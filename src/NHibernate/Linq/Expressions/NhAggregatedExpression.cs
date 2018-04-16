@@ -1,34 +1,39 @@
 ﻿using System.Linq.Expressions;
-using Remotion.Linq.Clauses.Expressions;
-using Remotion.Linq.Parsing;
+using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq.Expressions
 {
-	public abstract class NhAggregatedExpression : ExtensionExpression
+	public abstract class NhAggregatedExpression : NhExpression
 	{
-		public Expression Expression { get; set; }
-
-		protected NhAggregatedExpression(Expression expression, NhExpressionType type)
-			: base(expression.Type, (ExpressionType)type)
+		protected NhAggregatedExpression(Expression expression)
+			: this(expression, expression.Type)
 		{
-			Expression = expression;
 		}
 
-		protected NhAggregatedExpression(Expression expression, System.Type expressionType, NhExpressionType type)
-			: base(expressionType, (ExpressionType)type)
+		protected NhAggregatedExpression(Expression expression, System.Type type)
 		{
 			Expression = expression;
+			Type = type;
 		}
 
-		protected override Expression VisitChildren(ExpressionTreeVisitor visitor)
+		public sealed override System.Type Type { get; }
+
+		public Expression Expression { get; }
+
+		protected override Expression VisitChildren(ExpressionVisitor visitor)
 		{
-			var newExpression = visitor.VisitExpression(Expression);
+			var newExpression = visitor.Visit(Expression);
 
 			return newExpression != Expression
-					   ? CreateNew(newExpression)
-					   : this;
+				? CreateNew(newExpression)
+				: this;
 		}
 
 		public abstract Expression CreateNew(Expression expression);
+
+		protected override Expression Accept(NhExpressionVisitor visitor)
+		{
+			return visitor.VisitNhAggregated(this);
+		}
 	}
 }

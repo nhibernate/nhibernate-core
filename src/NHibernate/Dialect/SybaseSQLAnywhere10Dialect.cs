@@ -46,7 +46,7 @@ namespace NHibernate.Dialect
 	///	</item>
 	/// </list>
 	/// </remarks>
-	public class SybaseSQLAnywhere10Dialect : Dialect
+	public partial class SybaseSQLAnywhere10Dialect : Dialect
 	{
 		public SybaseSQLAnywhere10Dialect()
 		{
@@ -63,17 +63,17 @@ namespace NHibernate.Dialect
 
 		protected virtual void RegisterCharacterTypeMappings()
 		{
-			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(1)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 32767, "CHAR($l)");
-			RegisterColumnType(DbType.AnsiString, "VARCHAR(1)");
+			RegisterColumnType(DbType.AnsiString, "VARCHAR(255)");
 			RegisterColumnType(DbType.AnsiString, 32767, "VARCHAR($l)");
 			RegisterColumnType(DbType.AnsiString, 2147483647, "LONG VARCHAR");
-			RegisterColumnType(DbType.StringFixedLength, "NCHAR(1)");
+			RegisterColumnType(DbType.StringFixedLength, "NCHAR(255)");
 			RegisterColumnType(DbType.StringFixedLength, 32767, "NCHAR($l)");
-			RegisterColumnType(DbType.String, "NVARCHAR(1)");
+			RegisterColumnType(DbType.String, "NVARCHAR(255)");
 			RegisterColumnType(DbType.String, 32767, "NVARCHAR($l)");
 			RegisterColumnType(DbType.String, 2147483647, "LONG NVARCHAR");
-			RegisterColumnType(DbType.Binary, "BINARY(1)");
+			RegisterColumnType(DbType.Binary, "BINARY(8000)");
 			RegisterColumnType(DbType.Binary, 32767, "VARBINARY($l)");
 			RegisterColumnType(DbType.Binary, 2147483647, "LONG BINARY");
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
@@ -91,7 +91,8 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Single, "REAL");
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)"); // Precision ranges from 0-127
-			RegisterColumnType(DbType.Decimal, 19, "NUMERIC($p, $s)"); // Precision ranges from 0-127
+			// Anywhere max precision is 127, but .Net is limited to 28-29.
+			RegisterColumnType(DbType.Decimal, 29, "NUMERIC($p, $s)"); // Precision ranges from 0-127
 		}
 
 		protected virtual void RegisterDateTimeTypeMappings()
@@ -139,12 +140,13 @@ namespace NHibernate.Dialect
 			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
 			RegisterFunction("rand", new StandardSQLFunction("rand", NHibernateUtil.Double));
 			RegisterFunction("remainder", new StandardSQLFunction("remainder"));
-			RegisterFunction("round", new StandardSQLFunction("round"));
+			RegisterFunction("round", new StandardSQLFunctionWithRequiredParameters("round", new object[] {null, "0"}));
 			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
 			RegisterFunction("sin", new StandardSQLFunction("sin", NHibernateUtil.Double));
 			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
 			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
-			RegisterFunction("truncate", new StandardSQLFunction("truncate"));
+			RegisterFunction("truncnum", new StandardSQLFunctionWithRequiredParameters("truncnum", new object[] {null, "0"}));
+			RegisterFunction("truncate", new StandardSQLFunctionWithRequiredParameters("truncnum", new object[] {null, "0"}));
 		}
 
 		protected virtual void RegisterXmlFunctions()
@@ -199,17 +201,17 @@ namespace NHibernate.Dialect
 		protected virtual void RegisterDateFunctions()
 		{
 			RegisterFunction("date", new StandardSQLFunction("date", NHibernateUtil.Date));
-			RegisterFunction("dateadd", new StandardSQLFunction("dateadd", NHibernateUtil.Timestamp));
+			RegisterFunction("dateadd", new StandardSQLFunction("dateadd", NHibernateUtil.DateTime));
 			RegisterFunction("datediff", new StandardSQLFunction("datediff", NHibernateUtil.Int32));
 			RegisterFunction("dateformat", new StandardSQLFunction("dateformat", NHibernateUtil.String));
 			RegisterFunction("datename", new StandardSQLFunction("datename", NHibernateUtil.String));
 			RegisterFunction("datepart", new StandardSQLFunction("datepart", NHibernateUtil.Int32));
-			RegisterFunction("datetime", new StandardSQLFunction("datetime", NHibernateUtil.Timestamp));
+			RegisterFunction("datetime", new StandardSQLFunction("datetime", NHibernateUtil.DateTime));
 			RegisterFunction("day", new StandardSQLFunction("day", NHibernateUtil.Int32));
 			RegisterFunction("dayname", new StandardSQLFunction("dayname", NHibernateUtil.String));
 			RegisterFunction("days", new StandardSQLFunction("days"));
 			RegisterFunction("dow", new StandardSQLFunction("dow", NHibernateUtil.Int32));
-			RegisterFunction("getdate", new StandardSQLFunction("getdate", NHibernateUtil.Timestamp));
+			RegisterFunction("getdate", new StandardSQLFunction("getdate", NHibernateUtil.DateTime));
 			RegisterFunction("hour", new StandardSQLFunction("hour", NHibernateUtil.Int32));
 			RegisterFunction("hours", new StandardSQLFunction("hours"));
 			RegisterFunction("minute", new StandardSQLFunction("minute", NHibernateUtil.Int32));
@@ -217,7 +219,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("month", new StandardSQLFunction("month", NHibernateUtil.Int32));
 			RegisterFunction("monthname", new StandardSQLFunction("monthname", NHibernateUtil.String));
 			RegisterFunction("months", new StandardSQLFunction("months"));
-			RegisterFunction("now", new NoArgSQLFunction("now", NHibernateUtil.Timestamp));
+			RegisterFunction("now", new NoArgSQLFunction("now", NHibernateUtil.DateTime));
 			RegisterFunction("quarter", new StandardSQLFunction("quarter", NHibernateUtil.Int32));
 			RegisterFunction("second", new StandardSQLFunction("second", NHibernateUtil.Int32));
 			RegisterFunction("seconds", new StandardSQLFunction("seconds"));
@@ -228,7 +230,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("ymd", new StandardSQLFunction("ymd", NHibernateUtil.Date));
 
 			// compatibility functions
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.Timestamp, true));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime, true));
 			RegisterFunction("current_time", new NoArgSQLFunction("getdate", NHibernateUtil.Time, true));
 			RegisterFunction("current_date", new NoArgSQLFunction("getdate", NHibernateUtil.Date, true));
 		}
@@ -344,18 +346,134 @@ namespace NHibernate.Dialect
 			RegisterFunction("watcomsql", new StandardSQLFunction("watcomsql", NHibernateUtil.String));
 		}
 
+		#region private static readonly string[] DialectKeywords = { ... }
+
+		private static readonly string[] DialectKeywords =
+		{
+			"aes_decrypt",
+			"asc",
+			"attach",
+			"backup",
+			"bit",
+			"bottom",
+			"break",
+			"capability",
+			"cascade",
+			"char_convert",
+			"checkpoint",
+			"clear",
+			"comment",
+			"compressed",
+			"conflict",
+			"convert",
+			"dbspace",
+			"deleting",
+			"desc",
+			"detach",
+			"elseif",
+			"encrypted",
+			"endif",
+			"exception",
+			"existing",
+			"externlogin",
+			"force",
+			"forward",
+			"goto",
+			"holdlock",
+			"identified",
+			"index",
+			"inserting",
+			"install",
+			"instead",
+			"integrated",
+			"iq",
+			"isolation",
+			"json",
+			"kerberos",
+			"key",
+			"lock",
+			"login",
+			"long",
+			"membership",
+			"message",
+			"mode",
+			"modify",
+			"noholdlock",
+			"notify",
+			"nvarchar",
+			"off",
+			"openstring",
+			"openxml",
+			"option",
+			"options",
+			"others",
+			"passthrough",
+			"print",
+			"privileges",
+			"proc",
+			"publication",
+			"raiserror",
+			"readtext",
+			"reference",
+			"refresh",
+			"remote",
+			"remove",
+			"rename",
+			"reorganize",
+			"resource",
+			"restore",
+			"restrict",
+			"rowtype",
+			"save",
+			"session",
+			"setuser",
+			"share",
+			"spatial",
+			"sqlcode",
+			"stop",
+			"subtrans",
+			"subtransaction",
+			"synchronize",
+			"temporary",
+			"timeline",
+			"tinyint",
+			"truncate",
+			"tsequal",
+			"unbounded",
+			"uniqueidentifier",
+			"unsigned",
+			"updating",
+			"validate",
+			"varbinary",
+			"varbit",
+			"variable",
+			"varray",
+			"view",
+			"wait",
+			"waitfor",
+			"work",
+			"writetext",
+			"xml",
+		};
+
+		#endregion
+
 		protected virtual void RegisterKeywords()
 		{
-			RegisterKeyword("TOP");
-			RegisterKeyword("FIRST");
-			RegisterKeyword("FETCH");
-			RegisterKeyword("START");
-			RegisterKeyword("AT");
-			RegisterKeyword("WITH");
-			RegisterKeyword("CONTAINS");
-			RegisterKeyword("REGEXP");
-			RegisterKeyword("SIMILAR");
-			RegisterKeyword("SEQUENCE");
+			// Register driver returned keywords for SQL Anywhere 16
+			RegisterKeywords(DialectKeywords);
+
+			// Keywords originally registered for SQL Anywhere 10 (none are in the above list)
+			RegisterKeyword("top");
+			RegisterKeyword("first");
+			RegisterKeyword("fetch");
+			RegisterKeyword("start");
+			RegisterKeyword("at");
+			RegisterKeyword("with");
+			RegisterKeyword("contains");
+			RegisterKeyword("regexp");
+			RegisterKeyword("similar");
+			RegisterKeyword("sequence");
 		}
 
 		#region IDENTITY or AUTOINCREMENT support
@@ -525,10 +643,28 @@ namespace NHibernate.Dialect
 		/// In this dialect, we avoid this issue by supporting only
 		/// <tt>FOR UPDATE BY LOCK</tt>.
 		/// </summary>
+		// Since v5.1
+		[Obsolete("Use UsesColumnsWithForUpdateOf instead")]
 		public override bool ForUpdateOfColumns
 		{
 			get { return false; }
 		}
+
+		/* 6.0 TODO: uncomment once ForUpdateOfColumns is removed.
+		/// <summary>
+		/// SQL Anywhere does support <c>FOR UPDATE OF</c> syntax. However,
+		/// in SQL Anywhere one cannot specify both <c>FOR UPDATE OF</c> syntax
+		/// and <c>FOR UPDATE BY LOCK</c> in the same statement. To achieve INTENT
+		/// locking when using <c>FOR UPDATE OF</c> syntax one must use a table hint
+		/// in the query's FROM clause, ie.
+		/// <code>
+		/// SELECT * FROM FOO WITH( UPDLOCK ) FOR UPDATE OF ( column-list ).
+		/// </code>
+		/// In this dialect, we avoid this issue by supporting only
+		/// <c>FOR UPDATE BY LOCK</c>.
+		/// </summary>
+		public override bool UsesColumnsWithForUpdateOf => false;
+		*/
 
 		/// <summary>
 		/// SQL Anywhere supports <tt>FOR UPDATE</tt> over cursors containing

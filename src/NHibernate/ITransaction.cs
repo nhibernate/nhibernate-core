@@ -17,7 +17,7 @@ namespace NHibernate
 	/// at most one uncommitted <c>ITransaction</c> associated with a particular <c>ISession</c>
 	/// at a time. Implementors are not intended to be threadsafe.
 	/// </remarks>
-	public interface ITransaction : IDisposable
+	public partial interface ITransaction : IDisposable
 	{
 		/// <summary>
 		/// Begin the transaction with the default isolation level.

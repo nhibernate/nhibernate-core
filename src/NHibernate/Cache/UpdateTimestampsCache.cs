@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 using NHibernate.Cfg;
@@ -13,14 +14,14 @@ namespace NHibernate.Cache
 	/// recommend that the the underlying cache not be configured for expiry at all.
 	/// Note, in particular, that an LRU cache expiry policy is never appropriate.
 	/// </summary>
-	public class UpdateTimestampsCache
+	public partial class UpdateTimestampsCache
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(UpdateTimestampsCache));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(UpdateTimestampsCache));
 		private ICache updateTimestamps;
 
 		private readonly string regionName = typeof(UpdateTimestampsCache).Name;
 
-		public void Clear()
+		public virtual void Clear()
 		{
 			updateTimestamps.Clear();
 		}
@@ -29,38 +30,54 @@ namespace NHibernate.Cache
 		{
 			string prefix = settings.CacheRegionPrefix;
 			regionName = prefix == null ? regionName : prefix + '.' + regionName;
-			log.Info("starting update timestamps cache at region: " + regionName);
+			log.Info("starting update timestamps cache at region: {0}", regionName);
 			updateTimestamps = settings.CacheProvider.BuildCache(regionName, props);
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
+		//Since v5.1
+		[Obsolete("Please use PreInvalidate(IReadOnlyCollection<string>) instead.")]
 		public void PreInvalidate(object[] spaces)
+		{
+			//Only for backwards compatibility.
+			PreInvalidate(spaces.OfType<string>().ToList());
+		}
+
+		[MethodImpl(MethodImplOptions.Synchronized)]
+		public virtual void PreInvalidate(IReadOnlyCollection<string> spaces)
 		{
 			//TODO: to handle concurrent writes correctly, this should return a Lock to the client
 			long ts = updateTimestamps.NextTimestamp() + updateTimestamps.Timeout;
-			for (int i = 0; i < spaces.Length; i++)
+			foreach (var space in spaces)
 			{
-				updateTimestamps.Put(spaces[i], ts);
+				updateTimestamps.Put(space, ts);
 			}
+
 			//TODO: return new Lock(ts);
 		}
 
-		/// <summary></summary>
-		[MethodImpl(MethodImplOptions.Synchronized)]
+		//Since v5.1
+		[Obsolete("Please use PreInvalidate(IReadOnlyCollection<string>) instead.")]
 		public void Invalidate(object[] spaces)
+		{
+			//Only for backwards compatibility.
+			Invalidate(spaces.OfType<string>().ToList());
+		}
+
+		[MethodImpl(MethodImplOptions.Synchronized)]
+		public virtual void Invalidate(IReadOnlyCollection<string> spaces)
 		{
 			//TODO: to handle concurrent writes correctly, the client should pass in a Lock
 			long ts = updateTimestamps.NextTimestamp();
 			//TODO: if lock.getTimestamp().equals(ts)
-			for (int i = 0; i < spaces.Length; i++)
+			foreach (var space in spaces)
 			{
-				log.Debug(string.Format("Invalidating space [{0}]", spaces[i]));
-				updateTimestamps.Put(spaces[i], ts);
+				log.Debug("Invalidating space [{0}]", space);
+				updateTimestamps.Put(space, ts);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public bool IsUpToDate(ISet<string> spaces, long timestamp /* H2.1 has Long here */)
+		public virtual bool IsUpToDate(ISet<string> spaces, long timestamp /* H2.1 has Long here */)
 		{
 			foreach (string space in spaces)
 			{
@@ -95,7 +112,7 @@ namespace NHibernate.Cache
 			return true;
 		}
 
-		public void Destroy()
+		public virtual void Destroy()
 		{
 			try
 			{
@@ -103,7 +120,7 @@ namespace NHibernate.Cache
 			}
 			catch (Exception e)
 			{
-				log.Warn("could not destroy UpdateTimestamps cache", e);
+				log.Warn(e, "could not destroy UpdateTimestamps cache");
 			}
 		}
 	}

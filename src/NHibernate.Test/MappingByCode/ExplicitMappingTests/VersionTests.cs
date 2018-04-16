@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
+	[TestFixture]
 	public class VersionTests
 	{
 		private class MyClass

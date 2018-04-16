@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3160
 {
+	[TestFixture]
 	public class MappingWithUniqueTests
 	{
 		protected HbmMapping GetMappings()

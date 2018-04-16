@@ -8,6 +8,7 @@ namespace NHibernate.Test.MappingByCode
 
 	public class Entity { }
 
+	[TestFixture]
 	public class ImportTest
 	{
 		[Test]

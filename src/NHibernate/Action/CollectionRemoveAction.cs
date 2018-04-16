@@ -8,7 +8,7 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Action
 {
 	[Serializable]
-	public sealed class CollectionRemoveAction : CollectionAction
+	public sealed partial class CollectionRemoveAction : CollectionAction
 	{
 		private readonly bool emptySnapshot;
 		private readonly object affectedOwner;

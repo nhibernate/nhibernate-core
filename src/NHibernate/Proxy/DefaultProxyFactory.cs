@@ -8,7 +8,7 @@ namespace NHibernate.Proxy
 	public class DefaultProxyFactory : AbstractProxyFactory
 	{
 		private readonly ProxyFactory factory = new ProxyFactory();
-		protected static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (DefaultProxyFactory));
+		protected static readonly INHibernateLogger log = NHibernateLogger.For(typeof (DefaultProxyFactory));
 
 		public override INHibernateProxy GetProxy(object id, ISessionImplementor session)
 		{
@@ -24,7 +24,7 @@ namespace NHibernate.Proxy
 			}
 			catch (Exception ex)
 			{
-				log.Error("Creating a proxy instance failed", ex);
+				log.Error(ex, "Creating a proxy instance failed");
 				throw new HibernateException("Creating a proxy instance failed", ex);
 			}
 		}

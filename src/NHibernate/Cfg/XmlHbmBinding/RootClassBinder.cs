@@ -37,7 +37,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			Table table = mappings.AddTable(schema, catalog, tableName, classSchema.Subselect, rootClass.IsAbstract.GetValueOrDefault(), classSchema.schemaaction);
 			((ITableOwner) rootClass).Table = table;
 
-			log.InfoFormat("Mapping class: {0} -> {1}", rootClass.EntityName, rootClass.Table.Name);
+			log.Info("Mapping class: {0} -> {1}", rootClass.EntityName, rootClass.Table.Name);
 
 			rootClass.IsMutable = classSchema.mutable;
 			rootClass.Where = classSchema.where ?? rootClass.Where;
@@ -114,13 +114,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				switch (timestampSchema.source)
 				{
 					case HbmTimestampSource.Vm:
-						simpleValue.TypeName = NHibernateUtil.Timestamp.Name; 
+						simpleValue.TypeName = NHibernateUtil.DateTime.Name;
 						break;
 					case HbmTimestampSource.Db:
-						simpleValue.TypeName = NHibernateUtil.DbTimestamp.Name; 
+						simpleValue.TypeName = NHibernateUtil.DbTimestamp.Name;
 						break;
 					default:
-						simpleValue.TypeName = NHibernateUtil.Timestamp.Name;
+						simpleValue.TypeName = NHibernateUtil.DateTime.Name;
 						break;
 				}
 			}

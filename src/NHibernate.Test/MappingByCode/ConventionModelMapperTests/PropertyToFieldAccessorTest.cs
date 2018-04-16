@@ -6,12 +6,16 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 {
+	[TestFixture]
 	public class PropertyToFieldAccessorTest
 	{
 		private class MyClass
 		{
 			public int Id { get; set; }
+			// Used by reflection
+#pragma warning disable CS0169 // The field is never used
 			private string aField;
+#pragma warning restore CS0169 // The field is never used
 			public int AProp { get; set; }
 
 			private ICollection<int> withDifferentBackField;
@@ -21,7 +25,10 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 				set { withDifferentBackField = value as ICollection<int>; }
 			}
 
+			// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			private string readOnlyWithSameBackField;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 			public string ReadOnlyWithSameBackField
 			{
 				get { return readOnlyWithSameBackField; }

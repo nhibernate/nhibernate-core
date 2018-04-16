@@ -8,7 +8,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 		{
 			var source = queryModelVisitor.Model.SelectClause.GetOutputDataInfo().ItemExpression;
 
-			var expression = new HqlGeneratorExpressionTreeVisitor(queryModelVisitor.VisitorParameters)
+			var expression = new HqlGeneratorExpressionVisitor(queryModelVisitor.VisitorParameters)
 				.BuildOfType(source, resultOperator.SearchedItemType);
 
 			tree.AddWhereClause(expression);

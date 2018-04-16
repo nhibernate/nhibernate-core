@@ -7,7 +7,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Param
 {
-	public abstract class AbstractExplicitParameterSpecification : IPageableParameterSpecification
+	public abstract partial class AbstractExplicitParameterSpecification : IPageableParameterSpecification
 	{
 		private readonly int sourceColumn;
 		private readonly int sourceLine;

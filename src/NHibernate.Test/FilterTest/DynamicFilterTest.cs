@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using log4net;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -28,11 +29,11 @@ namespace NHibernate.Test.FilterTest
 			// Force a collection into the second level cache, with its non-filtered elements
 			Salesperson sp = (Salesperson) session.Load(typeof(Salesperson), testData.steveId);
 			NHibernateUtil.Initialize(sp.Orders);
-			ICollectionPersister persister = ((ISessionFactoryImplementor) sessions)
+			ICollectionPersister persister = ((ISessionFactoryImplementor) Sfi)
 				.GetCollectionPersister(typeof(Salesperson).FullName + ".Orders");
 			Assert.IsTrue(persister.HasCache, "No cache for collection");
 			CacheKey cacheKey =
-				new CacheKey(testData.steveId, persister.KeyType, persister.Role, (ISessionFactoryImplementor) sessions);
+				new CacheKey(testData.steveId, persister.KeyType, persister.Role, (ISessionFactoryImplementor) Sfi);
 			CollectionCacheEntry cachedData = (CollectionCacheEntry)persister.Cache.Cache.Get(cacheKey);
 			Assert.IsNotNull(cachedData, "collection was not in cache");
 
@@ -194,6 +195,127 @@ namespace NHibernate.Test.FilterTest
 			session.Close();
 			testData.Release();
 		}
+
+
+		[Test]
+		public void CriteriaControl()
+		{
+			using (var testData = new TestData(this))
+			{
+				testData.Prepare();
+
+				// the subquery...
+				var subquery = DetachedCriteria
+					.For<Salesperson>()
+					.SetProjection(Property.ForName("Name"));
+
+				using (var session = OpenSession())
+				using (var transaction = session.BeginTransaction())
+				{
+					session.EnableFilter("fulfilledOrders").SetParameter("asOfDate", testData.lastMonth.Date);
+					session.EnableFilter("regionlist").SetParameter("regions", "APAC");
+
+					var result = session
+						.CreateCriteria<Order>()
+						.Add(Subqueries.In("steve", subquery))
+						.List();
+
+					Assert.That(result.Count, Is.EqualTo(1));
+
+					transaction.Commit();
+				}
+			}
+		}
+
+		[Test]
+		public void CriteriaSubqueryWithFilters()
+		{
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// Criteria-subquery test
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			log.Info("Starting Criteria-subquery filter tests");
+			using (var testData = new TestData(this))
+			{
+				testData.Prepare();
+
+				using (var session = OpenSession())
+				{
+					session.EnableFilter("region").SetParameter("region", "APAC");
+
+					log.Info("Criteria query against Department with a subquery on Salesperson in the APAC reqion...");
+					var salespersonSubquery = DetachedCriteria.For<Salesperson>()
+						.Add(Restrictions.Eq("Name", "steve"))
+						.SetProjection(Property.ForName("Department"));
+
+					var departmentsQuery = session.CreateCriteria<Department>().
+						Add(Subqueries.PropertyIn("Id", salespersonSubquery));
+					var departments = departmentsQuery.List<Department>();
+
+					Assert.That(departments.Count, Is.EqualTo(1), "Incorrect department count");
+
+					log.Info("Criteria query against Department with a subquery on Salesperson in the FooBar reqion...");
+
+					session.EnableFilter("region").SetParameter("region", "Foobar");
+					departments = departmentsQuery.List<Department>();
+
+					Assert.That(departments.Count, Is.EqualTo(0), "Incorrect department count");
+
+					log.Info("Criteria query against Order with a subquery for line items with a subquery on product and sold by a given sales person...");
+					session.EnableFilter("region").SetParameter("region", "APAC");
+
+					var lineItemSubquery = DetachedCriteria.For<LineItem>()
+						.Add(Restrictions.Ge("Quantity", 1L))
+						.CreateCriteria("Product")
+						.Add(Restrictions.Eq("Name", "Acme Hair Gel"))
+						.SetProjection(Property.ForName("Id"));
+
+					var orders = session.CreateCriteria<Order>()
+						.Add(Subqueries.Exists(lineItemSubquery))
+						.Add(Restrictions.Eq("Buyer", "gavin"))
+						.List<Order>();
+
+					Assert.That(orders.Count, Is.EqualTo(1), "Incorrect orders count");
+
+					log.Info("query against Order with a subquery for line items with a subquery line items where the product name is Acme Hair Gel and the quantity is greater than 1 in a given region and the product is effective as of last month");
+					session.EnableFilter("region").SetParameter("region", "APAC");
+					session.EnableFilter("effectiveDate").SetParameter("asOfDate", testData.lastMonth.Date);
+
+					var productSubquery = DetachedCriteria.For<Product>()
+						.
+						Add(Restrictions.Eq("Name", "Acme Hair Gel"))
+						.SetProjection(Property.ForName("id"));
+
+					lineItemSubquery = DetachedCriteria.For<LineItem>()
+						.Add(Restrictions.Ge("Quantity", 1L))
+						.CreateCriteria("Product")
+						.Add(Subqueries.PropertyIn("Id", productSubquery))
+						.SetProjection(Property.ForName("Id"));
+
+					orders = session
+						.CreateCriteria<Order>()
+						.Add(Subqueries.Exists(lineItemSubquery))
+						.Add(Restrictions.Eq("Buyer", "gavin"))
+						.List<Order>();
+
+					Assert.That(orders.Count, Is.EqualTo(1), "Incorrect orders count");
+
+
+					log.Info("query against Order with a subquery for line items with a subquery line items where the product name is Acme Hair Gel and the quantity is greater than 1 in a given region and the product is effective as of 4 months ago");
+					session.EnableFilter("region").SetParameter("region", "APAC");
+					session.EnableFilter("effectiveDate").SetParameter("asOfDate", testData.fourMonthsAgo.Date);
+
+					orders = session.CreateCriteria<Order>()
+						.Add(Subqueries.Exists(lineItemSubquery))
+						.Add(Restrictions.Eq("Buyer", "gavin"))
+						.List<Order>();
+
+					Assert.That(orders.Count, Is.EqualTo(0), "Incorrect orders count");
+
+					session.Close();
+				}
+			}
+		}
+
 
 		[Test]
 		public void GetFilters()
@@ -472,10 +594,7 @@ namespace NHibernate.Test.FilterTest
 			testData.Release();
 		}
 
-		protected override string MappingsAssembly
-		{
-			get { return "NHibernate.Test"; }
-		}
+		protected override string MappingsAssembly => "NHibernate.Test";
 
 		protected override IList Mappings
 		{
@@ -489,7 +608,7 @@ namespace NHibernate.Test.FilterTest
 			}
 		}
 
-		private class TestData
+		private class TestData:IDisposable
 		{
 			public long steveId;
 			public long deptId;
@@ -620,6 +739,11 @@ namespace NHibernate.Test.FilterTest
 
 				transaction.Commit();
 				session.Close();
+			}
+
+			public void Dispose()
+			{
+				Release();
 			}
 		}
 	}

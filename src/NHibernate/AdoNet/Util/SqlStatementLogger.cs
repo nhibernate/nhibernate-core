@@ -8,7 +8,7 @@ namespace NHibernate.AdoNet.Util
 	/// <summary> Centralize logging handling for SQL statements. </summary>
 	public class SqlStatementLogger
 	{
-		private static readonly IInternalLogger Logger = LoggerProvider.LoggerFor("NHibernate.SQL");
+		private static readonly INHibernateLogger Logger = NHibernateLogger.For("NHibernate.SQL");
 
 		/// <summary> Constructs a new SqlStatementLogger instance.</summary>
 		public SqlStatementLogger() : this(false, false)
@@ -30,7 +30,7 @@ namespace NHibernate.AdoNet.Util
 
 		public bool IsDebugEnabled
 		{
-			get { return Logger.IsDebugEnabled; }
+			get { return Logger.IsDebugEnabled(); }
 		}
 
 		/// <summary> Log a DbCommand. </summary>
@@ -39,7 +39,7 @@ namespace NHibernate.AdoNet.Util
 		/// <param name="style">The requested formatting style. </param>
 		public virtual void LogCommand(string message, DbCommand command, FormatStyle style)
 		{
-			if (!Logger.IsDebugEnabled && !LogToStdout || string.IsNullOrEmpty(command.CommandText))
+			if (!Logger.IsDebugEnabled() && !LogToStdout || string.IsNullOrEmpty(command.CommandText))
 			{
 				return;
 			}
@@ -104,11 +104,7 @@ namespace NHibernate.AdoNet.Util
 
 		private static string GetParameterLoggableType(DbParameter dataParameter)
 		{
-			//TODO: Fix me after 4.6.2 update. Size and Precision has been added to DbParameter
-			var p = dataParameter as IDbDataParameter;
-			if (p != null)
-				return p.DbType + " (" + p.Size + ":" + p.Scale + ":" + p.Precision + ")";
-			return dataParameter.DbType.ToString();
+			return dataParameter.DbType + " (" + dataParameter.Size + ":" + dataParameter.Scale + ":" + dataParameter.Precision + ")";
 		}
 
 		public string GetParameterLoggableValue(DbParameter parameter)
@@ -140,14 +136,6 @@ namespace NHibernate.AdoNet.Util
 			return parameter.Value.ToString();
 
 		}
-
-
-		[Obsolete("Use GetParameterLoggableValue(parameter) instead.")]
-		public string GetParameterLogableValue(DbParameter parameter)
-		{
-			return GetParameterLoggableValue(parameter);
-		}
-
 
 		private static string GetBufferAsHexString(byte[] buffer)
 		{

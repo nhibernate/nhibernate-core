@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3505
 	{
 		protected override void OnTearDown()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				s.Delete("from Student");
 			    s.Delete("from Teacher");

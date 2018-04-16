@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using Antlr.Runtime;
 
 using NHibernate.Hql.Ast.ANTLR.Util;
@@ -15,7 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromClause : HqlSqlWalkerNode, IDisplayableNode
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(FromClause));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(FromClause));
 		private const int RootLevel = 1;
 
 		private int _level = RootLevel;
@@ -128,9 +130,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public void AddJoinByPathMap(string path, FromElement destination)
 		{
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
-				Log.Debug("addJoinByPathMap() : " + path + " -> " + destination);
+				Log.Debug("addJoinByPathMap() : {0} -> {1}", path, destination);
 			}
 
 			_fromElementsByPath.Add(path, destination);
@@ -138,9 +140,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public void AddCollectionJoinFromElementByPath(string path, FromElement destination)
 		{
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
-				Log.Debug("addCollectionJoinFromElementByPath() : " + path + " -> " + destination);
+				Log.Debug("addCollectionJoinFromElementByPath() : {0} -> {1}", path, destination);
 			}
 			_collectionJoinFromElementsByPath.Add(path, destination);	// Add the new node to the map so that we don't create it twice.
 		}
@@ -363,11 +365,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public virtual void Resolve()
 		{
 			// Make sure that all from elements registered with this FROM clause are actually in the AST.
-			var iter = (new ASTIterator(GetFirstChild())).GetEnumerator();
 			var childrenInTree = new HashSet<IASTNode>();
-			while (iter.MoveNext())
+			foreach (var ast in new ASTIterator(GetFirstChild()))
 			{
-				childrenInTree.Add(iter.Current);
+				childrenInTree.Add(ast);
 			}
 			foreach (var fromElement in _fromElements)
 			{
@@ -376,6 +377,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					throw new SemanticException("Element not in AST: " + fromElement);
 				}
 			}
+		}
+
+		public FromElement GetFromElementByClassName(string className)
+		{
+			return _fromElementByClassAlias.Values.FirstOrDefault(variable => variable.ClassName == className);
 		}
 	}
 }

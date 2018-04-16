@@ -1,13 +1,33 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
+using NHibernate.Event;
+using NHibernate.Event.Default;
+using NHibernate.Impl;
 using NHibernate.Stat;
 using NHibernate.Type;
 
 namespace NHibernate
 {
+	// 6.0 TODO: Convert to interface methods
+	public static class SessionExtensions
+	{
+		/// <summary>
+		/// Obtain a <see cref="IStatelessSession"/> builder with the ability to grab certain information from
+		/// this session. The built <c>IStatelessSession</c> will require its own disposal.
+		/// </summary>
+		/// <param name="session">The session from which to build a stateless session.</param>
+		/// <returns>The session builder.</returns>
+		public static ISharedStatelessSessionBuilder StatelessSessionWithOptions(this ISession session)
+		{
+			var impl = session as SessionImpl ?? throw new NotSupportedException("Only SessionImpl sessions are supported.");
+			return impl.StatelessSessionWithOptions();
+		}
+	}
+
 	/// <summary>
 	/// The main runtime interface between a .NET application and NHibernate. This is the central
 	/// API class abstracting the notion of a persistence service.
@@ -71,8 +91,15 @@ namespace NHibernate
 	/// </para>
 	/// <seealso cref="ISessionFactory"/>
 	/// </remarks>
-	public interface ISession : IDisposable
+	public partial interface ISession : IDisposable
 	{
+		/// <summary>
+		/// Obtain a <see cref="ISession"/> builder with the ability to grab certain information from
+		/// this session. The built <c>ISession</c> will require its own flushes and disposal.
+		/// </summary>
+		/// <returns>The session builder.</returns>
+		ISharedSessionBuilder SessionWithOptions();
+
 		/// <summary>
 		/// Force the <c>ISession</c> to flush.
 		/// </summary>
@@ -164,15 +191,39 @@ namespace NHibernate
 		bool IsOpen { get; }
 
 		/// <summary>
-		/// Is the <c>ISession</c> currently connected?
+		/// Is the session connected?
 		/// </summary>
+		/// <value>
+		/// <see langword="true" /> if the session is connected.
+		/// </value>
+		/// <remarks>
+		/// A session is considered connected if there is a <see cref="DbConnection"/> (regardless
+		/// of its state) or if the field <c>connect</c> is true. Meaning that it will connect
+		/// at the next operation that requires a connection.
+		/// </remarks>
 		bool IsConnected { get; }
 
 		/// <summary>
 		/// Does this <c>ISession</c> contain any changes which must be
 		/// synchronized with the database? Would any SQL be executed if
-		/// we flushed this session?
+		/// we flushed this session? May trigger save cascades, which could
+		/// cause themselves some SQL to be executed, especially if the
+		/// <c>identity</c> id generator is used.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// The default implementation first checks if it contains saved or deleted entities to be flushed. If not, it
+		/// then delegate the check to its <see cref="IDirtyCheckEventListener" />, which by default is
+		/// <see cref="DefaultDirtyCheckEventListener" />.
+		/// </para>
+		/// <para>
+		/// <see cref="DefaultDirtyCheckEventListener" /> replicates all the beginning of the flush process, checking
+		/// dirtiness of entities loaded in the session and triggering their pending cascade operations in order to
+		/// detect new and removed children. This can have the side effect of performing the <see cref="Save(object)"/>
+		/// of children, causing their id to be generated. Depending on their id generator, this can trigger calls to
+		/// the database and even actually insert them if using an <c>identity</c> generator.
+		/// </para>
+		/// </remarks>
 		bool IsDirty();
 
 		/// <summary>
@@ -518,11 +569,10 @@ namespace NHibernate
 		/// This operation cascades to associated instances if the association is mapped
 		/// with <tt>cascade="merge"</tt>.<br/>
 		/// The semantics of this method are defined by JSR-220.
+		/// </summary>
 		/// <param name="entityName">Name of the entity.</param>
 		/// <param name="obj">a detached instance with state to be copied </param>
 		/// <returns> an updated persistent instance </returns>
-		/// </summary>
-		/// <returns></returns>
 		object Merge(string entityName, object obj);
 
 		/// <summary>
@@ -548,11 +598,10 @@ namespace NHibernate
 		/// This operation cascades to associated instances if the association is mapped
 		/// with <tt>cascade="merge"</tt>.<br/>
 		/// The semantics of this method are defined by JSR-220.
+		/// </summary>
 		/// <param name="entityName">Name of the entity.</param>
 		/// <param name="entity">a detached instance with state to be copied </param>
 		/// <returns> an updated persistent instance </returns>
-		/// </summary>
-		/// <returns></returns>
 		T Merge<T>(string entityName, T entity) where T : class;
 
 		/// <summary>
@@ -701,6 +750,23 @@ namespace NHibernate
 		/// Get the current Unit of Work and return the associated <c>ITransaction</c> object.
 		/// </summary>
 		ITransaction Transaction { get; }
+
+		/// <summary>
+		/// Join the <see cref="System.Transactions.Transaction.Current"/> system transaction.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Sessions auto-join current transaction by default on their first usage within a scope.
+		/// This can be disabled with <see cref="ISessionBuilder{T}.AutoJoinTransaction(bool)"/> from
+		/// a session builder obtained with <see cref="ISessionFactory.WithOptions()"/>.
+		/// </para>
+		/// <para>
+		/// This method allows to explicitly join the current transaction. It does nothing if it is already
+		/// joined.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="HibernateException">Thrown if there is no current transaction.</exception>
+		void JoinTransaction();
 
 		/// <summary>
 		/// Creates a new <c>Criteria</c> for the entity class.
@@ -929,12 +995,31 @@ namespace NHibernate
 		/// <summary> Get the statistics for this session.</summary>
 		ISessionStatistics Statistics { get; }
 
-		///  <summary>
-		///  Starts a new Session. This secondary Session inherits the connection, transaction,
-		///  and other context information from the primary Session. It doesn't need to be flushed
-		///  or closed by the developer.
-		///  </summary>
-		/// <returns>The new session</returns>
-		ISession GetChildSession();
+		// Obsolete since v5.
+		/// <summary>
+		/// Starts a new Session with the given entity mode in effect. This secondary
+		/// Session inherits the connection, transaction, and other context
+		///	information from the primary Session. It has to be flushed
+		/// or disposed by the developer since v5.
+		/// </summary>
+		/// <param name="entityMode">Ignored.</param>
+		/// <returns>The new session.</returns>
+		[Obsolete("Please use SessionWithOptions instead. Now requires to be flushed and disposed of.")]
+		ISession GetSession(EntityMode entityMode);
+
+		/// <summary>
+		/// Creates a new Linq <see cref="IQueryable{T}"/> for the entity class.
+		/// </summary>
+		/// <typeparam name="T">The entity class</typeparam>
+		/// <returns>An <see cref="IQueryable{T}"/> instance</returns>
+		IQueryable<T> Query<T>();
+
+		/// <summary>
+		/// Creates a new Linq <see cref="IQueryable{T}"/> for the entity class and with given entity name.
+		/// </summary>
+		/// <typeparam name="T">The type of entity to query.</typeparam>
+		/// <param name="entityName">The entity name.</param>
+		/// <returns>An <see cref="IQueryable{T}"/> instance</returns>
+		IQueryable<T> Query<T>(string entityName);
 	}
 }

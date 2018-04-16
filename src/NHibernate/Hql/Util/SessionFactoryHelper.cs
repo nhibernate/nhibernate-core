@@ -87,13 +87,13 @@ namespace NHibernate.Hql.Util
 			{
 				return (IQueryableCollection)sfi.GetCollectionPersister(role);
 			}
-			catch (InvalidCastException)
+			catch (InvalidCastException ice)
 			{
-				throw new QueryException("collection is not queryable: " + role);
+				throw new QueryException("collection is not queryable: " + role, ice);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				throw new QueryException("collection not found: " + role);
+				throw new QueryException("collection not found: " + role, ex);
 			}
 		}
 
@@ -186,15 +186,15 @@ namespace NHibernate.Hql.Util
 				}
 				return queryableCollection;
 			}
-			catch (InvalidCastException)
+			catch (InvalidCastException ice)
 			{
 				throw new QueryException(
-						"collection role is not queryable: " + role);
+						"collection role is not queryable: " + role, ice);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
 				throw new QueryException("collection role not found: "
-						+ role);
+						+ role, ex);
 			}
 		}
 	}

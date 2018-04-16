@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Type;
 using System.Collections.Generic;
@@ -76,43 +75,21 @@ namespace NHibernate.Impl
 		/// <param name="name">The parameter's name.</param>
 		/// <param name="values">The values to be expanded into an SQL IN list.</param>
 		/// <returns>This FilterImpl instance (for method chaining).</returns>
-		public IFilter SetParameterList(string name, ICollection values)
+		public IFilter SetParameterList<T>(string name, ICollection<T> values)
 		{
-			// Make sure this is a defined parameter and check the incoming value type
-			if (values == null)
-			{
-				throw new ArgumentException("Collection must be not null!", "values");
-			}
-
 			var type = definition.GetParameterType(name);
 			if (type == null)
 			{
 				throw new HibernateException("Undefined filter parameter [" + name + "]");
 			}
 
-			if (values.Count > 0)
+			if (!type.ReturnedClass.IsAssignableFrom(typeof(T)))
 			{
-				var e = values.GetEnumerator();
-				e.MoveNext();
-				if (!type.ReturnedClass.IsInstanceOfType(e.Current))
-				{
-					throw new HibernateException("Incorrect type for parameter [" + name + "]");
-				}
+				throw new HibernateException("Incorrect type for parameter [" + name + "]");
 			}
-			parameters[name] = values;
-			return this;
-		}
 
-		/// <summary>
-		/// Set the named parameter's value list for this filter.  Used
-		/// in conjunction with IN-style filter criteria.        
-		/// </summary>
-		/// <param name="name">The parameter's name.</param>
-		/// <param name="values">The values to be expanded into an SQL IN list.</param>
-		/// <returns>This FilterImpl instance (for method chaining).</returns>
-		public IFilter SetParameterList(string name, object[] values)
-		{
-			return SetParameterList(name, new List<object>(values));
+			parameters[name] = values ?? throw new ArgumentException("Collection must be not null!", nameof(values));
+			return this;
 		}
 
 		public object GetParameter(string name)

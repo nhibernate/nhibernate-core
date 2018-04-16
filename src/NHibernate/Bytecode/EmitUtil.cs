@@ -1,67 +1,10 @@
-using System;
-using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections.Generic;
-using NHibernate.Linq;
-using NHibernate.Util;
 
 namespace NHibernate.Bytecode
 {
-	public class EmitUtil
+	internal static class EmitUtil
 	{
-		private EmitUtil()
-		{
-		}
-
-		/// <summary>
-		/// Emits an <c>ldc.i4</c> opcode using the fastest available opcode choice.
-		/// </summary>
-		public static void EmitFastInt(ILGenerator il, int value)
-		{
-			switch (value)
-			{
-				case -1:
-					il.Emit(OpCodes.Ldc_I4_M1);
-					return;
-				case 0:
-					il.Emit(OpCodes.Ldc_I4_0);
-					return;
-				case 1:
-					il.Emit(OpCodes.Ldc_I4_1);
-					return;
-				case 2:
-					il.Emit(OpCodes.Ldc_I4_2);
-					return;
-				case 3:
-					il.Emit(OpCodes.Ldc_I4_3);
-					return;
-				case 4:
-					il.Emit(OpCodes.Ldc_I4_4);
-					return;
-				case 5:
-					il.Emit(OpCodes.Ldc_I4_5);
-					return;
-				case 6:
-					il.Emit(OpCodes.Ldc_I4_6);
-					return;
-				case 7:
-					il.Emit(OpCodes.Ldc_I4_7);
-					return;
-				case 8:
-					il.Emit(OpCodes.Ldc_I4_8);
-					return;
-			}
-
-			if (value > -129 && value < 128)
-			{
-				il.Emit(OpCodes.Ldc_I4_S, (SByte) value);
-			}
-			else
-			{
-				il.Emit(OpCodes.Ldc_I4, value);
-			}
-		}
-
 		public static void EmitBoxIfNeeded(ILGenerator il, System.Type type)
 		{
 			if (type.IsValueType)
@@ -70,29 +13,25 @@ namespace NHibernate.Bytecode
 			}
 		}
 
-		private static Dictionary<System.Type, OpCode> typeToOpcode;
+		private static readonly Dictionary<System.Type, OpCode> typeToOpcode;
 
 		static EmitUtil()
 		{
-			typeToOpcode = new Dictionary<System.Type, OpCode>(12);
-
-			typeToOpcode[typeof(bool)] = OpCodes.Ldind_I1;
-			typeToOpcode[typeof(sbyte)] = OpCodes.Ldind_I1;
-			typeToOpcode[typeof(byte)] = OpCodes.Ldind_U1;
-
-			typeToOpcode[typeof(char)] = OpCodes.Ldind_U2;
-			typeToOpcode[typeof(short)] = OpCodes.Ldind_I2;
-			typeToOpcode[typeof(ushort)] = OpCodes.Ldind_U2;
-
-			typeToOpcode[typeof(int)] = OpCodes.Ldind_I4;
-			typeToOpcode[typeof(uint)] = OpCodes.Ldind_U4;
-
-			typeToOpcode[typeof(long)] = OpCodes.Ldind_I8;
-			typeToOpcode[typeof(ulong)] = OpCodes.Ldind_I8;
-
-			typeToOpcode[typeof(float)] = OpCodes.Ldind_R4;
-
-			typeToOpcode[typeof(double)] = OpCodes.Ldind_R8;
+			typeToOpcode = new Dictionary<System.Type, OpCode>
+			{
+				{typeof(bool), OpCodes.Ldind_I1},
+				{typeof(sbyte), OpCodes.Ldind_I1},
+				{typeof(byte), OpCodes.Ldind_U1},
+				{typeof(char), OpCodes.Ldind_U2},
+				{typeof(short), OpCodes.Ldind_I2},
+				{typeof(ushort), OpCodes.Ldind_U2},
+				{typeof(int), OpCodes.Ldind_I4},
+				{typeof(uint), OpCodes.Ldind_U4},
+				{typeof(long), OpCodes.Ldind_I8},
+				{typeof(ulong), OpCodes.Ldind_I8},
+				{typeof(float), OpCodes.Ldind_R4},
+				{typeof(double), OpCodes.Ldind_R8},
+			};
 		}
 
 		/// <summary>
@@ -145,67 +84,6 @@ namespace NHibernate.Bytecode
 					il.Emit(OpCodes.Castclass, propertyType);
 				}
 			}
-		}
-
-		/// <summary>
-		/// Defines a new delegate type.
-		/// </summary>
-		public static System.Type DefineDelegateType(
-			string fullTypeName,
-			ModuleBuilder moduleBuilder,
-			System.Type returnType,
-			System.Type[] parameterTypes)
-		{
-			TypeBuilder delegateBuilder =
-				moduleBuilder.DefineType(
-					fullTypeName,
-					TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass |
-					TypeAttributes.AutoClass, typeof(MulticastDelegate));
-
-			// Define a special constructor
-			ConstructorBuilder constructorBuilder =
-				delegateBuilder.DefineConstructor(
-					MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public,
-					CallingConventions.Standard, new System.Type[] {typeof(object), typeof(IntPtr)});
-
-			constructorBuilder.SetImplementationFlags(
-				MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
-
-			// Define the Invoke method for the delegate
-
-			MethodBuilder methodBuilder = delegateBuilder.DefineMethod("Invoke",
-			                                                           MethodAttributes.Public | MethodAttributes.HideBySig
-			                                                           | MethodAttributes.NewSlot | MethodAttributes.Virtual,
-			                                                           returnType, parameterTypes);
-
-			methodBuilder.SetImplementationFlags(
-				MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
-
-			return delegateBuilder.CreateType();
-		}
-
-		public static void EmitLoadType(ILGenerator il, System.Type type)
-		{
-			il.Emit(OpCodes.Ldtoken, type);
-			il.Emit(OpCodes.Call, ReflectionCache.TypeMethods.GetTypeFromHandle);
-		}
-
-		public static void EmitLoadMethodInfo(ILGenerator il, MethodInfo methodInfo)
-		{
-			il.Emit(OpCodes.Ldtoken, methodInfo);
-			il.Emit(OpCodes.Call, ReflectionCache.MethodBaseMethods.GetMethodFromHandle);
-			il.Emit(OpCodes.Castclass, typeof(MethodInfo));
-		}
-
-		private static readonly MethodInfo CreateDelegate = ReflectionHelper.GetMethod(
-			() => Delegate.CreateDelegate(null, null));
-
-		public static void EmitCreateDelegateInstance(ILGenerator il, System.Type delegateType, MethodInfo methodInfo)
-		{
-			EmitLoadType(il, delegateType);
-			EmitLoadMethodInfo(il, methodInfo);
-			il.EmitCall(OpCodes.Call, CreateDelegate, null);
-			il.Emit(OpCodes.Castclass, delegateType);
 		}
 	}
 }

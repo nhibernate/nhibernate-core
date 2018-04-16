@@ -2,7 +2,10 @@ namespace NHibernate.Test.Generatedkeys.Select
 {
 	public class MyEntity
 	{
+		// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 		private int id;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 		private string name;
 		protected MyEntity() {}
 

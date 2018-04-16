@@ -7,11 +7,11 @@ using NHibernate.Type;
 namespace NHibernate.Engine
 {
 	/// <summary> Algorithms related to foreign key constraint transparency </summary>
-	public static class ForeignKeys
+	public static partial class ForeignKeys
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ForeignKeys));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ForeignKeys));
 
-		public class Nullifier
+		public partial class Nullifier
 		{
 			private readonly bool isDelete;
 			private readonly bool isEarlyInsert;
@@ -138,7 +138,7 @@ namespace NHibernate.Engine
 				EntityEntry entityEntry = session.PersistenceContext.GetEntry(obj);
 				if (entityEntry == null)
 				{
-					return IsTransient(entityName, obj, null, session);
+					return IsTransientSlow(entityName, obj, session);
 				}
 				else
 				{
@@ -151,31 +151,25 @@ namespace NHibernate.Engine
 		/// Is this instance persistent or detached?
 		/// </summary>
 		/// <remarks>
-		/// If <paramref name="assumed"/> is non-null, don't hit the database to make the 
-		/// determination, instead assume that value; the client code must be 
-		/// prepared to "recover" in the case that this assumed result is incorrect.
+		/// Hit the database to make the determination.
 		/// </remarks>
-		public static bool IsNotTransient(string entityName, System.Object entity, bool? assumed, ISessionImplementor session)
+		public static bool IsNotTransientSlow(string entityName, object entity, ISessionImplementor session)
 		{
 			if (entity.IsProxy())
 				return true;
 			if (session.PersistenceContext.IsEntryFor(entity))
 				return true;
-			return !IsTransient(entityName, entity, assumed, session);
+			return !IsTransientSlow(entityName, entity, session);
 		}
 
 		/// <summary> 
 		/// Is this instance, which we know is not persistent, actually transient? 
-		/// If <tt>assumed</tt> is non-null, don't hit the database to make the 
-		/// determination, instead assume that value; the client code must be 
-		/// prepared to "recover" in the case that this assumed result is incorrect.
+		/// Don't hit the database to make the determination, instead return null; 
 		/// </summary>
 		/// <remarks>
-		/// If <paramref name="assumed"/> is non-null, don't hit the database to make the 
-		/// determination, instead assume that value; the client code must be 
-		/// prepared to "recover" in the case that this assumed result is incorrect.
+		/// Don't hit the database to make the determination, instead return null; 
 		/// </remarks>
-		public static bool IsTransient(string entityName, object entity, bool? assumed, ISessionImplementor session)
+		public static bool? IsTransientFast(string entityName, object entity, ISessionImplementor session)
 		{
 			if (Equals(Intercept.LazyPropertyInitializer.UnfetchedProperty, entity))
 			{
@@ -185,30 +179,33 @@ namespace NHibernate.Engine
 			}
 
 			// let the interceptor inspect the instance to decide
-			bool? isUnsaved = session.Interceptor.IsTransient(entity);
-			if (isUnsaved.HasValue)
-				return isUnsaved.Value;
-
 			// let the persister inspect the instance to decide
+			return session.Interceptor.IsTransient(entity) ??
+			       session.GetEntityPersister(entityName, entity).IsTransient(entity, session);
+		}
+
+		/// <summary> 
+		/// Is this instance, which we know is not persistent, actually transient? 
+		/// </summary>
+		/// <remarks>
+		/// Hit the database to make the determination.
+		/// </remarks>
+		public static bool IsTransientSlow(string entityName, object entity, ISessionImplementor session)
+		{
+			return IsTransientFast(entityName, entity, session) ??
+			       HasDbSnapshot(entityName, entity, session);
+		}
+
+		static bool HasDbSnapshot(string entityName, object entity, ISessionImplementor session)
+		{
 			IEntityPersister persister = session.GetEntityPersister(entityName, entity);
-			isUnsaved = persister.IsTransient(entity, session);
-			if (isUnsaved.HasValue)
-				return isUnsaved.Value;
-
-			// we use the assumed value, if there is one, to avoid hitting
-			// the database
-			if (assumed.HasValue)
-				return assumed.Value;
-
 			if (persister.IdentifierGenerator is Assigned)
 			{
 				// When using assigned identifiers we cannot tell if an entity
 				// is transient or detached without querying the database.
 				// This could potentially cause Select N+1 in cascaded saves, so warn the user.
-				log.Warn("Unable to determine if " + entity.ToString()
-					+ " with assigned identifier " + persister.GetIdentifier(entity)
-					+ " is transient or detached; querying the database."
-					+ " Use explicit Save() or Update() in session to prevent this.");
+				log.Warn("Unable to determine if {0} with assigned identifier {1} is transient or detached; querying the database. Use explicit Save() or Update() in session to prevent this.", 
+					entity, persister.GetIdentifier(entity));
 			}
 
 			// hit the database, after checking the session cache for a snapshot
@@ -247,7 +244,7 @@ namespace NHibernate.Engine
 						return entity;
 					/**********************************************/
 
-					if (IsTransient(entityName, entity, false, session))
+					if (IsTransientFast(entityName, entity, session).GetValueOrDefault())
 					{
 						/***********************************************/
 						// TODO NH verify the behavior of NH607 test

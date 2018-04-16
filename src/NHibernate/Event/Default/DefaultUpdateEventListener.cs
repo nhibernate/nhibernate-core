@@ -6,7 +6,7 @@ namespace NHibernate.Event.Default
 {
 	/// <summary> An event handler for update() events</summary>
 	[Serializable]
-	public class DefaultUpdateEventListener : DefaultSaveOrUpdateEventListener
+	public partial class DefaultUpdateEventListener : DefaultSaveOrUpdateEventListener
 	{
 		protected override object PerformSaveOrUpdate(SaveOrUpdateEvent @event)
 		{

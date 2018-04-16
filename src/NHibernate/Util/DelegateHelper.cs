@@ -19,9 +19,15 @@ namespace NHibernate.Util
 			var parameter = Expression.Parameter(typeof(object), "x");
 			var instance = Expression.Convert(parameter, type);
 			var property = Expression.Property(instance, propertyName);
-			var value = Expression.Parameter(typeof (T), "value");
+			var valueParameter = Expression.Parameter(typeof (T), "value");
+			Expression value = valueParameter;
+			// Cast value if required
+			if (!property.Type.IsAssignableFrom(typeof(T)))
+			{
+				value = Expression.Convert(valueParameter, property.Type);
+			}
 			var assign = Expression.Assign(property, value);
-			return Expression.Lambda<Action<object, T>>(assign, parameter, value).Compile();
+			return Expression.Lambda<Action<object, T>>(assign, parameter, valueParameter).Compile();
 		}
 
 		public static Action<object> BuildAction(System.Type type, string methodName)

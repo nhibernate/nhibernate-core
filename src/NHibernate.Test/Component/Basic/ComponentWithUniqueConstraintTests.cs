@@ -12,6 +12,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Component.Basic
 {
+	[TestFixture]
 	public class ComponentWithUniqueConstraintTests : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
@@ -37,7 +38,7 @@ namespace NHibernate.Test.Component.Basic
 
 		protected override void OnTearDown()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
 				session.Delete("from Employee");

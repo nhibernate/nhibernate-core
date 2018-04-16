@@ -8,12 +8,12 @@ namespace NHibernate.Persister.Entity
 	/// <summary> 
 	/// Not really a <tt>Loader</tt>, just a wrapper around a named query.
 	/// </summary>
-	public class NamedQueryLoader : IUniqueEntityLoader
+	public partial class NamedQueryLoader : IUniqueEntityLoader
 	{
 		private readonly string queryName;
 		private readonly IEntityPersister persister;
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(NamedQueryLoader));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(NamedQueryLoader));
 
 		public NamedQueryLoader(string queryName, IEntityPersister persister)
 		{
@@ -23,9 +23,9 @@ namespace NHibernate.Persister.Entity
 
 		public object Load(object id, object optionalObject, ISessionImplementor session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug(string.Format("loading entity: {0} using named query: {1}", persister.EntityName, queryName));
+				log.Debug("loading entity: {0} using named query: {1}", persister.EntityName, queryName);
 			}
 
 			AbstractQueryImpl query = (AbstractQueryImpl) session.GetNamedQuery(queryName);
@@ -40,7 +40,7 @@ namespace NHibernate.Persister.Entity
 			query.SetOptionalId(id);
 			query.SetOptionalEntityName(persister.EntityName);
 			query.SetOptionalObject(optionalObject);
-			query.SetFlushMode(FlushMode.Never);
+			query.SetFlushMode(FlushMode.Manual);
 			query.List();
 
 			// now look up the object we are really interested in!

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Criterion;
@@ -26,7 +25,7 @@ namespace NHibernate.Test.Criteria
 			get { return false; }
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
 			string[] projection = criteriaQuery.GetColumnsUsingProjection(criteria, propertyName);
 
@@ -56,7 +55,7 @@ namespace NHibernate.Test.Criteria
 			get { return false; }
 		}
 
-		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			throw new InvalidOperationException("not a grouping projection");
 		}

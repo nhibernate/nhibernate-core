@@ -15,9 +15,9 @@ namespace NHibernate.Event.Default
 	/// in response to generated refresh events. 
 	/// </summary>
 	[Serializable]
-	public class DefaultRefreshEventListener : IRefreshEventListener
+	public partial class DefaultRefreshEventListener : IRefreshEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultRefreshEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DefaultRefreshEventListener));
 
 		public virtual void OnRefresh(RefreshEvent @event)
 		{
@@ -52,9 +52,9 @@ namespace NHibernate.Event.Default
 			{
 				persister = source.GetEntityPersister(null, obj); //refresh() does not pass an entityName
 				id = persister.GetIdentifier(obj);
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("refreshing transient " + MessageHelper.InfoString(persister, id, source.Factory));
+					log.Debug("refreshing transient {0}", MessageHelper.InfoString(persister, id, source.Factory));
 				}
 				EntityKey key = source.GenerateEntityKey(id, persister);
 				if (source.PersistenceContext.GetEntry(key) != null)
@@ -65,9 +65,9 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("refreshing " + MessageHelper.InfoString(e.Persister, e.Id, source.Factory));
+					log.Debug("refreshing {0}", MessageHelper.InfoString(e.Persister, e.Id, source.Factory));
 				}
 				if (!e.ExistsInDatabase)
 				{
@@ -118,7 +118,7 @@ namespace NHibernate.Event.Default
 
 			// NH Different behavior : we are ignoring transient entities without throw any kind of exception
 			// because a transient entity is "self refreshed"
-			if (!ForeignKeys.IsTransient(persister.EntityName, obj, result == null, @event.Session))
+			if (!ForeignKeys.IsTransientFast(persister.EntityName, obj, @event.Session).GetValueOrDefault(result == null))
 				UnresolvableObjectException.ThrowIfNull(result, id, persister.EntityName);
 		}
 

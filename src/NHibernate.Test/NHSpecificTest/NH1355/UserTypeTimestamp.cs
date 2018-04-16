@@ -49,14 +49,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1355
 			get { return false; }
 		}
 
-		public object NullSafeGet(DbDataReader rs, string[] names, object owner)
+		public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return rs.GetValue(rs.GetOrdinal(names[0]));
 		}
 
-		public void NullSafeSet(DbCommand cmd, object value, int index)
+		public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			NHibernateUtil.Binary.NullSafeSet(cmd, value, index);
+			NHibernateUtil.Binary.NullSafeSet(cmd, value, index, session);
 		}
 
 		public object Replace(object original, object target, object owner)

@@ -7,7 +7,7 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Action
 {
 	[Serializable]
-	public sealed class EntityIdentityInsertAction : EntityAction
+	public sealed partial class EntityIdentityInsertAction : EntityAction
 	{
 		private readonly object lockObject = new object();
 		private readonly object[] state;

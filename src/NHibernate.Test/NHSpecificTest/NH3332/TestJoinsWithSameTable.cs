@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using NHibernate.Dialect;
 using NHibernate.Linq;
 using NUnit.Framework;
 
@@ -7,6 +8,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3332
 	[TestFixture]
 	public class TestJoinsWithSameTable : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// This test uses a version mapping corresponding to SLQ Server timestamp, where the type is not
+			// a datetime but an incremented binary int.
+			return Dialect is MsSql2000Dialect;
+		}
+
 		protected override void OnSetUp()
 		{
 			using (var session = OpenSession())

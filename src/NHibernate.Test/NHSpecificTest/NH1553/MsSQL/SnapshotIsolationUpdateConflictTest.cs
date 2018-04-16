@@ -1,8 +1,12 @@
+using System;
 using System.Data;
-using System.Data.Common;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
+using NHibernate.Driver;
+using NHibernate.Engine;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 {
@@ -26,27 +30,23 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 
 		private Person LoadPerson()
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
+			using (var tr = BeginTransaction(session))
 			{
-				using (ITransaction tr = BeginTransaction(session))
-				{
-					var p = session.Get<Person>(person.Id);
-					tr.Commit();
-					return p;
-				}
+				var p = session.Get<Person>(person.Id);
+				tr.Commit();
+				return p;
 			}
 		}
 
 		private void SavePerson(Person p)
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
+			using (var tr = BeginTransaction(session))
 			{
-				using (ITransaction tr = BeginTransaction(session))
-				{
-					session.SaveOrUpdate(p);
-					session.Flush();
-					tr.Commit();
-				}
+				session.SaveOrUpdate(p);
+				session.Flush();
+				tr.Commit();
 			}
 		}
 
@@ -64,18 +64,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 			p2.IdentificationNumber += 2;
 
 			SavePerson(p1);
-			Assert.AreEqual(person.Version + 1, p1.Version);
-			try
-			{
-				SavePerson(p2);
-				Assert.Fail("Expecting stale object state exception");
-			}
-			catch (StaleObjectStateException sose)
-			{
-				Assert.AreEqual(typeof (Person).FullName, sose.EntityName);
-				Assert.AreEqual(p2.Id, sose.Identifier);
-				// as expected.
-			}
+			Assert.That(p1.Version, Is.EqualTo(person.Version + 1));
+
+			var expectedException = Sfi.Settings.IsBatchVersionedDataEnabled
+				? (IResolveConstraint) Throws.InstanceOf<StaleStateException>()
+				: Throws.InstanceOf<StaleObjectStateException>()
+				        .And.Property("EntityName").EqualTo(typeof(Person).FullName)
+				        .And.Property("Identifier").EqualTo(p2.Id);
+
+			Assert.That(() => SavePerson(p2), expectedException);
 		}
 
 		/// <summary>
@@ -89,55 +86,73 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 
 			p1.IdentificationNumber++;
 
-			using (ISession session1 = OpenSession())
+			using (var session1 = OpenSession())
+			using (var tr1 = BeginTransaction(session1))
 			{
-				using (ITransaction tr1 = BeginTransaction(session1))
+				session1.SaveOrUpdate(p1);
+				session1.Flush();
+
+				using (var session2 = OpenSession())
+				using (var tr2 = BeginTransaction(session2))
 				{
-					session1.SaveOrUpdate(p1);
-					session1.Flush();
+					var p2 = session2.Get<Person>(person.Id);
+					p2.IdentificationNumber += 2;
 
-					using (ISession session2 = OpenSession())
-					{
-						using (ITransaction tr2 = BeginTransaction(session2))
+					tr1.Commit();
+					Assert.That(p1.Version, Is.EqualTo(person.Version + 1));
+
+					session2.SaveOrUpdate(p2);
+
+					var expectedException = Sfi.Settings.IsBatchVersionedDataEnabled
+						? (IConstraint) Throws.InstanceOf<StaleStateException>()
+						: Throws.InstanceOf<StaleObjectStateException>()
+						        .And.Property("EntityName").EqualTo(typeof(Person).FullName)
+						        .And.Property("Identifier").EqualTo(p2.Id);
+
+					Assert.That(
+						() =>
 						{
-							var p2 = session2.Get<Person>(person.Id);
-							p2.IdentificationNumber += 2;
-
-							tr1.Commit();
-							Assert.AreEqual(person.Version + 1, p1.Version);
-
-							try
-							{
-								session2.SaveOrUpdate(p2);
-								session2.Flush();
-
-								tr2.Commit();
-								Assert.Fail("StaleObjectStateException expected");
-							}
-							catch (StaleObjectStateException sose)
-							{
-								Assert.AreEqual(typeof (Person).FullName, sose.EntityName);
-								Assert.AreEqual(p2.Id, sose.Identifier);
-								// as expected
-							}
-						}
-					}
+							session2.Flush();
+							tr2.Commit();
+						},
+						expectedException);
 				}
 			}
 		}
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect is MsSql2005Dialect || dialect is MsSql2008Dialect;
+			return dialect is MsSql2005Dialect;
+		}
+
+		protected override bool AppliesTo(ISessionFactoryImplementor factory)
+		{
+			// SQLUpdateConflictToStaleStateExceptionConverter is specific to Sql client driver, and does not work
+			// with Odbc (and likeley Oledb).
+			return factory.ConnectionProvider.Driver is SqlClientDriver;
+		}
+
+		private bool _isSnapshotIsolationAlreadyAllowed;
+
+		private void CheckAllowSnapshotIsolation()
+		{
+			using (var session = OpenSession())
+			using (var command = session.Connection.CreateCommand())
+			{
+				command.CommandText = $@"select snapshot_isolation_state_desc from sys.databases 
+	where name = '{session.Connection.Database}'";
+				_isSnapshotIsolationAlreadyAllowed =
+					StringComparer.OrdinalIgnoreCase.Equals(command.ExecuteScalar() as string, "on");
+			}
 		}
 
 		private void SetAllowSnapshotIsolation(bool on)
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
+			using (var command = session.Connection.CreateCommand())
 			{
-				var command = session.Connection.CreateCommand();
 				command.CommandText = "ALTER DATABASE " + session.Connection.Database + " set allow_snapshot_isolation "
-				                      + (on ? "on" : "off");
+					+ (on ? "on" : "off");
 				command.ExecuteNonQuery();
 			}
 		}
@@ -146,7 +161,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 		{
 			base.OnSetUp();
 
-			SetAllowSnapshotIsolation(true);
+			CheckAllowSnapshotIsolation();
+			if (!_isSnapshotIsolationAlreadyAllowed)
+				SetAllowSnapshotIsolation(true);
 
 			person = new Person();
 			person.IdentificationNumber = 123;
@@ -155,18 +172,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 
 		protected override void OnTearDown()
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
+			using (var tr = session.BeginTransaction(IsolationLevel.Serializable))
 			{
-				using (ITransaction tr = session.BeginTransaction(IsolationLevel.Serializable))
-				{
-					string hql = "from Person";
-					session.Delete(hql);
-					session.Flush();
-					tr.Commit();
-				}
+				session.Delete("from Person");
+				tr.Commit();
 			}
 
-			SetAllowSnapshotIsolation(false);
+			if (!_isSnapshotIsolationAlreadyAllowed)
+				SetAllowSnapshotIsolation(false);
 
 			base.OnTearDown();
 		}

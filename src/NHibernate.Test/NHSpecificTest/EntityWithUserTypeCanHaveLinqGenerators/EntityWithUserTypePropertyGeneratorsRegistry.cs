@@ -1,5 +1,5 @@
-using NHibernate.Linq;
 using NHibernate.Linq.Functions;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 {
@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 	{
 		public EntityWithUserTypePropertyGeneratorsRegistry()
 		{
-			RegisterGenerator(ReflectionHelper.GetMethod((IExample e) => e.IsEquivalentTo(null)),
+			RegisterGenerator(ReflectHelper.GetMethod((IExample e) => e.IsEquivalentTo(null)),
 							new EntityWithUserTypePropertyIsEquivalentGenerator());
 		}
 	}

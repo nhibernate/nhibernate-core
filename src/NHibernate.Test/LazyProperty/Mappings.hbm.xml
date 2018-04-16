@@ -9,6 +9,7 @@
 		</id>
 		<property name="Name" />
 		<property name="ALotOfText" lazy="true" />
+		<property name="FieldInterceptor" />
 	</class>
 
 </hibernate-mapping>

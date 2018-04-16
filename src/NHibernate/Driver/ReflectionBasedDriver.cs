@@ -1,3 +1,4 @@
+using System;
 using System.Data.Common;
 using NHibernate.Util;
 
@@ -11,6 +12,11 @@ namespace NHibernate.Driver
 		                                                                       + "application configuration file to specify the full name of the assembly.";
 
 		private readonly IDriveConnectionCommandProvider connectionCommandProvider;
+
+		/// <summary>
+		/// If the driver use a third party driver (not a .Net Framework DbProvider), its assembly version.
+		/// </summary>
+		protected Version DriverVersion { get; } 
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="ReflectionBasedDriver" /> with
@@ -32,7 +38,6 @@ namespace NHibernate.Driver
 		/// <param name="driverAssemblyName">Assembly to load the types from.</param>
 		/// <param name="connectionTypeName">Connection type name.</param>
 		/// <param name="commandTypeName">Command type name.</param>
-		/// <seealso cref="DbProviderFactories.GetFactory(string)"/>
 		protected ReflectionBasedDriver(string providerInvariantName, string driverAssemblyName, string connectionTypeName, string commandTypeName)
 		{
 			// Try to get the types from an already loaded assembly
@@ -41,16 +46,21 @@ namespace NHibernate.Driver
 
 			if (connectionType == null || commandType == null)
 			{
+#if NETFX
 				if (string.IsNullOrEmpty(providerInvariantName))
 				{
+#endif
 					throw new HibernateException(string.Format(ReflectionTypedProviderExceptionMessageTemplate, driverAssemblyName));
+#if NETFX
 				}
 				var factory = DbProviderFactories.GetFactory(providerInvariantName);
 				connectionCommandProvider = new DbProviderFactoryDriveConnectionCommandProvider(factory);
+#endif
 			}
 			else
 			{
 				connectionCommandProvider = new ReflectionDriveConnectionCommandProvider(connectionType, commandType);
+				DriverVersion = connectionType.Assembly.GetName().Version;
 			}
 		}
 

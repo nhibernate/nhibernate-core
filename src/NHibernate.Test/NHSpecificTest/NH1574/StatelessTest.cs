@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1574
 				session.Flush();
 			}
 
-			using (IStatelessSession session = sessions.OpenStatelessSession())
+			using (IStatelessSession session = Sfi.OpenStatelessSession())
 			{
 				IQuery query = session.CreateQuery("from SpecializedPrincipal p");
 				IList<Principal> principals = query.List<Principal>();

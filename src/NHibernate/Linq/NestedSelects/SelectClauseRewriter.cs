@@ -5,7 +5,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.NestedSelects
 {
-	class SelectClauseRewriter : ExpressionTreeVisitor
+	class SelectClauseRewriter : RelinqExpressionVisitor
 	{
 		private readonly Dictionary<Expression, Expression> _dictionary;
 
@@ -27,7 +27,7 @@ namespace NHibernate.Linq.NestedSelects
 			_dictionary = dictionary;
 		}
 
-		public override Expression VisitExpression(Expression expression)
+		public override Expression Visit(Expression expression)
 		{
 			if (expression == null)
 				return null;
@@ -35,15 +35,15 @@ namespace NHibernate.Linq.NestedSelects
 			if (_dictionary.TryGetValue(expression, out replacement))
 				return replacement;
 
-			return base.VisitExpression(expression);
+			return base.Visit(expression);
 		}
 
-		protected override Expression VisitMemberExpression(MemberExpression expression)
+		protected override Expression VisitMember(MemberExpression expression)
 		{
 			return AddAndConvertExpression(expression);
 		}
 
-		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 		{
 			return AddAndConvertExpression(expression);
 		}

@@ -6,7 +6,7 @@ using NHibernate.Engine.Query;
 
 namespace NHibernate.Impl
 {
-	public abstract class AbstractQueryImpl2 : AbstractQueryImpl
+	public abstract partial class AbstractQueryImpl2 : AbstractQueryImpl
 	{
 		private readonly Dictionary<string, LockMode> _lockModes = new Dictionary<string, LockMode>(2);
 

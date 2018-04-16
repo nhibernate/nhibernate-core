@@ -1,7 +1,7 @@
 namespace NHibernate.Event
 {
 	/// <summary> Defines the contract for handling of session auto-flush events. </summary>
-	public interface IAutoFlushEventListener
+	public partial interface IAutoFlushEventListener
 	{
 		/// <summary>
 		/// Handle the given auto-flush event.

@@ -10,7 +10,7 @@ namespace NHibernate.Param
 	/// <summary>
 	/// Parameter bind specification for an explicit named parameter.
 	/// </summary>
-	public class NamedParameterSpecification : AbstractExplicitParameterSpecification
+	public partial class NamedParameterSpecification : AbstractExplicitParameterSpecification
 	{
 		private const string NamedParameterIdTemplate = "<nnh{0}_span{1}>";
 

@@ -15,7 +15,7 @@ namespace NHibernate.Type
 	/// A reference to an entity class
 	/// </summary>
 	[Serializable]
-	public abstract class EntityType : AbstractType, IAssociationType
+	public abstract partial class EntityType : AbstractType, IAssociationType
 	{
 		protected readonly string uniqueKeyPropertyName;
 		private readonly bool eager;
@@ -239,7 +239,7 @@ namespace NHibernate.Type
 				{
 					return target;
 				}
-				if (session.GetContextEntityIdentifier(original) == null && ForeignKeys.IsTransient(associatedEntityName, original, false, session))
+				if (session.GetContextEntityIdentifier(original) == null && ForeignKeys.IsTransientFast(associatedEntityName, original, session).GetValueOrDefault())
 				{
 					object copy = session.Factory.GetEntityPersister(associatedEntityName).Instantiate(null);
 					//TODO: should this be Session.instantiate(Persister, ...)?
@@ -484,7 +484,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				return GetAssociatedJoinable(factory).FilterFragment(alias, enabledFilters);
+				return GetAssociatedJoinable(factory).FilterFragment(alias, FilterHelper.GetEnabledForManyToOne(enabledFilters));
 			}
 		}
 
@@ -508,12 +508,19 @@ namespace NHibernate.Type
 
 			//TODO: implement caching?! proxies?!
 
+			var keyType = GetIdentifierOrUniqueKeyType(factory)
+				// EntityUniqueKey was doing this on the type. I suspect this was needed only for its usage in Loader,
+				// which can work with entities as keys not yet instanciated and just represented by their identifiers.
+				// But since removing this call from EntityUniqueKey is done for a patch and that the code path here has
+				// no known bugs with this GetSemiResolvedType, moving its call here for avoiding altering this code
+				// path. See GH1645.
+				.GetSemiResolvedType(factory);
 			EntityUniqueKey euk =
 				new EntityUniqueKey(
 					entityName,
 					uniqueKeyPropertyName,
 					key,
-					GetIdentifierOrUniqueKeyType(factory),
+					keyType,
 					session.Factory);
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;

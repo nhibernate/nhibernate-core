@@ -42,12 +42,12 @@ namespace NHibernate.Criterion
 			}
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
-			SqlString condition = criterion.ToSqlString(criteria, criteriaQuery, enabledFilters);
-			SqlString ifTrue = whenTrue.ToSqlString(criteria, position + GetHashCode() + 1, criteriaQuery, enabledFilters);
+			SqlString condition = criterion.ToSqlString(criteria, criteriaQuery);
+			SqlString ifTrue = whenTrue.ToSqlString(criteria, position + GetHashCode() + 1, criteriaQuery);
 			ifTrue = SqlStringHelper.RemoveAsAliasesFromSql(ifTrue);
-			SqlString ifFalse = whenFalse.ToSqlString(criteria, position + GetHashCode() + 2, criteriaQuery, enabledFilters);
+			SqlString ifFalse = whenFalse.ToSqlString(criteria, position + GetHashCode() + 2, criteriaQuery);
 			ifFalse = SqlStringHelper.RemoveAsAliasesFromSql(ifFalse);
 			return new SqlString("(case when ", condition, " then ", ifTrue, " else ", ifFalse, " end) as ",
 			                     GetColumnAliases(position, criteria, criteriaQuery)[0]);
@@ -112,8 +112,7 @@ namespace NHibernate.Criterion
 			}
 		}
 
-		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery,
-		                                           IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			SqlStringBuilder buf = new SqlStringBuilder();
 			IProjection[] projections = criterion.GetProjections();
@@ -123,14 +122,14 @@ namespace NHibernate.Criterion
 				{
 					if (proj.IsGrouped)
 					{
-						buf.Add(proj.ToGroupSqlString(criteria, criteriaQuery, enabledFilters)).Add(", ");
+						buf.Add(proj.ToGroupSqlString(criteria, criteriaQuery)).Add(", ");
 					}
 				}
 			}
 			if(whenFalse.IsGrouped)
-				buf.Add(whenFalse.ToGroupSqlString(criteria, criteriaQuery, enabledFilters)).Add(", ");
+				buf.Add(whenFalse.ToGroupSqlString(criteria, criteriaQuery)).Add(", ");
 			if(whenTrue.IsGrouped)
-				buf.Add(whenTrue.ToGroupSqlString(criteria, criteriaQuery, enabledFilters)).Add(", ");
+				buf.Add(whenTrue.ToGroupSqlString(criteria, criteriaQuery)).Add(", ");
 
 			if(buf.Count >= 2)
 			{

@@ -351,21 +351,6 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
-		/// Compacts the SqlString into the fewest parts possible.
-		/// </summary>
-		/// <returns>A new SqlString.</returns>
-		/// <remarks>
-		/// Combines all SqlParts that are strings and next to each other into
-		/// one SqlPart.
-		/// </remarks>
-		[Obsolete]
-		public SqlString Compact()
-		{
-			// FIXME: As of january 2012, the SqlString is always in compact form. Once this is settled, perhaps we should remove SqlString.Compact()?
-			return this;
-		}
-
-		/// <summary>
 		/// Makes a copy of the SqlString, with new parameter references (Placeholders)
 		/// </summary>
 		public SqlString Copy()
@@ -417,6 +402,11 @@ namespace NHibernate.SqlCommand
 		public int IndexOfCaseInsensitive(string text)
 		{
 			return IndexOf(text, 0, _length, StringComparison.InvariantCultureIgnoreCase);
+		}
+
+		internal int IndexOfOrdinal(string text)
+		{
+			return IndexOf(text, 0, _length, StringComparison.Ordinal);
 		}
 
 		/// <summary>
@@ -663,6 +653,18 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
+		/// Returns true if content is empty or white space characters only
+		/// </summary>
+		public bool IsEmptyOrWhitespace()
+		{
+			if (Length <= 0)
+				return true;
+
+			GetTrimmedIndexes(out _, out var newLength);
+			return newLength <= 0;
+		}
+
+		/// <summary>
 		/// Removes all occurrences of white space characters from the beginning and end of this instance.
 		/// </summary>
 		/// <returns>
@@ -673,6 +675,14 @@ namespace NHibernate.SqlCommand
 		{
 			if (_firstPartIndex < 0) return this;
 
+			GetTrimmedIndexes(out var sqlStartIndex, out var length);
+			return length > 0
+				? new SqlString(this, sqlStartIndex, length)
+				: Empty;
+		}
+
+		private void GetTrimmedIndexes(out int sqlStartIndex, out int length)
+		{
 			var firstPart = _parts[_firstPartIndex];
 			var firstPartOffset = _sqlStartIndex - firstPart.SqlIndex;
 			var firstPartLength = Math.Min(firstPart.Length - firstPartOffset, _length);
@@ -691,11 +701,8 @@ namespace NHibernate.SqlCommand
 				lastPartLength--;
 			}
 
-			var sqlStartIndex = firstPart.SqlIndex + firstPartOffset;
-			var length = lastPart.SqlIndex + lastPartOffset + 1 - sqlStartIndex;
-			return length > 0
-				? new SqlString(this, sqlStartIndex, length)
-				: Empty;
+			sqlStartIndex = firstPart.SqlIndex + firstPartOffset;
+			length = lastPart.SqlIndex + lastPartOffset + 1 - sqlStartIndex;
 		}
 
 		public void Visit(ISqlStringVisitor visitor)

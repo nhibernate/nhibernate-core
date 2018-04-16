@@ -41,7 +41,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			Table mytable = mappings.AddTable(schema, catalog, GetClassTableName(subclass, joinedSubclassMapping.table), joinedSubclassMapping.Subselect, false, joinedSubclassMapping.schemaaction);
 			((ITableOwner)subclass).Table = mytable;
 
-			log.InfoFormat("Mapping joined-subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
+			log.Info("Mapping joined-subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
 
 			// KEY
 			BindKey(subclass, joinedSubclassMapping.key, mytable);

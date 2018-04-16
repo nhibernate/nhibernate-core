@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using NHibernate.DomainModel;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Linq;
@@ -114,17 +115,58 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void ReplaceFunction()
 		{
+			var suppliedName = "Anne";
 			var query = from e in db.Employees
 						where e.FirstName.StartsWith("An")
 						select new
-								{
-									Before = e.FirstName,
-									AfterMethod = e.FirstName.Replace("An", "Zan"),
-									AfterExtension = ExtensionMethods.Replace(e.FirstName, "An", "Zan"),
-									AfterExtension2 = e.FirstName.ReplaceExtension("An", "Zan")
-								};
+							{
+								Before = e.FirstName,
+								// This one call the standard string.Replace, not the extension. The linq registry handles it.
+								AfterMethod = e.FirstName.Replace("An", "Zan"),
+								AfterExtension = ExtensionMethods.Replace(e.FirstName, "An", "Zan"),
+								AfterNamedExtension = e.FirstName.ReplaceExtension("An", "Zan"),
+								AfterEvaluableExtension = e.FirstName.ReplaceWithEvaluation("An", "Zan"),
+								AfterEvaluable2Extension = e.FirstName.ReplaceWithEvaluation2("An", "Zan"),
+							BeforeConst = suppliedName,
+								// This one call the standard string.Replace, not the extension. The linq registry handles it.
+								AfterMethodConst = suppliedName.Replace("An", "Zan"),
+								AfterExtensionConst = ExtensionMethods.Replace(suppliedName, "An", "Zan"),
+								AfterNamedExtensionConst = suppliedName.ReplaceExtension("An", "Zan"),
+								AfterEvaluableExtensionConst = suppliedName.ReplaceWithEvaluation("An", "Zan"),
+								AfterEvaluable2ExtensionConst = suppliedName.ReplaceWithEvaluation2("An", "Zan")
+						};
+			var results = query.ToList();
+			var s = ObjectDumper.Write(results);
 
-			var s = ObjectDumper.Write(query);
+			foreach (var result in results)
+			{
+				var expectedDbResult = Regex.Replace(result.Before, "An", "Zan", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+				Assert.That(result.AfterMethod, Is.EqualTo(expectedDbResult), $"Wrong {nameof(result.AfterMethod)} value");
+				Assert.That(result.AfterExtension, Is.EqualTo(expectedDbResult), $"Wrong {nameof(result.AfterExtension)} value");
+				Assert.That(result.AfterNamedExtension, Is.EqualTo(expectedDbResult), $"Wrong {nameof(result.AfterNamedExtension)} value");
+				Assert.That(result.AfterEvaluableExtension, Is.EqualTo(expectedDbResult), $"Wrong {nameof(result.AfterEvaluableExtension)} value");
+				Assert.That(result.AfterEvaluable2Extension, Is.EqualTo(expectedDbResult), $"Wrong {nameof(result.AfterEvaluable2Extension)} value");
+
+				var expectedDbResultConst = Regex.Replace(result.BeforeConst, "An", "Zan", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+				var expectedInMemoryResultConst = result.BeforeConst.Replace("An", "Zan");
+				var expectedInMemoryExtensionResultConst = result.BeforeConst.ReplaceWithEvaluation("An", "Zan");
+				Assert.That(result.AfterMethodConst, Is.EqualTo(expectedInMemoryResultConst), $"Wrong {nameof(result.AfterMethodConst)} value");
+				Assert.That(result.AfterExtensionConst, Is.EqualTo(expectedDbResultConst), $"Wrong {nameof(result.AfterExtensionConst)} value");
+				Assert.That(result.AfterNamedExtensionConst, Is.EqualTo(expectedDbResultConst), $"Wrong {nameof(result.AfterNamedExtensionConst)} value");
+				Assert.That(result.AfterEvaluableExtensionConst, Is.EqualTo(expectedInMemoryExtensionResultConst), $"Wrong {nameof(result.AfterEvaluableExtensionConst)} value");
+				Assert.That(result.AfterEvaluable2ExtensionConst, Is.EqualTo(expectedInMemoryExtensionResultConst), $"Wrong {nameof(result.AfterEvaluable2ExtensionConst)} value");
+			}
+
+			// Should cause ReplaceWithEvaluation to fail
+			suppliedName = null;
+			var failingQuery = from e in db.Employees
+						where e.FirstName.StartsWith("An")
+						select new
+						{
+							Before = e.FirstName,
+							AfterEvaluableExtensionConst = suppliedName.ReplaceWithEvaluation("An", "Zan")
+						};
+			Assert.That(() => failingQuery.ToList(), Throws.InstanceOf<HibernateException>().And.InnerException.InstanceOf<ArgumentNullException>());
 		}
 
 		[Test]
@@ -262,6 +304,12 @@ namespace NHibernate.Test.Linq
 				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.Trim('h') == "e"));
 				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimStart('h') == "eh"));
 				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimEnd('h') == "he"));
+
+				// Check when passed as array
+				// (the single character parameter is a new overload in .netcoreapp2.0, but not net461 or .netstandard2.0).
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.Trim(new [] { 'h' }) == "e"));
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimStart(new[] { 'h' }) == "eh"));
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimEnd(new[] { 'h' }) == "he"));
 
 				// Let it rollback to get rid of temporary changes.
 			}

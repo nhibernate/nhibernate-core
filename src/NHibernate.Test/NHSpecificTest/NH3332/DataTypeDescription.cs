@@ -7,7 +7,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3332
 		private Culture _culture;
 		private DataType _dataType;
 		private String _description;
+		// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 		private Byte[] _rowVersionId;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 
 		public override int GetHashCode()
 		{

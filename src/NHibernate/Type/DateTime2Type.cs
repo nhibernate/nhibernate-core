@@ -1,66 +1,33 @@
 ﻿using System;
 using System.Data;
-using System.Data.Common;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
 {
+	// Obsolete since v5.0
 	/// <summary>
-	/// Maps a <see cref="System.DateTime" /> Property to a <see cref="DbType.DateTime"/>
+	/// Maps a <see cref="System.DateTime" /> Property to a <see cref="DbType.DateTime2"/>
 	/// </summary>
+	[Obsolete("Use DateTimeType instead, it uses DateTime2 with dialects supporting it.")]
 	[Serializable]
-	public class DateTime2Type : DateTimeType
+	public class DateTime2Type : AbstractDateTimeType
 	{
-		/// <summary></summary>
-		internal DateTime2Type() : base(SqlTypeFactory.DateTime2)
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public DateTime2Type() : base(SqlTypeFactory.DateTime2)
 		{
 		}
 
-		public override string Name
+		/// <summary>
+		/// Constructor for specifying a datetime with a scale. Use <see cref="SqlTypeFactory.GetDateTime2"/>.
+		/// </summary>
+		/// <param name="sqlType">The sql type to use for the type.</param>
+		public DateTime2Type(DateTime2SqlType sqlType) : base(sqlType)
 		{
-			get { return "DateTime2"; }
 		}
 
-		public override object Get(DbDataReader rs, int index)
-		{
-			try
-			{
-				return Convert.ToDateTime(rs[index]);
-			}
-			catch (Exception ex)
-			{
-				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[index]), ex);
-			}
-		}
-
-		public override void Set(DbCommand st, object value, int index)
-		{
-			st.Parameters[index].Value = (DateTime) value;
-		}
-
-		public override bool IsEqual(object x, object y)
-		{
-			if (x == y)
-			{
-				return true;
-			}
-
-			if (x == null || y == null)
-			{
-				return false;
-			}
-
-			return x.Equals(y);
-		}
-
-		public override object Next(object current, Engine.ISessionImplementor session)
-		{
-			return Seed(session);
-		}
-
-		public override object Seed(Engine.ISessionImplementor session)
-		{
-			return DateTime.Now;
-		}
+		/// <inheritdoc />
+		public override string Name => "DateTime2";
 	}
 }

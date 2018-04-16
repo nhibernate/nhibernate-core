@@ -3,7 +3,7 @@ namespace NHibernate.Event
 	/// <summary>
 	/// Called after updating the datastore
 	/// </summary>
-	public interface IPostUpdateEventListener
+	public partial interface IPostUpdateEventListener
 	{
 		/// <summary>
 		/// 

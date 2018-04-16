@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH3879"
+	default-lazy="false">
+
+  <class name="SeqhiloEntity" table="SeqhiloEntity">
+    <id name="Id" type="Int64">
+      <generator class="seqhilo" >
+        <param name="max_lo">9</param>
+        <param name="sequence">seqhiloEntity_ids</param>
+      </generator>
+    </id>
+  </class>
+
+</hibernate-mapping>

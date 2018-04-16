@@ -85,9 +85,9 @@ namespace NHibernate.Id.Enhanced
 	///  </tr>
 	///</table>
 	/// </remarks>
-	public class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
+	public partial class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SequenceStyleGenerator));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SequenceStyleGenerator));
 
 
 		public const string ConfigPreferSegmentPerEntity = "prefer_entity_table_as_segment_value";
@@ -325,7 +325,7 @@ namespace NHibernate.Id.Enhanced
 			bool preferSegmentPerEntity = PropertiesHelper.GetBoolean(ConfigPreferSegmentPerEntity, parms, false);
 			string defaultToUse = preferSegmentPerEntity ? parms[PersistentIdGeneratorParmsNames.Table] : DefaultSegmentValue;
 
-			log.DebugFormat("Explicit segment value for id generator [{0}.{1}] suggested; using default [{2}].", TableName, SegmentColumnName, defaultToUse);
+			log.Debug("Explicit segment value for id generator [{0}.{1}] suggested; using default [{2}].", TableName, SegmentColumnName, defaultToUse);
 
 			return defaultToUse;
 		}
@@ -410,7 +410,7 @@ namespace NHibernate.Id.Enhanced
 		}
 
 
-		private class TableAccessCallback : IAccessCallback
+		private partial class TableAccessCallback : IAccessCallback
 		{
 			private TableGenerator owner;
 			private readonly ISessionImplementor session;
@@ -479,7 +479,7 @@ namespace NHibernate.Id.Enhanced
 				}
 				catch (Exception ex)
 				{
-					log.Error("Unable to read or initialize hi value in " + TableName, ex);
+					log.Error(ex, "Unable to read or initialize hi value in {0}", TableName);
 					throw;
 				}
 
@@ -502,7 +502,7 @@ namespace NHibernate.Id.Enhanced
 				}
 				catch (Exception ex)
 				{
-					log.Error("Unable to update hi value in " + TableName, ex);
+					log.Error(ex, "Unable to update hi value in {0}", TableName);
 					throw;
 				}
 			}

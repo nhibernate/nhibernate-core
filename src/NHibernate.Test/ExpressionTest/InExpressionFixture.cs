@@ -2,7 +2,6 @@ using System;
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
-using NHibernate.Util;
 using NUnit.Framework;
 using System.Linq;
 
@@ -22,7 +21,7 @@ namespace NHibernate.Test.ExpressionTest
 			ICriterion inExpression = Expression.In("Count", new int[] { 3, 4, 5 });
 
 			CreateObjects(typeof(Simple), session);
-			SqlString sqlString = inExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
+			SqlString sqlString = inExpression.ToSqlString(criteria, criteriaQuery);
 
 			string expectedSql = "sql_alias.count_ in (?, ?, ?)";
 
@@ -35,9 +34,9 @@ namespace NHibernate.Test.ExpressionTest
 		public void InEmptyList()
 		{
 			ISession session = factory.OpenSession();
-			InExpression expression = new InExpression("Count", new object[0]);
+			InExpression expression = new InExpression("Count", Array.Empty<object>());
 			CreateObjects(typeof(Simple), session);
-			SqlString sql = expression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
+			SqlString sql = expression.ToSqlString(criteria, criteriaQuery);
 			Assert.AreEqual("1=0", sql.ToString());
 			session.Close();
 		}
@@ -56,7 +55,7 @@ namespace NHibernate.Test.ExpressionTest
 						Projections.Constant(1),
 						Projections.Constant(1)),
 					new object[] { "A", "B" });
-				var sql = inExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
+				var sql = inExpression.ToSqlString(criteria, criteriaQuery);
 
 				// Allow some dialectal differences in function name and parameter style.
 				Assert.That(sql.ToString(),

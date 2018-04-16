@@ -42,10 +42,10 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary>
-		/// Gets or Sets the Timeout of the Query
+		/// The timeout in seconds for the underlying ADO.NET query.
 		/// </summary>
-		/// <value>The Query Timeout</value>
-		/// <remarks>Defaults to NoValue unless specifically set.</remarks>
+		/// <value>The query timeout in seconds.</value>
+		/// <remarks>Defaults to <see cref="NoValue" /> unless specifically set.</remarks>
 		public int Timeout
 		{
 			get { return timeout; }

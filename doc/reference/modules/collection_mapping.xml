@@ -6,59 +6,45 @@
 
         <para>
             NHibernate requires that persistent collection-valued fields be declared
-            as an interface type, for example:
+            as a generic interface type, for example:
         </para>
         
         <programlisting><![CDATA[public class Product
 {
-    private string serialNumber;
-    private ISet parts = new HashedSet();
-    
-    public ISet Parts
-    {
-        get { return parts; }
-        set { parts = value; }
-    }
+    public ISet<Part> Parts { get; set; } = new HashSet<Part>();
 
-    public string SerialNumber
-    {
-        get { return serialNumber; }
-        set { serialNumber = value; }
-    }
+    public string SerialNumber { get; set; }
 }]]></programlisting>
         
         <para>
-            The actual interface might be <literal>Iesi.Collections.ISet</literal>,
-            <literal>System.Collections.ICollection</literal>,
-            <literal>System.Collections.IList</literal>,
-            <literal>System.Collections.IDictionary</literal>,
+            The actual interface might be
             <literal>System.Collections.Generic.ICollection&lt;T&gt;</literal>,
             <literal>System.Collections.Generic.IList&lt;T&gt;</literal>,
             <literal>System.Collections.Generic.IDictionary&lt;K, V&gt;</literal>,
-            <literal>Iesi.Collections.Generic.ISet&lt;T&gt;</literal>
+            <literal>System.Collections.Generic.ISet&lt;T&gt;</literal>
             or ... anything you like! (Where "anything you like" means you will
             have to write an implementation of <literal>NHibernate.UserType.IUserCollectionType</literal>.)
         </para>
         
         <para>
             Notice how we initialized the instance variable with an instance of
-            <literal>HashedSet</literal>. This is the best way to initialize collection
+            <literal>HashSet&lt;T&gt;</literal>. This is the best way to initialize collection
             valued properties of newly instantiated (non-persistent) instances. When
             you make the instance persistent - by calling <literal>Save()</literal>,
-            for example - NHibernate will actually replace the <literal>HashedSet</literal>
-            with an instance of NHibernate's own implementation of <literal>ISet</literal>.
+            for example - NHibernate will actually replace the <literal>HashSet&lt;T&gt;</literal>
+            with an instance of NHibernate's own implementation of <literal>ISet&lt;T&gt;</literal>.
             Watch out for errors like this:
         </para>
 
         <programlisting><![CDATA[Cat cat = new DomesticCat();
 Cat kitten = new DomesticCat();
 ....
-ISet kittens = new HashedSet();
+ISet<Cat> kittens = new HashSet<Cat>();
 kittens.Add(kitten);
 cat.Kittens = kittens;
 session.Save(cat);
 kittens = cat.Kittens; //Okay, kittens collection is an ISet
-HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
+HashSet<Cat> hs = (HashSet<Cat>) cat.Kittens; //Error!]]></programlisting>
 
         <para>
             Collection instances have the usual behavior of value types. They are automatically
@@ -253,9 +239,8 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                 </callout>
                 <callout arearefs="mappingcollection14">
                     <para>
-                        <literal>generic</literal> (optional): Choose between generic and non-generic collection
-                        interface. If this option is not specified, NHibernate will use reflection to choose
-                        the interface.
+                        <literal>generic</literal> (optional, obsolete): Choose between generic and non-generic
+                        collection interfaces. But currently NHibernate only supports generic collections.
                     </para>
                 </callout>
             </calloutlist>
@@ -622,14 +607,16 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
             However, if the application tries something like this:
         </para>
 
-        <programlisting><![CDATA[s = sessions.OpenSession();
-ITransaction tx = sessions.BeginTransaction();
-User u = (User) s.Find("from User u where u.Name=?", userName, NHibernateUtil.String)[0];
-IDictionary permissions = u.Permissions;
-tx.Commit();
-s.Close();
+        <programlisting><![CDATA[IDictionary<string, int> permissions;
+using (s = sessions.OpenSession())
+using (ITransaction tx = sessions.BeginTransaction())
+{
+    var u = s.Load<User>(userId);
+    permissions = u.Permissions;
+    tx.Commit();
+}
 
-int accessLevel = (int) permissions["accounts"];  // Error!]]></programlisting>
+int accessLevel = permissions["accounts"];  // Error!]]></programlisting>
 
         <para>
             It could be in for a nasty surprise. Since the permissions collection was not
@@ -700,24 +687,23 @@ int accessLevel = (int) permissions["accounts"];  // Error!]]></programlisting>
                 <para>
                     You may also attach a previously loaded object to a new <literal>ISession</literal>
                     with <literal>Update()</literal> or <literal>Lock()</literal> before
-                    accessing unitialized collections (or other proxies). NHibernate can not
+                    accessing uninitialized collections (or other proxies). NHibernate can not
                     do this automatically, as it would introduce ad hoc transaction semantics!
                 </para>
             </listitem>
         </itemizedlist>
 
         <para>
-            You can use the <literal>Filter()</literal> method of the NHibernate ISession API to
+            You can use the <literal>CreateFilter()</literal> method of the NHibernate ISession API to
             get the size of a collection without initializing it:
         </para>
 
-        <programlisting><![CDATA[ICollection countColl = s.Filter( collection, "select count(*)" );
-IEnumerator countEn = countColl.GetEnumerator();
-countEn.MoveNext();
-int count = (int) countEn.Current;]]></programlisting>
+        <programlisting><![CDATA[var count = s
+    .CreateFilter(collection, "select count(*)")
+    .UniqueResult<long>();]]></programlisting>
 
         <para>
-            <literal>Filter()</literal> or <literal>CreateFilter()</literal> are also used to
+            <literal>CreateFilter()</literal> is also used to
             efficiently retrieve subsets of a collection without needing to initialize the whole
             collection.
         </para>
@@ -728,8 +714,8 @@ int count = (int) countEn.Current;]]></programlisting>
         <title>Sorted Collections</title>
 
         <para>
-            NHibernate supports collections implemented by <literal>System.Collections.SortedList</literal> and
-            <literal>Iesi.Collections.SortedSet</literal>. You must specify a comparer in the mapping file:
+            NHibernate supports collections implemented by <literal>System.Collections.Generic.SortedList&lt;T&gt;</literal> and
+            <literal>System.Collections.Generic.SortedSet&lt;T&gt;</literal>. You must specify a comparer in the mapping file:
         </para>
 
         <programlisting><![CDATA[<set name="Aliases" table="person_aliases" sort="natural">
@@ -746,7 +732,7 @@ int count = (int) countEn.Current;]]></programlisting>
         <para>
             Allowed values of the <literal>sort</literal> attribute are <literal>unsorted</literal>,
             <literal>natural</literal> and the name of a class implementing
-            <literal>System.Collections.IComparer</literal>.
+            <literal>System.Collections.Generic.IComparer&lt;T&gt;</literal>.
         </para>
 
         <para>
@@ -758,10 +744,8 @@ int count = (int) countEn.Current;]]></programlisting>
 
         <para>
             Setting the <literal>order-by</literal> attribute tells NHibernate to use
-            <literal>ListDictionary</literal> or <literal>ListSet</literal> class
-            internally for dictionaries and sets, maintaining the order of the elements.
-            <emphasis>Note that lookup operations on these collections are very slow if they
-            contain more than a few elements.</emphasis>
+            <literal>Iesi.Collections.Generic.LinkedHashSet</literal> class
+            internally for sets, maintaining the order of the elements. It is not supported on maps.
         </para>
 
         <programlisting><![CDATA[<set name="Aliases" table="person_aliases" order-by="name asc">
@@ -782,10 +766,12 @@ int count = (int) countEn.Current;]]></programlisting>
 
         <para>
             Associations may even be sorted by some arbitrary criteria at runtime using a
-            <literal>Filter()</literal>.
+            <literal>CreateFilter()</literal>.
         </para>
 
-        <programlisting><![CDATA[sortedUsers = s.Filter( group.Users, "order by this.Name" );]]></programlisting>
+        <programlisting><![CDATA[sortedUsers = s
+    .CreateFilter(group.Users, "order by this.Name")
+    .List<User>();]]></programlisting>
 
     </sect1>
 
@@ -867,12 +853,6 @@ int count = (int) countEn.Current;]]></programlisting>
         </para>
 
         <para>
-            Please note that NHibernate does not support bidirectional one-to-many associations
-            with an indexed collection (list, map or array) as the "many" end, you have to
-            use a set or bag mapping.
-        </para>
-
-        <para>
             You may specify a bidirectional many-to-many association simply by mapping two
             many-to-many associations to the same database table and declaring one end as
             <emphasis>inverse</emphasis> (which one is your choice). Here's an example of
@@ -881,23 +861,24 @@ int count = (int) countEn.Current;]]></programlisting>
         </para>
 
         <programlisting><![CDATA[<class name="NHibernate.Auction.Category, NHibernate.Auction">
-    <id name="Id" column="ID"/>
-    ...
-    <bag name="Items" table="CATEGORY_ITEM" lazy="true">
-        <key column="CATEGORY_ID"/>
-        <many-to-many class="NHibernate.Auction.Item, NHibernate.Auction" column="ITEM_ID"/>
-    </bag>
+  <id name="Id" column="ID"/>
+  ...
+  <bag name="Items" table="CATEGORY_ITEM" lazy="true">
+    <key column="CATEGORY_ID"/>
+    <many-to-many class="NHibernate.Auction.Item, NHibernate.Auction" column="ITEM_ID"/>
+  </bag>
 </class>
 
 <class name="NHibernate.Auction.Item, NHibernate.Auction">
-    <id name="id" column="ID"/>
-    ...
+  <id name="id" column="ID"/>
+  ...
 
-    <!-- inverse end -->
-    <bag name="categories" table="CATEGORY_ITEM" inverse="true" lazy="true">
-        <key column="ITEM_ID"/>
-        <many-to-many class="NHibernate.Auction.Category, NHibernate.Auction" column="CATEGORY_ID"/>
-    </bag>
+  <!-- inverse end -->
+  <bag name="categories" table="CATEGORY_ITEM" inverse="true" lazy="true">
+    <key column="ITEM_ID"/>
+    <many-to-many class="NHibernate.Auction.Category, NHibernate.Auction"
+        column="CATEGORY_ID"/>
+  </bag>
 </class>]]></programlisting>
 
         <para>
@@ -950,6 +931,75 @@ session.Update(category);                 // The relationship will be saved]]></
 
     </sect1>
 
+    <sect1 id="collections-indexedbidirectional">
+        <title>Bidirectional associations with indexed collections</title>
+
+        <para>
+            There are some additional considerations for bidirectional mappings with indexed collections
+            (where one end is represented as a <literal>&lt;list&gt;</literal> or <literal>&lt;map&gt;</literal>)
+            when using NHibernate mapping files. If there is a property of the child class that maps to the
+            index column you can use <literal>inverse="true"</literal> on the collection mapping:
+        </para>
+
+        <programlisting><![CDATA[<class name="Parent">
+    <id name="Id" column="parent_id"/>
+    ....
+    <map name="Children" inverse="true">
+        <key column="parent_id"/>
+        <map-key column="name"
+            type="string"/>
+        <one-to-many class="Child"/>
+    </map>
+</class>
+
+<class name="Child">
+    <id name="Id" column="child_id"/>
+    ....
+    <property name="Name" column="name"
+        not-null="true"/>
+    <many-to-one name="Parent"
+        class="Parent"
+        column="parent_id"
+        not-null="true"/>
+</class>]]></programlisting>
+
+        <para>
+            If there is no such property on the child class, the association cannot be considered truly
+            bidirectional. That is, there is information available at one end of the association that is not
+            available at the other end. In this case, you cannot map the collection
+            <literal>inverse="true"</literal>. Instead, you could use the following mapping:
+        </para>
+
+        <programlisting><![CDATA[<class name="Parent">
+    <id name="Id" column="parent_id"/>
+    ....
+    <map name="Children">
+        <key column="parent_id"
+            not-null="true"/>
+        <map-key column="name"
+            type="string"/>
+        <one-to-many class="Child"/>
+    </map>
+</class>
+
+<class name="Child">
+    <id name="Id" column="child_id"/>
+    ....
+    <many-to-one name="Parent"
+        class="Parent"
+        column="parent_id"
+        insert="false"
+        update="false"
+        not-null="true"/>
+</class>]]></programlisting>
+
+        <para>
+            Note that in this mapping, the collection-valued end of the association is responsible for
+            updates to the foreign key.
+        </para>
+
+    </sect1>
+
     <sect1 id="collections-ternary">
         <title>Ternary Associations</title>
 
@@ -994,27 +1044,16 @@ session.Update(category);                 // The relationship will be saved]]></
         </para>
 
         <programlisting><![CDATA[using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace Eg
-    
+
     public class Parent
     {
-        private long id;
-        private ISet children;
-    
-        public long Id
-        {
-            get { return id; }
-            set { id = value; }
-        }
-        
-        private ISet Children
-        {
-            get { return children; }
-            set { children = value; }
-        }
-    
+        public long Id { get; set; }
+
+        private ISet<Child> Children { get; set; }
+
         ....
         ....
     }
@@ -1052,8 +1091,8 @@ namespace Eg
             This maps to the following table definitions:
         </para>
 
-        <programlisting><![CDATA[create table parent ( Id bigint not null primary key )
-create table child ( Id bigint not null primary key, Name varchar(255), parent_id bigint )
+        <programlisting><![CDATA[create table parent (Id bigint not null primary key)
+create table child (Id bigint not null primary key, Name varchar(255), parent_id bigint)
 alter table child add constraint childfk0 (parent_id) references parent]]></programlisting>
 
         <para>
@@ -1134,7 +1173,9 @@ create table childset ( parent_id bigint not null,
 alter table childset add constraint childsetfk0 (parent_id) references parent
 alter table childset add constraint childsetfk1 (child_id) references child]]></programlisting>
 
-        <!-- TODO: link to parent/child chapter -->
+        <para>
+            See also <xref linkend="example-parentchild" />.
+        </para>
 
     </sect1>
 

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -27,7 +26,7 @@ namespace NHibernate.Criterion
 			return (distinct) ? "distinct " + base.ToString() : base.ToString();
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
 			var buf = new SqlStringBuilder().Add("count(");
 			if (distinct)
@@ -36,7 +35,7 @@ namespace NHibernate.Criterion
 			}
 			if (projection != null)
 			{
-				buf.Add(SqlStringHelper.RemoveAsAliasesFromSql(projection.ToSqlString(criteria, position, criteriaQuery, enabledFilters)));
+				buf.Add(SqlStringHelper.RemoveAsAliasesFromSql(projection.ToSqlString(criteria, position, criteriaQuery)));
 			}
 			else
 			{

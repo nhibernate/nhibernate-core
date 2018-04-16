@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest
 {
+	[TestFixture]
 	public class PropertiesHelperTest
 	{
 		[Test]

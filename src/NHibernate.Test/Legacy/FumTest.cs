@@ -75,7 +75,7 @@ namespace NHibernate.Test.Legacy
 				Assert.IsTrue(b.MapComponent.Stringmap.Count == 2);
 
 				int none = s.CreateCriteria(typeof(Fum))
-					.Add(Expression.In("FumString", new string[0]))
+					.Add(Expression.In("FumString", Array.Empty<string>()))
 					.List().Count;
 				Assert.AreEqual(0, none);
 
@@ -598,7 +598,8 @@ namespace NHibernate.Test.Legacy
 				if (Dialect.SupportsSubSelects)
 				{
 					s.CreateQuery("from fum1 in class Fum where exists elements(fum1.Friends)").List();
-					s.CreateQuery("from fum1 in class Fum where size(fum1.Friends) = 0").List();
+					if (Dialect.SupportsScalarSubSelects)
+						s.CreateQuery("from fum1 in class Fum where size(fum1.Friends) = 0").List();
 				}
 				s.CreateQuery("select elements(fum1.Friends) from fum1 in class Fum").List();
 				s.CreateQuery("from fum1 in class Fum, fr in elements( fum1.Friends )").List();
@@ -615,9 +616,9 @@ namespace NHibernate.Test.Legacy
 
 			// NOTE: H2.1 has getSessions().openSession() here (and below),
 			// instead of just the usual openSession()
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
-				s.FlushMode = FlushMode.Never;
+				s.FlushMode = FlushMode.Manual;
 
 				Simple simple = new Simple();
 				simple.Address = "123 Main St. Anytown USA";
@@ -654,9 +655,9 @@ namespace NHibernate.Test.Legacy
 			///////////////////////////////////////////////////////////////////////////
 			// Test updates across serializations
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
-				s.FlushMode = FlushMode.Never;
+				s.FlushMode = FlushMode.Manual;
 				Simple simple = (Simple) s.Get(typeof(Simple), 10L);
 				Assert.AreEqual(check.Name, simple.Name, "Not same parent instances");
 				Assert.AreEqual(check.Other.Name, other.Name, "Not same child instances");
@@ -677,9 +678,9 @@ namespace NHibernate.Test.Legacy
 
 			///////////////////////////////////////////////////////////////////////////
 			// Test deletions across serializations
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
-				s.FlushMode = FlushMode.Never;
+				s.FlushMode = FlushMode.Manual;
 				Simple simple = (Simple) s.Get(typeof(Simple), 10L);
 				Assert.AreEqual(check.Name, simple.Name, "Not same parent instances");
 				Assert.AreEqual(check.Other.Name, other.Name, "Not same child instances");

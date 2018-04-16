@@ -7,9 +7,9 @@
 >
 
 	<property name="root.dir" value=".." />
-	<include buildfile="${root.dir}/build-common/common-project.xml" />
+	<include buildfile="${root.dir}/build-common/common.xml" />
 
-	<target name="init" depends="common.init">
+	<target name="init" depends="common.init common.nuget-restore">
 		<property name="doc.out.dir" value="${build.dir}/doc" />
 		<property name="doc.help2.out.dir" value="${doc.out.dir}/help2" />
 		<property name="doc.chm.out.dir" value="${doc.out.dir}" />
@@ -26,6 +26,7 @@
 
 	<target name="manual" depends="init">
 		<property name="lang" value="en" />
+		<copy file="LICENSE.txt" todir="${doc.out.dir}"/>
 		<nant target="build" buildfile="reference/reference.build">
 			<properties>
 				<property name="lang" value="${lang}" />
@@ -49,11 +50,11 @@
 		</copy>
 	</target>
 
-	<target name="api" depends="init apidocbuilder-project" description="Generates the API documentation (in MSDN style and VS.NET 2005 if available)">
+	<target name="api" depends="init apidocbuilder-project" description="Generates the API documentation (in MSDN style if available)">
 		<uptodate property="api.uptodate">
 			<sourcefiles>
-				<include name="${bin.dir}/*.dll" />
-				<include name="${bin.dir}/*.xml" />
+				<include name="${root.dir}/src/NHibernate/bin/${build.config}/net461/*.dll" />
+				<include name="${root.dir}/src/NHibernate/bin/${build.config}/net461/*.xml" />
 			</sourcefiles>
 			<targetfiles>
 				<include name="${doc.help2.out.dir}/**" />
@@ -64,8 +65,7 @@
 		<echo if="${api.uptodate}">API documentation is up to date, skipping generation step.</echo>
 
 		<if test="${not api.uptodate}">
-			<property name="apidocbuilder.exe" value="${directory::get-parent-directory(environment::get-folder-path('System'))}\Microsoft.NET\Framework\v3.5\MSBuild.exe" />
-			<exec program="${apidocbuilder.exe}">
+			<exec program="${path::combine(tools.dir, 'actual_msbuild.cmd')}">
 				<arg line="NHibernate.shfbproj" />
 			</exec>
 		</if>

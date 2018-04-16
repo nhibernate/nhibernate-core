@@ -63,10 +63,10 @@ namespace NHibernate.Dialect
 
 		new protected void RegisterKeywords()
 		{
-			RegisterKeyword("NEAR");
-			RegisterKeyword("LIMIT");
-			RegisterKeyword("OFFSET");
-			RegisterKeyword("DATETIMEOFFSET");
+			RegisterKeyword("near");
+			RegisterKeyword("limit");
+			RegisterKeyword("offset");
+			RegisterKeyword("datetimeoffset");
 		}
 
 		new void RegisterDateTimeTypeMappings()

@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode
 {
+	[TestFixture]
 	public class CustomizerHolderMergeTest
 	{
 		private class MyClass

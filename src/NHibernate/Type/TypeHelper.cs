@@ -10,9 +10,9 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Collection of convenience methods relating to operations across arrays of types...
 	/// </summary>
-	public static class TypeHelper
+	public static partial class TypeHelper
 	{
-		public static readonly IType[] EmptyTypeArray = new IType[0];
+		public static readonly IType[] EmptyTypeArray = Array.Empty<IType>();
 
 		/// <summary>Deep copy a series of values from one array to another</summary>
 		/// <param name="values">The values to copy (the source)</param>
@@ -125,6 +125,25 @@ namespace NHibernate.Type
 				if (Equals(LazyPropertyInitializer.UnfetchedProperty, original[i]) || Equals(BackrefPropertyAccessor.Unknown, original[i]))
 				{
 					copied[i] = target[i];
+				}
+				else if (target[i] == LazyPropertyInitializer.UnfetchedProperty)
+				{
+					// Should be no need to check for target[i] == PropertyAccessStrategyBackRefImpl.UNKNOWN
+					// because PropertyAccessStrategyBackRefImpl.get( object ) returns
+					// PropertyAccessStrategyBackRefImpl.UNKNOWN, so target[i] == original[i].
+					//
+					// We know from above that original[i] != LazyPropertyInitializer.UNFETCHED_PROPERTY &&
+					// original[i] != PropertyAccessStrategyBackRefImpl.UNKNOWN;
+					// This is a case where the entity being merged has a lazy property
+					// that has been initialized. Copy the initialized value from original.
+					if (types[i].IsMutable)
+					{
+						copied[i] = types[i].DeepCopy(original[i], session.Factory);
+					}
+					else
+					{
+						copied[i] = original[i];
+					}
 				}
 				else
 				{

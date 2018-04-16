@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.CfgTest
 {
+	[TestFixture]
 	public class AccessorsSerializableTest
 	{
 		private static System.Type[] accessors = typeof (IPropertyAccessor).Assembly.GetTypes().Where(t => t.Namespace == typeof (IPropertyAccessor).Namespace && t.GetInterfaces().Contains(typeof (IPropertyAccessor))).ToArray();

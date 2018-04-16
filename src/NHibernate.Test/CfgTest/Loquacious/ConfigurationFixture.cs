@@ -46,9 +46,11 @@ namespace NHibernate.Test.CfgTest.Loquacious
 					.Using<MsSql2000Dialect>()
 					.AutoQuoteKeywords()
 					.EnableLogFormattedSql()
+#if NETFX
 					.BatchingQueries
 						.Through<SqlClientBatchingBatcherFactory>()
 						.Each(15)
+#endif
 					.Connected
 						.Through<DebugConnectionProvider>()
 						.By<SqlClientDriver>()
@@ -80,8 +82,10 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(cfg.Properties[Environment.Dialect], Is.EqualTo(typeof(MsSql2000Dialect).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.Hbm2ddlKeyWords], Is.EqualTo("auto-quote"));
 			Assert.That(cfg.Properties[Environment.FormatSql], Is.EqualTo("true"));
+#if NETFX
 			Assert.That(cfg.Properties[Environment.BatchStrategy], Is.EqualTo(typeof(SqlClientBatchingBatcherFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.BatchSize], Is.EqualTo("15"));
+#endif
 			Assert.That(cfg.Properties[Environment.ConnectionProvider], Is.EqualTo(typeof(DebugConnectionProvider).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.ConnectionDriver], Is.EqualTo(typeof(SqlClientDriver).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.ReleaseConnections], Is.EqualTo(ConnectionReleaseModeParser.ToString(ConnectionReleaseMode.AfterTransaction)));
@@ -131,7 +135,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 		public void NH2890Loquacious()
 		{
 			var cfg = new Configuration();
-			cfg.Configure(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEnbeddedConfig.cfg.xml"))
+			cfg.Configure(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEmbeddedConfig.cfg.xml"))
 				.SetDefaultAssembly("NHibernate.DomainModel")
 				.SetDefaultNamespace("NHibernate.DomainModel")
 				.SessionFactory()

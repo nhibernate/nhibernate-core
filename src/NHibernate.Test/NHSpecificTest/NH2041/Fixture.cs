@@ -4,6 +4,7 @@ using NHibernate.Cfg;
 
 namespace NHibernate.Test.NHSpecificTest.NH2041
 {
+	[TestFixture]
 	public class Fixture
 	{
 		[Test]

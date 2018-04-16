@@ -1,4 +1,5 @@
 using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.UserTypes
@@ -52,16 +53,18 @@ namespace NHibernate.UserTypes
 		int GetHashCode(object x);
 
 		/// <summary>
-		/// Retrieve an instance of the mapped class from a JDBC resultset.
+		/// Retrieve an instance of the mapped class from an ADO resultset.
 		/// Implementors should handle possibility of null values.
 		/// </summary>
 		/// <param name="rs">a DbDataReader</param>
 		/// <param name="names">column names</param>
+		/// <param name="session">The session for which the operation is done. Allows access to
+		/// <c>Factory.Dialect</c> and <c>Factory.ConnectionProvider.Driver</c> for adjusting to
+		/// database or data provider capabilities.</param>
 		/// <param name="owner">the containing entity</param>
-		/// <returns></returns>
+		/// <returns>The value.</returns>
 		/// <exception cref="HibernateException">HibernateException</exception>
-//		/// <exception cref="SQLException">SQLException</exception>
-		object NullSafeGet(DbDataReader rs, string[] names, object owner);
+		object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner);
 
 		/// <summary>
 		/// Write an instance of the mapped class to a prepared statement.
@@ -71,9 +74,11 @@ namespace NHibernate.UserTypes
 		/// <param name="cmd">a DbCommand</param>
 		/// <param name="value">the object to write</param>
 		/// <param name="index">command parameter index</param>
+		/// <param name="session">The session for which the operation is done. Allows access to
+		/// <c>Factory.Dialect</c> and <c>Factory.ConnectionProvider.Driver</c> for adjusting to
+		/// database or data provider capabilities.</param>
 		/// <exception cref="HibernateException">HibernateException</exception>
-//		/// <exception cref="SQLException">SQLException</exception>
-		void NullSafeSet(DbCommand cmd, object value, int index);
+		void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session);
 
 		/// <summary>
 		/// Return a deep copy of the persistent state, stopping at entities and at collections.

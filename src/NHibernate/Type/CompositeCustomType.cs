@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public class CompositeCustomType : AbstractType, IAbstractComponentType
+	public partial class CompositeCustomType : AbstractType, IAbstractComponentType
 	{
 		private readonly ICompositeUserType userType;
 		private readonly string name;
@@ -49,7 +49,7 @@ namespace NHibernate.Type
 			TypeFactory.InjectParameters(userType, parameters);
 			if (!userType.ReturnedClass.IsSerializable)
 			{
-				LoggerProvider.LoggerFor(typeof(CustomType)).WarnFormat("the custom composite class '{0}' handled by '{1}' is not Serializable: ", userType.ReturnedClass, userTypeClass);
+				NHibernateLogger.For(typeof(CustomType)).Warn("the custom composite class '{0}' handled by '{1}' is not Serializable: ", userType.ReturnedClass, userTypeClass);
 			}
 
 			// This is to be nice to an application developer.

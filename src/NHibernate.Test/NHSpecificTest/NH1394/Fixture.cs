@@ -74,6 +74,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 		[Test]
 		public void CanOrderBySubqueryProjection()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			using (ISession s = OpenSession())
 			{
 				using (new SqlLogSpy())
@@ -101,6 +104,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 		[Test]
 		public void CanOrderBySubqueryProjectionDesc()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			using (ISession s = OpenSession())
 			{
 				DetachedCriteria dc = DetachedCriteria.For<Person>("sub");

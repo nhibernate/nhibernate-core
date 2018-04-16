@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
+using NHibernate.Id;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
@@ -16,6 +17,124 @@ namespace NHibernate.Dialect
 	public class MsSqlCeDialect : Dialect
 	{
 		public MsSqlCeDialect()
+		{
+			RegisterTypeMapping();
+
+			RegisterFunctions();
+
+			RegisterKeywords();
+
+			RegisterDefaultProperties();
+		}
+
+		#region private static readonly string[] DialectKeywords = { ... }
+
+		private static readonly string[] DialectKeywords =
+		{
+			"apply",
+			"asc",
+			"backup",
+			"bit",
+			"break",
+			"browse",
+			"bulk",
+			"cascade",
+			"checkpoint",
+			"clustered",
+			"coalesce",
+			"compute",
+			"contains",
+			"containstable",
+			"convert",
+			"database",
+			"datetime",
+			"dbcc",
+			"deny",
+			"desc",
+			"disk",
+			"distributed",
+			"dump",
+			"errlvl",
+			"file",
+			"fillfactor",
+			"first",
+			"freetext",
+			"freetexttable",
+			"goto",
+			"holdlock",
+			"identity_insert",
+			"identitycol",
+			"image",
+			"index",
+			"key",
+			"kill",
+			"lineno",
+			"load",
+			"money",
+			"next",
+			"nocheck",
+			"nonclustered",
+			"ntext",
+			"nullif",
+			"nvarchar",
+			"off",
+			"offset",
+			"offsets",
+			"opendatasource",
+			"openquery",
+			"openrowset",
+			"openxml",
+			"option",
+			"percent",
+			"pivot",
+			"plan",
+			"print",
+			"proc",
+			"public",
+			"raiserror",
+			"read",
+			"readtext",
+			"reconfigure",
+			"replication",
+			"restore",
+			"restrict",
+			"revert",
+			"rowcount",
+			"rowguidcol",
+			"rowversion",
+			"rule",
+			"save",
+			"schema",
+			"session_user",
+			"setuser",
+			"shutdown",
+			"statistics",
+			"textsize",
+			"tinyint",
+			"top",
+			"tran",
+			"transaction",
+			"truncate",
+			"tsequal",
+			"uniqueidentifier",
+			"unpivot",
+			"updatetext",
+			"use",
+			"varbinary",
+			"view",
+			"waitfor",
+			"writetext",
+			"xmlunnest",
+		};
+
+		#endregion
+
+		protected virtual void RegisterKeywords()
+		{
+			RegisterKeywords(DialectKeywords);
+		}
+
+		protected virtual void RegisterTypeMapping()
 		{
 			RegisterColumnType(DbType.AnsiStringFixedLength, "NCHAR(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 4000, "NCHAR($l)");
@@ -31,7 +150,8 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "DATETIME");
 			RegisterColumnType(DbType.DateTime, "DATETIME");
 			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "NUMERIC($p, $s)");
+			// SQL Server CE max precision is 38, but .Net is limited to 28-29.
+			RegisterColumnType(DbType.Decimal, 29, "NUMERIC($p, $s)");
 			RegisterColumnType(DbType.Double, "FLOAT");
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
@@ -44,10 +164,14 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 4000, "NVARCHAR($l)");
 			RegisterColumnType(DbType.String, 1073741823, "NTEXT");
 			RegisterColumnType(DbType.Time, "DATETIME");
+		}
 
+		protected virtual void RegisterFunctions()
+		{
 			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
-			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar)")); 
+			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar)"));
 
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime, true));
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(dd, 0, datediff(dd, 0, ?1))"));
 			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(second, ?1)"));
 			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(minute, ?1)"));
@@ -65,11 +189,20 @@ namespace NHibernate.Dialect
 			RegisterFunction("lower", new StandardSQLFunction("lower"));
 
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
+			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
+			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
 
-			RegisterFunction("round", new StandardSQLFunction("round"));
+			RegisterFunction("round", new StandardSQLFunctionWithRequiredParameters("round", new object[] {null, "0"}));
+			RegisterFunction("truncate", new StandardSQLFunctionWithRequiredParameters("round", new object[] {null, "0", "1"}));
 
+			RegisterFunction("bit_length", new SQLFunctionTemplate(NHibernateUtil.Int32, "datalength(?1) * 8"));
+			RegisterFunction("extract", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(?1, ?3)"));
+		}
+
+		protected virtual void RegisterDefaultProperties()
+		{
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlServerCeDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
 		}
@@ -124,6 +257,10 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
+		public override System.Type NativeIdentifierGeneratorClass => typeof(TableHiLoGenerator);
+
+		public override bool SupportsCircularCascadeDeleteConstraints => false;
+
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new MsSqlCeDataBaseSchema(connection);
@@ -151,12 +288,12 @@ namespace NHibernate.Dialect
 			var tableName = new StringBuilder();
 			if (!string.IsNullOrEmpty(schema))
 			{
-				if (schema.StartsWith(OpenQuote.ToString()))
+				if (schema.StartsWith(OpenQuote))
 				{
 					schema = schema.Substring(1, schema.Length - 1);
 					quoted = true;
 				}
-				if (schema.EndsWith(CloseQuote.ToString()))
+				if (schema.EndsWith(CloseQuote))
 				{
 					schema = schema.Substring(0, schema.Length - 1);
 					quoted = true;
@@ -164,12 +301,12 @@ namespace NHibernate.Dialect
 				tableName.Append(schema).Append(StringHelper.Underscore);
 			}
 
-			if (table.StartsWith(OpenQuote.ToString()))
+			if (table.StartsWith(OpenQuote))
 			{
 				table = table.Substring(1, table.Length - 1);
 				quoted = true;
 			}
-			if (table.EndsWith(CloseQuote.ToString()))
+			if (table.EndsWith(CloseQuote))
 			{
 				table = table.Substring(0, table.Length - 1);
 				quoted = true;
@@ -194,6 +331,11 @@ namespace NHibernate.Dialect
 			throw new NotSupportedException("The query should start with 'SELECT' or 'SELECT DISTINCT'");
 		}
 
+		/// <summary>
+		/// Does this dialect support concurrent writing connections in the same transaction?
+		/// </summary>
+		public override bool SupportsConcurrentWritingConnectionsInSameTransaction => false;
+
 		public override long TimestampResolutionInTicks
 		{
 			get
@@ -202,5 +344,30 @@ namespace NHibernate.Dialect
 				return TimeSpan.TicksPerMillisecond*10L;
 			}
 		}
+
+		// SQL Server 3.5 supports 128.
+		/// <inheritdoc />
+		public override int MaxAliasLength => 128;
+
+		#region Informational metadata
+
+		/// <summary>
+		/// Does this dialect support pooling parameter in connection string?
+		/// </summary>
+		public override bool SupportsPoolingParameter => false;
+
+		/// <inheritdoc/>
+		public override bool SupportsScalarSubSelects => false;
+
+		/// <summary>
+		/// Does this dialect support distributed transaction?
+		/// </summary>
+		/// <remarks>
+		/// Fails enlisting a connection into a distributed transaction, fails promoting a transaction
+		/// to distributed when it has already a connection enlisted.
+		/// </remarks>
+		public override bool SupportsDistributedTransactions => false;
+
+		#endregion
 	}
 }

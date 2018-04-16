@@ -21,22 +21,21 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
             get { return "NHibernate.Test"; }
         }
 
-		protected override void BuildSessionFactory()
+		protected override DebugSessionFactory BuildSessionFactory()
 		{
 			cfg.GetCollectionMapping(typeof (Employee).FullName + ".Primaries")
 				.CollectionTable.Name = "WantedProfessions";
 			cfg.GetCollectionMapping(typeof (Employee).FullName + ".Secondaries")
 				.CollectionTable.Name = "WantedProfessions";
-			base.BuildSessionFactory();
-		}
-
-		protected override void OnTearDown()
-		{
-			cfg.GetCollectionMapping(typeof (Employee).FullName + ".Primaries")
-				.CollectionTable.Name = "WantedProfessions_DUMMY_1";
-			cfg.GetCollectionMapping(typeof (Employee).FullName + ".Secondaries")
-				.CollectionTable.Name = "WantedProfessions_DUMMY_2";
-			base.OnTearDown();
+			try
+			{
+				return base.BuildSessionFactory();
+			}
+			finally
+			{
+				// Restore configuration.
+				Configure();
+			}
 		}
 
         [Test]

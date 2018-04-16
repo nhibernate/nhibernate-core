@@ -41,19 +41,20 @@ namespace NHibernate.Test.Cascade.Circle
 		[Test]
 		public void Merge()
 		{
+			object routeId;
 			using (ISession session = base.OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
 				Route route = new Route();
 				route.Name = "routeA";
-				session.Save(route);
+				routeId = session.Save(route);
 				transaction.Commit();
 			}
 	
 			using (ISession session = base.OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				Route route = session.Get<Route>(1L);
+				Route route = session.Get<Route>(routeId);
 				route.TransientField = "sfnaouisrbn";
 		
 				Tour tour = new Tour();

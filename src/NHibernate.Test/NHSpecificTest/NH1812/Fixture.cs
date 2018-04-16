@@ -1,11 +1,17 @@
 using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1812
 {
-	public class AstBugBase : BugTestCase
+	public class AstBug : BugTestCase
 	{
+		/* to the nh guy...
+		* sorry for not coming up with a more realistic use case
+		* We have a query that works fine with the old parser but not with the new AST parser
+		* I've broke our complex query down to this... 
+		* I believe the problem is when mixing aggregate methods with isnull()
+		*/
+
 		[Test]
 		public void Test()
 		{
@@ -13,8 +19,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1812
 
 			const string query =
 				@"select p from Person p
-                            left outer join p.PeriodCollection p1
-                        where p1.Start > coalesce((select max(p2.Start) from Period p2), :nullStart)";
+					left outer join p.PeriodCollection p1
+				where p1.Start > coalesce((select max(p2.Start) from Period p2), :nullStart)";
 
 			using (ISession s = OpenSession())
 			{
@@ -28,7 +34,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1812
 					.SetDateTime("nullStart", new DateTime(2001, 1, 1))
 					.List<Person>();
 			}
+		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return Dialect.SupportsScalarSubSelects;
 		}
 
 		protected override void OnTearDown()
@@ -42,17 +52,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1812
 				}
 			}
 		}
-	}
-
-	[TestFixture]
-	public class AstBug : AstBugBase
-	{
-
-		/* to the nh guy...
-         * sorry for not coming up with a more realistic use case
-         * We have a query that works fine with the old parser but not with the new AST parser
-         * I've broke our complex query down to this... 
-         * I believe the problem is when mixing aggregate methods with isnull()
-         */
 	}
 }

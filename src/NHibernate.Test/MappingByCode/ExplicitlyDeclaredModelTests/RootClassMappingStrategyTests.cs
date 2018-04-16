@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 {
+	[TestFixture]
 	public class RootClassMappingStrategyTests
 	{
 		private class MyClass

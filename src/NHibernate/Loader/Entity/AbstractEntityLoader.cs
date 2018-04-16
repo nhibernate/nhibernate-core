@@ -14,9 +14,9 @@ namespace NHibernate.Loader.Entity
 	/// <summary>
 	/// Abstract superclass for entity loaders that use outer joins
 	/// </summary>
-	public abstract class AbstractEntityLoader : OuterJoinLoader, IUniqueEntityLoader
+	public abstract partial class AbstractEntityLoader : OuterJoinLoader, IUniqueEntityLoader
 	{
-		protected static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (AbstractEntityLoader));
+		protected static readonly INHibernateLogger log = NHibernateLogger.For(typeof (AbstractEntityLoader));
 		protected readonly IOuterJoinLoadable persister;
 		protected readonly string entityName;
 		private IParameterSpecification[] parametersSpecifications;

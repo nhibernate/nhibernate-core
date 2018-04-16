@@ -13,7 +13,7 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public abstract class PropertyExpression : AbstractCriterion
 	{
-		private static readonly TypedValue[] NoTypedValues = new TypedValue[0];
+		private static readonly TypedValue[] NoTypedValues = Array.Empty<TypedValue>();
 		private readonly string _lhsPropertyName;
 		private readonly string _rhsPropertyName;
 		private readonly IProjection _lhsProjection;
@@ -68,13 +68,12 @@ namespace NHibernate.Criterion
 		/// </summary>
 		protected abstract string Op { get; }
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery,
-											  IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			SqlString[] columnNames =
-				CriterionUtil.GetColumnNames(_lhsPropertyName, _lhsProjection, criteriaQuery, criteria, enabledFilters);
+				CriterionUtil.GetColumnNames(_lhsPropertyName, _lhsProjection, criteriaQuery, criteria);
 			SqlString[] otherColumnNames =
-				CriterionUtil.GetColumnNames(_rhsPropertyName, _rhsProjection, criteriaQuery, criteria, enabledFilters);
+				CriterionUtil.GetColumnNames(_rhsPropertyName, _rhsProjection, criteriaQuery, criteria);
 
 			SqlStringBuilder sb = new SqlStringBuilder();
 			if (columnNames.Length > 1)

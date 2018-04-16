@@ -6,6 +6,7 @@ using NHibernate.Linq;
 
 namespace NHibernate.Test.Linq
 {
+	[TestFixture]
 	public class StatelessSessionQueringTest : LinqTestCase
 	{
 		[Test]

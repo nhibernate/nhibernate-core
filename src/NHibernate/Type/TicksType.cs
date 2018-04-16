@@ -17,32 +17,20 @@ namespace NHibernate.Type
 	/// The System.DateTime.Ticks is accurate to 100-nanosecond intervals. 
 	/// </remarks>
 	[Serializable]
-	public class TicksType : PrimitiveType, IVersionType, ILiteralType
+	public partial class TicksType : PrimitiveType, IVersionType, ILiteralType
 	{
 		/// <summary></summary>
 		public TicksType()
 			: base(SqlTypeFactory.Int64) {}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="index"></param>
-		/// <returns></returns>
-		public override object Get(DbDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			return new DateTime(Convert.ToInt64(rs[index]));
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public override object Get(DbDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
 		/// <summary></summary>
@@ -51,13 +39,7 @@ namespace NHibernate.Type
 			get { return typeof(DateTime); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
-		public override void Set(DbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			st.Parameters[index].Value = ((DateTime)value).Ticks;
 		}

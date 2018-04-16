@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH3771">
+
+  <class name="Singer">
+    <id name="Id"/>
+    <version name="Version"/>
+    <property name="Name" type="String" />
+  </class>
+
+
+</hibernate-mapping>

@@ -15,7 +15,7 @@ namespace NHibernate.Type
 	/// <seealso cref="IUserType"/>
 	/// </summary>
 	[Serializable]
-	public class CustomType : AbstractType, IDiscriminatorType, IVersionType
+	public partial class CustomType : AbstractType, IDiscriminatorType, IVersionType
 	{
 		private readonly IUserType userType;
 		private readonly string name;
@@ -64,11 +64,7 @@ namespace NHibernate.Type
 			sqlTypes = userType.SqlTypes;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="mapping"></param>
-		/// <returns></returns>
+		/// <inheritdoc />
 		public override SqlType[] SqlTypes(IMapping mapping)
 		{
 			return sqlTypes;
@@ -92,23 +88,23 @@ namespace NHibernate.Type
 
 		public override object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return userType.NullSafeGet(rs, names, owner);
+			return userType.NullSafeGet(rs, names, session, owner);
 		}
 
 		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			return NullSafeGet(rs, new string[] {name}, session, owner);
+			return NullSafeGet(rs, new[] { name }, session, owner);
 		}
 
 		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			if (settable[0]) 
-				userType.NullSafeSet(st, value, index);
+			if (settable[0])
+				userType.NullSafeSet(st, value, index, session);
 		}
 
 		public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			userType.NullSafeSet(cmd, value, index);
+			userType.NullSafeSet(cmd, value, index, session);
 		}
 
 		/// <summary>

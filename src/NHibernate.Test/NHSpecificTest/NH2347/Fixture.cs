@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2347
 {
+	[TestFixture]
 	public class Fixture : TestCaseMappingByCode
 	{
 		[Test]

@@ -11,7 +11,7 @@
 		<property name="FrequentFlyerNumber" />
 		<many-to-one name="Reservation" column="reservation_id" class="Reservation"/>
     <component name="Name" class="Name">
-      <property name="First" />
+      <property name="First" column="`First`" />
       <property name="Last" />
     </component> 
 	</class>

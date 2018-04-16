@@ -7,6 +7,7 @@ namespace NHibernate.Test.PropertyTest
 	/// <summary>
 	/// Test the <c>nosetter.pascalcase-underscore</c> access strategy.
 	/// </summary>
+	[TestFixture]
 	public class NoSetterPascalCaseUnderscoreFixture : NoSetterAccessorFixture
 	{
 		[SetUp]

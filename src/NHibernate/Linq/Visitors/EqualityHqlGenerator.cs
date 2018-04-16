@@ -24,7 +24,7 @@ namespace NHibernate.Linq.Visitors
 			var outerNewExpression = outerKeySelector as NewExpression;
 			return innerNewExpression != null && outerNewExpression != null
 				? VisitNew(innerNewExpression, outerNewExpression)
-				: GenerateEqualityNode(innerKeySelector, outerKeySelector, new HqlGeneratorExpressionTreeVisitor(_parameters));
+				: GenerateEqualityNode(innerKeySelector, outerKeySelector, new HqlGeneratorExpressionVisitor(_parameters));
 		}
 
 		private HqlBooleanExpression VisitNew(NewExpression innerKeySelector, NewExpression outerKeySelector)
@@ -46,7 +46,7 @@ namespace NHibernate.Linq.Visitors
 
 		private HqlEquality GenerateEqualityNode(NewExpression innerKeySelector, NewExpression outerKeySelector, int index)
 		{
-			return GenerateEqualityNode(innerKeySelector.Arguments[index], outerKeySelector.Arguments[index], new HqlGeneratorExpressionTreeVisitor(_parameters));
+			return GenerateEqualityNode(innerKeySelector.Arguments[index], outerKeySelector.Arguments[index], new HqlGeneratorExpressionVisitor(_parameters));
 		}
 
 		private HqlEquality GenerateEqualityNode(Expression leftExpr, Expression rightExpr, IHqlExpressionVisitor visitor)

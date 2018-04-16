@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 
 using NHibernate.Engine.Query;
 using NHibernate.Linq;
@@ -61,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 			// get the planCache field on the QueryPlanCache and overwrite it with the restricted cache
 			queryPlanCacheType
 				.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
-				.SetValue(sessions.QueryPlanCache, cache);
+				.SetValue(Sfi.QueryPlanCache, cache);
 
 			// Initiate a LINQ query with a contains with one item in it, of which we know that the underlying IQueryExpression implementations
 			// aka NhLinqExpression and the ExpandedQueryExpression generate the same key.
@@ -82,7 +83,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 				// This will constantly interact with the cache (Once in the PrepareQuery method of the DefaultQueryProvider and once in the Execute)
 				System.Action queryExecutor = () =>
 					{
-						var sessionToUse = sessions.OpenSession();
+						var sessionToUse = Sfi.OpenSession();
 
 						try
 						{
@@ -116,7 +117,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 				var softReferenceCache = (IEnumerable) field.GetValue(cache);
 
 				// Since the cache only contains one item, the first one will be our key
-				var queryPlanCacheKey = ((DictionaryEntry) softReferenceCache.First()).Key;
+				var queryPlanCacheKey = ((DictionaryEntry) softReferenceCache.Cast<object>().First()).Key;
 
 				// Setup an action that will be run on another thread and that will do nothing more than clearing the cache as long
 				// as the value stored behind the cachekey is not of type ExpandedQueryExpression, which triggers the error.
@@ -144,11 +145,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 						}
 					};
 
-				var queryExecutorAsyncResult = queryExecutor.BeginInvoke(null, null);
-				var cacheCleanerAsyncResult = cacheCleaner.BeginInvoke(null, null);
+				var queryExecutorTask = Task.Run(queryExecutor);
+				var cacheCleanerTask = Task.Run(cacheCleaner);
 
-				queryExecutor.EndInvoke(queryExecutorAsyncResult);
-				cacheCleaner.EndInvoke(cacheCleanerAsyncResult);
+				queryExecutorTask.Wait();
+				cacheCleanerTask.Wait();
 
 				Assert.IsTrue(allLinqQueriesSucceeded);
 			}

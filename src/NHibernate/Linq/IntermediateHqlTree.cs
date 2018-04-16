@@ -29,6 +29,7 @@ namespace NHibernate.Linq
 		private HqlHaving _hqlHaving;
 		private HqlTreeNode _root;
 		private HqlOrderBy _orderBy;
+		private HqlInsert _insertRoot;
 
 		public bool IsRoot
 		{
@@ -42,30 +43,65 @@ namespace NHibernate.Linq
 		{
 			get
 			{
-				ExecuteAddHavingClause(_hqlHaving);
-				ExecuteAddOrderBy(_orderBy);
-				ExecuteAddSkipClause(_skipCount);
-				ExecuteAddTakeClause(_takeCount);
+				//Strange side effects in a property getter...
+				AddPendingHqlClausesToRoot();
 				return _root;
 			}
 		}
 
-		public HqlTreeBuilder TreeBuilder { get; private set; }
+		private void AddPendingHqlClausesToRoot()
+		{
+			ExecuteAddHavingClause(_hqlHaving);
+			ExecuteAddOrderBy(_orderBy);
+			ExecuteAddSkipClause(_skipCount);
+			ExecuteAddTakeClause(_takeCount);
+		}
 
-		public IntermediateHqlTree(bool root)
+		/// <summary>
+		/// If execute result type does not match expected final result type (implying a post execute transformer
+		/// will yield expected result type), the intermediate execute type.
+		/// </summary>
+		public System.Type ExecuteResultTypeOverride { get; set; }
+
+		public HqlTreeBuilder TreeBuilder { get; }
+
+		public IntermediateHqlTree(bool root, QueryMode mode)
 		{
 			_isRoot = root;
 			TreeBuilder = new HqlTreeBuilder();
-			_root = TreeBuilder.Query(TreeBuilder.SelectFrom(TreeBuilder.From()));
+			if (mode == QueryMode.Delete)
+			{
+				_root = TreeBuilder.Delete(TreeBuilder.From());
+			}
+			else if (mode == QueryMode.Update)
+			{
+				_root = TreeBuilder.Update(TreeBuilder.From(), TreeBuilder.Set());
+			}
+			else if (mode == QueryMode.UpdateVersioned)
+			{
+				_root = TreeBuilder.Update(TreeBuilder.Versioned(), TreeBuilder.From(), TreeBuilder.Set());
+			}
+			else if (mode == QueryMode.Insert)
+			{
+				_root = TreeBuilder.Query(TreeBuilder.SelectFrom(TreeBuilder.From()));
+				_insertRoot = TreeBuilder.Insert(TreeBuilder.Into(), _root as HqlQuery);
+			}
+			else
+			{
+				_root = TreeBuilder.Query(TreeBuilder.SelectFrom(TreeBuilder.From()));
+			}
 		}
 
 		public ExpressionToHqlTranslationResults GetTranslation()
 		{
-			return new ExpressionToHqlTranslationResults(Root,
-														 _itemTransformers,
-														 _listTransformers,
-														 _postExecuteTransformers,
-														 _additionalCriteria);
+			AddPendingHqlClausesToRoot();
+			var translationRoot = _insertRoot ?? _root;
+			return new ExpressionToHqlTranslationResults(translationRoot,
+				_itemTransformers,
+				_listTransformers,
+				_postExecuteTransformers,
+				_additionalCriteria,
+				ExecuteResultTypeOverride);
 		}
 
 		public void AddDistinctRootOperator()
@@ -95,9 +131,16 @@ namespace NHibernate.Linq
 			_root.NodesPreOrder.OfType<HqlSelectFrom>().First().AddChild(select);
 		}
 
+		public void AddInsertClause(HqlIdent target, HqlRange columnSpec)
+		{
+			var into = _insertRoot.NodesPreOrder.OfType<HqlInto>().Single();
+			into.AddChild(target);
+			into.AddChild(columnSpec);
+		}
+
 		public void AddGroupByClause(HqlGroupBy groupBy)
 		{
-			this._root.AddChild(groupBy);
+			_root.AddChild(groupBy);
 		}
 
 		public void AddOrderByClause(HqlExpression orderBy, HqlDirectionStatement direction)
@@ -197,10 +240,24 @@ namespace NHibernate.Linq
 			}
 			else
 			{
-				var currentClause = (HqlBooleanExpression) _hqlHaving.Children.Single();
+				var currentClause = (HqlBooleanExpression)_hqlHaving.Children.Single();
 
 				_hqlHaving.ClearChildren();
 				_hqlHaving.AddChild(TreeBuilder.BooleanAnd(currentClause, where));
+			}
+		}
+
+		public void AddSet(HqlEquality equality)
+		{
+			var currentSet = _root.NodesPreOrder.OfType<HqlSet>().FirstOrDefault();
+			if (currentSet == null)
+			{
+				currentSet = TreeBuilder.Set(equality);
+				_root.AddChild(currentSet);
+			}
+			else
+			{
+				currentSet.AddChild(equality);
 			}
 		}
 

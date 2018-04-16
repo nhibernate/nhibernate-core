@@ -5,23 +5,23 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
 using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Engine
 {
-	public class BatchFetchQueue
+	public partial class BatchFetchQueue
 	{
-		private static readonly object Marker = new object();
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(BatchFetchQueue));
 
 		/// <summary>
-		/// Defines a sequence of <see cref="EntityKey" /> elements that are currently
-		/// eligible for batch fetching.
+		/// Used to hold information about the entities that are currently eligible for batch-fetching.  Ultimately
+		/// used by <see cref="GetEntityBatch" /> to build entity load batches.
 		/// </summary>
 		/// <remarks>
-		/// Even though this is a map, we only use the keys.  A map was chosen in
-		/// order to utilize a <see cref="LinkedHashMap{K, V}" /> to maintain sequencing
-		/// as well as uniqueness.
+		/// A Map structure is used to segment the keys by entity type since loading can only be done for a particular entity
+		/// type at a time.
 		/// </remarks>
-		private readonly IDictionary<EntityKey, object> batchLoadableEntityKeys = new LinkedHashMap<EntityKey, object>(8);
+		private readonly IDictionary<string, LinkedHashSet<EntityKey>> batchLoadableEntityKeys = new Dictionary<string, LinkedHashSet<EntityKey>>(8);
 
 		/// <summary>
 		/// A map of <see cref="SubselectFetch">subselect-fetch descriptors</see>
@@ -30,6 +30,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		private readonly IDictionary<EntityKey, SubselectFetch> subselectsByEntityKey = new Dictionary<EntityKey, SubselectFetch>(8);
 
+		private readonly IDictionary<string, LinkedHashMap<CollectionEntry, IPersistentCollection>> batchLoadableCollections = new Dictionary<string, LinkedHashMap<CollectionEntry, IPersistentCollection>>(8);
 		/// <summary>
 		/// The owning persistence context.
 		/// </summary>
@@ -50,6 +51,7 @@ namespace NHibernate.Engine
 		public void Clear()
 		{
 			batchLoadableEntityKeys.Clear();
+			batchLoadableCollections.Clear();
 			subselectsByEntityKey.Clear();
 		}
 
@@ -113,7 +115,12 @@ namespace NHibernate.Engine
 		{
 			if (key.IsBatchLoadable)
 			{
-				batchLoadableEntityKeys[key] = Marker;
+				if (!batchLoadableEntityKeys.TryGetValue(key.EntityName, out var set))
+				{
+					set = new LinkedHashSet<EntityKey>();
+					batchLoadableEntityKeys.Add(key.EntityName, set);
+				}
+				set.Add(key);
 			}
 		}
 
@@ -125,7 +132,44 @@ namespace NHibernate.Engine
 		public void RemoveBatchLoadableEntityKey(EntityKey key)
 		{
 			if (key.IsBatchLoadable)
-				batchLoadableEntityKeys.Remove(key);
+			{
+				if (batchLoadableEntityKeys.TryGetValue(key.EntityName, out var set))
+				{
+					set.Remove(key);
+				}
+			}
+		}
+
+		/// <summary>
+		/// If a CollectionEntry represents a batch loadable collection, add
+		/// it to the queue.
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <param name="ce"></param>
+		public void AddBatchLoadableCollection(IPersistentCollection collection, CollectionEntry ce)
+		{
+			var persister = ce.LoadedPersister;
+
+			if (!batchLoadableCollections.TryGetValue(persister.Role, out var map))
+			{
+				map = new LinkedHashMap<CollectionEntry, IPersistentCollection>();
+				batchLoadableCollections.Add(persister.Role, map);
+			}
+			map[ce] = collection;
+		}
+
+		/// <summary>
+		/// After a collection was initialized or evicted, we don't
+		/// need to batch fetch it anymore, remove it from the queue
+		/// if necessary
+		/// </summary>
+		/// <param name="ce"></param>
+		public void RemoveBatchLoadableCollection(CollectionEntry ce)
+		{
+			if (batchLoadableCollections.TryGetValue(ce.LoadedPersister.Role, out var map))
+			{
+				map.Remove(ce);
+			}
 		}
 
 		/// <summary>
@@ -143,21 +187,32 @@ namespace NHibernate.Engine
 			int end = -1;
 			bool checkForEnd = false;
 
-			// this only works because collection entries are kept in a sequenced
-			// map by persistence context (maybe we should do like entities and
-			// keep a separate sequences set...)
-			foreach (DictionaryEntry me in context.CollectionEntries)
+			if (batchLoadableCollections.TryGetValue(collectionPersister.Role, out var map))
 			{
-				CollectionEntry ce = (CollectionEntry) me.Value;
-				IPersistentCollection collection = (IPersistentCollection) me.Key;
-				if (!collection.WasInitialized && ce.LoadedPersister == collectionPersister)
+				foreach (KeyValuePair<CollectionEntry, IPersistentCollection> me in map)
 				{
+					var ce = me.Key;
+					var collection = me.Value;
+					if (ce.LoadedKey == null)
+					{
+						// the LoadedKey of the CollectionEntry might be null as it might have been reset to null
+						// (see for example Collections.ProcessDereferencedCollection()
+						// and CollectionEntry.AfterAction())
+						// though we clear the queue on flush, it seems like a good idea to guard
+						// against potentially null LoadedKey:s
+						continue;
+					}
+
+					if (collection.WasInitialized)
+					{
+						log.Warn("Encountered initialized collection in BatchFetchQueue, this should not happen.");
+						continue;
+					}
+
 					if (checkForEnd && i == end)
 					{
 						return keys; //the first key found after the given key
 					}
-
-					//if ( end == -1 && count > batchSize*10 ) return keys; //try out ten batches, max
 
 					bool isEqual = collectionPersister.KeyType.IsEqual(id, ce.LoadedKey, collectionPersister.Factory);
 
@@ -182,6 +237,7 @@ namespace NHibernate.Engine
 					}
 				}
 			}
+
 			return keys; //we ran out of keys to try
 		}
 
@@ -194,7 +250,7 @@ namespace NHibernate.Engine
 		/// <param name="id">The identifier of the entity currently demanding load.</param>
 		/// <param name="batchSize">The maximum number of keys to return</param>
 		/// <returns>an array of identifiers, of length batchSize (possibly padded with nulls)</returns>
-		public object[] GetEntityBatch(IEntityPersister persister,object id,int batchSize)
+		public object[] GetEntityBatch(IEntityPersister persister, object id, int batchSize)
 		{
 			object[] ids = new object[batchSize];
 			ids[0] = id; //first element of array is reserved for the actual instance we are loading!
@@ -202,9 +258,9 @@ namespace NHibernate.Engine
 			int end = -1;
 			bool checkForEnd = false;
 
-			foreach (EntityKey key in batchLoadableEntityKeys.Keys)
+			if (batchLoadableEntityKeys.TryGetValue(persister.EntityName, out var set))
 			{
-				if (key.EntityName.Equals(persister.EntityName))
+				foreach (var key in set)
 				{
 					//TODO: this needn't exclude subclasses...
 					if (checkForEnd && i == end)
@@ -236,7 +292,7 @@ namespace NHibernate.Engine
 
 		private bool IsCached(EntityKey entityKey, IEntityPersister persister)
 		{
-			if (persister.HasCache)
+			if (persister.HasCache && context.Session.CacheMode.HasFlag(CacheMode.Get))
 			{
 				CacheKey key = context.Session.GenerateCacheKey(entityKey.Identifier, persister.IdentifierType, entityKey.EntityName);
 				return persister.Cache.Cache.Get(key) != null;
@@ -246,7 +302,7 @@ namespace NHibernate.Engine
 
 		private bool IsCached(object collectionKey, ICollectionPersister persister)
 		{
-			if (persister.HasCache)
+			if (persister.HasCache && context.Session.CacheMode.HasFlag(CacheMode.Get))
 			{
 				CacheKey cacheKey = context.Session.GenerateCacheKey(collectionKey, persister.KeyType, persister.Role);
 				return persister.Cache.Cache.Get(cacheKey) != null;

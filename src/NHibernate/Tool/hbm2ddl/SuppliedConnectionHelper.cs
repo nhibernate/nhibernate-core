@@ -6,7 +6,7 @@ namespace NHibernate.Tool.hbm2ddl
 	/// A <seealso cref="IConnectionHelper"/> implementation based on an explicitly supplied
 	/// connection.
 	/// </summary>
-	public class SuppliedConnectionHelper : IConnectionHelper
+	public partial class SuppliedConnectionHelper : IConnectionHelper
 	{
 		private DbConnection connection;
 

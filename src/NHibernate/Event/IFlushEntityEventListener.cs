@@ -1,6 +1,6 @@
 namespace NHibernate.Event
 {
-	public interface IFlushEntityEventListener
+	public partial interface IFlushEntityEventListener
 	{
 		void OnFlushEntity(FlushEntityEvent @event);
 	}

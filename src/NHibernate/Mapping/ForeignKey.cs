@@ -86,11 +86,18 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public override string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
 		{
-			string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
-			string drop = string.Format("alter table {0} {1}", Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema),
-																	dialect.GetDropForeignKeyConstraintString(Name));
-			string end = dialect.GetIfExistsDropConstraintEnd(Table, Name);
-			return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
+			var catalog = Table.GetQuotedCatalog(dialect, defaultCatalog);
+			var schema = Table.GetQuotedSchema(dialect, defaultSchema);
+			var quotedName = Table.GetQuotedName(dialect);
+
+			return new StringBuilder()
+				.AppendLine(dialect.GetIfExistsDropConstraint(catalog, schema, quotedName, Name))
+				.AppendFormat("alter table ")
+				.Append(Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema))
+				.Append(" ")
+				.AppendLine(dialect.GetDropForeignKeyConstraintString(Name))
+				.Append(dialect.GetIfExistsDropConstraintEnd(catalog, schema, quotedName, Name))
+				.ToString();
 		}
 
 		#endregion
@@ -122,12 +129,24 @@ namespace NHibernate.Mapping
 				sb.Append("])");
 				throw new FKUnmatchingColumnsException(sb.ToString());
 			}
-			IEnumerator<Column> fkCols = ColumnIterator.GetEnumerator();
-			IEnumerator<Column> pkCols = referencedTable.PrimaryKey.ColumnIterator.GetEnumerator();
 
-			while (fkCols.MoveNext() && pkCols.MoveNext())
+			AlignColumns(ColumnIterator, referencedTable.PrimaryKey.ColumnIterator);
+		}
+
+		internal static void AlignColumns(IEnumerable<Column> fk, IEnumerable<Column> pk)
+		{
+			using (var fkCols = fk.GetEnumerator())
+			using (var pkCols = pk.GetEnumerator())
 			{
-				fkCols.Current.Length = pkCols.Current.Length;
+				while (fkCols.MoveNext() && pkCols.MoveNext())
+				{
+					if (pkCols.Current.IsLengthDefined() || fkCols.Current.IsLengthDefined())
+						fkCols.Current.Length = pkCols.Current.Length;
+					if (pkCols.Current.IsPrecisionDefined() || fkCols.Current.IsPrecisionDefined())
+						fkCols.Current.Precision = pkCols.Current.Precision;
+					if (pkCols.Current.IsScaleDefined() || fkCols.Current.IsScaleDefined())
+						fkCols.Current.Scale = pkCols.Current.Scale;
+				}
 			}
 		}
 
@@ -178,7 +197,7 @@ namespace NHibernate.Mapping
 				result.Append(GetType().FullName)
 					.Append('(')
 					.Append(Table.Name)
-					.Append(StringHelper.Join(", " , Columns))
+					.Append(StringHelper.Join(", ", Columns))
 					.Append(" ref-columns:")
 					.Append('(')
 					.Append(StringHelper.Join(", ", ReferencedColumns))

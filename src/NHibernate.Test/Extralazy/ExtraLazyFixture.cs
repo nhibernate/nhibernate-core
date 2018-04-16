@@ -54,8 +54,8 @@ namespace NHibernate.Test.Extralazy
 
 				t.Commit();
 			}
-			sessions.Evict(typeof (User));
-			sessions.Evict(typeof (Photo));
+			Sfi.Evict(typeof (User));
+			Sfi.Evict(typeof (Photo));
 		}
 
 		[Test]

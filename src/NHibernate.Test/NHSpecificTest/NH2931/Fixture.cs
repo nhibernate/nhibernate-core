@@ -1,4 +1,5 @@
-﻿using NHibernate.Mapping.ByCode;
+﻿using System;
+using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2931
         //no xml mappings here, since we use MappingByCode
         protected override System.Collections.IList Mappings
         {
-            get { return new string[0]; }
+            get { return Array.Empty<string>(); }
         }
 
         [Test]

@@ -10,7 +10,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 		public void Process(ContainsResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{
 			var itemExpression =
-				HqlGeneratorExpressionTreeVisitor.Visit(resultOperator.Item, queryModelVisitor.VisitorParameters)
+				HqlGeneratorExpressionVisitor.Visit(resultOperator.Item, queryModelVisitor.VisitorParameters)
 					.AsExpression();
 
 			var from = GetFromRangeClause(tree.Root);

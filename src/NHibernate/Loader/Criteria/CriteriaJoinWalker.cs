@@ -32,7 +32,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly IList<IType> resultTypeList = new List<IType>();
 		private readonly IList<bool> includeInResultRowList = new List<bool>();
 
-		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(CriteriaJoinWalker));
+		private static readonly INHibernateLogger logger = NHibernateLogger.For(typeof(CriteriaJoinWalker));
 
 		public CriteriaJoinWalker(IOuterJoinLoadable persister, CriteriaQueryTranslator translator,
 		                          ISessionFactoryImplementor factory, ICriteria criteria, string rootEntityName,
@@ -46,13 +46,14 @@ namespace NHibernate.Loader.Criteria
 			if (translator.HasProjection)
 			{
 				InitProjection(
-					translator.GetSelect(enabledFilters),
-					translator.GetWhereCondition(enabledFilters),
+					translator.GetSelect(),
+					translator.GetWhereCondition(),
 					translator.GetOrderBy(),
 					translator.GetGroupBy(),
-					translator.GetHavingCondition(enabledFilters),
-					enabledFilters, 
-					LockMode.None);
+					translator.GetHavingCondition(),
+					enabledFilters,
+					LockMode.None,
+					translator.GetEntityProjections());
 
 				resultTypes = translator.ProjectedTypes;
 				userAliases = translator.ProjectedAliases;
@@ -61,7 +62,7 @@ namespace NHibernate.Loader.Criteria
 			}
 			else
 			{
-				InitAll(translator.GetWhereCondition(enabledFilters), translator.GetOrderBy(), LockMode.None);
+				InitAll(translator.GetWhereCondition(), translator.GetOrderBy(), LockMode.None);
 
 				resultTypes = new IType[] { TypeFactory.ManyToOne(persister.EntityName) };
 
@@ -72,6 +73,21 @@ namespace NHibernate.Loader.Criteria
 				userAliases = userAliasList.ToArray();
 				resultTypes = resultTypeList.ToArray();
 				includeInResultRow = includeInResultRowList.ToArray();
+			}
+		}
+
+		protected override void AddAssociations()
+		{
+			base.AddAssociations();
+			foreach (var entityJoinInfo in translator.GetEntityJoins().Values)
+			{
+				var tableAlias = translator.GetSQLAlias(entityJoinInfo.Criteria);
+				var criteriaPath = entityJoinInfo.Criteria.Alias; //path for entity join is equal to alias
+				var persister = entityJoinInfo.Persister as IOuterJoinLoadable;
+				AddExplicitEntityJoinAssociation(persister, tableAlias, translator.GetJoinType(criteriaPath), GetWithClause(criteriaPath));
+				IncludeInResultIfNeeded(persister, entityJoinInfo.Criteria, tableAlias);
+				//collect mapped associations for entity join
+				WalkEntityTree(persister, tableAlias, criteriaPath, 1);
 			}
 		}
 
@@ -198,19 +214,7 @@ namespace NHibernate.Loader.Criteria
 				ICriteria subcriteria = translator.GetCriteria(path);
 				sqlAlias = subcriteria == null ? null : translator.GetSQLAlias(subcriteria);
 
-				if (joinable.ConsumesEntityAlias() && !translator.HasProjection)
-				{
-					includeInResultRowList.Add(subcriteria != null && subcriteria.Alias != null);
-
-					if (sqlAlias != null)
-					{
-						if (subcriteria.Alias != null)
-						{
-							userAliasList.Add(subcriteria.Alias); //alias may be null
-							resultTypeList.Add(translator.ResultType(subcriteria));
-						}
-					}
-				}
+				IncludeInResultIfNeeded(joinable, subcriteria, sqlAlias);
 			}
 
 			if (sqlAlias == null)
@@ -219,6 +223,22 @@ namespace NHibernate.Loader.Criteria
 			return sqlAlias;
 		}
 
+		private void IncludeInResultIfNeeded(IJoinable joinable, ICriteria subcriteria, string sqlAlias)
+		{
+			if (joinable.ConsumesEntityAlias() && !translator.HasProjection)
+			{
+				includeInResultRowList.Add(subcriteria != null && subcriteria.Alias != null);
+
+				if (sqlAlias != null)
+				{
+					if (subcriteria.Alias != null)
+					{
+						userAliasList.Add(subcriteria.Alias); //alias may be null
+						resultTypeList.Add(translator.ResultType(subcriteria));
+					}
+				}
+			}
+		}
 
 		protected override string GenerateRootAlias(string tableName)
 		{
@@ -228,7 +248,7 @@ namespace NHibernate.Loader.Criteria
 
 		protected override SqlString GetWithClause(string path)
 		{
-			return translator.GetWithClause(path, EnabledFilters);
+			return translator.GetWithClause(path);
 		}
 	}
 }

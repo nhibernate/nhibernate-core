@@ -22,9 +22,9 @@
 *.scc
 *.tokens
 [Bb]in
-[Db]ebug*/
+[Db]ebug/
 obj/
-[Rr]elease*/
+[Rr]elease/
 *resharper*
 _ReSharper*/
 [Tt]est[Rr]esult*
@@ -34,3 +34,4 @@ SharedAssemblyInfo.*
 hibernate.cfg.xml
 .vs/
 packages/
+.idea/

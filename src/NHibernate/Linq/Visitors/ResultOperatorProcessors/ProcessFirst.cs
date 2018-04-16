@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Reflection;
+using NHibernate.Util;
 using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
@@ -7,9 +8,9 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 	public class ProcessFirst : ProcessFirstOrSingleBase, IResultOperatorProcessor<FirstResultOperator>
 	{
 		private static readonly MethodInfo FirstOrDefault =
-			ReflectionHelper.GetMethodDefinition(() => Queryable.FirstOrDefault<object>(null));
+			ReflectionCache.QueryableMethods.FirstOrDefaultDefinition;
 		private static readonly MethodInfo First =
-			ReflectionHelper.GetMethodDefinition(() => Queryable.First<object>(null));
+			ReflectionCache.QueryableMethods.FirstDefinition;
 
 		public void Process(FirstResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{

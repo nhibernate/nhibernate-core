@@ -21,15 +21,16 @@ You need a Java Runtime Environment (JRE) to run Saxon which is used to build
 the documentation. You don't need to download and install Saxon, its jars are
 present in the repository.
 
-You need HTML Help Workshop to build the CHM help file, and Visual Studio
-Help Integration Kit (VSHIK) to build the HtmlHelp2 help file.
+You need HTML Help Workshop to build the CHM help file, and Sandcastle Help File
+Builder (SHFB - https://github.com/EWSoftware/SHFB) to build the HtmlHelp2 help
+file.
 
 ================================================================================
 DocBook Quick Start
 ================================================================================
 Read this article on Code Project (by Jim Crafton)
 	"Documention with DocBook on Win32"
-	http://www.codeproject.com/winhelp/docbook_howto.asp
+	https://www.codeproject.com/Articles/4481/Documention-with-DocBook-on-Win
 
 
 ================================================================================

@@ -14,11 +14,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// </summary>
 	public class ASTQueryTranslatorFactory : IQueryTranslatorFactory
 	{
-		public IQueryTranslator[] CreateQueryTranslators(string queryString, string collectionRole, bool shallow, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory)
-		{
-			return CreateQueryTranslators(queryString.ToQueryExpression(), collectionRole, shallow, filters, factory);
-		}
-
 		public IQueryTranslator[] CreateQueryTranslators(IQueryExpression queryExpression, string collectionRole, bool shallow, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory)
 		{
 			return CreateQueryTranslators(queryExpression.Translate(factory, collectionRole != null), queryExpression.Key, collectionRole, shallow, filters, factory);

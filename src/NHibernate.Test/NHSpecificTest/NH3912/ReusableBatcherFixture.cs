@@ -11,6 +11,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3912
 {
+	[TestFixture]
 	public class ReusableBatcherFixture : TestCaseMappingByCode
 	{
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)

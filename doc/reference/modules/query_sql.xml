@@ -18,7 +18,7 @@
     <literal>ISession.CreateSQLQuery()</literal>. The following describes how
     to use this API for querying.</para>
 
-    <sect2>
+    <sect2 id="querysql-scalar">
       <title>Scalar queries</title>
 
       <para>The most basic SQL query is to get a list of scalars
@@ -42,14 +42,15 @@
         </listitem>
       </itemizedlist>
 
-      <para>This will return an IList of Object arrays (object[]) with
+      <para>This will return an <literal>IList</literal> of <literal>Object</literal>
+      arrays (<literal>object[]</literal>) with
       scalar values for each column in the CATS table. Only these three
       columns will be returned, even though the query is using
       <literal>*</literal> and could return more than the three listed
       columns.</para>
     </sect2>
 
-    <sect2>
+    <sect2 id="querysql-entity">
       <title>Entity queries</title>
 
       <para>The above query was about returning scalar values,
@@ -85,13 +86,13 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       the following example for a <literal>many-to-one</literal> to a
       <literal>Dog</literal>:</para>
 
-      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE, DOG_ID FROM CATS").AddEntity(typeof(Cat));
-]]></programlisting>
+      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE, DOG_ID FROM CATS")
+    .AddEntity(typeof(Cat));]]></programlisting>
 
       <para>This will allow cat.Dog property access to function properly.</para>
     </sect2>
 
-    <sect2>
+    <sect2 id="querysql-associations-collections">
       <title>Handling associations and collections</title>
 
       <para>It is possible to eagerly join in the <literal>Dog</literal> to
@@ -99,10 +100,12 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       done via the <literal>AddJoin()</literal> method, which allows you to
       join in an association or collection.</para>
 
-      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT c.ID, NAME, BIRTHDATE, DOG_ID, D_ID, D_NAME FROM CATS c, DOGS d WHERE c.DOG_ID = d.D_ID")
- .AddEntity("cat", typeof(Cat))
- .AddJoin("cat.Dog");
-]]></programlisting>
+      <programlisting><![CDATA[sess
+    .CreateSQLQuery(
+        "SELECT cat.ID, NAME, BIRTHDATE, DOG_ID, D_ID, D_NAME " +
+        "FROM CATS cat, DOGS d WHERE cat.DOG_ID = d.D_ID")
+    .AddEntity("cat", typeof(Cat))
+    .AddJoin("cat.Dog");]]></programlisting>
 
       <para>In this example the returned <literal>Cat</literal>'s will have
       their <literal>Dog</literal> property fully initialized without any
@@ -112,10 +115,12 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       <literal>Cat</literal> had a one-to-many to <literal>Dog</literal>
       instead.</para>
 
-      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE, D_ID, D_NAME, CAT_ID FROM CATS c, DOGS d WHERE c.ID = d.CAT_ID")
- .AddEntity("cat", typeof(Cat))
- .AddJoin("cat.Dogs");
-]]></programlisting>
+      <programlisting><![CDATA[sess
+    .CreateSQLQuery(
+        "SELECT ID, NAME, BIRTHDATE, D_ID, D_NAME, CAT_ID " +
+        "FROM CATS cat, DOGS d WHERE cat.ID = d.CAT_ID")
+    .AddEntity("cat", typeof(Cat))
+    .AddJoin("cat.Dogs");]]></programlisting>
 
       <para>At this stage we are reaching the limits of what is possible with
       native queries without starting to enhance the SQL queries to make them
@@ -124,7 +129,7 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       names are not enough.</para>
     </sect2>
 
-    <sect2>
+    <sect2 id="querysql-multiple-entities">
       <title>Returning multiple entities</title>
 
       <para>Until now the result set column names are assumed to be the same
@@ -135,10 +140,12 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       <para>Column alias injection is needed in the following query (which
       most likely will fail):</para>
 
-      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT c.*, m.*  FROM CATS c, CATS m WHERE c.MOTHER_ID = c.ID")
- .AddEntity("cat", typeof(Cat))
- .AddEntity("mother", typeof(Cat))
-]]></programlisting>
+      <programlisting><![CDATA[sess
+    .CreateSQLQuery(
+        "SELECT cat.*, mother.* " +
+        "FROM CATS cat, CATS mother WHERE cat.MOTHER_ID = mother.ID")
+    .AddEntity("cat", typeof(Cat))
+    .AddEntity("mother", typeof(Cat))]]></programlisting>
 
       <para>The intention for this query is to return two Cat instances per
       row, a cat and its mother. This will fail since there is a conflict of
@@ -150,10 +157,12 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       <para>The following form is not vulnerable to column name
       duplication:</para>
 
-      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT {cat.*}, {mother.*}  FROM CATS c, CATS m WHERE c.MOTHER_ID = c.ID")
- .AddEntity("cat", typeof(Cat))
- .AddEntity("mother", typeof(Cat))
-]]></programlisting>
+      <programlisting><![CDATA[sess
+    .CreateSQLQuery(
+        "SELECT {cat.*}, {mother.*} " +
+        "FROM CATS cat, CATS mother WHERE cat.MOTHER_ID = mother.ID")
+    .AddEntity("cat", typeof(Cat))
+    .AddEntity("mother", typeof(Cat))]]></programlisting>
 
       <para>This query specified:</para>
 
@@ -177,13 +186,13 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       declared in the mapping metadata. Notice that we may even use the
       property aliases in the where clause if we like.</para>
 
-      <programlisting><![CDATA[String sql = "SELECT ID as {c.Id}, NAME as {c.Name}, " + 
-         "BIRTHDATE as {c.BirthDate}, MOTHER_ID as {c.Mother}, {mother.*} " +
-         "FROM CAT_LOG c, CAT_LOG m WHERE {c.Mother} = c.ID";
+      <programlisting><![CDATA[String sql = "SELECT c.ID as {c.Id}, c.NAME as {c.Name}, " + 
+         "c.BIRTHDATE as {c.BirthDate}, c.MOTHER_ID as {c.Mother}, {mother.*} " +
+         "FROM CAT_LOG c, CAT_LOG m WHERE {c.Mother} = m.ID";
 
-IList loggedCats = sess.CreateSQLQuery(sql)
-        .AddEntity("cat", typeof(Cat))
-        .AddEntity("mother", typeof(Cat)).List();
+var loggedCats = sess.CreateSQLQuery(sql)
+    .AddEntity("c", typeof(Cat))
+    .AddEntity("m", typeof(Cat)).List<object[]>();
 ]]></programlisting>
 
       <sect3 id="querysql-aliasreferences" revision="2">
@@ -306,7 +315,7 @@ IList loggedCats = sess.CreateSQLQuery(sql)
       </sect3>
     </sect2>
 
-    <sect2>
+    <sect2 id="querysql-non-managed-entities">
       <title>Returning non-managed entities</title>
 
       <para>It is possible to apply an <literal>IResultTransformer</literal> to native sql queries. Allowing it to e.g. return non-managed entities.</para>
@@ -336,7 +345,7 @@ IList loggedCats = sess.CreateSQLQuery(sql)
 		</para>
 	</sect2>
 
-    <sect2>
+    <sect2 id="querysql-inheritance">
       <title>Handling inheritance</title>
 
       <para>Native SQL queries which query for entities that are mapped as part
@@ -344,17 +353,21 @@ IList loggedCats = sess.CreateSQLQuery(sql)
       its subclasses.</para>
     </sect2>
 
-    <sect2>
+    <sect2 id="querysql-parameters">
       <title>Parameters</title>
 
       <para>Native SQL queries support positional as well as named
       parameters:</para>
 
-      <programlisting><![CDATA[Query query = sess.CreateSQLQuery("SELECT * FROM CATS WHERE NAME like ?").AddEntity(typeof(Cat));
-IList pusList = query.SetString(0, "Pus%").List();
-     
-query = sess.createSQLQuery("SELECT * FROM CATS WHERE NAME like :name").AddEntity(typeof(Cat));
-IList pusList = query.SetString("name", "Pus%").List();          ]]></programlisting>
+      <programlisting><![CDATA[var query = sess
+    .CreateSQLQuery("SELECT * FROM CATS WHERE NAME like ?")
+    .AddEntity(typeof(Cat));
+var pusList = query.SetString(0, "Pus%").List<Cat>();
+
+query = sess
+    .createSQLQuery("SELECT * FROM CATS WHERE NAME like :name")
+    .AddEntity(typeof(Cat));
+var pusList = query.SetString("name", "Pus%").List<Cat>();]]></programlisting>
     </sect2>
     
     
@@ -378,10 +391,10 @@ IList pusList = query.SetString("name", "Pus%").List();          ]]></programlis
     WHERE person.NAME LIKE :namePattern
 </sql-query>]]></programlisting>
 
-    <programlisting><![CDATA[IList people = sess.GetNamedQuery("persons")
+    <programlisting><![CDATA[var people = sess.GetNamedQuery("persons")
     .SetString("namePattern", namePattern)
     .SetMaxResults(50)
-    .List();]]></programlisting>
+    .List<Person>();]]></programlisting>
 
     <para>The <literal>&lt;return-join&gt;</literal> and
     <literal>&lt;load-collection&gt;</literal> elements are used to join
@@ -416,7 +429,7 @@ IList pusList = query.SetString("name", "Pus%").List();          ]]></programlis
     FROM PERSON p WHERE p.NAME LIKE 'Hiber%'
 </sql-query>]]></programlisting>
 
-    <para>You can externalize the resultset mapping informations in a
+    <para>You can externalize the resultset mapping information in a
     <literal>&lt;resultset&gt;</literal> element to either reuse them across
     several named queries or through the
     <literal>SetResultSetMapping()</literal> API.</para>
@@ -443,11 +456,62 @@ IList pusList = query.SetString("name", "Pus%").List();          ]]></programlis
     <para>You can alternatively use the resultset mapping information in your
     .hbm.xml files directly in code.</para>
 
-    <programlisting><![CDATA[IList cats = sess.CreateSQLQuery(
-        "select {cat.*}, {kitten.*} from cats cat, cats kitten where kitten.mother = cat.id"
-    )
+    <programlisting><![CDATA[var cats = sess.CreateSQLQuery(
+        "select {cat.*}, {kitten.*} " +
+        "from cats cat, cats kitten " +
+        "where kitten.mother = cat.id")
     .SetResultSetMapping("catAndKitten")
-    .List();]]></programlisting>
+    .List<Cat>();]]></programlisting>
+
+            <para>
+                Like HQL named queries, SQL named queries accepts a number of attributes matching settings
+                available on the <literal>ISQLQuery</literal> interface.
+            </para>
+
+            <itemizedlist spacing="compact">
+                <listitem>
+                    <para>
+                    <literal>flush-mode</literal> - override the session flush mode just for this query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>cacheable</literal> - allow the query results to be cached by the second level cache.
+                    See <xref linkend="caches"/>.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>cache-region</literal> - specify the cache region of the query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>cache-mode</literal> - specify the cache mode of the query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>fetch-size</literal> - set a fetch size for the underlying ADO query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>timeout</literal> - set the query timeout in seconds.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>read-only</literal> - <literal>true</literal> switches yielded entities to read-only.
+                    See <xref linkend="readonly"/>.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>comment</literal> - add a custom comment to the SQL.
+                    </para>
+                </listitem>
+            </itemizedlist>
 
     <sect2 id="propertyresults">
       <title>Using return-property to explicitly specify column/alias
@@ -575,7 +639,7 @@ IList pusList = query.SetString("name", "Pus%").List();          ]]></programlis
         <itemizedlist spacing="compact">
           <listitem>
             <para>The procedure must return a result set. NHibernate will
-            use <literal>IDbCommand.ExecuteReader()</literal> to obtain
+            use <literal>DbCommand.ExecuteReader()</literal> to obtain
             the results.
             </para>
           </listitem>
@@ -644,7 +708,7 @@ IList pusList = query.SetString("name", "Pus%").List();          ]]></programlis
 
     <para>The stored procedures are by default required to affect the same number
     of rows as NHibernate-generated SQL would. NHibernate uses
-    <literal>IDbCommand.ExecuteNonQuery</literal> to retrieve the number of rows
+    <literal>DbCommand.ExecuteNonQuery</literal> to retrieve the number of rows
     affected. This check can be disabled by using <literal>check="none"</literal>
     attribute in <literal>sql-insert</literal> element.
     </para>

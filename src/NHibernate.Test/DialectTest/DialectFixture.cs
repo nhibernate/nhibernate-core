@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -162,7 +161,7 @@ namespace NHibernate.Test.DialectTest
 
 			using (var connection = sessions.ConnectionProvider.GetConnection())
 			{
-				var statement = driver.GenerateCommand(CommandType.Text, new SqlString(dialect.CurrentTimestampSelectString), new SqlType[0]);
+				var statement = driver.GenerateCommand(CommandType.Text, new SqlString(dialect.CurrentTimestampSelectString), Array.Empty<SqlType>());
 				statement.Connection = connection;
 				using (var reader = statement.ExecuteReader())
 				{
@@ -170,6 +169,33 @@ namespace NHibernate.Test.DialectTest
 					Assert.That(reader[0], Is.InstanceOf<DateTime>());
 				}
 			}
+		}
+
+		[Test]
+		public void GetDecimalTypeName()
+		{
+			var cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			var dialect = Dialect.Dialect.GetDialect(cfg.Properties);
+
+			Assert.That(dialect.GetTypeName(SqlTypeFactory.GetSqlType(DbType.Decimal, 40, 40)), Does.Not.Contain("40"), "oversized decimal");
+			// This regex tests wether the type is qualified with expected length/precision/scale or not qualified at all.
+			Assert.That(dialect.GetTypeName(SqlTypeFactory.GetSqlType(DbType.Decimal, 3, 2)), Does.Match(@"^[^(]*(\(\s*3\s*,\s*2\s*\))?\s*$"), "small decimal");
+		}
+
+		[Test]
+		public void GetTypeCastName()
+		{
+			var cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			cfg.SetProperty(Environment.QueryDefaultCastLength, "20");
+			cfg.SetProperty(Environment.QueryDefaultCastPrecision, "10");
+			cfg.SetProperty(Environment.QueryDefaultCastScale, "3");
+			var dialect = Dialect.Dialect.GetDialect(cfg.Properties);
+
+			// Those regex test wether the type is qualified with expected length/precision/scale or not qualified at all.
+			Assert.That(dialect.GetCastTypeName(SqlTypeFactory.Decimal), Does.Match(@"^[^(]*(\(\s*10\s*,\s*3\s*\))?\s*$"), "decimal");
+			Assert.That(dialect.GetCastTypeName(SqlTypeFactory.GetSqlType(DbType.Decimal, 12, 4)), Does.Match(@"^[^(]*(\(\s*12\s*,\s*4\s*\))?\s*$"), "decimal(12,4)");
+			Assert.That(dialect.GetCastTypeName(new SqlType(DbType.String)), Does.Match(@"^[^(]*(\(\s*20\s*\))?\s*$"), "string");
+			Assert.That(dialect.GetCastTypeName(SqlTypeFactory.GetString(25)), Does.Match(@"^[^(]*(\(\s*25\s*\))?\s*$"), "string(25)");
 		}
 	}
 }

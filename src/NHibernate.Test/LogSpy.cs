@@ -19,7 +19,7 @@ namespace NHibernate.Test
 			logger = log.Logger as Logger;
 			if (logger == null)
 			{
-				throw new Exception("Unable to get the logger");
+				throw new InvalidOperationException("Unable to get the logger");
 			}
 
 			// Change the log level to DEBUG and temporarily save the previous log level
@@ -40,8 +40,8 @@ namespace NHibernate.Test
 		public LogSpy(System.Type loggerType) : this(LogManager.GetLogger(loggerType), false) { }
 		public LogSpy(System.Type loggerType, bool disable) : this(LogManager.GetLogger(loggerType), disable) { }
 
-		public LogSpy(string loggerName) : this(LogManager.GetLogger(loggerName), false) { }
-		public LogSpy(string loggerName, bool disable) : this(LogManager.GetLogger(loggerName), disable) { }
+		public LogSpy(string loggerName) : this(LogManager.GetLogger(typeof(LogSpy).Assembly, loggerName), false) { }
+		public LogSpy(string loggerName, bool disable) : this(LogManager.GetLogger(typeof(LogSpy).Assembly, loggerName), disable) { }
 
 		public MemoryAppender Appender
 		{

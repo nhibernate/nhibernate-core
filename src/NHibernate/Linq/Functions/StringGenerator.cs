@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Visitors;
+using NHibernate.Util;
 
 namespace NHibernate.Linq.Functions
 {
@@ -63,7 +65,7 @@ namespace NHibernate.Linq.Functions
 	{
 		public LengthGenerator()
 		{
-			SupportedProperties = new[] { ReflectionHelper.GetProperty((string x) => x.Length) };
+			SupportedProperties = new[] { ReflectHelper.GetProperty((string x) => x.Length) };
 		}
 
 		public override HqlTreeNode BuildHql(MemberInfo member, Expression expression, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
@@ -76,7 +78,7 @@ namespace NHibernate.Linq.Functions
 	{
 		public StartsWithGenerator()
 		{
-			SupportedMethods = new[] { ReflectionHelper.GetMethodDefinition<string>(x => x.StartsWith(null)) };
+			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition<string>(x => x.StartsWith(null)) };
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
@@ -93,7 +95,7 @@ namespace NHibernate.Linq.Functions
 	{
 		public EndsWithGenerator()
 		{
-			SupportedMethods = new[] { ReflectionHelper.GetMethodDefinition<string>(x => x.EndsWith(null)) };
+			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition<string>(x => x.EndsWith(null)) };
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
@@ -110,7 +112,7 @@ namespace NHibernate.Linq.Functions
 	{
 		public ContainsGenerator()
 		{
-			SupportedMethods = new[] { ReflectionHelper.GetMethodDefinition<string>(x => x.Contains(null)) };
+			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition<string>(x => x.Contains(null)) };
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
@@ -130,8 +132,8 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 									{
-										ReflectionHelper.GetMethodDefinition<string>(x => x.ToLower()),
-										ReflectionHelper.GetMethodDefinition<string>(x => x.ToLowerInvariant())
+										ReflectHelper.GetMethodDefinition<string>(x => x.ToLower()),
+										ReflectHelper.GetMethodDefinition<string>(x => x.ToLowerInvariant())
 									};
 		}
 
@@ -147,8 +149,8 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 									{
-										ReflectionHelper.GetMethodDefinition<string>(x => x.ToUpper()),
-										ReflectionHelper.GetMethodDefinition<string>(x => x.ToUpperInvariant()),
+										ReflectHelper.GetMethodDefinition<string>(x => x.ToUpper()),
+										ReflectHelper.GetMethodDefinition<string>(x => x.ToUpperInvariant()),
 									};
 		}
 
@@ -164,8 +166,8 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 									{
-										ReflectionHelper.GetMethodDefinition<string>(s => s.Substring(0)),
-										ReflectionHelper.GetMethodDefinition<string>(s => s.Substring(0, 0))
+										ReflectHelper.GetMethodDefinition<string>(s => s.Substring(0)),
+										ReflectHelper.GetMethodDefinition<string>(s => s.Substring(0, 0))
 									};
 		}
 
@@ -188,10 +190,10 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 									{
-										ReflectionHelper.GetMethodDefinition<string>(s => s.IndexOf(' ')),
-										ReflectionHelper.GetMethodDefinition<string>(s => s.IndexOf(" ")),
-										ReflectionHelper.GetMethodDefinition<string>(s => s.IndexOf(' ', 0)),
-										ReflectionHelper.GetMethodDefinition<string>(s => s.IndexOf(" ", 0))
+										ReflectHelper.GetMethodDefinition<string>(s => s.IndexOf(' ')),
+										ReflectHelper.GetMethodDefinition<string>(s => s.IndexOf(" ")),
+										ReflectHelper.GetMethodDefinition<string>(s => s.IndexOf(' ', 0)),
+										ReflectHelper.GetMethodDefinition<string>(s => s.IndexOf(" ", 0))
 									};
 		}
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
@@ -222,8 +224,8 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 									{
-										ReflectionHelper.GetMethodDefinition<string>(s => s.Replace(' ', ' ')),
-										ReflectionHelper.GetMethodDefinition<string>(s => s.Replace("", ""))
+										ReflectHelper.GetMethodDefinition<string>(s => s.Replace(' ', ' ')),
+										ReflectHelper.GetMethodDefinition<string>(s => s.Replace("", ""))
 									};
 		}
 
@@ -240,13 +242,7 @@ namespace NHibernate.Linq.Functions
 	{
 		public TrimGenerator()
 		{
-			SupportedMethods = new[]
-									{
-										ReflectionHelper.GetMethodDefinition<string>(s => s.Trim()),
-										ReflectionHelper.GetMethodDefinition<string>(s => s.Trim('a')),
-										ReflectionHelper.GetMethodDefinition<string>(s => s.TrimStart('a')),
-										ReflectionHelper.GetMethodDefinition<string>(s => s.TrimEnd('a'))
-									};
+			SupportedMethods = typeof(string).GetMethods().Where(x => new[] { "Trim", "TrimStart", "TrimEnd" }.Contains(x.Name)).ToArray();
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
@@ -259,13 +255,9 @@ namespace NHibernate.Linq.Functions
 			else
 				trimWhere = "both";
 
-			string trimChars = "";
-			if (method.GetParameters().Length > 0)
-				foreach (char c in (char[])((ConstantExpression)arguments[0]).Value)
-					trimChars += c;
+			var trimChars = ExtractTrimChars(arguments);
 
-
-			if (trimChars == "")
+			if (string.IsNullOrEmpty(trimChars))
 			{
 				return treeBuilder.MethodCall("trim", treeBuilder.Ident(trimWhere), treeBuilder.Ident("from"), visitor.Visit(targetObject).AsExpression());
 			}
@@ -273,6 +265,20 @@ namespace NHibernate.Linq.Functions
 			{
 				return treeBuilder.MethodCall("trim", treeBuilder.Ident(trimWhere), treeBuilder.Constant(trimChars), treeBuilder.Ident("from"), visitor.Visit(targetObject).AsExpression());
 			}
+		}
+
+		private static string ExtractTrimChars(IReadOnlyList<Expression> arguments)
+		{
+			if (arguments.Count > 0)
+			{
+				var constantExpression = (ConstantExpression) arguments[0];
+				if (constantExpression.Value is char c)
+					return c.ToString();
+				if (constantExpression.Value is char[] chars)
+					return new string(chars);
+			}
+
+			return string.Empty;
 		}
 	}
 

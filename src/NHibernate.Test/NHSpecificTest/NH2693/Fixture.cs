@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2693
 {
+	[TestFixture]
 	public class Fixture : BugTestCase
 	{
 		private List<FirstLevel> _firstLevels;

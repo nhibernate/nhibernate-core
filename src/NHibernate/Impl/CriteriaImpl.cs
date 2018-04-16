@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -14,7 +15,7 @@ namespace NHibernate.Impl
 	/// Implementation of the <see cref="ICriteria"/> interface
 	/// </summary>
 	[Serializable]
-	public class CriteriaImpl : ICriteria
+	public partial class CriteriaImpl : ICriteria, ISupportEntityJoinCriteria
 	{
 		private readonly System.Type persistentClass;
 		private readonly List<CriterionEntry> criteria = new List<CriterionEntry>();
@@ -370,6 +371,11 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		public ICriteria CreateEntityCriteria(string alias, ICriterion withClause, JoinType joinType, string entityName)
+		{
+			return new Subcriteria(this, this, alias, alias, joinType, withClause, entityName);
+		}
+
 		public ICriteria Add(ICriteria criteriaInst, ICriterion expression)
 		{
 			criteria.Add(new CriterionEntry(expression, criteriaInst));
@@ -405,18 +411,18 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new FutureValue<T>(List<T>);
+				return new FutureValue<T>(List<T>, async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
 			}
 
 			session.FutureCriteriaBatch.Add<T>(this);
 			return session.FutureCriteriaBatch.GetFutureValue<T>();
 		}
 
-		public IEnumerable<T> Future<T>()
+		public IFutureEnumerable<T> Future<T>()
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return List<T>();
+				return new DelayedEnumerator<T>(List<T>, async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
 			}
 
 			session.FutureCriteriaBatch.Add<T>(this);
@@ -634,7 +640,7 @@ namespace NHibernate.Impl
 		}
 
 		[Serializable]
-		public sealed class Subcriteria : ICriteria
+		public sealed partial class Subcriteria : ICriteria
 		{
 			// Added to simulate Java-style inner class
 			private readonly CriteriaImpl root;
@@ -646,7 +652,7 @@ namespace NHibernate.Impl
 			private readonly JoinType joinType;
 			private ICriterion withClause;
 
-			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, string alias, JoinType joinType, ICriterion withClause)
+			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, string alias, JoinType joinType, ICriterion withClause, string joinEntityName = null)
 			{
 				this.root = root;
 				this.parent = parent;
@@ -654,6 +660,7 @@ namespace NHibernate.Impl
 				this.path = path;
 				this.joinType = joinType;
 				this.withClause = withClause;
+				JoinEntityName = joinEntityName;
 
 				root.subcriteriaList.Add(this);
 
@@ -666,6 +673,16 @@ namespace NHibernate.Impl
 
 			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, JoinType joinType)
 				: this(root, parent, path, null, joinType) { }
+
+			/// <summary>
+			/// Entity name for "Entity Join" - join for entity with not mapped association
+			/// </summary>
+			public string JoinEntityName { get; }
+
+			/// <summary>
+			/// Is this an Entity join for not mapped association
+			/// </summary>
+			public bool IsEntityJoin => JoinEntityName != null;
 
 			public ICriterion WithClause
 			{
@@ -790,7 +807,7 @@ namespace NHibernate.Impl
 				return root.FutureValue<T>();
 			}
 
-			public IEnumerable<T> Future<T>()
+			public IFutureEnumerable<T> Future<T>()
 			{
 				return root.Future<T>();
 			}
@@ -807,16 +824,7 @@ namespace NHibernate.Impl
 
 			public T UniqueResult<T>()
 			{
-				object result = UniqueResult();
-				if (result == null && typeof (T).IsValueType)
-				{
-					throw new InvalidCastException(
-						"UniqueResult<T>() cannot cast null result to value type. Call UniqueResult<T?>() instead");
-				}
-				else
-				{
-					return (T) result;
-				}
+				return root.UniqueResult<T>();
 			}
 
 			public void ClearOrders()

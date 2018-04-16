@@ -8,7 +8,7 @@ namespace NHibernate.Event.Default
 	/// loaded entity instance. 
 	/// </summary>
 	[Serializable]
-	public class DefaultPreLoadEventListener : IPreLoadEventListener
+	public partial class DefaultPreLoadEventListener : IPreLoadEventListener
 	{
 		public virtual void OnPreLoad(PreLoadEvent @event)
 		{

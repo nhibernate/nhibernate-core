@@ -8,7 +8,7 @@ namespace NHibernate.Linq.GroupBy
 	/// <summary>
 	/// Detects if an expression tree contains naked QuerySourceReferenceExpression
 	/// </summary>
-	internal class IsNonAggregatingGroupByDetectionVisitor : NhExpressionTreeVisitor
+	internal class IsNonAggregatingGroupByDetectionVisitor : NhExpressionVisitor
 	{
 		private bool _containsNakedQuerySourceReferenceExpression;
 
@@ -16,24 +16,24 @@ namespace NHibernate.Linq.GroupBy
 		{
 			_containsNakedQuerySourceReferenceExpression = false;
 
-			VisitExpression(expression);
+			Visit(expression);
 
 			return _containsNakedQuerySourceReferenceExpression;
 		}
 
-		protected override Expression VisitMemberExpression(MemberExpression expression)
+		protected override Expression VisitMember(MemberExpression expression)
 		{
 			return expression.IsGroupingKey()
 					   ? expression
-					   : base.VisitMemberExpression(expression);
+					   : base.VisitMember(expression);
 		}
 
-		protected override Expression VisitNhAggregate(NhAggregatedExpression expression)
+		protected internal override Expression VisitNhAggregated(NhAggregatedExpression expression)
 		{
 			return expression;
 		}
 
-		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 		{
 			_containsNakedQuerySourceReferenceExpression = true;
 			return expression;

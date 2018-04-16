@@ -20,7 +20,7 @@ namespace NHibernate.Cache
 	/// <seealso cref="NonstrictReadWriteCache"/> for a faster algorithm
 	/// <seealso cref="ICacheConcurrencyStrategy"/>
 	/// </remarks>
-	public class ReadWriteCache : ICacheConcurrencyStrategy
+	public partial class ReadWriteCache : ICacheConcurrencyStrategy
 	{
 		public interface ILockable
 		{
@@ -30,7 +30,7 @@ namespace NHibernate.Cache
 			bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator);
 		}
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ReadWriteCache));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ReadWriteCache));
 
 		private readonly object _lockObject = new object();
 		private ICache cache;
@@ -90,9 +90,9 @@ namespace NHibernate.Cache
 		{
 			lock (_lockObject)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Cache lookup: " + key);
+					log.Debug("Cache lookup: {0}", key);
 				}
 
 				// commented out in H3.1
@@ -106,24 +106,24 @@ namespace NHibernate.Cache
 
 				if (gettable)
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug("Cache hit: " + key);
+						log.Debug("Cache hit: {0}", key);
 					}
 
 					return ((CachedItem) lockable).Value;
 				}
 				else
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						if (lockable == null)
 						{
-							log.Debug("Cache miss: " + key);
+							log.Debug("Cache miss: {0}", key);
 						}
 						else
 						{
-							log.Debug("Cached item was locked: " + key);
+							log.Debug("Cached item was locked: {0}", key);
 						}
 					}
 					return null;
@@ -147,9 +147,9 @@ namespace NHibernate.Cache
 		{
 			lock (_lockObject)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Invalidating: " + key);
+					log.Debug("Invalidating: {0}", key);
 				}
 
 				try
@@ -189,9 +189,9 @@ namespace NHibernate.Cache
 
 			lock (_lockObject)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Caching: " + key);
+					log.Debug("Caching: {0}", key);
 				}
 
 				try
@@ -206,23 +206,23 @@ namespace NHibernate.Cache
 					if (puttable)
 					{
 						cache.Put(key, new CachedItem(value, cache.NextTimestamp(), version));
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
-							log.Debug("Cached: " + key);
+							log.Debug("Cached: {0}", key);
 						}
 						return true;
 					}
 					else
 					{
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
 							if (lockable.IsLock)
 							{
-								log.Debug("Item was locked: " + key);
+								log.Debug("Item was locked: {0}", key);
 							}
 							else
 							{
-								log.Debug("Item was already cached: " + key);
+								log.Debug("Item was already cached: {0}", key);
 							}
 						}
 						return false;
@@ -249,9 +249,9 @@ namespace NHibernate.Cache
 		{
 			lock (_lockObject)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Releasing: " + key);
+					log.Debug("Releasing: {0}", key);
 				}
 
 				try
@@ -277,7 +277,7 @@ namespace NHibernate.Cache
 
 		internal void HandleLockExpiry(object key)
 		{
-			log.Warn("An item was expired by the cache while it was locked (increase your cache timeout): " + key);
+			log.Warn("An item was expired by the cache while it was locked (increase your cache timeout): {0}", key);
 			long ts = cache.NextTimestamp() + cache.Timeout;
 			// create new lock that times out immediately
 			CacheLock @lock = new CacheLock(ts, NextLockId(), null);
@@ -303,7 +303,7 @@ namespace NHibernate.Cache
 			}
 			catch (Exception e)
 			{
-				log.Warn("Could not destroy cache", e);
+				log.Warn(e, "Could not destroy cache");
 			}
 		}
 
@@ -315,9 +315,9 @@ namespace NHibernate.Cache
 		{
 			lock (_lockObject)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Updating: " + key);
+					log.Debug("Updating: {0}", key);
 				}
 
 				try
@@ -338,9 +338,9 @@ namespace NHibernate.Cache
 						{
 							//recache the updated state
 							cache.Put(key, new CachedItem(value, cache.NextTimestamp(), version));
-							if (log.IsDebugEnabled)
+							if (log.IsDebugEnabled())
 							{
-								log.Debug("Updated: " + key);
+								log.Debug("Updated: {0}", key);
 							}
 						}
 						return true;
@@ -362,9 +362,9 @@ namespace NHibernate.Cache
 		{
 			lock (_lockObject)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Inserting: " + key);
+					log.Debug("Inserting: {0}", key);
 				}
 
 				try
@@ -375,9 +375,9 @@ namespace NHibernate.Cache
 					if (lockable == null)
 					{
 						cache.Put(key, new CachedItem(value, cache.NextTimestamp(), version));
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
-							log.Debug("Inserted: " + key);
+							log.Debug("Inserted: {0}", key);
 						}
 						return true;
 					}

@@ -10,7 +10,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Param
 {
-	public class DynamicFilterParameterSpecification : IParameterSpecification
+	public partial class DynamicFilterParameterSpecification : IParameterSpecification
 	{
 		private const string DynamicFilterParameterIdTemplate = "<dfnh-{0}_span{1}>";
 
@@ -93,7 +93,7 @@ namespace NHibernate.Param
 		}
 
 		[Serializable]
-		private class CollectionOfValuesType : IType
+		private partial class CollectionOfValuesType : IType
 		{
 			private readonly IType elementType;
 			private readonly int valueSpan;

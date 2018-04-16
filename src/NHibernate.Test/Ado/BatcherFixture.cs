@@ -34,16 +34,16 @@ namespace NHibernate.Test.Ado
 		[Description("The batcher should run all INSERT queries in only one roundtrip.")]
 		public void OneRoundTripInserts()
 		{
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 			FillDb();
 
-			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			Cleanup();
 		}
 
 		private void Cleanup()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (s.BeginTransaction())
 			{
 				s.CreateQuery("delete from VerySimple").ExecuteUpdate();
@@ -54,11 +54,12 @@ namespace NHibernate.Test.Ado
 
 		private void FillDb()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				s.Save(new VerySimple {Id = 1, Name = "Fabio", Weight = 119.5});
 				s.Save(new VerySimple {Id = 2, Name = "Fiamma", Weight = 9.8});
+				s.Save(new VerySimple {Id = 3, Name = "Roberto", Weight = 98.8 });
 				tx.Commit();
 			}
 		}
@@ -69,34 +70,38 @@ namespace NHibernate.Test.Ado
 		{
 			FillDb();
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				var vs1 = s.Get<VerySimple>(1);
 				var vs2 = s.Get<VerySimple>(2);
+				var vs3 = s.Get<VerySimple>(3);
 				vs1.Weight -= 10;
 				vs2.Weight -= 1;
-				sessions.Statistics.Clear();
+				vs3.Weight -= 5;
+				Sfi.Statistics.Clear();
 				s.Update(vs1);
 				s.Update(vs2);
+				s.Update(vs3);
 				tx.Commit();
 			}
 
-			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			Cleanup();
 		}
 
+#if NETFX
 		[Test, Ignore("Not fixed yet.")]
 		[Description("SqlClient: The batcher should run all different INSERT queries in only one roundtrip.")]
 		public void SqlClientOneRoundTripForUpdateAndInsert()
 		{
-			if (sessions.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
+			if (Sfi.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
 				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
 
 			FillDb();
 
-			using(var sqlLog = new SqlLogSpy())
-			using (ISession s = sessions.OpenSession())
+			using (var sqlLog = new SqlLogSpy())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				s.Save(new VerySimple
@@ -128,7 +133,7 @@ namespace NHibernate.Test.Ado
 		[Description("SqlClient: The batcher log output should be formatted")]
 		public void BatchedoutputShouldBeFormatted()
 		{
-			if (sessions.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
+			if (Sfi.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
 				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
 
 			using (var sqlLog = new SqlLogSpy())
@@ -140,7 +145,7 @@ namespace NHibernate.Test.Ado
 
 			Cleanup();
 		}
-
+#endif
 
 		[Test]
 		[Description("The batcher should run all DELETE queries in only one roundtrip.")]
@@ -148,18 +153,20 @@ namespace NHibernate.Test.Ado
 		{
 			FillDb();
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				var vs1 = s.Get<VerySimple>(1);
 				var vs2 = s.Get<VerySimple>(2);
-				sessions.Statistics.Clear();
+				var vs3 = s.Get<VerySimple>(3);
+				Sfi.Statistics.Clear();
 				s.Delete(vs1);
 				s.Delete(vs2);
+				s.Delete(vs3);
 				tx.Commit();
 			}
 
-			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			Cleanup();
 		}
 
@@ -174,7 +181,7 @@ namespace NHibernate.Test.Ado
 			{
 				using (var sl = new SqlLogSpy())
 				{
-					sessions.Statistics.Clear();
+					Sfi.Statistics.Clear();
 					FillDb();
 					string logs = sl.GetWholeLog();
 					Assert.That(logs, Does.Not.Contain("Adding to batch").IgnoreCase);
@@ -183,7 +190,7 @@ namespace NHibernate.Test.Ado
 				}
 			}
 
-			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			Cleanup();
 		}
 
@@ -198,7 +205,7 @@ namespace NHibernate.Test.Ado
 			{
 				using (var sl = new SqlLogSpy())
 				{
-					sessions.Statistics.Clear();
+					Sfi.Statistics.Clear();
 					FillDb();
 					string logs = sl.GetWholeLog();
 					Assert.That(logs, Does.Contain("batch").IgnoreCase);
@@ -213,7 +220,7 @@ namespace NHibernate.Test.Ado
 				}
 			}
 
-			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			Cleanup();
 		}
 
@@ -224,14 +231,14 @@ namespace NHibernate.Test.Ado
 			{
 				using (var sl = new SqlLogSpy())
 				{
-					sessions.Statistics.Clear();
+					Sfi.Statistics.Clear();
 					FillDb();
 					string logs = sl.GetWholeLog();
 					Assert.That(logs, Does.Contain("Batch commands:").IgnoreCase);
 				}
 			}
 
-			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			Cleanup();
 		}
 
@@ -244,7 +251,7 @@ namespace NHibernate.Test.Ado
 			{
 				using (var sl = new SqlLogSpy())
 				{
-					sessions.Statistics.Clear();
+					Sfi.Statistics.Clear();
 					FillDb();
 					foreach (var loggingEvent in sl.Appender.GetEvents())
 					{
@@ -266,7 +273,7 @@ namespace NHibernate.Test.Ado
 				}
 			}
 
-			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			Cleanup();
 		}
 	}

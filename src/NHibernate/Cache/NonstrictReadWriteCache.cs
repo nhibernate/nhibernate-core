@@ -12,11 +12,11 @@ namespace NHibernate.Cache
 	/// This is an "asynchronous" concurrency strategy.
 	/// <seealso cref="ReadWriteCache"/> for a much stricter algorithm
 	/// </summary>
-	public class NonstrictReadWriteCache : ICacheConcurrencyStrategy
+	public partial class NonstrictReadWriteCache : ICacheConcurrencyStrategy
 	{
 		private ICache cache;
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(NonstrictReadWriteCache));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(NonstrictReadWriteCache));
 
 		/// <summary>
 		/// Gets the cache region name.
@@ -37,9 +37,9 @@ namespace NHibernate.Cache
 		/// </summary>
 		public object Get(CacheKey key, long txTimestamp)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Cache lookup: " + key);
+				log.Debug("Cache lookup: {0}", key);
 			}
 
 			object result = cache.Get(key);
@@ -68,15 +68,15 @@ namespace NHibernate.Cache
 
 			if (minimalPut && cache.Get(key) != null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("item already cached: " + key);
+					log.Debug("item already cached: {0}", key);
 				}
 				return false;
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Caching: " + key);
+				log.Debug("Caching: {0}", key);
 			}
 			cache.Put(key, value);
 			return true;
@@ -92,16 +92,16 @@ namespace NHibernate.Cache
 
 		public void Remove(CacheKey key)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Removing: " + key);
+				log.Debug("Removing: {0}", key);
 			}
 			cache.Remove(key);
 		}
 
 		public void Clear()
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Clearing");
 			}
@@ -116,7 +116,7 @@ namespace NHibernate.Cache
 			}
 			catch (Exception e)
 			{
-				log.Warn("Could not destroy cache", e);
+				log.Warn(e, "Could not destroy cache");
 			}
 		}
 
@@ -125,9 +125,9 @@ namespace NHibernate.Cache
 		/// </summary>
 		public void Evict(CacheKey key)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Invalidating: " + key);
+				log.Debug("Invalidating: {0}", key);
 			}
 			cache.Remove(key);
 		}
@@ -154,9 +154,9 @@ namespace NHibernate.Cache
 		/// </summary>
 		public void Release(CacheKey key, ISoftLock @lock)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Invalidating (again): " + key);
+				log.Debug("Invalidating (again): {0}", key);
 			}
 
 			cache.Remove(key);

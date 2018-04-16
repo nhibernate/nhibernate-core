@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Criterion;
 using NUnit.Framework;
@@ -151,9 +152,21 @@ namespace NHibernate.Test.Operations
 		{
 			ClearCounts();
 
-			var root = new Node {Name = "root"};
-			var child = new Node {Name = "child"};
-			var grandchild = new Node {Name = "grandchild"};
+			var root = new Node
+			{
+				Created = RoundForDialect(DateTime.Now),
+				Name = "root"
+			};
+			var child = new Node
+			{
+				Created = RoundForDialect(DateTime.Now),
+				Name = "child"
+			};
+			var grandchild = new Node
+			{
+				Created = RoundForDialect(DateTime.Now),
+				Name = "grandchild"
+			};
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
@@ -169,7 +182,11 @@ namespace NHibernate.Test.Operations
 			ClearCounts();
 
 			grandchild.Description = "the grand child";
-			var grandchild2 = new Node {Name = "grandchild2"};
+			var grandchild2 = new Node
+			{
+				Created = RoundForDialect(DateTime.Now),
+				Name = "grandchild2"
+			};
 			child.AddChild(grandchild2);
 
 			using (var s = OpenSession())
@@ -183,8 +200,16 @@ namespace NHibernate.Test.Operations
 			AssertUpdateCount(1);
 			ClearCounts();
 
-			var child2 = new Node {Name = "child2"};
-			var grandchild3 = new Node {Name = "grandchild3"};
+			var child2 = new Node
+			{
+				Created = RoundForDialect(DateTime.Now),
+				Name = "child2"
+			};
+			var grandchild3 = new Node
+			{
+				Created = RoundForDialect(DateTime.Now),
+				Name = "grandchild3"
+			};
 			child2.AddChild(grandchild3);
 			root.AddChild(child2);
 
@@ -223,9 +248,9 @@ namespace NHibernate.Test.Operations
 			using (ISession s = OpenSession())
 			{
 				ITransaction tx = s.BeginTransaction();
-				root = new NumberedNode("root");
-				child = new NumberedNode("child");
-				grandchild = new NumberedNode("grandchild");
+				root = new NumberedNode("root", RoundForDialect(DateTime.Now));
+				child = new NumberedNode("child", RoundForDialect(DateTime.Now));
+				grandchild = new NumberedNode("grandchild", RoundForDialect(DateTime.Now));
 				root.AddChild(child);
 				child.AddChild(grandchild);
 				root = (NumberedNode) s.Merge(root);
@@ -243,7 +268,7 @@ namespace NHibernate.Test.Operations
 			cit.MoveNext();
 			grandchild = cit.Current;
 			grandchild.Description = "the grand child";
-			var grandchild2 = new NumberedNode("grandchild2");
+			var grandchild2 = new NumberedNode("grandchild2", RoundForDialect(DateTime.Now));
 			child.AddChild(grandchild2);
 
 			using (ISession s = OpenSession())
@@ -257,10 +282,10 @@ namespace NHibernate.Test.Operations
 			AssertUpdateCount(1);
 			ClearCounts();
 
-			sessions.Evict(typeof (NumberedNode));
+			Sfi.Evict(typeof (NumberedNode));
 
-			var child2 = new NumberedNode("child2");
-			var grandchild3 = new NumberedNode("grandchild3");
+			var child2 = new NumberedNode("child2", RoundForDialect(DateTime.Now));
+			var grandchild3 = new NumberedNode("grandchild3", RoundForDialect(DateTime.Now));
 			child2.AddChild(grandchild3);
 			root.AddChild(child2);
 
@@ -293,7 +318,7 @@ namespace NHibernate.Test.Operations
 				NumberedNode root;
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					root = new NumberedNode("root");
+					root = new NumberedNode("root", RoundForDialect(DateTime.Now));
 					s.Persist(root);
 					tx.Commit();
 				}
@@ -302,7 +327,7 @@ namespace NHibernate.Test.Operations
 				NumberedNode mergedChild;
 				using (var tx = s.BeginTransaction())
 				{
-					var child = new NumberedNode("child");
+					var child = new NumberedNode("child", RoundForDialect(DateTime.Now));
 					root.AddChild(child);
 					Assert.That(s.Merge(root), Is.SameAs(root));
 					IEnumerator<NumberedNode> rit = root.Children.GetEnumerator();
@@ -432,8 +457,16 @@ namespace NHibernate.Test.Operations
 		{
 			ClearCounts();
 
-			var root = new Node {Name = "root"};
-			var child = new Node {Name = "child"};
+			var root = new Node
+			{
+				Created = RoundForDialect(DateTime.Now),
+				Name = "root"
+			};
+			var child = new Node
+			{
+				Created = RoundForDialect(DateTime.Now),
+				Name = "child"
+			};
 			using(ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
@@ -448,7 +481,11 @@ namespace NHibernate.Test.Operations
 			root.Description = "The root node";
 			child.Description = "The child node";
 
-			var secondChild = new Node {Name = "second child"};
+			var secondChild = new Node
+			{
+				Created = RoundForDialect(DateTime.Now),
+				Name = "second child"
+			};
 
 			root.AddChild(secondChild);
 
@@ -468,8 +505,8 @@ namespace NHibernate.Test.Operations
 		{
 			ClearCounts();
 
-			var root = new NumberedNode("root");
-			var child = new NumberedNode("child");
+			var root = new NumberedNode("root", RoundForDialect(DateTime.Now));
+			var child = new NumberedNode("child", RoundForDialect(DateTime.Now));
 			using(ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
@@ -484,7 +521,7 @@ namespace NHibernate.Test.Operations
 			root.Description = "The root node";
 			child.Description = "The child node";
 
-			var secondChild = new NumberedNode("second child");
+			var secondChild = new NumberedNode("second child", RoundForDialect(DateTime.Now));
 
 			root.AddChild(secondChild);
 
@@ -502,7 +539,11 @@ namespace NHibernate.Test.Operations
 		[Test]
 		public void NoExtraUpdatesOnMerge()
 		{
-			var node = new Node {Name = "test"};
+			var node = new Node
+			{
+				Created = RoundForDialect(DateTime.Now),
+				Name = "test"
+			};
 			using(ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
@@ -635,11 +676,19 @@ namespace NHibernate.Test.Operations
 		[Test]
 		public void NoExtraUpdatesOnMergeWithCollection()
 		{
-			var parent = new Node {Name = "parent"};
+			var parent = new Node
+			{
+				Created = RoundForDialect(DateTime.Now),
+				Name = "parent"
+			};
 			using(ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				var child = new Node {Name = "child"};
+				var child = new Node
+				{
+					Created = RoundForDialect(DateTime.Now),
+					Name = "child"
+				};
 				parent.Children.Add(child);
 				child.Parent = parent;
 				s.Persist(parent);
@@ -666,7 +715,12 @@ namespace NHibernate.Test.Operations
 			IEnumerator<Node> it = parent.Children.GetEnumerator();
 			it.MoveNext();
 			it.Current.Description = "child's new description";
-			parent.Children.Add(new Node {Name = "second child"});
+			parent.Children.Add(
+				new Node
+				{
+					Created = RoundForDialect(DateTime.Now),
+					Name = "second child"
+				});
 			using(var s = OpenSession())
 			using (s.BeginTransaction())
 			{

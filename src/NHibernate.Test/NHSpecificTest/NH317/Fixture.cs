@@ -27,11 +27,13 @@ namespace NHibernate.Test.NHSpecificTest.NH317
 		[Test]
 		public void ProxySerialization()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			Node node = new Node();
 			node.Id = 1;
 			node.Name = "Node 1";
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save(node);
 			s.Flush();
 			s.Close();

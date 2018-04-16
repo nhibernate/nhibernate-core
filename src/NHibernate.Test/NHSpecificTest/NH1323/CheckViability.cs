@@ -5,6 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1323
 {
 	[Explicit("Demonstration of not viability")]
+	[TestFixture]
 	public class CheckViability: BugTestCase
 	{
 		public class FullInitializedRetrievedEntity : IDisposable

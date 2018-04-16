@@ -4,7 +4,7 @@
     <para>
         The ICriteria API
         is NHibernate's implementation of Query Object.
-        NHibernate 3.0 introduces the QueryOver api, which combines the use of
+        NHibernate 3.0 introduces the QueryOver API, which combines the use of
         Extension Methods
         and
         Lambda Expressions
@@ -213,6 +213,25 @@ IList<Cat> cats =
     
     </sect1>
 
+    <sect1 id="queryqueryover_entityjoin">
+      <title>Join entities without association (Entity joins or ad hoc joins)</title>
+      <para>
+        In QueryOver you have the ability to define a join to any entity, not just through a mapped association.
+        To achieve it, use <literal>JoinEntityAlias</literal> and <literal>JoinEntityQueryOver</literal>. By example:
+      </para>
+
+      <programlisting><![CDATA[Cat cat = null;
+Cat joinedCat = null;
+
+var uniquelyNamedCats = sess.QueryOver<Cat>(() => cat)
+    .JoinEntityAlias(
+        () => joinedCat,
+        () => cat.Name == joinedCat.Name && cat.Id != joinedCat.Id,
+        JoinType.LeftOuterJoin)
+    .Where(() => joinedCat.Id == null)
+    .List();]]></programlisting>
+    </sect1>
+
     <sect1 id="queryqueryover-aliases">
         <title>Aliases</title>
 
@@ -251,7 +270,7 @@ IQueryOver<Cat,Cat> catQuery =
             Simple projections of the properties of the root type can be added using the <code>.Select</code> method
             which can take multiple Lambda Expression arguments:
         </para>
-        <programlisting><![CDATA[IList selection =
+        <programlisting><![CDATA[var selection =
     session.QueryOver<Cat>()
         .Select(
             c => c.Name,
@@ -292,7 +311,7 @@ Console.WriteLine(catDetails[0].CatAge);]]></programlisting>
             QueryOver allows arbitrary IProjection to be added (allowing private properties to be projected).  The Projections factory
             class also has overloads to allow Lambda Expressions to be used:
         </para>
-        <programlisting><![CDATA[IList selection =
+        <programlisting><![CDATA[var selection =
     session.QueryOver<Cat>()
         .Select(Projections.ProjectionList()
             .Add(Projections.Property<Cat>(c => c.Name))
@@ -302,7 +321,7 @@ Console.WriteLine(catDetails[0].CatAge);]]></programlisting>
         <para>
             In addition there is an inline syntax for creating projection lists that does not require the explicit class qualification:
         </para>
-        <programlisting><![CDATA[IList selection =
+        <programlisting><![CDATA[var selection =
     session.QueryOver<Cat>()
         .SelectList(list => list
             .Select(c => c.Name)
@@ -337,9 +356,9 @@ IList<CatSummary> catReport =
 
         <para>
             In addition to projecting properties, there are extension methods to allow certain common dialect-registered
-            functions to be applied.  For example you can write the following to extract just the year part of a date:
+            functions to be applied.  For example you can write the following to get 3 letters named people.
         </para>
-        <programlisting><![CDATA[        .Where(p => p.BirthDate.YearPart() == 1971)]]></programlisting>
+        <programlisting><![CDATA[        .Where(p => p.FirstName.StrLength() == 3)]]></programlisting>
         
         <para>
             The functions can also be used inside projections:
@@ -348,6 +367,32 @@ IList<CatSummary> catReport =
             p => Projections.Concat(p.LastName, ", ", p.FirstName),
             p => p.Height.Abs())]]></programlisting>
 
+    </sect1>
+
+    <sect1 id="queryqueryover-projectionentities">
+      <title>Entities Projection</title>
+
+      <para>
+        You can add entity projections via the <literal>AsEntity()</literal> extension.
+      </para>
+
+      <programlisting><![CDATA[Cat mate = null;
+
+var catAndMateNameList = sess.QueryOver<Cat>()
+    .JoinAlias(c => c.Mate, () => mate)
+    .Select(c => c.AsEntity(), c => mate.Name)
+    .List<object[]>();]]></programlisting>
+
+      <para>
+        Or it can be done via the <literal>Projections.RootEntity</literal> and <literal>Projections.Entity</literal> methods
+        if more control over loaded entities is required. For instance, entity projections can be lazy loaded
+        or fetched with lazy properties:
+      </para>
+      <programlisting><![CDATA[.Select(
+    Projections.Entity(() => alias1).SetLazy(true),
+    Projections.Entity(() => alias2).SetFetchLazyProperties(true),
+    Projections.RootEntity()
+        )]]></programlisting>
     </sect1>
 
     <sect1 id="queryqueryover-subqueries">

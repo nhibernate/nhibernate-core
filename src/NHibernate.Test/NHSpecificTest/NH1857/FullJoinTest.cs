@@ -44,11 +44,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1857
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
+			if (!TestDialect.SupportsFullJoin)
+				return false;
 			if (dialect is MySQLDialect)
 				return false;
 			if (dialect is InformixDialect)
-				return false;
-			if (dialect is SQLiteDialect)
 				return false;
 
 			return true;

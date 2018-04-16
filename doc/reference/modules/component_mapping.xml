@@ -17,54 +17,23 @@
 
         <programlisting><![CDATA[public class Person
 {
-    private DateTime birthday;
-    private Name name;
-    private string key;
-    
-    public string Key
-    {
-        get { return key; }
-        set { key = value; }
-    }
-    
-    public DateTime Birthday
-    {
-        get { return birthday; }
-        set { birthday = value; }
-    }
+    public string Key { get; set; }
 
-    public Name Name
-    {
-        get { return name; }
-        set { name = value; }
-    }
+    public DateTime Birthday { get; set; }
+
+    public Name Name { get; set; }
+
     ......
     ......
 }]]></programlisting>
 
 <programlisting><![CDATA[public class Name
 {
-    char initial;
-    string first;
-    string last;
-    
-    public string First
-    {
-        get { return first; }
-        set { first = value; }
-    }
-    
-    public string Last
-    {
-        get { return last; }
-        set { last = value; }
-    }
+    public string First { get; set; }
 
-    public char Initial
-    {
-        get { return initial; }
-        set { initial = value; }
-    }
+    public string Last { get; set; }
+
+    public char Initial { get; set; }
 }]]></programlisting>
 
         <para>
@@ -246,7 +215,7 @@
         <itemizedlist spacing="compact">
             <listitem>
                 <para>
-                    It must be <literal>Serializable</literal>.
+                    It must be marked with the <literal>Serializable</literal> attribute.
                 </para>
             </listitem>
             <listitem>
@@ -254,6 +223,12 @@
                     It must re-implement <literal>Equals()</literal> and
                     <literal>GetHashCode()</literal>, consistently with the database's 
                     notion of composite key equality.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    It should re-implement <literal>ToString()</literal> if you consider
+                    using the second level cache. See <xref linkend="NHibernate.Caches-howto" />.
                 </para>
             </listitem>
         </itemizedlist>

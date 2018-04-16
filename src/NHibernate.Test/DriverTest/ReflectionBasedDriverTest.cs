@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.DriverTest
 {
+	[TestFixture]
 	public class ReflectionBasedDriverTest
 	{
 		private class MyDriverWithWrongClassesAndGoodDbProviderFactory : ReflectionBasedDriver
@@ -32,13 +33,20 @@ namespace NHibernate.Test.DriverTest
 				get { throw new NotImplementedException(); }
 			}
 		}
+		
 		private class MyDriverWithNoDbProviderFactory : ReflectionBasedDriver
 		{
-			public MyDriverWithNoDbProviderFactory():
-			base(null,
-				"System.Data.OracleClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", 
-			"System.Data.OracleClient.OracleConnection", 
-			"System.Data.OracleClient.OracleCommand") { }
+			public MyDriverWithNoDbProviderFactory() : base(
+				null,
+#if NETFX
+				"System.Data.OracleClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+#else
+				"System.Data.OracleClient",				
+#endif
+				"System.Data.OracleClient.OracleConnection",
+				"System.Data.OracleClient.OracleCommand")
+			{
+			}
 
 			public override bool UseNamedPrefixInSql
 			{
@@ -56,6 +64,7 @@ namespace NHibernate.Test.DriverTest
 			}
 		}
 
+#if NETFX
 		[Test]
 		public void WhenCreatedWithGoodDbProviderThenNotThrows()
 		{
@@ -87,6 +96,7 @@ namespace NHibernate.Test.DriverTest
 				Assert.That(command, Is.Not.Null);
 			}
 		}
+#endif
 
 		[Test]
 		public void WhenCreatedWithNoDbProviderThenNotThrows()

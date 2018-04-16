@@ -110,11 +110,13 @@ namespace NHibernate.Persister.Entity
 			int spacesSize = 1 + persistentClass.SynchronizedTables.Count;
 			spaces = new string[spacesSize];
 			spaces[0] = tableName;
-			IEnumerator<string> iSyncTab = persistentClass.SynchronizedTables.GetEnumerator();
-			for (int i = 1; i < spacesSize; i++)
+			using (var iSyncTab = persistentClass.SynchronizedTables.GetEnumerator())
 			{
-				iSyncTab.MoveNext();
-				spaces[i] = iSyncTab.Current;
+				for (var i = 1; i < spacesSize; i++)
+				{
+					iSyncTab.MoveNext();
+					spaces[i] = iSyncTab.Current;
+				}
 			}
 
 			subclassSpaces = persistentClass.SubclassTableClosureIterator

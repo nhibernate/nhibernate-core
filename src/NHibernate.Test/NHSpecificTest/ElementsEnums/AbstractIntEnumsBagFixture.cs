@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.ElementsEnums
 {
+	[TestFixture]
 	public abstract class AbstractIntEnumsBagFixture : TestCase
 	{
 		protected override string MappingsAssembly

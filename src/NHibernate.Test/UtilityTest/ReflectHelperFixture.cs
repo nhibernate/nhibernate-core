@@ -82,6 +82,7 @@ namespace NHibernate.Test.UtilityTest
 			Assert.IsNull(noType);
 		}
 
+#if NETFX
 		[Test]
 		public void TypeFoundInNotLoadedAssembly()
 		{
@@ -91,6 +92,7 @@ namespace NHibernate.Test.UtilityTest
 			System.Type sameType = ReflectHelper.TypeFromAssembly("System.Web.HttpRequest", "System.Web", false);
 			Assert.AreEqual(httpRequest, sameType, "should be the exact same Type");
 		}
+#endif
 
 		[Test]
 		public void SystemTypes()
@@ -122,10 +124,13 @@ namespace NHibernate.Test.UtilityTest
 		public void GetGenericMethodFrom()
 		{
 			var signature = new[] {typeof (string), typeof (string), typeof (bool)};
+			// This is the fixture for this obsolete member, so disable the obsolete warning.
+#pragma warning disable CS0618 // Type or member is obsolete
 			Assert.That(ReflectHelper.GetGenericMethodFrom<ISomething>("List", new[] {typeof (BRhf)}, signature), Is.Not.Null);
 			Assert.That(ReflectHelper.GetGenericMethodFrom<ISomething>("List", new[] { typeof(int), typeof(string) }, signature), Is.Not.Null);
 			Assert.That(ReflectHelper.GetGenericMethodFrom<ISomething>("List", new[] { typeof(int), typeof(string) }
 				, new[] { typeof(string), typeof(string), typeof(bool), typeof(IComparer<>).MakeGenericType(typeof(int)) }), Is.Not.Null);
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 	}
 

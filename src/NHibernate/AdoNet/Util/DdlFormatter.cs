@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using NHibernate.Util;
@@ -18,15 +19,15 @@ namespace NHibernate.AdoNet.Util
 		/// </summary>
 		public virtual string Format(string sql)
 		{
-			if (sql.ToLowerInvariant().StartsWith("create table"))
+			if (sql.StartsWith("create table", StringComparison.OrdinalIgnoreCase))
 			{
 				return FormatCreateTable(sql);
 			}
-			else if (sql.ToLowerInvariant().StartsWith("alter table"))
+			else if (sql.StartsWith("alter table", StringComparison.OrdinalIgnoreCase))
 			{
 				return FormatAlterTable(sql);
 			}
-			else if (sql.ToLowerInvariant().StartsWith("comment on"))
+			else if (sql.StartsWith("comment on", StringComparison.OrdinalIgnoreCase))
 			{
 				return FormatCommentOn(sql);
 			}
@@ -38,13 +39,10 @@ namespace NHibernate.AdoNet.Util
 
 		protected virtual string FormatCommentOn(string sql)
 		{
-			StringBuilder result = new StringBuilder(60).Append(Indent1);
-			IEnumerator<string> tokens = (new StringTokenizer(sql, " '[]\"", true)).GetEnumerator();
-
-			bool quoted = false;
-			while (tokens.MoveNext())
+			var result = new StringBuilder(60).Append(Indent1);
+			var quoted = false;
+			foreach (var token in new StringTokenizer(sql, " '[]\"", true))
 			{
-				string token = tokens.Current;
 				result.Append(token);
 				if (IsQuote(token))
 				{
@@ -64,13 +62,10 @@ namespace NHibernate.AdoNet.Util
 
 		protected virtual string FormatAlterTable(string sql)
 		{
-			StringBuilder result = new StringBuilder(60).Append(Indent1);
-			IEnumerator<string> tokens = (new StringTokenizer(sql, " (,)'[]\"", true)).GetEnumerator();
-
-			bool quoted = false;
-			while (tokens.MoveNext())
+			var result = new StringBuilder(60).Append(Indent1);
+			var quoted = false;
+			foreach (var token in new StringTokenizer(sql, " (,)'[]\"", true))
 			{
-				string token = tokens.Current;
 				if (IsQuote(token))
 				{
 					quoted = !quoted;
@@ -90,14 +85,11 @@ namespace NHibernate.AdoNet.Util
 
 		protected virtual string FormatCreateTable(string sql)
 		{
-			StringBuilder result = new StringBuilder(60).Append(Indent1);
-			IEnumerator<string> tokens = (new StringTokenizer(sql, "(,)'[]\"", true)).GetEnumerator();
-
-			int depth = 0;
-			bool quoted = false;
-			while (tokens.MoveNext())
+			var result = new StringBuilder(60).Append(Indent1);
+			var depth = 0;
+			var quoted = false;
+			foreach (var token in new StringTokenizer(sql, "(,)'[]\"", true))
 			{
-				string token = tokens.Current;
 				if (IsQuote(token))
 				{
 					quoted = !quoted;

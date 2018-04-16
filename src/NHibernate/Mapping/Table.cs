@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
@@ -25,14 +26,11 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class Table : IRelationalModel
 	{
-		[ThreadStatic]
-		private static int tableCounter;
-
 		private readonly List<string> checkConstraints = new List<string>();
 		private readonly LinkedHashMap<string, Column> columns = new LinkedHashMap<string, Column>();
 		private readonly Dictionary<ForeignKeyKey, ForeignKey> foreignKeys = new Dictionary<ForeignKeyKey, ForeignKey>();
 		private readonly Dictionary<string, Index> indexes = new Dictionary<string, Index>();
-		private readonly int uniqueInteger;
+		private int? uniqueInteger;
 		private readonly Dictionary<string, UniqueKey> uniqueKeys = new Dictionary<string, UniqueKey>();
 		private string catalog;
 		private string comment;
@@ -40,6 +38,7 @@ namespace NHibernate.Mapping
 		private IKeyValue idValue;
 		private bool isAbstract;
 		private bool isSchemaQuoted;
+		private bool isCatalogQuoted;
 		private string name;
 		private bool quoted;
 		private string schema;
@@ -51,7 +50,6 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public Table()
 		{
-			uniqueInteger = tableCounter++;
 		}
 
 		public Table(string name) : this()
@@ -188,11 +186,13 @@ namespace NHibernate.Mapping
 
 		/// <summary>
 		/// Gets the unique number of the Table.
+		/// Used for SQL alias generation
 		/// </summary>
 		/// <value>The unique number of the Table.</value>
 		public int UniqueInteger
 		{
-			get { return uniqueInteger; }
+			get { return uniqueInteger ?? throw new InvalidOperationException(nameof(UniqueInteger) + " has not been supplied"); }
+			set { uniqueInteger = value; }
 		}
 
 		/// <summary>
@@ -273,7 +273,18 @@ namespace NHibernate.Mapping
 		public string Catalog
 		{
 			get { return catalog; }
-			set { catalog = value; }
+			set
+			{
+				if (value != null && value[0] == '`')
+				{
+					isCatalogQuoted = true;
+					catalog = value.Substring(1, value.Length - 2);
+				}
+				else
+				{
+					catalog = value;
+				}
+			}
 		}
 
 		public string Comment
@@ -315,6 +326,11 @@ namespace NHibernate.Mapping
 		public bool IsSchemaQuoted
 		{
 			get { return isSchemaQuoted; }
+		}
+
+		public bool IsCatalogQuoted
+		{
+			get { return isCatalogQuoted; }
 		}
 
 		#region IRelationalModel Members
@@ -418,7 +434,11 @@ namespace NHibernate.Mapping
 
 			foreach (UniqueKey uk in UniqueKeyIterator)
 			{
-				buf.Append(',').Append(uk.SqlConstraintString(dialect));
+				string ukSql = uk.SqlConstraintString(dialect);
+				if (!string.IsNullOrEmpty(ukSql))
+				{
+					buf.Append(',').Append(ukSql);
+				}
 			}
 
 			if (dialect.SupportsTableCheck)
@@ -492,9 +512,9 @@ namespace NHibernate.Mapping
 			{
 				return "( " + subselect + " )";
 			}
-			string quotedName = GetQuotedName(dialect);
-			string usedSchema = schema == null ? defaultSchema : GetQuotedSchema(dialect);
-			string usedCatalog = catalog ?? defaultCatalog;
+			var quotedName = GetQuotedName(dialect);
+			var usedSchema = GetQuotedSchema(dialect, defaultSchema);
+			var usedCatalog = GetQuotedCatalog(dialect, defaultCatalog);
 			return dialect.Qualify(usedCatalog, usedSchema, quotedName);
 		}
 
@@ -527,19 +547,44 @@ namespace NHibernate.Mapping
 
 		public string GetQuotedSchema(Dialect.Dialect dialect)
 		{
-			return IsSchemaQuoted ? dialect.OpenQuote + schema + dialect.CloseQuote : schema;
+			return IsSchemaQuoted ? dialect.QuoteForSchemaName(schema) : schema;
+		}
+
+		public string GetQuotedSchema(Dialect.Dialect dialect, string defaultQuotedSchema)
+		{
+			return schema == null ? defaultQuotedSchema :
+				GetQuotedSchema(dialect);
+		}
+
+		/// <summary> returns quoted name as it is in the mapping file.</summary>
+		public string GetQuotedCatalog()
+		{
+			return IsCatalogQuoted ? "`" + catalog + "`" : catalog;
+		}
+
+		public string GetQuotedCatalog(Dialect.Dialect dialect)
+		{
+			return IsCatalogQuoted ? dialect.QuoteForCatalogName(catalog) : catalog;
+		}
+
+		public string GetQuotedCatalog(Dialect.Dialect dialect, string defaultQuotedCatalog)
+		{
+			return catalog == null ? defaultQuotedCatalog :
+				GetQuotedCatalog(dialect);
 		}
 
 		/// <summary>
 		/// Gets the schema for this table in quoted form if it is necessary.
 		/// </summary>
 		/// <param name="dialect">
-		/// The <see cref="Dialect.Dialect" /> that knows how to quote the table name.
+		/// The <see cref="Dialect.Dialect" /> that knows how to quote the schema name.
 		/// </param>
 		/// <returns>
 		/// The schema name for this table in a form that is safe to use inside
 		/// of a SQL statement. Quoted if it needs to be, not quoted if it does not need to be.
 		/// </returns>
+		// Since v5.1; back-tilts are removed when storing schema: this thing is non-sens.
+		[Obsolete("This method is no-op and has no usages")]
 		public string GetQuotedSchemaName(Dialect.Dialect dialect)
 		{
 			if (schema == null)
@@ -547,7 +592,7 @@ namespace NHibernate.Mapping
 				return null;
 			}
 
-			if (schema.StartsWith("`"))
+			if (schema.StartsWith('`'))
 			{
 				return dialect.QuoteForSchemaName(schema.Substring(1, schema.Length - 2));
 			}
@@ -564,12 +609,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public Column GetColumn(int n)
 		{
-			IEnumerator<Column> iter = columns.Values.GetEnumerator();
-			for (int i = 0; i <= n; i++)
-			{
-				iter.MoveNext();
-			}
-			return iter.Current;
+			return columns.Values.Skip(n).First();
 		}
 
 		/// <summary>
@@ -731,7 +771,7 @@ namespace NHibernate.Mapping
 			return uk;
 		}
 
-		public virtual void CreateForeignKeys() {}
+		public virtual void CreateForeignKeys() { }
 
 		public virtual ForeignKey CreateForeignKey(string keyName, IEnumerable<Column> keyColumns, string referencedEntityName)
 		{
@@ -976,8 +1016,10 @@ namespace NHibernate.Mapping
 			return buf.ToString();
 		}
 
-		public void ValidateColumns(Dialect.Dialect dialect, IMapping mapping, ITableMetadata tableInfo)
+		public IEnumerable<string> ValidateColumns(Dialect.Dialect dialect, IMapping mapping, ITableMetadata tableInfo)
 		{
+			var validationErrors = new List<string>();
+
 			IEnumerable<Column> iter = ColumnIterator;
 			foreach (Column column in iter)
 			{
@@ -985,8 +1027,12 @@ namespace NHibernate.Mapping
 
 				if (columnInfo == null)
 				{
-					throw new HibernateException(string.Format("Missing column: {0} in {1}", column.Name,
-															   dialect.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name)));
+					validationErrors.Add(
+						string.Format(
+							"Missing column: {0} in {1}",
+							column.Name,
+							dialect.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name)));
+					continue;
 				}
 
 				//TODO: Add new method to ColumnMetadata :getTypeCode
@@ -994,12 +1040,17 @@ namespace NHibernate.Mapping
 				//|| columnInfo.get() == column.GetSqlTypeCode(mapping);
 				if (!typesMatch)
 				{
-					throw new HibernateException(string.Format("Wrong column type in {0} for column {1}. Found: {2}, Expected {3}",
-															   dialect.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name),
-															   column.Name, columnInfo.TypeName.ToLowerInvariant(),
-															   column.GetSqlType(dialect, mapping)));
+					validationErrors.Add(
+						string.Format(
+							"Wrong column type in {0} for column {1}. Found: {2}, Expected {3}",
+							dialect.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name),
+							column.Name,
+							columnInfo.TypeName.ToLowerInvariant(),
+							column.GetSqlType(dialect, mapping)));
 				}
 			}
+
+			return validationErrors;
 		}
 
 
@@ -1031,8 +1082,8 @@ namespace NHibernate.Mapping
 			{
 				// NH : Different implementation to prevent NH930 (look test)
 				return //y.referencedClassName.Equals(x.referencedClassName) &&
-					CollectionHelper.CollectionEquals<Column>(y.columns, x.columns)
-					&& CollectionHelper.CollectionEquals<Column>(y.referencedColumns, x.referencedColumns);
+					CollectionHelper.SequenceEquals<Column>(y.columns, x.columns)
+					&& CollectionHelper.SequenceEquals<Column>(y.referencedColumns, x.referencedColumns);
 			}
 
 			public int GetHashCode(ForeignKeyKey obj)

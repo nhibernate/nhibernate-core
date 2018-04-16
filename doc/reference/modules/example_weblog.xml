@@ -11,33 +11,17 @@
         </para>
 
         <programlisting><![CDATA[using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace Eg
 {
     public class Blog
     {
-        private long _id;
-        private string _name;
-        private IList _items;
-    
-        public virtual long Id
-        {
-            get { return _id; }
-            set { _id = value; }
-        }
-        
-        public virtual IList Items
-        {
-            get { return _items; }
-            set { _items = value; }
-        }
-        
-        public virtual string Name
-        {
-            get { return _name; }
-            set { _name = value; }
-        }
+        public virtual long Id { get; set;}
+
+        public virtual IList<BlogItem> Items { get; set;}
+
+        public virtual string Name { get; set;}
     }
 }]]></programlisting>
 
@@ -47,41 +31,15 @@ namespace Eg
 {
     public class BlogItem
     {
-        private long _id;
-        private DateTime _dateTime;
-        private string _text;
-        private string _title;
-        private Blog _blog;
+        public virtual Blog Blog { get; set;}
 
-        public virtual Blog Blog
-        {
-            get { return _blog; }
-            set { _blog = value; }
-        }
+        public virtual DateTime DateTime { get; set;}
 
-        public virtual DateTime DateTime
-        {
-            get { return _dateTime; }
-            set { _dateTime = value; }
-        }
+        public virtual long Id { get; set;}
 
-        public virtual long Id
-        {
-            get { return _id; }
-            set { _id = value; }
-        }
+        public virtual string Text { get; set;}
 
-        public virtual string Text
-        {
-            get { return _text; }
-            set { _text = value; }
-        }
-
-        public virtual string Title
-        {
-            get { return _title; }
-            set { _title = value; }
-        }
+        public virtual string Title { get; set;}
     }
 }]]></programlisting>
 
@@ -94,7 +52,7 @@ namespace Eg
             The XML mappings should now be quite straightforward.
         </para>
         
-        <programlisting><![CDATA[<?xml version="1.0"?>
+        <programlisting><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
     assembly="Eg" namespace="Eg">
 
@@ -117,7 +75,7 @@ namespace Eg
             not-null="true" 
             unique="true"/>
             
-        <bag 
+        <bag
             name="Items" 
             inverse="true" 
             lazy="true"
@@ -133,7 +91,7 @@ namespace Eg
     
 </hibernate-mapping>]]></programlisting>
 
-        <programlisting><![CDATA[<?xml version="1.0"?>
+        <programlisting><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
     assembly="Eg" namespace="Eg">
     
@@ -185,8 +143,9 @@ namespace Eg
         </para>
 
         <programlisting><![CDATA[using System;
-using System.Collections;
-
+using System.Collections.Generic;
+using NHibernate;
+using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 
 namespace Eg
@@ -194,31 +153,29 @@ namespace Eg
     public class BlogMain
     {
         private ISessionFactory _sessions;
-        
+
         public void Configure()
         {
-            _sessions = new Configuration()
-                .AddClass(typeof(Blog))
-                .AddClass(typeof(BlogItem))
+            _sessions = new Configuration().Configure()
                 .BuildSessionFactory();
         }
-        
+
         public void ExportTables()
         {
-            Configuration cfg = new Configuration()
-                .AddClass(typeof(Blog))
-                .AddClass(typeof(BlogItem));
-            new SchemaExport(cfg).create(true, true);
+            var cfg = new Configuration().Configure();
+            new SchemaExport(cfg).Create(true, true);
         }
-        
+
         public Blog CreateBlog(string name)
         {
-            Blog blog = new Blog();
-            blog.Name = name;
-            blog.Items = new ArrayList();
-            
-            using (ISession session = _sessions.OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
+            var blog = new Blog
+            {
+                Name = name,
+                Items = new List<BlogItem>()
+            };
+
+            using (var session = _sessions.OpenSession())
+            using (var tx = session.BeginTransaction())
             {
                 session.Save(blog);
                 tx.Commit();
@@ -226,18 +183,20 @@ namespace Eg
 
             return blog;
         }
-        
+
         public BlogItem CreateBlogItem(Blog blog, string title, string text)
         {
-            BlogItem item = new BlogItem();
-            item.Title = title;
-            item.Text = text;
-            item.Blog = blog;
-            item.DateTime = DateTime.Now;
+            var item = new BlogItem
+            {
+                Title = title,
+                Text = text,
+                Blog = blog,
+                DateTime = DateTime.Now
+            };
             blog.Items.Add(item);
-            
-            using (ISession session = _sessions.OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
+
+            using (var session = _sessions.OpenSession())
+            using (var tx = session.BeginTransaction())
             {
                 session.Update(blog);
                 tx.Commit();
@@ -245,18 +204,20 @@ namespace Eg
 
             return item;
         }
-        
+
         public BlogItem CreateBlogItem(long blogId, string title, string text)
         {
-            BlogItem item = new BlogItem();
-            item.Title = title;
-            item.Text = text;
-            item.DateTime = DateTime.Now;
-            
-            using (ISession session = _sessions.OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
+            var item = new BlogItem
             {
-                Blog blog = (Blog) session.Load(typeof(Blog), blogId);
+                Title = title,
+                Text = text,
+                DateTime = DateTime.Now
+            };
+
+            using (var session = _sessions.OpenSession())
+            using (var tx = session.BeginTransaction())
+            {
+                var blog = session.Load<Blog>(blogId);
                 item.Blog = blog;
                 blog.Items.Add(item);
                 tx.Commit();
@@ -264,38 +225,38 @@ namespace Eg
 
             return item;
         }
-        
+
         public void UpdateBlogItem(BlogItem item, string text)
         {
             item.Text = text;
 
-            using (ISession session = _sessions.OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
+            using (var session = _sessions.OpenSession())
+            using (var tx = session.BeginTransaction())
             {
                 session.Update(item);
                 tx.Commit();
             }
         }
-        
+
         public void UpdateBlogItem(long itemId, string text)
         {
-            using (ISession session = _sessions.OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
+            using (var session = _sessions.OpenSession())
+            using (var tx = session.BeginTransaction())
             {
-                BlogItem item = (BlogItem) session.Load(typeof(BlogItem), itemId);
+                var item = session.Load<BlogItem>(itemId);
                 item.Text = text;
                 tx.Commit();
             }
         }
-        
-        public IList listAllBlogNamesAndItemCounts(int max)
-        {
-            IList result = null;
 
-            using (ISession session = _sessions.OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
+        public IList<object[]> ListAllBlogNamesAndItemCounts(int max)
+        {
+            IList<object[]> result;
+
+            using (var session = _sessions.OpenSession())
+            using (var tx = session.BeginTransaction())
             {
-                IQuery q = session.CreateQuery(
+                var q = session.CreateQuery(
                     "select blog.id, blog.Name, count(blogItem) " +
                     "from Blog as blog " +
                     "left outer join blog.Items as blogItem " +
@@ -303,50 +264,50 @@ namespace Eg
                     "order by max(blogItem.DateTime)"
                 );
                 q.SetMaxResults(max);
-                result = q.List();
+                result = q.List<object[]>();
                 tx.Commit();
             }
 
             return result;
         }
-        
+
         public Blog GetBlogAndAllItems(long blogId)
         {
             Blog blog = null;
 
-            using (ISession session = _sessions.OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
+            using (var session = _sessions.OpenSession())
+            using (var tx = session.BeginTransaction())
             {
-                IQuery q = session.createQuery(
+                var q = session.CreateQuery(
                     "from Blog as blog " +
                     "left outer join fetch blog.Items " +
                     "where blog.id = :blogId"
                 );
                 q.SetParameter("blogId", blogId);
-                blog  = (Blog) q.List()[0];
+                blog = q.UniqueResult<Blog>();
                 tx.Commit();
             }
 
             return blog;
         }
-        
-        public IList ListBlogsAndRecentItems()
-        {
-            IList result = null;
 
-            using (ISession session = _sessions.OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
+        public IList<object[]> ListBlogsAndRecentItems()
+        {
+            IList<object[]> result = null;
+
+            using (var session = _sessions.OpenSession())
+            using (var tx = session.BeginTransaction())
             {
-                IQuery q = session.CreateQuery(
+                var q = session.CreateQuery(
                     "from Blog as blog " +
                     "inner join blog.Items as blogItem " +
                     "where blogItem.DateTime > :minDate"
                 );
-    
-                DateTime date = DateTime.Now.AddMonths(-1);
+
+                var date = DateTime.Now.AddMonths(-1);
                 q.SetDateTime("minDate", date);
-                
-                result = q.List();
+
+                result = q.List<object[]>();
                 tx.Commit();
             }
 
@@ -354,6 +315,37 @@ namespace Eg
         }
     }
 }]]></programlisting>
+
+        <para>
+            It requires some configuration settings in <literal>web.config</literal>, such as:
+        </para>
+
+        <programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <!-- Add this element -->
+  <configSections>
+    <section
+        name="hibernate-configuration"
+        type="NHibernate.Cfg.ConfigurationSectionHandler, NHibernate" />
+  </configSections>
+
+  <!-- Add this element -->
+  <hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
+    <session-factory>
+      <property name="dialect">NHibernate.Dialect.MsSql2012Dialect</property>
+      <property name="connection.connection_string">
+        Server=localhost\SQLEXPRESS;initial catalog=Eg;Integrated Security=True
+      </property>
+
+      <mapping assembly="Eg" />
+    </session-factory>
+  </hibernate-configuration>
+
+  <!-- Leave the other sections unchanged -->
+  <system.web>
+    ...
+  </system.web>
+</configuration>]]></programlisting>
 
     </sect1>
 

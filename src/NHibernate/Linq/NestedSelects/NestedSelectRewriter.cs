@@ -16,16 +16,20 @@ namespace NHibernate.Linq.NestedSelects
 	static class NestedSelectRewriter
 	{
 		private static readonly MethodInfo CastMethod =
-			ReflectionHelper.GetMethod(() => Enumerable.Cast<object[]>(null));
-		private static readonly MethodInfo GroupByMethod = ReflectionHelper.GetMethod(
+			ReflectHelper.GetMethod(() => Enumerable.Cast<object[]>(null));
+		private static readonly MethodInfo GroupByMethod = ReflectHelper.GetMethod(
 			() => Enumerable.GroupBy<object[], Tuple, Tuple>(null, null, (Func<object[], Tuple>)null));
-		private static readonly MethodInfo WhereMethod = ReflectionHelper.GetMethod(
-			() => Enumerable.Where<Tuple>(null, (Func<Tuple, bool>)null));
+		private static readonly MethodInfo WhereMethod = ReflectHelper.GetMethod(
+			() => Enumerable.Where(null, (Func<Tuple, bool>)null));
+		private static readonly MethodInfo ObjectReferenceEquals = ReflectHelper.GetMethod(
+			() => ReferenceEquals(null, null));
+		private static readonly PropertyInfo IGroupingKeyProperty = (PropertyInfo)
+			ReflectHelper.GetProperty<IGrouping<Tuple, Tuple>, Tuple>(g => g.Key);
 
 		public static void ReWrite(QueryModel queryModel, ISessionFactory sessionFactory)
 		{
 			var nsqmv = new NestedSelectDetector(sessionFactory);
-			nsqmv.VisitExpression(queryModel.SelectClause.Selector);
+			nsqmv.Visit(queryModel.SelectClause.Selector);
 			if (!nsqmv.HasSubqueries)
 				return;
 
@@ -40,7 +44,7 @@ namespace NHibernate.Linq.NestedSelects
 					replacements.Add(expression, processed);
 			}
 
-			var key = Expression.Property(group, "Key");
+			var key = Expression.Property(group, IGroupingKeyProperty);
 
 			var expressions = new List<ExpressionHolder>();
 
@@ -48,7 +52,7 @@ namespace NHibernate.Linq.NestedSelects
 
 			var rewriter = new SelectClauseRewriter(key, expressions, identifier, replacements);
 
-			var resultSelector = rewriter.VisitExpression(queryModel.SelectClause.Selector);
+			var resultSelector = rewriter.Visit(queryModel.SelectClause.Selector);
 
 			elementExpression.AddRange(expressions);
 
@@ -146,7 +150,7 @@ namespace NHibernate.Linq.NestedSelects
 
 			var rewriter = new SelectClauseRewriter(parameter, elementExpression, identifier, 1, new Dictionary<Expression, Expression>());
 
-			var selectorBody = rewriter.VisitExpression(@select);
+			var selectorBody = rewriter.Visit(@select);
 
 			return Expression.Lambda(selectorBody, parameter);
 		}
@@ -200,9 +204,7 @@ namespace NHibernate.Linq.NestedSelects
 			var t = Expression.Parameter(typeof (Tuple), "t");
 			return Expression.Lambda(
 				Expression.Not(
-					Expression.Call(typeof (object),
-									"ReferenceEquals",
-									System.Type.EmptyTypes,
+					Expression.Call(ObjectReferenceEquals,
 									ArrayIndex(Expression.Property(t, Tuple.ItemsProperty), index),
 									Expression.Constant(null))),
 				t);

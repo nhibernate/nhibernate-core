@@ -13,9 +13,16 @@ namespace NHibernate.Test.Hql.Ast
 	[TestFixture]
 	public class HqlFixture : BaseFixture
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// Some classes are mapped with table joins, which requires temporary tables for DML to work,
+			// and DML is used for the cleanup.
+			return Dialect.SupportsTemporaryTables;
+		}
+
 		protected HQLQueryPlan CreateQueryPlan(string hql, bool scalar)
 		{
-			return new QueryExpressionPlan(new StringQueryExpression(hql), scalar, new CollectionHelper.EmptyMapClass<string, IFilter>(), sessions);
+			return new QueryExpressionPlan(new StringQueryExpression(hql), scalar, CollectionHelper.EmptyDictionary<string, IFilter>(), Sfi);
 		}
 
 		protected HQLQueryPlan CreateQueryPlan(string hql)

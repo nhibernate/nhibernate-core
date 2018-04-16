@@ -2,55 +2,61 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH1891
 {
-    [TestFixture]
-    public class Fixture : TestCase
-    {
-        protected override System.Collections.IList Mappings
-        {
-            get { return new string[] { "NHSpecificTest.NH1891.FormulaEscaping.hbm.xml" }; }
-        }
+	[TestFixture]
+	public class Fixture : TestCase
+	{
+		protected override System.Collections.IList Mappings
+		{
+			get { return new[] { "NHSpecificTest.NH1891.FormulaEscaping.hbm.xml" }; }
+		}
 
-        protected override string MappingsAssembly
-        {
-            get { return "NHibernate.Test"; }
-        }
+		protected override string MappingsAssembly
+		{
+			get { return "NHibernate.Test"; }
+		}
 
-        protected override void OnTearDown()
-        {
-            using (ISession s = OpenSession())
-            {
-                s.Delete("from B");
-                s.Flush();
-                s.Delete("from A");
-                s.Flush();
-            }
-        }
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// Mapping uses a scalar sub-select formula.
+			return dialect.SupportsScalarSubSelects;
+		}
 
-        [Test]
-        public void FormulaEscaping()
-        {
-            string name = "Test";
+		protected override void OnTearDown()
+		{
+			using (ISession s = OpenSession())
+			{
+				s.Delete("from B");
+				s.Flush();
+				s.Delete("from A");
+				s.Flush();
+			}
+		}
 
-            B b = new B();
-            b.Name = name;
+		[Test]
+		public void FormulaEscaping()
+		{
+			string name = "Test";
 
-            A a = new A();
-            a.FormulaConstraint = name;
+			B b = new B();
+			b.Name = name;
 
-            ISession s = OpenSession();
+			A a = new A();
+			a.FormulaConstraint = name;
 
-            s.Save(b);
-            s.Save(a);
-            s.Flush();
-            s.Close();
+			ISession s = OpenSession();
 
-            s = OpenSession();
+			s.Save(b);
+			s.Save(a);
+			s.Flush();
+			s.Close();
 
-            a = s.Get<A>(a.Id);
+			s = OpenSession();
 
-            Assert.AreEqual(1, a.FormulaCount);
+			a = s.Get<A>(a.Id);
 
-            s.Close();
-        }
-    }
+			Assert.AreEqual(1, a.FormulaCount);
+
+			s.Close();
+		}
+	}
 }

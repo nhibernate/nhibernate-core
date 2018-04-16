@@ -18,7 +18,7 @@ namespace NHibernate.Dialect.Lock
 	/// For non-read locks, this is achieved through the Dialect's specific
 	/// SELECT ... FOR UPDATE syntax.
 	/// </remarks>
-	public class SelectLockingStrategy : ILockingStrategy
+	public partial class SelectLockingStrategy : ILockingStrategy
 	{
 		private readonly ILockable lockable;
 		private readonly LockMode lockMode;

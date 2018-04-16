@@ -4,7 +4,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.GroupBy
 {
-	internal class KeySelectorVisitor : ExpressionTreeVisitor
+	internal class KeySelectorVisitor : RelinqExpressionVisitor
 	{
 		private readonly GroupResultOperator _groupBy;
 
@@ -13,13 +13,13 @@ namespace NHibernate.Linq.GroupBy
 			_groupBy = groupBy;
 		}
 
-		protected override Expression VisitMemberExpression(MemberExpression expression)
+		protected override Expression VisitMember(MemberExpression expression)
 		{
 			if (expression.IsGroupingKeyOf(_groupBy))
 			{
 				return _groupBy.KeySelector;
 			}
-			return base.VisitMemberExpression(expression);
+			return base.VisitMember(expression);
 		}
 	}
 }

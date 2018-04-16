@@ -31,8 +31,6 @@
 <!ENTITY nhc-preface            SYSTEM "modules/nhibernatecontrib_preface.xml">
 <!ENTITY nhcaches-chapter       SYSTEM "modules/nhibernate_caches.xml">
 <!ENTITY nhma-chapter           SYSTEM "modules/nhibernate_mapping_attributes.xml">
-<!ENTITY nhbm2net-chapter       SYSTEM "modules/nhibernate_tool_hbm2net.xml">
-<!ENTITY nullables-chapter      SYSTEM "modules/nullables.xml">
 ]>
 
 
@@ -40,7 +38,7 @@
 	<bookinfo>
 		<title>NHibernate - Relational Persistence for Idiomatic .NET</title>
 		<subtitle>NHibernate Reference Documentation</subtitle>
-		<releaseinfo>5.0</releaseinfo>
+		<releaseinfo>5.1</releaseinfo>
 	</bookinfo>
 
 	<toc />

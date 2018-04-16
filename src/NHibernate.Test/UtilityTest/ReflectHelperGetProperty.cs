@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest
 {
+	[TestFixture]
 	public class ReflectHelperGetProperty
 	{
 		private class Entity

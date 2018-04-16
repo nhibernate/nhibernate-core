@@ -4,6 +4,7 @@ using NHibernate.Mapping.ByCode;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRegistrationTests
 {
+	[TestFixture]
 	public class ModelMapperAddMappingByTypeTests
 	{
 		public class WithOutPublicParameterLessCtor

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   namespace="NHibernate.Test.QueryTest"
+                   assembly="NHibernate.Test">
+  <query name="Bad1">
+    from NonExistent
+  </query>
+  <query name="Bad2">
+    blah
+  </query>
+</hibernate-mapping>

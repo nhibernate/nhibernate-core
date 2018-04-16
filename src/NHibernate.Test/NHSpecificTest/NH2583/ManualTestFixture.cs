@@ -7,7 +7,8 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2583
 {
-    public class ManualTestFixture : BugTestCase
+	[TestFixture]
+	public class ManualTestFixture : BugTestCase
     {
         /// <summary>
         /// This setup is used in most tests in here - but not all; and we might want to
@@ -142,10 +143,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                 List<MyBO> leftResult;
                 List<MyBO> rightResult;
                 List<MyBO> orResult;
+				// Gets translated to SQL, where it can be null.
+#pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
                 TestCoreOrShouldBeCompatibleWithSum(session,
-                    bo => bo.BO1.I2 == null,
-                    bo => bo.BO2.J2 == null,
+					bo => bo.BO1.I2 == null,
+					bo => bo.BO2.J2 == null,
                     bo => bo.BO1.I2 == null || bo.BO2.J2 == null, out leftResult, out rightResult, out orResult);
+#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
                 //Assert.AreEqual(0, leftResult.Count);
                 //Assert.AreEqual(0, rightResult.Count);
                 //Assert.AreEqual(0, orResult.Count);

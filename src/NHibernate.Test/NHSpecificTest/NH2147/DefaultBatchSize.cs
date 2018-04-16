@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2147
 {
+	[TestFixture]
 	public class DefaultBatchSize
 	{
 		private const BindingFlags DefaultFlags =

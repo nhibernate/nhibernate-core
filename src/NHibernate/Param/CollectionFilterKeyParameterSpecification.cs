@@ -8,7 +8,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Param
 {
-	public class CollectionFilterKeyParameterSpecification : IParameterSpecification
+	public partial class CollectionFilterKeyParameterSpecification : IParameterSpecification
 	{
 		private const string CollectionFilterParameterIdTemplate = "<collfilter{0}{1}_{2}>";
 

@@ -13,7 +13,7 @@ namespace NHibernate.Cache
 	/// value is a <see cref="CachedItem"/>.
 	/// </para>
 	/// </remarks>
-	public interface ICache
+	public partial interface ICache
 	{
 		/// <summary>
 		/// Get the object from the Cache

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql;
-using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Transform;
 using NHibernate.Type;
@@ -16,7 +15,7 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// Abstract implementation of the IQuery interface.
 	/// </summary>
-	public abstract class AbstractQueryImpl : IQuery
+	public abstract partial class AbstractQueryImpl : IQuery
 	{
 		private readonly string queryString;
 		private readonly ISessionImplementor session;
@@ -455,12 +454,28 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		public IQuery SetDateTimeNoMs(int position, DateTime val)
+		{
+			SetParameter(position, val, NHibernateUtil.DateTimeNoMs);
+			return this;
+		}
+
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead, it uses DateTime2 with dialects supporting it.")]
+		public IQuery SetDateTime2(int position, DateTime val)
+		{
+			SetParameter(position, val, NHibernateUtil.DateTime2);
+			return this;
+		}
+
 		public IQuery SetTime(int position, DateTime val)
 		{
 			SetParameter(position, val, NHibernateUtil.Time);
 			return this;
 		}
 
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead.")]
 		public IQuery SetTimestamp(int position, DateTime val)
 		{
 			SetParameter(position, val, NHibernateUtil.Timestamp);
@@ -557,12 +572,14 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IQuery SetDateTime2(int position, DateTime val)
+		public IQuery SetDateTimeNoMs(string name, DateTime val)
 		{
-			SetParameter(position, val, NHibernateUtil.DateTime2);
+			SetParameter(name, val, NHibernateUtil.DateTimeNoMs);
 			return this;
 		}
 
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead, it uses DateTime2 with dialects supporting it.")]
 		public IQuery SetDateTime2(string name, DateTime val)
 		{
 			SetParameter(name, val, NHibernateUtil.DateTime2);
@@ -605,6 +622,8 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead.")]
 		public IQuery SetTimestamp(string name, DateTime val)
 		{
 			SetParameter(name, val, NHibernateUtil.Timestamp);
@@ -700,7 +719,7 @@ namespace NHibernate.Impl
 			{
 				throw new ArgumentNullException("type","Can't determine the type of parameter-list elements.");
 			}
-			if(!vals.Any())
+			if(!vals.Cast<object>().Any())
 			{
 				throw new QueryException(string.Format("An empty parameter-list generates wrong SQL; parameter name '{0}'", name));
 			}
@@ -721,7 +740,7 @@ namespace NHibernate.Impl
 					return this;
 			}
 
-			object firstValue = vals.FirstOrNull();
+			object firstValue = vals.Cast<object>().FirstOrDefault();
 			SetParameterList(name, vals, firstValue == null ? GuessType(vals.GetCollectionElementType()) : DetermineType(name, firstValue));
 
 			return this;
@@ -882,11 +901,11 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IEnumerable<T> Future<T>()
+		public IFutureEnumerable<T> Future<T>()
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return List<T>();
+				return new DelayedEnumerator<T>(List<T>, async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
 			}
 
 			session.FutureQueryBatch.Add<T>(this);
@@ -897,7 +916,7 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new FutureValue<T>(List<T>);
+				return new FutureValue<T>(List<T>, async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
 			}
 			
 			session.FutureQueryBatch.Add<T>(this);

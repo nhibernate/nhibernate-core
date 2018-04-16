@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Cfg.MappingSchema;
 
@@ -7,7 +8,7 @@ namespace NHibernate.Test
 	{
 		protected override IList Mappings
 		{
-			get { return new string[0]; }
+			get { return Array.Empty<string>(); }
 		}
 
 		protected override string MappingsAssembly

@@ -52,7 +52,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (mappings.PreferPooledValuesLo != null)
 				results[Environment.PreferPooledValuesLo] = mappings.PreferPooledValuesLo;
 
-			foreach (HbmParam paramSchema in generatorMapping.param ?? new HbmParam[0])
+			foreach (HbmParam paramSchema in generatorMapping.param ?? System.Array.Empty<HbmParam>())
 				results[paramSchema.name] = paramSchema.GetText();
 
 			return results;

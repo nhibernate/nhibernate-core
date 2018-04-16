@@ -5,7 +5,7 @@ namespace NHibernate.Event.Default
 {
 	/// <summary> An event handler for save() events</summary>
 	[Serializable]
-	public class DefaultSaveEventListener : DefaultSaveOrUpdateEventListener
+	public partial class DefaultSaveEventListener : DefaultSaveOrUpdateEventListener
 	{
 		protected override object PerformSaveOrUpdate(SaveOrUpdateEvent @event)
 		{

@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH687
 			try
 			{
 				int child1Id, child2Id;
-				using (ISession session = sessions.OpenSession())
+				using (ISession session = Sfi.OpenSession())
 				{
 					session.Save(foo);
 
@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH687
 					session.Flush();
 				}
 
-				using (ISession session = sessions.OpenSession())
+				using (ISession session = Sfi.OpenSession())
 				{
 					Foo r = session.Get<Foo>(foo.Id);
 					Assert.IsNotNull(r);

@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1356
 {
+	[TestFixture]
 	public abstract class Fixture : BugTestCase
 	{
 		[Test]

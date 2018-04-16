@@ -37,9 +37,9 @@ namespace NHibernate.Id
 	/// better choice (where supported).
 	/// </p>
 	/// </remarks>
-	public class TableHiLoGenerator : TableGenerator
+	public partial class TableHiLoGenerator : TableGenerator
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(TableHiLoGenerator));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(TableHiLoGenerator));
 
 		/// <summary>
 		/// The name of the max lo parameter.
@@ -94,7 +94,7 @@ namespace NHibernate.Id
 				long hival = Convert.ToInt64(base.Generate(session, obj));
 				lo = (hival == 0) ? 1 : 0;
 				hi = hival * (maxLo + 1);
-				log.Debug("New high value: " + hival);
+				log.Debug("New high value: {0}", hival);
 			}
 
 			return IdentifierGeneratorFactory.CreateNumber(hi + lo++, returnClass);

@@ -71,10 +71,10 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 			
-			Assert.That(sessions.Statistics.EntityInsertCount, Is.EqualTo(4));
-			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(0));
+			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(4));
+			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(0));
 
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 				
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
@@ -119,10 +119,10 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 
-			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(1));
-			Assert.That(sessions.Statistics.EntityDeleteCount, Is.EqualTo(4));
+			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.EntityDeleteCount, Is.EqualTo(4));
 			
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 		}
 		
 		[Test]
@@ -965,77 +965,80 @@ namespace NHibernate.Test.ReadOnly
 				
 				t.Commit();
 			}
-			
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
+
+			if (Dialect.SupportsScalarSubSelects)
 			{
-				DetachedCriteria dc = NHibernate.Criterion.DetachedCriteria.For<Student>("st")
-					.Add(Property.ForName("st.StudentNumber").EqProperty("e.StudentNumber"))
-					.SetProjection(Property.ForName("Name"));
+				using (ISession s = OpenSession())
+				using (ITransaction t = s.BeginTransaction())
+				{
+					DetachedCriteria dc = NHibernate.Criterion.DetachedCriteria.For<Student>("st")
+						.Add(Property.ForName("st.StudentNumber").EqProperty("e.StudentNumber"))
+						.SetProjection(Property.ForName("Name"));
 				
-				enrolment = s.CreateCriteria<Enrolment>("e")
-					.Add(Subqueries.Eq("Gavin King", dc))
-					.SetReadOnly(true)
-					.UniqueResult<Enrolment>();
+					enrolment = s.CreateCriteria<Enrolment>("e")
+						.Add(Subqueries.Eq("Gavin King", dc))
+						.SetReadOnly(true)
+						.UniqueResult<Enrolment>();
 				
-				Assert.That(s.IsReadOnly(enrolment), Is.True);
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.False);
-				CheckProxyReadOnly(s, enrolment.Course, true);
+					Assert.That(s.IsReadOnly(enrolment), Is.True);
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.False);
+					CheckProxyReadOnly(s, enrolment.Course, true);
 				
-				NHibernateUtil.Initialize(enrolment.Course);
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.True);
-				CheckProxyReadOnly(s, enrolment.Course, true);
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.False);
-				CheckProxyReadOnly(s, enrolment.Student, true);
+					NHibernateUtil.Initialize(enrolment.Course);
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.True);
+					CheckProxyReadOnly(s, enrolment.Course, true);
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.False);
+					CheckProxyReadOnly(s, enrolment.Student, true);
 				
-				NHibernateUtil.Initialize(enrolment.Student);
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.True);
-				CheckProxyReadOnly(s, enrolment.Student, true);
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.False);
-				CheckProxyReadOnly(s, enrolment.Student.PreferredCourse, false);
+					NHibernateUtil.Initialize(enrolment.Student);
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.True);
+					CheckProxyReadOnly(s, enrolment.Student, true);
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.False);
+					CheckProxyReadOnly(s, enrolment.Student.PreferredCourse, false);
 				
-				NHibernateUtil.Initialize(enrolment.Student.PreferredCourse);
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.True);
-				CheckProxyReadOnly(s, enrolment.Student.PreferredCourse, false);
+					NHibernateUtil.Initialize(enrolment.Student.PreferredCourse);
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.True);
+					CheckProxyReadOnly(s, enrolment.Student.PreferredCourse, false);
 			
-				t.Commit();
-			}
+					t.Commit();
+				}
 			
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
-			{
-				DetachedCriteria dc = NHibernate.Criterion.DetachedCriteria.For<Student>("st")
-					.CreateCriteria("Enrolments")
-					.CreateCriteria("Course")
-					.Add(Property.ForName("Description").Eq("Hibernate Training"))
-					.SetProjection(Property.ForName("st.Name"));
+				using (ISession s = OpenSession())
+				using (ITransaction t = s.BeginTransaction())
+				{
+					DetachedCriteria dc = NHibernate.Criterion.DetachedCriteria.For<Student>("st")
+						.CreateCriteria("Enrolments")
+						.CreateCriteria("Course")
+						.Add(Property.ForName("Description").Eq("Hibernate Training"))
+						.SetProjection(Property.ForName("st.Name"));
 				
-				enrolment = s.CreateCriteria<Enrolment>("e")
-					.Add(Subqueries.Eq("Gavin King", dc))
-					.SetReadOnly(true)
-					.UniqueResult<Enrolment>();
+					enrolment = s.CreateCriteria<Enrolment>("e")
+						.Add(Subqueries.Eq("Gavin King", dc))
+						.SetReadOnly(true)
+						.UniqueResult<Enrolment>();
 				
-				Assert.That(s.IsReadOnly(enrolment), Is.True);
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.False);
-				CheckProxyReadOnly(s, enrolment.Course, true);
+					Assert.That(s.IsReadOnly(enrolment), Is.True);
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.False);
+					CheckProxyReadOnly(s, enrolment.Course, true);
 				
-				NHibernateUtil.Initialize(enrolment.Course);
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.True);
-				CheckProxyReadOnly(s, enrolment.Course, true);
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.False);
-				CheckProxyReadOnly(s, enrolment.Student, true);
+					NHibernateUtil.Initialize(enrolment.Course);
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.True);
+					CheckProxyReadOnly(s, enrolment.Course, true);
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.False);
+					CheckProxyReadOnly(s, enrolment.Student, true);
 				
-				NHibernateUtil.Initialize(enrolment.Student);
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.True);
-				CheckProxyReadOnly(s, enrolment.Student, true);
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.False);
-				CheckProxyReadOnly(s, enrolment.Student.PreferredCourse, false);
+					NHibernateUtil.Initialize(enrolment.Student);
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.True);
+					CheckProxyReadOnly(s, enrolment.Student, true);
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.False);
+					CheckProxyReadOnly(s, enrolment.Student.PreferredCourse, false);
 				
-				NHibernateUtil.Initialize(enrolment.Student.PreferredCourse);
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.True);
-				CheckProxyReadOnly(s, enrolment.Student.PreferredCourse, false);
+					NHibernateUtil.Initialize(enrolment.Student.PreferredCourse);
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.True);
+					CheckProxyReadOnly(s, enrolment.Student.PreferredCourse, false);
 			
-				t.Commit();
+					t.Commit();
+				}
 			}
 			
 			using (ISession s = OpenSession())
@@ -1053,6 +1056,8 @@ namespace NHibernate.Test.ReadOnly
 		[Test]
 		public void DetachedCriteria()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			DetachedCriteria dc = NHibernate.Criterion.DetachedCriteria.For<Student>()
 				.Add(Property.ForName("Name").Eq("Gavin King"))
 				.AddOrder(Order.Asc("StudentNumber"));

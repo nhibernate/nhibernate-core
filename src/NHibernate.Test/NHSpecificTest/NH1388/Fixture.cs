@@ -5,7 +5,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1388
 {
 	public class Student
 	{
+		// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 		private int _id;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 		private readonly IDictionary<Subject, Major> _majors = new Dictionary<Subject, Major>();
 
 		public virtual int Id
@@ -37,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1388
 		[Test]
 		public void BagTest()
 		{
-			int studentId = 1;
+			object studentId;
 
 			// Set major.
 			using (ISession session = OpenSession())
@@ -58,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1388
 
 				session.Save(subject1);
 				session.Save(subject2);
-				session.Save(student);
+				studentId = session.Save(student);
 
 				session.Flush();
 				t.Commit();

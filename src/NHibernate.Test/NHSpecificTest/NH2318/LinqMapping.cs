@@ -1,14 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using NHibernate.Hql.Ast;
-using NHibernate.Linq;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2318
 {
@@ -31,8 +28,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2318
 		public TrimGenerator()
 		{
 			SupportedMethods = new[] {
-				ReflectionHelper.GetMethodDefinition(() => TrimExtensions.TrimLeading(null, null)),
-				ReflectionHelper.GetMethodDefinition(() => TrimExtensions.TrimTrailing(null, null)),
+				ReflectHelper.GetMethodDefinition(() => TrimExtensions.TrimLeading(null, null)),
+				ReflectHelper.GetMethodDefinition(() => TrimExtensions.TrimTrailing(null, null)),
 			};
 		}
 

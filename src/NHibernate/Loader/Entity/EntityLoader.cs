@@ -12,7 +12,7 @@ namespace NHibernate.Loader.Entity
 	/// The <see cref="IEntityPersister"/> must implement <see cref="ILoadable" />. For other entities,
 	/// create a customized subclass of <see cref="Loader" />.
 	/// </remarks>
-	public class EntityLoader : AbstractEntityLoader
+	public partial class EntityLoader : AbstractEntityLoader
 	{
 		private readonly bool batchLoader;
 
@@ -36,7 +36,7 @@ namespace NHibernate.Loader.Entity
 
 			batchLoader = batchSize > 1;
 
-			log.Debug("Static select for entity " + entityName + ": " + SqlString);
+			log.Debug("Static select for entity {0}: {1}", entityName, SqlString);
 		}
 
 		public object LoadByUniqueKey(ISessionImplementor session, object key)

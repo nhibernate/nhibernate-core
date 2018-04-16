@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2583
 {
+	[TestFixture]
 	public class SelfJoinTestFixture : BugTestCase
 	{
 		[Test]

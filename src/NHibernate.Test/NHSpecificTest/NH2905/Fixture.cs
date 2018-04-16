@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2905
 {
+	[TestFixture]
 	public class Fixture : TestCaseMappingByCode
 	{
 		private Guid _entity3Id;

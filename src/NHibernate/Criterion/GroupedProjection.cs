@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -17,12 +16,12 @@ namespace NHibernate.Criterion
 			this.projection = projection;
 		}
 
-		public virtual SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public virtual SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
-			return renderedProjection = projection.ToSqlString(criteria, position, criteriaQuery, enabledFilters);
+			return renderedProjection = projection.ToSqlString(criteria, position, criteriaQuery);
 		}
 
-		public virtual SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public virtual SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			//This is kind of a hack. The hack is based on the fact that ToGroupSqlString always called after ToSqlString.
 			return SqlStringHelper.RemoveAsAliasesFromSql(renderedProjection);
@@ -50,7 +49,7 @@ namespace NHibernate.Criterion
 
 		public virtual string[] Aliases
 		{
-			get { return new string[] {}; }
+			get { return Array.Empty<string>(); }
 		}
 
 		public virtual bool IsGrouped

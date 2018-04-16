@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Hql.Ast.ANTLR;
 using System.Collections.Generic;
@@ -7,13 +8,13 @@ namespace NHibernate.Test.BulkManipulation
 {
 	public class BaseFixture: TestCase
 	{
-		private readonly IDictionary<string, IFilter> emptyfilters = new CollectionHelper.EmptyMapClass<string, IFilter>();
+		private readonly IDictionary<string, IFilter> emptyfilters = CollectionHelper.EmptyDictionary<string, IFilter>();
 
 		#region Overrides of TestCase
 
 		protected override IList Mappings
 		{
-			get { return new string[0]; }
+			get { return Array.Empty<string>(); }
 		}
 
 		#endregion
@@ -33,7 +34,7 @@ namespace NHibernate.Test.BulkManipulation
 
 		public string GetSql(string query)
 		{
-			var qt = new QueryTranslatorImpl(null, new HqlParseEngine(query, false, sessions).Parse(), emptyfilters, sessions);
+			var qt = new QueryTranslatorImpl(null, new HqlParseEngine(query, false, Sfi).Parse(), emptyfilters, Sfi);
 			qt.Compile(null, false);
 			return qt.SQLString;
 		}

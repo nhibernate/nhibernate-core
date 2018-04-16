@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Logging
 {
+	[TestFixture]
 	public class Log4NetLoggerTest
 	{
 		private class LogMock: ILog

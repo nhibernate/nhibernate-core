@@ -11,7 +11,7 @@ namespace NHibernate.Engine.Query
 	[Serializable]
 	public class QueryPlanCache
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(QueryPlanCache));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(QueryPlanCache));
 
 		private readonly ISessionFactoryImplementor factory;
 
@@ -47,12 +47,6 @@ namespace NHibernate.Engine.Query
 			return metadata;
 		}
 
-		[Obsolete("Please use overload with IQueryExpression")]
-		public IQueryPlan GetHQLQueryPlan(string queryString, bool shallow, IDictionary<string, IFilter> enabledFilters)
-		{
-			return GetHQLQueryPlan(queryString.ToQueryExpression(), shallow, enabledFilters);
-		}
-
 		public IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
 			var key = new HQLQueryPlanKey(queryExpression, shallow, enabledFilters);
@@ -60,62 +54,76 @@ namespace NHibernate.Engine.Query
 
 			if (plan == null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("unable to locate HQL query plan in cache; generating (" + queryExpression.Key + ")");
+					log.Debug("unable to locate HQL query plan in cache; generating ({0})", queryExpression.Key);
 				}
 				plan = new QueryExpressionPlan(queryExpression, shallow, enabledFilters, factory);
-				planCache.Put(key, plan);
+				// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
+				if (!(queryExpression is NhLinqExpression linqExpression) || linqExpression.CanCachePlan)
+					planCache.Put(key, plan);
+				else
+					log.Debug("Query plan not cacheable");
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("located HQL query plan in cache (" + queryExpression.Key + ")");
+					log.Debug("located HQL query plan in cache ({0})", queryExpression.Key);
 				}
-				var planExpression = plan.QueryExpression as NhLinqExpression;
-				var expression = queryExpression as NhLinqExpression;
-				if (planExpression != null && expression != null)
-				{
-					//NH-3413
-					//Here we have to use original expression.
-					//In most cases NH do not translate expression in second time, but 
-					// for cases when we have list parameters in query, like @p1.Contains(...),
-					// it does, and then it uses parameters from first try. 
-					//TODO: cache only required parts of QueryExpression
-
-					//NH-3436
-					// We have to return new instance plan with it's own query expression
-					// because other treads can override queryexpression of current plan during execution of query if we will use cached instance of plan 
-					expression.CopyExpressionTranslation(planExpression);
-					plan = plan.Copy(expression);
-				}
+				plan = CopyIfRequired(plan, queryExpression);
 			}
 
 			return plan;
 		}
 
-		public FilterQueryPlan GetFilterQueryPlan(string filterString, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters)
+		private static QueryExpressionPlan CopyIfRequired(QueryExpressionPlan plan, IQueryExpression queryExpression)
 		{
-			var key = new FilterQueryPlanKey(filterString, collectionRole, shallow, enabledFilters);
-			var plan = (FilterQueryPlan) planCache[key];
+			var planExpression = plan.QueryExpression as NhLinqExpression;
+			var expression = queryExpression as NhLinqExpression;
+			if (planExpression != null && expression != null)
+			{
+				//NH-3413
+				//Here we have to use original expression.
+				//In most cases NH do not translate expression in second time, but 
+				// for cases when we have list parameters in query, like @p1.Contains(...),
+				// it does, and then it uses parameters from first try. 
+				//TODO: cache only required parts of QueryExpression
+
+				//NH-3436
+				// We have to return new instance plan with it's own query expression
+				// because other treads can override queryexpression of current plan during execution of query if we will use cached instance of plan 
+				expression.CopyExpressionTranslation(planExpression);
+				plan = plan.Copy(expression);
+			}
+
+			return plan;
+		}
+
+		public IQueryExpressionPlan GetFilterQueryPlan(string filterString, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters)
+		{
+			return GetFilterQueryPlan(new StringQueryExpression(filterString), collectionRole, shallow, enabledFilters);
+		}
+
+		public IQueryExpressionPlan GetFilterQueryPlan(IQueryExpression queryExpression, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters)
+		{
+			var key = new FilterQueryPlanKey(queryExpression.Key, collectionRole, shallow, enabledFilters);
+			var plan = (QueryExpressionPlan) planCache[key];
 
 			if (plan == null)
 			{
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("unable to locate collection-filter query plan in cache; generating (" + collectionRole + " : "
-							  + filterString + ")");
-				}
-				plan = new FilterQueryPlan(filterString.ToQueryExpression(), collectionRole, shallow, enabledFilters, factory);
-				planCache.Put(key, plan);
+				log.Debug("unable to locate collection-filter query plan in cache; generating ({0} : {1})", collectionRole, queryExpression.Key);
+				plan = new FilterQueryPlan(queryExpression, collectionRole, shallow, enabledFilters, factory);
+				// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
+				if (!(queryExpression is NhLinqExpression linqExpression) || linqExpression.CanCachePlan)
+					planCache.Put(key, plan);
+				else
+					log.Debug("Query plan not cacheable");
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("located collection-filter query plan in cache (" + collectionRole + " : " + filterString + ")");
-				}
+				log.Debug("located collection-filter query plan in cache ({0} : {1})", collectionRole, queryExpression.Key);
+				plan = CopyIfRequired(plan, queryExpression);
 			}
 
 			return plan;
@@ -127,18 +135,18 @@ namespace NHibernate.Engine.Query
 
 			if (plan == null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("unable to locate native-sql query plan in cache; generating (" + spec.QueryString + ")");
+					log.Debug("unable to locate native-sql query plan in cache; generating ({0})", spec.QueryString);
 				}
 				plan = new NativeSQLQueryPlan(spec, factory);
 				planCache.Put(spec, plan);
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("located native-sql query plan in cache (" + spec.QueryString + ")");
+					log.Debug("located native-sql query plan in cache ({0})", spec.QueryString);
 				}
 			}
 

@@ -14,9 +14,9 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
 	[CLSCompliant(false)]
-	public class MultiTableDeleteExecutor : AbstractStatementExecutor
+	public partial class MultiTableDeleteExecutor : AbstractStatementExecutor
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(MultiTableDeleteExecutor));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(MultiTableDeleteExecutor));
 		private readonly IQueryable persister;
 		private readonly SqlString idInsertSelect;
 		private readonly SqlString[] deletes;
@@ -36,7 +36,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			persister = fromElement.Queryable;
 
 			idInsertSelect = GenerateIdInsertSelect(persister, bulkTargetAlias, deleteStatement.WhereClause);
-			log.Debug("Generated ID-INSERT-SELECT SQL (multi-table delete) : " + idInsertSelect);
+			log.Debug("Generated ID-INSERT-SELECT SQL (multi-table delete) : {0}", idInsertSelect);
 
 			string[] tableNames = persister.ConstraintOrderedTableNameClosure;
 			string[][] columnNames = persister.ConstraintOrderedTableKeyColumnClosure;
@@ -113,7 +113,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					{
 						try
 						{
-							ps = session.Batcher.PrepareCommand(CommandType.Text, deletes[i], new SqlType[0]);
+							ps = session.Batcher.PrepareCommand(CommandType.Text, deletes[i], Array.Empty<SqlType>());
 							session.Batcher.ExecuteNonQuery(ps);
 						}
 						finally

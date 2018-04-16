@@ -1,39 +1,55 @@
 using System;
 using System.Collections;
-using System.Data.Common;
-using System.Threading;
 using System.Transactions;
+using NHibernate.Cfg;
 using NUnit.Framework;
 
 namespace NHibernate.Test.SystemTransactions
 {
-	[TestFixture]
 	public class TransactionNotificationFixture : TestCase
 	{
 		protected override IList Mappings
-		{
-			get { return new string[] {}; }
-		}
+			=> Array.Empty<string>();
 
+		protected virtual bool UseConnectionOnSystemTransactionPrepare => true;
+
+		protected override void Configure(Configuration configuration)
+		{
+			configuration.SetProperty(
+				Cfg.Environment.UseConnectionOnSystemTransactionPrepare,
+				UseConnectionOnSystemTransactionPrepare.ToString());
+		}
 
 		[Test]
 		public void NoTransaction()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (sessions.OpenSession(interceptor))
+			using (Sfi.WithOptions().Interceptor(interceptor).OpenSession()) { }
+			Assert.AreEqual(0, interceptor.afterTransactionBeginCalled);
+			Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
+			Assert.AreEqual(0, interceptor.afterTransactionCompletionCalled);
+		}
+
+		[Test]
+		public void TransactionDisabled()
+		{
+			var interceptor = new RecordingInterceptor();
+			using (var ts = new TransactionScope())
+			using (Sfi.WithOptions().Interceptor(interceptor).AutoJoinTransaction(false).OpenSession())
 			{
-				Assert.AreEqual(0, interceptor.afterTransactionBeginCalled);
-				Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
-				Assert.AreEqual(0, interceptor.afterTransactionCompletionCalled);
+				ts.Complete();
 			}
+			Assert.AreEqual(0, interceptor.afterTransactionBeginCalled);
+			Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
+			Assert.AreEqual(0, interceptor.afterTransactionCompletionCalled);
 		}
 
 		[Test]
 		public void AfterBegin()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (new TransactionScope()) 
-			using (sessions.OpenSession(interceptor))
+			using (new TransactionScope())
+			using (Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				Assert.AreEqual(1, interceptor.afterTransactionBeginCalled);
 				Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
@@ -46,15 +62,15 @@ namespace NHibernate.Test.SystemTransactions
 		{
 			var interceptor = new RecordingInterceptor();
 			ISession session;
-			using(var scope = new TransactionScope())
+			using (var scope = new TransactionScope())
 			{
-				session = sessions.OpenSession(interceptor);
+				session = Sfi.WithOptions().Interceptor(interceptor).OpenSession();
 				scope.Complete();
 			}
 			session.Dispose();
 			Assert.AreEqual(1, interceptor.beforeTransactionCompletionCalled);
 			Assert.AreEqual(1, interceptor.afterTransactionCompletionCalled);
-			
+
 		}
 
 		[Test]
@@ -62,7 +78,7 @@ namespace NHibernate.Test.SystemTransactions
 		{
 			var interceptor = new RecordingInterceptor();
 			using (new TransactionScope())
-			using (sessions.OpenSession(interceptor))
+			using (Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 			}
 			Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
@@ -73,7 +89,7 @@ namespace NHibernate.Test.SystemTransactions
 		public void TwoTransactionScopesInsideOneSession()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (var session = sessions.OpenSession(interceptor))
+			using (var session = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				using (var scope = new TransactionScope())
 				{
@@ -96,7 +112,7 @@ namespace NHibernate.Test.SystemTransactions
 		public void OneTransactionScopesInsideOneSession()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (var session = sessions.OpenSession(interceptor))
+			using (var session = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				using (var scope = new TransactionScope())
 				{
@@ -148,49 +164,50 @@ namespace NHibernate.Test.SystemTransactions
 			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(2));
 		}
 
-
 		[Description("NH2128")]
 		[Theory]
 		public void ShouldNotifyAfterDistributedTransactionWithOwnConnection(bool doCommit)
 		{
-			// Note: For distributed transaction, calling Close() on the session isn't
+			if (!Sfi.ConnectionProvider.Driver.SupportsSystemTransactions)
+				Assert.Ignore("Driver does not support System.Transactions. Ignoring test.");
+			
+			// Note: For system transaction, calling Close() on the session isn't
 			// supported, so we don't need to test that scenario.
 
 			var interceptor = new RecordingInterceptor();
-			ISession s1 = null;
+			ISession s1;
 
-			using (var tx = new TransactionScope())
+			var ownConnection1 = Sfi.ConnectionProvider.GetConnection();
+			try
 			{
-				var ownConnection1 = sessions.ConnectionProvider.GetConnection();
-
-				try
+				using (var tx = new TransactionScope())
 				{
-					try
+					ownConnection1.EnlistTransaction(System.Transactions.Transaction.Current);
+					using (s1 = Sfi.WithOptions().Connection(ownConnection1).Interceptor(interceptor).OpenSession())
 					{
-						s1 = sessions.OpenSession(ownConnection1, interceptor);
-
 						s1.CreateCriteria<object>().List();
-					}
-					finally
-					{
-						if (s1 != null)
-							s1.Dispose();
 					}
 
 					if (doCommit)
 						tx.Complete();
 				}
-				finally
-				{
-					sessions.ConnectionProvider.CloseConnection(ownConnection1);
-				}
+			}
+			finally
+			{
+				Sfi.ConnectionProvider.CloseConnection(ownConnection1);
 			}
 
-			// Transaction completion may happen asynchronously, so allow some delay.
-			Assert.That(() => s1.IsOpen, Is.False.After(500, 100));
+			// Transaction completion may happen asynchronously, so allow some delay. Odbc promotes
+			// this test to distributed and have that delay, by example.
+			Assert.That(() => s1.IsOpen, Is.False.After(500, 100), "Session not closed.");
 
 			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1));
 		}
+	}
 
+	[TestFixture]
+	public class TransactionWithoutConnectionFromPrepareNotificationFixture : TransactionNotificationFixture
+	{
+		protected override bool UseConnectionOnSystemTransactionPrepare => false;
 	}
 }

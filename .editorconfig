@@ -6,6 +6,28 @@ insert_final_newline = true
 
 [*.cs]
 indent_style = tab
+dotnet_sort_system_directives_first = true
+csharp_space_after_cast = true
 
 [*.xsd]
 indent_style = tab
+
+[*.json]
+indent_style = space
+indent_size = 2
+
+[*.xml]
+indent_style = space
+indent_size = 2
+
+[*.csproj]
+indent_style = space
+indent_size = 2
+
+[*.vbproj]
+indent_style = space
+indent_size = 2
+
+[*.cshtml]
+indent_style = space
+indent_size = 4

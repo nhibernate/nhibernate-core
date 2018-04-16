@@ -6,6 +6,7 @@ using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
+using NHibernate.Util;
 
 namespace NHibernate.Persister
 {
@@ -101,7 +102,7 @@ namespace NHibernate.Persister
 				Exception e = tie.InnerException;
 				if (e is HibernateException)
 				{
-					throw e;
+					throw ReflectHelper.UnwrapTargetInvocationException(tie);
 				}
 				else
 				{
@@ -143,7 +144,7 @@ namespace NHibernate.Persister
 				Exception e = tie.InnerException;
 				if (e is HibernateException)
 				{
-					throw e;
+					throw ReflectHelper.UnwrapTargetInvocationException(tie);
 				}
 				else
 				{

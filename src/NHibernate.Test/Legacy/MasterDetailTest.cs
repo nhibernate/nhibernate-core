@@ -401,7 +401,7 @@ namespace NHibernate.Test.Legacy
 			master.AddDetail(d1);
 			master.AddDetail(d2);
 
-			if (Dialect.SupportsSubSelects)
+			if (Dialect.SupportsScalarSubSelects)
 			{
 				string hql = "from d in class NHibernate.DomainModel.Detail, m in class NHibernate.DomainModel.Master " +
 				             "where m = d.Master and m.Outgoing.size = 0 and m.Incoming.size = 0";
@@ -639,6 +639,8 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void Serialization()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			ISession s = OpenSession();
 			Master m = new Master();
 			Detail d1 = new Detail();
@@ -661,6 +663,7 @@ namespace NHibernate.Test.Legacy
 			MemoryStream stream = new MemoryStream();
 			BinaryFormatter f = new BinaryFormatter();
 			f.Serialize(stream, s);
+			s.Close();
 			stream.Position = 0;
 			Console.WriteLine(stream.Length);
 
@@ -694,6 +697,7 @@ namespace NHibernate.Test.Legacy
 			s.Disconnect();
 			stream = new MemoryStream();
 			f.Serialize(stream, s);
+			s.Close();
 			stream.Position = 0;
 
 			s = (ISession) f.Deserialize(stream);
@@ -1197,7 +1201,7 @@ namespace NHibernate.Test.Legacy
 			s.Flush();
 			s.Close();
 
-			sessions.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
+			Sfi.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
 
 			s = OpenSession();
 			a = (Assignable) s.Get(typeof(Assignable), "foo");
@@ -1209,7 +1213,7 @@ namespace NHibernate.Test.Legacy
 			s.Flush();
 			s.Close();
 
-			sessions.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
+			Sfi.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
 
 			s = OpenSession();
 			a = (Assignable) s.Get(typeof(Assignable), "foo");
@@ -1222,7 +1226,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(3, a.Categories.Count);
 			s.Close();
 
-			sessions.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
+			Sfi.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
 
 			s = OpenSession();
 			a = (Assignable) s.Get(typeof(Assignable), "foo");
@@ -1257,7 +1261,7 @@ namespace NHibernate.Test.Legacy
 		public void ToStringWithNoIdentifier()
 		{
 			NHibernateUtil.Entity(typeof(Master)).ToLoggableString(new Master(),
-			                                                       (ISessionFactoryImplementor) sessions);
+			                                                       (ISessionFactoryImplementor) Sfi);
 		}
 
 		[Test]

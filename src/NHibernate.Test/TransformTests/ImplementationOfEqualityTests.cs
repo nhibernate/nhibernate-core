@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.TransformTests
 {
+	[TestFixture]
 	public class ImplementationOfEqualityTests
 	{
 		private readonly IEnumerable<System.Type> transformerTypes =
@@ -65,7 +66,7 @@ namespace NHibernate.Test.TransformTests
 		[Test]
 		public void AliasToBeanConstructorResultTransformer_ShouldHaveEqualityBasedOnCtorParameter()
 		{
-			var emptyCtor = new System.Type[0];
+			var emptyCtor = System.Type.EmptyTypes;
 			var transformer1 = new AliasToBeanConstructorResultTransformer(typeof(object).GetConstructor(emptyCtor));
 			var transformer2 = new AliasToBeanConstructorResultTransformer(typeof(object).GetConstructor(emptyCtor));
 			Assert.That(transformer1, Is.EqualTo(transformer2));

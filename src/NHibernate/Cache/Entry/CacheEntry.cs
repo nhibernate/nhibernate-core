@@ -10,7 +10,7 @@ namespace NHibernate.Cache.Entry
 	/// A cached instance of a persistent class
 	/// </summary>
 	[Serializable]
-	public sealed class CacheEntry
+	public sealed partial class CacheEntry
 	{
 		private readonly object[] disassembledState;
 		private readonly string subclass;

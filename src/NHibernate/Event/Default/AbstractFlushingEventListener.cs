@@ -17,9 +17,9 @@ namespace NHibernate.Event.Default
 	/// A convenience base class for listeners whose functionality results in flushing.
 	/// </summary>
 	[Serializable]
-	public abstract class AbstractFlushingEventListener
+	public abstract partial class AbstractFlushingEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (AbstractFlushingEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (AbstractFlushingEventListener));
 
 		protected virtual object Anything
 		{
@@ -67,21 +67,22 @@ namespace NHibernate.Event.Default
 			}
 
 			//some statistics
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				StringBuilder sb = new StringBuilder(100);
+				log.Debug(
+					"Flushed: {0} insertions, {1} updates, {2} deletions to {3} objects",
+					session.ActionQueue.InsertionsCount,
+					session.ActionQueue.UpdatesCount,
+					session.ActionQueue.DeletionsCount,
+					persistenceContext.EntityEntries.Count);
 
-				sb.Append("Flushed: ").Append(session.ActionQueue.InsertionsCount).Append(" insertions, ").Append(
-					session.ActionQueue.UpdatesCount).Append(" updates, ").Append(session.ActionQueue.DeletionsCount).Append(
-					" deletions to ").Append(persistenceContext.EntityEntries.Count).Append(" objects");
-				log.Debug(sb.ToString());
-				sb = new StringBuilder(100);
-				sb.Append("Flushed: ").Append(session.ActionQueue.CollectionCreationsCount).Append(" (re)creations, ").Append(
-					session.ActionQueue.CollectionUpdatesCount).Append(" updates, ").Append(session.ActionQueue.CollectionRemovalsCount)
-					.Append(" removals to ").Append(persistenceContext.CollectionEntries.Count).Append(" collections");
-
-				log.Debug(sb.ToString());
-				new Printer(session.Factory).ToString(persistenceContext.EntitiesByKey.Values.ToArray().GetEnumerator());
+				log.Debug(
+					"Flushed: {0} (re)creations, {1} updates, {2} removals to {3} collections",
+					session.ActionQueue.CollectionCreationsCount,
+					session.ActionQueue.CollectionUpdatesCount,
+					session.ActionQueue.CollectionRemovalsCount,
+					persistenceContext.CollectionEntries.Count);
+				new Printer(session.Factory).ToString(persistenceContext.EntitiesByKey.Values.ToArray());
 			}
 		}
 
@@ -228,7 +229,7 @@ namespace NHibernate.Event.Default
 		/// <param name="session">The session being flushed</param>
 		protected virtual void PerformExecutions(IEventSource session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("executing flush");
 			}
@@ -249,9 +250,9 @@ namespace NHibernate.Event.Default
 			}
 			catch (HibernateException he)
 			{
-				if (log.IsErrorEnabled)
+				if (log.IsErrorEnabled())
 				{
-					log.Error("Could not synchronize database state with session", he);
+					log.Error(he, "Could not synchronize database state with session");
 				}
 				throw;
 			}
@@ -269,7 +270,7 @@ namespace NHibernate.Event.Default
 		/// </summary>
 		protected virtual void PostFlush(ISessionImplementor session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("post flush");
 			}

@@ -5,7 +5,7 @@ namespace NHibernate.Util
 {
 	public class ADOExceptionReporter
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ADOExceptionReporter));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ADOExceptionReporter));
 		public const string DefaultExceptionMsg = "SQL Exception";
 
 		private ADOExceptionReporter()
@@ -19,16 +19,17 @@ namespace NHibernate.Util
 
 		public static void LogExceptions(Exception ex, string message)
 		{
-			if (log.IsErrorEnabled)
+			if (log.IsErrorEnabled())
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					message = StringHelper.IsNotEmpty(message) ? message : DefaultExceptionMsg;
-					log.Debug(message, ex);
+					log.Debug(ex, message);
 				}
+
 				while (ex != null)
 				{
-					log.Warn(ex);
+					log.Warn(ex, ex.Message);
 					log.Error(ex.Message);
 					ex = ex.InnerException;
 				}

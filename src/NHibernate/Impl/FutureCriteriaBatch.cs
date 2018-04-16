@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace NHibernate.Impl
 {
-	public class FutureCriteriaBatch : FutureBatch<ICriteria, IMultiCriteria>
+	public partial class FutureCriteriaBatch : FutureBatch<ICriteria, IMultiCriteria>
 	{
 		public FutureCriteriaBatch(SessionImpl session) : base(session) {}
 

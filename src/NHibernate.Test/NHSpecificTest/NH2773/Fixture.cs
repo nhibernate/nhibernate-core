@@ -4,6 +4,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2773 {
+   [TestFixture]
    public class Fixture : BugTestCase {
       private Guid _entityGuid;
 
@@ -37,6 +38,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2773 {
 
       [Test]
       public void DeserializedSession_ProxyType_ShouldBeEqualToOriginalProxyType() {
+         TestsContext.AssumeSystemTypeIsSerializable();
+
          System.Type originalProxyType = null;
          System.Type deserializedProxyType = null;
          ISession deserializedSession = null;

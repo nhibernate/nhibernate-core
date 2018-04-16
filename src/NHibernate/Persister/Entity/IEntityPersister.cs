@@ -22,7 +22,7 @@ namespace NHibernate.Persister.Entity
 	/// Implementors must be threadsafe (preferably immutable) and must provide a constructor of type
 	/// matching the signature of: (PersistentClass, SessionFactoryImplementor)
 	/// </remarks>
-	public interface IEntityPersister : IOptimisticCacheSource
+	public partial interface IEntityPersister : IOptimisticCacheSource
 	{
 		/// <summary>
 		/// The ISessionFactory to which this persister "belongs".

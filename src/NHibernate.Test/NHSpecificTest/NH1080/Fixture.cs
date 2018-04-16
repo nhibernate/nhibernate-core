@@ -58,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
             try
             {
 
-                using (ISession s = sessions.OpenSession())
+                using (ISession s = Sfi.OpenSession())
                 {
                     s.Save(c);
                     s.Save(b1);
@@ -68,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
                     s.Close();
                 }
 
-                using (ISession s = sessions.OpenSession())
+                using (ISession s = Sfi.OpenSession())
                 {
                     /* If bug is present, throws:
                     NHibernate.Test.NHSpecificTest.NH1080.Fixture.TestBug : NHibernate.UnresolvableObjectException : No row with the given identifier exists: 1, of class: NHibernate.Test.NHSpecificTest.NH1080.B
@@ -78,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
             }
             finally
             {
-                using (ISession s = sessions.OpenSession())
+                using (ISession s = Sfi.OpenSession())
                 {
                     
                     s.Delete(a);

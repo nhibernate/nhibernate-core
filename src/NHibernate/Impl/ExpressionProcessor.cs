@@ -88,14 +88,14 @@ namespace NHibernate.Impl
 
 			/// <summary>
 			/// Retrieve the property name from a supplied PropertyProjection
-			/// Note:  throws is the supplied IProjection is not a PropertyProjection
+			/// Note:  throws if the supplied IProjection is not a PropertyProjection
 			/// </summary>
 			public string AsProperty()
 			{
 				if (_property != null) return _property;
 
 				var propertyProjection = _projection as PropertyProjection;
-				if (propertyProjection == null) throw new Exception("Cannot determine property for " + _projection);
+				if (propertyProjection == null) throw new InvalidOperationException("Cannot determine property for " + _projection);
 				return propertyProjection.PropertyName;
 			}
 		}
@@ -153,7 +153,7 @@ namespace NHibernate.Impl
 			RegisterCustomMethodCall(() => RestrictionExtensions.IsLike("", "", null, null), RestrictionExtensions.ProcessIsLikeMatchModeEscapeChar);
 			RegisterCustomMethodCall(() => RestrictionExtensions.IsInsensitiveLike("", ""), RestrictionExtensions.ProcessIsInsensitiveLike);
 			RegisterCustomMethodCall(() => RestrictionExtensions.IsInsensitiveLike("", "", null), RestrictionExtensions.ProcessIsInsensitiveLikeMatchMode);
-			RegisterCustomMethodCall(() => RestrictionExtensions.IsIn(null, new object[0]), RestrictionExtensions.ProcessIsInArray);
+			RegisterCustomMethodCall(() => RestrictionExtensions.IsIn(null, Array.Empty<object>()), RestrictionExtensions.ProcessIsInArray);
 			RegisterCustomMethodCall(() => RestrictionExtensions.IsIn(null, new List<object>()), RestrictionExtensions.ProcessIsInCollection);
 			RegisterCustomMethodCall(() => RestrictionExtensions.IsBetween(null, null).And(null), RestrictionExtensions.ProcessIsBetween);
 
@@ -174,17 +174,7 @@ namespace NHibernate.Impl
 		    RegisterCustomProjection(() => default(DateTimeOffset).Second, e => ProjectionsExtensions.ProcessSecond(e.Expression));
 		    RegisterCustomProjection(() => default(DateTimeOffset).Date, e => ProjectionsExtensions.ProcessDate(e.Expression));
 
-#pragma warning disable 618
-			RegisterCustomProjection(() => ProjectionsExtensions.YearPart(default(DateTime)), e => ProjectionsExtensions.ProcessYear(e.Arguments[0]));
-			RegisterCustomProjection(() => ProjectionsExtensions.DayPart(default(DateTime)), e => ProjectionsExtensions.ProcessDay(e.Arguments[0]));
-			RegisterCustomProjection(() => ProjectionsExtensions.MonthPart(default(DateTime)), e => ProjectionsExtensions.ProcessMonth(e.Arguments[0]));
-			RegisterCustomProjection(() => ProjectionsExtensions.HourPart(default(DateTime)), e => ProjectionsExtensions.ProcessHour(e.Arguments[0]));
-			RegisterCustomProjection(() => ProjectionsExtensions.MinutePart(default(DateTime)), e => ProjectionsExtensions.ProcessMinute(e.Arguments[0]));
-			RegisterCustomProjection(() => ProjectionsExtensions.SecondPart(default(DateTime)), e => ProjectionsExtensions.ProcessSecond(e.Arguments[0]));
-			RegisterCustomProjection(() => ProjectionsExtensions.DatePart(default(DateTime)), e => ProjectionsExtensions.ProcessDate(e.Arguments[0]));
-#pragma warning restore 618
-
-            RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(int)), ProjectionsExtensions.ProcessSqrt);
+			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(int)), ProjectionsExtensions.ProcessSqrt);
 			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(double)), ProjectionsExtensions.ProcessSqrt);
 			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(decimal)), ProjectionsExtensions.ProcessSqrt);
 			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(byte)), ProjectionsExtensions.ProcessSqrt);
@@ -208,6 +198,7 @@ namespace NHibernate.Impl
 			RegisterCustomProjection(() => Math.Round(default(decimal)), ProjectionsExtensions.ProcessRound);
 			RegisterCustomProjection(() => Math.Round(default(double), default(int)), ProjectionsExtensions.ProcessRound);
 			RegisterCustomProjection(() => Math.Round(default(decimal), default(int)), ProjectionsExtensions.ProcessRound);
+			RegisterCustomProjection(() => ProjectionsExtensions.AsEntity(default(object)), ProjectionsExtensions.ProcessAsEntity);
 		}
 
 		private static ICriterion Eq(ProjectionInfo property, object value)
@@ -264,7 +255,7 @@ namespace NHibernate.Impl
 			if (unaryExpression != null)
 			{
 				if (!IsConversion(unaryExpression.NodeType))
-					throw new Exception("Cannot interpret member from " + expression);
+					throw new ArgumentException("Cannot interpret member from " + expression, nameof(expression));
 
 				return FindMemberProjection(unaryExpression.Operand);
 			}
@@ -352,7 +343,7 @@ namespace NHibernate.Impl
 			if (unaryExpression != null)
 			{
 				if (!IsConversion(unaryExpression.NodeType))
-					throw new Exception("Cannot interpret member from " + expression);
+					throw new ArgumentException("Cannot interpret member from " + expression, nameof(expression));
 
 				return FindMemberExpression(unaryExpression.Operand);
 			}
@@ -369,13 +360,13 @@ namespace NHibernate.Impl
 				if (methodCallExpression.Method.Name == "First")
 					return FindMemberExpression(methodCallExpression.Arguments[0]);
 
-				throw new Exception("Unrecognised method call in expression " + methodCallExpression);
+				throw new ArgumentException("Unrecognised method call in expression " + methodCallExpression, nameof(expression));
 			}
 
 			if (expression is ParameterExpression)
 				return "";
 
-			throw new Exception("Could not determine member from " + expression);
+			throw new ArgumentException("Could not determine member from " + expression, nameof(expression));
 		}
 
 		/// <summary>
@@ -398,7 +389,7 @@ namespace NHibernate.Impl
 		{
 			var methodCallExpression = expression as MethodCallExpression;
 			if (methodCallExpression == null)
-				throw new Exception("right operand should be detachedQueryInstance.As<T>() - " + expression);
+				throw new ArgumentException("right operand should be detachedQueryInstance.As<T>() - " + expression, nameof(expression));
 
 			var criteriaExpression = Expression.Lambda(methodCallExpression.Object).Compile();
 			QueryOver detachedQuery = (QueryOver)criteriaExpression.DynamicInvoke();
@@ -424,7 +415,7 @@ namespace NHibernate.Impl
 			if (unaryExpression != null)
 			{
 				if (!IsConversion(unaryExpression.NodeType))
-					throw new Exception("Cannot interpret member from " + expression);
+					throw new ArgumentException("Cannot interpret member from " + expression, nameof(expression));
 
 				return FindMemberType(unaryExpression.Operand);
 			}
@@ -435,7 +426,7 @@ namespace NHibernate.Impl
 				return methodCallExpression.Method.ReturnType;
 			}
 
-			throw new Exception("Could not determine member type from " + expression);
+			throw new ArgumentException("Could not determine member type from " + expression, nameof(expression));
 		}
 
 		private static bool IsMemberExpression(Expression expression)
@@ -460,7 +451,7 @@ namespace NHibernate.Impl
 			if (unaryExpression != null)
 			{
 				if (!IsConversion(unaryExpression.NodeType))
-					throw new Exception("Cannot interpret member from " + expression);
+					throw new ArgumentException("Cannot interpret member from " + expression, nameof(expression));
 
 				return IsMemberExpression(unaryExpression.Operand);
 			}
@@ -514,7 +505,7 @@ namespace NHibernate.Impl
 			if (type.IsPrimitive)
 				return Convert.ChangeType(value, type);
 
-			throw new Exception(string.Format("Cannot convert '{0}' to {1}", value, type));
+			throw new ArgumentException(string.Format("Cannot convert '{0}' to {1}", value, type));
 		}
 
 		private static ICriterion ProcessSimpleExpression(BinaryExpression be)
@@ -538,7 +529,7 @@ namespace NHibernate.Impl
 
 			Func<ProjectionInfo, object, ICriterion> simpleExpressionCreator;
 			if (!_simpleExpressionCreators.TryGetValue(nodeType, out simpleExpressionCreator))
-				throw new Exception("Unhandled simple expression type: " + nodeType);
+				throw new InvalidOperationException("Unhandled simple expression type: " + nodeType);
 
 			return simpleExpressionCreator(property, value);
 		}
@@ -562,7 +553,7 @@ namespace NHibernate.Impl
 				return Restrictions.Not(
 					property.CreateCriterion(Restrictions.IsNull, Restrictions.IsNull));
 
-			throw new Exception("Cannot supply null value to operator " + expressionType);
+			throw new ArgumentException("Cannot supply null value to operator " + expressionType, nameof(expressionType));
 		}
 
 		private static ICriterion ProcessMemberExpression(BinaryExpression be)
@@ -577,7 +568,7 @@ namespace NHibernate.Impl
 
 			Func<ProjectionInfo, ProjectionInfo, ICriterion> propertyExpressionCreator;
 			if (!_propertyExpressionCreators.TryGetValue(nodeType, out propertyExpressionCreator))
-				throw new Exception("Unhandled property expression type: " + nodeType);
+				throw new InvalidOperationException("Unhandled property expression type: " + nodeType);
 
 			return propertyExpressionCreator(leftProperty, rightProperty);
 		}
@@ -618,7 +609,7 @@ namespace NHibernate.Impl
 						return ProcessSimpleExpression(expression);
 
 				default:
-					throw new Exception("Unhandled binary expression: " + expression.NodeType + ", " + expression);
+					throw new NotImplementedException("Unhandled binary expression: " + expression.NodeType + ", " + expression);
 			}
 		}
 
@@ -633,7 +624,7 @@ namespace NHibernate.Impl
 			if (unaryExpression != null)
 			{
 				if (unaryExpression.NodeType != ExpressionType.Not)
-					throw new Exception("Cannot interpret member from " + expression);
+					throw new ArgumentException("Cannot interpret member from " + expression, nameof(expression));
 
 				if (IsMemberExpression(unaryExpression.Operand))
 					return Restrictions.Eq(FindMemberExpression(unaryExpression.Operand), false);
@@ -653,7 +644,9 @@ namespace NHibernate.Impl
 				return Restrictions.Eq(ClassMember(typeBinaryExpression.Expression), typeBinaryExpression.TypeOperand.FullName);
 			}
 
-			throw new Exception("Could not determine member type from " + expression.NodeType + ", " + expression + ", " + expression.GetType());
+			throw new ArgumentException(
+				"Could not determine member type from " + expression.NodeType + ", " + expression + ", " + expression.GetType(),
+				nameof(expression));
 		}
 
 		private static string ClassMember(Expression expression)
@@ -684,7 +677,7 @@ namespace NHibernate.Impl
 
 			Func<MethodCallExpression, ICriterion> customMethodCallProcessor;
 			if (!_customMethodCallProcessors.TryGetValue(signature, out customMethodCallProcessor))
-				throw new Exception("Unrecognised method call: " + signature);
+				throw new InvalidOperationException("Unrecognised method call: " + signature);
 
 			return customMethodCallProcessor(methodCallExpression);
 		}
@@ -793,7 +786,7 @@ namespace NHibernate.Impl
 
 			Func<string, DetachedCriteria, AbstractCriterion> subqueryExpressionCreator;
 			if (!subqueryExpressionCreators.TryGetValue(be.NodeType, out subqueryExpressionCreator))
-				throw new Exception("Unhandled subquery expression type: " + subqueryType + "," + be.NodeType);
+				throw new InvalidOperationException("Unhandled subquery expression type: " + subqueryType + "," + be.NodeType);
 
 			return subqueryExpressionCreator(property, detachedCriteria);
 		}

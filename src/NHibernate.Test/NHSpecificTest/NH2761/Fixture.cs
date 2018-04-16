@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2761
 {
+	[TestFixture]
 	public class Fixture
 	{
 		[Test]

@@ -51,15 +51,14 @@ namespace NHibernate.Criterion
 			}
 		}
 
-		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery,
-												   IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			SqlStringBuilder buf = new SqlStringBuilder();
 			foreach (IProjection projection in args)
 			{
 				if (projection.IsGrouped)
 				{
-					buf.Add(projection.ToGroupSqlString(criteria, criteriaQuery, enabledFilters)).Add(", ");
+					buf.Add(projection.ToGroupSqlString(criteria, criteriaQuery)).Add(", ");
 				}
 			}
 			if (buf.Count >= 2)
@@ -69,15 +68,14 @@ namespace NHibernate.Criterion
 			return buf.ToSqlString();
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery,
-											  IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
 			ISQLFunction sqlFunction = GetFunction(criteriaQuery);
 
 			var arguments = new List<object>();
 			for (int i = 0; i < args.Length; i++)
 			{
-				SqlString projectArg = GetProjectionArgument(criteriaQuery, criteria, args[i], 0, enabledFilters); // The loc parameter is unused.
+				SqlString projectArg = GetProjectionArgument(criteriaQuery, criteria, args[i], 0); // The loc parameter is unused.
 				arguments.Add(projectArg);
 			}
 
@@ -102,11 +100,9 @@ namespace NHibernate.Criterion
 			return dialectFunction;
 		}
 
-		private static SqlString GetProjectionArgument(ICriteriaQuery criteriaQuery, ICriteria criteria,
-													   IProjection projection, int loc,
-													   IDictionary<string, IFilter> enabledFilters)
+		private static SqlString GetProjectionArgument(ICriteriaQuery criteriaQuery, ICriteria criteria, IProjection projection, int loc)
 		{
-			SqlString sql = projection.ToSqlString(criteria, loc, criteriaQuery, enabledFilters);
+			SqlString sql = projection.ToSqlString(criteria, loc, criteriaQuery);
 			return SqlStringHelper.RemoveAsAliasesFromSql(sql);
 		}
 

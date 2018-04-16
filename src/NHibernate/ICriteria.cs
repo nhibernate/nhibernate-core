@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -52,7 +53,7 @@ namespace NHibernate
 	/// </code>
 	/// </para>
 	/// </remarks>
-	public interface ICriteria : ICloneable
+	public partial interface ICriteria : ICloneable
 	{
 		/// <summary>
 		/// Get the alias of the entity encapsulated by this criteria instance.
@@ -245,10 +246,10 @@ namespace NHibernate
 		ICriteria SetFetchSize(int fetchSize);
 
 		/// <summary>
-		/// Set a timeout for the underlying ADO.NET query
+		/// Set a timeout for the underlying ADO.NET query.
 		/// </summary>
-		/// <param name="timeout"></param>
-		/// <returns></returns>
+		/// <param name="timeout">The timeout in seconds.</param>
+		/// <returns><see langword="this" /> (for method chaining).</returns>
 		ICriteria SetTimeout(int timeout);
 
 		/// <summary>
@@ -303,7 +304,7 @@ namespace NHibernate
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
-		IEnumerable<T> Future<T>();
+		IFutureEnumerable<T> Future<T>();
 
 		/// <summary>
 		/// Get an IFutureValue instance, whose value can be retrieved through
@@ -314,7 +315,7 @@ namespace NHibernate
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		IFutureValue<T> FutureValue<T>();
-		
+
 		/// <summary>
 		/// Set the read-only mode for entities (and proxies) loaded by this Criteria. This
 		/// setting overrides the default for the session (see <see cref="ISession.DefaultReadOnly" />).

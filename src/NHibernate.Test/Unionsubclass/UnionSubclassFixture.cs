@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Unionsubclass
@@ -16,6 +17,13 @@ namespace NHibernate.Test.Unionsubclass
 		protected override IList Mappings
 		{
 			get { return new string[] { "Unionsubclass.Beings.hbm.xml" }; }
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// MsSqlCe bugs with "select someFloat union select null" with error 25947:
+			// The conversion is not supported. [ Type to convert from (if known) = varbinary, Type to convert to (if known) = float ]
+			return !(Dialect is MsSqlCeDialect);
 		}
 
 		[Test]

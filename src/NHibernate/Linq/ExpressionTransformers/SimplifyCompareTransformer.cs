@@ -4,7 +4,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Linq.Functions;
-using Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation;
+using NHibernate.Util;
+using Remotion.Linq.Parsing.ExpressionVisitors.Transformation;
 
 namespace NHibernate.Linq.ExpressionTransformers
 {
@@ -105,13 +106,13 @@ namespace NHibernate.Linq.ExpressionTransformers
 		private static readonly IDictionary<System.Type, MethodInfo> dummies = new Dictionary<System.Type, MethodInfo>
 			{
 				// Corresponds to string.Compare(a, b).
-				{typeof (string), ReflectionHelper.GetMethod(() => DummyComparison<string>(null, null))},
+				{typeof (string), ReflectHelper.GetMethod(() => DummyComparison<string>(null, null))},
 
 				// System.Data.Services.Providers.DataServiceProviderMethods has Compare methods for these types.
-				{typeof (bool), ReflectionHelper.GetMethod(() => DummyComparison<bool>(false, false))},
-				{typeof (bool?), ReflectionHelper.GetMethod(() => DummyComparison<bool?>(null, null))},
-				{typeof (Guid), ReflectionHelper.GetMethod(() => DummyComparison<Guid>(Guid.Empty, Guid.Empty))},
-				{typeof (Guid?), ReflectionHelper.GetMethod(() => DummyComparison<Guid?>(null, null))},
+				{typeof (bool), ReflectHelper.GetMethod(() => DummyComparison<bool>(false, false))},
+				{typeof (bool?), ReflectHelper.GetMethod(() => DummyComparison<bool?>(null, null))},
+				{typeof (Guid), ReflectHelper.GetMethod(() => DummyComparison<Guid>(Guid.Empty, Guid.Empty))},
+				{typeof (Guid?), ReflectHelper.GetMethod(() => DummyComparison<Guid?>(null, null))},
 			};
 
 

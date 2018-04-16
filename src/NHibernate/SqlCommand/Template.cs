@@ -87,117 +87,117 @@ namespace NHibernate.SqlCommand
 			bool inFromClause = false;
 			bool afterFromTable = false;
 
-			IEnumerator<string> tokensEnum = tokens.GetEnumerator();
-			bool hasMore = tokensEnum.MoveNext();
-			string nextToken = hasMore ? tokensEnum.Current : null;
-			string lastToken = string.Empty;
-			while (hasMore)
+			using (var tokensEnum = tokens.GetEnumerator())
 			{
-				string token = nextToken;
-				string lcToken = token.ToLowerInvariant();
-				hasMore = tokensEnum.MoveNext();
-				nextToken = hasMore ? tokensEnum.Current : null;
-
-				bool isQuoteCharacter = false;
-
-				if (!quotedIdentifier && "'".Equals(token))
+				var hasMore = tokensEnum.MoveNext();
+				var nextToken = hasMore ? tokensEnum.Current : null;
+				var lastToken = string.Empty;
+				while (hasMore)
 				{
-					quoted = !quoted;
-					isQuoteCharacter = true;
-				}
+					var token = nextToken;
+					var lcToken = token.ToLowerInvariant();
+					hasMore = tokensEnum.MoveNext();
+					nextToken = hasMore ? tokensEnum.Current : null;
 
-				if (!quoted)
-				{
-					bool isOpenQuote;
-					if ("`".Equals(token))
+					var isQuoteCharacter = false;
+
+					if (!quotedIdentifier && "'".Equals(token))
 					{
-						isOpenQuote = !quotedIdentifier;
-						token = lcToken = isOpenQuote ?
-						                  dialect.OpenQuote.ToString() :
-						                  dialect.CloseQuote.ToString();
-						quotedIdentifier = isOpenQuote;
+						quoted = !quoted;
 						isQuoteCharacter = true;
 					}
-					else if (!quotedIdentifier && (dialect.OpenQuote == token[0]))
+
+					if (!quoted)
 					{
-						isOpenQuote = true;
-						quotedIdentifier = true;
-						isQuoteCharacter = true;
+						bool isOpenQuote;
+						if ("`".Equals(token))
+						{
+							isOpenQuote = !quotedIdentifier;
+							token = lcToken = isOpenQuote ? dialect.OpenQuote.ToString() : dialect.CloseQuote.ToString();
+							quotedIdentifier = isOpenQuote;
+							isQuoteCharacter = true;
+						}
+						else if (!quotedIdentifier && (dialect.OpenQuote == token[0]))
+						{
+							isOpenQuote = true;
+							quotedIdentifier = true;
+							isQuoteCharacter = true;
+						}
+						else if (quotedIdentifier && (dialect.CloseQuote == token[0]))
+						{
+							quotedIdentifier = false;
+							isQuoteCharacter = true;
+							isOpenQuote = false;
+						}
+						else
+						{
+							isOpenQuote = false;
+						}
+
+						if (isOpenQuote && !inFromClause && !lastToken.EndsWith("."))
+						{
+							result.Append(placeholder).Append('.');
+						}
 					}
-					else if (quotedIdentifier && (dialect.CloseQuote == token[0]))
+
+					var quotedOrWhitespace = quoted ||
+						quotedIdentifier ||
+						isQuoteCharacter ||
+						char.IsWhiteSpace(token[0]);
+
+					if (quotedOrWhitespace)
 					{
-						quotedIdentifier = false;
-						isQuoteCharacter = true;
-						isOpenQuote = false;
+						result.Append(token);
+					}
+					else if (beforeTable)
+					{
+						result.Append(token);
+						beforeTable = false;
+						afterFromTable = true;
+					}
+					else if (afterFromTable)
+					{
+						if (!"as".Equals(lcToken))
+							afterFromTable = false;
+						result.Append(token);
+					}
+					else if (IsNamedParameter(token))
+					{
+						result.Append(token);
+					}
+					else if (
+						IsIdentifier(token, dialect) &&
+						!IsFunctionOrKeyword(lcToken, nextToken, dialect, functionRegistry)
+					)
+					{
+						result.Append(placeholder)
+							  .Append('.')
+							  .Append(token);
 					}
 					else
 					{
-						isOpenQuote = false;
+						if (BeforeTableKeywords.Contains(lcToken))
+						{
+							beforeTable = true;
+							inFromClause = true;
+						}
+						else if (inFromClause && ",".Equals(lcToken))
+						{
+							beforeTable = true;
+						}
+						result.Append(token);
 					}
 
-					if (isOpenQuote && !inFromClause && !lastToken.EndsWith("."))
-					{
-						result.Append(placeholder).Append('.');
-					}
-				}
-
-				bool quotedOrWhitespace = quoted ||
-				                          quotedIdentifier ||
-				                          isQuoteCharacter ||
-				                          char.IsWhiteSpace(token[0]);
-
-				if (quotedOrWhitespace)
-				{
-					result.Append(token);
-				}
-				else if (beforeTable)
-				{
-					result.Append(token);
-					beforeTable = false;
-					afterFromTable = true;
-				}
-				else if (afterFromTable)
-				{
-					if (!"as".Equals(lcToken))
-						afterFromTable = false;
-					result.Append(token);
-				}
-				else if (IsNamedParameter(token))
-				{
-					result.Append(token);
-				}
-				else if (
-					IsIdentifier(token, dialect) &&
-					!IsFunctionOrKeyword(lcToken, nextToken, dialect, functionRegistry)
+					if ( //Yuck:
+						inFromClause &&
+						Keywords.Contains(lcToken) && //"as" is not in Keywords
+						!BeforeTableKeywords.Contains(lcToken)
 					)
-				{
-					result.Append(placeholder)
-						.Append('.')
-						.Append(token);
-				}
-				else
-				{
-					if (BeforeTableKeywords.Contains(lcToken))
 					{
-						beforeTable = true;
-						inFromClause = true;
+						inFromClause = false;
 					}
-					else if (inFromClause && ",".Equals(lcToken))
-					{
-						beforeTable = true;
-					}
-					result.Append(token);
+					lastToken = token;
 				}
-
-				if ( //Yuck:
-					inFromClause &&
-					Keywords.Contains(lcToken) && //"as" is not in Keywords
-					!BeforeTableKeywords.Contains(lcToken)
-					)
-				{
-					inFromClause = false;
-				}
-				lastToken = token;
 			}
 			return result.ToString();
 		}
@@ -218,80 +218,80 @@ namespace NHibernate.SqlCommand
 			bool quoted = false;
 			bool quotedIdentifier = false;
 
-			IEnumerator<string> tokensEnum = tokens.GetEnumerator();
-			bool hasMore = tokensEnum.MoveNext();
-			string nextToken = hasMore ? tokensEnum.Current : null;
-			while (hasMore)
+			using (var tokensEnum = tokens.GetEnumerator())
 			{
-				string token = nextToken;
-				string lcToken = token.ToLowerInvariant();
-				hasMore = tokensEnum.MoveNext();
-				nextToken = hasMore ? tokensEnum.Current : null;
-
-				bool isQuoteCharacter = false;
-
-				if (!quotedIdentifier && "'".Equals(token))
+				var hasMore = tokensEnum.MoveNext();
+				var nextToken = hasMore ? tokensEnum.Current : null;
+				while (hasMore)
 				{
-					quoted = !quoted;
-					isQuoteCharacter = true;
-				}
+					var token = nextToken;
+					var lcToken = token.ToLowerInvariant();
+					hasMore = tokensEnum.MoveNext();
+					nextToken = hasMore ? tokensEnum.Current : null;
 
-				if (!quoted)
-				{
-					bool isOpenQuote;
-					if ("`".Equals(token))
+					var isQuoteCharacter = false;
+
+					if (!quotedIdentifier && "'".Equals(token))
 					{
-						isOpenQuote = !quotedIdentifier;
-						token = lcToken = isOpenQuote ?
-						                  dialect.OpenQuote.ToString() :
-						                  dialect.CloseQuote.ToString();
-						quotedIdentifier = isOpenQuote;
+						quoted = !quoted;
 						isQuoteCharacter = true;
 					}
-					else if (!quotedIdentifier && (dialect.OpenQuote == token[0]))
+
+					if (!quoted)
 					{
-						isOpenQuote = true;
-						quotedIdentifier = true;
-						isQuoteCharacter = true;
+						bool isOpenQuote;
+						if ("`".Equals(token))
+						{
+							isOpenQuote = !quotedIdentifier;
+							token = lcToken = isOpenQuote ? dialect.OpenQuote.ToString() : dialect.CloseQuote.ToString();
+							quotedIdentifier = isOpenQuote;
+							isQuoteCharacter = true;
+						}
+						else if (!quotedIdentifier && (dialect.OpenQuote == token[0]))
+						{
+							isOpenQuote = true;
+							quotedIdentifier = true;
+							isQuoteCharacter = true;
+						}
+						else if (quotedIdentifier && (dialect.CloseQuote == token[0]))
+						{
+							quotedIdentifier = false;
+							isQuoteCharacter = true;
+							isOpenQuote = false;
+						}
+						else
+						{
+							isOpenQuote = false;
+						}
+
+						if (isOpenQuote)
+						{
+							result.Append(Placeholder).Append('.');
+						}
 					}
-					else if (quotedIdentifier && (dialect.CloseQuote == token[0]))
+
+					var quotedOrWhitespace = quoted ||
+						quotedIdentifier ||
+						isQuoteCharacter ||
+						char.IsWhiteSpace(token[0]);
+
+					if (quotedOrWhitespace)
 					{
-						quotedIdentifier = false;
-						isQuoteCharacter = true;
-						isOpenQuote = false;
+						result.Append(token);
+					}
+					else if (
+						IsIdentifier(token, dialect) &&
+						!IsFunctionOrKeyword(lcToken, nextToken, dialect, functionRegistry)
+					)
+					{
+						result.Append(Placeholder)
+							  .Append('.')
+							  .Append(token);
 					}
 					else
 					{
-						isOpenQuote = false;
+						result.Append(token);
 					}
-
-					if (isOpenQuote)
-					{
-						result.Append(Placeholder).Append('.');
-					}
-				}
-
-				bool quotedOrWhitespace = quoted ||
-				                          quotedIdentifier ||
-				                          isQuoteCharacter ||
-				                          char.IsWhiteSpace(token[0]);
-
-				if (quotedOrWhitespace)
-				{
-					result.Append(token);
-				}
-				else if (
-					IsIdentifier(token, dialect) &&
-					!IsFunctionOrKeyword(lcToken, nextToken, dialect, functionRegistry)
-					)
-				{
-					result.Append(Placeholder)
-						.Append('.')
-						.Append(token);
-				}
-				else
-				{
-					result.Append(token);
 				}
 			}
 			return result.ToString();
@@ -299,7 +299,7 @@ namespace NHibernate.SqlCommand
 
 		private static bool IsNamedParameter(string token)
 		{
-			return token.StartsWith(":");
+			return token.StartsWith(':');
 		}
 
 		private static bool IsFunctionOrKeyword(string lcToken, string nextToken, Dialect.Dialect dialect,
@@ -308,7 +308,7 @@ namespace NHibernate.SqlCommand
 			return "(".Equals(nextToken) ||
 			       Keywords.Contains(lcToken) ||
 			       functionRegistry.HasFunction(lcToken) ||
-			       dialect.Keywords.Contains(lcToken) ||
+			       dialect.IsKeyword(lcToken) ||
 				   dialect.IsKnownToken(lcToken, nextToken) ||
 			       FunctionKeywords.Contains(lcToken);
 		}

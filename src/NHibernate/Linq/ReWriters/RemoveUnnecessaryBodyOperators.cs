@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.ResultOperators;
@@ -7,7 +8,7 @@ using Remotion.Linq.EagerFetching;
 
 namespace NHibernate.Linq.ReWriters
 {
-	public class RemoveUnnecessaryBodyOperators : QueryModelVisitorBase
+	public class RemoveUnnecessaryBodyOperators : NhQueryModelVisitorBase
 	{
 		private RemoveUnnecessaryBodyOperators() {}
 
@@ -35,8 +36,7 @@ namespace NHibernate.Linq.ReWriters
 			}
 			if (resultOperator is AnyResultOperator)
 			{
-				Array.ForEach(queryModel.ResultOperators.OfType<FetchOneRequest>().ToArray(), op => queryModel.ResultOperators.Remove(op));
-				Array.ForEach(queryModel.ResultOperators.OfType<FetchManyRequest>().ToArray(), op => queryModel.ResultOperators.Remove(op));
+				ResultOperatorRemover.Remove(queryModel, x => x is FetchRequestBase);
 			}
 			base.VisitResultOperator(resultOperator, queryModel, index);
 		}

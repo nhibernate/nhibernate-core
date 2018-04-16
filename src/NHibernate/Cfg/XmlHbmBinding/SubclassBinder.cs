@@ -33,7 +33,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (subclass.EntityPersisterClass == null)
 				subclass.RootClazz.EntityPersisterClass = typeof(SingleTableEntityPersister);
 
-			log.InfoFormat("Mapping subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
+			log.Info("Mapping subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
 
 			// properties
 			new PropertiesBinder(mappings, subclass, dialect).Bind(subClassMapping.Properties, inheritedMetas);

@@ -8,7 +8,7 @@ namespace NHibernate.Linq.Functions
 {
 	public sealed class LinqToHqlGeneratorsRegistryFactory
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (LinqToHqlGeneratorsRegistryFactory));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (LinqToHqlGeneratorsRegistryFactory));
 
 		public static ILinqToHqlGeneratorsRegistry CreateGeneratorsRegistry(IDictionary<string, string> properties)
 		{
@@ -17,12 +17,12 @@ namespace NHibernate.Linq.Functions
 			{
 				try
 				{
-					log.Info("Initializing LinqToHqlGeneratorsRegistry: " + registry);
+					log.Info("Initializing LinqToHqlGeneratorsRegistry: {0}", registry);
 					return (ILinqToHqlGeneratorsRegistry) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(registry));
 				}
 				catch (Exception e)
 				{
-					log.Fatal("Could not instantiate LinqToHqlGeneratorsRegistry", e);
+					log.Fatal(e, "Could not instantiate LinqToHqlGeneratorsRegistry");
 					throw new HibernateException("Could not instantiate LinqToHqlGeneratorsRegistry: " + registry, e);
 				}
 			}

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using NHibernate.SqlCommand;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -56,7 +55,7 @@ namespace NHibernate.Criterion
 
 		public abstract bool IsGrouped { get; }
 
-		public abstract SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters);
+		public abstract SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery);
 
 		public abstract bool IsAggregate { get; }
 
@@ -68,10 +67,10 @@ namespace NHibernate.Criterion
 		/// <returns></returns>
 		public virtual TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[0];
+			return Array.Empty<TypedValue>();
 		}
 
-		public abstract SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters);
+		public abstract SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery);
 
 		public abstract IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery);
 		

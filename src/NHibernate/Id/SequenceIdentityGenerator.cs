@@ -8,7 +8,7 @@ namespace NHibernate.Id
 	/// by attaching a output parameter to the SQL command
 	/// In this respect it works much like ANSI-SQL IDENTITY generation.
 	/// </summary>
-	public class SequenceIdentityGenerator : SequenceGenerator, IPostInsertIdentifierGenerator
+	public partial class SequenceIdentityGenerator : SequenceGenerator, IPostInsertIdentifierGenerator
 	{
 		#region IPostInsertIdentifierGenerator Members
 

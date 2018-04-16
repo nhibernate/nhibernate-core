@@ -22,7 +22,7 @@ namespace NHibernate.Id
 	/// This code was contributed by Donald Mull.
 	/// </p>
 	/// </remarks>
-	public class GuidCombGenerator : IIdentifierGenerator
+	public partial class GuidCombGenerator : IIdentifierGenerator
 	{
 		private static readonly long BaseDateTicks = new DateTime(1900, 1, 1).Ticks;
 

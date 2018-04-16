@@ -1,5 +1,6 @@
 ﻿using NHibernate.Criterion;
 using NHibernate.Dialect;
+using NHibernate.Driver;
 using NHibernate.Transform;
 using NUnit.Framework;
 
@@ -83,8 +84,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3609
 		[Test]
 		public void GroupByClauseHasParameterSet()
 		{
-			if (Dialect is FirebirdDialect)
-				Assert.Ignore("Firebird does not support complex group by expressions");
+			if (!TestDialect.SupportsComplexExpressionInGroupBy)
+				Assert.Ignore(Dialect.GetType().Name + " does not support complex group by expressions");
+			// When not using a named prefix, the driver use positional parameters, causing parameterized
+			// expression used in group by and select to be not be considered as the same expression.
+			if (!((DriverBase)Sfi.ConnectionProvider.Driver).UseNamedPrefixInParameter)
+				Assert.Ignore("Cannot group by and select a parameterized expression with positional parameters");
 
 			using (var session = OpenSession())
 			using (session.BeginTransaction())

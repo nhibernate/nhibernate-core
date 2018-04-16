@@ -1,5 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
+using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NUnit.Framework;
 
@@ -8,6 +8,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 	[TestFixture]
 	public class NativeSqlCollectionLoaderFixture : BugTestCase
 	{
+		protected virtual bool WithQueryCache => false;
+
+		protected override void Configure(Configuration configuration)
+		{
+			base.Configure(configuration);
+			configuration.SetProperty(Environment.UseQueryCache, WithQueryCache.ToString());
+		}
+
 		#region Tests - <return-join>
 
 		[Test]
@@ -18,8 +26,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 
 			Assert.That(country, Is.Not.Null);
 			Assert.That(country.Routes, Is.EquivalentTo(routes));
-
-			Cleanup();
 		}
 
 		[Test]
@@ -29,7 +35,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			Country country = LoadCountryWithNativeSQL(CreateCountry(routes), "LoadCountryRoutesWithCustomAliases");
 			Assert.That(country, Is.Not.Null);
 			Assert.That(country.Routes, Is.EquivalentTo(routes));
-			Cleanup();
 		}
 
 		[Test]
@@ -39,9 +44,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			Country country = LoadCountryWithNativeSQL(CreateCountry(stats), "LoadAreaStatisticsWithSimpleHbmAliasInjection");
 
 			Assert.That(country, Is.Not.Null);
-			Assert.That((ICollection) country.Statistics.Keys, Is.EquivalentTo((ICollection) stats.Keys), "Keys");
-			Assert.That((ICollection) country.Statistics.Values, Is.EquivalentTo((ICollection) stats.Values), "Elements");
-			CleanupWithPersons();
+			Assert.That(country.Statistics.Keys, Is.EquivalentTo(stats.Keys), "Keys");
+			Assert.That(country.Statistics.Values, Is.EquivalentTo(stats.Values), "Elements");
 		}
 
 		[Test]
@@ -51,9 +55,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			Country country = LoadCountryWithNativeSQL(CreateCountry(stats), "LoadAreaStatisticsWithComplexHbmAliasInjection");
 
 			Assert.That(country, Is.Not.Null);
-			Assert.That((ICollection) country.Statistics.Keys, Is.EquivalentTo((ICollection) stats.Keys), "Keys");
-			Assert.That((ICollection) country.Statistics.Values, Is.EquivalentTo((ICollection) stats.Values), "Elements");
-			CleanupWithPersons();
+			Assert.That(country.Statistics.Keys, Is.EquivalentTo(stats.Keys), "Keys");
+			Assert.That(country.Statistics.Values, Is.EquivalentTo(stats.Values), "Elements");
 		}
 
 		[Test]
@@ -63,10 +66,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			Country country = LoadCountryWithNativeSQL(CreateCountry(stats), "LoadAreaStatisticsWithCustomAliases");
 
 			Assert.That(country, Is.Not.Null);
-			Assert.That((ICollection) country.Statistics.Keys, Is.EquivalentTo((ICollection) stats.Keys), "Keys");
-			Assert.That((ICollection) country.Statistics.Values, Is.EquivalentTo((ICollection) stats.Values), "Elements");
-
-			CleanupWithPersons();
+			Assert.That(country.Statistics.Keys, Is.EquivalentTo(stats.Keys), "Keys");
+			Assert.That(country.Statistics.Values, Is.EquivalentTo(stats.Values), "Elements");
 		}
 
 		[Test]
@@ -77,13 +78,16 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			Save(country);
 			using (ISession session = OpenSession())
 			{
-				var c =
-					session.GetNamedQuery("LoadCountryCitiesWithSimpleHbmAliasInjection").SetString("country_code", country.Code).
-						UniqueResult<Country>();
+				var query = session.GetNamedQuery("LoadCountryCitiesWithSimpleHbmAliasInjection")
+				                   .SetString("country_code", country.Code)
+				                   .SetCacheable(WithQueryCache);
+				var c = query.UniqueResult<Country>();
+				if (WithQueryCache)
+					// Re-get it for obtaining it from cache.
+					c = query.UniqueResult<Country>();
 				Assert.That(c, Is.Not.Null);
 				Assert.That(c.Cities, Is.EquivalentTo(cities));
 			}
-			CleanupWithCities();
 		}
 
 		[Test]
@@ -94,13 +98,16 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			Save(country);
 			using (ISession session = OpenSession())
 			{
-				var c =
-					session.GetNamedQuery("LoadCountryCitiesWithComplexHbmAliasInjection").SetString("country_code", country.Code).
-						UniqueResult<Country>();
+				var query = session.GetNamedQuery("LoadCountryCitiesWithComplexHbmAliasInjection")
+				                   .SetString("country_code", country.Code)
+				                   .SetCacheable(WithQueryCache);
+				var c = query.UniqueResult<Country>();
+				if (WithQueryCache)
+					// Re-get it for obtaining it from cache.
+					c = query.UniqueResult<Country>();
 				Assert.That(c, Is.Not.Null);
 				Assert.That(c.Cities, Is.EquivalentTo(cities));
 			}
-			CleanupWithCities();
 		}
 
 		[Test]
@@ -111,35 +118,25 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			Save(country);
 			using (ISession session = OpenSession())
 			{
-				var c =
-					session.GetNamedQuery("LoadCountryCitiesWithCustomAliases").SetString("country_code", country.Code).
-						UniqueResult<Country>();
+				var query = session.GetNamedQuery("LoadCountryCitiesWithCustomAliases")
+				                   .SetString("country_code", country.Code)
+				                   .SetCacheable(WithQueryCache);
+				var c = query.UniqueResult<Country>();
+				if (WithQueryCache)
+					// Re-get it for obtaining it from cache.
+					c = query.UniqueResult<Country>();
 				Assert.That(c, Is.Not.Null);
 				Assert.That(c.Cities, Is.EquivalentTo(cities));
 			}
-
-			// cleanup
-			CleanupWithCities();
 		}
 
 		[Test]
 		public void NativeQueryWithUnresolvedHbmAliasInjection()
 		{
 			IDictionary<int, AreaStatistics> stats = CreateStatistics();
-			try
-			{
-				LoadCountryWithNativeSQL(CreateCountry(stats), "LoadAreaStatisticsWithFaultyHbmAliasInjection");
-				Assert.Fail("Expected exception");
-			}
-			catch(QueryException)
-			{
-				// ok
-			}
-			finally
-			{
-				// cleanup
-				CleanupWithPersons();
-			}
+			Assert.That(
+				() => LoadCountryWithNativeSQL(CreateCountry(stats), "LoadAreaStatisticsWithFaultyHbmAliasInjection"),
+				Throws.InstanceOf<QueryException>());
 		}
 
 		private Country LoadCountryWithNativeSQL(Country country, string queryName)
@@ -156,7 +153,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			}
 			using (ISession session = OpenSession())
 			{
-				return session.GetNamedQuery(queryName).SetString("country_code", country.Code).UniqueResult<Country>();
+				var query = session.GetNamedQuery(queryName).SetString("country_code", country.Code).SetCacheable(WithQueryCache);
+				var result = query.UniqueResult<Country>();
+				if (WithQueryCache)
+					// Get it from cache by re-executing.
+					result = query.UniqueResult<Country>();
+				return result;
 			}
 		}
 
@@ -167,6 +169,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		[Test]
 		public void LoadElementCollectionWithCustomLoader()
 		{
+			Assume.That(WithQueryCache, Is.False, "This test does not use a cacheable query.");
 			string[] routes = CreateRoutes();
 			Country country = CreateCountry(routes);
 			Save(country);
@@ -176,12 +179,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 				Assert.That(c, Is.Not.Null, "country");
 				Assert.That(c.Routes, Is.EquivalentTo(routes), "country.Routes");
 			}
-			Cleanup();
 		}
 
 		[Test]
 		public void LoadCompositeElementCollectionWithCustomLoader()
 		{
+			Assume.That(WithQueryCache, Is.False, "This test does not use a cacheable query.");
 			IDictionary<int, AreaStatistics> stats = CreateStatistics();
 			Country country = CreateCountry(stats);
 			Save(country);
@@ -189,15 +192,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			{
 				var a = session.Get<Area>(country.Code);
 				Assert.That(a, Is.Not.Null, "area");
-				Assert.That((ICollection) a.Statistics.Keys, Is.EquivalentTo((ICollection) stats.Keys), "area.Keys");
-				Assert.That((ICollection) a.Statistics.Values, Is.EquivalentTo((ICollection) stats.Values), "area.Elements");
+				Assert.That(a.Statistics.Keys, Is.EquivalentTo(stats.Keys), "area.Keys");
+				Assert.That(a.Statistics.Values, Is.EquivalentTo(stats.Values), "area.Elements");
 			}
-			CleanupWithPersons();
 		}
 
 		[Test]
 		public void LoadEntityCollectionWithCustomLoader()
 		{
+			Assume.That(WithQueryCache, Is.False, "This test does not use a cacheable query.");
 			City[] cities = CreateCities();
 			Country country = CreateCountry(cities);
 			Save(country);
@@ -208,7 +211,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 				Assert.That(c, Is.Not.Null, "country");
 				Assert.That(c.Cities, Is.EquivalentTo(cities), "country.Cities");
 			}
-			CleanupWithCities();
 		}
 
 		private void Save<TArea>(TArea area) where TArea : Area
@@ -230,10 +232,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		[Test]
 		public void NativeUpdateQueryWithoutResults()
 		{
-			if(!(Dialect is MsSql2000Dialect))
-			{
-				Assert.Ignore("This does not apply to {0}", Dialect);
-			}
+			Assume.That(Dialect, Is.InstanceOf<MsSql2000Dialect>(), "This does not apply to {0}", Dialect);
+			Assume.That(WithQueryCache, Is.False, "This test does not use a cacheable query.");
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction tx = session.BeginTransaction())
@@ -247,10 +247,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		[Test]
 		public void NativeScalarQueryWithoutResults()
 		{
-			if (!(Dialect is MsSql2000Dialect))
-			{
-				Assert.Ignore("This does not apply to {0}", Dialect);
-			}
+			Assume.That(Dialect, Is.InstanceOf<MsSql2000Dialect>(), "This does not apply to {0}", Dialect);
+			Assume.That(WithQueryCache, Is.False, "This test does not use a cacheable query.");
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction tx = session.BeginTransaction())
@@ -276,7 +274,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 				{
 					// Native SQL Query outcome is not validated against <return-*> 
 					// resultset declarations.
-					var result = session.GetNamedQuery("ScalarQueryWithUndefinedResultset").UniqueResult<int>();
+					var query = session.GetNamedQuery("ScalarQueryWithUndefinedResultset")
+					                   .SetReadOnly(WithQueryCache);
+					var result = query.UniqueResult<int>();
+					if (WithQueryCache)
+						result = query.UniqueResult<int>();
 					Assert.That(result, Is.EqualTo(1));
 				}
 			}
@@ -295,7 +297,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 				{
 					// Native SQL Query outcome is not validated against <return-*> 
 					// resultset declarations.
-					var result = session.GetNamedQuery("ScalarQueryWithDefinedResultset").UniqueResult<int>();
+					var query = session.GetNamedQuery("ScalarQueryWithDefinedResultset")
+					                   .SetReadOnly(WithQueryCache);
+					var result = query.UniqueResult<int>();
+					if (WithQueryCache)
+						result = query.UniqueResult<int>();
 					Assert.That(result, Is.EqualTo(2));
 				}
 			}
@@ -305,41 +311,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 
 		#region cleanup
 
-		private void Cleanup()
+		protected override void OnTearDown()
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
 			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					session.Delete("from Country");
-					tx.Commit();
-				}
-			}
-		}
-
-		private void CleanupWithPersons()
-		{
-			using (ISession session = OpenSession())
-			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					session.Delete("from Person");
-					session.Delete("from Country");
-					tx.Commit();
-				}
-			}
-		}
-
-		private void CleanupWithCities()
-		{
-			using (ISession session = OpenSession())
-			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					session.Delete("from City");
-					session.Delete("from Country");
-					tx.Commit();
-				}
+				session.Delete("from Person");
+				session.Delete("from City");
+				session.Delete("from Country");
+				tx.Commit();
 			}
 		}
 
@@ -415,5 +395,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		}
 
 		#endregion
+	}
+
+	[TestFixture]
+	public class CachedNativeSqlCollectionLoaderFixture : NativeSqlCollectionLoaderFixture
+	{
+		protected override bool WithQueryCache => true;
 	}
 }

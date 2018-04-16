@@ -65,8 +65,8 @@ namespace NHibernate.Engine.Query.Sql
 			// Code taken back from 8e92af3f and amended according to NH-1931.
 			return hashCode == that.hashCode &&
 				queryString.Equals(that.queryString) &&
-				CollectionHelper.CollectionEquals(querySpaces, that.querySpaces) &&
-				CollectionHelper.CollectionEquals<INativeSQLQueryReturn>(sqlQueryReturns, that.sqlQueryReturns);
+				CollectionHelper.SequenceEquals(querySpaces, that.querySpaces) &&
+				CollectionHelper.SequenceEquals<INativeSQLQueryReturn>(sqlQueryReturns, that.sqlQueryReturns);
 		}
 
 		public override int GetHashCode()

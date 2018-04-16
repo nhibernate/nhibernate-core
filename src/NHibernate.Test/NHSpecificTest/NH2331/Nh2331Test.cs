@@ -97,7 +97,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2331
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return (true);
+			return Dialect.SupportsScalarSubSelects;
 		}
 
 		[Test]

@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
+	[TestFixture]
 	public class UriTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
@@ -94,7 +95,7 @@ namespace NHibernate.Test.TypesTest
 		public void AutoDiscoverFromNetType()
 		{
 			// integration test to be 100% sure
-			var propertyType = sessions.GetEntityPersister(typeof(UriClass).FullName).GetPropertyType("AutoUri");
+			var propertyType = Sfi.GetEntityPersister(typeof(UriClass).FullName).GetPropertyType("AutoUri");
 			Assert.That(propertyType, Is.InstanceOf<UriType>());
 		}
 

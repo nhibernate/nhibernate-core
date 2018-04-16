@@ -2,6 +2,7 @@ using log4net.Core;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NHibernate.Driver;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1144
@@ -25,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1144
 		[Test]
 		public void CanSaveInSingleBatch()
 		{
-			if (configuration.Properties[Environment.ConnectionDriver].Contains(typeof (OracleDataClientDriver).Name) == false)
+			if (!typeof(OracleDataClientDriver).IsAssignableFrom(ReflectHelper.ClassForName(cfg.GetProperty(Environment.ConnectionDriver))))
 			{
 				Assert.Ignore("Only applicable for Oracle Data Client driver");
 			}
@@ -52,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1144
 						tx.Commit();
 						foreach (LoggingEvent loggingEvent in spy.Appender.GetEvents())
 						{
-							if ("Executing batch".Equals(loggingEvent.MessageObject))
+							if ("Executing batch".Equals(loggingEvent.RenderedMessage))
 							{
 								executedBatch = true;
 								break;

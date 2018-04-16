@@ -91,7 +91,7 @@ namespace NHibernate.Util
 				upTo = upTo >= 0 ? upTo : condition.Length;
 				string property = condition.Substring(startOfProperty, upTo - startOfProperty);
 
-				string fullColumn = propMap.ContainsKey(property) ? propMap[property] : string.Format(string.Format("{0}.{1}", defaultAlias, property));
+				string fullColumn = propMap.ContainsKey(property) ? propMap[property] : string.Format("{0}.{1}", defaultAlias, property);
 
 				buffer.Append(fullColumn);
 

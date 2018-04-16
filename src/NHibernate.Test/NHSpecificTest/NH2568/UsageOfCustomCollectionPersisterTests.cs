@@ -20,6 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2568
 		public virtual int Id { get; set; }
 	}
 
+	[TestFixture]
 	public class UsageOfCustomCollectionPersisterTests
 	{
 		private HbmMapping GetMappings()

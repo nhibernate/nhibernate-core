@@ -242,7 +242,7 @@ namespace NHibernate.Test.FilterTest
 			var cfg = GetConfiguration();
 			cfg.AddXmlString(filterDef);
 		    var memoryAppender = new MemoryAppender();
-		    BasicConfigurator.Configure(memoryAppender);
+		    BasicConfigurator.Configure(LogManager.GetRepository(typeof(ConfigFixture).Assembly), memoryAppender);
             try
 			{
 			    cfg.BuildSessionFactory();

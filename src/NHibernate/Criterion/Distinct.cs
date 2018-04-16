@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -16,15 +15,15 @@ namespace NHibernate.Criterion
 			this.projection = proj;
 		}
 
-		public virtual SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public virtual SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
 			return new SqlString("distinct ")
-				.Append(projection.ToSqlString(criteria, position, criteriaQuery,enabledFilters));
+				.Append(projection.ToSqlString(criteria, position, criteriaQuery));
 		}
 
-		public virtual SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public virtual SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return projection.ToGroupSqlString(criteria, criteriaQuery,enabledFilters);
+			return projection.ToGroupSqlString(criteria, criteriaQuery);
 		}
 
 		public virtual IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)

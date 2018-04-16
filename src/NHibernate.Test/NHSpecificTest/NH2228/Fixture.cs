@@ -5,6 +5,7 @@ using NHibernate.Cfg.Loquacious;
 
 namespace NHibernate.Test.NHSpecificTest.NH2228
 {
+	[TestFixture]
 	public class Fixture : BugTestCase
 	{
 		public class ParentWithTwoChildrenScenario : IDisposable

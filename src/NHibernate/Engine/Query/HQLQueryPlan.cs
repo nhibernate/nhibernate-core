@@ -10,7 +10,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine.Query
 {
-    public interface IQueryPlan
+    public partial interface IQueryPlan
     {
         ParameterMetadata ParameterMetadata { get; }
         ISet<string> QuerySpaces { get; }
@@ -29,9 +29,9 @@ namespace NHibernate.Engine.Query
 
 	/// <summary> Defines a query execution plan for an HQL query (or filter). </summary>
 	[Serializable]
-	public class HQLQueryPlan : IQueryPlan
+	public partial class HQLQueryPlan : IQueryPlan
 	{
-		protected static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(HQLQueryPlan));
+		protected static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(HQLQueryPlan));
 
 		private readonly string _sourceQuery;
 
@@ -85,9 +85,9 @@ namespace NHibernate.Engine.Query
 
 		public void PerformList(QueryParameters queryParameters, ISessionImplementor session, IList results)
 		{
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
-				Log.Debug("find: " + _sourceQuery);
+				Log.Debug("find: {0}", _sourceQuery);
 				queryParameters.LogParameters(session.Factory);
 			}
 
@@ -152,13 +152,26 @@ namespace NHibernate.Engine.Query
 
 		public IEnumerable PerformIterate(QueryParameters queryParameters, IEventSource session)
 		{
-			bool? many;
-			IEnumerable[] results;
-			IEnumerable result;
-
-			DoIterate(queryParameters, session, out many, out results, out result);
-
-			return (many.HasValue && many.Value) ? new JoinedEnumerable(results) : result;
+			if (Log.IsDebugEnabled())
+			{
+				Log.Debug("enumerable: {0}", _sourceQuery);
+				queryParameters.LogParameters(session.Factory);
+			}
+			if (Translators.Length == 0)
+			{
+				return CollectionHelper.EmptyEnumerable;
+			}
+			if (Translators.Length == 1)
+			{
+				return Translators[0].GetEnumerable(queryParameters, session);
+			}
+			var results = new IEnumerable[Translators.Length];
+			for (int i = 0; i < Translators.Length; i++)
+			{
+				var result = Translators[i].GetEnumerable(queryParameters, session);
+				results[i] = result;
+			}
+			return new JoinedEnumerable(results);
 		}
 
 		public IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session)
@@ -168,14 +181,14 @@ namespace NHibernate.Engine.Query
 
         public int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session)
         {
-            if (Log.IsDebugEnabled)
+            if (Log.IsDebugEnabled())
             {
-                Log.Debug("executeUpdate: " + _sourceQuery);
+                Log.Debug("executeUpdate: {0}", _sourceQuery);
                 queryParameters.LogParameters(session.Factory);
             }
             if (Translators.Length != 1)
             {
-                Log.Warn("manipulation query [" + _sourceQuery + "] resulted in [" + Translators.Length + "] split queries");
+                Log.Warn("manipulation query [{0}] resulted in [{1}] split queries", _sourceQuery, Translators.Length);
             }
             int result = 0;
             for (int i = 0; i < Translators.Length; i++)
@@ -185,40 +198,7 @@ namespace NHibernate.Engine.Query
             return result;
         }
 
-		void DoIterate(QueryParameters queryParameters, IEventSource session, out bool? isMany, out IEnumerable[] results, out IEnumerable result)
-		{
-			isMany = null;
-			results = null;
-			if (Log.IsDebugEnabled)
-			{
-				Log.Debug("enumerable: " + _sourceQuery);
-				queryParameters.LogParameters(session.Factory);
-			}
-			if (Translators.Length == 0)
-			{
-				result = CollectionHelper.EmptyEnumerable;
-			}
-			else
-			{
-				results = null;
-				bool many = Translators.Length > 1;
-				if (many)
-				{
-					results = new IEnumerable[Translators.Length];
-				}
-
-				result = null;
-				for (int i = 0; i < Translators.Length; i++)
-				{
-					result = Translators[i].GetEnumerable(queryParameters, session);
-					if (many)
-						results[i] = result;
-				}
-				isMany = many;
-			}
-		}
-
-        void FinaliseQueryPlan()
+		void FinaliseQueryPlan()
         {
             BuildSqlStringsAndQuerySpaces();
             BuildMetaData();

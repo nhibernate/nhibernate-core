@@ -10,7 +10,7 @@ namespace NHibernate.Hql
 {
 	public class QuerySplitter
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(QuerySplitter));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(QuerySplitter));
 
 		private static readonly HashSet<string> beforeClassTokens = new HashSet<string>();
 		private static readonly HashSet<string> notAfterClassTokens = new HashSet<string>();
@@ -113,10 +113,10 @@ namespace NHibernate.Hql
 				templateQuery.Append(token);
 			}
 			string[] results =
-				StringHelper.Multiply(templateQuery.ToString(), placeholders.GetEnumerator(), replacements.GetEnumerator());
+				StringHelper.Multiply(templateQuery.ToString(), placeholders, replacements);
 			if (results.Length == 0)
 			{
-				log.Warn("no persistent classes found for query class: " + query);
+				log.Warn("no persistent classes found for query class: {0}", query);
 			}
 			return results;
 		}

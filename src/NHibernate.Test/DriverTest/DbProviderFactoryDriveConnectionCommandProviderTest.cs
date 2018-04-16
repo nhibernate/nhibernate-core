@@ -1,3 +1,4 @@
+#if NETFX
 using System;
 using System.Data.Common;
 using NHibernate.Driver;
@@ -5,6 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.DriverTest
 {
+	[TestFixture]
 	public class DbProviderFactoryDriveConnectionCommandProviderTest
 	{
 		[Test]
@@ -36,3 +38,4 @@ namespace NHibernate.Test.DriverTest
 		}
 	}
 }
+#endif

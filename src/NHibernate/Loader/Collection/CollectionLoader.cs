@@ -13,7 +13,7 @@ namespace NHibernate.Loader.Collection
 	/// <seealso cref="OneToManyLoader" />
 	/// <seealso cref="BasicCollectionLoader" />
 	/// </summary>
-	public class CollectionLoader : OuterJoinLoader, ICollectionInitializer
+	public partial class CollectionLoader : OuterJoinLoader, ICollectionInitializer
 	{
 		private readonly IQueryableCollection collectionPersister;
 		private IParameterSpecification[] parametersSpecifications;

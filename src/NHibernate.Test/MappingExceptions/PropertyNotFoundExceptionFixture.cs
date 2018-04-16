@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Cfg;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.MappingExceptions
@@ -43,6 +44,22 @@ namespace NHibernate.Test.MappingExceptions
 		{
 			new PropertyNotFoundException(null, "someField");
 			new PropertyNotFoundException(null, "SomeProperty", "getter");
+		}
+
+		[Test]
+		public void IsSerializable()
+		{
+			NHAssert.IsSerializable(new PropertyNotFoundException(null, "someField"));
+			NHAssert.IsSerializable(new PropertyNotFoundException(null, "SomeProperty", "getter"));
+		}
+
+		[Test]
+		public void SerializeWithType()
+		{
+			var bytes = SerializationHelper.Serialize(new PropertyNotFoundException(typeof(PropertyNotFoundExceptionFixture), "SomeProperty", "getter"));
+			var pnfe = (PropertyNotFoundException) SerializationHelper.Deserialize(bytes);
+
+			Assert.That(pnfe.TargetType, Is.EqualTo(typeof(PropertyNotFoundExceptionFixture)));
 		}
 	}
 }

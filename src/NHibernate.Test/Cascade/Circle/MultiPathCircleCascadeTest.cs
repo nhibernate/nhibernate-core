@@ -424,22 +424,22 @@ namespace NHibernate.Test.Cascade.Circle
 		
 		protected void ClearCounts()
 		{
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 		}
 		
 		protected void AssertInsertCount(long expected)
 		{
-			Assert.That(sessions.Statistics.EntityInsertCount, Is.EqualTo(expected), "unexpected insert count");
+			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(expected), "unexpected insert count");
 		}
 		
 		protected void AssertUpdateCount(long expected)
 		{
-			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(expected), "unexpected update count");
+			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(expected), "unexpected update count");
 		}
 		
 		protected void AssertDeleteCount(long expected)
 		{
-			Assert.That(sessions.Statistics.EntityDeleteCount, Is.EqualTo(expected), "unexpected delete count");
+			Assert.That(Sfi.Statistics.EntityDeleteCount, Is.EqualTo(expected), "unexpected delete count");
 		}
 	}
 }

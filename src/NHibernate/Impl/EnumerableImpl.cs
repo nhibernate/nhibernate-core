@@ -15,11 +15,15 @@ namespace NHibernate.Impl
 	/// Provides an <see cref="IEnumerable"/> wrapper over the results of an <see cref="IQuery"/>.
 	/// </summary>
 	/// <remarks>
-	/// This is the IteratorImpl in H2.0.3
+	/// <para>This is the IteratorImpl in H2.0.3</para>
+	/// <para>This thing is scary. It is an <see cref="IEnumerable" /> which returns itself as a <see cref="IEnumerator" />
+	/// when <c>GetEnumerator</c> is called, and <c>EnumerableImpl</c> is disposable. Iterating over it with a <c>foreach</c>
+	/// will cause it to be disposed, probably unexpectedly for the developer. (https://stackoverflow.com/a/11179175/1178314)
+	/// "Fortunately", it does not currently support multiple iterations anyway.</para>
 	/// </remarks>
 	public class EnumerableImpl : IEnumerable, IEnumerator, IDisposable
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(EnumerableImpl));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(EnumerableImpl));
 
 		private DbDataReader _reader;
 		private IEventSource _session;

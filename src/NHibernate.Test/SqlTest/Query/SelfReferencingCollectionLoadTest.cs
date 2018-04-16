@@ -1,4 +1,5 @@
 using System.Collections;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.SqlTest.Query
@@ -14,6 +15,13 @@ namespace NHibernate.Test.SqlTest.Query
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// Hacky mapping causing the primary key to reference itself as a foreign key, which is not supported by MySQL. It
+			// fails when trying to insert data by considering the foreign key violated.
+			return !(Dialect is MySQLDialect);
 		}
 
 		[Test]

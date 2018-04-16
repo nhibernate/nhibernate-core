@@ -8,7 +8,7 @@ namespace NHibernate
 	/// <summary>
 	/// Combines several queries into a single database call
 	/// </summary>
-	public interface IMultiQuery
+	public partial interface IMultiQuery
 	{
 		/// <summary>
 		/// Get all the results
@@ -144,9 +144,9 @@ namespace NHibernate
 		IMultiQuery SetForceCacheRefresh(bool forceCacheRefresh);
 
 		/// <summary>
-		/// The timeout for the underlying ADO query
+		/// Set a timeout for the underlying ADO.NET query.
 		/// </summary>
-		/// <param name="timeout"></param>
+		/// <param name="timeout">The timeout in seconds.</param>
 		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetTimeout(int timeout);
 
@@ -241,8 +241,21 @@ namespace NHibernate
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
 		/// <param name="name">The name of the parameter</param>
 		/// <returns>The instance for method chain.</returns>
+		/// <remarks>Since v5.0, does no more cut fractional seconds. Use <see cref="SetDateTimeNoMs" />
+		/// for this</remarks>
 		IMultiQuery SetDateTime(string name, DateTime val);
 
+		/// <summary>
+		/// Bind an instance of a <see cref="DateTime" /> to a named parameter
+		/// using an NHibernate <see cref="DateTimeNoMsType"/>.
+		/// </summary>
+		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		/// <param name="name">The name of the parameter</param>
+		/// <returns>The instance for method chain.</returns>
+		IMultiQuery SetDateTimeNoMs(string name, DateTime val);
+
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead, it uses DateTime2 with dialects supporting it.")]
 		IMultiQuery SetDateTime2(string name, DateTime val);
 		IMultiQuery SetTimeSpan(string name, TimeSpan val);
 		IMultiQuery SetTimeAsTimeSpan(string name, TimeSpan val);
@@ -346,6 +359,7 @@ namespace NHibernate
 		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetTime(string name, DateTime val);
 
+		// Obsolete since v5.0
 		/// <summary>
 		/// Bind an instance of a <see cref="DateTime" /> to a named parameter
 		/// using an NHibernate <see cref="TimestampType"/>.
@@ -353,6 +367,7 @@ namespace NHibernate
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
 		/// <returns>The instance for method chain.</returns>
+		[Obsolete("Use SetDateTime instead.")]
 		IMultiQuery SetTimestamp(string name, DateTime val);
 
 		/// <summary>

@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH719
 
 			try
 			{
-				using (ISession session = sessions.OpenSession())
+				using (ISession session = Sfi.OpenSession())
 				{
 					session.Save(a);
 					session.Save(b);
@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH719
 					session.Flush();
 				}
 
-				using (ISession session = sessions.OpenSession())
+				using (ISession session = Sfi.OpenSession())
 				{
 					// runs OK, since it's not cached
 					NotCached nc = (NotCached) session.Load(typeof(NotCached), 1);
@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH719
 				}
 
 				// 2nd run fails, when data is read from the cache
-				using (ISession session = sessions.OpenSession())
+				using (ISession session = Sfi.OpenSession())
 				{
 					// runs OK, since it's not cached
 					NotCached nc = (NotCached) session.Load(typeof(NotCached), 1);

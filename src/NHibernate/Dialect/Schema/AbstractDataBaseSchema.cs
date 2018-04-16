@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -25,6 +26,8 @@ namespace NHibernate.Dialect.Schema
 		{
 			get { return connection; }
 		}
+
+		public virtual bool IncludeDataTypesInReservedWords => true;
 
 		#region IDataBaseSchema Members
 
@@ -93,12 +96,22 @@ namespace NHibernate.Dialect.Schema
 
 		public virtual ISet<string> GetReservedWords()
 		{
-			var result = new HashSet<string>();
+			var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			DataTable dtReservedWords = connection.GetSchema(DbMetaDataCollectionNames.ReservedWords);
 			foreach (DataRow row in dtReservedWords.Rows)
 			{
 				result.Add(row["ReservedWord"].ToString());
 			}
+
+			if (IncludeDataTypesInReservedWords)
+			{
+				DataTable dtTypes = connection.GetSchema(DbMetaDataCollectionNames.DataTypes);
+				foreach (DataRow row in dtTypes.Rows)
+				{
+					result.Add(row["TypeName"].ToString());
+				}
+			}
+
 			return result;
 		}
 

@@ -30,7 +30,7 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		public IMethodBodyEmitter MethodBodyEmitter { get; private set; }
 
-		private static MethodBuilder GenerateMethodSignature(string name, MethodInfo method, TypeBuilder typeBuilder)
+		internal static MethodBuilder GenerateMethodSignature(string name, MethodInfo method, TypeBuilder typeBuilder)
 		{
 			//TODO: Should we use attributes of base method?
 			var methodAttributes = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.Virtual;
@@ -141,6 +141,8 @@ namespace NHibernate.Proxy.DynamicProxy
 			var proxyMethod = GenerateMethodSignature(method.Name, method, typeBuilder);
 
 			MethodBodyEmitter.EmitMethodBody(proxyMethod, callbackMethod, method, field);
+
+			typeBuilder.DefineMethodOverride(proxyMethod, method);
 		}
 	}
 }

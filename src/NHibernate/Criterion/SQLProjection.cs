@@ -5,7 +5,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
-	using System.Collections.Generic;
 	using Engine;
 
 	/// <summary>
@@ -36,7 +35,7 @@ namespace NHibernate.Criterion
 			this.groupBy = groupBy;
 		}
 
-		public SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
 		{
 			//SqlString result = new SqlString(criteriaQuery.GetSQLAlias(criteria));
 			//result.Replace(sql, "{alias}");
@@ -44,7 +43,7 @@ namespace NHibernate.Criterion
 			return new SqlString(StringHelper.Replace(sql, "{alias}", criteriaQuery.GetSQLAlias(criteria)));
 		}
 
-		public SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return new SqlString(StringHelper.Replace(groupBy, "{alias}", criteriaQuery.GetSQLAlias(criteria)));
 		}
@@ -82,7 +81,7 @@ namespace NHibernate.Criterion
 		/// <returns></returns>
 		public TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[0];
+			return Array.Empty<TypedValue>();
 		}
 
 		public IType[] GetTypes(string alias, ICriteria crit, ICriteriaQuery criteriaQuery)

@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.EntityNameWithFullName
 {
+	[TestFixture]
     public class Fixture : BugTestCase
     {
         protected override void OnTearDown()

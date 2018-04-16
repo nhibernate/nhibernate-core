@@ -6,7 +6,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Impl
 {
-	internal class MultipleQueriesCacheAssembler : ICacheAssembler
+	internal partial class MultipleQueriesCacheAssembler : ICacheAssembler
 	{
 		private readonly IList assemblersList;
 

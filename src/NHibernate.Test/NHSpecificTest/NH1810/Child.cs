@@ -7,7 +7,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 	{
 		private static readonly ILog Log = LogManager.GetLogger(typeof(Fixture));
 
+		// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 		int id;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 		int age;
 		Parent parent;
 

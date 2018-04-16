@@ -6,14 +6,16 @@
         look like this:
     </para>
 
-<programlisting><![CDATA[ISession session = sessionFactory.OpenSession();
-ITransaction tx = session.BeginTransaction();
-for ( int i=0; i<100000; i++ ) {
-    Customer customer = new Customer(.....);
-    session.Save(customer);
-}
-tx.Commit();
-session.Close();]]></programlisting>
+    <programlisting><![CDATA[using (ISession session = sessionFactory.OpenSession())
+using (ITransaction tx = session.BeginTransaction())
+{
+    for (int i = 0; i < 100000; i++)
+    {
+        Customer customer = new Customer(.....);
+        session.Save(customer);
+    }
+    tx.Commit();
+}]]></programlisting>
 
     <para>
         This would fall over with an <literal>OutOfMemoryException</literal> somewhere 
@@ -56,21 +58,24 @@ session.Close();]]></programlisting>
             the first-level cache.
         </para>
 
-<programlisting><![CDATA[ISession session = sessionFactory.openSession();
-ITransaction tx = session.BeginTransaction();
-   
-for ( int i=0; i<100000; i++ ) {
-    Customer customer = new Customer(.....);
-    session.Save(customer);
-    if ( i % 20 == 0 ) { //20, same as the ADO batch size
-        //flush a batch of inserts and release memory:
-        session.Flush();
-        session.Clear();
+        <programlisting><![CDATA[using (ISession session = sessionFactory.openSession())
+using (ITransaction tx = session.BeginTransaction())
+{
+    for (int i = 0; i < 100000; i++)
+    {
+        Customer customer = new Customer(.....);
+        session.Save(customer);
+        // 20, same as the ADO batch size
+        if (i % 20 == 0)
+        {
+            // flush a batch of inserts and release memory:
+            session.Flush();
+            session.Clear();
+        }
     }
-}
-   
-tx.Commit();
-session.Close();]]></programlisting>
+
+    tx.Commit();
+}]]></programlisting>
 
     </sect1>
 
@@ -90,20 +95,21 @@ session.Close();]]></programlisting>
             to data aliasing effects, due to the lack of a first-level cache. A stateless
             session is a lower-level abstraction, much closer to the underlying ADO.
         </para>
-        
-<programlisting><![CDATA[IStatelessSession session = sessionFactory.OpenStatelessSession();
-ITransaction tx = session.BeginTransaction();
-   
-var customers = session.GetNamedQuery("GetCustomers")
-    .Enumerable<Customer>();
-while ( customers.MoveNext() ) {
-    Customer customer = customers.Current;
-    customer.updateStuff(...);
-    session.Update(customer);
-}
-   
-tx.Commit();
-session.Close();]]></programlisting>
+
+        <programlisting><![CDATA[using (IStatelessSession session = sessionFactory.OpenStatelessSession())
+using (ITransaction tx = session.BeginTransaction())
+{
+    var customers = session.GetNamedQuery("GetCustomers")
+        .Enumerable<Customer>();
+    while (customers.MoveNext())
+    {
+        Customer customer = customers.Current;
+        customer.updateStuff(...);
+        session.Update(customer);
+    }
+
+    tx.Commit();
+}]]></programlisting>
 
         <para>
             Note that in this code example, the <literal>Customer</literal> instances returned
@@ -133,7 +139,8 @@ session.Close();]]></programlisting>
             (DML) statements: <literal>INSERT</literal>, <literal>UPDATE</literal>, <literal>DELETE</literal>)
             data directly in the database will not affect in-memory state. However, NHibernate provides methods
             for bulk SQL-style DML statement execution which are performed through the
-            Hibernate Query Language (<link linkend="queryhql">HQL</link>).
+            Hibernate Query Language (<link linkend="queryhql">HQL</link>). A
+            <link linkend="querylinq-modifying">Linq implementation</link> is available too.
         </para>
 
 	    <para>
@@ -175,17 +182,17 @@ session.Close();]]></programlisting>
             <literal>IQuery.ExecuteUpdate()</literal> method:
         </para>
 
-<programlisting><![CDATA[ISession session = sessionFactory.OpenSession();
-ITransaction tx = session.BeginTransaction();
-
-string hqlUpdate = "update Customer c set c.name = :newName where c.name = :oldName";
-// or string hqlUpdate = "update Customer set name = :newName where name = :oldName";
-int updatedEntities = s.CreateQuery( hqlUpdate )
-        .SetString( "newName", newName )
-        .SetString( "oldName", oldName )
+        <programlisting><![CDATA[using (ISession session = sessionFactory.OpenSession())
+using (ITransaction tx = session.BeginTransaction())
+{
+    string hqlUpdate = "update Customer c set c.name = :newName where c.name = :oldName";
+    // or string hqlUpdate = "update Customer set name = :newName where name = :oldName";
+    int updatedEntities = s.CreateQuery(hqlUpdate)
+        .SetString("newName", newName)
+        .SetString("oldName", oldName)
         .ExecuteUpdate();
-tx.Commit();
-session.Close();]]></programlisting>
+    tx.Commit();
+}]]></programlisting>
 
         <para>
             HQL <literal>UPDATE</literal> statements, by default do not effect the
@@ -197,15 +204,18 @@ session.Close();]]></programlisting>
             This is achieved by adding the <literal>VERSIONED</literal> keyword after the <literal>UPDATE</literal>
             keyword.
         </para>
-<programlisting><![CDATA[ISession session = sessionFactory.OpenSession();
-ITransaction tx = session.BeginTransaction();
-string hqlVersionedUpdate = "update versioned Customer set name = :newName where name = :oldName";
-int updatedEntities = s.CreateQuery( hqlUpdate )
-        .SetString( "newName", newName )
-        .SetString( "oldName", oldName )
+
+        <programlisting><![CDATA[using (ISession session = sessionFactory.OpenSession())
+using (ITransaction tx = session.BeginTransaction())
+{
+    string hqlVersionedUpdate =
+        "update versioned Customer set name = :newName where name = :oldName";
+    int updatedEntities = s.CreateQuery(hqlUpdate)
+        .SetString("newName", newName)
+        .SetString("oldName", oldName)
         .ExecuteUpdate();
-tx.Commit();
-session.Close();]]></programlisting>
+    tx.Commit();
+}]]></programlisting>
 
         <para>
             Note that custom version types (<literal>NHibernate.Usertype.IUserVersionType</literal>)
@@ -217,16 +227,16 @@ session.Close();]]></programlisting>
             method:
         </para>
 
-<programlisting><![CDATA[ISession session = sessionFactory.OpenSession();
-ITransaction tx = session.BeginTransaction();
-
-String hqlDelete = "delete Customer c where c.name = :oldName";
-// or String hqlDelete = "delete Customer where name = :oldName";
-int deletedEntities = s.CreateQuery( hqlDelete )
-        .SetString( "oldName", oldName )
+        <programlisting><![CDATA[using (ISession session = sessionFactory.OpenSession())
+using (ITransaction tx = session.BeginTransaction())
+{
+    string hqlDelete = "delete Customer c where c.name = :oldName";
+    // or String hqlDelete = "delete Customer where name = :oldName";
+    int deletedEntities = s.CreateQuery(hqlDelete)
+        .SetString("oldName", oldName)
         .ExecuteUpdate();
-tx.Commit();
-session.Close();]]></programlisting>
+    tx.Commit();
+}]]></programlisting>
 
         <para>
             The <literal>int</literal> value returned by the <literal>IQuery.ExecuteUpdate()</literal>
@@ -301,14 +311,16 @@ session.Close();]]></programlisting>
             An example HQL <literal>INSERT</literal> statement execution:
         </para>
 
-<programlisting><![CDATA[ISession session = sessionFactory.OpenSession();
-ITransaction tx = session.BeginTransaction();
-
-var hqlInsert = "insert into DelinquentAccount (id, name) select c.id, c.name from Customer c where ...";
-int createdEntities = s.CreateQuery( hqlInsert )
+        <programlisting><![CDATA[using (ISession session = sessionFactory.OpenSession())
+using (ITransaction tx = session.BeginTransaction())
+{
+    var hqlInsert =
+        "insert into DelinquentAccount (id, name) " +
+        "select c.id, c.name from Customer c where ...";
+    int createdEntities = s.CreateQuery(hqlInsert)
         .ExecuteUpdate();
-tx.Commit();
-session.Close();]]></programlisting>
+    tx.Commit();
+}]]></programlisting>
 
     </sect1>
 

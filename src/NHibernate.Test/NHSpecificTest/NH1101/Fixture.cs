@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1101
 			{
 				a = s.Get<A>(savedId);
 
-				IStatistics statistics = sessions.Statistics;
+				IStatistics statistics = Sfi.Statistics;
 				statistics.Clear();
 
 				Assert.IsNotNull(a.B); // an instance of B was created
@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1101
 			{
 				a = s.Load<A>(savedId);
 
-				IStatistics statistics = sessions.Statistics;
+				IStatistics statistics = Sfi.Statistics;
 				statistics.Clear();
 
 				Assert.IsNotNull(a.B); // an instance of B was created

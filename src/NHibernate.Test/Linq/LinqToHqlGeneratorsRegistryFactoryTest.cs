@@ -7,6 +7,7 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Linq
 {
+	[TestFixture]
 	public class LinqToHqlGeneratorsRegistryFactoryTest
 	{
 		[Test]

@@ -55,6 +55,8 @@ namespace NHibernate.Loader
 			set { aliases = value; }
 		}
 
+		public bool[] EagerPropertyFetches { get; set; }
+
 		public int[] CollectionOwners
 		{
 			get { return collectionOwners; }
@@ -291,6 +293,25 @@ namespace NHibernate.Loader
 																	 currentDepth);
 				}
 			}
+		}
+
+		internal void AddExplicitEntityJoinAssociation(
+			IOuterJoinLoadable persister,
+			string tableAlias,
+			JoinType joinType,
+			SqlString withClause)
+		{
+			OuterJoinableAssociation assoc =
+				new OuterJoinableAssociation(
+					persister.EntityType,
+					string.Empty,
+					Array.Empty<string>(),
+					tableAlias,
+					joinType,
+					withClause,
+					Factory,
+					enabledFilters);
+			AddAssociation(tableAlias, assoc);
 		}
 
 		private void WalkEntityAssociationTree(IAssociationType associationType, IOuterJoinLoadable persister,
@@ -573,7 +594,7 @@ namespace NHibernate.Loader
 				if (that == null)
 					return false;
 
-				return that.table.Equals(table) && CollectionHelper.CollectionEquals<string>(columns, that.columns);
+				return that.table.Equals(table) && CollectionHelper.SequenceEquals<string>(columns, that.columns);
 			}
 
 			public override int GetHashCode()
@@ -892,7 +913,7 @@ namespace NHibernate.Loader
 						joinable.SelectFragment(next == null ? null : next.Joinable, next == null ? null : next.RHSAlias, join.RHSAlias,
 																		entitySuffix, collectionSuffix, join.JoinType == JoinType.LeftOuterJoin);
 
-					if (selectFragment.Trim().Length > 0)
+					if (!string.IsNullOrWhiteSpace(selectFragment))
 					{
 						buf.Add(StringHelper.CommaSpace)
 							.Add(selectFragment);

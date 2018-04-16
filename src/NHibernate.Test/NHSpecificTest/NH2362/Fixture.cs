@@ -4,6 +4,7 @@ using NHibernate.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH2362
 {
+	[TestFixture]
 	public class Fixture : BugTestCase
 	{
 		[Test]

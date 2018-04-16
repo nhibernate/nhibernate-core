@@ -106,9 +106,9 @@
 
 <programlisting><![CDATA[ISession session = ...;
 session.EnableFilter("effectiveDate").SetParameter("asOfDate", DateTime.Today);
-IList results = session.CreateQuery("from Employee as e where e.Salary > :targetSalary")
+var results = session.CreateQuery("from Employee as e where e.Salary > :targetSalary")
          .SetInt64("targetSalary", 1000000L)
-         .List();
+         .List<Employee>();
 ]]></programlisting>
 
         <para>

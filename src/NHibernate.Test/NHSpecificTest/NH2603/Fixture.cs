@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2603
 {
+	[TestFixture]
 	public class Fixture : BugTestCase
 	{
 		#region Scenarios

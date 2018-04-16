@@ -2,6 +2,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2756
 {
+	[TestFixture]
 	public class Fixture : BugTestCase
 	{
 		[Test]

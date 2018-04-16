@@ -11,9 +11,9 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Event.Default
 {
 	[Serializable]
-	public class DefaultInitializeCollectionEventListener : IInitializeCollectionEventListener
+	public partial class DefaultInitializeCollectionEventListener : IInitializeCollectionEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultInitializeCollectionEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DefaultInitializeCollectionEventListener));
 
 		/// <summary> called by a collection that wants to initialize itself</summary>
 		public virtual void OnInitializeCollection(InitializeCollectionEvent @event)
@@ -33,9 +33,9 @@ namespace NHibernate.Event.Default
 				throw new HibernateException("collection was evicted");
 			if (!collection.WasInitialized)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("initializing collection " + MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, source));
+					log.Debug("initializing collection {0}", MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, source));
 				}
 
 				log.Debug("checking second-level cache");
@@ -70,7 +70,7 @@ namespace NHibernate.Event.Default
 				return false;
 			}
 
-			bool useCache = persister.HasCache && ((source.CacheMode & CacheMode.Get) == CacheMode.Get);
+			bool useCache = persister.HasCache && source.CacheMode.HasFlag(CacheMode.Get);
 
 			if (!useCache)
 			{
@@ -97,11 +97,11 @@ namespace NHibernate.Event.Default
 
 				if (ce == null)
 				{
-					log.DebugFormat("Collection cache miss: {0}", ck);
+					log.Debug("Collection cache miss: {0}", ck);
 				}
 				else
 				{
-					log.DebugFormat("Collection cache hit: {0}", ck);
+					log.Debug("Collection cache hit: {0}", ck);
 				}
 
 				if (ce == null)
@@ -115,7 +115,7 @@ namespace NHibernate.Event.Default
 					CollectionCacheEntry cacheEntry = (CollectionCacheEntry)persister.CacheEntryStructure.Destructure(ce, factory);
 					cacheEntry.Assemble(collection, persister, persistenceContext.GetCollectionOwner(id, persister));
 
-					persistenceContext.GetCollectionEntry(collection).PostInitialize(collection);
+					persistenceContext.GetCollectionEntry(collection).PostInitialize(collection, persistenceContext);
 					return true;
 				}
 			}

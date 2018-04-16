@@ -3,7 +3,7 @@ namespace NHibernate.Cache
 	/// <summary>
 	/// Used by <see cref="NoCacheProvider"/>
 	/// </summary>
-	public class FakeCache : ICache
+	public partial class FakeCache : ICache
 	{
 		public FakeCache(string regionName)
 		{

@@ -27,11 +27,11 @@ namespace NHibernate.Engine
 	/// PersistentContext to drive their processing.
 	/// </remarks>
 	[Serializable]
-	public class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
+	public partial class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
 	{
 		private const int InitCollectionSize = 8;
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(StatefulPersistenceContext));
-		private static readonly IInternalLogger ProxyWarnLog = LoggerProvider.LoggerFor(typeof(StatefulPersistenceContext).FullName + ".ProxyWarnLog");
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(StatefulPersistenceContext));
+		private static readonly INHibernateLogger ProxyWarnLog = NHibernateLogger.For(typeof(StatefulPersistenceContext).FullName + ".ProxyWarnLog");
 
 		public static readonly object NoRow = new object();
 
@@ -592,9 +592,9 @@ namespace NHibernate.Engine
 			{
 				var proxy = value as INHibernateProxy; 
 				
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("setting proxy identifier: " + id);
+					log.Debug("setting proxy identifier: {0}", id);
 				}
 				ILazyInitializer li = proxy.HibernateLazyInitializer;
 				li.Identifier = id;
@@ -712,9 +712,9 @@ namespace NHibernate.Engine
 
 			if (!alreadyNarrow)
 			{
-				if (ProxyWarnLog.IsWarnEnabled)
+				if (ProxyWarnLog.IsWarnEnabled())
 				{
-					ProxyWarnLog.Warn("Narrowing proxy to " + persister.ConcreteProxyClass + " - this operation breaks ==");
+					ProxyWarnLog.Warn("Narrowing proxy to {0} - this operation breaks ==", persister.ConcreteProxyClass);
 				}
 
 				if (obj != null)
@@ -835,6 +835,10 @@ namespace NHibernate.Engine
 		{
 			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
 			AddCollection(collection, ce, id);
+			if (persister.GetBatchSize() > 1)
+			{
+				batchFetchQueue.AddBatchLoadableCollection(collection, ce);
+			}
 		}
 
 		/// <summary> add a detached uninitialized collection</summary>
@@ -913,7 +917,7 @@ namespace NHibernate.Engine
 																										object id)
 		{
 			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
-			ce.PostInitialize(collection);
+			ce.PostInitialize(collection, this);
 			AddCollection(collection, ce, id);
 			return ce;
 		}
@@ -1439,7 +1443,7 @@ namespace NHibernate.Engine
 				}
 				catch (HibernateException he)
 				{
-					throw new InvalidOperationException(he.Message);
+					throw new InvalidOperationException(he.Message, he);
 				}
 			}
 
@@ -1467,7 +1471,7 @@ namespace NHibernate.Engine
 				}
 				catch (MappingException me)
 				{
-					throw new InvalidOperationException(me.Message);
+					throw new InvalidOperationException(me.Message, me);
 				}
 			}
 		}

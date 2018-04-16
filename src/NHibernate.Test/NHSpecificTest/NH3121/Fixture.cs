@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 			// For SQL Server only the SqlClientDriver sets parameter lengths
 			// even when there is no length specified in the mapping. The ODBC
 			// driver won't cause the truncation issue and hence not the exception.
-			if (!(sessions.ConnectionProvider.Driver is SqlClientDriver))
+			if (!(Sfi.ConnectionProvider.Driver is SqlClientDriver))
 				Assert.Ignore("Test limited to drivers that sets parameter length even with no length specified in the mapping.");
 
 			const int reportSize = 17158;

@@ -7,13 +7,13 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.GroupJoin
 {
-	public class GroupJoinSelectClauseRewriter : ExpressionTreeVisitor
+	public class GroupJoinSelectClauseRewriter : RelinqExpressionVisitor
 	{
 		private readonly IsAggregatingResults _results;
 
 		public static Expression ReWrite(Expression expression, IsAggregatingResults results)
 		{
-			return new GroupJoinSelectClauseRewriter(results).VisitExpression(expression);
+			return new GroupJoinSelectClauseRewriter(results).Visit(expression);
 		}
 
 		private GroupJoinSelectClauseRewriter(IsAggregatingResults results)
@@ -21,7 +21,7 @@ namespace NHibernate.Linq.GroupJoin
 			_results = results;
 		}
 
-		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
+		protected override Expression VisitSubQuery(SubQueryExpression expression)
 		{
 			// If the sub query's main (and only) from clause is one of our aggregating group bys, then swap it
 			GroupJoinClause groupJoin = LocateGroupJoinQuerySource(expression.QueryModel);

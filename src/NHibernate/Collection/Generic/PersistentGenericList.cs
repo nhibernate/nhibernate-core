@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
+using System.Linq;
+using System.Linq.Expressions;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
+using NHibernate.Linq;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -19,7 +22,7 @@ namespace NHibernate.Collection.Generic
 	/// <remarks>The underlying collection used is a <see cref="List{T}"/></remarks>
 	[Serializable]
 	[DebuggerTypeProxy(typeof (CollectionProxy<>))]
-	public class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList
+	public partial class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
 	{
 		protected IList<T> WrappedList;
 
@@ -230,7 +233,7 @@ namespace NHibernate.Collection.Generic
 				return false;
 			}
 			Read();
-			return CollectionHelper.CollectionEquals(WrappedList, that);
+			return CollectionHelper.SequenceEquals(WrappedList, that);
 		}
 
 		public override int GetHashCode()
@@ -497,7 +500,6 @@ namespace NHibernate.Collection.Generic
 
 		#endregion
 
-
 		#region IEnumerable<T> Members
 
 		IEnumerator<T> IEnumerable<T>.GetEnumerator()
@@ -508,6 +510,20 @@ namespace NHibernate.Collection.Generic
 
 		#endregion
 
+		#region IQueryable<T> Members
+
+		[NonSerialized]
+		IQueryable<T> _queryable;
+
+		Expression IQueryable.Expression => InnerQueryable.Expression;
+
+		System.Type IQueryable.ElementType => InnerQueryable.ElementType;
+
+		IQueryProvider IQueryable.Provider => InnerQueryable.Provider;
+
+		IQueryable<T> InnerQueryable => _queryable ?? (_queryable = new NhQueryable<T>(Session, this));
+
+		#endregion
 
 		#region DelayedOperations
 

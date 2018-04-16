@@ -14,7 +14,7 @@ namespace NHibernate.Type
 	/// to the database.
 	/// </summary>
 	[Serializable]
-	public class GenericMapType<TKey, TValue> : CollectionType
+	public partial class GenericMapType<TKey, TValue> : CollectionType
 	{
 		/// <summary>
 		/// Initializes a new instance of a <see cref="GenericMapType{TKey, TValue}"/> class for
@@ -78,25 +78,26 @@ namespace NHibernate.Type
 
 		public override object ReplaceElements(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session)
 		{
-			ICollectionPersister cp = session.Factory.GetCollectionPersister(Role);
+			var cp = session.Factory.GetCollectionPersister(Role);
 
-			IDictionary<TKey, TValue> result = (IDictionary<TKey, TValue>)target;
+			var targetPc = target as IPersistentCollection;
+			var originalPc = original as IPersistentCollection;
+			var iterOriginal = (IDictionary<TKey, TValue>)original;
+			var clearTargetsDirtyFlag = ShouldTargetsDirtyFlagBeCleared(targetPc, originalPc, iterOriginal);
+
+			var result = (IDictionary<TKey, TValue>)target;
 			result.Clear();
 
-			IEnumerable<KeyValuePair<TKey, TValue>> iter = (IDictionary<TKey, TValue>)original; 
-			foreach (KeyValuePair<TKey, TValue> me in iter)
+			foreach (var me in iterOriginal)
 			{
-				TKey key = (TKey)cp.IndexType.Replace(me.Key, null, session, owner, copyCache);
-				TValue value = (TValue)cp.ElementType.Replace(me.Value, null, session, owner, copyCache);
+				var key = (TKey)cp.IndexType.Replace(me.Key, null, session, owner, copyCache);
+				var value = (TValue)cp.ElementType.Replace(me.Value, null, session, owner, copyCache);
 				result[key] = value;
 			}
 
-			var originalPc = original as IPersistentCollection;
-			var resultPc = result as IPersistentCollection;
-			if (originalPc != null && resultPc != null)
+			if (clearTargetsDirtyFlag)
 			{
-				if (!originalPc.IsDirty)
-					resultPc.ClearDirty();
+				targetPc.ClearDirty();
 			}
 
 			return result;
@@ -115,6 +116,13 @@ namespace NHibernate.Type
 				.Where(pair => Equals(pair.Value, element))
 				.Select(pair => pair.Key)
 				.FirstOrDefault();
+		}
+
+		protected override bool AreCollectionElementsEqual(IEnumerable original, IEnumerable target)
+		{
+			var first = (IDictionary<TKey, TValue>)original;
+			var second = (IDictionary<TKey, TValue>)target;
+			return first.Count == second.Count && first.All(keyValue => second.Contains(keyValue));
 		}
 	}
 }

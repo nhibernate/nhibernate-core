@@ -13,6 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3100
 		public virtual bool? Flag { get; set; }
 	}
 
+	[TestFixture]
 	public class NullableBooleanFixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()

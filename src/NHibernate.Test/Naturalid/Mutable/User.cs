@@ -2,7 +2,10 @@ namespace NHibernate.Test.Naturalid.Mutable
 {
 	public class User
 	{
+		// Used by reflection
+#pragma warning disable CS0169 // The field is never used
 		private long id;
+#pragma warning restore CS0169 // The field is never used
 		private readonly string name;
 		private readonly string org;
 		private string password;

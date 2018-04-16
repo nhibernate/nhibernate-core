@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	/// Mapping of the built in Type hierarchy.
 	/// </summary>
 	[Serializable]
-	public abstract class AbstractType : IType
+	public abstract partial class AbstractType : IType
 	{
 		/// <summary>
 		/// Gets a value indicating if the <see cref="AbstractType"/> is an <see cref="IAssociationType"/>.
@@ -176,19 +176,13 @@ namespace NHibernate.Type
 			return GetType().GetHashCode();
 		}
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.DeepCopy"]/*'
-		/// /> 
+		/// <inheritdoc />
 		public abstract object DeepCopy(object val, ISessionFactoryImplementor factory);
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.SqlTypes"]/*'
-		/// /> 
+		/// <inheritdoc />
 		public abstract SqlType[] SqlTypes(IMapping mapping);
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.GetColumnSpan"]/*'
-		/// /> 
+		/// <inheritdoc />
 		public abstract int GetColumnSpan(IMapping mapping);
 
 		public virtual object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache,
@@ -214,7 +208,7 @@ namespace NHibernate.Type
 
 		public virtual bool IsEqual(object x, object y)
 		{
-			return EqualsHelper.Equals(x, y);
+			return Equals(x, y);
 		}
 
 		public virtual bool IsEqual(object x, object y, ISessionFactoryImplementor factory)
@@ -255,44 +249,28 @@ namespace NHibernate.Type
 
 		public abstract bool[] ToColumnNullness(object value, IMapping mapping);
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="P:IType.IsMutable"]/*'
-		/// /> 
+		/// <inheritdoc />
 		public abstract bool IsMutable { get; }
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="P:IType.Name"]/*'
-		/// /> 
+		/// <inheritdoc />
 		public abstract string Name { get; }
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, string[], ISessionImplementor, object)"]/*'
-		/// /> 
+		/// <inheritdoc />
 		public abstract object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner);
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, string, ISessionImplementor, object)"]/*'
-		/// /> 
+		/// <inheritdoc />
 		public abstract object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, Object owner);
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet(settable)"]/*'
-		/// /> 
+		/// <inheritdoc />
 		public abstract void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
-		/// /> 
+		/// <inheritdoc />
 		public abstract void NullSafeSet(DbCommand st, object value, int index, ISessionImplementor session);
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="P:IType.ReturnedClass"]/*'
-		/// /> 
+		/// <inheritdoc />
 		public abstract System.Type ReturnedClass { get; }
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.ToString"]/*'
-		/// /> 
+		/// <inheritdoc />
 		public abstract string ToLoggableString(object value, ISessionFactoryImplementor factory);
 
 		public abstract bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session);

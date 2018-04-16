@@ -13,7 +13,7 @@ namespace NHibernate.Action
 	/// instance.
 	/// </summary>
 	[Serializable]
-	public abstract class EntityAction : IExecutable, IComparable<EntityAction>, IDeserializationCallback
+	public abstract partial class EntityAction : IExecutable, IComparable<EntityAction>, IDeserializationCallback
 	{
 		private readonly string entityName;
 		private readonly object id;

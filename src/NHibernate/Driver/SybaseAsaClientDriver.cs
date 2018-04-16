@@ -32,5 +32,7 @@ namespace NHibernate.Driver
 		{
 			get { return String.Empty; }
 		}
+
+		public override bool RequiresTimeSpanForTime => true;
 	}
 }

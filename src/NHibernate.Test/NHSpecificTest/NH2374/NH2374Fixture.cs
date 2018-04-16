@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2374
 
 			using (ISession sroot = OpenSession())
 			{
-				using (ISession s = sroot.GetChildSession())
+				using (ISession s = sroot.SessionWithOptions().Connection().OpenSession())
 				{
 					using (ITransaction t = s.BeginTransaction())
 					{

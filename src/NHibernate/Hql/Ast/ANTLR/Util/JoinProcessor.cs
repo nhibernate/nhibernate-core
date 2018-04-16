@@ -24,7 +24,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	[CLSCompliant(false)]
 	public class JoinProcessor
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(JoinProcessor));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(JoinProcessor));
 
 		private readonly HqlSqlWalker _walker;
 		private readonly SyntheticAndFactory _syntheticAndFactory;
@@ -124,9 +124,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			if ( fromElement.UseFromFragment /*&& StringHelper.isNotEmpty( frag )*/ ) 
 			{
 				SqlString fromFragment = ProcessFromFragment( frag, join ).Trim();
-				if ( log.IsDebugEnabled ) 
+				if ( log.IsDebugEnabled() ) 
 				{
-					log.Debug( "Using FROM fragment [" + fromFragment + "]" );
+					log.Debug("Using FROM fragment [{0}]", fromFragment);
 				}
 
 				ProcessDynamicFilterParameters(fromFragment,fromElement,_walker);
@@ -168,12 +168,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 
 		private static bool HasDynamicFilterParam(SqlString sqlFragment)
 		{
-			return sqlFragment.IndexOfCaseInsensitive(ParserHelper.HqlVariablePrefix) < 0;
+			return !ParserHelper.HasHqlVariable(sqlFragment);
 		}
 
 		private static bool HasCollectionFilterParam(SqlString sqlFragment)
 		{
-			return sqlFragment.IndexOfCaseInsensitive("?") < 0;
+			return sqlFragment.IndexOfOrdinal("?") < 0;
 		}
 
 		private class JoinSequenceSelector : JoinSequence.ISelector
@@ -200,7 +200,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				if ( _fromElement.IsDereferencedBySubclassProperty) 
 				{
 					// TODO : or should we return 'containsTableAlias'??
-					log.Info( "forcing inclusion of extra joins [alias=" + alias + ", containsTableAlias=" + containsTableAlias + "]" );
+					log.Info("forcing inclusion of extra joins [alias={0}, containsTableAlias={1}]", alias, containsTableAlias);
 					return true;
 				}
 				bool shallowQuery = _walker.IsShallowQuery;

@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NHibernate.AdoNet
 {
@@ -45,6 +47,21 @@ namespace NHibernate.AdoNet
 		public override bool Read()
 		{
 			return rs.Read();
+		}
+
+		public override Task<bool> ReadAsync(CancellationToken cancellationToken)
+		{
+			return rs.ReadAsync(cancellationToken);
+		}
+
+		public override Task<bool> NextResultAsync(CancellationToken cancellationToken)
+		{
+			return rs.NextResultAsync(cancellationToken);
+		}
+
+		public override Task<bool> IsDBNullAsync(int ordinal, CancellationToken cancellationToken)
+		{
+			return rs.IsDBNullAsync(ordinal, cancellationToken);
 		}
 
 		public override int Depth

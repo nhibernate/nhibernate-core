@@ -42,7 +42,7 @@ namespace NHibernate.Test.Stats
 		[Test]
 		public void Can_use_cached_query_that_return_no_results()
 		{
-			Assert.IsTrue(sessions.Settings.IsQueryCacheEnabled);
+			Assert.IsTrue(Sfi.Settings.IsQueryCacheEnabled);
 
 			using(ISession s = OpenSession())
 			{
@@ -70,7 +70,7 @@ namespace NHibernate.Test.Stats
 		{
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			IStatistics stats = sessions.Statistics;
+			IStatistics stats = Sfi.Statistics;
 			stats.Clear();
 			bool isStats = stats.IsStatisticsEnabled;
 			stats.IsStatisticsEnabled = true;

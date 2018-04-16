@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
@@ -52,7 +53,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 							resultSetRef, synchronizedTables, cacheable, region, timeout, fetchSize,
 							flushMode, cacheMode, readOnly, comment, parameterTypes, callable);
 
-					log.DebugFormat("Named SQL query: {0} -> {1}", queryName, namedQuery.QueryString);
+					log.Debug("Named SQL query: {0} -> {1}", queryName, namedQuery.QueryString);
 					mappings.AddSQLQuery(queryName, namedQuery);
 				});
 		}
@@ -61,7 +62,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			IList<string> synchronizedTables = new List<string>();
 
-			foreach (object item in querySchema.Items ?? new object[0])
+			foreach (object item in querySchema.Items ?? Array.Empty<object>())
 			{
 				HbmSynchronize synchronizeSchema = item as HbmSynchronize;
 

@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.GeneratedTest
 {
+	[TestFixture]
 	public abstract class AbstractGeneratedPropertyTest : TestCase
 	{
 		protected override string  MappingsAssembly

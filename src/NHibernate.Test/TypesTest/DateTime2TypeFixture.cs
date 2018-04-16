@@ -1,4 +1,6 @@
 using System;
+using NHibernate.Driver;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -8,48 +10,44 @@ namespace NHibernate.Test.TypesTest
 	/// TestFixtures for the <see cref="DateTimeType"/>.
 	/// </summary>
 	[TestFixture]
-	public class DateTime2TypeFixture
+	[Obsolete]
+	public class DateTime2TypeFixture : AbstractDateTimeTypeFixture
 	{
-		[Test]
-		public void Next()
-		{
-			DateTimeType type = NHibernateUtil.DateTime2;
-			object current = DateTime.Now.AddMilliseconds(-1);
-			object next = type.Next(current, null);
+		protected override bool AppliesTo(Dialect.Dialect dialect) =>
+			TestDialect.SupportsSqlType(SqlTypeFactory.DateTime2);
 
-			Assert.That(next, Is.TypeOf<DateTime>().And.GreaterThan(current));
-		}
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory) =>
+			// Cannot handle DbType.DateTime2 via .Net ODBC.
+			!(factory.ConnectionProvider.Driver is OdbcDriver);
 
-		[Test]
-		public void Seed()
-		{
-			DateTimeType type = NHibernateUtil.DateTime;
-			Assert.IsTrue(type.Seed(null) is DateTime, "seed should be DateTime");
-		}
+		protected override string TypeName => "DateTime2";
+		protected override AbstractDateTimeType Type => NHibernateUtil.DateTime2;
 
 		[Test]
-		public void DeepCopyNotNull()
+		public void ObsoleteMessage()
 		{
-			NullableType type = NHibernateUtil.DateTime;
-
-			object value1 = DateTime.Now;
-			object value2 = type.DeepCopy(value1, null);
-
-			Assert.AreEqual(value1, value2, "Copies should be the same.");
-
-
-			value2 = ((DateTime)value2).AddHours(2);
-			Assert.IsFalse(value1 == value2, "value2 was changed, value1 should not have changed also.");
+			using (var spy = new LogSpy(typeof(TypeFactory)))
+			{
+				TypeFactory.Basic(NHibernateUtil.DateTime2.Name);
+				Assert.That(
+					spy.GetWholeLog(),
+					Does.Contain($"{NHibernateUtil.DateTime2.Name} is obsolete. Use DateTimeType instead").IgnoreCase);
+			}
 		}
+	}
 
-		[Test]
-		public void EqualityShouldIgnoreKindAndNotIgnoreMillisecond()
-		{
-			var type = NHibernateUtil.DateTime;
-			var localTime = DateTime.Now;
-			var unspecifiedKid = new DateTime(localTime.Ticks, DateTimeKind.Unspecified);
-			Assert.That(type.IsEqual(localTime, unspecifiedKid), Is.True);
-			Assert.That(type.IsEqual(localTime, unspecifiedKid), Is.True);
-		}
+	[TestFixture]
+	[Obsolete]
+	public class DateTime2TypeWithScaleFixture : DateTimeTypeWithScaleFixture
+	{
+		protected override bool AppliesTo(Dialect.Dialect dialect) =>
+			TestDialect.SupportsSqlType(SqlTypeFactory.DateTime2);
+
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory) =>
+			// Cannot handle DbType.DateTime2 via .Net ODBC.
+			!(factory.ConnectionProvider.Driver is OdbcDriver);
+
+		protected override string TypeName => "DateTime2WithScale";
+		protected override AbstractDateTimeType Type => (AbstractDateTimeType)TypeFactory.GetDateTime2Type(3);
 	}
 }

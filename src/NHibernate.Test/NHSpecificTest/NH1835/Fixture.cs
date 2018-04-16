@@ -9,9 +9,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1835
 		[Test]
 		public void ColumnTypeBinaryBlob()
 		{
-			var pc = sessions.GetEntityPersister(typeof (Document).FullName);
+			var pc = Sfi.GetEntityPersister(typeof (Document).FullName);
 			var type = pc.GetPropertyType("Contents");
-			Assert.That(type.SqlTypes(sessions)[0], Is.InstanceOf<BinaryBlobSqlType>());
+			Assert.That(type.SqlTypes(Sfi)[0], Is.InstanceOf<BinaryBlobSqlType>());
 		}
 	}
 }

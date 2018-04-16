@@ -7,12 +7,16 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 {
+	[TestFixture]
 	public class DynComponentPropertyOnDynamicCompoTests
 	{
 		private class Person
 		{
 			public int Id { get; set; }
+			// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			private IDictionary info;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 			public IDictionary Info
 			{
 				get { return info; }

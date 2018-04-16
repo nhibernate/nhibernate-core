@@ -15,33 +15,39 @@ namespace NHibernate.Test.NHSpecificTest.NH940
 			B b = new B();
 			a.B = b;
 
-			ISession s = OpenSession();
-			ITransaction t = s.BeginTransaction();
-			s.Save(a);
-			t.Commit();
-			s.Close();
-
-			s = OpenSession();
-			IList l = s.CreateCriteria(typeof(A)).List();
-			try
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
-				((A) l[0]).Execute();
-				Assert.Fail("Should have thrown MyException");
-			}
-			catch (MyException)
-			{
-				// OK
-			}
-			catch (Exception e)
-			{
-				Assert.Fail("Should have thrown MyException, thrown {0} instead", e);
+				s.Save(a);
+				t.Commit();
+				s.Close();
 			}
 
-			s = OpenSession();
-			t = s.BeginTransaction();
-			s.Delete(a);
-			t.Commit();
-			s.Close();
+			using (ISession s = OpenSession())
+			{
+				IList l = s.CreateCriteria(typeof(A)).List();
+				try
+				{
+					((A)l[0]).Execute();
+					Assert.Fail("Should have thrown MyException");
+				}
+				catch (MyException)
+				{
+					// OK
+				}
+				catch (Exception e)
+				{
+					Assert.Fail("Should have thrown MyException, thrown {0} instead", e);
+				}
+			}
+
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Delete(a);
+				t.Commit();
+				s.Close();
+			}
 		}
 	}
 }

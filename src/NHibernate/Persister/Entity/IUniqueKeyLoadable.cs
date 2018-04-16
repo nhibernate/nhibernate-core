@@ -5,7 +5,7 @@ namespace NHibernate.Persister.Entity
 	/// <summary>
 	/// Describes a class that may be loaded via a unique key.
 	/// </summary>
-	public interface IUniqueKeyLoadable
+	public partial interface IUniqueKeyLoadable
 	{
 		/// <summary>
 		/// Load an instance of the persistent class, by a unique key other than the primary key.

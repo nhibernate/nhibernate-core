@@ -21,13 +21,12 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Loader.Hql
 {
 	[CLSCompliant(false)]
-	public class QueryLoader : BasicLoader
+	public partial class QueryLoader : BasicLoader
 	{
 		private readonly QueryTranslatorImpl _queryTranslator;
 
 		private bool _hasScalars;
 		private string[][] _scalarColumnNames;
-		private IType[] _queryReturnTypes;
 		private IResultTransformer _selectNewTransformer;
 		private string[] _queryReturnAliases;
 		private IQueryableCollection[] _collectionPersisters;
@@ -71,7 +70,7 @@ namespace NHibernate.Loader.Hql
 			// we are given a map of user-alias -> lock mode
 			// create a new map of sql-alias -> lock mode
 			var aliasedLockModes = new Dictionary<string, LockMode>();
-			Dictionary<string, string[]> keyColumnNames = dialect.ForUpdateOfColumns ? new Dictionary<string, string[]>() : null;
+			Dictionary<string, string[]> keyColumnNames = dialect.UsesColumnsWithForUpdateOf ? new Dictionary<string, string[]>() : null;
 
 			foreach (var entry in lockModes)
 			{
@@ -203,7 +202,7 @@ namespace NHibernate.Loader.Hql
 			_hasScalars = selectClause.IsScalarSelect;
 			_scalarColumnNames = selectClause.ColumnNames;
 			//sqlResultTypes = selectClause.getSqlResultTypes();
-			_queryReturnTypes = selectClause.QueryReturnTypes;
+			ResultTypes = selectClause.QueryReturnTypes;
 
 			_selectNewTransformer = HolderInstantiator.CreateSelectNewTransformer(selectClause.Constructor, selectClause.IsMap, selectClause.IsList);
 			_queryReturnAliases = selectClause.QueryReturnAliases;
@@ -286,7 +285,7 @@ namespace NHibernate.Loader.Hql
 		public IList List(ISessionImplementor session, QueryParameters queryParameters)
 		{
 			CheckQuery(queryParameters);
-			return List(session, queryParameters, _queryTranslator.QuerySpaces, _queryReturnTypes);
+			return List(session, queryParameters, _queryTranslator.QuerySpaces);
 		}
 
 		public override IList GetResultList(IList results, IResultTransformer resultTransformer)
@@ -342,11 +341,11 @@ namespace NHibernate.Loader.Hql
 			if (_hasScalars)
 			{
 				string[][] scalarColumns = _scalarColumnNames;
-				int queryCols = _queryReturnTypes.Length;
+				int queryCols = ResultTypes.Length;
 				resultRow = new object[queryCols];
 				for (int i = 0; i < queryCols; i++)
 				{
-					resultRow[i] = _queryReturnTypes[i].NullSafeGet(rs, scalarColumns[i], session, null);
+					resultRow[i] = ResultTypes[i].NullSafeGet(rs, scalarColumns[i], session, null);
 				}
 			}
 			else
@@ -401,17 +400,15 @@ namespace NHibernate.Loader.Hql
 				bool[] includeInResultTuple = _includeInSelect;
 				if (_hasScalars)
 				{
-					includeInResultTuple = new bool[_queryReturnTypes.Length];
+					includeInResultTuple = new bool[ResultTypes.Length];
 					ArrayHelper.Fill(includeInResultTuple, true);
 				}
 				return includeInResultTuple;
 			}
 		}
 
-		public IType[] ReturnTypes
-		{
-			get { return _queryReturnTypes; }
-		}
+		[Obsolete("Please use ResultTypes instead")]
+		public IType[] ReturnTypes => ResultTypes;
 
 		internal IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session)
 		{
@@ -427,7 +424,7 @@ namespace NHibernate.Loader.Hql
 			var cmd = PrepareQueryCommand(queryParameters, false, session);
 
 			// This DbDataReader is disposed of in EnumerableImpl.Dispose
-			var rs = GetResultSet(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session);
+			var rs = GetResultSet(cmd, queryParameters, session, null);
 
 			HolderInstantiator hi = 
 				HolderInstantiator.GetHolderInstantiator(_selectNewTransformer, queryParameters.ResultTransformer, _queryReturnAliases);

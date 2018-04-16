@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3634
 {
+	[TestFixture]
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
@@ -117,6 +118,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 								   .Where(p => p.Connection == componentToCompare)
 								   .SingleOrDefault<Person>();
 
+				Assert.That(sally, Is.Not.Null);
 				Assert.That(sally.Name, Is.EqualTo("Sally"));
 				Assert.That(sally.Connection.PortName, Is.Null);
 			}
@@ -152,6 +154,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 				                   .Add(Restrictions.Eq("Connection", componentToCompare))
 				                   .UniqueResult<Person>();
 
+				Assert.That(sally, Is.Not.Null);
 				Assert.That(sally.Name, Is.EqualTo("Sally"));
 				Assert.That(sally.Connection.PortName, Is.Null);
 			}
@@ -175,6 +178,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 								   .SetCacheable(true)
 								   .UniqueResult<CachedPerson>();
 
+				Assert.That(cached, Is.Not.Null);
 				Assert.That(cached.Name, Is.EqualTo("CachedNull"));
 				Assert.That(cached.Connection.PortName, Is.Null);
 
@@ -222,6 +226,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 								   .SetCacheable(true)
 								   .UniqueResult<CachedPerson>();
 
+				Assert.That(cached, Is.Not.Null);
 				Assert.That(cached.Name, Is.EqualTo("CachedNotNull"));
 				Assert.That(cached.Connection.PortName, Is.Not.Null);
 
@@ -269,6 +274,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 								   .SetCacheable(true)
 								   .UniqueResult<CachedPerson>();
 
+				Assert.That(cached, Is.Not.Null);
 				Assert.That(cached.Name, Is.EqualTo("CachedNull"));
 				Assert.That(cached.Connection.PortName, Is.Null);
 
@@ -291,6 +297,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 								   .SetCacheable(true)
 								   .UniqueResult<CachedPerson>();
 
+				Assert.That(cached, Is.Not.Null);
 				Assert.That(cached.Name, Is.EqualTo("CachedNull"));
 				Assert.That(cached.Connection.PortName, Is.Null);
 
@@ -320,6 +327,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 				                   .And(p => p.Connection.ConnectionType == "http")
 				                   .SingleOrDefault<Person>();
 
+				Assert.That(sally, Is.Not.Null);
 				Assert.That(sally.Name, Is.EqualTo("Sally"));
 				Assert.That(sally.Connection.PortName, Is.Null);
 			}
@@ -337,6 +345,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 				                   .Add(Restrictions.Eq("Connection.ConnectionType", "http"))
 				                   .UniqueResult<Person>();
 
+				Assert.That(sally, Is.Not.Null);
 				Assert.That(sally.Name, Is.EqualTo("Sally"));
 				Assert.That(sally.Connection.PortName, Is.Null);
 			}

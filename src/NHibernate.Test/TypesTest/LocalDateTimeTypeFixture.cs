@@ -1,43 +1,29 @@
-using System;
+using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
 	/// <summary>
-	/// The Unit Tests for the UtcDateTimeType.
+	/// The Unit Tests for the LocalDateTimeType.
 	/// </summary>
 	[TestFixture]
-	public class LocalDateTimeTypeFixture : TypeFixtureBase
+	public class LocalDateTimeTypeFixture : AbstractDateTimeTypeFixture
 	{
-		protected override string TypeName
-		{
-			get { return "DateTime"; }
-		}
+		protected override string TypeName => "LocalDateTime";
+		protected override AbstractDateTimeType Type => NHibernateUtil.LocalDateTime;
+	}
 
-		[Test]
-		public void ReadWrite()
-		{
-			DateTime val = DateTime.UtcNow;
-			DateTime expected = new DateTime(val.Year, val.Month, val.Day, val.Hour, val.Minute, val.Second, DateTimeKind.Local);
+	[TestFixture]
+	public class LocalDateTimeTypeWithScaleFixture : DateTimeTypeWithScaleFixture
+	{
+		protected override string TypeName => "LocalDateTimeWithScale";
+		protected override AbstractDateTimeType Type => (AbstractDateTimeType)TypeFactory.GetLocalDateTimeType(3);
+	}
 
-			DateTimeClass basic = new DateTimeClass();
-			basic.Id = 1;
-			basic.LocalDateTimeValue = val;
-
-			ISession s = OpenSession();
-			s.Save(basic);
-			s.Flush();
-			s.Close();
-
-			s = OpenSession();
-			basic = (DateTimeClass) s.Load(typeof (DateTimeClass), 1);
-
-			Assert.AreEqual(DateTimeKind.Local, basic.LocalDateTimeValue.Value.Kind);
-			Assert.AreEqual(expected, basic.LocalDateTimeValue.Value);
-
-			s.Delete(basic);
-			s.Flush();
-			s.Close();
-		}
+	[TestFixture]
+	public class LocalDateTimeNoMsTypeFixture : DateTimeNoMsTypeFixture
+	{
+		protected override string TypeName => "LocalDateTimeNoMs";
+		protected override AbstractDateTimeType Type => NHibernateUtil.LocalDateTimeNoMs;
 	}
 }

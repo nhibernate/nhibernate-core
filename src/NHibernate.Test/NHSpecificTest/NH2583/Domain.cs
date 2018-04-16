@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH2583
 {
-    public class MyRef1
+    public partial class MyRef1
     {
         private static int _idCt = 1000;
         private int _id;
@@ -93,7 +93,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
     public enum TBO1_BO2_J { Null, BO1, ValueNull, Zero, One }
     public enum TBO1_BO3_L { Null, BO1, ValueNull, Zero, One }
 
-    public class MyBO
+    public partial class MyBO
     {
         private static int _idCt = 0;
         private int _id;
@@ -153,7 +153,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     bo.K1 = 1;
                     break;
                 default:
-                    throw new Exception("Value " + value + " not handled in code");
+                    throw new NotImplementedException("Value " + value + " not handled in code");
             }
         }
 
@@ -184,7 +184,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     set(bo.GetOrCreateBO1(s), 1);
                     break;
                 default:
-                    throw new Exception("Value " + value + " not handled in code");
+                    throw new NotImplementedException("Value " + value + " not handled in code");
             }
         }
 
@@ -220,7 +220,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     set(bo.GetOrCreateBO2(s), 1);
                     break;
                 default:
-                    throw new Exception("Value " + value + " not handled in code");
+                    throw new NotImplementedException("Value " + value + " not handled in code");
             }
         }
 
@@ -259,7 +259,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     set(bo.GetOrCreateBO1(s).GetOrCreateBO2(s), 1);
                     break;
                 default:
-                    throw new Exception("Value " + value + " not handled in code");
+                    throw new NotImplementedException("Value " + value + " not handled in code");
             }
         }
 
@@ -293,7 +293,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     bo.GetOrCreateBO1(s).GetOrCreateBO3(s).L1 = 1;
                     break;
                 default:
-                    throw new Exception("Value " + value + " not handled in code");
+                    throw new NotImplementedException("Value " + value + " not handled in code");
             }
         }
     }

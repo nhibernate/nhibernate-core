@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -12,7 +11,7 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public abstract class AbstractEmptinessExpression : AbstractCriterion
 	{
-		private readonly TypedValue[] NO_VALUES = new TypedValue[0];
+		private readonly TypedValue[] NO_VALUES = Array.Empty<TypedValue>();
 		private readonly string propertyName;
 
 		protected abstract bool ExcludeEmpty { get; }
@@ -33,7 +32,7 @@ namespace NHibernate.Criterion
 			return propertyName + (ExcludeEmpty ? " is not empty" : " is empty");
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			var entityName = criteriaQuery.GetEntityName(criteria, propertyName);
 			var actualPropertyName = criteriaQuery.GetPropertyName(propertyName);

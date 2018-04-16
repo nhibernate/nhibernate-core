@@ -15,9 +15,14 @@ namespace NHibernate.Driver
 	/// <remarks>
 	/// Always look for a native .NET DataProvider before using the Odbc DataProvider.
 	/// </remarks>
-	public class OdbcDriver : DriverBase
+	public class OdbcDriver 
+#if NETFX
+		: DriverBase
+#else
+		: ReflectionBasedDriver
+#endif
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(OdbcDriver));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(OdbcDriver));
 
 		private byte? _dbDateTimeScale;
 
@@ -28,12 +33,18 @@ namespace NHibernate.Driver
 
 			// Explicit scale for DbType.DateTime. Seems required for at least MS SQL Server 2008+.
 			_dbDateTimeScale = PropertiesHelper.GetByte(Environment.OdbcDateTimeScale, settings, null);
-			if (_dbDateTimeScale != null && Log.IsInfoEnabled)
+			if (_dbDateTimeScale != null && Log.IsInfoEnabled())
 			{
-				Log.Info(string.Format("Will use scale {0} for DbType.DateTime parameters.", _dbDateTimeScale));
+				Log.Info("Will use scale {0} for DbType.DateTime parameters.", _dbDateTimeScale);
 			}
 		}
 
+#if !NETFX
+		public OdbcDriver() 
+			: base("System.Data.Odbc", "System.Data.Odbc.OdbcConnection", "System.Data.Odbc.OdbcCommand")
+		{
+		}
+#else
 		public override DbConnection CreateConnection()
 		{
 			return new OdbcConnection();
@@ -43,6 +54,7 @@ namespace NHibernate.Driver
 		{
 			return new OdbcCommand();
 		}
+#endif
 
 		public override bool UseNamedPrefixInSql
 		{
@@ -61,19 +73,36 @@ namespace NHibernate.Driver
 
 		private void SetVariableLengthParameterSize(DbParameter dbParam, SqlType sqlType)
 		{
-			if (Equals(sqlType, SqlTypeFactory.DateTime) && _dbDateTimeScale != null)
-				((IDbDataParameter)dbParam).Scale = _dbDateTimeScale.Value;
+			if (sqlType is DateTimeSqlType && _dbDateTimeScale != null)
+				dbParam.Scale = _dbDateTimeScale.Value;
 
-			// Override the defaults using data from SqlType.
 			if (sqlType.LengthDefined)
 			{
-				dbParam.Size = sqlType.Length;
+				switch (dbParam.DbType)
+				{
+					case DbType.AnsiString:
+					case DbType.AnsiStringFixedLength:
+					case DbType.String:
+					case DbType.StringFixedLength:
+						// NH-4083: do not limit to column length if above 2000. Setting size may trigger conversion from
+						// nvarchar to ntext when size is superior or equal to 2000, causing some queries to fail:
+						// https://stackoverflow.com/q/8569844/1178314
+						// So we cannot do as the SqlServerClientDriver which set max default length instead.
+						// This may also cause NH-3895, forbidding like comparisons which may need
+						// some more length.
+						// Moreover specifying size is a SQL Server optimization for query
+						// plan cache, but we have no knowledge here if the target database will be SQL-Server.
+						break;
+					default:
+						dbParam.Size = sqlType.Length;
+						break;
+				}
 			}
 
 			if (sqlType.PrecisionDefined)
 			{
-				((IDbDataParameter)dbParam).Precision = sqlType.Precision;
-				((IDbDataParameter)dbParam).Scale = sqlType.Scale;
+				dbParam.Precision = sqlType.Precision;
+				dbParam.Scale = sqlType.Scale;
 			}
 		}
 
@@ -82,5 +111,15 @@ namespace NHibernate.Driver
 			base.InitializeParameter(dbParam, name, sqlType);
 			SetVariableLengthParameterSize(dbParam, sqlType);
 		}
+
+		public override bool RequiresTimeSpanForTime => true;
+
+		/// <summary>
+		/// Depends on target DB in the Odbc case. This in facts depends on both the driver and the database.
+		/// </summary>
+		public override bool HasDelayedDistributedTransactionCompletion => true;
+
+		/// <inheritdoc />
+		public override DateTime MinDate => new DateTime(1753, 1, 1);
 	}
 }

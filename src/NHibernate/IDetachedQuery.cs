@@ -48,9 +48,10 @@ namespace NHibernate
 		IDetachedQuery SetReadOnly(bool readOnly);
 
 		/// <summary>
-		/// The timeout for the underlying ADO query
+		/// Set a timeout for the underlying ADO.NET query.
 		/// </summary>
-		/// <param name="timeout"></param>
+		/// <param name="timeout">The timeout in seconds.</param>
+		/// <returns><see langword="this" /> (for method chaining).</returns>
 		IDetachedQuery SetTimeout(int timeout);
 
 		/// <summary> Set a fetch size for the underlying ADO query.</summary>
@@ -213,6 +214,8 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		/// <remarks>Since v5.0, does no more cut fractional seconds. Use <see cref="SetDateTimeNoMs(int, DateTime)" />
+		/// for this</remarks>
 		IDetachedQuery SetDateTime(int position, DateTime val);
 
 		/// <summary>
@@ -221,7 +224,25 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
 		/// <param name="name">The name of the parameter</param>
+		/// <remarks>Since v5.0, does no more cut fractional seconds. Use <see cref="SetDateTimeNoMs(string, DateTime)" />
+		/// for this</remarks>
 		IDetachedQuery SetDateTime(string name, DateTime val);
+
+		/// <summary>
+		/// Bind an instance of a <see cref="DateTime" /> to an indexed parameter
+		/// using an NHibernate <see cref="DateTimeNoMsType"/>.
+		/// </summary>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		IDetachedQuery SetDateTimeNoMs(int position, DateTime val);
+
+		/// <summary>
+		/// Bind an instance of a <see cref="DateTime" /> to a named parameter
+		/// using an NHibernate <see cref="DateTimeNoMsType"/>.
+		/// </summary>
+		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		/// <param name="name">The name of the parameter</param>
+		IDetachedQuery SetDateTimeNoMs(string name, DateTime val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Decimal" /> to an indexed parameter
@@ -381,20 +402,24 @@ namespace NHibernate
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
 		IDetachedQuery SetTime(string name, DateTime val);
 
+		// Obsolete since v5.0
 		/// <summary>
 		/// Bind an instance of a <see cref="DateTime" /> to an indexed parameter
 		/// using an NHibernate <see cref="TimestampType"/>.
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		[Obsolete("Use SetDateTime instead.")]
 		IDetachedQuery SetTimestamp(int position, DateTime val);
 
+		// Obsolete since v5.0
 		/// <summary>
 		/// Bind an instance of a <see cref="DateTime" /> to a named parameter
 		/// using an NHibernate <see cref="TimestampType"/>.
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		[Obsolete("Use SetDateTime instead.")]
 		IDetachedQuery SetTimestamp(string name, DateTime val);
 
 		/// <summary>

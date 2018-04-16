@@ -6,9 +6,11 @@
     for querying with NHibernate.
   </para>
   <para>
-    The Linq provider works as an extension of the <literal>ISession</literal>. It is defined in the
-    <literal>NHibernate.Linq</literal> namespace, so this namespace has to be imported for using the
-    Linq provider. Of course, the Linq namespace is still needed too.
+    <literal>IQueryable</literal> queries are obtained with the <literal>Query</literal> methods used on the
+    <literal>ISession</literal> or <literal>IStatelessSession</literal>. (Prior to NHibernate 5.0, these
+    methods were extensions defined in the <literal>NHibernate.Linq</literal> namespace.) A number of
+    NHibernate Linq extensions giving access to NHibernate specific features are defined in the
+    <literal>NHibernate.Linq</literal> namespace. Of course, the Linq namespace is still needed too.
   </para>
   <programlisting><![CDATA[using System.Linq;
 using NHibernate.Linq;]]></programlisting>
@@ -43,13 +45,37 @@ using NHibernate.Linq;]]></programlisting>
         .ToList();]]></programlisting>
 
     <para>
-      A client timeout for the query can be defined.
+      Starting with NHibernate 5.0, queries can also be created from an entity collection, with the standard
+      Linq extension <literal>AsQueryable</literal> available from <literal>System.Linq</literal> namespace.
+    </para>
+    <programlisting><![CDATA[IList<Cat> whiteKittens =
+    cat.Kittens.AsQueryable()
+        .Where(k => k.Color == "white")
+        .ToList();]]></programlisting>
+    <para>
+      This will be executed as a query on that <literal>cat</literal>'s kittens without loading the
+      entire collection.
+    </para>
+    <para>
+      If the collection is a map, call <literal>AsQueryable</literal> on its <literal>Values</literal>
+      property.
+    </para>
+    <programlisting><![CDATA[IList<Cat> whiteKittens =
+    cat.Kittens.Values.AsQueryable()
+        .Where(k => k.Color == "white")
+        .ToList();]]></programlisting>
+    <para>&nbsp;</para>
+
+    <para>
+      A client timeout for the query can be defined. As most others NHibernate specific features for
+      Linq, this is available through an extension defined in <literal>NHibernate.Linq</literal>
+      namespace.
     </para>
     <programlisting><![CDATA[IList<Cat> cats =
     session.Query<Cat>()
         .Where(c => c.Color == "black")
         // Allows 10 seconds only.
-        .TimeOut(10)
+        .SetOptions(o => o.SetTimeout(10))
         .ToList();]]></programlisting>
   </sect1>
 
@@ -66,6 +92,10 @@ using NHibernate.Linq;]]></programlisting>
     <programlisting><![CDATA[IList<Cat> cats =
     session.Query<Cat>()
         .Where(c => c.BirthDate == DateTime.Today.MappedAs(NHibernateUtil.Date))
+        .ToList();]]></programlisting>
+    <programlisting><![CDATA[IList<Cat> cats =
+    session.Query<Cat>()
+        .Where(c => c.Name == "Max".MappedAs(TypeFactory.Basic("AnsiString(200)")))
         .ToList();]]></programlisting>
   </sect1>
 
@@ -301,7 +331,7 @@ using NHibernate.Linq;]]></programlisting>
     <sect2 id="querylinq-supportedmethods-string">
       <title>Strings</title>
       <para>
-        Following properties and methods are supported on strings:
+        The following properties and methods are supported on strings:
       </para>
       <itemizedlist>
         <listitem>
@@ -398,7 +428,7 @@ using NHibernate.Linq;]]></programlisting>
       At that point, all defined future results are evaluated in one single round-trip to database.
     </para>
     <programlisting><![CDATA[// Define queries
-IEnumerable<Cat> cats =
+IFutureEnumerable<Cat> cats =
     session.Query<Cat>()
         .Where(c => c.Color == "black")
         .ToFuture();
@@ -406,7 +436,7 @@ IFutureValue<int> catCount =
     session.Query<Cat>()
         .ToFutureValue(q => q.Count());
 // Execute them
-foreach(Cat cat in cats)
+foreach(Cat cat in cats.GetEnumerable())
 {
     // Do something
 }
@@ -417,7 +447,9 @@ if (catCount.Value > 10)
 ]]></programlisting>
     <para>
       In above example, accessing <literal>catCount.Value</literal> does not trigger a round-trip to database:
-      it has been evaluated with <literal>cats</literal> enumeration.
+      it has been evaluated with <literal>cats.GetEnumerable()</literal> call. If instead
+      <literal>catCount.Value</literal> was accessed first, it would have executed both future and
+      <literal>cats.GetEnumerable()</literal> would have not trigger a round-trip to database.
     </para>
   </sect1>
 
@@ -427,7 +459,8 @@ if (catCount.Value > 10)
     <para>
       A Linq query may load associated entities or collection of entities. Once the query is defined, using
       <literal>Fetch</literal> allows fetching a related entity, and <literal>FetchMany</literal> allows
-      fetching a collection.
+      fetching a collection. These methods are defined as extensions in <literal>NHibernate.Linq</literal>
+      namespace.
     </para>
     <programlisting><![CDATA[IList<Cat> oldCats =
     session.Query<Cat>()
@@ -451,6 +484,7 @@ IList<Cat> oldCats =
     oldCatsQuery
         .FetchMany(c => c.AnotherCollection)
         .ToFuture()
+        .GetEnumerable()
         .ToList();]]></programlisting>
     <para>&nbsp;</para>
     
@@ -467,6 +501,119 @@ IList<Cat> oldCats =
         .ToList();]]></programlisting>
   </sect1>
 
+  <sect1 id="querylinq-modifying">
+    <title>Modifying entities inside the database</title>
+
+    <para>
+      Beginning with NHibernate 5.0, Linq queries can be used for inserting, updating or deleting entities.
+      The query defines the data to delete, update or insert, and then <literal>Delete</literal>,
+      <literal>Update</literal>, <literal>UpdateBuilder</literal>, <literal>InsertInto</literal> and
+      <literal>InsertBuilder</literal> queryable extension methods allow to delete it,
+      or instruct in which way it should be updated or inserted. Those queries happen entirely inside the
+      database, without extracting corresponding entities out of the database.
+    </para>
+    <para>
+      These operations are a Linq implementation of <xref linkend="batch-direct" />, with the same abilities
+      and limitations.
+    </para>
+
+    <sect2 id="querylinq-modifying-insert">
+      <title>Inserting new entities</title>
+      <para>
+        <literal>InsertInto</literal> and <literal>InsertBuilder</literal> method extensions expect a NHibernate
+        queryable defining the data source of the insert. This data can be entities or a projection. Then they
+        allow specifying the target entity type to insert, and how to convert source data to those target
+        entities. Three forms of target specification exist.
+      </para>
+      <para>
+        Using projection to target entity:
+      </para>
+      <programlisting><![CDATA[session.Query<Cat>()
+    .Where(c => c.BodyWeight > 20)
+    .InsertInto(c => new Dog { Name = c.Name + "dog", BodyWeight = c.BodyWeight });]]></programlisting>
+      <para>
+        Projections can be done with an anonymous object too, but it requires supplying explicitly the target
+        type, which in turn requires re-specifying the source type:
+      </para>
+      <programlisting><![CDATA[session.Query<Cat>()
+    .Where(c => c.BodyWeight > 20)
+    .InsertInto<Cat, Dog>(c => new { Name = c.Name + "dog", BodyWeight = c.BodyWeight });]]></programlisting>
+      <para>
+        Or using assignments:
+      </para>
+      <programlisting><![CDATA[session.Query<Cat>()
+    .Where(c => c.BodyWeight > 20)
+    .InsertBuilder()
+    .Into<Dog>()
+    .Value(d => d.Name, c => c.Name + "dog")
+    .Value(d => d.BodyWeight, c => c.BodyWeight)
+    .Insert();]]></programlisting>
+      <para>
+        In all cases, unspecified properties are not included in the resulting SQL insert.
+        <link linkend="mapping-declaration-version"><literal>version</literal></link> and
+        <link linkend="mapping-declaration-timestamp"><literal>timestamp</literal></link> properties are
+        exceptions. If not specified, they are inserted with their <literal>seed</literal> value.
+      </para>
+      <para>
+        For more information on <literal>Insert</literal> limitations, please refer to
+        <xref linkend="batch-direct" />.
+      </para>
+    </sect2>
+
+    <sect2 id="querylinq-modifying-update">
+      <title>Updating entities</title>
+      <para>
+        <literal>Update</literal> and <literal>UpdateBuilder</literal> method extensions expect a NHibernate
+        queryable defining the entities to update. Then they allow specifying which properties should be
+        updated with which values. As for insertion, three forms of target specification exist.
+      </para>
+      <para>
+        Using projection to updated entity:
+      </para>
+      <programlisting><![CDATA[session.Query<Cat>()
+    .Where(c => c.BodyWeight > 20)
+    .Update(c => new Cat { BodyWeight = c.BodyWeight / 2 });]]></programlisting>
+      <para>
+        Projections can be done with an anonymous object too:
+      </para>
+      <programlisting><![CDATA[session.Query<Cat>()
+    .Where(c => c.BodyWeight > 20)
+    .Update(c => new { BodyWeight = c.BodyWeight / 2 });]]></programlisting>
+      <para>
+        Or using assignments:
+      </para>
+      <programlisting><![CDATA[session.Query<Cat>()
+    .Where(c => c.BodyWeight > 20)
+    .UpdateBuilder()
+    .Set(c => c.BodyWeight, c => c.BodyWeight / 2)
+    .Update();]]></programlisting>
+      <para>
+        In all cases, unspecified properties are not included in the resulting SQL update. This could
+        be changed for <link linkend="mapping-declaration-version"><literal>version</literal></link> and
+        <link linkend="mapping-declaration-timestamp"><literal>timestamp</literal></link> properties:
+        using <literal>UpdateVersioned</literal> instead of <literal>Update</literal> allows incrementing
+        the version. Custom version types (<literal>NHibernate.Usertype.IUserVersionType</literal>) are
+        not supported.
+      </para>
+      <para>
+        When using projection to updated entity, please note that the constructed entity must have the
+        exact same type than the underlying queryable source type. Attempting to project to any other class
+        (anonymous projections excepted) will fail.
+      </para>
+    </sect2>
+
+    <sect2 id="querylinq-modifying-delete">
+      <title>Deleting entities</title>
+      <para>
+        <literal>Delete</literal> method extension expects a queryable defining the entities to delete.
+        It immediately deletes them.
+      </para>
+      <programlisting><![CDATA[session.Query<Cat>()
+    .Where(c => c.BodyWeight > 20)
+    .Delete();]]></programlisting>
+    </sect2>
+  </sect1>
+
   <sect1 id="querylinq-querycache">
     <title>Query cache</title>
 
@@ -477,24 +624,25 @@ IList<Cat> oldCats =
     <para>&nbsp;</para>
     
     <para>
-      <literal>Cacheable</literal> extension method enables the cache for the query.
+      <literal>SetOptions</literal> extension method allows to enable the cache for the query.
     </para>
     <programlisting><![CDATA[IList<Cat> oldCats =
     session.Query<Cat>()
         .Where(c => c.BirthDate.Year < 2010)
-        .Cacheable()
+        .SetOptions(o => o.SetCacheable(true))
         .ToList();]]></programlisting>
     <para>&nbsp;</para>
 
     <para>
-      <literal>CacheMode</literal> and <literal>CacheRegion</literal> extension methods set
-      the cache mode and the cache region respectively.
+      The cache mode and cache region can be specified too.
     </para>
     <programlisting><![CDATA[IList<Cat> cats =
     session.Query<Cat>()
         .Where(c => c.Name == "Max")
-        .Cacheable()
-        .CacheRegion("catNames")
+        .SetOptions(o => o
+            .SetCacheable(true)
+            .SetCacheRegion("catNames")
+            .SetCacheMode(CacheMode.Put))
         .ToList();]]></programlisting>
   </sect1>
 
@@ -545,11 +693,21 @@ IList<Cat> cats =
     }
 }]]></programlisting>
       <para>
-        The method call will always be translated to SQL if at least one of the parameters of the
-        method call has its value originating from an entity. Otherwise, the Linq provider will try to
-        evaluate the method call with .Net runtime instead. Since NHibernate 5.0, if this runtime
-        evaluation fails (throws an exception), then the method call will be translated to SQL too.
+        Since NHibernate v5.0, the Linq provider will no more evaluate in-memory the method call
+        even when it does not depend on the queried data. If you wish to have the method call evaluated
+        before querying whenever possible, and then replaced in the query by its resulting value, specify
+        <literal>LinqExtensionPreEvaluation.AllowPreEvaluation</literal> on the attribute.
       </para>
+      <programlisting><![CDATA[public static class CustomLinqExtensions
+{
+    [LinqExtensionMethod("dbo.aCustomFunction",
+        LinqExtensionPreEvaluation.AllowPreEvaluation)]
+    public static string ACustomFunction(this string input, string otherInput)
+    {
+        // In-memory evaluation implementation.
+        return input.Replace(otherInput, "blah");
+    }
+}]]></programlisting>
     </sect2>
 
     <sect2 id="querylinq-extending-generator">
@@ -590,7 +748,7 @@ IList<Cat> cats =
     {
         SupportedMethods = new[]
         {
-             ReflectionHelper.GetMethodDefinition(() => NullableExtensions.AsNullable(0))
+             ReflectHelper.GetMethodDefinition(() => NullableExtensions.AsNullable(0))
         };
     }
 
@@ -600,8 +758,8 @@ IList<Cat> cats =
         HqlTreeBuilder treeBuilder,
         IHqlExpressionVisitor visitor)
     {
-        // This has just to transmit the argument "as is", HQL does not need a specific call for
-        // null conversion.
+        // This has just to transmit the argument "as is", HQL does not need
+        // a specific call for null conversion.
         return visitor.Visit(arguments[0]).AsExpression();
     }
 }]]></programlisting>
@@ -637,7 +795,9 @@ DefaultLinqToHqlGeneratorsRegistry
         <link linkend="configuration-programmatic">code</link> before building the session factory.
         Use one of them.
       </para>
-      <programlisting><![CDATA[<property name="linqtohql.generatorsregistry">YourNameSpace.ExtendedLinqToHqlGeneratorsRegistry, YourAssemblyName</property>]]></programlisting>
+      <programlisting><![CDATA[<property name="linqtohql.generatorsregistry">
+    YourNameSpace.ExtendedLinqToHqlGeneratorsRegistry, YourAssemblyName
+</property>]]></programlisting>
       <programlisting><![CDATA[using NHibernate.Cfg;
 // ...
 
@@ -655,6 +815,13 @@ cfg.LinqToHqlGeneratorsRegistry<ExtendedLinqToHqlGeneratorsRegistry>();
         .Min();]]></programlisting>
       <para>
         (Of course, the same result could be obtained with <literal>(DateTime?)(c.BirthDate)</literal>.)
+      </para>
+      <para>
+        By default, the Linq provider will try to evaluate the method call with .Net runtime
+        whenever possible, instead of translating it to SQL. It will not do it if at least one
+        of the parameters of the method call has its value originating from an entity, or if
+        the method is marked with the <literal>NoPreEvaluation</literal> attribute (available
+        since NHibernate 5.0).
       </para>
     </sect2>
   </sect1>

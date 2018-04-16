@@ -27,7 +27,7 @@ namespace NHibernate.Linq
 
 		// This constructor is called by our users, create a new IQueryExecutor.
 		public NhQueryable(ISessionImplementor session, string entityName)
-			: base(QueryProviderFactory.CreateQueryProvider(session))
+			: base(QueryProviderFactory.CreateQueryProvider(session, null))
 		{
 			EntityName = entityName;
 		}
@@ -44,6 +44,12 @@ namespace NHibernate.Linq
 			: base(provider, expression)
 		{
 			EntityName = entityName;
+		}
+
+		public NhQueryable(ISessionImplementor session, object collection)
+			: base(QueryProviderFactory.CreateQueryProvider(session, collection))
+		{
+			EntityName = typeof(T).FullName;
 		}
 
 		public string EntityName { get; private set; }

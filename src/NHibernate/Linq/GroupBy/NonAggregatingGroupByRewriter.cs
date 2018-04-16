@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using NHibernate.Linq.ResultOperators;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
-using Remotion.Linq.Clauses.ExpressionTreeVisitors;
+using Remotion.Linq.Clauses.ExpressionVisitors;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 
@@ -71,7 +71,7 @@ namespace NHibernate.Linq.GroupBy
 			var mapping = new QuerySourceMapping();
 			mapping.AddMapping(queryModel.MainFromClause, parameter);
 			
-			var body = ReferenceReplacingExpressionTreeVisitor.ReplaceClauseReferences(queryModel.SelectClause.Selector, mapping, false);
+			var body = ReferenceReplacingExpressionVisitor.ReplaceClauseReferences(queryModel.SelectClause.Selector, mapping, false);
 			
 			var lambda = Expression.Lambda(body, parameter);
 			

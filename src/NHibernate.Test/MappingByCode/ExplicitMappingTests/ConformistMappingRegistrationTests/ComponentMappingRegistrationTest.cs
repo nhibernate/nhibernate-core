@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRegistrationTests
 {
+	[TestFixture]
 	public class ComponentMappingRegistrationTest
 	{
 		public class MyClass

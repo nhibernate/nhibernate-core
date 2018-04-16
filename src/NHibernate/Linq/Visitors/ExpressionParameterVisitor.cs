@@ -6,6 +6,7 @@ using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.Param;
 using NHibernate.Type;
+using NHibernate.Util;
 using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
@@ -13,19 +14,19 @@ namespace NHibernate.Linq.Visitors
 	/// <summary>
 	/// Locates constants in the expression tree and generates parameters for each one
 	/// </summary>
-	public class ExpressionParameterVisitor : ExpressionTreeVisitor
+	public class ExpressionParameterVisitor : RelinqExpressionVisitor
 	{
 		private readonly Dictionary<ConstantExpression, NamedParameter> _parameters = new Dictionary<ConstantExpression, NamedParameter>();
 		private readonly ISessionFactoryImplementor _sessionFactory;
 
 		private static readonly MethodInfo QueryableSkipDefinition =
-			ReflectionHelper.GetMethodDefinition(() => Queryable.Skip<object>(null, 0));
+			ReflectHelper.GetMethodDefinition(() => Queryable.Skip<object>(null, 0));
 		private static readonly MethodInfo QueryableTakeDefinition =
-			ReflectionHelper.GetMethodDefinition(() => Queryable.Take<object>(null, 0));
+			ReflectHelper.GetMethodDefinition(() => Queryable.Take<object>(null, 0));
 		private static readonly MethodInfo EnumerableSkipDefinition =
-			ReflectionHelper.GetMethodDefinition(() => Enumerable.Skip<object>(null, 0));
+			ReflectHelper.GetMethodDefinition(() => Enumerable.Skip<object>(null, 0));
 		private static readonly MethodInfo EnumerableTakeDefinition =
-			ReflectionHelper.GetMethodDefinition(() => Enumerable.Take<object>(null, 0));
+			ReflectHelper.GetMethodDefinition(() => Enumerable.Take<object>(null, 0));
 
 		private readonly ICollection<MethodBase> _pagingMethods = new HashSet<MethodBase>
 			{
@@ -47,16 +48,16 @@ namespace NHibernate.Linq.Visitors
 		{
 			var visitor = new ExpressionParameterVisitor(sessionFactory);
 
-			expression = visitor.VisitExpression(expression);
+			expression = visitor.Visit(expression);
 
 			return visitor._parameters;
 		}
 
-		protected override Expression VisitMethodCallExpression(MethodCallExpression expression)
+		protected override Expression VisitMethodCall(MethodCallExpression expression)
 		{
 			if (expression.Method.Name == nameof(LinqExtensionMethods.MappedAs) && expression.Method.DeclaringType == typeof(LinqExtensionMethods))
 			{
-				var rawParameter = VisitExpression(expression.Arguments[0]);
+				var rawParameter = Visit(expression.Arguments[0]);
 				var parameter = rawParameter as ConstantExpression;
 				var type = expression.Arguments[1] as ConstantExpression;
 				if (parameter == null)
@@ -80,7 +81,7 @@ namespace NHibernate.Linq.Visitors
 			if (_pagingMethods.Contains(method) && !_sessionFactory.Dialect.SupportsVariableLimit)
 			{
 				//TODO: find a way to make this code cleaner
-				var query = VisitExpression(expression.Arguments[0]);
+				var query = Visit(expression.Arguments[0]);
 				var arg = expression.Arguments[1];
 
 				if (query == expression.Arguments[0])
@@ -94,10 +95,10 @@ namespace NHibernate.Linq.Visitors
 				return expression;
 			}
 
-			return base.VisitMethodCallExpression(expression);
+			return base.VisitMethodCall(expression);
 		}
 
-		protected override Expression VisitConstantExpression(ConstantExpression expression)
+		protected override Expression VisitConstant(ConstantExpression expression)
 		{
 			if (!_parameters.ContainsKey(expression) && !typeof(IQueryable).IsAssignableFrom(expression.Type) && !IsNullObject(expression))
 			{
@@ -124,7 +125,7 @@ namespace NHibernate.Linq.Visitors
 				_parameters.Add(expression, new NamedParameter("p" + (_parameters.Count + 1), value, type));
 			}
 
-			return base.VisitConstantExpression(expression);
+			return base.VisitConstant(expression);
 		}
 
 		private static bool IsNullObject(ConstantExpression expression)

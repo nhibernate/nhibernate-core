@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3518
 	{
 		protected override void OnTearDown()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using (var t = session.BeginTransaction())
 			{
 				session.Delete("from ClassWithXmlMember");
@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3518
 			xmlDocument.AppendChild(xmlElement);
 			var parentA = new ClassWithXmlMember("A", xmlDocument);
 
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				s.Save(parentA);

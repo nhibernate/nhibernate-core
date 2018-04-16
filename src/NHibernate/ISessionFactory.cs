@@ -23,12 +23,19 @@ namespace NHibernate
 	/// These properties are defined on <c>Environment</c>
 	/// </para>
 	/// </remarks>
-	public interface ISessionFactory : IDisposable
+	public partial interface ISessionFactory : IDisposable
 	{
 		/// <summary>
-		/// Open a <c>ISession</c> on the given connection
+		/// Obtain a <see cref="ISession"/> builder.
 		/// </summary>
-		/// <param name="conn">A connection provided by the application</param>
+		/// <returns>The session builder.</returns>
+		ISessionBuilder WithOptions();
+
+		// Obsolete in v5.
+		/// <summary>
+		/// Open a <see cref="ISession"/> on the given connection
+		/// </summary>
+		/// <param name="connection">A connection provided by the application</param>
 		/// <returns>A session</returns>
 		/// <remarks>
 		/// Note that the second-level cache will be disabled if you
@@ -36,34 +43,58 @@ namespace NHibernate
 		/// any statements you might have executed in the same transaction.
 		/// Consider implementing your own <see cref="IConnectionProvider" />.
 		/// </remarks>
-		ISession OpenSession(DbConnection conn);
+		[Obsolete("Please use WithOptions instead.")]
+		ISession OpenSession(DbConnection connection);
 
+		// Obsolete in v5.
 		/// <summary>
-		/// Create database connection and open a <c>ISession</c> on it, specifying an interceptor
+		/// Create database connection and open a <see cref="ISession"/> on it, specifying an interceptor
 		/// </summary>
 		/// <param name="sessionLocalInterceptor">A session-scoped interceptor</param>
-		/// <returns>A session</returns>
+		/// <returns>A session.</returns>
+		[Obsolete("Please use WithOptions instead.")]
 		ISession OpenSession(IInterceptor sessionLocalInterceptor);
 
+		// Obsolete in v5.
 		/// <summary>
-		/// Open a <c>ISession</c> on the given connection, specifying an interceptor
+		/// Open a <see cref="ISession"/> on the given connection, specifying an interceptor
 		/// </summary>
 		/// <param name="conn">A connection provided by the application</param>
 		/// <param name="sessionLocalInterceptor">A session-scoped interceptor</param>
-		/// <returns>A session</returns>
+		/// <returns>A session.</returns>
 		/// <remarks>
 		/// Note that the second-level cache will be disabled if you
 		/// supply a ADO.NET connection. NHibernate will not be able to track
 		/// any statements you might have executed in the same transaction.
 		/// Consider implementing your own <see cref="IConnectionProvider" />.
 		/// </remarks>
+		[Obsolete("Please use WithOptions instead.")]
 		ISession OpenSession(DbConnection conn, IInterceptor sessionLocalInterceptor);
 
 		/// <summary>
-		/// Create a database connection and open a <c>ISession</c> on it
+		/// Create a database connection and open a <see cref="ISession"/> on it
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>A session.</returns>
 		ISession OpenSession();
+
+		/// <summary>
+		/// Obtain a <see cref="IStatelessSession"/> builder.
+		/// </summary>
+		/// <returns>The session builder.</returns>
+		IStatelessSessionBuilder WithStatelessOptions();
+
+		/// <summary>
+		/// Get a new <see cref="IStatelessSession"/>.
+		/// </summary>
+		/// <returns>A stateless session</returns>
+		IStatelessSession OpenStatelessSession();
+
+		/// <summary>
+		/// Get a new <see cref="IStatelessSession"/> for the given ADO.NET connection.
+		/// </summary>
+		/// <param name="connection">A connection provided by the application</param>
+		/// <returns>A stateless session</returns>
+		IStatelessSession OpenStatelessSession(DbConnection connection);
 
 		/// <summary>
 		/// Get the <see cref="IClassMetadata"/> associated with the given entity class
@@ -166,12 +197,6 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="cacheRegion"></param>
 		void EvictQueries(string cacheRegion);
-
-		/// <summary> Get a new stateless session.</summary>
-		IStatelessSession OpenStatelessSession();
-
-		/// <summary> Get a new stateless session for the given ADO.NET connection.</summary>
-		IStatelessSession OpenStatelessSession(DbConnection connection);
 
 		/// <summary>
 		/// Obtain the definition of a filter by name.

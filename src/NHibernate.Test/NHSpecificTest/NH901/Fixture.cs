@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Cfg;
 using NHibernate.Mapping.ByCode;
@@ -6,14 +7,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH901
 {
+	[TestFixture]
 	public abstract class FixtureBase : TestCase
 	{
-		private new ISession OpenSession(IInterceptor interceptor)
-		{
-			lastOpenedSession = sessions.OpenSession(interceptor);
-			return lastOpenedSession;
-		}
-
 		protected override void OnTearDown()
 		{
 			base.OnTearDown();
@@ -112,7 +108,7 @@ namespace NHibernate.Test.NHSpecificTest.NH901
 	{
 		protected override IList Mappings
 		{
-			get { return new string[0]; }
+			get { return Array.Empty<string>(); }
 		}
 
 		protected override string MappingsAssembly

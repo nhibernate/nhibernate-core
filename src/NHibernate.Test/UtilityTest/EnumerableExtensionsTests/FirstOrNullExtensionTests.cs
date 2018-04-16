@@ -5,6 +5,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 {
+	//Since v5.1
+	[Obsolete]
+	[TestFixture]
 	public class FirstOrNullExtensionTests
 	{
 		[Test]
@@ -22,7 +25,7 @@ namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 		[Test]
 		public void WhenEmptyThenReturnNull()
 		{
-			Assert.That((new object[0]).FirstOrNull(), Is.Null);
+			Assert.That((Array.Empty<object>()).FirstOrNull(), Is.Null);
 		}
 	}
 }

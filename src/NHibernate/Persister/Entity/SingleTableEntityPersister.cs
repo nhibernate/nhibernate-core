@@ -247,9 +247,7 @@ namespace NHibernate.Persister.Entity
 					throw new MappingException("Discriminator mapping required for single table polymorphic persistence");
 
 				forceDiscriminator = persistentClass.IsForceDiscriminator;
-				IEnumerator<ISelectable> iSel = discrimValue.ColumnIterator.GetEnumerator();
-				iSel.MoveNext();
-				ISelectable selectable = iSel.Current;
+				var selectable = discrimValue.ColumnIterator.First();
 				if (discrimValue.HasFormula)
 				{
 					Formula formula = (Formula)selectable;

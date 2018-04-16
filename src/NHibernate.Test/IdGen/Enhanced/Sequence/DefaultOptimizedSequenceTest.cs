@@ -43,7 +43,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Sequence
 			// if an increment size greater than 1 is specified, and that the global
 			// property Cfg.Environment.PreferPooledValuesLo takes effect.
 
-			var persister = sessions.GetEntityPersister(typeof(Entity).FullName);
+			var persister = Sfi.GetEntityPersister(typeof(Entity).FullName);
 			Assert.That(persister.IdentifierGenerator, Is.TypeOf<SequenceStyleGenerator>());
 
 			var generator = (SequenceStyleGenerator)persister.IdentifierGenerator;

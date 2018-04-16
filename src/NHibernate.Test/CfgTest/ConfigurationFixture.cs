@@ -27,7 +27,7 @@ namespace NHibernate.Test.CfgTest
 		public void ReadCfgXmlFromDefaultFile()
 		{
 			Configuration cfg = new Configuration();
-			cfg.Configure(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEnbeddedConfig.cfg.xml"));
+			cfg.Configure(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEmbeddedConfig.cfg.xml"));
 
 			Assert.IsTrue(cfg.Properties.ContainsKey(Environment.ShowSql));
 			Assert.IsTrue(cfg.Properties.ContainsKey(Environment.UseQueryCache));
@@ -76,7 +76,7 @@ namespace NHibernate.Test.CfgTest
 		public void ReadCfgXmlFromAssembly()
 		{
 			Configuration cfg = new Configuration();
-			cfg.Configure(this.GetType().Assembly, "NHibernate.Test.TestEnbeddedConfig.cfg.xml");
+			cfg.Configure(this.GetType().Assembly, "NHibernate.Test.TestEmbeddedConfig.cfg.xml");
 
 			Assert.AreEqual("true 1, false 0, yes 1, no 0", cfg.Properties[Environment.QuerySubstitutions]);
 			Assert.AreEqual("Server=localhost;initial catalog=nhibernate;User Id=;Password=",
@@ -91,7 +91,7 @@ namespace NHibernate.Test.CfgTest
 		public void InvalidXmlInCfgFile()
 		{
 			XmlDocument cfgXml = new XmlDocument();
-			cfgXml.Load(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEnbeddedConfig.cfg.xml"));
+			cfgXml.Load(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEmbeddedConfig.cfg.xml"));
 
 			// this should put us at the first <property> element
 			XmlElement propElement = cfgXml.DocumentElement.GetElementsByTagName("property")[0] as XmlElement;
@@ -432,7 +432,7 @@ namespace NHibernate.Test.CfgTest
 		public void NH2890Standard()
 		{
 			var cfg = new Configuration();
-			cfg.Configure(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEnbeddedConfig.cfg.xml"))
+			cfg.Configure(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEmbeddedConfig.cfg.xml"))
 				.LinqQueryProvider<SampleQueryProvider>()
 				.SetDefaultAssembly("NHibernate.DomainModel")
 				.SetDefaultNamespace("NHibernate.DomainModel");
@@ -451,7 +451,7 @@ namespace NHibernate.Test.CfgTest
 		public void NH2890Xml()
 		{
 			var cfg = new Configuration();
-			cfg.Configure(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEnbeddedConfig.cfg.xml"))
+			cfg.Configure(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEmbeddedConfig.cfg.xml"))
 				.SetDefaultAssembly("NHibernate.DomainModel")
 				.SetDefaultNamespace("NHibernate.DomainModel");
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 
@@ -12,54 +11,32 @@ namespace NHibernate.Type
 	/// <see cref="DbType.Date"/> column
 	/// </summary>
 	[Serializable]
-	public class DateType : PrimitiveType, IIdentifierType, ILiteralType, IParameterizedType
+	public class DateType : AbstractDateTimeType, IParameterizedType
 	{
+		private static readonly INHibernateLogger _log = NHibernateLogger.For(typeof(DateType));
+		// Since v5.0
+		[Obsolete("Explicitly affect your values to your entities properties instead.")]
 		public const string BaseValueParameterName = "BaseValue";
-		public static readonly DateTime BaseDateValue = new DateTime(1753, 01, 01);
-		private DateTime customBaseDate = BaseDateValue;
+		// Since v5.0
+		[Obsolete("Use DateTime.MinValue.")]
+		public static readonly DateTime BaseDateValue = DateTime.MinValue;
+		private DateTime customBaseDate = _baseDateValue;
 
-		/// <summary></summary>
+		private static readonly DateTime _baseDateValue = DateTime.MinValue;
+
+		/// <summary>Default constructor</summary>
 		public DateType() : base(SqlTypeFactory.Date)
 		{
 		}
 
-		/// <summary></summary>
-		public override string Name
-		{
-			get { return "Date"; }
-		}
+		/// <inheritdoc />
+		public override string Name => "Date";
 
-		public override object Get(DbDataReader rs, int index)
-		{
-			try
-			{
-				DateTime dbValue = Convert.ToDateTime(rs[index]);
-				return dbValue.Date;
-			}
-			catch (Exception ex)
-			{
-				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[index]), ex);
-			}
-		}
+		/// <inheritdoc />
+		protected override DateTime AdjustDateTime(DateTime dateValue) =>
+			dateValue.Date;
 
-		public override object Get(DbDataReader rs, string name)
-		{
-			return Get(rs, rs.GetOrdinal(name));
-		}
-
-		public override System.Type ReturnedClass
-		{
-			get { return typeof(DateTime); }
-		}
-
-		public override void Set(DbCommand st, object value, int index)
-		{
-			var parm = st.Parameters[index];
-			var dateTime = (DateTime)value;
-			if (dateTime < customBaseDate) parm.Value = DBNull.Value;
-			else parm.Value = dateTime.Date;
-		}
-
+		/// <inheritdoc />
 		public override bool IsEqual(object x, object y)
 		{
 			if (x == y)
@@ -71,20 +48,21 @@ namespace NHibernate.Type
 				return false;
 			}
 
-			DateTime date1 = (DateTime)x;
-			DateTime date2 = (DateTime)y;
+			var date1 = (DateTime)x;
+			var date2 = (DateTime)y;
 			if (date1.Equals(date2))
 				return true;
 
 			return date1.Day == date2.Day
-						 && date1.Month == date2.Month
-						 && date1.Year == date2.Year;
+				 && date1.Month == date2.Month
+				 && date1.Year == date2.Year;
 		}
 
+		/// <inheritdoc />
 		public override int GetHashCode(object x)
 		{
-			DateTime date = (DateTime)x;
-			int hashCode = 1;
+			var date = (DateTime)x;
+			var hashCode = 1;
 			unchecked
 			{
 				hashCode = 31 * hashCode + date.Day;
@@ -94,36 +72,19 @@ namespace NHibernate.Type
 			return hashCode;
 		}
 
-		public override string ToString(object val)
-		{
-			return ((DateTime) val).ToShortDateString();
-		}
+		/// <inheritdoc />
+		public override string ToString(object val) =>
+			((DateTime) val).ToShortDateString();
 
-		public override object FromStringValue(string xml)
-		{
-			return DateTime.Parse(xml);
-		}
+		/// <inheritdoc />
+		public override object DefaultValue => customBaseDate;
 
-		public object StringToObject(string xml)
-		{
-			return string.IsNullOrEmpty(xml) ? null : FromStringValue(xml);
-		}
+		/// <inheritdoc />
+		public override string ObjectToSQLString(object value, Dialect.Dialect dialect) =>
+			"\'" + ((DateTime)value).ToShortDateString() + "\'";
 
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof(DateTime); }
-		}
-
-		public override object DefaultValue
-		{
-			get { return customBaseDate; }
-		}
-
-		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
-		{
-			return "\'" + ((DateTime)value).ToShortDateString() + "\'";
-		}
-
+		// Since v5
+		[Obsolete("Its only parameter, BaseValue, is obsolete.")]
 		public void SetParameterValues(IDictionary<string, string> parameters)
 		{
 			if(parameters == null)
@@ -133,6 +94,9 @@ namespace NHibernate.Type
 			string value;
 			if (parameters.TryGetValue(BaseValueParameterName, out value))
 			{
+				_log.Warn(
+					"Parameter {0} is obsolete and will be remove in a future version. Explicitly affect your values to your entities properties instead.",
+					BaseValueParameterName);
 				customBaseDate = DateTime.Parse(value);
 			}
 		}

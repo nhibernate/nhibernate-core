@@ -20,11 +20,10 @@ namespace NHibernate.Loader.Criteria
 	/// Note that criteria
 	/// queries are more like multi-object <c>Load()</c>s than like HQL queries.
 	/// </remarks>
-	public class CriteriaLoader : OuterJoinLoader
+	public partial class CriteriaLoader : OuterJoinLoader
 	{
 		private readonly CriteriaQueryTranslator translator;
 		private readonly ISet<string> querySpaces;
-		private readonly IType[] resultTypes;
 		//the user visible aliases, which are unknown to the superclass,
 		//these are not the actual "physical" SQL aliases
 		private readonly string[] userAliases;
@@ -47,7 +46,7 @@ namespace NHibernate.Loader.Criteria
 			InitFromWalker(walker);
 
 			userAliases = walker.UserAliases;
-			resultTypes = walker.ResultTypes;
+			ResultTypes = walker.ResultTypes;
 			includeInResultRow = walker.IncludeInResultRow;
 			resultRowLength = ArrayHelper.CountTrue(IncludeInResultRow);
 			// fill caching objects only if there is a projection
@@ -76,11 +75,6 @@ namespace NHibernate.Loader.Criteria
 			get { return translator; }
 		}
 
-		public IType[] ResultTypes
-		{
-			get { return resultTypes; }
-		}
-
 		protected override string[] ResultRowAliases
 		{
 			get { return userAliases; }
@@ -93,7 +87,7 @@ namespace NHibernate.Loader.Criteria
 
 		public IList List(ISessionImplementor session)
 		{
-			return List(session, translator.GetQueryParameters(), querySpaces, resultTypes);
+			return List(session, translator.GetQueryParameters(), querySpaces);
 		}
 
 		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
@@ -171,7 +165,7 @@ namespace NHibernate.Loader.Criteria
 			}
 
 			Dictionary<string, LockMode> aliasedLockModes = new Dictionary<string, LockMode>();
-			Dictionary<string, string[]> keyColumnNames = dialect.ForUpdateOfColumns ? new Dictionary<string, string[]>() : null;
+			Dictionary<string, string[]> keyColumnNames = dialect.UsesColumnsWithForUpdateOf ? new Dictionary<string, string[]>() : null;
 			string[] drivingSqlAliases = Aliases;
 
 			//NH-3710: if we are issuing an aggregation function, Aliases will be null

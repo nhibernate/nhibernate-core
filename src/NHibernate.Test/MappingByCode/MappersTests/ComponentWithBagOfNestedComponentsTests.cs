@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
+	[TestFixture]
 	public class ComponentWithBagOfNestedComponentsTests : TestCase
 	{
 		public class OwnedItem
@@ -57,7 +58,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			{
 				// We can perform these tests without
 				// creating a data schema
-				return new string[0];
+				return Array.Empty<string>();
 			}
 		}
 

@@ -6,9 +6,11 @@ using System.Linq;
 using System.Reflection;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
+using TypeExtensions = NHibernate.Mapping.ByCode.TypeExtensions;
 
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
+	[TestFixture]
 	public class TypeExtensionsTest
 	{
 		private const BindingFlags BindingFlagsIncludePrivate = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
@@ -220,7 +222,10 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 
 		private abstract class MyAbstract
 		{
+			// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			protected int aField;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 			public abstract string Description { get; }
 		}
 

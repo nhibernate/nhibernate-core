@@ -30,5 +30,7 @@
 		{
 			get { return ":"; }
 		}
+
+		public override bool RequiresTimeSpanForTime => true;
 	}
 }

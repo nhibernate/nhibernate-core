@@ -11,7 +11,7 @@ using NHibernate.Type;
 namespace NHibernate.Action
 {
 	[Serializable]
-	public sealed class EntityUpdateAction : EntityAction
+	public sealed partial class EntityUpdateAction : EntityAction
 	{
 		private readonly object[] state;
 		private readonly object[] previousState;

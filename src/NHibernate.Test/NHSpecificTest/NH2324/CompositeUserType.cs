@@ -148,8 +148,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2324
 			else
 			{
 				var data = (CompositeData) value;
-				if (settable[0]) NHibernateUtil.DateTime.Set(cmd, data.DataA, index++);
-				if (settable[1]) NHibernateUtil.DateTime.Set(cmd, data.DataB, index);
+				if (settable[0]) NHibernateUtil.DateTime.Set(cmd, data.DataA, index++, session);
+				if (settable[1]) NHibernateUtil.DateTime.Set(cmd, data.DataB, index, session);
 			}
 		}
 

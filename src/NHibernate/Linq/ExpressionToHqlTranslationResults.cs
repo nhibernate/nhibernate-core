@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using NHibernate.Hql.Ast;
 using NHibernate.Type;
 
@@ -11,16 +8,23 @@ namespace NHibernate.Linq
 {
 	public class ExpressionToHqlTranslationResults
 	{
-		public HqlTreeNode Statement { get; private set; }
-		public ResultTransformer ResultTransformer { get; private set; }
-		public Delegate PostExecuteTransformer { get; private set; }
-		public List<Action<IQuery, IDictionary<string, Tuple<object, IType>>>> AdditionalCriteria { get; private set; }
+		public HqlTreeNode Statement { get;  }
+		public ResultTransformer ResultTransformer { get; }
+		public Delegate PostExecuteTransformer { get; }
+		public List<Action<IQuery, IDictionary<string, Tuple<object, IType>>>> AdditionalCriteria { get; }
+
+		/// <summary>
+		/// If execute result type does not match expected final result type (implying a post execute transformer
+		/// will yield expected result type), the intermediate execute type.
+		/// </summary>
+		public System.Type ExecuteResultTypeOverride { get; }
 
 		public ExpressionToHqlTranslationResults(HqlTreeNode statement, 
 			IList<LambdaExpression> itemTransformers, 
 			IList<LambdaExpression> listTransformers,
 			IList<LambdaExpression> postExecuteTransformers,
-			List<Action<IQuery, IDictionary<string, Tuple<object, IType>>>> additionalCriteria)
+			List<Action<IQuery, IDictionary<string, Tuple<object, IType>>>> additionalCriteria,
+			System.Type executeResultTypeOverride)
 		{
 			Statement = statement;
 
@@ -35,6 +39,7 @@ namespace NHibernate.Linq
 			}
 
 			AdditionalCriteria = additionalCriteria;
+			ExecuteResultTypeOverride = executeResultTypeOverride;
 		}
 
 		private static TDelegate MergeLambdasAndCompile<TDelegate>(IList<LambdaExpression> itemTransformers) 

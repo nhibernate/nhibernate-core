@@ -14,9 +14,9 @@
             <literal>ICriteria</literal> instances.
         </para>
 
-        <programlisting><![CDATA[ICriteria crit = sess.CreateCriteria(typeof(Cat));
+        <programlisting><![CDATA[ICriteria crit = sess.CreateCriteria<Cat>();
 crit.SetMaxResults(50);
-List cats = crit.List();]]></programlisting>
+var cats = crit.List<Cat>();]]></programlisting>
 
     </sect1>
      
@@ -31,24 +31,24 @@ List cats = crit.List();]]></programlisting>
             <literal>ICriterion</literal> types.
         </para>
 
-        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
+        <programlisting><![CDATA[var cats = sess.CreateCriteria<Cat>()
     .Add( Expression.Like("Name", "Fritz%") )
     .Add( Expression.Between("Weight", minWeight, maxWeight) )
-    .List();]]></programlisting>
+    .List<Cat>();]]></programlisting>
     
         <para>
             Expressions may be grouped logically.
         </para>
 
-        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
+        <programlisting><![CDATA[var cats = sess.CreateCriteria<Cat>()
     .Add( Expression.Like("Name", "Fritz%") )
     .Add( Expression.Or(
         Expression.Eq( "Age", 0 ),
         Expression.IsNull("Age")
     ) )
-    .List();]]></programlisting>
+    .List<Cat>();]]></programlisting>
     
-        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
+        <programlisting><![CDATA[var cats = sess.CreateCriteria<Cat>()
     .Add( Expression.In( "Name", new String[] { "Fritz", "Izi", "Pk" } ) )
     .Add( Expression.Disjunction()
         .Add( Expression.IsNull("Age") )
@@ -56,18 +56,18 @@ List cats = crit.List();]]></programlisting>
     	.Add( Expression.Eq("Age", 1 ) )
     	.Add( Expression.Eq("Age", 2 ) )
     ) )
-    .List();]]></programlisting>
+    .List<Cat>();]]></programlisting>
     
         <para>
             There are quite a range of built-in criterion types (<literal>Expression</literal>
             subclasses), but one that is especially useful lets you specify SQL directly.
         </para>
 
-        <programlisting><![CDATA[
-        // Create a string parameter for the SqlString below
-        IList cats = sess.CreateCriteria(typeof(Cat))
-            .Add( Expression.Sql("lower({alias}.Name) like lower(?)", "Fritz%", NHibernateUtil.String )
-            .List();]]></programlisting>
+        <programlisting><![CDATA[// Create a string parameter for the SqlString below
+var cats = sess.CreateCriteria<Cat>()
+    .Add(Expression.Sql("lower({alias}.Name) like lower(?)",
+        "Fritz%", NHibernateUtil.String))
+    .List<Cat>();]]></programlisting>
     
         <para>
             The <literal>{alias}</literal> placeholder with be replaced by the row alias
@@ -83,12 +83,12 @@ List cats = crit.List();]]></programlisting>
             You may order the results using <literal>NHibernate.Expression.Order</literal>.
         </para>
 
-        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
+        <programlisting><![CDATA[var cats = sess.CreateCriteria<Cat>()
     .Add( Expression.Like("Name", "F%")
     .AddOrder( Order.Asc("Name") )
     .AddOrder( Order.Desc("Age") )
     .SetMaxResults(50)
-    .List();]]></programlisting>
+    .List<Cat>();]]></programlisting>
     
     </sect1>
     
@@ -100,14 +100,14 @@ List cats = crit.List();]]></programlisting>
             associations using <literal>CreateCriteria()</literal>.
         </para>
 
-        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
+        <programlisting><![CDATA[var cats = sess.CreateCriteria<Cat>()
     .Add( Expression.Like("Name", "F%")
     .CreateCriteria("Kittens")
         .Add( Expression.Like("Name", "F%") )
-    .List();]]></programlisting>
+    .List<Cat>();]]></programlisting>
 
         <para>
-            note that the second <literal>CreateCriteria()</literal> returns a new
+            Note that the second <literal>CreateCriteria()</literal> returns a new
             instance of <literal>ICriteria</literal>, which refers to the elements of
             the <literal>Kittens</literal> collection.
         </para>
@@ -116,11 +116,11 @@ List cats = crit.List();]]></programlisting>
             The following, alternate form is useful in certain circumstances.
         </para>
 
-        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
+        <programlisting><![CDATA[var cats = sess.CreateCriteria<Cat>()
     .CreateAlias("Kittens", "kt")
     .CreateAlias("Mate", "mt")
     .Add( Expression.EqProperty("kt.Name", "mt.Name") )
-    .List();]]></programlisting>
+    .List<Cat>();]]></programlisting>
 
         <para>
             (<literal>CreateAlias()</literal> does not create a new instance of
@@ -134,19 +134,42 @@ List cats = crit.List();]]></programlisting>
             criteria, you must use <literal>SetResultTransformer(Transformers.AliasToEntityMap)</literal>.
         </para>
 
-        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
+        <programlisting><![CDATA[var cats = sess.CreateCriteria<Cat>()
     .CreateCriteria("Kittens", "kt")
         .Add( Expression.Eq("Name", "F%") )
     .SetResultTransformer(Transformers.AliasToEntityMap)
-    .List();
+    .List<IDictionary>();
 foreach ( IDictionary map in cats )
 {
-    Cat cat = (Cat) map[CriteriaUtil.RootAlias];
+    Cat cat = (Cat) map[CriteriaSpecification.RootAlias];
     Cat kitten = (Cat) map["kt"];
 }]]></programlisting>
+      <para>
+        Note that for retrieving just kittens you can also use an entity projection.
+        See <xref linkend="querycriteria-projection"/> for more information.
+      </para>
 
     </sect1>
-    
+
+    <sect1 id="querycriteria_entityjoin">
+      <title>Join entities without association (Entity joins or ad hoc joins)</title>
+      <para>
+        In criteria you have the ability to define a join to any entity, not just through a mapped association.
+        To achieve it, use <literal>CreateEntityAlias</literal> and <literal>CreateEntityCriteria</literal>. By example:
+      </para>
+
+      <programlisting><![CDATA[IList<Cat> uniquelyNamedCats = sess.CreateCriteria<Cat>("c")
+    .CreateEntityAlias(
+        "joinedCat",
+        Restrictions.And(
+            Restrictions.EqProperty("c.Name", "joinedCat.Name"),
+            Restrictions.NotEqProperty("c.Id", "joinedCat.Id")),
+        JoinType.LeftOuterJoin,
+        typeof(Cat).FullName)
+    .Add(Restrictions.IsNull("joinedCat.Id"))
+    .List();]]></programlisting>
+    </sect1>
+
     <sect1 id="querycriteria-dynamicfetching">
         <title>Dynamic association fetching</title>
 
@@ -155,12 +178,12 @@ foreach ( IDictionary map in cats )
             <literal>SetFetchMode()</literal>.
         </para>
 
-        <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
+        <programlisting><![CDATA[var cats = sess.CreateCriteria<Cat>()
     .Add( Expression.Like("Name", "Fritz%") )
     .SetFetchMode("Mate", FetchMode.Eager)
     .SetFetchMode("Kittens", FetchMode.Eager)
-    .List();]]></programlisting>
-    
+    .List<Cat>();]]></programlisting>
+
         <para>
             This query will fetch both <literal>Mate</literal> and <literal>Kittens</literal>
             by outer join. See <xref linkend="performance-fetching"/> for more information.
@@ -179,10 +202,10 @@ foreach ( IDictionary map in cats )
         <programlisting><![CDATA[Cat cat = new Cat();
 cat.Sex = 'F';
 cat.Color = Color.Black;
-List results = session.CreateCriteria(typeof(Cat))
+var results = session.CreateCriteria<Cat>()
     .Add( Example.Create(cat) )
-    .List();]]></programlisting>
-    
+    .List<Cat>();]]></programlisting>
+
         <para>
            Version properties, identifiers and associations are ignored. By default,
            null-valued properties and properties which return an empty string from
@@ -198,20 +221,20 @@ List results = session.CreateCriteria(typeof(Cat))
     .ExcludeProperty("Color")  //exclude the property named "color"
     .IgnoreCase()              //perform case insensitive string comparisons
     .EnableLike();             //use like for string comparisons
-IList results = session.CreateCriteria(typeof(Cat))
+var results = session.CreateCriteria<Cat>()
     .Add(example)
-    .List();]]></programlisting>
-    
+    .List<Cat>();]]></programlisting>
+
         <para>
             You can even use examples to place criteria upon associated objects.
         </para>
 
-        <programlisting><![CDATA[IList results = session.CreateCriteria(typeof(Cat))
+        <programlisting><![CDATA[var results = session.CreateCriteria<Cat>()
     .Add( Example.Create(cat) )
     .CreateCriteria("Mate")
         .Add( Example.Create( cat.Mate ) )
-    .List();]]></programlisting>
-    
+    .List<Cat>();]]></programlisting>
+
     </sect1>
 
     <sect1 id="querycriteria-projection">
@@ -222,20 +245,20 @@ IList results = session.CreateCriteria(typeof(Cat))
             projection to a query by calling <literal>SetProjection()</literal>.
         </para>
         
-        <programlisting><![CDATA[IList results = session.CreateCriteria(typeof(Cat))
+        <programlisting><![CDATA[var results = session.CreateCriteria<Cat>()
     .SetProjection( Projections.RowCount() )
     .Add( Expression.Eq("Color", Color.BLACK) )
-    .List();]]></programlisting>
-    
-        <programlisting><![CDATA[List results = session.CreateCriteria(typeof(Cat))
+    .List<int>();]]></programlisting>
+
+        <programlisting><![CDATA[var results = session.CreateCriteria<Cat>()
     .SetProjection( Projections.ProjectionList()
         .Add( Projections.RowCount() )
         .Add( Projections.Avg("Weight") )
         .Add( Projections.Max("Weight") )
         .Add( Projections.GroupProperty("Color") )
     )
-    .List();]]></programlisting>
-    
+    .List<object[]>();]]></programlisting>
+
         <para>
             There is no explicit "group by" necessary in a criteria query. Certain
             projection types are defined to be <emphasis>grouping projections</emphasis>,
@@ -248,16 +271,16 @@ IList results = session.CreateCriteria(typeof(Cat))
             do this:
         </para>
 
-        <programlisting><![CDATA[IList results = session.CreateCriteria(typeof(Cat))
+        <programlisting><![CDATA[var results = session.CreateCriteria<Cat>()
     .SetProjection( Projections.Alias( Projections.GroupProperty("Color"), "colr" ) )
     .AddOrder( Order.Asc("colr") )
-    .List();]]></programlisting>
-    
-        <programlisting><![CDATA[IList results = session.CreateCriteria(typeof(Cat))
+    .List<string>();]]></programlisting>
+
+        <programlisting><![CDATA[var results = session.CreateCriteria<Cat>()
     .SetProjection( Projections.GroupProperty("Color").As("colr") )
     .AddOrder( Order.Asc("colr") )
-    .List();]]></programlisting>
-    
+    .List<string>();]]></programlisting>
+
         <para>
             The <literal>Alias()</literal> and <literal>As()</literal> methods simply wrap a
             projection instance in another, aliased, instance of <literal>IProjection</literal>.
@@ -265,7 +288,7 @@ IList results = session.CreateCriteria(typeof(Cat))
             projection list:
         </para>
 
-       <programlisting><![CDATA[IList results = session.CreateCriteria(typeof(Cat))
+       <programlisting><![CDATA[var results = session.CreateCriteria<Cat>()
     .SetProjection( Projections.ProjectionList()
         .Add( Projections.RowCount(), "catCountByColor" )
         .Add( Projections.Avg("Weight"), "avgWeight" )
@@ -274,9 +297,9 @@ IList results = session.CreateCriteria(typeof(Cat))
     )
     .AddOrder( Order.Desc("catCountByColor") )
     .AddOrder( Order.Desc("avgWeight") )
-    .List();]]></programlisting>
-    
-        <programlisting><![CDATA[IList results = session.CreateCriteria(typeof(DomesticCat), "cat")
+    .List<object[]>();]]></programlisting>
+
+        <programlisting><![CDATA[var results = session.CreateCriteria(typeof(DomesticCat), "cat")
     .CreateAlias("kittens", "kit")
     .SetProjection( Projections.ProjectionList()
         .Add( Projections.Property("cat.Name"), "catName" )
@@ -284,8 +307,35 @@ IList results = session.CreateCriteria(typeof(Cat))
     )
     .AddOrder( Order.Asc("catName") )
     .AddOrder( Order.Asc("kitName") )
+    .List<object[]>();]]></programlisting>
+
+      <para>
+        You can also add an entity projection to a criteria query:
+      </para>
+
+      <programlisting><![CDATA[var kittens = sess.CreateCriteria<Cat>()
+    .CreateCriteria("Kittens", "kt")
+    .Add(Expression.Eq("Name", "F%"))
+    .SetProjection(Projections.Entity(typeof(Cat), "kt"))
     .List();]]></programlisting>
-    
+
+      <programlisting><![CDATA[var cats = sess.CreateCriteria<Cat>()
+    .CreateCriteria("Kittens", "kt")
+    .Add(Expression.Eq("Name", "F%"))
+    .SetProjection(
+        Projections.RootEntity(),
+        Projections.Entity(typeof(Cat), "kt"))
+    .List<object[]>();
+
+foreach (var objs in cats)
+{
+    Cat cat = (Cat) objs[0];
+    Cat kitten = (Cat) objs[1];
+}]]></programlisting>
+
+      <para>
+        See <xref linkend="queryqueryover-projectionentities"/> for more information.
+      </para>
     </sect1>
 
     <sect1 id="querycriteria-detachedqueries">
@@ -294,44 +344,45 @@ IList results = session.CreateCriteria(typeof(Cat))
             The <literal>DetachedCriteria</literal> class lets you create a query outside the scope 
             of a session, and then later execute it using some arbitrary <literal>ISession</literal>.
         </para>
-        
-        <programlisting><![CDATA[DetachedCriteria query = DetachedCriteria.For(typeof(Cat))
+
+        <programlisting><![CDATA[DetachedCriteria query = DetachedCriteria.For<Cat>()
     .Add( Expression.Eq("sex", 'F') );
-    
-ISession session = ....;
-ITransaction txn = session.BeginTransaction();
-IList results = query.GetExecutableCriteria(session).SetMaxResults(100).List();
-txn.Commit();
-session.Close();]]></programlisting>
+
+using (ISession session = ....)
+using (ITransaction txn = session.BeginTransaction())
+{
+    var results = query.GetExecutableCriteria(session).SetMaxResults(100).List<Cat>();
+    txn.Commit();
+}]]></programlisting>
 
         <para>
             A <literal>DetachedCriteria</literal> may also be used to express a sub-query. ICriterion
-            instances involving sub-queries may be obtained via <literal>Subqueries</literal>
-            <!-- or <literal>Property</literal> -->.
+            instances involving sub-queries may be obtained via <literal>Subqueries</literal>.
+            <!-- or <literal>Property</literal>.-->
         </para>
         
-        <programlisting><![CDATA[DetachedCriteria avgWeight = DetachedCriteria.For(typeof(Cat))
+        <programlisting><![CDATA[DetachedCriteria avgWeight = DetachedCriteria.For<Cat>()
     .SetProjection( Projections.Avg("Weight") );
-session.CreateCriteria(typeof(Cat))
+session.CreateCriteria<Cat>()
     .Add( Subqueries.Gt("Weight", avgWeight) )
-    .List();]]></programlisting>
+    .List<Cat>();]]></programlisting>
     
-        <programlisting><![CDATA[DetachedCriteria weights = DetachedCriteria.For(typeof(Cat))
+        <programlisting><![CDATA[DetachedCriteria weights = DetachedCriteria.For<Cat>()
     .SetProjection( Projections.Property("Weight") );
-session.CreateCriteria(typeof(Cat))
-    .add( Subqueries.GeAll("Weight", weights) )
-    .list();]]></programlisting>
+session.CreateCriteria<Cat>()
+    .Add( Subqueries.GeAll("Weight", weights) )
+    .List<Cat>();]]></programlisting>
     
         <para>
             Even correlated sub-queries are possible:
         </para>
         
-        <programlisting><![CDATA[DetachedCriteria avgWeightForSex = DetachedCriteria.For(typeof(Cat), "cat2")
+        <programlisting><![CDATA[DetachedCriteria avgWeightForSex = DetachedCriteria.For<Cat>("cat2")
     .SetProjection( Projections.Avg("Weight") )
     .Add( Expression.EqProperty("cat2.Sex", "cat.Sex") );
 session.CreateCriteria(typeof(Cat), "cat")
     .Add( Subqueries.Gt("weight", avgWeightForSex) )
-    .List();]]></programlisting>
+    .List<Cat>();]]></programlisting>
 
     </sect1>
 

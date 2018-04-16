@@ -5,7 +5,6 @@ using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Exceptions;
-using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
@@ -50,6 +49,16 @@ namespace NHibernate.Test.TypesTest
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
+		protected override void OnTearDown()
+		{
+			base.OnTearDown();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.CreateQuery("delete from System.Object").ExecuteUpdate();
+				t.Commit();
+			}
+		}
 
 		[Test]
 		[Description("Values longer than the maximum possible string length " +
@@ -81,6 +90,57 @@ namespace NHibernate.Test.TypesTest
 			AssertFailedInsertExceptionDetailsAndEmptyTable(ex);
 		}
 
+		// NH-4083
+		[Test]
+		public void CanCompareShortValueWithLongString()
+		{
+			var maxStringLength = GetLongStringMappedLength();
+			var longString = new string('x', maxStringLength);
+			using (var s = OpenSession())
+			{
+				var b = new StringClass { LongStringValue = longString };
+				s.Save(b);
+				s.Flush();
+			}
+
+			using (var s = OpenSession())
+			{
+				var q = s.CreateQuery("from StringClass s where s.LongStringValue != :shortString")
+				         // Do not replace with SetString, otherwise length will be unspecified.
+				         .SetParameter("shortString", "aaa");
+				var sc = q.UniqueResult<StringClass>();
+				Assert.That(sc, Is.Not.Null);
+				Assert.That(sc.LongStringValue, Is.EqualTo(longString));
+			}
+		}
+
+		[Test]
+		public void CanCompareLongValueWithLongString()
+		{
+			var maxStringLength = GetLongStringMappedLength();
+
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver && maxStringLength >= 2000)
+				Assert.Ignore("Odbc wrecks nvarchar parameter types when they are longer than 2000, it switch them to ntext");
+
+			var longString = new string('x', maxStringLength);
+			using (var s = OpenSession())
+			{
+				var b = new StringClass { LongStringValue = longString };
+				s.Save(b);
+				s.Flush();
+			}
+
+			using (var s = OpenSession())
+			{
+				var q = s.CreateQuery("from StringClass s where s.LongStringValue = :longString")
+				         // Do not replace with SetString, otherwise length will be unspecified.
+				         .SetParameter("longString", longString);
+				var sc = q.UniqueResult<StringClass>();
+				Assert.That(sc, Is.Not.Null);
+				Assert.That(sc.LongStringValue, Is.EqualTo(longString));
+			}
+		}
+
 		[Test]
 		[Description("Values longer than the mapped string length " +
 		             "should raise an exception if they would otherwise be truncated.")]
@@ -106,7 +166,6 @@ namespace NHibernate.Test.TypesTest
 
 			AssertFailedInsertExceptionDetailsAndEmptyTable(ex);
 		}
-
 
 		private void AssertFailedInsertExceptionDetailsAndEmptyTable(Exception ex)
 		{
@@ -145,164 +204,92 @@ namespace NHibernate.Test.TypesTest
 			}
 		}
 
-
 		[Test]
 		public void CriteriaLikeParameterCanExceedColumnSize()
 		{
-			Exception exception = CatchException<Exception>(
-				() =>
-				{
-					using (ISession s = OpenSession())
-					using (s.BeginTransaction())
-					{
-						s.Save(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"});
-						s.Save(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"});
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Save(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"});
+				s.Save(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"});
 
-						var aaItems =
-							s.CreateCriteria<StringClass>()
-							 .Add(Restrictions.Like("StringValue", "%AAAAAAAAA%"))
-							 .List();
+				var aaItems =
+					s.CreateCriteria<StringClass>()
+					 .Add(Restrictions.Like("StringValue", "%AAAAAAAAA%"))
+					 .List();
 
-						Assert.That(aaItems.Count, Is.EqualTo(2));
-					}
-				});
-
-
-			// This test fails against the ODBC driver. The driver would need to be override to allow longer parameter sizes than the column.
-			AssertExpectedFailureOrNoException(
-				exception,
-				(sessions.ConnectionProvider.Driver is OdbcDriver));
+				Assert.That(aaItems.Count, Is.EqualTo(2));
+			}
 		}
 
 		[Test]
 		public void HqlLikeParameterCanExceedColumnSize()
 		{
-			Exception exception = CatchException<Exception>(
-				() =>
-				{
-					using (ISession s = OpenSession())
-					using (s.BeginTransaction())
-					{
-						s.Save(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"});
-						s.Save(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"});
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Save(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"});
+				s.Save(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"});
 
-						var aaItems =
-							s.CreateQuery("from StringClass s where s.StringValue like :likeValue")
-							 .SetParameter("likeValue", "%AAAAAAAAA%")
-							 .List();
+				var aaItems =
+					s.CreateQuery("from StringClass s where s.StringValue like :likeValue")
+					 .SetParameter("likeValue", "%AAAAAAAAA%")
+					 .List();
 
-						Assert.That(aaItems.Count, Is.EqualTo(2));
-					}
-				});
-
-
-			// This test fails against the ODBC driver. The driver would need to be override to allow longer parameter sizes than the column.
-			AssertExpectedFailureOrNoException(
-				exception,
-				(sessions.ConnectionProvider.Driver is OdbcDriver));
+				Assert.That(aaItems.Count, Is.EqualTo(2));
+			}
 		}
-
 
 		[Test]
 		public void CriteriaEqualityParameterCanExceedColumnSize()
 		{
+			if (!TestDialect.SupportsNonDataBoundCondition)
+			{
+				// Doesn't work on Firebird due to Firebird not figuring out parameter types on its own.
+				Assert.Ignore("Dialect does not support this test");
+			}
+
 			// We should be able to query a column with a value longer than
 			// the specified column size, to avoid tedious exceptions.
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Save(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"});
+				s.Save(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"});
 
-			Exception exception = CatchException<Exception>(
-				() =>
-				{
-					using (ISession s = OpenSession())
-					using (s.BeginTransaction())
-					{
-						s.Save(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"});
-						s.Save(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"});
+				var aaItems =
+					s.CreateCriteria<StringClass>()
+					 .Add(Restrictions.Eq("StringValue", "AAAAAAAAABx"))
+					 .List();
 
-						var aaItems =
-							s.CreateCriteria<StringClass>()
-							 .Add(Restrictions.Eq("StringValue", "AAAAAAAAABx"))
-							 .List();
-
-						Assert.That(aaItems.Count, Is.EqualTo(0));
-					}
-				});
-
-			// Doesn't work on Firebird due to Firebird not figuring out parameter types on its own.
-			// This test fails against the ODBC driver. The driver would need to be override to allow longer parameter sizes than the column.
-			AssertExpectedFailureOrNoException(
-				exception,
-				(Dialect is FirebirdDialect) || (sessions.ConnectionProvider.Driver is OdbcDriver));
+				Assert.That(aaItems.Count, Is.EqualTo(0));
+			}
 		}
-
 
 		[Test]
 		public void HqlEqualityParameterCanExceedColumnSize()
 		{
+			if (!TestDialect.SupportsNonDataBoundCondition)
+			{
+				// Doesn't work on Firebird due to Firebird not figuring out parameter types on its own.
+				Assert.Ignore("Dialect does not support this test");
+			}
+
 			// We should be able to query a column with a value longer than
 			// the specified column size, to avoid tedious exceptions.
-
-			Exception exception = CatchException<Exception>(
-				() =>
-				{
-					using (ISession s = OpenSession())
-					using (s.BeginTransaction())
-					{
-						s.Save(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"});
-						s.Save(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"});
-
-						var aaItems =
-							s.CreateQuery("from StringClass s where s.StringValue = :likeValue")
-							 .SetParameter("likeValue", "AAAAAAAAABx")
-							 .List();
-
-						Assert.That(aaItems.Count, Is.EqualTo(0));
-					}
-				});
-
-			// Doesn't work on Firebird due to Firebird not figuring out parameter types on its own.
-			// This test fails against the ODBC driver. The driver would need to be override to allow longer parameter sizes than the column.
-			AssertExpectedFailureOrNoException(
-				exception,
-				(Dialect is FirebirdDialect) || (sessions.ConnectionProvider.Driver is OdbcDriver));
-		}
-
-
-		/// <summary>
-		/// Some test cases doesn't work during some scenarios for well-known reasons. If the test
-		/// fails under these circumstances, mark it as IGNORED. If it _stops_ failing, mark it
-		/// as a FAILURE so that it can be investigated.
-		/// </summary>
-		private void AssertExpectedFailureOrNoException(Exception exception, bool requireExceptionAndIgnoreTest)
-		{
-			if (requireExceptionAndIgnoreTest)
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
 			{
-				Assert.NotNull(
-					exception,
-					"Test was expected to have a well-known, but ignored, failure for the current configuration. If " +
-					"that expected failure no longer occurs, it may now be possible to remove this exception.");
+				s.Save(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"});
+				s.Save(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"});
 
-				Assert.Ignore("This test is known to fail for the current configuration.");
+				var aaItems =
+					s.CreateQuery("from StringClass s where s.StringValue = :likeValue")
+					 .SetParameter("likeValue", "AAAAAAAAABx")
+					 .List();
+
+				Assert.That(aaItems.Count, Is.EqualTo(0));
 			}
-
-			// If the above didn't ignore the exception, it's for real - rethrow to trigger test failure.
-			if (exception != null)
-				throw new Exception("Wrapped exception.", exception);
-		}
-
-
-		private TException CatchException<TException>(System.Action action)
-			where TException : Exception
-		{
-			try
-			{
-				action();
-			}
-			catch (TException exception)
-			{
-				return exception;
-			}
-
-			return null;
 		}
 	}
 }

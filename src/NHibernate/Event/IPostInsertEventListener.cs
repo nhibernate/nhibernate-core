@@ -1,7 +1,7 @@
 namespace NHibernate.Event
 {
 	/// <summary> Called after inserting an item in the datastore </summary>
-	public interface IPostInsertEventListener
+	public partial interface IPostInsertEventListener
 	{
 		/// <summary>
 		/// 

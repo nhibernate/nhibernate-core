@@ -15,9 +15,9 @@ using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
-	public class MultiCriteriaImpl : IMultiCriteria
+	public partial class MultiCriteriaImpl : IMultiCriteria
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(MultiCriteriaImpl));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(MultiCriteriaImpl));
 		private readonly IList<ICriteria> criteriaQueries = new List<ICriteria>();
 		private readonly IList<System.Type> resultCollectionGenericType = new List<System.Type>();
 
@@ -35,6 +35,7 @@ namespace NHibernate.Impl
 		private string cacheRegion;
 		private IResultTransformer resultTransformer;
 		private readonly IResultSetsCommand resultSetsCommand;
+		private int? _timeout;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MultiCriteriaImpl"/> class.
@@ -60,19 +61,19 @@ namespace NHibernate.Impl
 
 		public IList List()
 		{
-			using (new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			{
 				bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
 
 				CreateCriteriaLoaders();
 				CombineCriteriaQueries();
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.DebugFormat("Multi criteria with {0} criteria queries.", criteriaQueries.Count);
+					log.Debug("Multi criteria with {0} criteria queries.", criteriaQueries.Count);
 					for (int i = 0; i < criteriaQueries.Count; i++)
 					{
-						log.DebugFormat("Query #{0}: {1}", i, criteriaQueries[i]);
+						log.Debug("Query #{0}: {1}", i, criteriaQueries[i]);
 					}
 				}
 
@@ -137,7 +138,7 @@ namespace NHibernate.Impl
 				log.Debug("Cache miss for multi criteria query");
 				IList list = DoList();
 				result = list;
-				if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
+				if (session.CacheMode.HasFlag(CacheMode.Put))
 				{
 					bool put = queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, combinedParameters.NaturalKeyLookup, session);
 					if (put && factory.Statistics.IsStatisticsEnabled)
@@ -221,7 +222,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = resultSetsCommand.GetReader(null))
+				using (var reader = resultSetsCommand.GetReader(_timeout))
 				{
 					var hydratedObjects = new List<object>[loaders.Count];
 					List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[loaders.Count];
@@ -277,8 +278,7 @@ namespace NHibernate.Impl
 			}
 			catch (Exception sqle)
 			{
-				var message = string.Format("Failed to execute multi criteria: [{0}]", resultSetsCommand.Sql);
-				log.Error(message, sqle);
+				log.Error(sqle, "Failed to execute multi criteria: [{0}]", resultSetsCommand.Sql);
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi criteria", resultSetsCommand.Sql);
 			}
 			if (statsEnabled)
@@ -459,7 +459,7 @@ namespace NHibernate.Impl
 			{
 				foreach (KeyValuePair<string, TypedValue> dictionaryEntry in queryParameters.NamedParameters)
 				{
-					combinedQueryParameters.NamedParameters.Add(dictionaryEntry.Key + index, dictionaryEntry.Value);
+					combinedQueryParameters.NamedParameters.Add(dictionaryEntry.Key + "_" + index, dictionaryEntry.Value);
 				}
 				index += 1;
 				positionalParameterTypes.AddRange(queryParameters.PositionalParameterTypes);
@@ -474,6 +474,17 @@ namespace NHibernate.Impl
 		{
 			if (criteriaResultPositions.ContainsKey(key))
 				throw new InvalidOperationException(String.Format("The key '{0}' already exists", key));
+		}
+
+		/// <summary>
+		/// Set a timeout for the underlying ADO.NET query.
+		/// </summary>
+		/// <param name="timeout">The timeout in seconds.</param>
+		/// <returns><see langword="this" /> (for method chaining).</returns>
+		public IMultiCriteria SetTimeout(int timeout)
+		{
+			_timeout = timeout == RowSelection.NoValue ? (int?) null : timeout;
+			return this;
 		}
 	}
 }

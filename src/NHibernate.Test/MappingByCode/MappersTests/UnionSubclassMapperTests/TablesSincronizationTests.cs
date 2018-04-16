@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.UnionSubclassMapperTests
 {
+	[TestFixture]
 	public class TablesSincronizationTests
 	{
 		private class EntitySimple

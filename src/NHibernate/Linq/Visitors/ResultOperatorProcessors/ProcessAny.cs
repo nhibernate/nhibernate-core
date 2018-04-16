@@ -17,6 +17,10 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 				Expression<Func<IEnumerable<object>, bool>> x = l => l.Any();
 				tree.AddListTransformer(x);
+
+				// NH-3850: Queries with polymorphism yields many results which must be combined.
+				Expression<Func<IEnumerable<bool>, bool>> px = l => l.Any(r => r);
+				tree.AddPostExecuteTransformer(px);
 			}
 			else
 			{

@@ -46,6 +46,8 @@ namespace NHibernate.Test.ConnectionTest
 		[Test]
 		public void SerializationOnAfterStatementAggressiveRelease()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			Prepare();
 			ISession s = GetSessionUnderTest();
 			Silly silly = new Silly("silly");
@@ -67,6 +69,8 @@ namespace NHibernate.Test.ConnectionTest
 		[Test]
 		public void SerializationFailsOnAfterStatementAggressiveReleaseWithOpenResources()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			Prepare();
 			ISession s = GetSessionUnderTest();
 
@@ -176,23 +180,24 @@ namespace NHibernate.Test.ConnectionTest
 		{
 			Prepare();
 
-			DbConnection originalConnection = sessions.ConnectionProvider.GetConnection();
-			ISession session = sessions.OpenSession(originalConnection);
+			using (var originalConnection = Sfi.ConnectionProvider.GetConnection())
+			using (var session = Sfi.WithOptions().Connection(originalConnection).OpenSession())
+			{
+				var silly = new Silly("silly");
+				session.Save(silly);
 
-			Silly silly = new Silly("silly");
-			session.Save(silly);
+				// this will cause the connection manager to cycle through the aggressive Release logic;
+				// it should not Release the connection since we explicitly supplied it ourselves.
+				session.Flush();
 
-			// this will cause the connection manager to cycle through the aggressive Release logic;
-			// it should not Release the connection since we explicitly suplied it ourselves.
-			session.Flush();
+				Assert.IsTrue(originalConnection == session.Connection, "Different connections");
 
-			Assert.IsTrue(originalConnection == session.Connection, "Different connections");
+				session.Delete(silly);
+				session.Flush();
 
-			session.Delete(silly);
-			session.Flush();
-
-			Release(session);
-			originalConnection.Close();
+				Release(session);
+				originalConnection.Close();
+			}
 			Done();
 		}
 

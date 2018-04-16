@@ -130,21 +130,23 @@ namespace NHibernate.Persister.Entity
 			List<string> tables = new List<string>();
 			List<string[]> keyColumns = new List<string[]>();
 			List<bool> cascadeDeletes = new List<bool>();
-			IEnumerator<IKeyValue> kiter = persistentClass.KeyClosureIterator.GetEnumerator();
-			foreach (Table tab in persistentClass.TableClosureIterator)
+			using (var kiter = persistentClass.KeyClosureIterator.GetEnumerator())
 			{
-				kiter.MoveNext();
-				IKeyValue key = kiter.Current;
-				string tabname = tab.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
-				tables.Add(tabname);
+				foreach (var tab in persistentClass.TableClosureIterator)
+				{
+					kiter.MoveNext();
+					var key = kiter.Current;
+					var tabname = tab.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
+					tables.Add(tabname);
 
-				List<string> keyCols = new List<string>(idColumnSpan);
-				IEnumerable<Column> enumerableKCols = new SafetyEnumerable<Column>(key.ColumnIterator);
-				foreach (Column kcol in enumerableKCols)
-					keyCols.Add(kcol.GetQuotedName(factory.Dialect));
+					var keyCols = new List<string>(idColumnSpan);
+					var enumerableKCols = new SafetyEnumerable<Column>(key.ColumnIterator);
+					foreach (var kcol in enumerableKCols)
+						keyCols.Add(kcol.GetQuotedName(factory.Dialect));
 
-				keyColumns.Add(keyCols.ToArray());
-				cascadeDeletes.Add(key.IsCascadeDeleteEnabled && factory.Dialect.SupportsCascadeDelete);				
+					keyColumns.Add(keyCols.ToArray());
+					cascadeDeletes.Add(key.IsCascadeDeleteEnabled && factory.Dialect.SupportsCascadeDelete);
+				}
 			}
 			naturalOrderTableNames = tables.ToArray();
 			naturalOrderTableKeyColumns = keyColumns.ToArray();

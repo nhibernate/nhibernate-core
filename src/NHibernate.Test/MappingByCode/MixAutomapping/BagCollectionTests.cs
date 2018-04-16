@@ -7,12 +7,16 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
+	[TestFixture]
 	public class BagCollectionTests
 	{
 		// match any IEnumerable
 		private class Entity
 		{
+			// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			private ICollection<string> emails;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 			public IEnumerable<string> NickNames { get; set; }
 			public byte[] Bytes { get; set; }
 			public object Emails

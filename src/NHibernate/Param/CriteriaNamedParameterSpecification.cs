@@ -8,7 +8,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Param
 {
-	public class CriteriaNamedParameterSpecification : IParameterSpecification
+	public partial class CriteriaNamedParameterSpecification : IParameterSpecification
 	{
 		private const string CriteriaNamedParameterIdTemplate = "<crnh-{0}_span{1}>";
 		private readonly string name;

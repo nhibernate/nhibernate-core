@@ -6,7 +6,7 @@ using NHibernate.Exceptions;
 
 namespace NHibernate.AdoNet
 {
-	public class MySqlClientBatchingBatcher : AbstractBatcher
+	public partial class MySqlClientBatchingBatcher : AbstractBatcher
 	{
 		private int batchSize;
 		private int totalExpectedRowsAffected;
@@ -39,13 +39,17 @@ namespace NHibernate.AdoNet
 
 		public override void AddToBatch(IExpectation expectation)
 		{
+			// MySql batcher cannot be initiated if a data reader is still open: check them.
+			if (CountOfStatementsInCurrentBatch == 0)
+				CheckReaders();
+
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
 			var batchUpdate = CurrentCommand;
 			Prepare(batchUpdate);
 			Driver.AdjustCommand(batchUpdate);
 			string lineWithParameters = null;
 			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
-			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled)
+			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled())
 			{
 				lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
 				var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
@@ -55,9 +59,9 @@ namespace NHibernate.AdoNet
 					.Append(":")
 					.AppendLine(lineWithParameters);
 			}
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
-				Log.Debug("Adding to batch:" + lineWithParameters);
+				Log.Debug("Adding to batch:{0}", lineWithParameters);
 			}
 			currentBatch.Append(batchUpdate);
 
@@ -69,34 +73,48 @@ namespace NHibernate.AdoNet
 
 		protected override void DoExecuteBatch(DbCommand ps)
 		{
-			Log.DebugFormat("Executing batch");
-			CheckReaders();
-			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
-			{
-				Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
-				currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
-			}
-
-			int rowsAffected;
 			try
 			{
-				rowsAffected = currentBatch.ExecuteNonQuery();
+				Log.Debug("Executing batch");
+				CheckReaders();
+				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+				{
+					Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
+				}
+
+				int rowsAffected;
+				try
+				{
+					rowsAffected = currentBatch.ExecuteNonQuery();
+				}
+				catch (DbException e)
+				{
+					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+				}
+
+				Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
 			}
-			catch (DbException e)
+			finally
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+				ClearCurrentBatch();
 			}
-
-			Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
-
-			currentBatch.Dispose();
-			totalExpectedRowsAffected = 0;
-			currentBatch = CreateConfiguredBatch();
 		}
 
 		private MySqlClientSqlCommandSet CreateConfiguredBatch()
 		{
 			return new MySqlClientSqlCommandSet(batchSize);
+		}
+
+		private void ClearCurrentBatch()
+		{
+			currentBatch.Dispose();
+			totalExpectedRowsAffected = 0;
+			currentBatch = CreateConfiguredBatch();
+
+			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+			{
+				currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
+			}
 		}
 
 		public override void CloseCommands()
@@ -105,13 +123,28 @@ namespace NHibernate.AdoNet
 
 			try
 			{
+				ClearCurrentBatch();
+			}
+			catch (Exception e)
+			{
+				// Prevent exceptions when clearing the batch from hiding any original exception
+				// (We do not know here if this batch closing occurs after a failure or not.)
+				Log.Warn(e, "Exception clearing batch");
+			}
+		}
+
+		protected override void Dispose(bool isDisposing)
+		{
+			base.Dispose(isDisposing);
+			// Prevent exceptions when closing the batch from hiding any original exception
+			// (We do not know here if this batch closing occurs after a failure or not.)
+			try
+			{
 				currentBatch.Dispose();
 			}
 			catch (Exception e)
 			{
-				// Prevent exceptions when closing the batch from hiding any original exception
-				// (We do not know here if this batch closing occurs after a failure or not.)
-				Log.Warn("Exception closing batcher", e);
+				Log.Warn(e, "Exception closing batcher");
 			}
 		}
 	}

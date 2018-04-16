@@ -3,7 +3,7 @@ using NHibernate.Event;
 
 namespace NHibernate.Test.NHSpecificTest.NH1230
 {
-	public class PreSaveDoVeto : IPreInsertEventListener
+	public partial class PreSaveDoVeto : IPreInsertEventListener
 	{
 		private ILog log = LogManager.GetLogger(typeof(PreSaveDoVeto));
 

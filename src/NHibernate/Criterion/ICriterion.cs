@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
@@ -19,7 +18,7 @@ namespace NHibernate.Criterion
 		/// Render a SqlString fragment for the expression.
 		/// </summary>
 		/// <returns>A SqlString that contains a valid Sql fragment.</returns>
-		SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters);
+		SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery);
 
 		/// <summary>
 		/// Return typed values for all parameters in the rendered SQL fragment

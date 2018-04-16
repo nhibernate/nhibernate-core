@@ -11,13 +11,14 @@ using NHibernate.Persister.Entity;
 using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
+using Array = System.Array;
 
 namespace NHibernate.DomainModel
 {
 	/// <summary>
 	/// Summary description for CustomPersister.
 	/// </summary>
-	public class CustomPersister : IEntityPersister
+	public partial class CustomPersister : IEntityPersister
 	{
 		private static readonly Hashtable Instances = new Hashtable();
 		private static readonly IIdentifierGenerator Generator = new UUIDHexGenerator();
@@ -130,12 +131,12 @@ namespace NHibernate.DomainModel
 
 		public ValueInclusion[] PropertyInsertGenerationInclusions
 		{
-			get { return new ValueInclusion[0]; }
+			get { return Array.Empty<ValueInclusion>(); }
 		}
 
 		public ValueInclusion[] PropertyUpdateGenerationInclusions
 		{
-			get { return new ValueInclusion[0]; }
+			get { return Array.Empty<ValueInclusion>(); }
 		}
 
 		public bool[] PropertyCheckability
@@ -254,7 +255,7 @@ namespace NHibernate.DomainModel
 
 		public int[] FindDirty(object[] currentState, object[] previousState, object entity, ISessionImplementor session)
 		{
-			if (!EqualsHelper.Equals(currentState[0], previousState[0]))
+			if (!Equals(currentState[0], previousState[0]))
 			{
 				return new int[] { 0 };
 			}
@@ -266,7 +267,7 @@ namespace NHibernate.DomainModel
 
 		public int[] FindModified(object[] old, object[] current, object entity, ISessionImplementor session)
 		{
-			if (!EqualsHelper.Equals(old[0], current[0]))
+			if (!Equals(old[0], current[0]))
 			{
 				return new int[] { 0 };
 			}

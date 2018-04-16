@@ -46,7 +46,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2441
 			using (ISession session = OpenSession())
 			{
 				var query1 = session.Query<Person>().Where(p => true);
+				// When translated to SQL, it may not be always true.
+#pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 				var query2 = session.Query<Person>().Where(p => p.Id != null);
+#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 				var query3 = session.Query<Person>();
 				
 				Assert.That(query1.Count(), Is.EqualTo(query2.Count()));

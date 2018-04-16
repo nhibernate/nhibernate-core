@@ -78,7 +78,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		protected abstract SqlString EmptyExpression { get; }
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			if (this.criteria.Count == 0)
 			{
@@ -92,11 +92,11 @@ namespace NHibernate.Criterion
 
 			for (int i = 0; i < this.criteria.Count - 1; i++)
 			{
-				sqlBuilder.Add(this.criteria[i].ToSqlString(criteria, criteriaQuery, enabledFilters));
+				sqlBuilder.Add(this.criteria[i].ToSqlString(criteria, criteriaQuery));
 				sqlBuilder.Add(Op);
 			}
 
-			sqlBuilder.Add(this.criteria[this.criteria.Count - 1].ToSqlString(criteria, criteriaQuery, enabledFilters));
+			sqlBuilder.Add(this.criteria[this.criteria.Count - 1].ToSqlString(criteria, criteriaQuery));
 
 
 			sqlBuilder.Add(")");

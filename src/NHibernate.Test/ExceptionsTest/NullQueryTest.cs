@@ -17,7 +17,7 @@ namespace NHibernate.Test.ExceptionsTest
 
 		protected override IList Mappings
 		{
-			get { return new string[0]; }
+			get { return Array.Empty<string>(); }
 		}
 
 		#endregion
@@ -36,7 +36,7 @@ namespace NHibernate.Test.ExceptionsTest
 			catch (Exception sqle)
 			{
 				Assert.DoesNotThrow(
-					() => ADOExceptionHelper.Convert(sessions.SQLExceptionConverter, sqle, "could not get or update next value", null));
+					() => ADOExceptionHelper.Convert(Sfi.SQLExceptionConverter, sqle, "could not get or update next value", null));
 			}
 			finally
 			{

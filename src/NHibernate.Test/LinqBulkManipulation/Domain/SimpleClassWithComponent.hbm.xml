@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.LinqBulkManipulation.Domain">
+
+	<class name="SimpleClassWithComponent">
+    <id type="int">
+      <generator class="native" />
+    </id>
+    <property name="Description"/>
+    <property name="LongValue"/>
+    <property name="IntValue"/>
+    <component name="Name">
+      <property name="First" column="name_first"/>
+      <property name="Initial" column="name_initial"/>
+      <property name="Last" column="name_last"/>
+    </component>
+  </class>
+</hibernate-mapping>

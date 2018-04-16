@@ -6,7 +6,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// An <see cref="IType"/> that may be used to version data.
 	/// </summary>
-	public interface IVersionType : IType
+	public partial interface IVersionType : IType
 	{
 		/// <summary>
 		/// When implemented by a class, increments the version.

@@ -8,6 +8,7 @@ namespace NHibernate.Context
 {
 	//TODO: refactoring on this class. Maybe using MapBasedSessionContext.
 	/// <summary>
+	/// <para>
 	/// A <see cref="ICurrentSessionContext"/> impl which scopes the notion of current
 	/// session by the current thread of execution. Threads do not give us a 
 	/// nice hook to perform any type of cleanup making
@@ -19,18 +20,20 @@ namespace NHibernate.Context
 	/// generated here are unusable until after {@link Session#beginTransaction()}
 	/// has been called. If <tt>Close()</tt> is called on a session managed by
 	/// this class, it will be automatically unbound.
-	/// <p/>
+	/// </para>
+	/// <para>
 	/// Additionally, the static <see cref="Bind"/> and <see cref="Unbind"/> methods are
 	/// provided to allow application code to explicitly control opening and
 	/// closing of these sessions.  This, with some from of interception,
 	/// is the preferred approach.  It also allows easy framework integration
 	/// and one possible approach for implementing long-sessions.
-	/// <p/>
+	/// </para>
+	/// <para>The cleanup on transaction end is indeed not implemented.</para>
 	/// </summary>
 	[Serializable]
-	public class ThreadLocalSessionContext : ICurrentSessionContext
+	public partial class ThreadLocalSessionContext : ICurrentSessionContext
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ThreadLocalSessionContext));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ThreadLocalSessionContext));
 
 		[ThreadStatic]
 		protected static IDictionary<ISessionFactory, ISession> context;
@@ -83,14 +86,14 @@ namespace NHibernate.Context
 						}
 						catch (Exception ex)
 						{
-							log.Debug("Unable to rollback transaction for orphaned session", ex);
+							log.Debug(ex, "Unable to rollback transaction for orphaned session");
 						}
 					}
 					orphan.Close();
 				}
 				catch (Exception ex)
 				{
-					log.Debug("Unable to close orphaned session", ex);
+					log.Debug(ex, "Unable to close orphaned session");
 				}
 			}
 		}
@@ -148,11 +151,10 @@ namespace NHibernate.Context
 
 		protected ISession BuildOrObtainSession()
 		{
-			return factory.OpenSession(
-				null,
-				IsAutoFlushEnabled(),
-				IsAutoCloseEnabled(),
-				GetConnectionReleaseMode());
+			return factory.WithOptions()
+				.AutoClose(IsAutoCloseEnabled())
+				.ConnectionReleaseMode(GetConnectionReleaseMode())
+				.OpenSession();
 		}
 
 		private ConnectionReleaseMode GetConnectionReleaseMode()
@@ -160,11 +162,17 @@ namespace NHibernate.Context
 			return factory.Settings.ConnectionReleaseMode;
 		}
 
+		/// <summary>
+		/// Not currently implemented.
+		/// </summary>
+		/// <returns><see langword="true"/></returns>
 		protected virtual bool IsAutoCloseEnabled()
 		{
 			return true;
 		}
 
+		// Obsolete since v5
+		[Obsolete("Had never any implementation, has always had no effect.")]
 		protected virtual bool IsAutoFlushEnabled()
 		{
 			return true;

@@ -48,10 +48,10 @@ public class AuditInterceptor : EmptyInterceptor {
 
     public override bool OnFlushDirty(object entity, 
                                       object id, 
-				      object[] currentState,
-				      object[] previousState, 
-				      string[] propertyNames,
-				      IType[] types) 
+                                      object[] currentState,
+                                      object[] previousState,
+                                      string[] propertyNames,
+                                      IType[] types)
     {
         if ( entity is IAuditable ) {
             updates++;
@@ -67,9 +67,9 @@ public class AuditInterceptor : EmptyInterceptor {
 
     public override bool OnLoad(object entity, 
                                 object id, 
-				object[] state, 
-				string[] propertyNames, 
-				IType[] types)
+                                object[] state,
+                                string[] propertyNames,
+                                IType[] types)
     {
         if ( entity is IAuditable ) {
             loads++;
@@ -79,9 +79,9 @@ public class AuditInterceptor : EmptyInterceptor {
 
     public override bool OnSave(object entity, 
                                 object id, 
-				object[] state, 
-				string[] propertyNames, 
-				IType[] types)
+                                object[] state,
+                                string[] propertyNames,
+                                IType[] types)
     {
         if ( entity is IAuditable ) {
             creates++;
@@ -98,7 +98,10 @@ public class AuditInterceptor : EmptyInterceptor {
     public override void AfterTransactionCompletion(ITransaction tx)
     {
         if ( tx.WasCommitted ) {
-            System.Console.WriteLine("Creations: " + creates + ", Updates: " + updates, "Loads: " + loads);
+            System.Console.WriteLine(
+                "Creations: " + creates +
+                ", Updates: " + updates +
+                ", Loads: " + loads);
         }
         updates=0;
         creates=0;
@@ -202,7 +205,8 @@ public class AuditInterceptor : EmptyInterceptor {
         </para>
 
         <programlisting><![CDATA[Configuration cfg = new Configuration();
-ILoadEventListener[] stack = new ILoadEventListener[] { new MyLoadListener(), new DefaultLoadEventListener() };
+ILoadEventListener[] stack =
+    new ILoadEventListener[] { new MyLoadListener(), new DefaultLoadEventListener() };
 cfg.EventListeners.LoadEventListeners = stack;]]></programlisting>
 
         <para>

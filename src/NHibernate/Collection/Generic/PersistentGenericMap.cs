@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
+using System.Linq;
+using System.Linq.Expressions;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
+using NHibernate.Linq;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -20,17 +23,24 @@ namespace NHibernate.Collection.Generic
 	/// <typeparam name="TValue">The type of the elements in the IDictionary.</typeparam>
 	[Serializable]
 	[DebuggerTypeProxy(typeof(DictionaryProxy<,>))]
-	public class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, ICollection
+	public partial class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, ICollection
 	{
 		protected IDictionary<TKey, TValue> WrappedMap;
+		private readonly ICollection<TValue> _wrappedValues;
 
-		public PersistentGenericMap() { }
+		public PersistentGenericMap()
+		{
+			_wrappedValues = new ValuesWrapper(this);
+		}
 
 		/// <summary>
 		/// Construct an uninitialized PersistentGenericMap.
 		/// </summary>
 		/// <param name="session">The ISession the PersistentGenericMap should be a part of.</param>
-		public PersistentGenericMap(ISessionImplementor session) : base(session) { }
+		public PersistentGenericMap(ISessionImplementor session) : base(session)
+		{
+			_wrappedValues = new ValuesWrapper(this);
+		}
 
 		/// <summary>
 		/// Construct an initialized PersistentGenericMap based off the values from the existing IDictionary.
@@ -41,6 +51,7 @@ namespace NHibernate.Collection.Generic
 			: base(session)
 		{
 			WrappedMap = map;
+			_wrappedValues = new ValuesWrapper(this);
 			SetInitialized();
 			IsDirectlyAccessible = true;
 		}
@@ -72,7 +83,9 @@ namespace NHibernate.Collection.Generic
 			}
 			foreach (KeyValuePair<TKey, TValue> entry in WrappedMap)
 			{
-				if (elementType.IsDirty(entry.Value, xmap[entry.Key], Session))
+				// This method is not currently called if a key has been removed/added, but better be on the safe side.
+				if (!xmap.TryGetValue(entry.Key, out var value) ||
+					elementType.IsDirty(value, entry.Value, Session))
 				{
 					return false;
 				}
@@ -345,8 +358,7 @@ namespace NHibernate.Collection.Generic
 		{
 			get
 			{
-				Read();
-				return WrappedMap.Values;
+				return _wrappedValues;
 			}
 		}
 
@@ -566,5 +578,85 @@ namespace NHibernate.Collection.Generic
 		}
 
 		#endregion
+
+		[Serializable]
+		private class ValuesWrapper : ICollection<TValue>, IQueryable<TValue>
+		{
+			private readonly PersistentGenericMap<TKey, TValue> _map;
+
+			public ValuesWrapper(PersistentGenericMap<TKey, TValue> map)
+			{
+				_map = map;
+			}
+
+			#region IQueryable<TValue> Members
+
+			[NonSerialized]
+			private IQueryable<TValue> _queryable;
+
+			Expression IQueryable.Expression => InnerQueryable.Expression;
+
+			System.Type IQueryable.ElementType => InnerQueryable.ElementType;
+
+			IQueryProvider IQueryable.Provider => InnerQueryable.Provider;
+
+			private IQueryable<TValue> InnerQueryable => _queryable ?? (_queryable = new NhQueryable<TValue>(_map.Session, _map));
+
+			#endregion
+
+			#region ICollection<TValue> Members
+
+			public IEnumerator<TValue> GetEnumerator()
+			{
+				_map.Read();
+				return _map.WrappedMap.Values.GetEnumerator();
+			}
+
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				_map.Read();
+				return GetEnumerator();
+			}
+
+			public void Add(TValue item)
+			{
+				throw new NotSupportedException("Values collection is readonly");
+			}
+
+			public void Clear()
+			{
+				throw new NotSupportedException("Values collection is readonly");
+			}
+
+			public bool Contains(TValue item)
+			{
+				_map.Read();
+				return _map.WrappedMap.Values.Contains(item);
+			}
+
+			public void CopyTo(TValue[] array, int arrayIndex)
+			{
+				_map.Read();
+				_map.WrappedMap.Values.CopyTo(array, arrayIndex);
+			}
+
+			public bool Remove(TValue item)
+			{
+				throw new NotSupportedException("Values collection is readonly");
+			}
+
+			public int Count
+			{
+				get
+				{
+					_map.Read();
+					return _map.WrappedMap.Values.Count;
+				}
+			}
+
+			public bool IsReadOnly => true;
+
+			#endregion
+		}
 	}
 }

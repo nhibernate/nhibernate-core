@@ -12,9 +12,9 @@ namespace NHibernate.Engine
 	/// of a collection with respect to its persistent state
 	/// </summary>
 	[Serializable]
-	public class CollectionEntry
+	public partial class CollectionEntry
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (CollectionEntry));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (CollectionEntry));
 
 		/// <summary>session-start/post-flush persistent state</summary>
 		private object snapshot;
@@ -279,9 +279,9 @@ namespace NHibernate.Engine
 			}
 			Dirty(collection);
 
-			if (log.IsDebugEnabled && collection.IsDirty && loadedPersister != null)
+			if (log.IsDebugEnabled() && collection.IsDirty && loadedPersister != null)
 			{
-				log.Debug("Collection dirty: " + MessageHelper.CollectionInfoString(loadedPersister, loadedKey));
+				log.Debug("Collection dirty: {0}", MessageHelper.CollectionInfoString(loadedPersister, loadedKey));
 			}
 
 			// reset all of these values so any previous flush status 
@@ -298,10 +298,30 @@ namespace NHibernate.Engine
 		/// has been initialized.
 		/// </summary>
 		/// <param name="collection">The initialized <see cref="AbstractPersistentCollection"/> that this Entry is for.</param>
+		//Since v5.1
+		[Obsolete("Please use PostInitialize(collection, persistenceContext) instead.")]
 		public void PostInitialize(IPersistentCollection collection)
 		{
 			snapshot = LoadedPersister.IsMutable ? collection.GetSnapshot(LoadedPersister) : null;
 			collection.SetSnapshot(loadedKey, role, snapshot);
+		}
+
+		/// <summary>
+		/// Updates the CollectionEntry to reflect that the <see cref="IPersistentCollection"/>
+		/// has been initialized.
+		/// </summary>
+		/// <param name="collection">The initialized <see cref="AbstractPersistentCollection"/> that this Entry is for.</param>
+		/// <param name="persistenceContext"></param>
+		public void PostInitialize(IPersistentCollection collection, IPersistenceContext persistenceContext)
+		{
+#pragma warning disable 618
+			//6.0 TODO: Inline PostInitialize here.
+			PostInitialize(collection);
+#pragma warning restore 618
+			if (LoadedPersister.GetBatchSize() > 1)
+			{
+				persistenceContext.BatchFetchQueue.RemoveBatchLoadableCollection(this);
+			}
 		}
 
 		/// <summary>

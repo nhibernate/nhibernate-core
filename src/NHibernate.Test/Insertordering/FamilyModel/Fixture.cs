@@ -66,12 +66,12 @@ namespace NHibernate.Test.Insertordering.FamilyModel
 				var denis = new Man { Name = "Denis", Mother = jeanne, Father = paul };
 
 				var laure = new Woman { Name = "Laure", Mother = paulette };
-				var valerie = new Woman { Name = "Valérie", Mother = paulette };
+				var valerie = new Woman { Name = "ValÃ©rie", Mother = paulette };
 				var caroline = new Woman { Name = "Caroline", Mother = monique };
 				var cathy = new Woman { Name = "Cathy", Father = yves };
-				var helene = new Woman { Name = "Hélène", Father = yves };
+				var helene = new Woman { Name = "HÃ©lÃ¨ne", Father = yves };
 				var nicolas = new Man { Name = "Nicolas", Mother = monique };
-				var frederic = new Man { Name = "Frédéric", Mother = monique };
+				var frederic = new Man { Name = "FrÃ©dÃ©ric", Mother = monique };
 				var arnaud = new Man { Name = "Arnaud", Father = denis };
 
 				session.Save(alice);

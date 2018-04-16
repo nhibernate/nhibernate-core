@@ -1,18 +1,40 @@
 using System;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
 {
 	[Serializable]
-	public class UtcDateTimeType : AbstractDateTimeSpecificKindType
+	public class UtcDateTimeType : DateTimeType
 	{
-		protected override DateTimeKind DateTimeKind
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public UtcDateTimeType()
 		{
-			get { return DateTimeKind.Utc; }
 		}
 
-		public override string Name
+		/// <summary>
+		/// Constructor for specifying a datetime with a scale. Use <see cref="SqlTypeFactory.GetDateTime"/>.
+		/// </summary>
+		/// <param name="sqlType">The sql type to use for the type.</param>
+		public UtcDateTimeType(DateTimeSqlType sqlType) : base(sqlType)
 		{
-			get { return "UtcDateTime"; }
 		}
+
+		/// <inheritdoc />
+		protected override DateTimeKind Kind => DateTimeKind.Utc;
+
+		/// <inheritdoc />
+		public override string Name => "UtcDateTime";
+	}
+
+	[Serializable]
+	public class UtcDateTimeNoMsType : DateTimeNoMsType
+	{
+		/// <inheritdoc />
+		protected override DateTimeKind Kind => DateTimeKind.Utc;
+
+		/// <inheritdoc />
+		public override string Name => "UtcDateTimeNoMs";
 	}
 }

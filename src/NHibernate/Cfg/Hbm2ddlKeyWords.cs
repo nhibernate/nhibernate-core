@@ -1,3 +1,5 @@
+using System;
+
 namespace NHibernate.Cfg
 {
 	public class Hbm2DDLKeyWords
@@ -33,7 +35,7 @@ namespace NHibernate.Cfg
 
 		public bool Equals(string other)
 		{
-			return value.Equals(other);
+			return value.Equals(other, StringComparison.OrdinalIgnoreCase);
 		}
 
 		public bool Equals(Hbm2DDLKeyWords other)

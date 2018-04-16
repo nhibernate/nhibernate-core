@@ -7,7 +7,7 @@ namespace NHibernate.Event.Default
 	/// flushing session state in response to generated flush events. 
 	/// </summary>
 	[Serializable]
-	public class DefaultFlushEventListener : AbstractFlushingEventListener, IFlushEventListener
+	public partial class DefaultFlushEventListener : AbstractFlushingEventListener, IFlushEventListener
 	{
 		public virtual void OnFlush(FlushEvent @event)
 		{

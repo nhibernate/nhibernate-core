@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.LinqBulkManipulation.Domain"
+	default-access="field.camelcase">
+	
+	<class name="IntegerVersioned">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+        <version name="Version" column="vers"/>
+		<property name="Name"/>
+        <property name="Data" access="property"/>
+	</class>
+
+	<class name="TimestampVersioned">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+    <timestamp name="Version" column="vers"/> 
+		<property name="Name"/>
+        <property name="Data" access="property"/>
+	</class>
+
+</hibernate-mapping>

@@ -68,8 +68,6 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		{
 			switch (source)
 			{
-				case BytecodeProviderType.Codedom:
-					return "codedom";
 				case BytecodeProviderType.Lcg:
 					return "lcg";
 				default:

@@ -1240,9 +1240,9 @@ namespace NHibernate.Mapping.ByCode
 		{
 			System.Type collectionElementType = GetCollectionElementTypeOrThrow(propertiesContainerType, member, propertyType);
 			ICollectionElementRelationMapper cert = DetermineCollectionElementRelationType(member, propertyPath, collectionElementType);
-			if(cert is OneToManyRelationMapper)
+			if (cert is OneToManyRelationMapper)
 			{
-				throw new NotSupportedException("id-bag does not suppot one-to-many relation");
+				throw new NotSupportedException("id-bag does not support one-to-many relation");
 			}
 			propertiesContainer.IdBag(member, collectionPropertiesMapper =>
 			{

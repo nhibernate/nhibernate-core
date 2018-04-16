@@ -13,7 +13,7 @@ namespace NHibernate.Impl
 	public sealed class Printer
 	{
 		private readonly ISessionFactoryImplementor _factory;
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Printer));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(Printer));
 
 		/// <summary>
 		/// 
@@ -83,25 +83,25 @@ namespace NHibernate.Impl
 			return CollectionPrinter.ToString(result);
 		}
 
-		public void ToString(IEnumerator enumerator)
+		public void ToString(object[] entities)
 		{
-			if (!log.IsDebugEnabled || !enumerator.MoveNext())
+			if (!log.IsDebugEnabled() || entities.Length == 0)
 			{
 				return;
 			}
 
 			log.Debug("listing entities:");
-			int i = 0;
+			var i = 0;
 
-			do
+			foreach(var entity in entities)
 			{
 				if (i++ > 20)
 				{
 					log.Debug("more......");
 					break;
 				}
-				log.Debug(ToString(enumerator.Current));
-			} while (enumerator.MoveNext());
+				log.Debug(ToString(entity));
+			}
 		}
 
 		public Printer(ISessionFactoryImplementor factory)

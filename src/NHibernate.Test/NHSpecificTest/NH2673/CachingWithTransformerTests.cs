@@ -10,6 +10,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2673
 {
+	[TestFixture]
 	public class CachingWithTransformerTests: TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
@@ -185,6 +186,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 					                   .SetFetchMode("Posts", FetchMode.Eager)
 					                   .SetCacheable(true)
 					                   .Future<Blog>()
+					                   .GetEnumerable()
 					                   .ToList();
 					tx.Commit();
 				}

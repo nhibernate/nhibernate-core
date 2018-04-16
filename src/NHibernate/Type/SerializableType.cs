@@ -26,7 +26,7 @@ namespace NHibernate.Type
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public class SerializableType : MutableType
+	public partial class SerializableType : MutableType
 	{
 		private readonly System.Type serializableClass;
 		private readonly BinaryType binaryType;
@@ -47,19 +47,19 @@ namespace NHibernate.Type
 			binaryType = (BinaryType) TypeFactory.GetBinaryType(sqlType.Length);
 		}
 
-		public override void Set(DbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			binaryType.Set(st, ToBytes(value), index);
+			binaryType.Set(st, ToBytes(value), index, session);
 		}
 
-		public override object Get(DbDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
-		public override object Get(DbDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			byte[] bytes = (byte[]) binaryType.Get(rs, index);
+			byte[] bytes = (byte[]) binaryType.Get(rs, index, session);
 			if (bytes == null)
 			{
 				return null;

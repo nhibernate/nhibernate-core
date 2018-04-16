@@ -34,9 +34,9 @@ namespace NHibernate.Id
 	/// The mapping parameters <c>table</c> and <c>column</c> are required.
 	/// </p>
 	/// </remarks>
-	public class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
+	public partial class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (TableGenerator));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (TableGenerator));
 
 		/// <summary>
 		/// An additional where clause that is added to 
@@ -232,23 +232,17 @@ namespace NHibernate.Id
 					rs = qps.ExecuteReader();
 					if (!rs.Read())
 					{
-						string err;
-						if (string.IsNullOrEmpty(whereClause))
-						{
-							err = "could not read a hi value - you need to populate the table: " + tableName;
-						}
-						else
-						{
-							err = string.Format("could not read a hi value from table '{0}' using the where clause ({1})- you need to populate the table.", tableName, whereClause);
-						}
-						log.Error(err);
-						throw new IdentifierGenerationException(err);
+						var errFormat = string.IsNullOrEmpty(whereClause) 
+							? "could not read a hi value - you need to populate the table: {0}" 
+							: "could not read a hi value from table '{0}' using the where clause ({1})- you need to populate the table.";
+						log.Error(errFormat, tableName, whereClause);
+						throw new IdentifierGenerationException(string.Format(errFormat, tableName, whereClause));
 					}
-					result = Convert.ToInt64(columnType.Get(rs, 0));
+					result = Convert.ToInt64(columnType.Get(rs, 0, session));
 				}
 				catch (Exception e)
 				{
-					log.Error("could not read a hi value", e);
+					log.Error(e, "could not read a hi value");
 					throw;
 				}
 				finally
@@ -266,8 +260,8 @@ namespace NHibernate.Id
 
 				try
 				{
-					columnType.Set(ups, result + 1, 0);
-					columnType.Set(ups, result, 1);
+					columnType.Set(ups, result + 1, 0, session);
+					columnType.Set(ups, result, 1, session);
 
 					PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Updating high value:", ups, FormatStyle.Basic);
 
@@ -275,7 +269,7 @@ namespace NHibernate.Id
 				}
 				catch (Exception e)
 				{
-					log.Error("could not update hi value in: " + tableName, e);
+					log.Error(e, "could not update hi value in: {0}", tableName);
 					throw;
 				}
 				finally

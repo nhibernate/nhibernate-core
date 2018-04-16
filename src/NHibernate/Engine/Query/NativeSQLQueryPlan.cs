@@ -21,9 +21,9 @@ namespace NHibernate.Engine.Query
 {
 	/// <summary> Defines a query execution plan for a native-SQL query. </summary>
 	[Serializable]
-	public class NativeSQLQueryPlan
+	public partial class NativeSQLQueryPlan
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(NativeSQLQueryPlan));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(NativeSQLQueryPlan));
 
 		private readonly string sourceQuery;
 		private readonly SQLCustomQuery customQuery;
@@ -120,7 +120,7 @@ namespace NHibernate.Engine.Query
 		private SqlString ExpandDynamicFilterParameters(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, ISessionImplementor session)
 		{
 			var enabledFilters = session.EnabledFilters;
-			if (enabledFilters.Count == 0 || sqlString.ToString().IndexOf(ParserHelper.HqlVariablePrefix) < 0)
+			if (enabledFilters.Count == 0 || !ParserHelper.HasHqlVariable(sqlString))
 			{
 				return sqlString;
 			}
@@ -143,7 +143,7 @@ namespace NHibernate.Engine.Query
 
 				foreach (string token in tokens)
 				{
-					if (token.StartsWith(ParserHelper.HqlVariablePrefix))
+					if (ParserHelper.IsHqlVariable(token))
 					{
 						string filterParameterName = token.Substring(1);
 						string[] parts = StringHelper.ParseFilterParameterName(filterParameterName);

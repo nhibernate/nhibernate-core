@@ -85,7 +85,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 		}
 	}
 
-	public class FooCache : ICache
+	public partial class FooCache : ICache
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(FooCache));
 		private string _region;

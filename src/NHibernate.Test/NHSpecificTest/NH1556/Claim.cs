@@ -4,7 +4,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1556
 {
    public class Claim
    {
+      // Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
       private Guid id;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
       private DateTime lastFilled;
       private ProductIdentifier productIdentifier;
       private Patient patient;

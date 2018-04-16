@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Event;
@@ -22,7 +23,7 @@ namespace NHibernate.Test.Events.PostEvents
 		[Test]
 		public void ImplicitFlush()
 		{
-			((SessionFactoryImpl) sessions).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[]
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[]
 			                                                                          	{
 			                                                                          		new AssertOldStatePostListener(
 			                                                                          			eArgs =>
@@ -44,13 +45,13 @@ namespace NHibernate.Test.Events.PostEvents
 			}
 
 			DbCleanup();
-			((SessionFactoryImpl) sessions).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
 		}
 
 		[Test]
 		public void ExplicitUpdate()
 		{
-			((SessionFactoryImpl) sessions).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[]
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[]
 			                                                                          	{
 			                                                                          		new AssertOldStatePostListener(
 			                                                                          			eArgs =>
@@ -73,13 +74,13 @@ namespace NHibernate.Test.Events.PostEvents
 			}
 
 			DbCleanup();
-			((SessionFactoryImpl) sessions).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
 		}
 
 		[Test]
 		public void WithDetachedObject()
 		{
-			((SessionFactoryImpl) sessions).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[]
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[]
 			                                                                          	{
 			                                                                          		new AssertOldStatePostListener(
 			                                                                          			eArgs =>
@@ -111,7 +112,7 @@ namespace NHibernate.Test.Events.PostEvents
 			}
 
 			DbCleanup();
-			((SessionFactoryImpl) sessions).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
 		}
 
 		[Test]
@@ -119,7 +120,7 @@ namespace NHibernate.Test.Events.PostEvents
 		{
 			// When the update is used directly as method to reattach a entity the OldState is null
 			// that mean that NH should not retrieve info from DB
-			((SessionFactoryImpl) sessions).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[]
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[]
 			                                                                          	{
 			                                                                          		new AssertOldStatePostListener(
 			                                                                          			eArgs =>
@@ -151,13 +152,13 @@ namespace NHibernate.Test.Events.PostEvents
 			}
 
 			DbCleanup();
-			((SessionFactoryImpl) sessions).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
 		}
 
 		[Test]
 		public void UpdateDetachedObjectWithLock()
 		{
-			((SessionFactoryImpl)sessions).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[]
+			((DebugSessionFactory)Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[]
 			                                                                          	{
 			                                                                          		new AssertOldStatePostListener(
 			                                                                          			eArgs =>
@@ -190,7 +191,7 @@ namespace NHibernate.Test.Events.PostEvents
 			}
 
 			DbCleanup();
-			((SessionFactoryImpl)sessions).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
+			((DebugSessionFactory)Sfi).EventListeners.PostUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
 		}
 		private void DbCleanup()
 		{

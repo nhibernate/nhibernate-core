@@ -49,7 +49,7 @@ namespace NHibernate.Id
 	/// This class is based on <see cref="System.Guid"/>
 	/// </p>
 	/// </remarks>
-	public class UUIDHexGenerator : IIdentifierGenerator, IConfigurable
+	public partial class UUIDHexGenerator : IIdentifierGenerator, IConfigurable
 	{
 		protected string format = FormatWithDigitsOnly;
 		protected string sep;

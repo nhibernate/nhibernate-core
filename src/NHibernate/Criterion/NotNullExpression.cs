@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
@@ -23,7 +22,7 @@ namespace NHibernate.Criterion
 			_projection = projection;
 		}
 
-		private static readonly TypedValue[] NoValues = new TypedValue[0];
+		private static readonly TypedValue[] NoValues = Array.Empty<TypedValue>();
 
 		/// <summary>
 		/// Initialize a new instance of the <see cref="NotNullExpression" /> class for a named
@@ -35,13 +34,13 @@ namespace NHibernate.Criterion
 			_propertyName = propertyName;
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
 			SqlString[] columnNames =
-				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria, enabledFilters);
+				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria);
 
 			bool opNeeded = false;
 

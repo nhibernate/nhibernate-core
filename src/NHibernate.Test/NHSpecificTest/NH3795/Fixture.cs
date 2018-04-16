@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		[Test]
 		public void TestFieldAliasInQueryOver()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				A rowalias = null;
 				s.QueryOver(() => AAliasField)
@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		[Test]
 		public void TestFieldAliasInQueryOverWithConversion()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				B rowalias = null;
 				s.QueryOver(() => AAliasField)
@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		[Test]
 		public void TestFieldAliasInJoinAlias()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				Child rowalias = null;
 				s.QueryOver<Parent>()
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		[Test]
 		public void TestFieldAliasInJoinQueryOver()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				Child rowalias = null;
 				s.QueryOver<Parent>()
@@ -80,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		public void TestAliasInQueryOver()
 		{
 			A aAlias = null;
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				A rowalias = null;
 				s.QueryOver(() => aAlias)
@@ -96,7 +96,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		public void TestAliasInQueryOverWithConversion()
 		{
 			A aAlias = null;
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				B rowalias = null;
 				s.QueryOver(() => aAlias)
@@ -112,7 +112,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		{
 			Child childAlias = null;
 
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				Child rowalias = null;
 				s.QueryOver<Parent>()
@@ -129,7 +129,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		{
 			Child childAlias = null;
 
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				Child rowalias = null;
 				s.QueryOver<Parent>()

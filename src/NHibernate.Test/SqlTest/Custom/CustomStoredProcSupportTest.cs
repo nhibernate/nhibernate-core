@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.SqlTest.Custom
 {
+	[TestFixture]
 	public abstract class CustomStoredProcSupportTest : CustomSQLSupportTest
 	{
 		[Test]

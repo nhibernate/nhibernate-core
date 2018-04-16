@@ -8,7 +8,7 @@ namespace NHibernate.Id
 	/// An <see cref="IIdentifierGenerator" /> that returns a <c>Int64</c> constructed from the system
 	/// time and a counter value. Not safe for use in a clustser!
 	/// </summary>
-	public class CounterGenerator : IIdentifierGenerator
+	public partial class CounterGenerator : IIdentifierGenerator
 	{
 		// (short)0 by default
 		private static short counter;

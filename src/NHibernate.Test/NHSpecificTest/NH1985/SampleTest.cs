@@ -1,6 +1,5 @@
-using System;
-using System.Data.Common;
 using NHibernate.Connection;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1985
@@ -8,13 +7,17 @@ namespace NHibernate.Test.NHSpecificTest.NH1985
 	[TestFixture]
 	public class SampleTest : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// Test written with raw SQL queries, not compatible with all databases.
+			return dialect is MsSql2000Dialect;
+		}
+
 		protected override void OnSetUp()
 		{
-			base.OnSetUp();
-
 			if (0 == ExecuteStatement("INSERT INTO DomainClass (Id, Label) VALUES (1, 'TEST record');"))
 			{
-				throw new ApplicationException("Insertion of test record failed.");
+				Assert.Fail("Insertion of test record failed.");
 			}
 		}
 
@@ -26,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1985
 		}
 
 		[Test]
-		[Ignore("It is valid to be delete immutable entities")]
+		[Ignore("It is valid to delete immutable entities")]
 		public void AttemptToDeleteImmutableObjectShouldThrow()
 		{
 			using (ISession session = OpenSession())

@@ -23,7 +23,7 @@ namespace NHibernate.Id
 	/// the entity is inserted.
 	/// </p>
 	/// </remarks>
-	public class IdentityGenerator : AbstractPostInsertGenerator
+	public partial class IdentityGenerator : AbstractPostInsertGenerator
 	{
 		public override IInsertGeneratedIdentifierDelegate GetInsertGeneratedIdentifierDelegate(
 			IPostInsertIdentityPersister persister, ISessionFactoryImplementor factory, bool isGetGeneratedKeysEnabled)
@@ -46,7 +46,7 @@ namespace NHibernate.Id
 		/// Delegate for dealing with IDENTITY columns where the dialect supports returning
 		/// the generated IDENTITY value directly from the insert statement.
 		/// </summary>
-		public class InsertSelectDelegate : AbstractReturningDelegate, IInsertGeneratedIdentifierDelegate
+		public partial class InsertSelectDelegate : AbstractReturningDelegate, IInsertGeneratedIdentifierDelegate
 		{
 			private readonly IPostInsertIdentityPersister persister;
 			private readonly ISessionFactoryImplementor factory;
@@ -93,7 +93,7 @@ namespace NHibernate.Id
 		/// Delegate for dealing with IDENTITY columns where the dialect requires an
 		/// additional command execution to retrieve the generated IDENTITY value
 		/// </summary>
-		public class BasicDelegate : AbstractSelectingDelegate, IInsertGeneratedIdentifierDelegate
+		public partial class BasicDelegate : AbstractSelectingDelegate, IInsertGeneratedIdentifierDelegate
 		{
 
 			private readonly IPostInsertIdentityPersister persister;

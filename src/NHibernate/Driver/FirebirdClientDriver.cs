@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using NHibernate.Dialect;
 using NHibernate.SqlCommand;
@@ -18,8 +20,8 @@ namespace NHibernate.Driver
 	{
 		private const string SELECT_CLAUSE_EXP = @"(?<=\bselect|\bwhere).*";
 		private const string CAST_PARAMS_EXP = @"(?<![=<>]\s?|first\s?|skip\s?|between\s|between\s@\bp\w+\b\sand\s)@\bp\w+\b(?!\s?[=<>])";
-		private readonly Regex _statementRegEx = new Regex(SELECT_CLAUSE_EXP, RegexOptions.IgnoreCase);
-		private readonly Regex _castCandidateRegEx = new Regex(CAST_PARAMS_EXP, RegexOptions.IgnoreCase);
+		private static readonly Regex _statementRegEx = new Regex(SELECT_CLAUSE_EXP, RegexOptions.IgnoreCase);
+		private static readonly Regex _castCandidateRegEx = new Regex(CAST_PARAMS_EXP, RegexOptions.IgnoreCase);
 		private readonly FirebirdDialect _fbDialect = new FirebirdDialect();
 
 		/// <summary>
@@ -37,26 +39,23 @@ namespace NHibernate.Driver
 		{
 		}
 
-		public override bool UseNamedPrefixInSql
+		public override void Configure(IDictionary<string, string> settings)
 		{
-			get { return true; }
+			base.Configure(settings);
+			_fbDialect.Configure(settings);
 		}
 
-		public override bool UseNamedPrefixInParameter
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInSql => true;
 
-		public override string NamedPrefix
-		{
-			get { return "@"; }
-		}
+		public override bool UseNamedPrefixInParameter => true;
+
+		public override string NamedPrefix => "@";
 
 		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
 			var convertedSqlType = sqlType;
 			if (convertedSqlType.DbType == DbType.Currency)
-				convertedSqlType = new SqlType(DbType.Decimal);
+				convertedSqlType = SqlTypeFactory.Decimal;
 
 			base.InitializeParameter(dbParam, name, convertedSqlType);
 		}
@@ -69,12 +68,13 @@ namespace NHibernate.Driver
 			if (!string.IsNullOrWhiteSpace(expWithParams))
 			{
 				var candidates = GetCastCandidates(expWithParams);
-				var castParams = from DbParameter p in command.Parameters
-								 where candidates.Contains(p.ParameterName)
-								 select p;
-				foreach (var param in castParams)
+
+				var index = 0;
+				foreach (DbParameter p in command.Parameters)
 				{
-					TypeCastParam(param, command);
+					if (candidates.Contains(p.ParameterName))
+						TypeCastParam(p, command, parameterTypes[index]);
+					index++;
 				}
 			}
 
@@ -86,7 +86,7 @@ namespace NHibernate.Driver
 			return _statementRegEx.Match(commandText).Value;
 		}
 
-		private HashSet<string> GetCastCandidates(string statement)
+		private static HashSet<string> GetCastCandidates(string statement)
 		{
 			var candidates =
 				_castCandidateRegEx
@@ -96,15 +96,96 @@ namespace NHibernate.Driver
 			return new HashSet<string>(candidates);
 		}
 
-		private void TypeCastParam(DbParameter param, DbCommand command)
+		private void TypeCastParam(DbParameter param, DbCommand command, SqlType sqlType)
 		{
-			var castType = GetFbTypeFromDbType(param.DbType);
-			command.CommandText = command.CommandText.ReplaceWholeWord(param.ParameterName, string.Format("cast({0} as {1})", param.ParameterName, castType));
+			var castType = GetFbTypeForParam(sqlType);
+			command.CommandText = command.CommandText.ReplaceWholeWord(
+				param.ParameterName,
+				$"cast({param.ParameterName} as {castType})");
 		}
 
-		private string GetFbTypeFromDbType(DbType dbType)
+		private string GetFbTypeForParam(SqlType sqlType)
 		{
-			return _fbDialect.GetCastTypeName(new SqlType(dbType));
+			if (sqlType.LengthDefined)
+				switch (sqlType.DbType)
+				{
+					case DbType.AnsiString:
+					case DbType.String:
+						// Use default length instead for supporting like expressions requiring longer length.
+						sqlType = new SqlType(sqlType.DbType);
+						break;
+				}
+			return _fbDialect.GetCastTypeName(sqlType);
 		}
+
+		private static volatile MethodInfo _clearPool;
+		private static volatile MethodInfo _clearAllPools;
+
+		/// <summary>
+		/// Clears the connection pool.
+		/// </summary>
+		/// <param name="connectionString">The connection string of connections for which to clear the pool.
+		/// <c>null</c> for clearing them all.</param>
+		public void ClearPool(string connectionString)
+		{
+			// In case of concurrent threads, may initialize many times. We do not care.
+			// Members are volatile for avoiding it gets used while its constructor is not yet ended.
+			if (_clearPool == null || _clearAllPools == null)
+			{
+				using (var clearConnection = CreateConnection())
+				{
+					var connectionType = clearConnection.GetType();
+					_clearPool = connectionType.GetMethod("ClearPool") ?? throw new InvalidOperationException("Unable to resolve ClearPool method.");
+					_clearAllPools = connectionType.GetMethod("ClearAllPools") ?? throw new InvalidOperationException("Unable to resolve ClearAllPools method.");
+				}
+			}
+
+			if (connectionString != null)
+			{
+				using (var clearConnection = CreateConnection())
+				{
+					clearConnection.ConnectionString = connectionString;
+					_clearPool.Invoke(null, new object[] {clearConnection});
+				}
+				return;
+			}
+
+			_clearAllPools.Invoke(null, Array.Empty<object>());
+		}
+
+		/// <summary>
+		/// This driver support of <see cref="System.Transactions.Transaction"/> is not compliant and too heavily
+		/// restricts what can be done for NHibernate tests. See DNET-764, DNET-766 (and bonus, DNET-765).
+		/// </summary>
+		/// <remarks>
+		/// <list type="bullet">
+		/// <item>
+		/// <term>DNET-764</term>
+		/// <description>When auto-enlistment is enabled (<c>Enlist=true</c> in connection string), the driver throws if
+		/// attempting to open a connection without an ambient transaction. http://tracker.firebirdsql.org/browse/DNET-764
+		/// </description>
+		/// </item>
+		/// <item>
+		/// <term>DNET-765</term>
+		/// <description>When the connection string does not specify auto-enlistment parameter <c>Enlist</c>, the driver
+		/// defaults to <c>false</c>. http://tracker.firebirdsql.org/browse/DNET-765
+		/// </description>
+		/// </item>
+		/// <item>
+		/// <term>DNET-766</term>
+		/// <description>When auto-enlistment is disabled (<c>Enlist=false</c> in connection string), the driver ignores
+		/// calls to <see cref="DbConnection.EnlistTransaction(System.Transactions.Transaction)"/>. They silently do
+		/// nothing, the Firebird connection does not get enlisted. http://tracker.firebirdsql.org/browse/DNET-766
+		/// </description>
+		/// </item>
+		/// </list>
+		/// </remarks>
+		public override bool SupportsSystemTransactions => false;
+
+		/// <summary>
+		/// <see langword="false"/>. Enlistment is completely disabled when auto-enlistment is disabled.
+		/// See http://tracker.firebirdsql.org/browse/DNET-766.
+		/// </summary>
+		public override bool SupportsEnlistmentWhenAutoEnlistmentIsDisabled => false;
 	}
 }

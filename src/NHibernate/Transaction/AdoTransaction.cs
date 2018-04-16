@@ -12,9 +12,9 @@ namespace NHibernate.Transaction
 	/// Wraps an ADO.NET <see cref="DbTransaction"/> to implement
 	/// the <see cref="ITransaction" /> interface.
 	/// </summary>
-	public class AdoTransaction : ITransaction
+	public partial class AdoTransaction : ITransaction
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AdoTransaction));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(AdoTransaction));
 		private ISessionImplementor session;
 		private DbTransaction trans;
 		private bool begun;
@@ -51,7 +51,7 @@ namespace NHibernate.Transaction
 		{
 			if (trans == null)
 			{
-				if (log.IsWarnEnabled)
+				if (log.IsWarnEnabled())
 				{
 					if (command.Transaction != null)
 					{
@@ -64,7 +64,7 @@ namespace NHibernate.Transaction
 			}
 			else
 			{
-				if (log.IsWarnEnabled)
+				if (log.IsWarnEnabled())
 				{
 					// got into here because the command was being initialized and had a null Transaction - probably
 					// don't need to be confused by that - just a normal part of initialization...
@@ -108,7 +108,7 @@ namespace NHibernate.Transaction
 		/// </exception>
 		public void Begin(IsolationLevel isolationLevel)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (session.BeginProcess())
 			{
 				if (begun)
 				{
@@ -119,13 +119,13 @@ namespace NHibernate.Transaction
 				{
 					throw new TransactionException("Cannot restart transaction after failed commit");
 				}
-				
+
 				if (isolationLevel == IsolationLevel.Unspecified)
 				{
 					isolationLevel = session.Factory.Settings.IsolationLevel;
 				}
 
-				log.Debug(string.Format("Begin ({0})", isolationLevel));
+				log.Debug("Begin ({0})", isolationLevel);
 
 				try
 				{
@@ -145,7 +145,7 @@ namespace NHibernate.Transaction
 				}
 				catch (Exception e)
 				{
-					log.Error("Begin transaction failed", e);
+					log.Error(e, "Begin transaction failed");
 					throw new TransactionException("Begin failed with SQL exception", e);
 				}
 
@@ -154,18 +154,21 @@ namespace NHibernate.Transaction
 				rolledBack = false;
 
 				session.AfterTransactionBegin(this);
+				foreach (var dependentSession in session.ConnectionManager.DependentSessions)
+					dependentSession.AfterTransactionBegin(this);
 			}
 		}
 
 		private void AfterTransactionCompletion(bool successful)
 		{
-			using (new SessionIdLoggingContext(sessionId))
-			{
-				session.AfterTransactionCompletion(successful, this);
-				NotifyLocalSynchsAfterTransactionCompletion(successful);
-				session = null;
-				begun = false;
-			}
+			session.ConnectionManager.AfterTransaction();
+			session.AfterTransactionCompletion(successful, this);
+			NotifyLocalSynchsAfterTransactionCompletion(successful);
+			foreach (var dependentSession in session.ConnectionManager.DependentSessions)
+				dependentSession.AfterTransactionCompletion(successful, this);
+	
+			session = null;
+			begun = false;
 		}
 
 		/// <summary>
@@ -178,7 +181,7 @@ namespace NHibernate.Transaction
 		/// </exception>
 		public void Commit()
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (session.BeginProcess())
 			{
 				CheckNotDisposed();
 				CheckBegun();
@@ -186,13 +189,10 @@ namespace NHibernate.Transaction
 
 				log.Debug("Start Commit");
 
-				if (session.FlushMode != FlushMode.Never)
-				{
-					session.Flush();
-				}
-
-				NotifyLocalSynchsBeforeTransactionCompletion();
 				session.BeforeTransactionCompletion(this);
+				NotifyLocalSynchsBeforeTransactionCompletion();
+				foreach (var dependentSession in session.ConnectionManager.DependentSessions)
+					dependentSession.BeforeTransactionCompletion(this);
 
 				try
 				{
@@ -205,7 +205,7 @@ namespace NHibernate.Transaction
 				}
 				catch (HibernateException e)
 				{
-					log.Error("Commit failed", e);
+					log.Error(e, "Commit failed");
 					AfterTransactionCompletion(false);
 					commitFailed = true;
 					// Don't wrap HibernateExceptions
@@ -213,7 +213,7 @@ namespace NHibernate.Transaction
 				}
 				catch (Exception e)
 				{
-					log.Error("Commit failed", e);
+					log.Error(e, "Commit failed");
 					AfterTransactionCompletion(false);
 					commitFailed = true;
 					throw new TransactionException("Commit failed with SQL exception", e);
@@ -254,13 +254,13 @@ namespace NHibernate.Transaction
 					}
 					catch (HibernateException e)
 					{
-						log.Error("Rollback failed", e);
+						log.Error(e, "Rollback failed");
 						// Don't wrap HibernateExceptions
 						throw;
 					}
 					catch (Exception e)
 					{
-						log.Error("Rollback failed", e);
+						log.Error(e, "Rollback failed");
 						throw new TransactionException("Rollback failed with SQL Exception", e);
 					}
 					finally
@@ -425,11 +425,8 @@ namespace NHibernate.Transaction
 					}
 					catch (Exception e)
 					{
-						log.Error("exception calling user Synchronization", e);
-#pragma warning disable 618
-						if (!session.Factory.Settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled)
-							throw;
-#pragma warning restore 618
+						log.Error(e, "exception calling user Synchronization");
+						throw;
 					}
 				}
 			}
@@ -449,7 +446,7 @@ namespace NHibernate.Transaction
 					}
 					catch (Exception e)
 					{
-						log.Error("exception calling user Synchronization", e);
+						log.Error(e, "exception calling user Synchronization");
 					}
 				}
 			}

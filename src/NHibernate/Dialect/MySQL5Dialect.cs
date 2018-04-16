@@ -8,7 +8,8 @@ namespace NHibernate.Dialect
 		public MySQL5Dialect()
 		{
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "DECIMAL($p, $s)");
+			// My SQL supports precision up to 65, but .Net is limited to 28-29.
+			RegisterColumnType(DbType.Decimal, 29, "DECIMAL($p, $s)");
 			RegisterColumnType(DbType.Guid, "BINARY(16)");
 		}
 
@@ -17,7 +18,7 @@ namespace NHibernate.Dialect
 			// MySql 5 also supports DECIMAL as a cast type target
 			// http://dev.mysql.com/doc/refman/5.0/en/cast-functions.html
 			RegisterCastType(DbType.Decimal, "DECIMAL(19,5)");
-			RegisterCastType(DbType.Decimal, 19, "DECIMAL($p, $s)");
+			RegisterCastType(DbType.Decimal, 29, "DECIMAL($p, $s)");
 			RegisterCastType(DbType.Double, "DECIMAL(19,5)");
 			RegisterCastType(DbType.Single, "DECIMAL(19,5)");
 			RegisterCastType(DbType.Guid, "BINARY(16)");
@@ -60,5 +61,10 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
+
+		// At least MySQL 5 is said to support 64 characters for columns, but 5.7 supports 256 for aliases.
+		// 64 seems quite good enough, being conservative.
+		/// <inheritdoc />
+		public override int MaxAliasLength => 64;
 	}
 }

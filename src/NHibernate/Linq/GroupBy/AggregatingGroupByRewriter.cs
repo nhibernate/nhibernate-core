@@ -33,14 +33,12 @@ namespace NHibernate.Linq.GroupBy
 	{
 		private static readonly ICollection<System.Type> AcceptableOuterResultOperators = new HashSet<System.Type>
 			{
-				typeof (SkipResultOperator),
-				typeof (TakeResultOperator),
-				typeof (FirstResultOperator),
-				typeof (SingleResultOperator),
-				typeof (AnyResultOperator),
-				typeof (AllResultOperator),
-				typeof (TimeoutResultOperator),
-				typeof (CacheableResultOperator)
+				typeof(SkipResultOperator),
+				typeof(TakeResultOperator),
+				typeof(FirstResultOperator),
+				typeof(SingleResultOperator),
+				typeof(AnyResultOperator),
+				typeof(AllResultOperator)
 			};
 
 		public static void ReWrite(QueryModel queryModel)
@@ -117,7 +115,7 @@ namespace NHibernate.Linq.GroupBy
 			{
 				// Re-write the KeySelector as an object array of the non-constant keys
 				// This should be safe because we've already re-written the select clause using the original keys
-				groupBy.KeySelector = Expression.NewArrayInit(typeof (object), keys.Select(x => x.Type.IsValueType ? Expression.Convert(x, typeof(object)) : x));
+				groupBy.KeySelector = Expression.NewArrayInit(typeof(object), keys.Select(x => x.Type.IsValueType ? Expression.Convert(x, typeof(object)) : x));
 			}
 		}
 	}

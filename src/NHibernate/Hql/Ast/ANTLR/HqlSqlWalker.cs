@@ -19,7 +19,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 {
 	public partial class HqlSqlWalker
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HqlSqlWalker));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(HqlSqlWalker));
 
 		// Fields
 		private readonly string _collectionFilterRole;
@@ -62,6 +62,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private IASTFactory _nodeFactory;
 		private readonly List<AssignmentSpecification> assignmentSpecifications = new List<AssignmentSpecification>();
 		private int numberOfParametersInSetClause;
+		private Stack<int> clauseStack=new Stack<int>();
 
 		public HqlSqlWalker(QueryTranslatorImpl qti,
 					  ISessionFactoryImplementor sfi,
@@ -85,7 +86,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/*
 		protected override void Mismatch(IIntStream input, int ttype, BitSet follow)
 		{
-		   throw new MismatchedTokenException(ttype, input);
+			throw new MismatchedTokenException(ttype, input);
 		}
 
 		public override object RecoverFromMismatchedSet(IIntStream input, RecognitionException e, BitSet follow)
@@ -174,17 +175,17 @@ namespace NHibernate.Hql.Ast.ANTLR
 				_statementType = statementType;
 			}
 			_currentStatementType = statementType;
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug(statementName + " << begin [level=" + _level + ", statement=" + _statementTypeName + "]");
+				log.Debug("{0} << begin [level={1}, statement={2}]", statementName, _level, _statementTypeName);
 			}
 		}
 
 		void BeforeStatementCompletion(string statementName)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug(statementName + " : finishing up [level=" + _level + ", statement=" + _statementTypeName + "]");
+				log.Debug("{0} : finishing up [level={1}, statement={2}]", statementName, _level, _statementTypeName);
 			}
 		}
 
@@ -361,7 +362,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			// TODO NH: we should check the "generated" property
 			// currently only the Hibernate-supplied DbTimestampType is supported here
-			return type is TimestampType;
+			return type is DbTimestampType;
 		}
 
 		private static bool IsIntegral(IType type)
@@ -392,22 +393,32 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if (persister.DiscriminatorType != null)
 			{
 				new SyntheticAndFactory(this)
-					.AddDiscriminatorWhereFragment(statement, persister, new CollectionHelper.EmptyMapClass<string, IFilter>(), fromElement.TableAlias);
+					.AddDiscriminatorWhereFragment(statement, persister, CollectionHelper.EmptyDictionary<string, IFilter>(), fromElement.TableAlias);
 			}
 		}
 
 		void AfterStatementCompletion(string statementName)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug(statementName + " >> end [level=" + _level + ", statement=" + _statementTypeName + "]");
+				log.Debug("{0} >> end [level={1}, statement={2}]", statementName, _level, _statementTypeName);
 			}
 			_level--;
 		}
 
 		void HandleClauseStart(int clauseType)
 		{
+			clauseStack.Push(_currentClauseType);
 			_currentClauseType = clauseType;
+		}
+
+		void HandleClauseEnd(int clauseType)
+		{
+			if (clauseType != _currentClauseType)
+			{
+				throw new SemanticException("Mismatched clause parsing");
+			}
+			_currentClauseType=clauseStack.Pop();
 		}
 
 		IASTNode CreateIntoClause(string path, IASTNode propertySpec)
@@ -445,8 +456,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		void ProcessQuery(IASTNode select, IASTNode query)
 		{
-			if ( log.IsDebugEnabled ) {
-				log.Debug( "processQuery() : " + query.ToStringTree() );
+			if ( log.IsDebugEnabled() ) {
+				log.Debug("processQuery() : {0}", query.ToStringTree());
 			}
 
 			try {
@@ -518,7 +529,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_selectClause = ( SelectClause ) qn.GetChild(0);
 			_selectClause.InitializeDerivedSelectClause( _currentFromClause );
 
-			if ( log.IsDebugEnabled ) 
+			if ( log.IsDebugEnabled() ) 
 			{
 				log.Debug( "Derived SELECT clause created." );
 			}
@@ -704,9 +715,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 				}
 			}
 
-			if ( log.IsDebugEnabled )
+			if ( log.IsDebugEnabled() )
 			{
-				log.Debug( "createFromJoinElement() : " + _printer.ShowAsString( fromElement, "-- join tree --" ) );
+				log.Debug("createFromJoinElement() : {0}", _printer.ShowAsString( fromElement, "-- join tree --" ));
 			}
 		}
 
@@ -719,7 +730,17 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		IASTNode CreateFromFilterElement(IASTNode filterEntity, IASTNode alias)
 		{
-			FromElement fromElement = _currentFromClause.AddFromElement(filterEntity.Text, alias);
+			var fromElementFound = true;
+
+			var fromElement = _currentFromClause.GetFromElement(alias.Text) ??
+							  _currentFromClause.GetFromElementByClassName(filterEntity.Text);
+
+			if (fromElement == null)
+			{
+				fromElementFound = false;
+				fromElement = _currentFromClause.AddFromElement(filterEntity.Text, alias);
+			}
+
 			FromClause fromClause = fromElement.FromClause;
 			IQueryableCollection persister = _sessionFactoryHelper.GetCollectionPersister(_collectionFilterRole);
 
@@ -745,11 +766,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 			fromElement.JoinSequence = join;
 			fromElement.Filter = true;
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("createFromFilterElement() : processed filter FROM element.");
 			}
-	
+
+			if (fromElementFound)
+				return (IASTNode) adaptor.Nil();
+
 			return fromElement;
 		}
 
@@ -820,7 +844,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				FromElement fromElement = (FromElement) fromElements[0];
 
-				log.Info( "attempting to resolve property [" + identText + "] as a non-qualified ref" );
+				log.Info("attempting to resolve property [{0}] as a non-qualified ref", identText);
 
 				IType type;
 				return fromElement.GetPropertyMapping(identText).TryToType(identText, out type);
@@ -956,8 +980,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 				// Note: once we add support for "JOIN ... ON ...",
 				// the ON clause needs to get included here
 				return CurrentClauseType == WHERE ||
-					   CurrentClauseType == WITH ||
-					   IsInCase;
+						CurrentClauseType == WITH ||
+						IsInCase;
 			}
 		}
 
@@ -1043,9 +1067,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 				IASTNode hqlSqlWithNode = (IASTNode) withClause().Tree;
 				input = old;
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("handleWithFragment() : " + _printer.ShowAsString(hqlSqlWithNode, "-- with clause --"));
+					log.Debug("handleWithFragment() : {0}", _printer.ShowAsString(hqlSqlWithNode, "-- with clause --"));
 				}
 				WithClauseVisitor visitor = new WithClauseVisitor(fromElement);
 				NodeTraverser traverser = new NodeTraverser(visitor);
@@ -1073,7 +1097,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 			catch (Exception e)
 			{
-				throw new SemanticException(e.Message);
+				throw new SemanticException(e.Message, e);
 			}
 		}
 	}

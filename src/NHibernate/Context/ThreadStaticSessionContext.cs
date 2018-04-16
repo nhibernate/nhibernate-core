@@ -1,27 +1,29 @@
 using System;
+using System.Collections;
+using NHibernate.Engine;
 
 namespace NHibernate.Context
 {
 	/// <summary>
 	/// Provides a <see cref="ISessionFactory.GetCurrentSession()">current session</see>
 	/// for each thread using the [<see cref="ThreadStaticAttribute"/>].
-	/// To avoid if there are two session factories in the same thread.
 	/// </summary>
 	[Serializable]
-	public class ThreadStaticSessionContext : CurrentSessionContext
+	public class ThreadStaticSessionContext : MapBasedSessionContext
 	{
 		[ThreadStatic]
-		private static ISession _session;
+		private static IDictionary _map;
 
-		public ThreadStaticSessionContext(Engine.ISessionFactoryImplementor factory)
+		public ThreadStaticSessionContext(ISessionFactoryImplementor factory) : base (factory) { }
+
+		protected override IDictionary GetMap()
 		{
+			return _map;
 		}
 
-		/// <summary> Gets or sets the currently bound session. </summary>
-		protected override ISession Session
+		protected override void SetMap(IDictionary value)
 		{
-			get { return _session; }
-			set { _session = value; }
+			_map = value;
 		}
 	}
 }

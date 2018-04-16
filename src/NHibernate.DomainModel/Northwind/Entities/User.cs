@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.Type;
 
 namespace NHibernate.DomainModel.Northwind.Entities
@@ -71,17 +72,17 @@ namespace NHibernate.DomainModel.Northwind.Entities
 		public EnumStoredAsStringType()
 			: base(typeof(EnumStoredAsString), 12) { }
 
-		public override void Set(DbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			if (value is EnumStoredAsString && (EnumStoredAsString)value == EnumStoredAsString.Unspecified)
-				base.Set(cmd, null, index);
+				base.Set(cmd, null, index, session);
 			else
-				base.Set(cmd, value, index);
+				base.Set(cmd, value, index, session);
 		}
 
-		public override object Get(DbDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			object obj = base.Get(rs, index);
+			object obj = base.Get(rs, index, session);
 			if (obj == null) return EnumStoredAsString.Unspecified;
 			return obj;
 		}

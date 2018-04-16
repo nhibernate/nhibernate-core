@@ -14,7 +14,7 @@ namespace NHibernate.Id.Insert
 	/// effect of performing the insert statement, in a Output parameter.
 	/// Thus, there is no need for an additional sql statement to determine the generated identifier. 
 	/// </summary>
-	public class OutputParamReturningDelegate : AbstractReturningDelegate
+	public partial class OutputParamReturningDelegate : AbstractReturningDelegate
 	{
 		private const string ReturnParameterName = "nhIdOutParam";
 		private readonly ISessionFactoryImplementor factory;

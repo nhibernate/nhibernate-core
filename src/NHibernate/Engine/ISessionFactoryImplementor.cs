@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.Cache;
@@ -23,11 +24,6 @@ namespace NHibernate.Engine
 	/// </summary>
 	public interface ISessionFactoryImplementor : IMapping, ISessionFactory
 	{
-		/// <summary>
-		/// Get the SQL <see cref="NHibernate.Dialect.Dialect"/>.
-		/// </summary>
-		Dialect.Dialect Dialect { get; }
-
 		IInterceptor Interceptor { get; }
 
 		QueryPlanCache QueryPlanCache { get; }
@@ -132,21 +128,17 @@ namespace NHibernate.Engine
 		/// <summary> Get a named second-level cache region</summary>
 		ICache GetSecondLevelCacheRegion(string regionName);
 
+		// Obsolete since v5
 		/// <summary>
 		/// Open a session conforming to the given parameters. Used mainly
 		/// for current session processing.
 		/// </summary>
 		/// <param name="connection">The external ado.net connection to use, if one (i.e., optional).</param>
-		/// <param name="flushBeforeCompletionEnabled">
-		/// Should the session be auto-flushed 
-		/// prior to transaction completion?
-		/// </param>
-		/// <param name="autoCloseSessionEnabled">
-		/// Should the session be auto-closed after
-		/// transaction completion?
-		/// </param>
+		/// <param name="flushBeforeCompletionEnabled">No usage.</param>
+		/// <param name="autoCloseSessionEnabled">Not yet implemented.</param>
 		/// <param name="connectionReleaseMode">The release mode for managed jdbc connections.</param>
 		/// <returns>An appropriate session.</returns>
+		[Obsolete("Please use WithOptions() instead.")]
 		ISession OpenSession(DbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
 		                     ConnectionReleaseMode connectionReleaseMode);
 

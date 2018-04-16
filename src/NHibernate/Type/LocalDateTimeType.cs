@@ -1,18 +1,40 @@
 using System;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
 {
 	[Serializable]
-	public class LocalDateTimeType : AbstractDateTimeSpecificKindType
+	public class LocalDateTimeType : DateTimeType
 	{
-		protected override DateTimeKind DateTimeKind
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public LocalDateTimeType()
 		{
-			get { return DateTimeKind.Local; }
 		}
 
-		public override string Name
+		/// <summary>
+		/// Constructor for specifying a datetime with a scale. Use <see cref="SqlTypeFactory.GetDateTime"/>.
+		/// </summary>
+		/// <param name="sqlType">The sql type to use for the type.</param>
+		public LocalDateTimeType(DateTimeSqlType sqlType) : base(sqlType)
 		{
-			get { return "LocalDateTime"; }
 		}
+
+		/// <inheritdoc />
+		protected override DateTimeKind Kind => DateTimeKind.Local;
+
+		/// <inheritdoc />
+		public override string Name => "LocalDateTime";
+	}
+
+	[Serializable]
+	public class LocalDateTimeNoMsType : DateTimeNoMsType
+	{
+		/// <inheritdoc />
+		protected override DateTimeKind Kind => DateTimeKind.Local;
+
+		/// <inheritdoc />
+		public override string Name => "LocalDateTimeNoMs";
 	}
 }

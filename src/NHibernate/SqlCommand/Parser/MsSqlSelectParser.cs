@@ -17,49 +17,46 @@ namespace NHibernate.SqlCommand.Parser
 
 		public MsSqlSelectParser(SqlString sql)
 		{
-			if (sql == null) throw new ArgumentNullException("sql");
-			this.Sql = sql;
-			this.SelectIndex = this.FromIndex = this.OrderByIndex = -1;
+			Sql = sql ?? throw new ArgumentNullException(nameof(sql));
+			SelectIndex = FromIndex = OrderByIndex = -1;
 
-			var tokenEnum = new SqlTokenizer(sql).GetEnumerator();
-			tokenEnum.MoveNext();
-
-			// Custom SQL may contain multiple SELECT statements, for example to assign parameters. 
-			// Therefore we loop over SELECT statements until a SELECT is found that returns data.
-			SqlToken selectToken;
-			bool isDistinct;
-			if (tokenEnum.TryParseUntilFirstMsSqlSelectColumn(out selectToken, out isDistinct))
+			using (var tokenEnum = new SqlTokenizer(sql).GetEnumerator())
 			{
-				this.SelectIndex = selectToken.SqlIndex;
-				this.IsDistinct = isDistinct;
-				_columns.AddRange(ParseColumnDefinitions(tokenEnum));
-				if (tokenEnum.TryParseUntil("from"))
-				{
-					this.FromIndex = tokenEnum.Current.SqlIndex;
+				tokenEnum.MoveNext();
 
-					SqlToken orderToken;
-					if (tokenEnum.TryParseUntilFirstOrderColumn(out orderToken))
+				// Custom SQL may contain multiple SELECT statements, for example to assign parameters. 
+				// Therefore we loop over SELECT statements until a SELECT is found that returns data.
+				if (tokenEnum.TryParseUntilFirstMsSqlSelectColumn(out var selectToken, out var isDistinct))
+				{
+					SelectIndex = selectToken.SqlIndex;
+					IsDistinct = isDistinct;
+					_columns.AddRange(ParseColumnDefinitions(tokenEnum));
+					if (tokenEnum.TryParseUntil("from"))
 					{
-						this.OrderByIndex = orderToken.SqlIndex;
-						foreach (var order in ParseOrderDefinitions(tokenEnum))
+						FromIndex = tokenEnum.Current.SqlIndex;
+
+						if (tokenEnum.TryParseUntilFirstOrderColumn(out var orderToken))
 						{
-							_orders.Add(order);
-							if (!order.Column.InSelectClause)
+							OrderByIndex = orderToken.SqlIndex;
+							foreach (var order in ParseOrderDefinitions(tokenEnum))
 							{
-								_columns.Add(order.Column);
+								_orders.Add(order);
+								if (!order.Column.InSelectClause)
+								{
+									_columns.Add(order.Column);
+								}
 							}
 						}
 					}
 				}
-				return;
 			}
 		}
 
-		public SqlString Sql { get; private set; }
-		public int SelectIndex { get; private set; }
-		public int FromIndex { get; private set; }
-		public int OrderByIndex { get; private set; }
-		public bool IsDistinct { get; private set; }
+		public SqlString Sql { get; }
+		public int SelectIndex { get; }
+		public int FromIndex { get; }
+		public int OrderByIndex { get;}
+		public bool IsDistinct { get; }
 
 		/// <summary>
 		/// Column definitions in SELECT clause

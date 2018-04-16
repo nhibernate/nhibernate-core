@@ -1,4 +1,5 @@
 using System.Collections;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypedManyToOne
@@ -14,6 +15,12 @@ namespace NHibernate.Test.TypedManyToOne
 		protected override IList Mappings
 		{
 			get { return new[] { "TypedManyToOne.Customer.hbm.xml" }; }
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// Mapping uses check constraint, which Ms SQL CE does not support.
+			return !(Dialect is MsSqlCeDialect);
 		}
 
 		[Test]
@@ -42,14 +49,14 @@ namespace NHibernate.Test.TypedManyToOne
 			cust.BillingAddress = bill;
 			cust.ShippingAddress = ship;
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.Persist(cust);
 				t.Commit();
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				IList results = s.CreateQuery("from Customer cust left join fetch cust.BillingAddress where cust.CustomerId='abc123'").List();
@@ -64,7 +71,7 @@ namespace NHibernate.Test.TypedManyToOne
 				t.Commit();
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.SaveOrUpdate(cust);
@@ -87,14 +94,14 @@ namespace NHibernate.Test.TypedManyToOne
 			cust.CustomerId = "xyz123";
 			cust.Name = "Matt";
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.Persist(cust);
 				t.Commit();
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				IList results = s.CreateQuery("from Customer cust left join fetch cust.BillingAddress where cust.CustomerId='xyz123'").List();

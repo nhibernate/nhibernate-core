@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -7,6 +6,7 @@ using NHibernate.Loader.Criteria;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -40,7 +40,7 @@ namespace NHibernate.Criterion
 
 		protected abstract SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery outerQuery);
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			ISessionFactoryImplementor factory = criteriaQuery.Factory;
 
@@ -60,10 +60,9 @@ namespace NHibernate.Criterion
 
 			IOuterJoinLoadable persister = (IOuterJoinLoadable) factory.GetEntityPersister(criteriaImpl.EntityOrClassName);
 
-			//patch to generate joins on subqueries
-			//stolen from CriteriaLoader
-			CriteriaJoinWalker walker =
-				new CriteriaJoinWalker(persister, innerQuery, factory, criteriaImpl, criteriaImpl.EntityOrClassName, enabledFilters);
+			criteriaImpl.Session = DeriveRootSession(criteria);
+
+			var walker = new CriteriaJoinWalker(persister, innerQuery, factory, criteriaImpl, criteriaImpl.EntityOrClassName, criteriaImpl.Session.EnabledFilters);
 
 			parameters = innerQuery.GetQueryParameters(); // parameters can be inferred only after initialize the walker
 
@@ -99,6 +98,7 @@ namespace NHibernate.Criterion
 			return buf.ToSqlString();
 		}
 
+
 		public override string ToString()
 		{
 			if (prefixOp)
@@ -117,10 +117,22 @@ namespace NHibernate.Criterion
 			return null;
 		}
 
-		public ICriteria Criteria
+		// NH-1146
+		public ICriteria Criteria => criteriaImpl;
+
+		static ISessionImplementor DeriveRootSession(ICriteria criteria)
 		{
-			// NH-1146
-			get { return criteriaImpl; }
+			while (criteria is CriteriaImpl.Subcriteria subcriteria)
+			{
+				criteria = subcriteria.Parent;
+			}
+			if (criteria is CriteriaImpl criteriaImpl)
+			{
+				return criteriaImpl.Session;
+			}
+			// could happen for custom Criteria impls.  Not likely, but...
+			// for long term solution, see HHH-3514
+			return null;
 		}
 	}
 }

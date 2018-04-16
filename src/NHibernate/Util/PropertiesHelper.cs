@@ -63,13 +63,14 @@ namespace NHibernate.Util
 			if (properties.TryGetValue(property, out propValue))
 			{
 				var tokens = new StringTokenizer(propValue, delim, false);
-				IEnumerator<string> en = tokens.GetEnumerator();
-				while (en.MoveNext())
+				using (var en = tokens.GetEnumerator())
 				{
-					string key = en.Current;
-
-					string value = en.MoveNext() ? en.Current : String.Empty;
-					map[key] = value;
+					while (en.MoveNext())
+					{
+						var key = en.Current;
+						var value = en.MoveNext() ? en.Current : string.Empty;
+						map[key] = value;
+					}
 				}
 			}
 			return map;

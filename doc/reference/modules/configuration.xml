@@ -24,7 +24,7 @@
 
         <para>
             You may obtain a <literal>Configuration</literal> instance by
-            instantiating it directly. Heres an example of setting up a datastore from 
+            instantiating it directly. Here is an example of setting up a datastore from 
             mappings defined in two XML configuration files:
         </para>
 
@@ -74,7 +74,7 @@
             A <literal>Configuration</literal> also specifies various optional properties:
         </para>
 
-        <programlisting><![CDATA[IDictionary props = new Hashtable();
+        <programlisting><![CDATA[var props = new Dictionary<string, string>();
 ...
 Configuration cfg = new Configuration()
     .AddClass(typeof(NHibernate.Auction.Item))
@@ -115,8 +115,8 @@ Configuration cfg = new Configuration()
             obtain ADO.NET connections wherever it pleases:
         </para>
 
-        <programlisting><![CDATA[IDbConnection conn = myApp.GetOpenConnection();
-ISession session = sessions.OpenSession(conn);
+        <programlisting><![CDATA[var conn = myApp.GetOpenConnection();
+var session = sessions.OpenSession(conn);
 
 // do some data access work]]></programlisting>
 
@@ -144,13 +144,6 @@ ISession session = sessions.OpenSession(conn);
                     Pass an instance of <literal>IDictionary</literal> mapping
                     property names to property values to
                     <literal>Configuration.SetProperties()</literal>.
-                </para>
-            </listitem>
-            <listitem>
-                <para>
-                    Add the properties to a configuration section in the application
-                    configuration file. The section should be named <literal>nhibernate</literal>
-                    and its handler set to <literal>System.Configuration.NameValueSectionHandler</literal>.
                 </para>
             </listitem>
             <listitem>
@@ -206,13 +199,14 @@ ISession session = sessions.OpenSession(conn);
                     <literal>connection.provider</literal>
                 </entry>
                 <entry>
-                    The type of a custom <literal>IConnectionProvider</literal>.
+                    The type of a custom <literal>IConnectionProvider</literal> implementation.
                     <para>
                         <emphasis role="strong">eg.</emphasis> 
                         <literal>full.classname.of.ConnectionProvider</literal> if the Provider 
                         is built into NHibernate, or <literal>full.classname.of.ConnectionProvider, 
                         assembly</literal> if using an implementation of <literal>IConnectionProvider</literal>
-                        not included in NHibernate.
+                        not included in NHibernate. The default is 
+                        <literal>NHibernate.Connection.DriverConnectionProvider</literal>.
                     </para>
                 </entry>
             </row>
@@ -223,6 +217,7 @@ ISession session = sessions.OpenSession(conn);
                 <entry>
                     The type of a custom <literal>IDriver</literal>, if using <literal>DriverConnectionProvider</literal>.
                     <para>
+                        <emphasis role="strong">eg.</emphasis>
                         <literal>full.classname.of.Driver</literal> if the Driver 
                         is built into NHibernate, or <literal>full.classname.of.Driver, assembly</literal> 
                         if using an implementation of IDriver not included in NHibernate.
@@ -257,11 +252,12 @@ ISession session = sessions.OpenSession(conn);
                 </entry>
                 <entry>
                     Set the ADO.NET transaction isolation level. Check
-                    <literal>System.Data.IsolationLevel</literal> for meaningful values 
+                    <literal>System.Data.IsolationLevel</literal> for meaningful values
                     and the database's documentation to ensure that level is supported.
                     <para>
-                        <emphasis role="strong">eg.</emphasis> 
-                        <literal>Chaos, ReadCommitted, ReadUncommitted, RepeatableRead, Serializable, Unspecified </literal>
+                        <emphasis role="strong">eg.</emphasis>
+                        <literal>Chaos</literal> | <literal>ReadCommitted</literal> | <literal>ReadUncommitted</literal> |
+                        <literal>RepeatableRead</literal> | <literal>Serializable</literal> | <literal>Unspecified</literal>
                     </para>
                 </entry>
             </row>
@@ -278,12 +274,24 @@ ISession session = sessions.OpenSession(conn);
                         <literal>after_transaction</literal>
                     </para>
                     <para>
-                        Note that this setting only affects <literal>ISession</literal>s returned from
-                        <literal>ISessionFactory.OpenSession</literal>.  For <literal>ISession</literal>s
-                        obtained through <literal>ISessionFactory.GetCurrentSession</literal>, the
+                        Note that for <literal>ISession</literal>s obtained through
+                        <literal>ISessionFactory.GetCurrentSession</literal>, the
                         <literal>ICurrentSessionContext</literal> implementation configured for use
-                        controls the connection release mode for those <literal>ISession</literal>s.
+                        may control the connection release mode for those <literal>ISession</literal>s.
                         See <xref linkend="architecture-current-session"/>.
+                    </para>
+                </entry>
+            </row>
+            <row>
+                <entry>
+                    <literal>prepare_sql</literal>
+                </entry>
+                <entry>
+                    Specify to prepare <literal>DbCommand</literal>s generated by NHibernate.
+                    Defaults to <literal>false</literal>.
+                    <para>
+                        <emphasis role="strong">eg.</emphasis>
+                        <literal>true</literal> | <literal>false</literal>
                     </para>
                 </entry>
             </row>
@@ -292,8 +300,12 @@ ISession session = sessions.OpenSession(conn);
                     <literal>command_timeout</literal>
                 </entry>
                 <entry>
-                    Specify the default timeout of <literal>IDbCommands</literal>
-                    generated by NHibernate.
+                    Specify the default timeout in seconds of <literal>DbCommand</literal>s
+                    generated by NHibernate. Negative values disable it.
+                    <para>
+                        <emphasis role="strong">eg.</emphasis>
+                        <literal>30</literal>
+                    </para>
                 </entry>
             </row>
             <row>
@@ -304,6 +316,80 @@ ISession session = sessions.OpenSession(conn);
                     Specify the batch size to use when batching update statements. Setting this to 0
                     (the default) disables the functionality.
                     See <xref linkend="performance-batch-updates" />.
+                    <para>
+                        <emphasis role="strong">eg.</emphasis>
+                        <literal>20</literal>
+                    </para>
+                </entry>
+            </row>
+            <row>
+                <entry>
+                    <literal>order_inserts</literal>
+                </entry>
+                <entry>
+                    Enable ordering of insert statements for the purpose of more efficient batching. Defaults
+                    to <literal>true</literal> if batching is enabled, <literal>false</literal> otherwise.
+                    <para>
+                        <emphasis role="strong">eg.</emphasis>
+                        <literal>true</literal> | <literal>false</literal>
+                    </para>
+                </entry>
+            </row>
+            <row>
+                <entry>
+                    <literal>order_updates</literal>
+                </entry>
+                <entry>
+                    Enable ordering of update statements for the purpose of more efficient batching. Defaults
+                    to <literal>true</literal> if batching is enabled, <literal>false</literal> otherwise.
+                    <para>
+                        <emphasis role="strong">eg.</emphasis>
+                        <literal>true</literal> | <literal>false</literal>
+                    </para>
+                </entry>
+            </row>
+            <row>
+                <entry>
+                    <literal>adonet.batch_versioned_data</literal>
+                </entry>
+                <entry>
+                    If batching is enabled, specify that versioned data can also be batched. Requires a dialect which
+                    batcher correctly returns rows count. Defaults to <literal>false</literal>.
+                    <para>
+                        <emphasis role="strong">eg.</emphasis>
+                        <literal>true</literal> | <literal>false</literal>
+                    </para>
+                </entry>
+            </row>
+            <row>
+                <entry>
+                    <literal>adonet.factory_class</literal>
+                </entry>
+                <entry>
+                    The class name of a <literal>IBatcherFactory</literal> implementation.
+                    <para>
+                        This is usually not needed, most of the time the <literal>driver</literal> will
+                        take care of setting the <literal>IBatcherFactory</literal> using a sensible default
+                        according to the database capabilities.
+                    </para>
+                    <para>
+                        <emphasis role="strong">eg.</emphasis>
+                        <literal>classname.of.BatcherFactory, assembly</literal>
+                    </para>
+                </entry>
+            </row>
+            <row>
+                <entry>
+                    <literal>adonet.wrap_result_sets</literal>
+                </entry>
+                <entry>
+                    Some database vendor data reader implementation have inefficient columnName-to-columnIndex
+                    resolution. Enabling this setting allows to wrap them in a data reader that will cache those
+                    resolutions. Defaults to <literal>false</literal>.
+                    <para>
+                        <emphasis role="strong">eg.</emphasis>
+                        <literal>true</literal> | <literal>false</literal>
+                    </para>
                 </entry>
             </row>
             </tbody>
@@ -317,26 +403,22 @@ ISession session = sessions.OpenSession(conn);
 
         <programlisting id="we-config-configuration" revision="1"><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 <configuration>
-	<configSections>
-		<section name="hibernate-configuration"
-				 type="NHibernate.Cfg.ConfigurationSectionHandler, NHibernate" />
-	</configSections>
+  <configSections>
+    <section name="hibernate-configuration"
+        type="NHibernate.Cfg.ConfigurationSectionHandler, NHibernate" />
+  </configSections>
 
-	<hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
-		<session-factory>
-			<property name="dialect">NHibernate.Dialect.MsSql2005Dialect</property>
-			<property name="connection.connection_string">
-				Server=(local);initial catalog=theDb;Integrated Security=SSPI
-			</property>
-			<property name="connection.isolation">ReadCommitted</property>
+  <hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
+    <session-factory>
+      <property name="dialect">NHibernate.Dialect.MsSql2012Dialect</property>
+      <property name="connection.connection_string">
+        Server=(local);initial catalog=theDb;Integrated Security=SSPI
+      </property>
+      <property name="connection.isolation">ReadCommitted</property>
+    </session-factory>
+  </hibernate-configuration>
 
-			<property name="proxyfactory.factory_class">
-				NHibernate.ByteCode.LinFu.ProxyFactoryFactory, NHibernate.ByteCode.LinFu
-			</property>
-		</session-factory>
-	</hibernate-configuration>
-
-    <!-- other app specific config follows -->
+  <!-- other app specific config follows -->
 </configuration>]]></programlisting>
 
         <para>
@@ -360,13 +442,11 @@ ISession session = sessions.OpenSession(conn);
         </para>
 
         <para>
-            System-level properties can only be set manually by setting static properties of
+            Some properties are system-level properties. They can only be set manually by setting static properties of
             <literal>NHibernate.Cfg.Environment</literal> class or be defined in the
-            <literal>&lt;nhibernate&gt;</literal> section of the application
-            configuration file. These properties cannot be set using
-            <literal>Configuration.SetProperties</literal> or be defined in the
-            <literal>&lt;hibernate-configuration&gt;</literal> section of the application configuration
-            file.
+            <literal>&lt;hibernate-configuration&gt;</literal> section of the application
+            configuration file. These properties cannot be set using <literal>Configuration.SetProperties</literal> or
+            the <literal>hibernate.cfg.xml</literal> configuration file.
         </para>
 
         <table frame="topbot" id="configuration-optional-properties" revision="3">
@@ -387,10 +467,23 @@ ISession session = sessions.OpenSession(conn);
                         </entry>
                         <entry>
                             The class name of a NHibernate <literal>Dialect</literal> - enables
-                            certain platform dependent features.
+                            certain platform dependent features. See <xref linkend="configuration-optional-dialects"/>.
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 
                                 <literal>full.classname.of.Dialect, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>default_catalog</literal>
+                        </entry>
+                        <entry>
+                            Qualify unqualified table names with the given catalog name
+                            in generated SQL.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>CATALOG_NAME</literal>
                             </para>
                         </entry>
                     </row>
@@ -427,12 +520,17 @@ ISession session = sessions.OpenSession(conn);
                         </entry>
                         <entry>
                             Enables use of a runtime-generated class to set or get properties of an entity
-                            or component instead of using runtime reflection (System-level property).
+                            or component instead of using runtime reflection. This is a system-level property.
                             The use of the reflection optimizer inflicts a certain startup cost on the
                             application but should lead to better performance in the long run.
-                            You can not set this property in <literal>hibernate.cfg.xml</literal>
-                            or <literal>&lt;hibernate-configuration&gt;</literal> section of the application
-                            configuration file.
+                            Defaults to <literal>true</literal>.
+                            <para>
+                                You can not set this property in <literal>hibernate.cfg.xml</literal>, but only
+                                in <literal>&lt;hibernate-configuration&gt;</literal> section of the application
+                                configuration file or by code by setting
+                                <literal>NHibernate.Cfg.Environment.UseReflectionOptimizer</literal>
+                                before creating any <literal>NHibernate.Cfg.Configuration</literal> instance.
+                            </para>
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 
                                 <literal>true</literal> | <literal>false</literal>
@@ -445,11 +543,34 @@ ISession session = sessions.OpenSession(conn);
                         </entry>
                         <entry>
                             Specifies the bytecode provider to use to optimize the use of reflection in NHibernate.
+                            This is a system-level property.
                             Use <literal>null</literal> to disable the optimization completely, <literal>lcg</literal>
-                            to use lightweight code generation. 
+                            to use built-in lightweight code generation, or the class name of a custom
+                            <literal>IBytecodeProvider</literal> implementation. Defaults to <literal>lcg</literal>.
+                            <para>
+                                You can not set this property in <literal>hibernate.cfg.xml</literal>, but only
+                                in <literal>&lt;hibernate-configuration&gt;</literal> section of the application
+                                configuration file or by code by setting
+                                <literal>NHibernate.Cfg.Environment.BytecodeProvider</literal>
+                                before creating any <literal>NHibernate.Cfg.Configuration</literal> instance.
+                            </para>
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
-                                <literal>null</literal> | <literal>lcg</literal>
+                                <literal>null</literal> | <literal>lcg</literal> |
+                                <literal>classname.of.BytecodeProvider, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>cache.use_second_level_cache</literal>
+                        </entry>
+                        <entry>
+                            Enable the second level cache. Requires specifying a <literal>cache.provider_class</literal>.
+                            See <xref linkend="caches"/>. Defaults to <literal>false</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
                             </para>
                         </entry>
                     </row>
@@ -458,9 +579,9 @@ ISession session = sessions.OpenSession(conn);
                             <literal>cache.provider_class</literal>
                         </entry>
                         <entry>
-                            The class name of a custom <literal>ICacheProvider</literal>.
+                            The class name of a <literal>ICacheProvider</literal> implementation.
                             <para>
-                                <emphasis role="strong">eg.</emphasis> 
+                                <emphasis role="strong">eg.</emphasis>
                                 <literal>classname.of.CacheProvider, assembly</literal>
                             </para>
                         </entry>
@@ -472,6 +593,7 @@ ISession session = sessions.OpenSession(conn);
                         <entry>
                             Optimize second-level cache operation to minimize writes, at the
                             cost of more frequent reads (useful for clustered caches).
+                            Defaults to <literal>false</literal>.
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 
                                 <literal>true</literal> | <literal>false</literal>
@@ -484,6 +606,7 @@ ISession session = sessions.OpenSession(conn);
                         </entry>
                         <entry>
                             Enable the query cache, individual queries still have to be set cacheable.
+                            Defaults to <literal>false</literal>.
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 
                                 <literal>true</literal> | <literal>false</literal>
@@ -495,8 +618,8 @@ ISession session = sessions.OpenSession(conn);
                             <literal>cache.query_cache_factory</literal>
                         </entry>
                         <entry>
-                            The class name of a custom <literal>IQueryCacheFactory</literal> interface,
-                            defaults to the built-in <literal>StandardQueryCacheFactory</literal>.
+                            The class name of a custom <literal>IQueryCacheFactory</literal> implementation.
+                            Defaults to the built-in <literal>StandardQueryCacheFactory</literal>.
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
                                 <literal>classname.of.QueryCacheFactory, assembly</literal>
@@ -517,6 +640,19 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>cache.default_expiration</literal>
+                        </entry>
+                        <entry>
+                            The default expiration delay in seconds for cached entries, for providers supporting
+                            this setting.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>300</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>query.substitutions</literal>
                         </entry>
                         <entry>
@@ -530,12 +666,157 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>query.default_cast_length</literal>
+                        </entry>
+                        <entry>
+                            Set the default length used in casting when the target type is length bound and
+                            does not specify it. Defaults to <literal>4000</literal>, automatically trimmed down
+                            according to dialect type registration.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>255</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>query.default_cast_precision</literal>
+                        </entry>
+                        <entry>
+                            Set the default precision used in casting when the target type is decimal and
+                            does not specify it. Defaults to <literal>28</literal>, automatically trimmed down
+                            according to dialect type registration.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>19</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>query.default_cast_scale</literal>
+                        </entry>
+                        <entry>
+                            Set the default scale used in casting when the target type is decimal and
+                            does not specify it. Defaults to <literal>10</literal>, automatically trimmed down
+                            according to dialect type registration.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>5</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>query.startup_check</literal>
+                        </entry>
+                        <entry>
+                            Should named queries be checked during startup (the default is enabled).
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>query.factory_class</literal>
+                        </entry>
+                        <entry>
+                            The class name of a custom <literal>IQueryTranslatorFactory</literal> implementation
+                            (HQL query parser factory). Defaults to the built-in
+                            <literal>ASTQueryTranslatorFactory</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>classname.of.QueryTranslatorFactory, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>query.linq_provider_class</literal>
+                        </entry>
+                        <entry>
+                            The class name of a custom <literal>INhQueryProvider</literal> implementation
+                            (LINQ provider). Defaults to the built-in <literal>DefaultQueryProvider</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>classname.of.LinqProvider, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>query.query_model_rewriter_factory</literal>
+                        </entry>
+                        <entry>
+                            The class name of a custom <literal>IQueryModelRewriterFactory</literal> implementation
+                            (LINQ query model rewriter factory). Defaults to <literal>null</literal> (no rewriter).
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>classname.of.QueryModelRewriterFactory, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>linqtohql.generatorsregistry</literal>
+                        </entry>
+                        <entry>
+                            The class name of a custom <literal>ILinqToHqlGeneratorsRegistry</literal> implementation.
+                            Defaults to the built-in <literal>DefaultLinqToHqlGeneratorsRegistry</literal>. See
+                            <xref linkend="querylinq-extending-generator"/>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>classname.of.LinqToHqlGeneratorsRegistry, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>sql_exception_converter</literal>
+                        </entry>
+                        <entry>
+                            The class name of a custom <literal>ISQLExceptionConverter</literal> implementation.
+                            Defaults to <literal>Dialect.BuildSQLExceptionConverter()</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>classname.of.SQLExceptionConverter, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>show_sql</literal>
                         </entry>
                         <entry>
-                            Write all SQL statements to console.
+                            Write all SQL statements to console. Defaults to <literal>false</literal>.
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>format_sql</literal>
+                        </entry>
+                        <entry>
+                            Log formatted SQL. Defaults to <literal>false</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>use_sql_comments</literal>
+                        </entry>
+                        <entry>
+                            Generate SQL with comments. Defaults to <literal>false</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
                                 <literal>true</literal> | <literal>false</literal>
                             </para>
                         </entry>
@@ -556,32 +837,32 @@ ISession session = sessions.OpenSession(conn);
                             </para>
                         </entry>
                     </row>
-                  <row>
-                    <entry>
-                      <literal>hbm2ddl.keywords</literal>
-                    </entry>
-                    <entry>
-                      Automatically import <literal>reserved/keywords</literal> from the database when the
-                      <literal>ISessionFactory</literal> is created.
-                      <para>
-                        <emphasis role="strong">none :</emphasis>
-                        disable any operation regarding RDBMS KeyWords
-                      </para>
-                      <para>
-                        <emphasis role="strong">keywords :</emphasis>
-                        imports all RDBMS KeyWords where the <literal>Dialect</literal> can provide the implementation of <literal>IDataBaseSchema</literal>.
-                      </para>
-                      <para>
-                        <emphasis role="strong">auto-quote :</emphasis>
-                        imports all RDBMS KeyWords and auto-quote all table-names/column-names .
-                      </para>
-                      <para>
-                        <emphasis role="strong">eg.</emphasis>
-                        <literal>none</literal> | <literal>keywords</literal> | <literal>auto-quote</literal>
-                      </para>
-                    </entry>
-                  </row>
-                  <row>
+                    <row>
+                        <entry>
+                            <literal>hbm2ddl.keywords</literal>
+                        </entry>
+                        <entry>
+                            Automatically import <literal>reserved/keywords</literal> from the database when the
+                            <literal>ISessionFactory</literal> is created.
+                            <para>
+                                <emphasis role="strong">none :</emphasis>
+                                disable any operation regarding RDBMS KeyWords (the default).
+                            </para>
+                            <para>
+                                <emphasis role="strong">keywords :</emphasis>
+                                imports all RDBMS KeyWords where the <literal>Dialect</literal> can provide the implementation of <literal>IDataBaseSchema</literal>.
+                            </para>
+                            <para>
+                                <emphasis role="strong">auto-quote :</emphasis>
+                                imports all RDBMS KeyWords and auto-quote all table-names/column-names.
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>none</literal> | <literal>keywords</literal> | <literal>auto-quote</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
                         <entry>
                             <literal>use_proxy_validator</literal>
                         </entry>
@@ -596,14 +877,267 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>proxyfactory.factory_class</literal>
+                        </entry>
+                        <entry>
+                            The class name of a custom <literal>IProxyFactoryFactory</literal> implementation.
+                            Defaults to the built-in <literal>DefaultProxyFactoryFactory</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>classname.of.ProxyFactoryFactory, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>collectiontype.factory_class</literal>
+                        </entry>
+                        <entry>
+                            The class name of a custom <literal>ICollectionTypeFactory</literal> implementation.
+                            Defaults to the built-in <literal>DefaultCollectionTypeFactory</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>classname.of.CollectionTypeFactory, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>transaction.factory_class</literal>
                         </entry>
                         <entry>
-                            The class name of a custom <literal>ITransactionFactory</literal> implementation,
-                            defaults to the built-in <literal>AdoNetWithDistributedTransactionFactory</literal>.
+                            The class name of a custom <literal>ITransactionFactory</literal> implementation.
+                            Defaults to the built-in <literal>AdoNetWithSystemTransactionFactory</literal>.
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 
                                 <literal>classname.of.TransactionFactory, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>transaction.use_connection_on_system_prepare</literal>
+                        </entry>
+                        <entry>
+                            When a system transaction is being prepared, is using connection during this process enabled?
+                            <para>
+                              Default is <literal>true</literal>, for supporting <literal>FlushMode.Commit</literal> with transaction factories
+                              supporting system transactions. But this requires enlisting additional connections, retaining disposed
+                              sessions and their connections until transaction end, and may trigger undesired transaction promotions to
+                              distributed.
+                            </para>
+                            <para>
+                              Set to <literal>false</literal> for disabling using connections from system
+                              transaction preparation, while still benefiting from <literal>FlushMode.Auto</literal> on querying.
+                            </para>
+                            <para>
+                              See <xref linkend="transactions-scopes"/>.
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>transaction.system_completion_lock_timeout</literal>
+                        </entry>
+                        <entry>
+                            Timeout duration in milliseconds for the system transaction completion lock.
+                            <para>
+                                When a system transaction completes, it may have its completion events running on concurrent threads,
+                                after scope disposal. This occurs when the transaction is distributed.
+                                This notably concerns <literal>ISessionImplementor.AfterTransactionCompletion(bool, ITransaction)</literal>.
+                                NHibernate protects the session from being concurrently used by the code following the scope disposal
+                                with a lock. To prevent any application freeze, this lock has a default timeout of five seconds. If the
+                                application appears to require longer (!) running transaction completion events, this setting allows to
+                                raise this timeout. <literal>-1</literal> disables the timeout.
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>10000</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>default_flush_mode</literal>
+                        </entry>
+                        <entry>
+                            The default <literal>FlushMode</literal>, <literal>Auto</literal> when not specified.
+                            See <xref linkend="manipulatingdata-flushing"/>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>Manual</literal> | <literal>Commit</literal> | <literal>Auto</literal> | <literal>Always</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>default_batch_fetch_size</literal>
+                        </entry>
+                        <entry>
+                            The default batch fetch size to use when lazily loading an entity or collection.
+                            Defaults to <literal>1</literal>. See <xref linkend="performance-fetching-batch"/>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>20</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>current_session_context_class</literal>
+                        </entry>
+                        <entry>
+                            The class name of an <literal>ICurrentSessionContext</literal> implementation.
+                            See <xref linkend="architecture-current-session"/>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>classname.of.CurrentSessionContext, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>id.optimizer.pooled.prefer_lo</literal>
+                        </entry>
+                        <entry>
+                            When using an enhanced id generator and pooled optimizers (see
+                            <xref linkend="mapping-declaration-id-enhanced"/>), prefer interpreting the database
+                            value as the lower (lo) boundary. The default is to interpret it as the high boundary.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>generate_statistics</literal>
+                        </entry>
+                        <entry>
+                            Enable statistics collection within <literal>ISessionFactory.Statistics</literal> property.
+                            Defaults to <literal>false</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>track_session_id</literal>
+                        </entry>
+                        <entry>
+                            Set whether the session id should be tracked in logs or not. When <literal>true</literal>, each
+                            session will have an unique <literal>Guid</literal> that can be retrieved with
+                            <literal>ISessionImplementor.SessionId</literal>, otherwise <literal>ISessionImplementor.SessionId</literal>
+                            will be <literal>Guid.Empty</literal>.
+                            <para>
+                                Session id is used for logging purpose and can also be retrieved on the static property
+                                <literal>NHibernate.Impl.SessionIdLoggingContext.SessionId</literal>, when tracking is enabled.
+                            </para>
+                            <para>
+                                Disabling tracking by setting <literal>track_session_id</literal> to <literal>false</literal>
+                                increases performances. Default is <literal>true</literal>.
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>sql_types.keep_datetime</literal>
+                        </entry>
+                        <entry>
+                            Since NHibernate v5.0 and if the dialect supports it, <literal>DbType.DateTime2</literal>
+                            is used instead of <literal>DbType.DateTime</literal>. This may be disabled by setting
+                            <literal>sql_types.keep_datetime</literal> to <literal>true</literal>.
+                            Defaults to <literal>false</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>oracle.use_n_prefixed_types_for_unicode</literal>
+                        </entry>
+                        <entry>
+                            <para>Oracle has a dual Unicode support model.</para>
+                            <para>
+                                Either the whole database use an Unicode encoding, and then all string types
+                                will be Unicode. In such case, Unicode strings should be mapped to non <literal>N</literal> prefixed
+                                types, such as <literal>Varchar2</literal>. This is the default.
+                            </para>
+                            <para>
+                                Or <literal>N</literal> prefixed types such as <literal>NVarchar2</literal> are to be used for Unicode strings, the
+                                others type are using a non Unicode encoding. In such case this setting needs to be set to
+                                <literal>true</literal>.
+                            </para>
+                            <para>
+                                See
+                                <ulink url="https://docs.oracle.com/cd/B19306_01/server.102/b14225/ch6unicode.htm#CACHCAHF">Implementing
+                                a Unicode Solution in the Database</ulink>.
+                                This setting applies only to Oracle dialects and ODP.Net managed or unmanaged driver.
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>odbc.explicit_datetime_scale</literal>
+                        </entry>
+                        <entry>
+                            This may need to be set to <literal>3</literal> if you are using the <literal>OdbcDriver</literal>
+                            with MS SQL Server 2008+.
+                            <para>
+                                This is intended to work around issues like:
+                                <programlisting>System.Data.Odbc.OdbcException :
+ERROR [22008]
+[Microsoft][SQL Server Native Client 11.0]
+Datetime field overflow. Fractional second
+precision exceeds the scale specified
+in the parameter binding.</programlisting>
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>3</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>nhibernate-logger</literal>
+                        </entry>
+                        <entry>
+                            The class name of an <literal>ILoggerFactory</literal> implementation. It allows using another
+                            logger than log4net.
+                            <para>
+                                The default is not defined, which causes NHibernate to search for log4net assembly. If this
+                                search succeeds, NHibernate will log with log4net. Otherwise, its internal logging will
+                                be disabled.
+                            </para>
+                            <para>
+                                This is a very special system-level property. It can only be set through an
+                                <ulink url="https://docs.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/appsettings/">appSetting</ulink>
+                                named <literal>nhibernate-logger</literal> in the application configuration file. It cannot
+                                be set neither with <literal>NHibernate.Cfg.Environment</literal> class, nor be defined in the
+                                <literal>&lt;hibernate-configuration&gt;</literal> section of the application
+                                configuration file, nor supplied by using <literal>Configuration.SetProperties</literal>, nor
+                                set in the <literal>hibernate.cfg.xml</literal> configuration file.
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>classname.of.LoggerFactory, assembly</literal>
                             </para>
                         </entry>
                     </row>
@@ -626,7 +1160,7 @@ ISession session = sessions.OpenSession(conn);
 
             <table frame="topbot" id="sql-dialects" revision="2">
                 <title>NHibernate SQL Dialects (<literal>dialect</literal>)</title>
-                <tgroup cols="2">
+                <tgroup cols="3">
                     <colspec colwidth="1*"/>
                     <colspec colwidth="2.5*"/>
                     <colspec colwidth="2.5*"/>
@@ -649,31 +1183,76 @@ ISession session = sessions.OpenSession(conn);
                             <entry></entry>
                         </row>
                         <row>
+                            <entry>Firebird</entry>
+                            <entry><literal>NHibernate.Dialect.FirebirdDialect</literal></entry>
+                            <entry>
+                                Set <literal>driver_class</literal> to
+                                <literal>NHibernate.Driver.FirebirdClientDriver</literal>
+                                for Firebird ADO.NET provider 2.0.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>Informix</entry>
+                            <entry><literal>NHibernate.Dialect.InformixDialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>Informix 9.40</entry>
+                            <entry><literal>NHibernate.Dialect.InformixDialect0940</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>Informix 10.00</entry>
+                            <entry><literal>NHibernate.Dialect.InformixDialect1000</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
                             <entry>Ingres</entry>
                             <entry><literal>NHibernate.Dialect.IngresDialect</literal></entry>
                             <entry></entry>
                         </row>
                         <row>
-                            <entry>PostgreSQL</entry> 
-                            <entry><literal>NHibernate.Dialect.PostgreSQLDialect</literal></entry>
+                            <entry>Ingres 9</entry>
+                            <entry><literal>NHibernate.Dialect.Ingres9Dialect</literal></entry>
                             <entry></entry>
                         </row>
                         <row>
-                            <entry>PostgreSQL 8.1</entry> 
-                            <entry><literal>NHibernate.Dialect.PostgreSQL81Dialect</literal></entry>
-                            <entry>
-                                This dialect supports <literal>FOR UPDATE NOWAIT</literal>
-                                available in PostgreSQL 8.1.
-                            </entry>
+                            <entry>Microsoft SQL Server 7</entry>
+                            <entry><literal>NHibernate.Dialect.MsSql7Dialect</literal></entry>
+                            <entry></entry>
                         </row>
                         <row>
-                            <entry>PostgreSQL 8.2</entry> 
-                            <entry><literal>NHibernate.Dialect.PostgreSQL82Dialect</literal></entry>
-                            <entry>
-                                This dialect supports <literal>IF EXISTS</literal> keyword in
-                                <literal>DROP TABLE</literal> and <literal>DROP SEQUENCE</literal>
-                                available in PostgreSQL 8.2.
-                            </entry>
+                            <entry>Microsoft SQL Server 2000</entry>
+                            <entry><literal>NHibernate.Dialect.MsSql2000Dialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>Microsoft SQL Server 2005</entry>
+                            <entry><literal>NHibernate.Dialect.MsSql2005Dialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>Microsoft SQL Server 2008</entry>
+                            <entry><literal>NHibernate.Dialect.MsSql2008Dialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>Microsoft SQL Azure Server 2008</entry>
+                            <entry><literal>NHibernate.Dialect.MsSqlAzure2008Dialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>Microsoft SQL Server 2012</entry>
+                            <entry><literal>NHibernate.Dialect.MsSql2012Dialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>Microsoft SQL Server Compact Edition</entry>
+                            <entry><literal>NHibernate.Dialect.MsSqlCeDialect</literal></entry>
+                        </row>
+                        <row>
+                            <entry>Microsoft SQL Server Compact Edition 4.0</entry>
+                            <entry><literal>NHibernate.Dialect.MsSqlCe40Dialect</literal></entry>
                         </row>
                         <row>
                             <entry>MySQL 3 or 4</entry> 
@@ -683,6 +1262,21 @@ ISession session = sessions.OpenSession(conn);
                         <row>
                             <entry>MySQL 5</entry>
                             <entry><literal>NHibernate.Dialect.MySQL5Dialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>MySQL 5 Inno DB</entry>
+                            <entry><literal>NHibernate.Dialect.MySQL5InnoDBDialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>MySQL 5.5</entry>
+                            <entry><literal>NHibernate.Dialect.MySQL55Dialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>MySQL 5.5 Inno DB</entry>
+                            <entry><literal>NHibernate.Dialect.MySQL55InnoDBDialect</literal></entry>
                             <entry></entry>
                         </row>
                         <row>
@@ -706,15 +1300,66 @@ ISession session = sessions.OpenSession(conn);
                             <entry></entry>
                         </row>
                         <row>
-                            <entry>Sybase Adaptive Server Enterprise 15</entry> 
-                            <entry><literal>NHibernate.Dialect.SybaseASE15Dialect</literal></entry>
+                            <entry>PostgreSQL</entry>
+                            <entry><literal>NHibernate.Dialect.PostgreSQLDialect</literal></entry>
                             <entry></entry>
+                        </row>
+                        <row>
+                            <entry>PostgreSQL</entry>
+                            <entry><literal>NHibernate.Dialect.PostgreSQLDialect</literal></entry>
+                            <entry>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>PostgreSQL 8.1</entry>
+                            <entry><literal>NHibernate.Dialect.PostgreSQL81Dialect</literal></entry>
+                            <entry>
+                                This dialect supports <literal>FOR UPDATE NOWAIT</literal>
+                                available in PostgreSQL 8.1.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>PostgreSQL 8.2</entry>
+                            <entry><literal>NHibernate.Dialect.PostgreSQL82Dialect</literal></entry>
+                            <entry>
+                                This dialect supports <literal>IF EXISTS</literal> keyword in
+                                <literal>DROP TABLE</literal> and <literal>DROP SEQUENCE</literal>
+                                available in PostgreSQL 8.2.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>PostgreSQL 8.3</entry>
+                            <entry><literal>NHibernate.Dialect.PostgreSQL83Dialect</literal></entry>
+                            <entry>
+                                This dialect supports <literal>XML</literal> type.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>SQLite</entry>
+                            <entry><literal>NHibernate.Dialect.SQLiteDialect</literal></entry>
+                            <entry>
+                                Set <literal>driver_class</literal> to
+                                <literal>NHibernate.Driver.SQLite20Driver</literal>
+                                for System.Data.SQLite provider for .NET 2.0.
+                                <para>
+                                    Due to
+                                    <ulink url="https://system.data.sqlite.org/index.html/tktview/44a0955ea344a777ffdbcc077831e1adc8b77a36">the
+                                    behavior of System.Data.SQLite</ulink> with <literal>DateTime</literal>, consider using
+                                    <literal>DateTimeFormatString=yyyy-MM-dd HH:mm:ss.FFFFFFF;</literal> in the SQLite
+                                    connection string for preventing undesired time shifts with its default configuration.
+                                </para>
+                            </entry>
                         </row>
                         <row>
                             <entry>Sybase Adaptive Server Anywhere 9</entry>
                             <entry><literal>NHibernate.Dialect.SybaseASA9Dialect</literal></entry>
                             <entry></entry>
-                        </row>                        
+                        </row>
+                        <row>
+                            <entry>Sybase Adaptive Server Enterprise 15</entry>
+                            <entry><literal>NHibernate.Dialect.SybaseASE15Dialect</literal></entry>
+                            <entry></entry>
+                        </row>
                         <row>
                             <entry>Sybase SQL Anywhere 10</entry>
                             <entry><literal>NHibernate.Dialect.SybaseSQLAnywhere10Dialect</literal></entry>
@@ -726,46 +1371,9 @@ ISession session = sessions.OpenSession(conn);
                             <entry></entry>
                         </row>
                         <row>
-                            <entry>Microsoft SQL Server 7</entry> 
-                            <entry><literal>NHibernate.Dialect.MsSql7Dialect</literal></entry>
+                            <entry>Sybase SQL Anywhere 12</entry>
+                            <entry><literal>NHibernate.Dialect.SybaseSQLAnywhere12Dialect</literal></entry>
                             <entry></entry>
-                        </row>
-                        <row>
-                            <entry>Microsoft SQL Server 2000</entry> 
-                            <entry><literal>NHibernate.Dialect.MsSql2000Dialect</literal></entry>
-                            <entry></entry>
-                        </row>
-                        <row>
-                            <entry>Microsoft SQL Server 2005</entry> 
-                            <entry><literal>NHibernate.Dialect.MsSql2005Dialect</literal></entry>
-                            <entry></entry>
-                        </row>
-                        <row>
-                            <entry>Microsoft SQL Server 2008</entry> 
-                            <entry><literal>NHibernate.Dialect.MsSql2008Dialect</literal></entry>
-                            <entry></entry>
-                        </row>
-                        <row>
-                            <entry>Microsoft SQL Server Compact Edition</entry>
-                            <entry><literal>NHibernate.Dialect.MsSqlCeDialect</literal></entry>
-                        </row>
-                        <row>
-                            <entry>Firebird</entry> 
-                            <entry><literal>NHibernate.Dialect.FirebirdDialect</literal></entry>
-                            <entry>
-                                Set <literal>driver_class</literal> to
-                                <literal>NHibernate.Driver.FirebirdClientDriver</literal>
-                                for Firebird ADO.NET provider 2.0.
-                            </entry>
-                        </row>
-                        <row>
-                            <entry>SQLite</entry>
-                            <entry><literal>NHibernate.Dialect.SQLiteDialect</literal></entry>
-                            <entry>
-                                Set <literal>driver_class</literal> to
-                                <literal>NHibernate.Driver.SQLite20Driver</literal>
-                                for System.Data.SQLite provider for .NET 2.0.
-                            </entry>
                         </row>
                     </tbody>
                 </tgroup>
@@ -865,7 +1473,8 @@ ISession session = sessions.OpenSession(conn);
         </para>
 
         <para>
-            You may download log4net from <literal>http://logging.apache.org/log4net/</literal>.
+            You may download log4net from <ulink url="https://logging.apache.org/log4net/" />,
+            or install it with NuGet.
             To use log4net you will need a <literal>log4net</literal> configuration section in
             the application configuration file.  An example of the configuration section is
             distributed with NHibernate in the <literal>src/NHibernate.Test</literal> project.
@@ -923,7 +1532,7 @@ ISession session = sessions.OpenSession(conn);
         <para>
             An alternative approach is to specify a full configuration in a file named
             <literal>hibernate.cfg.xml</literal>. This file can be used as a replacement
-            for the <literal>&lt;nhibernate;&gt;</literal> or <literal>&lt;hibernate-configuration&gt;</literal>
+            for the <literal>&lt;hibernate-configuration&gt;</literal>
             sections of the application configuration file.
         </para>
 
@@ -935,21 +1544,21 @@ ISession session = sessions.OpenSession(conn);
         <programlisting><![CDATA[<?xml version='1.0' encoding='utf-8'?>
 <hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
 
-    <!-- an ISessionFactory instance -->
-    <session-factory>
+  <!-- an ISessionFactory instance -->
+  <session-factory>
 
-        <!-- properties -->
-        <property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
-        <property name="connection.driver_class">NHibernate.Driver.SqlClientDriver</property>
-        <property name="connection.connection_string">Server=localhost;initial catalog=nhibernate;User Id=;Password=</property>
-        <property name="show_sql">false</property>
-        <property name="dialect">NHibernate.Dialect.MsSql2000Dialect</property>
+    <!-- properties -->
+    <property name="connection.connection_string">
+      Server=localhost;initial catalog=nhibernate;User Id=;Password=
+    </property>
+    <property name="show_sql">false</property>
+    <property name="dialect">NHibernate.Dialect.MsSql2012Dialect</property>
 
-        <!-- mapping files -->
-        <mapping resource="NHibernate.Auction.Item.hbm.xml" assembly="NHibernate.Auction" />
-        <mapping resource="NHibernate.Auction.Bid.hbm.xml" assembly="NHibernate.Auction" />
+    <!-- mapping files -->
+    <mapping resource="NHibernate.Auction.Item.hbm.xml" assembly="NHibernate.Auction" />
+    <mapping resource="NHibernate.Auction.Bid.hbm.xml" assembly="NHibernate.Auction" />
 
-    </session-factory>
+  </session-factory>
 
 </hibernate-configuration>]]></programlisting>
 

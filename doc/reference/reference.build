@@ -66,14 +66,12 @@
 			<arg file="styles/html_chunk.xsl"/>
 		</exec>
 
-		<exec program="java">
+		<exec program="java" workingdir="${build.single.dir}">
 			<arg value="-classpath" />
 			<arg>
 				<path refid="saxon.classpath"/>
 			</arg>
 			<arg value="com.icl.saxon.StyleSheet" />
-			<arg value="-o"/>
-			<arg file="${build.single.dir}/index.html"/>
 			<arg file="master.xml"/>
 			<arg file="styles/html.xsl"/>
 		</exec>

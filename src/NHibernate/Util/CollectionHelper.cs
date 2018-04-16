@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NHibernate.Util
 {
@@ -132,6 +132,7 @@ namespace NHibernate.Util
 			}
 		}
 
+		// To be removed in v6.0
 		[Serializable]
 		private class EmptyListClass : IList
 		{
@@ -213,15 +214,25 @@ namespace NHibernate.Util
 
 		public static readonly IEnumerable EmptyEnumerable = new EmptyEnumerableClass();
 		public static readonly IDictionary EmptyMap = new EmptyMapClass();
+
+		public static IDictionary<TKey, TValue> EmptyDictionary<TKey, TValue>()
+		{
+			return EmptyMapClass<TKey, TValue>.Instance;
+		}
+
 		public static readonly ICollection EmptyCollection = EmptyMap;
+		// Since v5
+		[Obsolete("It has no more usages in NHibernate and will be removed in a future version.")]
 		public static readonly IList EmptyList = new EmptyListClass();
 
+		// Obsolete since v5
 		/// <summary>
 		/// Determines if two collections have equals elements, with the same ordering.
 		/// </summary>
 		/// <param name="c1">The first collection.</param>
 		/// <param name="c2">The second collection.</param>
 		/// <returns><c>true</c> if collection are equals, <c>false</c> otherwise.</returns>
+		[Obsolete("It has no more usages in NHibernate and will be removed in a future version.")]
 		public static bool CollectionEquals(ICollection c1, ICollection c2)
 		{
 			if (c1 == c2)
@@ -229,7 +240,7 @@ namespace NHibernate.Util
 				return true;
 			}
 
-			if(c1==null || c2==null)
+			if (c1 == null || c2 == null)
 			{
 				return false;
 			}
@@ -239,21 +250,29 @@ namespace NHibernate.Util
 				return false;
 			}
 
-			IEnumerator e1 = c1.GetEnumerator();
-			IEnumerator e2 = c2.GetEnumerator();
-
-			while (e1.MoveNext())
+			var e2 = c2.GetEnumerator();
+			try
 			{
-				e2.MoveNext();
-				if (!Equals(e1.Current, e2.Current))
+				foreach (var item1 in c1)
 				{
-					return false;
+					e2.MoveNext();
+					if (!Equals(item1, e2.Current))
+					{
+						return false;
+					}
 				}
+			}
+			finally
+			{
+				// Most IEnumerator will have a disposable concrete implementation, must check it.
+				(e2 as IDisposable)?.Dispose();
 			}
 
 			return true;
 		}
 
+		// Since v5
+		[Obsolete("It has no more usages in NHibernate and will be removed in a future version.")]
 		public static bool DictionaryEquals(IDictionary a, IDictionary b)
 		{
 			if (Equals(a, b))
@@ -282,35 +301,7 @@ namespace NHibernate.Util
 			return true;
 		}
 
-		public static bool DictionaryEquals<K, V>(IDictionary<K, V> a, IDictionary<K, V> b)
-		{
-			if (Equals(a, b))
-			{
-				return true;
-			}
-
-			if (a == null || b == null)
-			{
-				return false;
-			}
-
-			if (a.Count != b.Count)
-			{
-				return false;
-			}
-
-			foreach (K key in a.Keys)
-			{
-				if (!Equals(a[key], b[key]))
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-		
-
+		// Obsolete since v5
 		/// <summary>
 		/// Computes a hash code for <paramref name="coll"/>.
 		/// </summary>
@@ -318,6 +309,7 @@ namespace NHibernate.Util
 		/// individual elements, so that the value is independent of the
 		/// collection iteration order.
 		/// </remarks>
+		[Obsolete("It has no more usages in NHibernate and will be removed in a future version.")]
 		public static int GetHashCode(IEnumerable coll)
 		{
 			unchecked
@@ -346,7 +338,7 @@ namespace NHibernate.Util
 		/// </remarks>
 		public static IDictionary<string, T> CreateCaseInsensitiveHashtable<T>()
 		{
-			return new Dictionary<string, T>(StringComparer.InvariantCultureIgnoreCase);
+			return new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
 		}
 
 		/// <summary>
@@ -359,7 +351,7 @@ namespace NHibernate.Util
 		/// </remarks>
 		public static IDictionary<string, T> CreateCaseInsensitiveHashtable<T>(IDictionary<string, T> dictionary)
 		{
-			return new Dictionary<string, T>(dictionary, StringComparer.InvariantCultureIgnoreCase);
+			return new Dictionary<string, T>(dictionary, StringComparer.OrdinalIgnoreCase);
 		}
 
 		// ~~~~~~~~~~~~~~~~~~~~~~ Generics ~~~~~~~~~~~~~~~~~~~~~~
@@ -433,7 +425,7 @@ namespace NHibernate.Util
 		}
 
 		[Serializable]
-		private class EmptyEnumerator<T> : IEnumerator<T> 
+		private class EmptyEnumerator<T> : IEnumerator<T>
 		{
 			#region IEnumerator<T> Members
 
@@ -477,7 +469,17 @@ namespace NHibernate.Util
 		[Serializable]
 		public class EmptyMapClass<TKey, TValue> : IDictionary<TKey, TValue>
 		{
+#pragma warning disable 618 // Constructor is obsolete, to be switched to non-obsolete but private.
+			internal static readonly IDictionary<TKey, TValue> Instance = new EmptyMapClass<TKey, TValue>();
+#pragma warning restore 618
+
 			private static readonly EmptyEnumerator<TKey, TValue> emptyEnumerator = new EmptyEnumerator<TKey, TValue>();
+
+			// Since v5.1. To be switched to private.
+			[Obsolete("Please use CollectionHelper.EmptyDictionary<TKey, TValue>() instead.")]
+			public EmptyMapClass()
+			{
+			}
 
 			#region IDictionary<TKey,TValue> Members
 
@@ -510,12 +512,12 @@ namespace NHibernate.Util
 
 			public ICollection<TKey> Keys
 			{
-				get { return new List<TKey>(); }
+				get { return Array.Empty<TKey>(); }
 			}
 
 			public ICollection<TValue> Values
 			{
-				get { return new List<TValue>(); }
+				get { return Array.Empty<TValue>(); }
 			}
 
 			#endregion
@@ -600,40 +602,105 @@ namespace NHibernate.Util
 			}
 		}
 
-		public static bool SetEquals<T>(ISet<T> a, ISet<T> b)
-		{
-			if (Equals(a, b))
-			{
-				return true;
-			}
+		/// <summary>
+		/// Determines if two sets have equal elements. Supports <c>null</c> arguments.
+		/// </summary>
+		/// <typeparam name="T">The type of the elements.</typeparam>
+		/// <param name="s1">The first set.</param>
+		/// <param name="s2">The second set.</param>
+		/// <returns><c>true</c> if sets are equals, <c>false</c> otherwise.</returns>
+		public static bool SetEquals<T>(ISet<T> s1, ISet<T> s2)
+			=> FastCheckEquality(s1, s2) ?? s1.SetEquals(s2);
 
-			if (a == null || b == null)
-			{
-				return false;
-			}
-
-			if (a.Count != b.Count)
-			{
-				return false;
-			}
-
-			foreach (T obj in a)
-			{
-				if (!b.Contains(obj))
-					return false;
-			}
-
-			return true;
-		}
-
+		// Obsolete since v5
 		/// <summary>
 		/// Determines if two collections have equals elements, with the same ordering.
 		/// </summary>
 		/// <typeparam name="T">The type of the elements.</typeparam>
 		/// <param name="c1">The first collection.</param>
 		/// <param name="c2">The second collection.</param>
-		/// <returns><c>true</c> if collection are equals, <c>false</c> otherwise.</returns>
+		/// <returns><c>true</c> if collections are equals, <c>false</c> otherwise.</returns>
+		[Obsolete("Please use SequenceEquals instead.")]
 		public static bool CollectionEquals<T>(ICollection<T> c1, ICollection<T> c2)
+			=> SequenceEquals(c1, c2);
+
+		/// <summary>
+		/// Determines if two collections have equals elements, with the same ordering. Supports <c>null</c> arguments.
+		/// </summary>
+		/// <typeparam name="T">The type of the elements.</typeparam>
+		/// <param name="c1">The first collection.</param>
+		/// <param name="c2">The second collection.</param>
+		/// <returns><c>true</c> if collections are equals, <c>false</c> otherwise.</returns>
+		public static bool SequenceEquals<T>(IEnumerable<T> c1, IEnumerable<T> c2)
+			=> SequenceEquals(c1, c2, null);
+
+		/// <summary>
+		/// Determines if two collections have equals elements, with the same ordering. Supports <c>null</c> arguments.
+		/// </summary>
+		/// <typeparam name="T">The type of the elements.</typeparam>
+		/// <param name="c1">The first collection.</param>
+		/// <param name="c2">The second collection.</param>
+		/// <param name="comparer">The element comparer.</param>
+		/// <returns><c>true</c> if collections are equals, <c>false</c> otherwise.</returns>
+		public static bool SequenceEquals<T>(IEnumerable<T> c1, IEnumerable<T> c2, IEqualityComparer<T> comparer)
+			=> FastCheckEquality(c1, c2) ?? c1.SequenceEqual(c2, comparer);
+
+		/// <summary>
+		/// Determines if two collections have the same elements with the same duplication count, whatever their ordering.
+		/// Supports <c>null</c> arguments.
+		/// </summary>
+		/// <typeparam name="T">The type of the elements.</typeparam>
+		/// <param name="c1">The first collection.</param>
+		/// <param name="c2">The second collection.</param>
+		/// <returns><c>true</c> if collections are equals, <c>false</c> otherwise.</returns>
+		public static bool BagEquals<T>(IEnumerable<T> c1, IEnumerable<T> c2)
+			=> BagEquals(c1, c2, null);
+
+		/// <summary>
+		/// Determines if two collections have the same elements with the same duplication count, whatever their ordering.
+		/// Supports <c>null</c> arguments.
+		/// </summary>
+		/// <typeparam name="T">The type of the elements.</typeparam>
+		/// <param name="c1">The first collection.</param>
+		/// <param name="c2">The second collection.</param>
+		/// <param name="comparer">The element comparer.</param>
+		/// <returns><c>true</c> if collections are equals, <c>false</c> otherwise.</returns>
+		public static bool BagEquals<T>(IEnumerable<T> c1, IEnumerable<T> c2, IEqualityComparer<T> comparer)
+		{
+			var result = FastCheckEquality(c1, c2);
+			if (result.HasValue)
+				return result.Value;
+			var l2 = c2.ToLookup(e => e, comparer);
+			// Lookups return an empty sequence if a key is missing, no need to test if it contains it.
+			return c1.ToLookup(e => e, comparer).All(g => g.Count() == l2[g.Key].Count());
+		}
+
+		/// <summary>
+		/// Determines if two maps have the same key-values. Supports <c>null</c> arguments.
+		/// </summary>
+		/// <typeparam name="K">The type of the keys.</typeparam>
+		/// <typeparam name="V">The type of the values.</typeparam>
+		/// <param name="m1">The first map.</param>
+		/// <param name="m2">The second map.</param>
+		/// <returns><c>true</c> if maps are equals, <c>false</c> otherwise.</returns>
+		public static bool DictionaryEquals<K, V>(IDictionary<K, V> m1, IDictionary<K, V> m2)
+			=> DictionaryEquals(m1, m2, null);
+
+		/// <summary>
+		/// Determines if two maps have the same key-values. Supports <c>null</c> arguments.
+		/// </summary>
+		/// <typeparam name="K">The type of the keys.</typeparam>
+		/// <typeparam name="V">The type of the values.</typeparam>
+		/// <param name="m1">The first map.</param>
+		/// <param name="m2">The second map.</param>
+		/// <param name="comparer">The value comparer.</param>
+		/// <returns><c>true</c> if maps are equals, <c>false</c> otherwise.</returns>
+		public static bool DictionaryEquals<K, V>(IDictionary<K, V> m1, IDictionary<K, V> m2, IEqualityComparer<V> comparer)
+			=> FastCheckEquality(m1, m2) ??
+				(comparer == null ? DictionaryEquals(m1, m2, EqualityComparer<V>.Default) :
+					m1.All(kv => m2.TryGetValue(kv.Key, out var value) && comparer.Equals(kv.Value, value)));
+
+		private static bool? FastCheckEquality<T>(IEnumerable<T> c1, IEnumerable<T> c2)
 		{
 			if (c1 == c2)
 			{
@@ -645,25 +712,13 @@ namespace NHibernate.Util
 				return false;
 			}
 
-			if (c1.Count != c2.Count)
+			if (c1.Count() != c2.Count())
 			{
 				return false;
 			}
 
-			IEnumerator e1 = c1.GetEnumerator();
-			IEnumerator e2 = c2.GetEnumerator();
-
-			while (e1.MoveNext())
-			{
-				e2.MoveNext();
-				if (!Equals(e1.Current, e2.Current))
-				{
-					return false;
-				}
-			}
-
-			return true;
+			// Requires elements comparison.
+			return null;
 		}
-
 	}
 }

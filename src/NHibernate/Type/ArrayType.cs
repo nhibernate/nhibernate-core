@@ -14,7 +14,7 @@ namespace NHibernate.Type
 	/// to the database.
 	/// </summary>
 	[Serializable]
-	public class ArrayType : CollectionType
+	public partial class ArrayType : CollectionType
 	{
 		private readonly System.Type elementClass;
 		private readonly System.Type arrayClass;

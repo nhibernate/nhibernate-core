@@ -34,7 +34,7 @@ namespace NHibernate.Test.SubselectFetchTest
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 
 			IList parents = s.CreateQuery("from Parent where name between 'bar' and 'foo' order by name desc")
 				.List();
@@ -65,7 +65,7 @@ namespace NHibernate.Test.SubselectFetchTest
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.MoreChildren[0]));
 
-			Assert.AreEqual(3, sessions.Statistics.PrepareStatementCount);
+			Assert.AreEqual(3, Sfi.Statistics.PrepareStatementCount);
 
 			Child c = (Child) p.Children[0];
 			NHibernateUtil.Initialize(c.Friends);
@@ -97,7 +97,7 @@ namespace NHibernate.Test.SubselectFetchTest
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 
 			IList parents = s.CreateQuery("from Parent where name between :bar and :foo order by name desc")
 				.SetParameter("bar", "bar")
@@ -130,7 +130,7 @@ namespace NHibernate.Test.SubselectFetchTest
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.MoreChildren[0]));
 
-			Assert.AreEqual(3, sessions.Statistics.PrepareStatementCount);
+			Assert.AreEqual(3, Sfi.Statistics.PrepareStatementCount);
 
 			Child c = (Child) p.Children[0];
 			NHibernateUtil.Initialize(c.Friends);
@@ -162,7 +162,7 @@ namespace NHibernate.Test.SubselectFetchTest
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 
 			IList parents = s.CreateQuery("from Parent where name between ? and ? order by name desc")
 				.SetParameter(0, "bar")
@@ -195,7 +195,7 @@ namespace NHibernate.Test.SubselectFetchTest
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.MoreChildren[0]));
 
-			Assert.AreEqual(3, sessions.Statistics.PrepareStatementCount);
+			Assert.AreEqual(3, Sfi.Statistics.PrepareStatementCount);
 
 			Child c = (Child) p.Children[0];
 			NHibernateUtil.Initialize(c.Friends);
@@ -229,7 +229,7 @@ namespace NHibernate.Test.SubselectFetchTest
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 
 			IList parents = s.CreateQuery("from Parent order by name desc")
 				.SetMaxResults(2)
@@ -245,7 +245,7 @@ namespace NHibernate.Test.SubselectFetchTest
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.Children));
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.MoreChildren));
 
-			Assert.AreEqual(3, sessions.Statistics.PrepareStatementCount);
+			Assert.AreEqual(3, Sfi.Statistics.PrepareStatementCount);
 
 			r = (Parent) s.Get(typeof(Parent), r.Name);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(r.Children)); // The test for True is the test of H3.2
@@ -321,7 +321,7 @@ namespace NHibernate.Test.SubselectFetchTest
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 
 			IList parents = s.CreateCriteria(typeof(Parent))
 				.Add(Expression.Between("Name", "bar", "foo"))
@@ -354,7 +354,7 @@ namespace NHibernate.Test.SubselectFetchTest
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.MoreChildren[0]));
 
-			Assert.AreEqual(3, sessions.Statistics.PrepareStatementCount);
+			Assert.AreEqual(3, Sfi.Statistics.PrepareStatementCount);
 
 			Child c = (Child) p.Children[0];
 			NHibernateUtil.Initialize(c.Friends);

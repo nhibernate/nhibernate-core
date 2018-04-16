@@ -11,7 +11,7 @@ namespace NHibernate.Loader.Collection
 	/// <summary>
 	/// Implements subselect fetching for a one to many association
 	/// </summary>
-	public class SubselectOneToManyLoader : OneToManyLoader
+	public partial class SubselectOneToManyLoader : OneToManyLoader
 	{
 		private const int BatchSizeForSubselectFetching = 1;
 		private readonly object[] keys;

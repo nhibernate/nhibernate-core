@@ -11,6 +11,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Test.Linq
 {
+	[TestFixture]
 	public class CustomQueryModelRewriterTests : LinqTestCase
 	{
 		protected override void Configure(Cfg.Configuration configuration)
@@ -40,16 +41,16 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-		public class CustomVisitor : QueryModelVisitorBase
+		public class CustomVisitor : NhQueryModelVisitorBase
 		{
 			public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
 			{
-				whereClause.TransformExpressions(new Visitor().VisitExpression);
+				whereClause.TransformExpressions(new Visitor().Visit);
 			}
 
-			private class Visitor : ExpressionTreeVisitor
+			private class Visitor : RelinqExpressionVisitor
 			{
-				protected override Expression VisitBinaryExpression(BinaryExpression expression)
+				protected override Expression VisitBinary(BinaryExpression expression)
 				{
 					if (
 						expression.NodeType == ExpressionType.Equal ||
@@ -82,7 +83,7 @@ namespace NHibernate.Test.Linq
 						}
 					}
 
-					return base.VisitBinaryExpression(expression);
+					return base.VisitBinary(expression);
 				}
 			}
 		}

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 using NHibernate.Criterion;
 using NHibernate.Engine;
@@ -42,7 +41,7 @@ namespace NHibernate.Criterion
 			if (projection != null)
 			{
 				SqlString sb = SqlString.Empty;
-				SqlString produced = this.projection.ToSqlString(criteria, 0, criteriaQuery, new Dictionary<string, IFilter>());
+				SqlString produced = this.projection.ToSqlString(criteria, 0, criteriaQuery);
 				SqlString truncated = SqlStringHelper.RemoveAsAliasesFromSql(produced);
 				sb = sb.Append(truncated);
 				sb = sb.Append(ascending ? " asc" : " desc");
@@ -131,7 +130,7 @@ namespace NHibernate.Criterion
 			if (projection != null)
 				return projection.GetTypedValues(criteria, criteriaQuery);
 
-			return new TypedValue[0]; // not using parameters for ORDER BY columns
+			return Array.Empty<TypedValue>(); // not using parameters for ORDER BY columns
 		}
 
 		public Order IgnoreCase()

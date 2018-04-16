@@ -1,5 +1,4 @@
 ﻿using NHibernate.Context;
-using NHibernate.Engine;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3058
@@ -7,15 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3058
 	[TestFixture]
 	public class SampleTest : BugTestCase
 	{
-		public static ISessionFactoryImplementor AmbientSfi { get; private set; }
-
-		protected override void BuildSessionFactory()
-		{
-			base.BuildSessionFactory();
-
-			AmbientSfi = Sfi;
-		}
-
 		protected override void Configure(Cfg.Configuration configuration)
 		{
 			base.Configure(configuration);

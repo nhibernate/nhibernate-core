@@ -9,7 +9,7 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// Implementation of the <see cref="IQuery"/> interface for collection filters.
 	/// </summary>
-	public class CollectionFilterImpl : QueryImpl
+	public partial class CollectionFilterImpl : QueryImpl
 	{
 		private readonly object collection;
 

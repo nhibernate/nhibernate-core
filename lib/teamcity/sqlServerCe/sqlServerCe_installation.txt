@@ -1,0 +1,15 @@
+
+Installation steps for local testing:
+
+1.  Create a project referencing System.Data.SqlServerCe.dll
+2.  Put following code in it, changing database file name and path as appropriate:
+	using (var en = new SqlCeEngine("DataSource=\"C:\\SqlCeData\\NHibernate.sdf\""))
+	{
+		en.CreateDatabase();
+	}
+3.  Run it.
+4.  Ensure your test configuration file references your newly created SQL Server CE database file. By example:
+	<property name="connection.connection_string">
+		Data Source=C:\SqlCeData\NHibernate.sdf
+	</property>
+

@@ -54,6 +54,8 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void DetachedCriteriaItSelf()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
 				.Add(Expression.Eq("Name", "Gavin King"));
 			SerializeAndList(dc);
@@ -183,6 +185,8 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void SubqueriesExpressions()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
 				.Add(Expression.Eq("Name", "Gavin King"));
 			ICriterion c = Subqueries.Eq("Gavin King", dc);
@@ -281,15 +285,9 @@ namespace NHibernate.Test.Criteria
 		}
 
 		[Test]
-		public void ResultTransformes()
+		public void ResultTransformesAreSerializable()
 		{
 			IResultTransformer rt = new RootEntityResultTransformer();
-			NHAssert.IsSerializable(rt);
-
-			rt = new AliasToBeanConstructorResultTransformer(typeof(StudentDTO).GetConstructor(new System.Type[] { }));
-			NHAssert.IsSerializable(rt);
-
-			rt = new AliasToBeanResultTransformer(typeof(StudentDTO));
 			NHAssert.IsSerializable(rt);
 
 			rt = new DistinctRootEntityResultTransformer();
@@ -300,8 +298,28 @@ namespace NHibernate.Test.Criteria
 		}
 
 		[Test]
+		public void AliasToBeanConstructorResultTransformerIsSerializable()
+		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+			
+			var rt = new AliasToBeanConstructorResultTransformer(typeof(StudentDTO).GetConstructor(System.Type.EmptyTypes));
+			NHAssert.IsSerializable(rt);
+		}
+
+		[Test]
+		public void AliasToBeanResultTransformerIsSerializable()
+		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+			
+			var rt = new AliasToBeanResultTransformer(typeof(StudentDTO));
+			NHAssert.IsSerializable(rt);
+		}
+
+		[Test]
 		public void ExecutableCriteria()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			// All query below don't have sense, are only to test if all needed classes are serializable
 
 			// Basic criterion
@@ -357,9 +375,12 @@ namespace NHibernate.Test.Criteria
 				.Add(Expression.Lt("StudentNumber", 668L));
 			SerializeAndList(dc);
 
-			dc = DetachedCriteria.For(typeof(Enrolment))
-				.SetProjection(Projections.Count("StudentNumber").SetDistinct());
-			SerializeAndList(dc);
+			if (TestDialect.SupportsCountDistinct)
+			{
+				dc = DetachedCriteria.For(typeof(Enrolment))
+					.SetProjection(Projections.Count("StudentNumber").SetDistinct());
+				SerializeAndList(dc);
+			}
 
 			dc = DetachedCriteria.For(typeof(Enrolment))
 				.SetProjection(Projections.ProjectionList()

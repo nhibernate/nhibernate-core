@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +7,7 @@ using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Ast.ANTLR.Util;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Impl
@@ -20,7 +20,16 @@ namespace NHibernate.Impl
 			QueryExpression = queryExpression;
 		}
 
+		protected ExpressionQueryImpl(
+			IQueryExpression queryExpression, ISessionImplementor session, ParameterMetadata parameterMetadata, bool isFilter)
+			: this(queryExpression, session, parameterMetadata)
+		{
+			_isFilter = isFilter;
+		}
+
 		public IQueryExpression QueryExpression { get; private set; }
+
+		protected readonly bool _isFilter;
 
 		/// <summary> 
 		/// Warning: adds new parameters to the argument by side-effect, as well as mutating the query expression tree!
@@ -65,12 +74,21 @@ namespace NHibernate.Impl
 				map.Add(name, aliases);
 			}
 
+			if (map.Count == 0)
+			{
+				// No list parameter needs to be replaced: they are all single valued. They just need
+				// to be retyped, which has been done above.
+				return QueryExpression;
+			}
+
 			//TODO: Do we need to translate expression one more time here?
-			var newTree = ParameterExpander.Expand(QueryExpression.Translate(Session.Factory, false), map);
+			// This is not much an issue anymore: ExpressionQueryImpl are currently created only with NhLinqExpression
+			// which do cache their translation.
+			var newTree = ParameterExpander.Expand(QueryExpression.Translate(Session.Factory, _isFilter), map);
 			var key = new StringBuilder(QueryExpression.Key);
 
 			foreach (var pair in map)
-							   {
+			{
 				key.Append(' ');
 				key.Append(pair.Key);
 				key.Append(':');
@@ -79,6 +97,56 @@ namespace NHibernate.Impl
 			}
 
 			return new ExpandedQueryExpression(QueryExpression, newTree, key.ToString());
+		}
+	}
+
+	internal partial class ExpressionFilterImpl : ExpressionQueryImpl
+	{
+		private readonly object collection;
+
+		public ExpressionFilterImpl(IQueryExpression queryExpression, object collection, ISessionImplementor session, ParameterMetadata parameterMetadata) 
+			: base(queryExpression, session, parameterMetadata, true)
+		{
+			this.collection = collection;
+		}
+
+		public override IList List()
+		{
+			VerifyParameters();
+			var namedParams = NamedParams;
+			Before();
+			try
+			{
+				return Session.ListFilter(collection, ExpandParameters(namedParams), GetQueryParameters(namedParams));
+			}
+			finally
+			{
+				After();
+			}
+		}
+
+		public override IType[] TypeArray()
+		{
+			IList<IType> typeList = Types;
+			int size = typeList.Count;
+			var result = new IType[size + 1];
+			for (int i = 0; i < size; i++)
+			{
+				result[i + 1] = typeList[i];
+			}
+			return result;
+		}
+
+		public override object[] ValueArray()
+		{
+			IList valueList = Values;
+			int size = valueList.Count;
+			var result = new object[size + 1];
+			for (int i = 0; i < size; i++)
+			{
+				result[i + 1] = valueList[i];
+			}
+			return result;
 		}
 	}
 

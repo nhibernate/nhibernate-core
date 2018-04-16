@@ -6,10 +6,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3332
 	{
 		private DataType _dataType;
 		private State _state;
+		// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 		private Int32 _id;
+		private Byte[] _rowVersionId;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 		private DateTime? _lastModifiedTimeStamp;
 		private String _name;
-		private Byte[] _rowVersionId;
 
 		public override int GetHashCode()
 		{

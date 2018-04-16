@@ -1,3 +1,4 @@
+using NHibernate.Id;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
@@ -30,7 +31,26 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
-		
+
+		/// <inheritdoc />
+		public override bool SupportsSequences => true;
+
+		/// <inheritdoc />
+		public override bool SupportsPooledSequences => true;
+
+		/// <inheritdoc />
+		public override string QuerySequencesString => "select seq_name from iisequences";
+
+		/// <inheritdoc />
+		// 6.0 TODO: remove override for having default behavior when sequences are supported.
+		//           It has been put for minimizing breaking changes due to supporting sequences in 5.1.
+		public override System.Type IdentityStyleIdentifierGeneratorClass => typeof(TriggerIdentityGenerator);
+
+		/// <inheritdoc />
+		// 6.0 TODO: remove override for having default behavior when sequences are supported.
+		//           It has been put for minimizing breaking changes due to supporting sequences in 5.1.
+		public override System.Type NativeIdentifierGeneratorClass => typeof(TableHiLoGenerator);
+
 		/// <summary>
 		/// Attempts to add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>.
 		/// Expects any database-specific offset and limit adjustments to have already been performed (ex. UseMaxForLimit, OffsetStartsAtOne).
@@ -64,5 +84,35 @@ namespace NHibernate.Dialect
 
 			return pagingBuilder.ToSqlString();
 		}
+
+		/// <inheritdoc />
+		public override string GetSequenceNextValString(string sequenceName)
+		{
+			return "select " + GetSelectSequenceNextValString(sequenceName) + " as seq";
+		}
+
+		/// <inheritdoc />
+		public override string GetSelectSequenceNextValString(string sequenceName)
+		{
+			return "next value for " + sequenceName;
+		}
+
+		/// <inheritdoc />
+		public override string GetCreateSequenceString(string sequenceName)
+		{
+			return "create sequence " + sequenceName;
+		}
+
+		/// <inheritdoc />
+		public override string GetDropSequenceString(string sequenceName)
+		{
+			return "drop sequence " + sequenceName;
+		}
+
+		#region Overridden informational metadata
+
+		public override bool DoesRepeatableReadCauseReadersToBlockWriters => true;
+
+		#endregion
 	}
 }

@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2880
 
 		protected override void OnSetUp()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
@@ -34,9 +34,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2880
 		[Test]
 		public void ProxiesFromDeserializedSessionsCanBeLoaded()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			MemoryStream sessionMemoryStream;
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
@@ -66,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2880
 		{
 			MemoryStream sessionMemoryStream;
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				s.EnableFilter("myFilter");
 
@@ -86,7 +88,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2880
 
 		protected override void OnTearDown()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{

@@ -100,7 +100,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1741
 		public void Bug()
 		{
 			var dq = new DetachedNamedQueryCrack(QueryName);
-			ISession s = sessions.OpenSession();
+			ISession s = Sfi.OpenSession();
 			dq.GetExecutableQuery(s);
 			s.Close();
 
@@ -121,7 +121,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1741
 			var dq = new DetachedNamedQueryCrack(QueryName);
 			dq.SetCacheable(false).SetCacheRegion("another region").SetReadOnly(false).SetTimeout(20).SetCacheMode(
 				CacheMode.Refresh).SetFetchSize(22).SetComment("another comment").SetFlushMode(FlushMode.Commit);
-			ISession s = sessions.OpenSession();
+			ISession s = Sfi.OpenSession();
 			dq.GetExecutableQuery(s);
 			s.Close();
 

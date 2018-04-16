@@ -12,9 +12,9 @@ namespace NHibernate.Engine
 	/// <summary>
 	/// A session action that may be cascaded from parent entity to its children
 	/// </summary>
-	public abstract class CascadingAction
+	public abstract partial class CascadingAction
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(CascadingAction));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(CascadingAction));
 
 		#region The CascadingAction contract
 
@@ -143,13 +143,13 @@ namespace NHibernate.Engine
 
 		#endregion
 
-		private class DeleteCascadingAction : CascadingAction
+		private partial class DeleteCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("cascading to delete: " + entityName);
+					log.Debug("cascading to delete: {0}", entityName);
 				}
 				session.Delete(entityName, child, isCascadeDeleteEnabled, (ISet<object>)anything);
 			}
@@ -166,13 +166,13 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private class LockCascadingAction : CascadingAction
+		private partial class LockCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("cascading to lock: " + entityName);
+					log.Debug("cascading to lock: {0}", entityName);
 				}
 				session.Lock(entityName, child, LockMode.None);
 			}
@@ -188,13 +188,13 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private class RefreshCascadingAction : CascadingAction
+		private partial class RefreshCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("cascading to refresh: " + entityName);
+					log.Debug("cascading to refresh: {0}", entityName);
 				}
 				session.Refresh(child, (IDictionary)anything);
 			}
@@ -209,13 +209,13 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private class EvictCascadingAction : CascadingAction
+		private partial class EvictCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("cascading to evict: " + entityName);
+					log.Debug("cascading to evict: {0}", entityName);
 				}
 				session.Evict(child);
 			}
@@ -234,13 +234,13 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private class SaveUpdateCascadingAction : CascadingAction
+		private partial class SaveUpdateCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("cascading to saveOrUpdate: " + entityName);
+					log.Debug("cascading to saveOrUpdate: {0}", entityName);
 				}
 				session.SaveOrUpdate(entityName, child);
 			}
@@ -260,13 +260,13 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private class MergeCascadingAction : CascadingAction
+		private partial class MergeCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("cascading to merge: " + entityName);
+					log.Debug("cascading to merge: {0}", entityName);
 				}
 				session.Merge(entityName, child, (IDictionary)anything);
 			}
@@ -283,13 +283,13 @@ namespace NHibernate.Engine
 			}
 		}
         
-		private class PersistCascadingAction : CascadingAction
+		private partial class PersistCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("cascading to persist: " + entityName);
+					log.Debug("cascading to persist: {0}", entityName);
 				}
 				session.Persist(entityName, child, (IDictionary)anything);
 			}
@@ -308,13 +308,13 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private class PersistOnFlushCascadingAction : CascadingAction
+		private partial class PersistOnFlushCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("cascading to persistOnFlush: " + entityName);
+					log.Debug("cascading to persistOnFlush: {0}", entityName);
 				}
 				session.PersistOnFlush(entityName, child, (IDictionary)anything);
 			}
@@ -343,7 +343,7 @@ namespace NHibernate.Engine
 				{
 					string childEntityName = ((EntityType)type).GetAssociatedEntityName(session.Factory);
 
-					if (!IsInManagedState(child, session) && !(child.IsProxy()) && ForeignKeys.IsTransient(childEntityName, child, null, session))
+					if (!IsInManagedState(child, session) && !child.IsProxy() && ForeignKeys.IsTransientSlow(childEntityName, child, session))
 					{
 						string parentEntiytName = persister.EntityName;
 						string propertyName = persister.PropertyNames[propertyIndex];
@@ -366,13 +366,13 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private class ReplicateCascadingAction : CascadingAction
+		private partial class ReplicateCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("cascading to replicate: " + entityName);
+					log.Debug("cascading to replicate: {0}", entityName);
 				}
 				session.Replicate(entityName, child, (ReplicationMode)anything);
 			}

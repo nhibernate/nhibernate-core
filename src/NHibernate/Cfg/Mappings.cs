@@ -19,7 +19,7 @@ namespace NHibernate.Cfg
 		[Serializable]
 		public class ColumnNames
 		{
-			public readonly IDictionary<string, string> logicalToPhysical = new Dictionary<string, string>();
+			public readonly IDictionary<string, string> logicalToPhysical = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			public readonly IDictionary<string, string> physicalToLogical = new Dictionary<string, string>();
 		}
 
@@ -46,7 +46,7 @@ namespace NHibernate.Cfg
 
 		#endregion
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Mappings));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(Mappings));
 
 		private readonly IDictionary<string, PersistentClass> classes;
 		private readonly IDictionary<string, Mapping.Collection> collections;
@@ -247,7 +247,7 @@ namespace NHibernate.Cfg
 			{
 				if (existing.Equals(className))
 				{
-					log.Info("duplicate import: " + className + "->" + rename);
+					log.Info("duplicate import: {0}->{1}", className, rename);
 				}
 				else
 				{
@@ -271,6 +271,7 @@ namespace NHibernate.Cfg
 				table.Catalog = catalog;
 				table.Subselect = subselect;
 				table.SchemaActions = GetSchemaActions(schemaAction);
+				table.UniqueInteger = tables.Count;
 				tables[key] = table;
 			}
 			else
@@ -337,15 +338,17 @@ namespace NHibernate.Cfg
 												Subselect = subselect
 											};
 
-			Table existing;
-			if (tables.TryGetValue(key, out existing))
+			var tableIndex = tables.Count;
+			if (tables.TryGetValue(key, out var existing))
 			{
 				if (existing.IsPhysicalTable)
 				{
 					throw new DuplicateMappingException("table", name);
 				}
+				tableIndex = existing.UniqueInteger;
 			}
 
+			table.UniqueInteger = tableIndex;
 			tables[key] = table;
 			return table;
 		}
@@ -509,7 +512,7 @@ namespace NHibernate.Cfg
 		{
 			var def = new TypeDef(typeClass, paramMap);
 			typeDefs[typeName] = def;
-			log.Debug("Added " + typeName + " with class " + typeClass);
+			log.Debug("Added {0} with class {1}", typeName, typeClass);
 		}
 
 		public TypeDef GetTypeDef(string typeName)
@@ -533,8 +536,8 @@ namespace NHibernate.Cfg
 			}
 
 			string oldFinalName;
-			binding.logicalToPhysical.TryGetValue(logicalName.ToLowerInvariant(), out oldFinalName);
-			binding.logicalToPhysical[logicalName.ToLowerInvariant()] = finalColumn.GetQuotedName();
+			binding.logicalToPhysical.TryGetValue(logicalName, out oldFinalName);
+			binding.logicalToPhysical[logicalName] = finalColumn.GetQuotedName();
 			if (oldFinalName != null &&
 					!(finalColumn.IsQuoted
 							? oldFinalName.Equals(finalColumn.GetQuotedName())
@@ -581,7 +584,6 @@ namespace NHibernate.Cfg
 
 		public string GetPhysicalColumnName(string logicalName, Table table)
 		{
-			logicalName = logicalName.ToLowerInvariant();
 			string finalName = null;
 			Table currentTable = table;
 			do
@@ -630,7 +632,7 @@ namespace NHibernate.Cfg
 
 		public string GetLogicalTableName(Table table)
 		{
-			return GetLogicalTableName(table.GetQuotedSchema(), table.Catalog, table.GetQuotedName());
+			return GetLogicalTableName(table.GetQuotedSchema(), table.GetQuotedCatalog(), table.GetQuotedName());
 		}
 
 		public ResultSetMappingDefinition GetResultSetMapping(string name)
@@ -673,7 +675,7 @@ namespace NHibernate.Cfg
 			}
 			if (string.IsNullOrEmpty(condition) && fdef == null)
 			{
-				log.Debug(string.Format("Adding filter second pass [{0}]", filterName));
+				log.Debug("Adding filter second pass [{0}]", filterName);
 				filtersSecondPasses.Enqueue(new FilterSecondPassArgs(filterable, filterName));
 			}
 			else if (string.IsNullOrEmpty(condition) && fdef != null)

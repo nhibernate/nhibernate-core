@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using NHibernate.Cfg.MappingSchema;
+﻿using NHibernate.Cfg.MappingSchema;
 using NHibernate.Criterion;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Transform;
@@ -8,8 +6,14 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3727
 {
+	[TestFixture]
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return Dialect.SupportsScalarSubSelects;
+		}
+
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();

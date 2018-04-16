@@ -9,7 +9,7 @@ namespace NHibernate.Param
 	/// <summary>
 	/// Maintains information relating to parameters which need to get bound into a <see cref="DbCommand"/>.
 	/// </summary>
-	public interface IParameterSpecification
+	public partial interface IParameterSpecification
 	{
 		/// <summary>
 		/// Bind the appropriate value into the given command.

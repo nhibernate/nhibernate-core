@@ -11,6 +11,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3383
 {
+	[TestFixture]
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
@@ -62,6 +63,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 		[Test]
 		public void DeserializedPropertyMapping_RefersToSameCascadeStyle()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			var classMapping = CreateMappingClasses();
 
 			RootClass deserializedClassMapping;
@@ -77,6 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 			AssertDeserializedMappingClasses(deserializedClassMapping);
 		}
 
+#if NETFX
 		// This test uses a seperate AppDomain to simulate the loading of a Configuration that was
 		// serialized to the disk and is later deserialized in a new process.
 		[Test]
@@ -109,6 +113,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 				}
 			}
 		}
+#endif
 
 		private static RootClass CreateMappingClasses()
 		{

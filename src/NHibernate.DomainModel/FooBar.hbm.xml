@@ -19,7 +19,7 @@
 		<id name="Key" type="String">
 			<column name="`foo_id`" length="36"/>
 			<generator class="uuid.hex">
-				<param name="seperator">:</param>
+				<param name="separator">:</param>
 			</generator>
 		</id>
 		<discriminator column="`$foo_subclass^`" type="Char" length="1"/>

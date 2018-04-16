@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using NHibernate.Linq;
-using NHibernate.Test.NHSpecificTest.NH0000;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2218
 {
+	[TestFixture]
 	public class Fixture : BugTestCase
 	{
 		protected override void OnSetUp()
@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2218
 		[Test]
 		public void SelectEntitiesByEntityNameFromStatelessSession()
 		{
-			using (var session = sessions.OpenStatelessSession())
+			using (var session = Sfi.OpenStatelessSession())
 			using (session.BeginTransaction())
 			{
 				// verify the instance count for both mappings

@@ -7,17 +7,17 @@ using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Parsing;
-using Remotion.Linq.Parsing.ExpressionTreeVisitors;
+using Remotion.Linq.Parsing.ExpressionVisitors;
 
 namespace NHibernate.Linq.GroupBy
 {
 	//This should be renamed. It handles entire querymodels, not just select clauses
-	internal class GroupBySelectClauseRewriter : ExpressionTreeVisitor
+	internal class GroupBySelectClauseRewriter : RelinqExpressionVisitor
 	{
 		public static Expression ReWrite(Expression expression, GroupResultOperator groupBy, QueryModel model)
 		{
 			var visitor = new GroupBySelectClauseRewriter(groupBy, model);
-			return TransparentIdentifierRemovingExpressionTreeVisitor.ReplaceTransparentIdentifiers(visitor.VisitExpression(expression));
+			return TransparentIdentifierRemovingExpressionVisitor.ReplaceTransparentIdentifiers(visitor.Visit(expression));
 		}
 
 		private readonly GroupResultOperator _groupBy;
@@ -31,11 +31,11 @@ namespace NHibernate.Linq.GroupBy
 			_nominatedKeySelector = GroupKeyNominator.Visit(groupBy);
 		}
 
-		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 		{
 			if (!IsMemberOfModel(expression))
 			{
-				return base.VisitQuerySourceReferenceExpression(expression);
+				return base.VisitQuerySourceReference(expression);
 			}
 
 			if (expression.IsGroupingElementOf(_groupBy))
@@ -43,14 +43,14 @@ namespace NHibernate.Linq.GroupBy
 				return _groupBy.ElementSelector;
 			}
 
-			return base.VisitQuerySourceReferenceExpression(expression);
+			return base.VisitQuerySourceReference(expression);
 		}
 
-		protected override Expression VisitMemberExpression(MemberExpression expression)
+		protected override Expression VisitMember(MemberExpression expression)
 		{
 			if (!IsMemberOfModel(expression))
 			{
-				return base.VisitMemberExpression(expression);
+				return base.VisitMember(expression);
 			}
 
 			if (expression.IsGroupingKeyOf(_groupBy))
@@ -64,7 +64,7 @@ namespace NHibernate.Linq.GroupBy
 			if ((elementSelector is MemberExpression) || (elementSelector is QuerySourceReferenceExpression))
 			{
 				// If ElementSelector is MemberExpression, just return
-				return base.VisitMemberExpression(expression);
+				return base.VisitMember(expression);
 			}
 
 			if ((elementSelector is NewExpression || elementSelector.NodeType == ExpressionType.Convert)
@@ -120,21 +120,23 @@ namespace NHibernate.Linq.GroupBy
 			return subQuery2 != null && subQuery2.QueryModel == _model;
 		}
 
-		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
+		protected override Expression VisitSubQuery(SubQueryExpression expression)
 		{
 			//If the subquery is a Count(*) aggregate with a condition
 			if (expression.QueryModel.MainFromClause.FromExpression.Type == _groupBy.ItemType)
 			{
 				var where = expression.QueryModel.BodyClauses.OfType<WhereClause>().FirstOrDefault();
-				NhCountExpression countExpression;
-				if (where != null && (countExpression = expression.QueryModel.SelectClause.Selector as NhCountExpression) !=
-				null && countExpression.Expression.NodeType == (ExpressionType)NhExpressionType.Star)
+				if (where != null &&
+				    expression.QueryModel.SelectClause.Selector is NhCountExpression countExpression &&
+				    countExpression.Expression is NhStarExpression)
 				{
 					//return it as a CASE [column] WHEN [predicate] THEN 1 ELSE NULL END
 					return
-							countExpression.CreateNew(Expression.Condition(where.Predicate, Expression.Constant(1, typeof(int?)),
+						countExpression.CreateNew(
+							Expression.Condition(
+								where.Predicate,
+								Expression.Constant(1, typeof(int?)),
 								Expression.Constant(null, typeof(int?))));
-
 				}
 			}
 
@@ -144,9 +146,9 @@ namespace NHibernate.Linq.GroupBy
 			{
 				foreach (var bodyClause in expression.QueryModel.BodyClauses)
 				{
-					bodyClause.TransformExpressions((e) => new KeySelectorVisitor(_groupBy).VisitExpression(e));
+					bodyClause.TransformExpressions((e) => new KeySelectorVisitor(_groupBy).Visit(e));
 				}
-				return base.VisitSubQueryExpression(expression);
+				return base.VisitSubQuery(expression);
 			}
 
 

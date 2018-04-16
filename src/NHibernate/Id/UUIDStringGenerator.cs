@@ -21,7 +21,7 @@ namespace NHibernate.Id
 	/// This impelementation was known to be incompatible with Postgres.
 	/// </para>
 	/// </remarks>
-	public class UUIDStringGenerator : IIdentifierGenerator
+	public partial class UUIDStringGenerator : IIdentifierGenerator
 	{
 		#region IIdentifierGenerator Members
 

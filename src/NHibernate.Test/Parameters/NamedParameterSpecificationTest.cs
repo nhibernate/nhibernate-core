@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Parameters
 {
+	[TestFixture]
 	public class NamedParameterSpecificationTest
 	{
 		[Test]

@@ -15,8 +15,9 @@ namespace NHibernate.Collection
 	/// <summary>
 	/// Base class for implementing <see cref="IPersistentCollection"/>.
 	/// </summary>
+	// 6.0 TODO: remove ILazyInitializedCollection once IPersistentCollection derives from it
 	[Serializable]
-	public abstract class AbstractPersistentCollection : IPersistentCollection
+	public abstract partial class AbstractPersistentCollection : IPersistentCollection, ILazyInitializedCollection
 	{
 		protected internal static readonly object Unknown = new object(); //place holder
 		protected internal static readonly object NotFound = new object(); //place holder
@@ -60,9 +61,11 @@ namespace NHibernate.Collection
 						{
 							return enclosingInstance.operationQueue[position].AddedInstance;
 						}
-						catch (IndexOutOfRangeException)
+						catch (IndexOutOfRangeException ex)
 						{
-							throw new InvalidOperationException();
+							throw new InvalidOperationException(
+								"MoveNext as not been called or its last call has yielded false (meaning the enumerator is beyond the end of the enumeration).",
+								ex);
 						}
 					}
 				}
@@ -714,7 +717,7 @@ namespace NHibernate.Collection
 			var currentIds = new HashSet<TypedValue>();
 			foreach (object current in currentElements)
 			{
-				if (current != null && ForeignKeys.IsNotTransient(entityName, current, null, session))
+				if (current != null && ForeignKeys.IsNotTransientSlow(entityName, current, session))
 				{
 					object currentId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session);
 					currentIds.Add(new TypedValue(idType, currentId));
@@ -736,7 +739,7 @@ namespace NHibernate.Collection
 
 		public void IdentityRemove(IList list, object obj, string entityName, ISessionImplementor session)
 		{
-			if (obj != null && ForeignKeys.IsNotTransient(entityName, obj, null, session))
+			if (obj != null && ForeignKeys.IsNotTransientSlow(entityName, obj, session))
 			{
 				IType idType = session.Factory.GetEntityPersister(entityName).IdentifierType;
 

@@ -29,7 +29,6 @@ namespace NHibernate.Cfg
 		#region JDBC Specific (Not Ported)
 
 		//private int jdbcFetchSize;
-		//private bool isJdbcBatchVersionedData;
 
 		#endregion
 		public SqlStatementLogger SqlStatementLogger { get; internal set; }
@@ -82,6 +81,8 @@ namespace NHibernate.Cfg
 
 		public bool IsIdentifierRollbackEnabled { get; internal set; }
 
+		// Since v5
+		[Obsolete("Please use DefaultFlushMode instead.")]
 		public bool IsFlushBeforeCompletionEnabled { get; internal set; }
 
 		public bool IsAutoCloseSessionEnabled { get; internal set; }
@@ -118,19 +119,20 @@ namespace NHibernate.Cfg
 
 		public bool IsNamedQueryStartupCheckingEnabled { get; internal set; }
 
+		public bool IsBatchVersionedDataEnabled { get; internal set; }
+
 		#region NH specific
 
 		public IsolationLevel IsolationLevel { get; internal set; }
 
 		public bool IsOuterJoinFetchEnabled { get; internal set; }
+		
+		public bool TrackSessionId { get; internal set; }
 
 		/// <summary>
 		/// Get the registry to provide Hql-Generators for known properties/methods.
 		/// </summary>
 		public ILinqToHqlGeneratorsRegistry LinqToHqlGeneratorsRegistry { get; internal set; }
-
-		[Obsolete("This setting is likely to be removed in a future version of NHibernate. The workaround is to catch all exceptions in the IInterceptor implementation.")]
-		public bool IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled { get; internal set; }
 
 		public IQueryModelRewriterFactory QueryModelRewriterFactory { get; internal set; }
 		

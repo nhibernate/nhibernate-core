@@ -1,5 +1,6 @@
 using System;
 using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 
@@ -35,9 +36,7 @@ namespace NHibernate.Test.SqlTest
 			return object.Equals(x, y);
 		}
 
-		public object NullSafeGet(DbDataReader resultSet,
-		                          string[] names,
-		                          object owner)
+		public object NullSafeGet(DbDataReader resultSet, string[] names, ISessionImplementor session, object owner)
 		{
 			int index0 = resultSet.GetOrdinal(names[0]);
 			int index1 = resultSet.GetOrdinal(names[1]);
@@ -50,9 +49,7 @@ namespace NHibernate.Test.SqlTest
 			return new MonetaryAmount(value, cur);
 		}
 
-		public void NullSafeSet(DbCommand statement,
-		                        object value,
-		                        int index)
+		public void NullSafeSet(DbCommand statement, object value, int index, ISessionImplementor session)
 		{
 			if (value == null)
 			{

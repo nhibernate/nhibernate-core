@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3234
 		private void Evict(ISession session, GridWidget widget)
 		{
 			session.Evict(widget);
-			sessions.Evict(widget.GetType());
+			Sfi.Evict(widget.GetType());
 		}
 
 		private static void Save(ISession session, GridWidget widget)

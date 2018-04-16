@@ -13,7 +13,7 @@ namespace NHibernate.Id.Enhanced
 	/// - <see cref="System.Type"/> The return type for the generated values.
 	/// - <langword>int</langword> The increment size.
 	/// </remarks>
-	public interface IOptimizer
+	public partial interface IOptimizer
 	{
 		/// <summary>
 		/// A common means to access the last value obtained from the underlying
