@@ -73,21 +73,36 @@ namespace NHibernate.Impl
 			if (results != null)
 				return results;
 
-			var multiApproach = CreateMultiApproach(isCacheable, cacheRegion);
-			var needTransformer = false;
-			foreach (var query in queries)
+			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				AddTo(multiApproach, query.Query, query.ResultType);
-				if (query.Future?.ExecuteOnEval != null)
-					needTransformer = true;
+				results = new List<object>();
+				foreach (var query in queries)
+				{
+					var result = List(query.Query);
+					if (query.Future != null)
+						result = query.Future.TransformList(result);
+					results.Add(result);
+				}
+			}
+			else
+			{
+				var multiApproach = CreateMultiApproach(isCacheable, cacheRegion);
+				var needTransformer = false;
+				foreach (var query in queries)
+				{
+					AddTo(multiApproach, query.Query, query.ResultType);
+					if (query.Future?.ExecuteOnEval != null)
+						needTransformer = true;
+				}
+
+				if (needTransformer)
+					AddResultTransformer(
+						multiApproach, 
+						new FutureResultsTransformer(queries));
+
+				results = GetResultsFrom(multiApproach);
 			}
 
-			if (needTransformer)
-				AddResultTransformer(
-					multiApproach, 
-					new FutureResultsTransformer(queries));
-
-			results = GetResultsFrom(multiApproach);
 			ClearCurrentFutureBatch();
 			return results;
 		}
@@ -95,6 +110,12 @@ namespace NHibernate.Impl
 		private IEnumerable<TResult> GetCurrentResult<TResult>(int currentIndex)
 		{
 			return ((IList) GetResults()[currentIndex]).Cast<TResult>();
+		}
+
+		// 6.0 TODO: switch to abstract
+		protected virtual IList List(TQueryApproach query)
+		{
+			throw new NotSupportedException("This FutureBatch implementation does not support executing queries when multiple queries are not supported");
 		}
 
 		protected abstract TMultiApproach CreateMultiApproach(bool isCacheable, string cacheRegion);

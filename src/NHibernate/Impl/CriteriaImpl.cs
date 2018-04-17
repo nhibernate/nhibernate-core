@@ -409,22 +409,12 @@ namespace NHibernate.Impl
 
 		public IFutureValue<T> FutureValue<T>()
 		{
-			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
-			{
-				return new FutureValue<T>(List<T>, async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
-			}
-
 			session.FutureCriteriaBatch.Add<T>(this);
 			return session.FutureCriteriaBatch.GetFutureValue<T>();
 		}
 
 		public IFutureEnumerable<T> Future<T>()
 		{
-			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
-			{
-				return new DelayedEnumerator<T>(List<T>, async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
-			}
-
 			session.FutureCriteriaBatch.Add<T>(this);
 			return session.FutureCriteriaBatch.GetEnumerator<T>();
 		}

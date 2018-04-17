@@ -50,8 +50,7 @@ namespace NHibernate.Test.Futures
 		{
 			using (var session = Sfi.OpenSession())
 			{
-				session.Delete("from Person");
-				session.Flush();
+				session.CreateQuery("delete from System.Object").ExecuteUpdate();
 			}
 
 			base.OnTearDown();
@@ -168,6 +167,82 @@ namespace NHibernate.Test.Futures
 					.Where(x => x.Id == personId)
 					.ToFutureValue(q => q.FirstOrDefault());
 				Assert.IsNotNull(futurePerson.Value);
+			}
+		}
+
+		[Test]
+		public void FutureValueWithLinqPolymorphicAggregate()
+		{
+			using (var session = OpenSession())
+			{
+				var futureExists =
+					session
+						.Query<PolymorphicA>()
+						.ToFutureValue(q => q.Any());
+				Assert.That(futureExists.Value, Is.False);
+
+				var b = new PolymorphicB();
+				session.Save(b);
+				session.Flush();
+
+				futureExists =
+					session
+						.Query<PolymorphicA>()
+						.ToFutureValue(q => q.Any());
+				Assert.That(futureExists.Value, Is.True, "Has not found B");
+
+				session.Delete(b);
+				session.Save(new PolymorphicA());
+				session.Flush();
+
+				futureExists =
+					session
+						.Query<PolymorphicA>()
+						.ToFutureValue(q => q.Any());
+				Assert.That(futureExists.Value, Is.True, "Has not found A");
+			}
+		}
+
+		[Test]
+		public void NonExplicitlyExecutedFutureAreExecuted()
+		{
+			Sfi.Statistics.IsStatisticsEnabled = true;
+			try
+			{
+				using (var s = Sfi.OpenSession())
+				{
+					var persons = s.CreateQuery("from Person").Future<Person>();
+					s.Query<Person>().ToFutureValue(q => q.Any());
+					Sfi.Statistics.Clear();
+					Assert.That(persons.GetEnumerable().FirstOrDefault(), Is.Null);
+					Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
+				}
+			}
+			finally
+			{
+				Sfi.Statistics.IsStatisticsEnabled = false;
+			}
+		}
+
+		[Test]
+		public void FutureIsNotReexecuted()
+		{
+			Sfi.Statistics.IsStatisticsEnabled = true;
+			try
+			{
+				using (var s = Sfi.OpenSession())
+				{
+					var exists = s.Query<Person>().ToFutureValue(q => q.Any());
+					Assert.That(exists.Value, Is.False);
+					Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
+					Sfi.Statistics.Clear();
+					Assert.That(exists.Value, Is.False);
+					Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
+				}
+			}
+			finally
+			{
+				Sfi.Statistics.IsStatisticsEnabled = false;
 			}
 		}
 
