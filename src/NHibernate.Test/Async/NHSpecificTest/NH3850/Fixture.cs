@@ -9,12 +9,14 @@
 
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Linq;
 using NHibernate.SqlTypes;
@@ -34,14 +36,26 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		private readonly DateTime _testDate = DateTime.Now;
 		private readonly DateTimeOffset _testDateWithOffset = DateTimeOffset.Now;
 
-		protected override bool AppliesTo(Dialect.Dialect dialect)
+		private readonly Lazy<bool> _supportsDateTimeOffset;
+
+		public FixtureAsync()
 		{
-			return TestDialect.SupportsSqlType(new SqlType(DbType.DateTimeOffset));
+			_supportsDateTimeOffset = new Lazy<bool>(() => TestDialect.SupportsSqlType(new SqlType(DbType.DateTimeOffset)));
 		}
+
+		protected override IList Mappings
+			=> new [] { $"NHSpecificTest.{BugNumber}.Mappings{MappingSuffix}.hbm.xml" };
+
+		private string MappingSuffix
+			=> SupportsDateTimeOffset ? string.Empty : "WithoutOffset";
+
+		private bool SupportsDateTimeOffset
+			=> _supportsDateTimeOffset.Value;
 
 		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
 		{
-			// Cannot handle DbType.DateTimeOffset via ODBC.
+			// Cannot handle DbType.DateTimeOffset via ODBC. Cannot put that test in SupportsDateTimeOffset
+			// because SupportsDateTimeOffset is used before factory creation.
 			return !(factory.ConnectionProvider.Driver is OdbcDriver);
 		}
 
@@ -525,7 +539,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 					            "Non nullable decimal average has failed");
 					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Average(dc => dc.NonNullableDecimal));
 					Assert.That(() => futureNonNullableDec.GetValueAsync(cancellationToken),
-					            Throws.InstanceOf<ArgumentNullException>(),
+					            Throws.InstanceOf<ArgumentNullException>()
+					                  // When multi-queries are not supported, we have a discrepancy here.
+					                  .Or.InnerException.InstanceOf<ArgumentNullException>(),
 					            "Future non nullable decimal average has failed");
 				}
 			}
@@ -1103,22 +1119,35 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 					Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).Value, Is.EqualTo(expectedResult).Within(0.001d), "Future double max has failed");
 
 				var date = await (dcQuery.MaxAsync(dc => dc.DateTime, cancellationToken));
-				var dateWithOffset = await (dcQuery.MaxAsync(dc => dc.DateTimeOffset, cancellationToken));
 				var futureDate = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.DateTime));
-				var futureDateWithOffset = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.DateTimeOffset));
 				if (expectedResult.HasValue)
 				{
 					Assert.That(date, Is.GreaterThan(_testDate), "DateTime max has failed");
-					Assert.That(dateWithOffset, Is.GreaterThan(_testDateWithOffset), "DateTimeOffset max has failed");
 					Assert.That(await (futureDate.GetValueAsync(cancellationToken)), Is.GreaterThan(_testDate), "Future DateTime max has failed");
-					Assert.That(await (futureDateWithOffset.GetValueAsync(cancellationToken)), Is.GreaterThan(_testDateWithOffset), "Future DateTimeOffset max has failed");
 				}
 				else
 				{
 					Assert.That(date, Is.Null, "DateTime max has failed");
-					Assert.That(dateWithOffset, Is.Null, "DateTimeOffset max has failed");
 					Assert.That(await (futureDate.GetValueAsync(cancellationToken)), Is.Null, "Future DateTime max has failed");
-					Assert.That(await (futureDateWithOffset.GetValueAsync(cancellationToken)), Is.Null, "Future DateTimeOffset max has failed");
+				}
+
+				if (SupportsDateTimeOffset)
+				{
+					var dateWithOffset = await (dcQuery.MaxAsync(dc => dc.DateTimeOffset, cancellationToken));
+					var futureDateWithOffset = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.DateTimeOffset));
+					if (expectedResult.HasValue)
+					{
+						Assert.That(dateWithOffset, Is.GreaterThan(_testDateWithOffset), "DateTimeOffset max has failed");
+						Assert.That(
+							await (futureDateWithOffset.GetValueAsync(cancellationToken)),
+							Is.GreaterThan(_testDateWithOffset),
+							"Future DateTimeOffset max has failed");
+					}
+					else
+					{
+						Assert.That(dateWithOffset, Is.Null, "DateTimeOffset max has failed");
+						Assert.That(await (futureDateWithOffset.GetValueAsync(cancellationToken)), Is.Null, "Future DateTimeOffset max has failed");
+					}
 				}
 
 				if (expectedResult.HasValue)
@@ -1216,22 +1245,32 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 					Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).Value, Is.EqualTo(expectedResult).Within(0.001d), "Future double min has failed");
 
 				var date = await (dcQuery.MinAsync(dc => dc.DateTime, cancellationToken));
-				var dateWithOffset = await (dcQuery.MinAsync(dc => dc.DateTimeOffset, cancellationToken));
 				var futureDate = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.DateTime));
-				var futureDateWithOffset = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.DateTimeOffset));
 				if (expectedResult.HasValue)
 				{
 					Assert.That(date, Is.LessThan(_testDate), "DateTime min has failed");
-					Assert.That(dateWithOffset, Is.LessThan(_testDateWithOffset), "DateTimeOffset min has failed");
 					Assert.That(await (futureDate.GetValueAsync(cancellationToken)), Is.LessThan(_testDate), "Future DateTime min has failed");
-					Assert.That(await (futureDateWithOffset.GetValueAsync(cancellationToken)), Is.LessThan(_testDateWithOffset), "Future DateTimeOffset min has failed");
 				}
 				else
 				{
 					Assert.That(date, Is.Null, "DateTime min has failed");
-					Assert.That(dateWithOffset, Is.Null, "DateTimeOffset min has failed");
 					Assert.That(await (futureDate.GetValueAsync(cancellationToken)), Is.Null, "Future DateTime min has failed");
-					Assert.That(await (futureDateWithOffset.GetValueAsync(cancellationToken)), Is.Null, "Future DateTimeOffset min has failed");
+				}
+
+				if (SupportsDateTimeOffset)
+				{
+					var dateWithOffset = await (dcQuery.MinAsync(dc => dc.DateTimeOffset, cancellationToken));
+					var futureDateWithOffset = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.DateTimeOffset));
+					if (expectedResult.HasValue)
+					{
+						Assert.That(dateWithOffset, Is.LessThan(_testDateWithOffset), "DateTimeOffset min has failed");
+						Assert.That(await (futureDateWithOffset.GetValueAsync(cancellationToken)), Is.LessThan(_testDateWithOffset), "Future DateTimeOffset min has failed");
+					}
+					else
+					{
+						Assert.That(dateWithOffset, Is.Null, "DateTimeOffset min has failed");
+						Assert.That(await (futureDateWithOffset.GetValueAsync(cancellationToken)), Is.Null, "Future DateTimeOffset min has failed");
+					}
 				}
 
 				if (expectedResult.HasValue)
@@ -1466,6 +1505,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		[Test]
 		public async Task SumObjectAsync()
 		{
+			if (Dialect is MsSqlCeDialect)
+			{
+				// Fails with an unhelpful message: "The command contained one or more errors.", without additional data
+				Assert.Ignore("This test is not supported by SQL Server CE");
+			}
+
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<object>().SumAsync(o => (int?)2));
