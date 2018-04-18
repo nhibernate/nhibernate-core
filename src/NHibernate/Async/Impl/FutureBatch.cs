@@ -29,14 +29,16 @@ namespace NHibernate.Impl
 
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				results = new List<object>();
+				var queriesResults = new List<object>();
 				foreach (var query in queries)
 				{
 					var result = await (ListAsync(query.Query, cancellationToken)).ConfigureAwait(false);
 					if (query.Future != null)
 						result = query.Future.TransformList(result);
-					results.Add(result);
+					queriesResults.Add(result);
 				}
+
+				results = queriesResults;
 			}
 			else
 			{

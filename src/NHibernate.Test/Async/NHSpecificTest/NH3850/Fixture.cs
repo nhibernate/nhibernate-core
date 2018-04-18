@@ -9,17 +9,13 @@
 
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 using NHibernate.Linq;
-using NHibernate.SqlTypes;
 using NHibernate.Util;
 using NUnit.Framework;
 
@@ -34,30 +30,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		private const string _searchName2 = "name2";
 		private const int _totalEntityCount = 10;
 		private readonly DateTime _testDate = DateTime.Now;
-		private readonly DateTimeOffset _testDateWithOffset = DateTimeOffset.Now;
-
-		private readonly Lazy<bool> _supportsDateTimeOffset;
-
-		public FixtureAsync()
-		{
-			_supportsDateTimeOffset = new Lazy<bool>(() => TestDialect.SupportsSqlType(new SqlType(DbType.DateTimeOffset)));
-		}
-
-		protected override IList Mappings
-			=> new [] { $"NHSpecificTest.{BugNumber}.Mappings{MappingSuffix}.hbm.xml" };
-
-		private string MappingSuffix
-			=> SupportsDateTimeOffset ? string.Empty : "WithoutOffset";
-
-		private bool SupportsDateTimeOffset
-			=> _supportsDateTimeOffset.Value;
-
-		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
-		{
-			// Cannot handle DbType.DateTimeOffset via ODBC. Cannot put that test in SupportsDateTimeOffset
-			// because SupportsDateTimeOffset is used before factory creation.
-			return !(factory.ConnectionProvider.Driver is OdbcDriver);
-		}
 
 		protected override void OnSetUp()
 		{
@@ -66,8 +38,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var dateTime1 = _testDate.AddDays(-1);
 				var dateTime2 = _testDate.AddDays(1);
-				var dateTimeOffset1 = _testDateWithOffset.AddDays(-1);
-				var dateTimeOffset2 = _testDateWithOffset.AddDays(1);
 				Action<DomainClassBase> init1 = dc =>
 				{
 					dc.Id = 1;
@@ -77,7 +47,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 					dc.Decimal = 1;
 					dc.Double = 1;
 					dc.DateTime = dateTime1;
-					dc.DateTimeOffset = dateTimeOffset1;
 					dc.NonNullableDecimal = 1;
 				};
 				Action<DomainClassBase> init2 = dc =>
@@ -89,7 +58,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 					dc.Decimal = 2;
 					dc.Double = 2;
 					dc.DateTime = dateTime2;
-					dc.DateTimeOffset = dateTimeOffset2;
 					dc.NonNullableDecimal = 2;
 				};
 
@@ -129,7 +97,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 					Decimal = 3,
 					Double = 3,
 					DateTime = dateTime1,
-					DateTimeOffset = dateTimeOffset1,
 					NonNullableDecimal = 3
 				};
 				session.Save(entity);
@@ -142,7 +109,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 					Decimal = 4,
 					Double = 4,
 					DateTime = dateTime2,
-					DateTimeOffset = dateTimeOffset2,
 					NonNullableDecimal = 4
 				};
 				session.Save(entity);
@@ -1131,25 +1097,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 					Assert.That(await (futureDate.GetValueAsync(cancellationToken)), Is.Null, "Future DateTime max has failed");
 				}
 
-				if (SupportsDateTimeOffset)
-				{
-					var dateWithOffset = await (dcQuery.MaxAsync(dc => dc.DateTimeOffset, cancellationToken));
-					var futureDateWithOffset = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.DateTimeOffset));
-					if (expectedResult.HasValue)
-					{
-						Assert.That(dateWithOffset, Is.GreaterThan(_testDateWithOffset), "DateTimeOffset max has failed");
-						Assert.That(
-							await (futureDateWithOffset.GetValueAsync(cancellationToken)),
-							Is.GreaterThan(_testDateWithOffset),
-							"Future DateTimeOffset max has failed");
-					}
-					else
-					{
-						Assert.That(dateWithOffset, Is.Null, "DateTimeOffset max has failed");
-						Assert.That(await (futureDateWithOffset.GetValueAsync(cancellationToken)), Is.Null, "Future DateTimeOffset max has failed");
-					}
-				}
-
 				if (expectedResult.HasValue)
 				{
 					var nonNullableDecimal = -1m;
@@ -1255,22 +1202,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				{
 					Assert.That(date, Is.Null, "DateTime min has failed");
 					Assert.That(await (futureDate.GetValueAsync(cancellationToken)), Is.Null, "Future DateTime min has failed");
-				}
-
-				if (SupportsDateTimeOffset)
-				{
-					var dateWithOffset = await (dcQuery.MinAsync(dc => dc.DateTimeOffset, cancellationToken));
-					var futureDateWithOffset = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.DateTimeOffset));
-					if (expectedResult.HasValue)
-					{
-						Assert.That(dateWithOffset, Is.LessThan(_testDateWithOffset), "DateTimeOffset min has failed");
-						Assert.That(await (futureDateWithOffset.GetValueAsync(cancellationToken)), Is.LessThan(_testDateWithOffset), "Future DateTimeOffset min has failed");
-					}
-					else
-					{
-						Assert.That(dateWithOffset, Is.Null, "DateTimeOffset min has failed");
-						Assert.That(await (futureDateWithOffset.GetValueAsync(cancellationToken)), Is.Null, "Future DateTimeOffset min has failed");
-					}
 				}
 
 				if (expectedResult.HasValue)
