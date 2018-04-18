@@ -1,4 +1,12 @@
-﻿Build 5.0.4
+﻿Build 5.0.5
+=============================
+
+Release notes - NHibernate - Version 5.0.5
+
+** Bug
+    * #1665 Have IFutureEnumerable.GetEnumerable executing immediatly the query
+
+Build 5.0.4
 =============================
 
 Release notes - NHibernate - Version 5.0.4
