@@ -141,5 +141,25 @@ namespace NHibernate.Test.Futures
 				}
 			}
 		}
+
+		[Test]
+		public void FutureExecutedOnGetEnumerable()
+		{
+			Sfi.Statistics.IsStatisticsEnabled = true;
+			try
+			{
+				using (var s = Sfi.OpenSession())
+				{
+					var persons = s.CreateQuery("from Person").Future<Person>();
+					Sfi.Statistics.Clear();
+					persons.GetEnumerable();
+					Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
+				}
+			}
+			finally
+			{
+				Sfi.Statistics.IsStatisticsEnabled = false;
+			}
+		}
 	}
 }
