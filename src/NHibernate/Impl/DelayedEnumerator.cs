@@ -25,11 +25,7 @@ namespace NHibernate.Impl
 
 		public IEnumerable<T> GetEnumerable()
 		{
-			var value = _result();
-			foreach (T item in value)
-			{
-				yield return item;
-			}
+			return _result();
 		}
 
 		// Remove in 6.0
