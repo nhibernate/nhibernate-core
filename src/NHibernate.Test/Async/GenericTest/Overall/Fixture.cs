@@ -11,6 +11,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using NUnit.Framework;
 
 namespace NHibernate.Test.GenericTest.Overall
@@ -19,11 +20,6 @@ namespace NHibernate.Test.GenericTest.Overall
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
-		}
-
 		protected override IList Mappings
 		{
 			get { return new[] { "GenericTest.Overall.Mappings.hbm.xml" }; }
@@ -57,6 +53,9 @@ namespace NHibernate.Test.GenericTest.Overall
 		[Test]
 		public async Task CRUDABAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			var entity = new A<B>
 			{
 				Property = new B { Prop = 2 },

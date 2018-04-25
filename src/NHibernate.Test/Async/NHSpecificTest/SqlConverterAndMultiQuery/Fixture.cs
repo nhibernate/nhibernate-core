@@ -35,11 +35,6 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 			return factory.ConnectionProvider.Driver is SqlClientDriver;
 		}
 
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
-		}
-
 		[Test]
 		public void NormalHqlShouldThrowUserExceptionAsync()
 		{

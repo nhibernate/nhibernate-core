@@ -16,22 +16,17 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using NHibernate.Engine.Query;
+using NHibernate.Linq;
 using NHibernate.Util;
 
 using NUnit.Framework;
 using System.Linq;
-using NHibernate.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH3050
 {
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
-		}
-
 		[Test]
 		public async Task TestAsync()
 		{

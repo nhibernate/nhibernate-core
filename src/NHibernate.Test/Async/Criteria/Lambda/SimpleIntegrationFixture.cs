@@ -17,11 +17,6 @@ namespace NHibernate.Test.Criteria.Lambda
 	[TestFixture]
 	public class SimpleIntegrationFixtureAsync : TestCase
 	{
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
-		}
-
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
