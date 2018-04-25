@@ -58,14 +58,14 @@
 		<exec program="make.bat" workingdir="${output.dir}">
 			<arg value="html" />
 			<environment>
-				<variable name="PATH" path="%PATH%;${python.dir};%${python.dir}/Scripts" />
+				<variable name="PATH" value="%PATH%;${python.dir};%${python.dir}/Scripts" />
 			</environment>
 		</exec>
 
 		<exec program="make.bat" workingdir="${output.dir}">
 			<arg value="singlehtml" />
 			<environment>
-				<variable name="PATH" path="%PATH%;${python.dir};%${python.dir}/Scripts" />
+				<variable name="PATH" value="%PATH%;${python.dir};%${python.dir}/Scripts" />
 			</environment>
 		</exec>
 
@@ -106,6 +106,7 @@
 	</target>
 
 	<target name="extract-python" depends="init">
+		<unzip zipfile="${python.zip}" todir="${python.dir}" />
 	</target>
 
 </project>
