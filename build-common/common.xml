@@ -32,9 +32,9 @@
 	</target>
 
 	<target name="common.download-nuget" depends="common.init">
-		<get 
-			src="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" 
-			dest="${tools.dir}/nuget.exe" 
+		<get
+			src="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
+			dest="${tools.dir}/nuget.exe"
 			usetimestamp="true"
 		/>
 	</target>

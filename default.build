@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
-<project 
-	name="NHibernate" 
+<project
+	name="NHibernate"
 	default="build"
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
@@ -42,7 +42,7 @@
 			<arg value="/t:Rebuild" />
 			<arg value="/v:q" />
 			<arg value="/m" />
-		</exec> 
+		</exec>
 	</target>
 
 	<target name="solution-restore" depends="common.nuget-restore">
@@ -50,12 +50,12 @@
 			<arg value="msbuild" />
 			<arg value="/t:Restore" />
 			<arg value="${root.dir}/src/NHibernate.sln" />
-		</exec> 
+		</exec>
 	</target>
 
 	<target name="get-nuget-package-path" depends="common.nuget-restore">
-		<xmlpeek 
-			file="${tools.dir}/packages.config" 
+		<xmlpeek
+			file="${tools.dir}/packages.config"
 			xpath="/packages/package[@id = '${nuget-package-id}']/@version"
 			property="nuget-package-version" />
 		<property name="nuget-package-path" value="${tools.dir}/${nuget-package-id}.${nuget-package-version}/" />
@@ -78,7 +78,7 @@
 		<!-- make sure the config file is writable -->
 		<attrib file="${app.config}" readonly="false" />
 
-		<!-- 
+		<!--
 			Tell nhibernate how to connect to the test database.
 		-->
 		<xmlpoke file="${app.config}"
@@ -111,7 +111,7 @@
 				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
 			</namespaces>
 		</xmlpoke>
-		
+
 		<!-- Make sure the property exists - it's only set for some scenarios. -->
 		<property name="nhibernate.odbc.explicit_datetime_scale" value="" unless="${property::exists('nhibernate.odbc.explicit_datetime_scale')}"/>
 		<xmlpoke file="${app.config}"
@@ -169,7 +169,7 @@
 		<xmlpoke
 			file="${app.config}"
 			xpath="/configuration/nhibernate/add[@key='hibernate.connection.connection_string']/@value"
-			value="conn string here" 
+			value="conn string here"
 		/>
 	</target>
 
@@ -182,17 +182,17 @@
 			<call target="run-database-tests"/>
 		</foreach>
 	</target>
-	
+
 	<target name="doc" depends="init binaries"
 		description="Builds the Help Documentation and the API documentation">
 		<nant buildfile="doc/documentation.build" target="api manual" />
 	</target>
-	
+
 	<target name="reference" depends="init binaries" unless="${skip.manual}"
 		description="Builds Reference Manual">
 		<nant buildfile="doc/documentation.build" target="manual" />
 	</target>
-	
+
 	<target name="reference-zip" depends="init binaries" unless="${skip.manual}"
 		description="Builds Reference Manual zip">
 		<nant buildfile="doc/documentation.build" target="manual-zip"/>
@@ -224,7 +224,7 @@
 		<property name="bin-pack.conf-template" value="${bin-pack.tmpdir}/Configuration_Templates" />
 		<property name="bin-pack.required" value="${bin-pack.tmpdir}/Required_Bins" />
 		<property name="bin-pack.tests" value="${bin-pack.tmpdir}/Tests" />
-		
+
 		<copy file="releasenotes.txt" todir="${bin-pack.tmpdir}"/>
 		<copy file="LICENSE.txt" todir="${bin-pack.tmpdir}"/>
 		<copy file="HowInstall.txt" todir="${bin-pack.tmpdir}"/>
@@ -281,13 +281,13 @@
 			</fileset>
 		</copy>
 	</target>
-	
+
 	<target name="package" depends="init binaries test reference-zip sources-zip binaries-zip"
 		description="Creates files for the General Available Release on SourceForge">
 
 		<echo message="Created a '${project.config}' package in ${build.dir}" />
 	</target>
-	
+
 	<target name="release" depends="init binaries binaries-zip sources-zip"
 		description="Creates files for the partial (Alpha-Beta-Candidate) Release on SourceForge">
 
@@ -306,9 +306,9 @@
 	<target name="gen-schema-classes" descripton="Generates schema classes from nhibernate-mapping.xsd">
 		<exec program="xsd.exe"
 			commandline="src\NHibernate\nhibernate-mapping.xsd /classes /fields /order /namespace:NHibernate.Cfg.MappingSchema /out:src\NHibernate\Cfg\MappingSchema\"/>
-		
+
 	</target>
-	
+
 	<target name="nugetpushbat" depends="init binaries common.download-nuget nuget.set-properties"
 					description="Creates files for the release on nuget gallery.">
 
@@ -337,7 +337,7 @@
 			</do>
 		</foreach>
 	</target>
-	
+
 	<target name="nugetpush" depends="init binaries common.download-nuget nuget.set-properties"
 					description="Push packages on nuget gallery.">
 		<!-- In order to use this task you have to be sure you have executed 'nuget SetApiKey' -->

@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
-<project 
-	name="doc" 
-	default="build" 
+<project
+	name="doc"
+	default="build"
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
 
@@ -11,12 +11,13 @@
 	<target name="init" depends="common.init">
 		<property name="lang" value="en" />
 
+		<property name="doc.dir" value="${root.dir}/doc" />
 		<property name="output.dir" value="${build.dir}/doc" />
 		<property name="output.html.basename" value="NHibernate.Reference" />
 		<property name="output.help2.dir" value="${output.dir}/help2" />
 
 		<property name="build.html.dir" value="${output.dir}" />
-		<property name="build.single.dir" value="${build.html.dir}/html_single" />
+		<property name="build.single.dir" value="${build.html.dir}/singlehtml" />
 		<property name="build.chunk.dir" value="${build.html.dir}/html" />
 		<property name="build.shared.dir" value="${build.html.dir}/shared" />
 		<property name="build.chm.dir" value="${output.dir}/tmp-chm" />
@@ -24,6 +25,9 @@
 		<property name="build.pdf.dir" value="${output.dir}/tmp-pdf" />
 
 		<property name="hhc.exe" value="${environment::get-folder-path('ProgramFiles')}\HTML Help Workshop\hhc" />
+
+		<property name="python.dir" value="${root.dir}/Tools/python" />
+		<property name="python.zip" value="${root.dir}/Tools/python.zip" />
 
 		<path id="saxon.classpath" >
 			<pathelement file="support/lib/avalon-framework-cvs-20020806.jar" />
@@ -35,14 +39,13 @@
 			<pathelement file="support/lib/saxon.jar" />
 			<pathelement file="support/lib/saxon-dbxsl-extensions.jar" />
 		</path>
-
 	</target>
 
 	<target name="clean" depends="init" description="Cleans any previous builds">
 		<delete dir="${build.html.dir}" failonerror="false" />
 	</target>
 
-	<target name="build" depends="init"
+	<target name="build" depends="init, extract-python"
 		description="Generates the documentation in multiple formats from the Docbook files.">
 		<call target="build-html" />
 		<call target="build-chm" />
@@ -56,24 +59,16 @@
 	</target>
 
 	<target name="build-html.generate" depends="init build-html.make-directories">
-		<exec program="java" workingdir="${build.chunk.dir}">
-			<arg value="-classpath" />
-			<arg>
-				<path refid="saxon.classpath"/>
-			</arg>
-			<arg value="com.icl.saxon.StyleSheet" />
-			<arg file="master.xml"/>
-			<arg file="styles/html_chunk.xsl"/>
+		<exec program="cmd" workingdir="${doc.dir}">
+			<arg value="/c" />
+			<arg value="make.bat" />
+			<arg value="html" />
 		</exec>
 
-		<exec program="java" workingdir="${build.single.dir}">
-			<arg value="-classpath" />
-			<arg>
-				<path refid="saxon.classpath"/>
-			</arg>
-			<arg value="com.icl.saxon.StyleSheet" />
-			<arg file="master.xml"/>
-			<arg file="styles/html.xsl"/>
+		<exec program="cmd" workingdir="${doc.dir}">
+			<arg value="/c" />
+			<arg value="make.bat" />
+			<arg value="singlehtml" />
 		</exec>
 
 	</target>
@@ -95,7 +90,16 @@
 
 	<target name="build-html"
 		depends="build-html.generate build-html.copy-misc-files"
-		description="Generates html from docbook files." />
+		description="Generates html from reStructuredText files." />
+
+	<target name="build-pdf-normal">
+		<!-- Create a PDF from the XSL/FO. -->
+		<exec program="cmd" workingdir="${doc.dir}">
+			<arg value="/c" />
+			<arg value="make.bat" />
+			<arg value="rinoh" />
+		</exec>
+	</target>
 
 	<target name="build-chm" depends="init" description="Generates chm file from docbook files.">
 
@@ -147,7 +151,7 @@
 
 		<!--
 			Compile the HxC into an HxS that can be included
-			in a Help2 collection 
+			in a Help2 collection
 		-->
 		<exec program="HxComp.exe" basedir="${vshik.path}">
 			<arg value="-p" />
@@ -170,49 +174,13 @@
 		<delete dir="${build.help2.dir}" />
 	</target>
 
-	<target name="build-pdf-prepare" depends="init">
-
-		<!-- Copy all the images to the output location, will be removed later. -->
-		<copy todir="${build.pdf.dir}/images">
-			<fileset basedir="images">
-				<include name="**/*.png"/>
-				<include name="**/*.svg"/>
-				<include name="**/*.gif"/>
-			</fileset>
-		</copy>
-
-		<!-- Create the XSL/FO temporary file. -->
-		<exec program="java">
-			<arg value="-classpath" />
-			<arg>
-				<path refid="saxon.classpath"/>
-			</arg>
-			<arg value="com.icl.saxon.StyleSheet" />
-			<arg value="-o"/>
-			<arg file="${build.pdf.dir}/docbook_fop.tmp"/>
-			<arg file="master.xml"/>
-			<arg file="styles/fopdf.xsl"/>
-		</exec>
-
-	</target>
-
-	<target name="build-pdf-normal" depends="build-pdf-prepare">
-		<!-- Create a PDF from the XSL/FO. -->
-		<exec program="java">
-			<arg value="-classpath" />
-			<arg>
-				<path refid="saxon.classpath"/>
-			</arg>
-			<arg value="org.apache.fop.apps.Fop" />
-			<arg value="${build.pdf.dir}/docbook_fop.tmp"/>
-			<arg value="${output.dir}/nhibernate_reference.pdf"/>
-		</exec>
-	</target>
-
 	<target name="build-pdf" depends="build-pdf-normal">
 		<!-- House keeping, delete temporary files. -->
 		<delete dir="${build.pdf.dir}" />
 	</target>
 
-</project>
+	<target name="extract-python" depends="init">
+		<unzip zipfile="${python.zip}" todir="${python.dir}" />
+	</target>
 
+</project>
