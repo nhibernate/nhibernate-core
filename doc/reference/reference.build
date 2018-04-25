@@ -17,7 +17,7 @@
 		<property name="output.help2.dir" value="${output.dir}/help2" />
 
 		<property name="build.html.dir" value="${output.dir}" />
-		<property name="build.single.dir" value="${build.html.dir}/html_single" />
+		<property name="build.single.dir" value="${build.html.dir}/singlehtml" />
 		<property name="build.chunk.dir" value="${build.html.dir}/html" />
 		<property name="build.shared.dir" value="${build.html.dir}/shared" />
 		<property name="build.chm.dir" value="${output.dir}/tmp-chm" />
