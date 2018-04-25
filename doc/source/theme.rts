@@ -1,0 +1,56 @@
+[STYLESHEET]
+name=Sphinx
+description=Mostly a copy of the LaTeX style included with Sphinx
+pygments_style=friendly
+
+[VARIABLES]
+mono_typeface=TeX Gyre Cursor
+serif_typeface=TeX Gyre Pagella
+sans_typeface=Tex Gyre Heros
+fallback_typeface=DejaVu Serif
+thin_black_stroke=0.5pt,#000
+blue=#20435c
+
+[default:Paragraph]
+typeface=$(serif_typeface)
+font_weight=REGULAR
+font_size=10pt
+line_spacing=fixed(12pt, leading(0))
+indent_first=0
+space_above=0
+space_below=0
+text_align=JUSTIFY
+kerning=True
+ligatures=True
+hyphen_lang=en_US
+hyphen_chars=4
+
+[fallback]
+typeface=$(fallback_typeface)
+
+[body]
+base=default
+space_above=5pt
+space_below=0
+text_align=justify
+
+[emphasis]
+font_slant=italic
+
+[strong]
+font_weight=BOLD
+
+[literal emphasis]
+base=emphasis
+typeface=$(mono_typeface)
+hyphenate=False
+ligatures=False
+
+[literal strong]
+base=strong
+typeface=$(mono_typeface)
+hyphenate=False
+ligatures=False
+
+[quote]
+font_slant=italic
