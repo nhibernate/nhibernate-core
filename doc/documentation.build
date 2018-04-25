@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 
-<project 
-	name="NHibernate Documentation" 
+<project
+	name="NHibernate Documentation"
 	default="doc"
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
@@ -11,15 +11,13 @@
 
 	<target name="init" depends="common.init common.nuget-restore">
 		<property name="doc.out.dir" value="${build.dir}/doc" />
-		<property name="doc.help2.out.dir" value="${doc.out.dir}/help2" />
-		<property name="doc.chm.out.dir" value="${doc.out.dir}" />
 		<property name="doc.tmp.dir" value="${path::get-full-path(doc.out.dir)}/temp" />
 	</target>
 
 	<target name="doc" depends="init manual api" />
 
 	<target name="clean" depends="init">
-		<nant target="clean" buildfile="reference/reference.build" />
+		<nant target="clean" buildfile="reference.build" />
 		<delete dir="${doc.out.dir}" />
 		<delete file="NHibernate.shfbproj" />
 	</target>
@@ -27,13 +25,13 @@
 	<target name="manual" depends="init">
 		<property name="lang" value="en" />
 		<copy file="LICENSE.txt" todir="${doc.out.dir}"/>
-		<nant target="build" buildfile="reference/reference.build">
+		<nant target="build" buildfile="reference.build">
 			<properties>
 				<property name="lang" value="${lang}" />
 			</properties>
 		</nant>
 	</target>
-	
+
 	<target name="manual-zip" depends="manual">
 		<zip zipfile="${build.dir}/NHibernate-${project.version}-reference.zip">
 			<fileset basedir="${doc.out.dir}">
