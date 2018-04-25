@@ -29,10 +29,6 @@
 		depends="init prepare-build-directory nuget.set-properties"
 		description="Builds NHibernate in the current configuration">
 
-		<exec program="python">
-			<arg value="--version" />
-		</exec>
-
 		<exec program="dotnet" verbose="true">
 			<arg value="msbuild" />
 			<arg value="${root.dir}/src/NHibernate.sln" />

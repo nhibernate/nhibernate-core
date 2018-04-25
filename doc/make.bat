@@ -4,9 +4,7 @@ pushd %~dp0
 
 REM Command file for Sphinx documentation
 
-if "%SPHINXBUILD%" == "" (
-	set SPHINXBUILD=sphinx-build
-)
+set SPHINXBUILD=python -m sphinx
 set SOURCEDIR=source
 set BUILDDIR=build
 set SPHINXPROJ=NHibernate
@@ -23,7 +21,7 @@ if errorlevel 9009 (
 	echo.
 	echo.If you don't have Sphinx installed, grab it from
 	echo.http://sphinx-doc.org/
-	exit /b 1
+	REM exit /b 1
 )
 
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS%
