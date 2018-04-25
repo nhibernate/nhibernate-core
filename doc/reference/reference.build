@@ -5,12 +5,13 @@
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
 
-	<property name="root.dir" value=".." />
+	<property name="root.dir" value="../.." />
 	<include buildfile="${root.dir}/build-common/common.xml" />
 
 	<target name="init" depends="common.init">
 		<property name="lang" value="en" />
 
+		<property name="doc.dir" value="${root.dir}/doc" />
 		<property name="output.dir" value="${build.dir}/doc" />
 		<property name="output.html.basename" value="NHibernate.Reference" />
 		<property name="output.help2.dir" value="${output.dir}/help2" />
@@ -38,7 +39,6 @@
 			<pathelement file="support/lib/saxon.jar" />
 			<pathelement file="support/lib/saxon-dbxsl-extensions.jar" />
 		</path>
-
 	</target>
 
 	<target name="clean" depends="init" description="Cleans any previous builds">
@@ -59,18 +59,16 @@
 	</target>
 
 	<target name="build-html.generate" depends="init build-html.make-directories">
-		<exec program="make.bat" workingdir="${output.dir}">
+		<exec program="cmd" workingdir="${doc.dir}">
+			<arg value="/c" />
+			<arg value="make.bat" />
 			<arg value="html" />
-			<environment>
-				<variable name="PATH" value="%PATH%;${python.dir};%${python.dir}/Scripts" />
-			</environment>
 		</exec>
 
-		<exec program="make.bat" workingdir="${output.dir}">
+		<exec program="cmd" workingdir="${doc.dir}">
+			<arg value="/c" />
+			<arg value="make.bat" />
 			<arg value="singlehtml" />
-			<environment>
-				<variable name="PATH" value="%PATH%;${python.dir};%${python.dir}/Scripts" />
-			</environment>
 		</exec>
 
 	</target>
@@ -96,11 +94,10 @@
 
 	<target name="build-pdf-normal">
 		<!-- Create a PDF from the XSL/FO. -->
-		<exec program="make.bat" workingdir="${output.dir}">
+		<exec program="cmd" workingdir="${doc.dir}">
+			<arg value="/c" />
+			<arg value="make.bat" />
 			<arg value="rinoh" />
-			<environment>
-				<variable name="PATH" path="%PATH%;${python.dir};%${python.dir}/Scripts" />
-			</environment>
 		</exec>
 	</target>
 

@@ -13,13 +13,13 @@
 		<property name="doc.out.dir" value="${build.dir}/doc" />
 		<property name="doc.tmp.dir" value="${path::get-full-path(doc.out.dir)}/temp" />
 		<property name="doc.chm.out.dir" value="${doc.out.dir}" />
-  	<property name="doc.help2.out.dir" value="${doc.out.dir}/help2" />
+		<property name="doc.help2.out.dir" value="${doc.out.dir}/help2" />
 	</target>
 
 	<target name="doc" depends="init manual api" />
 
 	<target name="clean" depends="init">
-		<nant target="clean" buildfile="reference.build" />
+		<nant target="clean" buildfile="reference/reference.build" />
 		<delete dir="${doc.out.dir}" />
 		<delete file="NHibernate.shfbproj" />
 	</target>
@@ -27,7 +27,7 @@
 	<target name="manual" depends="init">
 		<property name="lang" value="en" />
 		<copy file="LICENSE.txt" todir="${doc.out.dir}"/>
-		<nant target="build" buildfile="reference.build">
+		<nant target="build" buildfile="reference/reference.build">
 			<properties>
 				<property name="lang" value="${lang}" />
 			</properties>

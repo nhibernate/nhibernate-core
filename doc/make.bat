@@ -4,8 +4,9 @@ pushd %~dp0
 
 REM Command file for Sphinx documentation
 
+set PATH=%PATH%;..\Tools\python;..\Tools\python\Scripts
 set SPHINXBUILD=python -m sphinx
-set SOURCEDIR=source
+set SOURCEDIR=reference
 set BUILDDIR=build
 set SPHINXPROJ=NHibernate
 

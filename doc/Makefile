@@ -5,7 +5,7 @@
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = NHibernate
-SOURCEDIR     = source
+SOURCEDIR     = reference
 BUILDDIR      = build
 
 # Put it first so that "make" without argument is like "make help".
