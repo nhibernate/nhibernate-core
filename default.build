@@ -188,7 +188,7 @@
 		<nant buildfile="doc/documentation.build" target="api manual" />
 	</target>
 
-	<target name="reference" depends="init binaries" unless="${skip.manual}"
+	<target name="reference" depends="init" unless="${skip.manual}"
 		description="Builds Reference Manual">
 		<nant buildfile="doc/documentation.build" target="manual" />
 	</target>
