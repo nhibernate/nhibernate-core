@@ -12,6 +12,8 @@
 	<target name="init" depends="common.init common.nuget-restore">
 		<property name="doc.out.dir" value="${build.dir}/doc" />
 		<property name="doc.tmp.dir" value="${path::get-full-path(doc.out.dir)}/temp" />
+		<property name="doc.chm.out.dir" value="${doc.out.dir}" />
+  	<property name="doc.help2.out.dir" value="${doc.out.dir}/help2" />
 	</target>
 
 	<target name="doc" depends="init manual api" />
