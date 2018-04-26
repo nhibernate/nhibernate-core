@@ -27,6 +27,12 @@ namespace NHibernate.Test
 			_dialect = dialect;
 		}
 
+		/// <summary>
+		/// Has a native generator strategy resolving to identity.
+		/// </summary>
+		public bool HasIdentityNativeGenerator
+			=> _dialect.NativeIdentifierGeneratorClass == typeof(IdentityGenerator);
+
 		public virtual bool SupportsOperatorAll => true;
 		public virtual bool SupportsOperatorSome => true;
 		public virtual bool SupportsLocate => true;
@@ -66,7 +72,7 @@ namespace NHibernate.Test
 		/// <remarks>This property is useful for cases where empty inserts happens only when the entities
 		/// generator is <c>native</c> while the dialect uses <c>identity</c> for this generator.</remarks>
 		public bool SupportsEmptyInsertsOrHasNonIdentityNativeGenerator
-			=> SupportsEmptyInserts || _dialect.NativeIdentifierGeneratorClass != typeof(IdentityGenerator);
+			=> SupportsEmptyInserts || !HasIdentityNativeGenerator;
 
 
 		/// <summary>

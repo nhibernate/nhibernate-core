@@ -148,7 +148,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			long id = 1L;
 
-			if (Dialect is MsSql2000Dialect)
+			if (TestDialect.HasIdentityNativeGenerator)
 			{
 				id = (long) await (s.SaveAsync(new TrivialClass()));
 			}
@@ -184,7 +184,7 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			SubMulti sm = new SubMulti();
 			sm.Amount = 66.5f;
-			if (Dialect is MsSql2000Dialect)
+			if (TestDialect.HasIdentityNativeGenerator)
 			{
 				await (s.SaveAsync(sm));
 			}
@@ -215,7 +215,7 @@ namespace NHibernate.Test.Legacy
 			simp.Name = "simp";
 			object mid;
 			object sid;
-			if (Dialect is MsSql2000Dialect)
+			if (TestDialect.HasIdentityNativeGenerator)
 			{
 				mid = await (s.SaveAsync(multi));
 				sid = await (s.SaveAsync(simp));
@@ -230,7 +230,7 @@ namespace NHibernate.Test.Legacy
 			SubMulti sm = new SubMulti();
 			sm.Amount = 66.5f;
 			object smid;
-			if (Dialect is MsSql2000Dialect)
+			if (TestDialect.HasIdentityNativeGenerator)
 			{
 				smid = await (s.SaveAsync(sm));
 			}
@@ -464,7 +464,7 @@ namespace NHibernate.Test.Legacy
 			simp.Name = "simp";
 			object mid;
 			object sid;
-			if (Dialect is MsSql2000Dialect)
+			if (TestDialect.HasIdentityNativeGenerator)
 			{
 				mid = await (s.SaveAsync(multi));
 				sid = await (s.SaveAsync(simp));
@@ -484,7 +484,7 @@ namespace NHibernate.Test.Legacy
 			ls.Set = new HashSet<Top> { multi, simp };
 
 			object id;
-			if (Dialect is MsSql2000Dialect)
+			if (TestDialect.HasIdentityNativeGenerator)
 			{
 				id = await (s.SaveAsync(ls));
 			}
@@ -541,7 +541,7 @@ namespace NHibernate.Test.Legacy
 			simp.Name = "simp";
 			object mid;
 
-			if (Dialect is MsSql2000Dialect)
+			if (TestDialect.HasIdentityNativeGenerator)
 			{
 				mid = await (s.SaveAsync(multi));
 			}
@@ -556,7 +556,7 @@ namespace NHibernate.Test.Legacy
 			ls.YetAnother = ls;
 			ls.Name = "Less Simple";
 			object id;
-			if (Dialect is MsSql2000Dialect)
+			if (TestDialect.HasIdentityNativeGenerator)
 			{
 				id = await (s.SaveAsync(ls));
 			}
