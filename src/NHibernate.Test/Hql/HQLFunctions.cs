@@ -1140,7 +1140,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Iif()
 		{
-			AssumeFunctionSupported("Iif");
+			AssumeFunctionSupported("iif");
 			using (ISession s = OpenSession())
 			{
 				s.Save(new MaterialResource("Flash card 512MB", "A001/07", MaterialResource.MaterialState.Available));

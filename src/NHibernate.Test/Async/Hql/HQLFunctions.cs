@@ -1151,7 +1151,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task IifAsync()
 		{
-			AssumeFunctionSupported("Iif");
+			AssumeFunctionSupported("iif");
 			using (ISession s = OpenSession())
 			{
 				await (s.SaveAsync(new MaterialResource("Flash card 512MB", "A001/07", MaterialResource.MaterialState.Available)));
