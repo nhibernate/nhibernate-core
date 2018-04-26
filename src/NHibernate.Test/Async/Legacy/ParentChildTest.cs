@@ -24,11 +24,6 @@ namespace NHibernate.Test.Legacy
 	[TestFixture]
 	public class ParentChildTestAsync : TestCase
 	{
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
-		}
-
 		protected override IList Mappings
 		{
 			get
@@ -60,6 +55,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task ReplicateAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			Container baz = new Container();
 			Contained f = new Contained();
@@ -358,6 +356,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task CollectionQueryAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
@@ -515,6 +516,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task ManyToManyAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			// if( dialect is Dialect.HSQLDialect) return;
 
 			ISession s = OpenSession();
@@ -572,6 +576,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task ContainerAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Container c = new Container();
@@ -704,6 +711,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task CascadeCompositeElementsAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			Container c = new Container();
 			
 			c.Cascades = new List<Container.ContainerInnerClass>();
@@ -765,6 +775,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task BagAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			//if( dialect is Dialect.HSQLDialect ) return;
 
 			ISession s = OpenSession();

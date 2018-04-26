@@ -9,6 +9,7 @@
 
 
 using System.Collections;
+using NHibernate.Driver;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1869
@@ -23,11 +24,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1869
 		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
 		{
 		   return factory.ConnectionProvider.Driver.SupportsMultipleQueries;
-		}
-
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		protected override void OnTearDown()

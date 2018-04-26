@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using NUnit.Framework;
 
 namespace NHibernate.Test.GenericTest.Overall
@@ -8,11 +9,6 @@ namespace NHibernate.Test.GenericTest.Overall
 	[TestFixture]
 	public class Fixture : TestCase
 	{
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
-		}
-
 		protected override IList Mappings
 		{
 			get { return new[] { "GenericTest.Overall.Mappings.hbm.xml" }; }
@@ -46,6 +42,9 @@ namespace NHibernate.Test.GenericTest.Overall
 		[Test]
 		public void CRUDAB()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			var entity = new A<B>
 			{
 				Property = new B { Prop = 2 },

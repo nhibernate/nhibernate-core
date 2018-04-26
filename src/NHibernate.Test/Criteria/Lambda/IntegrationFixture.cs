@@ -12,11 +12,6 @@ namespace NHibernate.Test.Criteria.Lambda
 	[TestFixture]
 	public class IntegrationFixture : TestCase
 	{
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
-		}
-
 		protected override string MappingsAssembly { get { return "NHibernate.Test"; } }
 
 		protected override IList Mappings
@@ -257,6 +252,9 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public void OverrideEagerJoin()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{

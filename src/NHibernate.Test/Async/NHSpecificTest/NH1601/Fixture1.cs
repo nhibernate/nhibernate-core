@@ -17,27 +17,27 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
     [TestFixture]
     public class Fixture1Async : BugTestCase
     {
-	    protected override bool AppliesTo(Dialect.Dialect dialect)
-	    {
-		    return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
-		}
+        protected override bool AppliesTo(Dialect.Dialect dialect)
+        {
+            return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+        }
 
-		/// <summary>
-		/// Loads the project do not call Count on the list assigned.
-		/// </summary>
-		[Test]
+        /// <summary>
+        /// Loads the project do not call Count on the list assigned.
+        /// </summary>
+        [Test]
         public Task TestSaveAndLoadWithoutCountAsync()
-    {
-		try
-		{
-        ProjectWithOneList.TestAccessToList = false;
-        return SaveAndLoadProjectWithOneListAsync();
-    }
-		catch (System.Exception ex)
-		{
-		return Task.FromException<object>(ex);
-		}
-		}
+        {
+            try
+            {
+                ProjectWithOneList.TestAccessToList = false;
+                return SaveAndLoadProjectWithOneListAsync();
+            }
+            catch (System.Exception ex)
+            {
+                return Task.FromException<object>(ex);
+            }
+        }
 
         /// <summary>
         /// Refreshes the project do not call Count on the list assigned.

@@ -9,8 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1775
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return !(dialect is Oracle8iDialect) &&
-			       !(dialect is AbstractHanaDialect);
+			return !(dialect is Oracle8iDialect);
 		}
 
 		protected override void OnSetUp()

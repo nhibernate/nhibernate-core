@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH386
@@ -19,11 +20,6 @@ namespace NHibernate.Test.NHSpecificTest.NH386
 		public override string BugNumber
 		{
 			get { return "NH386"; }
-		}
-
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		[Test]

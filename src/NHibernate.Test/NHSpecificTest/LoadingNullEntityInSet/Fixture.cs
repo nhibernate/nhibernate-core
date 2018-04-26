@@ -21,9 +21,9 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
             get { return "NHibernate.Test"; }
         }
 
-	    protected override bool AppliesTo(Dialect.Dialect dialect)
-	    {
-		    return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		protected override DebugSessionFactory BuildSessionFactory()

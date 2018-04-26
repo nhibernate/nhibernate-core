@@ -24,7 +24,6 @@ using NHibernate.Connection;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
-using NHibernate.Id;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -41,11 +40,6 @@ namespace NHibernate.Test.Legacy
 		private static byte[] GetBytes(string str)
 		{
 			return Encoding.Unicode.GetBytes(str);
-		}
-
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		protected override IList Mappings

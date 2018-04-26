@@ -2,14 +2,12 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Data.Common;
-using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
-using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
@@ -18,7 +16,7 @@ namespace NHibernate.Dialect
 	/// A SQL dialect base class for SAP HANA
 	/// </summary>
 	/// <remarks>
-	/// The AbstractHanaDialect defaults the following configuration properties:
+	/// The HanaDialectBase defaults the following configuration properties:
 	/// <list type="table">
 	///		<listheader>
 	///			<term>Property</term>
@@ -30,70 +28,62 @@ namespace NHibernate.Dialect
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public abstract class AbstractHanaDialect : Dialect
+	public abstract class HanaDialectBase : Dialect
 	{
 		[Serializable]
 		private class TypeConvertingVarArgsSQLFunction : ISQLFunction
 		{
-			private readonly string begin;
-			private readonly string sep;
-			private readonly string end;
-			private SqlType type = null;
-			private Dialect dialect = null;
+			private readonly string _begin;
+			private readonly string _sep;
+			private readonly string _end;
+			private SqlType _type;
 
 			public TypeConvertingVarArgsSQLFunction(string begin, string sep, string end)
 			{
-				this.begin = begin;
-				this.sep = sep;
-				this.end = end;
+				_begin = begin;
+				_sep = sep;
+				_end = end;
 			}
 
 			#region ISQLFunction Members
 
 			public IType ReturnType(IType columnType, IMapping mapping)
 			{
-				type = columnType.SqlTypes(mapping)[0];
-				dialect = mapping.Dialect;
+				_type = columnType.SqlTypes(mapping)[0];
 				return columnType;
 			}
 
-			public bool HasArguments
-			{
-				get { return true; }
-			}
+			public bool HasArguments => true;
 
-			public bool HasParenthesesIfNoArguments
-			{
-				get { return true; }
-			}
+			public bool HasParenthesesIfNoArguments => true;
 
 			public SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{
-				SqlStringBuilder buf = new SqlStringBuilder().Add(begin);
-				for (int i = 0; i < args.Count; i++)
+				var buf = new SqlStringBuilder().Add(_begin);
+				for (var i = 0; i < args.Count; i++)
 				{
-					object arg = args[i];
-					if (arg is SqlString && (arg as SqlString).EqualsCaseInsensitive("?"))
+					var arg = args[i];
+					if (arg is SqlString str && str.EqualsCaseInsensitive("?"))
 					{
 						buf.Add("cast(");
 						buf.AddObject(arg);
 						buf.Add(" as ");
-						buf.Add(dialect.GetCastTypeName(type));
+						buf.Add(factory.Dialect.GetCastTypeName(_type));
 						buf.Add(")");
 					}
 					else
 					{
 						buf.AddObject(arg);
 					}
-					if (i < args.Count - 1) buf.Add(sep);
+					if (i < args.Count - 1) buf.Add(_sep);
 				}
-				return buf.Add(end).ToSqlString();
+				return buf.Add(_end).ToSqlString();
 			}
 
 			#endregion
 		}
 
-		public AbstractHanaDialect()
+		protected HanaDialectBase()
 		{
 			//string type
 			RegisterColumnType(DbType.AnsiStringFixedLength, "VARCHAR(255)");
@@ -419,7 +409,6 @@ namespace NHibernate.Dialect
 			RegisterFunction("chr", new StandardSQLFunction("char", NHibernateUtil.AnsiChar));
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "to_date(?1)"));
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
-			RegisterFunction("Iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 			RegisterFunction("sysdate", new NoArgSQLFunction("current_timestamp", NHibernateUtil.DateTime, false));
 			RegisterFunction("truncate", new SQLFunctionTemplateWithRequiredParameters(null, "floor(?1 * power(10, ?2)) / power(10, ?2)", new object[] { null, "0" }));
 		}
@@ -636,9 +625,6 @@ namespace NHibernate.Dialect
 		/// <inheritdoc />
 		public override bool SupportsColumnCheck => false;
 
-		/// <inheritdoc />
-		public override bool SupportsTableCheck => true;
-
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new HanaDataBaseSchema(connection);
@@ -649,8 +635,7 @@ namespace NHibernate.Dialect
 		#region Lock acquisition support
 
 		/// <inheritdoc />
-		[Obsolete("Use UsesColumnsWithForUpdateOf instead")]
-		public override bool ForUpdateOfColumns => true;
+		public override bool UsesColumnsWithForUpdateOf => true;
 
 		/// <inheritdoc />
 		public override string GetForUpdateString(string aliases)
@@ -691,12 +676,6 @@ namespace NHibernate.Dialect
 			return false;
 		}
 
-		/// <inheritdoc />
-		public override bool DropTemporaryTableAfterUse()
-		{
-			return true;
-		}
-
 		#endregion
 
 		#endregion
@@ -719,14 +698,14 @@ namespace NHibernate.Dialect
 
 		/// <inheritdoc />
 		public override long TimestampResolutionInTicks
-		{
-			get { return 10L; } // Maximum precision (one tick)
-		}
+			// According to https://help.sap.com/viewer/4fe29514fd584807ac9f2a04f6754767/2.0.02/en-US/3f81ccc7e35d44cbbc595c7d552c202a.html,
+			// it is supposed to have a 7 digits fractional second precision, but tests show only a 6 digits one. This is maybe a
+			// limitation of the data provider.
+			=> 10L;
 
 		#endregion
 
 		#region Constraint support
-
 
 		/// <inheritdoc />
 		public override string CascadeConstraintsString
@@ -774,7 +753,10 @@ namespace NHibernate.Dialect
 		/// <inheritdoc />
 		public override string GetSequenceNextValString(string sequenceName)
 		{
-			return "select " + GetSelectSequenceNextValString(sequenceName) + " from dummy";
+			// See https://help.sap.com/viewer/4fe29514fd584807ac9f2a04f6754767/2.0.02/en-US/20d509277519101489029c064d468c5d.html,
+			// this seems to be the recommended way of querying a sequence.
+			// SYS.DUMMY is a system table having normally one row. If someone has fiddled with it, this will cause failures...
+			return "select " + GetSelectSequenceNextValString(sequenceName) + " from sys.dummy";
 		}
 
 		/// <inheritdoc />
@@ -803,7 +785,7 @@ namespace NHibernate.Dialect
 				throw new MappingException("Unable to create the sequence [" + sequenceName + "]: the increment size must not be 0");
 			}
 
-			String createSequenceString = GetCreateSequenceString(sequenceName) + " start with " + initialValue + " increment by " + incrementSize;
+			var createSequenceString = GetCreateSequenceString(sequenceName) + " start with " + initialValue + " increment by " + incrementSize;
 			if (incrementSize > 0)
 			{
 				if (initialValue < 1)
@@ -841,9 +823,6 @@ namespace NHibernate.Dialect
 			return value ? "true" : "false";
 		}
 
-		/// <inheritdoc />
-		public override bool SupportsConcurrentWritingConnectionsInSameTransaction => false;
-
 		#endregion
 
 		#region Limit/offset support
@@ -879,10 +858,6 @@ namespace NHibernate.Dialect
 
 			return limitBuilder.ToSqlString();
 		}
-
-		#endregion
-
-		#region Identifier quoting support
 
 		#endregion
 
@@ -947,9 +922,6 @@ namespace NHibernate.Dialect
 		public override bool SupportsRowValueConstructorSyntaxInInList => true;
 
 		/// <inheritdoc />
-		public override bool SupportsCircularCascadeDeleteConstraints => false;
-
-		/// <inheritdoc />
 		public override bool SupportsExpectedLobUsagePattern => false;
 
 		/// <inheritdoc />
@@ -958,46 +930,28 @@ namespace NHibernate.Dialect
 		/// <inheritdoc />
 		public override bool SupportsExistsInSelect => false;
 
-		/// <inheritdoc />
-		public override bool SupportsScalarSubSelects => false;
-
 		#endregion
-
 
 		/// <inheritdoc />
 		public override string SelectGUIDString
-		{
-			get { return "select sysuuid from dummy"; }
-		}
+			// SYS.DUMMY is a system table having normally one row. If someone has fiddled with it, this will cause failures...
+			=> "select sysuuid from sys.dummy";
 
 		/// <inheritdoc />
 		public override bool IsCurrentTimestampSelectStringCallable => false;
 
 		/// <inheritdoc />
 		public override string CurrentTimestampSelectString
-		{
-			get { return "select current_timestamp from dummy"; }
-		}
-
-		/// <inheritdoc />
-		public override string NoColumnsInsertString
-		{
-			get { throw new MappingException("HANA does not support inserting a row without specifying any column values"); }
-		}
+			// SYS.DUMMY is a system table having normally one row. If someone has fiddled with it, this will cause failures...
+			=> "select current_timestamp from sys.dummy";
 
 		/// <inheritdoc />
 		public override int MaxAliasLength => 128;
 
 		/// <inheritdoc />
-		public override string AddColumnString
-		{
-			get { return "add ("; }
-		}
+		public override string AddColumnString => "add (";
 
 		/// <inheritdoc />
-		public override string AddColumnSuffixString
-		{
-			get { return ")"; }
-		}
+		public override string AddColumnSuffixString => ")";
 	}
 }

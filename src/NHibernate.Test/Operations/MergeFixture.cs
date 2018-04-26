@@ -10,8 +10,7 @@ namespace NHibernate.Test.Operations
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return !(dialect is Dialect.FirebirdDialect) && // Firebird has no CommandTimeout, and locks up during the tear-down of this fixture
-			       (TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator);
+			return !(dialect is Dialect.FirebirdDialect); // Firebird has no CommandTimeout, and locks up during the tear-down of this fixture
 		}
 
 		protected override void OnTearDown()
@@ -362,6 +361,9 @@ namespace NHibernate.Test.Operations
 		[Test]
 		public void MergeManyToManyWithCollectionDeference()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			// setup base data...
 			Competition competition;
 			using (ISession s = OpenSession())
@@ -786,6 +788,9 @@ namespace NHibernate.Test.Operations
 		[Test]
 		public void RecursiveMergeTransient()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			using (ISession s = OpenSession())
 			{
 				using (ITransaction tx = s.BeginTransaction())

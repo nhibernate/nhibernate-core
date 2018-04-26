@@ -18,11 +18,6 @@ namespace NHibernate.Test.Legacy
 	{
 		protected static short fumKeyShort = 1;
 
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
-		}
-
 		protected override IList Mappings
 		{
 			get

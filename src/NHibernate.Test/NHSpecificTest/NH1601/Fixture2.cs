@@ -5,15 +5,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
     [TestFixture]
     public class Fixture2 : BugTestCase
     {
-	    protected override bool AppliesTo(Dialect.Dialect dialect)
-	    {
-		    return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
-		}
+        protected override bool AppliesTo(Dialect.Dialect dialect)
+        {
+            return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+        }
 
-		/// <summary>
-		/// Loads the project and when Scenario2 and Scenario3 are set calls Count on the list assigned.
-		/// </summary>
-		[Test]
+        /// <summary>
+        /// Loads the project and when Scenario2 and Scenario3 are set calls Count on the list assigned.
+        /// </summary>
+        [Test]
         public void TestSaveAndLoadWithTwoCounts()
         {
             Project.TestAccessToList = false;

@@ -18,7 +18,7 @@ namespace NHibernate.Test.Generatedkeys.Seqidentity
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect.SupportsSequences && !(dialect is Dialect.MsSql2012Dialect) && !(dialect is Dialect.AbstractHanaDialect);
+			return dialect.SupportsSequences && !(dialect is Dialect.MsSql2012Dialect) && !(dialect is Dialect.HanaDialectBase);
 		}
 
 		[Test]

@@ -42,7 +42,7 @@ namespace NHibernate.Test.Ado
 			return !(dialect is FirebirdDialect) &&
 			       !(dialect is Oracle8iDialect) &&
 			       !(dialect is MsSqlCeDialect) &&
-			       !(dialect is AbstractHanaDialect);
+			       !(dialect is HanaDialectBase);
 		}
 
 		[Test]

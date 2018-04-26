@@ -36,47 +36,47 @@ namespace NHibernate.Dialect.Schema
 
 			return result;
 		}
-		
+
 		public override DataTable GetTables(string catalog, string schemaPattern, string tableNamePattern, string[] types)
 		{
-			var restrictions = new[] {schemaPattern, tableNamePattern, null};
+			var restrictions = new[] { schemaPattern, tableNamePattern, null };
 			DataTable objTbl = Connection.GetSchema("Tables", restrictions);
 			return objTbl;
 		}
 
 		public override DataTable GetIndexInfo(string catalog, string schemaPattern, string tableName)
 		{
-			var restrictions = new[] {schemaPattern, tableName, null};
+			var restrictions = new[] { schemaPattern, tableName, null };
 			DataTable objTbl = Connection.GetSchema("Indexes", restrictions);
 			return objTbl;
 		}
 
 		public override DataTable GetIndexColumns(string catalog, string schemaPattern, string tableName, string indexName)
 		{
-			var restrictions = new[] {schemaPattern, tableName, indexName, null};
+			var restrictions = new[] { schemaPattern, tableName, indexName, null };
 			DataTable objTbl = Connection.GetSchema("IndexColumns", restrictions);
 			return objTbl;
 		}
 
-		public override DataTable GetColumns(string catalog, string schemaPattern, string tableNamePattern,
-												string columnNamePattern)
+		public override DataTable GetColumns(
+			string catalog,
+			string schemaPattern,
+			string tableNamePattern,
+			string columnNamePattern)
 		{
-			var restrictions = new[] {schemaPattern, tableNamePattern, null};
+			var restrictions = new[] { schemaPattern, tableNamePattern, null };
 			DataTable objTbl = Connection.GetSchema("Columns", restrictions);
 			return objTbl;
 		}
 
 		public override DataTable GetForeignKeys(string catalog, string schema, string table)
 		{
-			var restrictions = new[] {schema, table, null};
+			var restrictions = new[] { schema, table, null };
 			DataTable objTbl = Connection.GetSchema("ForeignKeys", restrictions);
 			return objTbl;
 		}
 
-		public override bool StoresUpperCaseIdentifiers
-		{
-			get { return true; }
-		}
+		public override bool StoresUpperCaseIdentifiers => true;
 	}
 
 	public class HanaTableMetadata : AbstractTableMetadata
@@ -95,7 +95,7 @@ namespace NHibernate.Dialect.Schema
 
 		protected override string GetConstraintName(DataRow rs)
 		{
-		    return Convert.ToString(rs["CONSTRAINT_NAME"]);
+			return Convert.ToString(rs["CONSTRAINT_NAME"]);
 		}
 
 		protected override string GetColumnName(DataRow rs)
@@ -130,9 +130,9 @@ namespace NHibernate.Dialect.Schema
 			: base(rs)
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
-			
-			this.SetColumnSize(rs["CHARACTER_MAXIMUM_LENGTH"]);
-			this.SetNumericalPrecision(rs["NUMERIC_PRECISION"]);
+
+			SetColumnSize(rs["CHARACTER_MAXIMUM_LENGTH"]);
+			SetNumericalPrecision(rs["NUMERIC_PRECISION"]);
 
 			Nullable = Convert.ToString(rs["IS_NULLABLE"]);
 			TypeName = Convert.ToString(rs["DATA_TYPE"]);
