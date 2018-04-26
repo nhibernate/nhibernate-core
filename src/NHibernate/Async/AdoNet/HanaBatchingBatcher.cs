@@ -11,7 +11,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Diagnostics;
 using System.Text;
 using NHibernate.AdoNet.Util;
 using NHibernate.Exceptions;
@@ -23,46 +22,55 @@ namespace NHibernate.AdoNet
 	public partial class HanaBatchingBatcher : AbstractBatcher
 	{
 
-		public override async Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken)
+		public override Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			Debug.Assert(CurrentCommand is ICloneable); // HanaCommands are cloneable
-
-			var batchUpdate = CurrentCommand;
-			await (PrepareAsync(batchUpdate, cancellationToken)).ConfigureAwait(false);
-			Driver.AdjustCommand(batchUpdate);
-
-			_totalExpectedRowsAffected += expectation.ExpectedRowCount;
-			string lineWithParameters = null;
-			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
-			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled())
+			// HanaCommands are cloneable
+			if (!(CurrentCommand is ICloneable cloneableCurrentCommand))
+				throw new InvalidOperationException("Current command is not an ICloneable");
+			if (cancellationToken.IsCancellationRequested)
 			{
-				lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
-				var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
-				lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
-				_currentBatchCommandsLog.Append("command ")
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return InternalAddToBatchAsync();
+			async Task InternalAddToBatchAsync()
+			{
+
+				var batchUpdate = CurrentCommand;
+				await (PrepareAsync(batchUpdate, cancellationToken)).ConfigureAwait(false);
+				Driver.AdjustCommand(batchUpdate);
+
+				_totalExpectedRowsAffected += expectation.ExpectedRowCount;
+				string lineWithParameters = null;
+				var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
+				if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled())
+				{
+					lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
+					var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
+					lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
+					_currentBatchCommandsLog.Append("command ")
 					.Append(_countOfCommands)
 					.Append(":")
 					.AppendLine(lineWithParameters);
-			}
-			if (Log.IsDebugEnabled())
-			{
-				Log.Debug("Adding to batch:{0}", lineWithParameters);
-			}
+				}
+				if (Log.IsDebugEnabled())
+				{
+					Log.Debug("Adding to batch:{0}", lineWithParameters);
+				}
 
-			if (_currentBatch == null)
-			{
-				// use first command as the batching command
-				_currentBatch = (batchUpdate as ICloneable).Clone() as DbCommand;
-			}
+				if (_currentBatch == null)
+				{
+					// use first command as the batching command
+					_currentBatch = cloneableCurrentCommand.Clone() as DbCommand;
+				}
 
-			_currentBatchCommands.Add((batchUpdate as ICloneable).Clone() as DbCommand);
+				_currentBatchCommands.Add(cloneableCurrentCommand.Clone() as DbCommand);
 
-			_countOfCommands++;
+				_countOfCommands++;
 
-			if (_countOfCommands >= _batchSize)
-			{
-				await (DoExecuteBatchAsync(batchUpdate, cancellationToken)).ConfigureAwait(false);
+				if (_countOfCommands >= _batchSize)
+				{
+					await (DoExecuteBatchAsync(batchUpdate, cancellationToken)).ConfigureAwait(false);
+				}
 			}
 		}
 

@@ -49,7 +49,7 @@ namespace NHibernate.Test.DialectTest.FunctionTests
 					break;
 				case Oracle8iDialect _:
 				case SQLiteDialect _:
-				case AbstractHanaDialect _:
+				case HanaDialectBase _:
 					Assert.That(substringFunction, Is.TypeOf<StandardSQLFunction>());
 					break;
 				default:

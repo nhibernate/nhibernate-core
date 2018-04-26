@@ -7,12 +7,12 @@ namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
     [TestFixture]
     public class Fixture : TestCase
     {
-	    protected override bool AppliesTo(Dialect.Dialect dialect)
-	    {
-		    return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
-		}
+        protected override bool AppliesTo(Dialect.Dialect dialect)
+        {
+            return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+        }
 
-		protected override IList Mappings
+        protected override IList Mappings
         {
             get { return new string[] { "NHSpecificTest.ListsWithHoles.Mappings.hbm.xml" }; }
         }

@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return !(dialect is AbstractHanaDialect); // The WHERE clause "isactive = '1'" doesn't work on HANA because idactive is a boolean
+			return !(dialect is HanaDialectBase); // The WHERE clause "isactive = '1'" doesn't work on HANA because idactive is a boolean
 		}
 
 		private ISession session;

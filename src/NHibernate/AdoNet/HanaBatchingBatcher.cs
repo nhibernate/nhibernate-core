@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Diagnostics;
 using System.Text;
 using NHibernate.AdoNet.Util;
 using NHibernate.Exceptions;
@@ -9,7 +8,7 @@ using NHibernate.Exceptions;
 namespace NHibernate.AdoNet
 {
 	/// <summary>
-	/// Summary description for HanaBatchingBatcher.
+	/// DML batcher for HANA.
 	/// By Jonathan Bregler
 	/// </summary>
 	public partial class HanaBatchingBatcher : AbstractBatcher
@@ -34,7 +33,9 @@ namespace NHibernate.AdoNet
 
 		public override void AddToBatch(IExpectation expectation)
 		{
-			Debug.Assert(CurrentCommand is ICloneable); // HanaCommands are cloneable
+			// HanaCommands are cloneable
+			if (!(CurrentCommand is ICloneable cloneableCurrentCommand))
+				throw new InvalidOperationException("Current command is not an ICloneable");
 
 			var batchUpdate = CurrentCommand;
 			Prepare(batchUpdate);
@@ -61,10 +62,10 @@ namespace NHibernate.AdoNet
 			if (_currentBatch == null)
 			{
 				// use first command as the batching command
-				_currentBatch = (batchUpdate as ICloneable).Clone() as DbCommand;
+				_currentBatch = cloneableCurrentCommand.Clone() as DbCommand;
 			}
 
-			_currentBatchCommands.Add((batchUpdate as ICloneable).Clone() as DbCommand);
+			_currentBatchCommands.Add(cloneableCurrentCommand.Clone() as DbCommand);
 
 			_countOfCommands++;
 

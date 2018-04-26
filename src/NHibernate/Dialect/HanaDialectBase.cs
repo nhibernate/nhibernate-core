@@ -2,14 +2,12 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Data.Common;
-using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
-using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
@@ -18,7 +16,7 @@ namespace NHibernate.Dialect
 	/// A SQL dialect base class for SAP HANA
 	/// </summary>
 	/// <remarks>
-	/// The AbstractHanaDialect defaults the following configuration properties:
+	/// The HanaDialectBase defaults the following configuration properties:
 	/// <list type="table">
 	///		<listheader>
 	///			<term>Property</term>
@@ -30,7 +28,7 @@ namespace NHibernate.Dialect
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public abstract class AbstractHanaDialect : Dialect
+	public abstract class HanaDialectBase : Dialect
 	{
 		[Serializable]
 		private class TypeConvertingVarArgsSQLFunction : ISQLFunction
@@ -85,7 +83,7 @@ namespace NHibernate.Dialect
 			#endregion
 		}
 
-		public AbstractHanaDialect()
+		protected HanaDialectBase()
 		{
 			//string type
 			RegisterColumnType(DbType.AnsiStringFixedLength, "VARCHAR(255)");

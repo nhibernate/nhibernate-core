@@ -1,14 +1,3 @@
-using System;
-using System.Data;
-using System.Data.Common;
-using System.Text;
-using NHibernate.Dialect.Function;
-using NHibernate.Dialect.Schema;
-using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
-using NHibernate.Util;
-using Environment = NHibernate.Cfg.Environment;
-
 namespace NHibernate.Dialect
 {
 	/// <summary>
@@ -27,22 +16,12 @@ namespace NHibernate.Dialect
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public class HanaColumnStoreDialect : AbstractHanaDialect
+	public class HanaColumnStoreDialect : HanaDialectBase
 	{
-		public HanaColumnStoreDialect()
-		{
-		}
+		/// <inheritdoc />
+		public override string CreateTableString => "create column table";
 
 		/// <inheritdoc />
-		public override string CreateTableString
-		{
-			get { return "create column table"; }
-		}
-
-		/// <inheritdoc />
-		public override string CreateTemporaryTableString
-		{
-			get { return "create local temporary column table"; }
-		}
+		public override string CreateTemporaryTableString => "create local temporary column table";
 	}
 }

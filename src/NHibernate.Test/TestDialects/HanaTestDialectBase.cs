@@ -1,11 +1,11 @@
 ﻿namespace NHibernate.Test.TestDialects
 {
-	public abstract class AbstractHanaTestDialect : TestDialect
+	public abstract class HanaTestDialectBase : TestDialect
 	{
-        public AbstractHanaTestDialect(Dialect.Dialect dialect)
-            : base(dialect)
-        {
-        }
+		protected HanaTestDialectBase(Dialect.Dialect dialect)
+			: base(dialect)
+		{
+		}
 
 		public override bool SupportsComplexExpressionInGroupBy => false;
 
