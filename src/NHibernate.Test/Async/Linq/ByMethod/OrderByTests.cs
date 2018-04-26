@@ -72,8 +72,8 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public async Task OrderByCalculatedAggregatedSubselectPropertyAsync()
 		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore("Dialect does not support scalar sub-selects");
+			if (!TestDialect.SupportsAggregatingScalarSubSelectsInOrderBy)
+				Assert.Ignore("Dialect does not support aggregating scalar sub-selects in order by");
 
 			//NH-2781
 			var result = await (db.Orders
@@ -93,8 +93,8 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public async Task AggregateAscendingOrderByClauseAsync()
 		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore("Dialect does not support scalar sub-selects");
+			if (!TestDialect.SupportsAggregatingScalarSubSelectsInOrderBy)
+				Assert.Ignore("Dialect does not support aggregating scalar sub-selects in order by");
 
 			var query = from c in db.Customers
 						orderby c.Orders.Count
@@ -109,8 +109,8 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public async Task AggregateDescendingOrderByClauseAsync()
 		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore("Dialect does not support scalar sub-selects");
+			if (!TestDialect.SupportsAggregatingScalarSubSelectsInOrderBy)
+				Assert.Ignore("Dialect does not support aggregating scalar sub-selects in order by");
 
 			var query = from c in db.Customers
 						orderby c.Orders.Count descending
@@ -191,6 +191,9 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore("Dialect does not support scalar sub-selects");
 
+			if (!TestDialect.SupportsOrderByAndLimitInSubQueries)
+				Assert.Ignore("Dialect does not support sub-selects with order by or limit/top");
+
 			if (Dialect is Oracle8iDialect)
 				Assert.Ignore("On Oracle this generates a correlated subquery two levels deep which isn't supported until Oracle 10g.");
 
@@ -208,6 +211,9 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore("Dialect does not support scalar sub-selects");
+
+			if (!TestDialect.SupportsOrderByAndLimitInSubQueries)
+				Assert.Ignore("Dialect does not support sub-selects with order by or limit/top");
 
 			if (Dialect is Oracle8iDialect)
 				Assert.Ignore("On Oracle this generates a correlated subquery two levels deep which isn't supported until Oracle 10g.");
