@@ -96,6 +96,8 @@ namespace NHibernate.AdoNet
 
 					foreach (var command in _currentBatchCommands)
 					{
+						// Batching with HANA works by simply defining multiple times each command parameter.
+						// (Undocumented feature explained by a developer of the provider.)
 						foreach (DbParameter parameter in command.Parameters)
 						{
 							_currentBatch.Parameters.Add(parameter);
