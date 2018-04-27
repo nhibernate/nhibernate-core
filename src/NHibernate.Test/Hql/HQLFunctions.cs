@@ -1,5 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Dialect;
 using NUnit.Framework;
 
@@ -21,6 +25,19 @@ namespace NHibernate.Test.Hql
 						{"locate", new[] {typeof (SQLiteDialect)}},
 						{"bit_length", new[] {typeof (SQLiteDialect)}},
 						{"extract", new[] {typeof (SQLiteDialect)}},
+						{
+							"bxor",
+							new[]
+							{
+								// Could be supported like Oracle, with a template
+								typeof (SQLiteDialect),
+								// Could be supported by overriding registration with # instead of ^
+								typeof (PostgreSQLDialect),
+								typeof (PostgreSQL81Dialect),
+								typeof (PostgreSQL82Dialect),
+								typeof (PostgreSQL83Dialect)
+							}
+						},
 						{
 							"nullif",
 							new[]
@@ -1068,7 +1085,202 @@ group by mr.Description";
 				Assert.AreEqual(1, l.Count);
 			}
 		}
+
+		[Test]
+		public void BitwiseAnd()
+		{
+			IgnoreIfNotSupported("band");
+			CreateMaterialResources();
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var query = s.CreateQuery("from MaterialResource m where (m.State & 1) > 0");
+				var result = query.List();
+				Assert.That(result, Has.Count.EqualTo(1), "& 1");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State & 2) > 0");
+				result = query.List();
+				Assert.That(result, Has.Count.EqualTo(1), "& 2");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State & 3) > 0");
+				result = query.List();
+				Assert.That(result, Has.Count.EqualTo(2), "& 3");
+
+				tx.Commit();
+			}
+			DeleteMaterialResources();
+		}
+
+		[Test]
+		public void BitwiseOr()
+		{
+			IgnoreIfNotSupported("bor");
+			CreateMaterialResources();
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var query = s.CreateQuery("from MaterialResource m where (m.State | 1) > 0");
+				var result = query.List();
+				Assert.That(result, Has.Count.EqualTo(3), "| 1) > 0");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State | 1) > 1");
+				result = query.List();
+				Assert.That(result, Has.Count.EqualTo(1), "| 1) > 1");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State | 0) > 0");
+				result = query.List();
+				Assert.That(result, Has.Count.EqualTo(2), "| 0) > 0");
+
+				tx.Commit();
+			}
+			DeleteMaterialResources();
+		}
+
+		[Test]
+		public void BitwiseXor()
+		{
+			IgnoreIfNotSupported("bxor");
+			CreateMaterialResources();
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var query = s.CreateQuery("from MaterialResource m where (m.State ^ 1) > 0");
+				var result = query.List();
+				Assert.That(result, Has.Count.EqualTo(2), "^ 1");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State ^ 2) > 0");
+				result = query.List();
+				Assert.That(result, Has.Count.EqualTo(2), "^ 2");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State ^ 3) > 0");
+				result = query.List();
+				Assert.That(result, Has.Count.EqualTo(3), "^ 3");
+
+				tx.Commit();
+			}
+			DeleteMaterialResources();
+		}
+
+		[Test]
+		public void BitwiseNot()
+		{
+			IgnoreIfNotSupported("bnot");
+			IgnoreIfNotSupported("band");
+			CreateMaterialResources();
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				// ! takes not precedence over & at least with some dialects (maybe all).
+				var query = s.CreateQuery("from MaterialResource m where ((!m.State) & 3) = 3");
+				var result = query.List();
+				Assert.That(result, Has.Count.EqualTo(1), "((!m.State) & 3) = 3");
+
+				query = s.CreateQuery("from MaterialResource m where ((!m.State) & 3) = 2");
+				result = query.List();
+				Assert.That(result, Has.Count.EqualTo(1), "((!m.State) & 3) = 2");
+
+				query = s.CreateQuery("from MaterialResource m where ((!m.State) & 3) = 1");
+				result = query.List();
+				Assert.That(result, Has.Count.EqualTo(1), "((!m.State) & 3) = 1");
+
+				tx.Commit();
+			}
+			DeleteMaterialResources();
+		}
+
+		// #1670
+		[Test]
+		public void BitwiseIsThreadsafe()
+		{
+			IgnoreIfNotSupported("band");
+			IgnoreIfNotSupported("bor");
+			IgnoreIfNotSupported("bxor");
+			IgnoreIfNotSupported("bnot");
+			var queries = new List<Tuple<string, int>>
+			{
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State & 1) > 0", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State & 2) > 0", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State & 3) > 0", 2),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State | 1) > 0", 3),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State | 1) > 1", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State | 0) > 0", 2),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State ^ 1) > 0", 2),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State ^ 2) > 0", 2),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State ^ 3) > 0", 3),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where ((!m.State) & 3) = 3", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where ((!m.State) & 3) = 2", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where ((!m.State) & 3) = 1", 1)
+			};
+			// Do not use a ManualResetEventSlim, it does not support async and exhausts the task thread pool in the
+			// async counterparts of this test. SemaphoreSlim has the async support and release the thread when waiting.
+			var semaphore = new SemaphoreSlim(0);
+			var failures = new ConcurrentBag<Exception>();
+
+			CreateMaterialResources();
+
+			Parallel.For(
+				0, queries.Count + 1,
+				i =>
+				{
+					if (i >= queries.Count)
+					{
+						// Give some time to threads for reaching the wait, having all of them ready to do the
+						// critical part of their job concurrently.
+						Thread.Sleep(100);
+						semaphore.Release(queries.Count);
+						return;
+					}
+
+					try
+					{
+						var query = queries[i];
+						using (var s = OpenSession())
+						using (var tx = s.BeginTransaction())
+						{
+							semaphore.Wait();
+							var q = s.CreateQuery(query.Item1);
+							var result = q.UniqueResult<long>();
+							Assert.That(result, Is.EqualTo(query.Item2), query.Item1);
+							tx.Commit();
+						}
+					}
+					catch (Exception e)
+					{
+						failures.Add(e);
+					}
+				});
+
+			Assert.That(failures, Is.Empty, $"{failures.Count} task(s) failed.");
+			DeleteMaterialResources();
+		}
+
+		private void CreateMaterialResources()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.Save(new MaterialResource("m1", "18", MaterialResource.MaterialState.Available));
+				s.Save(new MaterialResource("m2", "19", MaterialResource.MaterialState.Reserved));
+				s.Save(new MaterialResource("m3", "20", MaterialResource.MaterialState.Discarded));
+				tx.Commit();
+			}
+		}
+
+		private void DeleteMaterialResources()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.CreateQuery("delete from MaterialResource").ExecuteUpdate();
+				tx.Commit();
+			}
+		}
 	}
+
 	public class ForNh1725
 	{
 		public string Description { get; set; }
