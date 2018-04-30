@@ -38,6 +38,7 @@ namespace NHibernate.Context
 						{
 							await (orphan.Transaction.RollbackAsync(cancellationToken)).ConfigureAwait(false);
 						}
+						catch (OperationCanceledException) { throw; }
 						catch (Exception ex)
 						{
 							log.Debug(ex, "Unable to rollback transaction for orphaned session");
@@ -45,6 +46,8 @@ namespace NHibernate.Context
 					}
 					orphan.Close();
 				}
+
+				catch (OperationCanceledException) { throw; }
 				catch (Exception ex)
 				{
 					log.Debug(ex, "Unable to close orphaned session");

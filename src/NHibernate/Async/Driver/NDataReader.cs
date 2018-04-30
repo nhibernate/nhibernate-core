@@ -60,6 +60,8 @@ namespace NHibernate.Driver
 
 				dataReader.results = resultList.ToArray();
 			}
+
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				throw new ADOException("There was a problem converting an DbDataReader to NDataReader", e);

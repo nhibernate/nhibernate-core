@@ -39,31 +39,17 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public Task ReadWriteNormalAsync()
 		{
-			try
-			{
-				var expected = DateTime.Today;
+			var expected = DateTime.Today;
 
-				return ReadWriteAsync(expected);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return ReadWriteAsync(expected);
 		}
 
 		[Test]
 		public Task ReadWriteMinAsync()
 		{
-			try
-			{
-				var expected = Sfi.ConnectionProvider.Driver.MinDate;
+			var expected = Sfi.ConnectionProvider.Driver.MinDate;
 
-				return ReadWriteAsync(expected);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return ReadWriteAsync(expected);
 		}
 
 		[Test]

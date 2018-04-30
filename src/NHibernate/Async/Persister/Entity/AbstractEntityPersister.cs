@@ -288,6 +288,7 @@ namespace NHibernate.Persister.Entity
 						await (PropertyTypes[i].NullSafeSetAsync(statement, fields[i], index, includeColumns[i], session, cancellationToken)).ConfigureAwait(false);
 						index += ArrayHelper.CountTrue(includeColumns[i]); //TODO:  this is kinda slow...
 					}
+					catch (OperationCanceledException) { throw; }
 					catch (Exception ex)
 					{
 						throw new PropertyValueException("Error dehydrating property value for", EntityName, entityMetamodel.PropertyNames[i], ex);
@@ -520,6 +521,8 @@ namespace NHibernate.Persister.Entity
 						expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(insertCmd, cancellationToken)).ConfigureAwait(false), insertCmd);
 					}
 				}
+
+				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{
 					if (useBatch)
@@ -787,6 +790,8 @@ namespace NHibernate.Persister.Entity
 						Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), tableId, j, expectation, statement);
 					}
 				}
+
+				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{
 					if (useBatch)

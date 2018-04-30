@@ -24,15 +24,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
         [Test]
         public Task TestSaveAndLoadWithTwoCountsAsync()
         {
-            try
-            {
-                Project.TestAccessToList = false;
-                return SaveAndLoadProjectAsync();
-            }
-            catch (System.Exception ex)
-            {
-                return Task.FromException<object>(ex);
-            }
+            Project.TestAccessToList = false;
+            return SaveAndLoadProjectAsync();
         }
 
         /// <summary>
@@ -41,15 +34,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
         [Test]
         public Task TestRefreshWithTwoCountsAsync()
         {
-            try
-            {
-                Project.TestAccessToList = false;
-                return SaveLoadAndRefreshProjectAsync();
-            }
-            catch (System.Exception ex)
-            {
-                return Task.FromException<object>(ex);
-            }
+            Project.TestAccessToList = false;
+            return SaveLoadAndRefreshProjectAsync();
         }
 
         /// <summary>
@@ -58,15 +44,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
         [Test]
         public Task TestTestSaveAndLoadWithThreeCountsAsync()
         {
-            try
-            {
-                Project.TestAccessToList = true;
-                return SaveAndLoadProjectAsync();
-            }
-            catch (System.Exception ex)
-            {
-                return Task.FromException<object>(ex);
-            }
+            Project.TestAccessToList = true;
+            return SaveAndLoadProjectAsync();
         }
 
         /// <summary>
@@ -76,15 +55,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
         [Test]
         public Task TestRefreshWithThreeCountsAsync()
         {
-            try
-            {
-                Project.TestAccessToList = true;
-                return SaveLoadAndRefreshProjectAsync();
-            }
-            catch (System.Exception ex)
-            {
-                return Task.FromException<object>(ex);
-            }
+            Project.TestAccessToList = true;
+            return SaveLoadAndRefreshProjectAsync();
         }
 
 

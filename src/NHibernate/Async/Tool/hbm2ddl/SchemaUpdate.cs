@@ -97,6 +97,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 				await (new SchemaUpdate(cfg).ExecuteAsync(script, doUpdate, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				log.Error(e, "Error running schema update");
@@ -159,6 +160,7 @@ namespace NHibernate.Tool.hbm2ddl
 					meta = new DatabaseMetadata(connection, dialect);
 					stmt = connection.CreateCommand();
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception sqle)
 				{
 					exceptions.Add(sqle);
@@ -187,6 +189,8 @@ namespace NHibernate.Tool.hbm2ddl
 							await (stmt.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 						}
 					}
+
+					catch (OperationCanceledException) { throw; }
 					catch (Exception e)
 					{
 						exceptions.Add(e);
@@ -196,6 +200,8 @@ namespace NHibernate.Tool.hbm2ddl
 
 				log.Info("schema update complete");
 			}
+
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				exceptions.Add(e);
@@ -211,6 +217,7 @@ namespace NHibernate.Tool.hbm2ddl
 					}
 					connectionHelper.Release();
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{
 					exceptions.Add(e);

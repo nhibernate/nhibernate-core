@@ -155,6 +155,7 @@ namespace NHibernate.Test.Cascade.Circle
 					await (session.MergeAsync(route, cancellationToken));
 					Assert.Fail("should have thrown an exception");
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception ex)
 				{
 					Assert.That(ex, Is.TypeOf(typeof(PropertyValueException)));

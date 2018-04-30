@@ -48,15 +48,8 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 		[Test]
 		public Task ShouldVerifySameTableAsync()
 		{
-			try
-			{
-				var validator = new Tool.hbm2ddl.SchemaValidator((_configuration1));
-				return validator.ValidateAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			var validator = new Tool.hbm2ddl.SchemaValidator((_configuration1));
+			return validator.ValidateAsync();
 		}
 
 #if NETFX

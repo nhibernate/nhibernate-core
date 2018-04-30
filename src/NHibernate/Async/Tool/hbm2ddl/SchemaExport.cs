@@ -170,6 +170,7 @@ namespace NHibernate.Tool.hbm2ddl
 					await (ExecuteSqlAsync(statement, sql, cancellationToken)).ConfigureAwait(false);
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				log.Warn("Unsuccessful: {0}", sql);
@@ -286,6 +287,7 @@ namespace NHibernate.Tool.hbm2ddl
 						statement.Dispose();
 					}
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{
 					log.Error(e, "Could not close connection: {0}", e.Message);
@@ -296,6 +298,7 @@ namespace NHibernate.Tool.hbm2ddl
 					{
 						exportOutput.Close();
 					}
+					catch (OperationCanceledException) { throw; }
 					catch (Exception ioe)
 					{
 						log.Error(ioe, "Error closing output file {0}: {1}", outputFile, ioe.Message);

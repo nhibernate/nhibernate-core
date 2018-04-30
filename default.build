@@ -50,6 +50,8 @@
 			<arg value="msbuild" />
 			<arg value="/t:Restore" />
 			<arg value="${root.dir}/src/NHibernate.sln" />
+			<arg value="/p:Platform=&quot;Any CPU&quot;" />
+			<arg value="/p:Configuration=&quot;${build.config}&quot;"/>
 		</exec> 
 	</target>
 
