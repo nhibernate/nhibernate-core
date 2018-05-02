@@ -1,3 +1,5 @@
+using Environment = NHibernate.Cfg.Environment;
+
 namespace NHibernate.Dialect
 {
 	/// <summary>
@@ -12,12 +14,17 @@ namespace NHibernate.Dialect
 	///		</listheader>
 	///		<item>
 	///			<term>connection.driver_class</term>
-	///			<description><see cref="NHibernate.Driver.HanaDriver" /></description>
+	///			<description><see cref="NHibernate.Driver.HanaColumnStoreDriver" /></description>
 	///		</item>
 	/// </list>
 	/// </remarks>
 	public class HanaColumnStoreDialect : HanaDialectBase
 	{
+		public HanaColumnStoreDialect()
+		{
+			DefaultProperties[Environment.ConnectionDriver] = typeof(NHibernate.Driver.HanaColumnStoreDriver).FullName;
+		}
+
 		/// <inheritdoc />
 		public override string CreateTableString => "create column table";
 

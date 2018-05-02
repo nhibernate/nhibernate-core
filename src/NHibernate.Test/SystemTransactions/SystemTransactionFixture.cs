@@ -185,7 +185,7 @@ namespace NHibernate.Test.SystemTransactions
 			// on concurrent threads. This creates race conditions when chaining scopes, the subsequent scope usage
 			// finding the connection still enlisted in the previous transaction, its complete being still not finished
 			// on its own thread.
-			if (Sfi.ConnectionProvider.Driver is HanaDriver)
+			if (Sfi.ConnectionProvider.Driver is HanaDriverBase)
 				Assert.Ignore("SAP HANA scope handling causes concurrency issues preventing chaining scope usages.");
 
 			using (var s = WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())

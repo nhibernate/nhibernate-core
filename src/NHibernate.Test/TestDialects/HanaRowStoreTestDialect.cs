@@ -6,5 +6,7 @@
 			: base(dialect)
 		{
 		}
+
+		public override bool SupportsSelectForUpdateOnOuterJoin => false;
 	}
 }

@@ -8,26 +8,12 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
-using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
 	/// <summary>
 	/// A SQL dialect base class for SAP HANA
 	/// </summary>
-	/// <remarks>
-	/// The HanaDialectBase defaults the following configuration properties:
-	/// <list type="table">
-	///		<listheader>
-	///			<term>Property</term>
-	///			<description>Default Value</description>
-	///		</listheader>
-	///		<item>
-	///			<term>connection.driver_class</term>
-	///			<description><see cref="NHibernate.Driver.HanaDriver" /></description>
-	///		</item>
-	/// </list>
-	/// </remarks>
 	public abstract class HanaDialectBase : Dialect
 	{
 		[Serializable]
@@ -129,8 +115,6 @@ namespace NHibernate.Dialect
 
 			//functions:
 			RegisterFunctions();
-
-			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.HanaDriver";
 		}
 
 		#region private static readonly string[] DialectKeywords = { ... }
@@ -916,7 +900,7 @@ namespace NHibernate.Dialect
 		public override bool SupportsEmptyInList => false;
 
 		/// <inheritdoc />
-		public override bool SupportsRowValueConstructorSyntax => true;
+		public override bool SupportsRowValueConstructorSyntax => false; // HANA supports this, but setting it to true causes the tests NH2294 and NH2394 to fail (see issue #1676)
 
 		/// <inheritdoc />
 		public override bool SupportsRowValueConstructorSyntaxInInList => true;
