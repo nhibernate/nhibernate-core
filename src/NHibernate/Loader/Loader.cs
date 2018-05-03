@@ -1369,7 +1369,13 @@ namespace NHibernate.Loader
 			// potential deadlock issues due to nature of code.
 			try
 			{
-				Log.Debug("Wrapping result set [{0}]", rs);
+				if (Log.IsDebugEnabled())
+				{
+					// Do not log the result set as-is, it is an IEnumerable which may get enumerated by loggers.
+					// (Serilog does that.) See #1667.
+					Log.Debug("Wrapping result set [{0}]", rs.GetType());
+				}
+
 				return new ResultSetWrapper(rs, RetreiveColumnNameToIndexCache(rs));
 			}
 			catch (Exception e)
