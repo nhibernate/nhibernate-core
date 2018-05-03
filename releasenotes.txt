@@ -1,4 +1,16 @@
-﻿Build 5.0.5
+﻿Build 5.0.6
+=============================
+
+Release notes - NHibernate - Version 5.0.6
+
+** Bug
+    * #1672 Generated async methods do not correctly propagate OperationCanceledException
+    * #1355 NH-3928 - Random invalid SQL generated when using bitwise operators
+
+** Task
+    * #1686 Release 5.0.6
+
+Build 5.0.5
 =============================
 
 Release notes - NHibernate - Version 5.0.5
