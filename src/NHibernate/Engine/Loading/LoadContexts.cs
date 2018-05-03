@@ -136,7 +136,9 @@ namespace NHibernate.Engine.Loading
 			{
 				if (log.IsDebugEnabled())
 				{
-					log.Debug("constructing collection load context for result set [{0}]", resultSet);
+					// Do not log the resultSet as-is, it is an IEnumerable which may get enumerated by loggers.
+					// (Serilog does that.) See #1667.
+					log.Debug("constructing collection load context for result set [{0}]", resultSet.GetType());
 				}
 				context = new CollectionLoadContext(this, resultSet);
 				collectionLoadContexts[resultSet] = context;
