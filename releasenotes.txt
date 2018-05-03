@@ -1,3 +1,11 @@
+Build 4.1.2.GA
+=============================
+
+Release notes - NHibernate - Version 4.1.2.GA
+
+** Bug
+    * #1355 NH-3928 - Random invalid SQL generated when using bitwise operators
+
 Build 4.1.1.GA
 =============================
 
