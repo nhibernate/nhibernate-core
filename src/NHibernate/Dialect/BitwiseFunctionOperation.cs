@@ -14,99 +14,63 @@ namespace NHibernate.Dialect
 	public class BitwiseFunctionOperation : ISQLFunction
 	{
 		private readonly string _functionName;
-		private SqlStringBuilder _sqlBuffer;
-		private Queue _args;
 
 		/// <summary>
-		/// Creates an instance of this class using the provided function name
+		/// Creates an instance of this class using the provided function name.
 		/// </summary>
 		/// <param name="functionName">
-		/// The bitwise function name as defined by the SQL-Dialect
+		/// The bitwise function name as defined by the SQL-Dialect.
 		/// </param>
 		public BitwiseFunctionOperation(string functionName)
 		{
-			_functionName = functionName;			
+			_functionName = functionName;
 		}
 
 		#region ISQLFunction Members
 
+		/// <inheritdoc />
 		public IType ReturnType(IType columnType, IMapping mapping)
 		{
 			return NHibernateUtil.Int64;
 		}
 
-		public bool HasArguments
-		{
-			get { return true; }
-		}
+		/// <inheritdoc />
+		public bool HasArguments => true;
 
-		public bool HasParenthesesIfNoArguments
-		{
-			get { return true; }
-		}
+		/// <inheritdoc />
+		public bool HasParenthesesIfNoArguments => true;
 
+		/// <inheritdoc />
 		public SqlString Render(IList args, ISessionFactoryImplementor factory)
 		{
-			Prepare(args);
+			var sqlBuffer = new SqlStringBuilder();
 
-			AddFunctionName(); 
-			OpenParens(); 
-			AddArguments(); 
-			CloseParens();
+			sqlBuffer.Add(_functionName);
+			sqlBuffer.Add("(");
+			foreach (var arg in args)
+			{
+				// The actual second argument may be surrounded by parentesis as additional arguments.
+				// They have to be ignored, otherwise it would emit "functionName(firstArg, (, secondArg, ))"
+				if (IsParens(arg.ToString()))
+					continue;
+				if (arg is Parameter || arg is SqlString)
+					sqlBuffer.AddObject(arg);
+				else
+					sqlBuffer.Add(arg.ToString());
+				sqlBuffer.Add(", ");
+			}
 
-			return SqlResult();
+			sqlBuffer.RemoveAt(sqlBuffer.Count - 1);
+			sqlBuffer.Add(")");
+
+			return sqlBuffer.ToSqlString();
 		}
 
 		#endregion
 
-		private void Prepare(IList args)
-		{
-			_sqlBuffer = new SqlStringBuilder();
-			_args = new Queue();
-			foreach (var arg in args)
-			{
-				if (!IsParens(arg.ToString()))
-					_args.Enqueue(arg);
-			}
-		}
-
 		private static bool IsParens(string candidate)
 		{
 			return candidate == "(" || candidate == ")";
-		}
-
-		private void AddFunctionName()
-		{
-			_sqlBuffer.Add(_functionName);
-		}
-
-		private void OpenParens()
-		{
-			_sqlBuffer.Add("(");
-		}
-
-		private void AddArguments()
-		{
-			while (_args.Count > 0)
-			{
-				var arg = _args.Dequeue();
-				if (arg is Parameter || arg is SqlString)
-					_sqlBuffer.AddObject(arg);
-				else
-					_sqlBuffer.Add(arg.ToString());
-				if (_args.Count > 0)
-					_sqlBuffer.Add(", ");
-			}
-		}
-
-		private void CloseParens()
-		{
-			_sqlBuffer.Add(")");
-		}
-
-		private SqlString SqlResult()
-		{
-			return _sqlBuffer.ToSqlString();
 		}
 	}
 }
