@@ -23,5 +23,27 @@
 		/// HANA 2 SP3 yields in such case: correlated subquery cannot have TOP or ORDER BY
 		/// </remarks>
 		public override bool SupportsOrderByAndLimitInSubQueries => false;
+
+		/// <inheritdoc />
+		/// <remarks>
+		/// HANA 2 SP3 with its .Net data provider yields 0 instead of the value.
+		/// </remarks>
+		public override bool SupportsSelectingDoubleLiteral => false;
+
+		/// <inheritdoc />
+		/// <remarks>
+		/// HANA 2 SP3 fails creating the foreign key with the message
+		/// "expression is of wrong type: cannot convert 'boolean' to 'varchar'".
+		/// </remarks>
+		public override bool SupportsFKOnCompositeKeyWithBoolean => false;
+
+		/// <inheritdoc />
+		/// <remarks>
+		/// HANA 2 SP3 with its .Net data provider regularly fails to open connections in tests involving
+		/// many parallel connection openings. It yields a message beginning with "Could not open connection to:"
+		/// followed by the connection string, with a <c>System.Runtime.InteropServices.SEHException</c> inner
+		/// exception (External component has thrown an exception).
+		/// </remarks>
+		public override bool SupportsConcurrencyTests => false;
 	}
 }

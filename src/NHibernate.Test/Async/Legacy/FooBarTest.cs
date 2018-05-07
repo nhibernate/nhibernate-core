@@ -4103,6 +4103,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task UpdateFromTransientAsync()
 		{
+			if (!TestDialect.SupportsBatchingDependentDML)
+				Assert.Ignore($"Dialect {Dialect} does not support batching of dependent DML (fee update on related fee)");
+
 			ISession s = OpenSession();
 			Fee fee1 = new Fee();
 			await (s.SaveAsync(fee1));

@@ -107,5 +107,26 @@ namespace NHibernate.Test
 		/// Supports order by and limits/top in correlated sub-queries
 		/// </summary>
 		public virtual bool SupportsOrderByAndLimitInSubQueries => true;
+
+		/// <summary>
+		/// Supports selecting a double literal.
+		/// </summary>
+		public virtual bool SupportsSelectingDoubleLiteral => true;
+
+		/// <summary>
+		/// Supports foreign keys on composite keys including a boolean column.
+		/// </summary>
+		public virtual bool SupportsFKOnCompositeKeyWithBoolean => true;
+
+		/// <summary>
+		/// Supports tests involving concurrency.
+		/// </summary>
+		public virtual bool SupportsConcurrencyTests => true;
+
+		/// <summary>
+		/// Supports batching together inserts/updates/Delets among which some depends (auto foreign key) on others
+		/// in the batch.
+		/// </summary>
+		public virtual bool SupportsBatchingDependentDML => true;
 	}
 }

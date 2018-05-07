@@ -54,6 +54,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3436
 		[Test]
 		public void TestQueryWithContainsInParallel()
 		{
+			if (!TestDialect.SupportsConcurrencyTests)
+			{
+				Assert.Ignore($"Dialect {Dialect} does not supports concurrency tests");
+			}
+
 			var ids = new List<Guid>
 			{
 				Guid.NewGuid(),
