@@ -10,7 +10,6 @@
 
 using System.Data;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 using NHibernate.Mapping;
 using NUnit.Framework;
 
@@ -49,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
         [Test]
         public async Task StringHugeLengthAsync()
         {
-			if (Sfi.ConnectionProvider.Driver is OdbcDriver || Dialect is MsSqlCeDialect)
+			if (Sfi.ConnectionProvider.Driver.IsOdbcDriver() || Dialect is MsSqlCeDialect)
 				Assert.Ignore("NH-4065, not fixed for Odbc and MsSqlCe");
 
             int id;

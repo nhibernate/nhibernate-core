@@ -4,7 +4,6 @@ using System.Xml.Linq;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
@@ -34,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3405
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
 			// No Xml support with Odbc (and likely OleDb too).
-			return factory.ConnectionProvider.Driver is SqlClientDriver;
+			return factory.ConnectionProvider.Driver.IsSqlClientDriver();
 		}
 
 		protected override HbmMapping GetMappings()

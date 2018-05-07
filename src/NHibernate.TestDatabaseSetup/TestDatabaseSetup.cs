@@ -20,17 +20,25 @@ namespace NHibernate.TestDatabaseSetup
 		private static readonly IDictionary<string, Action<Cfg.Configuration>> SetupMethods = new Dictionary<string, Action<Cfg.Configuration>>
 			{
 				{"NHibernate.Driver.SqlClientDriver", SetupSqlServer},
+				{"NHibernate.Driver.SqlServer2000Driver, NHibernate.Driver.SqlServer", SetupSqlServer},
 				{"NHibernate.Driver.Sql2008ClientDriver", SetupSqlServer},
+				{"NHibernate.Driver.SqlServer2008Driver, NHibernate.Driver.SqlServer", SetupSqlServer},
 				{"NHibernate.Driver.FirebirdClientDriver", SetupFirebird},
+				{"NHibernate.Driver.FirebirdDriver, NHibernate.Driver.Firebird", SetupFirebird},
 				{"NHibernate.Driver.NpgsqlDriver", SetupNpgsql},
+				{"NHibernate.Driver.PostgreSqlDriver, NHibernate.Driver.PostgreSql", SetupNpgsql},
 				{"NHibernate.Driver.OracleDataClientDriver", SetupOracle},
 				{"NHibernate.Driver.MySqlDataDriver", SetupMySql},
+				{"NHibernate.Driver.MySqlDriver, NHibernate.Driver.MySql", SetupMySql},
 				{"NHibernate.Driver.OracleClientDriver", SetupOracle},
 				{"NHibernate.Driver.OracleManagedDataClientDriver", SetupOracle},
+				{"NHibernate.Driver.OracleManagedDriver, NHibernate.Driver.Oracle.Managed", SetupOracle},
 				{"NHibernate.Driver.OdbcDriver", SetupSqlServerOdbc},
 #if NETFX
 				{"NHibernate.Driver.SQLite20Driver", SetupSQLite},
-				{"NHibernate.Driver.SqlServerCeDriver", SetupSqlServerCe}
+				{"NHibernate.Driver.SQLiteDriver, NHibernate.Driver.SQLite", SetupSQLite},
+				{"NHibernate.Driver.SqlServerCeDriver", SetupSqlServerCe},
+				{"NHibernate.Driver.SqlServerCompactDriver, NHibernate.Driver.SqlServer.Compact", SetupSqlServerCe},
 #endif
 			};
 

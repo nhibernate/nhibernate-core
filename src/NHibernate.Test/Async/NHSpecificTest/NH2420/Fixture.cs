@@ -14,7 +14,6 @@ using System.Data.SqlClient;
 using System.Configuration;
 using System.Transactions;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NUnit.Framework;
 
@@ -73,7 +72,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 						new DummyEnlistment(),
 						EnlistmentOptions.None);
 
-					if (Sfi.ConnectionProvider.Driver.GetType() == typeof(OdbcDriver))
+					if (Sfi.ConnectionProvider.Driver.GetType().IsOdbcDriver())
 						connection = new OdbcConnection(connectionString);
 					else
 						connection = new SqlConnection(connectionString);

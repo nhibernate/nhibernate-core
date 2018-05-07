@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-#if NETFX
+#if NETFX || DRIVER_PACKAGE
 using System.Data.SqlClient;
 #endif
 using NHibernate.AdoNet;
@@ -15,11 +15,22 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// A NHibernate Driver for using the SqlClient DataProvider
 	/// </summary>
+#if DRIVER_PACKAGE
+	public class SqlServer2000Driver
+#if NETFX
+		: DriverBase, IEmbeddedBatcherFactoryProvider
+#else
+		: DriverBase
+#endif
+#else
+	[Obsolete("Use NHibernate.Driver.SqlServer NuGet package and SqlServer2000Driver."
+		+ "  There are also Loquacious configuration points: .Connection.BySqlServer2000Driver() and .DataBaseIntegration(x => x.SqlServer2000Driver()).")]
 	public class SqlClientDriver
 #if NETFX
 		: DriverBase, IEmbeddedBatcherFactoryProvider
 #else
 		: ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
+#endif
 #endif
 	{
 		// Since v5.1
@@ -68,7 +79,7 @@ namespace NHibernate.Driver
 			_dialect = Dialect.Dialect.GetDialect(settings);
 		}
 
-#if !NETFX
+#if !NETFX && !DRIVER_PACKAGE
 		public SqlClientDriver()
 			: base("System.Data.SqlClient", "System.Data.SqlClient.SqlConnection", "System.Data.SqlClient.SqlCommand")
 		{
@@ -78,7 +89,7 @@ namespace NHibernate.Driver
 #else
 		/// <summary>
 		/// Creates an uninitialized <see cref="DbConnection" /> object for
-		/// the SqlClientDriver.
+		/// the SQL-Server driver.
 		/// </summary>
 		/// <value>An unitialized <see cref="System.Data.SqlClient.SqlConnection"/> object.</value>
 		public override DbConnection CreateConnection()
@@ -88,7 +99,7 @@ namespace NHibernate.Driver
 
 		/// <summary>
 		/// Creates an uninitialized <see cref="DbCommand" /> object for
-		/// the SqlClientDriver.
+		/// the SQL-Server driver.
 		/// </summary>
 		/// <value>An unitialized <see cref="System.Data.SqlClient.SqlCommand"/> object.</value>
 		public override DbCommand CreateCommand()
@@ -96,10 +107,12 @@ namespace NHibernate.Driver
 			return new System.Data.SqlClient.SqlCommand();
 		}
 
+#if NETFX
 		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass
 		{
 			get { return typeof(SqlClientBatchingBatcherFactory); }
 		}
+#endif
 #endif
 
 

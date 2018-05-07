@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -8,6 +9,7 @@ using System.Transactions;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Lock;
 using NHibernate.Dialect.Schema;
+using NHibernate.Driver;
 using NHibernate.Exceptions;
 using NHibernate.Id;
 using NHibernate.Mapping;
@@ -47,6 +49,7 @@ namespace NHibernate.Dialect
 		private readonly IDictionary<string, ISQLFunction> _sqlFunctions;
 
 		private static readonly IDictionary<string, ISQLFunction> StandardAggregateFunctions = CollectionHelper.CreateCaseInsensitiveHashtable<ISQLFunction>();
+		private static readonly ConcurrentDictionary<string, bool> ExternalDriverExistsCache = new ConcurrentDictionary<string, bool>();
 
 		private static readonly IViolatedConstraintNameExtracter Extracter;
 
@@ -2575,6 +2578,13 @@ namespace NHibernate.Dialect
 			// since SQLErrorCode is extremely vendor-specific.  Specific Dialects
 			// may override to return whatever is most appropriate for that vendor.
 			return new SQLStateConverter(ViolatedConstraintNameExtracter);
+		}
+
+		internal static string GetDriverName<TFallback>(string preferredName) where TFallback : IDriver
+		{
+			return ExternalDriverExistsCache.GetOrAdd(preferredName, s => ReflectHelper.ClassForFullNameOrNull(s) == null)
+				? typeof(TFallback).FullName
+				: preferredName;
 		}
 	}
 }

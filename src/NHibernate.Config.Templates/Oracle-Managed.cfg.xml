@@ -7,7 +7,7 @@ for your own use before compile tests in VisualStudio.
 <!-- This is the System.Data.OracleClient.dll provider for Oracle from MS -->
 <hibernate-configuration  xmlns="urn:nhibernate-configuration-2.2" >
 	<session-factory name="NHibernate.Test">
-		<property name="connection.driver_class">NHibernate.Driver.OracleManagedDataClientDriver</property>
+		<property name="connection.driver_class">NHibernate.Driver.OracleManagedDriver, NHibernate.Driver.Oracle.Managed</property>
 		<property name="connection.connection_string">
 			User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = ORCL)))
 		</property>

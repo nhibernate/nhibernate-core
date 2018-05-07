@@ -1,3 +1,4 @@
+using System;
 using System.Data.SqlClient;
 using NHibernate.AdoNet;
 using NHibernate.Dialect;
@@ -11,6 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3004
 	/// <summary>
 	/// A NHibernate Driver for using the SqlClient DataProvider
 	/// </summary>
+	[Obsolete("Uses old driver")]
 	public class TestSqlClientDriver : SqlClientDriver
 	{
 		bool _UseNamedPrefixInSql = true;

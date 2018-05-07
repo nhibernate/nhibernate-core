@@ -9,6 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.DriverTest
 {
 	[TestFixture]
+	[Obsolete("Uses old driver")]
 	public class FirebirdClientDriverFixture
 	{
 		private string _connectionString;

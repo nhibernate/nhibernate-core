@@ -4,9 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Transactions;
 using NHibernate.Cfg;
-using NHibernate.Driver;
 using NHibernate.Engine;
-using NHibernate.Linq;
 using NHibernate.Test.TransactionTest;
 using NUnit.Framework;
 
@@ -179,7 +177,7 @@ namespace NHibernate.Test.SystemTransactions
 			// ODBC with SQL-Server always causes scopes to go distributed, which causes their transaction completion to run
 			// asynchronously. But ODBC enlistment also check the previous transaction in a way that do not guard against it
 			// being concurrently disposed of. See https://github.com/nhibernate/nhibernate-core/pull/1505 for more details.
-			Assume.That(!(Sfi.ConnectionProvider.Driver is OdbcDriver),
+			Assume.That(!(Sfi.ConnectionProvider.Driver.IsOdbcDriver()),
 			            "ODBC sometimes fails on second scope by checking the previous transaction status, which may yield an object disposed exception");
 
 			using (var s = WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())

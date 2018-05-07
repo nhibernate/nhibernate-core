@@ -43,7 +43,7 @@ namespace NHibernate.Dialect
 	///	</listheader>
 	///	<item>
 	///		<term>connection.driver_class</term>
-	///		<description><see cref="NHibernate.Driver.SybaseSQLAnywhereDotNet4Driver" /></description>
+	///		<description>NHibernate.Driver.SybaseSQLAnywhereDotNet4Driver</description>
 	///	</item>
 	///	<item>
 	///		<term>prepare_sql</term>

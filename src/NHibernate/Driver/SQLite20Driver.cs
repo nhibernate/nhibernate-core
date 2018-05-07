@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.Common;
 
@@ -19,28 +20,54 @@ namespace NHibernate.Driver
 	/// Please check <a href="https://www.sqlite.org/">https://www.sqlite.org/</a> for more information regarding SQLite.
 	/// </para>
 	/// </remarks>
+#if DRIVER_PACKAGE
+	public class SQLiteDriver : DriverBase
+#else
+	[Obsolete("Use NHibernate.Driver.SQlLite NuGet package and SQLiteDriver."
+		+ "  There are also Loquacious configuration points: .Connection.BySQLiteDriver() and .DataBaseIntegration(x => x.SQLiteDriver()).")]
 	public class SQLite20Driver : ReflectionBasedDriver
+#endif
 	{
+#if DRIVER_PACKAGE
+		public SQLiteDriver()
+		{}
+#else
 		/// <summary>
 		/// Initializes a new instance of <see cref="SQLite20Driver"/>.
 		/// </summary>
 		/// <exception cref="HibernateException">
 		/// Thrown when the <c>SQLite.NET</c> assembly can not be loaded.
 		/// </exception>
-		public SQLite20Driver() : base(
-			"System.Data.SQLite",
-			"System.Data.SQLite",
-			"System.Data.SQLite.SQLiteConnection",
-			"System.Data.SQLite.SQLiteCommand")
+		public SQLite20Driver() 
+			: base(
+				"System.Data.SQLite",
+				"System.Data.SQLite",
+				"System.Data.SQLite.SQLiteConnection",
+				"System.Data.SQLite.SQLiteCommand")
 		{
 		}
+#endif
 
+#if DRIVER_PACKAGE
+		public override DbConnection CreateConnection()
+		{
+			var connection = new System.Data.SQLite.SQLiteConnection();
+			connection.StateChange += Connection_StateChange;
+			return connection;
+		}
+
+		public override DbCommand CreateCommand()
+		{
+			return new System.Data.SQLite.SQLiteCommand();
+		}
+#else
 		public override DbConnection CreateConnection()
 		{
 			var connection = base.CreateConnection();
 			connection.StateChange += Connection_StateChange;
 			return connection;
 		}
+#endif
 
 		private static void Connection_StateChange(object sender, StateChangeEventArgs e)
 		{

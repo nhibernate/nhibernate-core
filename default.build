@@ -223,6 +223,7 @@
 		<property name="bin-pack.tmpdir" value="${build.dir}/tmp-bin" />
 		<property name="bin-pack.conf-template" value="${bin-pack.tmpdir}/Configuration_Templates" />
 		<property name="bin-pack.required" value="${bin-pack.tmpdir}/Required_Bins" />
+		<property name="bin-pack.drivers" value="${bin-pack.tmpdir}/Select_Single_Driver" />
 		<property name="bin-pack.tests" value="${bin-pack.tmpdir}/Tests" />
 		
 		<copy file="releasenotes.txt" todir="${bin-pack.tmpdir}"/>
@@ -252,6 +253,41 @@
 				<include name="NHibernate.???" />
 				<include name="Remotion.Linq.???" />
 				<include name="Remotion.Linq.EagerFetching.???" />
+			</fileset>
+		</copy>
+		<copy todir="${bin-pack.drivers}">
+			<fileset basedir="${root.dir}/src/NHibernate.Driver.Firebird/bin/${build.config}/net461">
+				<include name="NHibernate.Driver.*.???" />
+			</fileset>
+		</copy>
+		<copy todir="${bin-pack.drivers}">
+			<fileset basedir="${root.dir}/src/NHibernate.Driver.MySql/bin/${build.config}/net461">
+				<include name="NHibernate.Driver.*.???" />
+			</fileset>
+		</copy>
+		<copy todir="${bin-pack.drivers}">
+			<fileset basedir="${root.dir}/src/NHibernate.Driver.Oracle.Managed/bin/${build.config}/net461">
+				<include name="NHibernate.Driver.*.???" />
+			</fileset>
+		</copy>
+		<copy todir="${bin-pack.drivers}">
+			<fileset basedir="${root.dir}/src/NHibernate.Driver.PostgreSql/bin/${build.config}/net461">
+				<include name="NHibernate.Driver.*.???" />
+			</fileset>
+		</copy>
+		<copy todir="${bin-pack.drivers}">
+			<fileset basedir="${root.dir}/src/NHibernate.Driver.SQLite/bin/${build.config}/net461">
+				<include name="NHibernate.Driver.*.???" />
+			</fileset>
+		</copy>
+		<copy todir="${bin-pack.drivers}">
+			<fileset basedir="${root.dir}/src/NHibernate.Driver.SqlServer/bin/${build.config}/net461">
+				<include name="NHibernate.Driver.*.???" />
+			</fileset>
+		</copy>
+		<copy todir="${bin-pack.drivers}">
+			<fileset basedir="${root.dir}/src/NHibernate.Driver.SqlServer.Compact/bin/${build.config}/net461">
+				<include name="NHibernate.Driver.*.???" />
 			</fileset>
 		</copy>
 		<!-- Tests -->

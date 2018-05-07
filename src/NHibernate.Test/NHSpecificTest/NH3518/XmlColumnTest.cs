@@ -1,7 +1,6 @@
 ﻿using System.Xml;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NUnit.Framework;
 
@@ -27,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3518
 
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
-			return factory.ConnectionProvider.Driver is SqlClientDriver;
+			return factory.ConnectionProvider.Driver.IsSqlClientDriver();
 		}
 
 		protected override void Configure(Configuration configuration)

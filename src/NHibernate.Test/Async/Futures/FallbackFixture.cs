@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Connection;
@@ -24,7 +25,7 @@ namespace NHibernate.Test.Futures
 	using System.Threading;
 
 	/// <summary>
-	/// I'm using a Driver which derives from SqlClientDriver to
+	/// I'm using a Driver which derives from SqlServer2000Driver to
 	/// return false for the SupportsMultipleQueries property. This is purely to test the way NHibernate
 	/// will behave when the driver that's being used does not support multiple queries... so even though
 	/// the test is using MsSql, it's only relevant for databases that don't support multiple queries
@@ -46,7 +47,7 @@ namespace NHibernate.Test.Futures
 			base.Configure(configuration);
 			using (var cp = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
 			{
-				if (cp.Driver is SqlClientDriver)
+				if (cp.Driver.IsSqlClientDriver())
 				{
 					configuration.Properties[Environment.ConnectionDriver] =
 						typeof(TestDriverThatDoesntSupportQueryBatching).AssemblyQualifiedName;

@@ -13,7 +13,6 @@ using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 using NHibernate.Exceptions;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
@@ -81,7 +80,7 @@ namespace NHibernate.Test.TypesTest
 			try
 			{
 				// This test case is for when the current driver will use a parameter size
-				// that is significantly larger than the mapped column size (e.g. SqlClientDriver currently).
+				// that is significantly larger than the mapped column size (e.g. SqlServer2000Driver currently).
 
 				// Note: This test could possible be written as
 				//   "database must raise an error OR it must store and return the full value"
@@ -139,7 +138,7 @@ namespace NHibernate.Test.TypesTest
 		{
 			var maxStringLength = GetLongStringMappedLength();
 
-			if (Sfi.ConnectionProvider.Driver is OdbcDriver && maxStringLength >= 2000)
+			if (Sfi.ConnectionProvider.Driver.IsOdbcDriver() && maxStringLength >= 2000)
 				Assert.Ignore("Odbc wrecks nvarchar parameter types when they are longer than 2000, it switch them to ntext");
 
 			var longString = new string('x', maxStringLength);
