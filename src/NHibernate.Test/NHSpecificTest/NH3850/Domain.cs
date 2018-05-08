@@ -11,6 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		public virtual decimal? Decimal { get; set; }
 		public virtual double? Double { get; set; }
 		public virtual DateTime? DateTime { get; set; }
+		public virtual DateTimeOffset? DateTimeOffset { get; set; }
 		public virtual decimal NonNullableDecimal { get; set; }
 	}
 
