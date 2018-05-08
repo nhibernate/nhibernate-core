@@ -66,6 +66,7 @@ namespace NHibernate.Tool.hbm2ddl
 				*/
 				await (new SchemaValidator(cfg).ValidateAsync(cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				log.Error("Error running schema update", e);
@@ -88,6 +89,7 @@ namespace NHibernate.Tool.hbm2ddl
 					var connection = connectionHelper.Connection;
 					meta = new DatabaseMetadata(connection, dialect, false);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception sqle)
 				{
 					log.Error("could not get database metadata", sqle);
@@ -95,6 +97,7 @@ namespace NHibernate.Tool.hbm2ddl
 				}
 				configuration.ValidateSchema(dialect, meta);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				log.Error("could not complete schema validation", e);

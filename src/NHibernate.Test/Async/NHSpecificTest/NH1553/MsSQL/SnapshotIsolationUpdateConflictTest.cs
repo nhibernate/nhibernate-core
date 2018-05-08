@@ -159,17 +159,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 			return factory.ConnectionProvider.Driver is SqlClientDriver;
 		}
 
-		private async Task SetAllowSnapshotIsolationAsync(bool on, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			using (ISession session = OpenSession())
-			{
-				var command = session.Connection.CreateCommand();
-				command.CommandText = "ALTER DATABASE " + session.Connection.Database + " set allow_snapshot_isolation "
-				                      + (on ? "on" : "off");
-				await (command.ExecuteNonQueryAsync(cancellationToken));
-			}
-		}
-
 		private void SetAllowSnapshotIsolation(bool on)
 		{
 			using (ISession session = OpenSession())

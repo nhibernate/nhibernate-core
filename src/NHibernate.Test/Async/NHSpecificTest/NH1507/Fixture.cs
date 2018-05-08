@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1507
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -33,54 +32,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1507
 		protected override void OnTearDown()
 		{
 			CleanupData();
-		}
-
-		private async Task CreateDataAsync(CancellationToken cancellationToken = default(CancellationToken))
-		{
-			//Employee
-			var emp = new Employee
-						{
-							Address = "Zombie street",
-							City = "Bitonto",
-							PostalCode = "66666",
-							FirstName = "tomb",
-							LastName = "mutilated"
-						};
-
-			//and his related orders
-			var order = new Order
-							{OrderDate = DateTime.Now, Employee = emp, ShipAddress = "dead zone 1", ShipCountry = "Deadville"};
-
-			var order2 = new Order
-							{OrderDate = DateTime.Now, Employee = emp, ShipAddress = "dead zone 2", ShipCountry = "Deadville"};
-
-			//Employee with no related orders but with same PostalCode
-			var emp2 = new Employee
-						{
-							Address = "Gut street",
-							City = "Mariotto",
-							Country = "Arised",
-							PostalCode = "66666",
-							FirstName = "carcass",
-							LastName = "purulent"
-						};
-
-			//Order with no related employee but with same ShipCountry
-			var order3 = new Order {OrderDate = DateTime.Now, ShipAddress = "dead zone 2", ShipCountry = "Deadville"};
-
-			using (ISession session = OpenSession())
-			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					await (session.SaveAsync(emp, cancellationToken));
-					await (session.SaveAsync(emp2, cancellationToken));
-					await (session.SaveAsync(order, cancellationToken));
-					await (session.SaveAsync(order2, cancellationToken));
-					await (session.SaveAsync(order3, cancellationToken));
-
-					await (tx.CommitAsync(cancellationToken));
-				}
-			}
 		}
 
 		private void CreateData()
@@ -127,23 +78,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1507
 					session.Save(order3);
 
 					tx.Commit();
-				}
-			}
-		}
-
-		private async Task CleanupDataAsync(CancellationToken cancellationToken = default(CancellationToken))
-		{
-			using (ISession session = OpenSession())
-			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					//delete empolyee and related orders
-					await (session.DeleteAsync("from Employee ee where ee.PostalCode = '66666'", cancellationToken));
-
-					//delete order not related to employee
-					await (session.DeleteAsync("from Order oo where oo.ShipCountry = 'Deadville'", cancellationToken));
-
-					await (tx.CommitAsync(cancellationToken));
 				}
 			}
 		}

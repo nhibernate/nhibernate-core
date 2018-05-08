@@ -39,6 +39,7 @@ namespace NHibernate.Connection
 				conn.ConnectionString = ConnectionString;
 				await (conn.OpenAsync(cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception)
 			{
 				conn.Dispose();

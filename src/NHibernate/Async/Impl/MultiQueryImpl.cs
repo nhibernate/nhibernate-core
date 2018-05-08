@@ -173,6 +173,7 @@ namespace NHibernate.Impl
 					}
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception sqle)
 			{
 				var message = string.Format("Failed to execute multi query: [{0}]", resultSetsCommand.Sql);

@@ -16,29 +16,12 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1792
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
 		protected override void OnTearDown()
 		{
 			DeleteAll();
-		}
-
-		/// <summary>
-		/// Deletes all the product entities from the persistence medium
-		/// </summary>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		private async Task DeleteAllAsync(CancellationToken cancellationToken = default(CancellationToken))
-		{
-			using (ISession session = OpenSession())
-			{
-				using (ITransaction trans = session.BeginTransaction())
-				{
-					await (session.DeleteAsync("from Product", cancellationToken));
-					await (trans.CommitAsync(cancellationToken));
-				}
-			}
 		}
 
 		/// <summary>
