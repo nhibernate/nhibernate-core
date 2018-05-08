@@ -243,6 +243,7 @@ namespace NHibernate.Type
 				}
 				return result == null ? null : persistenceContext.ProxyFor(result);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				// Do not call Convert on HibernateExceptions

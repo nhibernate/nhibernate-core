@@ -193,6 +193,7 @@ namespace NHibernate.Collection.Generic
 					}
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception sqle)
 			{
 				throw new ADOException("Could not generate idbag row id.", sqle);

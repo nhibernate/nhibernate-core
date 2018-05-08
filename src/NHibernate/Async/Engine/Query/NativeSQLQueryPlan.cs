@@ -96,6 +96,7 @@ namespace NHibernate.Engine.Query
 					}
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				throw;
