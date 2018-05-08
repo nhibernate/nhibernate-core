@@ -48,12 +48,39 @@ namespace NHibernate.Linq.Functions
 				ReflectHelper.GetMethodDefinition(() => Math.Floor(default(decimal))),
 				ReflectHelper.GetMethodDefinition(() => Math.Floor(default(double))),
 				ReflectHelper.GetMethodDefinition(() => decimal.Floor(default(decimal))),
-				
+
 				ReflectHelper.GetMethodDefinition(() => Math.Ceiling(default(decimal))),
 				ReflectHelper.GetMethodDefinition(() => Math.Ceiling(default(double))),
 				ReflectHelper.GetMethodDefinition(() => decimal.Ceiling(default(decimal))),
-				
+
 				ReflectHelper.GetMethodDefinition(() => Math.Pow(default(double), default(double))),
+
+#if NETCOREAPP2_0
+				ReflectHelper.GetMethodDefinition(() => MathF.Sin(default(float))),
+				ReflectHelper.GetMethodDefinition(() => MathF.Cos(default(float))),
+				ReflectHelper.GetMethodDefinition(() => MathF.Tan(default(float))),
+
+				ReflectHelper.GetMethodDefinition(() => MathF.Sinh(default(float))),
+				ReflectHelper.GetMethodDefinition(() => MathF.Cosh(default(float))),
+				ReflectHelper.GetMethodDefinition(() => MathF.Tanh(default(float))),
+
+				ReflectHelper.GetMethodDefinition(() => MathF.Asin(default(float))),
+				ReflectHelper.GetMethodDefinition(() => MathF.Acos(default(float))),
+				ReflectHelper.GetMethodDefinition(() => MathF.Atan(default(float))),
+				ReflectHelper.GetMethodDefinition(() => MathF.Atan2(default(float), default(float))),
+
+				ReflectHelper.GetMethodDefinition(() => MathF.Sqrt(default(float))),
+
+				ReflectHelper.GetMethodDefinition(() => MathF.Abs(default(float))),
+
+				ReflectHelper.GetMethodDefinition(() => MathF.Sign(default(float))),
+
+				ReflectHelper.GetMethodDefinition(() => MathF.Floor(default(float))),
+
+				ReflectHelper.GetMethodDefinition(() => MathF.Ceiling(default(float))),
+
+				ReflectHelper.GetMethodDefinition(() => MathF.Pow(default(float), default(float))),
+#endif
 			};
 		}
 

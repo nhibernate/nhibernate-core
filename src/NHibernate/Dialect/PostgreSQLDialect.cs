@@ -84,6 +84,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("atan2", new StandardSQLFunction("atan2", NHibernateUtil.Double));
 
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
+			RegisterFunction("bxor", new BitwiseNativeOperation("#"));
 
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
