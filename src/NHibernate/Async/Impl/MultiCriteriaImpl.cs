@@ -205,6 +205,7 @@ namespace NHibernate.Impl
 					}
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception sqle)
 			{
 				var message = string.Format("Failed to execute multi criteria: [{0}]", resultSetsCommand.Sql);

@@ -383,7 +383,6 @@ namespace NHibernate.Cache
 			{
 				return Task.FromException<object>(ex);
 			}
-			// NOOP
 		}
 
 		public Task<bool> UpdateAsync(CacheKey key, object value, object currentVersion, object previousVersion, CancellationToken cancellationToken)

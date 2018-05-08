@@ -273,34 +273,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 			return scope;
 		}
 
-		private async Task RunScriptAsync(string script, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			var cxnString = cfg.Properties["connection.connection_string"] + "; Pooling=No";
-			// Disable connection pooling so this won't be hindered by
-			// problems encountered during the actual test
-
-			string sql;
-			using (var reader = new StreamReader(GetType().Assembly.GetManifestResourceStream(GetType().Namespace + "." + script)))
-			{
-				sql = await (reader.ReadToEndAsync());
-			}
-
-			using (var cxn = new SqlConnection(cxnString))
-			{
-				await (cxn.OpenAsync(cancellationToken));
-
-				foreach (var batch in Regex.Split(sql, @"^go\s*$", RegexOptions.IgnoreCase | RegexOptions.Multiline)
-					.Where(b => !string.IsNullOrEmpty(b)))
-				{
-
-					using (var cmd = new System.Data.SqlClient.SqlCommand(batch, cxn))
-					{
-						await (cmd.ExecuteNonQueryAsync(cancellationToken));
-					}
-				}
-			}
-		}
-
 		private void RunScript(string script)
 		{
 			var cxnString = cfg.Properties["connection.connection_string"] + "; Pooling=No";

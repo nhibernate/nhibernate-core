@@ -172,6 +172,7 @@ namespace NHibernate.Tool.hbm2ddl
 					await (ExecuteSqlAsync(statement, sql, cancellationToken)).ConfigureAwait(false);
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				log.Warn("Unsuccessful: " + sql);
@@ -387,6 +388,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 				await (ExecuteAsync(scriptAction, execute, justDrop, connection, fileOutput, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				// So that we don't wrap HibernateExceptions in HibernateExceptions

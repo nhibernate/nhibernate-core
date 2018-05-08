@@ -14,7 +14,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3620 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class FixtureAsync : BugTestCase {
         protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory) {
@@ -40,16 +39,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3620 {
                     };
                     await (s.SaveAsync(tb));
                     await (tx.CommitAsync());
-                }
-            }
-        }
-
-        private async Task CleanupDataAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            using (ISession session = OpenSession()) {
-                using (ITransaction tx = session.BeginTransaction()) {
-                    await (session.DeleteAsync("from TwoBlobs", cancellationToken));
-                    await (tx.CommitAsync(cancellationToken));
                 }
             }
         }

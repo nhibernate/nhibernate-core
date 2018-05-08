@@ -116,6 +116,7 @@ namespace NHibernate.Loader
 					await (GetRowFromResultSetAsync(resultSet, session, queryParameters, GetLockModes(queryParameters.LockModes), null,
 										hydratedObjects, new EntityKey[entitySpan], returnProxies, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				throw; // Don't call Convert on HibernateExceptions
@@ -299,6 +300,7 @@ namespace NHibernate.Loader
 						Log.Debug(string.Format("done processing result set ({0} rows)", count));
 					}
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{
 					e.Data["actual-sql-query"] = st.CommandText;
@@ -827,6 +829,7 @@ namespace NHibernate.Loader
 				driver.RemoveUnusedCommandParameters(command, sqlString);
 				driver.ExpandQueryParameters(command, sqlString, sqlCommand.ParameterTypes);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				session.Batcher.CloseCommand(command, null);
@@ -880,6 +883,7 @@ namespace NHibernate.Loader
 				}
 				return rs;
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception sqle)
 			{
 				ADOExceptionReporter.LogExceptions(sqle);
@@ -909,6 +913,7 @@ namespace NHibernate.Loader
 										optionalIdentifier);
 				result = await (DoQueryAndInitializeNonLazyCollectionsAsync(session, qp, false, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				throw;
@@ -942,6 +947,7 @@ namespace NHibernate.Loader
 														   new QueryParameters(new IType[] { keyType, indexType },
 																			   new object[] { key, index }), false, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception sqle)
 			{
 				throw ADOExceptionHelper.Convert(_factory.SQLExceptionConverter, sqle, "could not collection element by index",
@@ -976,6 +982,7 @@ namespace NHibernate.Loader
 														   new QueryParameters(types, ids, optionalObject, optionalEntityName,
 																			   optionalId), false, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				throw;
@@ -1008,6 +1015,7 @@ namespace NHibernate.Loader
 			{
 				await (DoQueryAndInitializeNonLazyCollectionsAsync(session, new QueryParameters(new IType[] { type }, ids, ids), true, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				// Do not call Convert on HibernateExceptions
@@ -1040,6 +1048,7 @@ namespace NHibernate.Loader
 			{
 				await (DoQueryAndInitializeNonLazyCollectionsAsync(session, new QueryParameters(idTypes, ids, ids), true, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				// Do not call Convert on HibernateExceptions
@@ -1069,6 +1078,7 @@ namespace NHibernate.Loader
 													   new QueryParameters(parameterTypes, parameterValues, namedParameters, ids),
 													   true, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				// Do not call Convert on HibernateExceptions
@@ -1239,6 +1249,7 @@ namespace NHibernate.Loader
 			{
 				result = await (DoQueryAndInitializeNonLazyCollectionsAsync(session, queryParameters, true, forcedResultTransformer, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				// Do not call Convert on HibernateExceptions

@@ -93,6 +93,7 @@ namespace NHibernate.Id
 					}
 					result = Convert.ToInt64(columnType.Get(rs, 0, session));
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{
 					log.Error("could not read a hi value", e);
@@ -120,6 +121,7 @@ namespace NHibernate.Id
 
 					rows = await (ups.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{
 					log.Error("could not update hi value in: " + tableName, e);

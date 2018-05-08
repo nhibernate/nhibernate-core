@@ -269,6 +269,7 @@ namespace NHibernate.Impl
 						await (plan.PerformListAsync(queryParameters, this, results, cancellationToken)).ConfigureAwait(false);
 						success = true;
 					}
+					catch (OperationCanceledException) { throw; }
 					catch (HibernateException)
 					{
 						// Do not call Convert on HibernateExceptions
@@ -1066,6 +1067,7 @@ namespace NHibernate.Impl
 						await (plan.PerformListAsync(queryParameters, this, results, cancellationToken)).ConfigureAwait(false);
 						success = true;
 					}
+					catch (OperationCanceledException) { throw; }
 					catch (HibernateException)
 					{
 						// Do not call Convert on HibernateExceptions
@@ -1156,6 +1158,7 @@ namespace NHibernate.Impl
 						}
 						success = true;
 					}
+					catch (OperationCanceledException) { throw; }
 					catch (HibernateException)
 					{
 						// Do not call Convert on HibernateExceptions

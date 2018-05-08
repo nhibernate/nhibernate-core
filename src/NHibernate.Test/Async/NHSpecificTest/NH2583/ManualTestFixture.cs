@@ -305,18 +305,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
             }
         }
 
-        private static Task DeleteAllAsync<T>(ISession session, CancellationToken cancellationToken = default(CancellationToken))
-        {
-               try
-               {
-					       return session.CreateQuery("delete from " + typeof(T).Name).ExecuteUpdateAsync(cancellationToken);
-               }
-               catch (Exception ex)
-               {
-                      return Task.FromException<object>(ex);
-               }
-        }
-
         private static void DeleteAll<T>(ISession session)
         {
 					session.CreateQuery("delete from " + typeof(T).Name).ExecuteUpdate();
