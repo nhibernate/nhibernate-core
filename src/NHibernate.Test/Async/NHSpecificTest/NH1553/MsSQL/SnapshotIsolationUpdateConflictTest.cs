@@ -77,17 +77,16 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 		/// Tests, that NHibernate detects the update conflict and returns a StaleObjectStateException as expected.
 		/// This behaviour is part of the standard NHibernate feature set.
 		/// </summary>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		[Test]
-		public async Task UpdateConflictDetectedByNHAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public async Task UpdateConflictDetectedByNHAsync()
 		{
-			Person p1 = await (LoadPersonAsync(cancellationToken));
-			Person p2 = await (LoadPersonAsync(cancellationToken));
+			Person p1 = await (LoadPersonAsync());
+			Person p2 = await (LoadPersonAsync());
 
 			p1.IdentificationNumber++;
 			p2.IdentificationNumber += 2;
 
-			await (SavePersonAsync(p1, cancellationToken));
+			await (SavePersonAsync(p1));
 			Assert.That(p1.Version, Is.EqualTo(person.Version + 1));
 
 			var expectedException = Sfi.Settings.IsBatchVersionedDataEnabled
@@ -96,7 +95,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 				        .And.Property("EntityName").EqualTo(typeof(Person).FullName)
 				        .And.Property("Identifier").EqualTo(p2.Id);
 
-			Assert.That(() => SavePersonAsync(p2, cancellationToken), expectedException);
+			Assert.That(() => SavePersonAsync(p2), expectedException);
 		}
 
 		/// <summary>
