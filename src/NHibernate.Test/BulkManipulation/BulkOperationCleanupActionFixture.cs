@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Action;
 using NHibernate.Engine;
-using NHibernate.Impl;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
 using NSubstitute;
