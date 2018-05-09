@@ -42,7 +42,7 @@ namespace NHibernate.Impl
 		private CacheMode? cacheMode;
 		private CacheMode? sessionCacheMode;
 		private string comment;
-		
+
 		protected AbstractQueryImpl(string queryString, FlushMode flushMode, ISessionImplementor session,
 			ParameterMetadata parameterMetadata)
 		{

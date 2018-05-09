@@ -144,7 +144,5 @@ namespace NHibernate.Action
 		}
 
 		#endregion
-
-		
 	}
 }

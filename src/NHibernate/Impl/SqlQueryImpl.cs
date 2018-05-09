@@ -28,8 +28,7 @@ namespace NHibernate.Impl
 		private readonly ICollection<string> querySpaces;
 		private readonly bool callable;
 		private bool autoDiscoverTypes;
-		private readonly Lazy<HashSet<string>> addedQuerySpaces = new Lazy<HashSet<string>>(() => new HashSet<string>());
-
+		private readonly HashSet<string> addedQuerySpaces = new HashSet<string>();
 
 		/// <summary> Constructs a SQLQueryImpl given a sql query defined in the mappings. </summary>
 		/// <param name="queryDef">The representation of the defined sql-query. </param>
@@ -172,7 +171,7 @@ namespace NHibernate.Impl
 
 		public NativeSQLQuerySpecification GenerateQuerySpecification(IDictionary<string, TypedValue> parameters)
 		{
-			var allQuerySpaces=new List<string>(GetSynchronizedQuerySpaces());
+			var allQuerySpaces = new List<string>(GetSynchronizedQuerySpaces());
 			if (querySpaces != null)
 			{
 				allQuerySpaces.AddRange(querySpaces);
@@ -330,7 +329,7 @@ namespace NHibernate.Impl
 
 		public ISQLQuery AddSynchronizedQuerySpace(string querySpace)
 		{
-			addedQuerySpaces.Value.Add(querySpace);
+			addedQuerySpaces.Add(querySpace);
 			return this;
 		}
 
@@ -339,7 +338,7 @@ namespace NHibernate.Impl
 			var persister = session.Factory.GetEntityPersister(entityName);
 			foreach (var querySpace in persister.QuerySpaces)
 			{
-				addedQuerySpaces.Value.Add(querySpace);
+				addedQuerySpaces.Add(querySpace);
 			}
 			return this;
 		}
@@ -349,15 +348,14 @@ namespace NHibernate.Impl
 			var persister = session.Factory.GetEntityPersister(entityType.FullName);
 			foreach (var querySpace in persister.QuerySpaces)
 			{
-				addedQuerySpaces.Value.Add(querySpace);
+				addedQuerySpaces.Add(querySpace);
 			}
 			return this;
 		}
 
 		public IReadOnlyCollection<string> GetSynchronizedQuerySpaces()
 		{
-			return addedQuerySpaces.IsValueCreated ? addedQuerySpaces.Value : new HashSet<string>();
+			return addedQuerySpaces;
 		}
-		
 	}
 }
