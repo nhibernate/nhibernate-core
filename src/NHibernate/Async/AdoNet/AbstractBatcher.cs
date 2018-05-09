@@ -123,6 +123,7 @@ namespace NHibernate.AdoNet
 			{
 				return await (cmd.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				e.Data["actual-sql-query"] = cmd.CommandText;
@@ -150,6 +151,7 @@ namespace NHibernate.AdoNet
 			{
 				reader = await (cmd.ExecuteReaderAsync(cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				e.Data["actual-sql-query"] = cmd.CommandText;

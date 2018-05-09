@@ -298,6 +298,8 @@ namespace NHibernate.Loader
 						Log.Debug("done processing result set ({0} rows)", count);
 					}
 				}
+
+				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{
 					e.Data["actual-sql-query"] = st.CommandText;
@@ -893,6 +895,7 @@ namespace NHibernate.Loader
 				}
 				return rs;
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception sqle)
 			{
 				ADOExceptionReporter.LogExceptions(sqle);
@@ -955,6 +958,7 @@ namespace NHibernate.Loader
 														   new QueryParameters(new IType[] { keyType, indexType },
 																			   new object[] { key, index }), false, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception sqle)
 			{
 				throw ADOExceptionHelper.Convert(_factory.SQLExceptionConverter, sqle, "could not collection element by index",

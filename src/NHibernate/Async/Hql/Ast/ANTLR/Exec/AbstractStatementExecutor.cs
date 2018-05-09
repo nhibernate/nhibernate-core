@@ -114,6 +114,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, commandText, Array.Empty<SqlType>(), cancellationToken)).ConfigureAwait(false);
 					await (session.Batcher.ExecuteNonQueryAsync(ps, cancellationToken)).ConfigureAwait(false);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception t)
 				{
 					log.Warn(t, "unable to cleanup temporary id table after use [{0}]", t);
@@ -126,6 +127,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						{
 							session.Batcher.CloseCommand(ps, null);
 						}
+						catch (OperationCanceledException) { throw; }
 						catch (Exception)
 						{
 							// ignore
@@ -150,6 +152,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					await (stmnt.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 					session.Factory.Settings.SqlStatementLogger.LogCommand(stmnt, FormatStyle.Ddl);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception t)
 				{
 					log.Debug(t, "unable to create temporary id table [{0}]", t.Message);
@@ -162,6 +165,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						{
 							stmnt.Dispose();
 						}
+						catch (OperationCanceledException) { throw; }
 						catch (Exception)
 						{
 							// ignore
@@ -186,6 +190,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					await (stmnt.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 					session.Factory.Settings.SqlStatementLogger.LogCommand(stmnt, FormatStyle.Ddl);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception t)
 				{
 					log.Warn("unable to drop temporary id table after use [{0}]", t.Message);
@@ -198,6 +203,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						{
 							stmnt.Dispose();
 						}
+						catch (OperationCanceledException) { throw; }
 						catch (Exception)
 						{
 							// ignore

@@ -58,6 +58,7 @@ namespace NHibernate.Id.Enhanced
 							{
 								rs.Close();
 							}
+							catch (OperationCanceledException) { throw; }
 							catch
 							{
 								// intentionally empty

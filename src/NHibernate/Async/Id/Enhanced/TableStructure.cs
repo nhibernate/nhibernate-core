@@ -55,6 +55,7 @@ namespace NHibernate.Id.Enhanced
 					}
 					result = Convert.ToInt64(selectedValue);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception sqle)
 				{
 					Log.Error(sqle, "could not read a hi value");
@@ -76,6 +77,8 @@ namespace NHibernate.Id.Enhanced
 						updatedRows = await (updateCmd.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 					}
 				}
+
+				catch (OperationCanceledException) { throw; }
 				catch (Exception sqle)
 				{
 					Log.Error(sqle, "could not update hi value in: {0}", _tableName);

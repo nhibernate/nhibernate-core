@@ -81,6 +81,8 @@ namespace NHibernate.Persister.Collection
 									deleteExpectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 								}
 							}
+
+							catch (OperationCanceledException) { throw; }
 							catch (Exception e)
 							{
 								if (useBatch)
@@ -146,6 +148,8 @@ namespace NHibernate.Persister.Collection
 									insertExpectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 								}
 							}
+
+							catch (OperationCanceledException) { throw; }
 							catch (Exception e)
 							{
 								if (useBatch)

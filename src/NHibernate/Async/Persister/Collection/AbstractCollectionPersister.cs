@@ -217,6 +217,8 @@ namespace NHibernate.Persister.Collection
 							expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 						}
 					}
+
+					catch (OperationCanceledException) { throw; }
 					catch (Exception e)
 					{
 						if (useBatch)
@@ -376,6 +378,7 @@ namespace NHibernate.Persister.Collection
 							}
 							count++;
 						}
+						catch (OperationCanceledException) { throw; }
 						catch (Exception e)
 						{
 							if (useBatch)
@@ -517,6 +520,7 @@ namespace NHibernate.Persister.Collection
 					expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				if (useBatch)
@@ -552,15 +556,8 @@ namespace NHibernate.Persister.Collection
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				IBinder binder = new GeneratedIdentifierBinder(ownerId, collection, entry, index, session, this);
-				return identityDelegate.PerformInsertAsync(SqlInsertRowString, session, binder, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			IBinder binder = new GeneratedIdentifierBinder(ownerId, collection, entry, index, session, this);
+			return identityDelegate.PerformInsertAsync(SqlInsertRowString, session, binder, cancellationToken);
 		}
 
 		protected partial class GeneratedIdentifierBinder : IBinder

@@ -64,6 +64,8 @@ namespace NHibernate.Impl
 				{
 					Interceptor.AfterTransactionCompletion(tx);
 				}
+
+				catch (OperationCanceledException) { throw; }
 				catch (Exception t)
 				{
 					log.Error(t, "exception in interceptor afterTransactionCompletion()");
@@ -1246,6 +1248,7 @@ namespace NHibernate.Impl
 				{
 					Interceptor.BeforeTransactionCompletion(tx);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{
 					log.Error(e, "exception in interceptor BeforeTransactionCompletion()");
@@ -1261,16 +1264,9 @@ namespace NHibernate.Impl
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				if (FlushMode != FlushMode.Manual)
-					return FlushAsync(cancellationToken);
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			if (FlushMode != FlushMode.Manual)
+				return FlushAsync(cancellationToken);
+			return Task.CompletedTask;
 		}
 
 		private async Task FireDeleteAsync(DeleteEvent @event, CancellationToken cancellationToken)

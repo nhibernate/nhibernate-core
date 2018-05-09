@@ -58,7 +58,14 @@ namespace NHibernate.Type
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return baseType.NullSafeSetAsync(st, value == null ? null : keys[(string)value], index, session, cancellationToken);
+			try
+			{
+				return baseType.NullSafeSetAsync(st, value == null ? null : keys[(string)value], index, session, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
