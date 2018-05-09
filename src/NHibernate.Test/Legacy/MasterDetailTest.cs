@@ -41,6 +41,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void ParentChildren()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession session = OpenSession();
 
 			M parent = new M();
@@ -841,6 +844,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void CollectionReplaceOnUpdate()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Category c = new Category();
@@ -886,6 +892,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void CollectionReplace2()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Category c = new Category();
@@ -925,6 +934,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void CollectionReplace()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Category c = new Category();
@@ -970,6 +982,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void Categories()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			Category c = new Category();
 			c.Name = Category.RootCategory;
 			Category c1 = new Category();
@@ -1011,6 +1026,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void CollectionRefresh()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			Category c = new Category();
 			IList<Category> list = new List<Category>();
@@ -1054,6 +1072,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void CachedCollectionRefresh()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			Category c = new Category();
 			IList<Category> list = new List<Category>();
@@ -1239,6 +1260,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void PolymorphicCriteria()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			ITransaction txn = s.BeginTransaction();
 			Category f = new Category();

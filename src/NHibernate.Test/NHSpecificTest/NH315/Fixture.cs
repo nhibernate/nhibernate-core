@@ -14,6 +14,11 @@ namespace NHibernate.Test.NHSpecificTest.NH315
 			get { return "NH315"; }
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
+
 		[Test]
 		public void SaveClient()
 		{

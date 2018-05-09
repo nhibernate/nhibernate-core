@@ -1,141 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using NHibernate.Driver;
+using NHibernate.Dialect;
 using NHibernate.Linq;
-using NHibernate.SqlTypes;
 using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3850
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public class MainFixture : FixtureBase
 	{
-		private const string _searchName1 = "name";
-		private const string _searchName2 = "name2";
-		private const int _totalEntityCount = 10;
-		private readonly DateTime _testDate = DateTime.Now;
-		private readonly DateTimeOffset _testDateWithOffset = DateTimeOffset.Now;
-
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return TestDialect.SupportsSqlType(new SqlType(DbType.DateTimeOffset));
-		}
-
-		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
-		{
-			// Cannot handle DbType.DateTimeOffset via ODBC.
-			return !(factory.ConnectionProvider.Driver is OdbcDriver);
-		}
-
-		protected override void OnSetUp()
-		{
-			base.OnSetUp();
-			using (var session = OpenSession())
-			{
-				var dateTime1 = _testDate.AddDays(-1);
-				var dateTime2 = _testDate.AddDays(1);
-				var dateTimeOffset1 = _testDateWithOffset.AddDays(-1);
-				var dateTimeOffset2 = _testDateWithOffset.AddDays(1);
-				Action<DomainClassBase> init1 = dc =>
-				{
-					dc.Id = 1;
-					dc.Name = _searchName1;
-					dc.Integer = 1;
-					dc.Long = 1;
-					dc.Decimal = 1;
-					dc.Double = 1;
-					dc.DateTime = dateTime1;
-					dc.DateTimeOffset = dateTimeOffset1;
-					dc.NonNullableDecimal = 1;
-				};
-				Action<DomainClassBase> init2 = dc =>
-				{
-					dc.Id = 2;
-					dc.Name = _searchName2;
-					dc.Integer = 2;
-					dc.Long = 2;
-					dc.Decimal = 2;
-					dc.Double = 2;
-					dc.DateTime = dateTime2;
-					dc.DateTimeOffset = dateTimeOffset2;
-					dc.NonNullableDecimal = 2;
-				};
-
-				DomainClassBase entity = new DomainClassBExtendedByA();
-				init1(entity);
-				session.Save(entity);
-				entity = new DomainClassBExtendedByA();
-				init2(entity);
-				session.Save(entity);
-
-				entity = new DomainClassCExtendedByD();
-				init1(entity);
-				session.Save(entity);
-				entity = new DomainClassCExtendedByD();
-				init2(entity);
-				session.Save(entity);
-
-				entity = new DomainClassE();
-				init1(entity);
-				session.Save(entity);
-				entity = new DomainClassE();
-				init2(entity);
-				session.Save(entity);
-
-				entity = new DomainClassGExtendedByH();
-				init1(entity);
-				session.Save(entity);
-				entity = new DomainClassGExtendedByH();
-				init2(entity);
-				session.Save(entity);
-				entity = new DomainClassHExtendingG
-				{
-					Id = 3,
-					Name = _searchName1,
-					Integer = 3,
-					Long = 3,
-					Decimal = 3,
-					Double = 3,
-					DateTime = dateTime1,
-					DateTimeOffset = dateTimeOffset1,
-					NonNullableDecimal = 3
-				};
-				session.Save(entity);
-				entity = new DomainClassHExtendingG
-				{
-					Id = 4,
-					Name = _searchName2,
-					Integer = 4,
-					Long = 4,
-					Decimal = 4,
-					Double = 4,
-					DateTime = dateTime2,
-					DateTimeOffset = dateTimeOffset2,
-					NonNullableDecimal = 4
-				};
-				session.Save(entity);
-
-				session.Flush();
-			}
-		}
-
-		protected override void OnTearDown()
-		{
-			base.OnTearDown();
-			using (var session = OpenSession())
-			{
-				var hql = "from System.Object";
-				session.Delete(hql);
-				session.Flush();
-			}
-		}
-
 		// Failing case till NH-3850 is fixed
 		[Test]
 		public void AggregateGBase()
@@ -184,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				                    .OrderBy(dc => dc.Id);
 				var seed = new StringBuilder();
 				var result = query.Aggregate(seed, (s, dc) => s.Append(dc.Name).Append(","));
-				var expectedResult = _searchName1 + "," + _searchName2 + "," + _searchName1 + "," + _searchName2 + ",";
+				var expectedResult = SearchName1 + "," + SearchName2 + "," + SearchName1 + "," + SearchName2 + ",";
 				Assert.That(result.ToString(), Is.EqualTo(expectedResult));
 				// We are dodging another bug here: the seed is cached in query plan... So giving another seed to Future
 				// keeps re-using the seed used for non future above.
@@ -216,9 +94,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassBExtendedByA>().All(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassBExtendedByA>().All(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.False);
-				result = session.Query<DomainClassBExtendedByA>().ToFutureValue(qdc => qdc.All(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassBExtendedByA>().ToFutureValue(qdc => qdc.All(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.False, "Future");
 			}
 		}
@@ -229,9 +107,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassCExtendedByD>().All(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassCExtendedByD>().All(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.False);
-				result = session.Query<DomainClassCExtendedByD>().ToFutureValue(qdc => qdc.All(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassCExtendedByD>().ToFutureValue(qdc => qdc.All(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.False, "Future");
 			}
 		}
@@ -242,9 +120,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassE>().All(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassE>().All(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.False);
-				result = session.Query<DomainClassE>().ToFutureValue(qdc => qdc.All(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassE>().ToFutureValue(qdc => qdc.All(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.False, "Future");
 			}
 		}
@@ -255,9 +133,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassF>().All(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassF>().All(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.True);
-				result = session.Query<DomainClassF>().ToFutureValue(qdc => qdc.All(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassF>().ToFutureValue(qdc => qdc.All(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.True, "Future");
 			}
 		}
@@ -268,9 +146,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassGExtendedByH>().All(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassGExtendedByH>().All(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.False);
-				result = session.Query<DomainClassGExtendedByH>().ToFutureValue(qdc => qdc.All(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassGExtendedByH>().ToFutureValue(qdc => qdc.All(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.False, "Future");
 			}
 		}
@@ -282,10 +160,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var query = session.Query<DomainClassGExtendedByH>()
-				                   .Where(dc => dc.Name == _searchName1);
-				var result = query.All(dc => dc.Name == _searchName1);
+				                   .Where(dc => dc.Name == SearchName1);
+				var result = query.All(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.True);
-				var futureQuery = query.ToFutureValue(qdc => qdc.All(dc => dc.Name == _searchName1));
+				var futureQuery = query.ToFutureValue(qdc => qdc.All(dc => dc.Name == SearchName1));
 				Assert.That(futureQuery.Value, Is.True, "Future");
 			}
 		}
@@ -309,9 +187,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassBExtendedByA>().Any(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassBExtendedByA>().Any(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.True);
-				result = session.Query<DomainClassBExtendedByA>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassBExtendedByA>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.True, "Future");
 			}
 		}
@@ -335,9 +213,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassCExtendedByD>().Any(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassCExtendedByD>().Any(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.True);
-				result = session.Query<DomainClassCExtendedByD>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassCExtendedByD>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.True, "Future");
 			}
 		}
@@ -361,9 +239,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassE>().Any(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassE>().Any(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.True);
-				result = session.Query<DomainClassE>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassE>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.True, "Future");
 			}
 		}
@@ -387,9 +265,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassF>().Any(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassF>().Any(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.False);
-				result = session.Query<DomainClassF>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassF>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.False, "Future");
 			}
 		}
@@ -413,9 +291,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassGExtendedByH>().Any(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassGExtendedByH>().Any(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.True);
-				result = session.Query<DomainClassGExtendedByH>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassGExtendedByH>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.True, "Future");
 			}
 		}
@@ -513,7 +391,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 					            "Non nullable decimal average has failed");
 					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Average(dc => dc.NonNullableDecimal));
 					Assert.That(() => futureNonNullableDec.Value,
-					            Throws.InstanceOf<ArgumentNullException>(),
+					            Throws.InstanceOf<ArgumentNullException>()
+					                  // When multi-queries are not supported, we have a discrepancy here.
+					                  .Or.InnerException.InstanceOf<ArgumentNullException>(),
 					            "Future non nullable decimal average has failed");
 				}
 			}
@@ -550,9 +430,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassBExtendedByA>().Count(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassBExtendedByA>().Count(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.EqualTo(1));
-				result = session.Query<DomainClassBExtendedByA>().ToFutureValue(qdc => qdc.Count(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassBExtendedByA>().ToFutureValue(qdc => qdc.Count(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.EqualTo(1), "Future");
 			}
 		}
@@ -576,9 +456,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassCExtendedByD>().Count(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassCExtendedByD>().Count(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.EqualTo(1));
-				result = session.Query<DomainClassCExtendedByD>().ToFutureValue(qdc => qdc.Count(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassCExtendedByD>().ToFutureValue(qdc => qdc.Count(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.EqualTo(1), "Future");
 			}
 		}
@@ -602,9 +482,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassE>().Count(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassE>().Count(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.EqualTo(1));
-				result = session.Query<DomainClassE>().ToFutureValue(qdc => qdc.Count(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassE>().ToFutureValue(qdc => qdc.Count(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.EqualTo(1), "Future");
 			}
 		}
@@ -628,9 +508,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassF>().Count(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassF>().Count(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.EqualTo(0));
-				result = session.Query<DomainClassF>().ToFutureValue(qdc => qdc.Count(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassF>().ToFutureValue(qdc => qdc.Count(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.EqualTo(0), "Future");
 			}
 		}
@@ -654,9 +534,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassGExtendedByH>().Count(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassGExtendedByH>().Count(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.EqualTo(2));
-				result = session.Query<DomainClassGExtendedByH>().ToFutureValue(qdc => qdc.Count(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassGExtendedByH>().ToFutureValue(qdc => qdc.Count(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.EqualTo(2), "Future");
 			}
 		}
@@ -668,9 +548,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = session.Query<object>().Count();
-				Assert.That(result, Is.EqualTo(_totalEntityCount));
+				Assert.That(result, Is.EqualTo(TotalEntityCount));
 				result = session.Query<object>().ToFutureValue(qdc => qdc.Count()).Value;
-				Assert.That(result, Is.EqualTo(_totalEntityCount), "Future");
+				Assert.That(result, Is.EqualTo(TotalEntityCount), "Future");
 			}
 		}
 
@@ -700,14 +580,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassBExtendedByA>();
 				DomainClassBExtendedByA result = null;
-				Assert.That(() => result = query.FirstOrDefault(dc => dc.Name == _searchName1), Throws.Nothing);
+				Assert.That(() => result = query.FirstOrDefault(dc => dc.Name == SearchName1), Throws.Nothing);
 				Assert.That(result, Is.Not.Null);
-				Assert.That(result.Name, Is.EqualTo(_searchName1));
+				Assert.That(result.Name, Is.EqualTo(SearchName1));
 				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>());
-				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == _searchName1));
+				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == SearchName1));
 				Assert.That(() => result = futureQuery.Value, Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
-				Assert.That(result.Name, Is.EqualTo(_searchName1), "Future");
+				Assert.That(result.Name, Is.EqualTo(SearchName1), "Future");
 				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>(), "Future");
 			}
 		}
@@ -738,14 +618,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassCExtendedByD>();
 				DomainClassCExtendedByD result = null;
-				Assert.That(() => result = query.FirstOrDefault(dc => dc.Name == _searchName1), Throws.Nothing);
+				Assert.That(() => result = query.FirstOrDefault(dc => dc.Name == SearchName1), Throws.Nothing);
 				Assert.That(result, Is.Not.Null);
-				Assert.That(result.Name, Is.EqualTo(_searchName1));
+				Assert.That(result.Name, Is.EqualTo(SearchName1));
 				Assert.That(result, Is.TypeOf<DomainClassCExtendedByD>());
-				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == _searchName1));
+				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == SearchName1));
 				Assert.That(() => result = futureQuery.Value, Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
-				Assert.That(result.Name, Is.EqualTo(_searchName1), "Future");
+				Assert.That(result.Name, Is.EqualTo(SearchName1), "Future");
 				Assert.That(result, Is.TypeOf<DomainClassCExtendedByD>(), "Future");
 			}
 		}
@@ -774,13 +654,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassE>();
 				DomainClassE result = null;
-				Assert.That(() => result = query.FirstOrDefault(dc => dc.Name == _searchName1), Throws.Nothing);
+				Assert.That(() => result = query.FirstOrDefault(dc => dc.Name == SearchName1), Throws.Nothing);
 				Assert.That(result, Is.Not.Null);
-				Assert.That(result.Name, Is.EqualTo(_searchName1));
-				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == _searchName1));
+				Assert.That(result.Name, Is.EqualTo(SearchName1));
+				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == SearchName1));
 				Assert.That(() => result = futureQuery.Value, Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
-				Assert.That(result.Name, Is.EqualTo(_searchName1), "Future");
+				Assert.That(result.Name, Is.EqualTo(SearchName1), "Future");
 			}
 		}
 
@@ -808,9 +688,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassF>();
 				DomainClassF result = null;
-				Assert.That(() => result = query.FirstOrDefault(dc => dc.Name == _searchName1), Throws.Nothing);
+				Assert.That(() => result = query.FirstOrDefault(dc => dc.Name == SearchName1), Throws.Nothing);
 				Assert.That(result, Is.Null);
-				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == _searchName1));
+				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == SearchName1));
 				Assert.That(() => result = futureQuery.Value, Throws.Nothing, "Future");
 				Assert.That(result, Is.Null, "Future");
 			}
@@ -844,15 +724,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassGExtendedByH>();
 				DomainClassGExtendedByH result = null;
-				Assert.That(() => result = query.FirstOrDefault(dc => dc.Name == _searchName1), Throws.Nothing);
+				Assert.That(() => result = query.FirstOrDefault(dc => dc.Name == SearchName1), Throws.Nothing);
 				Assert.That(result, Is.Not.Null);
-				Assert.That(result.Name, Is.EqualTo(_searchName1));
+				Assert.That(result.Name, Is.EqualTo(SearchName1));
 				// If class type assert starts failing, maybe just ignore it: order of first on polymorphic queries looks unspecified to me.
 				Assert.That(result, Is.TypeOf<DomainClassGExtendedByH>());
-				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == _searchName1));
+				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == SearchName1));
 				Assert.That(() => result = futureQuery.Value, Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
-				Assert.That(result.Name, Is.EqualTo(_searchName1), "Future");
+				Assert.That(result.Name, Is.EqualTo(SearchName1), "Future");
 				// If class type assert starts failing, maybe just ignore it: order of first on polymorphic queries looks unspecified to me.
 				Assert.That(result, Is.TypeOf<DomainClassGExtendedByH>(), "Future");
 			}
@@ -897,9 +777,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassBExtendedByA>().LongCount(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassBExtendedByA>().LongCount(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.EqualTo(1));
-				result = session.Query<DomainClassBExtendedByA>().ToFutureValue(qdc => qdc.LongCount(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassBExtendedByA>().ToFutureValue(qdc => qdc.LongCount(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.EqualTo(1), "Future");
 			}
 		}
@@ -923,9 +803,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassCExtendedByD>().LongCount(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassCExtendedByD>().LongCount(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.EqualTo(1));
-				result = session.Query<DomainClassCExtendedByD>().ToFutureValue(qdc => qdc.LongCount(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassCExtendedByD>().ToFutureValue(qdc => qdc.LongCount(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.EqualTo(1), "Future");
 			}
 		}
@@ -949,9 +829,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassE>().LongCount(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassE>().LongCount(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.EqualTo(1));
-				result = session.Query<DomainClassE>().ToFutureValue(qdc => qdc.LongCount(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassE>().ToFutureValue(qdc => qdc.LongCount(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.EqualTo(1), "Future");
 			}
 		}
@@ -975,9 +855,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassF>().LongCount(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassF>().LongCount(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.EqualTo(0));
-				result = session.Query<DomainClassF>().ToFutureValue(qdc => qdc.LongCount(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassF>().ToFutureValue(qdc => qdc.LongCount(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.EqualTo(0), "Future");
 			}
 		}
@@ -1001,9 +881,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DomainClassGExtendedByH>().LongCount(dc => dc.Name == _searchName1);
+				var result = session.Query<DomainClassGExtendedByH>().LongCount(dc => dc.Name == SearchName1);
 				Assert.That(result, Is.EqualTo(2));
-				result = session.Query<DomainClassGExtendedByH>().ToFutureValue(qdc => qdc.LongCount(dc => dc.Name == _searchName1)).Value;
+				result = session.Query<DomainClassGExtendedByH>().ToFutureValue(qdc => qdc.LongCount(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.EqualTo(2), "Future");
 			}
 		}
@@ -1015,56 +895,21 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = session.Query<object>().LongCount();
-				Assert.That(result, Is.EqualTo(_totalEntityCount));
+				Assert.That(result, Is.EqualTo(TotalEntityCount));
 				result = session.Query<object>().ToFutureValue(qdc => qdc.LongCount()).Value;
-				Assert.That(result, Is.EqualTo(_totalEntityCount), "Future");
+				Assert.That(result, Is.EqualTo(TotalEntityCount), "Future");
 			}
 		}
 
-		// Failing case till NH-3850 is fixed
-		[Test]
-		public void MaxBBase()
-		{
-			Max<DomainClassBExtendedByA>(2);
-		}
-
-		// Failing case till NH-3850 is fixed
-		[Test]
-		public void MaxCBase()
-		{
-			Max<DomainClassCExtendedByD>(2);
-		}
-
-		// Non-reg case
-		[Test]
-		public void MaxE()
-		{
-			Max<DomainClassE>(2);
-		}
-
-		// Non-reg case
-		[Test]
-		public void MaxF()
-		{
-			Max<DomainClassF>(null);
-		}
-
-		// Failing case till NH-3850 is fixed
-		[Test]
-		public void MaxGBase()
-		{
-			Max<DomainClassGExtendedByH>(4);
-		}
-
-		private void Max<DC>(int? expectedResult) where DC : DomainClassBase
+		protected override void Max<TDc>(int? expectedResult)
 		{
 			using (var session = OpenSession())
 			{
-				var dcQuery = session.Query<DC>();
+				var dcQuery = session.Query<TDc>();
 				var name = dcQuery.Max(dc => dc.Name);
-				Assert.That(name, Is.EqualTo(expectedResult.HasValue ? _searchName2 : null), "String max has failed");
+				Assert.That(name, Is.EqualTo(expectedResult.HasValue ? SearchName2 : null), "String max has failed");
 				var futureName = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.Name));
-				Assert.That(futureName.Value, Is.EqualTo(expectedResult.HasValue ? _searchName2 : null), "Future string max has failed");
+				Assert.That(futureName.Value, Is.EqualTo(expectedResult.HasValue ? SearchName2 : null), "Future string max has failed");
 
 				var integ = dcQuery.Max(dc => dc.Integer);
 				Assert.That(integ, Is.EqualTo(expectedResult), "Integer max has failed");
@@ -1091,22 +936,16 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 					Assert.That(futureDbl.Value.Value, Is.EqualTo(expectedResult).Within(0.001d), "Future double max has failed");
 
 				var date = dcQuery.Max(dc => dc.DateTime);
-				var dateWithOffset = dcQuery.Max(dc => dc.DateTimeOffset);
 				var futureDate = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.DateTime));
-				var futureDateWithOffset = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.DateTimeOffset));
 				if (expectedResult.HasValue)
 				{
-					Assert.That(date, Is.GreaterThan(_testDate), "DateTime max has failed");
-					Assert.That(dateWithOffset, Is.GreaterThan(_testDateWithOffset), "DateTimeOffset max has failed");
-					Assert.That(futureDate.Value, Is.GreaterThan(_testDate), "Future DateTime max has failed");
-					Assert.That(futureDateWithOffset.Value, Is.GreaterThan(_testDateWithOffset), "Future DateTimeOffset max has failed");
+					Assert.That(date, Is.GreaterThan(TestDate), "DateTime max has failed");
+					Assert.That(futureDate.Value, Is.GreaterThan(TestDate), "Future DateTime max has failed");
 				}
 				else
 				{
 					Assert.That(date, Is.Null, "DateTime max has failed");
-					Assert.That(dateWithOffset, Is.Null, "DateTimeOffset max has failed");
 					Assert.That(futureDate.Value, Is.Null, "Future DateTime max has failed");
-					Assert.That(futureDateWithOffset.Value, Is.Null, "Future DateTimeOffset max has failed");
 				}
 
 				if (expectedResult.HasValue)
@@ -1134,50 +973,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			}
 		}
 
-		// Failing case till NH-3850 is fixed
-		[Test]
-		public void MinBBase()
-		{
-			Min<DomainClassBExtendedByA>(1);
-		}
-
-		// Failing case till NH-3850 is fixed
-		[Test]
-		public void MinCBase()
-		{
-			Min<DomainClassCExtendedByD>(1);
-		}
-
-		// Non-reg case
-		[Test]
-		public void MinE()
-		{
-			Min<DomainClassE>(1);
-		}
-
-		// Non-reg case
-		[Test]
-		public void MinF()
-		{
-			Min<DomainClassF>(null);
-		}
-
-		// Non-reg case
-		[Test]
-		public void MinGBase()
-		{
-			Min<DomainClassGExtendedByH>(1);
-		}
-
-		private void Min<DC>(int? expectedResult) where DC : DomainClassBase
+		protected override void Min<TDc>(int? expectedResult)
 		{
 			using (var session = OpenSession())
 			{
-				var dcQuery = session.Query<DC>();
+				var dcQuery = session.Query<TDc>();
 				var name = dcQuery.Min(dc => dc.Name);
-				Assert.That(name, Is.EqualTo(expectedResult.HasValue ? _searchName1 : null), "String min has failed");
+				Assert.That(name, Is.EqualTo(expectedResult.HasValue ? SearchName1 : null), "String min has failed");
 				var futureName = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.Name));
-				Assert.That(futureName.Value, Is.EqualTo(expectedResult.HasValue ? _searchName1 : null), "Future string min has failed");
+				Assert.That(futureName.Value, Is.EqualTo(expectedResult.HasValue ? SearchName1 : null), "Future string min has failed");
 
 				var integ = dcQuery.Min(dc => dc.Integer);
 				Assert.That(integ, Is.EqualTo(expectedResult), "Integer min has failed");
@@ -1204,22 +1008,16 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 					Assert.That(futureDbl.Value.Value, Is.EqualTo(expectedResult).Within(0.001d), "Future double min has failed");
 
 				var date = dcQuery.Min(dc => dc.DateTime);
-				var dateWithOffset = dcQuery.Min(dc => dc.DateTimeOffset);
 				var futureDate = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.DateTime));
-				var futureDateWithOffset = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.DateTimeOffset));
 				if (expectedResult.HasValue)
 				{
-					Assert.That(date, Is.LessThan(_testDate), "DateTime min has failed");
-					Assert.That(dateWithOffset, Is.LessThan(_testDateWithOffset), "DateTimeOffset min has failed");
-					Assert.That(futureDate.Value, Is.LessThan(_testDate), "Future DateTime min has failed");
-					Assert.That(futureDateWithOffset.Value, Is.LessThan(_testDateWithOffset), "Future DateTimeOffset min has failed");
+					Assert.That(date, Is.LessThan(TestDate), "DateTime min has failed");
+					Assert.That(futureDate.Value, Is.LessThan(TestDate), "Future DateTime min has failed");
 				}
 				else
 				{
 					Assert.That(date, Is.Null, "DateTime min has failed");
-					Assert.That(dateWithOffset, Is.Null, "DateTimeOffset min has failed");
 					Assert.That(futureDate.Value, Is.Null, "Future DateTime min has failed");
-					Assert.That(futureDateWithOffset.Value, Is.Null, "Future DateTimeOffset min has failed");
 				}
 
 				if (expectedResult.HasValue)
@@ -1268,14 +1066,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassBExtendedByA>();
 				DomainClassBExtendedByA result = null;
-				Assert.That(() => result = query.SingleOrDefault(dc => dc.Name == _searchName1), Throws.Nothing);
+				Assert.That(() => result = query.SingleOrDefault(dc => dc.Name == SearchName1), Throws.Nothing);
 				Assert.That(result, Is.Not.Null);
-				Assert.That(result.Name, Is.EqualTo(_searchName1));
+				Assert.That(result.Name, Is.EqualTo(SearchName1));
 				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>());
-				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == _searchName1));
+				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == SearchName1));
 				Assert.That(() => result = futureQuery.Value, Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
-				Assert.That(result.Name, Is.EqualTo(_searchName1), "Future");
+				Assert.That(result.Name, Is.EqualTo(SearchName1), "Future");
 				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>(), "Future");
 			}
 		}
@@ -1301,14 +1099,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassCExtendedByD>();
 				DomainClassCExtendedByD result = null;
-				Assert.That(() => result = query.SingleOrDefault(dc => dc.Name == _searchName1), Throws.Nothing);
+				Assert.That(() => result = query.SingleOrDefault(dc => dc.Name == SearchName1), Throws.Nothing);
 				Assert.That(result, Is.Not.Null);
-				Assert.That(result.Name, Is.EqualTo(_searchName1));
+				Assert.That(result.Name, Is.EqualTo(SearchName1));
 				Assert.That(result, Is.TypeOf<DomainClassCExtendedByD>());
-				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == _searchName1));
+				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == SearchName1));
 				Assert.That(() => result = futureQuery.Value, Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
-				Assert.That(result.Name, Is.EqualTo(_searchName1), "Future");
+				Assert.That(result.Name, Is.EqualTo(SearchName1), "Future");
 				Assert.That(result, Is.TypeOf<DomainClassCExtendedByD>(), "Future");
 			}
 		}
@@ -1334,13 +1132,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassE>();
 				DomainClassE result = null;
-				Assert.That(() => result = query.SingleOrDefault(dc => dc.Name == _searchName1), Throws.Nothing);
+				Assert.That(() => result = query.SingleOrDefault(dc => dc.Name == SearchName1), Throws.Nothing);
 				Assert.That(result, Is.Not.Null);
-				Assert.That(result.Name, Is.EqualTo(_searchName1));
-				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == _searchName1));
+				Assert.That(result.Name, Is.EqualTo(SearchName1));
+				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == SearchName1));
 				Assert.That(() => result = futureQuery.Value, Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
-				Assert.That(result.Name, Is.EqualTo(_searchName1), "Future");
+				Assert.That(result.Name, Is.EqualTo(SearchName1), "Future");
 			}
 		}
 
@@ -1368,9 +1166,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassF>();
 				DomainClassF result = null;
-				Assert.That(() => result = query.SingleOrDefault(dc => dc.Name == _searchName1), Throws.Nothing);
+				Assert.That(() => result = query.SingleOrDefault(dc => dc.Name == SearchName1), Throws.Nothing);
 				Assert.That(result, Is.Null);
-				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == _searchName1));
+				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == SearchName1));
 				Assert.That(() => result = futureQuery.Value, Throws.Nothing, "Future");
 				Assert.That(result, Is.Null, "Future");
 			}
@@ -1396,8 +1194,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var query = session.Query<DomainClassGExtendedByH>();
-				Assert.That(() => query.SingleOrDefault(dc => dc.Name == _searchName1), Throws.InvalidOperationException);
-				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == _searchName1));
+				Assert.That(() => query.SingleOrDefault(dc => dc.Name == SearchName1), Throws.InvalidOperationException);
+				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == SearchName1));
 				Assert.That(() => futureQuery.Value, Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
 			}
 		}
@@ -1454,10 +1252,16 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		[Test]
 		public void SumObject()
 		{
+			if (Dialect is MsSqlCeDialect)
+			{
+				// Fails with an unhelpful message: "The command contained one or more errors.", without additional data
+				Assert.Ignore("This test is not supported by SQL Server CE");
+			}
+
 			using (var session = OpenSession())
 			{
 				var result = session.Query<object>().Sum(o => (int?)2);
-				Assert.That(result, Is.EqualTo(_totalEntityCount * 2));
+				Assert.That(result, Is.EqualTo(TotalEntityCount * 2));
 			}
 		}
 

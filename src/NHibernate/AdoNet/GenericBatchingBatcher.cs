@@ -17,6 +17,7 @@ namespace NHibernate.AdoNet
 	/// - FirebirdSql.Data.FirebirdClient
 	/// - Oracle.ManagedDataAccess
 	/// - System.Data.SqlServerCe
+	/// - Sap.Data.Hana
 	/// </summary>
 	public partial class GenericBatchingBatcher : AbstractBatcher
 	{

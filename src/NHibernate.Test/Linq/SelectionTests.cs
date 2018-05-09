@@ -286,7 +286,7 @@ namespace NHibernate.Test.Linq
 			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
 
-			var timesheets = (from timesheet in db.Timesheets
+			var timesheets = (from timesheet in db.Timesheets orderby timesheet.Id
 							  select new
 							  {
 								  timesheet.Id,

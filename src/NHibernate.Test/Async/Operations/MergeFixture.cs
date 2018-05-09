@@ -399,6 +399,9 @@ namespace NHibernate.Test.Operations
 		[Test]
 		public async Task MergeManyToManyWithCollectionDeferenceAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			// setup base data...
 			Competition competition;
 			using (ISession s = OpenSession())
@@ -823,6 +826,9 @@ namespace NHibernate.Test.Operations
 		[Test]
 		public async Task RecursiveMergeTransientAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			using (ISession s = OpenSession())
 			{
 				using (ITransaction tx = s.BeginTransaction())

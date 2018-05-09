@@ -10,6 +10,11 @@ namespace NHibernate.Test.NHSpecificTest.NH521
 			get { return "NH521"; }
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
+
 		[Test]
 		public void AttachUninitProxyCausesInit()
 		{

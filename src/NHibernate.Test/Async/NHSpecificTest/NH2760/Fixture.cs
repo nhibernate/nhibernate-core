@@ -68,6 +68,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 		[Test]
 		public async Task ShouldBeAbleToSelectUserGroupAndOrderByUserCountAsync()
 		{
+			if (!TestDialect.SupportsAggregatingScalarSubSelectsInOrderBy)
+				Assert.Ignore("Dialect does not support aggregating scalar sub-selects in order by");
+
 			using (ISession session = base.OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
@@ -136,6 +139,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 		[Test]
 		public async Task ShouldBeAbleToSelectUserGroupAndOrderByUserCountWithHqlAsync()
 		{
+			if (!TestDialect.SupportsAggregatingScalarSubSelectsInOrderBy)
+				Assert.Ignore("Dialect does not support aggregating scalar sub-selects in order by");
+
 			using (ISession session = base.OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
