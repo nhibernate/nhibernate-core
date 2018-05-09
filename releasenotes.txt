@@ -1,4 +1,29 @@
-﻿Build 5.1.1
+Build 5.1.2
+=============================
+
+Release notes - NHibernate - Version 5.1.2
+
+** Bug
+
+   * #1680 RowCount not working with JoinEntityAlias
+   * #1672 Generated async methods do not correctly propagate OperationCanceledException
+   * #1667 Collection initializing with zero rows after update to NH5
+   * #1660 Wrong CopyTo implementation
+   * #1650 Cannot use cache.use_sliding_expiration in hibernate.cfg.xml
+   * #1585 Hashset unsupported by SetParameterList
+   * #1355 NH-3928 - Random invalid SQL generated when using bitwise operators
+
+** Task
+
+   * #1668 Merge 5.0.5 into 5.1.x
+   * #1664 Release 5.1.2
+   * #1659 Merge 5.0.4 into 5.1.x
+
+As part of releasing 5.1.2, a missing 5.0.0 possible breaking change has been added about future queries with data
+providers not actually supporting them. See 5.0.0 possible breaking changes.
+
+
+Build 5.1.1
 =============================
 
 Release notes - NHibernate - Version 5.1.1
@@ -192,6 +217,18 @@ Release notes - NHibernate - Version 5.1.0
 As part of releasing 5.1.0, a missing 5.0.0 possible breaking change has been added about inequality semantic in LINQ
 queries. See 5.0.0 possible breaking changes.
 
+Build 5.0.6
+=============================
+
+Release notes - NHibernate - Version 5.0.6
+
+** Bug
+    * #1672 Generated async methods do not correctly propagate OperationCanceledException
+    * #1355 NH-3928 - Random invalid SQL generated when using bitwise operators
+
+** Task
+    * #1686 Release 5.0.6
+
 Build 5.0.5
 =============================
 
@@ -319,6 +356,10 @@ Build 5.0.0
           the dialect. They resolve to 4000 length string and (28, 10) precision/scale decimals by default, and are
           trimmed down according to dialect. Those defaults can be overridden with query.default_cast_length,
           query.default_cast_precision and query.default_cast_scale settings.
+        * Future queries with data provider not actually supporting them (not supporting mutliple queries in a single
+          SQL command) are no more immediately executed at the .Future call. They are executed only when directly
+          enumerated or when their IFutureEnumerable.GetEnumerable method is called. (This aligns them with the behavior
+          of FutureValue.)
         * Dialects are now configurable. If you instantiate a dialect directly, make sure you call its Configure
           method, with as argument the properties of a NHibernate Configuration object. You may use instead
           Dialect.GetDialect methods, which configure the dialect before returning it.
@@ -546,6 +587,14 @@ Release notes - NHibernate - Version 5.0.0
 ** Meta Issue
     * [NH-4011] - Fix transaction scopes handling
 
+
+Build 4.1.2.GA
+=============================
+
+Release notes - NHibernate - Version 4.1.2.GA
+
+** Bug
+    * #1355 NH-3928 - Random invalid SQL generated when using bitwise operators
 
 Build 4.1.1.GA
 =============================
