@@ -221,11 +221,6 @@ namespace NHibernate.Test
 			ActualFactory.Evict(persistentClass);
 		}
 
-		void ISessionFactory.Evict(IEnumerable<System.Type> persistentClasses)
-		{
-			ActualFactory.Evict(persistentClasses);
-		}
-
 		void ISessionFactory.Evict(System.Type persistentClass, object id)
 		{
 			ActualFactory.Evict(persistentClass, id);
@@ -236,11 +231,6 @@ namespace NHibernate.Test
 			ActualFactory.EvictEntity(entityName);
 		}
 
-		void ISessionFactory.EvictEntity(IEnumerable<string> entityNames)
-		{
-			ActualFactory.EvictEntity(entityNames);
-		}
-
 		void ISessionFactory.EvictEntity(string entityName, object id)
 		{
 			ActualFactory.EvictEntity(entityName, id);
@@ -249,11 +239,6 @@ namespace NHibernate.Test
 		void ISessionFactory.EvictCollection(string roleName)
 		{
 			ActualFactory.EvictCollection(roleName);
-		}
-
-		void ISessionFactory.EvictCollection(IEnumerable<string> roleNames)
-		{
-			ActualFactory.EvictCollection(roleNames);
 		}
 
 		void ISessionFactory.EvictCollection(string roleName, object id)

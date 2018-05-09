@@ -55,11 +55,6 @@ namespace NHibernate.Test
 			return ActualFactory.EvictAsync(persistentClass, cancellationToken);
 		}
 
-		Task ISessionFactory.EvictAsync(IEnumerable<System.Type> persistentClasses, CancellationToken cancellationToken)
-		{
-			return ActualFactory.EvictAsync(persistentClasses, cancellationToken);
-		}
-
 		Task ISessionFactory.EvictAsync(System.Type persistentClass, object id, CancellationToken cancellationToken)
 		{
 			return ActualFactory.EvictAsync(persistentClass, id, cancellationToken);
@@ -70,11 +65,6 @@ namespace NHibernate.Test
 			return ActualFactory.EvictEntityAsync(entityName, cancellationToken);
 		}
 
-		Task ISessionFactory.EvictEntityAsync(IEnumerable<string> entityNames, CancellationToken cancellationToken)
-		{
-			return ActualFactory.EvictEntityAsync(entityNames, cancellationToken);
-		}
-
 		Task ISessionFactory.EvictEntityAsync(string entityName, object id, CancellationToken cancellationToken)
 		{
 			return ActualFactory.EvictEntityAsync(entityName, id, cancellationToken);
@@ -83,11 +73,6 @@ namespace NHibernate.Test
 		Task ISessionFactory.EvictCollectionAsync(string roleName, CancellationToken cancellationToken)
 		{
 			return ActualFactory.EvictCollectionAsync(roleName, cancellationToken);
-		}
-
-		Task ISessionFactory.EvictCollectionAsync(IEnumerable<string> roleNames, CancellationToken cancellationToken)
-		{
-			return ActualFactory.EvictCollectionAsync(roleNames, cancellationToken);
 		}
 
 		Task ISessionFactory.EvictCollectionAsync(string roleName, object id, CancellationToken cancellationToken)

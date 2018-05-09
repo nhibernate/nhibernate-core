@@ -15,7 +15,6 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Cfg;
-using NHibernate.Engine;
 using NSubstitute;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
@@ -29,7 +28,6 @@ namespace NHibernate.Test.BulkManipulation
 		protected override string MappingsAssembly => "NHibernate.Test";
 
 		protected override IList Mappings => new[] { "BulkManipulation.Vehicle.hbm.xml" };
-
 
 		protected override void Configure(Configuration configuration)
 		{
@@ -68,11 +66,7 @@ namespace NHibernate.Test.BulkManipulation
 
 					Assert.AreEqual(0, clearCalls.Count);
 				}
-
 			}
-
-
 		}
-		
 	}
 }

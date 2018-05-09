@@ -165,7 +165,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public Task EvictAsync(IEnumerable<System.Type> persistentClasses, CancellationToken cancellationToken = default(CancellationToken))
+		public Task EvictAsync(IEnumerable<System.Type> persistentClasses, CancellationToken cancellationToken)
 		{
 			if (persistentClasses == null)
 				throw new ArgumentNullException(nameof(persistentClasses));
@@ -208,7 +208,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public Task EvictEntityAsync(IEnumerable<string> entityNames, CancellationToken cancellationToken = default(CancellationToken))
+		public Task EvictEntityAsync(IEnumerable<string> entityNames, CancellationToken cancellationToken)
 		{
 			if (entityNames == null)
 				throw new ArgumentNullException(nameof(entityNames));
@@ -309,7 +309,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public Task EvictCollectionAsync(IEnumerable<string> roleNames, CancellationToken cancellationToken = default(CancellationToken))
+		public Task EvictCollectionAsync(IEnumerable<string> roleNames, CancellationToken cancellationToken)
 		{
 			if (roleNames == null)
 				throw new ArgumentNullException(nameof(roleNames));
