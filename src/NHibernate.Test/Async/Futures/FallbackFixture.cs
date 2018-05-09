@@ -58,8 +58,7 @@ namespace NHibernate.Test.Futures
 		{
 			using (var session = Sfi.OpenSession())
 			{
-				session.Delete("from Person");
-				session.Flush();
+				session.CreateQuery("delete from System.Object").ExecuteUpdate();
 			}
 
 			base.OnTearDown();
@@ -176,6 +175,82 @@ namespace NHibernate.Test.Futures
 					.Where(x => x.Id == personId)
 					.ToFutureValue(q => q.FirstOrDefault());
 				Assert.IsNotNull(await (futurePerson.GetValueAsync()));
+			}
+		}
+
+		[Test]
+		public async Task FutureValueWithLinqPolymorphicAggregateAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var futureExists =
+					session
+						.Query<PolymorphicA>()
+						.ToFutureValue(q => q.Any());
+				Assert.That(await (futureExists.GetValueAsync()), Is.False);
+
+				var b = new PolymorphicB();
+				await (session.SaveAsync(b));
+				await (session.FlushAsync());
+
+				futureExists =
+					session
+						.Query<PolymorphicA>()
+						.ToFutureValue(q => q.Any());
+				Assert.That(await (futureExists.GetValueAsync()), Is.True, "Has not found B");
+
+				await (session.DeleteAsync(b));
+				await (session.SaveAsync(new PolymorphicA()));
+				await (session.FlushAsync());
+
+				futureExists =
+					session
+						.Query<PolymorphicA>()
+						.ToFutureValue(q => q.Any());
+				Assert.That(await (futureExists.GetValueAsync()), Is.True, "Has not found A");
+			}
+		}
+
+		[Test]
+		public async Task NonExplicitlyExecutedFutureAreExecutedAsync()
+		{
+			Sfi.Statistics.IsStatisticsEnabled = true;
+			try
+			{
+				using (var s = Sfi.OpenSession())
+				{
+					var persons = s.CreateQuery("from Person").Future<Person>();
+					s.Query<Person>().ToFutureValue(q => q.Any());
+					Sfi.Statistics.Clear();
+					Assert.That((await (persons.GetEnumerableAsync())).FirstOrDefault(), Is.Null);
+					Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
+				}
+			}
+			finally
+			{
+				Sfi.Statistics.IsStatisticsEnabled = false;
+			}
+		}
+
+		[Test]
+		public async Task FutureIsNotReexecutedAsync()
+		{
+			Sfi.Statistics.IsStatisticsEnabled = true;
+			try
+			{
+				using (var s = Sfi.OpenSession())
+				{
+					var exists = s.Query<Person>().ToFutureValue(q => q.Any());
+					Assert.That(await (exists.GetValueAsync()), Is.False);
+					Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
+					Sfi.Statistics.Clear();
+					Assert.That(await (exists.GetValueAsync()), Is.False);
+					Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
+				}
+			}
+			finally
+			{
+				Sfi.Statistics.IsStatisticsEnabled = false;
 			}
 		}
 
