@@ -92,6 +92,17 @@
 										<xs:enumeration value="cache.region_prefix" />
 										<xs:enumeration value="cache.use_minimal_puts" />
 										<xs:enumeration value="cache.default_expiration" />
+										<xs:enumeration value="cache.use_sliding_expiration">
+											<xs:annotation>
+												<xs:documentation>
+													The use_sliding_expiration value is whether you wish to use a
+													sliding expiration or not. Defaults
+													to false. Not all providers support this setting, it may be ignored.
+													Check their respective
+													documentation.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="query.substitutions" />
 										<xs:enumeration value="query.factory_class" />
 										<xs:enumeration value="query.linq_provider_class" />
