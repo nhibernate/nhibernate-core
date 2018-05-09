@@ -936,6 +936,13 @@ namespace NHibernate.Test.Hql
 								throw;
 							}
 						}
+						else if (Dialect is HanaDialectBase)
+						{
+							string msgToCheck =
+								"not a GROUP BY expression: 'ANIMAL0_.BODYWEIGHT' must be in group by clause";
+							if (!ex.InnerException.Message.Contains(msgToCheck))
+								throw;
+						}
 						else
 						{
 							string msgToCheck =
@@ -1133,7 +1140,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Iif()
 		{
-			AssumeFunctionSupported("Iif");
+			AssumeFunctionSupported("iif");
 			using (ISession s = OpenSession())
 			{
 				s.Save(new MaterialResource("Flash card 512MB", "A001/07", MaterialResource.MaterialState.Available));

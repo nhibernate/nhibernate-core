@@ -2478,7 +2478,7 @@ namespace NHibernate.Test.Legacy
 				// probably the conversion ProxyArray.id (to_number ensuring a not null value)
 				// Indeed, ProxyArray.id is Glarch.tha_key which is a string filled with a Guid. It does
 				// not fail with most engine likely because there are no results thanks to other conditions.
-				if (!(Dialect is Oracle8iDialect) && !(Dialect is MsSqlCeDialect))
+				if (!(Dialect is Oracle8iDialect) && !(Dialect is MsSqlCeDialect) && !(Dialect is HanaDialectBase))
 				{
 					s.CreateQuery(
 						"select count(*) from Bar as bar join bar.Component.Glarch.ProxyArray as g where cast(g.id as Int32) in indices(bar.Baz.FooArray)").
@@ -4091,6 +4091,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void UpdateFromTransient()
 		{
+			if (!TestDialect.SupportsBatchingDependentDML)
+				Assert.Ignore($"Dialect {Dialect} does not support batching of dependent DML (fee update on related fee)");
+
 			ISession s = OpenSession();
 			Fee fee1 = new Fee();
 			s.Save(fee1);

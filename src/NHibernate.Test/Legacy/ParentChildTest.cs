@@ -44,6 +44,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void Replicate()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			Container baz = new Container();
 			Contained f = new Contained();
@@ -342,6 +345,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void CollectionQuery()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
@@ -499,6 +505,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void ManyToMany()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			// if( dialect is Dialect.HSQLDialect) return;
 
 			ISession s = OpenSession();
@@ -556,6 +565,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void Container()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Container c = new Container();
@@ -688,6 +700,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void CascadeCompositeElements()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			Container c = new Container();
 			
 			c.Cascades = new List<Container.ContainerInnerClass>();
@@ -749,6 +764,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void Bag()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			//if( dialect is Dialect.HSQLDialect ) return;
 
 			ISession s = OpenSession();

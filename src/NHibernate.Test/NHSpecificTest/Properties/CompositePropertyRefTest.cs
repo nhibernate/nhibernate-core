@@ -10,6 +10,11 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 		private long p_id;
 		private long p2_id;
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsFKOnCompositeKeyWithBoolean;
+		}
+
 		protected override void OnSetUp()
 		{
 			using (var s = OpenSession())

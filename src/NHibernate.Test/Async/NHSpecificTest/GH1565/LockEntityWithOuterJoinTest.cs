@@ -55,5 +55,10 @@ namespace NHibernate.Test.NHSpecificTest.GH1565
 				session.CreateSQLQuery("delete from MainEntity").ExecuteUpdate();
 			}
 		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
 	}
 }

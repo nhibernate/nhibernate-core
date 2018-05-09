@@ -85,8 +85,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 		[Test]
 		public async Task CanOrderBySubqueryProjectionAsync()
 		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+			if (!TestDialect.SupportsAggregatingScalarSubSelectsInOrderBy)
+				Assert.Ignore("Dialect does not support aggregating scalar sub-selects in order by");
 
 			using (ISession s = OpenSession())
 			{
@@ -115,8 +115,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 		[Test]
 		public async Task CanOrderBySubqueryProjectionDescAsync()
 		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+			if (!TestDialect.SupportsAggregatingScalarSubSelectsInOrderBy)
+				Assert.Ignore("Dialect does not support aggregating scalar sub-selects in order by");
 
 			using (ISession s = OpenSession())
 			{
