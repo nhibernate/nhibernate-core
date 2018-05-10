@@ -452,12 +452,7 @@ namespace NHibernate.Test
 					new HashSet<System.Type>
 					{
 						// Could be supported like Oracle, with a template
-						typeof (SQLiteDialect),
-						// Could be supported by overriding registration with # instead of ^
-						typeof (PostgreSQLDialect),
-						typeof (PostgreSQL81Dialect),
-						typeof (PostgreSQL82Dialect),
-						typeof (PostgreSQL83Dialect)
+						typeof (SQLiteDialect)
 					}
 				},
 				{
