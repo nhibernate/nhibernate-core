@@ -131,7 +131,7 @@ namespace NHibernate.SqlCommand.Parser
 					case SqlTokenType.Text:
 						if (blockLevel != 0) break;
 
-						if (token.Equals(",", StringComparison.InvariantCultureIgnoreCase))
+						if (token.Equals(",", StringComparison.Ordinal))
 						{
 							if (columnAliasToken != null)
 							{
@@ -139,7 +139,7 @@ namespace NHibernate.SqlCommand.Parser
 							}
 						}
 
-						if (token.Equals("from", StringComparison.InvariantCultureIgnoreCase))
+						if (token.Equals("from", StringComparison.OrdinalIgnoreCase))
 						{
 							if (columnAliasToken != null)
 							{
@@ -148,7 +148,7 @@ namespace NHibernate.SqlCommand.Parser
 							yield break;
 						}
 
-						if (token.Equals("as", StringComparison.InvariantCultureIgnoreCase))
+						if (token.Equals("as", StringComparison.OrdinalIgnoreCase))
 						{
 							columnEndToken = prevToken;
 						}
@@ -237,8 +237,8 @@ namespace NHibernate.SqlCommand.Parser
 					case SqlTokenType.Text:
 						if (blockLevel != 0) break;
 
-						if (token.Equals("asc", StringComparison.InvariantCultureIgnoreCase)
-							|| token.Equals("desc", StringComparison.InvariantCultureIgnoreCase))
+						if (token.Equals("asc", StringComparison.OrdinalIgnoreCase)
+							|| token.Equals("desc", StringComparison.OrdinalIgnoreCase))
 						{
 							orderEndToken = prevToken;
 							directionToken = token;
@@ -269,7 +269,7 @@ namespace NHibernate.SqlCommand.Parser
 		private OrderDefinition ParseOrderDefinition(SqlToken beginToken, SqlToken endToken, SqlToken directionToken)
 		{
 			var isDescending = directionToken != null &&
-							   directionToken.Equals("desc", StringComparison.InvariantCultureIgnoreCase);
+							   directionToken.Equals("desc", StringComparison.OrdinalIgnoreCase);
 
 			var columnNameOrIndex = beginToken == endToken
 				? beginToken.Value

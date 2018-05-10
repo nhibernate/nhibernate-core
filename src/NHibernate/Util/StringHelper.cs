@@ -658,31 +658,43 @@ namespace NHibernate.Util
 			return (loc < 0) ? qualifiedName : qualifiedName.Substring(loc + 1);
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usage and will be removed in a future version")]
 		public static bool EqualsCaseInsensitive(string a, string b)
 		{
 			return StringComparer.InvariantCultureIgnoreCase.Compare(a, b) == 0;
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usage and will be removed in a future version")]
 		public static int IndexOfCaseInsensitive(string source, string value)
 		{
 			return source.IndexOf(value, StringComparison.InvariantCultureIgnoreCase);
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usage and will be removed in a future version")]
 		public static int IndexOfCaseInsensitive(string source, string value, int startIndex)
 		{
 			return source.IndexOf(value, startIndex, StringComparison.InvariantCultureIgnoreCase);
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usage and will be removed in a future version")]
 		public static int IndexOfCaseInsensitive(string source, string value, int startIndex, int count)
 		{
 			return source.IndexOf(value, startIndex, count, StringComparison.InvariantCultureIgnoreCase);
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usage and will be removed in a future version")]
 		public static int LastIndexOfCaseInsensitive(string source, string value)
 		{
 			return source.LastIndexOf(value, StringComparison.InvariantCultureIgnoreCase);
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usage and will be removed in a future version")]
 		public static bool StartsWithCaseInsensitive(string source, string prefix)
 		{
 			return source.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase);

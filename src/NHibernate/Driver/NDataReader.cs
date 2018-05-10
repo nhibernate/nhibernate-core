@@ -612,7 +612,7 @@ namespace NHibernate.Driver
 
 				foreach (KeyValuePair<string, int> pair in fieldNameToIndex)
 				{
-					if (StringHelper.EqualsCaseInsensitive(pair.Key, colName))
+					if (string.Equals(pair.Key, colName, StringComparison.InvariantCultureIgnoreCase))
 					{
 						return pair.Value;
 					}
