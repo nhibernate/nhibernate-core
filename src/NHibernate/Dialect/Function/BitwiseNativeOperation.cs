@@ -1,11 +1,32 @@
 using System;
 using System.Collections;
-using NHibernate.Dialect.Function;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
+// 6.0 TODO: remove NHibernate.Dialect.BitwiseNativeOperation,
+// and remove "Function." prefix where the non obsolete one is used.
 namespace NHibernate.Dialect
+{
+	/// <inheritdoc />
+	[Serializable]
+	// Since 5.2
+	[Obsolete("Use NHibernate.Dialect.Function.BitwiseNativeOperation instead")]
+	public class BitwiseNativeOperation : Function.BitwiseNativeOperation
+	{
+		/// <inheritdoc />
+		public BitwiseNativeOperation(string sqlOpToken) : base(sqlOpToken)
+		{
+		}
+
+		/// <inheritdoc />
+		public BitwiseNativeOperation(string sqlOpToken, bool isNot) : base(sqlOpToken, isNot)
+		{
+		}
+	}
+}
+
+namespace NHibernate.Dialect.Function
 {
 	/// <summary>
 	/// Treats bitwise operations as native operations.
@@ -14,7 +35,7 @@ namespace NHibernate.Dialect
 	public class BitwiseNativeOperation : ISQLFunction
 	{
 		private readonly string _sqlOpToken;
-		private readonly bool _isNot;
+		private readonly bool _isUnary;
 
 		/// <summary>
 		/// Creates an instance using the giving token.
@@ -34,11 +55,11 @@ namespace NHibernate.Dialect
 		/// Creates an instance using the giving token and the flag indicating if it is an unary operator.
 		/// </summary>
 		/// <param name="sqlOpToken">The operation token.</param>
-		/// <param name="isNot">Whether the operation is unary or not.</param>
-		public BitwiseNativeOperation(string sqlOpToken, bool isNot)
+		/// <param name="isUnary">Whether the operation is unary or not.</param>
+		public BitwiseNativeOperation(string sqlOpToken, bool isUnary)
 		{
 			_sqlOpToken = sqlOpToken;
-			_isNot = isNot;
+			_isUnary = isUnary;
 		}
 
 		#region ISQLFunction Members
@@ -63,11 +84,11 @@ namespace NHibernate.Dialect
 
 			var sqlBuffer = new SqlStringBuilder();
 
-			if (!_isNot)
+			if (!_isUnary)
 				AddToBuffer(args[0], sqlBuffer);
 
 			sqlBuffer.Add(" ").Add(_sqlOpToken).Add(" ");
-			for (var i = _isNot ? 0 : 1; i < args.Count; i++)
+			for (var i = _isUnary ? 0 : 1; i < args.Count; i++)
 			{
 				AddToBuffer(args[i], sqlBuffer);
 			}
