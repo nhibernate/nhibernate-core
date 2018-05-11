@@ -96,10 +96,10 @@ namespace NHibernate.Engine
 
 				unchecked
 				{
-					int result = 0;
+					var result = 19;
 
 					foreach (object obj in values)
-						result += obj == null ? 0 : type.GetHashCode(obj);
+						result = 37 * result + (obj == null ? 0 : type.GetHashCode(obj));
 
 					return result;
 				}
