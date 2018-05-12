@@ -449,40 +449,33 @@ namespace NHibernate.Event.Default
 
 			Task<object> AssembleAsync(CacheKey ck, object ce, LoadEvent evt, bool alterStatistics)
 			{
-				try
+				if (factory.Statistics.IsStatisticsEnabled && alterStatistics)
 				{
-					if (factory.Statistics.IsStatisticsEnabled && alterStatistics)
+					if (ce == null)
 					{
-						if (ce == null)
-						{
-							factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
-							log.Debug("Entity cache miss: {0}", ck);
-						}
-						else
-						{
-							factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
-							log.Debug("Entity cache hit: {0}", ck);
-						}
+						factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
+						log.Debug("Entity cache miss: {0}", ck);
 					}
-
-					if (ce != null)
+					else
 					{
-						CacheEntry entry = (CacheEntry) persister.CacheEntryStructure.Destructure(ce, factory);
-
-						// Entity was found in second-level cache...
-						// NH: Different behavior (take a look to options.ExactPersister (NH-295))
-						if (!options.ExactPersister || persister.EntityMetamodel.SubclassEntityNames.Contains(entry.Subclass))
-						{
-							return AssembleCacheEntryAsync(entry, evt.EntityId, persister, evt, cancellationToken);
-						}
+						factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
+						log.Debug("Entity cache hit: {0}", ck);
 					}
-
-					return Task.FromResult<object>(null);
 				}
-				catch (Exception ex)
+
+				if (ce != null)
 				{
-					return Task.FromException<object>(ex);
+					CacheEntry entry = (CacheEntry) persister.CacheEntryStructure.Destructure(ce, factory);
+
+					// Entity was found in second-level cache...
+					// NH: Different behavior (take a look to options.ExactPersister (NH-295))
+					if (!options.ExactPersister || persister.EntityMetamodel.SubclassEntityNames.Contains(entry.Subclass))
+					{
+						return AssembleCacheEntryAsync(entry, evt.EntityId, persister, evt, cancellationToken);
+					}
 				}
+
+				return Task.FromResult<object>(null);
 			}
 		}
 
