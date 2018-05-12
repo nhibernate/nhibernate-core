@@ -22,18 +22,18 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <param name="keys">The keys to cache.</param>
 		/// <param name="values">The objects to cache.</param>
-		void PutMultiple(object[] keys, object[] values);
+		void PutMany(object[] keys, object[] values);
 
 		/// <summary>
 		/// Lock the objects from being changed by another thread.
 		/// </summary>
 		/// <param name="keys">The keys to lock.</param>
-		void LockMultiple(object[] keys);
+		void LockMany(object[] keys);
 
 		/// <summary>
 		/// Unlock the objects that were previously locked.
 		/// </summary>
 		/// <param name="keys">The keys to unlock.</param>
-		void UnlockMultiple(object[] keys);
+		void UnlockMany(object[] keys);
 	}
 }

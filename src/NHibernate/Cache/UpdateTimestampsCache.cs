@@ -90,7 +90,7 @@ namespace NHibernate.Cache
 				{
 					keys[index++] = space;
 				}
-				var lastUpdates = _batchUpdateTimestamps.GetMultiple(keys);
+				var lastUpdates = _batchUpdateTimestamps.GetMany(keys);
 				foreach (var lastUpdate in lastUpdates)
 				{
 					if (IsOutdated(lastUpdate, timestamp))

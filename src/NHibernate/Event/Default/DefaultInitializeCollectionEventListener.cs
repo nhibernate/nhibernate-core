@@ -97,7 +97,7 @@ namespace NHibernate.Event.Default
 					}
 					keys.Add(source.GenerateCacheKey(key, persister.KeyType, persister.Role));
 				}
-				var cachedObjects = persister.Cache.GetMultiple(keys.ToArray(), source.Timestamp);
+				var cachedObjects = persister.Cache.GetMany(keys.ToArray(), source.Timestamp);
 				for (var i = 1; i < cachedObjects.Length; i++)
 				{
 					var coll = source.PersistenceContext.BatchFetchQueue.GetBatchLoadableCollection(persister, collectionEntries[i]);

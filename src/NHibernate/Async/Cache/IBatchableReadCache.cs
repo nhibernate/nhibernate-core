@@ -24,6 +24,6 @@ namespace NHibernate.Cache
 		/// <param name="keys">The keys to be retrieved from the cache.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		Task<object[]> GetMultipleAsync(object[] keys, CancellationToken cancellationToken);
+		Task<object[]> GetManyAsync(object[] keys, CancellationToken cancellationToken);
 	}
 }

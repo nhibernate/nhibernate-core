@@ -18,7 +18,7 @@ namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class ReadWriteCache : ICacheConcurrencyStrategy
+	public partial class ReadWriteCache : IBatchableCacheConcurrencyStrategy
 	{
 		private readonly NHibernate.Util.AsyncLock _lockObjectAsync = new NHibernate.Util.AsyncLock();
 
@@ -90,7 +90,7 @@ namespace NHibernate.Cache
 			}
 		}
 
-		public Task<object[]> GetMultipleAsync(CacheKey[] keys, long txTimestamp, CancellationToken cancellationToken)
+		public Task<object[]> GetManyAsync(CacheKey[] keys, long timestamp, CancellationToken cancellationToken)
 		{
 			if (_batchableReadCache == null)
 			{
@@ -100,8 +100,8 @@ namespace NHibernate.Cache
 			{
 				return Task.FromCanceled<object[]>(cancellationToken);
 			}
-			return InternalGetMultipleAsync();
-			async Task<object[]> InternalGetMultipleAsync()
+			return InternalGetManyAsync();
+			async Task<object[]> InternalGetManyAsync()
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -110,11 +110,11 @@ namespace NHibernate.Cache
 				var result = new object[keys.Length];
 				using (await _lockObjectAsync.LockAsync())
 				{
-					var lockables = await (_batchableReadCache.GetMultipleAsync(keys.Select(o => (object) o).ToArray(), cancellationToken)).ConfigureAwait(false);
+					var lockables = await (_batchableReadCache.GetManyAsync(keys.Select(o => (object) o).ToArray(), cancellationToken)).ConfigureAwait(false);
 					for (var i = 0; i < lockables.Length; i++)
 					{
 						var lockable = (ILockable) lockables[i];
-						var gettable = lockable != null && lockable.IsGettable(txTimestamp);
+						var gettable = lockable != null && lockable.IsGettable(timestamp);
 
 						if (gettable)
 						{
@@ -180,7 +180,7 @@ namespace NHibernate.Cache
 		/// database is operating in repeatable read isolation mode.)
 		/// </summary>
 		/// <returns>Whether the items were actually put into the cache</returns>
-		public Task<bool[]> PutMultipleAsync(CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
+		public Task<bool[]> PutManyAsync(CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
 		                bool[] minimalPuts, CancellationToken cancellationToken)
 		{
 			if (_batchableReadWriteCache == null)
@@ -191,8 +191,8 @@ namespace NHibernate.Cache
 			{
 				return Task.FromCanceled<bool[]>(cancellationToken);
 			}
-			return InternalPutMultipleAsync();
-			async Task<bool[]> InternalPutMultipleAsync()
+			return InternalPutManyAsync();
+			async Task<bool[]> InternalPutManyAsync()
 			{
 
 				var result = new bool[keys.Length];
@@ -211,9 +211,9 @@ namespace NHibernate.Cache
 					var keysArr = keys.Cast<object>().ToArray();
 					try
 					{
-						await (_batchableReadWriteCache.LockMultipleAsync(keysArr, cancellationToken)).ConfigureAwait(false);
+						await (_batchableReadWriteCache.LockManyAsync(keysArr, cancellationToken)).ConfigureAwait(false);
 						var putBatch = new Dictionary<object, object>();
-						var lockables = await (_batchableReadWriteCache.GetMultipleAsync(keys, cancellationToken)).ConfigureAwait(false);
+						var lockables = await (_batchableReadWriteCache.GetManyAsync(keysArr, cancellationToken)).ConfigureAwait(false);
 						for (var i = 0; i < keys.Length; i++)
 						{
 							var key = keys[i];
@@ -249,12 +249,12 @@ namespace NHibernate.Cache
 
 						if (putBatch.Count > 0)
 						{
-							await (_batchableReadWriteCache.PutMultipleAsync(putBatch.Keys.ToArray(), putBatch.Values.ToArray(), cancellationToken)).ConfigureAwait(false);
+							await (_batchableReadWriteCache.PutManyAsync(putBatch.Keys.ToArray(), putBatch.Values.ToArray(), cancellationToken)).ConfigureAwait(false);
 						}
 					}
 					finally
 					{
-						await (_batchableReadWriteCache.UnlockMultipleAsync(keysArr, cancellationToken)).ConfigureAwait(false);
+						await (_batchableReadWriteCache.UnlockManyAsync(keysArr, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 				return result;

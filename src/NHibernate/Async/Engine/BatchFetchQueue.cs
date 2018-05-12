@@ -430,7 +430,7 @@ namespace NHibernate.Engine
 					persister.IdentifierType,
 					entityKey.EntityName);
 			}
-			var cacheResult = await (batchableCache.GetMultipleAsync(cacheKeys, cancellationToken)).ConfigureAwait(false);
+			var cacheResult = await (batchableCache.GetManyAsync(cacheKeys, cancellationToken)).ConfigureAwait(false);
 			for (var j = 0; j < result.Length; j++)
 			{
 				result[j] = cacheResult[j] != null;
@@ -469,7 +469,7 @@ namespace NHibernate.Engine
 					persister.KeyType,
 					persister.Role);
 			}
-			var cacheResult = await (batchableCache.GetMultipleAsync(cacheKeys, cancellationToken)).ConfigureAwait(false);
+			var cacheResult = await (batchableCache.GetManyAsync(cacheKeys, cancellationToken)).ConfigureAwait(false);
 			for (var j = 0; j < result.Length; j++)
 			{
 				result[j] = cacheResult[j] != null;

@@ -586,7 +586,7 @@ namespace NHibernate.Engine
 					persister.IdentifierType,
 					entityKey.EntityName);
 			}
-			var cacheResult = batchableCache.GetMultiple(cacheKeys);
+			var cacheResult = batchableCache.GetMany(cacheKeys);
 			for (var j = 0; j < result.Length; j++)
 			{
 				result[j] = cacheResult[j] != null;
@@ -623,7 +623,7 @@ namespace NHibernate.Engine
 					persister.KeyType,
 					persister.Role);
 			}
-			var cacheResult = batchableCache.GetMultiple(cacheKeys);
+			var cacheResult = batchableCache.GetMany(cacheKeys);
 			for (var j = 0; j < result.Length; j++)
 			{
 				result[j] = cacheResult[j] != null;

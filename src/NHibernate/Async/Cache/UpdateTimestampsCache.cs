@@ -122,7 +122,7 @@ namespace NHibernate.Cache
 					{
 						keys[index++] = space;
 					}
-					var lastUpdates = await (_batchUpdateTimestamps.GetMultipleAsync(keys, cancellationToken)).ConfigureAwait(false);
+					var lastUpdates = await (_batchUpdateTimestamps.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
 					foreach (var lastUpdate in lastUpdates)
 					{
 						if (IsOutdated(lastUpdate, timestamp))

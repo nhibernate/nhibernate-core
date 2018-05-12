@@ -22,7 +22,7 @@ namespace NHibernate.Cache
 	/// <seealso cref="NonstrictReadWriteCache"/> for a faster algorithm
 	/// <seealso cref="ICacheConcurrencyStrategy"/>
 	/// </remarks>
-	public partial class ReadWriteCache : ICacheConcurrencyStrategy
+	public partial class ReadWriteCache : IBatchableCacheConcurrencyStrategy
 	{
 		public interface ILockable
 		{
@@ -146,7 +146,7 @@ namespace NHibernate.Cache
 			}
 		}
 
-		public object[] GetMultiple(CacheKey[] keys, long txTimestamp)
+		public object[] GetMany(CacheKey[] keys, long timestamp)
 		{
 			if (_batchableReadCache == null)
 			{
@@ -159,11 +159,11 @@ namespace NHibernate.Cache
 			var result = new object[keys.Length];
 			lock (_lockObject)
 			{
-				var lockables = _batchableReadCache.GetMultiple(keys.Select(o => (object) o).ToArray());
+				var lockables = _batchableReadCache.GetMany(keys.Select(o => (object) o).ToArray());
 				for (var i = 0; i < lockables.Length; i++)
 				{
 					var lockable = (ILockable) lockables[i];
-					var gettable = lockable != null && lockable.IsGettable(txTimestamp);
+					var gettable = lockable != null && lockable.IsGettable(timestamp);
 
 					if (gettable)
 					{
@@ -227,7 +227,7 @@ namespace NHibernate.Cache
 		/// database is operating in repeatable read isolation mode.)
 		/// </summary>
 		/// <returns>Whether the items were actually put into the cache</returns>
-		public bool[] PutMultiple(CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
+		public bool[] PutMany(CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
 		                bool[] minimalPuts)
 		{
 			if (_batchableReadWriteCache == null)
@@ -251,9 +251,9 @@ namespace NHibernate.Cache
 				var keysArr = keys.Cast<object>().ToArray();
 				try
 				{
-					_batchableReadWriteCache.LockMultiple(keysArr);
+					_batchableReadWriteCache.LockMany(keysArr);
 					var putBatch = new Dictionary<object, object>();
-					var lockables = _batchableReadWriteCache.GetMultiple(keys);
+					var lockables = _batchableReadWriteCache.GetMany(keysArr);
 					for (var i = 0; i < keys.Length; i++)
 					{
 						var key = keys[i];
@@ -289,12 +289,12 @@ namespace NHibernate.Cache
 
 					if (putBatch.Count > 0)
 					{
-						_batchableReadWriteCache.PutMultiple(putBatch.Keys.ToArray(), putBatch.Values.ToArray());
+						_batchableReadWriteCache.PutMany(putBatch.Keys.ToArray(), putBatch.Values.ToArray());
 					}
 				}
 				finally
 				{
-					_batchableReadWriteCache.UnlockMultiple(keysArr);
+					_batchableReadWriteCache.UnlockMany(keysArr);
 				}
 			}
 			return result;

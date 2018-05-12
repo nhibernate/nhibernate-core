@@ -9,7 +9,7 @@ namespace NHibernate.Cache
 	/// <summary>
 	/// Caches data that is never updated
 	/// </summary>
-	public partial class ReadOnlyCache : ICacheConcurrencyStrategy
+	public partial class ReadOnlyCache : IBatchableCacheConcurrencyStrategy
 	{
 		private ICache cache;
 		private IBatchableReadCache _batchableReadCache;
@@ -46,7 +46,7 @@ namespace NHibernate.Cache
 			return result;	
 		}
 
-		public object[] GetMultiple(CacheKey[] keys, long txTimestamp)
+		public object[] GetMany(CacheKey[] keys, long timestamp)
 		{
 			if (_batchableReadCache == null)
 			{
@@ -56,7 +56,7 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
-			var results = _batchableReadCache.GetMultiple(keys.Select(o => (object) o).ToArray());
+			var results = _batchableReadCache.GetMany(keys.Select(o => (object) o).ToArray());
 			if (!log.IsDebugEnabled())
 			{
 				return results;
@@ -77,7 +77,7 @@ namespace NHibernate.Cache
 			throw new InvalidOperationException("ReadOnlyCache: Can't write to a readonly object " + key.EntityOrRoleName);
 		}
 
-		public bool[] PutMultiple(CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
+		public bool[] PutMany(CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
 		                          bool[] minimalPuts)
 		{
 			if (_batchableReadWriteCache == null)
@@ -104,7 +104,7 @@ namespace NHibernate.Cache
 			var skipKeyIndexes = new HashSet<int>();
 			if (checkKeys.Any())
 			{
-				var objects = _batchableReadWriteCache.GetMultiple(checkKeys.ToArray());
+				var objects = _batchableReadWriteCache.GetMany(checkKeys.Select(o => (object) o).ToArray());
 				for (var i = 0; i < objects.Length; i++)
 				{
 					if (objects[i] != null)
@@ -136,7 +136,7 @@ namespace NHibernate.Cache
 				putValues[j++] = values[i];
 				result[i] = true;
 			}
-			_batchableReadWriteCache.PutMultiple(putKeys, putValues);
+			_batchableReadWriteCache.PutMany(putKeys, putValues);
 			return result;
 		}
 

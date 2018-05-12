@@ -12,7 +12,6 @@ namespace NHibernate.Test.CacheTest.Caches
 	public partial class BatchableCache : ICache, IBatchableReadWriteCache
 	{
 		private readonly IDictionary _hashtable = new Hashtable();
-		private readonly string _regionName;
 
 		public List<object[]> GetMultipleCalls { get; } = new List<object[]>();
 
@@ -26,7 +25,7 @@ namespace NHibernate.Test.CacheTest.Caches
 
 		public List<object> PutCalls { get; } = new List<object>();
 
-		public void PutMultiple(object[] keys, object[] values)
+		public void PutMany(object[] keys, object[] values)
 		{
 			PutMultipleCalls.Add(keys);
 			for (int i = 0; i < keys.Length; i++)
@@ -35,12 +34,12 @@ namespace NHibernate.Test.CacheTest.Caches
 			}
 		}
 
-		public void LockMultiple(object[] keys)
+		public void LockMany(object[] keys)
 		{
 			LockMultipleCalls.Add(keys);
 		}
 
-		public void UnlockMultiple(object[] keys)
+		public void UnlockMany(object[] keys)
 		{
 			UnlockMultipleCalls.Add(keys);
 		}
@@ -49,7 +48,7 @@ namespace NHibernate.Test.CacheTest.Caches
 
 		public BatchableCache(string regionName)
 		{
-			_regionName = regionName;
+			RegionName = regionName;
 		}
 
 		/// <summary></summary>
@@ -59,7 +58,7 @@ namespace NHibernate.Test.CacheTest.Caches
 			return _hashtable[key];
 		}
 
-		public object[] GetMultiple(object[] keys)
+		public object[] GetMany(object[] keys)
 		{
 			GetMultipleCalls.Add(keys);
 			var result = new object[keys.Length];
@@ -123,18 +122,9 @@ namespace NHibernate.Test.CacheTest.Caches
 		}
 
 		/// <summary></summary>
-		public int Timeout
-		{
-			get
-			{
-				return Timestamper.OneMs * 60000; // ie. 60 seconds
-			}
-		}
+		public int Timeout => Timestamper.OneMs * 60000;
 
-		public string RegionName
-		{
-			get { return _regionName; }
-		}
+		public string RegionName { get; }
 
 		#endregion
 	}

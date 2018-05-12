@@ -44,7 +44,7 @@ namespace NHibernate.Cache
 
 			var factory = Session.Factory;
 			var cacheStrategy = CacheConcurrencyStrategy;
-			var puts = await (cacheStrategy.PutMultipleAsync(keys, values, Session.Timestamp, versions, versionComparers, minimalPuts, cancellationToken)).ConfigureAwait(false);
+			var puts = await (cacheStrategy.PutManyAsync(keys, values, Session.Timestamp, versions, versionComparers, minimalPuts, cancellationToken)).ConfigureAwait(false);
 
 			if (factory.Statistics.IsStatisticsEnabled && puts.Any(o => o))
 			{

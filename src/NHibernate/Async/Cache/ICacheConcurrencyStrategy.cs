@@ -130,31 +130,21 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <param name="cache">The cache concurrency strategy.</param>
 		/// <param name="keys">The keys (id) of the objects to get out of the Cache.</param>
-		/// <param name="txTimestamp">A timestamp prior to the transaction start time</param>
+		/// <param name="timestamp">A timestamp prior to the transaction start time</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>An array of cached objects or <see langword="null" /></returns>
 		/// <exception cref="CacheException"></exception>
-		//6.0 TODO: Merge into ICacheConcurrencyStrategy.
-		public static async Task<object[]> GetMultipleAsync(this ICacheConcurrencyStrategy cache, CacheKey[] keys, long txTimestamp, CancellationToken cancellationToken)
+		public static Task<object[]> GetManyAsync(this ICacheConcurrencyStrategy cache, CacheKey[] keys, long timestamp, CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			switch (cache)
+			if (!(cache is IBatchableCacheConcurrencyStrategy batchableCache))
 			{
-				case ReadOnlyCache readOnly:
-					return await (readOnly.GetMultipleAsync(keys, txTimestamp, cancellationToken)).ConfigureAwait(false);
-				case ReadWriteCache readWrite:
-					return await (readWrite.GetMultipleAsync(keys, txTimestamp, cancellationToken)).ConfigureAwait(false);
-				case NonstrictReadWriteCache nonstrictReadWrite:
-					return await (nonstrictReadWrite.GetMultipleAsync(keys, txTimestamp, cancellationToken)).ConfigureAwait(false);
+				throw new InvalidOperationException($"Cache concurrency strategy {cache.GetType()} does not support batching");
 			}
-
-			// Fallback to Get
-			var objects = new object[keys.Length];
-			for (var i = 0; i < keys.Length; i++)
+			if (cancellationToken.IsCancellationRequested)
 			{
-				objects[i] = await (cache.GetAsync(keys[i], txTimestamp, cancellationToken)).ConfigureAwait(false);
+				return Task.FromCanceled<object[]>(cancellationToken);
 			}
-			return objects;
+			return batchableCache.GetManyAsync(keys, timestamp, cancellationToken);
 		}
 
 		/// <summary>
@@ -170,28 +160,18 @@ namespace NHibernate.Cache
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns><see langword="true" /> if the objects were successfully cached.</returns>
 		/// <exception cref="CacheException"></exception>
-		//6.0 TODO: Merge into ICacheConcurrencyStrategy.
-		public static async Task<bool[]> PutMultipleAsync(this ICacheConcurrencyStrategy cache, CacheKey[] keys, object[] values, long timestamp,
+		public static Task<bool[]> PutManyAsync(this ICacheConcurrencyStrategy cache, CacheKey[] keys, object[] values, long timestamp,
 		                          object[] versions, IComparer[] versionComparers, bool[] minimalPuts, CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			switch (cache)
+			if (!(cache is IBatchableCacheConcurrencyStrategy batchableCache))
 			{
-				case ReadOnlyCache readOnly:
-					return await (readOnly.PutMultipleAsync(keys, values, timestamp, versions, versionComparers, minimalPuts, cancellationToken)).ConfigureAwait(false);
-				case ReadWriteCache readWrite:
-					return await (readWrite.PutMultipleAsync(keys, values, timestamp, versions, versionComparers, minimalPuts, cancellationToken)).ConfigureAwait(false);
-				case NonstrictReadWriteCache nonstrictReadWrite:
-					return await (nonstrictReadWrite.PutMultipleAsync(keys, values, timestamp, versions, versionComparers, minimalPuts, cancellationToken)).ConfigureAwait(false);
+				throw new InvalidOperationException($"Cache concurrency strategy {cache.GetType()} does not support batching");
 			}
-
-			// Fallback to Put
-			var result = new bool[keys.Length];
-			for (var i = 0; i < keys.Length; i++)
+			if (cancellationToken.IsCancellationRequested)
 			{
-				result[i] = await (cache.PutAsync(keys[i], values[i], timestamp, versions[i], versionComparers[i], minimalPuts[i], cancellationToken)).ConfigureAwait(false);
+				return Task.FromCanceled<bool[]>(cancellationToken);
 			}
-			return result;
+			return batchableCache.PutManyAsync(keys, values, timestamp, versions, versionComparers, minimalPuts, cancellationToken);
 		}
 	}
 }

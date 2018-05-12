@@ -22,7 +22,7 @@ namespace NHibernate.Test.CacheTest.Caches
 	public partial class BatchableCache : ICache, IBatchableReadWriteCache
 	{
 
-		public Task PutMultipleAsync(object[] keys, object[] values, CancellationToken cancellationToken)
+		public Task PutManyAsync(object[] keys, object[] values, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -39,7 +39,7 @@ namespace NHibernate.Test.CacheTest.Caches
 			}
 		}
 
-		public Task LockMultipleAsync(object[] keys, CancellationToken cancellationToken)
+		public Task LockManyAsync(object[] keys, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -52,7 +52,7 @@ namespace NHibernate.Test.CacheTest.Caches
 			}
 		}
 
-		public Task UnlockMultipleAsync(object[] keys, CancellationToken cancellationToken)
+		public Task UnlockManyAsync(object[] keys, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -81,7 +81,7 @@ namespace NHibernate.Test.CacheTest.Caches
 			}
 		}
 
-		public Task<object[]> GetMultipleAsync(object[] keys, CancellationToken cancellationToken)
+		public Task<object[]> GetManyAsync(object[] keys, CancellationToken cancellationToken)
 		{
 			try
 			{

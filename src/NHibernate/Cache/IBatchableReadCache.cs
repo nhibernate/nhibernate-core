@@ -22,6 +22,6 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <param name="keys">The keys to be retrieved from the cache.</param>
 		/// <returns></returns>
-		object[] GetMultiple(object[] keys);
+		object[] GetMany(object[] keys);
 	}
 }

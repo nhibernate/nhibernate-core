@@ -24,20 +24,20 @@ namespace NHibernate.Cache
 		/// <param name="keys">The keys to cache.</param>
 		/// <param name="values">The objects to cache.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task PutMultipleAsync(object[] keys, object[] values, CancellationToken cancellationToken);
+		Task PutManyAsync(object[] keys, object[] values, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Lock the objects from being changed by another thread.
 		/// </summary>
 		/// <param name="keys">The keys to lock.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task LockMultipleAsync(object[] keys, CancellationToken cancellationToken);
+		Task LockManyAsync(object[] keys, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Unlock the objects that were previously locked.
 		/// </summary>
 		/// <param name="keys">The keys to unlock.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task UnlockMultipleAsync(object[] keys, CancellationToken cancellationToken);
+		Task UnlockManyAsync(object[] keys, CancellationToken cancellationToken);
 	}
 }

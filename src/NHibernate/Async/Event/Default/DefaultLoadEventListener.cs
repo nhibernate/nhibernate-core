@@ -429,7 +429,7 @@ namespace NHibernate.Event.Default
 					}
 					keys.Add(source.GenerateCacheKey(key, persister.IdentifierType, persister.RootEntityName));
 				}
-				var cachedObjects = await (persister.Cache.GetMultipleAsync(keys.ToArray(), source.Timestamp, cancellationToken)).ConfigureAwait(false);
+				var cachedObjects = await (persister.Cache.GetManyAsync(keys.ToArray(), source.Timestamp, cancellationToken)).ConfigureAwait(false);
 				for (var i = 1; i < cachedObjects.Length; i++)
 				{
 					cancellationToken.ThrowIfCancellationRequested();

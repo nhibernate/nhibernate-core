@@ -148,29 +148,16 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <param name="cache">The cache concurrency strategy.</param>
 		/// <param name="keys">The keys (id) of the objects to get out of the Cache.</param>
-		/// <param name="txTimestamp">A timestamp prior to the transaction start time</param>
+		/// <param name="timestamp">A timestamp prior to the transaction start time</param>
 		/// <returns>An array of cached objects or <see langword="null" /></returns>
 		/// <exception cref="CacheException"></exception>
-		//6.0 TODO: Merge into ICacheConcurrencyStrategy.
-		public static object[] GetMultiple(this ICacheConcurrencyStrategy cache, CacheKey[] keys, long txTimestamp)
+		public static object[] GetMany(this ICacheConcurrencyStrategy cache, CacheKey[] keys, long timestamp)
 		{
-			switch (cache)
+			if (!(cache is IBatchableCacheConcurrencyStrategy batchableCache))
 			{
-				case ReadOnlyCache readOnly:
-					return readOnly.GetMultiple(keys, txTimestamp);
-				case ReadWriteCache readWrite:
-					return readWrite.GetMultiple(keys, txTimestamp);
-				case NonstrictReadWriteCache nonstrictReadWrite:
-					return nonstrictReadWrite.GetMultiple(keys, txTimestamp);
+				throw new InvalidOperationException($"Cache concurrency strategy {cache.GetType()} does not support batching");
 			}
-
-			// Fallback to Get
-			var objects = new object[keys.Length];
-			for (var i = 0; i < keys.Length; i++)
-			{
-				objects[i] = cache.Get(keys[i], txTimestamp);
-			}
-			return objects;
+			return batchableCache.GetMany(keys, timestamp);
 		}
 
 		/// <summary>
@@ -185,39 +172,26 @@ namespace NHibernate.Cache
 		/// <param name="minimalPuts">Indicates that the cache should avoid a put if the item is already cached.</param>
 		/// <returns><see langword="true" /> if the objects were successfully cached.</returns>
 		/// <exception cref="CacheException"></exception>
-		//6.0 TODO: Merge into ICacheConcurrencyStrategy.
-		public static bool[] PutMultiple(this ICacheConcurrencyStrategy cache, CacheKey[] keys, object[] values, long timestamp,
+		public static bool[] PutMany(this ICacheConcurrencyStrategy cache, CacheKey[] keys, object[] values, long timestamp,
 		                          object[] versions, IComparer[] versionComparers, bool[] minimalPuts)
 		{
-			switch (cache)
+			if (!(cache is IBatchableCacheConcurrencyStrategy batchableCache))
 			{
-				case ReadOnlyCache readOnly:
-					return readOnly.PutMultiple(keys, values, timestamp, versions, versionComparers, minimalPuts);
-				case ReadWriteCache readWrite:
-					return readWrite.PutMultiple(keys, values, timestamp, versions, versionComparers, minimalPuts);
-				case NonstrictReadWriteCache nonstrictReadWrite:
-					return nonstrictReadWrite.PutMultiple(keys, values, timestamp, versions, versionComparers, minimalPuts);
+				throw new InvalidOperationException($"Cache concurrency strategy {cache.GetType()} does not support batching");
 			}
-
-			// Fallback to Put
-			var result = new bool[keys.Length];
-			for (var i = 0; i < keys.Length; i++)
-			{
-				result[i] = cache.Put(keys[i], values[i], timestamp, versions[i], versionComparers[i], minimalPuts[i]);
-			}
-			return result;
+			return batchableCache.PutMany(keys, values, timestamp, versions, versionComparers, minimalPuts);
 		}
 
 		public static bool IsBatchingGetSupported(this ICacheConcurrencyStrategy cache)
 		{
 			// ReSharper disable once SuspiciousTypeConversion.Global
-			return cache.Cache is IBatchableReadCache;
+			return cache is IBatchableCacheConcurrencyStrategy && cache.Cache is IBatchableReadCache;
 		}
 
 		public static bool IsBatchingPutSupported(this ICacheConcurrencyStrategy cache)
 		{
 			// ReSharper disable once SuspiciousTypeConversion.Global
-			return cache.Cache is IBatchableReadWriteCache;
+			return cache is IBatchableCacheConcurrencyStrategy && cache.Cache is IBatchableReadWriteCache;
 		}
 	}
 }

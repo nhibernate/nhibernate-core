@@ -37,7 +37,7 @@ namespace NHibernate.Cache
 
 			var factory = Session.Factory;
 			var cacheStrategy = CacheConcurrencyStrategy;
-			var puts = cacheStrategy.PutMultiple(keys, values, Session.Timestamp, versions, versionComparers, minimalPuts);
+			var puts = cacheStrategy.PutMany(keys, values, Session.Timestamp, versions, versionComparers, minimalPuts);
 
 			if (factory.Statistics.IsStatisticsEnabled && puts.Any(o => o))
 			{
