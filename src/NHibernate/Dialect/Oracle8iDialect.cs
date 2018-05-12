@@ -303,7 +303,7 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 
-			RegisterFunction("band", new BitwiseFunctionOperation("bitand"));
+			RegisterFunction("band", new Function.BitwiseFunctionOperation("bitand"));
 			RegisterFunction("bor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2)"));
 			RegisterFunction("bxor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2) * 2"));
 			RegisterFunction("bnot", new SQLFunctionTemplate(null, "(-1 - ?1)"));

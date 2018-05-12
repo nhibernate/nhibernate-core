@@ -601,6 +601,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore(Dialect.GetType().Name + " does not support subquery in select clause");
 
+			if (!TestDialect.SupportsOrderByAndLimitInSubQueries)
+				Assert.Ignore("Dialect does not support sub-selects with order by or limit/top");
+
 			var list = (db.OrderLines
 				.Select(ol => new
 				{
@@ -619,6 +622,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 		{
 			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore(Dialect.GetType().Name + " does not support subquery in select clause");
+
+			if (!TestDialect.SupportsOrderByAndLimitInSubQueries)
+				Assert.Ignore("Dialect does not support sub-selects with order by or limit/top");
 
 			var list = db.OrderLines
 				.Select(ol => new
@@ -639,6 +645,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore(Dialect.GetType().Name + " does not support subquery in select clause");
 
+			if (!TestDialect.SupportsOrderByAndLimitInSubQueries)
+				Assert.Ignore("Dialect does not support sub-selects with order by or limit/top");
+
 			var list = db.OrderLines
 				.Select(ol => new
 				{
@@ -658,6 +667,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
 
+			if (!TestDialect.SupportsOrderByAndLimitInSubQueries)
+				Assert.Ignore("Dialect does not support sub-selects with order by or limit/top");
+
 			var result = (from p in db.Products
 						  where (from c in db.Categories
 								 where c.Name == "Confections"
@@ -675,6 +687,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
 
+			if (!TestDialect.SupportsOrderByAndLimitInSubQueries)
+				Assert.Ignore("Dialect does not support sub-selects with order by or limit/top");
+
 			var result = (from c in db.Categories
 						  where c.Products.OrderBy(p => p.ProductId).Select(p => p.Discontinued).FirstOrDefault() == false
 						  select c).ToList();
@@ -688,6 +703,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 		{
 			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
+			if (!TestDialect.SupportsOrderByAndLimitInSubQueries)
+				Assert.Ignore("Dialect does not support sub-selects with order by or limit/top");
 
 			//NH-3190
 			var result = (from p in db.Products
@@ -706,6 +724,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 		{
 			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
+			if (!TestDialect.SupportsOrderByAndLimitInSubQueries)
+				Assert.Ignore("Dialect does not support sub-selects with order by or limit/top");
 
 			var result = (from p in db.Products
 						  where (from c in db.Categories

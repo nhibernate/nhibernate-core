@@ -88,6 +88,10 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("round", new StandardSQLFunction("round"));
 
+			// SQLite has no built-in support of bitwise xor, but can emulate it.
+			// http://sqlite.1065341.n5.nabble.com/XOR-operator-td98004.html
+			RegisterFunction("bxor", new SQLFunctionTemplate(null, "((?1 | ?2) - (?1 & ?2))"));
+
 			// NH-3787: SQLite requires the cast in SQL too for not defaulting to string.
 			RegisterFunction("transparentcast", new CastFunction());
 		}

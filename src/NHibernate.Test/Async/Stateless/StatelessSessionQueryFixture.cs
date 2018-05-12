@@ -35,6 +35,11 @@ namespace NHibernate.Test.Stateless
 			cfg.SetProperty(Environment.MaxFetchDepth, 1.ToString());
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
+
 		private class TestData
 		{
 			internal readonly IList list = new ArrayList();

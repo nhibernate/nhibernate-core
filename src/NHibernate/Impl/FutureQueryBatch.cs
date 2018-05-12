@@ -9,6 +9,11 @@ namespace NHibernate.Impl
 		{
 		}
 
+		protected override IList List(IQuery query)
+		{
+			return query.List();
+		}
+
 		protected override IMultiQuery CreateMultiApproach(bool isCacheable, string cacheRegion)
 		{
 			return

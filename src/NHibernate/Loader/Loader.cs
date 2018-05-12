@@ -1372,7 +1372,13 @@ namespace NHibernate.Loader
 			// potential deadlock issues due to nature of code.
 			try
 			{
-				Log.Debug("Wrapping result set [{0}]", rs);
+				if (Log.IsDebugEnabled())
+				{
+					// Do not log the result set as-is, it is an IEnumerable which may get enumerated by loggers.
+					// (Serilog does that.) See #1667.
+					Log.Debug("Wrapping result set [{0}]", rs.GetType());
+				}
+
 				return new ResultSetWrapper(rs, RetreiveColumnNameToIndexCache(rs));
 			}
 			catch (Exception e)
@@ -1862,19 +1868,16 @@ namespace NHibernate.Loader
 						string parameterName = parts[1];
 						var filter = (FilterImpl)enabledFilters[filterName];
 
-						object value = filter.GetParameter(parameterName);
+						int? collectionSpan = filter.GetParameterSpan(parameterName);
 						IType type = filter.FilterDefinition.GetParameterType(parameterName);
 						int parameterColumnSpan = type.GetColumnSpan(session.Factory);
-						var collectionValue = value as ICollection;
-						int? collectionSpan = null;
 
 						// Add query chunk
-						string typeBindFragment = string.Join(", ", Enumerable.Repeat("?", parameterColumnSpan).ToArray());
+						string typeBindFragment = string.Join(", ", Enumerable.Repeat("?", parameterColumnSpan));
 						string bindFragment;
-						if (collectionValue != null && !type.ReturnedClass.IsArray)
+						if (collectionSpan.HasValue && !type.ReturnedClass.IsArray)
 						{
-							collectionSpan = collectionValue.Count;
-							bindFragment = string.Join(", ", Enumerable.Repeat(typeBindFragment, collectionValue.Count).ToArray());
+							bindFragment = string.Join(", ", Enumerable.Repeat(typeBindFragment, collectionSpan.Value));
 						}
 						else
 						{

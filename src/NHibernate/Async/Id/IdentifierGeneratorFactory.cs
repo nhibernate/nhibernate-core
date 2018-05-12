@@ -72,6 +72,7 @@ namespace NHibernate.Id
 			{
 				return await (type.NullSafeGetAsync(rs, rs.GetName(0), session, null, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				throw new IdentifierGenerationException("could not retrieve identifier value", e);

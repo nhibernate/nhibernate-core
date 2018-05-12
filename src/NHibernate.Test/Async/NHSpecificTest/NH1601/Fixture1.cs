@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1601
@@ -18,6 +17,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
     [TestFixture]
     public class Fixture1Async : BugTestCase
     {
+        protected override bool AppliesTo(Dialect.Dialect dialect)
+        {
+            return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+        }
+
         /// <summary>
         /// Loads the project do not call Count on the list assigned.
         /// </summary>

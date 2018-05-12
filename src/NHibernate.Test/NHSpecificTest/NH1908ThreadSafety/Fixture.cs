@@ -12,10 +12,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1908ThreadSafety
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return !(dialect is Oracle8iDialect);
 			// Oracle sometimes causes: ORA-12520: TNS:listener could not find available handler for requested type of server
 			// Following links bizarrely suggest it's an Oracle limitation under load:
 			// http://www.orafaq.com/forum/t/60019/2/ & http://www.ispirer.com/wiki/sqlways/troubleshooting-guide/oracle/import/tns_listener
+			return !(dialect is Oracle8iDialect) &&
+				TestDialect.SupportsConcurrencyTests;
 		}
 
 		[Test]

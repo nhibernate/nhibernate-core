@@ -70,6 +70,7 @@ namespace NHibernate.Transaction
 					await (AfterTransactionCompletionAsync(true, cancellationToken)).ConfigureAwait(false);
 					Dispose();
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (HibernateException e)
 				{
 					log.Error(e, "Commit failed");

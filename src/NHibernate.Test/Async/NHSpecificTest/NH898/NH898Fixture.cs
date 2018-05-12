@@ -10,7 +10,6 @@
 
 using System;
 using System.Collections;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH898
@@ -31,6 +30,11 @@ namespace NHibernate.Test.NHSpecificTest.NH898
 						"NHSpecificTest.NH898.ClassC.hbm.xml",
 					};
 			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		[Test]

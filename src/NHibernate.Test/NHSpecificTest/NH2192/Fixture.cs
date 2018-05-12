@@ -9,6 +9,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2192
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsConcurrencyTests;
+		}
+
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();

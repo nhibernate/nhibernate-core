@@ -39,8 +39,12 @@ namespace NHibernate.Test.SystemTransactions
 			}
 			// Purge any previous enlist
 			connectionString = Regex.Replace(
-				connectionString, $"[^;\"a-zA-Z]*{autoEnlistmentKeywordPattern}=[^;\"]*", string.Empty,
-				RegexOptions.IgnoreCase | RegexOptions.Multiline);
+				connectionString, $"[^;\"a-zA-Z]*{autoEnlistmentKeywordPattern}=[^;\"]*;?", string.Empty,
+				RegexOptions.IgnoreCase);
+			// Avoid redundant semi-colon
+			connectionString = Regex.Replace(
+				connectionString, $";[/s]*$", string.Empty,
+				RegexOptions.IgnoreCase);
 			connectionString += $";{autoEnlistmentKeyword}=false;";
 			configuration.SetProperty(Cfg.Environment.ConnectionString, connectionString);
 		}

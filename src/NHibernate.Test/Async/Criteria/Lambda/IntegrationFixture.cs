@@ -264,6 +264,9 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public async Task OverrideEagerJoinAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{

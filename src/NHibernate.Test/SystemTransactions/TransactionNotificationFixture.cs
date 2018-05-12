@@ -182,7 +182,6 @@ namespace NHibernate.Test.SystemTransactions
 			{
 				using (var tx = new TransactionScope())
 				{
-					ownConnection1.EnlistTransaction(System.Transactions.Transaction.Current);
 					using (s1 = Sfi.WithOptions().Connection(ownConnection1).Interceptor(interceptor).OpenSession())
 					{
 						s1.CreateCriteria<object>().List();

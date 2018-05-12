@@ -686,6 +686,7 @@ namespace NHibernate.Mapping
 					alter.Append(dialect.GetColumnComment(columnComment));
 				}
 
+				alter.Append(dialect.AddColumnSuffixString);
 				results.Add(alter.ToString());
 			}
 

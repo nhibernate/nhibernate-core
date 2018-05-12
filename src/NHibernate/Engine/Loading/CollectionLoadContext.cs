@@ -109,7 +109,9 @@ namespace NHibernate.Engine.Loading
 						// create one
 						if (log.IsDebugEnabled())
 						{
-							log.Debug("instantiating new collection [key={0}, rs={1}]", key, resultSet);
+							// Do not log the resultSet as-is, it is an IEnumerable which may get enumerated by loggers.
+							// (Serilog does that.) See #1667.
+							log.Debug("instantiating new collection [key={0}, rs={1}]", key, resultSet.GetType());
 						}
 						collection = persister.CollectionType.Instantiate(loadContexts.PersistenceContext.Session, persister, key);
 					}
