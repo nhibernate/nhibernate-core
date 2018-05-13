@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using NHibernate.Util;
 using NUnit.Framework;
 
@@ -122,12 +124,32 @@ namespace NHibernate.Test.UtilityTest
 			Assert.That(CollectionHelper.DictionaryEquals<string, string>(d2, d1), Is.False);
 		}
 
+		private static readonly MethodInfo KvpGetHashCode =
+			typeof(CollectionHelper)
+				.GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
+				.Where(m => m.Name == "GetHashCode")
+				.Select(m => new { m, p = m.GetParameters() })
+				.Where(mp => mp.p.Length == 1)
+				.Select(mp => new { mp.m, pt = mp.p[0].ParameterType })
+				.Single(
+					mpt => mpt.pt.IsGenericType &&
+						!mpt.pt.IsGenericTypeDefinition &&
+						mpt.pt.GetGenericTypeDefinition() == typeof(IEnumerable<>) &&
+						mpt.pt.GenericTypeArguments.Length == 1 &&
+						mpt.pt.GenericTypeArguments[0].IsGenericType &&
+						!mpt.pt.GenericTypeArguments[0].IsGenericTypeDefinition &&
+						mpt.pt.GenericTypeArguments[0].GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+				.m;
+
 		[Test]
 		public void MapsWithSameContentShouldHaveSameHashCode()
 		{
 			var d1 = new Dictionary<string, string> { { "1", "2" }, { "3", "4" } };
 			var d2 = new Dictionary<string, string> { { "1", "2" }, { "3", "4" } };
-			Assert.That(CollectionHelper.GetHashCode(d1), Is.EqualTo(CollectionHelper.GetHashCode(d2)));
+			var kvpGetHashCode = KvpGetHashCode.MakeGenericMethod(typeof(string), typeof(string));
+			Assert.That(
+				kvpGetHashCode.Invoke(null, new object[] { d1 }),
+				Is.EqualTo(kvpGetHashCode.Invoke(null, new object[] { d2 })));
 		}
 
 		// Failure of following tests is not an error from GetHashCode semantic viewpoint, but it causes it
@@ -138,7 +160,10 @@ namespace NHibernate.Test.UtilityTest
 		{
 			var d1 = new Dictionary<string, string> { { "1", "2" }, { "3", "4" } };
 			var d2 = new Dictionary<string, string> { { "1", "2" }, { "4", "3" } };
-			Assert.That(CollectionHelper.GetHashCode(d1), Is.Not.EqualTo(CollectionHelper.GetHashCode(d2)));
+			var kvpGetHashCode = KvpGetHashCode.MakeGenericMethod(typeof(string), typeof(string));
+			Assert.That(
+				kvpGetHashCode.Invoke(null, new object[] { d1 }),
+				Is.Not.EqualTo(kvpGetHashCode.Invoke(null, new object[] { d2 })));
 		}
 
 		[Test]
@@ -146,7 +171,10 @@ namespace NHibernate.Test.UtilityTest
 		{
 			var d1 = new Dictionary<string, string> { { "1", "2" }, { "3", "4" } };
 			var d2 = new Dictionary<string, string> { { "1", "2" }, { "3", "3" } };
-			Assert.That(CollectionHelper.GetHashCode(d1), Is.Not.EqualTo(CollectionHelper.GetHashCode(d2)));
+			var kvpGetHashCode = KvpGetHashCode.MakeGenericMethod(typeof(string), typeof(string));
+			Assert.That(
+				kvpGetHashCode.Invoke(null, new object[] { d1 }),
+				Is.Not.EqualTo(kvpGetHashCode.Invoke(null, new object[] { d2 })));
 		}
 
 		[Test]
@@ -154,7 +182,10 @@ namespace NHibernate.Test.UtilityTest
 		{
 			var d1 = new Dictionary<string, string> { { "1", "2" }, { "3", "4" } };
 			var d2 = new Dictionary<string, string> { { "1", "2" } };
-			Assert.That(CollectionHelper.GetHashCode(d1), Is.Not.EqualTo(CollectionHelper.GetHashCode(d2)));
+			var kvpGetHashCode = KvpGetHashCode.MakeGenericMethod(typeof(string), typeof(string));
+			Assert.That(
+				kvpGetHashCode.Invoke(null, new object[] { d1 }),
+				Is.Not.EqualTo(kvpGetHashCode.Invoke(null, new object[] { d2 })));
 		}
 
 		#endregion

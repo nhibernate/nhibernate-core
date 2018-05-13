@@ -613,7 +613,7 @@ namespace NHibernate.Util
 		/// individual elements key xored with their value if any, so that the value is independent of the
 		/// collection iteration order.
 		/// </remarks>
-		public static int GetHashCode<TK, TV>(IEnumerable<KeyValuePair<TK, TV>> coll)
+		internal static int GetHashCode<TK, TV>(IEnumerable<KeyValuePair<TK, TV>> coll)
 		{
 			unchecked
 			{
