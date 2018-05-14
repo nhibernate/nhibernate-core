@@ -6,27 +6,22 @@ namespace NHibernate.Util
 {
 	public static partial class SerializationHelper
 	{
-		private static readonly BinaryFormatter Formatter = new BinaryFormatter
-		{
-#if !NETFX
-			SurrogateSelector = new SurrogateSelector()
-#endif
-		};
-
 		public static byte[] Serialize(object obj)
 		{
-			using (var ms = new MemoryStream())
+			var formatter = CreateFormatter();
+			using (var stream = new MemoryStream())
 			{
-				Formatter.Serialize(ms, obj);
-				return ms.ToArray();
+				formatter.Serialize(stream, obj);
+				return stream.ToArray();
 			}
 		}
 
 		public static object Deserialize(byte[] data)
 		{
-			using (var ms = new MemoryStream(data))
+			var formatter = CreateFormatter();
+			using (var stream = new MemoryStream(data))
 			{
-				return Formatter.Deserialize(ms);
+				return formatter.Deserialize(stream);
 			}
 		}
 
@@ -55,6 +50,16 @@ namespace NHibernate.Util
 		internal static T GetValue<T>(this SerializationInfo info, string name)
 		{
 			return (T) info.GetValue(name, typeof(T));
+		}
+
+		private static BinaryFormatter CreateFormatter()
+		{
+			return new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SurrogateSelector()
+#endif
+			};
 		}
 	}
 }
