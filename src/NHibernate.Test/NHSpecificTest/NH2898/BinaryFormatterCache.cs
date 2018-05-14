@@ -2,6 +2,7 @@ using System.Collections;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Cache;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2898
 {
@@ -21,7 +22,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 			if (entry == null)
 				return null;
 
-			var fmt = new BinaryFormatter();
+			var fmt = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			using (var stream = new MemoryStream(entry))
 			{
 				return fmt.Deserialize(stream);
@@ -30,7 +36,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 
 		public void Put(object key, object value)
 		{
-			var fmt = new BinaryFormatter();
+			var fmt = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			using (var stream = new MemoryStream())
 			{
 				fmt.Serialize(stream, value);

@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Proxy;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH317
@@ -27,8 +28,6 @@ namespace NHibernate.Test.NHSpecificTest.NH317
 		[Test]
 		public void ProxySerialization()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			Node node = new Node();
 			node.Id = 1;
 			node.Name = "Node 1";
@@ -45,7 +44,12 @@ namespace NHibernate.Test.NHSpecificTest.NH317
 			s.Close();
 
 			// Serialize
-			IFormatter formatter = new BinaryFormatter();
+			var formatter = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			MemoryStream ms = new MemoryStream();
 			formatter.Serialize(ms, nodeProxy);
 

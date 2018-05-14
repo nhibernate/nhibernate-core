@@ -257,8 +257,6 @@ namespace NHibernate.Test.TransformTests
 		[Test]
 		public async Task SerializationAsync()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			await (AssertSerializationAsync<PublicPropertiesSimpleDTO>());
 			await (AssertSerializationAsync<PrivateFieldsSimpleDTO>());
 			await (AssertSerializationAsync<PublicInheritedPropertiesSimpleDTO>());
