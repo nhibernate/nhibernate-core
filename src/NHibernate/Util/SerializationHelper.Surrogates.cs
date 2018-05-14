@@ -242,11 +242,11 @@ namespace NHibernate.Util
 			}
 		}
 
-		public sealed class SurrogateSelector : ISurrogateSelector
+		public sealed class SurrogateSelector : System.Runtime.Serialization.SurrogateSelector
 		{
-			private static readonly bool SystemTypeIsSerializable = typeof(System.Type).IsSerializable;
-			private static readonly bool MemberInfoIsSerializable = typeof(MemberInfo).IsSerializable;
-			private static readonly bool DelegateIsSerializable = GetDelegateIsSerializable();
+			private static readonly bool SystemTypeIsNotSerializable = !typeof(System.Type).IsSerializable;
+			private static readonly bool MemberInfoIsNotSerializable = !typeof(MemberInfo).IsSerializable;
+			private static readonly bool DelegateIsNotSerializable = !GetDelegateIsSerializable();
 
 			private static bool GetDelegateIsSerializable()
 			{
@@ -272,40 +272,37 @@ namespace NHibernate.Util
 				}
 			}
 
-			private ISurrogateSelector _next;
-
-			void ISurrogateSelector.ChainSelector(ISurrogateSelector selector)
-				=> _next = selector;
-
-			ISurrogateSelector ISurrogateSelector.GetNextSelector()
-				=> _next;
-
-			ISerializationSurrogate ISurrogateSelector.GetSurrogate(
+			public override ISerializationSurrogate GetSurrogate(
 				System.Type type,
 				StreamingContext context,
 				out ISurrogateSelector selector)
 			{
-				if (typeof(System.Type).IsAssignableFrom(type) && !SystemTypeIsSerializable)
+				if (SystemTypeIsNotSerializable && typeof(System.Type).IsAssignableFrom(type))
 				{
 					selector = this;
 					return new TypeSerializationSurrogate();
 				}
 
-				if (typeof(MemberInfo).IsAssignableFrom(type) && !MemberInfoIsSerializable)
+				if (MemberInfoIsNotSerializable && typeof(MemberInfo).IsAssignableFrom(type))
 				{
 					selector = this;
 					return new MemberInfoSerializationSurrogate();
 				}
 
-				if (typeof(Delegate).IsAssignableFrom(type) && !DelegateIsSerializable)
+				if (DelegateIsNotSerializable && typeof(Delegate).IsAssignableFrom(type))
 				{
 					selector = this;
 					return new DelegateSerializationSurrogate();
 				}
 
-				selector = null;
-				return _next?.GetSurrogate(type, context, out selector);
+				return base.GetSurrogate(type, context, out selector);
 			}
+
+			public override void AddSurrogate(System.Type type, StreamingContext context, ISerializationSurrogate surrogate) =>
+				throw new NotSupportedException("This is a static SurrogateSelector");
+
+			public override void RemoveSurrogate(System.Type type, StreamingContext context) =>
+				throw new NotSupportedException("This is a static SurrogateSelector");
 		}
 	}
 }
