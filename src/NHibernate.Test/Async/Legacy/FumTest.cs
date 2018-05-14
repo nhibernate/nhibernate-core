@@ -16,6 +16,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
 using NHibernate.Type;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Legacy
@@ -718,7 +719,12 @@ namespace NHibernate.Test.Legacy
 
 		private ISession SpoofSerialization(ISession session)
 		{
-			BinaryFormatter formatter = new BinaryFormatter();
+			var formatter = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			MemoryStream stream = new MemoryStream();
 			formatter.Serialize(stream, session);
 

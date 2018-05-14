@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
 using NHibernate.Driver;
 using NHibernate.Type;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.Dates
@@ -117,7 +118,12 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 		{
 			var type = NHibernateUtil.DateTimeOffset;
 
-			var formatter = new BinaryFormatter();
+			var formatter = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 
 			Assert.That(() => formatter.Serialize(Stream.Null, type), Throws.Nothing);
 		}
