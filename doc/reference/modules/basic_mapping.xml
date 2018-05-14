@@ -2019,7 +2019,7 @@
         name="PropertyName" 
         class="ClassName"
         insert="true|false"
-        upate="true|false"
+        update="true|false"
         access="field|property|nosetter|ClassName"
         optimistic-lock="true|false">
 
