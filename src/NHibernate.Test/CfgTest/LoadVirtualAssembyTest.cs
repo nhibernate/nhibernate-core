@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NETFX
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using NHibernate.Cfg;
@@ -98,3 +99,4 @@ public class Entity$$INDEX$$Map : ClassMapping<Entity$$INDEX$$>
 
 	}
 }
+#endif
