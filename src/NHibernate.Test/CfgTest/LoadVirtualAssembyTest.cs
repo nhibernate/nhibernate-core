@@ -45,9 +45,9 @@ namespace NHibernate.Test.CfgTest
 			CompilerParams.CompilerOptions = "/optimize";
 			CompilerParams.ReferencedAssemblies.AddRange(new String[] {
 				"System.dll",
-                "System.Core.dll",
-                "System.Data.dll",
-				"C:\\NHibernate.dll" //load compiled version of NHibernate
+				"System.Core.dll",
+				"System.Data.dll",
+				new Uri(typeof(Cfg.Environment).Assembly.EscapedCodeBase).LocalPath
 			});
 
 			string rawCode = @"
