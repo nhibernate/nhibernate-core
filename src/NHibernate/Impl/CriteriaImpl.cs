@@ -541,6 +541,7 @@ namespace NHibernate.Impl
 			CloneProjectCrtieria(clone);
 			clone.SetResultTransformer(resultTransformer);
 			clone.comment = comment;
+			clone.readOnly = readOnly;
 			if (flushMode.HasValue)
 			{
 				clone.SetFlushMode(flushMode.Value);
