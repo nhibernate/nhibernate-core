@@ -11,7 +11,7 @@ using NHibernate.Mapping.ByCode.Conformist;
 namespace NHibernate.Test.CfgTest
 {
 	[TestFixture]
-	class LoadVirtualAssembyTest
+	public class LoadVirtualAssembyTest
     {
 
 		[Test]
