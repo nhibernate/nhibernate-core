@@ -87,15 +87,14 @@ namespace NHibernate.Test.CacheTest
 		[Test]
 		public void NotEqualHashCodeWithFilters()
 		{
+			// GetHashCode semantic does not guarantee no collision may ever occur, but the algorithm should
+			// generates different hashcodes for similar but inequal cases. These tests check that cache keys
+			// for a query generated for different parameters values are no more equal.
 			QueryKeyFilterDescLikeToCompare(out var qk, out var qk1, false);
-			// Unfortunately due to https://stackoverflow.com/a/5927853/1178314 and our implementation resulting in a call
-			// to GetHashCode on a KeyValuePair<string, TypedValue>, following assert always fails.
-			//Assert.That(qk.GetHashCode(), Is.Not.EqualTo(qk1.GetHashCode()), "qk & qk1");
+			Assert.That(qk.GetHashCode(), Is.Not.EqualTo(qk1.GetHashCode()), "qk & qk1");
 
 			QueryKeyFilterDescValueToCompare(out var qvk, out var qvk1, false);
-			// Unfortunately due to https://stackoverflow.com/a/5927853/1178314 and our implementation resulting in a call
-			// to GetHashCode on a KeyValuePair<string, TypedValue>, following assert always fails.
-			//Assert.That(qvk.GetHashCode(), Is.Not.EqualTo(qvk1.GetHashCode()), "qvk & qvk1");
+			Assert.That(qvk.GetHashCode(), Is.Not.EqualTo(qvk1.GetHashCode()), "qvk & qvk1");
 
 			Assert.That(qk.GetHashCode(), Is.Not.EqualTo(qvk.GetHashCode()), "qk & qvk");
 			Assert.That(qk1.GetHashCode(), Is.Not.EqualTo(qvk1.GetHashCode()), "qk1 & qvk1");
