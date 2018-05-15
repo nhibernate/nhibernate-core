@@ -68,6 +68,33 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
+
+		//Check that SelecMode survives query cloning
+		[Test]
+		public void SelectModeFetch_ClonedQueryOver()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var list = session.QueryOver<EntityComplex>()
+								.With(SelectMode.Fetch, ec => ec.Child1)
+								.JoinQueryOver(ec => ec.ChildrenList, JoinType.InnerJoin)
+								//now we can fetch inner joined collection
+								.With(SelectMode.Fetch, childrenList => childrenList)
+								.TransformUsing(Transformers.DistinctRootEntity)
+								.Clone()
+								.List();
+
+				var root = list.FirstOrDefault();
+				Assert.That(root, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(root), Is.True);
+				Assert.That(root.Child1, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(root.Child1), Is.True, "Entity must be initialized");
+				Assert.That(NHibernateUtil.IsInitialized(root.ChildrenList), Is.True, "ChildrenList Inner Joined collection must be initialized");
+
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
 		
 		[Test]
 		public void SelectModeDefault()

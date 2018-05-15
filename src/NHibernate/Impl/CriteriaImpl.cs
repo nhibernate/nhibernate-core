@@ -561,6 +561,7 @@ namespace NHibernate.Impl
 			{
 				clone.lockModes.Add(de.Key, de.Value);
 			}
+			clone.selectModes.AddOrOverride(selectModes);
 			clone.maxResults = maxResults;
 			clone.firstResult = firstResult;
 			clone.timeout = timeout;
