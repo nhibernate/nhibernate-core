@@ -5,7 +5,7 @@ namespace NHibernate.Test.LinqBulkManipulation.Domain
 	public class Mammal: Animal
 	{
 		private bool pregnant;
-		private DateTime birthdate;
+		private DateTime? birthdate;
 
 		public virtual bool Pregnant
 		{
@@ -13,7 +13,7 @@ namespace NHibernate.Test.LinqBulkManipulation.Domain
 			set { pregnant = value; }
 		}
 
-		public virtual DateTime Birthdate
+		public virtual DateTime? Birthdate
 		{
 			get { return birthdate; }
 			set { birthdate = value; }

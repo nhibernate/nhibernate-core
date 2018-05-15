@@ -52,7 +52,7 @@ namespace NHibernate.Id
 		private async Task GetNextAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			Logger.Debug("fetching initial value: " + _sql);
+			Logger.Debug("fetching initial value: {0}", _sql);
 
 			try
 			{
@@ -72,7 +72,7 @@ namespace NHibernate.Id
 							_next = 1L;
 						}
 						_sql = null;
-						Logger.Debug("first free id: " + _next);
+						Logger.Debug("first free id: {0}", _next);
 					}
 					finally
 					{
@@ -86,7 +86,7 @@ namespace NHibernate.Id
 			}
 			catch (DbException sqle)
 			{
-				Logger.Error("could not get increment value", sqle);
+				Logger.Error(sqle, "could not get increment value");
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
 												 "could not fetch initial value for increment generator");
 			}

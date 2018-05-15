@@ -208,7 +208,7 @@ namespace NHibernate.Type
 
 		public virtual bool IsEqual(object x, object y)
 		{
-			return EqualsHelper.Equals(x, y);
+			return Equals(x, y);
 		}
 
 		public virtual bool IsEqual(object x, object y, ISessionFactoryImplementor factory)

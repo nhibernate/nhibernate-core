@@ -4,18 +4,17 @@ This document describes the policies and procedures for working with NHibernate.
 
 For the least friction, please follow the steps in the order presented, being careful not to miss any. There are many details in this document that will help your contribution go as smoothly as possible. Please read it thoroughly. 
 
-## Check for Existing Issues Visit 
+## Create or find a GitHub Issue
 
-[https://nhibernate.jira.com][1] and search for your issue. If you see it, voting for it is a good way to increase the visibility of the issue. 
-## Create a JIRA Issue
+GitHub is used to generate the release notes and serves as a central point of reference for all changes that have occurred to NHibernate. 
 
-JIRA is used to generate the release notes and serves as a central point of reference for all changes that have occurred to NHibernate. 
+Visit [https://github.com/nhibernate/nhibernate-core/issues][1] and search for your issue. If you see it, giving it a like is a good way to increase the visibility of the issue. 
 
-Before creating an issue, please do your best to verify the existence of the problem. This reduces noise in the issue tracker and helps conserve the resources of the team for more useful tasks. Note the issue number for future steps. Ex. NH-2318 
+Before creating an issue, please do your best to verify the existence of the problem. This reduces noise in the issue tracker and helps conserve the resources of the team for more useful tasks. Note the issue number for future steps.
 
 ## Fork and Clone from GitHub
 
-The main GitHub repository is at <https://github.com/nhibernate/nhibernate-core>. If you plan to contribute your test case or improvement back to NHibernate, you should visit that page and fork the repository so you can commit your own changes and then submit a pull request. 
+The main GitHub repository is at [https://github.com/nhibernate/nhibernate-core][2]. If you plan to contribute your test case or improvement back to NHibernate, you should visit that page and fork the repository so you can commit your own changes and then submit a pull request. 
 
 ## The Build Menu
 
@@ -38,7 +37,7 @@ The main GitHub repository is at <https://github.com/nhibernate/nhibernate-core>
 2.  Run the build menu and select option B to create a new test configuration. Notepad will pop up and you should edit the connection string information, saving it when you're done. These configurations will appear in the "available-test-configurations" folder.
 3.  Run the build menu and select option C to activate the test configuration you created. The appropriate configuration will be copied to the "current-test-configuration" folder.
 4.  (Optional) Run all the tests with option D and hopefully you will see no failing tests. The build may fail on certain databases; please ask on the mailing list if you are having trouble.
-5.  Before using the database for unit tests from Visual Studio, you'll need to create an empty database that matches your connection string. [NH-2866][2] will make this easier, but for now you just have to drop/create the database specified in your connection string yourself.
+5.  Before using the database for unit tests from Visual Studio, you'll need to create an empty database that matches your connection string.
 
 ## Creating a Test Case to Verify the Issue
 
@@ -46,9 +45,13 @@ In most cases, you will be adding your test to the NHibernate.Test project. If t
 
 1.  Open **NHibernate.sln** from the src folder.
 2.  If adding a C# test, go to the NHSpecificTest folder in the NHibernate.Test project. If adding a VisualBasic test, go to the Issues folder in the NHibernate.Test.VisualBasic project.
-3.  Copy and paste the NH0000 folder to create a duplicate test ("Copy of NH0000").
-4.  Replace the four (five for vb) instances of NH0000 with your issue number.
+3.  Copy and paste the GH0000 folder to create a duplicate test ("Copy of GH0000").
+4.  Replace the four instances of GH0000 with your issue number.
 5.  Edit the test as you see fit. Don't commit yet; there are details in a later step.
+
+Do not use anymore the NHxxxx naming, they match issue numbers from https://nhibernate.jira.com/
+
+NHibernate has migrated its issue tracking from Jira to GitHub, and using the Jira naming may lead to conflicts with previous Jira issues.
 
 ## Running Your Unit Test
 
@@ -56,7 +59,7 @@ In most cases, you will be adding your test to the NHibernate.Test project. If t
 
 1.  Right click on the project (ex. NHibernate.Test) in Visual Studio.
 2.  Select: Debug -> Start New Instance
-3.  Type the name of your unit test to quickly go to it. For example: NH2318
+3.  Type the name of your unit test to quickly go to it. For example: GH2318
 4.  Select and run the test.
 5.  You can also make the test project your startup project and it will run NUnit when you press F5.
 
@@ -74,9 +77,7 @@ counter-part, you should regenerate the async code. Use build-menu option H for 
 
 Ensure that your e-mail address and name are configured appropriately in Git. 
 
-Create a feature branch so it's easy to keep it separate from other improvements. Having a pull request accepted might involve further commits based on community feedback, so having the feature branch provides a tidy place to work from. Using the issue number as the branch name is good practice. 
-
-When you commit, please include the issue number in your commit message. This will allow the JIRA issue tracker to automatically link your commits to the issue. By example: *NH-1234 - test case for blah trouble*.  Make sure you do not put any non whitespace character adjacent to the issue number, as this would prevent JIRA to match it. (Avoid *NH-1234: test case for blah trouble*.)
+Create a feature branch so it's easy to keep it separate from other improvements. Having a pull request accepted might involve further commits based on community feedback, so having the feature branch provides a tidy place to work from. Using the issue number as the branch name is good practice.
 
 ## Implementing the Bug Fix or Improvement
 
@@ -90,7 +91,7 @@ Please note that some tests assume a case insensitive accent sensitive database 
 
 ## Submit a Pull Request
 
-Be sure to link to the JIRA issue in your GitHub pull request. Also, go back to your JIRA issue and link to the pull request. 
+If you are fixing an existing issue, please make sure to include this issue number in your GitHub pull request. 
 
 We use tabs for code indentation, not spaces. As this is not the default in Visual Studio, you will need to reconfigure Visual Studio to indent with tabs whenever you work on the NHibernate codebase. To make this easier, NHibernate has an [editorconfig][3] configuration file to switch Visual Studio automatically between tabs and spaces mode. It is recommended you install editorconfig from the Visual Studio Extension Manager.
 
@@ -98,13 +99,13 @@ After submitting your pull request, come back later to check the outcome of auto
 
 ## Further Discussion
 
-The NHibernate team monitors JIRA and GitHub regularly, so your request will be noticed. If you want to discuss it further, you are welcome to post to the [nhibernate-development mailing list][4]. 
+The NHibernate team monitors GitHub regularly, so your request will be noticed. If you want to discuss it further, you are welcome to post to the [nhibernate-development mailing list][4]. 
 
 ## Happy Contributing!
 
 The NHibernate community values your contributions. Thank you for the time you have invested.
 
- [1]: https://nhibernate.jira.com/
- [2]: https://nhibernate.jira.com/browse/NH-2866
+ [1]: https://github.com/nhibernate/nhibernate-core/issues/
+ [2]: https://github.com/nhibernate/nhibernate-core/
  [3]: http://www.editorconfig.org/
  [4]: http://groups.google.com/group/nhibernate-development

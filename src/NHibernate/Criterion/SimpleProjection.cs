@@ -67,7 +67,7 @@ namespace NHibernate.Criterion
 		/// <returns></returns>
 		public virtual TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[0];
+			return Array.Empty<TypedValue>();
 		}
 
 		public abstract SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery);

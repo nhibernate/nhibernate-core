@@ -34,7 +34,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		protected override HbmMeta[] Metadatas
 		{
-			get { return meta ?? new HbmMeta[0]; }
+			get { return meta ?? Array.Empty<HbmMeta>(); }
 		}
 
 		#endregion
@@ -76,7 +76,7 @@ namespace NHibernate.Cfg.MappingSchema
 		{
 			get
 			{
-				return metavalue ?? new HbmMetaValue[0];
+				return metavalue ?? Array.Empty<HbmMetaValue>();
 			}
 		}
 

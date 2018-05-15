@@ -9,34 +9,44 @@
 
 
 using System;
+using NHibernate.Driver;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// TestFixtures for the <see cref="DateTimeType"/>.
 	/// </summary>
 	[TestFixture]
-	public class DateTime2TypeFixtureAsync
+	[Obsolete]
+	public class DateTime2TypeFixtureAsync : AbstractDateTimeTypeFixtureAsync
 	{
-		[Test]
-		public async Task NextAsync()
-		{
-			DateTimeType type = NHibernateUtil.DateTime2;
-			object current = DateTime.Now.AddMilliseconds(-1);
-			object next = await (type.NextAsync(current, null, CancellationToken.None));
+		protected override bool AppliesTo(Dialect.Dialect dialect) =>
+			TestDialect.SupportsSqlType(SqlTypeFactory.DateTime2);
 
-			Assert.That(next, Is.TypeOf<DateTime>().And.GreaterThan(current));
-		}
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory) =>
+			// Cannot handle DbType.DateTime2 via .Net ODBC.
+			!(factory.ConnectionProvider.Driver is OdbcDriver);
 
-		[Test]
-		public async Task SeedAsync()
-		{
-			DateTimeType type = NHibernateUtil.DateTime;
-			Assert.IsTrue(await (type.SeedAsync(null, CancellationToken.None)) is DateTime, "seed should be DateTime");
-		}
+		protected override string TypeName => "DateTime2";
+		protected override AbstractDateTimeType Type => NHibernateUtil.DateTime2;
+	}
+
+	[TestFixture]
+	[Obsolete]
+	public class DateTime2TypeWithScaleFixtureAsync : DateTimeTypeWithScaleFixtureAsync
+	{
+		protected override bool AppliesTo(Dialect.Dialect dialect) =>
+			TestDialect.SupportsSqlType(SqlTypeFactory.DateTime2);
+
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory) =>
+			// Cannot handle DbType.DateTime2 via .Net ODBC.
+			!(factory.ConnectionProvider.Driver is OdbcDriver);
+
+		protected override string TypeName => "DateTime2WithScale";
+		protected override AbstractDateTimeType Type => (AbstractDateTimeType)TypeFactory.GetDateTime2Type(3);
 	}
 }

@@ -18,7 +18,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultDeleteEventListener : IDeleteEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultDeleteEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DefaultDeleteEventListener));
 
 		#region IDeleteEventListener Members
 
@@ -168,9 +168,9 @@ namespace NHibernate.Event.Default
 		/// <param name="transientEntities">A cache of already deleted entities. </param>
 		protected virtual void DeleteEntity(IEventSource session, object entity, EntityEntry entityEntry, bool isCascadeDeleteEnabled, IEntityPersister persister, ISet<object> transientEntities)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("deleting " + MessageHelper.InfoString(persister, entityEntry.Id, session.Factory));
+				log.Debug("deleting {0}", MessageHelper.InfoString(persister, entityEntry.Id, session.Factory));
 			}
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;

@@ -50,6 +50,18 @@ namespace NHibernate.Test.TypesTest
 			get { return "TimeAsTimeSpan"; }
 		}
 
+		protected override void OnTearDown()
+		{
+			base.OnTearDown();
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.CreateQuery("delete from TimeAsTimeSpanClass").ExecuteUpdate();
+				tx.Commit();
+			}
+		}
+
 		[Test]
 		public async Task SavingAndRetrievingAsync()
 		{
@@ -79,12 +91,36 @@ namespace NHibernate.Test.TypesTest
 				Assert.AreEqual(entityReturned.TimeSpanValue.Minutes, ticks.Minutes);
 				Assert.AreEqual(entityReturned.TimeSpanValue.Seconds, ticks.Seconds);
 			}
+		}
 
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
+		[Test]
+		public async Task LowerDigitsAreIgnoredAsync()
+		{
+			if (!Dialect.SupportsDateTimeScale)
+				Assert.Ignore("Lower digits cannot be ignored when dialect does not support scale");
+
+			var baseTime = new TimeSpan(0, 17, 55, 24, 548);
+			var entity = new TimeAsTimeSpanClass
 			{
-				await (s.DeleteAsync(entityReturned));
-				await (tx.CommitAsync());
+				TimeSpanWithScale = baseTime.Add(TimeSpan.FromTicks(TimeSpan.TicksPerMillisecond / 3))
+			};
+			Assert.That(entity.TimeSpanWithScale, Is.Not.EqualTo(baseTime));
+
+			int id;
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(entity));
+				id = entity.Id;
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var retrieved = await (s.LoadAsync<TimeAsTimeSpanClass>(id));
+				Assert.That(retrieved.TimeSpanWithScale, Is.EqualTo(baseTime));
+				await (t.CommitAsync());
 			}
 		}
 	}

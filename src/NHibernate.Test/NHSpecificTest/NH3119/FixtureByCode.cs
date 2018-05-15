@@ -1,22 +1,17 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using NHibernate.Bytecode;
+using NHibernate.Bytecode.Lightweight;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
+using NHibernate.Properties;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3119
 {
-	/// <summary>
-	/// Fixture using 'by code' mappings
-	/// </summary>
-	/// <remarks>
-	/// This fixture is identical to <see cref="Fixture" /> except the <see cref="Entity" /> mapping is performed 
-	/// by code in the GetMappings method, and does not require the <c>Mappings.hbm.xml</c> file. Use this approach
-	/// if you prefer.
-	/// </remarks>
 	[TestFixture]
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
@@ -36,9 +31,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3119
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
+		private static IBytecodeProvider _backupByteCodeProvider;
+
 		protected override void OnSetUp()
 		{
-			if (!Cfg.Environment.UseReflectionOptimizer)
+			_backupByteCodeProvider = Environment.BytecodeProvider;
+
+			if (!Environment.UseReflectionOptimizer)
 			{
 				Assert.Ignore("Test only works with reflection optimization enabled");
 			}
@@ -52,10 +51,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3119
 				session.Flush();
 				transaction.Commit();
 			}
+
+			// Change refelection optimizer and recreate the configuration and factory
+			Environment.BytecodeProvider = new TestBytecodeProviderImpl();
+			Configure();
+			RebuildSessionFactory();
 		}
 
 		protected override void OnTearDown()
 		{
+			Environment.BytecodeProvider = _backupByteCodeProvider;
+
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
@@ -72,11 +78,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3119
 			using (ISession freshSession = OpenSession())
 			using (freshSession.BeginTransaction())
 			{
-				Entity entity = freshSession.Query<Entity>().Single();
-
-				string stackTrace = entity.Component.LastCtorStackTrace;
-
-				StringAssert.Contains("NHibernate.Bytecode.Lightweight.ReflectionOptimizer.CreateInstance", stackTrace);
+				ComponentTestReflectionOptimizer.IsCalledForComponent = false;
+				freshSession.Query<Entity>().Single();
+				Assert.That(ComponentTestReflectionOptimizer.IsCalledForComponent, Is.True);
 			}
 		}
 
@@ -84,23 +88,59 @@ namespace NHibernate.Test.NHSpecificTest.NH3119
 		public void PocoComponentTuplizerOfDeserializedConfiguration_Instantiate_UsesReflectonOptimizer()
 		{
 			MemoryStream configMemoryStream = new MemoryStream();
-			BinaryFormatter writer = new BinaryFormatter();
+			var writer = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			writer.Serialize(configMemoryStream, cfg);
 
 			configMemoryStream.Seek(0, SeekOrigin.Begin);
-			BinaryFormatter reader = new BinaryFormatter();
+			var reader = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			Configuration deserializedConfig = (Configuration)reader.Deserialize(configMemoryStream);
 			ISessionFactory factoryFromDeserializedConfig = deserializedConfig.BuildSessionFactory();
 
 			using (ISession deserializedSession = factoryFromDeserializedConfig.OpenSession())
 			using (deserializedSession.BeginTransaction())
 			{
-				Entity entity = deserializedSession.Query<Entity>().Single();
-
-				string stackTrace = entity.Component.LastCtorStackTrace;
-
-				StringAssert.Contains("NHibernate.Bytecode.Lightweight.ReflectionOptimizer.CreateInstance", stackTrace);
+				ComponentTestReflectionOptimizer.IsCalledForComponent = false;
+				deserializedSession.Query<Entity>().Single();
+				Assert.That(ComponentTestReflectionOptimizer.IsCalledForComponent, Is.True);
 			}
+		}
+	}
+
+	public class TestBytecodeProviderImpl : AbstractBytecodeProvider
+	{
+		public override IReflectionOptimizer GetReflectionOptimizer(System.Type mappedClass, IGetter[] getters, ISetter[] setters)
+		{
+			return new ComponentTestReflectionOptimizer(mappedClass, getters, setters);
+		}
+	}
+
+	public class ComponentTestReflectionOptimizer : ReflectionOptimizer
+	{
+		private readonly bool _logCall;
+		
+		public static bool IsCalledForComponent { get; set; }
+		
+		public ComponentTestReflectionOptimizer(System.Type mappedType, IGetter[] getters, ISetter[] setters) :
+			base(mappedType, getters, setters)
+		{
+			_logCall = mappedType == typeof(Component);
+		}
+
+		public override object CreateInstance()
+		{
+			if (_logCall)
+				IsCalledForComponent = true;
+			return base.CreateInstance();
 		}
 	}
 }

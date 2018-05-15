@@ -16,7 +16,7 @@ namespace NHibernate.Driver
 	/// </summary>
 	public abstract class DriverBase : IDriver, ISqlParameterFormatter
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DriverBase));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DriverBase));
 
 		private int commandTimeout;
 		private bool prepareSql;
@@ -25,7 +25,7 @@ namespace NHibernate.Driver
 		{
 			// Command timeout
 			commandTimeout = PropertiesHelper.GetInt32(Environment.CommandTimeout, settings, -1);
-			if (commandTimeout > -1 && log.IsInfoEnabled)
+			if (commandTimeout > -1 && log.IsInfoEnabled())
 			{
 				log.Info(string.Format("setting ADO.NET command timeout to {0} seconds", commandTimeout));
 			}
@@ -148,9 +148,9 @@ namespace NHibernate.Driver
 				}
 				catch (Exception e)
 				{
-					if (log.IsWarnEnabled)
+					if (log.IsWarnEnabled())
 					{
-						log.Warn(e.ToString());
+						log.Warn(e, e.ToString());
 					}
 				}
 			}
@@ -231,7 +231,7 @@ namespace NHibernate.Driver
 				.ForEach(unusedParameterName => cmd.Parameters.RemoveAt(unusedParameterName));
 		}
 
-		public virtual void ExpandQueryParameters(DbCommand cmd, SqlString sqlString)
+		public virtual void ExpandQueryParameters(DbCommand cmd, SqlString sqlString, SqlType[] parameterTypes)
 		{
 			if (UseNamedPrefixInSql)
 				return;  // named parameters are ok
@@ -242,8 +242,10 @@ namespace NHibernate.Driver
 				var parameter = part as Parameter;
 				if (parameter != null)
 				{
-					var originalParameter = cmd.Parameters[parameter.ParameterPosition.Value];
-					expandedParameters.Add(CloneParameter(cmd, originalParameter));
+					var index = parameter.ParameterPosition.Value;
+					var originalParameter = cmd.Parameters[index];
+					var originalType = parameterTypes[index];
+					expandedParameters.Add(CloneParameter(cmd, originalParameter, originalType));
 				}
 			}
 
@@ -262,11 +264,9 @@ namespace NHibernate.Driver
 			get { return false; }
 		}
 
-		protected virtual DbParameter CloneParameter(DbCommand cmd, DbParameter originalParameter)
+		protected virtual DbParameter CloneParameter(DbCommand cmd, DbParameter originalParameter, SqlType originalType)
 		{
-			var clone = cmd.CreateParameter();
-			clone.DbType = originalParameter.DbType;
-			clone.ParameterName = originalParameter.ParameterName;
+			var clone = GenerateParameter(cmd, originalParameter.ParameterName, originalType);
 			clone.Value = originalParameter.Value;
 			return clone;
 		}
@@ -313,13 +313,22 @@ namespace NHibernate.Driver
 
 		public virtual bool RequiresTimeSpanForTime => false;
 
+#if NETCOREAPP2_0
+		public virtual bool SupportsSystemTransactions => false;
+
+		public virtual bool SupportsNullEnlistment => false;
+#else
 		public virtual bool SupportsSystemTransactions => true;
 
 		public virtual bool SupportsNullEnlistment => true;
+#endif
 
 		/// <inheritdoc />
 		public virtual bool SupportsEnlistmentWhenAutoEnlistmentIsDisabled => true;
 
 		public virtual bool HasDelayedDistributedTransactionCompletion => false;
+
+		/// <inheritdoc />
+		public virtual DateTime MinDate => DateTime.MinValue;
 	}
 }

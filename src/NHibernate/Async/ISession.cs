@@ -14,6 +14,9 @@ using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
+using NHibernate.Event;
+using NHibernate.Event.Default;
+using NHibernate.Impl;
 using NHibernate.Stat;
 using NHibernate.Type;
 
@@ -21,6 +24,7 @@ namespace NHibernate
 {
 	using System.Threading.Tasks;
 	using System.Threading;
+
 	public partial interface ISession : IDisposable
 	{
 
@@ -38,9 +42,25 @@ namespace NHibernate
 		/// <summary>
 		/// Does this <c>ISession</c> contain any changes which must be
 		/// synchronized with the database? Would any SQL be executed if
-		/// we flushed this session?
+		/// we flushed this session? May trigger save cascades, which could
+		/// cause themselves some SQL to be executed, especially if the
+		/// <c>identity</c> id generator is used.
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <remarks>
+		/// <para>
+		/// The default implementation first checks if it contains saved or deleted entities to be flushed. If not, it
+		/// then delegate the check to its <see cref="IDirtyCheckEventListener" />, which by default is
+		/// <see cref="DefaultDirtyCheckEventListener" />.
+		/// </para>
+		/// <para>
+		/// <see cref="DefaultDirtyCheckEventListener" /> replicates all the beginning of the flush process, checking
+		/// dirtiness of entities loaded in the session and triggering their pending cascade operations in order to
+		/// detect new and removed children. This can have the side effect of performing the <see cref="Save(object)"/>
+		/// of children, causing their id to be generated. Depending on their id generator, this can trigger calls to
+		/// the database and even actually insert them if using an <c>identity</c> generator.
+		/// </para>
+		/// </remarks>
 		Task<bool> IsDirtyAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>

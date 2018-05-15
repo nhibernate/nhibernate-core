@@ -28,7 +28,7 @@ namespace NHibernate.Test.ExceptionsTest
 
 		protected override IList Mappings
 		{
-			get { return new string[0]; }
+			get { return Array.Empty<string>(); }
 		}
 
 		#endregion

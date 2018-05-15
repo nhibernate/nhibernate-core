@@ -469,7 +469,6 @@ namespace NHibernate.Collection.Generic
 
 		public void CopyTo(T[] array, int arrayIndex)
 		{
-			// NH : we really need to initialize the set ?
 			Read();
 			WrappedSet.CopyTo(array, arrayIndex);
 		}

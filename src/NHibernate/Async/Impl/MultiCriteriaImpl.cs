@@ -33,19 +33,19 @@ namespace NHibernate.Impl
 		public async Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			{
 				bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
 
 				CreateCriteriaLoaders();
 				CombineCriteriaQueries();
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.DebugFormat("Multi criteria with {0} criteria queries.", criteriaQueries.Count);
+					log.Debug("Multi criteria with {0} criteria queries.", criteriaQueries.Count);
 					for (int i = 0; i < criteriaQueries.Count; i++)
 					{
-						log.DebugFormat("Query #{0}: {1}", i, criteriaQueries[i]);
+						log.Debug("Query #{0}: {1}", i, criteriaQueries[i]);
 					}
 				}
 
@@ -151,7 +151,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = await (resultSetsCommand.GetReaderAsync(null, cancellationToken)).ConfigureAwait(false))
+				using (var reader = await (resultSetsCommand.GetReaderAsync(_timeout, cancellationToken)).ConfigureAwait(false))
 				{
 					var hydratedObjects = new List<object>[loaders.Count];
 					List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[loaders.Count];
@@ -205,10 +205,10 @@ namespace NHibernate.Impl
 					}
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception sqle)
 			{
-				var message = string.Format("Failed to execute multi criteria: [{0}]", resultSetsCommand.Sql);
-				log.Error(message, sqle);
+				log.Error(sqle, "Failed to execute multi criteria: [{0}]", resultSetsCommand.Sql);
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi criteria", resultSetsCommand.Sql);
 			}
 			if (statsEnabled)

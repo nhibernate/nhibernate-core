@@ -43,8 +43,8 @@ namespace NHibernate.Cache
 
 			long ts = session.Timestamp;
 
-			if (Log.IsDebugEnabled)
-				Log.DebugFormat("caching query results in region: '{0}'; {1}", _regionName, key);
+			if (Log.IsDebugEnabled())
+				Log.Debug("caching query results in region: '{0}'; {1}", _regionName, key);
 
 			IList cacheable = new List<object>(result.Count + 1) {ts};
 			for (int i = 0; i < result.Count; i++)
@@ -67,33 +67,42 @@ namespace NHibernate.Cache
 		public async Task<IList> GetAsync(QueryKey key, ICacheAssembler[] returnTypes, bool isNaturalKeyLookup, ISet<string> spaces, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (Log.IsDebugEnabled)
-				Log.DebugFormat("checking cached query results in region: '{0}'; {1}", _regionName, key);
+			if (Log.IsDebugEnabled())
+				Log.Debug("checking cached query results in region: '{0}'; {1}", _regionName, key);
 
 			var cacheable = (IList)await (_queryCache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 			if (cacheable == null)
 			{
-				Log.DebugFormat("query results were not found in cache: {0}", key);
+				Log.Debug("query results were not found in cache: {0}", key);
 				return null;
 			}
 
 			var timestamp = (long)cacheable[0];
 
-			if (Log.IsDebugEnabled)
-				Log.DebugFormat("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString(spaces));
+			if (Log.IsDebugEnabled())
+				Log.Debug("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString(spaces));
 
 			if (!isNaturalKeyLookup && !await (IsUpToDateAsync(spaces, timestamp, cancellationToken)).ConfigureAwait(false))
 			{
-				Log.DebugFormat("cached query results were not up to date for: {0}", key);
+				Log.Debug("cached query results were not up to date for: {0}", key);
 				return null;
 			}
 
-			Log.DebugFormat("returning cached query results for: {0}", key);
+			Log.Debug("returning cached query results for: {0}", key);
+			if (key.ResultTransformer?.AutoDiscoverTypes == true && cacheable.Count > 0)
+			{
+				returnTypes = GuessTypes(cacheable);
+			}
+
 			for (int i = 1; i < cacheable.Count; i++)
 			{
 				if (returnTypes.Length == 1)
 				{
-					await (returnTypes[0].BeforeAssembleAsync(cacheable[i], session, cancellationToken)).ConfigureAwait(false);
+					var beforeAssembleTask = returnTypes[0]?.BeforeAssembleAsync(cacheable[i], session, cancellationToken);
+					if (beforeAssembleTask != null)
+					{
+						await (beforeAssembleTask).ConfigureAwait(false);
+					}
 				}
 				else
 				{
@@ -115,14 +124,14 @@ namespace NHibernate.Cache
 						result.Add(await (TypeHelper.AssembleAsync((object[])cacheable[i], returnTypes, session, null, cancellationToken)).ConfigureAwait(false));
 					}
 				}
-				catch (UnresolvableObjectException)
+				catch (UnresolvableObjectException ex)
 				{
 					if (isNaturalKeyLookup)
 					{
 						//TODO: not really completely correct, since
 						//      the UnresolvableObjectException could occur while resolving
 						//      associations, leaving the PC in an inconsistent state
-						Log.Debug("could not reassemble cached result set");
+						Log.Debug(ex, "could not reassemble cached result set");
 						await (_queryCache.RemoveAsync(key, cancellationToken)).ConfigureAwait(false);
 						return null;
 					}

@@ -150,7 +150,8 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "DATETIME");
 			RegisterColumnType(DbType.DateTime, "DATETIME");
 			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "NUMERIC($p, $s)");
+			// SQL Server CE max precision is 38, but .Net is limited to 28-29.
+			RegisterColumnType(DbType.Decimal, 29, "NUMERIC($p, $s)");
 			RegisterColumnType(DbType.Double, "FLOAT");
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
@@ -193,7 +194,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
 			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
 
-			RegisterFunction("round", new StandardSQLFunction("round"));
+			RegisterFunction("round", new StandardSQLFunctionWithRequiredParameters("round", new object[] {null, "0"}));
+			RegisterFunction("truncate", new StandardSQLFunctionWithRequiredParameters("round", new object[] {null, "0", "1"}));
 
 			RegisterFunction("bit_length", new SQLFunctionTemplate(NHibernateUtil.Int32, "datalength(?1) * 8"));
 			RegisterFunction("extract", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(?1, ?3)"));
@@ -286,12 +288,12 @@ namespace NHibernate.Dialect
 			var tableName = new StringBuilder();
 			if (!string.IsNullOrEmpty(schema))
 			{
-				if (schema.StartsWith(OpenQuote.ToString()))
+				if (schema.StartsWith(OpenQuote))
 				{
 					schema = schema.Substring(1, schema.Length - 1);
 					quoted = true;
 				}
-				if (schema.EndsWith(CloseQuote.ToString()))
+				if (schema.EndsWith(CloseQuote))
 				{
 					schema = schema.Substring(0, schema.Length - 1);
 					quoted = true;
@@ -299,12 +301,12 @@ namespace NHibernate.Dialect
 				tableName.Append(schema).Append(StringHelper.Underscore);
 			}
 
-			if (table.StartsWith(OpenQuote.ToString()))
+			if (table.StartsWith(OpenQuote))
 			{
 				table = table.Substring(1, table.Length - 1);
 				quoted = true;
 			}
-			if (table.EndsWith(CloseQuote.ToString()))
+			if (table.EndsWith(CloseQuote))
 			{
 				table = table.Substring(0, table.Length - 1);
 				quoted = true;
@@ -342,6 +344,10 @@ namespace NHibernate.Dialect
 				return TimeSpan.TicksPerMillisecond*10L;
 			}
 		}
+
+		// SQL Server 3.5 supports 128.
+		/// <inheritdoc />
+		public override int MaxAliasLength => 128;
 
 		#region Informational metadata
 

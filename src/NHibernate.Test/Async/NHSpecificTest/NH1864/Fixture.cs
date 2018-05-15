@@ -18,6 +18,26 @@ namespace NHibernate.Test.NHSpecificTest.NH1864
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
+		[Test]
+		public void BugAsync()
+		{
+			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s=> s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
+		}
+
+		[Test]
+		public void FilterOnOffOnAsync()
+		{
+			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
+			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s => { }));
+			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
+		}
+
+		[Test]
+		public void FilterQueryTwiceAsync()
+		{
+			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
+			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
+		}
 		
 		private async Task ExecuteQueryAsync(Action<ISession> sessionModifier, CancellationToken cancellationToken = default(CancellationToken))
 		{

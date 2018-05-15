@@ -6,6 +6,11 @@ namespace NHibernate.Impl
 	{
 		public FutureCriteriaBatch(SessionImpl session) : base(session) {}
 
+		protected override IList List(ICriteria query)
+		{
+			return query.List();
+		}
+
 		protected override IMultiCriteria CreateMultiApproach(bool isCacheable, string cacheRegion)
 		{
 			return

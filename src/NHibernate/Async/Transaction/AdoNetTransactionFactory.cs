@@ -73,7 +73,7 @@ namespace NHibernate.Transaction
 				}
 				catch (Exception t)
 				{
-					using (new SessionIdLoggingContext(session.SessionId))
+					using (session.BeginContext())
 					{
 						try
 						{
@@ -84,7 +84,7 @@ namespace NHibernate.Transaction
 						}
 						catch (Exception ignore)
 						{
-							isolaterLog.Debug("Unable to rollback transaction", ignore);
+							isolaterLog.Debug(ignore, "Unable to rollback transaction");
 						}
 
 						if (t is HibernateException)
@@ -123,7 +123,7 @@ namespace NHibernate.Transaction
 					}
 					catch (Exception ignore)
 					{
-						isolaterLog.Warn("Unable to dispose transaction", ignore);
+						isolaterLog.Warn(ignore, "Unable to dispose transaction");
 					}
 
 					if (session.Factory.Dialect is SQLiteDialect == false)

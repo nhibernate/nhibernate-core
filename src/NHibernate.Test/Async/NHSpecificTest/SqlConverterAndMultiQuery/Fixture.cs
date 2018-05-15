@@ -9,7 +9,8 @@
 
 
 using NHibernate.Cfg;
-using NHibernate.Dialect;
+using NHibernate.Driver;
+using NHibernate.Engine;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
@@ -25,11 +26,13 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 			configuration.DataBaseIntegration(x => x.ExceptionConverter<SqlConverter>());
 		}
 
-		protected override bool AppliesTo(Dialect.Dialect dialect)
+		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
-			// MsSqlCe throws InvalidOperationException instead of a DbException for these tests, preventing
-			// the test SqlConverter to do its job.
-			return !(Dialect is MsSqlCeDialect);
+			// Test current implementation allows to test mmostly SQL Server. Other databases
+			// tend to (validly) send InvalidOperationException during prepare phase due to the closed
+			// connection, which get not converted. For testing other case, maybe a failure caused by a
+			// schema mismatch (like done in transaction tests) would be better.
+			return factory.ConnectionProvider.Driver is SqlClientDriver;
 		}
 
 		[Test]

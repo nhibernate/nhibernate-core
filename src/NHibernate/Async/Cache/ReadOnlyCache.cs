@@ -23,9 +23,9 @@ namespace NHibernate.Cache
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object result = await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
-			if (result != null && log.IsDebugEnabled)
+			if (result != null && log.IsDebugEnabled())
 			{
-				log.Debug("Cache hit: " + key);
+				log.Debug("Cache hit: {0}", key);
 			}
 			return result;	
 		}
@@ -61,15 +61,15 @@ namespace NHibernate.Cache
 
 			if (minimalPut && await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false) != null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("item already cached: " + key);
+					log.Debug("item already cached: {0}", key);
 				}
 				return false;
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Caching: " + key);
+				log.Debug("Caching: {0}", key);
 			}
 			await (cache.PutAsync(key, value, cancellationToken)).ConfigureAwait(false);
 			return true;
@@ -169,7 +169,6 @@ namespace NHibernate.Cache
 			{
 				return Task.FromException<object>(ex);
 			}
-			// NOOP
 		}
 
 		/// <summary>

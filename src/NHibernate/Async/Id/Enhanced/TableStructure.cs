@@ -50,15 +50,15 @@ namespace NHibernate.Id.Enhanced
 
 					if (selectedValue ==null)
 					{
-						string err = "could not read a hi value - you need to populate the table: " + _tableName;
-						Log.Error(err);
-						throw new IdentifierGenerationException(err);
+						Log.Error("could not read a hi value - you need to populate the table: {0}", _tableName);
+						throw new IdentifierGenerationException("could not read a hi value - you need to populate the table: " + _tableName);
 					}
 					result = Convert.ToInt64(selectedValue);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception sqle)
 				{
-					Log.Error("could not read a hi value", sqle);
+					Log.Error(sqle, "could not read a hi value");
 					throw;
 				}
 
@@ -77,9 +77,10 @@ namespace NHibernate.Id.Enhanced
 						updatedRows = await (updateCmd.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 					}
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception sqle)
 				{
-					Log.Error("could not update hi value in: " + _tableName, sqle);
+					Log.Error(sqle, "could not update hi value in: {0}", _tableName);
 					throw;
 				}
 			}

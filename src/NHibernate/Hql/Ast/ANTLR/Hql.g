@@ -768,11 +768,11 @@ NUM_INT
 	:   '.' {_type = DOT;}
 			(	('0'..'9')+ (EXPONENT)? (f1=FLOAT_SUFFIX {t=f1;})?
 				{
-					if (t != null && t.Text.ToUpperInvariant().IndexOf('F')>=0)
+					if (t != null && t.Text.IndexOf("F", System.StringComparison.OrdinalIgnoreCase)>=0)
 					{
 						_type = NUM_FLOAT;
 					}
-					else if (t != null && t.Text.ToUpperInvariant().IndexOf('M')>=0)
+					else if (t != null && t.Text.IndexOf("M", System.StringComparison.OrdinalIgnoreCase)>=0)
 					{
 						_type = NUM_DECIMAL;
 					}
@@ -806,11 +806,11 @@ NUM_INT
 			|   f4=FLOAT_SUFFIX {t=f4;}
 			)
 			{
-				if (t != null && t.Text.ToUpperInvariant().IndexOf('F') >= 0)
+				if (t != null && t.Text.IndexOf("F", System.StringComparison.OrdinalIgnoreCase) >= 0)
 				{
 					_type = NUM_FLOAT;
 				}
-				else if (t != null && t.Text.ToUpperInvariant().IndexOf('M')>=0)
+				else if (t != null && t.Text.IndexOf("M", System.StringComparison.OrdinalIgnoreCase)>=0)
 				{
 					_type = NUM_DECIMAL;
 				}

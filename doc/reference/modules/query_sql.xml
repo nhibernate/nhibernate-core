@@ -18,7 +18,7 @@
     <literal>ISession.CreateSQLQuery()</literal>. The following describes how
     to use this API for querying.</para>
 
-    <sect2>
+    <sect2 id="querysql-scalar">
       <title>Scalar queries</title>
 
       <para>The most basic SQL query is to get a list of scalars
@@ -42,14 +42,15 @@
         </listitem>
       </itemizedlist>
 
-      <para>This will return an IList of Object arrays (object[]) with
+      <para>This will return an <literal>IList</literal> of <literal>Object</literal>
+      arrays (<literal>object[]</literal>) with
       scalar values for each column in the CATS table. Only these three
       columns will be returned, even though the query is using
       <literal>*</literal> and could return more than the three listed
       columns.</para>
     </sect2>
 
-    <sect2>
+    <sect2 id="querysql-entity">
       <title>Entity queries</title>
 
       <para>The above query was about returning scalar values,
@@ -91,7 +92,7 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       <para>This will allow cat.Dog property access to function properly.</para>
     </sect2>
 
-    <sect2>
+    <sect2 id="querysql-associations-collections">
       <title>Handling associations and collections</title>
 
       <para>It is possible to eagerly join in the <literal>Dog</literal> to
@@ -128,7 +129,7 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       names are not enough.</para>
     </sect2>
 
-    <sect2>
+    <sect2 id="querysql-multiple-entities">
       <title>Returning multiple entities</title>
 
       <para>Until now the result set column names are assumed to be the same
@@ -314,7 +315,7 @@ var loggedCats = sess.CreateSQLQuery(sql)
       </sect3>
     </sect2>
 
-    <sect2>
+    <sect2 id="querysql-non-managed-entities">
       <title>Returning non-managed entities</title>
 
       <para>It is possible to apply an <literal>IResultTransformer</literal> to native sql queries. Allowing it to e.g. return non-managed entities.</para>
@@ -344,7 +345,7 @@ var loggedCats = sess.CreateSQLQuery(sql)
 		</para>
 	</sect2>
 
-    <sect2>
+    <sect2 id="querysql-inheritance">
       <title>Handling inheritance</title>
 
       <para>Native SQL queries which query for entities that are mapped as part
@@ -352,7 +353,7 @@ var loggedCats = sess.CreateSQLQuery(sql)
       its subclasses.</para>
     </sect2>
 
-    <sect2>
+    <sect2 id="querysql-parameters">
       <title>Parameters</title>
 
       <para>Native SQL queries support positional as well as named
@@ -461,6 +462,56 @@ var pusList = query.SetString("name", "Pus%").List<Cat>();]]></programlisting>
         "where kitten.mother = cat.id")
     .SetResultSetMapping("catAndKitten")
     .List<Cat>();]]></programlisting>
+
+            <para>
+                Like HQL named queries, SQL named queries accepts a number of attributes matching settings
+                available on the <literal>ISQLQuery</literal> interface.
+            </para>
+
+            <itemizedlist spacing="compact">
+                <listitem>
+                    <para>
+                    <literal>flush-mode</literal> - override the session flush mode just for this query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>cacheable</literal> - allow the query results to be cached by the second level cache.
+                    See <xref linkend="caches"/>.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>cache-region</literal> - specify the cache region of the query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>cache-mode</literal> - specify the cache mode of the query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>fetch-size</literal> - set a fetch size for the underlying ADO query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>timeout</literal> - set the query timeout in seconds.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>read-only</literal> - <literal>true</literal> switches yielded entities to read-only.
+                    See <xref linkend="readonly"/>.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>comment</literal> - add a custom comment to the SQL.
+                    </para>
+                </listitem>
+            </itemizedlist>
 
     <sect2 id="propertyresults">
       <title>Using return-property to explicitly specify column/alias
@@ -588,7 +639,7 @@ var pusList = query.SetString("name", "Pus%").List<Cat>();]]></programlisting>
         <itemizedlist spacing="compact">
           <listitem>
             <para>The procedure must return a result set. NHibernate will
-            use <literal>IDbCommand.ExecuteReader()</literal> to obtain
+            use <literal>DbCommand.ExecuteReader()</literal> to obtain
             the results.
             </para>
           </listitem>
@@ -657,7 +708,7 @@ var pusList = query.SetString("name", "Pus%").List<Cat>();]]></programlisting>
 
     <para>The stored procedures are by default required to affect the same number
     of rows as NHibernate-generated SQL would. NHibernate uses
-    <literal>IDbCommand.ExecuteNonQuery</literal> to retrieve the number of rows
+    <literal>DbCommand.ExecuteNonQuery</literal> to retrieve the number of rows
     affected. This check can be disabled by using <literal>check="none"</literal>
     attribute in <literal>sql-insert</literal> element.
     </para>

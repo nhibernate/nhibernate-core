@@ -11,7 +11,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -69,7 +68,7 @@ namespace NHibernate.Test.DialectTest
 
 			using (var connection = await (sessions.ConnectionProvider.GetConnectionAsync(CancellationToken.None)))
 			{
-				var statement = driver.GenerateCommand(CommandType.Text, new SqlString(dialect.CurrentTimestampSelectString), new SqlType[0]);
+				var statement = driver.GenerateCommand(CommandType.Text, new SqlString(dialect.CurrentTimestampSelectString), Array.Empty<SqlType>());
 				statement.Connection = connection;
 				using (var reader = await (statement.ExecuteReaderAsync()))
 				{

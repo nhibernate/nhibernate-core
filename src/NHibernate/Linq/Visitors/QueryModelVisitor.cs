@@ -130,7 +130,7 @@ namespace NHibernate.Linq.Visitors
 			ResultOperatorMap.Add<FetchManyRequest, ProcessFetchMany>();
 			ResultOperatorMap.Add<OfTypeResultOperator, ProcessOfType>();
 			ResultOperatorMap.Add<CastResultOperator, ProcessCast>();
-			ResultOperatorMap.Add<OptionsResultOperator, ProcessOptions>();
+			ResultOperatorMap.Add<AsQueryableResultOperator, ProcessAsQueryable>();
 		}
 
 		private QueryModelVisitor(VisitorParameters visitorParameters, bool root, QueryModel queryModel,

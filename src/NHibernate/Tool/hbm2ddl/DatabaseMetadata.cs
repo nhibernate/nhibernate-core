@@ -10,9 +10,9 @@ using NHibernate.Util;
 
 namespace NHibernate.Tool.hbm2ddl
 {
-	public partial class DatabaseMetadata : IDatabaseMetadata
+	public class DatabaseMetadata : IDatabaseMetadata
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (DatabaseMetadata));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (DatabaseMetadata));
 
 		private readonly IDictionary<string, ITableMetadata> tables = new Dictionary<string, ITableMetadata>();
 		private readonly ISet<string> sequences = new HashSet<string>();
@@ -88,7 +88,7 @@ namespace NHibernate.Tool.hbm2ddl
 					}
 				}
 
-				log.Info("table not found: " + name);
+				log.Info("table not found: {0}", name);
 				return null;
 			}
 			catch (DbException sqle)

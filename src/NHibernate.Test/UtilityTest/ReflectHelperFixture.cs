@@ -82,6 +82,7 @@ namespace NHibernate.Test.UtilityTest
 			Assert.IsNull(noType);
 		}
 
+#if NETFX
 		[Test]
 		public void TypeFoundInNotLoadedAssembly()
 		{
@@ -91,6 +92,7 @@ namespace NHibernate.Test.UtilityTest
 			System.Type sameType = ReflectHelper.TypeFromAssembly("System.Web.HttpRequest", "System.Web", false);
 			Assert.AreEqual(httpRequest, sameType, "should be the exact same Type");
 		}
+#endif
 
 		[Test]
 		public void SystemTypes()

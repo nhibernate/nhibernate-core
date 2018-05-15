@@ -1,3 +1,4 @@
+#if NETFX
 using System;
 using System.Data.Common;
 using System.Text;
@@ -47,7 +48,7 @@ namespace NHibernate.AdoNet
 			Driver.AdjustCommand(batchUpdate);
 			string lineWithParameters = null;
 			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
-			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled)
+			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled())
 			{
 				lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
 				var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
@@ -57,9 +58,9 @@ namespace NHibernate.AdoNet
 					.Append(":")
 					.AppendLine(lineWithParameters);
 			}
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
-				Log.Debug("Adding to batch:" + lineWithParameters);
+				Log.Debug("Adding to batch:{0}", lineWithParameters);
 			}
 			_currentBatch.Append((System.Data.SqlClient.SqlCommand)batchUpdate);
 
@@ -73,7 +74,7 @@ namespace NHibernate.AdoNet
 		{
 			try
 			{
-				Log.DebugFormat("Executing batch");
+				Log.Debug("Executing batch");
 				CheckReaders();
 				Prepare(_currentBatch.BatchCommand);
 				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
@@ -109,9 +110,9 @@ namespace NHibernate.AdoNet
 				}
 				catch (Exception e)
 				{
-					if (Log.IsWarnEnabled)
+					if (Log.IsWarnEnabled())
 					{
-						Log.Warn(e.ToString());
+						Log.Warn(e, e.ToString());
 					}
 				}
 			}
@@ -143,7 +144,7 @@ namespace NHibernate.AdoNet
 			}
 			catch (Exception e)
 			{
-				Log.Warn("Exception clearing batch", e);
+				Log.Warn(e, "Exception clearing batch");
 			}
 		}
 
@@ -158,8 +159,9 @@ namespace NHibernate.AdoNet
 			}
 			catch (Exception e)
 			{
-				Log.Warn("Exception closing batcher", e);
+				Log.Warn(e, "Exception closing batcher");
 			}
 		}
 	}
 }
+#endif

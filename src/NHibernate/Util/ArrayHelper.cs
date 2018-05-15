@@ -13,9 +13,15 @@ namespace NHibernate.Util
 	/// </summary>
 	public static class ArrayHelper
 	{
-		public static readonly object[] EmptyObjectArray = new object[0];
-		public static readonly int[] EmptyIntArray = new int[0];
-		public static readonly bool[] EmptyBoolArray = new bool[0];
+		//Since v5.1
+		[Obsolete("Please use System.Array.Empty<object>() instead")]
+		public static object[] EmptyObjectArray => Array.Empty<object>();
+		//Since v5.1
+		[Obsolete("Please use System.Array.Empty<int>() instead")]
+		public static int[] EmptyIntArray => Array.Empty<int>();
+		//Since v5.1
+		[Obsolete("Please use System.Array.Empty<bool>() instead")]
+		public static bool[] EmptyBoolArray => Array.Empty<bool>();
 
 		public static readonly bool[] True = new bool[] { true };
 		public static readonly bool[] False = new bool[] { false };

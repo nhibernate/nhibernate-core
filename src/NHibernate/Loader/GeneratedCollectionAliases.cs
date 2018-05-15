@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Persister.Collection;
 using NHibernate.Util;
@@ -37,14 +38,14 @@ namespace NHibernate.Loader
 		}
 
 		public GeneratedCollectionAliases(ICollectionPersister persister, string str)
-			: this(new CollectionHelper.EmptyMapClass<string, string[]>(), persister, str) {}
+			: this(CollectionHelper.EmptyDictionary<string, string[]>(), persister, str) {}
 
 		private string[] GetUserProvidedCompositeElementAliases(string[] defaultAliases)
 		{
 			var aliases = new List<string>();
 			foreach (KeyValuePair<string, string[]> userProvidedAlias in userProvidedAliases)
 			{
-				if (userProvidedAlias.Key.StartsWith("element."))
+				if (userProvidedAlias.Key.StartsWith("element.", StringComparison.Ordinal))
 				{
 					aliases.AddRange(userProvidedAlias.Value);
 				}

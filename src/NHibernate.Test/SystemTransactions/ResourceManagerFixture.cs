@@ -15,6 +15,7 @@ namespace NHibernate.Test.SystemTransactions
 	/// Holds tests for checking MSDTC resource managers behavior. They are not actual NHibernate tests,
 	/// they are here to help understand how NHibernate should implement its own resource manager.
 	/// </summary>
+	[TestFixture]
 	[Explicit("Does not test NHibernate but MSDTC")]
 	public class ResourceManagerFixture
 	{

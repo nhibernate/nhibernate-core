@@ -11,6 +11,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 using NHibernate.AdoNet;
@@ -58,7 +59,7 @@ namespace NHibernate.Impl
 		public virtual async Task<IList<T>> ListAsync<T>(IQueryExpression query, QueryParameters parameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(SessionId))
+			using (BeginProcess())
 			{
 				var results = new List<T>();
 				await (ListAsync(query, parameters, results, cancellationToken)).ConfigureAwait(false);
@@ -69,7 +70,7 @@ namespace NHibernate.Impl
 		public virtual async Task<IList<T>> ListAsync<T>(CriteriaImpl criteria, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(SessionId))
+			using (BeginProcess())
 			{
 				var results = new List<T>();
 				await (ListAsync(criteria, results, cancellationToken)).ConfigureAwait(false);
@@ -82,7 +83,7 @@ namespace NHibernate.Impl
 		public virtual async Task<IList> ListAsync(CriteriaImpl criteria, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(SessionId))
+			using (BeginProcess())
 			{
 				var results = new List<object>();
 				await (ListAsync(criteria, results, cancellationToken)).ConfigureAwait(false);
@@ -113,7 +114,7 @@ namespace NHibernate.Impl
 		public virtual async Task<IList> ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(SessionId))
+			using (BeginProcess())
 			{
 				var results = new List<object>();
 				await (ListAsync(spec, queryParameters, results, cancellationToken)).ConfigureAwait(false);
@@ -124,7 +125,7 @@ namespace NHibernate.Impl
 		public virtual async Task ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(SessionId))
+			using (BeginProcess())
 			{
 				var query = new SQLCustomQuery(
 					spec.SqlQueryReturns,
@@ -138,7 +139,7 @@ namespace NHibernate.Impl
 		public virtual async Task<IList<T>> ListAsync<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(SessionId))
+			using (BeginProcess())
 			{
 				var results = new List<T>();
 				await (ListAsync(spec, queryParameters, results, cancellationToken)).ConfigureAwait(false);
@@ -151,7 +152,7 @@ namespace NHibernate.Impl
 		public virtual async Task<IList<T>> ListCustomQueryAsync<T>(ICustomQuery customQuery, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(SessionId))
+			using (BeginProcess())
 			{
 				var results = new List<T>();
 				await (ListCustomQueryAsync(customQuery, queryParameters, results, cancellationToken)).ConfigureAwait(false);
@@ -170,7 +171,7 @@ namespace NHibernate.Impl
 		protected async Task AfterOperationAsync(bool success, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(SessionId))
+			using (BeginContext())
 			{
 				if (!ConnectionManager.IsInActiveTransaction)
 				{

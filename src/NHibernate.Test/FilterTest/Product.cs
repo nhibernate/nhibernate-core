@@ -8,8 +8,8 @@ namespace NHibernate.Test.FilterTest
 		private long id;
 		private string name;
 		private int stockNumber; // int for ease of hashCode() impl
-		private DateTime effectiveStartDate;
-		private DateTime effectiveEndDate;
+		private DateTime? effectiveStartDate;
+		private DateTime? effectiveEndDate;
 		private ISet<LineItem> orderLineItems;
 		private ISet<Category> categories;
 
@@ -51,13 +51,13 @@ namespace NHibernate.Test.FilterTest
 			set { stockNumber = value; }
 		}
 
-		public virtual DateTime EffectiveStartDate
+		public virtual DateTime? EffectiveStartDate
 		{
 			get { return effectiveStartDate; }
 			set { effectiveStartDate = value; }
 		}
 
-		public virtual DateTime EffectiveEndDate
+		public virtual DateTime? EffectiveEndDate
 		{
 			get { return effectiveEndDate; }
 			set { effectiveEndDate = value; }
@@ -74,6 +74,8 @@ namespace NHibernate.Test.FilterTest
 			get { return categories; }
 			set { categories = value; }
 		}
+
+		public virtual Guid ProductGuid { get; set; }
 
 		public override int GetHashCode()
 		{

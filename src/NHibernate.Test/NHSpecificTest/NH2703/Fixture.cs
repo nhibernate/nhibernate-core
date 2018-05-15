@@ -7,6 +7,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2703
 	{
 		Parent RootElement = null;
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
+
 		protected override void OnSetUp()
 		{
 			using (ISession session = Sfi.OpenSession())

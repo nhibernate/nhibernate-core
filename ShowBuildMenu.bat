@@ -10,9 +10,10 @@ set NUNIT="%~dp0Tools\NUnit.ConsoleRunner.3.7.0\tools\nunit3-console.exe"
 :main-menu
 echo ========================= NHIBERNATE BUILD MENU ==========================
 echo --- TESTING ---
-echo B. (Step 1) Set up a new test configuration for a particular database.
-echo C. (Step 2) Activate a test configuration.
-echo D. (Step 3) Run tests using active configuration (Needs built in Visual Studio).
+echo A. (Step 1) Set up a new test configuration for a particular database.
+echo B. (Step 2) Activate a test configuration.
+echo C. (Step 3) Run tests using active configuration with 32bits runner (Needs built in Visual Studio).
+echo D.       Or run tests using active configuration with 64bits runner (Needs built in Visual Studio).
 echo.
 echo --- BUILD ---
 echo E. Build NHibernate (Debug)
@@ -29,117 +30,111 @@ echo --- Exit ---
 echo X. Make the beautiful build menu go away.
 echo.
 
-%BUILDTOOL% prompt BCDEFGHIX
-if errorlevel 8 goto end
-if errorlevel 7 goto teamcity-menu
-if errorlevel 6 goto build-async
-if errorlevel 5 goto build-release-package
-if errorlevel 4 goto build-release
-if errorlevel 3 goto build-debug
-if errorlevel 2 goto test-run
+%BUILDTOOL% prompt ABCDEFGHIX
+if errorlevel 9 goto end
+if errorlevel 8 goto teamcity-menu
+if errorlevel 7 goto build-async
+if errorlevel 6 goto build-release-package
+if errorlevel 5 goto build-release
+if errorlevel 4 goto build-debug
+if errorlevel 3 goto test-run-64
+if errorlevel 2 goto test-run-32
 if errorlevel 1 goto test-activate
 if errorlevel 0 goto test-setup-menu
 
 :test-setup-menu
 echo A. Add a test configuration for SQL Server.
-echo B. Add a test configuration for Firebird (x86).
-echo C. Add a test configuration for Firebird (x64). [not recommended]
-echo D. Add a test configuration for SQLite (x86).
-echo E. Add a test configuration for SQLite (x64). [not recommended]
-echo F. Add a test configuration for PostgreSQL.
-echo G. Add a test configuration for Oracle.
-echo H. Add a test configuration for SQL Server Compact (x86).
-echo I. Add a test configuration for SQL Server Compact (x64).
-echo J. Add a test configuration for MySql.
+echo B. Add a test configuration for Firebird.
+echo C. Add a test configuration for SQLite.
+echo D. Add a test configuration for PostgreSQL.
+echo E. Add a test configuration for Oracle.
+echo F. Add a test configuration for Oracle with managed driver.
+echo G. Add a test configuration for SQL Server Compact.
+echo H. Add a test configuration for MySql.
+echo I. Add a test configuration for SAP HANA.
 echo.
 echo X.  Exit to main menu.
 echo.
 
-%BUILDTOOL% prompt ABCDEFGHIJX
-if errorlevel 10 goto main-menu
-if errorlevel 9 goto test-setup-mysql
-if errorlevel 8 goto test-setup-sqlservercex64
-if errorlevel 7 goto test-setup-sqlservercex86
-if errorlevel 6 goto test-setup-oracle
-if errorlevel 5 goto test-setup-postgresql
-if errorlevel 4 goto test-setup-sqlitex64
-if errorlevel 3 goto test-setup-sqlitex86
-if errorlevel 2 goto test-setup-firebirdx64
-if errorlevel 1 goto test-setup-firebirdx86
+%BUILDTOOL% prompt ABCDEFGHIX
+if errorlevel 9 goto main-menu
+if errorlevel 8 goto test-setup-hana
+if errorlevel 7 goto test-setup-mysql
+if errorlevel 6 goto test-setup-sqlserverce
+if errorlevel 5 goto test-setup-oracle-managed
+if errorlevel 4 goto test-setup-oracle
+if errorlevel 3 goto test-setup-postgresql
+if errorlevel 2 goto test-setup-sqlite
+if errorlevel 1 goto test-setup-firebird
 if errorlevel 0 goto test-setup-sqlserver
 
 :test-setup-sqlserver
 set CONFIG_NAME=MSSQL
-set PLATFORM=AnyCPU
+set TEST_PLATFORM=AnyCPU
 set LIB_FILES=
 set LIB_FILES2=
 goto test-setup-generic
 
-:test-setup-sqlservercex86
-set CONFIG_NAME=SqlServerCe32
-set PLATFORM=AnyCPU
-set LIB_FILES=lib\teamcity\SqlServerCe\*.dll
-set LIB_FILES2=lib\teamcity\SqlServerCe\X86\*.dll
-goto test-setup-generic
-
-:test-setup-sqlservercex64
-set CONFIG_NAME=SqlServerCe64
-set PLATFORM=AnyCPU
-set LIB_FILES=lib\teamcity\sqlServerCe\*.dll
-set LIB_FILES2=lib\teamcity\sqlServerCe\AMD64\*.dll
-goto test-setup-generic
-
-:test-setup-firebirdx86
-set CONFIG_NAME=FireBird
-set PLATFORM=x86
-set LIB_FILES=lib\teamcity\firebird\*.dll
-goto test-setup-generic
-
-:test-setup-firebirdx64
-set CONFIG_NAME=FireBird
-set PLATFORM=x64
-set LIB_FILES=lib\teamcity\firebird\*.dll
-goto test-setup-generic
-
-:test-setup-sqlitex86
-set CONFIG_NAME=SQLite
-set PLATFORM=x86
-set LIB_FILES=lib\teamcity\sqlite\x86\*
+:test-setup-sqlserverce
+set CONFIG_NAME=SqlServerCe
+set TEST_PLATFORM=AnyCPU
+set LIB_FILES=
 set LIB_FILES2=
 goto test-setup-generic
 
-:test-setup-sqlitex64
+:test-setup-firebird
+set CONFIG_NAME=FireBird
+set TEST_PLATFORM=AnyCPU
+set LIB_FILES=
+set LIB_FILES2=
+goto test-setup-generic
+
+:test-setup-sqlite
 set CONFIG_NAME=SQLite
-set PLATFORM=x64
-set LIB_FILES=lib\teamcity\sqlite\x64\*
+set TEST_PLATFORM=AnyCPU
+set LIB_FILES=
 set LIB_FILES2=
 goto test-setup-generic
 
 :test-setup-postgresql
 set CONFIG_NAME=PostgreSQL
-set PLATFORM=AnyCPU
-set LIB_FILES=lib\teamcity\postgresql\*.dll
+set TEST_PLATFORM=AnyCPU
+set LIB_FILES=
 set LIB_FILES2=
 goto test-setup-generic
 
 :test-setup-mysql
 set CONFIG_NAME=MySql
-set PLATFORM=AnyCPU
-set LIB_FILES=lib\teamcity\mysql\*.dll
+set TEST_PLATFORM=AnyCPU
+set LIB_FILES=
 set LIB_FILES2=
 goto test-setup-generic
 
 :test-setup-oracle
 set CONFIG_NAME=Oracle
-set PLATFORM=x86
+set TEST_PLATFORM=x86
 set LIB_FILES=lib\teamcity\oracle\x86\*.dll
+set LIB_FILES2=
+goto test-setup-generic
+
+:test-setup-oracle-managed
+set CONFIG_NAME=Oracle-Managed
+set TEST_PLATFORM=AnyCPU
+set LIB_FILES=
+set LIB_FILES2=
+goto test-setup-generic
+
+:test-setup-hana
+set CONFIG_NAME=HANA
+set TEST_PLATFORM=AnyCPU
+set LIB_FILES=
 set LIB_FILES2=
 goto test-setup-generic
 
 :test-setup-generic
 set CFGNAME=
 set /p CFGNAME=Enter a name for your test configuration or press enter to use default name: 
-if /I "%CFGNAME%"=="" set CFGNAME=%CONFIG_NAME%-%PLATFORM%
+if /I "%CFGNAME%"=="" set CFGNAME=%CONFIG_NAME%-%TEST_PLATFORM%
 mkdir "%AVAILABLE_CONFIGURATIONS%\%CFGNAME%"
 if /I "%LIB_FILES%"=="" goto test-setup-generic-skip-copy
 copy %LIB_FILES% "%AVAILABLE_CONFIGURATIONS%\%CFGNAME%"
@@ -164,9 +159,15 @@ copy "%FOLDER%\*" "%CURRENT_CONFIGURATION%"
 echo Configuration activated.
 goto main-menu
 
-:test-run
+:test-run-32
+SET NUNITPLATFORM=--x86
+goto test-run
+
+:test-run-64
 SET NUNITPLATFORM=
-IF /I "%PLATFORM%" NEQ "x64" set NUNITPLATFORM=--x86
+goto test-run
+
+:test-run
 start "nunit3-console" cmd /K %NUNIT% %NUNITPLATFORM% --agents=1 --process=separate NHibernate.nunit
 goto main-menu
 

@@ -44,10 +44,16 @@ namespace NHibernate.Mapping
 
 		public static string BuildSqlDropIndexString(Dialect.Dialect dialect, Table table, string name, string defaultCatalog, string defaultSchema)
 		{
-			string ifExists = dialect.GetIfExistsDropConstraint(table, name);
-			string drop = string.Format("drop index {0}", StringHelper.Qualify(table.GetQualifiedName(dialect, defaultCatalog, defaultSchema), name));
-			string end = dialect.GetIfExistsDropConstraintEnd(table, name);
-			return ifExists + Environment.NewLine + drop + Environment.NewLine + end;
+			var catalog = table.GetQuotedCatalog(dialect, defaultCatalog);
+			var schema = table.GetQuotedSchema(dialect, defaultSchema);
+			var tableName = table.GetQuotedName(dialect);
+
+			return new StringBuilder()
+				.AppendLine(dialect.GetIfExistsDropConstraint(catalog, schema, tableName, name))
+				.Append("drop index ")
+				.AppendLine(StringHelper.Qualify(table.GetQualifiedName(dialect, defaultCatalog, defaultSchema), name))
+				.Append(dialect.GetIfExistsDropConstraintEnd(catalog, schema, tableName, name))
+				.ToString();
 		}
 
 		/// <summary>

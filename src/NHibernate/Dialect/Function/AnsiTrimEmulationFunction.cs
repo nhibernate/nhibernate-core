@@ -98,8 +98,8 @@ namespace NHibernate.Dialect.Function
 				//      so we trim leading and trailing spaces
 				return BothSpaceTrim.Render(args, factory);
 			}
-			
-			if (StringHelper.EqualsCaseInsensitive("from", firstArg))
+
+			if ("from".Equals(firstArg, StringComparison.OrdinalIgnoreCase))
 			{
 				// we have the form: trim(from trimSource).
 				//      This is functionally equivalent to trim(trimSource)
@@ -118,15 +118,15 @@ namespace NHibernate.Dialect.Function
 			// trim-specification has been specified.  we handle the
 			// exception to that explicitly
 			int potentialTrimCharacterArgIndex = 1;
-			if (StringHelper.EqualsCaseInsensitive("leading", firstArg))
+			if ("leading".Equals(firstArg, StringComparison.OrdinalIgnoreCase))
 			{
 				trailing = false;
 			}
-			else if (StringHelper.EqualsCaseInsensitive("trailing", firstArg))
+			else if ("trailing".Equals(firstArg, StringComparison.OrdinalIgnoreCase))
 			{
 				leading = false;
 			}
-			else if (StringHelper.EqualsCaseInsensitive("both", firstArg))
+			else if ("both".Equals(firstArg, StringComparison.OrdinalIgnoreCase))
 			{
 			}
 			else
@@ -135,7 +135,7 @@ namespace NHibernate.Dialect.Function
 			}
 
 			object potentialTrimCharacter = args[potentialTrimCharacterArgIndex];
-			if (StringHelper.EqualsCaseInsensitive("from", potentialTrimCharacter.ToString()))
+			if ("from".Equals(potentialTrimCharacter.ToString(), StringComparison.OrdinalIgnoreCase))
 			{
 				trimCharacter = "' '";
 				trimSource = args[potentialTrimCharacterArgIndex + 1];
@@ -148,7 +148,7 @@ namespace NHibernate.Dialect.Function
 			else
 			{
 				trimCharacter = potentialTrimCharacter;
-				if (StringHelper.EqualsCaseInsensitive("from", args[potentialTrimCharacterArgIndex + 1].ToString()))
+				if ("from".Equals(args[potentialTrimCharacterArgIndex + 1].ToString(), StringComparison.OrdinalIgnoreCase))
 				{
 					trimSource = args[potentialTrimCharacterArgIndex + 2];
 				}

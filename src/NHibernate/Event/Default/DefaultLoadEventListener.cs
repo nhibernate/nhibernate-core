@@ -19,7 +19,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultLoadEventListener : AbstractLockUpgradeEventListener, ILoadEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultLoadEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DefaultLoadEventListener));
 		public static readonly object RemovedEntityMarker = new object();
 		public static readonly object InconsistentRTNClassMarker= new object();
 		public static readonly LockMode DefaultLockMode = LockMode.None;
@@ -89,7 +89,7 @@ namespace NHibernate.Event.Default
 			}
 			catch (HibernateException e)
 			{
-				log.Info("Error performing load command", e);
+				log.Info(e, "Error performing load command");
 				throw;
 			}
 		}
@@ -134,9 +134,9 @@ namespace NHibernate.Event.Default
 		/// <returns> The result of the proxy/load operation.</returns>
 		protected virtual object ProxyOrLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("loading entity: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
+				log.Debug("loading entity: {0}", MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 			}
 
 			if (!persister.HasProxy)
@@ -286,9 +286,9 @@ namespace NHibernate.Event.Default
 		/// <returns> The loaded entity, or null. </returns>
 		protected virtual object DoLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("attempting to resolve: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
+				log.Debug("attempting to resolve: {0}", MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 			}
 
 			object entity = LoadFromSessionCache(@event, keyToLoad, options);
@@ -304,9 +304,9 @@ namespace NHibernate.Event.Default
 			}
 			if (entity != null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("resolved object in session cache: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
+					log.Debug("resolved object in session cache: {0}", MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 				}
 				return entity;
 			}
@@ -314,16 +314,16 @@ namespace NHibernate.Event.Default
 			entity = LoadFromSecondLevelCache(@event, persister, options);
 			if (entity != null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("resolved object in second-level cache: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
+					log.Debug("resolved object in second-level cache: {0}", MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 				}
 				return entity;
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("object not resolved in any cache: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
+				log.Debug("object not resolved in any cache: {0}", MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 			}
 
 			return LoadFromDatasource(@event, persister, keyToLoad, options);
@@ -428,12 +428,12 @@ namespace NHibernate.Event.Default
 					if (ce == null)
 					{
 						factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
-						log.DebugFormat("Entity cache miss: {0}", ck);
+						log.Debug("Entity cache miss: {0}", ck);
 					}
 					else
 					{
 						factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
-						log.DebugFormat("Entity cache hit: {0}", ck);
+						log.Debug("Entity cache hit: {0}", ck);
 					}
 				}
 
@@ -459,9 +459,9 @@ namespace NHibernate.Event.Default
 			IEventSource session = @event.Session;
 			ISessionFactoryImplementor factory = session.Factory;
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("assembling entity from second-level cache: " + MessageHelper.InfoString(persister, id, factory));
+				log.Debug("assembling entity from second-level cache: {0}", MessageHelper.InfoString(persister, id, factory));
 			}
 
 			IEntityPersister subclassPersister = factory.GetEntityPersister(entry.Subclass);
@@ -476,9 +476,9 @@ namespace NHibernate.Event.Default
 			TypeHelper.DeepCopy(values, types, subclassPersister.PropertyUpdateability, values, session);
 
 			object version = Versioning.GetVersion(values, subclassPersister);
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Cached Version: " + version);
+				log.Debug("Cached Version: {0}", version);
 			}
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;

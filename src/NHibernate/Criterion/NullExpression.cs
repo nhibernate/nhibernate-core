@@ -12,7 +12,7 @@ namespace NHibernate.Criterion
 	{
 		private readonly string _propertyName;
 		private readonly IProjection _projection;
-		private static readonly TypedValue[] NoValues = new TypedValue[0];
+		private static readonly TypedValue[] NoValues = Array.Empty<TypedValue>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NullExpression"/> class.

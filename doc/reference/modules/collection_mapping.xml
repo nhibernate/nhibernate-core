@@ -6,7 +6,7 @@
 
         <para>
             NHibernate requires that persistent collection-valued fields be declared
-            as an interface type, for example:
+            as a generic interface type, for example:
         </para>
         
         <programlisting><![CDATA[public class Product
@@ -18,9 +18,6 @@
         
         <para>
             The actual interface might be
-            <literal>System.Collections.ICollection</literal>,
-            <literal>System.Collections.IList</literal>,
-            <literal>System.Collections.IDictionary</literal>,
             <literal>System.Collections.Generic.ICollection&lt;T&gt;</literal>,
             <literal>System.Collections.Generic.IList&lt;T&gt;</literal>,
             <literal>System.Collections.Generic.IDictionary&lt;K, V&gt;</literal>,
@@ -31,11 +28,11 @@
         
         <para>
             Notice how we initialized the instance variable with an instance of
-            <literal>HashSet</literal>. This is the best way to initialize collection
+            <literal>HashSet&lt;T&gt;</literal>. This is the best way to initialize collection
             valued properties of newly instantiated (non-persistent) instances. When
             you make the instance persistent - by calling <literal>Save()</literal>,
-            for example - NHibernate will actually replace the <literal>HashSet</literal>
-            with an instance of NHibernate's own implementation of <literal>ISet</literal>.
+            for example - NHibernate will actually replace the <literal>HashSet&lt;T&gt;</literal>
+            with an instance of NHibernate's own implementation of <literal>ISet&lt;T&gt;</literal>.
             Watch out for errors like this:
         </para>
 
@@ -242,9 +239,8 @@ HashSet<Cat> hs = (HashSet<Cat>) cat.Kittens; //Error!]]></programlisting>
                 </callout>
                 <callout arearefs="mappingcollection14">
                     <para>
-                        <literal>generic</literal> (optional): Choose between generic and non-generic collection
-                        interface. If this option is not specified, NHibernate will use reflection to choose
-                        the interface.
+                        <literal>generic</literal> (optional, obsolete): Choose between generic and non-generic
+                        collection interfaces. But currently NHibernate only supports generic collections.
                     </para>
                 </callout>
             </calloutlist>
@@ -857,12 +853,6 @@ int accessLevel = permissions["accounts"];  // Error!]]></programlisting>
         </para>
 
         <para>
-            Please note that NHibernate does not support bidirectional one-to-many associations
-            with an indexed collection (list, map or array) as the "many" end, you have to
-            use a set or bag mapping.
-        </para>
-
-        <para>
             You may specify a bidirectional many-to-many association simply by mapping two
             many-to-many associations to the same database table and declaring one end as
             <emphasis>inverse</emphasis> (which one is your choice). Here's an example of
@@ -937,6 +927,75 @@ session.Update(category);                 // The relationship will be saved]]></
         <para>
             Mapping one end of an association with <literal>inverse="true"</literal> doesn't
             affect the operation of cascades, both are different concepts!
+        </para>
+
+    </sect1>
+
+    <sect1 id="collections-indexedbidirectional">
+        <title>Bidirectional associations with indexed collections</title>
+
+        <para>
+            There are some additional considerations for bidirectional mappings with indexed collections
+            (where one end is represented as a <literal>&lt;list&gt;</literal> or <literal>&lt;map&gt;</literal>)
+            when using NHibernate mapping files. If there is a property of the child class that maps to the
+            index column you can use <literal>inverse="true"</literal> on the collection mapping:
+        </para>
+
+        <programlisting><![CDATA[<class name="Parent">
+    <id name="Id" column="parent_id"/>
+    ....
+    <map name="Children" inverse="true">
+        <key column="parent_id"/>
+        <map-key column="name"
+            type="string"/>
+        <one-to-many class="Child"/>
+    </map>
+</class>
+
+<class name="Child">
+    <id name="Id" column="child_id"/>
+    ....
+    <property name="Name" column="name"
+        not-null="true"/>
+    <many-to-one name="Parent"
+        class="Parent"
+        column="parent_id"
+        not-null="true"/>
+</class>]]></programlisting>
+
+        <para>
+            If there is no such property on the child class, the association cannot be considered truly
+            bidirectional. That is, there is information available at one end of the association that is not
+            available at the other end. In this case, you cannot map the collection
+            <literal>inverse="true"</literal>. Instead, you could use the following mapping:
+        </para>
+
+        <programlisting><![CDATA[<class name="Parent">
+    <id name="Id" column="parent_id"/>
+    ....
+    <map name="Children">
+        <key column="parent_id"
+            not-null="true"/>
+        <map-key column="name"
+            type="string"/>
+        <one-to-many class="Child"/>
+    </map>
+</class>
+
+<class name="Child">
+    <id name="Id" column="child_id"/>
+    ....
+    <many-to-one name="Parent"
+        class="Parent"
+        column="parent_id"
+        insert="false"
+        update="false"
+        not-null="true"/>
+</class>]]></programlisting>
+
+        <para>
+            Note that in this mapping, the collection-valued end of the association is responsible for
+            updates to the foreign key.
         </para>
 
     </sect1>

@@ -43,7 +43,7 @@ namespace NHibernate.Engine.Query
 
 			if (session.IsEventSource)
 			{
-				await (((IEventSource)session).ActionQueue.AddActionAsync(action, cancellationToken)).ConfigureAwait(false);
+				((IEventSource)session).ActionQueue.AddAction(action);
 			}
 		}
 
@@ -96,6 +96,7 @@ namespace NHibernate.Engine.Query
 					}
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				throw;

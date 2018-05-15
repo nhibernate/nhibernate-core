@@ -17,11 +17,11 @@ namespace NHibernate.Engine
 	[Serializable]
 	public sealed class QueryParameters
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (QueryParameters));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (QueryParameters));
 
 		private bool readOnly;
 
-		public QueryParameters() : this(TypeHelper.EmptyTypeArray, ArrayHelper.EmptyObjectArray) {}
+		public QueryParameters() : this(TypeHelper.EmptyTypeArray, Array.Empty<object>()) {}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, object optionalObject, string optionalEntityName, object optionalObjectId)
 			: this(positionalParameterTypes, postionalParameterValues)
@@ -50,7 +50,7 @@ namespace NHibernate.Engine
 		public QueryParameters(IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized,
 		                       bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
 			: this(
-				TypeHelper.EmptyTypeArray, ArrayHelper.EmptyObjectArray, namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null,
+				TypeHelper.EmptyTypeArray, Array.Empty<object>(), namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null,
 				transformer)
 		{
 			// used by CriteriaTranslator
@@ -61,8 +61,8 @@ namespace NHibernate.Engine
 		                       IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion,
 		                       string comment, object[] collectionKeys, IResultTransformer transformer)
 		{
-			PositionalParameterTypes = positionalParameterTypes ?? new IType[0];
-			PositionalParameterValues = positionalParameterValues ?? new object[0];
+			PositionalParameterTypes = positionalParameterTypes ?? Array.Empty<IType>();
+			PositionalParameterValues = positionalParameterValues ?? Array.Empty<object>();
 			NamedParameters = namedParameters ?? new Dictionary<string, TypedValue>(1);
 			LockModes = lockModes;
 			RowSelection = rowSelection;
@@ -171,12 +171,12 @@ namespace NHibernate.Engine
 			var print = new Printer(factory);
 			if (PositionalParameterValues.Length != 0)
 			{
-				log.Debug("parameters: " + print.ToString(PositionalParameterTypes, PositionalParameterValues));
+				log.Debug("parameters: {0}", print.ToString(PositionalParameterTypes, PositionalParameterValues));
 			}
 
 			if (NamedParameters != null)
 			{
-				log.Debug("named parameters: " + print.ToString(NamedParameters));
+				log.Debug("named parameters: {0}", print.ToString(NamedParameters));
 			}
 		}
 

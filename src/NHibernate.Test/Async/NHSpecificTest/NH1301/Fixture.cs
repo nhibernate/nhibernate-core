@@ -21,6 +21,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1301
 			get { return "NH1301"; }
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
+
 		[Test]
 		public async Task TestAsync()
 		{

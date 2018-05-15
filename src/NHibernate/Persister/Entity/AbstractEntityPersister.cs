@@ -110,7 +110,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AbstractEntityPersister));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(AbstractEntityPersister));
 		public const string EntityClass = "class";
 		protected const string Discriminator_Alias = "clazz_";
 
@@ -755,8 +755,8 @@ namespace NHibernate.Persister.Entity
 			{
 				if (identitySelectString == null)
 					identitySelectString =
-						Factory.Dialect.GetIdentitySelectString(GetTableName(0), GetKeyColumns(0)[0],
-																										IdentifierType.SqlTypes(Factory)[0].DbType);
+						Factory.Dialect.GetIdentitySelectString(GetKeyColumns(0)[0], GetTableName(0),
+						                                        IdentifierType.SqlTypes(Factory)[0].DbType);
 				return identitySelectString;
 			}
 		}
@@ -1238,11 +1238,11 @@ namespace NHibernate.Persister.Entity
 			if (entry == null)
 				throw new HibernateException("entity is not associated with the session: " + id);
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug(
-					string.Format("initializing lazy properties of: {0}, field access: {1}",
-												MessageHelper.InfoString(this, id, Factory), fieldName));
+				log.Debug("initializing lazy properties of: {0}, field access: {1}",
+					MessageHelper.InfoString(this, id, Factory),
+					fieldName);
 			}
 
 			if (HasCache && session.CacheMode.HasFlag(CacheMode.Get))
@@ -1270,7 +1270,7 @@ namespace NHibernate.Persister.Entity
 
 			log.Debug("initializing lazy properties from datastore");
 
-			using (new SessionIdLoggingContext(session.SessionId)) 
+			using (session.BeginProcess())
 			try
 			{
 				object result = null;
@@ -1442,12 +1442,12 @@ namespace NHibernate.Persister.Entity
 
 		public object[] GetDatabaseSnapshot(object id, ISessionImplementor session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Getting current persistent state for: " + MessageHelper.InfoString(this, id, Factory));
+				log.Debug("Getting current persistent state for: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
 
-			using (new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			try
 			{
 				var st = session.Batcher.PrepareCommand(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory));
@@ -1638,12 +1638,12 @@ namespace NHibernate.Persister.Entity
 			}
 
 			object nextVersion = VersionType.Next(currentVersion, session);
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Forcing version increment [" +
-					MessageHelper.InfoString(this, id, Factory) + "; " +
-					VersionType.ToLoggableString(currentVersion, Factory) + " -> " +
-					VersionType.ToLoggableString(nextVersion, Factory) + "]");
+				log.Debug("Forcing version increment [{0}; {1} -> {2}]",
+				          MessageHelper.InfoString(this, id, Factory),
+				          VersionType.ToLoggableString(currentVersion, Factory),
+				          VersionType.ToLoggableString(nextVersion, Factory));
 			}
 
 			IExpectation expectation = Expectations.AppropriateExpectation(updateResultCheckStyles[0]);
@@ -1698,11 +1698,11 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		public object GetCurrentVersion(object id, ISessionImplementor session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Getting version: " + MessageHelper.InfoString(this, id, Factory));
+				log.Debug("Getting version: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
-			using(new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			try
 			{
 				var st = session.Batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString, IdentifierType.SqlTypes(Factory));
@@ -2118,7 +2118,7 @@ namespace NHibernate.Persister.Entity
 					//don't need filters for the static loaders
 					uniqueKeyLoaders[propertyNames[i]] =
 						CreateUniqueKeyLoader(propertyTypes[i], GetPropertyColumnNames(i),
-																	new CollectionHelper.EmptyMapClass<string, IFilter>());
+																	CollectionHelper.EmptyDictionary<string, IFilter>());
 				}
 			}
 		}
@@ -2197,7 +2197,7 @@ namespace NHibernate.Persister.Entity
 
 		protected IUniqueEntityLoader CreateEntityLoader(LockMode lockMode)
 		{
-			return CreateEntityLoader(lockMode, new CollectionHelper.EmptyMapClass<string, IFilter>());
+			return CreateEntityLoader(lockMode, CollectionHelper.EmptyDictionary<string, IFilter>());
 		}
 
 		protected bool Check(int rows, object id, int tableNumber, IExpectation expectation, DbCommand statement)
@@ -2206,14 +2206,14 @@ namespace NHibernate.Persister.Entity
 			{
 				expectation.VerifyOutcomeNonBatched(rows, statement);
 			}
-			catch (StaleStateException)
+			catch (StaleStateException sse)
 			{
 				if (!IsNullableTable(tableNumber))
 				{
 					if (Factory.Statistics.IsStatisticsEnabled)
 						Factory.StatisticsImplementor.OptimisticFailure(EntityName);
 
-					throw new StaleObjectStateException(EntityName, id);
+					throw new StaleObjectStateException(EntityName, id, sse);
 				}
 			}
 			catch (TooManyRowsAffectedException ex)
@@ -2430,9 +2430,9 @@ namespace NHibernate.Persister.Entity
 		protected int Dehydrate(object id, object[] fields, object rowId, bool[] includeProperty, bool[][] includeColumns, int table,
 			DbCommand statement, ISessionImplementor session, int index)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Dehydrating entity: " + MessageHelper.InfoString(this, id, Factory));
+				log.Debug("Dehydrating entity: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
 
 			// there's a pretty strong coupling between the order of the SQL parameter 
@@ -2478,9 +2478,9 @@ namespace NHibernate.Persister.Entity
 		public object[] Hydrate(DbDataReader rs, object id, object obj, ILoadable rootLoadable,
 			string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Hydrating entity: " + MessageHelper.InfoString(this, id, Factory));
+				log.Debug("Hydrating entity: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
 
 			AbstractEntityPersister rootPersister = (AbstractEntityPersister)rootLoadable;
@@ -2489,7 +2489,7 @@ namespace NHibernate.Persister.Entity
 			DbCommand sequentialSelect = null;
 			DbDataReader sequentialResultSet = null;
 			bool sequentialSelectEmpty = false;
-			using (new SessionIdLoggingContext(session.SessionId)) 
+			using (session.BeginProcess())
 			try
 			{
 				if (hasDeferred)
@@ -2602,12 +2602,12 @@ namespace NHibernate.Persister.Entity
 		/// </remarks>
 		protected object Insert(object[] fields, bool[] notNull, SqlCommandInfo sql, object obj, ISessionImplementor session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Inserting entity: " + EntityName + " (native id)");
+				log.Debug("Inserting entity: {0} (native id)", EntityName);
 				if (IsVersioned)
 				{
-					log.Debug("Version: " + Versioning.GetVersion(fields, this));
+					log.Debug("Version: {0}", Versioning.GetVersion(fields, this));
 				}
 			}
 			IBinder binder = new GeneratedIdentifierBinder(fields, notNull, session, obj, this);
@@ -2647,12 +2647,12 @@ namespace NHibernate.Persister.Entity
 				return;
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Inserting entity: " + MessageHelper.InfoString(this, tableId, Factory));
+				log.Debug("Inserting entity: {0}", MessageHelper.InfoString(this, tableId, Factory));
 				if (j == 0 && IsVersioned)
 				{
-					log.Debug("Version: " + Versioning.GetVersion(fields, this));
+					log.Debug("Version: {0}", Versioning.GetVersion(fields, this));
 				}
 			}
 
@@ -2765,12 +2765,12 @@ namespace NHibernate.Persister.Entity
 			//bool callable = IsUpdateCallable(j);
 			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable; //note: updates to joined tables can't be batched...
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Updating entity: " + MessageHelper.InfoString(this, id, Factory));
+				log.Debug("Updating entity: {0}", MessageHelper.InfoString(this, id, Factory));
 				if (useVersion)
 				{
-					log.Debug("Existing version: " + oldVersion + " -> New Version: " + fields[VersionProperty]);
+					log.Debug("Existing version: {0} -> New Version: {1}", oldVersion, fields[VersionProperty]);
 				}
 			}
 
@@ -2886,20 +2886,20 @@ namespace NHibernate.Persister.Entity
 			IExpectation expectation = Expectations.AppropriateExpectation(deleteResultCheckStyles[j]);
 			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable;
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Deleting entity: " + MessageHelper.InfoString(this, tableId, Factory));
+				log.Debug("Deleting entity: {0}", MessageHelper.InfoString(this, tableId, Factory));
 				if (useVersion)
 				{
-					log.Debug("Version: " + version);
+					log.Debug("Version: {0}", version);
 				}
 			}
 
 			if (IsTableCascadeDeleteEnabled(j))
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("delete handled by foreign key constraint: " + GetTableName(j));
+					log.Debug("delete handled by foreign key constraint: {0}", GetTableName(j));
 				}
 				return; //EARLY EXIT!
 			}
@@ -3031,7 +3031,7 @@ namespace NHibernate.Persister.Entity
 				// to be updated; an empty array for the dirty fields needs to be passed to
 				// getPropertiesToUpdate() instead of null.
 				propsToUpdate = this.GetPropertiesToUpdate(
-					(dirtyFields == null ? ArrayHelper.EmptyIntArray : dirtyFields), hasDirtyCollection);
+					(dirtyFields == null ? Array.Empty<int>() : dirtyFields), hasDirtyCollection);
 				
 				// don't need to check laziness (dirty checking algorithm handles that)
 				updateStrings = new SqlCommandInfo[span];
@@ -3197,46 +3197,46 @@ namespace NHibernate.Persister.Entity
 
 		protected void LogStaticSQL()
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Static SQL for entity: " + EntityName);
+				log.Debug("Static SQL for entity: {0}", EntityName);
 				if (sqlLazySelectString != null)
 				{
-					log.Debug(" Lazy select: " + sqlLazySelectString);
+					log.Debug(" Lazy select: {0}", sqlLazySelectString);
 				}
 				if (sqlVersionSelectString != null)
 				{
-					log.Debug(" Version select: " + sqlVersionSelectString);
+					log.Debug(" Version select: {0}", sqlVersionSelectString);
 				}
 				if (sqlSnapshotSelectString != null)
 				{
-					log.Debug(" Snapshot select: " + sqlSnapshotSelectString);
+					log.Debug(" Snapshot select: {0}", sqlSnapshotSelectString);
 				}
 				for (int j = 0; j < TableSpan; j++)
 				{
-					log.Debug(" Insert " + j + ": " + SqlInsertStrings[j]);
-					log.Debug(" Update " + j + ": " + SqlUpdateStrings[j]);
-					log.Debug(" Delete " + j + ": " + SqlDeleteStrings[j]);
+					log.Debug(" Insert {0}: {1}", j, SqlInsertStrings[j]);
+					log.Debug(" Update {0}: {1}", j, SqlUpdateStrings[j]);
+					log.Debug(" Delete {0}: {1}", j, SqlDeleteStrings[j]);
 				}
 				if (sqlIdentityInsertString != null)
 				{
-					log.Debug(" Identity insert: " + sqlIdentityInsertString);
+					log.Debug(" Identity insert: {0}", sqlIdentityInsertString);
 				}
 				if (sqlUpdateByRowIdString != null)
 				{
-					log.Debug(" Update by row id (all fields): " + sqlUpdateByRowIdString);
+					log.Debug(" Update by row id (all fields): {0}", sqlUpdateByRowIdString);
 				}
 				if (sqlLazyUpdateByRowIdString != null)
 				{
-					log.Debug(" Update by row id (non-lazy fields): " + sqlLazyUpdateByRowIdString);
+					log.Debug(" Update by row id (non-lazy fields): {0}", sqlLazyUpdateByRowIdString);
 				}
 				if (sqlInsertGeneratedValuesSelectString != null)
 				{
-					log.Debug("Insert-generated property select: " + sqlInsertGeneratedValuesSelectString);
+					log.Debug("Insert-generated property select: {0}", sqlInsertGeneratedValuesSelectString);
 				}
 				if (sqlUpdateGeneratedValuesSelectString != null)
 				{
-					log.Debug("Update-generated property select: " + sqlUpdateGeneratedValuesSelectString);
+					log.Debug("Update-generated property select: {0}", sqlUpdateGeneratedValuesSelectString);
 				}
 			}
 		}
@@ -3580,9 +3580,9 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		public object Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Fetching entity: " + MessageHelper.InfoString(this, id, Factory));
+				log.Debug("Fetching entity: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
 
 			IUniqueEntityLoader loader = GetAppropriateLoader(lockMode, session);
@@ -3705,12 +3705,12 @@ namespace NHibernate.Persister.Entity
 
 		private void LogDirtyProperties(int[] props)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				for (int i = 0; i < props.Length; i++)
 				{
 					string propertyName = entityMetamodel.Properties[props[i]].Name;
-					log.Debug(StringHelper.Qualify(EntityName, propertyName) + " is dirty");
+					log.Debug("{0} is dirty", StringHelper.Qualify(EntityName, propertyName));
 				}
 			}
 		}
@@ -4103,7 +4103,7 @@ namespace NHibernate.Persister.Entity
 		private void ProcessGeneratedPropertiesWithGeneratedSql(object id, object entity, object[] state,
 			ISessionImplementor session, SqlString selectionSQL, ValueInclusion[] generationInclusions)
 		{
-			using (new SessionIdLoggingContext(session.SessionId)) 
+			using (session.BeginProcess())
 			try
 			{
 				var cmd = session.Batcher.PrepareQueryCommand(CommandType.Text, selectionSQL, IdentifierType.SqlTypes(Factory));
@@ -4175,9 +4175,9 @@ namespace NHibernate.Persister.Entity
 			{
 				throw new MappingException("persistent class did not define a natural-id : " + MessageHelper.InfoString(this));
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Getting current natural-id snapshot state for: " + MessageHelper.InfoString(this, id, Factory));
+				log.Debug("Getting current natural-id snapshot state for: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
 
 			int[] naturalIdPropertyIndexes = NaturalIdentifierProperties;
@@ -4210,7 +4210,7 @@ namespace NHibernate.Persister.Entity
 			///////////////////////////////////////////////////////////////////////
 
 			object[] snapshot = new object[naturalIdPropertyCount];
-			using (new SessionIdLoggingContext(session.SessionId)) 
+			using (session.BeginProcess())
 			try
 			{
 				var ps = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));

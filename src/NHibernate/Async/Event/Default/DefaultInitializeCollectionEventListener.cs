@@ -44,9 +44,9 @@ namespace NHibernate.Event.Default
 				throw new HibernateException("collection was evicted");
 			if (!collection.WasInitialized)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("initializing collection " + MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, source));
+					log.Debug("initializing collection {0}", MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, source));
 				}
 
 				log.Debug("checking second-level cache");
@@ -109,11 +109,11 @@ namespace NHibernate.Event.Default
 
 				if (ce == null)
 				{
-					log.DebugFormat("Collection cache miss: {0}", ck);
+					log.Debug("Collection cache miss: {0}", ck);
 				}
 				else
 				{
-					log.DebugFormat("Collection cache hit: {0}", ck);
+					log.Debug("Collection cache hit: {0}", ck);
 				}
 
 				if (ce == null)
@@ -127,7 +127,7 @@ namespace NHibernate.Event.Default
 					CollectionCacheEntry cacheEntry = (CollectionCacheEntry)persister.CacheEntryStructure.Destructure(ce, factory);
 					await (cacheEntry.AssembleAsync(collection, persister, persistenceContext.GetCollectionOwner(id, persister), cancellationToken)).ConfigureAwait(false);
 
-					persistenceContext.GetCollectionEntry(collection).PostInitialize(collection);
+					persistenceContext.GetCollectionEntry(collection).PostInitialize(collection, persistenceContext);
 					return true;
 				}
 			}

@@ -159,7 +159,7 @@ namespace NHibernate.Persister.Collection
 		private readonly IDictionary<string, object> collectionPropertyColumnAliases = new Dictionary<string, object>();
 		private readonly IDictionary<string, object> collectionPropertyColumnNames = new Dictionary<string, object>();
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (ICollectionPersister));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (ICollectionPersister));
 
 		public AbstractCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
 		{
@@ -248,7 +248,11 @@ namespace NHibernate.Persister.Collection
 				foreach (Column col in collection.Owner.Key.ColumnIterator)
 				{
 					keyColumnNames[k] = col.GetQuotedName(dialect);
-					keyColumnAliases[k] = col.GetAlias(dialect) + "_owner_"; // Force the alias to be unique in case it conflicts with an alias in the entity
+					// Force the alias to be unique in case it conflicts with an alias in the entity
+					// As per Column.GetAlias, we have 3 characters left for SelectFragment suffix and one for here.
+					// Since suffixes are composed of digits and '_', and GetAlias is already suffixed, adding any other
+					// letter will avoid collision.
+					keyColumnAliases[k] = col.GetAlias(dialect) + "o";
 					k++;
 				}
 				joinColumnNames = new string[collection.Key.ColumnSpan];
@@ -555,33 +559,33 @@ namespace NHibernate.Persister.Collection
 		public void PostInstantiate()
 		{
 			initializer = queryLoaderName == null
-							? CreateCollectionInitializer(new CollectionHelper.EmptyMapClass<string, IFilter>())
+							? CreateCollectionInitializer(CollectionHelper.EmptyDictionary<string, IFilter>())
 							: new NamedQueryCollectionInitializer(queryLoaderName, this);
 		}
 
 		protected void LogStaticSQL()
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Static SQL for collection: " + Role);
+				log.Debug("Static SQL for collection: {0}", Role);
 				if (SqlInsertRowString != null)
 				{
-					log.Debug(" Row insert: " + SqlInsertRowString.Text);
+					log.Debug(" Row insert: {0}", SqlInsertRowString.Text);
 				}
 
 				if (SqlUpdateRowString != null)
 				{
-					log.Debug(" Row update: " + SqlUpdateRowString.Text);
+					log.Debug(" Row update: {0}", SqlUpdateRowString.Text);
 				}
 
 				if (SqlDeleteRowString != null)
 				{
-					log.Debug(" Row delete: " + SqlDeleteRowString.Text);
+					log.Debug(" Row delete: {0}", SqlDeleteRowString.Text);
 				}
 
 				if (SqlDeleteString != null)
 				{
-					log.Debug(" One-shot delete: " + SqlDeleteString.Text);
+					log.Debug(" One-shot delete: {0}", SqlDeleteString.Text);
 				}
 			}
 		}
@@ -1021,9 +1025,9 @@ namespace NHibernate.Persister.Collection
 		{
 			if (!isInverse && RowDeleteEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Deleting collection: " + MessageHelper.CollectionInfoString(this, id, Factory));
+					log.Debug("Deleting collection: {0}", MessageHelper.CollectionInfoString(this, id, Factory));
 				}
 
 				// Remove all the old entries
@@ -1066,7 +1070,7 @@ namespace NHibernate.Persister.Collection
 						}
 					}
 
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("done deleting collection");
 					}
@@ -1083,9 +1087,9 @@ namespace NHibernate.Persister.Collection
 		{
 			if (!isInverse && RowInsertEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Inserting collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
+					log.Debug("Inserting collection: {0}", MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				try
@@ -1125,10 +1129,10 @@ namespace NHibernate.Persister.Collection
 						i++;
 					}
 
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						if (count > 0)
-							log.Debug(string.Format("done inserting collection: {0} rows inserted", count));
+							log.Debug("done inserting collection: {0} rows inserted", count);
 						else
 							log.Debug("collection was empty");
 					}
@@ -1145,9 +1149,9 @@ namespace NHibernate.Persister.Collection
 		{
 			if (!isInverse && RowDeleteEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Deleting rows of collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
+					log.Debug("Deleting rows of collection: {0}", MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				bool deleteByIndex = !IsOneToMany && hasIndex && !indexContainsFormula;
@@ -1224,10 +1228,10 @@ namespace NHibernate.Persister.Collection
 						}
 					}
 
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						if (count > 0)
-							log.Debug("done deleting collection rows: " + count + " deleted");
+							log.Debug("done deleting collection rows: {0} deleted", count);
 						else
 							log.Debug("no rows to delete");
 					}
@@ -1244,9 +1248,9 @@ namespace NHibernate.Persister.Collection
 		{
 			if (!isInverse && RowInsertEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Inserting rows of collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
+					log.Debug("Inserting rows of collection: {0}", MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				try
@@ -1280,9 +1284,9 @@ namespace NHibernate.Persister.Collection
 						i++;
 					}
 
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug(string.Format("done inserting rows: {0} inserted", count));
+						log.Debug("done inserting rows: {0} inserted", count);
 					}
 				}
 				catch (DbException sqle)
@@ -1373,17 +1377,17 @@ namespace NHibernate.Persister.Collection
 		{
 			if (!isInverse && collection.RowUpdatePossible)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug(string.Format("Updating rows of collection: {0}#{1}", role, id));
+					log.Debug("Updating rows of collection: {0}#{1}", role, id);
 				}
 
 				// update all the modified entries
 				int count = DoUpdateRows(id, collection, session);
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug(string.Format("done updating rows: {0} updated", count));
+					log.Debug("done updating rows: {0} updated", count);
 				}
 			}
 		}
@@ -1508,12 +1512,12 @@ namespace NHibernate.Persister.Collection
 
 		public int GetSize(object key, ISessionImplementor session)
 		{
-			using(new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			try
 			{
 				if(session.EnabledFilters.Count > 0)
 				{
-					
+					// The above call validates the filters
 				}
 
 				var st = session.Batcher.PrepareCommand(CommandType.Text, GenerateSelectSizeString(session), KeyType.SqlTypes(factory));
@@ -1550,7 +1554,7 @@ namespace NHibernate.Persister.Collection
 		private bool Exists(object key, object indexOrElement, IType indexOrElementType, SqlString sql,
 							ISessionImplementor session)
 		{
-			using(new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			try
 			{
 				List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
@@ -1590,7 +1594,7 @@ namespace NHibernate.Persister.Collection
 
 		public virtual object GetElementByIndex(object key, object index, ISessionImplementor session, object owner)
 		{
-			using(new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			try
 			{
 				List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
@@ -2037,6 +2041,14 @@ namespace NHibernate.Persister.Collection
 		public string[] RootTableKeyColumnNames
 		{
 			get { return new string[] {IdentifierColumnName}; }
+		}
+
+		/// <summary>
+		/// Get the batch size of a collection persister.
+		/// </summary>
+		public int GetBatchSize()
+		{
+			return batchSize;
 		}
 
 		public SqlString GetSelectByUniqueKeyString(string propertyName)

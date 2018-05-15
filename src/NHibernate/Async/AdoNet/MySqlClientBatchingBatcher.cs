@@ -24,13 +24,17 @@ namespace NHibernate.AdoNet
 		public override async Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			// MySql batcher cannot be initiated if a data reader is still open: check them.
+			if (CountOfStatementsInCurrentBatch == 0)
+				await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
+
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
 			var batchUpdate = CurrentCommand;
 			await (PrepareAsync(batchUpdate, cancellationToken)).ConfigureAwait(false);
 			Driver.AdjustCommand(batchUpdate);
 			string lineWithParameters = null;
 			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
-			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled)
+			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled())
 			{
 				lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
 				var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
@@ -40,9 +44,9 @@ namespace NHibernate.AdoNet
 					.Append(":")
 					.AppendLine(lineWithParameters);
 			}
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
-				Log.Debug("Adding to batch:" + lineWithParameters);
+				Log.Debug("Adding to batch:{0}", lineWithParameters);
 			}
 			currentBatch.Append(batchUpdate);
 
@@ -57,7 +61,7 @@ namespace NHibernate.AdoNet
 			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
-				Log.DebugFormat("Executing batch");
+				Log.Debug("Executing batch");
 				await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
 				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 				{

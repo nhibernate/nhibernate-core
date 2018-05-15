@@ -16,7 +16,7 @@
             </listitem>
             <listitem>
                 Microsoft SQL Server 2012 - the database server. This tutorial uses
-                the desktop edition (SQL-EXPRESS), a free download from Microsoft. Support
+                the desktop edition (SQL Express), a free download from Microsoft. Support
                 for other databases is only a matter of changing the NHibernate SQL
                 dialect and driver configuration.
             </listitem>
@@ -29,7 +29,7 @@
             First, we have to create a new Web project. We use the name <literal>QuickStart</literal>.
             In the project, add a NuGet reference to <literal>NHibernate</literal>. Visual Studio
             will automatically copy the library and its dependencies to the project output directory.
-            If you are using a database other than SQL Server, add a reference to the driver assembly
+            If you are using a database other than SQL Server, add a reference to its driver assembly
             to your project.
         </para>
 
@@ -52,9 +52,6 @@
   <hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
     <session-factory>
       <property name="dialect">NHibernate.Dialect.MsSql2012Dialect</property>
-      <property name="connection.provider">
-        NHibernate.Connection.DriverConnectionProvider
-      </property>
       <property name="connection.connection_string">
         Server=localhost\SQLEXPRESS;initial catalog=quickstart;Integrated Security=True
       </property>
@@ -164,7 +161,7 @@
             foreign key relationships to other entities) to database tables.
         </para>
         <para>
-            Please note that the Cat.hbm.xml should be set to an embedded resource.
+            Please note that the <literal>Cat.hbm.xml</literal> file should be set to an embedded resource.
         </para>
 
         <programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
@@ -412,9 +409,10 @@ finally
 
         <para>
             NHibernate also offers an object-oriented <emphasis>query by criteria</emphasis> API
-            that can be used to formulate type-safe queries, and the Hibernate Query Language (HQL),
-            which is an easy to learn and powerful object-oriented extension to SQL.
-            NHibernate of course uses <literal>IDbCommand</literal>s and parameter binding for all
+            that can be used to formulate type-safe queries, the Hibernate Query Language (HQL),
+            which is an easy to learn and powerful object-oriented extension to SQL, as well as a
+            strongly-typed LINQ API which translates internally to HQL.
+            NHibernate of course uses <literal>DbCommand</literal>s and parameter binding for all
             SQL communication with the database. You may also use NHibernate's direct SQL query
             feature or get a plain ADO.NET connection from an <literal>ISession</literal> in rare
             cases.

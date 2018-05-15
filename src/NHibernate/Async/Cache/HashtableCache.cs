@@ -107,7 +107,6 @@ namespace NHibernate.Cache
 			{
 				return Task.FromException<object>(ex);
 			}
-			// local cache, so we use synchronization
 		}
 
 		/// <summary></summary>
@@ -126,7 +125,6 @@ namespace NHibernate.Cache
 			{
 				return Task.FromException<object>(ex);
 			}
-			// local cache, so we use synchronization
 		}
 
 		#endregion

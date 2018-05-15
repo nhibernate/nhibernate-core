@@ -26,73 +26,74 @@ namespace NHibernate.Test.DriverTest
 		private string _connectionString;
 		private FirebirdClientDriver _driver;
 
-		[Test]
-		public async Task ConnectionPooling_OpenThenCloseThenOpenAnotherOne_OnlyOneConnectionIsPooledAsync()
-		{
-			MakeDriver();
-
-			_driver.ClearPool(_connectionString);
-
-			var allreadyEstablished = await (GetEstablishedConnectionsAsync());
-
-			var connection1 = MakeConnection();
-			var connection2 = MakeConnection();
-
-			//open first connection
-			await (connection1.OpenAsync());
-			await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 1, "After first open"));
-
-			//return it to the pool
-			connection1.Close();
-			await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 1, "After first close"));
-
-			//open the second connection
-			await (connection2.OpenAsync());
-			await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 1, "After second open"));
-
-			//return it to the pool
-			connection2.Close();
-			await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 1, "After second close"));
-		}
-
-		[Test]
-		public async Task ConnectionPooling_OpenThenCloseTwoAtTheSameTime_TowConnectionsArePooledAsync()
-		{
-			MakeDriver();
-
-			_driver.ClearPool(_connectionString);
-
-			var allreadyEstablished = await (GetEstablishedConnectionsAsync());
-
-			var connection1 = MakeConnection();
-			var connection2 = MakeConnection();
-
-			//open first connection
-			await (connection1.OpenAsync());
-			await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 1, "After first open"));
-
-			//open second one
-			await (connection2.OpenAsync());
-			await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 2, "After second open"));
-
-			//return connection1 to the pool
-			connection1.Close();
-			await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 2, "After first close"));
-
-			//return connection2 to the pool
-			connection2.Close();
-			await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 2, "After second close"));
-		}
-
-		private void MakeDriver()
+		[OneTimeSetUp]
+		public void OneTimeSetup()
 		{
 			var cfg = TestConfigurationHelper.GetDefaultConfiguration();
+
 			var dlct = cfg.GetProperty("dialect");
 			if (!dlct.Contains("Firebird"))
 				Assert.Ignore("Applies only to Firebird");
 
 			_driver = new FirebirdClientDriver();
+			_driver.Configure(cfg.Properties);
 			_connectionString = cfg.GetProperty("connection.connection_string");
+		}
+
+		[Test]
+		public async Task ConnectionPooling_OpenThenCloseThenOpenAnotherOne_OnlyOneConnectionIsPooledAsync()
+		{
+			_driver.ClearPool(_connectionString);
+
+			var allreadyEstablished = await (GetEstablishedConnectionsAsync());
+
+			using (var connection1 = MakeConnection())
+			using (var connection2 = MakeConnection())
+			{
+				//open first connection
+				await (connection1.OpenAsync());
+				await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 1, "After first open"));
+
+				//return it to the pool
+				connection1.Close();
+				await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 1, "After first close"));
+
+				//open the second connection
+				await (connection2.OpenAsync());
+				await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 1, "After second open"));
+
+				//return it to the pool
+				connection2.Close();
+				await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 1, "After second close"));
+			}
+		}
+
+		[Test]
+		public async Task ConnectionPooling_OpenThenCloseTwoAtTheSameTime_TowConnectionsArePooledAsync()
+		{
+			_driver.ClearPool(_connectionString);
+
+			var allreadyEstablished = await (GetEstablishedConnectionsAsync());
+
+			using (var connection1 = MakeConnection())
+			using (var connection2 = MakeConnection())
+			{
+				//open first connection
+				await (connection1.OpenAsync());
+				await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 1, "After first open"));
+
+				//open second one
+				await (connection2.OpenAsync());
+				await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 2, "After second open"));
+
+				//return connection1 to the pool
+				connection1.Close();
+				await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 2, "After first close"));
+
+				//return connection2 to the pool
+				connection2.Close();
+				await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 2, "After second close"));
+			}
 		}
 
 		private DbConnection MakeConnection()
@@ -125,14 +126,14 @@ namespace NHibernate.Test.DriverTest
 		private DbCommand BuildSelectCaseCommand(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
-					.Add("select (case when col = ")
-					.AddParameter()
-					.Add(" then ")
-					.AddParameter()
-					.Add(" else ")
-					.AddParameter()
-					.Add(" end) from table")
-					.ToSqlString();
+				.Add("select (case when col = ")
+				.AddParameter()
+				.Add(" then ")
+				.AddParameter()
+				.Add(" else ")
+				.AddParameter()
+				.Add(" end) from table")
+				.ToSqlString();
 
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType, paramType });
 		}
@@ -140,12 +141,12 @@ namespace NHibernate.Test.DriverTest
 		private DbCommand BuildSelectConcatCommand(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
-					.Add("select col || ")
-					.AddParameter()
-					.Add(" || ")
-					.Add("col ")
-					.Add("from table")
-					.ToSqlString();
+				.Add("select col || ")
+				.AddParameter()
+				.Add(" || ")
+				.Add("col ")
+				.Add("from table")
+				.ToSqlString();
 
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
@@ -153,10 +154,10 @@ namespace NHibernate.Test.DriverTest
 		private DbCommand BuildSelectAddCommand(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
-					.Add("select col + ")
-					.AddParameter()
-					.Add(" from table")
-					.ToSqlString();
+				.Add("select col + ")
+				.AddParameter()
+				.Add(" from table")
+				.ToSqlString();
 
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
@@ -172,6 +173,7 @@ namespace NHibernate.Test.DriverTest
 
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
+
 		private DbCommand BuildInsertWithParamsInSelectCommandWithSelectInColumnName(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
@@ -184,7 +186,7 @@ namespace NHibernate.Test.DriverTest
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
 
-        private DbCommand BuildInsertWithParamsInSelectCommandWithWhereInColumnName(SqlType paramType)
+		private DbCommand BuildInsertWithParamsInSelectCommandWithWhereInColumnName(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
 				.Add("insert into table1 (col1_where_aaa) ")

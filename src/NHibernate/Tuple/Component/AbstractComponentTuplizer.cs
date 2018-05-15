@@ -9,7 +9,7 @@ namespace NHibernate.Tuple.Component
 	[Serializable]
 	public abstract class AbstractComponentTuplizer : IComponentTuplizer
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AbstractComponentTuplizer));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(AbstractComponentTuplizer));
 
 		protected internal int propertySpan;
 		protected internal IGetter[] getters;
@@ -35,9 +35,9 @@ namespace NHibernate.Tuple.Component
 				}
 				i++;
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.DebugFormat("{0} accessors found for component: {1}", foundCustomAccessor ? "Custom" : "No custom",
+				log.Debug("{0} accessors found for component: {1}", foundCustomAccessor ? "Custom" : "No custom",
 								component.ComponentClassName);
 			}
 			hasCustomAccessors = foundCustomAccessor;
@@ -101,7 +101,8 @@ namespace NHibernate.Tuple.Component
 
 		public virtual object GetPropertyValue(object component, int i)
 		{
-			return getters[i].Get(component);
+			// NH Different behavior : for NH-1101
+			return component == null ? null : getters[i].Get(component);
 		}
 
 		/// <summary> This method does not populate the component parent</summary>

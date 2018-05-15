@@ -20,28 +20,20 @@ namespace NHibernate.Test.NHSpecificTest.NH1443
 	[TestFixture]
 	public class FixtureAsync
 	{
-		private static Task BugAsync(Configuration cfg, CancellationToken cancellationToken = default(CancellationToken))
+		private static async Task BugAsync(Configuration cfg, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			try
-			{
-				var su = new SchemaExport(cfg);
-				var sb = new StringBuilder(500);
-				su.Execute(x => sb.AppendLine(x), false, false);
-				string script = sb.ToString();
+			var su = new SchemaExport(cfg);
+			var sb = new StringBuilder(500);
+			await (su.ExecuteAsync(x => sb.AppendLine(x), false, false, cancellationToken));
+			string script = sb.ToString();
 
 
-				if (Dialect.Dialect.GetDialect(cfg.Properties).SupportsIfExistsBeforeTableName)
-					Assert.That(script, Does.Match("drop table if exists nhibernate.dbo.Aclass"));
-				else
-					Assert.That(script, Does.Match("drop table nhibernate.dbo.Aclass"));
+			if (Dialect.Dialect.GetDialect(cfg.Properties).SupportsIfExistsBeforeTableName)
+				Assert.That(script, Does.Match("drop table if exists nhibernate.dbo.Aclass"));
+			else
+				Assert.That(script, Does.Match("drop table nhibernate.dbo.Aclass"));
 
-				Assert.That(script, Does.Match("create table nhibernate.dbo.Aclass"));
-				return Task.CompletedTask;
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			Assert.That(script, Does.Match("create ((column|row) )?table nhibernate.dbo.Aclass"));
 			
 		}
 

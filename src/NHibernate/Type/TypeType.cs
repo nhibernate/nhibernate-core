@@ -20,9 +20,9 @@ namespace NHibernate.Type
 
 		/// <summary>
 		/// Initialize a new instance of the TypeType class using a 
-		/// <see cref="SqlType"/>. 
+		/// <see cref="SqlTypes.SqlType"/>. 
 		/// </summary>
-		/// <param name="sqlType">The underlying <see cref="SqlType"/>.</param>
+		/// <param name="sqlType">The underlying <see cref="SqlTypes.SqlType"/>.</param>
 		internal TypeType(StringSqlType sqlType)
 			: base(sqlType) {}
 

@@ -49,7 +49,7 @@ namespace NHibernate.Criterion
 
 		public virtual string[] Aliases
 		{
-			get { return new string[] {}; }
+			get { return Array.Empty<string>(); }
 		}
 
 		public virtual bool IsGrouped

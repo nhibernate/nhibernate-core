@@ -21,7 +21,7 @@
         </para>
 
         <programlisting><![CDATA[using System;
-using Iesi.Collections;
+using System.Collections.Generic;
 
 namespace Eg
 {
@@ -41,7 +41,7 @@ namespace Eg
         public virtual DateTime Birthdate { get; set; }
         public virtual float Weight { get; set; }
         public virtual Color Color { get; set; }
-        public virtual ISet Kittens { get; set; }
+        public virtual ISet<Cat> Kittens { get; set; }
         public virtual char Sex { get; set; }
 
         // AddKitten not needed by NHibernate
@@ -62,7 +62,7 @@ namespace Eg
 
             <para>
                 <literal>Cat</literal> declares properties for all the persistent fields.
-                Many other ORM tools directly persist instance variables. We believe 
+                Many other <emphasis>ORM tools</emphasis> directly persist instance variables. We believe 
                 it is far better to decouple this implementation detail from the persistence 
                 mechanism. NHibernate persists properties, using their getter and setter methods.
             </para>

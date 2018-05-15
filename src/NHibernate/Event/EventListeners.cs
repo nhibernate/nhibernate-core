@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using NHibernate.Cfg;
 using NHibernate.Event.Default;
 using NHibernate.Util;
@@ -53,7 +54,7 @@ namespace NHibernate.Event
 			eventInterfaceFromType[ListenerType.PostCollectionRecreate] = typeof (IPostCollectionRecreateEventListener);
 			eventInterfaceFromType[ListenerType.PostCollectionRemove] = typeof (IPostCollectionRemoveEventListener);
 			eventInterfaceFromType[ListenerType.PostCollectionUpdate] = typeof (IPostCollectionUpdateEventListener);
-			eventInterfaceFromType = new UnmodifiableDictionary<ListenerType, System.Type>(eventInterfaceFromType);
+			eventInterfaceFromType = new ReadOnlyDictionary<ListenerType, System.Type>(eventInterfaceFromType);
 		}
 
 		private ILoadEventListener[] loadEventListeners = new ILoadEventListener[] {new DefaultLoadEventListener()};
@@ -99,33 +100,33 @@ namespace NHibernate.Event
 		private IPreLoadEventListener[] preLoadEventListeners = new IPreLoadEventListener[]
 		                                                        	{new DefaultPreLoadEventListener()};
 
-		private IPreDeleteEventListener[] preDeleteEventListeners = new IPreDeleteEventListener[] {};
-		private IPreUpdateEventListener[] preUpdateEventListeners = new IPreUpdateEventListener[] {};
-		private IPreInsertEventListener[] preInsertEventListeners = new IPreInsertEventListener[] {};
-		private IPostDeleteEventListener[] postDeleteEventListeners = new IPostDeleteEventListener[] {};
-		private IPostUpdateEventListener[] postUpdateEventListeners = new IPostUpdateEventListener[] {};
-		private IPostInsertEventListener[] postInsertEventListeners = new IPostInsertEventListener[] {};
-		private IPostDeleteEventListener[] postCommitDeleteEventListeners = new IPostDeleteEventListener[] {};
-		private IPostUpdateEventListener[] postCommitUpdateEventListeners = new IPostUpdateEventListener[] {};
-		private IPostInsertEventListener[] postCommitInsertEventListeners = new IPostInsertEventListener[] {};
+		private IPreDeleteEventListener[] preDeleteEventListeners = Array.Empty<IPreDeleteEventListener>();
+		private IPreUpdateEventListener[] preUpdateEventListeners = Array.Empty<IPreUpdateEventListener>();
+		private IPreInsertEventListener[] preInsertEventListeners = Array.Empty<IPreInsertEventListener>();
+		private IPostDeleteEventListener[] postDeleteEventListeners = Array.Empty<IPostDeleteEventListener>();
+		private IPostUpdateEventListener[] postUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
+		private IPostInsertEventListener[] postInsertEventListeners = Array.Empty<IPostInsertEventListener>();
+		private IPostDeleteEventListener[] postCommitDeleteEventListeners = Array.Empty<IPostDeleteEventListener>();
+		private IPostUpdateEventListener[] postCommitUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
+		private IPostInsertEventListener[] postCommitInsertEventListeners = Array.Empty<IPostInsertEventListener>();
 
 		private IPreCollectionRecreateEventListener[] preCollectionRecreateEventListeners =
-			new IPreCollectionRecreateEventListener[] {};
+			Array.Empty<IPreCollectionRecreateEventListener>();
 
 		private IPostCollectionRecreateEventListener[] postCollectionRecreateEventListeners =
-			new IPostCollectionRecreateEventListener[] {};
+			Array.Empty<IPostCollectionRecreateEventListener>();
 
 		private IPreCollectionRemoveEventListener[] preCollectionRemoveEventListeners =
-			new IPreCollectionRemoveEventListener[] {};
+			Array.Empty<IPreCollectionRemoveEventListener>();
 
 		private IPostCollectionRemoveEventListener[] postCollectionRemoveEventListeners =
-			new IPostCollectionRemoveEventListener[] {};
+			Array.Empty<IPostCollectionRemoveEventListener>();
 
 		private IPreCollectionUpdateEventListener[] preCollectionUpdateEventListeners =
-			new IPreCollectionUpdateEventListener[] {};
+			Array.Empty<IPreCollectionUpdateEventListener>();
 
 		private IPostCollectionUpdateEventListener[] postCollectionUpdateEventListeners =
-			new IPostCollectionUpdateEventListener[] {};
+			Array.Empty<IPostCollectionUpdateEventListener>();
 
 		private ISaveOrUpdateEventListener[] saveEventListeners = new ISaveOrUpdateEventListener[]
 		                                                          	{new DefaultSaveEventListener()};

@@ -9,6 +9,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3141
 	{
 		private int id;
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
+
 		protected override void OnSetUp()
 		{
 			using (var s = OpenSession())

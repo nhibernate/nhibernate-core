@@ -37,7 +37,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				return StringHelper.EqualsCaseInsensitive(code, TrueString);
+				return code.Equals(TrueString, StringComparison.InvariantCultureIgnoreCase);
 			}
 		}
 
@@ -68,11 +68,11 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object StringToObject(String xml)
 		{
-			if (StringHelper.EqualsCaseInsensitive(TrueString, xml))
+			if (string.Equals(TrueString, xml, StringComparison.InvariantCultureIgnoreCase))
 			{
 				return true;
 			}
-			else if (StringHelper.EqualsCaseInsensitive(FalseString, xml))
+			else if (string.Equals(FalseString, xml, StringComparison.InvariantCultureIgnoreCase))
 			{
 				return false;
 			}

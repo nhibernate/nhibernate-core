@@ -1,0 +1,32 @@
+create:
+  include-footer: false
+issue-labels-include:
+ - "t: Bug"
+ - "t: New Feature"
+ - "t: Improvement"
+ - "t: Task"
+ - "t: Tests"
+issue-labels-exclude:
+ - "r: Duplicate"
+ - "r: External Issue"
+ - "r: Not an Issue"
+ - "r: Obsolete"
+ - "r: Rejected"
+ - "r: Replaced"
+ - "t: Fix"
+issue-labels-alias:
+ - name:   "t: Bug"
+   header: Bug
+   plural: Bug
+ - name:   "t: New Feature"
+   header: New Feature
+   plural: New Feature
+ - name:   "t: Improvement"
+   header: Improvement
+   plural: Improvement
+ - name:   "t: Task"
+   header: Task
+   plural: Task
+ - name:   "t: Tests"
+   header: Tests
+   plural: Tests

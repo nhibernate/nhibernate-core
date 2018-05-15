@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using System.Data.Common;
 using NUnit.Framework;
@@ -21,7 +22,7 @@ namespace NHibernate.Test.TransactionTest
 	{
 		protected override IList Mappings
 		{
-			get { return new string[] {}; }
+			get { return Array.Empty<string>(); }
 		}
 
 		[Test]

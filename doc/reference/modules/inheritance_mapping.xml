@@ -429,7 +429,7 @@
               <entry>Polymorphic one-to-one</entry>
               <entry>Polymorphic one-to-many</entry>
               <entry>Polymorphic many-to-many</entry>
-              <entry>Polymorphic <literal>load()/get()</literal></entry>
+              <entry>Polymorphic <literal>Load()/Get()</literal></entry>
               <entry>Polymorphic queries</entry>
               <entry>Polymorphic joins</entry>
               <entry>Outer join fetching</entry>

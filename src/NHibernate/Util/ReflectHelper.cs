@@ -17,7 +17,7 @@ namespace NHibernate.Util
 	/// </summary>
 	public static class ReflectHelper
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ReflectHelper));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ReflectHelper));
 
 		public const BindingFlags AnyVisibilityInstance = BindingFlags.Instance | BindingFlags.Public |
 														   BindingFlags.NonPublic;
@@ -407,9 +407,9 @@ namespace NHibernate.Util
 				if (name.Assembly == null)
 				{
 					// No assembly was specified for the type, so just fail
-					string message = "Could not load type " + name + ". Possible cause: no assembly name specified.";
-					log.Warn(message);
-					if (throwOnError) throw new TypeLoadException(message);
+					const string noAssembly = "Could not load type {0}. Possible cause: no assembly name specified.";
+					log.Warn(noAssembly, name);
+					if (throwOnError) throw new TypeLoadException(string.Format(noAssembly, name));
 					return null;
 				}
 
@@ -426,7 +426,7 @@ namespace NHibernate.Util
 
 				if (assembly == null)
 				{
-					log.Warn("Could not load type " + name + ". Possible cause: incorrect assembly name specified.");
+					log.Warn("Could not load type {0}. Possible cause: incorrect assembly name specified.", name);
 					return null;
 				}
 
@@ -434,7 +434,7 @@ namespace NHibernate.Util
 
 				if (type == null)
 				{
-					log.Warn("Could not load type " + name + ".");
+					log.Warn("Could not load type {0}.", name);
 					return null;
 				}
 
@@ -442,9 +442,9 @@ namespace NHibernate.Util
 			}
 			catch (Exception e)
 			{
-				if (log.IsErrorEnabled)
+				if (log.IsErrorEnabled())
 				{
-					log.Error("Could not load type " + name + ".", e);
+					log.Error(e, "Could not load type {0}.", name);
 				}
 				if (throwOnError) throw;
 				return null;
@@ -607,8 +607,20 @@ namespace NHibernate.Util
 		/// <returns>The unwrapped exception.</returns>
 		public static Exception UnwrapTargetInvocationException(TargetInvocationException ex)
 		{
-			Exception_InternalPreserveStackTrace.Invoke(ex.InnerException, new Object[] { });
+			Exception_InternalPreserveStackTrace.Invoke(ex.InnerException, Array.Empty<object>());
 			return ex.InnerException;
+		}
+
+		/// <summary>
+		/// Ensures an exception current stack-trace will be preserved if the exception is explicitly rethrown.
+		/// </summary>
+		/// <param name="ex">
+		/// The <see cref="Exception"/> which current stack-trace is to be preserved in case of explicit rethrow.
+		/// </param>
+		/// <returns>The unwrapped exception.</returns>
+		internal static void PreserveStackTrace(Exception ex)
+		{
+			Exception_InternalPreserveStackTrace.Invoke(ex, Array.Empty<object>());
 		}
 
 		/// <summary>
@@ -654,33 +666,26 @@ namespace NHibernate.Util
 			List<System.Type> typesToSearch = new List<System.Type>();
 			MethodInfo foundMethod = null;
 			
-			try
-			{            
-				typesToSearch.Add(type);
-			
-				if (type.IsInterface)
-				{
-					// Methods on parent interfaces are not actually inherited
-					// by child interfaces, so we have to use GetInterfaces to
-					// identify any parent interfaces that may contain the
-					// method implementation
-					System.Type[] inheritedInterfaces = type.GetInterfaces();
-					typesToSearch.AddRange(inheritedInterfaces);
-				}
-
-				foreach (System.Type typeToSearch in typesToSearch)
-				{
-					MethodInfo result = typeToSearch.GetMethod(method.Name, bindingFlags, null, tps, null);
-					if (result != null)
-					{
-						foundMethod = result;
-						break;
-					}
-				}
-			}
-			catch (Exception)
+			typesToSearch.Add(type);
+		
+			if (type.IsInterface)
 			{
-			   throw;
+				// Methods on parent interfaces are not actually inherited
+				// by child interfaces, so we have to use GetInterfaces to
+				// identify any parent interfaces that may contain the
+				// method implementation
+				System.Type[] inheritedInterfaces = type.GetInterfaces();
+				typesToSearch.AddRange(inheritedInterfaces);
+			}
+
+			foreach (System.Type typeToSearch in typesToSearch)
+			{
+				MethodInfo result = typeToSearch.GetMethod(method.Name, bindingFlags, null, tps, null);
+				if (result != null)
+				{
+					foundMethod = result;
+					break;
+				}
 			}
 			
 			return foundMethod;
@@ -771,12 +776,12 @@ namespace NHibernate.Util
 
 		public static bool IsPropertyGet(MethodInfo method)
 		{
-			return method.IsSpecialName && method.Name.StartsWith("get_");
+			return method.IsSpecialName && method.Name.StartsWith("get_", StringComparison.Ordinal);
 		}
 
 		public static bool IsPropertySet(MethodInfo method)
 		{
-			return method.IsSpecialName && method.Name.StartsWith("set_");
+			return method.IsSpecialName && method.Name.StartsWith("set_", StringComparison.Ordinal);
 		}
 
 		public static string GetPropertyName(MethodInfo method)

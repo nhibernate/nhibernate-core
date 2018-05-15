@@ -15,8 +15,9 @@ namespace NHibernate.Collection
 	/// <summary>
 	/// Base class for implementing <see cref="IPersistentCollection"/>.
 	/// </summary>
+	// 6.0 TODO: remove ILazyInitializedCollection once IPersistentCollection derives from it
 	[Serializable]
-	public abstract partial class AbstractPersistentCollection : IPersistentCollection
+	public abstract partial class AbstractPersistentCollection : IPersistentCollection, ILazyInitializedCollection
 	{
 		protected internal static readonly object Unknown = new object(); //place holder
 		protected internal static readonly object NotFound = new object(); //place holder
@@ -60,9 +61,11 @@ namespace NHibernate.Collection
 						{
 							return enclosingInstance.operationQueue[position].AddedInstance;
 						}
-						catch (IndexOutOfRangeException)
+						catch (IndexOutOfRangeException ex)
 						{
-							throw new InvalidOperationException();
+							throw new InvalidOperationException(
+								"MoveNext as not been called or its last call has yielded false (meaning the enumerator is beyond the end of the enumeration).",
+								ex);
 						}
 					}
 				}

@@ -116,11 +116,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_constructorArgumentTypes = ResolveConstructorArgumentTypes();
 			string path = ( ( IPathNode ) GetChild(0) ).Path;
 
-			if (path.ToLowerInvariant() == "map")
+			if (string.Equals(path, "map", StringComparison.OrdinalIgnoreCase))
 			{
 				_isMap = true;
 			}
-			else if (path.ToLowerInvariant() == "list") 
+			else if (string.Equals(path, "list", StringComparison.OrdinalIgnoreCase)) 
 			{
 				_isList = true;
 			}
@@ -137,7 +137,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			if ( argumentExpressions == null ) 
 			{
 				// return an empty Type array
-				return new IType[]{};
+				return Array.Empty<IType>();
 			}
 
 			IType[] types = new IType[argumentExpressions.Length];

@@ -105,7 +105,7 @@ namespace NHibernate.Driver
 		/// for 'select ... from MyTable t where t.Col1 = @p0 and t.Col2 = @p0' we can issue
 		/// 'select ... from MyTable t where t.Col1 = ? and t.Col2 = ?'
 		/// </remarks>
-		void ExpandQueryParameters(DbCommand cmd, SqlString sqlString);
+		void ExpandQueryParameters(DbCommand cmd, SqlString sqlString, SqlType[] parameterTypes);
 
 		IResultSetsCommand GetResultSetsCommand(ISessionImplementor session);
 		bool SupportsMultipleQueries { get; }
@@ -158,5 +158,10 @@ namespace NHibernate.Driver
 		/// crash due to this, because they re-use the connection in the second phase.
 		/// </remarks>
 		bool HasDelayedDistributedTransactionCompletion { get; }
+
+		/// <summary>
+		/// The minimal date supplied as a <see cref="DateTime" /> supported by this driver.
+		/// </summary>
+		DateTime MinDate { get; }
 	}
 }

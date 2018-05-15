@@ -1,18 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?> 
+<?xml version="1.0" encoding="utf-8"?>
 
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
-
-    <class 
-		name="NHibernate.Test.TypesTest.DateTimeClass, NHibernate.Test" 
-		table="bc_datetime"
-	>
-		
-		<id name="Id" column="id">
-			<generator class="assigned" />
-		</id>
-		
-		<property name="UtcDateTimeValue" type="UtcDateTime" column="utcdatec"/>
-		<property name="LocalDateTimeValue" type="LocalDateTime" column="localdatec"/>
-    <property name="NormalDateTimeValue" />
-    </class>
+  <class
+    name="NHibernate.Test.TypesTest.DateTimeClass, NHibernate.Test"
+    table="bc_datetime">
+    <id name="Id" column="id">
+      <generator class="assigned"/>
+    </id>
+    <version name="Revision" column="`Revision`" type="datetime"/>
+    <property name="Value" column="`Value`"/>
+    <property name="NullableValue"/>
+  </class>
 </hibernate-mapping>

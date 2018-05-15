@@ -92,11 +92,17 @@ namespace NHibernate.Collection.Generic
 			get { return false; }
 		}
 
-		void ICollection.CopyTo(Array array, int index)
+		void ICollection.CopyTo(Array array, int arrayIndex)
 		{
-			for (var i = index; i < Count; i++)
+			Read();
+			if (_gbag is ICollection collection)
 			{
-				array.SetValue(this[i], i);
+				collection.CopyTo(array, arrayIndex);
+			}
+			else
+			{
+				foreach (var item in _gbag)
+					array.SetValue(item, arrayIndex++);
 			}
 		}
 
@@ -197,16 +203,13 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(T item)
 		{
-			var exists = ReadElementExistence(item);
-			return !exists.HasValue ? _gbag.Contains(item) : exists.Value;
+			return ReadElementExistence(item) ?? _gbag.Contains(item);
 		}
 
 		public void CopyTo(T[] array, int arrayIndex)
 		{
-			for (var i = arrayIndex; i < Count; i++)
-			{
-				array.SetValue(this[i], i);
-			}
+			Read();
+			_gbag.CopyTo(array, arrayIndex);
 		}
 
 		public bool Remove(T item)

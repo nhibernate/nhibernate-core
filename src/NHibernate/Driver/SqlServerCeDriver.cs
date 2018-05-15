@@ -4,8 +4,6 @@ using System.Data;
 using System.Data.Common;
 using System.Reflection;
 using NHibernate.SqlTypes;
-using NHibernate.Util;
-using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Driver
 {
@@ -25,13 +23,11 @@ namespace NHibernate.Driver
 		{
 		}
 
-		private bool prepareSql;
 		private PropertyInfo dbParamSqlDbTypeProperty;
 
 		public override void Configure(IDictionary<string, string> settings)
 		{
 			base.Configure(settings);
-			prepareSql = PropertiesHelper.GetBoolean(Environment.PrepareSql, settings, false);
 
 			using (var cmd = CreateCommand())
 			{
@@ -46,10 +42,7 @@ namespace NHibernate.Driver
 		/// <remarks>
 		/// <see langword="true" /> because MsSql uses "<c>@</c>".
 		/// </remarks>
-		public override bool UseNamedPrefixInSql
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInSql => true;
 
 		/// <summary>
 		/// MsSql requires the use of a Named Prefix in the Parameter.  
@@ -57,10 +50,7 @@ namespace NHibernate.Driver
 		/// <remarks>
 		/// <see langword="true" /> because MsSql uses "<c>@</c>".
 		/// </remarks>
-		public override bool UseNamedPrefixInParameter
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInParameter => true;
 
 		/// <summary>
 		/// The Named Prefix for parameters.  
@@ -68,10 +58,7 @@ namespace NHibernate.Driver
 		/// <value>
 		/// Sql Server uses <c>"@"</c>.
 		/// </value>
-		public override string NamedPrefix
-		{
-			get { return "@"; }
-		}
+		public override string NamedPrefix => "@";
 
 		/// <summary>
 		/// The SqlClient driver does NOT support more than 1 open DbDataReader
@@ -83,10 +70,7 @@ namespace NHibernate.Driver
 		/// attempted to be Opened.  When Yukon comes out a new Driver will be 
 		/// created for Yukon because it is supposed to support it.
 		/// </remarks>
-		public override bool SupportsMultipleOpenReaders
-		{
-			get { return false; }
-		}
+		public override bool SupportsMultipleOpenReaders => false;
 
 		protected override void SetCommandTimeout(DbCommand cmd)
 		{
@@ -102,10 +86,6 @@ namespace NHibernate.Driver
 			base.InitializeParameter(dbParam, name, AdjustSqlType(sqlType));
 
 			AdjustDbParamTypeForLargeObjects(dbParam, sqlType);
-			if (prepareSql)
-			{
-				SqlClientDriver.SetVariableLengthParameterSize(dbParam, sqlType);
-		}
 		}
 
 		private static SqlType AdjustSqlType(SqlType sqlType)
@@ -145,5 +125,8 @@ namespace NHibernate.Driver
 		/// this case.
 		/// </summary>
 		public override bool SupportsEnlistmentWhenAutoEnlistmentIsDisabled => false;
+
+		/// <inheritdoc />
+		public override DateTime MinDate => new DateTime(1753, 1, 1);
 	}
 }

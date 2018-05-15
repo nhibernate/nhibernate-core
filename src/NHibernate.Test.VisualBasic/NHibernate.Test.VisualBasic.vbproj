@@ -1,49 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../build-common/NHibernate.props" />
-
   <PropertyGroup>
     <Description>The Visual Basic Unit Tests for NHibernate.</Description>
-
-    <TargetFramework>net461</TargetFramework>
-
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
     <OptionExplicit>On</OptionExplicit>
     <OptionStrict>On</OptionStrict>
   </PropertyGroup>
-
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+    <DefineConstants>NETCOREAPP2_0,$(DefineConstants)</DefineConstants>
+    <OutputType>Exe</OutputType>
+    <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
+    <DefineConstants>NET461,$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <None Remove="**\*.hbm.xml" />
   </ItemGroup>
-
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
+    <Compile Remove="**\Issues\NH3302\**" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="**\*.hbm.xml" Exclude="bin\**\*.*" />
   </ItemGroup>
-
   <ItemGroup>
     <None Include="..\NHibernate.Test\App.config" Link="App.config" />
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="Antlr3.Runtime" Version="3.5.1" />
-    <PackageReference Include="Iesi.Collections" Version="4.0.2" />
-    <PackageReference Include="log4net" Version="2.0.8" />
-    <PackageReference Include="nunit" Version="3.7.1" />
-    <PackageReference Include="Remotion.Linq" Version="2.1.2" />
-    <PackageReference Include="Remotion.Linq.EagerFetching" Version="2.1.0" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.7.6" />
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.3.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
     <PackageReference Include="Microsoft.VisualBasic" Version="10.2.0" />
   </ItemGroup>
-
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+    <PackageReference Include="NUnitLite" Version="3.10.1" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate\NHibernate.csproj" />
     <ProjectReference Include="..\NHibernate.Test\NHibernate.Test.csproj" ExcludeAssets="ContentFiles" />
   </ItemGroup>
-
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
-
 </Project>

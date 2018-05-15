@@ -41,40 +41,24 @@ namespace NHibernate.Test.TransactionTest
 		}
 
 		[Test]
-		public Task CommitAfterDisposeThrowsExceptionAsync()
+		public void CommitAfterDisposeThrowsExceptionAsync()
 		{
-			try
+			using (ISession s = OpenSession())
 			{
-				using (ISession s = OpenSession())
-				{
-					ITransaction t = s.BeginTransaction();
-					t.Dispose();
-					Assert.ThrowsAsync<ObjectDisposedException>(() => t.CommitAsync());
-				}
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				ITransaction t = s.BeginTransaction();
+				t.Dispose();
+				Assert.ThrowsAsync<ObjectDisposedException>(() => t.CommitAsync());
 			}
 		}
 
 		[Test]
-		public Task RollbackAfterDisposeThrowsExceptionAsync()
+		public void RollbackAfterDisposeThrowsExceptionAsync()
 		{
-			try
+			using (ISession s = OpenSession())
 			{
-				using (ISession s = OpenSession())
-				{
-					ITransaction t = s.BeginTransaction();
-					t.Dispose();
-					Assert.ThrowsAsync<ObjectDisposedException>(() => t.RollbackAsync());
-				}
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				ITransaction t = s.BeginTransaction();
+				t.Dispose();
+				Assert.ThrowsAsync<ObjectDisposedException>(() => t.RollbackAsync());
 			}
 		}
 
@@ -182,6 +166,35 @@ namespace NHibernate.Test.TransactionTest
 			using (var t = s.BeginTransaction())
 			{
 				Assert.That(await (s.Query<Person>().CountAsync()), Is.EqualTo(4));
+				await (t.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task FlushFromTransactionAppliesToSharingStatelessSessionAsync()
+		{
+			using (var s = OpenSession())
+			{
+				var builder = s.StatelessSessionWithOptions().Connection();
+
+				using (var s1 = builder.OpenStatelessSession())
+				using (var s2 = builder.OpenStatelessSession())
+				using (var t = s.BeginTransaction())
+				{
+					var p1 = new Person();
+					var p2 = new Person();
+					var p3 = new Person();
+					await (s1.InsertAsync(p1));
+					await (s2.InsertAsync(p2));
+					await (s.SaveAsync(p3));
+					await (t.CommitAsync());
+				}
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				Assert.That(await (s.Query<Person>().CountAsync()), Is.EqualTo(3));
 				await (t.CommitAsync());
 			}
 		}

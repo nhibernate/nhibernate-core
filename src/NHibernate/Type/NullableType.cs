@@ -22,21 +22,21 @@ namespace NHibernate.Type
 		static NullableType()
 		{
 			//cache this, because it was a significant performance cost
-			IsDebugEnabled = LoggerProvider.LoggerFor(typeof(IType).Namespace).IsDebugEnabled;
+			IsDebugEnabled = NHibernateLogger.For(typeof(IType).Namespace).IsDebugEnabled();
 		}
 
-		private IInternalLogger Log
+		private INHibernateLogger Log
 		{
-			get { return LoggerProvider.LoggerFor(GetType()); }
+			get { return NHibernateLogger.For(GetType()); }
 		}
 
 		private readonly SqlType _sqlType;
 
 		/// <summary>
 		/// Initialize a new instance of the NullableType class using a 
-		/// <see cref="SqlType"/>. 
+		/// <see cref="NHibernate.SqlTypes.SqlType"/>. 
 		/// </summary>
-		/// <param name="sqlType">The underlying <see cref="SqlType"/>.</param>
+		/// <param name="sqlType">The underlying <see cref="NHibernate.SqlTypes.SqlType"/>.</param>
 		/// <remarks>This is used when the Property is mapped to a single column.</remarks>
 		protected NullableType(SqlType sqlType)
 		{
@@ -141,7 +141,7 @@ namespace NHibernate.Type
 			{
 				if (IsDebugEnabled)
 				{
-					Log.Debug("binding null to parameter: " + index);
+					Log.Debug("binding null to parameter: {0}", index);
 				}
 
 				//Do we check IsNullable?
@@ -154,7 +154,7 @@ namespace NHibernate.Type
 			{
 				if (IsDebugEnabled)
 				{
-					Log.Debug("binding '" + ToString(value) + "' to parameter: " + index);
+					Log.Debug("binding '{0}' to parameter: {1}", ToString(value), index);
 				}
 
 				Set(st, value, index, session);
@@ -219,7 +219,7 @@ namespace NHibernate.Type
 			{
 				if (IsDebugEnabled)
 				{
-					Log.Debug("returning null as column: " + name);
+					Log.Debug("returning null as column: {0}", name);
 				}
 				// TODO: add a method to NullableType.GetNullValue - if we want to
 				// use "MAGIC" numbers to indicate null values...
@@ -242,7 +242,7 @@ namespace NHibernate.Type
 
 				if (IsDebugEnabled)
 				{
-					Log.Debug("returning '" + ToString(val) + "' as column: " + name);
+					Log.Debug("returning '{0}' as column: {1}", ToString(val), name);
 				}
 
 				return val;
@@ -266,10 +266,10 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Gets the underlying <see cref="SqlType" /> for 
+		/// Gets the underlying <see cref="NHibernate.SqlTypes.SqlType" /> for 
 		/// the column mapped by this <see cref="NullableType" />.
 		/// </summary>
-		/// <value>The underlying <see cref="SqlType"/>.</value>
+		/// <value>The underlying <see cref="NHibernate.SqlTypes.SqlType"/>.</value>
 		/// <remarks>
 		/// This implementation should be suitable for all subclasses unless they need to
 		/// do some special things to get the value.  There are no built in <see cref="NullableType"/>s
@@ -291,9 +291,20 @@ namespace NHibernate.Type
 		/// column.  All of their implementation should be in <see cref="NullableType.SqlType" />.
 		/// </para>
 		/// </remarks>
-		public override sealed SqlType[] SqlTypes(IMapping mapping)
+		public sealed override SqlType[] SqlTypes(IMapping mapping)
 		{
-			return new SqlType[] {SqlType};
+			return new[] { OverrideSqlType(mapping, SqlType) };
+		}
+
+		/// <summary>
+		/// Overrides the sql type.
+		/// </summary>
+		/// <param name="type">The type to override.</param>
+		/// <param name="mapping">The mapping for which to override <paramref name="type"/>.</param>
+		/// <returns>The refined types.</returns>
+		static SqlType OverrideSqlType(IMapping mapping, SqlType type)
+		{
+			return mapping != null ? mapping.Dialect.OverrideSqlType(type) : type;
 		}
 
 		/// <summary>
@@ -321,7 +332,7 @@ namespace NHibernate.Type
 
 		public override bool IsEqual(object x, object y)
 		{
-			return EqualsHelper.Equals(x, y);
+			return Equals(x, y);
 		}
 
 		#region override of System.Object Members

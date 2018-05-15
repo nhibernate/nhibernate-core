@@ -75,7 +75,7 @@ namespace NHibernate.Mapping
 
 		public virtual void CreateForeignKeyOfEntity(string entityName)
 		{
-			if (!HasFormula && ! "none".Equals(ForeignKeyName, StringComparison.InvariantCultureIgnoreCase))
+			if (!HasFormula && ! "none".Equals(ForeignKeyName, StringComparison.OrdinalIgnoreCase))
 			{
 				ForeignKey fk = table.CreateForeignKey(ForeignKeyName, ConstraintColumns, entityName);
 				fk.CascadeDeleteEnabled = cascadeDeleteEnabled;
@@ -260,6 +260,10 @@ namespace NHibernate.Mapping
 				else if (col.IsPrecisionDefined())
 				{
 					result = TypeFactory.BuiltInType(typeName, Convert.ToByte(col.Precision), Convert.ToByte(col.Scale));
+				}
+				else if (col.IsScaleDefined())
+				{
+					result = TypeFactory.BuiltInType(typeName, col.Scale);
 				}
 			}
 			return result ?? TypeFactory.HeuristicType(typeName, typeParameters);

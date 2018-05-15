@@ -6,6 +6,7 @@
 
 #endregion
 
+using System;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -17,7 +18,7 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		public void PushArguments(ParameterInfo[] methodParameters, ILGenerator IL, bool isStatic)
 		{
-			ParameterInfo[] parameters = methodParameters ?? new ParameterInfo[0];
+			ParameterInfo[] parameters = methodParameters ?? Array.Empty<ParameterInfo>();
 			int parameterCount = parameters.Length;
 
 			// object[] args = new object[size];
@@ -55,12 +56,19 @@ namespace NHibernate.Proxy.DynamicProxy
 
 				if (param.ParameterType.IsByRef)
 				{
-					OpCode ldindInstruction;
-					if(!OpCodesMap.TryGetLdindOpCode(param.ParameterType.GetElementType(), out ldindInstruction))
+					var unboxedType = param.ParameterType.GetElementType();
+					if (Nullable.GetUnderlyingType(unboxedType) != null)
 					{
-						ldindInstruction = OpCodes.Ldind_Ref;
+						IL.Emit(OpCodes.Ldobj, unboxedType);
 					}
-					IL.Emit(ldindInstruction);
+					else if (OpCodesMap.TryGetLdindOpCode(unboxedType, out var ldind))
+					{
+						IL.Emit(ldind);
+					}
+					else
+					{
+						IL.Emit(OpCodes.Ldind_Ref);
+					}
 				}
 
 				if (parameterType.IsValueType || param.ParameterType.IsByRef || parameterType.IsGenericParameter)

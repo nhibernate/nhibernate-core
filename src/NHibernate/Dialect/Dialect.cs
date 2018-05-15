@@ -30,7 +30,7 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public abstract partial class Dialect
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(Dialect));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(Dialect));
 
 		protected const string DefaultBatchSize = "15";
 		protected const string NoBatch = "0";
@@ -40,7 +40,7 @@ namespace NHibernate.Dialect
 
 		/// <summary> Characters used for closing quoted sql identifiers </summary>
 		public const string PossibleClosedQuoteChars = "`'\"]";
-		
+
 		private readonly TypeNames _typeNames = new TypeNames();
 		private readonly TypeNames _hibernateTypeNames = new TypeNames();
 		private readonly IDictionary<string, string> _properties = new Dictionary<string, string>();
@@ -78,7 +78,7 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		protected Dialect()
 		{
-			Log.Info("Using dialect: " + this);
+			Log.Info("Using dialect: {0}", this);
 
 			_sqlFunctions = CollectionHelper.CreateCaseInsensitiveHashtable(StandardAggregateFunctions);
 
@@ -98,6 +98,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
 			RegisterFunction("lower", new StandardSQLFunction("lower"));
 			RegisterFunction("cast", new CastFunction());
+			RegisterFunction("transparentcast", new TransparentCastFunction());
 			RegisterFunction("extract", new AnsiExtractFunction());
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "||", ")"));
 
@@ -116,10 +117,10 @@ namespace NHibernate.Dialect
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(year from ?1)"));
 
 			// Bitwise operations
-			RegisterFunction("band", new BitwiseNativeOperation("&"));
-			RegisterFunction("bor", new BitwiseNativeOperation("|"));
-			RegisterFunction("bxor", new BitwiseNativeOperation("^"));
-			RegisterFunction("bnot", new BitwiseNativeOperation("~", true));
+			RegisterFunction("band", new Function.BitwiseNativeOperation("&"));
+			RegisterFunction("bor", new Function.BitwiseNativeOperation("|"));
+			RegisterFunction("bxor", new Function.BitwiseNativeOperation("^"));
+			RegisterFunction("bnot", new Function.BitwiseNativeOperation("~", true));
 
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
 
@@ -135,7 +136,7 @@ namespace NHibernate.Dialect
 			RegisterHibernateType(DbType.Int16, NHibernateUtil.Int16.Name);
 			RegisterHibernateType(DbType.SByte, NHibernateUtil.SByte.Name);
 			RegisterHibernateType(DbType.Time, NHibernateUtil.Time.Name);
-			RegisterHibernateType(DbType.DateTime, NHibernateUtil.Timestamp.Name);
+			RegisterHibernateType(DbType.DateTime, NHibernateUtil.DateTime.Name);
 			RegisterHibernateType(DbType.String, NHibernateUtil.String.Name);
 			RegisterHibernateType(DbType.VarNumeric, NHibernateUtil.Decimal.Name);
 			RegisterHibernateType(DbType.Decimal, NHibernateUtil.Decimal.Name);
@@ -199,6 +200,9 @@ namespace NHibernate.Dialect
 		/// <param name="settings">The configuration settings.</param>
 		public virtual void Configure(IDictionary<string, string> settings)
 		{
+			DefaultCastLength = PropertiesHelper.GetInt32(Environment.QueryDefaultCastLength, settings, 4000);
+			DefaultCastPrecision = PropertiesHelper.GetByte(Environment.QueryDefaultCastPrecision, settings, null) ?? 29;
+			DefaultCastScale = PropertiesHelper.GetByte(Environment.QueryDefaultCastScale, settings, null) ?? 10;
 		}
 
 		#endregion
@@ -213,19 +217,12 @@ namespace NHibernate.Dialect
 		/// <returns>The database type name used by ddl.</returns>
 		public virtual string GetTypeName(SqlType sqlType)
 		{
-			if (sqlType.LengthDefined || sqlType.PrecisionDefined)
+			if (sqlType.LengthDefined || sqlType.PrecisionDefined || sqlType.ScaleDefined)
 			{
-				string resultWithLength = _typeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
-				if (resultWithLength != null) return resultWithLength;
+				return _typeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
 			}
 
-			string result = _typeNames.Get(sqlType.DbType);
-			if (result == null)
-			{
-				throw new HibernateException(string.Format("No default type mapping for SqlType {0}", sqlType));
-			}
-
-			return result;
+			return _typeNames.Get(sqlType.DbType);
 		}
 
 		/// <summary>
@@ -239,12 +236,7 @@ namespace NHibernate.Dialect
 		/// <returns>The database type name used by ddl.</returns>
 		public virtual string GetTypeName(SqlType sqlType, int length, int precision, int scale)
 		{
-			string result = _typeNames.Get(sqlType.DbType, length, precision, scale);
-			if (result == null)
-			{
-				throw new HibernateException(string.Format("No type mapping for SqlType {0} of length {1}", sqlType, length));
-			}
-			return result;
+			return _typeNames.Get(sqlType.DbType, length, precision, scale);
 		}
 
 		/// <summary>
@@ -257,15 +249,50 @@ namespace NHibernate.Dialect
 			return _typeNames.GetLongest(dbType);
 		}
 
+		public int DefaultCastLength { get; protected set; }
+		public byte DefaultCastPrecision { get; protected set; }
+		public byte DefaultCastScale { get; protected set; }
+
 		/// <summary> 
 		/// Get the name of the database type appropriate for casting operations
 		/// (via the CAST() SQL function) for the given <see cref="SqlType"/> typecode.
 		/// </summary>
 		/// <param name="sqlType">The <see cref="SqlType"/> typecode </param>
 		/// <returns> The database type name </returns>
-		public virtual string GetCastTypeName(SqlType sqlType)
+		public virtual string GetCastTypeName(SqlType sqlType) =>
+			GetCastTypeName(sqlType, _typeNames);
+
+		/// <summary> 
+		/// Get the name of the database type appropriate for casting operations
+		/// (via the CAST() SQL function) for the given <see cref="SqlType"/> typecode.
+		/// </summary>
+		/// <param name="sqlType">The <see cref="SqlType"/> typecode.</param>
+		/// <param name="castTypeNames">The source for type names.</param>
+		/// <returns>The database type name.</returns>
+		protected virtual string GetCastTypeName(SqlType sqlType, TypeNames castTypeNames)
 		{
-			return GetTypeName(sqlType, Column.DefaultLength, Column.DefaultPrecision, Column.DefaultScale);
+			if (sqlType.LengthDefined || sqlType.PrecisionDefined || sqlType.ScaleDefined)
+				return castTypeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
+			switch (sqlType.DbType)
+			{
+				case DbType.Decimal:
+				// Oracle dialect defines precision and scale for double, because it uses number instead of binary_double.
+				case DbType.Double:
+					// We cannot know if the user needs its digit after or before the dot, so use a configurable
+					// default.
+					return castTypeNames.Get(sqlType.DbType, 0, DefaultCastPrecision, DefaultCastScale);
+				case DbType.DateTime:
+				case DbType.DateTime2:
+				case DbType.DateTimeOffset:
+				case DbType.Time:
+				case DbType.Currency:
+					// Use default for these, dialects are supposed to map them to max capacity
+					return castTypeNames.Get(sqlType.DbType);
+				default:
+					// Other types are either length bound or not length/precision/scale bound. Otherwise they need to be
+					// handled previously.
+					return castTypeNames.Get(sqlType.DbType, DefaultCastLength, 0, 0);
+			}
 		}
 
 		/// <summary>
@@ -274,7 +301,7 @@ namespace NHibernate.Dialect
 		/// length (if appropriate)
 		/// </summary>
 		/// <param name="code">The typecode</param>
-		/// <param name="capacity">Maximum length of database type</param>
+		/// <param name="capacity">Maximum length or scale of database type</param>
 		/// <param name="name">The database type name</param>
 		protected void RegisterColumnType(DbType code, int capacity, string name)
 		{
@@ -291,6 +318,14 @@ namespace NHibernate.Dialect
 		{
 			_typeNames.Put(code, name);
 		}
+
+		/// <summary>
+		/// Override provided <see cref="SqlType"/>s.
+		/// </summary>
+		/// <param name="type">The original <see cref="SqlType"/>.</param>
+		/// <returns>Refined <see cref="SqlType"/>s.</returns>
+		public virtual SqlType OverrideSqlType(SqlType type) =>
+			type;
 
 		#endregion
 
@@ -355,14 +390,14 @@ namespace NHibernate.Dialect
 			res.Append(" constraint ")
 				.Append(constraintName)
 				.Append(" foreign key (")
-				.Append(StringHelper.Join(StringHelper.CommaSpace, foreignKey))
+				.Append(string.Join(StringHelper.CommaSpace, foreignKey))
 				.Append(") references ")
 				.Append(referencedTable);
 
 			if (!referencesPrimaryKey)
 			{
 				res.Append(" (")
-					.Append(StringHelper.Join(StringHelper.CommaSpace, primaryKey))
+					.Append(string.Join(StringHelper.CommaSpace, primaryKey))
 					.Append(')');
 			}
 
@@ -466,15 +501,15 @@ namespace NHibernate.Dialect
 		/// <returns> The appropriate for update fragment. </returns>
 		public virtual string GetForUpdateString(LockMode lockMode)
 		{
-			if (lockMode == LockMode.Upgrade)
+			if (Equals(lockMode, LockMode.Upgrade))
 			{
 				return ForUpdateString;
 			}
-			if (lockMode == LockMode.UpgradeNoWait)
+			if (Equals(lockMode, LockMode.UpgradeNoWait))
 			{
 				return ForUpdateNowaitString;
 			}
-			if (lockMode == LockMode.Force)
+			if (Equals(lockMode, LockMode.Force))
 			{
 				return ForUpdateNowaitString;
 			}
@@ -491,13 +526,29 @@ namespace NHibernate.Dialect
 			get { return " for update"; }
 		}
 
-		/// <summary> Is <tt>FOR UPDATE OF</tt> syntax supported? </summary>
-		/// <value> True if the database supports <tt>FOR UPDATE OF</tt> syntax; false otherwise. </value>
+		/// <summary>Is <c>FOR UPDATE OF</c> syntax supported?</summary>
+		/// <value><see langword="true"/> if the database supports <c>FOR UPDATE OF</c> syntax; <see langword="false"/> otherwise. </value>
+		public virtual bool SupportsForUpdateOf
+			// By default, just check UsesColumnsWithForUpdateOf. ForUpdateOf needs to be overriden only for dialects supporting
+			// "For Update Of" on table aliases.
+			=> UsesColumnsWithForUpdateOf;
+
+		/// <summary>Is <c>FOR UPDATE OF</c> syntax expecting columns?</summary>
+		/// <value><see langword="true"/> if the database expects a column list with <c>FOR UPDATE OF</c> syntax,
+		/// <see langword="false"/> if it expects table alias instead or do not support <c>FOR UPDATE OF</c> syntax.</value>
+		// Since v5.1
+		[Obsolete("Use UsesColumnsWithForUpdateOf instead")]
 		public virtual bool ForUpdateOfColumns
 		{
 			// by default we report no support
 			get { return false; }
 		}
+
+		public virtual bool UsesColumnsWithForUpdateOf
+#pragma warning disable 618
+			// For avoiding a breaking change, we need to call the old name by default.
+			=> ForUpdateOfColumns;
+#pragma warning restore 618
 
 		/// <summary> 
 		/// Does this dialect support <tt>FOR UPDATE</tt> in conjunction with outer joined rows?
@@ -532,11 +583,11 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary> 
-		/// Get the <tt>FOR UPDATE OF column_list NOWAIT</tt> fragment appropriate
-		/// for this dialect given the aliases of the columns to be write locked.
+		/// Get the <c>FOR UPDATE OF column_list NOWAIT</c> fragment appropriate
+		/// for this dialect given the aliases of the columns or tables to be write locked.
 		/// </summary>
-		/// <param name="aliases">The columns to be write locked. </param>
-		/// <returns> The appropriate <tt>FOR UPDATE colunm_list NOWAIT</tt> clause string. </returns>
+		/// <param name="aliases">The columns or tables to be write locked.</param>
+		/// <returns>The appropriate <c>FOR UPDATE colunm_or_table_list NOWAIT</c> clause string.</returns>
 		public virtual string GetForUpdateNowaitString(string aliases)
 		{
 			return GetForUpdateString(aliases);
@@ -723,15 +774,22 @@ namespace NHibernate.Dialect
 			return " drop constraint " + constraintName;
 		}
 
+
 		/// <summary>
 		/// The syntax that is used to check if a constraint does not exists before creating it
 		/// </summary>
 		/// <param name="table">The table.</param>
 		/// <param name="name">The name.</param>
 		/// <returns></returns>
+		// Since v5.1
+		[Obsolete("Can cause issues when a custom schema is defined (https://nhibernate.jira.com/browse/NH-1285). The new overload with the defaultSchema parameter should be used instead")]
 		public virtual string GetIfNotExistsCreateConstraint(Table table, string name)
 		{
-			return "";
+			var catalog = table.GetQuotedCatalog(this, null);
+			var schema = table.GetQuotedSchema(this, null);
+			var tableName = table.GetQuotedName(this);
+
+			return GetIfNotExistsCreateConstraint(catalog, schema, tableName, name);
 		}
 
 		/// <summary>
@@ -741,9 +799,15 @@ namespace NHibernate.Dialect
 		/// <param name="table">The table.</param>
 		/// <param name="name">The name.</param>
 		/// <returns></returns>
+		// Since v5.1
+		[Obsolete("Can cause issues when a custom schema is defined (https://nhibernate.jira.com/browse/NH-1285). The new overload with the defaultSchema parameter should be used instead")]
 		public virtual string GetIfNotExistsCreateConstraintEnd(Table table, string name)
 		{
-			return "";
+			var catalog = table.GetQuotedCatalog(this, null);
+			var schema = table.GetQuotedSchema(this, null);
+			var tableName = table.GetQuotedName(this);
+
+			return GetIfNotExistsCreateConstraintEnd(catalog, schema, tableName, name);
 		}
 
 		/// <summary>
@@ -752,9 +816,15 @@ namespace NHibernate.Dialect
 		/// <param name="table">The table.</param>
 		/// <param name="name">The name.</param>
 		/// <returns></returns>
+		// Since v5.1
+		[Obsolete("Can cause issues when a custom schema is defined (https://nhibernate.jira.com/browse/NH-1285). The new overload with the defaultSchema parameter should be used instead")]
 		public virtual string GetIfExistsDropConstraint(Table table, string name)
 		{
-			return "";
+			var catalog = table.GetQuotedCatalog(this, null);
+			var schema = table.GetQuotedSchema(this, null);
+			var tableName = table.GetQuotedName(this);
+
+			return GetIfExistsDropConstraint(catalog, schema, tableName, name);
 		}
 
 		/// <summary>
@@ -764,7 +834,67 @@ namespace NHibernate.Dialect
 		/// <param name="table">The table.</param>
 		/// <param name="name">The name.</param>
 		/// <returns></returns>
+		// Since v5.1
+		[Obsolete("Can cause issues when a custom schema is defined (https://nhibernate.jira.com/browse/NH-1285). The new overload with the defaultSchema parameter should be used instead")]
 		public virtual string GetIfExistsDropConstraintEnd(Table table, string name)
+		{
+			var catalog = table.GetQuotedCatalog(this, null);
+			var schema = table.GetQuotedSchema(this, null);
+			var tableName = table.GetQuotedName(this);
+
+			return GetIfExistsDropConstraintEnd(catalog, schema, tableName, name);
+		}
+
+		/// <summary>
+		/// The syntax that is used to check if a constraint does not exists before creating it
+		/// </summary>
+		/// <param name="catalog">The catalog.</param>
+		/// <param name="schema">The schema.</param>
+		/// <param name="table">The table.</param>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
+		public virtual string GetIfNotExistsCreateConstraint(string catalog, string schema, string table, string name)
+		{
+			return "";
+		}
+
+		/// <summary>
+		/// The syntax that is used to close the if for a constraint exists check, used
+		/// for dialects that requires begin/end for ifs
+		/// </summary>
+		/// <param name="catalog">The catalog.</param>
+		/// <param name="schema">The schema.</param>
+		/// <param name="table">The table.</param>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
+		public virtual string GetIfNotExistsCreateConstraintEnd(string catalog, string schema, string table, string name)
+		{
+			return "";
+		}
+
+		/// <summary>
+		/// The syntax that is used to check if a constraint exists before dropping it
+		/// </summary>
+		/// <param name="catalog">The catalog.</param>
+		/// <param name="schema">The schema.</param>
+		/// <param name="table">The table.</param>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
+		public virtual string GetIfExistsDropConstraint(string catalog, string schema, string table, string name)
+		{
+			return "";
+		}
+
+		/// <summary>
+		/// The syntax that is used to close the if for a constraint exists check, used
+		/// for dialects that requires begin/end for ifs
+		/// </summary>
+		/// <param name="catalog">The catalog.</param>
+		/// <param name="schema">The schema.</param>
+		/// <param name="table">The table.</param>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
+		public virtual string GetIfExistsDropConstraintEnd(string catalog, string schema, string table, string name)
 		{
 			return "";
 		}
@@ -860,14 +990,14 @@ namespace NHibernate.Dialect
 			return insertString;
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Get the select command to use to retrieve the last generated IDENTITY
-		/// value for a particular table 
+		/// value for a particular table.
 		/// </summary>
-		/// <param name="tableName">The table into which the insert was done </param>
-		/// <param name="identityColumn">The PK column. </param>
-		/// <param name="type">The <see cref="DbType"/> type code. </param>
-		/// <returns> The appropriate select command </returns>
+		/// <param name="identityColumn">The PK column.</param>
+		/// <param name="tableName">The table into which the insert was done.</param>
+		/// <param name="type">The <see cref="DbType"/> type code.</param>
+		/// <returns>The appropriate select command.</returns>
 		public virtual string GetIdentitySelectString(string identityColumn, string tableName, DbType type)
 		{
 			return IdentitySelectString;
@@ -1394,7 +1524,7 @@ namespace NHibernate.Dialect
 
 			public IEnumerator GetEnumerator()
 			{
-				return ((IEnumerable<SqlString>)this).GetEnumerator();
+				return ((IEnumerable<SqlString>) this).GetEnumerator();
 			}
 
 			public enum TokenizerState
@@ -1606,7 +1736,7 @@ namespace NHibernate.Dialect
 			return (name[0] == OpenQuote && name[name.Length - 1] == CloseQuote);
 		}
 
-		public virtual string Qualify(string catalog, string schema, string table)
+		public virtual string Qualify(string catalog, string schema, string name)
 		{
 			StringBuilder qualifiedName = new StringBuilder();
 
@@ -1618,7 +1748,7 @@ namespace NHibernate.Dialect
 			{
 				qualifiedName.Append(schema).Append(StringHelper.Dot);
 			}
-			return qualifiedName.Append(table).ToString();
+			return qualifiedName.Append(name).ToString();
 		}
 
 		/// <summary>
@@ -1635,7 +1765,7 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		protected virtual string Quote(string name)
 		{
-			string quotedName = name.Replace(OpenQuote.ToString(), new string(OpenQuote, 2));
+			var quotedName = name.Replace(OpenQuote.ToString(), new string(OpenQuote, 2));
 
 			// in some dbs the Open and Close Quote are the same chars - if they are 
 			// then we don't have to escape the Close Quote char because we already
@@ -1723,6 +1853,24 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
+		/// Quotes a name for being used as a catalogname
+		/// </summary>
+		/// <param name="catalogName">Name of the catalog</param>
+		/// <returns>A Quoted name in the format of OpenQuote + catalogName + CloseQuote</returns>
+		/// <remarks>
+		/// <p>
+		/// If the catalogName is already enclosed in the OpenQuote and CloseQuote then this 
+		/// method will return the catalogName that was passed in without going through any
+		/// Quoting process.  So if catalogName is passed in already Quoted make sure that 
+		/// you have escaped all of the chars according to your DataBase's specifications.
+		/// </p>
+		/// </remarks>
+		public virtual string QuoteForCatalogName(string catalogName)
+		{
+			return IsQuoted(catalogName) ? catalogName : Quote(catalogName);
+		}
+
+		/// <summary>
 		/// Unquotes and unescapes an already quoted name
 		/// </summary>
 		/// <param name="quoted">Quoted string</param>
@@ -1792,6 +1940,66 @@ namespace NHibernate.Dialect
 			}
 
 			return unquoted;
+		}
+
+		/// <summary>
+		/// Convert back-tilt quotes in a name for being used as an aliasname.
+		/// </summary>
+		/// <param name="aliasName">Name of the alias.</param>
+		/// <returns>A name with back-tilt quotes converted if any.</returns>
+		public virtual string ConvertQuotesForAliasName(string aliasName)
+		{
+			return StringHelper.IsBackticksEnclosed(aliasName)
+				? Quote(StringHelper.PurgeBackticksEnclosing(aliasName))
+				: aliasName;
+		}
+
+		/// <summary>
+		/// Convert back-tilt quotes in a name for being used as a columnname.
+		/// </summary>
+		/// <param name="columnName">Name of the column.</param>
+		/// <returns>A name with back-tilt quotes converted if any.</returns>
+		public virtual string ConvertQuotesForColumnName(string columnName)
+		{
+			return StringHelper.IsBackticksEnclosed(columnName)
+				? Quote(columnName)
+				: columnName;
+		}
+
+		/// <summary>
+		/// Convert back-tilt quotes in a name for being used as a tablename.
+		/// </summary>
+		/// <param name="tableName">Name of the table.</param>
+		/// <returns>A name with back-tilt quotes converted if any.</returns>
+		public virtual string ConvertQuotesForTableName(string tableName)
+		{
+			return StringHelper.IsBackticksEnclosed(tableName)
+				? Quote(tableName)
+				: tableName;
+		}
+
+		/// <summary>
+		/// Convert back-tilt quotes in a name for being used as a schemaname.
+		/// </summary>
+		/// <param name="schemaName">Name of the schema.</param>
+		/// <returns>A name with back-tilt quotes converted if any.</returns>
+		public virtual string ConvertQuotesForSchemaName(string schemaName)
+		{
+			return StringHelper.IsBackticksEnclosed(schemaName)
+				? Quote(schemaName)
+				: schemaName;
+		}
+
+		/// <summary>
+		/// Convert back-tilt quotes in a name for being used as a catalogname.
+		/// </summary>
+		/// <param name="catalogName">Name of the catalog.</param>
+		/// <returns>A name with back-tilt quotes converted if any.</returns>
+		public virtual string ConvertQuotesForCatalogName(string catalogName)
+		{
+			return StringHelper.IsBackticksEnclosed(catalogName)
+				? Quote(catalogName)
+				: catalogName;
 		}
 
 		#endregion
@@ -2123,6 +2331,11 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		public virtual bool SupportsDistributedTransactions => true;
 
+		/// <summary>
+		/// Does this dialect handles date and time types scale (fractional seconds precision)?
+		/// </summary>
+		public virtual bool SupportsDateTimeScale => false;
+
 		#endregion
 
 		/// <summary>
@@ -2243,17 +2456,36 @@ namespace NHibernate.Dialect
 			get { return "lower"; }
 		}
 
-		public virtual int MaxAliasLength
-		{
-			get { return 10; }
-		}
+		// 18 is the smallest of all dialects we handle.
+		/// <summary>
+		/// The maximum length a SQL alias can have.
+		/// </summary>
+		public virtual int MaxAliasLength => 18;
 
 		/// <summary>
-		/// The syntax used to add a column to a table. Note this is deprecated
+		/// The maximum number of parameters allowed in a query.
+		/// </summary>
+		public virtual int? MaxNumberOfParameters => null;
+
+		/// <summary>
+		/// The character used to terminate a SQL statement.
+		/// </summary>
+		public virtual char StatementTerminator => ';';
+
+		/// <summary>
+		/// The syntax used to add a column to a table.
 		/// </summary>
 		public virtual string AddColumnString
 		{
 			get { throw new NotSupportedException("No add column syntax supported by Dialect"); }
+		}
+
+		/// <summary>
+		/// The syntax for the suffix used to add a column to a table.
+		/// </summary>
+		public virtual string AddColumnSuffixString
+		{
+			get { return String.Empty; }
 		}
 
 		public virtual string DropForeignKeyString

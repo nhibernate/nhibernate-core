@@ -215,7 +215,7 @@
         <itemizedlist spacing="compact">
             <listitem>
                 <para>
-                    It must be <literal>Serializable</literal>.
+                    It must be marked with the <literal>Serializable</literal> attribute.
                 </para>
             </listitem>
             <listitem>
@@ -223,6 +223,12 @@
                     It must re-implement <literal>Equals()</literal> and
                     <literal>GetHashCode()</literal>, consistently with the database's 
                     notion of composite key equality.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    It should re-implement <literal>ToString()</literal> if you consider
+                    using the second level cache. See <xref linkend="NHibernate.Caches-howto" />.
                 </para>
             </listitem>
         </itemizedlist>

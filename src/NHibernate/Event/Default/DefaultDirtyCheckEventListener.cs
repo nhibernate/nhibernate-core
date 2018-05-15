@@ -10,7 +10,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultDirtyCheckEventListener : AbstractFlushingEventListener, IDirtyCheckEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultDirtyCheckEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DefaultDirtyCheckEventListener));
 
 		public virtual void OnDirtyCheck(DirtyCheckEvent @event)
 		{

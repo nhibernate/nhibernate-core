@@ -301,6 +301,17 @@ namespace NHibernate.Hql.Ast
 			return new HqlCast(_factory, expression, type);
 		}
 
+		/// <summary>
+		/// Generate a cast node intended solely to hint HQL at the resulting type, without issuing an actual SQL cast.
+		/// </summary>
+		/// <param name="expression">The expression to cast.</param>
+		/// <param name="type">The resulting type.</param>
+		/// <returns>A <see cref="HqlTransparentCast"/> node.</returns>
+		public HqlTransparentCast TransparentCast(HqlExpression expression, System.Type type)
+		{
+			return new HqlTransparentCast(_factory, expression, type);
+		}
+
 		public HqlBitwiseNot BitwiseNot()
 		{
 			return new HqlBitwiseNot(_factory);

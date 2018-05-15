@@ -32,11 +32,12 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Binary, 2147483647, "bytea");
 			RegisterColumnType(DbType.Boolean, "boolean");
 			RegisterColumnType(DbType.Byte, "int2");
-			RegisterColumnType(DbType.Currency, "decimal(16,4)");
+			RegisterColumnType(DbType.Currency, "decimal(18,4)");
 			RegisterColumnType(DbType.Date, "date");
 			RegisterColumnType(DbType.DateTime, "timestamp");
 			RegisterColumnType(DbType.Decimal, "decimal(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "decimal(18, $l)");
+			// Ingres max precision is 31, but .Net is limited to 28-29.
+			RegisterColumnType(DbType.Decimal, 29, "decimal($p, $s)");
 			RegisterColumnType(DbType.Double, "float8");
 			RegisterColumnType(DbType.Int16, "int2");
 			RegisterColumnType(DbType.Int32, "int4");
@@ -51,6 +52,15 @@ namespace NHibernate.Dialect
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.IngresDriver";
 		}
+
+		// Ingres 10.2 supports 256 bytes (so worst unicode case would mean 64 characters), but I am unable to find
+		// the limit for older versions, excepted many various sites mention a 32 length limit.
+		// https://unifaceinfo.com/docs/0906/Uniface_Library_HTML/ulibrary/INS_NAMING_RULES_8EEFC1A489331BF969D2A8AA36AF2832.html
+		// There are traces of a ticket for increasing this in version 10: http://lists.ingres.com/pipermail/bugs/2010-May/000052.html
+		// This dialect seems to target version below 9, since there is Ingres9Dialect deriving from it.
+		// So sticking to 32.
+		/// <inheritdoc />
+		public override int MaxAliasLength => 32;
 
 		#region Overridden informational metadata
 

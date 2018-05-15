@@ -6,7 +6,6 @@ using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
 using NHibernate.Type;
 using Environment = NHibernate.Cfg.Environment;
 
@@ -30,12 +29,6 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class FirebirdDialect : Dialect
 	{
-		#region Fields
-
-		private const int MAX_DECIMAL_PRECISION = 18;
-
-		#endregion
-
 		public FirebirdDialect()
 		{
 			RegisterKeywords();
@@ -47,23 +40,6 @@ namespace NHibernate.Dialect
 		public override string AddColumnString
 		{
 			get { return "add"; }
-		}
-
-		public override string GetTypeName(SqlType sqlType)
-		{
-			if (IsUnallowedDecimal(sqlType.DbType, sqlType.Precision))
-				return base.GetTypeName(new SqlType(sqlType.DbType, MAX_DECIMAL_PRECISION, sqlType.Scale));
-
-			return base.GetTypeName(sqlType);
-		}
-
-		public override string GetTypeName(SqlType sqlType, int length, int precision, int scale)
-		{
-			var fbDecimalPrecision = precision;
-			if (IsUnallowedDecimal(sqlType.DbType, precision))
-				fbDecimalPrecision = MAX_DECIMAL_PRECISION;
-
-			return base.GetTypeName(sqlType, length, fbDecimalPrecision, scale);
 		}
 
 		public override string GetSelectSequenceNextValString(string sequenceName)
@@ -446,10 +422,10 @@ namespace NHibernate.Dialect
 			RegisterFunction("sysdate", new CastedFunction("today", NHibernateUtil.Date));
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
 			// Bitwise operations
-			RegisterFunction("band", new BitwiseFunctionOperation("bin_and"));
-			RegisterFunction("bor", new BitwiseFunctionOperation("bin_or"));
-			RegisterFunction("bxor", new BitwiseFunctionOperation("bin_xor"));
-			RegisterFunction("bnot", new BitwiseFunctionOperation("bin_not"));
+			RegisterFunction("band", new Function.BitwiseFunctionOperation("bin_and"));
+			RegisterFunction("bor", new Function.BitwiseFunctionOperation("bin_or"));
+			RegisterFunction("bxor", new Function.BitwiseFunctionOperation("bin_xor"));
+			RegisterFunction("bnot", new Function.BitwiseFunctionOperation("bin_not"));
 		}
 
 		private void RegisterFirebirdServerEmbeddedFunctions()
@@ -477,7 +453,8 @@ namespace NHibernate.Dialect
 		private void RegisterMathematicalFunctions()
 		{
 			RegisterFunction("abs", new StandardSQLFunction("abs", NHibernateUtil.Double));
-			RegisterFunction("ceiling", new StandardSQLFunction("ceiling", NHibernateUtil.Double));
+			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
+			RegisterFunction("ceil", new StandardSQLFunction("ceil"));
 			RegisterFunction("div", new StandardSQLFunction("div", NHibernateUtil.Double));
 			RegisterFunction("dpower", new StandardSQLFunction("dpower", NHibernateUtil.Double));
 			RegisterFunction("ln", new StandardSQLFunction("ln", NHibernateUtil.Double));
@@ -487,8 +464,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
 			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
 			RegisterFunction("sqtr", new StandardSQLFunction("sqtr", NHibernateUtil.Double));
-			RegisterFunction("truncate", new StandardSQLFunction("truncate"));
-			RegisterFunction("floor", new StandardSafeSQLFunction("floor", NHibernateUtil.Double, 1));
+			RegisterFunction("trunc", new StandardSQLFunction("trunc"));
+			RegisterFunction("truncate", new StandardSQLFunction("trunc"));
+			RegisterFunction("floor", new StandardSQLFunction("floor"));
 			RegisterFunction("round", new StandardSQLFunction("round"));
 		}
 
@@ -509,8 +487,10 @@ namespace NHibernate.Dialect
 
 		private void RegisterStringAndCharFunctions()
 		{
-			RegisterFunction("ascii_char", new StandardSQLFunction("ascii_char"));
-			RegisterFunction("ascii_val", new StandardSQLFunction("ascii_val", NHibernateUtil.Int16));
+			RegisterFunction("ascii_char", new StandardSQLFunction("ascii_char", NHibernateUtil.Character));
+			RegisterFunction("chr", new StandardSQLFunction("ascii_char", NHibernateUtil.Character));
+			RegisterFunction("ascii_val", new StandardSQLFunction("ascii_val", NHibernateUtil.Int32));
+			RegisterFunction("ascii", new StandardSQLFunction("ascii_val", NHibernateUtil.Int32));
 			RegisterFunction("lpad", new StandardSQLFunction("lpad"));
 			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
 			RegisterFunction("sright", new StandardSQLFunction("sright"));
@@ -544,10 +524,11 @@ namespace NHibernate.Dialect
 			RegisterFunction("tanh", new StandardSQLFunction("tanh", NHibernateUtil.Double));
 		}
 
-		private static bool IsUnallowedDecimal(DbType dbType, int precision)
-		{
-			return dbType == DbType.Decimal && precision > MAX_DECIMAL_PRECISION;
-		}
+		// As of Firebird 2.5 documentation, limit is 30/31 (not all source are concordant), with some
+		// cases supporting more but considered as bugs and no more tolerated in v3.
+		// It seems it may be extended to 63 for Firebird v4.
+		/// <inheritdoc />
+		public override int MaxAliasLength => 30;
 
 		#region Informational metadata
 

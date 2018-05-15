@@ -4,7 +4,6 @@ using System.Data.Common;
 using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
-using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -64,7 +63,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 16777215, "MEDIUMTEXT");
 			//todo: future: add compatibility with decimal???
 			//An unpacked fixed-point number. Behaves like a CHAR column; 
-			//ìunpackedî means the number is stored as a string, using one character for each digit of the value.
+			//‚Äúunpacked‚Äù means the number is stored as a string, using one character for each digit of the value.
 			//M is the total number of digits and D is the number of digits after the decimal point
 			//DECIMAL[(M[,D])] [UNSIGNED] [ZEROFILL]
 
@@ -79,7 +78,9 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Byte, "TINYINT UNSIGNED");
 			RegisterColumnType(DbType.Currency, "NUMERIC(18,4)");
 			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "NUMERIC($p, $s)");
+			// Prior to version 5, decimal was stored as a string, so it was supporting a huge precision. Limiting to
+			// .Net capabilities.
+			RegisterColumnType(DbType.Decimal, 29, "NUMERIC($p, $s)");
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			//The signed range is -32768 to 32767. The unsigned range is 0 to 65535. 
 			RegisterColumnType(DbType.Int16, "SMALLINT");
@@ -262,8 +263,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
 			RegisterFunction("round", new StandardSQLFunction("round"));
-			RegisterFunction("truncate", new StandardSQLFunction("truncate"));
-			
+			RegisterFunction("truncate", new StandardSQLFunctionWithRequiredParameters("truncate", new object[] {null, "0"}));
+
 			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
 			
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
@@ -285,7 +286,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("ucase", new StandardSQLFunction("ucase"));
 			RegisterFunction("lcase", new StandardSQLFunction("lcase"));
 
-			RegisterFunction("chr", new StandardSQLFunction("char", NHibernateUtil.Character));
+			RegisterFunction("chr", new SQLFunctionTemplate(NHibernateUtil.Character, "cast(char(?1) as char)"));
 			RegisterFunction("ascii", new StandardSQLFunction("ascii", NHibernateUtil.Int32));
 			RegisterFunction("instr", new StandardSQLFunction("instr", NHibernateUtil.Int32));
 			RegisterFunction("lpad", new StandardSQLFunction("lpad", NHibernateUtil.String));
@@ -494,15 +495,8 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="sqlType">The <see cref="SqlType"/> typecode </param>
 		/// <returns> The database type name </returns>
-		public override string GetCastTypeName(SqlType sqlType)
-		{
-			string result = castTypeNames.Get(sqlType.DbType, Column.DefaultLength, Column.DefaultPrecision, Column.DefaultScale);
-			if (result == null)
-			{
-				throw new HibernateException(string.Format("No CAST() type mapping for SqlType {0}", sqlType));
-			}
-			return result;
-		}
+		public override string GetCastTypeName(SqlType sqlType) =>
+			GetCastTypeName(sqlType, castTypeNames);
 
 		public override long TimestampResolutionInTicks
 		{

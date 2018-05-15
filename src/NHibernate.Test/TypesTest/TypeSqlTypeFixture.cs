@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Engine;
@@ -17,8 +18,15 @@ namespace NHibernate.Test.TypesTest
 		public virtual byte[] BinaryBlob { get; set; }
 		public virtual byte[] Binary { get; set; }
 		public virtual string StringClob { get; set; }
+		public virtual DateTime DateTimeProp { get; set; }
+		public virtual DateTime LocalDateTime { get; set; }
+		public virtual DateTime UtcDateTime { get; set; }
+		public virtual DateTime TimeProp { get; set; }
+		public virtual TimeSpan TimeAsTimeSpan { get; set; }
+		public virtual DateTimeOffset DateTimeOffsetProp { get; set; }
 	}
 
+	[TestFixture]
 	public abstract class TypeSqlTypeFixture
 	{
 		protected const string TestNameSpace = "NHibernate.Test.TypesTest.";
@@ -82,6 +90,25 @@ namespace NHibernate.Test.TypesTest
 
 			type = pc.GetPropertyType("StringClob");
 			Assert.That(type.SqlTypes(factory)[0].Length, Is.EqualTo(1002));
+
+			type = pc.GetPropertyType(nameof(MultiTypeEntity.DateTimeProp));
+			Assert.That(type.SqlTypes(factory)[0].Scale, Is.EqualTo(0), "Unexpected scale for DateTimeProp");
+			Assert.That(type.SqlTypes(factory)[0].ScaleDefined, Is.True);
+
+			type = pc.GetPropertyType(nameof(MultiTypeEntity.LocalDateTime));
+			Assert.That(type.SqlTypes(factory)[0].Scale, Is.EqualTo(1), "Unexpected scale for LocalDateTime");
+
+			type = pc.GetPropertyType(nameof(MultiTypeEntity.UtcDateTime));
+			Assert.That(type.SqlTypes(factory)[0].Scale, Is.EqualTo(2), "Unexpected scale for UtcDateTime");
+
+			type = pc.GetPropertyType(nameof(MultiTypeEntity.TimeProp));
+			Assert.That(type.SqlTypes(factory)[0].Scale, Is.EqualTo(3), "Unexpected scale for TimeProp");
+
+			type = pc.GetPropertyType(nameof(MultiTypeEntity.TimeAsTimeSpan));
+			Assert.That(type.SqlTypes(factory)[0].Scale, Is.EqualTo(4), "Unexpected scale for TimeAsTimeSpan");
+
+			type = pc.GetPropertyType(nameof(MultiTypeEntity.DateTimeOffsetProp));
+			Assert.That(type.SqlTypes(factory)[0].Scale, Is.EqualTo(5), "Unexpected scale for DateTimeOffsetProp");
 		}
 
 		protected abstract string GetResourceName();
@@ -128,13 +155,12 @@ namespace NHibernate.Test.TypesTest
 		}
 	}
 
-
 	[TestFixture, Ignore("Not fixed yet.")]
 	public class FixtureWithSqlType : TypeSqlTypeFixture
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect is MsSql2000Dialect;
+			return dialect is MsSql2008Dialect;
 		}
 		protected override string GetResourceName()
 		{

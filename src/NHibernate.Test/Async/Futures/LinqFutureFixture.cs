@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System.Collections.Generic;
 using NHibernate.Driver;
 using NHibernate.Linq;
 using NUnit.Framework;
@@ -205,7 +206,7 @@ namespace NHibernate.Test.Futures
 		public async Task CanUseFutureFetchQueryAsync()
 		{
 			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
-			
+
 			using (var s = Sfi.OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
@@ -279,7 +280,7 @@ namespace NHibernate.Test.Futures
 		public async Task CanCombineSingleFutureValueWithEnumerableFuturesAsync()
 		{
 			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
-			
+
 			using (var s = Sfi.OpenSession())
 			{
 				var persons = s.Query<Person>()
@@ -364,11 +365,51 @@ namespace NHibernate.Test.Futures
 					var events = logSpy.Appender.GetEvents();
 					Assert.AreEqual(1, events.Length);
 					var wholeLog = logSpy.GetWholeLog();
-					string paramPrefix = ((DriverBase)Sfi.ConnectionProvider.Driver).NamedPrefix;
+					string paramPrefix = ((DriverBase) Sfi.ConnectionProvider.Driver).NamedPrefix;
 					Assert.That(
 						wholeLog,
 						Does.Contain(paramPrefix + "p0 = 1 [Type: Int32 (0:0:0)], " + paramPrefix + "p1 = 2 [Type: Int32 (0:0:0)]"));
 				}
+			}
+		}
+
+		[Test]
+		public async Task UsingManyParametersAndQueries_DoesNotCauseParameterNameCollisionsAsync()
+		{
+			//GH-1357
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var p1 = new Person { Name = "Person name", Age = 15};
+				var p2 = new Person { Name = "Person name", Age = 5 };
+
+				await (s.SaveAsync(p1));
+				await (s.SaveAsync(p2));
+				await (tx.CommitAsync());
+			}
+			using (var s = Sfi.OpenSession())
+			{
+				var list = new List<IFutureEnumerable<Person>>();
+				for (var i = 0; i < 12; i++)
+				{
+					var query = s.Query<Person>();
+					for (var j = 0; j < 12; j++)
+					{
+						query = query.Where(x => x.Age > j);
+					}
+					list.Add(query.WithOptions(x => x.SetCacheable(true)).ToFuture());
+				}
+				foreach (var query in list)
+				{
+					var result = query.ToList();
+					Assert.That(result.Count,Is.EqualTo(1));
+				}
+			}
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				await (s.DeleteAsync("from Person"));
+				await (tx.CommitAsync());
 			}
 		}
 	}

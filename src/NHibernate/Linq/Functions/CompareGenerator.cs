@@ -32,6 +32,8 @@ namespace NHibernate.Linq.Functions
 
 				ReflectHelper.GetMethodDefinition<float>(x => x.CompareTo(x)),
 				ReflectHelper.GetMethodDefinition<double>(x => x.CompareTo(x)),
+				
+				ReflectHelper.GetMethodDefinition(() => decimal.Compare(default(decimal), default(decimal))),
 				ReflectHelper.GetMethodDefinition<decimal>(x => x.CompareTo(x)),
 
 				ReflectHelper.GetMethodDefinition<DateTime>(x => x.CompareTo(x)),
@@ -44,17 +46,9 @@ namespace NHibernate.Linq.Functions
 				return true;
 
 			// This is .Net 4 only, and in the System.Data.Services assembly, which we don't depend directly on.
-			if (methodInfo != null && methodInfo.Name == "Compare" &&
+			return methodInfo != null && methodInfo.Name == "Compare" &&
 				   methodInfo.DeclaringType != null &&
-				   methodInfo.DeclaringType.FullName == "System.Data.Services.Providers.DataServiceProviderMethods")
-				return true;
-
-			if (methodInfo != null && methodInfo.Name == "CompareString" &&
-				   methodInfo.DeclaringType != null &&
-				   (methodInfo.DeclaringType.FullName == "Microsoft.VisualBasic.CompilerServices.EmbeddedOperators"))
-				return true;
-
-			return false;
+				   methodInfo.DeclaringType.FullName == "System.Data.Services.Providers.DataServiceProviderMethods";
 		}
 
 

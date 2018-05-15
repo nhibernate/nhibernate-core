@@ -62,7 +62,6 @@ namespace NHibernate.Type
 			{
 				return Task.FromException<object>(ex);
 			}
-			// NOOP
 		}
 
 		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
@@ -214,9 +213,9 @@ namespace NHibernate.Type
 					}
 				}
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Created collection wrapper: " + MessageHelper.CollectionInfoString(persister, collection, key, session));
+					log.Debug("Created collection wrapper: {0}", MessageHelper.CollectionInfoString(persister, collection, key, session));
 				}
 			}
 			collection.Owner = owner;

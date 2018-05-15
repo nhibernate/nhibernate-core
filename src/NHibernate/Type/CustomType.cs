@@ -64,11 +64,7 @@ namespace NHibernate.Type
 			sqlTypes = userType.SqlTypes;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="mapping"></param>
-		/// <returns></returns>
+		/// <inheritdoc />
 		public override SqlType[] SqlTypes(IMapping mapping)
 		{
 			return sqlTypes;

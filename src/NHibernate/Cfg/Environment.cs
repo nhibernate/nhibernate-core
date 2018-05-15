@@ -6,6 +6,7 @@ using System.Reflection;
 using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
 using NHibernate.Engine;
+using NHibernate.Linq;
 using NHibernate.Util;
 
 namespace NHibernate.Cfg
@@ -78,6 +79,7 @@ namespace NHibernate.Cfg
 		public const string ConnectionStringName = "connection.connection_string_name";
 
 		// Unused, Java-specific
+		// But has many code usage though.
 		public const string SessionFactoryName = "session_factory_name";
 
 		public const string Dialect = "dialect";
@@ -109,13 +111,16 @@ namespace NHibernate.Cfg
 		/// <summary> Enable formatting of SQL logged to the console</summary>
 		public const string FormatSql = "format_sql";
 
-		// Unused, Java-specific
+		// Since v5.0.1
+		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string UseGetGeneratedKeys = "jdbc.use_get_generated_keys";
 
-		// Unused, not implemented
+		// Since v5.0.1
+		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string StatementFetchSize = "jdbc.fetch_size";
 
-		// Unused, not implemented
+		// Since v5.0.1
+		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string OutputStylesheet = "xml.output_stylesheet";
 
 		public const string TransactionStrategy = "transaction.factory_class";
@@ -140,7 +145,8 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public const string UseConnectionOnSystemTransactionPrepare = "transaction.use_connection_on_system_prepare";
 
-		// Unused, not implemented (and somewhat Java-specific)
+		// Since v5.0.1
+		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string TransactionManagerStrategy = "transaction.manager_lookup_class";
 
 		public const string CacheProvider = "cache.provider_class";
@@ -159,19 +165,25 @@ namespace NHibernate.Cfg
 		/// <summary> Enable statistics collection</summary>
 		public const string GenerateStatistics = "generate_statistics";
 
+		// Its test is ignored with reason "Not supported yet".
 		public const string UseIdentifierRollBack = "use_identifier_rollback";
 
-		// The classname of the HQL query parser factory
+		/// <summary>
+		/// The classname of the HQL query parser factory.
+		/// </summary>
 		public const string QueryTranslator = "query.factory_class";
 
-		// The class name of the LINQ query provider class, implementing from <see cref="INhQueryProvider"/>
+		/// <summary>
+		/// The class name of the LINQ query provider class, implementing <see cref="INhQueryProvider"/>.
+		/// </summary>
 		public const string QueryLinqProvider = "query.linq_provider_class";
 
+		// Since v5.0.1
+		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string QueryImports = "query.imports";
 		public const string Hbm2ddlAuto = "hbm2ddl.auto";
 		public const string Hbm2ddlKeyWords = "hbm2ddl.keywords";
 
-		// Unused, not implemented
 		public const string SqlExceptionConverter = "sql_exception_converter";
 
 		public const string BatchVersionedData = "adonet.batch_versioned_data";
@@ -181,6 +193,9 @@ namespace NHibernate.Cfg
 
 		// NHibernate-specific properties
 		public const string PrepareSql = "prepare_sql";
+		/// <summary>
+		/// Set the default timeout in seconds for ADO.NET queries.
+		/// </summary>
 		public const string CommandTimeout = "command_timeout";
 
 		public const string PropertyBytecodeProvider = "bytecode.provider";
@@ -195,18 +210,42 @@ namespace NHibernate.Cfg
 
 		public const string LinqToHqlGeneratorsRegistry = "linqtohql.generatorsregistry";
 
-		/// <summary> Enable ordering of insert statements for the purpose of more effecient batching.</summary>
+		/// <summary> Enable ordering of insert statements for the purpose of more efficient batching.</summary>
 		public const string OrderInserts = "order_inserts";
 
-		/// <summary> Enable ordering of update statements for the purpose of more effecient batching.</summary>
+		/// <summary> Enable ordering of update statements for the purpose of more efficient batching.</summary>
 		public const string OrderUpdates = "order_updates";
 
 		public const string QueryModelRewriterFactory = "query.query_model_rewriter_factory";
 
 		/// <summary>
+		/// Set the default length used in casting when the target type is length bound and
+		/// does not specify it. <c>4000</c> by default, automatically trimmed down according to dialect type registration.
+		/// </summary>
+		public const string QueryDefaultCastLength = "query.default_cast_length";
+
+		/// <summary>
+		/// Set the default precision used in casting when the target type is decimal and
+		/// does not specify it. <c>29</c> by default, automatically trimmed down according to dialect type registration.
+		/// </summary>
+		public const string QueryDefaultCastPrecision = "query.default_cast_precision";
+
+		/// <summary>
+		/// Set the default scale used in casting when the target type is decimal and
+		/// does not specify it. <c>10</c> by default, automatically trimmed down according to dialect type registration.
+		/// </summary>
+		public const string QueryDefaultCastScale = "query.default_cast_scale";
+
+		/// <summary>
 		/// This may need to be set to 3 if you are using the OdbcDriver with MS SQL Server 2008+.
 		/// </summary>
 		public const string OdbcDateTimeScale = "odbc.explicit_datetime_scale";
+
+		/// <summary>
+		/// Disable switching built-in NHibernate date-time types from DbType.DateTime to DbType.DateTime2
+		/// for dialects supporting datetime2.
+		/// </summary>
+		public const string SqlTypesKeepDateTime = "sql_types.keep_datetime";
 
 		/// <summary>
 		/// <para>Oracle has a dual Unicode support model.</para>
@@ -222,12 +261,24 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public const string OracleUseNPrefixedTypesForUnicode = "oracle.use_n_prefixed_types_for_unicode";
 
-		private static readonly Dictionary<string, string> GlobalProperties;
+		/// <summary>
+		/// <para>Set whether tracking the session id or not. When <see langword="true"/>, each session 
+		/// will have an unique <see cref="Guid"/> that can be retrieved by <see cref="ISessionImplementor.SessionId"/>,
+		/// otherwise <see cref="ISessionImplementor.SessionId"/> will always be <see cref="Guid.Empty"/>. Session id 
+		/// is used for logging purpose that can be also retrieved in a static context by 
+		/// <see cref="NHibernate.Impl.SessionIdLoggingContext.SessionId"/>, where the current session id is stored,
+		/// when tracking is enabled.</para>
+		/// In case the current session id won't be used, it is recommended to disable it, in order to increase performance.
+		/// <para>Default is <see langword="true"/>.</para>
+		/// </summary>
+		public const string TrackSessionId = "track_session_id";
+
+		private static readonly Dictionary<string, string> GlobalProperties = new Dictionary<string, string>();
 
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Environment));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(Environment));
 
 		/// <summary>
 		/// Issue warnings to user when any obsolete property names are used.
@@ -239,14 +290,35 @@ namespace NHibernate.Cfg
 		static Environment()
 		{
 			// Computing the version string is a bit expensive, so do it only if logging is enabled.
-			if (log.IsInfoEnabled)
+			if (log.IsInfoEnabled())
 			{
-				log.Info("NHibernate " + Version);
+				log.Info("NHibernate {0}", Version);
 			}
 
-			GlobalProperties = new Dictionary<string, string>();
-			GlobalProperties[PropertyUseReflectionOptimizer] = bool.TrueString;
-			LoadGlobalPropertiesFromAppConfig();
+			InitializeGlobalProperties(GetHibernateConfiguration());
+		}
+
+		public static void InitializeGlobalProperties(IHibernateConfiguration config)
+		{
+			GlobalProperties.Clear();
+			if (config != null)
+			{
+				HibernateConfiguration = config;
+				GlobalProperties[PropertyBytecodeProvider] = config.ByteCodeProviderType;
+				GlobalProperties[PropertyUseReflectionOptimizer] = config.UseReflectionOptimizer.ToString();
+				if (config.SessionFactory != null)
+				{
+					foreach (var kvp in config.SessionFactory.Properties)
+					{
+						GlobalProperties[kvp.Key] = kvp.Value;
+					}
+				}
+			}
+			else
+			{
+				GlobalProperties[PropertyUseReflectionOptimizer] = bool.TrueString;
+			}
+
 			VerifyProperties(GlobalProperties);
 
 			BytecodeProviderInstance = BuildBytecodeProvider(GlobalProperties);
@@ -258,58 +330,26 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private static void LoadGlobalPropertiesFromAppConfig()
+		internal static IHibernateConfiguration HibernateConfiguration { get; private set; }
+
+		private static IHibernateConfiguration GetHibernateConfiguration()
 		{
 			object config = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName);
-
 			if (config == null)
 			{
-				log.Info(string.Format("{0} section not found in application configuration file", CfgXmlHelper.CfgSectionName));
-				return;
+				log.Info("{0} section not found in application configuration file", CfgXmlHelper.CfgSectionName);
+				return null;
 			}
 
 			var nhConfig = config as IHibernateConfiguration;
 			if (nhConfig == null)
 			{
 				log.Info(
-					string.Format(
-						"{0} section handler, in application configuration file, is not IHibernateConfiguration, section ignored",
-						CfgXmlHelper.CfgSectionName));
-				return;
+					"{0} section handler, in application configuration file, is not IHibernateConfiguration, section ignored",
+					CfgXmlHelper.CfgSectionName);
 			}
 
-			GlobalProperties[PropertyBytecodeProvider] = nhConfig.ByteCodeProviderType;
-			GlobalProperties[PropertyUseReflectionOptimizer] = nhConfig.UseReflectionOptimizer.ToString();
-			if (nhConfig.SessionFactory != null)
-			{
-				foreach (var kvp in nhConfig.SessionFactory.Properties)
-				{
-					GlobalProperties[kvp.Key] = kvp.Value;
-				}
-			}
-		}
-
-		internal static void ResetSessionFactoryProperties()
-		{
-			string savedBytecodeProvider;
-			GlobalProperties.TryGetValue(PropertyBytecodeProvider, out savedBytecodeProvider);
-			// Save values loaded and used in static constructor
-
-			string savedUseReflectionOptimizer;
-			GlobalProperties.TryGetValue(PropertyUseReflectionOptimizer, out savedUseReflectionOptimizer);
-			// Clean all property loaded from app.config
-			GlobalProperties.Clear();
-
-			// Restore values loaded and used in static constructor
-			if (savedBytecodeProvider != null)
-			{
-				GlobalProperties[PropertyBytecodeProvider] = savedBytecodeProvider;
-			}
-
-			if (savedUseReflectionOptimizer != null)
-			{
-				GlobalProperties[PropertyUseReflectionOptimizer] = savedUseReflectionOptimizer;
-			}
+			return nhConfig;
 		}
 
 		/// <summary>
@@ -362,7 +402,7 @@ namespace NHibernate.Cfg
 		{
 			const string defaultBytecodeProvider = "lcg";
 			string provider = PropertiesHelper.GetString(PropertyBytecodeProvider, properties, defaultBytecodeProvider);
-			log.Info("Bytecode provider name : " + provider);
+			log.Info("Bytecode provider name : {0}", provider);
 			return BuildBytecodeProvider(provider);
 		}
 
@@ -375,7 +415,7 @@ namespace NHibernate.Cfg
 				case "null":
 					return new NullBytecodeProvider();
 				default:
-					log.Info("custom bytecode provider [" + providerName + "]");
+					log.Info("custom bytecode provider [{0}]", providerName);
 					return CreateCustomBytecodeProvider(providerName);
 			}
 		}

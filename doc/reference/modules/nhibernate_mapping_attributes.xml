@@ -248,7 +248,7 @@ public MyType MyProperty;</programlisting>
 				<para>Updating <filename>/src/NHibernate.Mapping.Attributes/nhibernate-mapping.xsd</filename> (copy/paste) and running the Generator again (even if it wasn't modified)</para>
 			</listitem>
 			<listitem>
-				<para>Running the Test project and make sure that no exception is thrown. A class/property should be modified/added in this project to be sure that any new breaking change will be caught (=> update the reference hbm.xml files and/or the project <filename>NHibernate.Mapping.Attributes-2.0.csproj</filename>)</para>
+				<para>Running the Test project and make sure that no exception is thrown. A class/property should be modified/added in this project to be sure that any new breaking change will be caught (=> update the reference hbm.xml files and/or the project <filename>NHibernate.Mapping.Attributes.csproj</filename>)</para>
 			</listitem>
 		</orderedlist>
 		<para>This implementation is based on NHibernate mapping schema; so there is probably lot of "standard schema features" that are not supported...</para>

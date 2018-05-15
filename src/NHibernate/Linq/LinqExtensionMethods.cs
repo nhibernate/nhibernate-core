@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using NHibernate.Impl;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -2447,42 +2446,55 @@ namespace NHibernate.Linq
 		}
 
 
-		internal static readonly MethodInfo SetOptionsDefinition =
-			ReflectHelper.GetMethodDefinition(() => SetOptions<object>(null, null));
-
 		/// <summary>
-		/// Allow to set NHibernate query options.
+		/// Allows to set NHibernate query options.
 		/// </summary>
 		/// <typeparam name="T">The type of the queried elements.</typeparam>
 		/// <param name="query">The query on which to set options.</param>
 		/// <param name="setOptions">The options setter.</param>
 		/// <returns>The query altered with the options.</returns>
+		//Since v5.1
+		[Obsolete("Please use WithOptions instead.")]
 		public static IQueryable<T> SetOptions<T>(this IQueryable<T> query, Action<IQueryableOptions> setOptions)
 		{
-			var method = SetOptionsDefinition.MakeGenericMethod(typeof(T));
-			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(setOptions));
-			return new NhQueryable<T>(query.Provider, callExpression);
+			return WithOptions(query, setOptions);
+		}
+
+		/// <summary>
+		/// Allows to set NHibernate query options.
+		/// </summary>
+		/// <typeparam name="T">The type of the queried elements.</typeparam>
+		/// <param name="query">The query on which to set options.</param>
+		/// <param name="setOptions">The options setter.</param>
+		/// <returns>The query altered with the options.</returns>
+		public static IQueryable<T> WithOptions<T>(this IQueryable<T> query, Action<NhQueryableOptions> setOptions)
+		{
+			if (!(query.Provider is IQueryProviderWithOptions queryProvider))
+				throw new NotSupportedException(
+					$"The query.Provider does not support setting options. Please implement {nameof(IQueryProviderWithOptions)}.");
+
+			return queryProvider.WithOptions(setOptions).CreateQuery<T>(query.Expression);
 		}
 
 		// Since v5
-		[Obsolete("Please use SetOptions instead.")]
+		[Obsolete("Please use WithOptions instead.")]
 		public static IQueryable<T> Cacheable<T>(this IQueryable<T> query)
-			=> query.SetOptions(o => o.SetCacheable(true));
+			=> query.WithOptions(o => o.SetCacheable(true));
 
 		// Since v5
-		[Obsolete("Please use SetOptions instead.")]
+		[Obsolete("Please use WithOptions instead.")]
 		public static IQueryable<T> CacheMode<T>(this IQueryable<T> query, CacheMode cacheMode)
-			=> query.SetOptions(o => o.SetCacheMode(cacheMode));
+			=> query.WithOptions(o => o.SetCacheMode(cacheMode));
 
 		// Since v5
-		[Obsolete("Please use SetOptions instead.")]
+		[Obsolete("Please use WithOptions instead.")]
 		public static IQueryable<T> CacheRegion<T>(this IQueryable<T> query, string region)
-			=> query.SetOptions(o => o.SetCacheRegion(region));
+			=> query.WithOptions(o => o.SetCacheRegion(region));
 
 		// Since v5
-		[Obsolete("Please use SetOptions instead.")]
+		[Obsolete("Please use WithOptions instead.")]
 		public static IQueryable<T> Timeout<T>(this IQueryable<T> query, int timeout)
-			=> query.SetOptions(o => o.SetTimeout(timeout));
+			=> query.WithOptions(o => o.SetTimeout(timeout));
 
 		/// <summary>
 		/// Allows to specify the parameter NHibernate type to use for a literal in a queryable expression.

@@ -12,5 +12,7 @@
 			get { return _aLotOfText; }
 			set { _aLotOfText = value; }
 		}
+
+		public virtual string FieldInterceptor { get; set; }
 	}
 }

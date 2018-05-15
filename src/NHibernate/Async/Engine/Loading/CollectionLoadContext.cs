@@ -56,7 +56,8 @@ namespace NHibernate.Engine.Loading
 				LoadingCollectionEntry lce = loadContexts.LocateLoadingCollectionEntry(collectionKey);
 				if (lce == null)
 				{
-					log.Warn("In CollectionLoadContext#endLoadingCollections, localLoadingCollectionKeys contained [" + collectionKey + "], but no LoadingCollectionEntry was found in loadContexts");
+					log.Warn("In CollectionLoadContext#endLoadingCollections, localLoadingCollectionKeys contained [{0}], but no LoadingCollectionEntry was found in loadContexts", 
+						collectionKey);
 				}
 				else if (lce.ResultSet == resultSet && lce.Persister == persister)
 				{
@@ -66,9 +67,9 @@ namespace NHibernate.Engine.Loading
 						session.PersistenceContext.AddUnownedCollection(new CollectionKey(persister, lce.Key),
 																		lce.Collection);
 					}
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug("removing collection load entry [" + lce + "]");
+						log.Debug("removing collection load entry [{0}]", lce);
 					}
 
 					// todo : i'd much rather have this done from #endLoadingCollection(CollectionPersister,LoadingCollectionEntry)...
@@ -96,17 +97,17 @@ namespace NHibernate.Engine.Loading
 			cancellationToken.ThrowIfCancellationRequested();
 			if (matchedCollectionEntries == null || matchedCollectionEntries.Count == 0)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("no collections were found in result set for role: " + persister.Role);
+					log.Debug("no collections were found in result set for role: {0}", persister.Role);
 				}
 				return;
 			}
 
 			int count = matchedCollectionEntries.Count;
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug(count + " collections were found in result set for role: " + persister.Role);
+				log.Debug("{0} collections were found in result set for role: {1}", count, persister.Role);
 			}
 
 			for (int i = 0; i < count; i++)
@@ -114,20 +115,22 @@ namespace NHibernate.Engine.Loading
 				await (EndLoadingCollectionAsync(matchedCollectionEntries[i], persister, cancellationToken)).ConfigureAwait(false);
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug(count + " collections initialized for role: " + persister.Role);
+				log.Debug("{0} collections initialized for role: {1}", count, persister.Role);
 			}
 		}
 
 		private async Task EndLoadingCollectionAsync(LoadingCollectionEntry lce, ICollectionPersister persister, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("ending loading collection [" + lce + "]");
+				log.Debug("ending loading collection [{0}]", lce);
 			}
-			ISessionImplementor session = LoadContext.PersistenceContext.Session;
+
+			var persistenceContext = LoadContext.PersistenceContext;
+			var session = persistenceContext.Session;
 
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
 			var stopWath = new Stopwatch();
@@ -140,17 +143,17 @@ namespace NHibernate.Engine.Loading
 
 			if (persister.CollectionType.HasHolder())
 			{
-				LoadContext.PersistenceContext.AddCollectionHolder(lce.Collection);
+				persistenceContext.AddCollectionHolder(lce.Collection);
 			}
 
-			CollectionEntry ce = LoadContext.PersistenceContext.GetCollectionEntry(lce.Collection);
+			CollectionEntry ce = persistenceContext.GetCollectionEntry(lce.Collection);
 			if (ce == null)
 			{
-				ce = LoadContext.PersistenceContext.AddInitializedCollection(persister, lce.Collection, lce.Key);
+				ce = persistenceContext.AddInitializedCollection(persister, lce.Collection, lce.Key);
 			}
 			else
 			{
-				ce.PostInitialize(lce.Collection);
+				ce.PostInitialize(lce.Collection, persistenceContext);
 			}
 
 			bool addToCache = hasNoQueuedAdds && persister.HasCache && 
@@ -161,9 +164,9 @@ namespace NHibernate.Engine.Loading
 				await (AddCollectionToCacheAsync(lce, persister, cancellationToken)).ConfigureAwait(false);
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("collection fully initialized: " + MessageHelper.CollectionInfoString(persister, lce.Collection, lce.Key, session));
+				log.Debug("collection fully initialized: {0}", MessageHelper.CollectionInfoString(persister, lce.Collection, lce.Key, session));
 			}
 
 			if (statsEnabled)
@@ -183,9 +186,9 @@ namespace NHibernate.Engine.Loading
 			ISessionImplementor session = LoadContext.PersistenceContext.Session;
 			ISessionFactoryImplementor factory = session.Factory;
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Caching collection: " + MessageHelper.CollectionInfoString(persister, lce.Collection, lce.Key, session));
+				log.Debug("Caching collection: {0}", MessageHelper.CollectionInfoString(persister, lce.Collection, lce.Key, session));
 			}
 
 			if (!(session.EnabledFilters.Count == 0) && persister.IsAffectedByEnabledFilters(session))

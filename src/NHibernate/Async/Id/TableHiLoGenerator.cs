@@ -53,7 +53,7 @@ namespace NHibernate.Id
 					long hival = Convert.ToInt64(await (base.GenerateAsync(session, obj, cancellationToken)).ConfigureAwait(false));
 					lo = (hival == 0) ? 1 : 0;
 					hi = hival * (maxLo + 1);
-					log.Debug("New high value: " + hival);
+					log.Debug("New high value: {0}", hival);
 				}
 
 				return IdentifierGeneratorFactory.CreateNumber(hi + lo++, returnClass);

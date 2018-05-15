@@ -73,19 +73,13 @@ namespace NHibernate.Mapping
 				if (property == null)
 					throw new MappingException("Could not find property " + ReferencedPropertyName + " on " + ReferencedEntityName);
 
-				if (!HasFormula && !"none".Equals(ForeignKeyName, StringComparison.InvariantCultureIgnoreCase))
+				if (!HasFormula && !"none".Equals(ForeignKeyName, StringComparison.OrdinalIgnoreCase))
 				{
 
 					IEnumerable<Column> ce = new SafetyEnumerable<Column>(property.ColumnIterator);
 
-					// NH : The four lines below was added to ensure that related columns have same length,
-					// like ForeignKey.AlignColumns() do
-					using (var fkCols = ConstraintColumns.GetEnumerator())
-					using (var pkCols = ce.GetEnumerator())
-					{
-						while (fkCols.MoveNext() && pkCols.MoveNext())
-							fkCols.Current.Length = pkCols.Current.Length;
-					}
+					// NH : Ensure that related columns have same length
+					ForeignKey.AlignColumns(ConstraintColumns, ce);
 
 					ForeignKey fk =
 						Table.CreateForeignKey(ForeignKeyName, ConstraintColumns, ((EntityType)Type).GetAssociatedEntityName(), ce);

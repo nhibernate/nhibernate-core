@@ -68,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3149
 
 				thread.Start();
 
-				Thread.Sleep(1000);
+				await (Task.Delay(1000));
 
 				var watch = new Stopwatch();
 				watch.Start();

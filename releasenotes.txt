@@ -1,3 +1,601 @@
+Build 5.1.2
+=============================
+
+Release notes - NHibernate - Version 5.1.2
+
+** Bug
+
+   * #1680 RowCount not working with JoinEntityAlias
+   * #1672 Generated async methods do not correctly propagate OperationCanceledException
+   * #1667 Collection initializing with zero rows after update to NH5
+   * #1660 Wrong CopyTo implementation
+   * #1650 Cannot use cache.use_sliding_expiration in hibernate.cfg.xml
+   * #1585 Hashset unsupported by SetParameterList
+   * #1355 NH-3928 - Random invalid SQL generated when using bitwise operators
+
+** Task
+
+   * #1668 Merge 5.0.5 into 5.1.x
+   * #1664 Release 5.1.2
+   * #1659 Merge 5.0.4 into 5.1.x
+
+As part of releasing 5.1.2, a missing 5.0.0 possible breaking change has been added about future queries with data
+providers not actually supporting them. See 5.0.0 possible breaking changes.
+
+
+Build 5.1.1
+=============================
+
+Release notes - NHibernate - Version 5.1.1
+
+** Bug
+
+   * #1645 One-to-one with property-ref triggers StackOverflow Exception
+   * #1643 TypeLoadException in StaticProxyFactory after upgrading to 5.1.0
+   * #1640 Handle all overloads of String.Trim*()
+   * #1636 Fix api documentation assets path
+   * #1628 StackOverflowException for lazy proxied entities with explicit interface properties
+   * #1618 Fix NuGet push script
+   * #1149 NH-3391 - StatelessSession: one-to-one detail-object is always null
+
+** Improvement
+
+   * #1646 Add a link to release notes in NuGet package
+   * #1639 Speedup access to SQL Server on Linux
+   * #1624 Add missing ids on documentation sections
+   * #1619 Document "entity join" and "entity projection"
+
+** Task
+
+   * #1649 Release 5.1.1
+   * #1622 Update cache documentation
+   * #1621 Upgrade Async Generator to a version compatible with VS 15.6.3
+
+
+Build 5.1.0
+=============================
+
+Release notes - NHibernate - Version 5.1.0
+
+** Highlights
+    * NHibernate has gained two new target frameworks: .Net Core 2.0 and .Net Standard 2.0. NHibernate NuGet package
+      provides them, along with the .Net framework 4.6.1 build.
+      For these new frameworks, some additional specificities or limitations apply:
+      * Binary serialization is not supported - the user shall implement serialization surrogates for System.Type,
+        FieldInfo, PropertyInfo, MethodInfo, ConstructorInfo, Delegate, etc.
+      * SqlClient, Odbc, Oledb drivers are converted to ReflectionBasedDriver to avoid the extra dependencies.
+      * CallSessionContext uses a static AsyncLocal field to mimic the CallContext behavior.
+      * System transactions (transaction scopes) are untested, due to the lack of data providers supporting them.
+    * 114 issues were resolved in this release.
+
+    ##### Possible Breaking Changes #####
+        * Since Ingres9Dialect is now supporting sequences, the enhanced-sequence identifier generator will default to
+          using a sequence instead of a table. Revert to previous behavior by using its force_table_use parameter.
+        * Some overridable methods of the Dialect base class and of MsSql2000Dialect have been obsoleted in favor of
+          new methods. Dialects implementors need to override the replacing methods if they were overriding the
+          obsolete ones, which are:
+          * Dialect.GetIfNotExistsCreateConstraint(Table table, string name), replaced by
+            GetIfNotExistsCreateConstraint(string catalog, string schema, string table, string name).
+          * Dialect.GetIfNotExistsCreateConstraintEnd(Table table, string name), replaced by
+            GetIfNotExistsCreateConstraintEnd(string catalog, string schema, string table, string name).
+          * Dialect.GetIfExistsDropConstraint(Table table, string name), replaced by
+            GetIfExistsDropConstraint(string catalog, string schema, string table, string name).
+          * Dialect.GetIfExistsDropConstraintEnd(Table table, string name), replaced by
+            GetIfExistsDropConstraintEnd(string catalog, string schema, string table, string name).
+          * MsSql2000Dialect.GetSelectExistingObject(string name, Table table), replaced by
+            GetSelectExistingObject(string catalog, string schema, string table, string name).
+
+** Bug
+
+   * #1606 NHibernate 5 precision maximum on decimal reduced vs. NHibernate 4
+   * #1605 MySql batcher may attempt initiating a new batch without closing open reader first.
+   * #1604 MySql batcher disables db exception translation
+   * #1602 Preserve original snapshot mode.
+   * #1594 AsyncLocal leak in SystemTransactionContext
+   * #1587 Prevent substitute garbage collection
+   * #1565 For update with outer join fails with PostgreSQL
+   * #1562 Fix round registration
+   * #1559 Deep removal of Fetch result operators when Any is used
+   * #1556 Linq query with "Contains" on persistent collection fails
+   * #1551 Assert for a null reference in a flaky test.
+   * #1536 Avoid a null reference exception in ExpressionKeyVisitor
+   * #1535 Fix some HQL functions registration
+   * #1534 Fixed entity name retrieval for EntityProjection
+   * #1526 ExpressionKeyVisitor does not produce unique keys for anonymous types coming from different assemblies
+   * #1514 Fix exceptions serialization
+   * #1511 Test Unicode string.
+   * #1509 Add missing NHibernateLogLevel.Info in example web project
+   * #1507 NH-3119 - fix test not supporting optimization
+   * #1506 SQLite is bugged with distributed transactions: disable distributed tests
+   * #1505 Chaining scopes with ODBC is bugged: disabling the test.
+   * #1501 Fix NH-3023 test
+   * #1496 Fix ManyToOneType.IsModified to handle both object instance and identifier passed to the parameter ‚Äúold‚Äù.
+   * #1491 Forgotten async generation for #1487
+   * #1486 Fix IsModified so that a null equates empty components when using select-before-update.
+   * #1484 Fix default types
+   * #1478 Exception when using envers with the latest logging changes
+   * #1476 Fix GetQueryCache storing two different caches.
+   * #1468 Comparison with DateTime? produces wrong SQL
+   * #1463 Fix a null reference case in session context
+   * #1454 Fix ProxyFactory cache
+   * #1445 Upgrade AsyncGenerator to 0.6.2 and regenerate.
+   * #1442 Unable to use an entity with a `FieldInterceptor` property and a lazy loaded property
+   * #1436 StackOverflowException when merging an entity with a lazy property
+   * #1434 Replace remaining SetOptions with WithOptions
+   * #1385 SecondLevelCache CreateSQLQuery().UniqueResult<int>() throws Exception Specified cast is not valid.
+   * #1372 NH-3982 - Simple query with Cacheable, Fetch and SingleOrDefault throws exception (regression from 3.3.0)
+   * #1371 NH-3898 - Configuring a property with generated="insert" turns "Property.IsUpdatable" into"false" even using update="true" in the xml mapping file.
+   * #1363 NH-2500 - NH 3.0 Linq provider uses query parameters from first call in subsequent calls.
+   * #1335 NH-3787 - Decimal truncation in Linq ternary expression
+   * #1330 NH-3673 - Closure variable values locked in from expressions in NHibernate LINQ provider
+   * #1226 NH-2534 - Join-fetching a many-to-one with property-ref results in select n+1 problem
+   * #1196 NH-4087 - Decimal truncation occurs after 5 digits
+   * #1119 NH-3084 - Class NHibernate.Loader.Loader logs SQL statement on INFO level
+   * #1052 NH-3976 - Inconsistent Decimal/NHibernateUtil.Currency handling causing runtime error when using Oracle.ManagedDataAccess
+   * #987 NH-1509 - MsSql2000Dialect does not use default schema when creating "if exists" statement
+   * #448 NH-1285 - Drop/Create script with default_schema/default_catalog fix(SqlServer)
+
+** New Feature
+
+   * #1588 Add a generic batcher for insert/update/delete statements, usable with PostgreSQL and others
+   * #1545 Support to join not associated entities in Criteria (aka Entity Join)
+   * #1451 New StaticProxyFactoryFactory
+   * #1403 Add timeouts support to MultiCriteria
+   * #1377 Logging refactoring
+   * #954 NH-3807 - Support for .NET Core 2.0
+   * #948 NH-3435 - Ability to select entities in Criteria projections
+   * #910 NH-3606 - Open a stateless session from a session
+   * #908 NH-3470 - Allow Linq Query to load entities as read-only
+
+** Improvement
+
+   * #1600 Set MySqlClientBatchingBatcher as a default batcher for MySqlDataDriver
+   * #1597 Add support for single-argument truncate to dialects that do not support it natively
+   * #1569 Modernize test example
+   * #1567 Avoid Trim().Length as empty check and ToLowerInvariant() in string comparison
+   * #1561 NAnt refactoring
+   * #1558 Improved collection batch fetching
+   * #1557 Aggregate named queries validation exceptions.
+   * #1555 Catch practices: avoid losing catched exception information.
+   * #1552 Obsolete UnmodifiableDictionary
+   * #1549 Remove an override which was doing the same thing as the base
+   * #1548 Add a missing short circuit in query parameter expansion.
+   * #1547 Double query translation
+   * #1546 Remove a redundant argument in Linq provider ExecuteQuery.
+   * #1543 Various string manipulation optimizations
+   * #1541 Cache subclass entity aliases in Loader
+   * #1537 Avoid unnecessary persister lookup in Loader
+   * #1529 Lazy mapping schema loading
+   * #1521 Enable warning as error for all projects and configurations
+   * #1519 Reuse SchemaExport in CreateSchema/DropSchema in tests
+   * #1515 Make NHibernateUtil.Initialize / IsInitialized better reusable for sub-projects like Envers
+   * #1504 More reliable SQLite handling in tests.
+   * #1502 Upgrade Iesi to 4.0.3 in order to use a release assembly
+   * #1498 Cease throwing bare Exception
+   * #1494 Update to Oracle installation instructions.
+   * #1490 Optimize empty arrays usages
+   * #1483 Clean-up of TypeFactory
+   * #1482 Refactored DefaultEntityAliases to avoid unnecessary calculations
+   * #1477 Reuse the same generic EmptyMapClass instance across the project
+   * #1475 Document expiration constraint on UpdateTimestampsCache region.
+   * #1467 Reduce the number of calls to UpdateTimestampsCache
+   * #1466 Obsolete EqualsHelper
+   * #1465 Obsolete EnumerableExtensions
+   * #1464 Obsolete ISessionImplementor.Initialize method
+   * #1449 Document IsDirty potential side effects
+   * #1441 Normalize TargetInvocationException unwrapping
+   * #1417 Table counter for aliases should be stable
+   * #1412 Store Linq query options in a query provider instead of a queryable
+   * #1391 Performance regression in SessionIdLoggingContext
+   * #843 NH-3879 - SequenceHiLoGenerator Jumps 1 number each lo > maxLo
+   * #842 NH-3869 - Add a way of adding comments into LINQ queries
+   * #837 NH-3804 - Register CHR/CHAR, NCHAR, UNICODE, and ASCII standard functions to the dialect(s)
+   * #831 NH-3515 - Support for Decimal.Round, Decimal.Ceiling, Decimal.Floor and other static methods of Decimal class
+   * #768 NH-3921 - Support sequences in Ingres9Dialect
+   * #769 NH-3922 - The various timeout methods should indicate time unit
+
+** Task
+
+   * #1610 Move MsSql constants from driver to dialect.
+   * #1608 Missing Async test for GH1594
+   * #1603 Forgotten async generation of truncate test
+   * #1598 Upgrade IESI to 4.0.4 for having a bumped file version.
+   * #1589 Add framework info to example web project and enable .NET Core.
+   * #1574 Fix encoding in NorthwindDbCreator.cs
+   * #1563 Generate Async test for deep removal of fetch.
+   * #1527 Adjust ignore rules for not ignoring DebugHelpers folder and contents
+   * #1525 5.1.0 release
+   * #1524 Reduce breaking changes due to Ingres9 sequence support
+   * #1518 Upgrade to AsyncGenerator 0.8.1
+   * #1512 Upgrade to NUnit 3.9
+   * #1474 Upgrade AsyncGenerator to 0.7.0
+
+** Tests
+
+   * #1539 Add more tests for constants in LINQ queries
+
+As part of releasing 5.1.0, a missing 5.0.0 possible breaking change has been added about inequality semantic in LINQ
+queries. See 5.0.0 possible breaking changes.
+
+Build 5.0.6
+=============================
+
+Release notes - NHibernate - Version 5.0.6
+
+** Bug
+    * #1672 Generated async methods do not correctly propagate OperationCanceledException
+    * #1355 NH-3928 - Random invalid SQL generated when using bitwise operators
+
+** Task
+    * #1686 Release 5.0.6
+
+Build 5.0.5
+=============================
+
+Release notes - NHibernate - Version 5.0.5
+
+** Bug
+    * #1665 Have IFutureEnumerable.GetEnumerable executing immediatly the query
+
+Build 5.0.4
+=============================
+
+Release notes - NHibernate - Version 5.0.4
+
+** Bug
+    * #1658 Add missing cache setting
+
+Build 5.0.3
+=============================
+
+Release notes - NHibernate - Version 5.0.3
+
+** Bug
+    * #1462 Fix disposing SessionIdLoggingContext if CheckAndUpdateSessionStatus is failed
+
+Build 5.0.2
+=============================
+
+Release notes - NHibernate - Version 5.0.2
+
+** Bug
+    * #1456 NH-4052 - Add missing serializable implementation
+    * #1455 Reduces check session and set context id redundant calls
+    * #1453 Eliminate unnecessary AsyncLocal allocation if SessionId isn't changed
+
+** Task
+    * #1457 Release 5.0.2
+
+As part of releasing 5.0.2, a missing 5.0.0 possible breaking change has been added about Dialects requiring now
+to be configured. See 5.0.0 possible breaking changes.
+
+Build 5.0.1
+=============================
+
+Release notes - NHibernate - Version 5.0.1
+
+** Bug
+    * #1428 Insert underscore in combined parameter name
+    * #1424 Bad wording and example fixes in cache documentation.
+    * #1420 Fix #1419 - ISession.IsDirty() shouldn't throw exception for transient many-to-one object in a session
+    * #1419 ISession.IsDirty() shouldn't throw exception for transient many-to-one object in a session
+    * #1418 Column.GetAlias should account for other suffixes
+    * #1415 Correct MaxAliasLength for various dialects
+    * #1393 Fix Linq Future aggregates failures, fixes #1387
+    * #1389 Add support for out/ref Nullable parameters of proxied methods
+    * #1387 Linq Sum() with ToFutureValue fails
+    * #1384 Fix a column spec causing missing col in pdf, fix a text overflow
+    * #1380 #750 - AliasToBean failure, test case and fix
+    * #1378 Fix #1362 - Running Unit tests against SQLite fails on datetime/UTC
+    * #1362 NH-4093 - Running Unit tests against SQLite fails on numerous (22) datetime/UTC related tests.
+    * #1357 NH-3983 - ToFuture throws ArgumentException at CreateCombinedQueryParameters
+    * #1179 NH-3840 - Wrong documentation of "cascade" in 5.1.11 (many-to-one)
+    * #1165 NH-3554 - Docs - bidirectional, indexed collections
+    * #983 Fix forgotten CDATA closure.
+    * #879 NH-4006 - Provide a correct MaxAliasLength for various dialects
+    * #750 Transformers.AliasToBean: Value cannot be null. Parameter name: key
+    * #712 NH-4092 - AsyncGenerator creates unused private static event handler in SQLite20Driver
+
+** Improvement
+    * #1410 Remove unused code in build scripts
+    * #1404 Use MsBuild for packing .nupkg files
+    * #1401 Clean up db tests dependencies
+    * #1395 Documentation fixes
+    * #1386 Lack of custom logging documentation
+    * #1382 Jira to GitHub: change issue naming in tests
+    * #1379 Documentation fixes
+    * #982 Back port doc fixes
+    * #824 NH-3208 - Document all possible settings in hibernate.cfg
+    * #823 NH-3179 - Documentation should note that OnDelete should set IsSaved to false in chapter 24.1
+    * #788 NH-1947 - Undocumented attributes on sql-query element
+    * #713 Switch to GitHub issues
+    * #711 Switch doc generation to UTF-8.
+
+** Task
+    * #1431 Release 5.0.1
+    * #1405 Remove unused and broken NHibernate.Setup WiX project
+
+
+Build 5.0.0
+=============================
+
+** Highlights
+    * IO bound methods have gained an async counterpart. Not intended for parallelism, make sure to await each
+      call before further interacting with a session and its queries.
+    * Strongly typed DML operation (insert/update/delete) are now available as Linq extensions on queryables.
+    * Entities collections can be queried with .AsQueryable() Linq extension without being fully loaded.
+    * Reference documentation has been curated and completed, notably with a Linq section.
+      http://nhibernate.info/doc/nhibernate-reference/index.html
+
+** Known BREAKING CHANGES from NH4.1.1.GA to 5.0.0
+
+    NHibernate now targets .Net 4.6.1.
+
+    Remotion.Linq and Antlr3 libraries are no more merged in the NHibernate library,
+    and must be deployed along NHibernate library. (NuGet will reference them.)
+
+    Classes and members which were flagged as obsolete in the NHibernate 4.x series have been dropped.
+    Prior to upgrading, fix any obsolete warning according to its message. See NH-4075 and NH-3684 for a list.
+
+    ##### Possible Breaking Changes #####
+        * All members exposing some System.Data types have been changed for the corresponding System.Data.Common
+          types. (IDbCommand => DbCommand, ...)
+        * The Date NHibernate type will no more replace by null values below its base value (which was year 1753).
+          Its base value is now DateTime.MinValue. Its configuration parameter is obsolete.
+        * NHibernate type DateTimeType, which is the default for a .Net DateTime, does no longer cut fractional
+          seconds. Use DateTimeNoMsType if you wish to have fractional seconds cut. It applies to its Local/Utc
+          counterparts too.
+        * LocalDateTimeType and UtcDateTimeType do no more accept being set with a value having a non-matching kind,
+          they throw instead.
+        * DbTimestamp will now round the retrieved value according to Dialect.TimestampResolutionInTicks.
+        * When an object typed property is mapped to a NHibernate timestamp, setting an invalid object in the
+          property will now throw at flush instead of replacing it with DateTime.Now.
+        * Decimal type registration now correctly handles maximal precision. For most dialects, it is 28, matching
+          the .Net limit. Values in mappings above maximal precision will be reduced to maximal precision.
+        * Default cast types do no more resolve string to 255 length and decimal to its default precision/scale for
+          the dialect. They resolve to 4000 length string and (28, 10) precision/scale decimals by default, and are
+          trimmed down according to dialect. Those defaults can be overridden with query.default_cast_length,
+          query.default_cast_precision and query.default_cast_scale settings.
+        * Future queries with data provider not actually supporting them (not supporting mutliple queries in a single
+          SQL command) are no more immediately executed at the .Future call. They are executed only when directly
+          enumerated or when their IFutureEnumerable.GetEnumerable method is called. (This aligns them with the behavior
+          of FutureValue.)
+        * Dialects are now configurable. If you instantiate a dialect directly, make sure you call its Configure
+          method, with as argument the properties of a NHibernate Configuration object. You may use instead
+          Dialect.GetDialect methods, which configure the dialect before returning it.
+        * Transaction scopes handling has undergone a major rework. See NH-4011 for full details.
+          ** More transaction promotion to distributed may occur if you use the "flush on commit" feature with
+             transaction scopes. Explicitly flush your session instead. Ensure it does not occur by disabling
+             transaction.use_connection_on_system_events setting.
+          ** After transaction events no more allow using the connection when they are raised from a scope
+             completion.
+          ** Connection enlistment in an ambient transaction is now enforced by NHibernate by default.
+          ** The connection releasing is no more directly triggered by a scope completion, but by later
+             interactions with the session.
+        * AdoNetWithDistributedTransactionFactory has been renamed AdoNetWithSystemTransactionFactory.
+        * Subcriteria.UniqueResult<T> for value types now return default(T) when result is null, as was
+          already doing CriteriaImpl.UniqueResult<T>.
+        * AliasToBeanResultTransformer property/field resolution logic has changed for supporting members
+          which names differ only by case. See NH-3693 last comments for details.
+        * Linq inequality implementation has been changed for supporting null, meaning that a "a != b" expression
+          will now be considered matching if one side is null, while previously due to SQL null semantic it was
+          considered non-matching. See NH-3100.
+        * Linq extension methods marked with attribute LinqExtensionMethod will no more be evaluated
+          in-memory prior to query execution when they do not depend on query results, but will always be
+          translated to their corresponding SQL call. This can be changed with a parameter of the attribute.
+        * Linq Query methods are now native members of ISession and IStatelessSession instead of being
+          extension methods.
+        * Linq provider now use Remotion.Linq v2, which may break Linq provider extensions, mainly due to names
+          changes. See https://github.com/nhibernate/nhibernate-core/pull/568 changes to test files for examples.
+        * NHibernate Linq internals have undergone some minor changes which may break custom Linq providers due
+          to method signature changes and additional methods to implement.
+        * IMapping interface has an additional Dialect member. ISessionFactoryImplementor has lost it, since it
+          gains it back through IMapping.
+        * IDriver.ExpandQueryParameters and DriverBase.CloneParameter take an additional argument.
+        * NullableType, its descendent (notably all PrimitiveType) and IUserType value getters and setters now
+          take the session as an argument. This should mainly impact custom types implementors.
+        * EmitUtil is now internal and has been cleaned of unused members.
+        * ContraintOrderedTableKeyColumnClosure has been renamed ConstraintOrderedTableKeyColumnClosure.
+        * enabledFilter parameter has been removed from IProjection.ToSqlString and ICriterion.ToSqlString methods.
+        * Proxy factory and proxy cache now use TypeInfo instead of System.Type. This should be transparent for
+          most users.
+        * Exceptions which were based on ApplicationException are now based on Exception: HibernateException,
+          ParserException and AssertionFailure. The logger factory which could throw a bare ApplicationException
+          now throws an InstantiationException instead.
+        * ThreadSafeDictionary class has been removed. Use System.Collections.Concurrent.ConcurrentDictionary
+          instead.
+        * Entity mode switching capability, which had never been fully implemented, is dropped.
+        * BytecodeProviderImpl, intended for .Net Framework 1 and broken, is dropped.
+        * Sessions concrete classes constructors have been changed. (It is not expected for them to be used
+          directly.)
+        * Obsolete setting interceptors.beforetransactioncompletion_ignore_exceptions is dropped.
+        * SQL Server 2008+ dialects now use datetime2 instead of datetime for all date-time types, including
+          timestamp. This can be reverted with sql_types.keep_datetime setting.
+        * SQL Server 2008+ timestamp resolution is now 100ns in accordance with datetime2 capabilities, down from
+          10ms previously. This can be reverted with sql_types.keep_datetime setting.
+        * Oracle 9g+ dialects now use timestamp(7) for all date time types, instead of timestamp(4).
+        * Oracle 9g+ timestamp resolution is now 100ns in accordance with timestamp(7) capabilities, down from
+          100¬µs previously. 
+        * Oracle: Hbm2dll will no-more choose N- prefixed types for typing Unicode string columns by default.
+          This can be changed with oracle.use_n_prefixed_types_for_unicode setting, which will furthermore
+          control DbCommand parameters typing accordingly. See NH-4062.
+        * SqlServerCe: the id generator "native" will now resolve as table-hilo instead of identity.
+        * Firebird: timestamp resolution is now 1ms.
+        * PostgreSQL: if Npgsql v3 or later is used, time DbParameters will be fetched as TimeSpan instead of
+          DateTime.
+        * DB2 & Oracle lite: decimal type registration was hardcoding precision as 19 and was using length as
+          scale. It now uses precision and scale from mapping when specified, and disregards length.
+        * Ingres & Sybase ASA: decimal type registration was hardcoding precision as 18 and was using length as
+          scale. It now uses precision and scale from mapping when specified, and disregards length.
+        * ODBC: String parameter length will no more be specified by the OdbcDriver.
+
+
+Release notes - NHibernate - Version 5.0.0
+
+** Sub-task
+    * [NH-3956] - Native SQL query plan may get wrong plan
+    * [NH-3957] - Second level query cache may yields wrong cache entry
+    * [NH-4001] - Remove ThreadSafeDictionary
+
+** Bug
+    * [NH-926] - Identity insert fails with SQL Ce dialect and aggressive connection release mode.
+    * [NH-1752] - NHibernate Date type converts to NULL
+    * [NH-1904] - Protected properties and public properties cannot have the same name with different case
+    * [NH-2029] - filter-def's use-many-to-one=false should take ON into consideration
+    * [NH-2145] - AssertionFailure exception at ISession.Save
+    * [NH-2176] - Consecutive TransactionScopes cannot be used in same NHibernate session
+    * [NH-2238] - "DTC transaction prepare phase failed" when UPDATE:ing in a promoted TransactionScope
+    * [NH-2241] - Batch Insert using stateless session when using second level cache throws exception when unable to determine transient status
+    * [NH-2928] - Connections can only be closed after the Transaction is completed
+    * [NH-3023] - Deadlocks may cause connection pool corruption when in a distributed transaction
+    * [NH-3078] - TimeAsTimeSpanType issue when using Sybase Advantage Database
+    * [NH-3100] - Problem in use if condition for nullable boolean in linq to NHibernate
+    * [NH-3114] - Collection inside Component cannot be mapped to a different table
+    * [NH-3227] - InvalidOperationException in AbstractBatcher when distributed transaction is aborted
+    * [NH-3247] - Char value gets 'cached' in Where-queries
+    * [NH-3374] - Session.Merge throws InvalidCastException when using a Lazy bytes[] property
+    * [NH-3600] - ISession.Save returns wrong Id
+    * [NH-3665] - FirstOrDefault() broken since 3.3.4 and 3.4.0
+    * [NH-3693] - AliasToBeanResultTransformerFixture fails under Firebird
+    * [NH-3755] - Proxy exception for multiple joined-subclass
+    * [NH-3757] - Dynamic entity mapped with entity-name cannot have a component of a fixed class
+    * [NH-3793] - Attribute entity-name on <key-many-to-one> is ignored, causing mapping exception
+    * [NH-3845] - OfType fails with polymorphism
+    * [NH-3850] - .Count(), .Any() and other aggregates return only first result on polymorphic queries
+    * [NH-3885] - ThreadSafeDictionary is not threadsafe
+    * [NH-3889] - Coalesce on entity in sub-select causes incorrect SQL
+    * [NH-3895] - Problem with DateTime fractional seconds on ODBC for MS SQL Server
+    * [NH-3911] - Reflection Optimizer tries to cast values to getter type in setter
+    * [NH-3913] - Component has bag of child components. Child property mapping ignored
+    * [NH-3931] - Invalid order of child inserts when using TPH inheritance
+    * [NH-3946] - Linq where "is base class" doesn't get subclasses
+    * [NH-3948] - CheckAndUpdateSessionStatus() called twice in CreateFilter method inside SessionImpl class
+    * [NH-3950] - FutureValue fails on Linq queries defining a PostExecuteTransformer
+    * [NH-3954] - Dynamic proxy cache may yield a wrong proxy
+    * [NH-3955] - Unreliable Equals implementation
+    * [NH-3961] - Invalid date parameter format with nullables and MappedAs
+    * [NH-3966] - Missing command set dispose in batchers
+    * [NH-3968] - Distributed transaction cannot be committed because AdoNetWithDistributedTransactionFactory tries to write data by using locked sqlConnection
+    * [NH-3969] - Firebird: TimestampResolutionInTicks should be 1ms
+    * [NH-3977] - Thread safety weaknesses of MapBasedSessionContext
+    * [NH-3981] - CollectionHelper.DictionaryEquals throws
+    * [NH-3985] - ObjectDisposedException is thrown when using a child session after having previously disposed of another child session.
+    * [NH-3998] - SqlServer CE: "The column aliases must be unique" exception is thrown in some tests
+    * [NH-4013] - SqlClientBatchingBatcher CloseCommands contract violated
+    * [NH-4022] - MsSql2012Dialect: Invalid drop sequence statement
+    * [NH-4024] - ODBC failures with time
+    * [NH-4027] - Missing disposals of enumerators
+    * [NH-4035] - Teardown failure should not prevent cleanup
+    * [NH-4038] - Mapping a TimeSpan in a collection component mapping maps as a BIGINT
+    * [NH-4046] - Default length too short for variable length types with SAP Anywhere / ASE
+    * [NH-4077] - Possible race condition in ActionQueue.ExecuteActions
+    * [NH-4083] - ODBC nvarchar parameter corruption
+    * [NH-4084] - DbTimestamp cause stale update exception
+    * [NH-4086] - TimeType may lose fractional seconds
+    * [NH-4088] - Dialect.GetCastTypeName is buggy
+    * [NH-4090] - Prepare SQL fails with time parameters and SQL Server 2008+
+    * [NH-4091] - SQL Server CE allocates too much memory with blob and sql prepare
+
+** New Feature
+    * [NH-1530] - Add support for XmlDocType and XDocType for Oracle
+    * [NH-2319] - IQueryable support for persistent collections
+    * [NH-3488] - Strongly Typed Updates and Deletes
+    * [NH-3771] - Implement setting to enable Batch Update with Optimistic Locking control
+    * [NH-3905] - Support async: Blocking IO leads to ThreadPool starvation and limits scalability
+    * [NH-3934] - Add methods WhereNot(ICriterion) and AndNot(ICriterion) in QueryOver
+    * [NH-3951] - Support .All() result operator
+    * [NH-3996] - Postgres: add support for XmlDocType and XDocType
+    * [NH-4009] - Allow marking a Linq extension as db only
+    * [NH-4017] - Handle Time parameter conversion for newer Npgsql
+    * [NH-4018] - Port AutoJoinTransaction feature
+    * [NH-4028] - Support inconclusive tests in result comparison
+    * [NH-4031] - Add an AsyncLocalSessionContext
+    * [NH-4032] - Supports multiple factories with ThreadStaticSessionContext
+    * [NH-4062] - Properly handle Oracle Unicode support dual model
+
+** Task
+    * [NH-3683] - Fix Compilation Warnings
+    * [NH-3958] - Reference documentation: missing types
+    * [NH-3959] - Fix documentation typos
+    * [NH-3999] - Document effect of quoted identifier on case sensitivity
+    * [NH-4000] - Release 5.0
+    * [NH-4004] - Restrict tests running on SQL CE
+    * [NH-4051] - Replace System.Linq.Dynamic with System.Linq.Dynamic.Core in tests
+    * [NH-4057] - Fix tests for MySql
+    * [NH-4058] - Fix Oracle managed failing tests
+    * [NH-4063] - Fix ODBC failing tests
+
+** Improvement
+    * [NH-1851] - Mapping a TimeSpan as TimeAsTimeSpan for MySQL
+    * [NH-2444] - Document linq provider
+    * [NH-3094] - Linq does not support unary plus and unary minus operators
+    * [NH-3370] - Remove warning about "NHibernate.Type.CustomType -- the custom type * is not serializable"
+    * [NH-3386] - Linq OrderBy NewID()
+    * [NH-3431] - Replace System.Data with System.Data.Common
+    * [NH-3578] - Subcriteria.UniqueResult<T> for value types should return default(T), same as CriteriaImpl.UniqueResult<T> when result is null
+    * [NH-3669] - Query should be instance method of ISession
+    * [NH-3723] - Some tests are failing when log level set to DEBUG
+    * [NH-3744] - Fixed spelling of ContraintOrderedTableKeyColumnClosure method
+    * [NH-3750] - Use NuGet to refer to Remotion.Linq (unmerge ReMotion.Linq)
+    * [NH-3877] - Target .NET 4.6.1
+    * [NH-3900] - Upgrade to Nunit 3.x
+    * [NH-3919] - Clean up and harmonize datetime types with regards to different dialects
+    * [NH-3927] - Switch to SemVer version scheme
+    * [NH-3932] - Merge() may fire unnecessary updates if collection and version mapping exists
+    * [NH-3943] - Use NuGet to reference packages instead of local copies
+    * [NH-3944] - Upgrade to ReLinq 2
+    * [NH-3945] - Update to Antlr 3.5.1
+    * [NH-3952] - Cleanup EnumerableHelper usage
+    * [NH-3962] - Build with MSBuild Tools 2017 (15)
+    * [NH-3963] - More explicit error on MappedAs invalid usage.
+    * [NH-3964] - Refactor reflection patterns
+    * [NH-3970] - TestCase base class: avoid hiding test failure on tear-down
+    * [NH-3973] - Remove enabledFilter parameter from IProjection.ToSqlString and ICriterion.ToSqlString methods
+    * [NH-3975] - Synchronize some features dialect support properties
+    * [NH-3978] - Extract IDatabaseMetadata from DatabaseMetadata
+    * [NH-3987] - Re-implement NhQueryable options
+    * [NH-3988] - Replace ApplicationException base class with just Exception
+    * [NH-3990] - Upgrade to VS2017 Project structure
+    * [NH-3993] - Component Element Customizer Missing ability to map non-public parents and composite element relations
+    * [NH-3997] - SqlServer CE: Make native generator to be TableHiLoGenerator
+    * [NH-4003] - Refactor session constructor
+    * [NH-4010] - Visual Studio launcher still launches 2015
+    * [NH-4014] - Update SQLite assembly for tests
+    * [NH-4015] - Update Npgsql driver and enable DTC for it in tests
+    * [NH-4019] - Pass assembly into log4net functions
+    * [NH-4020] - Use TypeBuilder.CreateTypeInfo()
+    * [NH-4021] - Track all opened session in tests
+    * [NH-4023] - Pass ISessionImplementor to all value setters and getters of nullable types
+    * [NH-4026] - Update Firebird driver and use server in tests
+    * [NH-4030] - Cleanup and xml doc of Linq Future extension
+    * [NH-4033] - Update MySql connector used in tests
+    * [NH-4034] - Flush all sessions participating in a transaction
+    * [NH-4043] - Complete keyword registration needs done in dialects.
+    * [NH-4049] - EmitUtil can be cleaned up
+    * [NH-4050] - Use Task.Run instead of BeginInvoke in tests
+    * [NH-4052] - Collect schema validation exceptions
+    * [NH-4064] - Unmerge Antrl3.Runtime
+    * [NH-4073] - Replace NHibernate.Web.Example with modern version
+    * [NH-4076] - Do not resurrect session
+
+** Remove Feature
+    * [NH-3684] - Remove <Time>Part Extension Methods of QueryOver
+    * [NH-3700] - Remove CodeDom BytecodeProviderImpl
+    * [NH-3722] - Remove entity mode switching capability
+    * [NH-4075] - Remove code obsolete in 4.x
+
+** Meta Issue
+    * [NH-4011] - Fix transaction scopes handling
+
+
+Build 4.1.2.GA
+=============================
+
+Release notes - NHibernate - Version 4.1.2.GA
+
+** Bug
+    * #1355 NH-3928 - Random invalid SQL generated when using bitwise operators
+
 Build 4.1.1.GA
 =============================
 
@@ -3062,7 +3660,7 @@ Alpha Build 0.3.0.0
 - BatcherImpl and PreparerImpl were combined and code cleaned up thanks to problems found when using Ngpsql (Martijn Boland).
 - ITransaction is now responsible for joining IDbCommand to IDbTransaction instead of IBatcher - if applicable.
 - Modified code to help improve performance of Drivers that don't support multiple Open DataReaders on a single IDbConnection.
-- Fixed bug with hbm2net and VelocityRenderer throwing Exception (Carlos Guzm·n ¡lvarez & Peter Smulovics).
+- Fixed bug with hbm2net and VelocityRenderer throwing Exception (Carlos Guzm√°n √Ålvarez & Peter Smulovics).
 - Clean up of hbm2net (Peter Smulovics).
 - Modified internals of AbstractEntityPersister to help with buiding on Mono (Oliver Weichhold).
 - Renamed nhibernate.build to NHibernate.build to help with building on Mono (Oliver Weichhold).
@@ -3114,10 +3712,10 @@ PreAlpha Build 0.1.0.0
 - nhibernate-configuration-2.0.xsd schema was updated to .net friendly names and all cfg.xml files are now validated.
 - Fixed bug with classes having dynamic-insert and dynamic-update causing IndexOutOfRangeExceptions.
 - Modified length of string for CultureInfoType.
-- Added Firebird fixes contributed by Carlos Guzm·n ¡lvarez.
+- Added Firebird fixes contributed by Carlos Guzm√°n √Ålvarez.
 - Changed TimestampType.Set to behaive like hibernate.  Will not write a null value anymore - instead replaces it with DateTime.Now.
 - Removed IVersionType interface from DecimalType.
-- Add PropertyExpressions contributed by Carlos Guzm·n ¡lvarez.
+- Add PropertyExpressions contributed by Carlos Guzm√°n √Ålvarez.
 - Fixed bug with referencing joined classes properties in hql.
 - Fixed IndexOutOfRangeException with NormalizedEntityPersister for versioned entities.
 - Added ObjectType to TypeFactory and NHibernate.

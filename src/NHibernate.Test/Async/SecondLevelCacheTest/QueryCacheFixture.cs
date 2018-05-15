@@ -144,7 +144,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			QueryStatistics qs = Sfi.Statistics.GetQueryStatistics(queryString);
 			EntityStatistics es = Sfi.Statistics.GetEntityStatistics(typeof(Item).FullName);
 
-			Thread.Sleep(200);
+			await (Task.Delay(200));
 
 			IList result;
 			using (ISession s = OpenSession())
@@ -183,7 +183,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			Assert.That(qs.CacheMissCount, Is.EqualTo(2));
 			Assert.That(es.FetchCount, Is.EqualTo(0));
 
-			Thread.Sleep(200);
+			await (Task.Delay(200));
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
@@ -240,7 +240,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			QueryStatistics qs = Sfi.Statistics.GetQueryStatistics(queryString);
 			EntityStatistics es = Sfi.Statistics.GetEntityStatistics(typeof(AnotherItem).FullName);
 
-			Thread.Sleep(200);
+			await (Task.Delay(200));
 
 			IList result;
 			using (ISession s = OpenSession())
@@ -291,7 +291,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			Assert.That(qs.CacheHitCount, Is.EqualTo(4));
 			Assert.That(qs.CacheMissCount, Is.EqualTo(2));
 
-			Thread.Sleep(200);
+			await (Task.Delay(200));
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())

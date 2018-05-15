@@ -22,11 +22,26 @@ namespace NHibernate.Linq
 		Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken);
 	}
 
-	public partial class DefaultQueryProvider : INhQueryProvider
+	/// <summary>
+	/// The extended <see cref="T:System.Linq.IQueryProvider" /> that supports setting options for underlying <see cref="T:NHibernate.IQuery" />.
+	/// </summary>
+	public interface IQueryProviderWithOptions : IQueryProvider
+	{
+		/// <summary>
+		/// Creates a copy of a current provider with set query options.
+		/// </summary>
+		/// <param name="setOptions">An options setter.</param>
+		/// <returns>A new <see cref="IQueryProvider"/> with options.</returns>
+		IQueryProvider WithOptions(Action<NhQueryableOptions> setOptions);
+	}
+
+	public partial class DefaultQueryProvider : INhQueryProvider, IQueryProviderWithOptions
 	{
 		private static readonly MethodInfo CreateQueryMethodDefinition = ReflectHelper.GetMethodDefinition((INhQueryProvider p) => p.CreateQuery<object>(null));
 
 		private readonly WeakReference<ISessionImplementor> _session;
+
+		private readonly NhQueryableOptions _options;
 
 		public DefaultQueryProvider(ISessionImplementor session)
 		{
@@ -40,6 +55,12 @@ namespace NHibernate.Linq
 			: this(session)
 		{
 			Collection = collection;
+		}
+
+		private DefaultQueryProvider(ISessionImplementor session, object collection, NhQueryableOptions options)
+			: this(session, collection)
+		{
+			_options = options;
 		}
 
 		public object Collection { get; }
@@ -56,15 +77,25 @@ namespace NHibernate.Linq
 
 		public virtual object Execute(Expression expression)
 		{
-			IQuery query;
-			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query);
+			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out var query);
 
-			return ExecuteQuery(nhLinqExpression, query, nhLinqExpression);
+			return ExecuteQuery(nhLinqExpression, query);
 		}
 
 		public TResult Execute<TResult>(Expression expression)
 		{
 			return (TResult)Execute(expression);
+		}
+
+		public IQueryProvider WithOptions(Action<NhQueryableOptions> setOptions)
+		{
+			if (setOptions == null) throw new ArgumentNullException(nameof(setOptions));
+
+			var options = _options != null
+				? _options.Clone()
+				: new NhQueryableOptions();
+			setOptions(options);
+			return new DefaultQueryProvider(Session, Collection, options);
 		}
 
 		public virtual IQueryable CreateQuery(Expression expression)
@@ -121,7 +152,7 @@ namespace NHibernate.Linq
 			try
 			{
 				var nhLinqExpression = PrepareQuery(expression, out var query);
-				return ExecuteQueryAsync(nhLinqExpression, query, nhLinqExpression, cancellationToken);
+				return ExecuteQueryAsync(nhLinqExpression, query, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -143,16 +174,19 @@ namespace NHibernate.Linq
 			}
 
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
+			_options?.Apply(query);
 			SetResultTransformerAndAdditionalCriteria(query, nhLinqExpression, nhLinqExpression.ParameterValuesByName);
 
 			return nhLinqExpression;
 		}
 
+		// Since v5.1
+		[Obsolete("Use ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query) instead")]
 		protected virtual object ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)
 		{
 			IList results = query.List();
 
-			if (nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
+			if (nhQuery.ExpressionToHqlTranslationResults?.PostExecuteTransformer != null)
 			{
 				try
 				{
@@ -160,7 +194,7 @@ namespace NHibernate.Linq
 				}
 				catch (TargetInvocationException e)
 				{
-					throw e.InnerException;
+					throw ReflectHelper.UnwrapTargetInvocationException(e);
 				}
 			}
 
@@ -170,6 +204,14 @@ namespace NHibernate.Linq
 			}
 
 			return results[0];
+		}
+
+		protected virtual object ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query)
+		{
+			// For avoiding breaking derived classes, call the obsolete method until it is dropped.
+#pragma warning disable 618
+			return ExecuteQuery(nhLinqExpression, query, nhLinqExpression);
+#pragma warning restore 618
 		}
 
 		private static void SetParameters(IQuery query, IDictionary<string, Tuple<object, IType>> parameters)
@@ -210,11 +252,14 @@ namespace NHibernate.Linq
 
 		public virtual void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters)
 		{
-			query.SetResultTransformer(nhExpression.ExpressionToHqlTranslationResults.ResultTransformer);
-
-			foreach (var criteria in nhExpression.ExpressionToHqlTranslationResults.AdditionalCriteria)
+			if (nhExpression.ExpressionToHqlTranslationResults != null)
 			{
-				criteria(query, parameters);
+				query.SetResultTransformer(nhExpression.ExpressionToHqlTranslationResults.ResultTransformer);
+
+				foreach (var criteria in nhExpression.ExpressionToHqlTranslationResults.AdditionalCriteria)
+				{
+					criteria(query, parameters);
+				}
 			}
 		}
 
@@ -225,7 +270,7 @@ namespace NHibernate.Linq
 			var query = Session.CreateQuery(nhLinqExpression);
 
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
-
+			_options?.Apply(query);
 			return query.ExecuteUpdate();
 		}
 	}

@@ -22,7 +22,7 @@ long generatedId = (long) sess.Save(fritz);]]></programlisting>
 pk.Color = Color.Tabby;
 pk.Sex = 'F';
 pk.Name = "PK";
-pk.Kittens = new HashSet();
+pk.Kittens = new HashSet<Cat>();
 pk.AddKitten(fritz);
 sess.Save( pk, 1234L );]]></programlisting>
 
@@ -62,7 +62,7 @@ DomesticCat pk = sess.Load<DomesticCat>(pkId);]]></programlisting>
 <programlisting><![CDATA[Cat cat = new DomesticCat();
 // load pk's state into cat
 sess.Load( cat, pkId );
-ISet kittens = cat.Kittens;]]></programlisting>
+var kittens = cat.Kittens;]]></programlisting>
 
         <para>
             Note that <literal>Load()</literal> will throw an unrecoverable exception if there is no matching 
@@ -160,7 +160,7 @@ var problems = sess
         <para>
             These given <literal>Set</literal> parameters are used to bind the given values to the
             <literal>?</literal> query placeholders (which map to input
-            parameters of an ADO.NET <literal>IDbCommand</literal>). Just
+            parameters of an ADO.NET <literal>DbCommand</literal>). Just
             as in ADO.NET, you should use this binding mechanism in preference to string
             manipulation.
         </para>
@@ -296,6 +296,63 @@ var cats = q.List<Cat>();]]></programlisting>
 q.SetString(0, name);
 q.SetInt32(1, minWeight);
 var cats = q.List<Cat>();]]></programlisting>
+
+            <para>
+                Named queries are by default validated at startup time, allowing to catch errors
+                more easily than having to test all the application features using HQL queries. In
+                case of validation errors, the details of failing queries are logged and a
+                validation error is raised.
+            </para>
+
+            <para>
+                Named queries accepts a number of attributes matching settings available on the
+                <literal>IQuery</literal> interface.
+            </para>
+
+            <itemizedlist spacing="compact">
+                <listitem>
+                    <para>
+                    <literal>flush-mode</literal> - override the session flush mode just for this query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>cacheable</literal> - allow the query results to be cached by the second level cache.
+                    See <xref linkend="caches"/>.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>cache-region</literal> - specify the cache region of the query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>cache-mode</literal> - specify the cache mode of the query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>fetch-size</literal> - set a fetch size for the underlying ADO query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>timeout</literal> - set the query timeout in seconds.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>read-only</literal> - <literal>true</literal> switches yielded entities to read-only.
+                    See <xref linkend="readonly"/>.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>comment</literal> - add a custom comment to the generated SQL.
+                    </para>
+                </listitem>
+            </itemizedlist>
 
             <para>
                 The query interface supports the use of named parameters. Named parameters
@@ -460,7 +517,7 @@ sess.Flush();  // changes to cat are automatically detected and persisted]]></pr
                 usually use versioned  data to ensure transaction isolation.) This approach
                 requires a slightly different  programming model to the one described in the
                 last section. NHibernate supports this model by providing the
-                method <literal>Session.Update()</literal>.
+                method <literal>ISession.Update()</literal>.
             </para>
 
             <programlisting><![CDATA[// in the first session
@@ -684,6 +741,8 @@ sess.Lock(pk, LockMode.Upgrade);]]></programlisting>
             <literal>Delete()</literal>.
         </para>
 
+        <programlisting><![CDATA[sess.Delete("from Cat");]]></programlisting>
+
         <para>
             You may now delete objects in any order you like, without risk of foreign key
             constraint violations. Of course, it is still possible to violate a <literal>NOT
@@ -761,7 +820,7 @@ sess.Lock(pk, LockMode.Upgrade);]]></programlisting>
         </orderedlist>
 
         <para>
-            (An exception is that objects using <literal>native</literal> ID generation are 
+            (An exception is that objects using <literal>identity</literal> ID generation are
             inserted when they are saved.)
         </para>
 
@@ -800,6 +859,37 @@ using (ITransaction tx = sess.BeginTransaction())
     tx.Commit(); // flush occurs
 }]]></programlisting>
 
+    </sect1>
+
+    <sect1 id="manipulatingdata-dirtiness">
+        <title>Checking dirtiness</title>
+
+        <para>
+            <literal>ISession.IsDirty()</literal> will return whether the session hold any pending
+            change to flush or not. Be cautious when using this method, its default implementation
+            may have the following effects:
+        </para>
+
+        <itemizedlist spacing="compact">
+            <listitem>
+                <para>
+                    Dirty checks all the loaded entities. NHibernate does not instrument the entities
+                    for being notified of changes done on loaded ones. Instead, it stores their
+                    initial state and compare them to it. If session has loaded a lot of entities,
+                    the dirty checking will have a significant impact.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    Triggers pending cascade operations. This includes any pending <literal>Save</literal>
+                    of, by example, children added to a collection having the <literal>Save</literal>
+                    cascade enabled. Depending on the entities ID generators (see
+                    <xref linkend="mapping-declaration-id-generator"/>), this may trigger calls to the
+                    database, or even entity insertions if they are using the <literal>identity</literal>
+                    generator.
+                </para>
+            </listitem>
+        </itemizedlist>
     </sect1>
 
     <sect1 id="manipulatingdata-endingsession">
@@ -926,9 +1016,11 @@ sess.Close();]]></programlisting>
             For exceptions thrown by the data provider while interacting with the database,
             NHibernate will wrap the error in an instance of <literal>ADOException</literal>.
             The underlying exception is accessible by calling <literal>ADOException.InnerException</literal>.
-            NHibernate converts the DbException into an appropriate ADOException subclass using the ISQLExceptionConverter attached to the SessionFactory. 
-            By default, the ISQLExceptionConverter is defined by the configured dialect; however, it is also possible to plug in a custom implementation 
-            (see the api-docs for the ISQLExceptionConverter class for details).
+            NHibernate converts the <literal>DbException</literal> into an appropriate <literal>ADOException</literal>
+            subclass using the <literal>ISQLExceptionConverter</literal> attached to the SessionFactory.
+            By default, the <literal>ISQLExceptionConverter</literal> is defined by the configured dialect;
+            however, it is also possible to plug in a custom implementation
+            (see the api-docs for the <literal>ISQLExceptionConverter</literal> class for details).
         </para>
 
         <para>

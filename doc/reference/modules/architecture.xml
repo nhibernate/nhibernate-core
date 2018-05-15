@@ -132,8 +132,8 @@
                     <listitem>
                         <para>
                             (Optional) A factory for ADO.NET connections and commands. Abstracts application
-                            from the concrete vendor-specific implementations of <literal>IDbConnection</literal>
-                            and <literal>IDbCommand</literal>. Not exposed to application, but can be
+                            from the concrete vendor-specific implementations of <literal>DbConnection</literal>
+                            and <literal>DbCommand</literal>. Not exposed to application, but can be
                             extended/implemented by the developer.
                         </para>
                     </listitem>

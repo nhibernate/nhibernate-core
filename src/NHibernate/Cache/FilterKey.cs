@@ -25,9 +25,9 @@ namespace NHibernate.Cache
 
 		public override int GetHashCode()
 		{
-			int result = 13;
+			var result = 13;
 			result = 37 * result + _filterName.GetHashCode();
-			result = 37 * result + CollectionHelper.GetHashCode(_filterParameters);
+			result = 37 * result + CollectionHelper.GetHashCode(_filterParameters, NamedParameterComparer.Instance);
 			return result;
 		}
 

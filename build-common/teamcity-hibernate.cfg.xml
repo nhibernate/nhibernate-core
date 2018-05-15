@@ -15,7 +15,7 @@
 			<property name="format_sql">true</property>
 
 			<!-- This is the System.Data.dll provider for MSSQL Server -->
-			<property name="connection.driver_class">NHibernate.Driver.SqlClientDriver</property>
+			<property name="connection.driver_class">NHibernate.Driver.Sql2008ClientDriver</property>
 			<property name="dialect">NHibernate.Dialect.MsSql2008Dialect</property>
 			<property name="connection.connection_string">Server=.\SQLExpress;initial catalog=nhibernate;Integrated Security=SSPI</property>
 			<property name="show_sql">false</property>
@@ -24,5 +24,7 @@
 			<property name="adonet.wrap_result_sets">false</property>
 
 			<property name="odbc.explicit_datetime_scale"></property>
+			<property name="oracle.use_n_prefixed_types_for_unicode"></property>
+			<property name="query.default_cast_length"></property>
 		</session-factory>
 	</hibernate-configuration>

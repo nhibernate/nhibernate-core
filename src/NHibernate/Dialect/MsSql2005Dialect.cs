@@ -1,12 +1,15 @@
 using System.Data;
-using NHibernate.Driver;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
+using NHibernate.Util;
 
 namespace NHibernate.Dialect
 {
 	public class MsSql2005Dialect : MsSql2000Dialect
 	{
+		///<remarks>http://stackoverflow.com/a/7264795/259946</remarks>
+		public const int MaxSizeForXml = 2147483647; // int.MaxValue
+
 		public MsSql2005Dialect()
 		{
 			RegisterColumnType(DbType.Xml, "XML");
@@ -15,16 +18,16 @@ namespace NHibernate.Dialect
 		protected override void RegisterCharacterTypeMappings()
 		{
 			base.RegisterCharacterTypeMappings();
-			RegisterColumnType(DbType.String, SqlClientDriver.MaxSizeForClob, "NVARCHAR(MAX)");
-			RegisterColumnType(DbType.AnsiString, SqlClientDriver.MaxSizeForAnsiClob, "VARCHAR(MAX)");
+			RegisterColumnType(DbType.String, MaxSizeForClob, "NVARCHAR(MAX)");
+			RegisterColumnType(DbType.AnsiString, MaxSizeForAnsiClob, "VARCHAR(MAX)");
 		}
 
 		protected override void RegisterLargeObjectTypeMappings()
 		{
 			base.RegisterLargeObjectTypeMappings();
 			RegisterColumnType(DbType.Binary, "VARBINARY(MAX)");
-			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForLengthLimitedBinary, "VARBINARY($l)");
-			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForBlob, "VARBINARY(MAX)");
+			RegisterColumnType(DbType.Binary, MaxSizeForLengthLimitedBinary, "VARBINARY($l)");
+			RegisterColumnType(DbType.Binary, MaxSizeForBlob, "VARBINARY(MAX)");
 		}
 
 		protected override void RegisterKeywords()
@@ -43,39 +46,25 @@ namespace NHibernate.Dialect
 		/// functionality.
 		/// </summary>
 		/// <value><c>true</c></value>
-		public override bool SupportsLimit
-		{
-			get { return true; }
-		}
+		public override bool SupportsLimit => true;
 
 		/// <summary>
 		/// Sql Server 2005 supports a query statement that provides <c>LIMIT</c>
 		/// functionality with an offset.
 		/// </summary>
 		/// <value><c>true</c></value>
-		public override bool SupportsLimitOffset
-		{
-			get { return true; }
-		}
+		public override bool SupportsLimitOffset => true;
 
-		public override bool SupportsVariableLimit
-		{
-			get { return true; }
-		}
+		public override bool SupportsVariableLimit => true;
 
-		protected override string GetSelectExistingObject(string name, Table table)
+		protected override string GetSelectExistingObject(string catalog, string schema, string table, string name)
 		{
-			string schema = table.GetQuotedSchemaName(this);
-			if (schema != null)
-			{
-				schema += ".";
-			}
-			string objName = string.Format("{0}{1}", schema, Quote(name));
-			string parentName = string.Format("{0}{1}", schema, table.GetQuotedName(this));
 			return
 				string.Format(
-					"select 1 from sys.objects where object_id = OBJECT_ID(N'{0}') AND parent_object_id = OBJECT_ID('{1}')", objName,
-					parentName);
+					"select 1 from {0} where object_id = OBJECT_ID(N'{1}') and parent_object_id = OBJECT_ID(N'{2}')",
+					Qualify(catalog, "sys", "objects"),
+					Qualify(catalog, schema, Quote(name)),
+					Qualify(catalog, schema, table));
 		}
 
 		/// <summary>
@@ -83,10 +72,7 @@ namespace NHibernate.Dialect
 		/// functionality with an offset.
 		/// </summary>
 		/// <value><c>false</c></value>
-		public override bool UseMaxForLimit
-		{
-			get { return false; }
-		}
+		public override bool UseMaxForLimit => false;
 
 		public override string AppendLockHint(LockMode lockMode, string tableName)
 		{
@@ -102,6 +88,10 @@ namespace NHibernate.Dialect
 
 			return tableName;
 		}
+
+		// SQL Server 2005 supports 128.
+		/// <inheritdoc />
+		public override int MaxAliasLength => 128;
 
 		#region Overridden informational metadata
 

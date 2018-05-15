@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test.VisualBasic" namespace="NHibernate.Test.VisualBasic.Issues.GH1468">
+
+	<class name="Entity">
+		<id name="Id">
+			<generator class="guid.comb"/>
+		</id>
+		<property name="Date1" />
+	</class>
+
+</hibernate-mapping>

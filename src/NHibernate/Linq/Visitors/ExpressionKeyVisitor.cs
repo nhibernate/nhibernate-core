@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -81,7 +80,9 @@ namespace NHibernate.Linq.Visitors
 		{
 			NamedParameter param;
 
-			if (_constantToParameterMap.TryGetValue(expression, out param) && insideSelectClause == false)
+			if (_constantToParameterMap == null)
+				throw new InvalidOperationException("Cannot visit a constant without a constant to parameter map.");
+			if (_constantToParameterMap.TryGetValue(expression, out param))
 			{
 				// Nulls generate different query plans.  X = variable generates a different query depending on if variable is null or not.
 				if (param.Value == null)
@@ -156,26 +157,8 @@ namespace NHibernate.Linq.Visitors
 			return expression;
 		}
 
-		private bool insideSelectClause;
 		protected override Expression VisitMethodCall(MethodCallExpression expression)
 		{
-			var old = insideSelectClause;
-
-			switch (expression.Method.Name)
-			{
-				case "First":
-				case "FirstOrDefault":
-				case "Single":
-				case "SingleOrDefault":
-				case "Select":
-				case "GroupBy":
-					insideSelectClause = true;
-					break;
-				default:
-					insideSelectClause = false;
-					break;
-			}
-
 			Visit(expression.Object);
 			_string.Append('.');
 			VisitMethod(expression.Method);
@@ -183,14 +166,13 @@ namespace NHibernate.Linq.Visitors
 			ExpressionVisitor.Visit(expression.Arguments, AppendCommas);
 			_string.Append(')');
 
-			insideSelectClause = old;
 			return expression;
 		}
 
 		protected override Expression VisitNew(NewExpression expression)
 		{
 			_string.Append("new ");
-			_string.Append(expression.Constructor.DeclaringType.Name);
+			_string.Append(expression.Constructor.DeclaringType.AssemblyQualifiedName);
 			_string.Append('(');
 			Visit(expression.Arguments, AppendCommas);
 			_string.Append(')');
@@ -210,7 +192,7 @@ namespace NHibernate.Linq.Visitors
 			_string.Append("IsType(");
 			Visit(expression.Expression);
 			_string.Append(", ");
-			_string.Append(expression.TypeOperand.FullName);
+			_string.Append(expression.TypeOperand.AssemblyQualifiedName);
 			_string.Append(")");
 
 			return expression;
@@ -238,7 +220,7 @@ namespace NHibernate.Linq.Visitors
 			if (methodInfo.IsGenericMethod)
 			{
 				_string.Append('[');
-				_string.Append(string.Join(",", methodInfo.GetGenericArguments().Select(a => a.FullName).ToArray()));
+				_string.Append(string.Join(",", methodInfo.GetGenericArguments().Select(a => a.AssemblyQualifiedName).ToArray()));
 				_string.Append(']');
 			}
 		}

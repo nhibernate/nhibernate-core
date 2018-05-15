@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using NHibernate.Cfg;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
@@ -92,7 +93,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Bidirectional
 	{
 		protected override IList Mappings
 		{
-			get { return new string[0]; }
+			get { return Array.Empty<string>(); }
 		}
 
 		protected override void AddMappings(Configuration configuration)

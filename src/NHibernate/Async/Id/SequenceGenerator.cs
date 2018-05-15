@@ -52,9 +52,9 @@ namespace NHibernate.Id
 					{
 						await (reader.ReadAsync(cancellationToken)).ConfigureAwait(false);
 						object result = await (IdentifierGeneratorFactory.GetAsync(reader, identifierType, session, cancellationToken)).ConfigureAwait(false);
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
-							log.Debug("Sequence identifier generated: " + result);
+							log.Debug("Sequence identifier generated: {0}", result);
 						}
 						return result;
 					}
@@ -70,7 +70,7 @@ namespace NHibernate.Id
 			}
 			catch (DbException sqle)
 			{
-				log.Error("error generating sequence", sqle);
+				log.Error(sqle, "error generating sequence");
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "could not get next sequence value");
 			}
 		}

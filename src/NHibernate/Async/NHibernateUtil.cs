@@ -20,11 +20,8 @@ using NHibernate.Util;
 
 namespace NHibernate
 {
-	using System.Collections.Generic;
-	using System.Reflection;
 	using System.Threading.Tasks;
 	using System.Threading;
-
 	public static partial class NHibernateUtil
 	{
 
@@ -47,15 +44,21 @@ namespace NHibernate
 				{
 					return Task.CompletedTask;
 				}
-				else if (proxy.IsProxy())
+				if (proxy.IsProxy())
 				{
 					return ((INHibernateProxy)proxy).HibernateLazyInitializer.InitializeAsync(cancellationToken);
 				}
-				else if (proxy is IPersistentCollection)
+				else if (proxy is ILazyInitializedCollection coll)
 				{
-					return ((IPersistentCollection)proxy).ForceInitializationAsync(cancellationToken);
+					return coll.ForceInitializationAsync(cancellationToken);
+				}
+				// 6.0 TODO: remove once IPersistentCollection derives from ILazyInitializedCollection
+				else if (proxy is IPersistentCollection persistent)
+				{
+					return persistent.ForceInitializationAsync(cancellationToken);
 				}
 				return Task.CompletedTask;
+
 			}
 			catch (Exception ex)
 			{

@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 using NHibernate.Cfg;
@@ -24,7 +25,7 @@ namespace NHibernate.Cache
 		private readonly NHibernate.Util.AsyncLock _invalidate = new NHibernate.Util.AsyncLock();
 		private readonly NHibernate.Util.AsyncLock _isUpToDate = new NHibernate.Util.AsyncLock();
 
-		public Task ClearAsync(CancellationToken cancellationToken)
+		public virtual Task ClearAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -33,26 +34,65 @@ namespace NHibernate.Cache
 			return updateTimestamps.ClearAsync(cancellationToken);
 		}
 
+		//Since v5.1
+		[Obsolete("Please use PreInvalidate(IReadOnlyCollection<string>) instead.")]
+		public Task PreInvalidateAsync(object[] spaces, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				//Only for backwards compatibility.
+				return PreInvalidateAsync(spaces.OfType<string>().ToList(), cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
 		[MethodImpl()]
-		public async Task PreInvalidateAsync(object[] spaces, CancellationToken cancellationToken)
+		public virtual async Task PreInvalidateAsync(IReadOnlyCollection<string> spaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _preInvalidate.LockAsync())
 			{
 				//TODO: to handle concurrent writes correctly, this should return a Lock to the client
 				long ts = updateTimestamps.NextTimestamp() + updateTimestamps.Timeout;
-				for (int i = 0; i < spaces.Length; i++)
+				foreach (var space in spaces)
 				{
-					await (updateTimestamps.PutAsync(spaces[i], ts, cancellationToken)).ConfigureAwait(false);
+					await (updateTimestamps.PutAsync(space, ts, cancellationToken)).ConfigureAwait(false);
 				}
+
 				//TODO: return new Lock(ts);
 			}
+
 			//TODO: return new Lock(ts);
 		}
 
-		/// <summary></summary>
+		//Since v5.1
+		[Obsolete("Please use PreInvalidate(IReadOnlyCollection<string>) instead.")]
+		public Task InvalidateAsync(object[] spaces, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				//Only for backwards compatibility.
+				return InvalidateAsync(spaces.OfType<string>().ToList(), cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
 		[MethodImpl()]
-		public async Task InvalidateAsync(object[] spaces, CancellationToken cancellationToken)
+		public virtual async Task InvalidateAsync(IReadOnlyCollection<string> spaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _invalidate.LockAsync())
@@ -60,16 +100,16 @@ namespace NHibernate.Cache
 				//TODO: to handle concurrent writes correctly, the client should pass in a Lock
 				long ts = updateTimestamps.NextTimestamp();
 				//TODO: if lock.getTimestamp().equals(ts)
-				for (int i = 0; i < spaces.Length; i++)
+				foreach (var space in spaces)
 				{
-					log.Debug(string.Format("Invalidating space [{0}]", spaces[i]));
-					await (updateTimestamps.PutAsync(spaces[i], ts, cancellationToken)).ConfigureAwait(false);
+					log.Debug("Invalidating space [{0}]", space);
+					await (updateTimestamps.PutAsync(space, ts, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
 		[MethodImpl()]
-		public async Task<bool> IsUpToDateAsync(ISet<string> spaces, long timestamp /* H2.1 has Long here */, CancellationToken cancellationToken)
+		public virtual async Task<bool> IsUpToDateAsync(ISet<string> spaces, long timestamp /* H2.1 has Long here */, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _isUpToDate.LockAsync())

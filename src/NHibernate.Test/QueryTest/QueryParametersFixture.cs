@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NUnit.Framework;
@@ -29,7 +30,7 @@ namespace NHibernate.Test.QueryTest
 		{
 			QueryParameters qp = new QueryParameters(
 				new IType[] {NHibernateUtil.String},
-				new object[] {});
+				Array.Empty<object>());
 
 			Assert.Throws<QueryException>(() => qp.ValidateParameters());
 		}

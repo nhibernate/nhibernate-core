@@ -16,6 +16,27 @@ using NHibernate.Type;
 
 namespace NHibernate.Engine
 {
+	// 6.0 TODO: Convert to interface methods
+	internal static class SessionImplementorExtensions
+	{
+		internal static IDisposable BeginContext(this ISessionImplementor session)
+		{
+			if (session == null)
+				return null;
+			return (session as AbstractSessionImpl)?.BeginContext() ?? new SessionIdLoggingContext(session.SessionId);
+		}
+
+		internal static IDisposable BeginProcess(this ISessionImplementor session)
+		{
+			if (session == null)
+				return null;
+			return (session as AbstractSessionImpl)?.BeginProcess() ??
+				// This method has only replaced bare call to setting the id, so this fallback is enough for avoiding a
+				// breaking change in case in custom session implementation is used.
+				new SessionIdLoggingContext(session.SessionId);
+		}
+	}
+
 	/// <summary>
 	/// Defines the internal contract between the <c>Session</c> and other parts of NHibernate
 	/// such as implementors of <c>Type</c> or <c>ClassPersister</c>
@@ -25,6 +46,8 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Initialize the session after its construction was complete
 		/// </summary>
+		// Since v5.1
+		[Obsolete("This method has no more usages in NHibernate and will be removed.")]
 		void Initialize();
 
 		/// <summary>
@@ -251,8 +274,16 @@ namespace NHibernate.Engine
 		bool IsOpen { get; }
 
 		/// <summary>
-		/// Is the <c>ISession</c> currently connected?
+		/// Is the session connected?
 		/// </summary>
+		/// <value>
+		/// <see langword="true" /> if the session is connected.
+		/// </value>
+		/// <remarks>
+		/// A session is considered connected if there is a <see cref="DbConnection"/> (regardless
+		/// of its state) or if the field <c>connect</c> is true. Meaning that it will connect
+		/// at the next operation that requires a connection.
+		/// </remarks>
 		bool IsConnected { get; }
 
 		FlushMode FlushMode { get; set; }

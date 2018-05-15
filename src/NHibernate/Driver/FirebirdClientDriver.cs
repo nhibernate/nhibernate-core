@@ -20,8 +20,8 @@ namespace NHibernate.Driver
 	{
 		private const string SELECT_CLAUSE_EXP = @"(?<=\bselect|\bwhere).*";
 		private const string CAST_PARAMS_EXP = @"(?<![=<>]\s?|first\s?|skip\s?|between\s|between\s@\bp\w+\b\sand\s)@\bp\w+\b(?!\s?[=<>])";
-		private readonly Regex _statementRegEx = new Regex(SELECT_CLAUSE_EXP, RegexOptions.IgnoreCase);
-		private readonly Regex _castCandidateRegEx = new Regex(CAST_PARAMS_EXP, RegexOptions.IgnoreCase);
+		private static readonly Regex _statementRegEx = new Regex(SELECT_CLAUSE_EXP, RegexOptions.IgnoreCase);
+		private static readonly Regex _castCandidateRegEx = new Regex(CAST_PARAMS_EXP, RegexOptions.IgnoreCase);
 		private readonly FirebirdDialect _fbDialect = new FirebirdDialect();
 
 		/// <summary>
@@ -37,29 +37,25 @@ namespace NHibernate.Driver
 				"FirebirdSql.Data.FirebirdClient.FbConnection",
 				"FirebirdSql.Data.FirebirdClient.FbCommand")
 		{
-
 		}
 
-		public override bool UseNamedPrefixInSql
+		public override void Configure(IDictionary<string, string> settings)
 		{
-			get { return true; }
+			base.Configure(settings);
+			_fbDialect.Configure(settings);
 		}
 
-		public override bool UseNamedPrefixInParameter
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInSql => true;
 
-		public override string NamedPrefix
-		{
-			get { return "@"; }
-		}
+		public override bool UseNamedPrefixInParameter => true;
+
+		public override string NamedPrefix => "@";
 
 		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
 			var convertedSqlType = sqlType;
 			if (convertedSqlType.DbType == DbType.Currency)
-				convertedSqlType = new SqlType(DbType.Decimal);
+				convertedSqlType = SqlTypeFactory.Decimal;
 
 			base.InitializeParameter(dbParam, name, convertedSqlType);
 		}
@@ -72,12 +68,13 @@ namespace NHibernate.Driver
 			if (!string.IsNullOrWhiteSpace(expWithParams))
 			{
 				var candidates = GetCastCandidates(expWithParams);
-				var castParams = from DbParameter p in command.Parameters
-								 where candidates.Contains(p.ParameterName)
-								 select p;
-				foreach (var param in castParams)
+
+				var index = 0;
+				foreach (DbParameter p in command.Parameters)
 				{
-					TypeCastParam(param, command);
+					if (candidates.Contains(p.ParameterName))
+						TypeCastParam(p, command, parameterTypes[index]);
+					index++;
 				}
 			}
 
@@ -89,7 +86,7 @@ namespace NHibernate.Driver
 			return _statementRegEx.Match(commandText).Value;
 		}
 
-		private HashSet<string> GetCastCandidates(string statement)
+		private static HashSet<string> GetCastCandidates(string statement)
 		{
 			var candidates =
 				_castCandidateRegEx
@@ -99,15 +96,26 @@ namespace NHibernate.Driver
 			return new HashSet<string>(candidates);
 		}
 
-		private void TypeCastParam(DbParameter param, DbCommand command)
+		private void TypeCastParam(DbParameter param, DbCommand command, SqlType sqlType)
 		{
-			var castType = GetFbTypeFromDbType(param.DbType);
-			command.CommandText = command.CommandText.ReplaceWholeWord(param.ParameterName, string.Format("cast({0} as {1})", param.ParameterName, castType));
+			var castType = GetFbTypeForParam(sqlType);
+			command.CommandText = command.CommandText.ReplaceWholeWord(
+				param.ParameterName,
+				$"cast({param.ParameterName} as {castType})");
 		}
 
-		private string GetFbTypeFromDbType(DbType dbType)
+		private string GetFbTypeForParam(SqlType sqlType)
 		{
-			return _fbDialect.GetCastTypeName(new SqlType(dbType));
+			if (sqlType.LengthDefined)
+				switch (sqlType.DbType)
+				{
+					case DbType.AnsiString:
+					case DbType.String:
+						// Use default length instead for supporting like expressions requiring longer length.
+						sqlType = new SqlType(sqlType.DbType);
+						break;
+				}
+			return _fbDialect.GetCastTypeName(sqlType);
 		}
 
 		private static volatile MethodInfo _clearPool;
@@ -142,7 +150,7 @@ namespace NHibernate.Driver
 				return;
 			}
 
-			_clearAllPools.Invoke(null, new object[0]);
+			_clearAllPools.Invoke(null, Array.Empty<object>());
 		}
 
 		/// <summary>

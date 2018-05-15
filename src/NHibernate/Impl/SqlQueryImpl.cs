@@ -93,7 +93,7 @@ namespace NHibernate.Impl
 			get
 			{
 				//we never need to apply locks to the SQL
-				return new CollectionHelper.EmptyMapClass<string, LockMode>();
+				return CollectionHelper.EmptyDictionary<string, LockMode>();
 			}
 		}
 
@@ -236,7 +236,7 @@ namespace NHibernate.Impl
 			string ownerAlias = path.Substring(0, loc);
 			string role = path.Substring(loc + 1);
 			queryReturns.Add(
-				new NativeSQLQueryJoinReturn(alias, ownerAlias, role, new CollectionHelper.EmptyMapClass<string, string[]>(), lockMode));
+				new NativeSQLQueryJoinReturn(alias, ownerAlias, role, CollectionHelper.EmptyDictionary<string, string[]>(), lockMode));
 			return this;
 		}
 

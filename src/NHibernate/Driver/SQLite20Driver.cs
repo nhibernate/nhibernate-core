@@ -1,4 +1,3 @@
-using System;
 using System.Data;
 using System.Data.Common;
 
@@ -20,7 +19,7 @@ namespace NHibernate.Driver
 	/// Please check <a href="https://www.sqlite.org/">https://www.sqlite.org/</a> for more information regarding SQLite.
 	/// </para>
 	/// </remarks>
-	public partial class SQLite20Driver : ReflectionBasedDriver
+	public class SQLite20Driver : ReflectionBasedDriver
 	{
 		/// <summary>
 		/// Initializes a new instance of <see cref="SQLite20Driver"/>.
@@ -36,46 +35,26 @@ namespace NHibernate.Driver
 		{
 		}
 
-        public override DbConnection CreateConnection()
-        {
-            var connection = base.CreateConnection();
-            connection.StateChange += Connection_StateChange;
-            return connection;
-        }
-
-        private static void Connection_StateChange(object sender, StateChangeEventArgs e)
-        {
-            if ((e.OriginalState == ConnectionState.Broken || e.OriginalState == ConnectionState.Closed || e.OriginalState == ConnectionState.Connecting) &&
-                e.CurrentState == ConnectionState.Open)
-            {
-                var connection = (DbConnection)sender;
-                using (var command = connection.CreateCommand())
-                {
-                    // Activated foreign keys if supported by SQLite.  Unknown pragmas are ignored.
-                    command.CommandText = "PRAGMA foreign_keys = ON";
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
-		public override bool UseNamedPrefixInSql
+		public override DbConnection CreateConnection()
 		{
-			get { return true; }
+			var connection = base.CreateConnection();
+			connection.StateChange += Connection_StateChange;
+			return connection;
 		}
 
-		public override bool UseNamedPrefixInParameter
+		private static void Connection_StateChange(object sender, StateChangeEventArgs e)
 		{
-			get { return true; }
-		}
-
-		public override string NamedPrefix
-		{
-			get { return "@"; }
-		}
-
-		public override bool SupportsMultipleOpenReaders
-		{
-			get { return false; }
+			if ((e.OriginalState == ConnectionState.Broken || e.OriginalState == ConnectionState.Closed || e.OriginalState == ConnectionState.Connecting) &&
+				e.CurrentState == ConnectionState.Open)
+			{
+				var connection = (DbConnection)sender;
+				using (var command = connection.CreateCommand())
+				{
+					// Activated foreign keys if supported by SQLite.  Unknown pragmas are ignored.
+					command.CommandText = "PRAGMA foreign_keys = ON";
+					command.ExecuteNonQuery();
+				}
+			}
 		}
 
 		public override IResultSetsCommand GetResultSetsCommand(Engine.ISessionImplementor session)
@@ -83,11 +62,16 @@ namespace NHibernate.Driver
 			return new BasicResultSetsCommand(session);
 		}
 
-		public override bool SupportsMultipleQueries
-		{
-			get { return true; }
-		}
-		
+		public override bool UseNamedPrefixInSql => true;
+
+		public override bool UseNamedPrefixInParameter => true;
+
+		public override string NamedPrefix => "@";
+
+		public override bool SupportsMultipleOpenReaders => false;
+
+		public override bool SupportsMultipleQueries => true;
+
 		public override bool SupportsNullEnlistment => false;
 
 		public override bool HasDelayedDistributedTransactionCompletion => true;

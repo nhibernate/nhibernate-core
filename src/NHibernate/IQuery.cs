@@ -3,7 +3,6 @@ using System.Collections;
 using NHibernate.Transform;
 using NHibernate.Type;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace NHibernate
 {
@@ -212,9 +211,10 @@ namespace NHibernate
 		IQuery SetCacheRegion(string cacheRegion);
 
 		/// <summary>
-		/// The timeout for the underlying ADO query
+		/// Set a timeout for the underlying ADO.NET query.
 		/// </summary>
-		/// <param name="timeout"></param>
+		/// <param name="timeout">The timeout in seconds.</param>
+		/// <returns><see langword="this" /> (for method chaining).</returns>
 		IQuery SetTimeout(int timeout);
 
 		/// <summary> Set a fetch size for the underlying ADO query.</summary>
@@ -403,6 +403,8 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		/// <remarks>Since v5.0, does no more cut fractional seconds. Use <see cref="SetDateTimeNoMs(int, DateTime)" />
+		/// for this</remarks>
 		IQuery SetDateTime(int position, DateTime val);
 
 		/// <summary>
@@ -411,9 +413,31 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
 		/// <param name="name">The name of the parameter</param>
+		/// <remarks>Since v5.0, does no more cut fractional seconds. Use <see cref="SetDateTimeNoMs(string, DateTime)" />
+		/// for this</remarks>
 		IQuery SetDateTime(string name, DateTime val);
 
+		/// <summary>
+		/// Bind an instance of a <see cref="DateTime" /> to an indexed parameter
+		/// using an NHibernate <see cref="DateTimeNoMsType"/>.
+		/// </summary>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		IQuery SetDateTimeNoMs(int position, DateTime val);
+
+		/// <summary>
+		/// Bind an instance of a <see cref="DateTime" /> to a named parameter
+		/// using an NHibernate <see cref="DateTimeNoMsType"/>.
+		/// </summary>
+		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		/// <param name="name">The name of the parameter</param>
+		IQuery SetDateTimeNoMs(string name, DateTime val);
+
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead, it uses DateTime2 with dialects supporting it.")]
 		IQuery SetDateTime2(int position, DateTime val);
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead, it uses DateTime2 with dialects supporting it.")]
 		IQuery SetDateTime2(string name, DateTime val);
 		IQuery SetTimeSpan(int position, TimeSpan val);
 		IQuery SetTimeSpan(string name, TimeSpan val);
@@ -566,20 +590,24 @@ namespace NHibernate
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
 		IQuery SetTime(string name, DateTime val);
 
+		// Obsolete since v5.0
 		/// <summary>
 		/// Bind an instance of a <see cref="DateTime" /> to an indexed parameter
 		/// using an NHibernate <see cref="TimestampType"/>.
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		[Obsolete("Use SetDateTime instead.")]
 		IQuery SetTimestamp(int position, DateTime val);
 
+		// Obsolete since v5.0
 		/// <summary>
 		/// Bind an instance of a <see cref="DateTime" /> to a named parameter
 		/// using an NHibernate <see cref="TimestampType"/>.
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		[Obsolete("Use SetDateTime instead.")]
 		IQuery SetTimestamp(string name, DateTime val);
 
 		/// <summary>

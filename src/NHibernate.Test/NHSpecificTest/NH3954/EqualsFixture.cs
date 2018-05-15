@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.Serialization;
 using NHibernate.Proxy;
 using NHibernate.Proxy.DynamicProxy;
 using NHibernate.Type;
@@ -29,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3954
 		public void TypeEquality()
 		{
 			var entry1 = new ProxyCacheEntry(typeof(Entity1), null);
-			var entry2 = new ProxyCacheEntry(typeof(Entity1), new System.Type[0]);
+			var entry2 = new ProxyCacheEntry(typeof(Entity1), System.Type.EmptyTypes);
 			Assert.IsTrue(entry1.Equals(entry2));
 			Assert.IsTrue(entry2.Equals(entry1));
 		}
@@ -48,9 +49,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3954
 		[Test]
 		public void InterfaceEquality()
 		{
-			var entry1 = new ProxyCacheEntry(typeof(Entity1), new[] { typeof(INHibernateProxy), typeof(IProxy) });
+			var entry1 = new ProxyCacheEntry(typeof(Entity1), new[] { typeof(INHibernateProxy), typeof(ISerializable) });
 			// Interfaces order inverted on purpose: must be supported.
-			var entry2 = new ProxyCacheEntry(typeof(Entity1), new[] { typeof(IProxy), typeof(INHibernateProxy) });
+			var entry2 = new ProxyCacheEntry(typeof(Entity1), new[] { typeof(ISerializable), typeof(INHibernateProxy) });
 			Assert.IsTrue(entry1.Equals(entry2));
 			Assert.IsTrue(entry2.Equals(entry1));
 		}
@@ -59,9 +60,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3954
 		[Test]
 		public void InterfaceEqualityWithLotOfUnordererdAndDupInterfaces()
 		{
-			var entry1 = new ProxyCacheEntry(typeof(Entity1), new[] { typeof(INHibernateProxy), typeof(IProxy), typeof(IType), typeof(IDisposable), typeof(IFilter) });
+			var entry1 = new ProxyCacheEntry(typeof(Entity1), new[] { typeof(INHibernateProxy), typeof(ISerializable), typeof(IType), typeof(IDisposable), typeof(IFilter) });
 			// Interfaces order inverted and duplicated on purpose: must be supported.
-			var entry2 = new ProxyCacheEntry(typeof(Entity1), new[] { typeof(IType), typeof(IProxy), typeof(IFilter), typeof(IDisposable), typeof(IType), typeof(IFilter), typeof(INHibernateProxy) });
+			var entry2 = new ProxyCacheEntry(typeof(Entity1), new[] { typeof(IType), typeof(ISerializable), typeof(IFilter), typeof(IDisposable), typeof(IType), typeof(IFilter), typeof(INHibernateProxy) });
 			Assert.IsTrue(entry1.Equals(entry2));
 			Assert.IsTrue(entry2.Equals(entry1));
 		}
@@ -69,8 +70,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3954
 		[Test]
 		public void InterfaceInequality()
 		{
-			var entry1 = new ProxyCacheEntry(typeof(Entity1), new[] { typeof(INHibernateProxy), typeof(IProxy) });
-			var entry2 = new ProxyCacheEntry(typeof(Entity1), new[] { typeof(IProxy) });
+			var entry1 = new ProxyCacheEntry(typeof(Entity1), new[] { typeof(INHibernateProxy), typeof(ISerializable) });
+			var entry2 = new ProxyCacheEntry(typeof(Entity1), new[] { typeof(ISerializable) });
 			TweakEntry(entry2, entry1.GetHashCode());
 			Assert.IsFalse(entry1.Equals(entry2));
 			Assert.IsFalse(entry2.Equals(entry1));

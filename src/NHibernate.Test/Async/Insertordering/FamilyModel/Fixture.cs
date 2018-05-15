@@ -29,6 +29,11 @@ namespace NHibernate.Test.Insertordering.FamilyModel
 			get { return "NHibernate.Test"; }
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsBatchingDependentDML;
+		}
+
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.DataBaseIntegration(x =>

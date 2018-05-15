@@ -3,7 +3,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Dialect
 {
 	/// <summary> 
-	/// A dialect specifically for use with Oracle 10g.
+	/// A dialect specifically for use with Oracle 12c.
 	/// </summary>
 	/// <remarks>
 	/// The main difference between this dialect and <see cref="Oracle12cDialect"/>
@@ -38,5 +38,10 @@ namespace NHibernate.Dialect
 
 			return result.ToSqlString();
 		}
+
+		// 128 since 12.2. https://stackoverflow.com/a/756569/1178314, will
+		// have to do a 12-2c dialect for exploiting it, or wait for 13.
+		// / <inheritdoc />
+		//public override int MaxAliasLength => 128;
 	}
 }

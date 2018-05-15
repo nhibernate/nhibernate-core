@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
@@ -45,13 +46,71 @@ namespace NHibernate.Test.Futures
 			}
 		}
 
+		[Test(Description = "https://github.com/nhibernate/nhibernate-core/issues/1387")]
+		public async Task ToFutureValueWithSumReturnsResultAsync()
+		{
+			using (var s = OpenSession())
+			{
+				var personsSum = s.Query<Person>()
+					.Select(x => x.Id)
+					.ToFutureValue(x => x.Sum());
+
+				Assert.IsNotNull(personsSum);
+				Assert.NotZero(await (personsSum.GetValueAsync()));
+			}
+		}
+
+		[Test]
+		public void ToFutureValueWithSumOnEmptySetThrowsAsync()
+		{
+			using (var s = OpenSession())
+			{
+				var personsSum = s.Query<Person>()
+					.Where(x => false) // make this an empty set
+					.Select(x => x.Id)
+					.ToFutureValue(x => x.Sum());
+
+				Assert.That(() => personsSum.GetValueAsync(), Throws.InnerException.TypeOf<InvalidOperationException>().Or.InnerException.TypeOf<ArgumentNullException>());
+			}
+		}
+
+		[Test]
+		public async Task ToFutureValueWithNullableSumReturnsResultAsync()
+		{
+			using (var s = OpenSession())
+			{
+				var ageSum = s.Query<Person>()
+					.Select(x => x.Age)
+					.ToFutureValue(x => x.Sum());
+
+				Assert.IsNotNull(ageSum);
+				Assert.IsNotNull(await (ageSum.GetValueAsync()));
+				Assert.NotZero((await (ageSum.GetValueAsync())).Value);
+			}
+		}
+
+		[Test]
+		public async Task ToFutureValueWithNullableSumOnEmptySetReturnsNullAsync()
+		{
+			using (var s = OpenSession())
+			{
+				var ageSum = s.Query<Person>()
+					.Where(x => false) // make this an empty set
+					.Select(x => x.Age)
+					.ToFutureValue(x => x.Sum());
+
+				Assert.IsNotNull(ageSum);
+				Assert.IsNull(await (ageSum.GetValueAsync()));
+			}
+		}
+
 		protected override void OnSetUp()
 		{
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.Save(new Person {Name = "Test1"});
-				session.Save(new Person {Name = "Test2"});
+				session.Save(new Person {Name = "Test1", Age = 20});
+				session.Save(new Person {Name = "Test2", Age = 30});
 				session.Save(new Person {Name = "Test3"});
 				session.Save(new Person {Name = "Test4"});
 				transaction.Commit();

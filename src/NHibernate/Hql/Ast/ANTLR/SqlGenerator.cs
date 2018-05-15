@@ -384,7 +384,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private void BeginBitwiseOp(string op)
 		{
-			var function = sessionFactory.SQLFunctionRegistry.FindSQLFunction(op.ToLowerInvariant());
+			var function = sessionFactory.SQLFunctionRegistry.FindSQLFunction(op);
 			if (function == null)
 				return;
 
@@ -394,7 +394,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private void EndBitwiseOp(string op)
 		{
-			ISQLFunction function = sessionFactory.SQLFunctionRegistry.FindSQLFunction(op.ToLowerInvariant());
+			ISQLFunction function = sessionFactory.SQLFunctionRegistry.FindSQLFunction(op);
 			if (function == null)
 				return;
 

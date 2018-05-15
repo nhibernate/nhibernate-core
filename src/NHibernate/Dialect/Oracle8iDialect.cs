@@ -182,12 +182,14 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.UInt32, "NUMBER(10,0)");
 			RegisterColumnType(DbType.UInt64, "NUMBER(20,0)");
 
-			RegisterColumnType(DbType.Currency, "NUMBER(20,2)");
+			// 6.0 TODO: bring down to 18,4 for consistency with other dialects.
+			RegisterColumnType(DbType.Currency, "NUMBER(22,4)");
 			RegisterColumnType(DbType.Single, "FLOAT(24)");
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION");
-			RegisterColumnType(DbType.Double, 19, "NUMBER($p,$s)");
+			RegisterColumnType(DbType.Double, 40, "NUMBER($p,$s)");
 			RegisterColumnType(DbType.Decimal, "NUMBER(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "NUMBER($p,$s)");
+			// Oracle max precision is 39-40, but .Net is limited to 28-29.
+			RegisterColumnType(DbType.Decimal, 29, "NUMBER($p,$s)");
 		}
 
 		protected virtual void RegisterDateTimeTypeMappings()
@@ -228,7 +230,9 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("round", new StandardSQLFunction("round"));
 			RegisterFunction("trunc", new StandardSQLFunction("trunc"));
+			RegisterFunction("truncate", new StandardSQLFunction("trunc"));
 			RegisterFunction("ceil", new StandardSQLFunction("ceil"));
+			RegisterFunction("ceiling", new StandardSQLFunction("ceil"));
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
 
 			RegisterFunction("chr", new StandardSQLFunction("chr", NHibernateUtil.Character));
@@ -244,7 +248,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("right", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1, -?2)"));
 
 			RegisterFunction("to_char", new StandardSQLFunction("to_char", NHibernateUtil.String));
-			RegisterFunction("to_date", new StandardSQLFunction("to_date", NHibernateUtil.Timestamp));
+			RegisterFunction("to_date", new StandardSQLFunction("to_date", NHibernateUtil.DateTime));
 
 			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.Date, false));
 			RegisterFunction("current_time", new NoArgSQLFunction("current_timestamp", NHibernateUtil.Time, false));
@@ -260,7 +264,7 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("last_day", new StandardSQLFunction("last_day", NHibernateUtil.Date));
 			RegisterFunction("sysdate", new NoArgSQLFunction("sysdate", NHibernateUtil.Date, false));
-			RegisterFunction("systimestamp", new NoArgSQLFunction("systimestamp", NHibernateUtil.Timestamp, false));
+			RegisterFunction("systimestamp", new NoArgSQLFunction("systimestamp", NHibernateUtil.DateTime, false));
 			RegisterFunction("uid", new NoArgSQLFunction("uid", NHibernateUtil.Int32, false));
 			RegisterFunction("user", new NoArgSQLFunction("user", NHibernateUtil.String, false));
 
@@ -299,7 +303,7 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 
-			RegisterFunction("band", new BitwiseFunctionOperation("bitand"));
+			RegisterFunction("band", new Function.BitwiseFunctionOperation("bitand"));
 			RegisterFunction("bor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2)"));
 			RegisterFunction("bxor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2) * 2"));
 			RegisterFunction("bnot", new SQLFunctionTemplate(null, "(-1 - ?1)"));
@@ -308,12 +312,6 @@ namespace NHibernate.Dialect
 		protected internal virtual void RegisterDefaultProperties()
 		{
 			//DefaultProperties[Environment.DefaultBatchFetchSize] = DefaultBatchSize; It can break some test and it is a user matter
-
-			// Oracle driver reports to support GetGeneratedKeys(), but they only
-			// support the version taking an array of the names of the columns to
-			// be returned (via its RETURNING clause).  No other driver seems to
-			// support this overloaded version.
-			DefaultProperties[Environment.UseGetGeneratedKeys] = "false";
 		}
 
 		// features which change between 8i, 9i, and 10g ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -487,10 +485,17 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		// Since v5.1
+		[Obsolete("Use UsesColumnsWithForUpdateOf instead")]
 		public override bool ForUpdateOfColumns
 		{
 			get { return true; }
 		}
+
+		/* 6.0 TODO: uncomment once ForUpdateOfColumns is removed.
+		/// <inheritdoc />
+		public override bool UsesColumnsWithForUpdateOf => true;
+		*/
 
 		public override bool SupportsUnionAll
 		{
@@ -537,6 +542,10 @@ namespace NHibernate.Dialect
 				return TimeSpan.TicksPerSecond;
 			}
 		}
+
+		// 30 before 12.1. https://stackoverflow.com/a/756569/1178314
+		/// <inheritdoc />
+		public override int MaxAliasLength => 30;
 
 		#region Overridden informational metadata
 

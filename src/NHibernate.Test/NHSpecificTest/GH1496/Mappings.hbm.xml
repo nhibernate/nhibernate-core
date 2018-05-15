@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.GH1496">
+  <class name="Person" dynamic-update="true"   dynamic-insert="false" select-before-update="true" >
+    <id name="Id" type="integer" />
+    <property name="Name" type="string" length="50"/>
+    <many-to-one name="Address" class="Address" column="AddressId"/>
+  </class>
+
+  <class name="Address" dynamic-update="true" lazy="true">
+    <id name="Id" type="integer">
+      <generator class="native" />
+    </id>
+    <property name="PostalCode" type="string" length="20" />
+    <property name="Street" type="string" length="100" />
+    <property name="State" type="string" length="50" />
+  </class>
+
+  <class name="Employee" dynamic-update="true"   dynamic-insert="false" select-before-update="true" >
+    <id name="Id" type="integer" />
+    <property name="Name" type="string" length="50"/>
+    <many-to-one name="Contact" class="Contact" cascade="persist,save-update,delete" fetch="join">
+      <column name="ContactId"/>
+      <column name="TypeName"/>
+    </many-to-one>
+    
+  </class>
+  
+  <class name="Contact"
+		table="Contact"
+		select-before-update="true"
+		dynamic-update="true">
+    <composite-id name="ContactIdentifier" class="ContactIdentifier">
+      <key-property name="ContactId"/>
+      <key-property name="TypeName"/>
+    </composite-id>
+    <property name="Phone" type="string" length="20"/>
+  </class>
+  
+</hibernate-mapping>

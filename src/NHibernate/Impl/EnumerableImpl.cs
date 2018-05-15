@@ -23,7 +23,7 @@ namespace NHibernate.Impl
 	/// </remarks>
 	public class EnumerableImpl : IEnumerable, IEnumerator, IDisposable
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(EnumerableImpl));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(EnumerableImpl));
 
 		private DbDataReader _reader;
 		private IEventSource _session;

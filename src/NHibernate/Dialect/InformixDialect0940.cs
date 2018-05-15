@@ -146,5 +146,8 @@ namespace NHibernate.Dialect
             get { return false; }
         }
 
+        // Informix 9 is said on Internet to be limited to 128. (http://www.justskins.com/forums/length-of-columns-names-143294.html)
+        /// <inheritdoc />
+        public override int MaxAliasLength => 128;
     };
 }

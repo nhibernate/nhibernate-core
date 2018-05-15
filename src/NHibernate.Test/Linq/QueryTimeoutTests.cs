@@ -34,7 +34,7 @@ namespace NHibernate.Test.Linq
 			var result = (from e in db.Customers
 						  where e.CompanyName == "Corp"
 						  select e)
-				.SetOptions(o => o.SetTimeout(17))
+				.WithOptions(o => o.SetTimeout(17))
 				.ToList();
 
 			Assert.That(TimeoutCatchingNonBatchingBatcher.LastCommandTimeout, Is.EqualTo(17));
@@ -48,7 +48,7 @@ namespace NHibernate.Test.Linq
 						  where e.CompanyName == "Corp"
 						  select e)
 				.Skip(5).Take(5)
-				.SetOptions(o => o.SetTimeout(17))
+				.WithOptions(o => o.SetTimeout(17))
 				.ToList();
 
 			Assert.That(TimeoutCatchingNonBatchingBatcher.LastCommandTimeout, Is.EqualTo(17));
@@ -61,7 +61,7 @@ namespace NHibernate.Test.Linq
 			var result = (from e in db.Customers
 						  orderby e.CompanyName
 						  select e)
-				.SetOptions(o => o.SetTimeout(17))
+				.WithOptions(o => o.SetTimeout(17))
 				.Skip(5).Take(5)
 				.ToList();
 
@@ -74,7 +74,7 @@ namespace NHibernate.Test.Linq
 		{
 			var subQuery = db.Customers
 				.Where(e2 => e2.CompanyName.Contains("a")).Select(e2 => e2.CustomerId)
-				.SetOptions(o => o.SetTimeout(18)); // This Timeout() should not cause trouble, and be ignored.
+				.WithOptions(o => o.SetTimeout(18)); // This Timeout() should not cause trouble, and be ignored.
 
 			var result = (from e in db.Customers
 						  where subQuery.Contains(e.CustomerId)
@@ -82,7 +82,7 @@ namespace NHibernate.Test.Linq
 							  into g
 							  select new { g.Key, Count = g.Count() })
 				.Skip(5).Take(5)
-				.SetOptions(o => o.SetTimeout(17))
+				.WithOptions(o => o.SetTimeout(17))
 				.ToList();
 
 			Assert.That(TimeoutCatchingNonBatchingBatcher.LastCommandTimeout, Is.EqualTo(17));

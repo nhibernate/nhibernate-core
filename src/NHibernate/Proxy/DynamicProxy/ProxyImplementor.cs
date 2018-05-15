@@ -36,7 +36,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			field = typeBuilder.DefineField("__interceptor", typeof (IInterceptor), FieldAttributes.Private);
 
 			// Implement the getter
-			MethodBuilder getterMethod = typeBuilder.DefineMethod("get_Interceptor", InterceptorMethodsAttributes, CallingConventions.HasThis, typeof(IInterceptor), new System.Type[0]);
+			MethodBuilder getterMethod = typeBuilder.DefineMethod("get_Interceptor", InterceptorMethodsAttributes, CallingConventions.HasThis, typeof(IInterceptor), System.Type.EmptyTypes);
 			getterMethod.SetImplementationFlags(MethodImplAttributes.Managed | MethodImplAttributes.IL);
 
 			ILGenerator IL = getterMethod.GetILGenerator();

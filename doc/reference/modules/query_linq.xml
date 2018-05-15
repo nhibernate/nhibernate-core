@@ -331,7 +331,7 @@ using NHibernate.Linq;]]></programlisting>
     <sect2 id="querylinq-supportedmethods-string">
       <title>Strings</title>
       <para>
-        Following properties and methods are supported on strings:
+        The following properties and methods are supported on strings:
       </para>
       <itemizedlist>
         <listitem>
@@ -428,7 +428,7 @@ using NHibernate.Linq;]]></programlisting>
       At that point, all defined future results are evaluated in one single round-trip to database.
     </para>
     <programlisting><![CDATA[// Define queries
-IEnumerable<Cat> cats =
+IFutureEnumerable<Cat> cats =
     session.Query<Cat>()
         .Where(c => c.Color == "black")
         .ToFuture();
@@ -436,7 +436,7 @@ IFutureValue<int> catCount =
     session.Query<Cat>()
         .ToFutureValue(q => q.Count());
 // Execute them
-foreach(Cat cat in cats)
+foreach(Cat cat in cats.GetEnumerable())
 {
     // Do something
 }
@@ -447,7 +447,9 @@ if (catCount.Value > 10)
 ]]></programlisting>
     <para>
       In above example, accessing <literal>catCount.Value</literal> does not trigger a round-trip to database:
-      it has been evaluated with <literal>cats</literal> enumeration.
+      it has been evaluated with <literal>cats.GetEnumerable()</literal> call. If instead
+      <literal>catCount.Value</literal> was accessed first, it would have executed both future and
+      <literal>cats.GetEnumerable()</literal> would have not trigger a round-trip to database.
     </para>
   </sect1>
 
@@ -482,6 +484,7 @@ IList<Cat> oldCats =
     oldCatsQuery
         .FetchMany(c => c.AnotherCollection)
         .ToFuture()
+        .GetEnumerable()
         .ToList();]]></programlisting>
     <para>&nbsp;</para>
     

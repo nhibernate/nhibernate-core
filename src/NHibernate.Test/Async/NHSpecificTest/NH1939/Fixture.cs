@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1939
 		{
 			schemaBuilder = new StringBuilder();
 
-			SchemaExport schemaExport = new SchemaExport(cfg);
+			SchemaExport schemaExport = SchemaExport;
 			await (schemaExport.ExecuteAsync(AddString, false, false));
 
 			string schema = schemaBuilder.ToString();

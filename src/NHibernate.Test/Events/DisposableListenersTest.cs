@@ -19,7 +19,7 @@ namespace NHibernate.Test.Events
 	}
 
 	[TestFixture]
-	public partial class DisposableListenersTest
+	public class DisposableListenersTest
 	{
 		[Test]
 		public void WhenCloseSessionFactoryThenCallDisposeOfListener()

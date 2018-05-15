@@ -103,6 +103,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 
 		// Non-reg test case
 		[Test]
+		[Obsolete]
 		public void NonNullableMappedAsTimestampShouldBeCultureAgnostic()
 		{
 			using (ISession session = OpenSession())
@@ -216,6 +217,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 
 		// Failing test case till NH-3961 is fixed
 		[Test]
+		[Obsolete]
 		public void NullableMappedAsTimestampShouldBeCultureAgnostic()
 		{
 			using (ISession session = OpenSession())

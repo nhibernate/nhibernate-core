@@ -7,8 +7,8 @@ namespace NHibernate.Test.FilterTest
 	{
 		private long id;
 		private String name;
-		private DateTime effectiveStartDate;
-		private DateTime effectiveEndDate;
+		private DateTime? effectiveStartDate;
+		private DateTime? effectiveEndDate;
 		private ISet<Product> products;
 
 		public Category()
@@ -39,13 +39,13 @@ namespace NHibernate.Test.FilterTest
 			set { name = value; }
 		}
 
-		public virtual DateTime EffectiveStartDate
+		public virtual DateTime? EffectiveStartDate
 		{
 			get { return effectiveStartDate; }
 			set { effectiveStartDate = value; }
 		}
 
-		public virtual DateTime EffectiveEndDate
+		public virtual DateTime? EffectiveEndDate
 		{
 			get { return effectiveEndDate; }
 			set { effectiveEndDate = value; }

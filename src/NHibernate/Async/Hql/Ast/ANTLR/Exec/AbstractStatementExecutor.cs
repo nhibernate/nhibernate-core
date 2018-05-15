@@ -43,7 +43,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 			if (session.IsEventSource)
 			{
-				await (((IEventSource)session).ActionQueue.AddActionAsync(action, cancellationToken)).ConfigureAwait(false);
+				((IEventSource)session).ActionQueue.AddAction(action);
 			}
 		}
 
@@ -111,12 +111,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				try
 				{
 					var commandText = new SqlString("delete from " + persister.TemporaryIdTableName);
-					ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, commandText, new SqlType[0], cancellationToken)).ConfigureAwait(false);
+					ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, commandText, Array.Empty<SqlType>(), cancellationToken)).ConfigureAwait(false);
 					await (session.Batcher.ExecuteNonQueryAsync(ps, cancellationToken)).ConfigureAwait(false);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception t)
 				{
-					log.Warn("unable to cleanup temporary id table after use [" + t + "]");
+					log.Warn(t, "unable to cleanup temporary id table after use [{0}]", t);
 				}
 				finally
 				{
@@ -150,9 +151,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					await (stmnt.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 					session.Factory.Settings.SqlStatementLogger.LogCommand(stmnt, FormatStyle.Ddl);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception t)
 				{
-					log.Debug("unable to create temporary id table [" + t.Message + "]");
+					log.Debug(t, "unable to create temporary id table [{0}]", t.Message);
 				}
 				finally
 				{
@@ -186,9 +188,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					await (stmnt.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 					session.Factory.Settings.SqlStatementLogger.LogCommand(stmnt, FormatStyle.Ddl);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception t)
 				{
-					log.Warn("unable to drop temporary id table after use [" + t.Message + "]");
+					log.Warn("unable to drop temporary id table after use [{0}]", t.Message);
 				}
 				finally
 				{

@@ -39,13 +39,13 @@ namespace NHibernate.Test.Events.Collections.Association.Bidirectional.ManyToMan
 			{
 				Assert.Ignore("Not supported");
 				return Task.CompletedTask;
+				// This test need some more deep study if it really work in H3.2
+				// because <bag> allow duplication.
 			}
 			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
-			// This test need some more deep study if it really work in H3.2
-			// because <bag> allow duplication.
 		}
 	}
 }

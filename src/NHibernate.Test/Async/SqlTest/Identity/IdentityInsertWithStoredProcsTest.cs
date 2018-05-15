@@ -51,7 +51,7 @@ namespace NHibernate.Test.SqlTest.Identity
 
 				Assert.AreEqual(1, spy.Appender.GetEvents().Length, "Num loggedEvents");
 				Assert.AreEqual(1, ifa.Id, "ifa.Id");
-				Assert.AreEqual(GetExpectedInsertOrgLogStatement("IFA"), spy.Appender.GetEvents()[0].MessageObject, "Message 1");
+				Assert.AreEqual(GetExpectedInsertOrgLogStatement("IFA"), spy.Appender.GetEvents()[0].RenderedMessage, "Message 1");
 				using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
@@ -73,7 +73,7 @@ namespace NHibernate.Test.SqlTest.Identity
 
 				Assert.AreEqual(1, spy.Appender.GetEvents().Length, "Num loggedEvents");
 				Assert.AreEqual(2, efa.Id, "efa.Id");
-				Assert.AreEqual(GetExpectedInsertOrgLogStatement("EFA"), spy.Appender.GetEvents()[0].MessageObject, "Message 2");
+				Assert.AreEqual(GetExpectedInsertOrgLogStatement("EFA"), spy.Appender.GetEvents()[0].RenderedMessage, "Message 2");
 				using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{

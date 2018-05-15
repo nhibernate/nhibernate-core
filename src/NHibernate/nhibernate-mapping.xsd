@@ -140,7 +140,6 @@
 				<xs:choice minOccurs="0">
 					<xs:element ref="version" />
 					<xs:element ref="timestamp" />
-					<xs:element ref="timestamputc" />
 				</xs:choice>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="property" />
@@ -1185,7 +1184,13 @@
 			</xs:attribute>
 			<xs:attribute name="cache-region" type="xs:string" />
 			<xs:attribute name="fetch-size" type="xs:int" />
-			<xs:attribute name="timeout" type="xs:positiveInteger" />
+			<xs:attribute name="timeout" type="xs:positiveInteger">
+				<xs:annotation>
+					<xs:documentation>
+						Set the default timeout in seconds for the underlying ADO.NET query.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 			<xs:attribute name="cache-mode" type="cacheMode">
 			</xs:attribute>
 			<xs:attribute name="read-only" type="xs:boolean">
@@ -1310,7 +1315,13 @@
 			</xs:attribute>
 			<xs:attribute name="cache-region" type="xs:string" />
 			<xs:attribute name="fetch-size" type="xs:int" />
-			<xs:attribute name="timeout" type="xs:positiveInteger" />
+			<xs:attribute name="timeout" type="xs:positiveInteger">
+				<xs:annotation>
+					<xs:documentation>
+						Set the default timeout in seconds for the underlying ADO.NET query.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 			<xs:attribute name="cache-mode" type="cacheMode">
 			</xs:attribute>
 			<xs:attribute name="read-only" type="xs:boolean">
@@ -1413,34 +1424,6 @@
 			</xs:attribute>
 			<xs:attribute name="generated" default="never" type="versionGeneration">
 			</xs:attribute>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="timestamputc">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded" />
-			</xs:sequence>
-			<xs:attribute name="name" use="required" type="xs:string" />
-			<xs:attribute name="node" type="xs:string" />
-			<xs:attribute name="column" type="xs:string" />
-			<xs:attribute name="access" type="xs:string" />
-			<xs:attribute name="unsaved-value">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="null" />
-					<xs:enumeration value="undefined" />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name="source" default="vm">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="vm" />
-						<xs:enumeration value="db" />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name="generated" default="never" type="versionGeneration" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="tuplizer">

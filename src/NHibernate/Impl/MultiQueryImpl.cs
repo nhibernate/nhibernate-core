@@ -19,7 +19,7 @@ namespace NHibernate.Impl
 {
 	public partial class MultiQueryImpl : IMultiQuery
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(MultiQueryImpl));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(MultiQueryImpl));
 
 		private readonly List<IQuery> queries = new List<IQuery>();
 		private readonly List<ITranslator> translators = new List<ITranslator>();
@@ -29,7 +29,7 @@ namespace NHibernate.Impl
 		private IList queryResults;
 		private readonly Dictionary<string, int> queryResultPositions = new Dictionary<string, int>();
 		private string cacheRegion;
-		private int commandTimeout = RowSelection.NoValue;
+		private int? _timeout;
 		private bool isCacheable;
 		private readonly ISessionImplementor session;
 		private IResultTransformer resultTransformer;
@@ -64,7 +64,7 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetTimeout(int timeout)
 		{
-			commandTimeout = timeout;
+			_timeout = timeout == RowSelection.NoValue ? (int?) null : timeout;
 			return this;
 		}
 
@@ -158,6 +158,17 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		public IMultiQuery SetDateTimeNoMs(string name, DateTime val)
+		{
+			foreach (var query in queries)
+			{
+				query.SetDateTimeNoMs(name, val);
+			}
+			return this;
+		}
+
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead, it uses DateTime2 with dialects supporting it.")]
 		public IMultiQuery SetDateTime2(string name, DateTime val)
 		{
 			foreach (IQuery query in queries)
@@ -293,6 +304,8 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead.")]
 		public IMultiQuery SetTimestamp(string name, DateTime val)
 		{
 			foreach (IQuery query in queries)
@@ -393,17 +406,17 @@ namespace NHibernate.Impl
 		/// </summary>
 		public IList List()
 		{
-			using (new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			{
 				bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
 				combinedParameters = CreateCombinedQueryParameters();
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.DebugFormat("Multi query with {0} queries.", queries.Count);
+					log.Debug("Multi query with {0} queries.", queries.Count);
 					for (int i = 0; i < queries.Count; i++)
 					{
-						log.DebugFormat("Query #{0}: {1}", i, queries[i]);
+						log.Debug("Query #{0}: {1}", i, queries[i]);
 					}
 				}
 
@@ -445,58 +458,54 @@ namespace NHibernate.Impl
 
 		protected virtual IList GetResultList(IList results)
 		{
-			var resultCollections = new List<object>(resultCollectionGenericType.Count);
-			for (int i = 0; i < queries.Count; i++)
+			var rawResultCollections = new List<IList>(resultCollectionGenericType.Count);
+			for (var i = 0; i < queries.Count; i++)
 			{
-				if (resultCollectionGenericType[i] == typeof(object))
-				{
-					resultCollections.Add(new List<object>());
-				}
-				else
-				{
-					resultCollections.Add(Activator.CreateInstance(typeof(List<>).MakeGenericType(resultCollectionGenericType[i])));
-				}
+				var query = queries[i] as ExpressionQueryImpl;
+				// Linq queries may override the query type, finishing the work with a post execute transformer,
+				// which with multi queries are executed through the multi-query result trasformer.
+				var rawElementType = query?.QueryExpression?.Type ?? resultCollectionGenericType[i];
+				var resultList = rawElementType == typeof(object)
+					? new List<object>()
+					: (IList) Activator.CreateInstance(typeof(List<>).MakeGenericType(rawElementType));
+				rawResultCollections.Add(resultList);
 			}
 
-			var multiqueryHolderInstatiator = GetMultiQueryHolderInstatiator();
-			for (int i = 0; i < results.Count; i++)
+			for (var i = 0; i < results.Count; i++)
 			{
 				// First use the transformer of each query transforming each row and then the list
 				// DONE: The behavior when the query has a 'new' instead a transformer is delegated to the Loader
 				var resultList = translators[i].Loader.GetResultList((IList)results[i], Parameters[i].ResultTransformer);
-				// then use the MultiQueryTransformer (if it has some sense...) using, as source, the transformed result.
-				resultList = GetTransformedResults(resultList, multiqueryHolderInstatiator);
 
 				var queryIndex = translatorQueryMap[i];
-				ArrayHelper.AddAll((IList)resultCollections[queryIndex], resultList);
+				ArrayHelper.AddAll(rawResultCollections[queryIndex], resultList);
+			}
+
+			var resultCollections = new List<object>(resultCollectionGenericType.Count);
+			for (var i = 0; i < queries.Count; i++)
+			{
+				// Once polymorpic queries aggregated in one result per query (previous loop), use the
+				// MultiQueryTransformer using, as source, the aggregated result.
+				var resultList = GetTransformedResults(rawResultCollections[i]);
+				resultCollections.Add(resultList);
 			}
 
 			return resultCollections;
 		}
 
-		private IList GetTransformedResults(IList source, HolderInstantiator holderInstantiator)
+		private  IList GetTransformedResults(IList source)
 		{
-			if (!holderInstantiator.IsRequired)
-			{
+			if (resultTransformer == null)
 				return source;
-			}
-			for (int j = 0; j < source.Count; j++)
+
+			//MultiCriteria does not call TransformTuple here
+			for (var j = 0; j < source.Count; j++)
 			{
-				object[] row = source[j] as object[] ?? new[] { source[j] };
-				source[j] = holderInstantiator.Instantiate(row);
+				var row = source[j] as object[] ?? new[] {source[j]};
+				source[j] = resultTransformer.TransformTuple(row, null);
 			}
 
-			return holderInstantiator.ResultTransformer.TransformList(source);
-		}
-
-		private HolderInstantiator GetMultiQueryHolderInstatiator()
-		{
-			return HasMultiQueryResultTransformer() ? new HolderInstantiator(resultTransformer, null) : HolderInstantiator.NoopInstantiator;
-		}
-
-		private bool HasMultiQueryResultTransformer()
-		{
-			return resultTransformer != null;
+			return resultTransformer.TransformList(source);
 		}
 
 		protected List<object> DoList()
@@ -517,11 +526,11 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = resultSetsCommand.GetReader(commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null))
+				using (var reader = resultSetsCommand.GetReader(_timeout))
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.DebugFormat("Executing {0} queries", translators.Count);
+						log.Debug("Executing {0} queries", translators.Count);
 					}
 					for (int i = 0; i < translators.Count; i++)
 					{
@@ -539,7 +548,7 @@ namespace NHibernate.Impl
 
 						if (parameter.HasAutoDiscoverScalarTypes)
 						{
-							translator.Loader.AutoDiscoverTypes(reader);
+							translator.Loader.AutoDiscoverTypes(reader, parameter, null);
 						}
 
 						LockMode[] lockModeArray = translator.Loader.GetLockModes(parameter.LockModes);
@@ -551,7 +560,7 @@ namespace NHibernate.Impl
 						translator.Loader.HandleEmptyCollections(parameter.CollectionKeys, reader, session);
 						EntityKey[] keys = new EntityKey[entitySpan]; // we can reuse it each time
 
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
 							log.Debug("processing result set");
 						}
@@ -560,9 +569,9 @@ namespace NHibernate.Impl
 						int count;
 						for (count = 0; count < maxRows && reader.Read(); count++)
 						{
-							if (log.IsDebugEnabled)
+							if (log.IsDebugEnabled())
 							{
-								log.Debug("result set row: " + count);
+								log.Debug("result set row: {0}", count);
 							}
 
 							rowCount++;
@@ -577,16 +586,16 @@ namespace NHibernate.Impl
 							}
 						}
 
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
-							log.Debug(string.Format("done processing result set ({0} rows)", count));
+							log.Debug("done processing result set ({0} rows)", count);
 						}
 
 						results.Add(tempResults);
 
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
-							log.DebugFormat("Query {0} returned {1} results", i, tempResults.Count);
+							log.Debug("Query {0} returned {1} results", i, tempResults.Count);
 						}
 
 						reader.NextResult();
@@ -608,8 +617,7 @@ namespace NHibernate.Impl
 			}
 			catch (Exception sqle)
 			{
-				var message = string.Format("Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
-				log.Error(message, sqle);
+				log.Error(sqle, "Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi query", resultSetsCommand.Sql);
 			}
 
@@ -743,7 +751,7 @@ namespace NHibernate.Impl
 			{
 				foreach (KeyValuePair<string, TypedValue> dictionaryEntry in queryParameters.NamedParameters)
 				{
-					combinedQueryParameters.NamedParameters.Add(dictionaryEntry.Key + index, dictionaryEntry.Value);
+					combinedQueryParameters.NamedParameters.Add(dictionaryEntry.Key + "_" + index, dictionaryEntry.Value);
 				}
 				index += 1;
 				positionalParameterTypes.AddRange(queryParameters.PositionalParameterTypes);

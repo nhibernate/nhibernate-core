@@ -40,9 +40,9 @@ namespace NHibernate.Id
 			}
 			object id = await (GetAsync(rs, type, session, cancellationToken)).ConfigureAwait(false);
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Natively generated identity: " + id);
+				log.Debug("Natively generated identity: {0}", id);
 			}
 			return id;
 		}
@@ -72,6 +72,7 @@ namespace NHibernate.Id
 			{
 				return await (type.NullSafeGetAsync(rs, rs.GetName(0), session, null, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				throw new IdentifierGenerationException("could not retrieve identifier value", e);

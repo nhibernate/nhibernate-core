@@ -118,7 +118,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3564
 				rc.Property(x => x.Name);
 				rc.Property(x => x.DateOfBirth, pm =>
 				{
-					pm.Type(NHibernateUtil.Timestamp);
+					pm.Type(NHibernateUtil.DateTime);
 				});
 			});
 
@@ -162,11 +162,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3564
 			using (session.BeginTransaction())
 			{
 				var bob = session.Query<Person>()
-					.SetOptions(o => o.SetCacheable(true))
+					.WithOptions(o => o.SetCacheable(true))
 					.Where(e => e.DateOfBirth == new DateTime(2015, 4, 22))
 					.ToList();
 				var sally = session.Query<Person>()
-					.SetOptions(o => o.SetCacheable(true))
+					.WithOptions(o => o.SetCacheable(true))
 					.Where(e => e.DateOfBirth == new DateTime(2014, 4, 22))
 					.ToList();
 

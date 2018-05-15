@@ -8,6 +8,9 @@ namespace NHibernate.Cfg.Loquacious
 		bool IsCacheable { get; set; }
 		string CacheRegion { get; set; }
 		int FetchSize { get; set; }
+		/// <summary>
+		/// The timeout in seconds for the underlying ADO.NET query.
+		/// </summary>
 		int Timeout { get; set; }
 		FlushMode FlushMode { get; set; }
 		string Query { get; set; }

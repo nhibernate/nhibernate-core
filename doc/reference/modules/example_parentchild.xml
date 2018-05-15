@@ -317,19 +317,24 @@ session.Flush();]]></programlisting>
          <programlisting><![CDATA[public class Persistent
 {
     private bool _saved = false;
-    
+
     public void OnSave()
     {
-        _saved=true;
+        _saved = true;
     }
-    
+
     public void OnLoad()
     {
-        _saved=true;
+        _saved = true;
     }
-    
+
+    public void OnDelete()
+    {
+        _saved = false;
+    }
+
     ......
-    
+
     public bool IsSaved
     {
         get { return _saved; }
@@ -338,12 +343,11 @@ session.Flush();]]></programlisting>
      
          <para>
              (The <literal>saved</literal> property is non-persistent.)
-             Now implement <literal>IsTransient()</literal>, along with <literal>OnLoad()</literal>
-             and <literal>OnSave()</literal> as follows.
+             Now implement <literal>IsTransient()</literal>, along with <literal>OnLoad()</literal>,
+             <literal>OnSave()</literal> and <literal>OnDelete()</literal> as follows.
          </para>
 
-         <programlisting>
-	<![CDATA[public object IsTransient(object entity)
+         <programlisting><![CDATA[public object IsTransient(object entity)
 {
     if (entity is Persistent)
     {
@@ -355,7 +359,7 @@ session.Flush();]]></programlisting>
     }
 }
 
-public bool OnLoad(object entity, 
+public bool OnLoad(object entity,
     object id,
     object[] state,
     string[] propertyNames,
@@ -373,8 +377,17 @@ public boolean OnSave(object entity,
 {
     if (entity is Persistent) ( (Persistent) entity ).OnSave();
     return false;
+}
+
+public virtual void OnDelete(object entity,
+    object id,
+    object[] state,
+    string[] propertyNames,
+    IType[] types)
+{
+    if (entity is Persistent) ( (Persistent) entity ).OnDelete();
 }]]></programlisting>
-     
+
      </sect1>
 
      <sect1 id="example-parentchild-conclusion">

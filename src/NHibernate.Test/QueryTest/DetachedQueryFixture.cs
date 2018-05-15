@@ -82,7 +82,7 @@ namespace NHibernate.Test.QueryTest
 			Assert.IsTrue(tdq.OptionalUntypeParams[1].Equals(new Foo("Fulano", "De Tal")));
 
 			tdq.SetAnsiString(1, "");
-			tdq.SetBinary(2, new byte[] { });
+			tdq.SetBinary(2, Array.Empty<byte>());
 			tdq.SetBoolean(3, false);
 			tdq.SetByte(4, 255);
 			tdq.SetCharacter(5, 'A');
@@ -97,7 +97,7 @@ namespace NHibernate.Test.QueryTest
 			tdq.SetSingle(14, 1.1f);
 			tdq.SetString(15, "");
 			tdq.SetTime(16, DateTime.Now);
-			tdq.SetTimestamp(17, DateTime.Now);
+			tdq.SetDateTimeNoMs(17, DateTime.Now);
 			tdq.SetGuid(18, Guid.Empty);
 			Assert.IsTrue(tdq.PosParams[1].Type.Equals(NHibernateUtil.AnsiString));
 			Assert.IsTrue(tdq.PosParams[2].Type.Equals(NHibernateUtil.Binary));
@@ -115,11 +115,11 @@ namespace NHibernate.Test.QueryTest
 			Assert.IsTrue(tdq.PosParams[14].Type.Equals(NHibernateUtil.Single));
 			Assert.IsTrue(tdq.PosParams[15].Type.Equals(NHibernateUtil.String));
 			Assert.IsTrue(tdq.PosParams[16].Type.Equals(NHibernateUtil.Time));
-			Assert.IsTrue(tdq.PosParams[17].Type.Equals(NHibernateUtil.Timestamp));
+			Assert.IsTrue(tdq.PosParams[17].Type.Equals(NHibernateUtil.DateTimeNoMs));
 			Assert.IsTrue(tdq.PosParams[18].Type.Equals(NHibernateUtil.Guid));
 
 			tdq.SetAnsiString("1", "");
-			tdq.SetBinary("2", new byte[] { });
+			tdq.SetBinary("2", Array.Empty<byte>());
 			tdq.SetBoolean("3", false);
 			tdq.SetByte("4", 255);
 			tdq.SetCharacter("5", 'A');
@@ -134,7 +134,7 @@ namespace NHibernate.Test.QueryTest
 			tdq.SetSingle("14", 1.1f);
 			tdq.SetString("15", "");
 			tdq.SetTime("16", DateTime.Now);
-			tdq.SetTimestamp("17", DateTime.Now);
+			tdq.SetDateTimeNoMs("17", DateTime.Now);
 			tdq.SetGuid("18", Guid.Empty);
 			Assert.IsTrue(tdq.NamedParams["1"].Type.Equals(NHibernateUtil.AnsiString));
 			Assert.IsTrue(tdq.NamedParams["2"].Type.Equals(NHibernateUtil.Binary));
@@ -152,7 +152,7 @@ namespace NHibernate.Test.QueryTest
 			Assert.IsTrue(tdq.NamedParams["14"].Type.Equals(NHibernateUtil.Single));
 			Assert.IsTrue(tdq.NamedParams["15"].Type.Equals(NHibernateUtil.String));
 			Assert.IsTrue(tdq.NamedParams["16"].Type.Equals(NHibernateUtil.Time));
-			Assert.IsTrue(tdq.NamedParams["17"].Type.Equals(NHibernateUtil.Timestamp));
+			Assert.IsTrue(tdq.NamedParams["17"].Type.Equals(NHibernateUtil.DateTimeNoMs));
 			Assert.IsTrue(tdq.NamedParams["18"].Type.Equals(NHibernateUtil.Guid));
 
 			tdq.SetParameter(10, 123456m);
@@ -181,7 +181,7 @@ namespace NHibernate.Test.QueryTest
 			origin.SetLockMode("LM1", LockMode.Upgrade);
 			origin.SetProperties(new Foo("Pallino", "Pinco"));
 			origin.SetInt64(1, 1);
-			origin.SetBinary(2, new byte[] { });
+			origin.SetBinary(2, Array.Empty<byte>());
 			origin.SetBoolean(3, false);
 			origin.SetDateTime(6, DateTime.MaxValue);
 			origin.SetCharacter("5", 'A');
@@ -544,7 +544,7 @@ namespace NHibernate.Test.QueryTest
 
 			public override IQuery GetExecutableQuery(ISession session)
 			{
-				throw new Exception("The method or operation is not implemented.");
+				throw new NotImplementedException("The method or operation is not implemented.");
 			}
 
 			public new void CopyTo(IDetachedQuery destination)

@@ -61,45 +61,5 @@ namespace NHibernate.Test.MappingTest
 
 			Assert.AreEqual("[schema].name", tbl.GetQualifiedName(dialect));
 		}
-
-		[Test]
-		public void TablesUniquelyNamed()
-		{
-			Table tbl1 = new Table();
-			Table tbl2 = new Table();
-
-			Assert.AreEqual(tbl1.UniqueInteger + 1, tbl2.UniqueInteger);
-		}
-
-		[Test]
-		public void TablesUniquelyNamedOnlyWithinThread()
-		{
-			var uniqueIntegerList = new System.Collections.Concurrent.ConcurrentBag<int>();
-			var method = new ThreadStart(() =>
-			                             {
-				                             Table tbl1 = new Table();
-				                             Table tbl2 = new Table();
-
-				                             // Store these values for later comparison
-				                             uniqueIntegerList.Add(tbl1.UniqueInteger);
-				                             uniqueIntegerList.Add(tbl2.UniqueInteger);
-
-				                             // Ensure that within a thread we have unique integers
-				                             Assert.AreEqual(tbl1.UniqueInteger + 1, tbl2.UniqueInteger);
-			                             });
-
-			var thread1 = new CrossThreadTestRunner(method);
-			var thread2 = new CrossThreadTestRunner(method);
-
-			thread1.Start();
-			thread2.Start();
-
-			thread1.Join();
-			thread2.Join();
-
-			// There should in total be 4 tables, but only two distinct identifiers.
-			Assert.AreEqual(4, uniqueIntegerList.Count);
-			Assert.AreEqual(2, uniqueIntegerList.Distinct().Count());
-		}
 	}
 }

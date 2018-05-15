@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 namespace NHibernate.Cfg.MappingSchema
@@ -6,62 +7,62 @@ namespace NHibernate.Cfg.MappingSchema
 	{
 		public HbmDatabaseObject[] DatabaseObjects
 		{
-			get { return databaseobject ?? new HbmDatabaseObject[0]; }
+			get { return databaseobject ?? Array.Empty<HbmDatabaseObject>(); }
 		}
 
 		public HbmFilterDef[] FilterDefinitions
 		{
-			get { return filterdef ?? new HbmFilterDef[0]; }
+			get { return filterdef ?? Array.Empty<HbmFilterDef>(); }
 		}
 
 		public HbmResultSet[] ResultSets
 		{
-			get { return resultset ?? new HbmResultSet[0]; }
+			get { return resultset ?? Array.Empty<HbmResultSet>(); }
 		}
 
 		public HbmTypedef[] TypeDefinitions
 		{
-			get { return typedef ?? new HbmTypedef[0]; }
+			get { return typedef ?? Array.Empty<HbmTypedef>(); }
 		}
 
 		public HbmImport[] Imports
 		{
-			get { return import ?? new HbmImport[0]; }
+			get { return import ?? Array.Empty<HbmImport>(); }
 		}
 
 		protected override HbmMeta[] Metadatas
 		{
-			get { return meta ?? new HbmMeta[0]; }
+			get { return meta ?? Array.Empty<HbmMeta>(); }
 		}
 
 		public HbmClass[] RootClasses
 		{
-			get { return Items != null ? Items.OfType<HbmClass>().ToArray():new HbmClass[0]; }
+			get { return Items != null ? Items.OfType<HbmClass>().ToArray():Array.Empty<HbmClass>(); }
 		}
 
 		public HbmSubclass[] SubClasses
 		{
-			get { return Items != null ? Items.OfType<HbmSubclass>().ToArray(): new HbmSubclass[0]; }
+			get { return Items != null ? Items.OfType<HbmSubclass>().ToArray(): Array.Empty<HbmSubclass>(); }
 		}
 
 		public HbmJoinedSubclass[] JoinedSubclasses
 		{
-			get { return Items != null ? Items.OfType<HbmJoinedSubclass>().ToArray(): new HbmJoinedSubclass[0]; }
+			get { return Items != null ? Items.OfType<HbmJoinedSubclass>().ToArray(): Array.Empty<HbmJoinedSubclass>(); }
 		}
 
 		public HbmUnionSubclass[] UnionSubclasses
 		{
-			get { return Items != null ? Items.OfType<HbmUnionSubclass>().ToArray(): new HbmUnionSubclass[0]; }
+			get { return Items != null ? Items.OfType<HbmUnionSubclass>().ToArray(): Array.Empty<HbmUnionSubclass>(); }
 		}
 
 		public HbmQuery[] HqlQueries
 		{
-			get { return Items1 != null ? Items1.OfType<HbmQuery>().ToArray() : new HbmQuery[0]; }
+			get { return Items1 != null ? Items1.OfType<HbmQuery>().ToArray() : Array.Empty<HbmQuery>(); }
 		}
 
 		public HbmSqlQuery[] SqlQueries
 		{
-			get { return Items1 != null ? Items1.OfType<HbmSqlQuery>().ToArray() : new HbmSqlQuery[0]; }
+			get { return Items1 != null ? Items1.OfType<HbmSqlQuery>().ToArray() : Array.Empty<HbmSqlQuery>(); }
 		}
 	}
 }

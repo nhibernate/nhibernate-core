@@ -8,9 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH473
@@ -19,6 +16,11 @@ namespace NHibernate.Test.NHSpecificTest.NH473
 	[TestFixture]
 	public class FixtureAsync:BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
+
 		protected override void OnSetUp()
 		{
 			using(var session=this.OpenSession())

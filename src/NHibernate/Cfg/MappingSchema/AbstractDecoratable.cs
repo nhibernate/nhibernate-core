@@ -9,7 +9,7 @@ namespace NHibernate.Cfg.MappingSchema
 	[Serializable]
 	public abstract class AbstractDecoratable : IDecoratable
 	{
-		private static readonly IDictionary<string, MetaAttribute> EmptyMetaData = new CollectionHelper.EmptyMapClass<string, MetaAttribute>();
+		private static readonly IDictionary<string, MetaAttribute> EmptyMetaData = CollectionHelper.EmptyDictionary<string, MetaAttribute>();
 
 		[NonSerialized]
 		[XmlIgnore]

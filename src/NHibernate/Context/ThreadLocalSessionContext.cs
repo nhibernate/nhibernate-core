@@ -33,7 +33,7 @@ namespace NHibernate.Context
 	[Serializable]
 	public partial class ThreadLocalSessionContext : ICurrentSessionContext
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ThreadLocalSessionContext));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ThreadLocalSessionContext));
 
 		[ThreadStatic]
 		protected static IDictionary<ISessionFactory, ISession> context;
@@ -86,14 +86,14 @@ namespace NHibernate.Context
 						}
 						catch (Exception ex)
 						{
-							log.Debug("Unable to rollback transaction for orphaned session", ex);
+							log.Debug(ex, "Unable to rollback transaction for orphaned session");
 						}
 					}
 					orphan.Close();
 				}
 				catch (Exception ex)
 				{
-					log.Debug("Unable to close orphaned session", ex);
+					log.Debug(ex, "Unable to close orphaned session");
 				}
 			}
 		}

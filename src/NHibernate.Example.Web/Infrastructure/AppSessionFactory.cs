@@ -13,7 +13,7 @@ namespace NHibernate.Example.Web.Infrastructure
 
 		public AppSessionFactory(Microsoft.Extensions.Logging.ILoggerFactory loggerFactory)
 		{
-			NHibernate.LoggerProvider.SetLoggersFactory(new NHibernateToMicrosoftLoggerFactory(loggerFactory));
+			NHibernate.NHibernateLogger.SetLoggersFactory(new NHibernateToMicrosoftLoggerFactory(loggerFactory));
 
 			var mapper = new ModelMapper();
 			mapper.AddMapping<ItemMap>();
@@ -24,7 +24,7 @@ namespace NHibernate.Example.Web.Infrastructure
 				{
 					db.ConnectionString = @"Server=(local)\SQLEXPRESS;initial catalog=nhibernate;Integrated Security=true";
 					db.Dialect<MsSql2008Dialect>();
-					db.Driver<SqlClientDriver>();
+					db.Driver<Sql2008ClientDriver>();
 				})
 				.AddMapping(domainMapping);
 			Configuration.SessionFactory().GenerateStatistics();

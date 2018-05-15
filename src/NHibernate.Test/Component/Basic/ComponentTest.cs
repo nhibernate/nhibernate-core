@@ -21,7 +21,7 @@ namespace NHibernate.Test.Component.Basic
 
 		protected override System.Collections.IList Mappings
 		{
-			get { return new string[] { }; }
+			get { return Array.Empty<string>(); }
 		}
 		
 		protected override void Configure(Configuration configuration)

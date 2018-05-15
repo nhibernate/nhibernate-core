@@ -42,6 +42,9 @@ namespace NHibernate.Test.GenericTest.Overall
 		[Test]
 		public void CRUDAB()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			var entity = new A<B>
 			{
 				Property = new B { Prop = 2 },

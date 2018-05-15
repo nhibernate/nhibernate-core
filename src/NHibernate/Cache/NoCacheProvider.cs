@@ -9,7 +9,7 @@ namespace NHibernate.Cache
 	/// </summary>
 	public class NoCacheProvider : ICacheProvider
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(NoCacheProvider));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(NoCacheProvider));
 
 		public const string WarnMessage = "Second-level cache is enabled in a class, but no cache provider was selected. Fake cache used.";
 

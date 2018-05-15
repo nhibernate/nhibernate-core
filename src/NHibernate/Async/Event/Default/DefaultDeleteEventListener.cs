@@ -172,9 +172,9 @@ namespace NHibernate.Event.Default
 		protected virtual async Task DeleteEntityAsync(IEventSource session, object entity, EntityEntry entityEntry, bool isCascadeDeleteEnabled, IEntityPersister persister, ISet<object> transientEntities, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("deleting " + MessageHelper.InfoString(persister, entityEntry.Id, session.Factory));
+				log.Debug("deleting {0}", MessageHelper.InfoString(persister, entityEntry.Id, session.Factory));
 			}
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;

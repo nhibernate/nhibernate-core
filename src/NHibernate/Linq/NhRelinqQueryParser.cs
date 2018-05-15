@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Linq;
 using System.Linq.Expressions;
@@ -7,9 +6,8 @@ using NHibernate.Linq.ExpressionTransformers;
 using NHibernate.Linq.Visitors;
 using NHibernate.Util;
 using Remotion.Linq;
-using Remotion.Linq.Clauses;
-using Remotion.Linq.Clauses.StreamedData;
 using Remotion.Linq.EagerFetching.Parsing;
+using Remotion.Linq.Parsing.ExpressionVisitors;
 using Remotion.Linq.Parsing.ExpressionVisitors.Transformation;
 using Remotion.Linq.Parsing.Structure;
 using Remotion.Linq.Parsing.Structure.ExpressionTreeProcessors;
@@ -86,16 +84,6 @@ namespace NHibernate.Linq
 				new[] { ReflectHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.ThenFetchMany<object, object, object>(null, null)) },
 				typeof(ThenFetchManyExpressionNode));
 
-			methodInfoRegistry.Register(
-				new[]
-					{
-						ReflectHelper.GetMethodDefinition(() => Queryable.AsQueryable(null)),
-						ReflectHelper.GetMethodDefinition(() => Queryable.AsQueryable<object>(null)),
-					}, typeof(AsQueryableExpressionNode)
-				);
-
-			methodInfoRegistry.Register(new[] { LinqExtensionMethods.SetOptionsDefinition }, typeof(OptionsExpressionNode));
-
 			var nodeTypeProvider = ExpressionTreeParser.CreateDefaultNodeTypeProvider();
 			nodeTypeProvider.InnerProviders.Add(methodInfoRegistry);
 			defaultNodeTypeProvider = nodeTypeProvider;
@@ -113,76 +101,6 @@ namespace NHibernate.Linq
 		public System.Type GetNodeType(MethodInfo method)
 		{
 			return defaultNodeTypeProvider.GetNodeType(method);
-		}
-	}
-
-	public class AsQueryableExpressionNode : MethodCallExpressionNodeBase
-	{
-		public AsQueryableExpressionNode(MethodCallExpressionParseInfo parseInfo) : base(parseInfo)
-		{
-		}
-
-		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
-		{
-			return Source.Resolve(inputParameter, expressionToBeResolved, clauseGenerationContext);
-		}
-
-		protected override void ApplyNodeSpecificSemantics(QueryModel queryModel, ClauseGenerationContext clauseGenerationContext)
-		{
-		}
-	}
-
-	internal class OptionsExpressionNode : ResultOperatorExpressionNodeBase
-	{
-		private readonly MethodCallExpressionParseInfo _parseInfo;
-		private readonly ConstantExpression _setOptions;
-
-		public OptionsExpressionNode(MethodCallExpressionParseInfo parseInfo, ConstantExpression setOptions)
-			: base(parseInfo, null, null)
-		{
-			_parseInfo = parseInfo;
-			_setOptions = setOptions;
-		}
-
-		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
-		{
-			return Source.Resolve(inputParameter, expressionToBeResolved, clauseGenerationContext);
-		}
-
-		protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
-		{
-			return new OptionsResultOperator(_parseInfo, _setOptions);
-		}
-	}
-
-	internal class OptionsResultOperator : ResultOperatorBase
-	{
-		public MethodCallExpressionParseInfo ParseInfo { get; }
-		public ConstantExpression SetOptions { get; }
-
-		public OptionsResultOperator(MethodCallExpressionParseInfo parseInfo, ConstantExpression setOptions)
-		{
-			ParseInfo = parseInfo;
-			SetOptions = setOptions;
-		}
-
-		public override IStreamedData ExecuteInMemory(IStreamedData input)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo)
-		{
-			return inputInfo;
-		}
-
-		public override ResultOperatorBase Clone(CloneContext cloneContext)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void TransformExpressions(Func<Expression, Expression> transformation)
-		{
 		}
 	}
 }

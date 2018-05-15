@@ -40,7 +40,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public ICollection<HbmMetaValue> MetaValues
 		{
-			get { return new HbmMetaValue[0]; }
+			get { return Array.Empty<HbmMetaValue>(); }
 		}
 
 		#endregion

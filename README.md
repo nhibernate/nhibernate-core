@@ -36,12 +36,13 @@ There are two official NHibernate community forums:
 Bug Reports
 -----------
 
-If you find any bugs, please report them using the [JIRA bug tracker][C1]. A
+If you find any bugs, please report them using the [GitHub issue tracker][C1]. A
 test-case that demonstrates the issue is usually required. Instructions on providing a test-case
-can be found [here][C2].
+can be found in [contributing guidelines][C3] or [here][C2].
 
-[C1]: http://nhibernate.jira.com
-[C2]: http://nhibernate.info/blog/2008/10/03/the-best-way-to-solve-nhibernate-bugs-submit-good-unit-test.html
+[C1]: http://github.com/nhibernate/nhibernate-core/issues
+[C2]: http://nhibernate.info/blog/2008/10/04/the-best-way-to-solve-nhibernate-bugs-submit-good-unit-test.html
+[C3]: CONTRIBUTING.md
 
 Licenses
 --------
@@ -66,10 +67,12 @@ of NHibernate (in no particular order):
 * [GitHub][] and [SourceForge][] - source code hosting
 * [Atlassian][] - JIRA bug tracker licence and hosting
 * [Log4net][] - logging, by the [Apache Software Foundation][]
-* [JetBrains][] - [ReSharper][] licences for NHibernate developers
+* [JetBrains][] - [ReSharper][] licences for NHibernate developers 
 * [LinFu][] - proxy implementation (Philip Laureano)
 * Iesi.Collections - source code taken from an [article][] written by Jason Smith
 * [Relinq][] - Linq provider for NHibernate
+* [AsyncGenerator][] - Roslyn based async C# code generator by @maca88
+
 
 [NUnit]: http://www.nunit.org
 [Nant]: http://nant.sourceforge.net
@@ -85,3 +88,4 @@ of NHibernate (in no particular order):
 [LinFu]: http://code.google.com/p/linfu
 [article]: http://www.codeproject.com/KB/recipes/sets.aspx
 [Relinq]: http://relinq.codeplex.com/
+[AsyncGenerator]: http://github.com/maca88/AsyncGenerator

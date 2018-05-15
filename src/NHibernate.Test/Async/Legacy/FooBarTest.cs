@@ -2490,7 +2490,7 @@ namespace NHibernate.Test.Legacy
 				// probably the conversion ProxyArray.id (to_number ensuring a not null value)
 				// Indeed, ProxyArray.id is Glarch.tha_key which is a string filled with a Guid. It does
 				// not fail with most engine likely because there are no results thanks to other conditions.
-				if (!(Dialect is Oracle8iDialect) && !(Dialect is MsSqlCeDialect))
+				if (!(Dialect is Oracle8iDialect) && !(Dialect is MsSqlCeDialect) && !(Dialect is HanaDialectBase))
 				{
 					await (s.CreateQuery(
 						"select count(*) from Bar as bar join bar.Component.Glarch.ProxyArray as g where cast(g.id as Int32) in indices(bar.Baz.FooArray)").
@@ -2841,7 +2841,20 @@ namespace NHibernate.Test.Legacy
 
 			// serialize and then deserialize the session.
 			Stream stream = new MemoryStream();
-			IFormatter formatter = new BinaryFormatter();
+#if NETFX
+			var formatter = new BinaryFormatter();
+#else
+			var selector = new SurrogateSelector();
+			selector.AddSurrogate(
+				typeof(CultureInfo),
+				new StreamingContext(StreamingContextStates.All),
+				new CultureInfoSerializationSurrogate());
+			selector.ChainSelector(new SerializationHelper.SurrogateSelector());
+			var formatter = new BinaryFormatter
+			{
+				SurrogateSelector = selector
+			};
+#endif
 			formatter.Serialize(stream, s);
 
 			s.Close();
@@ -4101,6 +4114,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task UpdateFromTransientAsync()
 		{
+			if (!TestDialect.SupportsBatchingDependentDML)
+				Assert.Ignore($"Dialect {Dialect} does not support batching of dependent DML (fee update on related fee)");
+
 			ISession s = OpenSession();
 			Fee fee1 = new Fee();
 			await (s.SaveAsync(fee1));
@@ -4690,7 +4706,12 @@ namespace NHibernate.Test.Legacy
 
 			// serialize the session.
 			Stream stream = new MemoryStream();
-			IFormatter formatter = new BinaryFormatter();
+			var formatter = new BinaryFormatter()
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			formatter.Serialize(stream, s);
 
 			// close the original session
