@@ -534,6 +534,18 @@ namespace NHibernate.Cfg
 			}
 		}
 
+		/// <summary>
+		///  Adds assembly created in memory as a resource names for mappning 
+		/// </summary>
+		/// <param name="assembly">The name of the assembly to load.</param>
+		/// <remarks>
+		/// The assembly must be loaded before you use <see cref="AddMapping(HbmMapping)"/>.
+		/// </remarks>
+		public void AddMemoryAssembly(Assembly assembly)
+		{
+			ReflectHelperMemoryAssembly.Instance.AddMemoryAssembly(assembly);
+		}
+
 		public void AddMapping(HbmMapping mappingDocument)
 		{
 			AddDeserializedMapping(mappingDocument, "mapping_by_code");
