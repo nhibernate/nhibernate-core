@@ -163,7 +163,7 @@ namespace NHibernate.Impl
 		
 		public SelectMode GetSelectMode(string path)
 		{
-			if (!selectModes.TryGetValue(path,out var result))
+			if (!selectModes.TryGetValue(path, out var result))
 			{
 				result = SelectMode.Default;
 			}
@@ -363,7 +363,7 @@ namespace NHibernate.Impl
 			if (!string.IsNullOrEmpty(alias))
 			{
 				var criteriaByAlias = GetCriteriaByAlias(alias);
-				criteriaByAlias.With(selectMode, associationPath, (string) null);
+				criteriaByAlias.With(selectMode, associationPath, null);
 				return this;
 			}
 

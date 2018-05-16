@@ -3,29 +3,29 @@ namespace NHibernate.Loader
 	public enum SelectMode
 	{
 		/// <summary>
-		/// Default behavior (as if no select mode applied).
+		/// Default behavior (as if no select mode is specified).
 		/// </summary>
 		Default,
 
 		/// <summary>
-		/// Fetch entity.
+		/// Fetch the entity.
 		/// </summary>
 		Fetch,
 		
 		/// <summary>
-		/// Fetch lazy properties.
+		/// Fetch the entity and its lazy properties.
 		/// </summary>
 		FetchLazyProperties,
 
 		/// <summary>
-		/// Only Identifier columns are added to select statement.
+		/// Only identifier columns are added to select statement.
 		/// Use it for fetching child objects for already loaded entities.
-		/// Note: Missing entities in session will be returned as null
+		/// Entities missing in session will be returned as null.
 		/// </summary>
 		ChildFetch,
 
 		/// <summary>
-		/// Skips entity from select statement but keeps join in query
+		/// Skips the entity from select statement but keeps joining it in the query.
 		/// </summary>
 		Skip,
 	}

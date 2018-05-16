@@ -23,7 +23,6 @@ using NHibernate.Loader.Collection;
 using NHibernate.Loader.Entity;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Persister.Collection

@@ -263,6 +263,8 @@ namespace NHibernate.Persister.Collection
 			return includeCollectionColumns ? SelectFragment(lhsAlias, collectionSuffix) : string.Empty;
 		}
 
+		// Since v5.2
+		[Obsolete("Use overload taking includeLazyProperties parameter")]
 		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias,
 			string entitySuffix, string collectionSuffix, bool includeCollectionColumns)
 		{

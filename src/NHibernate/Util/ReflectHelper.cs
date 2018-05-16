@@ -27,6 +27,12 @@ namespace NHibernate.Util
 		private static readonly MethodInfo Exception_InternalPreserveStackTrace =
 			typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
 
+		internal static T CastOrThrow<T>(object obj, string supportMessage) where T : class
+		{
+			return obj as T
+				?? throw new ArgumentException($"{obj?.GetType().FullName} requires to implement {typeof(T).FullName} interface to support {supportMessage}.");
+		}
+
 		/// <summary>
 		/// Extract the <see cref="MethodInfo"/> from a given expression.
 		/// </summary>

@@ -13,7 +13,6 @@ using NHibernate.Loader.Collection;
 using NHibernate.Loader.Entity;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Persister.Collection
@@ -304,6 +303,8 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
+		// Since v5.2
+		[Obsolete("Use overload taking includeLazyProperties parameter")]
 		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix, bool includeCollectionColumns)
 		{
 			return SelectFragment(rhs, rhsAlias, lhsAlias, entitySuffix, collectionSuffix, includeCollectionColumns, false);
@@ -320,7 +321,7 @@ namespace NHibernate.Persister.Collection
 
 			if (fetchLazyProperties)
 			{
-				var selectMode = TypeHelper.CastOrThrow<ISupportSelectModeJoinable>(ElementPersister, "fetch lazy properties");
+				var selectMode = ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(ElementPersister, "fetch lazy properties");
 				if (selectMode != null)
 					return buf.Append(selectMode.SelectFragment(null, null, lhsAlias, entitySuffix, null, false, fetchLazyProperties)).ToString();
 			}

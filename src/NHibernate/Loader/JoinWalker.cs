@@ -878,7 +878,7 @@ namespace NHibernate.Loader
 
 					if (collPersister.IsOneToMany)
 					{
-						FillEntityPersisterProperties(i,oj, (ILoadable) collPersister.ElementPersister);
+						FillEntityPersisterProperties(i, oj, (ILoadable) collPersister.ElementPersister);
 						i++;
 					}
 				}
@@ -952,6 +952,7 @@ namespace NHibernate.Loader
 			{
 				case SelectMode.Default:
 				case SelectMode.Fetch:
+#pragma warning disable 618
 					return join.Joinable.SelectFragment(
 						next?.Joinable,
 						next?.RHSAlias,
@@ -959,9 +960,10 @@ namespace NHibernate.Loader
 						entitySuffix,
 						collectionSuffix,
 						join.ShouldFetchCollectionPersister());
+#pragma warning restore 618
 
 				case SelectMode.FetchLazyProperties:
-					return TypeHelper.CastOrThrow<ISupportSelectModeJoinable>(join.Joinable, "fetch lazy propertie")
+					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(join.Joinable, "fetch lazy propertie")
 						.SelectFragment(
 							next?.Joinable,
 							next?.RHSAlias,
@@ -972,7 +974,7 @@ namespace NHibernate.Loader
 							true);
 				
 				case SelectMode.ChildFetch:
-					return TypeHelper.CastOrThrow<ISupportSelectModeJoinable>(join.Joinable, "child fetch select mode").IdentifierSelectFragment(join.RHSAlias, entitySuffix);
+					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(join.Joinable, "child fetch select mode").IdentifierSelectFragment(join.RHSAlias, entitySuffix);
 
 				case SelectMode.Skip:
 					return string.Empty;

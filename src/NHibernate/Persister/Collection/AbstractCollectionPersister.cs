@@ -30,7 +30,7 @@ namespace NHibernate.Persister.Collection
 	/// Summary description for AbstractCollectionPersister.
 	/// </summary>
 	public abstract partial class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
-														IPostInsertIdentityPersister, ISupportSelectModeJoinable
+		IPostInsertIdentityPersister, ISupportSelectModeJoinable
 	{
 		protected static readonly object NotFoundPlaceHolder = new object();
 		private readonly string role;
@@ -1647,11 +1647,15 @@ namespace NHibernate.Persister.Collection
 		public abstract SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
 
 		// 6.0 TODO: Remove (Replace with ISupportSelectModeJoinable.SelectFragment)
+		// Since v5.2
+		[Obsolete("Use overload taking includeLazyProperties parameter")]
 		public abstract string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string currentEntitySuffix,
 											  string currentCollectionSuffix, bool includeCollectionColumns);
 		
 		// 6.0 TODO: Make abstract
-		public virtual string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix, bool includeCollectionColumns, bool includeLazyProperties)
+		public virtual string SelectFragment(
+			IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix,
+			bool includeCollectionColumns, bool includeLazyProperties)
 		{
 			throw new NotImplementedException("Fetching lazy properties is not implemented by " + GetType().FullName);
 		}
@@ -1664,7 +1668,7 @@ namespace NHibernate.Persister.Collection
 		/// <returns></returns>
 		public virtual string IdentifierSelectFragment(string name, string suffix)
 		{
-			var persister = TypeHelper.CastOrThrow<ISupportSelectModeJoinable>(ElementPersister, "SelectMode.ChildFetch for collection");
+			var persister = ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(ElementPersister, "SelectMode.ChildFetch for collection");
 			return persister.IdentifierSelectFragment(name, suffix);
 		}
 

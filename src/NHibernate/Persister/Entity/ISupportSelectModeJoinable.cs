@@ -6,16 +6,13 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Given a query alias and an identifying suffix, render the identifier select fragment for joinable entity.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="suffix"></param>
-		/// <returns></returns>
 		string IdentifierSelectFragment(string name, string suffix);
 
 		/// <summary>
 		/// All columns to select, when loading.
 		/// </summary>
-		string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix,
-							string currentCollectionSuffix, bool includeCollectionColumns, bool includeLazyProperties);
-
+		string SelectFragment(
+			IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix,
+			string currentCollectionSuffix, bool includeCollectionColumns, bool includeLazyProperties);
 	}
 }

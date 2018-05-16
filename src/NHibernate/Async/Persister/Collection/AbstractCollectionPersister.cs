@@ -39,7 +39,7 @@ namespace NHibernate.Persister.Collection
 	using System.Threading.Tasks;
 	using System.Threading;
 	public abstract partial class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
-														IPostInsertIdentityPersister, ISupportSelectModeJoinable
+		IPostInsertIdentityPersister, ISupportSelectModeJoinable
 	{
 
 		public Task InitializeAsync(object key, ISessionImplementor session, CancellationToken cancellationToken)
