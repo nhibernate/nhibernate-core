@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using NUnit.Framework;
-using NHibernate.Cfg;
 using System.CodeDom.Compiler;
 using System.Linq;
 using Microsoft.CSharp;
 using System.Reflection;
+using NHibernate.Engine;
 using NHibernate.Mapping.ByCode;
+using NHibernate.Tool.hbm2ddl;
 
 namespace NHibernate.Test.CfgTest
 {
@@ -19,13 +19,50 @@ namespace NHibernate.Test.CfgTest
 			const int assemblyGenerateCount = 10;
 			var code = GenerateCode(assemblyGenerateCount);
 			var assembly = CompileAssembly(code);
-			
-			var config = new Configuration();
+
+			var config = TestConfigurationHelper.GetDefaultConfiguration();
 			var mapper = new ModelMapper();
 			mapper.AddMappings(assembly.GetExportedTypes());
 			config.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
 
-			Assert.That(config.ClassMappings.Count, Is.EqualTo(assemblyGenerateCount), "Not all virtual assembly mapped");
+			Assert.That(config.ClassMappings, Has.Count.EqualTo(assemblyGenerateCount), "Not all virtual assembly mapped");
+
+			// Ascertain the mappings are usable.
+			using (var sf = config.BuildSessionFactory())
+			{
+				var se = new SchemaExport(config);
+				se.Create(false, true);
+				try
+				{
+					using (var s = sf.OpenSession())
+					using (var tx = s.BeginTransaction())
+					{
+						foreach (var entityClass in assembly.GetExportedTypes()
+						                                    .Where(t => !typeof(IConformistHoldersProvider).IsAssignableFrom(t)))
+						{
+							var ctor = entityClass.GetConstructor(Array.Empty<System.Type>());
+							Assert.That(ctor, Is.Not.Null, $"Default constructor for {entityClass} not found");
+							var entity = ctor.Invoke(Array.Empty<object>());
+							s.Save(entity);
+						}
+
+						tx.Commit();
+					}
+
+					using (var s = sf.OpenSession())
+					using (var tx = s.BeginTransaction())
+					{
+						var entities = s.CreateQuery("from System.Object").List<object>();
+						Assert.That(entities, Has.Count.EqualTo(assemblyGenerateCount), "Not all expected entities were persisted");
+
+						tx.Commit();
+					}
+				}
+				finally
+				{
+					TestCase.DropSchema(false, se, (ISessionFactoryImplementor) sf);
+				}
+			}
 		}
 
 		private static string[] GenerateCode(int assemblyCount)
@@ -35,24 +72,24 @@ using NHibernate.Mapping.ByCode.Conformist;
 
 public class Entity$$INDEX$$
 {
-    public virtual int ID { get; set; }
-    public virtual string Name { get; set; }
+	public virtual int ID { get; set; }
+	public virtual string Name { get; set; }
 }
 
 public class Entity$$INDEX$$Map : ClassMapping<Entity$$INDEX$$>
 {
-    public Entity$$INDEX$$Map () 
-    {
-        Table(""Entity$$INDEX$$"");
+	public Entity$$INDEX$$Map () 
+	{
+		Table(""Entity$$INDEX$$"");
 
 		Id(x => x.ID, m =>
 		{
-			m.Column(""ID"");
+			m.Column(""`ID`"");
 		});
 
 		Property(x => x.Name, m =>
 		{
-			m.Column(""Name"");
+			m.Column(""`Name`"");
 		});
 	}
 }";
