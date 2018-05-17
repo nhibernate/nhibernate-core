@@ -1,4 +1,4 @@
-namespace NHibernate.Loader
+namespace NHibernate
 {
 	public enum SelectMode
 	{
@@ -11,7 +11,7 @@ namespace NHibernate.Loader
 		/// Fetch the entity.
 		/// </summary>
 		Fetch,
-		
+
 		/// <summary>
 		/// Fetch the entity and its lazy properties.
 		/// </summary>

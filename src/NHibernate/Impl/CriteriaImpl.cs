@@ -363,7 +363,7 @@ namespace NHibernate.Impl
 			if (!string.IsNullOrEmpty(alias))
 			{
 				var criteriaByAlias = GetCriteriaByAlias(alias);
-				criteriaByAlias.With(selectMode, associationPath, null);
+				criteriaByAlias.Fetch(selectMode, associationPath, null);
 				return this;
 			}
 

@@ -14,7 +14,7 @@ namespace NHibernate
 		/// <c>curCriteriaEntityType => curCriteriaEntityType</c> or
 		/// <c>curCriteriaEntityType => curCriteriaEntityType.ChildEntity.SubEntity</c>.
 		/// </summary>
-		public static IQueryOver<TRoot, TSubType> With<TRoot, TSubType>(
+		public static IQueryOver<TRoot, TSubType> Fetch<TRoot, TSubType>(
 			this IQueryOver<TRoot,TSubType> queryOver, SelectMode mode,
 			params Expression<Func<TSubType, object>>[] associationPaths)
 		{
@@ -31,7 +31,7 @@ namespace NHibernate
 		/// Applies a select mode for the given aliased criteria association paths:
 		/// <c>() => aliasedCriteria</c> or <c>() => aliasedCriteria.ChildEntity.SubEntity</c>.
 		/// </summary>
-		public static TThis With<TThis>(
+		public static TThis Fetch<TThis>(
 			this TThis queryOver, SelectMode mode, params Expression<Func<object>>[] aliasedAssociationPaths)
 			where TThis: IQueryOver
 		{
@@ -42,7 +42,7 @@ namespace NHibernate
 
 				StringHelper.IsNotRoot(expressionPath, out var alias, out var path);
 
-				criteria.With(mode, path, alias);
+				criteria.Fetch(mode, path, alias);
 			}
 
 			return queryOver;
@@ -56,7 +56,7 @@ namespace NHibernate
 		/// <param name="associationPath">The association path for the given <paramref name="alias"/> criteria.</param>
 		/// <param name="alias">The criteria alias. If null or empty, the current criteria will be used.</param>
 		/// <returns>The current criteria.</returns>
-		public static ICriteria With(this ICriteria criteria, SelectMode mode, string associationPath, string alias)
+		public static ICriteria Fetch(this ICriteria criteria, SelectMode mode, string associationPath, string alias)
 		{
 			var q = CastOrThrow<ISupportSelectModeCriteria>(criteria);
 			q.SetSelectMode(mode, associationPath, alias);

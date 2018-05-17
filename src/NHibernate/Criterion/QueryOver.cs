@@ -1010,7 +1010,7 @@ namespace NHibernate.Criterion
 
 		public IQueryOver<TRoot, TSubType> SetSelectMode(SelectMode mode, Expression<Func<TSubType, object>> path)
 		{
-			UnderlyingCriteria.With(mode, ExpressionProcessor.FindMemberExpression(path.Body), null);
+			UnderlyingCriteria.Fetch(mode, ExpressionProcessor.FindMemberExpression(path.Body), null);
 			return this;
 		}
 	}

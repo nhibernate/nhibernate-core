@@ -32,7 +32,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				root = session.QueryOver(() => root)
 							//Child1 is required solely for filtering, no need to be fetched, so skip it from select statement
 							.JoinQueryOver(r => r.Child1, JoinType.InnerJoin)
-							.With(SelectMode.Skip, child1 => child1)
+							.Fetch(SelectMode.Skip, child1 => child1)
 							.Take(1)
 							.SingleOrDefault();
 
@@ -51,10 +51,10 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 			using (var session = OpenSession())
 			{
 				var list = session.QueryOver<EntityComplex>()
-								.With(SelectMode.Fetch, ec => ec.Child1)
+								.Fetch(SelectMode.Fetch, ec => ec.Child1)
 								.JoinQueryOver(ec => ec.ChildrenList, JoinType.InnerJoin)
 								//now we can fetch inner joined collection
-								.With(SelectMode.Fetch, childrenList => childrenList)
+								.Fetch(SelectMode.Fetch, childrenList => childrenList)
 								.TransformUsing(Transformers.DistinctRootEntity)
 								.List();
 
@@ -77,10 +77,10 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 			using (var session = OpenSession())
 			{
 				var list = session.QueryOver<EntityComplex>()
-								.With(SelectMode.Fetch, ec => ec.Child1)
+								.Fetch(SelectMode.Fetch, ec => ec.Child1)
 								.JoinQueryOver(ec => ec.ChildrenList, JoinType.InnerJoin)
 								//now we can fetch inner joined collection
-								.With(SelectMode.Fetch, childrenList => childrenList)
+								.Fetch(SelectMode.Fetch, childrenList => childrenList)
 								.TransformUsing(Transformers.DistinctRootEntity)
 								.Clone()
 								.List();
@@ -105,9 +105,9 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				//SelectMode.Default is no op - fetching is controlled by default behavior:
 				//SameTypeChild won't be loaded, and ChildrenList collection won't be fetched due to InnerJoin
 				var list = session.QueryOver<EntityComplex>()
-								.With(SelectMode.Default, ec => ec.SameTypeChild)
+								.Fetch(SelectMode.Default, ec => ec.SameTypeChild)
 								.JoinQueryOver(ec => ec.ChildrenList, JoinType.InnerJoin)
-								.With(SelectMode.Default, childrenList => childrenList)
+								.Fetch(SelectMode.Default, childrenList => childrenList)
 								.TransformUsing(Transformers.DistinctRootEntity)
 								.List();
 
@@ -134,7 +134,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 			using (var session = OpenSession())
 			{
 				var root = session.QueryOver<EntityComplex>()
-								.With(SelectMode.FetchLazyProperties, ec => ec)
+								.Fetch(SelectMode.FetchLazyProperties, ec => ec)
 								.Where(ec => ec.LazyProp != null)
 								.Take(1)
 								.SingleOrDefault();
@@ -166,15 +166,15 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				session
 					.QueryOver(() => root)
 					//Only ID is added to SELECT statement for root so it's index scan only
-					.With(SelectMode.ChildFetch, ec => ec)
-					.With(SelectMode.Fetch, ec => ec.ChildrenList)
+					.Fetch(SelectMode.ChildFetch, ec => ec)
+					.Fetch(SelectMode.Fetch, ec => ec.ChildrenList)
 					.Where(r => r.Id == _parentEntityComplexId)
 					.Future();
 				
 				session
 					.QueryOver(() => root)
-					.With(SelectMode.ChildFetch, ec => ec)
-					.With(SelectMode.Fetch, ec => ec.ChildrenListEmpty)
+					.Fetch(SelectMode.ChildFetch, ec => ec)
+					.Fetch(SelectMode.Fetch, ec => ec.ChildrenListEmpty)
 					.Where(r => r.Id == _parentEntityComplexId)
 					.Future();
 
@@ -204,15 +204,15 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				session
 					.QueryOver(() => root)
 					//Only ID is added to SELECT statement for root so it's index scan only
-					.With(SelectMode.ChildFetch, ec => ec)
-					.With(SelectMode.Fetch, ec => ec.ChildrenList)
+					.Fetch(SelectMode.ChildFetch, ec => ec)
+					.Fetch(SelectMode.Fetch, ec => ec.ChildrenList)
 					.Where(r => r.Id == _parentEntityComplexId)
 					.List();
 				
 				session
 					.QueryOver(() => root)
-					.With(SelectMode.ChildFetch, ec => ec)
-					.With(SelectMode.Fetch, ec => ec.ChildrenListEmpty)
+					.Fetch(SelectMode.ChildFetch, ec => ec)
+					.Fetch(SelectMode.Fetch, ec => ec.ChildrenListEmpty)
 					.Where(r => r.Id == _parentEntityComplexId)
 					.List();
 
@@ -235,7 +235,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				EntitySimpleChild rootChild = null;
 				rootChild = session.QueryOver(() => rootChild)
 							.JoinEntityQueryOver(() => parentJoin, Restrictions.Where(() => rootChild.ParentId == parentJoin.Id))
-							.With(SelectMode.Skip, a => a)
+							.Fetch(SelectMode.Skip, a => a)
 							.Take(1)
 							.SingleOrDefault();
 
@@ -260,7 +260,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				EntitySimpleChild rootChild = null;
 				rootChild = session.QueryOver(() => rootChild)
 							.JoinEntityQueryOver(() => parentJoin, Restrictions.Where(() => rootChild.ParentId == parentJoin.Id))
-							.With(SelectMode.FetchLazyProperties, ec => ec)
+							.Fetch(SelectMode.FetchLazyProperties, ec => ec)
 							.Take(1)
 							.SingleOrDefault();
 				parentJoin = session.Load<EntityComplex>(rootChild.ParentId);
@@ -285,9 +285,9 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 			{
 				EntityComplex root = null;
 				root = session.QueryOver(() => root)
-							.With(SelectMode.ChildFetch, r => r)
+							.Fetch(SelectMode.ChildFetch, r => r)
 							.JoinQueryOver(ec => ec.ChildrenList)
-							.With(SelectMode.Fetch, simpleChild => simpleChild)
+							.Fetch(SelectMode.Fetch, simpleChild => simpleChild)
 							.Take(1)
 							.SingleOrDefault();
 
@@ -308,9 +308,9 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 			{
 				EntityEager root = null;
 				root = session.QueryOver(() => root)
-							.With(SelectMode.ChildFetch, r => r)
+							.Fetch(SelectMode.ChildFetch, r => r)
 							.JoinQueryOver(ec => ec.ChildrenList)
-							.With(SelectMode.Fetch, simpleChild => simpleChild)
+							.Fetch(SelectMode.Fetch, simpleChild => simpleChild)
 							.Take(1)
 							.SingleOrDefault();
 
@@ -337,21 +337,21 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 
 				session
 					.QueryOver(() => root)
-					.With(SelectMode.ChildFetch, () => root)
-					.With(SelectMode.Fetch, () => root.ChildrenList)
+					.Fetch(SelectMode.ChildFetch, () => root)
+					.Fetch(SelectMode.Fetch, () => root.ChildrenList)
 					.Future();
 
 				session
 					.QueryOver(() => root)
-					.With(SelectMode.ChildFetch, () => root, () => root.ChildrenList)
-					.With(SelectMode.Fetch, () => root.ChildrenList[0].Children)
+					.Fetch(SelectMode.ChildFetch, () => root, () => root.ChildrenList)
+					.Fetch(SelectMode.Fetch, () => root.ChildrenList[0].Children)
 					.Future();
 
 				session
 					.QueryOver(() => root)
-					.With(SelectMode.Skip, () => root.ChildrenList)
-					.With(SelectMode.ChildFetch,() => root, () => root.ChildrenList[0].Children)
-					.With(SelectMode.Fetch, () => root.ChildrenList[0].Children[0].Children)
+					.Fetch(SelectMode.Skip, () => root.ChildrenList)
+					.Fetch(SelectMode.ChildFetch,() => root, () => root.ChildrenList[0].Children)
+					.Fetch(SelectMode.Fetch, () => root.ChildrenList[0].Children[0].Children)
 					.Future();
 
 				root = rootFuture.ToList().First(r => r.Id == _parentEntityComplexId);
@@ -377,21 +377,21 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 
 				session
 					.QueryOver(() => root)
-					.With(SelectMode.ChildFetch, () => root)
-					.With(SelectMode.Fetch, () => root.ChildrenList)
+					.Fetch(SelectMode.ChildFetch, () => root)
+					.Fetch(SelectMode.Fetch, () => root.ChildrenList)
 					.List();
 
 				session
 					.QueryOver(() => root)
-					.With(SelectMode.ChildFetch, () => root, () => root.ChildrenList)
-					.With(SelectMode.Fetch, () => root.ChildrenList[0].Children)
+					.Fetch(SelectMode.ChildFetch, () => root, () => root.ChildrenList)
+					.Fetch(SelectMode.Fetch, () => root.ChildrenList[0].Children)
 					.List();
 
 				session
 					.QueryOver(() => root)
-					.With(SelectMode.Skip, () => root.ChildrenList)
-					.With(SelectMode.ChildFetch,() => root, () => root.ChildrenList[0].Children)
-					.With(SelectMode.Fetch, () => root.ChildrenList[0].Children[0].Children)
+					.Fetch(SelectMode.Skip, () => root.ChildrenList)
+					.Fetch(SelectMode.ChildFetch,() => root, () => root.ChildrenList[0].Children)
+					.Fetch(SelectMode.Fetch, () => root.ChildrenList[0].Children[0].Children)
 					.List();
 
 				root = list.First(r => r.Id == _parentEntityComplexId);
@@ -411,8 +411,8 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 			using (var session = OpenSession())
 			{
 				var query = session.QueryOver<EntityComplex>()
-						.With(SelectMode.Skip, ec => ec)
-						.With(SelectMode.Fetch, ec => ec.Child1)
+						.Fetch(SelectMode.Skip, ec => ec)
+						.Fetch(SelectMode.Fetch, ec => ec.Child1)
 						.Take(1);
 
 				Assert.Throws<NotSupportedException>(() => query.SingleOrDefault());
