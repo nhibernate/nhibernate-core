@@ -289,7 +289,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 
 
 		[Test]
-		public async Task SelectModeChildFetchReturnsNullForNotLoadedObjectAndDoesntThrowExceptionAsync()
+		public async Task SelectModeChildFetchLoadsNotLoadedObjectAsync()
 		{
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
@@ -302,8 +302,12 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 							.Take(1)
 							.SingleOrDefaultAsync());
 
-				Assert.That(root, Is.Null);
-				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+				Assert.That(root, Is.Not.Null, "root is not loaded");
+				Assert.That(NHibernateUtil.IsInitialized(root), Is.False, "root should not be initialized");
+				Assert.That(sqlLog.Appender.GetEvents(), Has.Length.EqualTo(1), "Only one SQL select is expected");
+				// The root was not initialized but its children collection is immediately initialized... A bit weird feature.
+				Assert.That(NHibernateUtil.IsInitialized(root.ChildrenList), Is.True, "root children should be initialized");
+				Assert.That(root.ChildrenList, Has.Count.EqualTo(1).And.None.Null, "Unexpected children collection content");
 			}
 		}
 		

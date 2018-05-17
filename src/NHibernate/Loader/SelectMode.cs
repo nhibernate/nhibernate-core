@@ -18,9 +18,9 @@ namespace NHibernate.Loader
 		FetchLazyProperties,
 
 		/// <summary>
-		/// Only identifier columns are added to select statement.
-		/// Use it for fetching child objects for already loaded entities.
-		/// Entities missing in session will be returned as null.
+		/// Only identifier columns are added to select statement. Use it for fetching child objects for already loaded
+		/// entities.
+		/// Entities missing in session will be loaded (lazily if possible, otherwise with additional immediate loads).
 		/// </summary>
 		ChildFetch,
 
