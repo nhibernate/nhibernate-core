@@ -375,7 +375,7 @@ namespace NHibernate.Loader
 					var key = keys[i];
 					if (entity == null && key != null && IsChildFetchEntity(i))
 					{
-						// The entity was missing in the session, fallback on interbal load (which will just yield a
+						// The entity was missing in the session, fallback on internal load (which will just yield a
 						// proxy if the persister supports it).
 						row[i] = session.InternalLoad(key.EntityName, key.Identifier, false, false);
 					}
