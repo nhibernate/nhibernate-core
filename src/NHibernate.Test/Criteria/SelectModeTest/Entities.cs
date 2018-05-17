@@ -21,6 +21,18 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 		public virtual IList<EntityComplex> ChildrenListEmpty { get; set; } = new List<EntityComplex>();
 	}
 
+	public class EntityEager
+	{
+		public Guid Id { get; set; }
+		public int Version { get; set; }
+		public string Name { get; set; }
+		public IList<EntityEagerChild> ChildrenList { get; set; }
+	}
+
+	public class EntityEagerChild :BaseChild
+	{
+	}
+
 	public abstract class BaseChild
 	{
 		public virtual Guid Id { get; set; }

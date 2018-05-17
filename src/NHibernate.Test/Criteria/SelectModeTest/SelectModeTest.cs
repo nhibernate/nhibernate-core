@@ -301,6 +301,28 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 		}
 
 		[Test]
+		public void SelectModeChildFetchLoadsNotLoaded_NotProxifiedObject()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityEager root = null;
+				root = session.QueryOver(() => root)
+							.With(SelectMode.ChildFetch, r => r)
+							.JoinQueryOver(ec => ec.ChildrenList)
+							.With(SelectMode.Fetch, simpleChild => simpleChild)
+							.Take(1)
+							.SingleOrDefault();
+
+				Assert.That(root, Is.Not.Null, "root is loaded");
+				Assert.That(NHibernateUtil.IsInitialized(root), Is.True, "root should be initialized");
+				Assert.That(sqlLog.Appender.GetEvents(), Has.Length.EqualTo(2), "Two SQL selects are expected (query + loading not proxified entity)");
+				Assert.That(NHibernateUtil.IsInitialized(root.ChildrenList), Is.True, "root children should be initialized");
+				Assert.That(root.ChildrenList, Has.Count.EqualTo(1).And.None.Null, "Unexpected children collection content");
+			}
+		}
+
+		[Test]
 		public void SelectModeChildFetchDeep_SingleDbRoundtrip_Aliased()
 		{
 			SkipFutureTestIfNotSupported();
@@ -409,7 +431,22 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
-			mapper.Class<EntityComplex>(
+			mapper.Class<EntityEager>(
+				rc =>
+				{
+					rc.Lazy(false);
+					rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+					rc.Version(ep => ep.Version, vm => { });
+					rc.Property(x => x.Name);
+					MapList(rc, p => p.ChildrenList);
+				});
+
+			MapSimpleChild<EntityEagerChild>(
+				mapper,
+				rc => { rc.Lazy(false); });
+				
+
+		mapper.Class<EntityComplex>(
 				rc =>
 				{
 					rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
@@ -454,9 +491,9 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
-		private static void MapSimpleChild<TChild>(ModelMapper mapper) where TChild : BaseChild
+		private static void MapSimpleChild<TChild>(ModelMapper mapper, Action<IClassMapper<TChild>> action = null) where TChild : BaseChild
 		{
-			MapSimpleChild<TChild, object>(mapper, default(TChild), null);
+			MapSimpleChild<TChild, object>(mapper, default(TChild), null, action);
 		}
 
 		private static void MapSimpleChild<TChild, TSubChild>(ModelMapper mapper, TChild obj, Expression<Func<TChild, IEnumerable<TSubChild>>> expression, Action<IClassMapper<TChild>> action = null) where TChild : BaseChild
@@ -471,6 +508,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 					{
 						MapList(rc, expression);
 					}
+					action?.Invoke(rc);
 				});
 		}
 
@@ -505,6 +543,8 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				session.Query<Level2Child>().Delete();
 				session.Query<EntityComplex>().Delete();
 				session.Query<EntitySimpleChild>().Delete();
+				session.Query<EntityEagerChild>().Delete();
+				session.Query<EntityEager>().Delete();
 
 
 				session.Flush();
@@ -575,6 +615,12 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 					ChildrenList = new List<EntitySimpleChild> {child1},
 					ChildrenListEmpty = new List<EntityComplex> { },
 				};
+				session.Save(new EntityEager()
+				{
+					Name = "Eager",
+					ChildrenList = new List<EntityEagerChild>
+					{ new EntityEagerChild(){Name ="EagerChild"}}
+				});
 
 				session.Save(child1);
 				session.Save(child2);
