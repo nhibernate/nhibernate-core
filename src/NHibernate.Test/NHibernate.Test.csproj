@@ -2,7 +2,7 @@
   <Import Project="../../build-common/NHibernate.props" />
   <PropertyGroup>
     <Description>The Unit Tests for NHibernate.</Description>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>$(NhAppTargetFrameworks)</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
   </PropertyGroup>
