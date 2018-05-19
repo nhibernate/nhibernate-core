@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Criterion;
+using NHibernate.Driver;
 using NHibernate.Linq;
 using NHibernate.Loader;
 using NHibernate.Mapping.ByCode;
@@ -368,6 +369,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 		[Test]
 		public void SelectModeChildFetchDeep_Aliased()
 		{
+			//using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
 				EntityComplex root = null;
@@ -417,13 +419,145 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 
 				Assert.Throws<NotSupportedException>(() => query.SingleOrDefault());
 			}
+		}		
+		
+		
+		[Test]
+		public void LazyRootEntityIsNotSupported()
+		{using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var query = session.QueryOver<EntityComplex>()
+						.Fetch(SelectMode.SkipJoin, ec => ec)
+						.Fetch(SelectMode.Fetch, ec => ec.Child1)
+						.Take(1);
+
+				Assert.Throws<NotSupportedException>(() => query.SingleOrDefault());
+			}
 		}
+
+//6.0 TODO: Remove tests wrapped in pragma below
+#pragma warning disable 618
+		
+		[Test]
+		public void FetchModeEagerForLazy()
+		{
+			using (var session = OpenSession())
+			{
+				var parent = session.QueryOver<EntityComplex>()
+									.Fetch(ec => ec.Child1).Eager
+									.Fetch(ec => ec.ChildrenList).Eager
+									.Where(ec => ec.Child1 != null)
+									.TransformUsing(Transformers.DistinctRootEntity)
+									.List()
+									.FirstOrDefault();
+
+				Assert.That(parent?.Child1, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(parent?.Child1), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(parent?.ChildrenList), Is.True);
+			}
+		}		
+		
+		[Test]
+		public void FetchModeLazyForLazy()
+		{
+			using (var session = OpenSession())
+			{
+				var parent = session.QueryOver<EntityComplex>()
+									.Fetch(ec => ec.Child1).Lazy
+									.Fetch(ec => ec.ChildrenList).Lazy
+									.Where(ec => ec.Child1 != null)
+									.TransformUsing(Transformers.DistinctRootEntity)
+									.List()
+									.FirstOrDefault();
+
+				Assert.That(parent?.Child1, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(parent?.Child1), Is.False);
+				Assert.That(NHibernateUtil.IsInitialized(parent?.ChildrenList), Is.False);
+			}
+		}
+		
+		[Test]
+		public void FetchModeDefaultForLazy()
+		{
+			using (var session = OpenSession())
+			{
+				var parent = session.QueryOver<EntityComplex>()
+									.Fetch(ec => ec.Child1).Default
+									.Fetch(ec => ec.ChildrenList).Default
+									.Where(ec => ec.Child1 != null)
+									.TransformUsing(Transformers.DistinctRootEntity)
+									.List()
+									.FirstOrDefault();
+
+				Assert.That(parent?.Child1, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(parent?.Child1), Is.False);
+				Assert.That(NHibernateUtil.IsInitialized(parent?.ChildrenList), Is.False);
+			}
+		}
+		
+		[Test]
+		public void FetchModeLazyForEager()
+		{
+			using (var session = OpenSession())
+			{
+				var parent = session.QueryOver<EntityEager>().List().FirstOrDefault();
+				Assert.That(parent?.ChildrenList, Is.Not.Null, "Failed test set up. Object must not be null.");
+				Assert.That(parent?.ChildrenList, Is.Not.Null, "Failed test set up. ChildrenList must be eager loaded with parent.");
+			}
+
+			using (var session = OpenSession())
+			{
+				var parent = session.QueryOver<EntityEager>()
+									.Fetch(ec => ec.ChildrenList).Lazy
+									.TransformUsing(Transformers.DistinctRootEntity)
+									.List()
+									.FirstOrDefault();
+
+				Assert.That(parent?.ChildrenList, Is.Not.Null, "collection should not be null");
+				Assert.That(NHibernateUtil.IsInitialized(parent?.ChildrenList), Is.False, "Eager collection should not be initialized.");
+			}
+		}
+
+		[Test]
+		public void FetchModeDefaultForEager()
+		{
+			using (var session = OpenSession())
+			{
+				var parent = session.QueryOver<EntityEager>()
+									.Fetch(ec => ec.ChildrenList).Default
+									.TransformUsing(Transformers.DistinctRootEntity)
+									.List()
+									.FirstOrDefault();
+
+				Assert.That(parent?.ChildrenList, Is.Not.Null, "collection should not be null");
+				Assert.That(NHibernateUtil.IsInitialized(parent?.ChildrenList), Is.True, "eager collection should be initialized");
+			}
+		}
+		
+		[Test]
+		public void FetchModeEagerForEager()
+		{
+			using (var session = OpenSession())
+			{
+				var parent = session.QueryOver<EntityEager>()
+									.Fetch(ec => ec.ChildrenList).Eager
+									.TransformUsing(Transformers.DistinctRootEntity)
+									.List()
+									.FirstOrDefault();
+
+				Assert.That(parent?.ChildrenList, Is.Not.Null, "collection should not be null");
+				Assert.That(NHibernateUtil.IsInitialized(parent?.ChildrenList), Is.True, "eager collection should be initialized");
+			}
+		}
+
+#pragma warning restore 618
+
 
 		private void SkipFutureTestIfNotSupported()
 		{
-			var driver = Sfi.ConnectionProvider.Driver;
-			if (driver.SupportsMultipleQueries == false)
-				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
+			if (Sfi.ConnectionProvider.Driver.SupportsMultipleQueries == false)
+				Assert.Ignore("Driver {0} does not support multi-queries", Sfi.ConnectionProvider.Driver.GetType().FullName);
 		}
 
 		#region Test Setup
@@ -438,7 +572,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 					rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 					rc.Version(ep => ep.Version, vm => { });
 					rc.Property(x => x.Name);
-					MapList(rc, p => p.ChildrenList);
+					MapList(rc, p => p.ChildrenList, CollectionFetchMode.Join);
 				});
 
 			MapSimpleChild<EntityEagerChild>(
@@ -512,7 +646,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				});
 		}
 
-		private static void MapList<TParent, TElement>(IClassMapper<TParent> rc, Expression<Func<TParent, IEnumerable<TElement>>> expression) where TParent : class
+		private static void MapList<TParent, TElement>(IClassMapper<TParent> rc, Expression<Func<TParent, IEnumerable<TElement>>> expression, CollectionFetchMode fetchMode =  null) where TParent : class
 		{
 			rc.Bag(
 				expression,
@@ -530,6 +664,10 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 
 						});
 					m.Cascade(Mapping.ByCode.Cascade.All);
+					if (fetchMode != null)
+					{
+						m.Fetch(fetchMode);
+					}
 				},
 				a => a.OneToMany());
 		}

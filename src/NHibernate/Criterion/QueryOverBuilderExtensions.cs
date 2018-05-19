@@ -7,6 +7,8 @@ namespace NHibernate.Criterion
 {
 	public static class QueryOverBuilderExtensions
 	{
+#pragma warning disable CS0612 // Type or member is obsoletes
+
 		// Fetch builder
 		public static QueryOver<TRoot, TSubType> Default<TRoot, TSubType>(this Lambda.QueryOverFetchBuilder<TRoot, TSubType> builder)
 		{
@@ -37,7 +39,7 @@ namespace NHibernate.Criterion
 		{
 			return builder.Lazy;
 		}
-
+#pragma warning restore CS0612 // Type or member is obsoletes
 
 		// Lock builder
 		public static QueryOver<TRoot, TSubType> Force<TRoot, TSubType>(this Lambda.QueryOverLockBuilder<TRoot, TSubType> builder)

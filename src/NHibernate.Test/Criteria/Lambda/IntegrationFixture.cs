@@ -278,7 +278,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				var persons =
 					s.QueryOver<Parent>()
-						.Fetch(p => p.Children).Lazy
+						.Fetch(SelectMode.SkipJoin, p => p.Children)
 						.List();
 
 				Assert.That(persons.Count, Is.EqualTo(1));

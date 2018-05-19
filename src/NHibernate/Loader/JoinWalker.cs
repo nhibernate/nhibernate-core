@@ -979,7 +979,7 @@ namespace NHibernate.Loader
 				case SelectMode.Skip:
 					return string.Empty;
 				default:
-					throw new ArgumentOutOfRangeException();
+					throw new ArgumentOutOfRangeException(nameof(join.SelectMode), $"{join.SelectMode} is unexpected.");
 			}
 		}
 	}

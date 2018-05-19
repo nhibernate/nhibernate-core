@@ -7,6 +7,6 @@ namespace NHibernate.Criterion
 	// 6.0 TODO: merge into IQueryOver<TRoot,TSubType>.
 	public interface ISupportSelectModeQueryOver<TRoot, TSubType>
 	{
-		IQueryOver<TRoot, TSubType> SetSelectMode(SelectMode mode, Expression<Func<TSubType, object>> path);
+		IQueryOver<TRoot, TSubType> Fetch(SelectMode mode, Expression<Func<TSubType, object>> path);
 	}
 }

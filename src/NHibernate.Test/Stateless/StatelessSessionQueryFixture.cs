@@ -100,7 +100,7 @@ namespace NHibernate.Test.Stateless
 
 			using (IStatelessSession s = Sfi.OpenStatelessSession())
 			{
-				Assert.AreEqual(1, s.CreateCriteria<Contact>().SetFetchMode("Org", FetchMode.Select).List().Count);
+				Assert.AreEqual(1, s.CreateCriteria<Contact>().Fetch(SelectMode.SkipJoin, "Org").List().Count);
 			}
 
 			testData.cleanData();

@@ -80,7 +80,7 @@ namespace NHibernate.Test.Unconstrained
 			session = OpenSession();
 			tx = session.BeginTransaction();
 			p = (Person) await (session.CreateCriteria(typeof(Person))
-			             	.SetFetchMode("Employee", FetchMode.Join)
+			             	.Fetch("Employee")
 			             	.Add(Expression.Eq("Name", "gavin"))
 			             	.UniqueResultAsync());
 			Assert.IsNull(p.Employee);
@@ -93,7 +93,7 @@ namespace NHibernate.Test.Unconstrained
 			session = OpenSession();
 			tx = session.BeginTransaction();
 			p = (Person) await (session.CreateCriteria(typeof(Person))
-			             	.SetFetchMode("Employee", FetchMode.Join)
+			             	.Fetch("Employee")
 			             	.Add(Expression.Eq("Name", "gavin"))
 			             	.UniqueResultAsync());
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Employee));

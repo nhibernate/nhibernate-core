@@ -300,8 +300,8 @@ namespace NHibernate.Test.SubselectFetchTest
 				.ListAsync());
 
 			IList parents = await (s.CreateCriteria(typeof(Parent))
-				.SetFetchMode("MoreChildren", FetchMode.Join)
-				.SetFetchMode("MoreChildren.Friends", FetchMode.Join)
+				.Fetch("MoreChildren")
+				.Fetch("MoreChildren.Friends")
 				.AddOrder(Order.Desc("Name"))
 				.ListAsync());
 

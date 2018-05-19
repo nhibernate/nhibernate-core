@@ -99,9 +99,9 @@ namespace NHibernate.Loader.Criteria
 		protected override OuterJoinableAssociation CreateRootAssociation()
 		{
 			var selectMode = GetSelectMode(string.Empty);
-			if (selectMode == SelectMode.Skip)
+			if (selectMode == SelectMode.Skip || selectMode == SelectMode.SkipJoin)
 			{
-				throw new NotSupportedException($"Skipping root entity is not implemented. Use {nameof(SelectMode)}.{nameof(SelectMode.ChildFetch)} instead.");
+				throw new NotSupportedException($"SelectMode {selectMode}  for root entity is not supported. Use {nameof(SelectMode)}.{nameof(SelectMode.ChildFetch)} instead.");
 			}
 
 			return new OuterJoinableAssociation(
@@ -174,40 +174,31 @@ namespace NHibernate.Loader.Criteria
 			{
 				return translator.GetJoinType(path);
 			}
-			else
+
+			if (translator.HasProjection)
 			{
-				if (translator.HasProjection)
-				{
+				return JoinType.None;
+			}
+
+			var selectMode = translator.RootCriteria.GetSelectMode(path);
+			switch (selectMode)
+			{
+				case SelectMode.Default:
+					return base.GetJoinType(type, config, path, lhsTable, lhsColumns, nullable, currentDepth, cascadeStyle);
+
+				case SelectMode.Fetch:
+				case SelectMode.FetchLazyProperties:
+				case SelectMode.ChildFetch:
+				case SelectMode.Skip:
+					IsDuplicateAssociation(lhsTable, lhsColumns, type); //deliberately ignore return value!
+					return GetJoinType(nullable, currentDepth);
+				
+				case SelectMode.SkipJoin:
 					return JoinType.None;
-				}
-				else
-				{
-					FetchMode fetchMode = translator.RootCriteria.GetFetchMode(path);
-					if (IsDefaultFetchMode(fetchMode))
-					{
-						return base.GetJoinType(type, config, path, lhsTable, lhsColumns, nullable, currentDepth, cascadeStyle);
-					}
-					else
-					{
-						if (fetchMode == FetchMode.Join)
-						{
-							IsDuplicateAssociation(lhsTable, lhsColumns, type); //deliberately ignore return value!
-							return GetJoinType(nullable, currentDepth);
-						}
-						else
-						{
-							return JoinType.None;
-						}
-					}
-				}
+				default:
+					throw new ArgumentOutOfRangeException(nameof(selectMode), selectMode.ToString());
 			}
 		}
-
-		private static bool IsDefaultFetchMode(FetchMode fetchMode)
-		{
-			return fetchMode == FetchMode.Default;
-		}
-
 
 		protected override string GenerateTableAlias(int n, string path, IJoinable joinable)
 		{

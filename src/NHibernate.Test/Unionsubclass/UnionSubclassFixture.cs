@@ -87,8 +87,7 @@ namespace NHibernate.Test.Unionsubclass
 			s.Clear();
 
 			IList list =
-				s.CreateCriteria(typeof(Human)).SetFetchMode("location", FetchMode.Join).SetFetchMode("location.beings",
-																																															 FetchMode.Join).List();
+				s.CreateCriteria(typeof(Human)).Fetch("location").Fetch("location.beings").List();
 
 			for (int i = 0; i < list.Count; i++)
 			{

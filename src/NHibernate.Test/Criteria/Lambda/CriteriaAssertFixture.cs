@@ -168,11 +168,11 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			DetachedCriteria expected =
 				DetachedCriteria.For<Person>()
-					.SetFetchMode("Father", FetchMode.Eager);
+					.Fetch("Father");
 
 			DetachedCriteria actual =
 				DetachedCriteria.For<Person>()
-					.SetFetchMode("Father", FetchMode.Lazy);
+					.Fetch(SelectMode.SkipJoin, "Father");
 
 			AssertCriteriaAreNotEqual(expected, actual);
 		}

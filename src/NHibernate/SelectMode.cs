@@ -28,5 +28,11 @@ namespace NHibernate
 		/// Skips the entity from select statement but keeps joining it in the query.
 		/// </summary>
 		Skip,
+
+		/// <summary>
+		/// Equivalent of <see cref="FetchMode.Lazy"/> and <see cref="FetchMode.Select"/>.
+		/// Skips fetching for eagerly mapped association (no-op for lazy association).
+		/// </summary>
+		SkipJoin,
 	}
 }
