@@ -22,14 +22,16 @@ namespace NHibernate.Dialect.Lock
 	{
 		private readonly ILockable lockable;
 		private readonly LockMode lockMode;
-		private readonly SqlString sql;
+		private readonly Lazy<SqlString> sql;
 
 		public SelectLockingStrategy(ILockable lockable, LockMode lockMode)
 		{
 			this.lockable = lockable;
 			this.lockMode = lockMode;
-			sql = GenerateLockString();
+			this.sql = new Lazy<SqlString>(GenerateLockString);
 		}
+
+		private SqlString Sql => sql.Value;
 
 		private SqlString GenerateLockString()
 		{
@@ -57,7 +59,7 @@ namespace NHibernate.Dialect.Lock
 			ISessionFactoryImplementor factory = session.Factory;
 			try
 			{
-				var st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
+				var st = session.Batcher.PrepareCommand(CommandType.Text, Sql, lockable.IdAndVersionSqlTypes);
 				DbDataReader rs = null;
 				try
 				{
@@ -100,7 +102,7 @@ namespace NHibernate.Dialect.Lock
 				                       	{
 				                       		SqlException = sqle,
 				                       		Message = "could not lock: " + MessageHelper.InfoString(lockable, id, factory),
-				                       		Sql = sql.ToString(),
+				                       		Sql = Sql.ToString(),
 				                       		EntityName = lockable.EntityName,
 				                       		EntityId = id
 				                       	};

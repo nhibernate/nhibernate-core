@@ -32,7 +32,7 @@ namespace NHibernate.Dialect.Lock
 			ISessionFactoryImplementor factory = session.Factory;
 			try
 			{
-				var st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, lockable.IdAndVersionSqlTypes, cancellationToken)).ConfigureAwait(false);
+				var st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, Sql, lockable.IdAndVersionSqlTypes, cancellationToken)).ConfigureAwait(false);
 				DbDataReader rs = null;
 				try
 				{
@@ -76,7 +76,7 @@ namespace NHibernate.Dialect.Lock
 				                       	{
 				                       		SqlException = sqle,
 				                       		Message = "could not lock: " + MessageHelper.InfoString(lockable, id, factory),
-				                       		Sql = sql.ToString(),
+				                       		Sql = Sql.ToString(),
 				                       		EntityName = lockable.EntityName,
 				                       		EntityId = id
 				                       	};
