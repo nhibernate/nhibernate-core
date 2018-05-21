@@ -22,15 +22,16 @@ namespace NHibernate.Dialect.Lock
 	{
 		private readonly ILockable lockable;
 		private readonly LockMode lockMode;
-		private SqlString sql;
+		private readonly Lazy<SqlString> sql;
 
 		public SelectLockingStrategy(ILockable lockable, LockMode lockMode)
 		{
 			this.lockable = lockable;
 			this.lockMode = lockMode;
+			this.sql = new Lazy<SqlString>(GenerateLockString);
 		}
 
-		private SqlString Sql => sql ?? (sql = GenerateLockString());
+		private SqlString Sql => sql.Value;
 
 		private SqlString GenerateLockString()
 		{
