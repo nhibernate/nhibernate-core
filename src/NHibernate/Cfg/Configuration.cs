@@ -518,12 +518,11 @@ namespace NHibernate.Cfg
 			}
 			try
 			{
-				Dialect.Dialect dialect = Dialect.Dialect.GetDialect(properties);
-				OnBeforeBindMapping(new BindMappingEventArgs(dialect, mappingDocument, documentFileName));
+				OnBeforeBindMapping(new BindMappingEventArgs(mappingDocument, documentFileName));
 				Mappings mappings = CreateMappings();
 
 				new MappingRootBinder(mappings).Bind(mappingDocument);
-				OnAfterBindMapping(new BindMappingEventArgs(dialect, mappingDocument, documentFileName));
+				OnAfterBindMapping(new BindMappingEventArgs(mappingDocument, documentFileName));
 			}
 			catch (Exception e)
 			{

@@ -5,15 +5,22 @@ namespace NHibernate.Cfg
 {
 	public class BindMappingEventArgs: EventArgs
 	{
-		public BindMappingEventArgs(Dialect.Dialect dialect, HbmMapping mapping, string fileName)
+		[Obsolete("Please use constructor without a dialect parameter.", true)]
+		public BindMappingEventArgs(Dialect.Dialect dialect, HbmMapping mapping, string fileName) : this(mapping, fileName)
 		{
 			Dialect = dialect;
+		}
+
+		public BindMappingEventArgs(HbmMapping mapping, string fileName)
+		{
 			Mapping = mapping;
 			FileName = fileName;
 		}
 
-		public Dialect.Dialect Dialect { get; private set; }
-		public HbmMapping Mapping { get; private set; }
-		public string FileName { get; private set; }
+		//Since v5.2
+		[Obsolete("This property will be removed in a future version.", true)]
+		public Dialect.Dialect Dialect { get; }
+		public HbmMapping Mapping { get; }
+		public string FileName { get; }
 	}
 }
