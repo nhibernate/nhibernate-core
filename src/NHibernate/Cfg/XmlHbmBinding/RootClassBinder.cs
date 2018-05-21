@@ -54,7 +54,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			BindTimestamp(classSchema.Timestamp, rootClass, table, inheritedMetas);
 			BindVersion(classSchema.Version, rootClass, table, inheritedMetas);
 
-			rootClass.CreatePrimaryKey(dialect);
+			rootClass.CreatePrimaryKey();
 			BindNaturalId(classSchema.naturalid, rootClass, inheritedMetas);
 			new PropertiesBinder(mappings, rootClass, dialect).Bind(classSchema.Properties, inheritedMetas);
 

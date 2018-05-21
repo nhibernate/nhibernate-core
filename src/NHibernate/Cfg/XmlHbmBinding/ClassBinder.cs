@@ -214,7 +214,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			key.IsCascadeDeleteEnabled = joinMapping.key.ondelete == HbmOndelete.Cascade;
 			new ValuePropertyBinder(key, Mappings).BindSimpleValue(joinMapping.key, persistentClass.EntityName, false);
 
-			join.CreatePrimaryKey(dialect);
+			join.CreatePrimaryKey();
 			join.CreateForeignKey();
 
 			// PROPERTIES

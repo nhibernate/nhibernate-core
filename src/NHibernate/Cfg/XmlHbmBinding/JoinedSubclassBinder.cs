@@ -46,7 +46,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			// KEY
 			BindKey(subclass, joinedSubclassMapping.key, mytable);
 
-			subclass.CreatePrimaryKey(dialect);
+			subclass.CreatePrimaryKey();
 
 			if (!subclass.IsJoinedSubclass)
 				throw new MappingException(
