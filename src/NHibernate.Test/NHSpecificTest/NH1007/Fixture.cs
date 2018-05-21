@@ -90,7 +90,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1007
 			mappings.DefaultAssembly = "NHibernate.Test";
 			mappings.DefaultNamespace = "NHibernate.Test.NHSpecificTest.NH1007";
 
-			var rootBinder = new MappingRootBinder(mappings, dialect);
+			var rootBinder = new MappingRootBinder(mappings);
 			rootBinder.Bind(mapping);
 
 			var employer = rootBinder.Mappings.GetClass("NHibernate.Test.NHSpecificTest.NH1007.Employer1");

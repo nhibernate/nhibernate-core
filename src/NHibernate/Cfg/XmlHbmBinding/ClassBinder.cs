@@ -11,20 +11,31 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public abstract class ClassBinder : Binder
 	{
+		//Since v5.2
+		[Obsolete("This field will be removed in a future version.")]
 		protected readonly Dialect.Dialect dialect;
 
+		//Since v5.2
+		[Obsolete("Please use constructor without a dialect parameter.")]
 		protected ClassBinder(Mappings mappings, Dialect.Dialect dialect)
-			: base(mappings)
+			: this(mappings)
 		{
 			this.dialect = dialect;
 		}
 
 		protected ClassBinder(ClassBinder parent)
-			: base(parent.Mappings)
+			: this(parent.Mappings)
 		{
+#pragma warning disable 618
 			dialect = parent.dialect;
+#pragma warning restore 618
 		}
 
+		protected ClassBinder(Mappings mappings)
+			: base(mappings)
+		{
+		}
+		
 		protected void BindClass(IEntityMapping classMapping, PersistentClass model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			// handle the lazy attribute
@@ -218,7 +229,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			join.CreateForeignKey();
 
 			// PROPERTIES
-			new PropertiesBinder(Mappings, persistentClass, dialect).Bind(joinMapping.Properties, join.Table,
+			new PropertiesBinder(Mappings, persistentClass).Bind(joinMapping.Properties, join.Table,
 																							inheritedMetas, p => { },
 																							join.AddProperty);
 
@@ -325,7 +336,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 										}; 
 			}
 
-			new PropertiesBinder(Mappings, model, className, path, isNullable, Mappings.Dialect).Bind(
+			new PropertiesBinder(Mappings, model, className, path, isNullable).Bind(
 				componentMapping.Properties, model.Table, inheritedMetas, p =>
 					{ }, model.AddProperty);
 		}

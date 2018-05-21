@@ -522,7 +522,7 @@ namespace NHibernate.Cfg
 				OnBeforeBindMapping(new BindMappingEventArgs(dialect, mappingDocument, documentFileName));
 				Mappings mappings = CreateMappings(dialect);
 
-				new MappingRootBinder(mappings, dialect).Bind(mappingDocument);
+				new MappingRootBinder(mappings).Bind(mappingDocument);
 				OnAfterBindMapping(new BindMappingEventArgs(dialect, mappingDocument, documentFileName));
 			}
 			catch (Exception e)
