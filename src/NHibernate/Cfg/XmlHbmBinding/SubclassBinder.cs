@@ -13,6 +13,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
+		public SubclassBinder(Mappings mappings)
+			: base(mappings)
+		{
+		}
+
 		//Since v5.2
 		[Obsolete("Please use constructor without a dialect parameter.")]
 		public SubclassBinder(Binder parent, Dialect.Dialect dialect)
@@ -20,6 +25,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
+		//Since v5.2
+		[Obsolete("Please use constructor that accepts mappings parameter instead.")]
 		public SubclassBinder(ClassBinder parent)
 			: base(parent)
 		{

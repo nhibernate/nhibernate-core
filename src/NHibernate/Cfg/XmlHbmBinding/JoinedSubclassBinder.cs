@@ -20,6 +20,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
+		//Since v5.2
+		[Obsolete("Please use constructor that accepts mappings parameter instead.")]
 		public JoinedSubclassBinder(ClassBinder parent)
 			: base(parent)
 		{

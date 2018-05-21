@@ -55,8 +55,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			rootClass.IsExplicitPolymorphism = classSchema.polymorphism == HbmPolymorphismType.Explicit;
 
 			BindCache(classSchema.cache, rootClass);
-			new ClassIdBinder(this).BindId(classSchema.Id, rootClass, table);
-			new ClassCompositeIdBinder(this).BindCompositeId(classSchema.CompositeId, rootClass);
+			new ClassIdBinder(Mappings).BindId(classSchema.Id, rootClass, table);
+			new ClassCompositeIdBinder(Mappings).BindCompositeId(classSchema.CompositeId, rootClass);
 			new ClassDiscriminatorBinder(rootClass, Mappings).BindDiscriminator(classSchema.discriminator, table);
 			BindTimestamp(classSchema.Timestamp, rootClass, table, inheritedMetas);
 			BindVersion(classSchema.Version, rootClass, table, inheritedMetas);

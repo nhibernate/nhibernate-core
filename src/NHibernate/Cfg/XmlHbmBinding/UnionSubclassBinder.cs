@@ -15,6 +15,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
+		public UnionSubclassBinder(Mappings mappings)
+			: base(mappings)
+		{
+		}
+
+		//Since v5.2
+		[Obsolete("Please use constructor that accepts mappings parameter instead.")]
 		public UnionSubclassBinder(ClassBinder parent)
 			: base(parent)
 		{

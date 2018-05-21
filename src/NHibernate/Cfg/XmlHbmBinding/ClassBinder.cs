@@ -23,12 +23,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			this.dialect = dialect;
 		}
 
+		//Since v5.2
+		[Obsolete("Please use constructor that accepts mappings parameter instead.")]
 		protected ClassBinder(ClassBinder parent)
 			: this(parent.Mappings)
 		{
-#pragma warning disable 618
 			dialect = parent.dialect;
-#pragma warning restore 618
 		}
 
 		protected ClassBinder(Mappings mappings)
@@ -59,7 +59,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			foreach (var unionSubclass in unionSubclasses)
 			{
-				new UnionSubclassBinder(this).HandleUnionSubclass(persistentClass, unionSubclass, inheritedMetas);
+				new UnionSubclassBinder(Mappings).HandleUnionSubclass(persistentClass, unionSubclass, inheritedMetas);
 			}
 		}
 
@@ -67,7 +67,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			foreach (var joinedSubclass in joinedSubclasses)
 			{
-				new JoinedSubclassBinder(this).HandleJoinedSubclass(persistentClass, joinedSubclass, inheritedMetas);
+				new JoinedSubclassBinder(Mappings).HandleJoinedSubclass(persistentClass, joinedSubclass, inheritedMetas);
 			}
 		}
 
@@ -75,7 +75,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			foreach (var subclass in subclasses)
 			{
-				new SubclassBinder(this).HandleSubclass(persistentClass, subclass, inheritedMetas);
+				new SubclassBinder(Mappings).HandleSubclass(persistentClass, subclass, inheritedMetas);
 			}
 		}
 

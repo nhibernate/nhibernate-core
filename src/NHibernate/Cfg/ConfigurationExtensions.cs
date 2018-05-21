@@ -139,7 +139,7 @@ namespace NHibernate.Cfg
 			{
 				return configuration;
 			}
-			var mappings = GetMappings(configuration);
+			var mappings = configuration.CreateMappings();
 			mappings.AddTypeDef(tdConfiguration.Alias, typeof(TDef).AssemblyQualifiedName, tdConfiguration.Properties.ToTypeParameters());
 			return configuration;
 		}
@@ -162,12 +162,6 @@ namespace NHibernate.Cfg
 			namedQueryDefinition(builder);
 			configuration.NamedQueries.Add(queryIdentifier, builder.Build());
 			return configuration;
-		}
-
-		private static Mappings GetMappings(Configuration configuration)
-		{
-			Dialect.Dialect dialect = Dialect.Dialect.GetDialect(configuration.Properties);
-			return configuration.CreateMappings(dialect);
 		}
 	}
 }

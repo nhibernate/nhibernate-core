@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2761
 		private Mappings GetMappings()
 		{
 			var configuration = GetConfiguration();
-			return configuration.CreateMappings(Dialect.Dialect.GetDialect(configuration.Properties));
+			return configuration.CreateMappings();
 		}
 
 		private Configuration GetConfiguration()

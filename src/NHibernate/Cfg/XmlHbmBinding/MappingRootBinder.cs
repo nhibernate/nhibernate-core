@@ -111,7 +111,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddSubclasses(HbmSubclass subClass, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			var binder = new SubclassBinder(this);
+			var binder = new SubclassBinder(Mappings);
 
 			binder.Bind(subClass, inheritedMetas);
 		}

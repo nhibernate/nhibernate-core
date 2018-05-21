@@ -520,7 +520,7 @@ namespace NHibernate.Cfg
 			{
 				Dialect.Dialect dialect = Dialect.Dialect.GetDialect(properties);
 				OnBeforeBindMapping(new BindMappingEventArgs(dialect, mappingDocument, documentFileName));
-				Mappings mappings = CreateMappings(dialect);
+				Mappings mappings = CreateMappings();
 
 				new MappingRootBinder(mappings).Bind(mappingDocument);
 				OnAfterBindMapping(new BindMappingEventArgs(dialect, mappingDocument, documentFileName));
@@ -561,7 +561,18 @@ namespace NHibernate.Cfg
 		/// Create a new <see cref="Mappings" /> to add classes and collection
 		/// mappings to.
 		/// </summary>
+		//Since v5.2
+		[Obsolete("Please use overload without a dialect parameter.")]
 		public Mappings CreateMappings(Dialect.Dialect dialect)
+		{
+			return CreateMappings();
+		}
+
+		/// <summary>
+		/// Create a new <see cref="Mappings" /> to add classes and collection
+		/// mappings to.
+		/// </summary>
+		public Mappings CreateMappings()
 		{
 			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
 			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
@@ -571,7 +582,7 @@ namespace NHibernate.Cfg
 			return new Mappings(classes, collections, tables, NamedQueries, NamedSQLQueries, SqlResultSetMappings, Imports,
 								secondPasses, filtersSecondPasses, propertyReferences, namingStrategy, typeDefs, FilterDefinitions, extendsQueue,
 								auxiliaryDatabaseObjects, tableNameBinding, columnNameBindingPerTable, defaultAssembly,
-								defaultNamespace, defaultCatalog, defaultSchema, preferPooledValuesLo, dialect);
+								defaultNamespace, defaultCatalog, defaultSchema, preferPooledValuesLo);
 		}
 
 		private void ProcessPreMappingBuildProperties()
