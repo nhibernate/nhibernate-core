@@ -101,7 +101,7 @@ namespace NHibernate.Loader.Criteria
 			var selectMode = GetSelectMode(string.Empty);
 			if (selectMode == SelectMode.Skip || selectMode == SelectMode.SkipJoin)
 			{
-				throw new NotSupportedException($"SelectMode {selectMode}  for root entity is not supported. Use {nameof(SelectMode)}.{nameof(SelectMode.ChildFetch)} instead.");
+				throw new NotSupportedException($"SelectMode {selectMode} for root entity is not supported. Use {nameof(SelectMode)}.{nameof(SelectMode.ChildFetch)} instead.");
 			}
 
 			return new OuterJoinableAssociation(

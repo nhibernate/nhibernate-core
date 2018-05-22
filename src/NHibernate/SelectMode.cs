@@ -3,7 +3,7 @@ namespace NHibernate
 	public enum SelectMode
 	{
 		/// <summary>
-		/// Default behavior (as if no select mode is specified).
+		/// Default to the setting configured in the mapping file.
 		/// </summary>
 		Default,
 
@@ -30,7 +30,6 @@ namespace NHibernate
 		Skip,
 
 		/// <summary>
-		/// Equivalent of <see cref="FetchMode.Lazy"/> and <see cref="FetchMode.Select"/>.
 		/// Skips fetching for eagerly mapped association (no-op for lazy association).
 		/// </summary>
 		SkipJoin,

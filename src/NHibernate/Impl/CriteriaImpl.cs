@@ -2,10 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
 using NHibernate.Criterion;
 using NHibernate.Engine;
-using NHibernate.Loader;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Util;
@@ -145,7 +143,7 @@ namespace NHibernate.Impl
 		}
 
 		//Since 5.2
-		[Obsolete("Replaced with GetSelectMode")]
+		[Obsolete("Use GetSelectMode instead")]
 		public FetchMode GetFetchMode(string path)
 		{
 			switch (GetSelectMode(path))
@@ -375,12 +373,16 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		//Since 5.2
+		[Obsolete("Use Fetch instead")]
 		public ICriteria SetFetchMode(string associationPath, FetchMode mode)
 		{
 			Fetch(GetSelectMode(mode), associationPath, null);
 			return this;
 		}
 
+		//Since 5.2
+		[Obsolete]
 		private SelectMode GetSelectMode(FetchMode mode)
 		{
 			switch (mode)
@@ -871,6 +873,8 @@ namespace NHibernate.Impl
 				return root.UniqueResult();
 			}
 
+			//Since 5.2
+			[Obsolete("Use Fetch instead")]
 			public ICriteria SetFetchMode(string associationPath, FetchMode mode)
 			{
 				root.SetFetchMode(StringHelper.Qualify(path, associationPath), mode);

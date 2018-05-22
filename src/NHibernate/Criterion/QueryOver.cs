@@ -482,12 +482,12 @@ namespace NHibernate.Criterion
 			get { return new QueryOverSubqueryBuilder<TRoot,TSubType>(this); }
 		}
 
-#pragma warning disable CS0612 // Type or member is obsolete
+		// Since v5.2
+		[Obsolete("Use Fetch(SelectMode mode, Expression<Func<TSubType, object>> path) instead")]
 		public QueryOverFetchBuilder<TRoot,TSubType> Fetch(Expression<Func<TRoot, object>> path)
 		{
 			return new QueryOverFetchBuilder<TRoot,TSubType>(this, path);
 		}
-#pragma warning restore CS0612 // Type or member is obsolete
 
 		public QueryOverLockBuilder<TRoot,TSubType> Lock()
 		{
@@ -900,10 +900,10 @@ namespace NHibernate.Criterion
 		IQueryOverSubqueryBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.WithSubquery
 		{ get { return new IQueryOverSubqueryBuilder<TRoot,TSubType>(this); } }
 
-#pragma warning disable CS0612 // Type or member is obsoletes
+		// Since v5.2
+		[Obsolete("Use Fetch(SelectMode mode, Expression<Func<TSubType, object>> path) instead")]
 		IQueryOverFetchBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Fetch(Expression<Func<TRoot, object>> path)
 		{ return new IQueryOverFetchBuilder<TRoot,TSubType>(this, path); }
-#pragma warning restore CS0612 // Type or member is obsolete
 
 		IQueryOverLockBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Lock()
 		{ return new IQueryOverLockBuilder<TRoot,TSubType>(this, null); }

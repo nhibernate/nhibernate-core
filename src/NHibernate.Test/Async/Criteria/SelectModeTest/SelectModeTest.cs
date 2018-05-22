@@ -15,9 +15,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Criterion;
-using NHibernate.Driver;
 using NHibernate.Linq;
-using NHibernate.Loader;
 using NHibernate.Mapping.ByCode;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -55,7 +53,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
-		
+
 		[Test]
 		public async Task SelectModeFetchAsync()
 		{
@@ -107,7 +105,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
-		
+
 		[Test]
 		public async Task SelectModeDefaultAsync()
 		{
@@ -127,7 +125,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				session.QueryOver<EntityComplex>()
 						.JoinQueryOver(ec => ec.ChildrenList, JoinType.InnerJoin)
 						.TransformUsing(Transformers.DistinctRootEntity);
-						
+
 				var root = list.FirstOrDefault();
 				Assert.That(root, Is.Not.Null);
 				Assert.That(NHibernateUtil.IsInitialized(root), Is.True);
@@ -160,7 +158,6 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 			}
 		}
 
-
 		[Test]
 		public async Task SelectModeChildFetchForMultipleCollections_SingleDbRoundtripAsync()
 		{
@@ -182,7 +179,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 					.Fetch(SelectMode.Fetch, ec => ec.ChildrenList)
 					.Where(r => r.Id == _parentEntityComplexId)
 					.Future();
-				
+
 				session
 					.QueryOver(() => root)
 					.Fetch(SelectMode.ChildFetch, ec => ec)
@@ -208,7 +205,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 			using (var session = OpenSession())
 			{
 				EntityComplex root = null;
-				root  = await (session
+				root = await (session
 						.QueryOver(() => root)
 						.Where(r => r.Id == _parentEntityComplexId)
 						.SingleOrDefaultAsync());
@@ -220,7 +217,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 					.Fetch(SelectMode.Fetch, ec => ec.ChildrenList)
 					.Where(r => r.Id == _parentEntityComplexId)
 					.ListAsync());
-				
+
 				await (session
 					.QueryOver(() => root)
 					.Fetch(SelectMode.ChildFetch, ec => ec)
@@ -261,7 +258,6 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 			}
 		}
 
-
 		[Test]
 		public async Task SelectModeFetchLazyPropertiesForEntityJoinAsync()
 		{
@@ -287,7 +283,6 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
-
 
 		[Test]
 		public async Task SelectModeChildFetchLoadsNotLoadedObjectAsync()
@@ -333,11 +328,10 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				Assert.That(root.ChildrenList, Has.Count.EqualTo(1).And.None.Null, "Unexpected children collection content");
 			}
 		}
-		
+
 		[Test]
 		public async Task SelectModeChildFetchDeep_AliasedAsync()
 		{
-			//using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
 				EntityComplex root = null;
@@ -366,7 +360,6 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 
 				root = list.First(r => r.Id == _parentEntityComplexId);
 
-
 				Assert.That(root?.ChildrenList, Is.Not.Null);
 				Assert.That(NHibernateUtil.IsInitialized(root?.ChildrenList));
 				Assert.That(NHibernateUtil.IsInitialized(root?.ChildrenList[0].Children));
@@ -377,7 +370,6 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 		[Test]
 		public void SkipRootEntityIsNotSupportedAsync()
 		{
-			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
 				var query = session.QueryOver<EntityComplex>()
@@ -387,12 +379,11 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 
 				Assert.ThrowsAsync<NotSupportedException>(() => query.SingleOrDefaultAsync());
 			}
-		}		
-		
-		
+		}
+
 		[Test]
 		public void LazyRootEntityIsNotSupportedAsync()
-		{using (var sqlLog = new SqlLogSpy())
+		{
 			using (var session = OpenSession())
 			{
 				var query = session.QueryOver<EntityComplex>()
@@ -404,10 +395,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 			}
 		}
 
-//6.0 TODO: Remove tests wrapped in pragma below
-#pragma warning disable 618
-		
-		[Test]
+		[Test, Obsolete]
 		public async Task FetchModeEagerForLazyAsync()
 		{
 			using (var session = OpenSession())
@@ -424,9 +412,9 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				Assert.That(NHibernateUtil.IsInitialized(parent?.Child1), Is.True);
 				Assert.That(NHibernateUtil.IsInitialized(parent?.ChildrenList), Is.True);
 			}
-		}		
-		
-		[Test]
+		}
+
+		[Test, Obsolete]
 		public async Task FetchModeLazyForLazyAsync()
 		{
 			using (var session = OpenSession())
@@ -444,8 +432,8 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				Assert.That(NHibernateUtil.IsInitialized(parent?.ChildrenList), Is.False);
 			}
 		}
-		
-		[Test]
+
+		[Test, Obsolete]
 		public async Task FetchModeDefaultForLazyAsync()
 		{
 			using (var session = OpenSession())
@@ -463,8 +451,8 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				Assert.That(NHibernateUtil.IsInitialized(parent?.ChildrenList), Is.False);
 			}
 		}
-		
-		[Test]
+
+		[Test, Obsolete]
 		public async Task FetchModeLazyForEagerAsync()
 		{
 			using (var session = OpenSession())
@@ -487,7 +475,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public async Task FetchModeDefaultForEagerAsync()
 		{
 			using (var session = OpenSession())
@@ -502,8 +490,8 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				Assert.That(NHibernateUtil.IsInitialized(parent?.ChildrenList), Is.True, "eager collection should be initialized");
 			}
 		}
-		
-		[Test]
+
+		[Test, Obsolete]
 		public async Task FetchModeEagerForEagerAsync()
 		{
 			using (var session = OpenSession())
@@ -518,9 +506,6 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				Assert.That(NHibernateUtil.IsInitialized(parent?.ChildrenList), Is.True, "eager collection should be initialized");
 			}
 		}
-
-#pragma warning restore 618
-
 
 		private void SkipFutureTestIfNotSupported()
 		{
@@ -546,7 +531,6 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 			MapSimpleChild<EntityEagerChild>(
 				mapper,
 				rc => { rc.Lazy(false); });
-				
 
 		mapper.Class<EntityComplex>(
 				rc =>
@@ -652,7 +636,6 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				session.Query<EntityEagerChild>().Delete();
 				session.Query<EntityEager>().Delete();
 
-
 				session.Flush();
 				transaction.Commit();
 			}
@@ -700,8 +683,8 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 							}
 						}
 					}
-
 				};
+
 				var child2 = new EntitySimpleChild
 				{
 					Name = "Child2",
@@ -732,7 +715,6 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				session.Save(child2);
 				session.Save(parent.SameTypeChild);
 				session.Save(parent);
-
 
 				session.Flush();
 				transaction.Commit();

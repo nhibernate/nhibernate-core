@@ -8,7 +8,7 @@ namespace NHibernate
 	/// <remarks>
 	/// <para>
 	/// For Hql queries, use the <c>FETCH</c> keyword instead.
-	/// In Criteria SelectMode enum is used
+	/// For Criteria queries, use <c>Fetch</c> functions instead.
 	/// </para>
 	/// </remarks>
 	[Serializable]
@@ -29,7 +29,9 @@ namespace NHibernate
 		/// </summary>
 		Join = 2,
 
+		[Obsolete("Use Select instead")]
 		Lazy = Select,
+		[Obsolete("Use Join instead")]
 		Eager = Join
 	}
 }
