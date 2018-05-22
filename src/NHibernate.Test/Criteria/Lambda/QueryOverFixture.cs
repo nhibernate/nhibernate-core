@@ -864,12 +864,12 @@ namespace NHibernate.Test.Criteria.Lambda
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
 					.Fetch("PersonList")
-					.Fetch(SelectMode.SkipJoin, "PersonList.PersonList");
+					.Fetch(SelectMode.Skip, "PersonList.PersonList");
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
 					.Fetch(SelectMode.Fetch, p => p.PersonList)
-					.Fetch(SelectMode.SkipJoin, p => p.PersonList[0].PersonList);
+					.Fetch(SelectMode.Skip, p => p.PersonList[0].PersonList);
 
 			AssertCriteriaAreEqual(expected, actual);
 		}

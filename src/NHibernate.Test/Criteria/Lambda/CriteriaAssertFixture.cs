@@ -172,7 +172,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			DetachedCriteria actual =
 				DetachedCriteria.For<Person>()
-					.Fetch(SelectMode.SkipJoin, "Father");
+					.Fetch(SelectMode.Skip, "Father");
 
 			AssertCriteriaAreNotEqual(expected, actual);
 		}

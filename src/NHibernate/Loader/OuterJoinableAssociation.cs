@@ -191,7 +191,7 @@ namespace NHibernate.Loader
 
 			switch (SelectMode)
 			{
-				case SelectMode.Default:
+				case SelectMode.Undefined:
 					return JoinType == JoinType.LeftOuterJoin;
 
 				case SelectMode.Fetch:
@@ -199,7 +199,7 @@ namespace NHibernate.Loader
 					return true;
 
 				case SelectMode.ChildFetch:
-				case SelectMode.Skip:
+				case SelectMode.JoinOnly:
 					return false;
 			}
 

@@ -181,7 +181,7 @@ namespace NHibernate.Loader
 
 		protected  virtual SelectMode GetSelectMode(string path)
 		{
-			return SelectMode.Default;
+			return SelectMode.Undefined;
 		}
 
 		private static int[] GetTopologicalSortOrder(List<DependentAlias> fields)
@@ -706,7 +706,7 @@ namespace NHibernate.Loader
 			int result = 0;
 			foreach (OuterJoinableAssociation oj in associations)
 			{
-				if (oj.Joinable.ConsumesEntityAlias() && oj.SelectMode != SelectMode.Skip)
+				if (oj.Joinable.ConsumesEntityAlias() && oj.SelectMode != SelectMode.JoinOnly)
 					result++;
 			}
 
@@ -854,7 +854,7 @@ namespace NHibernate.Loader
 
 			foreach (OuterJoinableAssociation oj in associations)
 			{
-				if (oj.SelectMode == SelectMode.Skip)
+				if (oj.SelectMode == SelectMode.JoinOnly)
 					continue;
 
 				if (!oj.IsCollection)
@@ -935,7 +935,7 @@ namespace NHibernate.Loader
 						buf.Add(StringHelper.CommaSpace)
 							.Add(selectFragment);
 					}
-					if (joinable.ConsumesEntityAlias() && join.SelectMode != SelectMode.Skip)
+					if (joinable.ConsumesEntityAlias() && join.SelectMode != SelectMode.JoinOnly)
 						entityAliasCount++;
 
 					if (joinable.ConsumesCollectionAlias() && join.ShouldFetchCollectionPersister())
@@ -950,7 +950,7 @@ namespace NHibernate.Loader
 		{
 			switch (join.SelectMode)
 			{
-				case SelectMode.Default:
+				case SelectMode.Undefined:
 				case SelectMode.Fetch:
 #pragma warning disable 618
 					return join.Joinable.SelectFragment(
@@ -976,7 +976,7 @@ namespace NHibernate.Loader
 				case SelectMode.ChildFetch:
 					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(join.Joinable, "child fetch select mode").IdentifierSelectFragment(join.RHSAlias, entitySuffix);
 
-				case SelectMode.Skip:
+				case SelectMode.JoinOnly:
 					return string.Empty;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(join.SelectMode), $"{join.SelectMode} is unexpected.");

@@ -99,7 +99,7 @@ namespace NHibernate.Loader.Criteria
 		protected override OuterJoinableAssociation CreateRootAssociation()
 		{
 			var selectMode = GetSelectMode(string.Empty);
-			if (selectMode == SelectMode.Skip || selectMode == SelectMode.SkipJoin)
+			if (selectMode == SelectMode.JoinOnly || selectMode == SelectMode.Skip)
 			{
 				throw new NotSupportedException($"SelectMode {selectMode} for root entity is not supported. Use {nameof(SelectMode)}.{nameof(SelectMode.ChildFetch)} instead.");
 			}
@@ -183,17 +183,17 @@ namespace NHibernate.Loader.Criteria
 			var selectMode = translator.RootCriteria.GetSelectMode(path);
 			switch (selectMode)
 			{
-				case SelectMode.Default:
+				case SelectMode.Undefined:
 					return base.GetJoinType(type, config, path, lhsTable, lhsColumns, nullable, currentDepth, cascadeStyle);
 
 				case SelectMode.Fetch:
 				case SelectMode.FetchLazyProperties:
 				case SelectMode.ChildFetch:
-				case SelectMode.Skip:
+				case SelectMode.JoinOnly:
 					IsDuplicateAssociation(lhsTable, lhsColumns, type); //deliberately ignore return value!
 					return GetJoinType(nullable, currentDepth);
 				
-				case SelectMode.SkipJoin:
+				case SelectMode.Skip:
 					return JoinType.None;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(selectMode), selectMode.ToString());
@@ -241,7 +241,7 @@ namespace NHibernate.Loader.Criteria
 		{
 			if (joinable.ConsumesEntityAlias() && !translator.HasProjection)
 			{
-				var includedInSelect = translator.RootCriteria.GetSelectMode(path) != SelectMode.Skip;
+				var includedInSelect = translator.RootCriteria.GetSelectMode(path) != SelectMode.JoinOnly;
 				includeInResultRowList.Add(subcriteria != null && subcriteria.Alias != null && includedInSelect);
 
 				if (sqlAlias != null && includedInSelect)

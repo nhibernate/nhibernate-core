@@ -33,7 +33,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 		private Guid _parentEntityComplexId;
 
 		[Test]
-		public async Task SelectModeSkipAsync()
+		public async Task SelectModeJoinOnlyAsync()
 		{
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
@@ -42,7 +42,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				root = await (session.QueryOver(() => root)
 							//Child1 is required solely for filtering, no need to be fetched, so skip it from select statement
 							.JoinQueryOver(r => r.Child1, JoinType.InnerJoin)
-							.Fetch(SelectMode.Skip, child1 => child1)
+							.Fetch(SelectMode.JoinOnly, child1 => child1)
 							.Take(1)
 							.SingleOrDefaultAsync());
 
@@ -107,7 +107,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 		}
 
 		[Test]
-		public async Task SelectModeDefaultAsync()
+		public async Task SelectModeUndefinedAsync()
 		{
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
@@ -115,9 +115,9 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				//SelectMode.Default is no op - fetching is controlled by default behavior:
 				//SameTypeChild won't be loaded, and ChildrenList collection won't be fetched due to InnerJoin
 				var list = await (session.QueryOver<EntityComplex>()
-								.Fetch(SelectMode.Default, ec => ec.SameTypeChild)
+								.Fetch(SelectMode.Undefined, ec => ec.SameTypeChild)
 								.JoinQueryOver(ec => ec.ChildrenList, JoinType.InnerJoin)
-								.Fetch(SelectMode.Default, childrenList => childrenList)
+								.Fetch(SelectMode.Undefined, childrenList => childrenList)
 								.TransformUsing(Transformers.DistinctRootEntity)
 								.ListAsync());
 
@@ -235,7 +235,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 		}
 
 		[Test]
-		public async Task SelectModeSkipEntityJoinAsync()
+		public async Task SelectModeJoinOnlyEntityJoinAsync()
 		{
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
@@ -244,7 +244,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				EntitySimpleChild rootChild = null;
 				rootChild = await (session.QueryOver(() => rootChild)
 							.JoinEntityQueryOver(() => parentJoin, Restrictions.Where(() => rootChild.ParentId == parentJoin.Id))
-							.Fetch(SelectMode.Skip, a => a)
+							.Fetch(SelectMode.JoinOnly, a => a)
 							.Take(1)
 							.SingleOrDefaultAsync());
 
@@ -353,7 +353,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 
 				await (session
 					.QueryOver(() => root)
-					.Fetch(SelectMode.Skip, () => root.ChildrenList)
+					.Fetch(SelectMode.JoinOnly, () => root.ChildrenList)
 					.Fetch(SelectMode.ChildFetch,() => root, () => root.ChildrenList[0].Children)
 					.Fetch(SelectMode.Fetch, () => root.ChildrenList[0].Children[0].Children)
 					.ListAsync());
@@ -368,12 +368,12 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 		}
 
 		[Test]
-		public void SkipRootEntityIsNotSupportedAsync()
+		public void JoinOnlyRootEntityIsNotSupportedAsync()
 		{
 			using (var session = OpenSession())
 			{
 				var query = session.QueryOver<EntityComplex>()
-						.Fetch(SelectMode.Skip, ec => ec)
+						.Fetch(SelectMode.JoinOnly, ec => ec)
 						.Fetch(SelectMode.Fetch, ec => ec.Child1)
 						.Take(1);
 
@@ -382,12 +382,12 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 		}
 
 		[Test]
-		public void LazyRootEntityIsNotSupportedAsync()
+		public void SkipRootEntityIsNotSupportedAsync()
 		{
 			using (var session = OpenSession())
 			{
 				var query = session.QueryOver<EntityComplex>()
-						.Fetch(SelectMode.SkipJoin, ec => ec)
+						.Fetch(SelectMode.Skip, ec => ec)
 						.Fetch(SelectMode.Fetch, ec => ec.Child1)
 						.Take(1);
 

@@ -148,9 +148,9 @@ namespace NHibernate.Impl
 		{
 			switch (GetSelectMode(path))
 			{
-				case SelectMode.Default:
+				case SelectMode.Undefined:
 					return FetchMode.Default;
-				case SelectMode.SkipJoin:
+				case SelectMode.Skip:
 					return FetchMode.Lazy;
 				default:
 					return FetchMode.Join;
@@ -161,7 +161,7 @@ namespace NHibernate.Impl
 		{
 			if (!selectModes.TryGetValue(path, out var result))
 			{
-				result = SelectMode.Default;
+				result = SelectMode.Undefined;
 			}
 			return result;
 		}
@@ -388,10 +388,10 @@ namespace NHibernate.Impl
 			switch (mode)
 			{
 				case FetchMode.Default:
-					return SelectMode.Default;
+					return SelectMode.Undefined;
 
 				case FetchMode.Select:
-					return SelectMode.SkipJoin;
+					return SelectMode.Skip;
 
 				case FetchMode.Join:
 					return SelectMode.Fetch;

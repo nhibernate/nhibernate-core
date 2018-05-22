@@ -1,11 +1,14 @@
 namespace NHibernate
 {
+	/// <summary>
+	/// Represents fetching options for Criteria
+	/// </summary>
 	public enum SelectMode
 	{
 		/// <summary>
 		/// Default to the setting configured in the mapping file.
 		/// </summary>
-		Default,
+		Undefined,
 
 		/// <summary>
 		/// Fetch the entity.
@@ -27,11 +30,11 @@ namespace NHibernate
 		/// <summary>
 		/// Skips the entity from select statement but keeps joining it in the query.
 		/// </summary>
-		Skip,
+		JoinOnly,
 
 		/// <summary>
 		/// Skips fetching for eagerly mapped association (no-op for lazy association).
 		/// </summary>
-		SkipJoin,
+		Skip,
 	}
 }
