@@ -518,11 +518,12 @@ namespace NHibernate.Cfg
 			}
 			try
 			{
-				OnBeforeBindMapping(new BindMappingEventArgs(mappingDocument, documentFileName));
-				Mappings mappings = CreateMappings();
-
+				var dialect = new Lazy<Dialect.Dialect>(() => Dialect.Dialect.GetDialect(properties));
+				OnBeforeBindMapping(new BindMappingEventArgs(mappingDocument, documentFileName) {LazyDialect = dialect});
+				var mappings = CreateMappings();
+				mappings.LazyDialect = dialect;
 				new MappingRootBinder(mappings).Bind(mappingDocument);
-				OnAfterBindMapping(new BindMappingEventArgs(mappingDocument, documentFileName));
+				OnAfterBindMapping(new BindMappingEventArgs(mappingDocument, documentFileName) {LazyDialect = dialect});
 			}
 			catch (Exception e)
 			{
@@ -564,13 +565,11 @@ namespace NHibernate.Cfg
 		[Obsolete("Please use overload without a dialect parameter.")]
 		public Mappings CreateMappings(Dialect.Dialect dialect)
 		{
-			return CreateMappings();
+			var mappings = CreateMappings();
+			mappings.LazyDialect = new Lazy<Dialect.Dialect>(() => dialect);
+			return mappings;
 		}
 
-		/// <summary>
-		/// Create a new <see cref="Mappings" /> to add classes and collection
-		/// mappings to.
-		/// </summary>
 		public Mappings CreateMappings()
 		{
 			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);

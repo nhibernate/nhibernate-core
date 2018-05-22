@@ -10,15 +10,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 	public class MappingRootBinder : Binder
 	{
 		//Since v5.2
-		[Obsolete("This field will be removed in a future version.")]
-		private readonly Dialect.Dialect dialect;
-
-		//Since v5.2
 		[Obsolete("Please use constructor without a dialect parameter.")]
 		public MappingRootBinder(Mappings mappings, Dialect.Dialect dialect)
 			: this(mappings)
 		{
-			this.dialect = dialect;
 		}
 
 		public MappingRootBinder(Mappings mappings)

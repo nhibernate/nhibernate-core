@@ -88,6 +88,9 @@ namespace NHibernate.Cfg
 		/// </summary>
 		protected internal IDictionary<string, TableDescription> tableNameBinding;
 
+		//6.0 TODO: Remove
+		internal Lazy<Dialect.Dialect> LazyDialect;
+
 		//Since v5.2
 		[Obsolete("Please use constructor without a dialect parameter.")]
 		protected internal Mappings(
@@ -138,7 +141,7 @@ namespace NHibernate.Cfg
 				defaultSchema,
 				preferPooledValuesLo)
 		{
-			Dialect = dialect;
+			LazyDialect = new Lazy<Dialect.Dialect>(() => dialect);
 		}
 
 		protected internal Mappings(
@@ -235,7 +238,7 @@ namespace NHibernate.Cfg
 
 		//Since v5.2
 		[Obsolete("This property will be removed in a future version.")]
-		public Dialect.Dialect Dialect { get; }
+		public Dialect.Dialect Dialect => LazyDialect.Value;
 
 		/// <summary>
 		/// 

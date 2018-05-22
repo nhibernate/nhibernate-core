@@ -3,12 +3,16 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Cfg
 {
-	public class BindMappingEventArgs: EventArgs
+	public class BindMappingEventArgs : EventArgs
 	{
-		[Obsolete("Please use constructor without a dialect parameter.", true)]
-		public BindMappingEventArgs(Dialect.Dialect dialect, HbmMapping mapping, string fileName) : this(mapping, fileName)
+		//6.0 TODO: Remove
+		internal Lazy<Dialect.Dialect> LazyDialect;
+
+		[Obsolete("Please use constructor without a dialect parameter.")]
+		public BindMappingEventArgs(Dialect.Dialect dialect, HbmMapping mapping, string fileName)
+			: this(mapping, fileName)
 		{
-			Dialect = dialect;
+			LazyDialect = new Lazy<Dialect.Dialect>(() => dialect);
 		}
 
 		public BindMappingEventArgs(HbmMapping mapping, string fileName)
@@ -18,8 +22,8 @@ namespace NHibernate.Cfg
 		}
 
 		//Since v5.2
-		[Obsolete("This property will be removed in a future version.", true)]
-		public Dialect.Dialect Dialect { get; }
+		[Obsolete("This property will be removed in a future version.")]
+		public Dialect.Dialect Dialect => LazyDialect.Value;
 		public HbmMapping Mapping { get; }
 		public string FileName { get; }
 	}
