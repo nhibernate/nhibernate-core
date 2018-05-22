@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1704
 		}
 
 		[Test(Description = "GH-1704")]
-		public void GroupByKeySelectToCustomClass()
+		public void GroupByCustomClassAsKey()
 		{
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
