@@ -79,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1927
         public Task CriteriaWithEagerFetchAsync()
         {
             return TestQueryAsync(s => s.CreateCriteria(typeof (Customer))
-				.SetFetchMode("Invoices", FetchMode.Eager)
+				.Fetch("Invoices")
 				.UniqueResult<Customer>()
 				);
         }

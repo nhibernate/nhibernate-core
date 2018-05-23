@@ -362,7 +362,7 @@ namespace NHibernate.Loader
 			// this call is side-effecty
 			object[] row =
 				GetRow(resultSet, persisters, keys, queryParameters.OptionalObject, optionalObjectKey, lockModeArray,
-					   hydratedObjects, session);
+					   hydratedObjects, session, !returnProxies);
 
 			ReadCollectionElements(row, resultSet, session);
 
@@ -372,13 +372,23 @@ namespace NHibernate.Loader
 				for (int i = 0; i < entitySpan; i++)
 				{
 					object entity = row[i];
-					object proxy = session.PersistenceContext.ProxyFor(persisters[i], keys[i], entity);
-
-					if (entity != proxy)
+					var key = keys[i];
+					if (entity == null && key != null && IsChildFetchEntity(i))
 					{
-						// Force the proxy to resolve itself
-						((INHibernateProxy)proxy).HibernateLazyInitializer.SetImplementation(entity);
-						row[i] = proxy;
+						// The entity was missing in the session, fallback on internal load (which will just yield a
+						// proxy if the persister supports it).
+						row[i] = session.InternalLoad(key.EntityName, key.Identifier, false, false);
+					}
+					else
+					{
+						object proxy = session.PersistenceContext.ProxyFor(persisters[i], keys[i], entity);
+
+						if (entity != proxy)
+						{
+							// Force the proxy to resolve itself
+							((INHibernateProxy) proxy).HibernateLazyInitializer.SetImplementation(entity);
+							row[i] = proxy;
+						}
 					}
 				}
 			}
@@ -906,7 +916,7 @@ namespace NHibernate.Loader
 		/// </summary>
 		private object[] GetRow(DbDataReader rs, ILoadable[] persisters, EntityKey[] keys, object optionalObject,
 								EntityKey optionalObjectKey, LockMode[] lockModes, IList hydratedObjects,
-								ISessionImplementor session)
+								ISessionImplementor session, bool mustLoadMissingEntity)
 		{
 			int cols = persisters.Length;
 			IEntityAliases[] descriptors = EntityAliases;
@@ -937,6 +947,17 @@ namespace NHibernate.Loader
 					obj = session.GetEntityUsingInterceptor(key);
 					var alreadyLoaded = obj != null;
 					var persister = persisters[i];
+					if (IsChildFetchEntity(i))
+					{
+						if (!alreadyLoaded && mustLoadMissingEntity)
+						{
+							// Missing in session while its data has not been selected: fallback on immediate load
+							obj = session.ImmediateLoad(key.EntityName, key.Identifier);
+						}
+						rowResults[i] = obj;
+						continue;
+					}
+
 					if (alreadyLoaded)
 					{
 						//its already loaded so dont need to hydrate it
@@ -1053,6 +1074,11 @@ namespace NHibernate.Loader
 			hydratedObjects.Add(obj);
 
 			return obj;
+		}
+
+		protected virtual bool IsChildFetchEntity(int i)
+		{
+			return false;
 		}
 
 		private bool IsEagerPropertyFetchEnabled(int i)

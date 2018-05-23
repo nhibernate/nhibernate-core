@@ -235,7 +235,7 @@ int accessLevel = permissions["accounts"];  // Error!]]></programlisting>
                 <literal>left join fetch</literal> in HQL. This tells NHibernate to fetch 
                 the association eagerly in the first select, using an outer join. In the
                 <literal>ICriteria</literal> query API, you would use
-                <literal>SetFetchMode(FetchMode.Join)</literal>.
+                <literal>Fetch()</literal>.
             </para>
             
             <para>
@@ -243,12 +243,12 @@ int accessLevel = permissions["accounts"];  // Error!]]></programlisting>
                 <literal>Get()</literal> or <literal>Load()</literal>, simply use a 
                 <literal>ICriteria</literal> query, for example:
             </para>
-            
+
             <programlisting><![CDATA[User user = session.CreateCriteria(typeof(User))
-    .SetFetchMode("Permissions", FetchMode.Join)
+    .Fetch(SelectMode.Fetch, "Permissions")
     .Add( Expression.Eq("Id", userId) )
     .UniqueResult<User>();]]></programlisting>
-                
+
             <para>
                 (This is NHibernate's equivalent of what some <emphasis>ORM</emphasis> solutions call a "fetch plan".)
             </para>
@@ -475,7 +475,7 @@ using(var iter = session
                         <literal>NHibernateUtil.Initialize()</literal> for each collection that will
                         be needed in the web tier (this call must occur before the session is closed)
                         or retrieves the collection eagerly using a NHibernate query with a
-                        <literal>FETCH</literal> clause or a <literal>FetchMode.Join</literal> in
+                        <literal>FETCH</literal> clause or a <literal>SelectMode.Fetch</literal> in
                         <literal>ICriteria</literal>. This is usually easier if you adopt the
                         <emphasis>Command</emphasis> pattern instead of a <emphasis>Session Facade</emphasis>.
                     </para>

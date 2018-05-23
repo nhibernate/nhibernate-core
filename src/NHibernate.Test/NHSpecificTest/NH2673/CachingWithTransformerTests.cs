@@ -166,7 +166,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = session.CreateCriteria<Blog>()
-					                   .SetFetchMode("Posts", FetchMode.Eager)
+					                   .Fetch("Posts")
 					                   .SetCacheable(true)
 					                   .List<Blog>();
 					tx.Commit();
@@ -183,7 +183,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = session.CreateCriteria<Blog>()
-					                   .SetFetchMode("Posts", FetchMode.Eager)
+					                   .Fetch("Posts")
 					                   .SetCacheable(true)
 					                   .Future<Blog>()
 					                   .GetEnumerable()
@@ -237,7 +237,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 			using (session.BeginTransaction())
 			{
 				var result = session.QueryOver<Blog>().Where(x => x.Author == "Gabriel")
-									.Fetch(x => x.Posts).Eager
+									.Fetch(SelectMode.Fetch, x => x.Posts)
 									.TransformUsing(new DistinctRootEntityResultTransformer())
 									.Cacheable()
 									.List<Blog>();

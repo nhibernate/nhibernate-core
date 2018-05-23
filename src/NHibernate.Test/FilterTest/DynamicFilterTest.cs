@@ -174,7 +174,7 @@ namespace NHibernate.Test.FilterTest
 
 				log.Info("Criteria query against Salesperson...");
 				IList salespersons = session.CreateCriteria(typeof(Salesperson))
-				                            .SetFetchMode("orders", FetchMode.Join)
+				                            .Fetch("orders")
 				                            .List();
 				Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 				Assert.AreEqual(1, ((Salesperson) salespersons[0]).Orders.Count, "Incorrect order count");

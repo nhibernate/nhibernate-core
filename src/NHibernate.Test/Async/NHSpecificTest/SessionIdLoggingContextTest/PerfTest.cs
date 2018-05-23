@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.SessionIdLoggingContextTest
             {
                 var ticksAtStart = DateTime.Now.Ticks;
                 var res = await (s.CreateCriteria<ClassA>()
-                    .SetFetchMode("Children", FetchMode.Join)
+                    .Fetch("Children")
                     .SetResultTransformer(Transformers.DistinctRootEntity)
                     .Add(Restrictions.Eq("Name", "Parent"))
                     .ListAsync<ClassA>());
