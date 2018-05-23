@@ -347,7 +347,10 @@ namespace NHibernate.Criterion
 		{
 			var expression = methodCallExpression.Arguments[0];
 			var aliasName = ExpressionProcessor.FindMemberExpression(expression);
-			return Projections.Entity(expression.Type, aliasName);
+			return
+				string.IsNullOrEmpty(aliasName)
+					? Projections.RootEntity()
+					: Projections.Entity(expression.Type, aliasName);
 		}
 	}
 }

@@ -217,6 +217,26 @@ namespace NHibernate.Test.Criteria
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
+		
+		[Test]
+		public void EntityProjectionAsSelectExpressionForArgumentAlias()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntitySimpleChild child1 = null;
+				var complex = session
+					.QueryOver<EntityComplex>()
+					.JoinAlias(ep => ep.Child1, () => child1)
+					.Select(ec => ec.AsEntity())
+					.Take(1).SingleOrDefault();
+
+				Assert.That(complex, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(complex), Is.True, "Object must be initialized");
+				Assert.That(NHibernateUtil.IsInitialized(complex.Child1), Is.False, "Object must be lazy");
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
 
 		[Test]
 		public void EntityProjectionLockMode()
