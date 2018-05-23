@@ -55,7 +55,7 @@ namespace NHibernate.Linq.GroupBy
 		{
 			_transformed = true;
 			// Transform each initializer recursively (to allow for nested initializers)
-			if(expression.Members == null)
+			if (expression.Members == null)
 				return Expression.New(expression.Constructor, expression.Arguments.Select(VisitInternal));
 
 			return Expression.New(expression.Constructor, expression.Arguments.Select(VisitInternal), expression.Members);

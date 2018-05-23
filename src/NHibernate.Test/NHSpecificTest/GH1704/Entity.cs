@@ -12,11 +12,11 @@ namespace NHibernate.Test.NHSpecificTest.GH1704
 
 	class GroupByEntity
 	{
-        public GroupByEntity(string country)
-        {
-            Country = country;
-        }
-        public virtual string Country { get; set; }
+		public GroupByEntity(string country)
+		{
+			Country = country;
+		}
+		public virtual string Country { get; set; }
 		public virtual string City { get; set; }
 	}
 }

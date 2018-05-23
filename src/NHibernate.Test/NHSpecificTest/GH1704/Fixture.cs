@@ -11,19 +11,19 @@ namespace NHibernate.Test.NHSpecificTest.GH1704
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity {Country = "Greece", City = "Athens", Budget = 100000m};
+				var e1 = new Entity { Country = "Greece", City = "Athens", Budget = 100000m };
 				session.Save(e1);
 
-				var e2 = new Entity {Country = "Greece", City = "Chania", Budget = 50000m};
+				var e2 = new Entity { Country = "Greece", City = "Chania", Budget = 50000m };
 				session.Save(e2);
 
-				var e3 = new Entity {Country = "Italy", City = "Rome", Budget = 200000m};
+				var e3 = new Entity { Country = "Italy", City = "Rome", Budget = 200000m };
 				session.Save(e3);
 
-				var e4 = new Entity {Country = "Italy", City = "Milan", Budget = 100000m};
+				var e4 = new Entity { Country = "Italy", City = "Milan", Budget = 100000m };
 				session.Save(e4);
 
-				var e5 = new Entity {Country = "France", City = "Paris", Budget = 300000m};
+				var e5 = new Entity { Country = "France", City = "Paris", Budget = 300000m };
 				session.Save(e5);
 
 				transaction.Commit();
