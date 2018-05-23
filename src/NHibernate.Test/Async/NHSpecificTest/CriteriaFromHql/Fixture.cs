@@ -59,8 +59,8 @@ where p.Parent is null")
 			{
 				Person result = await (session.CreateCriteria(typeof(Person))
 					.Add(Restrictions.IsNull("Parent"))
-					.SetFetchMode("Children", FetchMode.Join)
-					.SetFetchMode("Children.Children", FetchMode.Join)
+					.Fetch("Children")
+					.Fetch("Children.Children")
 					.UniqueResultAsync<Person>());
 				string criteriaQuery = spy.Appender.GetEvents()[0].RenderedMessage;
 				Debug.WriteLine("Criteria: " + criteriaQuery);

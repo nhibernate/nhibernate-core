@@ -33,8 +33,8 @@ namespace NHibernate.Test.Legacy
 		public async Task FetchManyToOneAsync()
 		{
 			ISession s = OpenSession();
-			await (s.CreateCriteria(typeof(Po)).SetFetchMode("Set", FetchMode.Eager).ListAsync());
-			await (s.CreateCriteria(typeof(Po)).SetFetchMode("List", FetchMode.Eager).ListAsync());
+			await (s.CreateCriteria(typeof(Po)).Fetch("Set").ListAsync());
+			await (s.CreateCriteria(typeof(Po)).Fetch("List").ListAsync());
 			s.Close();
 		}
 

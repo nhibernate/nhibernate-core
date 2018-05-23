@@ -315,6 +315,8 @@ namespace NHibernate.Engine.Loading
 			{
 				versionComparator = persister.OwnerEntityPersister.VersionType.Comparator;
 				object collectionOwner = LoadContext.PersistenceContext.GetCollectionOwner(lce.Key, persister);
+				if (collectionOwner == null)
+					return;
 				version = LoadContext.PersistenceContext.GetEntry(collectionOwner).Version;
 			}
 			else

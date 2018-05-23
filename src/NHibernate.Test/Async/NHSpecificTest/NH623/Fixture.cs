@@ -81,7 +81,7 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 
 			session.Clear();
 
-			result = await (session.CreateCriteria(typeof(Document)).SetFetchMode("Pages", FetchMode.Join).ListAsync());
+			result = await (session.CreateCriteria(typeof(Document)).Fetch("Pages").ListAsync());
 			d = result[0] as Document;
 
 			// this assertion fails because if the collection is eager fetched it will contain all elements and will ignore the where clause.

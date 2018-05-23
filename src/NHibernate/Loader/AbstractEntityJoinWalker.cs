@@ -33,10 +33,16 @@ namespace NHibernate.Loader
 		{
 			AddAssociations();
 			IList<OuterJoinableAssociation> allAssociations = new List<OuterJoinableAssociation>(associations);
-			allAssociations.Add(CreateAssociation(persister.EntityType, alias));
+			var rootAssociation = CreateRootAssociation();
+			allAssociations.Add(rootAssociation);
 
 			InitPersisters(allAssociations, lockMode);
-			InitStatementString(whereString, orderByString, lockMode);
+			InitStatementString(rootAssociation, null, whereString, orderByString, null, null, lockMode);
+		}
+
+		protected virtual OuterJoinableAssociation CreateRootAssociation()
+		{
+			return CreateAssociation(persister.EntityType, Alias);
 		}
 
 		//Since v5.1
@@ -78,7 +84,7 @@ namespace NHibernate.Loader
 				Suffixes = Array.Empty<string>();
 			}
 
-			InitStatementString(projectionString, whereString, orderByString, groupByString, havingString, lockMode);
+			InitStatementString(null, projectionString, whereString, orderByString, groupByString, havingString, lockMode);
 		}
 
 		protected virtual void AddAssociations()
@@ -99,12 +105,8 @@ namespace NHibernate.Loader
 				CollectionHelper.EmptyDictionary<string, IFilter>());
 		}
 
-		private void InitStatementString(SqlString condition, SqlString orderBy, LockMode lockMode)
-		{
-			InitStatementString(null, condition, orderBy, null, null, lockMode);
-		}
 
-		private void InitStatementString(SqlString projection, SqlString condition, SqlString orderBy, SqlString groupBy, SqlString having, LockMode lockMode)
+		private void InitStatementString(OuterJoinableAssociation rootAssociation, SqlString projection, SqlString condition, SqlString orderBy, SqlString groupBy, SqlString having, LockMode lockMode)
 		{
 			SqlString selectClause = projection;
 			if (selectClause == null)
@@ -112,7 +114,8 @@ namespace NHibernate.Loader
 				int joins = CountEntityPersisters(associations);
 
 				Suffixes = BasicLoader.GenerateSuffixes(joins + 1);
-				selectClause = new SqlString(persister.SelectFragment(alias, Suffixes[joins]) + SelectString(associations));
+				var suffix = Suffixes[joins];
+				selectClause = new SqlString(GetSelectFragment(rootAssociation, suffix, null) + SelectString(associations));
 			}
 
 			JoinFragment ojf = MergeOuterJoins(associations);

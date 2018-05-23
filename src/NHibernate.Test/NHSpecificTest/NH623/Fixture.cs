@@ -70,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 
 			session.Clear();
 
-			result = session.CreateCriteria(typeof(Document)).SetFetchMode("Pages", FetchMode.Join).List();
+			result = session.CreateCriteria(typeof(Document)).Fetch("Pages").List();
 			d = result[0] as Document;
 
 			// this assertion fails because if the collection is eager fetched it will contain all elements and will ignore the where clause.

@@ -125,6 +125,8 @@ namespace NHibernate
 		/// <param name="associationPath">A dot separated property path.</param>
 		/// <param name="mode">The Fetch mode.</param>
 		/// <returns></returns>
+		//Since 5.2
+		[Obsolete("Use Fetch instead")]
 		ICriteria SetFetchMode(string associationPath, FetchMode mode);
 
 		/// <summary>

@@ -2058,8 +2058,8 @@ namespace NHibernate.Test.Legacy
 				.Add(Expression.EqProperty("Integer", "Integer"))
 				.Add(Expression.Like("String", f.String))
 				.Add(Expression.In("Boolean", new bool[] {f.Boolean, f.Boolean}))
-				.SetFetchMode("TheFoo", FetchMode.Eager)
-				.SetFetchMode("Baz", FetchMode.Lazy)
+				.Fetch("TheFoo")
+				.Fetch(SelectMode.Skip, "Baz")
 				.ListAsync());
 
 			Assert.IsTrue(list.Count == 1 && list[0] == f);
@@ -2119,11 +2119,11 @@ namespace NHibernate.Test.Legacy
 				.Add(Expression.Like("String", f.String))
 				.Add(Expression.In("Boolean", new bool[] {f.Boolean, f.Boolean}))
 				.Add(Expression.IsNotNull("TheFoo"))
-				.SetFetchMode("TheFoo", FetchMode.Eager)
-				.SetFetchMode("Baz", FetchMode.Lazy)
-				.SetFetchMode("Component.Glarch", FetchMode.Lazy)
-				.SetFetchMode("TheFoo.Baz", FetchMode.Lazy)
-				.SetFetchMode("TheFoo.Component.Glarch", FetchMode.Lazy)
+				.Fetch("TheFoo")
+				.Fetch(SelectMode.Skip, "Baz")
+				.Fetch(SelectMode.Skip, "Component.Glarch")
+				.Fetch(SelectMode.Skip, "TheFoo.Baz")
+				.Fetch(SelectMode.Skip, "TheFoo.Component.Glarch")
 				.ListAsync());
 
 			f = (Foo) list[0];
