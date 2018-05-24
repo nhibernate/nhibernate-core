@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3153
 			var conf = TestConfigurationHelper.GetDefaultConfiguration();
 			conf.AddResource("NHibernate.Test.NHSpecificTest.NH3153.SchemaInClass.hbm.xml", typeof(A).Assembly);
 
-			var mappings = conf.CreateMappings(Dialect.Dialect.GetDialect());
+			var mappings = conf.CreateMappings();
 
 			var pc = mappings.GetClass(typeof(A).FullName);
 			Assert.That(((SimpleValue)pc.Identifier).IdentifierGeneratorProperties["schema"], Is.EqualTo("Test"));
@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3153
 			var conf = TestConfigurationHelper.GetDefaultConfiguration();
 			conf.AddResource("NHibernate.Test.NHSpecificTest.NH3153.SchemaInMapping.hbm.xml", typeof(A).Assembly);
 
-			var mappings = conf.CreateMappings(Dialect.Dialect.GetDialect());
+			var mappings = conf.CreateMappings();
 
 			var pc = mappings.GetClass(typeof(A).FullName);
 			Assert.That(((SimpleValue)pc.Identifier).IdentifierGeneratorProperties["schema"], Is.EqualTo("Test"));

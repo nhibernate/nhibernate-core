@@ -518,12 +518,12 @@ namespace NHibernate.Cfg
 			}
 			try
 			{
-				Dialect.Dialect dialect = Dialect.Dialect.GetDialect(properties);
-				OnBeforeBindMapping(new BindMappingEventArgs(dialect, mappingDocument, documentFileName));
-				Mappings mappings = CreateMappings(dialect);
-
-				new MappingRootBinder(mappings, dialect).Bind(mappingDocument);
-				OnAfterBindMapping(new BindMappingEventArgs(dialect, mappingDocument, documentFileName));
+				var dialect = new Lazy<Dialect.Dialect>(() => Dialect.Dialect.GetDialect(properties));
+				OnBeforeBindMapping(new BindMappingEventArgs(mappingDocument, documentFileName) {LazyDialect = dialect});
+				var mappings = CreateMappings();
+				mappings.LazyDialect = dialect;
+				new MappingRootBinder(mappings).Bind(mappingDocument);
+				OnAfterBindMapping(new BindMappingEventArgs(mappingDocument, documentFileName) {LazyDialect = dialect});
 			}
 			catch (Exception e)
 			{
@@ -561,7 +561,16 @@ namespace NHibernate.Cfg
 		/// Create a new <see cref="Mappings" /> to add classes and collection
 		/// mappings to.
 		/// </summary>
+		//Since v5.2
+		[Obsolete("Please use overload without a dialect parameter.")]
 		public Mappings CreateMappings(Dialect.Dialect dialect)
+		{
+			var mappings = CreateMappings();
+			mappings.LazyDialect = new Lazy<Dialect.Dialect>(() => dialect);
+			return mappings;
+		}
+
+		public Mappings CreateMappings()
 		{
 			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
 			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
@@ -571,7 +580,7 @@ namespace NHibernate.Cfg
 			return new Mappings(classes, collections, tables, NamedQueries, NamedSQLQueries, SqlResultSetMappings, Imports,
 								secondPasses, filtersSecondPasses, propertyReferences, namingStrategy, typeDefs, FilterDefinitions, extendsQueue,
 								auxiliaryDatabaseObjects, tableNameBinding, columnNameBindingPerTable, defaultAssembly,
-								defaultNamespace, defaultCatalog, defaultSchema, preferPooledValuesLo, dialect);
+								defaultNamespace, defaultCatalog, defaultSchema, preferPooledValuesLo);
 		}
 
 		private void ProcessPreMappingBuildProperties()
