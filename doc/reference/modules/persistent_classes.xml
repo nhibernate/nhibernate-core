@@ -115,7 +115,7 @@ namespace Eg
             <itemizedlist spacing="compact">
                 <listitem>
                     <para>
-                        Cascaded updates (see "Lifecycle Objects")
+                        Cascaded updates (see <xref linkend="manipulatingdata-graphs"/>)
                     </para>
                 </listitem>
                 <listitem>

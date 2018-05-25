@@ -5,81 +5,78 @@
         <title>The Three Strategies</title>
 
         <para>
-            NHibernate supports the three basic inheritance mapping strategies.
+            NHibernate supports the three basic inheritance mapping strategies:
         </para>
 
         <itemizedlist>
-        <listitem>
-        <para>
-            table per class hierarchy
-        </para>
-        </listitem>
-        <listitem>
-        <para>
-            table per subclass
-        </para>
-        </listitem>
-        <listitem>
-        <para>
-            table per concrete class
-        </para>
-        </listitem>
+            <listitem>
+                <para>
+                    table per class hierarchy
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    table per subclass
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    table per concrete class
+                </para>
+            </listitem>
         </itemizedlist>
-        
+
         <para>
-            In addition, NHibernate supports a fourth, slightly different kind of 
-            polymorphism:
+            In addition, NHibernate supports a fourth, slightly different kind of polymorphism:
         </para>
 
         <itemizedlist>
-        <listitem>
-        <para>
-            implicit polymorphism
-        </para>
-        </listitem>
+            <listitem>
+                <para>
+                    implicit polymorphism
+                </para>
+            </listitem>
         </itemizedlist>
-        
+
         <para>
-            It is possible to use different mapping strategies for different
-            branches of the same inheritance hierarchy, and then make use of implicit
-            polymorphism to achieve polymorphism across the whole hierarchy. However, 
-            NHibernate does not support mixing <literal>&lt;subclass&gt;</literal>,
-            and <literal>&lt;joined-subclass&gt;</literal> and 
+            It is possible to use different mapping strategies for different branches of the same
+            inheritance hierarchy. You can then make use of implicit polymorphism to achieve polymorphism
+            across the whole hierarchy. However,  NHibernate does not support mixing
+            <literal>&lt;subclass&gt;</literal>, and <literal>&lt;joined-subclass&gt;</literal> and
             <literal>&lt;union-subclass&gt;</literal> mappings under the same root
-            <literal>&lt;class&gt;</literal> element. It is possible to mix together
-            the table per hierarchy and table per subclass strategies, under the
-            the same <literal>&lt;class&gt;</literal> element, by combining the 
-            <literal>&lt;subclass&gt;</literal> and <literal>&lt;join&gt;</literal>
-            elements (see below).
+            <literal>&lt;class&gt;</literal> element. It is possible to mix together the table per
+            hierarchy and table per subclass strategies, under the the same
+            <literal>&lt;class&gt;</literal> element, by combining the <literal>&lt;subclass&gt;</literal>
+            and <literal>&lt;join&gt;</literal> elements (see
+            <xref linkend="inheritance-mixing-tableperclass-tablepersubclass"/>).
         </para>
 
         <para>
-             It is possible to define <literal>subclass</literal>, <literal>union-subclass</literal>,
-             and <literal>joined-subclass</literal> mappings in separate mapping documents, directly beneath
-             <literal>hibernate-mapping</literal>. This allows you to extend a class hierarchy just by adding
-             a new mapping file. You must specify an <literal>extends</literal> attribute in the subclass mapping,
-             naming a previously mapped superclass.
-         </para>
+            It is possible to define <literal>subclass</literal>, <literal>union-subclass</literal>,
+            and <literal>joined-subclass</literal> mappings in separate mapping documents directly beneath
+            <literal>hibernate-mapping</literal>. This allows you to extend a class hierarchy by adding
+            a new mapping file. You must specify an <literal>extends</literal> attribute in the subclass
+            mapping, naming a previously mapped superclass.
+        </para>
 
-         <programlisting><![CDATA[
+        <programlisting><![CDATA[
  <hibernate-mapping>
      <subclass name="DomesticCat" extends="Cat" discriminator-value="D">
           <property name="name" type="string"/>
      </subclass>
  </hibernate-mapping>]]></programlisting>
 
-
         <sect2 id="inheritance-tableperclass" >
-        <title>Table per class hierarchy</title>
+            <title>Table per class hierarchy</title>
 
-        <para>
-            Suppose we have an interface <literal>IPayment</literal>, with implementors
-            <literal>CreditCardPayment</literal>, <literal>CashPayment</literal>,
-            <literal>ChequePayment</literal>. The table-per-hierarchy mapping would
-            look like:
-        </para>
+            <para>
+                Suppose we have an interface <literal>IPayment</literal>, with implementors
+                <literal>CreditCardPayment</literal>, <literal>CashPayment</literal>,
+                <literal>ChequePayment</literal>. The table-per-hierarchy mapping would display in the
+                following way:
+            </para>
 
-        <programlisting><![CDATA[<class name="IPayment" table="PAYMENT">
+            <programlisting><![CDATA[<class name="IPayment" table="PAYMENT">
     <id name="Id" type="Int64" column="PAYMENT_ID">
         <generator class="native"/>
     </id>
@@ -87,6 +84,7 @@
     <property name="Amount" column="AMOUNT"/>
     ...
     <subclass name="CreditCardPayment" discriminator-value="CREDIT">
+        <property name="CreditCardType" column="CCTYPE"/>
         ...
     </subclass>
     <subclass name="CashPayment" discriminator-value="CASH">
@@ -97,22 +95,22 @@
     </subclass>
 </class>]]></programlisting>
 
-        <para>
-            Exactly one table is required. There is one big limitation of this
-            mapping strategy: columns declared by the subclasses may not have
-            <literal>NOT NULL</literal> constraints.
-        </para>
+            <para>
+                Exactly one table is required. There is a limitation of this mapping strategy: columns
+                declared by the subclasses, such as <literal>CCTYPE</literal>, cannot have
+                <literal>NOT NULL</literal> constraints.
+            </para>
 
         </sect2>
 
         <sect2 id="inheritance-tablepersubclass">
             <title>Table per subclass</title>
 
-        <para>
-            A table-per-subclass mapping would look like:
-        </para>
+            <para>
+                A table-per-subclass mapping would look like:
+            </para>
 
-        <programlisting><![CDATA[<class name="IPayment" table="PAYMENT">
+            <programlisting><![CDATA[<class name="IPayment" table="PAYMENT">
     <id name="Id" type="Int64" column="PAYMENT_ID">
         <generator class="native"/>
     </id>
@@ -120,6 +118,7 @@
     ...
     <joined-subclass name="CreditCardPayment" table="CREDIT_PAYMENT">
         <key column="PAYMENT_ID"/>
+        <property name="CreditCardType" column="CCTYPE"/>
         ...
     </joined-subclass>
     <joined-subclass name="CashPayment" table="CASH_PAYMENT">
@@ -132,30 +131,27 @@
     </joined-subclass>
 </class>]]></programlisting>
 
-        <para>
-            Four tables are required. The three subclass tables have primary
-            key associations to the superclass table (so the relational model
-            is actually a one-to-one association).
-        </para>
+            <para>
+                Four tables are required. The three subclass tables have primary key associations to the
+                superclass table so the relational model is actually a one-to-one association.
+            </para>
 
         </sect2>
 
         <sect2 id="inheritance-tablepersubclass-discriminator">
-        <title>Table per subclass, using a discriminator</title>
-        
-        <para>
-            Note that NHibernate's implementation of table-per-subclass requires
-            no discriminator column. Other object/relational mappers use a
-            different implementation of table-per-subclass which requires a type
-            discriminator column in the superclass table. The approach taken by
-            NHibernate is much more difficult to implement but arguably more
-            correct from a relational point of view. If you would like to use
-            a discriminator column with the table per subclass strategy, you
-            may combine the use of <literal>&lt;subclass&gt;</literal> and
-            <literal>&lt;join&gt;</literal>, as follow:
-        </para>
+            <title>Table per subclass, using a discriminator</title>
 
-        <programlisting><![CDATA[<class name="Payment" table="PAYMENT">
+            <para>
+                NHibernate's implementation of table per subclass does not require a discriminator column.
+                Other object/relational mappers use a different implementation of table per subclass that
+                requires a type discriminator column in the superclass table. The approach taken by
+                NHibernate is much more difficult to implement, but arguably more correct from a relational
+                point of view. If you want to use a discriminator column with the table per subclass
+                strategy, you can combine the use of <literal>&lt;subclass&gt;</literal> and
+                <literal>&lt;join&gt;</literal>, as follows:
+            </para>
+
+            <programlisting><![CDATA[<class name="Payment" table="PAYMENT">
     <id name="Id" type="Int64" column="PAYMENT_ID">
         <generator class="native"/>
     </id>
@@ -183,21 +179,21 @@
     </subclass>
 </class>]]></programlisting>
 
-        <para>
-            The optional <literal>fetch="select"</literal> declaration tells NHibernate 
-            not to fetch the <literal>ChequePayment</literal> subclass data using an
-            outer join when querying the superclass.
-        </para>
+            <para>
+                The optional <literal>fetch="select"</literal> declaration tells NHibernate 
+                not to fetch the <literal>ChequePayment</literal> subclass data using an
+                outer join when querying the superclass.
+            </para>
 
         </sect2>
 
         <sect2 id="inheritance-mixing-tableperclass-tablepersubclass">
-        <title>Mixing table per class hierarchy with table per subclass</title>
+            <title>Mixing table per class hierarchy with table per subclass</title>
 
-        <para>
-            You may even mix the table per hierarchy and table per subclass strategies
-            using this approach:
-        </para>
+            <para>
+                You can even mix the table per hierarchy and table per subclass strategies
+                using the following approach:
+            </para>
 
         <programlisting><![CDATA[<class name="Payment" table="PAYMENT">
     <id name="Id" type="Int64" column="PAYMENT_ID">
@@ -220,25 +216,25 @@
     </subclass>
 </class>]]></programlisting>
 
-        <para>
-            For any of these mapping strategies, a polymorphic
-            association to <literal>IPayment</literal> is mapped using
-            <literal>&lt;many-to-one&gt;</literal>.
-        </para>
+            <para>
+                For any of these mapping strategies, a polymorphic
+                association to <literal>IPayment</literal> is mapped using
+                <literal>&lt;many-to-one&gt;</literal>.
+            </para>
 
-        <programlisting><![CDATA[<many-to-one name="Payment" column="PAYMENT" class="IPayment"/>]]></programlisting>
-    
+            <programlisting><![CDATA[<many-to-one name="Payment" column="PAYMENT" class="IPayment"/>]]></programlisting>
+
         </sect2>
 
         <sect2 id="inheritance-tableperconcrete" revision="2">
-        <title>Table per concrete class</title>
+            <title>Table per concrete class</title>
 
-        <para>
-            There are two ways we could go about mapping the table per concrete class
-            strategy. The first is to use <literal>&lt;union-subclass&gt;</literal>.
-        </para>
+            <para>
+                There are two ways we can map the table per concrete class strategy. First, you can use
+                <literal>&lt;union-subclass&gt;</literal>.
+            </para>
 
-        <programlisting><![CDATA[<class name="Payment">
+            <programlisting><![CDATA[<class name="Payment">
     <id name="Id" type="Int64" column="PAYMENT_ID">
         <generator class="sequence"/>
     </id>
@@ -256,41 +252,40 @@
     </union-subclass>
 </class>]]></programlisting>
 
-        <para>
-            Three tables are involved for the subclasses. Each table defines columns for
-            all properties of the class, including inherited properties.
-        </para>
-        
-        <para>
-            The limitation of this approach is that if a property is mapped on the 
-            superclass, the column name must be the same on all subclass tables.
-            (We might relax this in a future release of NHibernate.) The identity
-            generator strategy is not allowed in union subclass inheritance, indeed
-            the primary key seed has to be shared across all unioned subclasses
-            of a hierarchy.
-        </para>
+            <para>
+                Three tables are involved for the subclasses. Each table defines columns for
+                all properties of the class, including inherited properties.
+            </para>
 
-        <para>
-            If your superclass is abstract, map it with <literal>abstract="true"</literal>.
-            Of course, if it is not abstract, an additional table (defaults to
-            <literal>PAYMENT</literal> in the example above) is needed to hold instances
-            of the superclass.
-        </para>
+            <para>
+                The limitation of this approach is that if a property is mapped on the superclass, the
+                column name must be the same on all subclass tables. The identity generator strategy is
+                not allowed in union subclass inheritance. The primary key seed has to be shared across
+                all unioned subclasses of a hierarchy.
+            </para>
+
+            <para>
+                If your superclass is abstract, map it with <literal>abstract="true"</literal>.
+                If it is not abstract, an additional table (it defaults to
+                <literal>PAYMENT</literal> in the example above), is needed to hold instances
+                of the superclass.
+            </para>
 
         </sect2>
 
         <sect2 id="inheritance-tableperconcreate-polymorphism">
-        <title>Table per concrete class, using implicit polymorphism</title>
+            <title>Table per concrete class, using implicit polymorphism</title>
 
-        <para>
-            An alternative approach is to make use of implicit polymorphism:
-        </para>
+            <para>
+                An alternative approach is to make use of implicit polymorphism:
+            </para>
 
-        <programlisting><![CDATA[<class name="CreditCardPayment" table="CREDIT_PAYMENT">
+            <programlisting><![CDATA[<class name="CreditCardPayment" table="CREDIT_PAYMENT">
     <id name="Id" type="Int64" column="CREDIT_PAYMENT_ID">
         <generator class="native"/>
     </id>
     <property name="Amount" column="CREDIT_AMOUNT"/>
+    <property name="CreditCardType" column="CCTYPE"/>
     ...
 </class>
 
@@ -309,52 +304,49 @@
     <property name="Amount" column="CHEQUE_AMOUNT"/>
     ...
 </class>]]></programlisting>
-           
-        <para>
-            Notice that nowhere do we mention the <literal>IPayment</literal> interface 
-            explicitly. Also notice that properties of <literal>IPayment</literal> are 
-            mapped in each of the subclasses. If you want to avoid duplication, consider
-            using XML entities
-            (e.g. <literal>[ &lt;!ENTITY allproperties SYSTEM "allproperties.xml"&gt; ]</literal>
-            in the <literal>DOCTYPE</literal> declaration and 
-            <literal>&amp;allproperties;</literal> in the mapping).
-        </para>
-        
-        <para>
-            The disadvantage of this approach is that NHibernate does not generate SQL
-            <literal>UNION</literal>s when performing polymorphic queries.
-        </para>
 
-        <para>
-            For this mapping strategy, a polymorphic association to <literal>IPayment</literal> 
-            is usually mapped using <literal>&lt;any&gt;</literal>.
-        </para>
+            <para>
+                Notice that the <literal>IPayment</literal> interface is not mentioned
+                explicitly. Also notice that properties of <literal>IPayment</literal> are
+                mapped in each of the subclasses. If you want to avoid duplication, consider
+                using XML entities (by example
+                <literal>[ &lt;!ENTITY allproperties SYSTEM "allproperties.xml"&gt; ]</literal>
+                in the <literal>DOCTYPE</literal> declaration and
+                <literal>&amp;allproperties;</literal> in the mapping).
+            </para>
+            
+            <para>
+                The disadvantage of this approach is that NHibernate does not generate SQL
+                <literal>UNION</literal>s when performing polymorphic queries.
+            </para>
 
-        <programlisting><![CDATA[<any name="Payment" meta-type="string" id-type="Int64">
+            <para>
+                For this mapping strategy, a polymorphic association to <literal>IPayment</literal> 
+                is usually mapped using <literal>&lt;any&gt;</literal>.
+            </para>
+
+            <programlisting><![CDATA[<any name="Payment" meta-type="string" id-type="Int64">
     <meta-value value="CREDIT" class="CreditCardPayment"/>
     <meta-value value="CASH" class="CashPayment"/>
     <meta-value value="CHEQUE" class="ChequePayment"/>
     <column name="PAYMENT_CLASS"/>
     <column name="PAYMENT_ID"/>
 </any>]]></programlisting>
-           
+
         </sect2>
 
         <sect2 id="inheritace-mixingpolymorphism">
-        <title>Mixing implicit polymorphism with other inheritance mappings</title>
+            <title>Mixing implicit polymorphism with other inheritance mappings</title>
 
-        <para>
-            There is one further thing to notice about this mapping.
-            Since the subclasses are each mapped in their own
-            <literal>&lt;class&gt;</literal> element (and since
-            <literal>IPayment</literal> is just an interface), each of
-            the subclasses could easily be part of another table-per-class
-            or table-per-subclass inheritance hierarchy! (And you can
-            still use polymorphic queries against the
-            <literal>IPayment</literal> interface.)
-       </para>
+            <para>
+                Since the subclasses are each mapped in their own
+                <literal>&lt;class&gt;</literal> element and since
+                <literal>IPayment</literal> is just an interface, each of
+                the subclasses could easily be part of another inheritance hierarchy. You can
+                still use polymorphic queries against the <literal>IPayment</literal> interface.
+            </para>
 
-        <programlisting><![CDATA[<class name="CreditCardPayment" table="CREDIT_PAYMENT">
+            <programlisting><![CDATA[<class name="CreditCardPayment" table="CREDIT_PAYMENT">
     <id name="Id" type="Int64" column="CREDIT_PAYMENT_ID">
         <generator class="native"/>
     </id>
@@ -382,28 +374,28 @@
     </joined-subclass>
 </class>]]></programlisting>
 
-        <para>
-            Once again, we don't mention <literal>IPayment</literal> explicitly. If we
-            execute a query against the <literal>IPayment</literal> interface - for
-            example, <literal>from IPayment</literal> - NHibernate
-            automatically returns instances of <literal>CreditCardPayment</literal>
-            (and its subclasses, since they also implement <literal>IPayment</literal>),
-            <literal>CashPayment</literal> and <literal>ChequePayment</literal> but
-            not instances of <literal>NonelectronicTransaction</literal>.
-        </para>
+            <para>
+                Once again, <literal>IPayment</literal> is not mentioned explicitly. If we
+                execute a query against the <literal>IPayment</literal> interface - for
+                example, <literal>from IPayment</literal> - NHibernate
+                automatically returns instances of <literal>CreditCardPayment</literal>
+                (and its subclasses, since they also implement <literal>IPayment</literal>),
+                <literal>CashPayment</literal> and <literal>ChequePayment</literal> but
+                not instances of <literal>NonelectronicTransaction</literal> (provided it does
+                not implement <literal>IPayment</literal>).
+            </para>
 
         </sect2>
-        
+
     </sect1>
 
     <sect1 id="inheritance-limitations">
         <title>Limitations</title>
 
         <para>
-            There are certain limitations to the "implicit polymorphism" approach to
-            the table per concrete-class mapping strategy. There are somewhat less
-            restrictive limitations to <literal>&lt;union-subclass&gt;</literal>
-            mappings.
+            There are limitations to the "implicit polymorphism" approach to the table per concrete-class
+            mapping strategy. There are somewhat less restrictive limitations to
+            <literal>&lt;union-subclass&gt;</literal> mappings.
         </para>
 
         <para>
