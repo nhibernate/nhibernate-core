@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using NHibernate.Action;
 using NHibernate.Engine;
 using NHibernate.Metadata;
@@ -40,6 +37,8 @@ namespace NHibernate.Test.BulkManipulation
 		[TestCase("TestClass", false, 1, 0, 1)]
 		[TestCase("", true, 1, 1, 1)]
 		[Test]
+		// 6.0 TODO: remove this ignore.
+		[Ignore("Must wait for the tested methods to be actually added to ISessionFactoryImplementor")]
 		public void AfterTransactionCompletionProcess_EvictsFromCache(string querySpaces, bool persisterHasCache, int expectedPropertySpaceLength, int expectedEntityEvictionCount, int expectedCollectionEvictionCount)
 		{
 			_persister.HasCache.Returns(persisterHasCache);
@@ -67,7 +66,6 @@ namespace NHibernate.Test.BulkManipulation
 			{
 				_factory.DidNotReceive().EvictCollection(Arg.Any<IEnumerable<string>>());
 			}
-
 		}
 	}
 }

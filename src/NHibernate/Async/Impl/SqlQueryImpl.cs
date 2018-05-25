@@ -21,7 +21,7 @@ namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class SqlQueryImpl : AbstractQueryImpl, ISQLQuery
+	public partial class SqlQueryImpl : AbstractQueryImpl, ISQLQuery, ISynchronizableSQLQuery
 	{
 
 		public override async Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
@@ -121,6 +121,5 @@ namespace NHibernate.Impl
 				return Task.FromException<IEnumerable<ITranslator>>(ex);
 			}
 		}
-		
 	}
 }

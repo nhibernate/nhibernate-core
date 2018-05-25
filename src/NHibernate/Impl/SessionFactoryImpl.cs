@@ -930,10 +930,8 @@ namespace NHibernate.Impl
 			{
 				if (log.IsDebugEnabled())
 				{
-					foreach (var p in cacheGroup)
-					{
-						log.Debug("evicting second-level cache: " + p.EntityName);
-					}
+					log.Debug("evicting second-level cache for: {0}",
+					          string.Join(", ", cacheGroup.Select(p => p.EntityName)));
 				}
 				cacheGroup.Key.Clear();
 			}
@@ -1001,13 +999,10 @@ namespace NHibernate.Impl
 
 			foreach (var cacheGroup in roleNames.Select(GetCollectionPersister).Where(x => x.HasCache).GroupBy(x => x.Cache))
 			{
-			
 				if (log.IsDebugEnabled())
 				{
-					foreach (var p in cacheGroup)
-					{
-						log.Debug("evicting second-level cache: " + p.Role);
-					}
+					log.Debug("evicting second-level cache for: {0}",
+					          string.Join(", ", cacheGroup.Select(p => p.Role)));
 				}
 				cacheGroup.Key.Clear();
 			}

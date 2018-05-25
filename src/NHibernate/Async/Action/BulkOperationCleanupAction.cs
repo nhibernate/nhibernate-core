@@ -60,7 +60,5 @@ namespace NHibernate.Action
 		}
 
 		#endregion
-
-		
 	}
 }

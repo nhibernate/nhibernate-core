@@ -22,14 +22,13 @@ namespace NHibernate.Impl
 	/// &lt;/sql-query-name&gt;
 	/// </code>
 	/// </example>
-	public partial class SqlQueryImpl : AbstractQueryImpl, ISQLQuery
+	public partial class SqlQueryImpl : AbstractQueryImpl, ISQLQuery, ISynchronizableSQLQuery
 	{
 		private readonly IList<INativeSQLQueryReturn> queryReturns;
 		private readonly ICollection<string> querySpaces;
 		private readonly bool callable;
 		private bool autoDiscoverTypes;
-		private readonly Lazy<HashSet<string>> addedQuerySpaces = new Lazy<HashSet<string>>(() => new HashSet<string>());
-
+		private readonly HashSet<string> addedQuerySpaces = new HashSet<string>();
 
 		/// <summary> Constructs a SQLQueryImpl given a sql query defined in the mappings. </summary>
 		/// <param name="queryDef">The representation of the defined sql-query. </param>
@@ -172,7 +171,7 @@ namespace NHibernate.Impl
 
 		public NativeSQLQuerySpecification GenerateQuerySpecification(IDictionary<string, TypedValue> parameters)
 		{
-			var allQuerySpaces=new List<string>(GetSynchronizedQuerySpaces());
+			var allQuerySpaces = new List<string>(GetSynchronizedQuerySpaces());
 			if (querySpaces != null)
 			{
 				allQuerySpaces.AddRange(querySpaces);
@@ -328,36 +327,35 @@ namespace NHibernate.Impl
 			yield return new SqlTranslator(sqlQuery, sessionImplementor.Factory);
 		}
 
-		public ISQLQuery AddSynchronizedQuerySpace(string querySpace)
+		public ISynchronizableSQLQuery AddSynchronizedQuerySpace(string querySpace)
 		{
-			addedQuerySpaces.Value.Add(querySpace);
+			addedQuerySpaces.Add(querySpace);
 			return this;
 		}
 
-		public ISQLQuery AddSynchronizedEntityName(string entityName)
+		public ISynchronizableSQLQuery AddSynchronizedEntityName(string entityName)
 		{
 			var persister = session.Factory.GetEntityPersister(entityName);
 			foreach (var querySpace in persister.QuerySpaces)
 			{
-				addedQuerySpaces.Value.Add(querySpace);
+				addedQuerySpaces.Add(querySpace);
 			}
 			return this;
 		}
 
-		public ISQLQuery AddSynchronizedEntityClass(System.Type entityType)
+		public ISynchronizableSQLQuery AddSynchronizedEntityClass(System.Type entityType)
 		{
 			var persister = session.Factory.GetEntityPersister(entityType.FullName);
 			foreach (var querySpace in persister.QuerySpaces)
 			{
-				addedQuerySpaces.Value.Add(querySpace);
+				addedQuerySpaces.Add(querySpace);
 			}
 			return this;
 		}
 
 		public IReadOnlyCollection<string> GetSynchronizedQuerySpaces()
 		{
-			return addedQuerySpaces.IsValueCreated ? addedQuerySpaces.Value : new HashSet<string>();
+			return addedQuerySpaces;
 		}
-		
 	}
 }

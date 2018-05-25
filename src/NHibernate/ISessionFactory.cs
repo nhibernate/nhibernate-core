@@ -4,11 +4,88 @@ using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.Connection;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.Metadata;
 using NHibernate.Stat;
 
 namespace NHibernate
 {
+	// 6.0 TODO: move below methods directly in ISessionFactory then remove SessionFactoryExtension
+	public static partial class SessionFactoryExtension
+	{
+		/// <summary>
+		/// Evict all entries from the process-level cache. This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy. Use with care.
+		/// </summary>
+		/// <param name="factory">The session factory.</param>
+		/// <param name="persistentClasses">The classes of the entities to evict.</param>
+		public static void Evict(this ISessionFactory factory, IEnumerable<System.Type> persistentClasses)
+		{
+			if (factory is SessionFactoryImpl sfi)
+			{
+				sfi.Evict(persistentClasses);
+			}
+			else
+			{
+				if (persistentClasses == null)
+					throw new ArgumentNullException(nameof(persistentClasses));
+				foreach (var @class in persistentClasses)
+				{
+					factory.Evict(@class);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Evict all entries from the second-level cache. This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy. Use with care.
+		/// </summary>
+		/// <param name="factory">The session factory.</param>
+		/// <param name="entityNames">The names of the entities to evict.</param>
+		public static void EvictEntity(this ISessionFactory factory, IEnumerable<string> entityNames)
+		{
+			if (factory is SessionFactoryImpl sfi)
+			{
+				sfi.EvictEntity(entityNames);
+			}
+			else
+			{
+				if (entityNames == null)
+					throw new ArgumentNullException(nameof(entityNames));
+				foreach (var name in entityNames)
+				{
+					factory.EvictEntity(name);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Evict all entries from the process-level cache. This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy. Use with care.
+		/// </summary>
+		/// <param name="factory">The session factory.</param>
+		/// <param name="roleNames">The names of the collections to evict.</param>
+		public static void EvictCollection(this ISessionFactory factory, IEnumerable<string> roleNames)
+		{
+			if (factory is SessionFactoryImpl sfi)
+			{
+				sfi.EvictCollection(roleNames);
+			}
+			else
+			{
+				if (roleNames == null)
+					throw new ArgumentNullException(nameof(roleNames));
+				foreach (var role in roleNames)
+				{
+					factory.EvictCollection(role);
+				}
+			}
+		}
+	}
+
 	/// <summary>
 	/// Creates <c>ISession</c>s.
 	/// </summary>
@@ -148,14 +225,6 @@ namespace NHibernate
 		void Evict(System.Type persistentClass);
 
 		/// <summary>
-		/// Evict all entries from the process-level cache.  This method occurs outside
-		/// of any transaction; it performs an immediate "hard" remove, so does not respect
-		/// any transaction isolation semantics of the usage strategy.  Use with care.
-		/// </summary>
-		/// <param name="persistentClasses"></param>
-		void Evict(IEnumerable<System.Type> persistentClasses);
-
-		/// <summary>
 		/// Evict an entry from the process-level cache.  This method occurs outside
 		/// of any transaction; it performs an immediate "hard" remove, so does not respect
 		/// any transaction isolation semantics of the usage strategy.  Use with care.
@@ -172,13 +241,6 @@ namespace NHibernate
 		void EvictEntity(string entityName);
 
 		/// <summary> 
-		/// Evict all entries from the second-level cache. This method occurs outside
-		/// of any transaction; it performs an immediate "hard" remove, so does not respect
-		/// any transaction isolation semantics of the usage strategy. Use with care.
-		/// </summary>
-		void EvictEntity(IEnumerable<string> entityNames);
-
-		/// <summary> 
 		/// Evict an entry from the second-level  cache. This method occurs outside
 		/// of any transaction; it performs an immediate "hard" remove, so does not respect
 		/// any transaction isolation semantics of the usage strategy. Use with care.
@@ -192,14 +254,6 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="roleName"></param>
 		void EvictCollection(string roleName);
-
-		/// <summary>
-		/// Evict all entries from the process-level cache.  This method occurs outside
-		/// of any transaction; it performs an immediate "hard" remove, so does not respect
-		/// any transaction isolation semantics of the usage strategy.  Use with care.
-		/// </summary>
-		/// <param name="roleNames"></param>
-		void EvictCollection(IEnumerable<string> roleNames);
 
 		/// <summary>
 		/// Evict an entry from the process-level cache.  This method occurs outside

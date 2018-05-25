@@ -165,7 +165,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public Task EvictAsync(IEnumerable<System.Type> persistentClasses, CancellationToken cancellationToken = default(CancellationToken))
+		public Task EvictAsync(IEnumerable<System.Type> persistentClasses, CancellationToken cancellationToken)
 		{
 			if (persistentClasses == null)
 				throw new ArgumentNullException(nameof(persistentClasses));
@@ -208,7 +208,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public Task EvictEntityAsync(IEnumerable<string> entityNames, CancellationToken cancellationToken = default(CancellationToken))
+		public Task EvictEntityAsync(IEnumerable<string> entityNames, CancellationToken cancellationToken)
 		{
 			if (entityNames == null)
 				throw new ArgumentNullException(nameof(entityNames));
@@ -224,10 +224,8 @@ namespace NHibernate.Impl
 				{
 					if (log.IsDebugEnabled())
 					{
-						foreach (var p in cacheGroup)
-						{
-							log.Debug("evicting second-level cache: " + p.EntityName);
-						}
+						log.Debug("evicting second-level cache for: {0}",
+					          string.Join(", ", cacheGroup.Select(p => p.EntityName)));
 					}
 					await (cacheGroup.Key.ClearAsync(cancellationToken)).ConfigureAwait(false);
 				}
@@ -311,7 +309,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public Task EvictCollectionAsync(IEnumerable<string> roleNames, CancellationToken cancellationToken = default(CancellationToken))
+		public Task EvictCollectionAsync(IEnumerable<string> roleNames, CancellationToken cancellationToken)
 		{
 			if (roleNames == null)
 				throw new ArgumentNullException(nameof(roleNames));
@@ -325,13 +323,10 @@ namespace NHibernate.Impl
 
 				foreach (var cacheGroup in roleNames.Select(GetCollectionPersister).Where(x => x.HasCache).GroupBy(x => x.Cache))
 				{
-				
 					if (log.IsDebugEnabled())
 					{
-						foreach (var p in cacheGroup)
-						{
-							log.Debug("evicting second-level cache: " + p.Role);
-						}
+						log.Debug("evicting second-level cache for: {0}",
+					          string.Join(", ", cacheGroup.Select(p => p.Role)));
 					}
 					await (cacheGroup.Key.ClearAsync(cancellationToken)).ConfigureAwait(false);
 				}
