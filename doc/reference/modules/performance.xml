@@ -539,7 +539,7 @@ using(var iter = session
             <para>
                 You may also enable batch fetching of collections. For example, if each <literal>Person</literal> has
                 a lazy collection of <literal>Cat</literal>s, and 10 persons are currently loaded in the
-                <literal>ISesssion</literal>, iterating through all persons will generate 10 <literal>SELECT</literal>s,
+                <literal>ISession</literal>, iterating through all persons will generate 10 <literal>SELECT</literal>s,
                 one for every call to <literal>person.Cats</literal>. If you enable batch fetching for the
                 <literal>Cats</literal> collection in the mapping of <literal>Person</literal>, NHibernate can pre-fetch
                 collections:
