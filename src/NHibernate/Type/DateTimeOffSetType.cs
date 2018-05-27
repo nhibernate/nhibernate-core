@@ -58,21 +58,18 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			var dateValue = (DateTimeOffset) value;
-			st.Parameters[index].Value =
-				new DateTimeOffset(dateValue.Ticks, dateValue.Offset);
+			st.Parameters[index].Value = value;
 		}
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
 			{
-				var dbValue = (DateTimeOffset) rs[index];
-				return new DateTimeOffset(dbValue.Ticks, dbValue.Offset);
+				return (DateTimeOffset) rs[index];
 			}
 			catch (Exception ex)
 			{
-				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[index]), ex);
+				throw new FormatException(string.Format("Input '{0}' was not in the correct format.", rs[index]), ex);
 			}
 		}
 
