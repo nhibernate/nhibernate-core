@@ -4,9 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.Serialization;
-using System.Security;
 using NHibernate.Intercept;
-using NHibernate.Proxy.DynamicProxy;
 using NHibernate.Util;
 
 namespace NHibernate.Proxy
@@ -15,8 +13,6 @@ namespace NHibernate.Proxy
 	{
 		private const MethodAttributes constructorAttributes =
 			MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName;
-
-		private static readonly ConstructorInfo ObjectConstructor = typeof(object).GetConstructor(System.Type.EmptyTypes);
 
 		private static readonly System.Type FieldInterceptorAccessorType = typeof(IFieldInterceptorAccessor);
 		private static readonly PropertyInfo AccessorTypeFieldInterceptorProperty =
@@ -27,11 +23,6 @@ namespace NHibernate.Proxy
 		private static readonly System.Type AbstractFieldInterceptorType = typeof(AbstractFieldInterceptor);
 		private static readonly FieldInfo AbstractFieldInterceptorInvokeImplementationField =
 			AbstractFieldInterceptorType.GetField(nameof(AbstractFieldInterceptor.InvokeImplementation));
-		private static readonly IProxyAssemblyBuilder ProxyAssemblyBuilder = new DefaultProxyAssemblyBuilder();
-
-		private static readonly ConstructorInfo SecurityCriticalAttributeConstructor = typeof(SecurityCriticalAttribute).GetConstructor(System.Type.EmptyTypes);
-		private static readonly MethodInfo SerializableGetObjectDataMethod = typeof(ISerializable).GetMethod(nameof(ISerializable.GetObjectData));
-		private static readonly MethodInfo SerializationInfoSetTypeMethod = ReflectHelper.GetMethod<SerializationInfo>(si => si.SetType(null));
 
 		private static readonly System.Type FieldInterceptorObjectReferenceType = typeof(FieldInterceptorObjectReference);
 		private static readonly ConstructorInfo FieldInterceptorObjectReferenceConstructor =
@@ -53,8 +44,8 @@ namespace NHibernate.Proxy
 
 			var name = new AssemblyName(assemblyName);
 
-			var assemblyBuilder = ProxyAssemblyBuilder.DefineDynamicAssembly(AppDomain.CurrentDomain, name);
-			var moduleBuilder = ProxyAssemblyBuilder.DefineDynamicModule(assemblyBuilder, moduleName);
+			var assemblyBuilder = ProxyBuilderHelper.DefineDynamicAssembly(AppDomain.CurrentDomain, name);
+			var moduleBuilder = ProxyBuilderHelper.DefineDynamicModule(assemblyBuilder, moduleName);
 
 			const TypeAttributes typeAttributes = TypeAttributes.AutoClass | TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.BeforeFieldInit;
 
@@ -83,22 +74,19 @@ namespace NHibernate.Proxy
 
 			ImplementConstructor(typeBuilder, parentType, proxyInfoField);
 
-			foreach (var method in ProxyFactory.GetProxiableMethods(baseType, interfaces.Except(new[] { typeof(ISerializable) })))
+			// Provide a custom implementation of ISerializable instead of redirecting it back to the interceptor
+			foreach (var method in ProxyBuilderHelper.GetProxiableMethods(baseType, interfaces.Except(new[] { typeof(ISerializable) })))
 			{
 				CreateProxiedMethod(typeBuilder, method, fieldInterceptorField);
 			}
 
-			// Make the proxy serializable
-			var serializableConstructor = typeof(SerializableAttribute).GetConstructor(System.Type.EmptyTypes);
-			var customAttributeBuilder = new CustomAttributeBuilder(serializableConstructor, Array.Empty<object>());
-			typeBuilder.SetCustomAttribute(customAttributeBuilder);
-
+			ProxyBuilderHelper.MakeProxySerializable(typeBuilder);
 			ImplementDeserializationConstructor(typeBuilder, parentType);
 			ImplementGetObjectData(typeBuilder, proxyInfoField, fieldInterceptorField, parentType);
 
 			var proxyType = typeBuilder.CreateTypeInfo();
 
-			ProxyAssemblyBuilder.Save(assemblyBuilder);
+			ProxyBuilderHelper.Save(assemblyBuilder);
 
 			return proxyType;
 		}
@@ -135,7 +123,7 @@ namespace NHibernate.Proxy
 
 			var IL = constructor.GetILGenerator();
 
-			CallDefaultBaseConstructor(IL, parentType);
+			ProxyBuilderHelper.CallDefaultBaseConstructor(IL, parentType);
 
 			// __proxyInfo == proxyInfo;
 			IL.Emit(OpCodes.Ldarg_0);
@@ -165,7 +153,7 @@ namespace NHibernate.Proxy
 					// Throw new InvalidOperationException(<message>);
 					IL.Emit(
 						OpCodes.Ldstr,
-						$"Proxy for class {parentType.FullName} cannot be serialized because the class implements " +
+						$"Proxy for class {parentType.FullName} cannot be deserialized because the class implements " +
 						$"{nameof(ISerializable)} without having a deserialization constructor (see CA2229).");
 					IL.Emit(OpCodes.Newobj, InvalidOperationWithMessageConstructor);
 					IL.Emit(OpCodes.Throw);
@@ -179,38 +167,15 @@ namespace NHibernate.Proxy
 				}
 			}
 			else
-				CallDefaultBaseConstructor(IL, parentType);
+				ProxyBuilderHelper.CallDefaultBaseConstructor(IL, parentType);
 
 			// Everything else is done in FieldInterceptorObjectReference.
 			IL.Emit(OpCodes.Ret);
 		}
 
-		private static void CallDefaultBaseConstructor(ILGenerator il, System.Type parentType)
-		{
-			var baseConstructor = parentType.GetConstructor(
-				BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-				null,
-				System.Type.EmptyTypes,
-				null);
-			// if there is no default constructor, or the default constructor is private/internal, call System.Object constructor
-			// this works, but the generated assembly will fail PeVerify (cannot use in medium trust for example)
-			if (baseConstructor == null || baseConstructor.IsPrivate || baseConstructor.IsAssembly)
-				baseConstructor = ObjectConstructor;
-
-			il.Emit(OpCodes.Ldarg_0);
-			il.Emit(OpCodes.Call, baseConstructor);
-		}
-
 		private static void ImplementGetObjectData(TypeBuilder typeBuilder, FieldInfo proxyInfoField, FieldInfo fieldInterceptorField, System.Type parentType)
 		{
-			const MethodAttributes attributes =
-				MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.Virtual;
-			
-			var parameterTypes = new[] { typeof (SerializationInfo), typeof (StreamingContext) };
-
-			var methodBuilder = typeBuilder.DefineMethod(nameof(ISerializable.GetObjectData), attributes, typeof(void), parameterTypes);
-			methodBuilder.SetImplementationFlags(MethodImplAttributes.IL | MethodImplAttributes.Managed);
-			methodBuilder.SetCustomAttribute(new CustomAttributeBuilder(SecurityCriticalAttributeConstructor, Array.Empty<object>()));
+			var methodBuilder = ProxyBuilderHelper.GetObjectDataMethodBuilder(typeBuilder);
 
 			var IL = methodBuilder.GetILGenerator();
 			IL.DeclareLocal(FieldInterceptorObjectReferenceType);
@@ -219,7 +184,7 @@ namespace NHibernate.Proxy
 			IL.Emit(OpCodes.Ldarg_1);
 			IL.Emit(OpCodes.Ldtoken, FieldInterceptorObjectReferenceType);
 			IL.Emit(OpCodes.Call, ReflectionCache.TypeMethods.GetTypeFromHandle);
-			IL.Emit(OpCodes.Callvirt, SerializationInfoSetTypeMethod);
+			IL.Emit(OpCodes.Callvirt, ProxyBuilderHelper.SerializationInfoSetTypeMethod);
 
 			// var objectReference = new FieldInterceptorObjectReference(this.__proxyInfo, this.__fieldInterceptor));
 			IL.Emit(OpCodes.Ldarg_0);
@@ -233,17 +198,30 @@ namespace NHibernate.Proxy
 			IL.Emit(OpCodes.Ldloc_0);
 			IL.Emit(OpCodes.Ldarg_1);
 			IL.Emit(OpCodes.Ldarg_2);
-			IL.Emit(OpCodes.Callvirt, SerializableGetObjectDataMethod);
+			IL.Emit(OpCodes.Callvirt, ProxyBuilderHelper.SerializableGetObjectDataMethod);
 
 			if (typeof(ISerializable).IsAssignableFrom(parentType))
 			{
-				// base.GetObjectData(info, context);
 				var parentGetObjectData = parentType.GetMethod(
 					nameof(ISerializable.GetObjectData),
 					BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
 					null,
-					parameterTypes,
+					new[] { typeof (SerializationInfo), typeof (StreamingContext) },
 					null);
+				if (parentGetObjectData == null)
+				{
+					// Throw new InvalidOperationException(<message>);
+					IL.Emit(
+						OpCodes.Ldstr,
+						$"Proxy for class {parentType.FullName} cannot be serialized because the class implements " +
+						$"{nameof(ISerializable)} without having a public or protected GetObjectData.");
+					IL.Emit(OpCodes.Newobj, InvalidOperationWithMessageConstructor);
+					IL.Emit(OpCodes.Throw);
+					typeBuilder.DefineMethodOverride(methodBuilder, ProxyBuilderHelper.SerializableGetObjectDataMethod);
+					return;
+				}
+
+				// base.GetObjectData(info, context);
 				IL.Emit(OpCodes.Ldarg_0);
 				IL.Emit(OpCodes.Ldarg_1);
 				IL.Emit(OpCodes.Ldarg_2);
@@ -268,7 +246,7 @@ namespace NHibernate.Proxy
 
 			IL.Emit(OpCodes.Ret);
 
-			typeBuilder.DefineMethodOverride(methodBuilder, SerializableGetObjectDataMethod);
+			typeBuilder.DefineMethodOverride(methodBuilder, ProxyBuilderHelper.SerializableGetObjectDataMethod);
 		}
 
 		private static void ImplementGetFieldInterceptor(TypeBuilder typeBuilder, MethodInfo method, FieldInfo fieldInterceptorField)
@@ -331,7 +309,7 @@ namespace NHibernate.Proxy
 				}
 				return propValue;
 			 */
-			var methodOverride = DefaultyProxyMethodBuilder.GenerateMethodSignature(getter.Name, getter, typeBuilder);
+			var methodOverride = ProxyBuilderHelper.GenerateMethodSignature(getter.Name, getter, typeBuilder);
 
 			var IL = methodOverride.GetILGenerator();
 			IL.DeclareLocal(getter.ReturnType); // propValue
@@ -394,7 +372,7 @@ namespace NHibernate.Proxy
 				}
 				base.<setter>(value);
 			 */
-			var methodOverride = DefaultyProxyMethodBuilder.GenerateMethodSignature(setter.Name, setter, typeBuilder);
+			var methodOverride = ProxyBuilderHelper.GenerateMethodSignature(setter.Name, setter, typeBuilder);
 
 			var IL = methodOverride.GetILGenerator();
 

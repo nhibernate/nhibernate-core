@@ -3,6 +3,7 @@ using NHibernate.Tuple;
 
 namespace NHibernate.Test.DynamicEntity.Tuplizer
 {
+	[Obsolete("Require dynamic proxies")]
 	public class MyEntityInstantiator : IInstantiator
 	{
 		private readonly System.Type entityType;

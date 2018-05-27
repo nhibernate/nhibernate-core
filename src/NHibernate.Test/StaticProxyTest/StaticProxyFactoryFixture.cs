@@ -9,8 +9,6 @@ using NUnit.Framework;
 
 #if NETFX
 using System.Reflection;
-using System.Reflection.Emit;
-using NHibernate.Proxy.DynamicProxy;
 using NHibernate.Test.ProxyTest;
 #else
 using System.Globalization;
@@ -22,13 +20,24 @@ namespace NHibernate.Test.StaticProxyTest
 {
 	public class StaticProxyFactoryFixture
 	{
-		internal interface ISomething
+		internal interface IInternal
 		{
 			int Id { get; }
 		}
 
 		[Serializable]
-		public class TestClass : ISomething
+		public class InternalInterfaceTestClass : IInternal
+		{
+			public virtual int Id { get; set; }
+		}
+
+		public interface IPublic
+		{
+			int Id { get; }
+		}
+
+		[Serializable]
+		public class PublicInterfaceTestClass : IPublic
 		{
 			public virtual int Id { get; set; }
 		}
@@ -54,21 +63,56 @@ namespace NHibernate.Test.StaticProxyTest
 			}
 		}
 
+		[Serializable]
+		public class CustomExplicitSerializationClass : ISerializable
+		{
+			public virtual int Id { get; set; }
+
+			public CustomExplicitSerializationClass()
+			{
+			}
+
+			protected CustomExplicitSerializationClass(SerializationInfo info, StreamingContext context)
+			{
+				Id = info.GetInt32(nameof(Id));
+			}
+
+			[SecurityCritical]
+			void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+			{
+				GetObjectData(info, context);
+			}
+
+			protected virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+			{
+				info.AddValue(nameof(Id), Id);
+			}
+		}
+
 		[Test]
-		public void CanCreateProxyForClassWithInternalInterface()
+		public void VerifyProxyForClassWithInternalInterface()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(TestClass).FullName, typeof(TestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
-			var proxy = factory.GetProxy(1, null);
-			Assert.That(proxy, Is.Not.Null);
+			factory.PostInstantiate(typeof(InternalInterfaceTestClass).FullName, typeof(InternalInterfaceTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+
+#if NETFX
+			VerifyGeneratedAssembly(
+				() =>
+				{
+#endif
+					var proxy = factory.GetProxy(1, null);
+					Assert.That(proxy, Is.Not.Null);
+#if NETFX
+				});
+#endif
 		}
 
 		[Test]
 		public void CanSerializeFieldInterceptorProxy()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(TestClass).FullName, typeof(TestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
-			var proxy = (TestClass) factory.GetFieldInterceptionProxy(new TestClass());
+			factory.PostInstantiate(typeof(PublicInterfaceTestClass).FullName, typeof(PublicInterfaceTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+			var proxy = (PublicInterfaceTestClass) factory.GetFieldInterceptionProxy(new PublicInterfaceTestClass());
 			proxy.Id = 1;
 
 			var serializer = GetFormatter();
@@ -76,7 +120,7 @@ namespace NHibernate.Test.StaticProxyTest
 			{
 				serializer.Serialize(memoryStream, proxy);
 				memoryStream.Seek(0L, SeekOrigin.Begin);
-				proxy = (TestClass) serializer.Deserialize(memoryStream);
+				proxy = (PublicInterfaceTestClass) serializer.Deserialize(memoryStream);
 				Assert.That(proxy.Id, Is.EqualTo(1));
 			}
 		}
@@ -99,74 +143,60 @@ namespace NHibernate.Test.StaticProxyTest
 			}
 		}
 
-#if NETFX
+		[Test]
+		public void CanSerializeFieldInterceptorProxyWithExplicitISerializableEntity()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(typeof(CustomExplicitSerializationClass).FullName, typeof(CustomExplicitSerializationClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+			var proxy = (CustomExplicitSerializationClass) factory.GetFieldInterceptionProxy(new CustomExplicitSerializationClass());
+			proxy.Id = 2;
+
+			var serializer = GetFormatter();
+			using (var memoryStream = new MemoryStream())
+			{
+				serializer.Serialize(memoryStream, proxy);
+				memoryStream.Seek(0L, SeekOrigin.Begin);
+				proxy = (CustomExplicitSerializationClass) serializer.Deserialize(memoryStream);
+				Assert.That(proxy.Id, Is.EqualTo(2));
+			}
+		}
+
 		[Test]
 		public void VerifyFieldInterceptorProxy()
 		{
-			var proxyBuilderType = typeof(StaticProxyFactory).Assembly.GetType("NHibernate.Proxy.FieldInterceptorProxyBuilder", true);
-			var proxyBuilder = proxyBuilderType.GetMethod("CreateProxyType");
-			Assert.That(proxyBuilder, Is.Not.Null, "Failed to find method CreateProxyType");
-			var proxyBuilderAssemblyBuilder = proxyBuilderType.GetField("ProxyAssemblyBuilder", BindingFlags.NonPublic | BindingFlags.Static);
-			Assert.That(proxyBuilderAssemblyBuilder, Is.Not.Null, "Failed to find assembly builder field");
-
-			const string assemblyName = "VerifyFieldInterceptorProxy";
-			var assemblyBuilder = new SavingProxyAssemblyBuilder(assemblyName);
-
-			var backupAssemblyBuilder = proxyBuilderAssemblyBuilder.GetValue(null);
-			proxyBuilderAssemblyBuilder.SetValue(null, assemblyBuilder);
-			try
-			{
-				proxyBuilder.Invoke(null, new object[] { typeof(TestClass) });
-			}
-			finally
-			{
-				proxyBuilderAssemblyBuilder.SetValue(null, backupAssemblyBuilder);
-			}
-
-			new PeVerifier($"{assemblyName}.dll").AssertIsValid();
-		}
-
-		public class SavingProxyAssemblyBuilder : IProxyAssemblyBuilder
-		{
-			private readonly string _assemblyName;
-
-			public SavingProxyAssemblyBuilder(string assemblyName)
-			{
-				_assemblyName = assemblyName;
-			}
-
-			public AssemblyBuilder DefineDynamicAssembly(AppDomain appDomain, AssemblyName name)
-			{
-				return appDomain.DefineDynamicAssembly(
-					new AssemblyName(_assemblyName),
-					AssemblyBuilderAccess.RunAndSave,
-					TestContext.CurrentContext.TestDirectory);
-			}
-
-			public ModuleBuilder DefineDynamicModule(AssemblyBuilder assemblyBuilder, string moduleName)
-			{
-				return assemblyBuilder.DefineDynamicModule(moduleName, $"{_assemblyName}.mod", true);
-			}
-
-			public void Save(AssemblyBuilder assemblyBuilder)
-			{
-				assemblyBuilder.Save($"{_assemblyName}.dll");
-			}
-		}
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(typeof(InternalInterfaceTestClass).FullName, typeof(InternalInterfaceTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+#if NETFX
+			VerifyGeneratedAssembly(
+				() =>
+				{
 #endif
-
-		public interface IPublicTest
-		{
-			int Id { get; }
-		}
-
-		public class PublicInterfaceTestClass : IPublicTest
-		{
-			public virtual int Id { get; set; }
+					var fieldProxy = factory.GetFieldInterceptionProxy(new InternalInterfaceTestClass());
+					Assert.That(fieldProxy, Is.InstanceOf<InternalInterfaceTestClass>());
+#if NETFX
+				});
+#endif
 		}
 
 		[Test]
-		public void CanGenerateValidFieldInterceptorProxyWithAdditionalInterface()
+		public void VerifyFieldInterceptorProxyWithISerializableEntity()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(typeof(CustomSerializationClass).FullName, typeof(CustomSerializationClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+#if NETFX
+			VerifyGeneratedAssembly(
+				() =>
+				{
+#endif
+					var fieldProxy = factory.GetFieldInterceptionProxy(new CustomSerializationClass());
+					Assert.That(fieldProxy, Is.InstanceOf<CustomSerializationClass>());
+#if NETFX
+				});
+#endif
+		}
+
+		[Test]
+		public void VerifyFieldInterceptorProxyWithAdditionalInterface()
 		{
 			var factory = new StaticProxyFactory();
 			factory.PostInstantiate(
@@ -177,11 +207,20 @@ namespace NHibernate.Test.StaticProxyTest
 				// having an additional interface in the interface list, instead of just having INHibernateProxy.
 				// (Quite a loosy semantic...)
 				// The field interceptor proxy ignores this setting, as it does not delegate its implementation
-				// to an instance of the persistentClass, and so cannot implement interface methods.
-				new HashSet<System.Type> {typeof(INHibernateProxy), typeof(IPublicTest)},
+				// to an instance of the persistentClass, and so cannot implement interface methods if it does not
+				// inherit the persitentClass.
+				new HashSet<System.Type> {typeof(INHibernateProxy), typeof(IPublic)},
 				null, null, null);
-			var fieldProxy = factory.GetFieldInterceptionProxy(null);
-			Assert.That(fieldProxy, Is.InstanceOf<PublicInterfaceTestClass>());
+#if NETFX
+			VerifyGeneratedAssembly(
+				() =>
+				{
+#endif
+					var fieldProxy = factory.GetFieldInterceptionProxy(new PublicInterfaceTestClass());
+					Assert.That(fieldProxy, Is.InstanceOf<PublicInterfaceTestClass>());
+#if NETFX
+				});
+#endif
 		}
 
 		private static BinaryFormatter GetFormatter()
@@ -201,5 +240,28 @@ namespace NHibernate.Test.StaticProxyTest
 			};
 #endif
 		}
+
+#if NETFX
+		private static void VerifyGeneratedAssembly(System.Action assemblyGenerator)
+		{
+			var proxyBuilderHelperType = typeof(StaticProxyFactory).Assembly.GetType("NHibernate.Proxy.ProxyBuilderHelper", true);
+			var enableSave = proxyBuilderHelperType.GetMethod("EnableDynamicAssemblySaving", BindingFlags.NonPublic | BindingFlags.Static);
+			Assert.That(enableSave, Is.Not.Null, "Failed to find method EnableDynamicAssemblySaving");
+
+			const string assemblyName = "VerifyFieldInterceptorProxy.dll";
+			var assemblyPath = Path.Combine(TestContext.CurrentContext.TestDirectory, assemblyName);
+			enableSave.Invoke(null, new object[] { true, assemblyPath });
+			try
+			{
+				assemblyGenerator();
+			}
+			finally
+			{
+				enableSave.Invoke(null, new object[] { false, null });
+			}
+
+			new PeVerifier(assemblyName).AssertIsValid();
+		}
+#endif
 	}
 }

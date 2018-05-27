@@ -6,6 +6,7 @@ using NHibernate.Intercept;
 
 namespace NHibernate.Test.DynamicProxyTests
 {
+	[Obsolete]
 	public class LazyFieldInterceptorTests
 	{
 		[Serializable]

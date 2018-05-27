@@ -1,7 +1,10 @@
+using System;
 using NHibernate.Proxy;
 
 namespace NHibernate.Bytecode
 {
+	// Since v5.2
+	[Obsolete("Use StaticProxyFactoryFactory instead")]
 	public class DefaultProxyFactoryFactory : IProxyFactoryFactory
 	{
 		#region IProxyFactoryFactory Members

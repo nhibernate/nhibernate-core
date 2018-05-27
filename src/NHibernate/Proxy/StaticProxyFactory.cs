@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using NHibernate.Engine;
 using NHibernate.Intercept;
-using NHibernate.Proxy.DynamicProxy;
 
 namespace NHibernate.Proxy
 {
