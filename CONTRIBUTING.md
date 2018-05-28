@@ -12,6 +12,8 @@ Visit [https://github.com/nhibernate/nhibernate-core/issues][1] and search for y
 
 Before creating an issue, please do your best to verify the existence of the problem. This reduces noise in the issue tracker and helps conserve the resources of the team for more useful tasks. Note the issue number for future steps.
 
+If you are familiar with NHibernate inner working and want to directly fix the issue, you may also contribute a PR without writing a separated issue, provided you describe the fixed issue in the PR.
+
 ## Fork and Clone from GitHub
 
 The main GitHub repository is at [https://github.com/nhibernate/nhibernate-core][2]. If you plan to contribute your test case or improvement back to NHibernate, you should visit that page and fork the repository so you can commit your own changes and then submit a pull request. 
@@ -44,10 +46,11 @@ The main GitHub repository is at [https://github.com/nhibernate/nhibernate-core]
 In most cases, you will be adding your test to the NHibernate.Test project. If there is a test that only works with VisualBasic, then add it to the NHibernate.Test.VisualBasic project instead. 
 
 1.  Open **NHibernate.sln** from the src folder.
-2.  If adding a C# test, go to the NHSpecificTest folder in the NHibernate.Test project. If adding a VisualBasic test, go to the Issues folder in the NHibernate.Test.VisualBasic project.
-3.  Copy and paste the GH0000 folder to create a duplicate test ("Copy of GH0000").
-4.  Replace the four instances of GH0000 with your issue number.
-5.  Edit the test as you see fit. Don't commit yet; there are details in a later step.
+2.  If adding a VisualBasic test, go to the Issues folder in the NHibernate.Test.VisualBasic project. If adding a C# test, go to the NHibernate.Test project.
+3.  C# only: either find the suitable feature folder and add your test there without following the two next points, or go to the NHSpecificTest folder.
+4.  Copy and paste the GH0000 folder to create a duplicate test ("Copy of GH0000").
+5.  Replace the four instances of GH0000 with your issue number.
+6.  Edit the test as you see fit. Don't commit yet; there are details in a later step.
 
 Do not use anymore the NHxxxx naming, they match issue numbers from https://nhibernate.jira.com/
 
@@ -63,7 +66,9 @@ NHibernate has migrated its issue tracking from Jira to GitHub, and using the Ji
 4.  Select and run the test.
 5.  You can also make the test project your startup project and it will run NUnit when you press F5.
 
-### Third Party NUnit Test Runner This would be something like ReSharper. 
+### Third Party NUnit Test Runner
+
+This could be something like ReSharper.
 
 1.  Sometimes tests fail when run under x64. If required (ex. SQLite and Firebird), go to the project properties Build tab and set the target to x86.
 2.  Next, just run the tests as usual.
@@ -91,11 +96,11 @@ Please note that some tests assume a case insensitive accent sensitive database 
 
 ## Submit a Pull Request
 
-If you are fixing an existing issue, please make sure to include this issue number in your GitHub pull request. 
+If you are fixing an existing issue, please make sure to include this issue number in your GitHub pull request. (Use the # prefix instead of GH for automatically having a link to it.)
 
-We use tabs for code indentation, not spaces. As this is not the default in Visual Studio, you will need to reconfigure Visual Studio to indent with tabs whenever you work on the NHibernate codebase. To make this easier, NHibernate has an [editorconfig][3] configuration file to switch Visual Studio automatically between tabs and spaces mode. It is recommended you install editorconfig from the Visual Studio Extension Manager.
+We use tabs for code indentation, not spaces. To make this easier, NHibernate has an [editorconfig][3] configuration file to switch Visual Studio automatically between tabs and spaces mode.
 
-After submitting your pull request, come back later to check the outcome of automated builds. If some have failed, they will be listed in your pull request with a link to the corresponding TeamCity build. Find out in the build which tests are newly failing, and take appropriate action. Some of those builds have many known failing tests, which does not trigger a build failure. A *Comparison.txt* file in build Artifacts may help finding which failing tests are not known failing tests and must be addressed.
+After submitting your pull request, come back later to check the outcome of automated builds. If some have failed, they will be listed in your pull request with a link to the corresponding TeamCity build. Find out in the build which tests are newly failing, and take appropriate action. Some of those builds may have known failing tests, which does not trigger a build failure. In this case a *Comparison.txt* file in build Artifacts may help finding which failing tests are not known failing tests and must be addressed.
 
 ## Further Discussion
 
