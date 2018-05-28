@@ -38,6 +38,8 @@ namespace NHibernate.Engine
 		/// <see langword="false" /> otherwise.</param>
 		public TypedValue(IType type, object value, bool isList)
 		{
+			if (isList && value != null && !(value is IEnumerable))
+				throw new ArgumentException($"{nameof(value)} must be an {nameof(IEnumerable)} when {nameof(isList)} is true", nameof(value));
 			this.type = type;
 			this.value = value;
 			comparer = isList ? (IEqualityComparer<TypedValue>) new ParameterListComparer() : new DefaultComparer();
@@ -78,7 +80,10 @@ namespace NHibernate.Engine
 		{
 			public bool Equals(TypedValue x, TypedValue y)
 			{
-				if (y == null) return false;
+				if (ReferenceEquals(x, y))
+					return true;
+				if (x == null || y == null)
+					return false;
 				if (x.type.ReturnedClass != y.type.ReturnedClass)
 					return false;
 				return IsEquals(x.type, x.value as IEnumerable, y.value as IEnumerable);
@@ -152,7 +157,10 @@ namespace NHibernate.Engine
 		{
 			public bool Equals(TypedValue x, TypedValue y)
 			{
-				if (y == null) return false;
+				if (ReferenceEquals(x, y))
+					return true;
+				if (x == null || y == null)
+					return false;
 				if (x.type.ReturnedClass != y.type.ReturnedClass)
 					return false;
 				return x.type.IsEqual(y.value, x.value);
