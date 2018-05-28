@@ -599,5 +599,22 @@ namespace NHibernate.Test.Linq
 				return Task.FromException<object>(ex);
 			}
 		}
+
+		[Test]
+		public Task WhereEquatableEqualAsync()
+		{
+			try
+			{
+				var query = from item in db.Shippers
+							where ((IEquatable<Guid>) item.Reference).Equals(Guid.Empty)
+							select item;
+
+				return ObjectDumper.WriteAsync(query);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
 	}
 }
