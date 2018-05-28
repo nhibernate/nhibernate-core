@@ -17,15 +17,32 @@ namespace NHibernate.Engine
 		private readonly object value;
 		private readonly IEqualityComparer<TypedValue> comparer;
 
-		public TypedValue(IType type, object value)
+		/// <summary>
+		/// Constructor for typed value that may represent a simple value or a list value (for a parameter list).
+		/// If knowing what is value, use <see cref="TypedValue(IType, object, bool)"/> instead.
+		/// </summary>
+		/// <param name="type">The type of the value (or of its elements if it is a list value)</param>
+		/// <param name="value">The value.</param>
+		/// <remarks>The logic for infering if the value should be considered as a list value is minimal and will not
+		/// catch all cases, like hashset.</remarks>
+		public TypedValue(IType type, object value) : this (type, value, !type.IsCollectionType && value is ICollection && !type.ReturnedClass.IsArray)
 		{
+		}
+
+		/// <summary>
+		/// Construct a typed value.
+		/// </summary>
+		/// <param name="type">The type of the value (or of its elements if it is a list value)</param>
+		/// <param name="value">The value.</param>
+		/// <param name="isList"><see langword="true" /> if the value is a list value (for a parameter list),
+		/// <see langword="false" /> otherwise.</param>
+		public TypedValue(IType type, object value, bool isList)
+		{
+			if (isList && value != null && !(value is IEnumerable))
+				throw new ArgumentException($"{nameof(value)} must be an {nameof(IEnumerable)} when {nameof(isList)} is true", nameof(value));
 			this.type = type;
 			this.value = value;
-			var values = value as ICollection;
-			if (!type.IsCollectionType && values != null && !type.ReturnedClass.IsArray)
-				comparer = new ParameterListComparer();
-			else
-				comparer = new DefaultComparer();
+			comparer = isList ? (IEqualityComparer<TypedValue>) new ParameterListComparer() : new DefaultComparer();
 		}
 
 		public object Value
@@ -63,34 +80,37 @@ namespace NHibernate.Engine
 		{
 			public bool Equals(TypedValue x, TypedValue y)
 			{
-				if (y == null) return false;
+				if (ReferenceEquals(x, y))
+					return true;
+				if (x == null || y == null)
+					return false;
 				if (x.type.ReturnedClass != y.type.ReturnedClass)
 					return false;
-				return IsEquals(x.type, x.value as ICollection, y.value as ICollection);
+				return IsEquals(x.type, x.value as IEnumerable, y.value as IEnumerable);
 			}
 
 			public int GetHashCode(TypedValue obj)
 			{
-				return GetHashCode(obj.type, obj.value as ICollection);
+				return GetHashCode(obj.type, obj.value as IEnumerable);
 			}
 
-			private int GetHashCode(IType type, ICollection values)
+			private int GetHashCode(IType type, IEnumerable values)
 			{
 				if (values == null)
 					return 0;
 
 				unchecked
 				{
-					int result = 0;
+					var result = 19;
 
 					foreach (object obj in values)
-						result += obj == null ? 0 : type.GetHashCode(obj);
+						result = 37 * result + (obj == null ? 0 : type.GetHashCode(obj));
 
 					return result;
 				}
 			}
 
-			private bool IsEquals(IType type, ICollection x, ICollection y)
+			private bool IsEquals(IType type, IEnumerable x, IEnumerable y)
 			{
 				if (x == y)
 					return true;
@@ -98,7 +118,7 @@ namespace NHibernate.Engine
 				if (x == null || y == null)
 					return false;
 
-				if (x.Count != y.Count)
+				if (x is ICollection xCol && y is ICollection yCol && xCol.Count != yCol.Count)
 					return false;
 
 				var ye = y.GetEnumerator();
@@ -106,9 +126,19 @@ namespace NHibernate.Engine
 				{
 					foreach (var xItem in x)
 					{
-						ye.MoveNext();
+						if (!ye.MoveNext())
+						{
+							// y has less elements than x
+							return false;
+						}
 						if (!type.IsEqual(xItem, ye.Current))
 							return false;
+					}
+
+					if (ye.MoveNext())
+					{
+						// y has more elements than x
+						return false;
 					}
 				}
 				finally
@@ -127,7 +157,10 @@ namespace NHibernate.Engine
 		{
 			public bool Equals(TypedValue x, TypedValue y)
 			{
-				if (y == null) return false;
+				if (ReferenceEquals(x, y))
+					return true;
+				if (x == null || y == null)
+					return false;
 				if (x.type.ReturnedClass != y.type.ReturnedClass)
 					return false;
 				return x.type.IsEqual(y.value, x.value);
