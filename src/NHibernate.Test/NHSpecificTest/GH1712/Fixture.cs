@@ -55,5 +55,23 @@ namespace NHibernate.Test.NHSpecificTest.GH1712
 					Query("GenericEntityWithTimeSpan", TimeSpan.FromDays(1)));
 			}
 		}
+
+		[Test]
+		public void PerformingAQueryUsingIEquatableEntityShouldNotThrowEquals()
+		{
+			using (var session = Sfi.OpenSession())
+			{
+				GenericEntity<TId> Query<TId>(string name, TId id) where TId : IEquatable<TId>
+				{
+					var entity = new GenericEntity<TId> { Id = id };
+					return (from e in session.Query<GenericEntity<TId>>(name)
+					    where e.Equals(entity)
+					    select e).FirstOrDefault();
+				}
+
+				Assert.IsInstanceOf(typeof(GenericEntity<Guid>),
+					Query("GenericEntityWithGuid", Guid.Parse("093D2C0D-C1A4-42CB-95FC-1039CD0C00B6")));
+			}
+		}
 	}
 }

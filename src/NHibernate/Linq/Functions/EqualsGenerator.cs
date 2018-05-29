@@ -73,4 +73,25 @@ namespace NHibernate.Linq.Functions
 				visitor.Visit(rhs).ToArithmeticExpression());
 		}
 	}
+
+	public class EquatableRuntimeHqlGenerator : IRuntimeMethodHqlGenerator
+	{
+		private readonly IHqlGeneratorForMethod equalsGenerator = new EqualsGenerator();
+
+		#region IRuntimeMethodHqlGenerator Members
+
+		public bool SupportsMethod(MethodInfo method)
+		{
+			// the check about the name is to make things a little bit faster
+			return method != null && method.Name == nameof(IEquatable<object>.Equals) && method.IsMethodOf(typeof(IEquatable<>));
+		}
+
+		public IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)
+		{
+			return equalsGenerator;
+		}
+
+		#endregion
+	}
+
 }
