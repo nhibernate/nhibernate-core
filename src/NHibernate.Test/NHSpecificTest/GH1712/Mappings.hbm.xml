@@ -17,4 +17,9 @@
 			<generator class="assigned" />
 		</id>
 	</class>
+	<class name="GenericEntity`1[[System.TimeSpan]]" entity-name="GenericEntityWithTimeSpan" table="GenericEntityWithTimeSpan">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+	</class>
 </hibernate-mapping>

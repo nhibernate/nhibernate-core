@@ -16,6 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1712
 					Guid.Parse("093D2C0D-C1A4-42CB-95FC-1039CD0C00B6"));
 				session.Save("GenericEntityWithLong", new GenericEntity<long>(), 42L);
 				session.Save("GenericEntityWithString", new GenericEntity<string>(), "Bob l'éponge");
+				session.Save("GenericEntityWithTimeSpan", new GenericEntity<TimeSpan>(), TimeSpan.FromDays(1));
 				tx.Commit();
 			}
 		}
@@ -29,6 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1712
 				session.Delete("from GenericEntityWithGuid");
 				session.Delete("from GenericEntityWithLong");
 				session.Delete("from GenericEntityWithString");
+				session.Delete("from GenericEntityWithTimeSpan");
 				tx.Commit();
 			}
 		}
@@ -49,6 +51,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1712
 					Query("GenericEntityWithLong", 42L));
 				Assert.IsInstanceOf(typeof(GenericEntity<string>),
 					Query("GenericEntityWithString", "Bob l'éponge"));
+				Assert.IsInstanceOf(typeof(GenericEntity<TimeSpan>),
+					Query("GenericEntityWithTimeSpan", TimeSpan.FromDays(1)));
 			}
 		}
 	}

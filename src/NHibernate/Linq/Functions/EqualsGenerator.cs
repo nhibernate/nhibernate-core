@@ -39,6 +39,7 @@ namespace NHibernate.Linq.Functions
 					ReflectHelper.GetMethodDefinition<Guid>(x => x.Equals(x)),
 					ReflectHelper.GetMethodDefinition<DateTime>(x => x.Equals(x)),
 					ReflectHelper.GetMethodDefinition<DateTimeOffset>(x => x.Equals(x)),
+					ReflectHelper.GetMethodDefinition<TimeSpan>(x => x.Equals(x)),
 					ReflectHelper.GetMethodDefinition<bool>(x => x.Equals(default(bool))),
 
 					ReflectHelper.GetMethodDefinition<IEquatable<string>>(x => x.Equals(default(string))),
@@ -57,6 +58,7 @@ namespace NHibernate.Linq.Functions
 					ReflectHelper.GetMethodDefinition<IEquatable<Guid>>(x => x.Equals(default(Guid))),
 					ReflectHelper.GetMethodDefinition<IEquatable<DateTime>>(x => x.Equals(default(DateTime))),
 					ReflectHelper.GetMethodDefinition<IEquatable<DateTimeOffset>>(x => x.Equals(default(DateTimeOffset))),
+					ReflectHelper.GetMethodDefinition<IEquatable<TimeSpan>>(x => x.Equals(default(TimeSpan))),
 					ReflectHelper.GetMethodDefinition<IEquatable<bool>>(x => x.Equals(default(bool)))
 				};
 		}
