@@ -27,10 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1712
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				session.Delete("from GenericEntityWithGuid");
-				session.Delete("from GenericEntityWithLong");
-				session.Delete("from GenericEntityWithString");
-				session.Delete("from GenericEntityWithTimeSpan");
+				session.CreateQuery("delete from System.Object").ExecuteUpdate();
 				tx.Commit();
 			}
 		}
