@@ -24,6 +24,7 @@ namespace NHibernate.Proxy
 		private static readonly PropertyInfo LazyInitializerIdentifierProperty = LazyInitializerType.GetProperty(nameof(ILazyInitializer.Identifier));
 		private static readonly MethodInfo LazyInitializerInitializeMethod = LazyInitializerType.GetMethod(nameof(ILazyInitializer.Initialize));
 		private static readonly MethodInfo LazyInitializerGetImplementationMethod = LazyInitializerType.GetMethod(nameof(ILazyInitializer.GetImplementation), System.Type.EmptyTypes);
+		private static readonly PropertyInfo LazyInitializerIsUninitializedProperty = LazyInitializerType.GetProperty(nameof(ILazyInitializer.IsUninitialized));
 		private static readonly IProxyAssemblyBuilder ProxyAssemblyBuilder = new DefaultProxyAssemblyBuilder();
 
 		private static readonly ConstructorInfo SecurityCriticalAttributeConstructor = typeof(SecurityCriticalAttribute).GetConstructor(System.Type.EmptyTypes);
@@ -95,7 +96,7 @@ namespace NHibernate.Proxy
 			var customAttributeBuilder = new CustomAttributeBuilder(serializableConstructor, Array.Empty<object>());
 			typeBuilder.SetCustomAttribute(customAttributeBuilder);
 
-			ImplementDeserializationConstructor(typeBuilder);
+			ImplementDeserializationConstructor(typeBuilder, parentType);
 			ImplementGetObjectData(typeBuilder, proxyInfoField, lazyInitializerField);
 
 			var proxyType = typeBuilder.CreateTypeInfo();
@@ -168,13 +169,24 @@ namespace NHibernate.Proxy
 			IL.Emit(OpCodes.Ret);
 		}
 
-		private static void ImplementDeserializationConstructor(TypeBuilder typeBuilder)
+		private static void ImplementDeserializationConstructor(TypeBuilder typeBuilder, System.Type parentType)
 		{
 			var parameterTypes = new[] {typeof (SerializationInfo), typeof (StreamingContext)};
 			var constructor = typeBuilder.DefineConstructor(constructorAttributes, CallingConventions.Standard, parameterTypes);
 			constructor.SetImplementationFlags(MethodImplAttributes.IL | MethodImplAttributes.Managed);
 
 			var IL = constructor.GetILGenerator();
+
+			constructor.SetImplementationFlags(MethodImplAttributes.IL | MethodImplAttributes.Managed);
+
+			var baseConstructor = parentType.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, System.Type.EmptyTypes, null);
+			// if there is no default constructor, or the default constructor is private/internal, call System.Object constructor
+			// this works, but the generated assembly will fail PeVerify (cannot use in medium trust for example)
+			if (baseConstructor == null || baseConstructor.IsPrivate || baseConstructor.IsAssembly)
+				baseConstructor = ObjectConstructor;
+			IL.Emit(OpCodes.Ldarg_0);
+			IL.Emit(OpCodes.Call, baseConstructor);
+
 			//Everything is done in NHibernateProxyObjectReference, so just return data.
 			IL.Emit(OpCodes.Ret);
 		}
@@ -199,7 +211,12 @@ namespace NHibernate.Proxy
 			IL.Emit(OpCodes.Call, ReflectionCache.TypeMethods.GetTypeFromHandle);
 			IL.Emit(OpCodes.Callvirt, SerializationInfoSetTypeMethod);
 
-			// (new NHibernateProxyObjectReference(this.__proxyInfo, this.__lazyInitializer.Identifier)).GetObjectData(info, context);
+			// return
+			// 	(new NHibernateProxyObjectReference(
+			// 		this.__proxyInfo,
+			// 		this.__lazyInitializer.Identifier),
+			// 		this.__lazyInitializer.IsUninitialized ? null : this.__lazyInitializer.GetImplementation())
+			// 	.GetObjectData(info, context);
 			//this.__proxyInfo
 			IL.Emit(OpCodes.Ldarg_0);
 			IL.Emit(OpCodes.Ldfld, proxyInfoField);
@@ -209,11 +226,27 @@ namespace NHibernate.Proxy
 			IL.Emit(OpCodes.Ldfld, lazyInitializerField);
 			IL.Emit(OpCodes.Callvirt, LazyInitializerIdentifierProperty.GetMethod);
 
+			// this.__lazyInitializer.IsUninitialized ? null : this.__lazyInitializer.GetImplementation()
+			var isUnitialized = IL.DefineLabel();
+			var endIsUnitializedTernary = IL.DefineLabel();
+			IL.Emit(OpCodes.Ldarg_0);
+			IL.Emit(OpCodes.Ldfld, lazyInitializerField);
+			IL.Emit(OpCodes.Callvirt, LazyInitializerIsUninitializedProperty.GetMethod);
+			IL.Emit(OpCodes.Brtrue, isUnitialized);
+			IL.Emit(OpCodes.Ldarg_0);
+			IL.Emit(OpCodes.Ldfld, lazyInitializerField);
+			IL.Emit(OpCodes.Callvirt, LazyInitializerGetImplementationMethod);
+			IL.Emit(OpCodes.Br, endIsUnitializedTernary);
+			IL.MarkLabel(isUnitialized);
+			IL.Emit(OpCodes.Ldnull);
+			IL.MarkLabel(endIsUnitializedTernary);
+
 			var constructor = typeof(NHibernateProxyObjectReference).GetConstructor(
 				new[]
 				{
 					typeof(NHibernateProxyFactoryInfo),
 					typeof(object),
+					typeof(object)
 				});
 			IL.Emit(OpCodes.Newobj, constructor);
 
