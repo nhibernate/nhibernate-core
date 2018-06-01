@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fnhibernate%2Fnhibernate-core.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fnhibernate%2Fnhibernate-core?ref=badge_shield)
+
 Welcome to NHibernate
 =====================
 
@@ -89,3 +91,7 @@ of NHibernate (in no particular order):
 [article]: http://www.codeproject.com/KB/recipes/sets.aspx
 [Relinq]: http://relinq.codeplex.com/
 [AsyncGenerator]: http://github.com/maca88/AsyncGenerator
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fnhibernate%2Fnhibernate-core.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fnhibernate%2Fnhibernate-core?ref=badge_large)
