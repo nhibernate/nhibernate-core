@@ -35,22 +35,22 @@ namespace NHibernate.Test.NHSpecificTest.GH1712
 		}
 
 		[Test]
-		public void PerformingAQueryUsingIEquatableShouldNotThrowEquals()
+		public void QueryWithIEquatableEqualsShouldNotThrow()
 		{
 			using (var session = Sfi.OpenSession())
 			{
-				Assert.IsInstanceOf(
-					typeof(GenericEntity<Guid>),
-					QueryId("GenericEntityWithGuid", Guid.Parse("093D2C0D-C1A4-42CB-95FC-1039CD0C00B6"), session));
-				Assert.IsInstanceOf(
-					typeof(GenericEntity<long>),
-					QueryId("GenericEntityWithLong", 42L, session));
-				Assert.IsInstanceOf(
-					typeof(GenericEntity<string>),
-					QueryId("GenericEntityWithString", "Bob l'éponge", session));
-				Assert.IsInstanceOf(
-					typeof(GenericEntity<TimeSpan>),
-					QueryId("GenericEntityWithTimeSpan", TimeSpan.FromDays(1), session));
+				Assert.That(
+					QueryId("GenericEntityWithGuid", Guid.Parse("093D2C0D-C1A4-42CB-95FC-1039CD0C00B6"), session),
+					Is.InstanceOf<GenericEntity<Guid>>());
+				Assert.That(
+					QueryId("GenericEntityWithLong", 42L, session),
+					Is.InstanceOf<GenericEntity<long>>());
+				Assert.That(
+					QueryId("GenericEntityWithString", "Bob l'éponge", session),
+					Is.InstanceOf<GenericEntity<string>>());
+				Assert.That(
+					QueryId("GenericEntityWithTimeSpan", TimeSpan.FromDays(1), session),
+					Is.InstanceOf<GenericEntity<TimeSpan>>());
 			}
 		}
 
@@ -60,13 +60,81 @@ namespace NHibernate.Test.NHSpecificTest.GH1712
 			    select e).FirstOrDefault();
 
 		[Test]
-		public void PerformingAQueryUsingIEquatableEntityShouldNotThrowEquals()
+		public void QueryWithDefaultEqualsShouldNotThrow()
 		{
 			using (var session = Sfi.OpenSession())
 			{
-				Assert.IsInstanceOf(
-					typeof(GenericEntity<Guid>),
-					QueryEntity("GenericEntityWithGuid", Guid.Parse("093D2C0D-C1A4-42CB-95FC-1039CD0C00B6"), session));
+				Assert.That(
+					(from e in session.Query<GenericEntity<Guid>>("GenericEntityWithGuid")
+					 where e.Id.Equals(Guid.Parse("093D2C0D-C1A4-42CB-95FC-1039CD0C00B6"))
+					 select e).FirstOrDefault(),
+					Is.InstanceOf<GenericEntity<Guid>>());
+				Assert.That(
+					(from e in session.Query<GenericEntity<long>>("GenericEntityWithLong")
+					 where e.Id.Equals(42L)
+					 select e).FirstOrDefault(),
+					Is.InstanceOf<GenericEntity<long>>());
+				Assert.That(
+					(from e in session.Query<GenericEntity<string>>("GenericEntityWithString")
+					 where e.Id.Equals("Bob l'éponge")
+					 select e).FirstOrDefault(),
+					Is.InstanceOf<GenericEntity<string>>());
+				Assert.That(
+					(from e in session.Query<GenericEntity<TimeSpan>>("GenericEntityWithTimeSpan")
+					 where e.Id.Equals(TimeSpan.FromDays(1))
+					 select e).FirstOrDefault(),
+					Is.InstanceOf<GenericEntity<TimeSpan>>());
+
+				object entity = new GenericEntity<long> { Id = 42L };
+				Assert.That(
+					(from e in session.Query<GenericEntity<long>>("GenericEntityWithLong")
+					 where entity.Equals(e)
+					 select e).FirstOrDefault(),
+					Is.InstanceOf<GenericEntity<long>>());
+			}
+		}
+
+		[Test]
+		public void QueryWithStaticEqualsShouldNotThrow()
+		{
+			using (var session = Sfi.OpenSession())
+			{
+				Assert.That(
+					QueryIdWithStaticEquals("GenericEntityWithGuid", Guid.Parse("093D2C0D-C1A4-42CB-95FC-1039CD0C00B6"), session),
+					Is.InstanceOf<GenericEntity<Guid>>());
+				Assert.That(
+					QueryIdWithStaticEquals("GenericEntityWithLong", 42L, session),
+					Is.InstanceOf<GenericEntity<long>>());
+				Assert.That(
+					QueryIdWithStaticEquals("GenericEntityWithString", "Bob l'éponge", session),
+					Is.InstanceOf<GenericEntity<string>>());
+				Assert.That(
+					QueryIdWithStaticEquals("GenericEntityWithTimeSpan", TimeSpan.FromDays(1), session),
+					Is.InstanceOf<GenericEntity<TimeSpan>>());
+
+				var entity = new GenericEntity<long> { Id = 42L };
+				Assert.That(
+					(from e in session.Query<GenericEntity<long>>("GenericEntityWithLong")
+					 where Equals(e, entity)
+					 select e).FirstOrDefault(),
+					Is.InstanceOf<GenericEntity<long>>());
+			}
+		}
+
+		private GenericEntity<TId> QueryIdWithStaticEquals<TId>(string name, TId id, ISession session)
+			where TId : IEquatable<TId>
+			=> (from e in session.Query<GenericEntity<TId>>(name)
+			    where Equals(e.Id, id)
+			    select e).FirstOrDefault();
+
+		[Test]
+		public void QueryUsingIEquatableEntityShouldNotThrow()
+		{
+			using (var session = Sfi.OpenSession())
+			{
+				Assert.That(
+					QueryEntity("GenericEntityWithGuid", Guid.Parse("093D2C0D-C1A4-42CB-95FC-1039CD0C00B6"), session),
+					Is.InstanceOf<GenericEntity<Guid>>());
 			}
 		}
 

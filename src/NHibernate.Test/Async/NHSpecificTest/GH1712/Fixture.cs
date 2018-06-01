@@ -48,22 +48,22 @@ namespace NHibernate.Test.NHSpecificTest.GH1712
 		}
 
 		[Test]
-		public async Task PerformingAQueryUsingIEquatableShouldNotThrowEqualsAsync()
+		public async Task QueryWithIEquatableEqualsShouldNotThrowAsync()
 		{
 			using (var session = Sfi.OpenSession())
 			{
-				Assert.IsInstanceOf(
-					typeof(GenericEntity<Guid>),
-					await (QueryIdAsync("GenericEntityWithGuid", Guid.Parse("093D2C0D-C1A4-42CB-95FC-1039CD0C00B6"), session)));
-				Assert.IsInstanceOf(
-					typeof(GenericEntity<long>),
-					await (QueryIdAsync("GenericEntityWithLong", 42L, session)));
-				Assert.IsInstanceOf(
-					typeof(GenericEntity<string>),
-					await (QueryIdAsync("GenericEntityWithString", "Bob l'éponge", session)));
-				Assert.IsInstanceOf(
-					typeof(GenericEntity<TimeSpan>),
-					await (QueryIdAsync("GenericEntityWithTimeSpan", TimeSpan.FromDays(1), session)));
+				Assert.That(
+					await (QueryIdAsync("GenericEntityWithGuid", Guid.Parse("093D2C0D-C1A4-42CB-95FC-1039CD0C00B6"), session)),
+					Is.InstanceOf<GenericEntity<Guid>>());
+				Assert.That(
+					await (QueryIdAsync("GenericEntityWithLong", 42L, session)),
+					Is.InstanceOf<GenericEntity<long>>());
+				Assert.That(
+					await (QueryIdAsync("GenericEntityWithString", "Bob l'éponge", session)),
+					Is.InstanceOf<GenericEntity<string>>());
+				Assert.That(
+					await (QueryIdAsync("GenericEntityWithTimeSpan", TimeSpan.FromDays(1), session)),
+					Is.InstanceOf<GenericEntity<TimeSpan>>());
 			}
 		}
 
@@ -73,13 +73,81 @@ namespace NHibernate.Test.NHSpecificTest.GH1712
 			    select e).FirstOrDefaultAsync(cancellationToken);
 
 		[Test]
-		public async Task PerformingAQueryUsingIEquatableEntityShouldNotThrowEqualsAsync()
+		public async Task QueryWithDefaultEqualsShouldNotThrowAsync()
 		{
 			using (var session = Sfi.OpenSession())
 			{
-				Assert.IsInstanceOf(
-					typeof(GenericEntity<Guid>),
-					await (QueryEntityAsync("GenericEntityWithGuid", Guid.Parse("093D2C0D-C1A4-42CB-95FC-1039CD0C00B6"), session)));
+				Assert.That(
+					await ((from e in session.Query<GenericEntity<Guid>>("GenericEntityWithGuid")
+					 where e.Id.Equals(Guid.Parse("093D2C0D-C1A4-42CB-95FC-1039CD0C00B6"))
+					 select e).FirstOrDefaultAsync()),
+					Is.InstanceOf<GenericEntity<Guid>>());
+				Assert.That(
+					await ((from e in session.Query<GenericEntity<long>>("GenericEntityWithLong")
+					 where e.Id.Equals(42L)
+					 select e).FirstOrDefaultAsync()),
+					Is.InstanceOf<GenericEntity<long>>());
+				Assert.That(
+					await ((from e in session.Query<GenericEntity<string>>("GenericEntityWithString")
+					 where e.Id.Equals("Bob l'éponge")
+					 select e).FirstOrDefaultAsync()),
+					Is.InstanceOf<GenericEntity<string>>());
+				Assert.That(
+					await ((from e in session.Query<GenericEntity<TimeSpan>>("GenericEntityWithTimeSpan")
+					 where e.Id.Equals(TimeSpan.FromDays(1))
+					 select e).FirstOrDefaultAsync()),
+					Is.InstanceOf<GenericEntity<TimeSpan>>());
+
+				object entity = new GenericEntity<long> { Id = 42L };
+				Assert.That(
+					await ((from e in session.Query<GenericEntity<long>>("GenericEntityWithLong")
+					 where entity.Equals(e)
+					 select e).FirstOrDefaultAsync()),
+					Is.InstanceOf<GenericEntity<long>>());
+			}
+		}
+
+		[Test]
+		public async Task QueryWithStaticEqualsShouldNotThrowAsync()
+		{
+			using (var session = Sfi.OpenSession())
+			{
+				Assert.That(
+					await (QueryIdWithStaticEqualsAsync("GenericEntityWithGuid", Guid.Parse("093D2C0D-C1A4-42CB-95FC-1039CD0C00B6"), session)),
+					Is.InstanceOf<GenericEntity<Guid>>());
+				Assert.That(
+					await (QueryIdWithStaticEqualsAsync("GenericEntityWithLong", 42L, session)),
+					Is.InstanceOf<GenericEntity<long>>());
+				Assert.That(
+					await (QueryIdWithStaticEqualsAsync("GenericEntityWithString", "Bob l'éponge", session)),
+					Is.InstanceOf<GenericEntity<string>>());
+				Assert.That(
+					await (QueryIdWithStaticEqualsAsync("GenericEntityWithTimeSpan", TimeSpan.FromDays(1), session)),
+					Is.InstanceOf<GenericEntity<TimeSpan>>());
+
+				var entity = new GenericEntity<long> { Id = 42L };
+				Assert.That(
+					await ((from e in session.Query<GenericEntity<long>>("GenericEntityWithLong")
+					 where Equals(e, entity)
+					 select e).FirstOrDefaultAsync()),
+					Is.InstanceOf<GenericEntity<long>>());
+			}
+		}
+
+		private Task<GenericEntity<TId>> QueryIdWithStaticEqualsAsync<TId>(string name, TId id, ISession session, CancellationToken cancellationToken = default(CancellationToken))
+			where TId : IEquatable<TId>
+			=> (from e in session.Query<GenericEntity<TId>>(name)
+			    where Equals(e.Id, id)
+			    select e).FirstOrDefaultAsync(cancellationToken);
+
+		[Test]
+		public async Task QueryUsingIEquatableEntityShouldNotThrowAsync()
+		{
+			using (var session = Sfi.OpenSession())
+			{
+				Assert.That(
+					await (QueryEntityAsync("GenericEntityWithGuid", Guid.Parse("093D2C0D-C1A4-42CB-95FC-1039CD0C00B6"), session)),
+					Is.InstanceOf<GenericEntity<Guid>>());
 			}
 		}
 

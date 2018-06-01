@@ -42,6 +42,9 @@ namespace NHibernate.Linq.Functions
 					ReflectHelper.GetMethodDefinition<TimeSpan>(x => x.Equals(x)),
 					ReflectHelper.GetMethodDefinition<bool>(x => x.Equals(default(bool))),
 
+					ReflectHelper.GetMethodDefinition<object>(x => x.Equals(default(object))),
+					ReflectHelper.GetMethodDefinition(() => object.Equals(default(object), default(object))),
+
 					ReflectHelper.GetMethodDefinition<IEquatable<string>>(x => x.Equals(default(string))),
 					ReflectHelper.GetMethodDefinition<IEquatable<char>>(x => x.Equals(default(char))),
 					ReflectHelper.GetMethodDefinition<IEquatable<sbyte>>(x => x.Equals(default(sbyte))),
