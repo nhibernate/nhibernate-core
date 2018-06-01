@@ -92,7 +92,7 @@ namespace NHibernate.Cache
 
 		public Task<object[]> GetManyAsync(CacheKey[] keys, long timestamp, CancellationToken cancellationToken)
 		{
-			if (_batchableReadCache == null)
+			if (_batchableReadOnlyCache == null)
 			{
 				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching get operation");
 			}
@@ -110,7 +110,7 @@ namespace NHibernate.Cache
 				var result = new object[keys.Length];
 				using (await _lockObjectAsync.LockAsync())
 				{
-					var lockables = await (_batchableReadCache.GetManyAsync(keys.Select(o => (object) o).ToArray(), cancellationToken)).ConfigureAwait(false);
+					var lockables = await (_batchableReadOnlyCache.GetManyAsync(keys.Select(o => (object) o).ToArray(), cancellationToken)).ConfigureAwait(false);
 					for (var i = 0; i < lockables.Length; i++)
 					{
 						var lockable = (ILockable) lockables[i];
@@ -183,7 +183,7 @@ namespace NHibernate.Cache
 		public Task<bool[]> PutManyAsync(CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
 		                bool[] minimalPuts, CancellationToken cancellationToken)
 		{
-			if (_batchableReadWriteCache == null)
+			if (_batchableCache == null)
 			{
 				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching operations");
 			}
@@ -211,9 +211,9 @@ namespace NHibernate.Cache
 					var keysArr = keys.Cast<object>().ToArray();
 					try
 					{
-						await (_batchableReadWriteCache.LockManyAsync(keysArr, cancellationToken)).ConfigureAwait(false);
+						await (_batchableCache.LockManyAsync(keysArr, cancellationToken)).ConfigureAwait(false);
 						var putBatch = new Dictionary<object, object>();
-						var lockables = await (_batchableReadWriteCache.GetManyAsync(keysArr, cancellationToken)).ConfigureAwait(false);
+						var lockables = await (_batchableCache.GetManyAsync(keysArr, cancellationToken)).ConfigureAwait(false);
 						for (var i = 0; i < keys.Length; i++)
 						{
 							var key = keys[i];
@@ -249,12 +249,12 @@ namespace NHibernate.Cache
 
 						if (putBatch.Count > 0)
 						{
-							await (_batchableReadWriteCache.PutManyAsync(putBatch.Keys.ToArray(), putBatch.Values.ToArray(), cancellationToken)).ConfigureAwait(false);
+							await (_batchableCache.PutManyAsync(putBatch.Keys.ToArray(), putBatch.Values.ToArray(), cancellationToken)).ConfigureAwait(false);
 						}
 					}
 					finally
 					{
-						await (_batchableReadWriteCache.UnlockManyAsync(keysArr, cancellationToken)).ConfigureAwait(false);
+						await (_batchableCache.UnlockManyAsync(keysArr, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 				return result;

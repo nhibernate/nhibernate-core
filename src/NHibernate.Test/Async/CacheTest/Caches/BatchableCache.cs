@@ -19,7 +19,7 @@ using NHibernate.Cache;
 
 namespace NHibernate.Test.CacheTest.Caches
 {
-	public partial class BatchableCache : ICache, IBatchableReadWriteCache
+	public partial class BatchableCache : ICache, IBatchableCache
 	{
 
 		public Task PutManyAsync(object[] keys, object[] values, CancellationToken cancellationToken)

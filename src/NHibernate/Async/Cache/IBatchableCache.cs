@@ -16,7 +16,7 @@ namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial interface IBatchableReadWriteCache : IBatchableReadCache
+	public partial interface IBatchableCache : IBatchableReadOnlyCache
 	{
 		/// <summary>
 		/// Add multiple objects to the cache.

@@ -34,7 +34,7 @@ namespace NHibernate.Cache
 
 		public Task<object[]> GetManyAsync(CacheKey[] keys, long timestamp, CancellationToken cancellationToken)
 		{
-			if (_batchableReadCache == null)
+			if (_batchableReadOnlyCache == null)
 			{
 				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching get operation");
 			}
@@ -49,7 +49,7 @@ namespace NHibernate.Cache
 				{
 					log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 				}
-				var results = await (_batchableReadCache.GetManyAsync(keys.Select(o => (object) o).ToArray(), cancellationToken)).ConfigureAwait(false);
+				var results = await (_batchableReadOnlyCache.GetManyAsync(keys.Select(o => (object) o).ToArray(), cancellationToken)).ConfigureAwait(false);
 				if (!log.IsDebugEnabled())
 				{
 					return results;
@@ -84,7 +84,7 @@ namespace NHibernate.Cache
 		public Task<bool[]> PutManyAsync(CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
 		                          bool[] minimalPuts, CancellationToken cancellationToken)
 		{
-			if (_batchableReadWriteCache == null)
+			if (_batchableCache == null)
 			{
 				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching operations");
 			}
@@ -115,7 +115,7 @@ namespace NHibernate.Cache
 				var skipKeyIndexes = new HashSet<int>();
 				if (checkKeys.Any())
 				{
-					var objects = await (_batchableReadWriteCache.GetManyAsync(checkKeys.Select(o => (object) o).ToArray(), cancellationToken)).ConfigureAwait(false);
+					var objects = await (_batchableCache.GetManyAsync(checkKeys.Select(o => (object) o).ToArray(), cancellationToken)).ConfigureAwait(false);
 					for (var i = 0; i < objects.Length; i++)
 					{
 						if (objects[i] != null)
@@ -147,7 +147,7 @@ namespace NHibernate.Cache
 					putValues[j++] = values[i];
 					result[i] = true;
 				}
-				await (_batchableReadWriteCache.PutManyAsync(putKeys, putValues, cancellationToken)).ConfigureAwait(false);
+				await (_batchableCache.PutManyAsync(putKeys, putValues, cancellationToken)).ConfigureAwait(false);
 				return result;
 			}
 		}

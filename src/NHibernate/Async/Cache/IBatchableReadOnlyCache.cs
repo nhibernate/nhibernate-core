@@ -16,7 +16,7 @@ namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial interface IBatchableReadCache
+	public partial interface IBatchableReadOnlyCache
 	{
 		/// <summary>
 		/// Get multiple objects from the cache.

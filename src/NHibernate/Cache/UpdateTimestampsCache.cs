@@ -18,7 +18,7 @@ namespace NHibernate.Cache
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(UpdateTimestampsCache));
 		private ICache updateTimestamps;
-		private readonly IBatchableReadCache _batchUpdateTimestamps;
+		private readonly IBatchableReadOnlyCache _batchUpdateTimestamps;
 
 		private readonly string regionName = typeof(UpdateTimestampsCache).Name;
 
@@ -34,7 +34,7 @@ namespace NHibernate.Cache
 			log.Info("starting update timestamps cache at region: {0}", regionName);
 			updateTimestamps = settings.CacheProvider.BuildCache(regionName, props);
 			// ReSharper disable once SuspiciousTypeConversion.Global
-			_batchUpdateTimestamps = updateTimestamps as IBatchableReadCache;
+			_batchUpdateTimestamps = updateTimestamps as IBatchableReadOnlyCache;
 		}
 
 		//Since v5.1

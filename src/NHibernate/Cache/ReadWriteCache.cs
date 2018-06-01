@@ -36,8 +36,8 @@ namespace NHibernate.Cache
 
 		private readonly object _lockObject = new object();
 		private ICache cache;
-		private IBatchableReadCache _batchableReadCache;
-		private IBatchableReadWriteCache _batchableReadWriteCache;
+		private IBatchableReadOnlyCache _batchableReadOnlyCache;
+		private IBatchableCache _batchableCache;
 		private int _nextLockId;
 
 		public ReadWriteCache()
@@ -59,8 +59,8 @@ namespace NHibernate.Cache
 			{
 				cache = value;
 				// ReSharper disable once SuspiciousTypeConversion.Global
-				_batchableReadCache = value as IBatchableReadCache;
-				_batchableReadWriteCache = value as IBatchableReadWriteCache;
+				_batchableReadOnlyCache = value as IBatchableReadOnlyCache;
+				_batchableCache = value as IBatchableCache;
 			}
 		}
 
@@ -148,7 +148,7 @@ namespace NHibernate.Cache
 
 		public object[] GetMany(CacheKey[] keys, long timestamp)
 		{
-			if (_batchableReadCache == null)
+			if (_batchableReadOnlyCache == null)
 			{
 				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching get operation");
 			}
@@ -159,7 +159,7 @@ namespace NHibernate.Cache
 			var result = new object[keys.Length];
 			lock (_lockObject)
 			{
-				var lockables = _batchableReadCache.GetMany(keys.Select(o => (object) o).ToArray());
+				var lockables = _batchableReadOnlyCache.GetMany(keys.Select(o => (object) o).ToArray());
 				for (var i = 0; i < lockables.Length; i++)
 				{
 					var lockable = (ILockable) lockables[i];
@@ -230,7 +230,7 @@ namespace NHibernate.Cache
 		public bool[] PutMany(CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
 		                bool[] minimalPuts)
 		{
-			if (_batchableReadWriteCache == null)
+			if (_batchableCache == null)
 			{
 				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching operations");
 			}
@@ -251,9 +251,9 @@ namespace NHibernate.Cache
 				var keysArr = keys.Cast<object>().ToArray();
 				try
 				{
-					_batchableReadWriteCache.LockMany(keysArr);
+					_batchableCache.LockMany(keysArr);
 					var putBatch = new Dictionary<object, object>();
-					var lockables = _batchableReadWriteCache.GetMany(keysArr);
+					var lockables = _batchableCache.GetMany(keysArr);
 					for (var i = 0; i < keys.Length; i++)
 					{
 						var key = keys[i];
@@ -289,12 +289,12 @@ namespace NHibernate.Cache
 
 					if (putBatch.Count > 0)
 					{
-						_batchableReadWriteCache.PutMany(putBatch.Keys.ToArray(), putBatch.Values.ToArray());
+						_batchableCache.PutMany(putBatch.Keys.ToArray(), putBatch.Values.ToArray());
 					}
 				}
 				finally
 				{
-					_batchableReadWriteCache.UnlockMany(keysArr);
+					_batchableCache.UnlockMany(keysArr);
 				}
 			}
 			return result;

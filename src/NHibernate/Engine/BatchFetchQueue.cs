@@ -237,7 +237,7 @@ namespace NHibernate.Engine
 			// List of collection entries that haven't been checked for their existance in the cache. Besides the collection entry,
 			// the index where the entry was found is also stored in order to correctly order the returning keys.
 			var collectionKeys = new List<KeyValuePair<KeyValuePair<CollectionEntry, IPersistentCollection>, int>>(batchSize);
-			var batchableCache = collectionPersister.Cache?.Cache as IBatchableReadCache;
+			var batchableCache = collectionPersister.Cache?.Cache as IBatchableReadOnlyCache;
 
 			if (!batchLoadableCollections.TryGetValue(collectionPersister.Role, out var map))
 			{
@@ -420,7 +420,7 @@ namespace NHibernate.Engine
 			// List of entity keys that haven't been checked for their existance in the cache. Besides the entity key,
 			// the index where the key was found is also stored in order to correctly order the returning keys.
 			var entityKeys = new List<KeyValuePair<EntityKey, int>>(batchSize);
-			var batchableCache = persister.Cache?.Cache as IBatchableReadCache;
+			var batchableCache = persister.Cache?.Cache as IBatchableReadOnlyCache;
 
 			if (!batchLoadableEntityKeys.TryGetValue(persister.EntityName, out var set))
 			{
@@ -569,7 +569,7 @@ namespace NHibernate.Engine
 		/// <param name="checkCache">Whether to check the cache or just return <see langword="false" /> for all keys.</param>
 		/// <returns>An array of booleans that contains the result for each key.</returns>
 		private bool[] AreCached(List<KeyValuePair<EntityKey, int>> entityKeys, int[] keyIndexes, IEntityPersister persister,
-		                         IBatchableReadCache batchableCache, bool checkCache)
+		                         IBatchableReadOnlyCache batchableCache, bool checkCache)
 		{
 			var result = new bool[keyIndexes.Length];
 			if (!checkCache || !persister.HasCache || !context.Session.CacheMode.HasFlag(CacheMode.Get))
@@ -605,7 +605,7 @@ namespace NHibernate.Engine
 		/// <param name="checkCache">Whether to check the cache or just return <see langword="false" /> for all keys.</param>
 		/// <returns>An array of booleans that contains the result for each key.</returns>
 		private bool[] AreCached(List<KeyValuePair<KeyValuePair<CollectionEntry, IPersistentCollection>, int>> collectionKeys,
-		                         int[] keyIndexes, ICollectionPersister persister, IBatchableReadCache batchableCache,
+		                         int[] keyIndexes, ICollectionPersister persister, IBatchableReadOnlyCache batchableCache,
 		                         bool checkCache)
 		{
 			var result = new bool[keyIndexes.Length];

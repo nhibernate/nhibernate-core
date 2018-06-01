@@ -258,8 +258,8 @@ methodRules:
     name: Lock
   - containingType: NHibernate.Cache.ICache
     name: Unlock
-  - containingType: NHibernate.Cache.IBatchableReadCache
-  - containingType: NHibernate.Cache.IBatchableReadWriteCache
+  - containingType: NHibernate.Cache.IBatchableReadOnlyCache
+  - containingType: NHibernate.Cache.IBatchableCache
   name: Cache
 - filters:
   - containingNamespace: NHibernate

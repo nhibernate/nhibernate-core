@@ -15,7 +15,7 @@ namespace NHibernate.Cache
 	/// All implementations <em>must</em> be threadsafe.
 	/// </para>
 	/// </remarks>
-	public partial interface IBatchableReadCache
+	public partial interface IBatchableReadOnlyCache
 	{
 		/// <summary>
 		/// Get multiple objects from the cache.

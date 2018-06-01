@@ -9,7 +9,7 @@ using NHibernate.Cache;
 
 namespace NHibernate.Test.CacheTest.Caches
 {
-	public partial class BatchableCache : ICache, IBatchableReadWriteCache
+	public partial class BatchableCache : ICache, IBatchableCache
 	{
 		private readonly IDictionary _hashtable = new Hashtable();
 

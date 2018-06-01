@@ -185,13 +185,13 @@ namespace NHibernate.Cache
 		public static bool IsBatchingGetSupported(this ICacheConcurrencyStrategy cache)
 		{
 			// ReSharper disable once SuspiciousTypeConversion.Global
-			return cache is IBatchableCacheConcurrencyStrategy && cache.Cache is IBatchableReadCache;
+			return cache is IBatchableCacheConcurrencyStrategy && cache.Cache is IBatchableReadOnlyCache;
 		}
 
 		public static bool IsBatchingPutSupported(this ICacheConcurrencyStrategy cache)
 		{
 			// ReSharper disable once SuspiciousTypeConversion.Global
-			return cache is IBatchableCacheConcurrencyStrategy && cache.Cache is IBatchableReadWriteCache;
+			return cache is IBatchableCacheConcurrencyStrategy && cache.Cache is IBatchableCache;
 		}
 	}
 }
