@@ -36,19 +36,19 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 		public delegate IList AllModelQueryDelegate(ISession session);
 
 		[Test]
-		public Task ShouldWorkWithHQLAsync()
+		public async Task ShouldWorkWithHQLAsync()
 		{
-			return TestLazyDynamicClassAsync(
+			await (TestLazyDynamicClassAsync(
 				s => (IDictionary) s.CreateQuery("from ProductLine pl order by pl.Description").UniqueResult(),
-				s => s.CreateQuery("from Model m").List());
+				s => s.CreateQuery("from Model m").List()));
 		}
 
 		[Test]
-		public Task ShouldWorkWithCriteriaAsync()
+		public async Task ShouldWorkWithCriteriaAsync()
 		{
-			return TestLazyDynamicClassAsync(
+			await (TestLazyDynamicClassAsync(
 				s => (IDictionary) s.CreateCriteria("ProductLine").AddOrder(Order.Asc("Description")).UniqueResult(),
-				s => s.CreateCriteria("Model").List());
+				s => s.CreateCriteria("Model").List()));
 		}
 
 		public async Task TestLazyDynamicClassAsync(SingleCarQueryDelegate singleCarQueryHandler, AllModelQueryDelegate allModelQueryHandler, CancellationToken cancellationToken = default(CancellationToken))

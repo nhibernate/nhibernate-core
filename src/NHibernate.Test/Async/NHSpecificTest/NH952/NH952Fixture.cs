@@ -34,21 +34,14 @@ namespace NHibernate.Test.NHSpecificTest.NH952
 			};
 
 		[Test]
-		public Task OrderingAddResourcesAsync()
+		public async Task OrderingAddResourcesAsync()
 		{
-			try
+			Configuration cfg = new Configuration();
+			foreach (string res in Resources)
 			{
-				Configuration cfg = new Configuration();
-				foreach (string res in Resources)
-				{
-					cfg.AddResource(res, MyAssembly);
-				}
-				return cfg.BuildSessionFactory().CloseAsync();
+				cfg.AddResource(res, MyAssembly);
 			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (cfg.BuildSessionFactory().CloseAsync());
 		}
 	}
 }

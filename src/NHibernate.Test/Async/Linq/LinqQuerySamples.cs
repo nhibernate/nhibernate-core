@@ -81,71 +81,48 @@ namespace NHibernate.Test.Linq
 		[Category("SELECT/DISTINCT")]
 		[Test(Description = "This sample uses SELECT and a conditional statment to return a sequence of product " +
 							" name and product availability.")]
-		public Task DLinq13Async()
+		public async Task DLinq13Async()
 		{
-			try
-			{
-				var q =
+			var q =
 				from p in db.Products
 				select new {p.Name, Availability = p.UnitsInStock - p.UnitsOnOrder < 0 ? "Out Of Stock" : "In Stock"};
 
-				return ObjectDumper.WriteAsync(q, 1);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q, 1));
 		}
 
 		[Category("SELECT/DISTINCT")]
 		[Test(Description = "This sample uses SELECT and a known type to return a sequence of employees' names.")]
-		public Task DLinq14Async()
+		public async Task DLinq14Async()
 		{
-			try
-			{
-				IQueryable<Name> q =
+			IQueryable<Name> q =
 				from e in db.Employees
 				select new Name {FirstName = e.FirstName, LastName = e.LastName};
 
-				return ObjectDumper.WriteAsync(q, 1);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q, 1));
 		}
 
 		[Category("SELECT/DISTINCT")]
 		[Test(Description = "This sample uses SELECT and WHERE to return a sequence of " +
 							"just the London Customers' contact names.")]
-		public Task DLinq15Async()
+		public async Task DLinq15Async()
 		{
-			try
-			{
-				IQueryable<string> q =
+			IQueryable<string> q =
 				from c in db.Customers
 				where c.Address.City == "London"
 				select c.ContactName;
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("SELECT/DISTINCT")]
 		[Test(Description = "This sample uses SELECT and anonymous types to return " +
 							"a shaped subset of the data about Customers.")]
-		public Task DLinq16Async()
+		public async Task DLinq16Async()
 		{
-			try
-			{
-				if (!Dialect.SupportsScalarSubSelects)
-					Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
 
-				var q =
+			var q =
 				from c in db.Customers
 				select new
 						   {
@@ -155,12 +132,7 @@ namespace NHibernate.Test.Linq
 							   Count = c.Orders.Count()
 						   };
 
-				return ObjectDumper.WriteAsync(q, 1);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q, 1));
 		}
 
 		[Category("SELECT/DISTINCT")]
@@ -293,11 +265,9 @@ namespace NHibernate.Test.Linq
 							"all orders containing their OrderId, a subsequence of the " +
 							"items in the order where there is a discount, and the money " +
 							"saved if shipping is not included.")]
-		public Task DLinq17bAsync()
+		public async Task DLinq17bAsync()
 		{
-			try
-			{
-				var q =
+			var q =
 				from o in db.Orders
 				select new
 						   {
@@ -309,12 +279,7 @@ namespace NHibernate.Test.Linq
 							   FreeShippingDiscount = o.Freight
 						   };
 
-				return ObjectDumper.WriteAsync(q, 1);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q, 1));
 		}
 
 		[Category("SELECT/DISTINCT")]
@@ -323,11 +288,9 @@ namespace NHibernate.Test.Linq
 							"items in the order where there is a discount, and the money " +
 							"saved if shipping is not included.")]
 		[Ignore("TODO - nested select")]
-		public Task DLinq17cAsync()
+		public async Task DLinq17cAsync()
 		{
-			try
-			{
-				var q =
+			var q =
 				from o in db.Orders
 				select new
 						   {
@@ -341,32 +304,20 @@ namespace NHibernate.Test.Linq
 							   FreeShippingDiscount = o.Freight
 						   };
 
-				return ObjectDumper.WriteAsync(q, 1);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q, 1));
 		}
 
 		[Category("SELECT/DISTINCT")]
 		[Test(Description = "This sample uses Distinct to select a sequence of the unique cities " +
 							"that have Customers.")]
-		public Task DLinq18Async()
+		public async Task DLinq18Async()
 		{
-			try
-			{
-				IQueryable<string> q = (
+			IQueryable<string> q = (
 									   from c in db.Customers
 									   select c.Address.City)
 				.Distinct();
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("COUNT/SUM/MIN/MAX/AVG")]
@@ -496,11 +447,9 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample uses Max to find the Products that have the highest unit price " +
 							"in each category.")]
 		[Ignore("TODO nested aggregating group by")]
-		public Task DLinq28Async()
+		public async Task DLinq28Async()
 		{
-			try
-			{
-				var categories =
+			var categories =
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
@@ -513,12 +462,7 @@ namespace NHibernate.Test.Linq
 					select p2
 							   };
 
-				return ObjectDumper.WriteAsync(categories, 1);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(categories, 1));
 		}
 
 		[Category("COUNT/SUM/MIN/MAX/AVG")]
@@ -541,11 +485,9 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample uses Average to find the Products that have unit price higher than " +
 							"the average unit price of the category for each category.")]
 		[Ignore("TODO nested aggregating group by")]
-		public Task DLinq31Async()
+		public async Task DLinq31Async()
 		{
-			try
-			{
-				var categories =
+			var categories =
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
@@ -558,113 +500,73 @@ namespace NHibernate.Test.Linq
 					select p2
 							   };
 
-				return ObjectDumper.WriteAsync(categories, 1);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(categories, 1));
 		}
 
 		[Category("ORDER BY")]
 		[Test(Description = "This sample uses orderby to sort Employees by hire date.")]
-		public Task DLinq36Async()
+		public async Task DLinq36Async()
 		{
-			try
-			{
-				IOrderedQueryable<Employee> q =
+			IOrderedQueryable<Employee> q =
 				from e in db.Employees
 				orderby e.HireDate
 				select e;
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("ORDER BY")]
 		[Test(Description = "This sample uses where and orderby to sort Orders " +
 							"shipped to London by freight.")]
-		public Task DLinq37Async()
+		public async Task DLinq37Async()
 		{
-			try
-			{
-				IOrderedQueryable<Order> q =
+			IOrderedQueryable<Order> q =
 				from o in db.Orders
 				where o.ShippingAddress.City == "London"
 				orderby o.Freight
 				select o;
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("ORDER BY")]
 		[Test(Description = "This sample uses orderby to sort Products " +
 							"by unit price from highest to lowest.")]
-		public Task DLinq38Async()
+		public async Task DLinq38Async()
 		{
-			try
-			{
-				IOrderedQueryable<Product> q =
+			IOrderedQueryable<Product> q =
 				from p in db.Products
 				orderby p.UnitPrice descending
 				select p;
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("ORDER BY")]
 		[Test(Description = "This sample uses a compound orderby to sort Customers " +
 							"by city and then contact name.")]
-		public Task DLinq39Async()
+		public async Task DLinq39Async()
 		{
-			try
-			{
-				IOrderedQueryable<Customer> q =
+			IOrderedQueryable<Customer> q =
 				from c in db.Customers
 				orderby c.Address.City , c.ContactName
 				select c;
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("ORDER BY")]
 		[Test(Description = "This sample uses orderby to sort Orders from EmployeeId 1 " +
 							"by ship-to country, and then by freight from highest to lowest.")]
-		public Task DLinq40Async()
+		public async Task DLinq40Async()
 		{
-			try
-			{
-				IOrderedQueryable<Order> q =
+			IOrderedQueryable<Order> q =
 				from o in db.Orders
 				where o.Employee.EmployeeId == 1
 				orderby o.ShippingAddress.Country , o.Freight descending
 				select o;
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 
@@ -672,11 +574,9 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample uses Orderby, Max and Group By to find the Products that have " +
 							"the highest unit price in each category, and sorts the group by category id.")]
 		[Ignore("TODO nested aggregating group by")]
-		public Task DLinq41Async()
+		public async Task DLinq41Async()
 		{
-			try
-			{
-				var categories =
+			var categories =
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
@@ -690,12 +590,7 @@ namespace NHibernate.Test.Linq
 					select p2
 							   };
 
-				return ObjectDumper.WriteAsync(categories, 1);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(categories, 1));
 		}
 
 		[Category("GROUP BY/HAVING")]
@@ -725,11 +620,9 @@ namespace NHibernate.Test.Linq
 		[Category("GROUP BY/HAVING")]
 		[Test(Description = "This sample uses group by and Max " +
 							"to find the maximum unit price for each CategoryId.")]
-		public Task DLinq43Async()
+		public async Task DLinq43Async()
 		{
-			try
-			{
-				var q =
+			var q =
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
@@ -739,22 +632,15 @@ namespace NHibernate.Test.Linq
 								   MaxPrice = g.Max(p => p.UnitPrice)
 							   };
 
-				return ObjectDumper.WriteAsync(q, 1);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q, 1));
 		}
 
 		[Category("GROUP BY/HAVING")]
 		[Test(Description = "This sample uses group by and Min " +
 							"to find the minimum unit price for each CategoryId.")]
-		public Task DLinq44Async()
+		public async Task DLinq44Async()
 		{
-			try
-			{
-				var q =
+			var q =
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
@@ -764,22 +650,15 @@ namespace NHibernate.Test.Linq
 								   MinPrice = g.Min(p => p.UnitPrice)
 							   };
 
-				return ObjectDumper.WriteAsync(q, 1);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q, 1));
 		}
 
 		[Category("GROUP BY/HAVING")]
 		[Test(Description = "This sample uses group by and Average " +
 							"to find the average UnitPrice for each CategoryId.")]
-		public Task DLinq45Async()
+		public async Task DLinq45Async()
 		{
-			try
-			{
-				var q =
+			var q =
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
@@ -789,22 +668,15 @@ namespace NHibernate.Test.Linq
 								   AveragePrice = g.Average(p2 => p2.UnitPrice)
 							   };
 
-				return ObjectDumper.WriteAsync(q, 1);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q, 1));
 		}
 
 		[Category("GROUP BY/HAVING")]
 		[Test(Description = "This sample uses group by and Sum " +
 							"to find the total UnitPrice for each CategoryId.")]
-		public Task DLinq46Async()
+		public async Task DLinq46Async()
 		{
-			try
-			{
-				var q =
+			var q =
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
@@ -814,22 +686,15 @@ namespace NHibernate.Test.Linq
 								   TotalPrice = g.Sum(p => p.UnitPrice)
 							   };
 
-				return ObjectDumper.WriteAsync(q, 1);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q, 1));
 		}
 
 		[Category("GROUP BY/HAVING")]
 		[Test(Description = "This sample uses group by and Count " +
 							"to find the number of Products in each CategoryId.")]
-		public Task DLinq47Async()
+		public async Task DLinq47Async()
 		{
-			try
-			{
-				var q =
+			var q =
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
@@ -839,23 +704,16 @@ namespace NHibernate.Test.Linq
 								   NumProducts = g.Count()
 							   };
 
-				return ObjectDumper.WriteAsync(q, 1);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q, 1));
 		}
 
 		[Category("GROUP BY/HAVING")]
 		[Test(Description = "This sample uses group by and Count " +
 							"to find the number of Products in each CategoryId " +
 							"that are discontinued.")]
-		public Task DLinq48Async()
+		public async Task DLinq48Async()
 		{
-			try
-			{
-				var q =
+			var q =
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
@@ -865,23 +723,16 @@ namespace NHibernate.Test.Linq
 								   NumProducts = g.Count(p => p.Discontinued)
 							   };
 
-				return ObjectDumper.WriteAsync(q, 1);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q, 1));
 		}
 
 		[Category("GROUP BY/HAVING")]
 		[Test(Description = "This sample uses group by and Count " +
 							"to find the number of Products in each CategoryId " +
 							"that are not discontinued.")]
-		public Task DLinq48bAsync()
+		public async Task DLinq48bAsync()
 		{
-			try
-			{
-				var q =
+			var q =
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
@@ -891,22 +742,15 @@ namespace NHibernate.Test.Linq
 								   NumProducts = g.Count(p => !p.Discontinued)
 							   };
 
-				return ObjectDumper.WriteAsync(q, 1);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q, 1));
 		}
 
 		[Category("GROUP BY/HAVING")]
 		[Test(Description = "This sample uses a where clause after a group by clause " +
 							"to find all categories that have at least 10 products.")]
-		public Task DLinq49Async()
+		public async Task DLinq49Async()
 		{
-			try
-			{
-				var q =
+			var q =
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
@@ -917,12 +761,7 @@ namespace NHibernate.Test.Linq
 								   ProductCount = g.Count()
 							   };
 
-				return ObjectDumper.WriteAsync(q, 1);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q, 1));
 		}
 
 		[Category("GROUP BY/HAVING")]
@@ -955,22 +794,15 @@ namespace NHibernate.Test.Linq
 							"The first sequence contains products with unit price " +
 							"greater than 10. The second sequence contains products " +
 							"with unit price less than or equal to 10.")]
-		public Task DLinq51Async()
+		public async Task DLinq51Async()
 		{
-			try
-			{
-				var categories =
+			var categories =
 				from p in db.Products
 				group p by new {Criterion = p.UnitPrice > 10}
 				into g
 					select g;
 
-				return ObjectDumper.WriteAsync(categories, 1);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(categories, 1));
 		}
 
 		[Category("EXISTS/IN/ANY/ALL")]
@@ -1097,11 +929,9 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample uses Concat to return a sequence of all Customer and Employee " +
 							"phone/fax numbers.")]
 		[Ignore("TODO set operations")]
-		public Task DLinq55Async()
+		public async Task DLinq55Async()
 		{
-			try
-			{
-				IQueryable<string> q = (
+			IQueryable<string> q = (
 									   from c in db.Customers
 									   select c.Address.PhoneNumber
 								   ).Concat(
@@ -1112,23 +942,16 @@ namespace NHibernate.Test.Linq
 				select e.Address.PhoneNumber
 				);
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("UNION ALL/UNION/INTERSECT")]
 		[Test(Description = "This sample uses Concat to return a sequence of all Customer and Employee " +
 							"name and phone number mappings.")]
 		[Ignore("TODO set operations")]
-		public Task DLinq56Async()
+		public async Task DLinq56Async()
 		{
-			try
-			{
-				var q = (
+			var q = (
 						from c in db.Customers
 						select new {Name = c.CompanyName, Phone = c.Address.PhoneNumber}
 					).Concat(
@@ -1136,23 +959,16 @@ namespace NHibernate.Test.Linq
 				select new {Name = e.FirstName + " " + e.LastName, Phone = e.Address.PhoneNumber}
 				);
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("UNION ALL/UNION/INTERSECT")]
 		[Test(Description = "This sample uses Union to return a sequence of all countries that either " +
 							"Customers or Employees are in.")]
 		[Ignore("TODO set operations")]
-		public Task DLinq57Async()
+		public async Task DLinq57Async()
 		{
-			try
-			{
-				IQueryable<string> q = (
+			IQueryable<string> q = (
 									   from c in db.Customers
 									   select c.Address.Country
 								   ).Union(
@@ -1160,23 +976,16 @@ namespace NHibernate.Test.Linq
 				select e.Address.Country
 				);
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("UNION ALL/UNION/INTERSECT")]
 		[Test(Description = "This sample uses Intersect to return a sequence of all countries that both " +
 							"Customers and Employees live in.")]
 		[Ignore("TODO set operations")]
-		public Task DLinq58Async()
+		public async Task DLinq58Async()
 		{
-			try
-			{
-				IQueryable<string> q = (
+			IQueryable<string> q = (
 									   from c in db.Customers
 									   select c.Address.Country
 								   ).Intersect(
@@ -1184,23 +993,16 @@ namespace NHibernate.Test.Linq
 				select e.Address.Country
 				);
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("UNION ALL/UNION/INTERSECT")]
 		[Test(Description = "This sample uses Except to return a sequence of all countries that " +
 							"Customers live in but no Employees live in.")]
 		[Ignore("TODO set operations")]
-		public Task DLinq59Async()
+		public async Task DLinq59Async()
 		{
-			try
-			{
-				IQueryable<string> q = (
+			IQueryable<string> q = (
 									   from c in db.Customers
 									   select c.Address.Country
 								   ).Except(
@@ -1208,12 +1010,7 @@ namespace NHibernate.Test.Linq
 				select e.Address.Country
 				);
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("WHERE")]
@@ -1226,65 +1023,44 @@ namespace NHibernate.Test.Linq
 
 		[Category("TOP/BOTTOM")]
 		[Test(Description = "This sample uses Take to select the first 5 Employees hired.")]
-		public Task DLinq60Async()
+		public async Task DLinq60Async()
 		{
-			try
-			{
-				IQueryable<Employee> q = (
+			IQueryable<Employee> q = (
 										 from e in db.Employees
 										 orderby e.HireDate
 										 select e)
 				.Take(5);
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("TOP/BOTTOM")]
 		[Test(Description = "This sample uses Skip to select all but the 10 most expensive Products.")]
-		public Task DLinq61Async()
+		public async Task DLinq61Async()
 		{
-			try
-			{
-				IQueryable<Product> q = (
+			IQueryable<Product> q = (
 										from p in db.Products
 										orderby p.UnitPrice descending
 										select p)
 				.Skip(10);
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("Paging")]
 		[Test(Description = "This sample uses the Skip and Take operators to do paging by " +
 							"skipping the first 50 records and then returning the next 10, thereby " +
 							"providing the data for page 6 of the Products table.")]
-		public Task DLinq62Async()
+		public async Task DLinq62Async()
 		{
-			try
-			{
-				IQueryable<Customer> q = (
+			IQueryable<Customer> q = (
 										 from c in db.Customers
 										 orderby c.ContactName
 										 select c)
 				.Skip(50)
 				.Take(10);
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("Paging")]
@@ -1293,23 +1069,16 @@ namespace NHibernate.Test.Linq
 							"from page 5), then ordering by ProductId, and finally taking the first 10 results, " +
 							"thereby providing the data for page 6 of the Products table.  " +
 							"Note that this method only works when ordering by a unique key.")]
-		public Task DLinq63Async()
+		public async Task DLinq63Async()
 		{
-			try
-			{
-				IQueryable<Product> q = (
+			IQueryable<Product> q = (
 										from p in db.Products
 										where p.ProductId > 50
 										orderby p.ProductId
 										select p)
 				.Take(10);
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("WHERE")]
@@ -1343,88 +1112,60 @@ namespace NHibernate.Test.Linq
 		[Category("JOIN")]
 		[Test(Description = "This sample uses foreign key navigation in the " +
 							"from clause to select all orders for customers in London.")]
-		public Task DLinqJoin1Async()
+		public async Task DLinqJoin1Async()
 		{
-			try
-			{
-				IQueryable<Order> q =
+			IQueryable<Order> q =
 				from c in db.Customers
 				from o in c.Orders
 //                from o in c.Orders.Cast<Order>()
 				where c.Address.City == "London"
 				select o;
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("JOIN")]
 		[Test(Description = "This sample shows how to construct a join where one side is nullable and the other isn't.")]
-		public Task DLinqJoin10Async()
+		public async Task DLinqJoin10Async()
 		{
-			try
-			{
-				var q =
+			var q =
 				from o in db.Orders
 				join e in db.Employees
 					on o.Employee.EmployeeId equals (int?) e.EmployeeId into emps
 				from e in emps
 				select new {o.OrderId, e.FirstName};
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("JOIN")]
 		[Test(Description = "This sample uses foreign key navigation in the " +
 							"from clause to select all orders for customers in London.")]
-		public Task DLinqJoin1aAsync()
+		public async Task DLinqJoin1aAsync()
 		{
-			try
-			{
-				var q =
+			var q =
 				from c in db.Customers
 				from o in c.Orders
 //                from o in c.Orders.Cast<Order>()
 				where c.Address.City == "London"
 				select new {o.OrderDate, o.ShippingAddress.Region};
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("JOIN")]
 		[Test(Description = "This sample uses foreign key navigation in the " +
 							"from clause to select all orders for customers in London.")]
-		public Task DLinqJoin1bAsync()
+		public async Task DLinqJoin1bAsync()
 		{
-			try
-			{
-				var q =
+			var q =
 				from c in db.Customers
 				from o in c.Orders
 //                from o in c.Orders.Cast<Order>()
 				where c.Address.City == "London"
 				select new {c.Address.City, o.OrderDate, o.ShippingAddress.Region};
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("JOIN")]
@@ -1479,44 +1220,30 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample uses foreign key navigation in the " +
 							"where clause to filter for Products whose Supplier is in the USA " +
 							"that are out of stock.")]
-		public Task DLinqJoin2Async()
+		public async Task DLinqJoin2Async()
 		{
-			try
-			{
-				IQueryable<Product> q =
+			IQueryable<Product> q =
 				from p in db.Products
 				where p.Supplier.Address.Country == "USA" && p.UnitsInStock == 0
 				select p;
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("JOIN")]
 		[Test(Description = "This sample uses foreign key navigation in the " +
 							"from clause to filter for employees in Seattle, " +
 							"and also list their territories.")]
-		public Task DLinqJoin3Async()
+		public async Task DLinqJoin3Async()
 		{
-			try
-			{
-				var q =
+			var q =
 				from e in db.Employees
 				from et in e.Territories
 //                from et in e.Territories.Cast<Territory>()
 				where e.Address.City == "Seattle"
 				select new {e.FirstName, e.LastName, et.Region.Description};
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("JOIN")]
@@ -1524,11 +1251,9 @@ namespace NHibernate.Test.Linq
 							"select clause to filter for pairs of employees where " +
 							"one employee reports to the other and where " +
 							"both employees are from the same City.")]
-		public Task DLinqJoin4Async()
+		public async Task DLinqJoin4Async()
 		{
-			try
-			{
-				var q =
+			var q =
 				from e1 in db.Employees
 				from e2 in e1.Subordinates
 //                from e2 in e1.Subordinates.Cast<Employee>()
@@ -1542,134 +1267,87 @@ namespace NHibernate.Test.Linq
 							   e1.Address.City
 						   };
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("JOIN")]
 		[Test(Description = "This sample explictly joins two tables and projects results from both tables using a group join.")]
-		public Task DLinqJoin5Async()
+		public async Task DLinqJoin5Async()
 		{
-			try
-			{
-				if (!Dialect.SupportsScalarSubSelects)
-					Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
 
-				var q =
+			var q =
 				from c in db.Customers 
 				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId into orders
 				select new {c.ContactName, OrderCount = orders.Average(x => x.Freight)};
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("JOIN")]
 		[Test(Description = "This sample explictly joins two tables and projects results from both tables.")]
-		public Task DLinqJoin5aAsync()
+		public async Task DLinqJoin5aAsync()
 		{
-			try
-			{
-				var q =
+			var q =
 				from c in db.Customers
 				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId
 				select new { c.ContactName, o.OrderId };
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("JOIN")]
 		[Test(Description = "This sample explictly joins two tables and projects results from both tables using a group join.")]
-		public Task DLinqJoin5bAsync()
+		public async Task DLinqJoin5bAsync()
 		{
-			try
-			{
-				var q = from c in db.Customers
+			var q = from c in db.Customers
 					join o in db.Orders on c.CustomerId equals o.Customer.CustomerId
 					group new { c, o } by c.ContactName
 						into g
 						select new { ContactName = g.Key, OrderCount = g.Average(i => i.o.Freight) };
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("JOIN")]
 		[Test(Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
-		public Task DLinqJoin5cAsync()
+		public async Task DLinqJoin5cAsync()
 		{
-			try
-			{
-				var q =
+			var q =
 				from c in db.Customers
 				join o in db.Orders on new {c.CustomerId} equals new {o.Customer.CustomerId}
 				select new { c.ContactName, o.OrderId };
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("JOIN")]
 		[Test(Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
-		public Task DLinqJoin5dAsync()
+		public async Task DLinqJoin5dAsync()
 		{
-			try
-			{
-				var q =
+			var q =
 				from c in db.Customers
 				join o in db.Orders on new {c.CustomerId, HasContractTitle = c.ContactTitle != null} equals new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null }
 				select new { c.ContactName, o.OrderId };
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("JOIN")]
 		[Test(Description = "This sample explictly joins three tables and projects results from each of them.")]
-		public Task DLinqJoin6Async()
+		public async Task DLinqJoin6Async()
 		{
-			try
-			{
-				if (!Dialect.SupportsScalarSubSelects)
-					Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
 
-				var q =
+			var q =
 				from c in db.Customers
 				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId into ords
 				join e in db.Employees on c.Address.City equals e.Address.City into emps
 				select new {c.ContactName, ords = ords.Count(), emps = emps.Count()};
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("JOIN")]
@@ -1678,43 +1356,29 @@ namespace NHibernate.Test.Linq
 				"This sample shows how to get LEFT OUTER JOIN by using DefaultIfEmpty(). The DefaultIfEmpty() method returns null when there is no Order for the Employee."
 			)]
 		[Ignore("TODO left outer join")]
-		public Task DLinqJoin7Async()
+		public async Task DLinqJoin7Async()
 		{
-			try
-			{
-				var q =
+			var q =
 				from e in db.Employees
 				join o in db.Orders on e equals o.Employee into ords
 				from o in ords.DefaultIfEmpty()
 				select new {e.FirstName, e.LastName, Order = o};
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("JOIN")]
 		[Test(Description = "This sample projects a 'let' expression resulting from a join.")]
-		public Task DLinqJoin8Async()
+		public async Task DLinqJoin8Async()
 		{
-			try
-			{
-				var q =
+			var q =
 				from c in db.Customers
 				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId into ords
 				let z = c.Address.City + c.Address.Country
 				from o in ords
 				select new {c.ContactName, o.OrderId, z};
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("JOIN")]
@@ -1744,21 +1408,14 @@ namespace NHibernate.Test.Linq
 
 		[Category("JOIN")]
 		[Test(Description = "This sample shows a join which is then grouped")]
-		public Task DLinqJoin9bAsync()
+		public async Task DLinqJoin9bAsync()
 		{
-			try
-			{
-				var q = from c in db.Customers
+			var q = from c in db.Customers
 					 join o in db.Orders on c.CustomerId equals o.Customer.CustomerId
 					 group o by c into x
 					 select new { CustomerName = x.Key.ContactName, Order = x };
 
-				return ObjectDumper.WriteAsync(q);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(q));
 		}
 	}
 }

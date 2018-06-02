@@ -73,19 +73,12 @@ namespace NHibernate.Test.Linq
         }
 
         [Test]
-        public Task CanReuseAfterAggregateAsync()
+        public async Task CanReuseAfterAggregateAsync()
         {
-            try
-            {
-                User user = _query.Aggregate((u1, u2) => u1);
+            User user = _query.Aggregate((u1, u2) => u1);
 
-                Assert.IsNotNull(user);
-                return AssertQueryReuseableAsync();
-            }
-            catch (System.Exception ex)
-            {
-                return Task.FromException<object>(ex);
-            }
+            Assert.IsNotNull(user);
+            await (AssertQueryReuseableAsync());
         }
 
         [Test]

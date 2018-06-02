@@ -102,104 +102,62 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public Task FetchWithWhereAsync()
+		public async Task FetchWithWhereAsync()
 		{
-			try
-			{
-				// NH-2381 NH-2362
-				return (from p in session.Query<Product>().Fetch(a => a.Supplier)
+			// NH-2381 NH-2362
+			await ((from p in session.Query<Product>().Fetch(a => a.Supplier)
 			 where p.ProductId == 1
-			 select p).ToListAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			 select p).ToListAsync());
 		}
 
 		[Test]
-		public Task FetchManyWithWhereAsync()
+		public async Task FetchManyWithWhereAsync()
 		{
-			try
-			{
-						// NH-2381 NH-2362
-				return (from s
+					// NH-2381 NH-2362
+			await ((from s
 				in session.Query<Supplier>().FetchMany(a => a.Products)
 			 where s.SupplierId == 1
-			 select s).ToListAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			 select s).ToListAsync());
 		}
 
 		[Test]
-		public Task FetchAndThenFetchWithWhereAsync()
+		public async Task FetchAndThenFetchWithWhereAsync()
 		{
-			try
-			{
-				// NH-2362
-				return (from p
+			// NH-2362
+			await ((from p
 				in session.Query<User>().Fetch(a => a.Role).ThenFetch(a => a.Entity)
 			 where p.Id == 1
-			 select p).ToListAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			 select p).ToListAsync());
 		}
 
 		[Test]
-		public Task FetchAndThenFetchManyWithWhereAsync()
+		public async Task FetchAndThenFetchManyWithWhereAsync()
 		{
-			try
-			{
-				// NH-2362
-				return (from p
+			// NH-2362
+			await ((from p
 				in session.Query<Employee>().Fetch(a => a.Superior).ThenFetchMany(a => a.Orders)
 			 where p.EmployeeId == 1
-			 select p).ToListAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			 select p).ToListAsync());
 		}
 
 		[Test]
-		public Task FetchManyAndThenFetchWithWhereAsync()
+		public async Task FetchManyAndThenFetchWithWhereAsync()
 		{
-			try
-			{
-				// NH-2362
-				return (from s
+			// NH-2362
+			await ((from s
 				in session.Query<Supplier>().FetchMany(a => a.Products).ThenFetch(a => a.Category)
 			 where s.SupplierId == 1
-			 select s).ToListAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			 select s).ToListAsync());
 		}
 
 		[Test]
-		public Task FetchManyAndThenFetchManyWithWhereAsync()
+		public async Task FetchManyAndThenFetchManyWithWhereAsync()
 		{
-			try
-			{
-				// NH-2362
-				return (from s
+			// NH-2362
+			await ((from s
 				in session.Query<Supplier>().FetchMany(a => a.Products).ThenFetchMany(a => a.OrderLines)
 			 where s.SupplierId == 1
-			 select s).ToListAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			 select s).ToListAsync());
 		}
 
 		[Test]

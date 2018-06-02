@@ -63,21 +63,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3436
 		}
 		
 		[Test]
-		public Task TestQueryWithContainsAsync()
+		public async Task TestQueryWithContainsAsync()
 		{
-			try
-			{
-				var ids = new List<Guid>
+			var ids = new List<Guid>
 			{
 				Guid.NewGuid(),
 				Guid.NewGuid(),
 			};
-				return RunAsync(ids);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (RunAsync(ids));
 		}
 
 		private async Task RunAsync(ICollection<Guid> ids, CancellationToken cancellationToken = default(CancellationToken))
