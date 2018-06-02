@@ -13,6 +13,8 @@ namespace NHibernate.Cache
 		private readonly string _filterName;
 		private readonly Dictionary<string, TypedValue> _filterParameters = new Dictionary<string, TypedValue>();
 
+		// Since v5.2
+		[Obsolete("Use overload taking a FilterImpl")]
 		public FilterKey(string name, IEnumerable<KeyValuePair<string, object>> @params, IDictionary<string, IType> types)
 		{
 			_filterName = name;
@@ -20,6 +22,17 @@ namespace NHibernate.Cache
 			{
 				IType type = types[me.Key];
 				_filterParameters[me.Key] = new TypedValue(type, me.Value);
+			}
+		}
+
+		public FilterKey(FilterImpl filter)
+		{
+			var types = filter.FilterDefinition.ParameterTypes;
+			_filterName = filter.Name;
+			foreach (var me in filter.Parameters)
+			{
+				var type = types[me.Key];
+				_filterParameters[me.Key] = new TypedValue(type, me.Value, filter.GetParameterSpan(me.Key) != null);
 			}
 		}
 
@@ -58,7 +71,7 @@ namespace NHibernate.Cache
 			var result = new HashSet<FilterKey>();
 			foreach (FilterImpl filter in enabledFilters.Values)
 			{
-				FilterKey key = new FilterKey(filter.Name, filter.Parameters, filter.FilterDefinition.ParameterTypes);
+				var key = new FilterKey(filter);
 				result.Add(key);
 			}
 			return result;

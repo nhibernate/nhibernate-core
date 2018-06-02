@@ -5,6 +5,8 @@ using NHibernate.Proxy.DynamicProxy;
 
 namespace NHibernate.Proxy
 {
+	// Since v5.2
+	[Obsolete("Use StaticProxyFactory instead")]
 	public class DefaultProxyFactory : AbstractProxyFactory
 	{
 		private readonly ProxyFactory factory = new ProxyFactory();

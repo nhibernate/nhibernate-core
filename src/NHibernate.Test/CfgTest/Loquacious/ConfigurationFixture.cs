@@ -9,7 +9,6 @@ using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Ast.ANTLR;
-using NHibernate.Linq;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -37,7 +36,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 					.Through<DefaultCollectionTypeFactory>()
 				.Proxy
 					.DisableValidation()
-					.Through<DefaultProxyFactoryFactory>()
+					.Through<StaticProxyFactoryFactory>()
 				.ParsingHqlThrough<ASTQueryTranslatorFactory>()
 				.Mapping
 					.UsingDefaultCatalog("MyCatalog")
@@ -75,7 +74,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(cfg.Properties[Environment.CacheDefaultExpiration], Is.EqualTo("15"));
 			Assert.That(cfg.Properties[Environment.CollectionTypeFactoryClass], Is.EqualTo(typeof(DefaultCollectionTypeFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.UseProxyValidator], Is.EqualTo("false"));
-			Assert.That(cfg.Properties[Environment.ProxyFactoryFactoryClass], Is.EqualTo(typeof(DefaultProxyFactoryFactory).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.ProxyFactoryFactoryClass], Is.EqualTo(typeof(StaticProxyFactoryFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.QueryTranslator], Is.EqualTo(typeof(ASTQueryTranslatorFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.DefaultCatalog], Is.EqualTo("MyCatalog"));
 			Assert.That(cfg.Properties[Environment.DefaultSchema], Is.EqualTo("MySche"));
@@ -108,13 +107,13 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			// The place where put default properties values is the Dialect itself.
 			var cfg = new Configuration();
 			cfg.SessionFactory()
-				.Proxy.Through<DefaultProxyFactoryFactory>()
+				.Proxy.Through<StaticProxyFactoryFactory>()
 				.Integrate
 					.Using<MsSql2005Dialect>()
 					.Connected
 						.Using(new SqlConnectionStringBuilder { DataSource = "(local)", InitialCatalog = "nhibernate", IntegratedSecurity = true });
 
-			Assert.That(cfg.Properties[Environment.ProxyFactoryFactoryClass], Is.EqualTo(typeof(DefaultProxyFactoryFactory).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.ProxyFactoryFactoryClass], Is.EqualTo(typeof(StaticProxyFactoryFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.Dialect], Is.EqualTo(typeof(MsSql2005Dialect).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.ConnectionString], Is.EqualTo("Data Source=(local);Initial Catalog=nhibernate;Integrated Security=True"));
 		}

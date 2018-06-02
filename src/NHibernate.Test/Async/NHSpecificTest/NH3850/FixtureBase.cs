@@ -129,74 +129,74 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 
 		// Failing case till NH-3850 is fixed
 		[Test]
-		public Task MaxBBaseAsync()
+		public async Task MaxBBaseAsync()
 		{
-			return MaxAsync<DomainClassBExtendedByA>(2);
+			await (MaxAsync<DomainClassBExtendedByA>(2));
 		}
 
 		// Failing case till NH-3850 is fixed
 		[Test]
-		public Task MaxCBaseAsync()
+		public async Task MaxCBaseAsync()
 		{
-			return MaxAsync<DomainClassCExtendedByD>(2);
+			await (MaxAsync<DomainClassCExtendedByD>(2));
 		}
 
 		// Non-reg case
 		[Test]
-		public Task MaxEAsync()
+		public async Task MaxEAsync()
 		{
-			return MaxAsync<DomainClassE>(2);
+			await (MaxAsync<DomainClassE>(2));
 		}
 
 		// Non-reg case
 		[Test]
-		public Task MaxFAsync()
+		public async Task MaxFAsync()
 		{
-			return MaxAsync<DomainClassF>(null);
+			await (MaxAsync<DomainClassF>(null));
 		}
 
 		// Failing case till NH-3850 is fixed
 		[Test]
-		public Task MaxGBaseAsync()
+		public async Task MaxGBaseAsync()
 		{
-			return MaxAsync<DomainClassGExtendedByH>(4);
+			await (MaxAsync<DomainClassGExtendedByH>(4));
 		}
 
 		protected abstract Task MaxAsync<TDc>(int? expectedResult, CancellationToken cancellationToken = default(CancellationToken)) where TDc : DomainClassBase;
 
 		// Failing case till NH-3850 is fixed
 		[Test]
-		public Task MinBBaseAsync()
+		public async Task MinBBaseAsync()
 		{
-			return MinAsync<DomainClassBExtendedByA>(1);
+			await (MinAsync<DomainClassBExtendedByA>(1));
 		}
 
 		// Failing case till NH-3850 is fixed
 		[Test]
-		public Task MinCBaseAsync()
+		public async Task MinCBaseAsync()
 		{
-			return MinAsync<DomainClassCExtendedByD>(1);
+			await (MinAsync<DomainClassCExtendedByD>(1));
 		}
 
 		// Non-reg case
 		[Test]
-		public Task MinEAsync()
+		public async Task MinEAsync()
 		{
-			return MinAsync<DomainClassE>(1);
+			await (MinAsync<DomainClassE>(1));
 		}
 
 		// Non-reg case
 		[Test]
-		public Task MinFAsync()
+		public async Task MinFAsync()
 		{
-			return MinAsync<DomainClassF>(null);
+			await (MinAsync<DomainClassF>(null));
 		}
 
 		// Non-reg case
 		[Test]
-		public Task MinGBaseAsync()
+		public async Task MinGBaseAsync()
 		{
-			return MinAsync<DomainClassGExtendedByH>(1);
+			await (MinAsync<DomainClassGExtendedByH>(1));
 		}
 
 		protected abstract Task MinAsync<TDc>(int? expectedResult, CancellationToken cancellationToken = default(CancellationToken)) where TDc : DomainClassBase;

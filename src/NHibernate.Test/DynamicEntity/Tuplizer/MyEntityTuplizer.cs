@@ -1,8 +1,10 @@
+using System;
 using NHibernate.Mapping;
 using NHibernate.Tuple.Entity;
 
 namespace NHibernate.Test.DynamicEntity.Tuplizer
 {
+	[Obsolete("Require dynamic proxies")]
 	public class MyEntityTuplizer : PocoEntityTuplizer
 	{
 		public MyEntityTuplizer(EntityMetamodel entityMetamodel, PersistentClass mappedEntity) : base(entityMetamodel, mappedEntity) {}

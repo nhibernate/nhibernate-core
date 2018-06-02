@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NHibernate.Proxy.DynamicProxy
+namespace NHibernate.Proxy
 {
 	public class ProxyCacheEntry : IEquatable<ProxyCacheEntry>
 	{
@@ -26,6 +26,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			{
 				uniqueInterfaces.UnionWith(interfaces.Where(i => i != null));
 			}
+
 			_uniqueInterfaces = uniqueInterfaces;
 
 			_hashCode = 59 ^ baseType.GetHashCode();
@@ -64,5 +65,17 @@ namespace NHibernate.Proxy.DynamicProxy
 		}
 
 		public override int GetHashCode() => _hashCode;
+	}
+}
+
+namespace NHibernate.Proxy.DynamicProxy
+{
+	// Since v5.2
+	[Obsolete("Use NHibernate.Proxy.ProxyCacheEntry instead")]
+	public class ProxyCacheEntry : NHibernate.Proxy.ProxyCacheEntry
+	{
+		public ProxyCacheEntry(System.Type baseType, System.Type[] interfaces) : base(baseType, interfaces)
+		{
+		}
 	}
 }

@@ -37,51 +37,30 @@ namespace NHibernate.Test.TypesTest
 		}
 
 		[Test]
-		public Task ReadWriteNormalAsync()
+		public async Task ReadWriteNormalAsync()
 		{
-			try
-			{
-				var expected = DateTime.Today;
+			var expected = DateTime.Today;
 
-				return ReadWriteAsync(expected);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ReadWriteAsync(expected));
 		}
 
 		[Test]
-		public Task ReadWriteMinAsync()
+		public async Task ReadWriteMinAsync()
 		{
-			try
-			{
-				var expected = Sfi.ConnectionProvider.Driver.MinDate;
+			var expected = Sfi.ConnectionProvider.Driver.MinDate;
 
-				return ReadWriteAsync(expected);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ReadWriteAsync(expected));
 		}
 
 		[Test]
-		public Task ReadWriteYear750Async()
+		public async Task ReadWriteYear750Async()
 		{
-			try
+			var expected = new DateTime(750, 5, 13);
+			if (Sfi.ConnectionProvider.Driver.MinDate > expected)
 			{
-				var expected = new DateTime(750, 5, 13);
-				if (Sfi.ConnectionProvider.Driver.MinDate > expected)
-				{
-					Assert.Ignore($"The driver does not support dates below {Sfi.ConnectionProvider.Driver.MinDate:O}");
-				}
-				return ReadWriteAsync(expected);
+				Assert.Ignore($"The driver does not support dates below {Sfi.ConnectionProvider.Driver.MinDate:O}");
 			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ReadWriteAsync(expected));
 		}
 
 		private async Task ReadWriteAsync(DateTime expected, CancellationToken cancellationToken = default(CancellationToken))

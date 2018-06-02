@@ -324,35 +324,35 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		}
 
 		[Test, Ignore("Won't fix: requires reshaping the query")]
-		public Task AverageBBaseAsync()
+		public async Task AverageBBaseAsync()
 		{
-			return AverageAsync<DomainClassBExtendedByA>(1.5m);
+			await (AverageAsync<DomainClassBExtendedByA>(1.5m));
 		}
 
 		[Test, Ignore("Won't fix: requires reshaping the query")]
-		public Task AverageCBaseAsync()
+		public async Task AverageCBaseAsync()
 		{
-			return AverageAsync<DomainClassCExtendedByD>(1.5m);
+			await (AverageAsync<DomainClassCExtendedByD>(1.5m));
 		}
 
 		// Non-reg case
 		[Test]
-		public Task AverageEAsync()
+		public async Task AverageEAsync()
 		{
-			return AverageAsync<DomainClassE>(1.5m);
+			await (AverageAsync<DomainClassE>(1.5m));
 		}
 
 		// Non-reg case
 		[Test]
-		public Task AverageFAsync()
+		public async Task AverageFAsync()
 		{
-			return AverageAsync<DomainClassF>(null);
+			await (AverageAsync<DomainClassF>(null));
 		}
 
 		[Test, Ignore("Won't fix: requires reshaping the query")]
-		public Task AverageGBaseAsync()
+		public async Task AverageGBaseAsync()
 		{
-			return AverageAsync<DomainClassGExtendedByH>(2.5m);
+			await (AverageAsync<DomainClassGExtendedByH>(2.5m));
 		}
 
 		private async Task AverageAsync<DC>(decimal? expectedResult, CancellationToken cancellationToken = default(CancellationToken)) where DC : DomainClassBase
@@ -1227,37 +1227,37 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 
 		// Failing case till NH-3850 is fixed
 		[Test]
-		public Task SumBBaseAsync()
+		public async Task SumBBaseAsync()
 		{
-			return SumAsync<DomainClassBExtendedByA>(3);
+			await (SumAsync<DomainClassBExtendedByA>(3));
 		}
 
 		// Failing case till NH-3850 is fixed
 		[Test]
-		public Task SumCBaseAsync()
+		public async Task SumCBaseAsync()
 		{
-			return SumAsync<DomainClassCExtendedByD>(3);
+			await (SumAsync<DomainClassCExtendedByD>(3));
 		}
 
 		// Non-reg case
 		[Test]
-		public Task SumEAsync()
+		public async Task SumEAsync()
 		{
-			return SumAsync<DomainClassE>(3);
+			await (SumAsync<DomainClassE>(3));
 		}
 
 		// Non-reg case
 		[Test]
-		public Task SumFAsync()
+		public async Task SumFAsync()
 		{
-			return SumAsync<DomainClassF>(null);
+			await (SumAsync<DomainClassF>(null));
 		}
 
 		// Failing case till NH-3850 is fixed
 		[Test]
-		public Task SumGBaseAsync()
+		public async Task SumGBaseAsync()
 		{
-			return SumAsync<DomainClassGExtendedByH>(10);
+			await (SumAsync<DomainClassGExtendedByH>(10));
 		}
 
 		// Failing case till NH-3850 is fixed

@@ -13,3 +13,4 @@ current-test-configuration
 NHibernate.dll
 TestResult.xml
 .vscode
+.DS_Store

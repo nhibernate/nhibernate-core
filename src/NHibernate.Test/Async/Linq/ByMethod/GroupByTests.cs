@@ -904,19 +904,12 @@ namespace NHibernate.Test.Linq.ByMethod
 
 
 		[Test(Description = "NH-3446"), KnownBug("NH-3446", "NHibernate.HibernateException")]
-		public Task GroupByOrderByKeySelectToClassAsync()
+		public async Task GroupByOrderByKeySelectToClassAsync()
 		{
-			try
-			{
-				return db.Products.GroupBy(x => x.Supplier.CompanyName)
+			await (db.Products.GroupBy(x => x.Supplier.CompanyName)
 				.OrderBy(x => x.Key)
 				.Select(x => new GroupInfo {Key = x.Key, ItemCount = x.Count(), HasSubgroups = false, Items = x})
-				.ToListAsync();
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+				.ToListAsync());
 		}
 
 		private class GroupInfo

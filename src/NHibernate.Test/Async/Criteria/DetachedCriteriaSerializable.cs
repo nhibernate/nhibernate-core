@@ -46,18 +46,11 @@ namespace NHibernate.Test.Criteria
 		}
 
 		[Test]
-		public Task DetachedCriteriaItSelfAsync()
+		public async Task DetachedCriteriaItSelfAsync()
 		{
-			try
-			{
-				DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
+			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
 				.Add(Expression.Eq("Name", "Gavin King"));
-				return SerializeAndListAsync(dc);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (SerializeAndListAsync(dc));
 		}
 
 		[Test]

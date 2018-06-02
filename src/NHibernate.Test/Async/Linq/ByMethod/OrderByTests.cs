@@ -232,29 +232,15 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test(Description = "NH-3217")]
-		public Task OrderByNullCompareAndSkipAndTakeAsync()
+		public async Task OrderByNullCompareAndSkipAndTakeAsync()
 		{
-			try
-			{
-				return db.Orders.OrderBy(o => o.Shipper == null ? 0 : o.Shipper.ShipperId).Skip(3).Take(4).ToListAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (db.Orders.OrderBy(o => o.Shipper == null ? 0 : o.Shipper.ShipperId).Skip(3).Take(4).ToListAsync());
 		}
 
 		[Test(Description = "NH-3445"), KnownBug("NH-3445")]
-		public Task OrderByWithSelectDistinctAndTakeAsync()
+		public async Task OrderByWithSelectDistinctAndTakeAsync()
 		{
-			try
-			{
-				return db.Orders.Select(o => o.ShippedTo).Distinct().OrderBy(o => o).Take(1000).ToListAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (db.Orders.Select(o => o.ShippedTo).Distinct().OrderBy(o => o).Take(1000).ToListAsync());
 		}
 	}
 }

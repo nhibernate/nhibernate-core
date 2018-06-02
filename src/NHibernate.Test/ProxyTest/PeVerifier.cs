@@ -3,11 +3,11 @@ using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
 
-namespace NHibernate.Test.DynamicProxyTests
+namespace NHibernate.Test.ProxyTest
 {
 	// utility class to run PEVerify.exe against a saved-to-disk assembly, similar to:
 	// http://stackoverflow.com/questions/7290893/is-there-an-api-for-verifying-the-msil-of-a-dynamic-assembly-at-runtime
-	public partial class PeVerifier
+	public class PeVerifier
 	{
 		private string _assemlyLocation;
 		private string _peVerifyPath;

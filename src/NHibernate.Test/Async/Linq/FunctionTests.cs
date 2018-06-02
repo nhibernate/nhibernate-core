@@ -257,23 +257,16 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public Task TwoFunctionExpressionAsync()
+		public async Task TwoFunctionExpressionAsync()
 		{
-			try
-			{
-				if (!TestDialect.SupportsLocate)
-					Assert.Ignore("Locate function not supported.");
+			if (!TestDialect.SupportsLocate)
+				Assert.Ignore("Locate function not supported.");
 
-				var query = from e in db.Employees
+			var query = from e in db.Employees
 						where e.FirstName.IndexOf("A") == e.BirthDate.Value.Month 
 						select e.FirstName;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
@@ -378,226 +371,135 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public Task WhereShortEqualAsync()
+		public async Task WhereShortEqualAsync()
 		{
-			try
-			{
-				var query = from item in session.Query<Foo>()
+			var query = from item in session.Query<Foo>()
 						where item.Short.Equals(-1)
 						select item;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
-		public Task WhereBoolConstantEqualAsync()
+		public async Task WhereBoolConstantEqualAsync()
 		{
-			try
-			{
-				var query = from item in db.Role
+			var query = from item in db.Role
 						where item.IsActive.Equals(true)
 						select item;
-				
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
-		public Task WhereBoolConditionEqualsAsync()
+		public async Task WhereBoolConditionEqualsAsync()
 		{
-			try
-			{
-				var query = from item in db.Role
+			var query = from item in db.Role
 						where item.IsActive.Equals(item.Name != null)
 						select item;
-				
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
-		public Task WhereBoolParameterEqualAsync()
+		public async Task WhereBoolParameterEqualAsync()
 		{
-			try
-			{
-				var query = from item in db.Role
+			var query = from item in db.Role
 						where item.IsActive.Equals(1 == 1)
 						select item;
-				
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
-		public Task WhereBoolFuncEqualAsync()
+		public async Task WhereBoolFuncEqualAsync()
 		{
-			try
-			{
-				Func<bool> f = () => 1 == 1;
+			Func<bool> f = () => 1 == 1;
 
-				var query = from item in db.Role
+			var query = from item in db.Role
 						where item.IsActive.Equals(f())
 						select item;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
-		public Task WhereLongEqualAsync()
+		public async Task WhereLongEqualAsync()
 		{
-			try
-			{
-				var query = from item in db.PatientRecords
+			var query = from item in db.PatientRecords
 						 where item.Id.Equals(-1)
 						 select item;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
-		public Task WhereDateTimeEqualAsync()
+		public async Task WhereDateTimeEqualAsync()
 		{
-			try
-			{
-				var query = from item in db.Users
+			var query = from item in db.Users
 						where item.RegisteredAt.Equals(DateTime.Today)
 						select item;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}
 		
 		[Test]
-		public Task WhereGuidEqualAsync()
+		public async Task WhereGuidEqualAsync()
 		{
-			try
-			{
-				var query = from item in db.Shippers
+			var query = from item in db.Shippers
 						where item.Reference.Equals(Guid.Empty)
 						select item;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}		
 
 		[Test]
-		public Task WhereDoubleEqualAsync()
+		public async Task WhereDoubleEqualAsync()
 		{
-			try
-			{
-				var query = from item in db.Animals
+			var query = from item in db.Animals
 						where item.BodyWeight.Equals(-1)
 						select item;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}	
 	
 		[Test]
-		public Task WhereFloatEqualAsync()
+		public async Task WhereFloatEqualAsync()
 		{
-			try
-			{
-				var query = from item in session.Query<Foo>()
+			var query = from item in session.Query<Foo>()
 						where item.Float.Equals(-1)
 						select item;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}	
 
 		[Test]
-		public Task WhereCharEqualAsync()
+		public async Task WhereCharEqualAsync()
 		{
-			try
-			{
-				var query = from item in session.Query<Foo>()
+			var query = from item in session.Query<Foo>()
 						where item.Char.Equals('A')
 						select item;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
-		public Task WhereByteEqualAsync()
+		public async Task WhereByteEqualAsync()
 		{
-			try
-			{
-				var query = from item in session.Query<Foo>()
+			var query = from item in session.Query<Foo>()
 						where item.Byte.Equals(1)
 						select item;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
-		public Task WhereDecimalEqualAsync()
+		public async Task WhereDecimalEqualAsync()
 		{
-			try
-			{
-				var query = from item in db.OrderLines
+			var query = from item in db.OrderLines
 						where item.Discount.Equals(-1)
 						select item;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]

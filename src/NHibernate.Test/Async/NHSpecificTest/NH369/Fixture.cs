@@ -19,20 +19,13 @@ namespace NHibernate.Test.NHSpecificTest.NH369
 	public class FixtureAsync
 	{
 		[Test]
-		public Task KeyManyToOneAndNormalizedPersisterAsync()
+		public async Task KeyManyToOneAndNormalizedPersisterAsync()
 		{
-			try
-			{
-				Configuration cfg = new Configuration();
-				return cfg
+			Configuration cfg = new Configuration();
+			await (cfg
 				.AddClass(typeof(BaseClass))
 				.AddClass(typeof(KeyManyToOneClass))
-				.BuildSessionFactory().CloseAsync();
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+				.BuildSessionFactory().CloseAsync());
 		}
 	}
 }
