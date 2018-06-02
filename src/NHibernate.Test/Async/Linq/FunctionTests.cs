@@ -503,20 +503,13 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public Task WhereEquatableEqualAsync()
+		public async Task WhereEquatableEqualAsync()
 		{
-			try
-			{
-				var query = from item in db.Shippers
+			var query = from item in db.Shippers
 			            where ((IEquatable<Guid>) item.Reference).Equals(Guid.Empty)
 			            select item;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}
 	}
 }
