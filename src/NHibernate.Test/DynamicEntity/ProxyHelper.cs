@@ -1,7 +1,9 @@
+using System;
 using NHibernate.Proxy.DynamicProxy;
 
 namespace NHibernate.Test.DynamicEntity
 {
+	[Obsolete("Require dynamic proxies")]
 	public class ProxyHelper
 	{
 		private static readonly ProxyFactory proxyGenerator = new ProxyFactory();

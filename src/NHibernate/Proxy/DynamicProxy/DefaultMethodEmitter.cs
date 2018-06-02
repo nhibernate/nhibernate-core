@@ -14,6 +14,8 @@ using NHibernate.Util;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
+	// Since v5.2
+	[Obsolete("DynamicProxy namespace has been obsoleted, use static proxies instead (see StaticProxyFactory)")]
 	internal class DefaultMethodEmitter : IMethodBodyEmitter
 	{
 		private static readonly MethodInfo handlerMethod = ReflectHelper.GetMethod<IInterceptor>(

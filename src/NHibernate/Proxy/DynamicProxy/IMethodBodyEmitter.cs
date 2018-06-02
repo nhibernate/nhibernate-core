@@ -6,11 +6,14 @@
 
 #endregion
 
+using System;
 using System.Reflection;
 using System.Reflection.Emit;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
+	// Since v5.2
+	[Obsolete("DynamicProxy namespace has been obsoleted, use static proxies instead (see StaticProxyFactory)")]
 	public interface IMethodBodyEmitter
 	{
 		void EmitMethodBody(MethodBuilder proxyMethod, MethodBuilder callbackMethod, MethodInfo method, FieldInfo field);

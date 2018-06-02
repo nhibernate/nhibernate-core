@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Proxy.DynamicProxy;
 using NUnit.Framework;
 
@@ -27,6 +28,7 @@ namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 	}
 
 	[TestFixture]
+	[Obsolete]
 	public class Fixture
 	{
 		[Test]

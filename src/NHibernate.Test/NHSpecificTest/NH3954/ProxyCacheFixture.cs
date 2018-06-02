@@ -5,6 +5,9 @@ using System.Runtime.Serialization;
 using NHibernate.Proxy;
 using NHibernate.Proxy.DynamicProxy;
 using NUnit.Framework;
+#pragma warning disable 618
+using ProxyCacheEntry = NHibernate.Proxy.DynamicProxy.ProxyCacheEntry;
+#pragma warning restore 618
 
 namespace NHibernate.Test.NHSpecificTest.NH3954
 {
