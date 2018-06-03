@@ -4,6 +4,7 @@ using NHibernate.Collection;
 using NHibernate.Event;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
+using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -170,12 +171,18 @@ namespace NHibernate.Engine
 						EntityEntry entry = eventSource.PersistenceContext.GetEntry(parent);
 						if (entry != null && entry.Status != Status.Saving)
 						{
-							EntityType entityType = (EntityType)type;
 							object loadedValue;
 							if (componentPathStack.Count == 0)
 							{
 								// association defined on entity
 								loadedValue = entry.GetLoadedValue(propertyName);
+
+								// Check this is not a null carrying proxy. The no-proxy load is currently handled by
+								// putting a proxy (!) flagged for unwrapping (even for non-constrained one-to-one,
+								// which association may be null) in the loadedState of the parent. The unwrap flag
+								// causes it to support having a null implementation, instead of throwing an entity
+								// not found error.
+								loadedValue = eventSource.PersistenceContext.UnproxyAndReassociate(loadedValue);
 							}
 							else
 							{
