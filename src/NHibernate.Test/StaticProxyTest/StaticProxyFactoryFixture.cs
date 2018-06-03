@@ -108,6 +108,34 @@ namespace NHibernate.Test.StaticProxyTest
 		}
 
 		[Test]
+		public void VerifyProxyForClassWithAdditionalInterface()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(
+				typeof(PublicInterfaceTestClass).FullName,
+				typeof(PublicInterfaceTestClass),
+				// By way of the "proxy" attribute on the "class" mapping, an interface to use for the
+				// lazy entity load proxy instead of the persistentClass can be specified. This is "translated" into
+				// having an additional interface in the interface list, instead of just having INHibernateProxy.
+				// (Quite a loosy semantic...)
+				new HashSet<System.Type> {typeof(INHibernateProxy), typeof(IPublic)},
+				null, null, null);
+
+#if NETFX
+			VerifyGeneratedAssembly(
+				() =>
+				{
+#endif
+					var proxy = factory.GetProxy(1, null);
+					Assert.That(proxy, Is.Not.Null);
+					Assert.That(proxy, Is.InstanceOf<IPublic>());
+					Assert.That(proxy, Is.Not.InstanceOf<PublicInterfaceTestClass>());
+#if NETFX
+				});
+#endif
+		}
+
+		[Test]
 		public void CanSerializeFieldInterceptorProxy()
 		{
 			var factory = new StaticProxyFactory();

@@ -36,7 +36,16 @@ namespace NHibernate.Proxy
 
 		public TypeInfo CreateProxyType(System.Type baseType, IReadOnlyCollection<System.Type> baseInterfaces)
 		{
-			var typeName = $"{baseType.Name}Proxy";
+			System.Type interfaceType = null;
+			if (baseType == typeof(object))
+			{
+				// Mapping option "proxy" allows to ask for using an interface, which switches the base type to object
+				// and adds the interface to base interfaces set.
+				// Avoids using object for naming the proxy, as otherwise all entities using the "proxy" option for
+				// specifying an interface would have their proxies sharing the same full name.
+				interfaceType = baseInterfaces.FirstOrDefault(i => i != typeof(INHibernateProxy));
+			}
+			var typeName = $"{(interfaceType ?? baseType).Name}Proxy";
 			var assemblyName = $"{typeName}Assembly";
 			var moduleName = $"{typeName}Module";
 
@@ -77,7 +86,7 @@ namespace NHibernate.Proxy
 			// Provide a custom implementation of ISerializable instead of redirecting it back to the interceptor
 			foreach (var method in ProxyBuilderHelper.GetProxiableMethods(baseType, interfaces.Except(new[] {typeof(ISerializable)})))
 			{
-				CreateProxiedMethod(typeBuilder, method, lazyInitializerField);
+				CreateProxiedMethod(typeBuilder, method, lazyInitializerField, parentType);
 			}
 
 			ProxyBuilderHelper.MakeProxySerializable(typeBuilder);
@@ -91,7 +100,8 @@ namespace NHibernate.Proxy
 			return proxyType;
 		}
 
-		private void CreateProxiedMethod(TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField)
+		private void CreateProxiedMethod(
+			TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField, System.Type parentType)
 		{
 			if (method == NHibernateProxyTypeLazyInitializerProperty.GetMethod)
 			{
@@ -99,11 +109,11 @@ namespace NHibernate.Proxy
 			}
 			else if (method == _getIdentifierMethod)
 			{
-				ImplementGetIdentifier(typeBuilder, method, lazyInitializerField);
+				ImplementGetIdentifier(typeBuilder, method, lazyInitializerField, parentType);
 			}
 			else if (method == _setIdentifierMethod)
 			{
-				ImplementSetIdentifier(typeBuilder, method, lazyInitializerField);
+				ImplementSetIdentifier(typeBuilder, method, lazyInitializerField, parentType);
 			}
 			else if (!_overridesEquals && method.Name == "Equals" && method.GetBaseDefinition() == typeof(object).GetMethod("Equals", new[] {typeof(object)}))
 			{
@@ -115,11 +125,11 @@ namespace NHibernate.Proxy
 			}
 			else if (_componentIdType != null && _componentIdType.IsMethodOf(method))
 			{
-				ImplementCallMethodOnEmbeddedComponentId(typeBuilder, method, lazyInitializerField);
+				ImplementCallMethodOnEmbeddedComponentId(typeBuilder, method, lazyInitializerField, parentType);
 			}
 			else
 			{
-				ImplementCallMethodOnImplementation(typeBuilder, method, lazyInitializerField);
+				ImplementCallMethodOnImplementation(typeBuilder, method, lazyInitializerField, parentType);
 			}
 		}
 
@@ -217,7 +227,8 @@ namespace NHibernate.Proxy
 			typeBuilder.DefineMethodOverride(getMethod, method);
 		}
 
-		private static void ImplementGetIdentifier(TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField)
+		private static void ImplementGetIdentifier(
+			TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField, System.Type parentType)
 		{
 			/*
 			get 
@@ -231,7 +242,7 @@ namespace NHibernate.Proxy
 
 			var IL = methodOverride.GetILGenerator();
 
-			EmitCallBaseIfLazyInitializerIsNull(IL, method, lazyInitializerField);
+			EmitCallBaseIfLazyInitializerIsNull(IL, method, lazyInitializerField, parentType);
 
 			IL.Emit(OpCodes.Ldarg_0);
 			IL.Emit(OpCodes.Ldfld, lazyInitializerField);
@@ -242,10 +253,11 @@ namespace NHibernate.Proxy
 			typeBuilder.DefineMethodOverride(methodOverride, method);
 		}
 
-		private static void ImplementSetIdentifier(TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField)
+		private static void ImplementSetIdentifier(
+			TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField, System.Type parentType)
 		{
 			/*
-			 set 
+			 set
 			 {
 				if (this.__lazyInitializer == null)
 					return base.set_<Identifier>(value);
@@ -258,7 +270,7 @@ namespace NHibernate.Proxy
 			var methodOverride = ProxyBuilderHelper.GenerateMethodSignature(method.Name, method, typeBuilder);
 			var IL = methodOverride.GetILGenerator();
 
-			EmitCallBaseIfLazyInitializerIsNull(IL, method, lazyInitializerField);
+			EmitCallBaseIfLazyInitializerIsNull(IL, method, lazyInitializerField, parentType);
 
 			IL.Emit(OpCodes.Ldarg_0);
 			IL.Emit(OpCodes.Ldfld, lazyInitializerField);
@@ -278,7 +290,8 @@ namespace NHibernate.Proxy
 			typeBuilder.DefineMethodOverride(methodOverride, method);
 		}
 
-		private static void ImplementCallMethodOnEmbeddedComponentId(TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField)
+		private static void ImplementCallMethodOnEmbeddedComponentId(
+			TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField, System.Type parentType)
 		{
 			/*
 			 	if (this.__lazyInitializer == null)
@@ -289,7 +302,7 @@ namespace NHibernate.Proxy
 
 			var IL = methodOverride.GetILGenerator();
 
-			EmitCallBaseIfLazyInitializerIsNull(IL, method, lazyInitializerField);
+			EmitCallBaseIfLazyInitializerIsNull(IL, method, lazyInitializerField, parentType);
 
 			IL.Emit(OpCodes.Ldarg_0);
 			IL.Emit(OpCodes.Ldfld, lazyInitializerField);
@@ -301,18 +314,19 @@ namespace NHibernate.Proxy
 			typeBuilder.DefineMethodOverride(methodOverride, method);
 		}
 
-		private static void ImplementCallMethodOnImplementation(TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField)
+		private static void ImplementCallMethodOnImplementation(
+			TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField, System.Type parentType)
 		{
 			/*
 				if (this.__lazyInitializer == null)
 					return base.<Method>(args..);
-				return this.__lazyInitializer.GetImplementation().<Method>(args..) 
+				return this.__lazyInitializer.GetImplementation().<Method>(args..)
 			 */
 			var methodOverride = ProxyBuilderHelper.GenerateMethodSignature(method.Name, method, typeBuilder);
 
 			var IL = methodOverride.GetILGenerator();
 
-			EmitCallBaseIfLazyInitializerIsNull(IL, method, lazyInitializerField);
+			EmitCallBaseIfLazyInitializerIsNull(IL, method, lazyInitializerField, parentType);
 
 			EmitCallImplementation(IL, method, lazyInitializerField);
 			IL.Emit(OpCodes.Ret);
@@ -320,10 +334,26 @@ namespace NHibernate.Proxy
 			typeBuilder.DefineMethodOverride(methodOverride, method);
 		}
 
-		private static void EmitCallBaseIfLazyInitializerIsNull(ILGenerator IL, MethodInfo method, FieldInfo lazyInitializerField)
+		private static void EmitCallBaseIfLazyInitializerIsNull(
+			ILGenerator IL, MethodInfo method, FieldInfo lazyInitializerField, System.Type parentType)
 		{
-			//if (this.__lazyInitializer == null)
-			//	return base.<Method>(args..)
+			/*
+				<if (method.DeclaringType.IsAssignableFrom(parentType))
+				{>
+				if (this.__lazyInitializer == null)
+					return base.<method>(args..)
+				<}>
+			 */
+			if (!method.DeclaringType.IsAssignableFrom(parentType))
+				// The proxy does not derive from a type implementing the method, do not attempt
+				// calling its base. In such case, the lazy initializer is never null.
+				return;
+
+			// When deriving from the entity class, the entity class constructor may trigger
+			// virtual calls accessing the proxy state before its own constructor has a chance
+			// to initialize it. So although lazyInitializer is never supplied as null to the
+			// proxy constructor, we must guard nonetheless against it being null during base
+			// constructor call.
 
 			IL.Emit(OpCodes.Ldarg_0);
 			IL.Emit(OpCodes.Ldfld, lazyInitializerField);
