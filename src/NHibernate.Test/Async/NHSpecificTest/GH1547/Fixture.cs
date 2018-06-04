@@ -51,45 +51,38 @@ namespace NHibernate.Test.NHSpecificTest.GH1547
 		}
 
 		[Test]
-		public Task SimpleLinqPerfAsync()
+		public async Task SimpleLinqPerfAsync()
 		{
-			return BenchmarkAsync(
+			await (BenchmarkAsync(
 				"Simple LINQ",
 				s =>
 					s
 						.Query<Entity>()
-						.Where(e => e.Name == "Bob"));
+						.Where(e => e.Name == "Bob")));
 		}
 
 		[Test]
-		public Task LinqWithNonParameterizedConstantPerfAsync()
+		public async Task LinqWithNonParameterizedConstantPerfAsync()
 		{
-			return BenchmarkAsync(
+			await (BenchmarkAsync(
 				"Non parameterized constant",
 				s =>
 					s
 						.Query<Entity>()
 						.Where(e => e.Name == "Bob")
-						.Select(e => new { e, c = 2 }));
+						.Select(e => new { e, c = 2 })));
 		}
 
 		[Test]
-		public Task LinqWithListParameterPerfAsync()
+		public async Task LinqWithListParameterPerfAsync()
 		{
-			try
-			{
-				var names = new[] { "Bob", "Sally" };
-				return BenchmarkAsync(
+			var names = new[] { "Bob", "Sally" };
+			await (BenchmarkAsync(
 				"List parameter",
 				s =>
 					s
 						.Query<Entity>()
-						.Where(e => names.Contains(e.Name)));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+						.Where(e => names.Contains(e.Name))));
 		}
 
 		private async Task BenchmarkAsync<T>(string test, Func<ISession, IQueryable<T>> queryFactory, CancellationToken cancellationToken = default(CancellationToken))

@@ -22,9 +22,9 @@ namespace NHibernate.Test.CacheTest
 	public class CacheFixtureAsync
 	{
 		[Test]
-		public Task TestSimpleCacheAsync()
+		public async Task TestSimpleCacheAsync()
 		{
-			return DoTestCacheAsync(new HashtableCacheProvider());
+			await (DoTestCacheAsync(new HashtableCacheProvider()));
 		}
 
 		private CacheKey CreateCacheKey(string text)

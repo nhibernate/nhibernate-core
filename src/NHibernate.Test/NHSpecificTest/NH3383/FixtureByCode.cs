@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Type;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3383
@@ -26,9 +27,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 		{
 			CascadeStyle deserializedCascadeStyle;
 
+			var formatter = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			using (var configMemoryStream = new MemoryStream())
 			{
-				var formatter = new BinaryFormatter();
 				formatter.Serialize(configMemoryStream, CascadeStyle.Evict);
 				configMemoryStream.Position = 0;
 				deserializedCascadeStyle = (CascadeStyle) formatter.Deserialize(configMemoryStream);
@@ -45,9 +51,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 				new CascadeStyle.MultipleCascadeStyle(new[] {CascadeStyle.Delete, CascadeStyle.Lock});
 			CascadeStyle deserializedCascadeStyle;
 
+			var formatter = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			using (var configMemoryStream = new MemoryStream())
 			{
-				var formatter = new BinaryFormatter();
 				formatter.Serialize(configMemoryStream, startingCascadeStyle);
 				configMemoryStream.Position = 0;
 				deserializedCascadeStyle = (CascadeStyle)formatter.Deserialize(configMemoryStream);
@@ -63,15 +74,18 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 		[Test]
 		public void DeserializedPropertyMapping_RefersToSameCascadeStyle()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			var classMapping = CreateMappingClasses();
 
 			RootClass deserializedClassMapping;
 
-			using (MemoryStream configMemoryStream = new MemoryStream())
+			var formatter = new BinaryFormatter
 			{
-				BinaryFormatter formatter = new BinaryFormatter();
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
+			using (var configMemoryStream = new MemoryStream())
+			{
 				formatter.Serialize(configMemoryStream, classMapping);
 				configMemoryStream.Position = 0;
 				deserializedClassMapping = (RootClass)formatter.Deserialize(configMemoryStream);
@@ -90,7 +104,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 
 			using (MemoryStream configMemoryStream = new MemoryStream())
 			{
-				BinaryFormatter formatter = new BinaryFormatter();
+				var formatter = new BinaryFormatter();
 				formatter.Serialize(configMemoryStream, classMapping);
 				configMemoryStream.Position = 0;
 
@@ -158,7 +172,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 		{
 			public void DeserializeAndAssert(MemoryStream configMemoryStream)
 			{
-				BinaryFormatter formatter = new BinaryFormatter();
+				var formatter = new BinaryFormatter
+				{
+#if !NETFX
+					SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+				};
 				var deserializedClassMapping = (RootClass)formatter.Deserialize(configMemoryStream);
 
 				AssertDeserializedMappingClasses(deserializedClassMapping);

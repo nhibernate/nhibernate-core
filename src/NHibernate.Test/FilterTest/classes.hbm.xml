@@ -79,6 +79,8 @@
 		<property name="EffectiveStartDate" column="eff_start_dt" type="Date"/>
 		<property name="EffectiveEndDate" column="eff_end_dt" type="Date"/>
 
+		<property name="ProductGuid"/>
+
 		<set cascade="none" inverse="true" name="OrderLineItems">
 			<key column="PROD_ID"/>
 			<one-to-many class="LineItem"/>
@@ -93,6 +95,7 @@
 		</set>
 
 		<filter name="effectiveDate" condition=":asOfDate BETWEEN eff_start_dt and eff_end_dt"/>
+		<filter name="guidlist" condition="ProductGuid IN (:guids)"/>
 	</class>
 
 	<class name="Salesperson" table="SALES_PERSON">

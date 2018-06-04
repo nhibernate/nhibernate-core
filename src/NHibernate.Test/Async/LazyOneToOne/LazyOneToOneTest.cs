@@ -72,6 +72,7 @@ namespace NHibernate.Test.LazyOneToOne
 
 			p2 = await (s.CreateQuery("from Person where name='Emmanuel'").UniqueResultAsync<Person>());
 			Assert.That(p2.Employee, Is.Null);
+			Assert.That(p2.Employee, Is.Null);
 			await (t.CommitAsync());
 			s.Close();
 
@@ -85,6 +86,7 @@ namespace NHibernate.Test.LazyOneToOne
 			Assert.That(p.Employee.Employments.Count, Is.EqualTo(1));
 
 			p2 = await (s.GetAsync<Person>("Emmanuel"));
+			Assert.That(p2.Employee, Is.Null);
 			Assert.That(p2.Employee, Is.Null);
 			await (s.DeleteAsync(p2));
 			await (s.DeleteAsync(old));

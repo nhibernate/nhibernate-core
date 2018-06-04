@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using NHibernate.Engine;
 using NHibernate.Util;
 using NUnit.Framework;
 
@@ -178,6 +180,69 @@ namespace NHibernate.Test.UtilityTest
 			var c2 = new HashSet<string> { "1", "2" };
 			Assert.That(CollectionHelper.SetEquals(c1, c2), Is.False);
 			Assert.That(CollectionHelper.SetEquals(c2, c1), Is.False);
+		}
+
+		[Test]
+		public void MapsWithSameContentShouldHaveSameHashCode()
+		{
+			var d1 = new Dictionary<string, string> { { "1", "2" }, { "3", "4" } };
+			var d2 = new Dictionary<string, string> { { "1", "2" }, { "3", "4" } };
+			Assert.That(
+				CollectionHelper.GetHashCode(d1, KvpStringComparer.Instance),
+				Is.EqualTo(CollectionHelper.GetHashCode(d2, KvpStringComparer.Instance)));
+		}
+
+		// Failure of following tests is not an error from GetHashCode semantic viewpoint, but it causes it
+		// to be potentially inefficients for usages in dictionnaries or hashset.
+
+		[Test]
+		public void MapsWithSameCountButDistinctKeysShouldNotHaveSameHashCode()
+		{
+			var d1 = new Dictionary<string, string> { { "1", "2" }, { "3", "4" } };
+			var d2 = new Dictionary<string, string> { { "1", "2" }, { "4", "3" } };
+			Assert.That(
+				CollectionHelper.GetHashCode(d1, KvpStringComparer.Instance),
+				Is.Not.EqualTo(CollectionHelper.GetHashCode(d2, KvpStringComparer.Instance)));
+		}
+
+		[Test]
+		public void MapsWithSameCountButDistinctValuesShouldNotHaveSameHashCode()
+		{
+			var d1 = new Dictionary<string, string> { { "1", "2" }, { "3", "4" } };
+			var d2 = new Dictionary<string, string> { { "1", "2" }, { "3", "3" } };
+			Assert.That(
+				CollectionHelper.GetHashCode(d1, KvpStringComparer.Instance),
+				Is.Not.EqualTo(CollectionHelper.GetHashCode(d2, KvpStringComparer.Instance)));
+		}
+
+		[Test]
+		public void MapsWithoutSameCountShouldNotHaveSameHashCode()
+		{
+			var d1 = new Dictionary<string, string> { { "1", "2" }, { "3", "4" } };
+			var d2 = new Dictionary<string, string> { { "1", "2" } };
+			Assert.That(
+				CollectionHelper.GetHashCode(d1, KvpStringComparer.Instance),
+				Is.Not.EqualTo(CollectionHelper.GetHashCode(d2, KvpStringComparer.Instance)));
+		}
+
+		internal class KvpStringComparer : IEqualityComparer<KeyValuePair<string, string>>
+		{
+			public static readonly KvpStringComparer Instance = new KvpStringComparer();
+
+			public bool Equals(KeyValuePair<string, string> x, KeyValuePair<string, string> y)
+			{
+				return StringComparer.Ordinal.Equals(x.Key, y.Key) &&
+					StringComparer.Ordinal.Equals(x.Value, y.Value);
+			}
+
+			public int GetHashCode(KeyValuePair<string, string> obj)
+			{
+				unchecked
+				{
+					return 397 * StringComparer.Ordinal.GetHashCode(obj.Key) ^
+						(obj.Value != null ? StringComparer.Ordinal.GetHashCode(obj.Value) : 0);
+				}
+			}
 		}
 
 		#endregion

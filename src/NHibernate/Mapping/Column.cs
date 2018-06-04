@@ -155,7 +155,7 @@ namespace NHibernate.Mapping
 			//    But I will leave it like this for now to make it look similar. /Oskar 2016-08-20
 			bool useRawName = name.Length + suffix.Length <= usableLength &&
 			                  !_quoted &&
-			                  !StringHelper.EqualsCaseInsensitive(name, "rowid");
+			                  !"rowid".Equals(name, StringComparison.OrdinalIgnoreCase);
 			if (!useRawName)
 			{
 				if (suffix.Length >= usableLength)

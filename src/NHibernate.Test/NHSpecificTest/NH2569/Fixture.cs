@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2569
 			conf.DataBaseIntegration(x=> x.Dialect<MsSql2008Dialect>());
 			conf.AddDeserializedMapping(mapper.CompileMappingForAllExplicitlyAddedEntities(), "wholeDomain");
 
-			var mappings = conf.CreateMappings(Dialect.Dialect.GetDialect());
+			var mappings = conf.CreateMappings();
 			var pc = mappings.GetClass(typeof(MyClass).FullName);
 			Assert.That(((SimpleValue)pc.Identifier).IdentifierGeneratorProperties["schema"], Is.EqualTo("gSchema"));
 		}

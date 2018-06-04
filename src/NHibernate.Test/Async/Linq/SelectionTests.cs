@@ -440,10 +440,10 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public Task CanSelectConditionalEntityValueWithEntityComparisonRepeatAsync()
+		public async Task CanSelectConditionalEntityValueWithEntityComparisonRepeatAsync()
 		{
 			// Check again in the same ISessionFactory to ensure caching doesn't cause failures
-			return CanSelectConditionalEntityValueWithEntityComparisonAsync();
+			await (CanSelectConditionalEntityValueWithEntityComparisonAsync());
 		}
 
 		[Test]

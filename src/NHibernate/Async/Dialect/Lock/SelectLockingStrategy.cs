@@ -64,6 +64,7 @@ namespace NHibernate.Dialect.Lock
 					session.Batcher.CloseCommand(st, rs);
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				// Do not call Convert on HibernateExceptions

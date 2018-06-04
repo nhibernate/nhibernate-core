@@ -214,9 +214,9 @@ namespace NHibernate.Engine.Query
 				unchecked
 				{
 					var hash = query.GetHashCode();
-					hash = 29*hash + (shallow ? 1 : 0);
-					hash = 29*hash + CollectionHelper.GetHashCode(filterNames);
-					hash = 29*hash + queryTypeDiscriminator.GetHashCode();
+					hash = 29 * hash + (shallow ? 1 : 0);
+					hash = 29 * hash + CollectionHelper.GetHashCode(filterNames, filterNames.Comparer);
+					hash = 29 * hash + queryTypeDiscriminator.GetHashCode();
 					hashCode = hash;
 				}
 			}
@@ -289,7 +289,7 @@ namespace NHibernate.Engine.Query
 				int hash = query.GetHashCode();
 				hash = 29 * hash + collectionRole.GetHashCode();
 				hash = 29 * hash + (shallow ? 1 : 0);
-				hash = 29 * hash + CollectionHelper.GetHashCode(filterNames);
+				hash = 29 * hash + CollectionHelper.GetHashCode(filterNames, filterNames.Comparer);
 				hashCode = hash;
 			}
 

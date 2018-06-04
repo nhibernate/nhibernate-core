@@ -27,7 +27,7 @@ namespace NHibernate.Criterion
 		{
 			this.projection = Projections.Property(propertyName);
 			this.value = value;
-			typedValue = new TypedValue(NHibernateUtil.String, this.value);
+			typedValue = new TypedValue(NHibernateUtil.String, this.value, false);
 
 			this.escapeChar = escapeChar;
 			this.ignoreCase = ignoreCase;
@@ -37,7 +37,7 @@ namespace NHibernate.Criterion
 		{
 			this.projection = projection;
 			this.value = matchMode.ToMatchString(value);
-			typedValue = new TypedValue(NHibernateUtil.String, this.value);
+			typedValue = new TypedValue(NHibernateUtil.String, this.value, false);
 		}
 
 

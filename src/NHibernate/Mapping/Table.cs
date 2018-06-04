@@ -1083,14 +1083,13 @@ namespace NHibernate.Mapping
 			{
 				// NH : Different implementation to prevent NH930 (look test)
 				return //y.referencedClassName.Equals(x.referencedClassName) &&
-					CollectionHelper.SequenceEquals<Column>(y.columns, x.columns)
-					&& CollectionHelper.SequenceEquals<Column>(y.referencedColumns, x.referencedColumns);
+					CollectionHelper.SequenceEquals(y.columns, x.columns)
+					&& CollectionHelper.SequenceEquals(y.referencedColumns, x.referencedColumns);
 			}
 
 			public int GetHashCode(ForeignKeyKey obj)
 			{
-				int result = CollectionHelper.GetHashCode(obj.columns) ^ CollectionHelper.GetHashCode(obj.referencedColumns);
-				return result;
+				return CollectionHelper.GetHashCode(obj.columns) ^ CollectionHelper.GetHashCode(obj.referencedColumns);
 			}
 
 			#endregion

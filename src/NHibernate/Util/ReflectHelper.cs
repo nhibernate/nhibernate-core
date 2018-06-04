@@ -27,6 +27,12 @@ namespace NHibernate.Util
 		private static readonly MethodInfo Exception_InternalPreserveStackTrace =
 			typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
 
+		internal static T CastOrThrow<T>(object obj, string supportMessage) where T : class
+		{
+			return obj as T
+				?? throw new ArgumentException($"{obj?.GetType().FullName} requires to implement {typeof(T).FullName} interface to support {supportMessage}.");
+		}
+
 		/// <summary>
 		/// Extract the <see cref="MethodInfo"/> from a given expression.
 		/// </summary>
@@ -398,7 +404,6 @@ namespace NHibernate.Util
 			{
 				// Try to get the type from an already loaded assembly
 				System.Type type = System.Type.GetType(name.ToString());
-
 				if (type != null)
 				{
 					return type;
@@ -411,6 +416,16 @@ namespace NHibernate.Util
 					log.Warn(noAssembly, name);
 					if (throwOnError) throw new TypeLoadException(string.Format(noAssembly, name));
 					return null;
+				}
+
+				//Load type from already loaded assembly
+				type = System.Type.GetType(
+					name.ToString(),
+					an => AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName == an.FullName),
+					null);
+				if (type != null)
+				{
+					return type;
 				}
 
 				Assembly assembly = Assembly.Load(name.Assembly);

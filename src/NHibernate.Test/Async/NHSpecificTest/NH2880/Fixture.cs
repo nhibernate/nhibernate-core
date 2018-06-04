@@ -11,6 +11,7 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2880
@@ -45,8 +46,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2880
 		[Test]
 		public async Task ProxiesFromDeserializedSessionsCanBeLoadedAsync()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			MemoryStream sessionMemoryStream;
 
 			using (ISession s = Sfi.OpenSession())
@@ -58,12 +57,22 @@ namespace NHibernate.Test.NHSpecificTest.NH2880
 				}
 
 				sessionMemoryStream = new MemoryStream();
-				BinaryFormatter writer = new BinaryFormatter();
+				var writer = new BinaryFormatter
+				{
+#if !NETFX
+					SurrogateSelector = new SerializationHelper.SurrogateSelector()
+#endif
+				};
 				writer.Serialize(sessionMemoryStream, s);
 			}
 
 			sessionMemoryStream.Seek(0, SeekOrigin.Begin);
-			BinaryFormatter reader = new BinaryFormatter();
+			var reader = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()
+#endif
+			};
 			ISession restoredSession = (ISession)reader.Deserialize(sessionMemoryStream);
 
 			Entity1 e1 = await (restoredSession.GetAsync<Entity1>(_id));

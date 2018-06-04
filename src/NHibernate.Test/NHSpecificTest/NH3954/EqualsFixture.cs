@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Runtime.Serialization;
 using NHibernate.Proxy;
-using NHibernate.Proxy.DynamicProxy;
 using NHibernate.Type;
 using NUnit.Framework;
 

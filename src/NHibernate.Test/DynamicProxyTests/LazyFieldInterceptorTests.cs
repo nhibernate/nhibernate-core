@@ -6,6 +6,7 @@ using NHibernate.Intercept;
 
 namespace NHibernate.Test.DynamicProxyTests
 {
+	[Obsolete]
 	public class LazyFieldInterceptorTests
 	{
 		[Serializable]
@@ -29,8 +30,6 @@ namespace NHibernate.Test.DynamicProxyTests
 		[Test]
 		public void LazyFieldInterceptorIsBinarySerializable()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-			
 			var pf = new DefaultProxyFactory();
 			var propertyInfo = typeof(MyClass).GetProperty("Id");
 			pf.PostInstantiate("MyClass", typeof(MyClass), new HashSet<System.Type>(), propertyInfo.GetGetMethod(), propertyInfo.GetSetMethod(), null);

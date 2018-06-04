@@ -29,7 +29,7 @@ namespace NHibernate.Persister.Collection
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class OneToManyPersister : AbstractCollectionPersister
+	public partial class OneToManyPersister : AbstractCollectionPersister, ISupportSelectModeJoinable
 	{
 
 		protected override async Task<int> DoUpdateRowsAsync(object id, IPersistentCollection collection, ISessionImplementor session, CancellationToken cancellationToken)
@@ -81,6 +81,7 @@ namespace NHibernate.Persister.Collection
 									deleteExpectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 								}
 							}
+							catch (OperationCanceledException) { throw; }
 							catch (Exception e)
 							{
 								if (useBatch)
@@ -146,6 +147,7 @@ namespace NHibernate.Persister.Collection
 									insertExpectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 								}
 							}
+							catch (OperationCanceledException) { throw; }
 							catch (Exception e)
 							{
 								if (useBatch)

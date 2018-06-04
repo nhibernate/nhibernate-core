@@ -9,6 +9,7 @@
 		
 		<filter name="DescriptionLike" />
 		<filter name="DescriptionEqualAndValueGT" />
+		<filter name="ValueIn" />
 	</class>
 	<query name="EntityWithFilters.All" cache-region="aRegion" cacheable="true">
 		from EntityWithFilters
@@ -19,5 +20,8 @@
 	<filter-def name="DescriptionEqualAndValueGT" condition="Description = :pDesc and `Value` > :pValue">
 		<filter-param name="pDesc" type="string"/>
 		<filter-param name="pValue" type="int"/>
-	</filter-def> 
+	</filter-def>
+	<filter-def name="ValueIn" condition="`Value` in (:pIn)">
+		<filter-param name="pIn" type="int"/>
+	</filter-def>
 </hibernate-mapping>

@@ -490,5 +490,15 @@ namespace NHibernate.Test.Linq
 
 			ObjectDumper.Write(query);
 		}
+
+		[Test]
+		public void WhereEquatableEqual()
+		{
+			var query = from item in db.Shippers
+			            where ((IEquatable<Guid>) item.Reference).Equals(Guid.Empty)
+			            select item;
+
+			ObjectDumper.Write(query);
+		}
 	}
 }

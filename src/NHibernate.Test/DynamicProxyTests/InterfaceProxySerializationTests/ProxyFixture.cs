@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
@@ -25,7 +26,12 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 			// Serialize the session
 			using (Stream stream = new MemoryStream())
 			{
-				IFormatter formatter = new BinaryFormatter();
+				var formatter = new BinaryFormatter
+				{
+#if !NETFX
+					SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+				};
 				formatter.Serialize(stream, s);
 
 				// Close the original session
@@ -95,8 +101,6 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 		[Test]
 		public void ProxySerialize()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			ISession s = OpenSession();
 			IMyProxy ap = new MyProxyImpl {Id = 1, Name = "first proxy"};
 			s.Save(ap);
@@ -128,8 +132,6 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 		[Test]
 		public void SerializeNotFoundProxy()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			ISession s = OpenSession();
 			// this does not actually exists in db
 			var notThere = (IMyProxy) s.Load(typeof (MyProxyImpl), 5);

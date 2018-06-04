@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Cfg;
 using NUnit.Framework;
@@ -5,6 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.DynamicEntity.Interceptor
 {
 	[TestFixture]
+	[Obsolete("Require dynamic proxies")]
 	public class InterceptorDynamicEntity : TestCase
 	{
 		protected override string MappingsAssembly

@@ -47,7 +47,25 @@ namespace NHibernate.Test.Criteria
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
-		
+
+		//GH1680
+		[Test]
+		public void CanRowCountWithEntityJoinAsync()
+		{
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex = null;
+				EntityWithNoAssociation root = null;
+				var query = session.QueryOver(() => root)
+						.JoinEntityAlias(() => entityComplex, Restrictions.Where(() => root.Complex1Id == entityComplex.Id));
+
+				var rowCountQuery = query.ToRowCountQuery();
+				int rowCount = 0;
+				Assert.DoesNotThrowAsync(async () => rowCount = await (rowCountQuery.SingleOrDefaultAsync<int>()), "row count query should not throw exception");
+				Assert.That(rowCount, Is.GreaterThan(0), "row count should be > 0");
+			}
+		}
+
 		//check JoinEntityAlias - JoinAlias analog for entity join
 		[Test]
 		public async Task CanJoinNotAssociatedEntity_ExpressionAsync()

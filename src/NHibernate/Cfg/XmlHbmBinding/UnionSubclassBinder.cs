@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
@@ -7,11 +8,20 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class UnionSubclassBinder : ClassBinder
 	{
+		//Since v5.2
+		[Obsolete("Please use constructor without a dialect parameter.")]
 		public UnionSubclassBinder(Mappings mappings, Dialect.Dialect dialect)
 			: base(mappings, dialect)
 		{
 		}
 
+		public UnionSubclassBinder(Mappings mappings)
+			: base(mappings)
+		{
+		}
+
+		//Since v5.2
+		[Obsolete("Please use constructor that accepts mappings parameter instead.")]
 		public UnionSubclassBinder(ClassBinder parent)
 			: base(parent)
 		{
@@ -47,7 +57,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			log.Info("Mapping union-subclass: {0} -> {1}", unionSubclass.EntityName, unionSubclass.Table.Name);
 
 			// properties
-			new PropertiesBinder(mappings, unionSubclass, dialect).Bind(unionSubclassMapping.Properties, inheritedMetas);
+			new PropertiesBinder(mappings, unionSubclass).Bind(unionSubclassMapping.Properties, inheritedMetas);
 			BindUnionSubclasses(unionSubclassMapping.UnionSubclasses, unionSubclass, inheritedMetas);
 
 			model.AddSubclass(unionSubclass);

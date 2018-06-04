@@ -384,10 +384,10 @@ namespace NHibernate.Dialect
 
 		protected virtual void RegisterNHibernateFunctions()
 		{
-			RegisterFunction("band", new BitwiseFunctionOperation("bitand"));
-			RegisterFunction("bor", new BitwiseFunctionOperation("bitor"));
-			RegisterFunction("bxor", new BitwiseFunctionOperation("bitxor"));
-			RegisterFunction("bnot", new BitwiseFunctionOperation("bitnot"));
+			RegisterFunction("band", new Function.BitwiseFunctionOperation("bitand"));
+			RegisterFunction("bor", new Function.BitwiseFunctionOperation("bitor"));
+			RegisterFunction("bxor", new Function.BitwiseFunctionOperation("bitxor"));
+			RegisterFunction("bnot", new Function.BitwiseFunctionOperation("bitnot"));
 			RegisterFunction("bit_length", new SQLFunctionTemplate(NHibernateUtil.Int32, "length(to_binary(?1))*8"));
 			RegisterFunction("ceiling", new StandardSQLFunction("ceil"));
 			RegisterFunction("chr", new StandardSQLFunction("char", NHibernateUtil.AnsiChar));

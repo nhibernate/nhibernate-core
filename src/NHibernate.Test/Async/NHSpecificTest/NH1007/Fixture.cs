@@ -60,13 +60,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1007
 
 		private void VerifyMapping(HbmMapping mapping)
 		{
-			var dialect = new MsSql2008Dialect();
 			var configuration = new Configuration();
-			var mappings = configuration.CreateMappings(dialect);
+			var mappings = configuration.CreateMappings();
 			mappings.DefaultAssembly = "NHibernate.Test";
 			mappings.DefaultNamespace = "NHibernate.Test.NHSpecificTest.NH1007";
 
-			var rootBinder = new MappingRootBinder(mappings, dialect);
+			var rootBinder = new MappingRootBinder(mappings);
 			rootBinder.Bind(mapping);
 
 			var employer = rootBinder.Mappings.GetClass("NHibernate.Test.NHSpecificTest.NH1007.Employer1");

@@ -43,15 +43,15 @@ namespace NHibernate.Test.NHSpecificTest.NH642
 		}
 
 		[Test]
-		public Task MissingGetterAsync()
+		public async Task MissingGetterAsync()
 		{
-			return DoTestAsync("MissingGetter");
+			await (DoTestAsync("MissingGetter"));
 		}
 
 		[Test]
-		public Task MissingSetterAsync()
+		public async Task MissingSetterAsync()
 		{
-			return DoTestAsync("MissingSetter");
+			await (DoTestAsync("MissingSetter"));
 		}
 	}
 }
