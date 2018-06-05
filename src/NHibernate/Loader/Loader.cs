@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -31,17 +32,21 @@ namespace NHibernate.Loader
 	/// Abstract superclass of object loading (and querying) strategies.
 	/// </summary>
 	/// <remarks>
-	/// <p>
+	/// <para>
 	/// This class implements useful common functionality that concrete loaders would delegate to.
 	/// It is not intended that this functionality would be directly accessed by client code (Hence,
 	/// all methods of this class are declared <c>protected</c> or <c>private</c>.) This class relies heavily upon the
-	/// <see cref="ILoadable" /> interface, which is the contract between this class and 
+	/// <see cref="ILoadable" /> interface, which is the contract between this class and
 	/// <see cref="IEntityPersister" />s that may be loaded by it.
-	/// </p>
-	/// <p>
-	/// The present implementation is able to load any number of columns of entities and at most 
+	/// </para>
+	/// <para>
+	/// The present implementation is able to load any number of columns of entities and at most
 	/// one collection role per query.
-	/// </p>
+	/// </para>
+	/// <para>
+	/// All this class members are thread safe. Entity and collection loaders are held in persisters shared among
+	/// sessions built from the same session factory. They must be thread safe.
+	/// </para>
 	/// </remarks>
 	/// <seealso cref="NHibernate.Persister.Entity.ILoadable"/>
 	public abstract partial class Loader
@@ -63,8 +68,8 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Caches subclass entity aliases for given persister index in <see cref="EntityPersisters"/>  and subclass entity name
 		/// </summary>
-		private readonly Dictionary<Tuple<int, string>, string[][]> _subclassEntityAliasesMap = new Dictionary<Tuple<int, string>, string[][]>();
-			
+		private readonly ConcurrentDictionary<Tuple<int, string>, string[][]> _subclassEntityAliasesMap = new ConcurrentDictionary<Tuple<int, string>, string[][]>();
+
 		protected Loader(ISessionFactoryImplementor factory)
 		{
 			_factory = factory;
@@ -1103,14 +1108,9 @@ namespace NHibernate.Loader
 		private string[][] GetSubclassEntityAliases(int i, ILoadable persister)
 		{
 			var cacheKey = System.Tuple.Create(i, persister.EntityName);
-			if (_subclassEntityAliasesMap.TryGetValue(cacheKey, out string[][] cols))
-			{
-				return cols;
-			}
-
-			cols = EntityAliases[i].GetSuffixedPropertyAliases(persister);
-			_subclassEntityAliasesMap[cacheKey] = cols;
-			return cols;
+			return _subclassEntityAliasesMap.GetOrAdd(
+				cacheKey,
+				k => EntityAliases[i].GetSuffixedPropertyAliases(persister));
 		}
 
 		/// <summary>
