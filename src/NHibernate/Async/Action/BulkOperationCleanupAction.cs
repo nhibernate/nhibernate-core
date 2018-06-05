@@ -59,6 +59,46 @@ namespace NHibernate.Action
 			}
 		}
 
+		private Task EvictCollectionRegionsAsync(CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				if (affectedCollectionRoles != null && affectedCollectionRoles.Any())
+				{
+					return session.Factory.EvictCollectionAsync(affectedCollectionRoles, cancellationToken);
+				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		private Task EvictEntityRegionsAsync(CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				if (affectedEntityNames != null && affectedEntityNames.Any())
+				{
+					return session.Factory.EvictEntityAsync(affectedEntityNames, cancellationToken);
+				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
 		#endregion
 	}
 }
