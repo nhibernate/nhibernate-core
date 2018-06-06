@@ -5,6 +5,7 @@ Release notes - NHibernate - Version 5.1.3
 
 ** Bug
 
+   * #1730 Query cache always missed in session having altered the entities
    * #1711 Fix static proxy serialization
 
 ** Task
