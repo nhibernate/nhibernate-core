@@ -99,9 +99,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			RegisterDynamicComponentMapping(property, mapping);
 		}
 
-		public void Component<TComponent>(Expression<Func<TEntity, IDictionary<string, object>>> property,
-													 TComponent dynamicComponentTemplate,
-													 Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class
+		public void Component<TComponent>(Expression<Func<TEntity, IDictionary<string, object>>> property, TComponent dynamicComponentTemplate, Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class
 		{
 			RegisterDynamicComponentMapping(property, mapping);
 		}
@@ -117,7 +115,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
-			RegisterDynamicComponentMapping<TComponent>(mapping, member, memberOf);
+			RegisterDynamicComponentMapping(mapping, member, memberOf);
 		}
 
 		protected void RegisterDynamicComponentMapping<TComponent>(Action<IDynamicComponentMapper<TComponent>> mapping, params MemberInfo[] members)
