@@ -1,5 +1,7 @@
 using System;
 using NHibernate.Properties;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Tuple.Component
 {
@@ -16,30 +18,16 @@ namespace NHibernate.Tuple.Component
 			instantiator = BuildInstantiator(component);
 		}
 
-		public override System.Type MappedClass
-		{
-			get { return typeof(System.Collections.IDictionary); }
-		}
+		public override System.Type MappedClass =>
+			typeof(Dictionary<string, object>);
 
-		protected internal override IInstantiator BuildInstantiator(Mapping.Component component)
-		{
-			return new DynamicMapInstantiator();
-		}
+		protected internal override IInstantiator BuildInstantiator(Mapping.Component component) =>
+			new DynamicComponentInstantiator();
 
-		protected internal override IGetter BuildGetter(Mapping.Component component, Mapping.Property prop)
-		{
-			return BuildPropertyAccessor(prop).GetGetter(null, prop.Name);
-		}
+		protected internal override IGetter BuildGetter(Mapping.Component component, Mapping.Property prop) =>
+			PropertyAccessorFactory.DynamicMapPropertyAccessor.GetGetter(null, prop.Name);
 
-		protected internal override ISetter BuildSetter(Mapping.Component component, Mapping.Property prop)
-		{
-			return BuildPropertyAccessor(prop).GetSetter(null, prop.Name);
-		}
-
-		private IPropertyAccessor BuildPropertyAccessor(Mapping.Property property)
-		{
-			return PropertyAccessorFactory.DynamicMapPropertyAccessor;
-		}
-
+		protected internal override ISetter BuildSetter(Mapping.Component component, Mapping.Property prop) =>
+			PropertyAccessorFactory.DynamicMapPropertyAccessor.GetSetter(null, prop.Name);
 	}
 }

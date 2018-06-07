@@ -13,6 +13,8 @@ namespace NHibernate.Tuple
 		private readonly string entityName;
 		private readonly HashSet<string> isInstanceEntityNames = new HashSet<string>();
 
+		//Since v5.2
+		[Obsolete("This constructor is not used and will be removed in a future version.")]
 		public DynamicMapInstantiator()
 		{
 			entityName = null;
