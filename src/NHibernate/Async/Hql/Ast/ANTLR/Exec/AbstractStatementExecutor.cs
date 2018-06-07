@@ -24,11 +24,11 @@ using NHibernate.SqlTypes;
 using NHibernate.Transaction;
 using NHibernate.Util;
 using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
-	using System.Threading.Tasks;
-	using System.Threading;
 	public abstract partial class AbstractStatementExecutor : IStatementExecutor
 	{
 

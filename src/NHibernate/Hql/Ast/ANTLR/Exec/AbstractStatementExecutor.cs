@@ -14,6 +14,8 @@ using NHibernate.SqlTypes;
 using NHibernate.Transaction;
 using NHibernate.Util;
 using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
@@ -55,6 +57,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			{
 				action.AfterTransactionCompletionProcess(true);
 			}
+		}
+
+		[Obsolete]
+		protected virtual Task CoordinateSharedCacheCleanupAsync(ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+
+			CoordinateSharedCacheCleanup(session);
+
+			return Task.CompletedTask;
 		}
 
 		protected SqlString GenerateIdInsertSelect(IQueryable persister, string tableAlias, IASTNode whereClause)

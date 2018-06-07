@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
@@ -144,5 +146,19 @@ namespace NHibernate.Action
 		}
 
 		#endregion
+
+		[Obsolete]
+		public virtual void Init()
+		{
+			EvictEntityRegions();
+			EvictCollectionRegions();
+		}
+
+		[Obsolete]
+		public virtual async Task InitAsync(CancellationToken cancellationToken)
+		{
+			await EvictEntityRegionsAsync(cancellationToken);
+			await EvictCollectionRegionsAsync(cancellationToken);
+		}
 	}
 }
