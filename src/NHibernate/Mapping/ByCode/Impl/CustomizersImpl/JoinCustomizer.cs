@@ -132,16 +132,14 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			base.RegisterComponentMapping(property, mapping);
 		}
 
-		protected override void RegisterDynamicComponentMapping<TComponent>(Expression<Func<TEntity, System.Collections.IDictionary>> property
-			, Action<IDynamicComponentMapper<TComponent>> mapping)
+		protected override void RegisterDynamicComponentMapping<TComponent>(Expression<Func<TEntity, System.Collections.IDictionary>> property, Action<IDynamicComponentMapper<TComponent>> mapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			ExplicitDeclarationsHolder.AddAsPropertySplit(new SplitDefinition(typeof(TEntity), splitGroupId, member));
 			base.RegisterDynamicComponentMapping(property, mapping);
 		}
 
-		protected override void RegisterDynamicComponentMapping<TComponent>(Expression<Func<TEntity, IDictionary<string, object>>> property
-			, Action<IDynamicComponentMapper<TComponent>> mapping)
+		protected override void RegisterDynamicComponentMapping<TComponent>(Expression<Func<TEntity, IDictionary<string, object>>> property, Action<IDynamicComponentMapper<TComponent>> mapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			ExplicitDeclarationsHolder.AddAsPropertySplit(new SplitDefinition(typeof(TEntity), splitGroupId, member));
