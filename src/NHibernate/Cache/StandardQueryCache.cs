@@ -60,7 +60,7 @@ namespace NHibernate.Cache
 			if (isNaturalKeyLookup && result.Count == 0)
 				return false;
 
-			long ts = session.Timestamp;
+			long ts = session.Factory.Settings.CacheProvider.NextTimestamp();
 
 			if (Log.IsDebugEnabled())
 				Log.Debug("caching query results in region: '{0}'; {1}", _regionName, key);
