@@ -342,7 +342,8 @@
 
         <para>
             You can also map a property of type <literal>IDictionary</literal> or
-            <literal>IDictionary&lt;string, object&gt;</literal>:
+            <literal>IDictionary&lt;string, object&gt;</literal>, or declared as a C#
+            <literal>dynamic</literal>:
         </para>
 
     <programlisting><![CDATA[<dynamic-component name="UserAttributes">

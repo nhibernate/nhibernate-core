@@ -2,6 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq.Dynamic.Core;
 
 namespace NHibernate.Test.NHSpecificTest.NH2664Dynamic
@@ -22,37 +23,38 @@ namespace NHibernate.Test.NHSpecificTest.NH2664Dynamic
 			using (var session = OpenSession())
 			using (var tran = session.BeginTransaction())
 			{
+				var properties1 = new Dictionary<string, object>
+				{
+					["Name"] = "First Product",
+					["Description"] = "First Description"
+				};
 				session.Save(
 					new Product
 					{
 						ProductId = "1",
-						Properties = new Dictionary<string, object>
-						{
-							["Name"] = "First Product",
-							["Description"] = "First Description"
-						}
+						Properties = properties1
 					});
 
+				var properties2 = new
+				{
+					Name = "Second Product",
+					Description = "Second Description"
+				};
 				session.Save(
 					new Product
 					{
 						ProductId = "2",
-						Properties = new Dictionary<string, object>
-						{
-							["Name"] = "Second Product",
-							["Description"] = "Second Description"
-						}
+						Properties = properties2
 					});
 
+				dynamic properties3 = new ExpandoObject();
+				properties3.Name = "Third Product";
+				properties3.Description = "Third Description";
 				session.Save(
 					new Product
 					{
 						ProductId = "3",
-						Properties = new Dictionary<string, object>
-						{
-							["Name"] = "val",
-							["Description"] = "val"
-						}
+						Properties = properties3
 					});
 
 				tran.Commit();
@@ -81,6 +83,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2664Dynamic
 
 				Assert.That(product, Is.Not.Null);
 				Assert.That((object) product.Properties["Name"], Is.EqualTo("First Product"));
+				Assert.That((object) product.Properties.Name, Is.EqualTo("First Product"));
 			}
 		}
 
