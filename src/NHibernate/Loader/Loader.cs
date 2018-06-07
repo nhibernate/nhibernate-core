@@ -919,7 +919,6 @@ namespace NHibernate.Loader
 								ISessionImplementor session, bool mustLoadMissingEntity)
 		{
 			int cols = persisters.Length;
-			IEntityAliases[] descriptors = EntityAliases;
 
 			if (Log.IsDebugEnabled())
 			{
@@ -966,7 +965,7 @@ namespace NHibernate.Loader
 					else
 					{
 						obj =
-							InstanceNotYetLoaded(rs, i, persister, key, lockModes[i], descriptors[i].RowIdAlias, optionalObjectKey,
+							InstanceNotYetLoaded(rs, i, persister, key, lockModes[i], optionalObjectKey,
 												 optionalObject, hydratedObjects, session);
 					}
 					// #1226: Even if it is already loaded, if it can be loaded from an association with a property ref, make
@@ -1045,7 +1044,7 @@ namespace NHibernate.Loader
 		/// The entity instance is not in the session cache
 		/// </summary>
 		private object InstanceNotYetLoaded(DbDataReader dr, int i, ILoadable persister, EntityKey key, LockMode lockMode,
-											string rowIdAlias, EntityKey optionalObjectKey, object optionalObject,
+											EntityKey optionalObjectKey, object optionalObject,
 											IList hydratedObjects, ISessionImplementor session)
 		{
 			object obj;
@@ -1068,7 +1067,7 @@ namespace NHibernate.Loader
 			// (but don't yet initialize the object itself)
 			// note that we acquired LockMode.READ even if it was not requested
 			LockMode acquiredLockMode = lockMode == LockMode.None ? LockMode.Read : lockMode;
-			LoadFromResultSet(dr, i, obj, instanceClass, key, rowIdAlias, acquiredLockMode, persister, session);
+			LoadFromResultSet(dr, i, obj, instanceClass, key, acquiredLockMode, persister, session);
 
 			// materialize associations (and initialize the object) later
 			hydratedObjects.Add(obj);
@@ -1093,7 +1092,7 @@ namespace NHibernate.Loader
 		/// and pass the hydrated state to the session.
 		/// </summary>
 		private void LoadFromResultSet(DbDataReader rs, int i, object obj, string instanceClass, EntityKey key,
-									   string rowIdAlias, LockMode lockMode, ILoadable rootPersister,
+									   LockMode lockMode, ILoadable rootPersister,
 									   ISessionImplementor session)
 		{
 			object id = key.Identifier;
@@ -1121,7 +1120,7 @@ namespace NHibernate.Loader
 
 			object[] values = persister.Hydrate(rs, id, obj, rootPersister, cols, eagerPropertyFetch, session);
 
-			object rowId = persister.HasRowId ? rs[rowIdAlias] : null;
+			object rowId = persister.HasRowId ? rs[EntityAliases[i].RowIdAlias] : null;
 
 			TwoPhaseLoad.PostHydrate(persister, id, values, rowId, obj, lockMode, !eagerPropertyFetch, session);
 		}
