@@ -59,7 +59,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 		}
 
-		[Obsolete]
+		// Since v5.2
+		[Obsolete("This method has no more actual async calls to do, use its sync version instead.")]
 		protected virtual Task CoordinateSharedCacheCleanupAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();

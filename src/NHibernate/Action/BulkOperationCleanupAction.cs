@@ -147,14 +147,16 @@ namespace NHibernate.Action
 
 		#endregion
 
-		[Obsolete]
+		// Since v5.2
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		public virtual void Init()
 		{
 			EvictEntityRegions();
 			EvictCollectionRegions();
 		}
 
-		[Obsolete]
+		// Since v5.2
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		public virtual async Task InitAsync(CancellationToken cancellationToken)
 		{
 			await EvictEntityRegionsAsync(cancellationToken);
