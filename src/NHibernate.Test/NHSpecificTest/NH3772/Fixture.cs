@@ -1,81 +1,107 @@
-﻿using System.Diagnostics;
-using System.Linq;
+﻿using System.Linq;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.NH3772 {
-	public class Fixture : TestCaseMappingByCode {
-		protected override HbmMapping GetMappings() {
+namespace NHibernate.Test.NHSpecificTest.NH3772
+{
+	[TestFixture]
+	public class Fixture : TestCaseMappingByCode
+	{
+		protected override HbmMapping GetMappings()
+		{
 			var mapper = new ModelMapper();
-			mapper.Class<Entity>(rc => {
-				rc.Id(x => x.Id, m => m.Generator(Generators.Identity));
-				rc.Property(x => x.Name);
+			mapper.Class<Entity>(
+				rc =>
+				{
+					rc.Id(x => x.Id, m => m.Generator(Generators.Identity));
+					rc.Property(x => x.Name);
 
-				rc.Set(x => x.SubEntities,
-					   x => {
-						   x.Type<CustomGenericCollection<SubEntity>>();
-					   },
-					   x => {
-						   x.ManyToMany();
-					   });
-			});
+					rc.Set(
+						x => x.SubEntities,
+						x => x.Type<CustomGenericCollection<SubEntity>>(),
+						x => x.ManyToMany());
+				});
 
-			mapper.Class<SubEntity>(rc => {
-				rc.Id(x => x.Id, m => m.Generator(Generators.Identity));
-				rc.Property(x => x.Name);
-			});
+			mapper.Class<SubEntity>(
+				rc =>
+				{
+					rc.Id(x => x.Id, m => m.Generator(Generators.Identity));
+					rc.Property(x => x.Name);
+				});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
-		protected override void OnSetUp() {
-			using (var session = this.OpenSession()) {
-				using (var transaction = session.BeginTransaction()) {
-					var e1 = new Entity {Name = "Bob"};
-					session.Save(e1);
+		protected override void OnSetUp()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				session.Save(new Entity {Name = "Bob"});
 
-					var e2 = new Entity {Name = "Sally"};
-					session.Save(e2);
+				session.Save(new Entity {Name = "Sally"});
 
-					var s1 = new SubEntity {Name = "Bob"};
-					session.Save(s1);
+				session.Save(new SubEntity {Name = "Bob"});
 
-					var s2 = new SubEntity {Name = "Sally"};
-					session.Save(s2);
+				session.Save(new SubEntity {Name = "Sally"});
 
-					session.Flush();
-					transaction.Commit();
-				}
-
+				session.Flush();
+				transaction.Commit();
 			}
-			CustomGenericCollection<SubEntity>.TestBehavior = true;
 		}
 
-		protected override void OnTearDown() {
-			CustomGenericCollection<SubEntity>.TestBehavior = false;
+		protected override void OnTearDown()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				session.CreateQuery("delete from System.Object").ExecuteUpdate();
 
-			using (var session = this.OpenSession()) {
-				using (var transaction = session.BeginTransaction()) {
-					session.Delete("from NHibernate.Test.NHSpecificTest.NH3772.Entity");
-					session.Delete("from NHibernate.Test.NHSpecificTest.NH3772.SubEntity");
+				session.Flush();
 
-					session.Flush();
-
-					transaction.Commit();
-				}
+				transaction.Commit();
 			}
 		}
 
 		[Test]
-		public void CustomCollectionType_ThrowsHibernateException_WhenUserCollectionTypeReturnsInitializedPersistentCollection() {
-			using (var session = this.OpenSession()) {
-				using (session.BeginTransaction()) {
-					TestDelegate action = () => (from e in session.Query<Entity>() where e.Name == "Bob" select e).First();
+		public void CustomCollectionType_ThrowsHibernateException_WhenUserCollectionTypeReturnsInitializedCollection()
+		{
+			CustomGenericCollection<SubEntity>.InstantiateInitializedCollection = true;
 
-					Assert.That(action, Throws.InstanceOf<HibernateException>().And.Message.EqualTo("UserCollectionType.Instantiate should return a non-initialized persistent collection. Implement UserCollectionType.Instantiate(int anticipatedSize) to actually create the collection that needs to be wrapped by the persistent collection."));
-				}
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				TestDelegate action = () => (
+					from e in session.Query<Entity>()
+					where e.Name == "Bob"
+					select e
+				).First();
+
+				Assert.That(
+					action,
+					Throws.InstanceOf<HibernateException>().And.Message.EqualTo(
+						"UserCollectionType.Instantiate should return a non-initialized persistent " +
+						"collection. Implement UserCollectionType.Instantiate(int anticipatedSize) to " +
+						"actually create the collection that needs to be wrapped by the persistent collection."));
+			}
+		}
+
+		[Test]
+		public void CustomCollectionType_DoesNotThrowHibernateException_WhenUserCollectionTypeReturnsUninitializedCollection()
+		{
+			CustomGenericCollection<SubEntity>.InstantiateInitializedCollection = false;
+
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				TestDelegate action = () => (
+					from e in session.Query<Entity>()
+					where e.Name == "Bob"
+					select e
+				).First();
+
+				Assert.That(action, Throws.Nothing);
 			}
 		}
 	}
