@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -15,8 +16,7 @@ namespace NHibernate
 		/// <returns>The query.</returns>
 		public static ISQLQuery AddSynchronizedQuerySpace(this ISQLQuery sqlQuery, string querySpace)
 		{
-			if (!(sqlQuery is ISynchronizableSQLQuery ssq))
-				throw new NotSupportedException($"The query must implement {nameof(ISynchronizableSQLQuery)}");
+			var ssq = ReflectHelper.CastOrThrow<ISynchronizableSQLQuery>(sqlQuery, "synchronizable query");
 			return ssq.AddSynchronizedQuerySpace(querySpace);
 		}
 
@@ -28,8 +28,7 @@ namespace NHibernate
 		/// <returns>The query.</returns>
 		public static ISQLQuery AddSynchronizedEntityName(this ISQLQuery sqlQuery, string entityName)
 		{
-			if (!(sqlQuery is ISynchronizableSQLQuery ssq))
-				throw new NotSupportedException($"The query must implement {nameof(ISynchronizableSQLQuery)}");
+			var ssq = ReflectHelper.CastOrThrow<ISynchronizableSQLQuery>(sqlQuery, "synchronizable query");
 			return ssq.AddSynchronizedEntityName(entityName);
 		}
 
@@ -41,8 +40,7 @@ namespace NHibernate
 		/// <returns>The query.</returns>
 		public static ISQLQuery AddSynchronizedEntityClass(this ISQLQuery sqlQuery, System.Type entityType)
 		{
-			if (!(sqlQuery is ISynchronizableSQLQuery ssq))
-				throw new NotSupportedException($"The query must implement {nameof(ISynchronizableSQLQuery)}");
+			var ssq = ReflectHelper.CastOrThrow<ISynchronizableSQLQuery>(sqlQuery, "synchronizable query");
 			return ssq.AddSynchronizedEntityClass(entityType);
 		}
 
@@ -53,8 +51,7 @@ namespace NHibernate
 		/// <returns>The synchronized query spaces.</returns>
 		public static IReadOnlyCollection<string> GetSynchronizedQuerySpaces(this ISQLQuery sqlQuery)
 		{
-			if (!(sqlQuery is ISynchronizableSQLQuery ssq))
-				throw new NotSupportedException($"The query must implement {nameof(ISynchronizableSQLQuery)}");
+			var ssq = ReflectHelper.CastOrThrow<ISynchronizableSQLQuery>(sqlQuery, "synchronizable query");
 			return ssq.GetSynchronizedQuerySpaces();
 		}
 	}

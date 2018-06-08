@@ -65,9 +65,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 
-			CoordinateSharedCacheCleanup(session);
-
-			return Task.CompletedTask;
+			try
+			{
+				CoordinateSharedCacheCleanup(session);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		protected SqlString GenerateIdInsertSelect(IQueryable persister, string tableAlias, IASTNode whereClause)
