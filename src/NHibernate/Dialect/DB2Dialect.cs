@@ -32,6 +32,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.AnsiString, "VARCHAR(254)");
 			RegisterColumnType(DbType.AnsiString, 8000, "VARCHAR($l)");
 			RegisterColumnType(DbType.AnsiString, 2147483647, "CLOB");
+			RegisterColumnType(DbType.Binary, "BLOB");
 			RegisterColumnType(DbType.Binary, 2147483647, "BLOB");
 			RegisterColumnType(DbType.Boolean, "SMALLINT");
 			RegisterColumnType(DbType.Byte, "SMALLINT");
