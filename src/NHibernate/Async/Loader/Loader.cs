@@ -1173,7 +1173,7 @@ namespace NHibernate.Loader
 			}
 			try
 			{
-				bool cacheable = _factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
+				var cacheable = IsCacheable(queryParameters);
 
 				if (cacheable)
 				{
@@ -1208,23 +1208,12 @@ namespace NHibernate.Loader
 				await (PutResultInQueryCacheAsync(session, queryParameters, queryCache, key, result, cancellationToken)).ConfigureAwait(false);
 			}
 
-			IResultTransformer resolvedTransformer = ResolveResultTransformer(queryParameters.ResultTransformer);
-			if (resolvedTransformer != null)
-			{
-				result = (AreResultSetRowsTransformedImmediately()
-							  ? key.ResultTransformer.RetransformResults(
-								  result,
-								  ResultRowAliases,
-								  queryParameters.ResultTransformer,
-								  IncludeInResultRow)
-							  : key.ResultTransformer.UntransformToTuples(result)
-						 );
-			}
+			result = TransformCacheableResults(queryParameters, key.ResultTransformer, result);
 
 			return GetResultList(result, queryParameters.ResultTransformer);
 		}
 
-		private async Task<IList> GetResultFromQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters,
+		internal async Task<IList> GetResultFromQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters,
 											  ISet<string> querySpaces, IQueryCache queryCache,
 											  QueryKey key, CancellationToken cancellationToken)
 		{
@@ -1269,7 +1258,7 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		private async Task PutResultInQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters,
+		internal async Task PutResultInQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters,
 										   IQueryCache queryCache, QueryKey key, IList result, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();

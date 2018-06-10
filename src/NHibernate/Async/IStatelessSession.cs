@@ -14,11 +14,15 @@ using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
+using NHibernate.Impl;
+using NHibernate.Multi;
+using NHibernate.Util;
 
 namespace NHibernate
 {
 	using System.Threading.Tasks;
 	using System.Threading;
+
 	public partial interface IStatelessSession : IDisposable
 	{
 

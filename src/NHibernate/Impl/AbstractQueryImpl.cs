@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql;
+using NHibernate.Multi;
 using NHibernate.Proxy;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
@@ -1049,5 +1052,9 @@ namespace NHibernate.Impl
 		}
 
 		protected internal abstract IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters);
+
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
+		protected internal abstract Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters, CancellationToken cancellationToken);
 	}
 }

@@ -277,6 +277,8 @@ namespace NHibernate.Impl
 			}
 		}
 
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
 		public override Task<IQueryTranslator[]> GetQueriesAsync(IQueryExpression query, bool scalar, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)

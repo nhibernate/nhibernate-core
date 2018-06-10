@@ -17,7 +17,7 @@ using NHibernate.Type;
 namespace NHibernate.Engine
 {
 	// 6.0 TODO: Convert to interface methods
-	internal static class SessionImplementorExtensions
+	internal static partial class SessionImplementorExtensions
 	{
 		internal static IDisposable BeginContext(this ISessionImplementor session)
 		{
@@ -34,6 +34,11 @@ namespace NHibernate.Engine
 				// This method has only replaced bare call to setting the id, so this fallback is enough for avoiding a
 				// breaking change in case in custom session implementation is used.
 				new SessionIdLoggingContext(session.SessionId);
+		}
+
+		internal static void AutoFlushIfRequired(this ISessionImplementor implementor, ISet<string> querySpaces)
+		{
+			(implementor as AbstractSessionImpl)?.AutoFlushIfRequired(querySpaces);
 		}
 	}
 
@@ -246,6 +251,8 @@ namespace NHibernate.Engine
 
 		IQuery GetNamedSQLQuery(string name);
 		
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
 		IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar); // NH specific for MultiQuery
 
 		IInterceptor Interceptor { get; }

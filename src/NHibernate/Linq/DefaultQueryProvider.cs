@@ -22,6 +22,13 @@ namespace NHibernate.Linq
 		Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken);
 	}
 
+	// 6.0 TODO: merge into INhQueryProvider.
+	public interface ISupportFutureBatchNhQueryProvider
+	{
+		IQuery GetPreparedQuery(Expression expression, out NhLinqExpression nhExpression);
+		ISessionImplementor Session { get; }
+	}
+
 	/// <summary>
 	/// The extended <see cref="T:System.Linq.IQueryProvider" /> that supports setting options for underlying <see cref="T:NHibernate.IQuery" />.
 	/// </summary>
@@ -35,7 +42,7 @@ namespace NHibernate.Linq
 		IQueryProvider WithOptions(Action<NhQueryableOptions> setOptions);
 	}
 
-	public partial class DefaultQueryProvider : INhQueryProvider, IQueryProviderWithOptions
+	public partial class DefaultQueryProvider : INhQueryProvider, IQueryProviderWithOptions, ISupportFutureBatchNhQueryProvider
 	{
 		private static readonly MethodInfo CreateQueryMethodDefinition = ReflectHelper.GetMethodDefinition((INhQueryProvider p) => p.CreateQuery<object>(null));
 
@@ -65,7 +72,7 @@ namespace NHibernate.Linq
 
 		public object Collection { get; }
 
-		protected virtual ISessionImplementor Session
+		public virtual ISessionImplementor Session
 		{
 			get
 			{
@@ -272,6 +279,12 @@ namespace NHibernate.Linq
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
 			_options?.Apply(query);
 			return query.ExecuteUpdate();
+		}
+
+		public IQuery GetPreparedQuery(Expression expression, out NhLinqExpression nhExpression)
+		{
+			nhExpression = PrepareQuery(expression, out var query);
+			return query;
 		}
 	}
 }

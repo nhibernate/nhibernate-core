@@ -550,6 +550,8 @@ namespace NHibernate.Impl
 			}
 		}
 
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
 		public override IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar)
 		{
 			using (BeginProcess())
@@ -1026,8 +1028,8 @@ namespace NHibernate.Impl
 		/// named in the query and, if so, complete execution the flush
 		/// </summary>
 		/// <param name="querySpaces"></param>
-		/// <returns></returns>
-		private bool AutoFlushIfRequired(ISet<string> querySpaces)
+		/// <returns>Returns true if flush was executed</returns>
+		public override bool AutoFlushIfRequired(ISet<string> querySpaces)
 		{
 			using (BeginProcess())
 			{

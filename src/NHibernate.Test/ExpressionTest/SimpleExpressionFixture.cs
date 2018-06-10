@@ -74,7 +74,7 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			using (ISession session = factory.OpenSession())
 			{
-				CreateObjects(typeof(Multi), session);
+				CreateObjects(typeof(NHibernate.DomainModel.Multi), session);
 
 				ICriterion expression = Expression.Eq("MisspelledProperty", DateTime.Now);
 				Assert.Throws<QueryException>(() =>expression.ToSqlString(criteria, criteriaQuery));

@@ -7,8 +7,10 @@ using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Event.Default;
 using NHibernate.Impl;
+using NHibernate.Multi;
 using NHibernate.Stat;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -25,6 +27,16 @@ namespace NHibernate
 		{
 			var impl = session as SessionImpl ?? throw new NotSupportedException("Only SessionImpl sessions are supported.");
 			return impl.StatelessSessionWithOptions();
+		}
+
+		/// <summary>
+		/// Creates a <see cref="IQueryBatch"/> for the session.
+		/// </summary>
+		/// <param name="session">The session</param>
+		/// <returns>A query batch.</returns>
+		public static IQueryBatch CreateQueryBatch(this ISession session)
+		{
+			return ReflectHelper.CastOrThrow<AbstractSessionImpl>(session, "query batch").CreateQueryBatch();
 		}
 	}
 

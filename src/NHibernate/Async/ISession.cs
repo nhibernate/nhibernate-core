@@ -17,8 +17,10 @@ using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Event.Default;
 using NHibernate.Impl;
+using NHibernate.Multi;
 using NHibernate.Stat;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate
 {

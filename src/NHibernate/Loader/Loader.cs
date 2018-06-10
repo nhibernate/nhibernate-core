@@ -1637,13 +1637,18 @@ namespace NHibernate.Loader
 		/// <returns></returns>
 		protected IList List(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces)
 		{
-			bool cacheable = _factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
+			var cacheable = IsCacheable(queryParameters);
 
 			if (cacheable)
 			{
 				return ListUsingQueryCache(session, queryParameters, querySpaces);
 			}
 			return ListIgnoreQueryCache(session, queryParameters);
+		}
+
+		internal bool IsCacheable(QueryParameters queryParameters)
+		{
+			return _factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
 		}
 
 		private IList ListIgnoreQueryCache(ISessionImplementor session, QueryParameters queryParameters)
@@ -1665,23 +1670,28 @@ namespace NHibernate.Loader
 				PutResultInQueryCache(session, queryParameters, queryCache, key, result);
 			}
 
-			IResultTransformer resolvedTransformer = ResolveResultTransformer(queryParameters.ResultTransformer);
-			if (resolvedTransformer != null)
-			{
-				result = (AreResultSetRowsTransformedImmediately()
-							  ? key.ResultTransformer.RetransformResults(
-								  result,
-								  ResultRowAliases,
-								  queryParameters.ResultTransformer,
-								  IncludeInResultRow)
-							  : key.ResultTransformer.UntransformToTuples(result)
-						 );
-			}
+			result = TransformCacheableResults(queryParameters, key.ResultTransformer, result);
 
 			return GetResultList(result, queryParameters.ResultTransformer);
 		}
 
-		private QueryKey GenerateQueryKey(ISessionImplementor session, QueryParameters queryParameters)
+		internal IList TransformCacheableResults(QueryParameters queryParameters, CacheableResultTransformer transformer, IList result)
+		{
+			var resolvedTransformer = ResolveResultTransformer(queryParameters.ResultTransformer);
+			if (resolvedTransformer == null)
+				return result;
+
+			return (AreResultSetRowsTransformedImmediately()
+					? transformer.RetransformResults(
+						result,
+						ResultRowAliases,
+						queryParameters.ResultTransformer,
+						IncludeInResultRow)
+					: transformer.UntransformToTuples(result)
+				);
+		}
+
+		internal QueryKey GenerateQueryKey(ISessionImplementor session, QueryParameters queryParameters)
 		{
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters);
 			return new QueryKey(Factory, SqlString, queryParameters, filterKeys,
@@ -1695,7 +1705,7 @@ namespace NHibernate.Loader
 				queryParameters.HasAutoDiscoverScalarTypes, SqlString);
 		}
 
-		private IList GetResultFromQueryCache(ISessionImplementor session, QueryParameters queryParameters,
+		internal IList GetResultFromQueryCache(ISessionImplementor session, QueryParameters queryParameters,
 											  ISet<string> querySpaces, IQueryCache queryCache,
 											  QueryKey key)
 		{
@@ -1739,7 +1749,7 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		private void PutResultInQueryCache(ISessionImplementor session, QueryParameters queryParameters,
+		internal void PutResultInQueryCache(ISessionImplementor session, QueryParameters queryParameters,
 										   IQueryCache queryCache, QueryKey key, IList result)
 		{
 			if (session.CacheMode.HasFlag(CacheMode.Put))

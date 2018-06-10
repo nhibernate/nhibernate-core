@@ -16,6 +16,7 @@ using NHibernate.Hql;
 using NHibernate.Linq;
 using NHibernate.Loader.Custom;
 using NHibernate.Loader.Custom.Sql;
+using NHibernate.Multi;
 using NHibernate.Persister.Entity;
 using NHibernate.Transaction;
 using NHibernate.Type;
@@ -264,6 +265,8 @@ namespace NHibernate.Impl
 		/// <inheritdoc />
 		public virtual DbConnection Connection => ConnectionManager.GetConnection();
 
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
 		public abstract IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar);
 		public abstract EventListeners Listeners { get; }
 		public abstract bool IsEventSource { get; }
@@ -284,6 +287,18 @@ namespace NHibernate.Impl
 		{
 			get => _flushMode;
 			set => _flushMode = value;
+		}
+
+		//6.0 TODO: Make abstract
+		/// <summary>
+		/// detect in-memory changes, determine if the changes are to tables
+		/// named in the query and, if so, complete execution the flush
+		/// </summary>
+		/// <param name="querySpaces"></param>
+		/// <returns>Returns true if flush was executed</returns>
+		public virtual bool AutoFlushIfRequired(ISet<string> querySpaces)
+		{
+			return false;
 		}
 
 		public virtual IQuery GetNamedQuery(string queryName)
@@ -614,6 +629,11 @@ namespace NHibernate.Impl
 		public IQueryable<T> Query<T>(string entityName)
 		{
 			return new NhQueryable<T>(this, entityName);
+		}
+
+		public virtual IQueryBatch CreateQueryBatch()
+		{
+			return new QueryBatch(this, false);
 		}
 	}
 }

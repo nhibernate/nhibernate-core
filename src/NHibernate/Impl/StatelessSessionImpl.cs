@@ -278,6 +278,8 @@ namespace NHibernate.Impl
 			get { return CollectionHelper.EmptyDictionary<string, IFilter>(); }
 		}
 
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
 		public override IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar)
 		{
 			using (BeginContext())
