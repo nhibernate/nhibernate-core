@@ -1,7 +1,9 @@
 using System.Data;
+using System.Data.Common;
 using System.Text;
 using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
+using NHibernate.Dialect.Schema;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
@@ -191,6 +193,11 @@ namespace NHibernate.Dialect
 		public override string GetDropSequenceString(string sequenceName)
 		{
 			return string.Concat("drop sequence ", sequenceName, " restrict");
+		}
+
+		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
+		{
+			return new DB2MetaData(connection);
 		}
 
 		/// <summary></summary>
