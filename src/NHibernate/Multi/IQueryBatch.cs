@@ -14,6 +14,11 @@ namespace NHibernate.Multi
 		void Execute();
 
 		/// <summary>
+		/// Returns true if batch is already executed or empty
+		/// </summary>
+		bool IsExecutedOrEmpty { get; }
+
+		/// <summary>
 		/// Adds a query to the batch.
 		/// </summary>
 		/// <param name="query">The query.</param>

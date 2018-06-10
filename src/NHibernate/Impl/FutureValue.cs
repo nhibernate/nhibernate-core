@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
+	//Since 5.2
+	[Obsolete]
 	internal class FutureValue<T> : IFutureValue<T>, IDelayedValue
 	{
 		public delegate IEnumerable<T> GetResult();

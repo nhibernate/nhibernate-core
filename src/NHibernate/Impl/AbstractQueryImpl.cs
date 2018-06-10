@@ -906,14 +906,12 @@ namespace NHibernate.Impl
 
 		public IFutureEnumerable<T> Future<T>()
 		{
-			session.FutureQueryBatch.Add<T>(this);
-			return session.FutureQueryBatch.GetEnumerator<T>();
+			return session.GetFutureBatch().AddAsFuture<T>(this);
 		}
 
 		public IFutureValue<T> FutureValue<T>()
 		{
-			session.FutureQueryBatch.Add<T>(this);
-			return session.FutureQueryBatch.GetFutureValue<T>();
+			return session.GetFutureBatch().AddAsFutureValue<T>(this);
 		}
 
 		/// <summary> Override the current session cache mode, just for this query.

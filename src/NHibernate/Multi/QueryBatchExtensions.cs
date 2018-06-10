@@ -1,13 +1,16 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Criterion;
 using NHibernate.Engine;
 
 namespace NHibernate.Multi
 {
-	public static class QueryBatchExtensions
+	public static partial class QueryBatchExtensions
 	{
 		/// <summary>
 		/// Adds a query to the batch.
@@ -272,6 +275,190 @@ namespace NHibernate.Multi
 			return batch;
 		}
 
+		/// <summary>
+		/// Adds a query to the batch, returning it as an <see cref="IFutureEnumerable{T}"/>.
+		/// </summary>
+		/// <param name="batch">The batch.</param>
+		/// <param name="query">The query.</param>
+		/// <typeparam name="TResult">The type of the query result elements.</typeparam>
+		/// <returns>A future query which execution will be handled by the batch.</returns>
+		public static IFutureEnumerable<TResult> AddAsFuture<TResult>(this IQueryBatch batch, IQueryOver query)
+		{
+			return AddAsFuture(batch, For<TResult>(query));
+		}
+
+		/// <summary>
+		/// Adds a query to the batch, returning it as an <see cref="IFutureEnumerable{T}"/>.
+		/// </summary>
+		/// <param name="batch">The batch.</param>
+		/// <param name="query">The query.</param>
+		/// <typeparam name="TResult">The type of the query result elements.</typeparam>
+		/// <returns>A future query which execution will be handled by the batch.</returns>
+		public static IFutureEnumerable<TResult> AddAsFuture<TResult>(this IQueryBatch batch, IQueryOver<TResult> query)
+		{
+			return AddAsFuture(batch, For<TResult>(query));
+		}
+
+		/// <summary>
+		/// Adds a query to the batch, returning it as an <see cref="IFutureEnumerable{T}"/>.
+		/// </summary>
+		/// <param name="batch">The batch.</param>
+		/// <param name="query">The query.</param>
+		/// <typeparam name="TResult">The type of the query result elements.</typeparam>
+		/// <returns>A future query which execution will be handled by the batch.</returns>
+		public static IFutureEnumerable<TResult> AddAsFuture<TResult>(this IQueryBatch batch, ICriteria query)
+		{
+			return AddAsFuture(batch, For<TResult>(query));
+		}
+
+		/// <summary>
+		/// Adds a query to the batch, returning it as an <see cref="IFutureEnumerable{T}"/>.
+		/// </summary>
+		/// <param name="batch">The batch.</param>
+		/// <param name="query">The query.</param>
+		/// <typeparam name="TResult">The type of the query result elements.</typeparam>
+		/// <returns>A future query which execution will be handled by the batch.</returns>
+		public static IFutureEnumerable<TResult> AddAsFuture<TResult>(this IQueryBatch batch, DetachedCriteria query)
+		{
+			return AddAsFuture(batch, For<TResult>(query));
+		}
+
+		/// <summary>
+		/// Adds a query to the batch, returning it as an <see cref="IFutureEnumerable{T}"/>.
+		/// </summary>
+		/// <param name="batch">The batch.</param>
+		/// <param name="query">The query.</param>
+		/// <typeparam name="TResult">The type of the query result elements.</typeparam>
+		/// <returns>A future query which execution will be handled by the batch.</returns>
+		public static IFutureEnumerable<TResult> AddAsFuture<TResult>(this IQueryBatch batch, IQuery query)
+		{
+			return AddAsFuture(batch, For<TResult>(query));
+		}
+
+		/// <summary>
+		/// Adds a query to the batch, returning it as an <see cref="IFutureEnumerable{T}"/>.
+		/// </summary>
+		/// <param name="batch">The batch.</param>
+		/// <param name="query">The query.</param>
+		/// <typeparam name="TResult">The type of the query result elements.</typeparam>
+		/// <returns>A future query which execution will be handled by the batch.</returns>
+		public static IFutureEnumerable<TResult> AddAsFuture<TResult>(this IQueryBatch batch, IQueryable<TResult> query)
+		{
+			return AddAsFuture(batch, For(query));
+		}
+
+		/// <summary>
+		/// Adds a query to the batch, returning it as an <see cref="IFutureEnumerable{T}"/>.
+		/// </summary>
+		/// <param name="batch">The batch.</param>
+		/// <param name="query">The query.</param>
+		/// <typeparam name="TResult">The type of the query result elements.</typeparam>
+		/// <returns>A future query which execution will be handled by the batch.</returns>
+		public static IFutureEnumerable<TResult> AddAsFuture<TResult>(this IQueryBatch batch, IQueryBatchItem<TResult> query)
+		{
+			batch.Add(query);
+			return new FutureEnumerable<TResult>(batch, query);
+		}
+
+		/// <summary>
+		/// Adds a query to the batch, returning it as an <see cref="IFutureValue{T}"/>.
+		/// </summary>
+		/// <param name="batch">The batch.</param>
+		/// <param name="query">The query.</param>
+		/// <param name="selector">An aggregation function to apply to <paramref name="query"/>.</param>
+		/// <typeparam name="TSource">The type of the query elements before aggregation.</typeparam>
+		/// <typeparam name="TResult">The type resulting of the query result aggregation.</typeparam>
+		/// <returns>A future query which execution will be handled by the batch.</returns>
+		public static IFutureValue<TResult> AddAsFutureValue<TSource, TResult>(this IQueryBatch batch, IQueryable<TSource> query, Expression<Func<IQueryable<TSource>, TResult>> selector)
+		{
+			return AddAsFutureValue(batch, For(query, selector));
+		}
+
+		/// <summary>
+		/// Adds a query to the batch, returning it as an <see cref="IFutureValue{T}"/>.
+		/// </summary>
+		/// <param name="batch">The batch.</param>
+		/// <param name="query">The query.</param>
+		/// <typeparam name="TResult">The type of the query result elements.</typeparam>
+		/// <returns>A future query which execution will be handled by the batch.</returns>
+		public static IFutureValue<TResult> AddAsFutureValue<TResult>(this IQueryBatch batch, IQueryable<TResult> query)
+		{
+			return AddAsFutureValue(batch, For(query));
+		}
+
+		/// <summary>
+		/// Adds a query to the batch, returning it as an <see cref="IFutureValue{T}"/>.
+		/// </summary>
+		/// <param name="batch">The batch.</param>
+		/// <param name="query">The query.</param>
+		/// <typeparam name="TResult">The type of the query result elements.</typeparam>
+		/// <returns>A future query which execution will be handled by the batch.</returns>
+		public static IFutureValue<TResult> AddAsFutureValue<TResult>(this IQueryBatch batch, ICriteria query)
+		{
+			return AddAsFutureValue(batch, For<TResult>(query));
+		}
+
+		/// <summary>
+		/// Adds a query to the batch, returning it as an <see cref="IFutureValue{T}"/>.
+		/// </summary>
+		/// <param name="batch">The batch.</param>
+		/// <param name="query">The query.</param>
+		/// <typeparam name="TResult">The type of the query result elements.</typeparam>
+		/// <returns>A future query which execution will be handled by the batch.</returns>
+		public static IFutureValue<TResult> AddAsFutureValue<TResult>(this IQueryBatch batch, DetachedCriteria query)
+		{
+			return AddAsFutureValue(batch, For<TResult>(query));
+		}
+
+		/// <summary>
+		/// Adds a query to the batch, returning it as an <see cref="IFutureValue{T}"/>.
+		/// </summary>
+		/// <param name="batch">The batch.</param>
+		/// <param name="query">The query.</param>
+		/// <typeparam name="TResult">The type of the query result elements.</typeparam>
+		/// <returns>A future query which execution will be handled by the batch.</returns>
+		public static IFutureValue<TResult> AddAsFutureValue<TResult>(this IQueryBatch batch, IQueryOver query)
+		{
+			return AddAsFutureValue(batch, For<TResult>(query));
+		}
+
+		/// <summary>
+		/// Adds a query to the batch, returning it as an <see cref="IFutureValue{T}"/>.
+		/// </summary>
+		/// <param name="batch">The batch.</param>
+		/// <param name="query">The query.</param>
+		/// <typeparam name="TResult">The type of the query result elements.</typeparam>
+		/// <returns>A future query which execution will be handled by the batch.</returns>
+		public static IFutureValue<TResult> AddAsFutureValue<TResult>(this IQueryBatch batch, IQueryOver<TResult> query)
+		{
+			return AddAsFutureValue(batch, For<TResult>(query));
+		}
+
+		/// <summary>
+		/// Adds a query to the batch, returning it as an <see cref="IFutureValue{T}"/>.
+		/// </summary>
+		/// <param name="batch">The batch.</param>
+		/// <param name="query">The query.</param>
+		/// <typeparam name="TResult">The type of the query result elements.</typeparam>
+		/// <returns>A future query which execution will be handled by the batch.</returns>
+		public static IFutureValue<TResult> AddAsFutureValue<TResult>(this IQueryBatch batch, IQuery query)
+		{
+			return AddAsFutureValue(batch, For<TResult>(query));
+		}
+
+		/// <summary>
+		/// Adds a query to the batch, returning it as an <see cref="IFutureValue{T}"/>.
+		/// </summary>
+		/// <param name="batch">The batch.</param>
+		/// <param name="query">The query.</param>
+		/// <typeparam name="TResult">The type of the query result elements.</typeparam>
+		/// <returns>A future query which execution will be handled by the batch.</returns>
+		public static IFutureValue<TResult> AddAsFutureValue<TResult>(this IQueryBatch batch, IQueryBatchItem<TResult> query)
+		{
+			batch.Add(query);
+			return new FutureValue<TResult>(batch, query);
+		}
+
 		private static LinqBatchItem<TResult> For<TResult>(IQueryable<TResult> query)
 		{
 			return LinqBatchItem.Create(query);
@@ -319,5 +506,102 @@ namespace NHibernate.Multi
 			batch.Add(query);
 			return batch;
 		}
+
+		#region Helper classes
+
+		partial class FutureValue<TResult> : IFutureValue<TResult>
+		{
+			private FutureList<TResult> _futureList;
+
+			private TResult _result;
+
+			public FutureValue(IQueryBatch batch, IQueryBatchItem<TResult> query)
+			{
+				_futureList = new FutureList<TResult>(batch, query);
+			}
+
+			public TResult Value
+			{
+				get
+				{
+					if (_futureList == null)
+						return _result;
+
+					_result = _futureList.Value.FirstOrDefault();
+					_futureList = null;
+
+					return _result;
+				}
+			}
+		}
+
+		partial class FutureList<TResult> : IFutureList<TResult>
+		{
+			private IQueryBatch _batch;
+			private IQueryBatchItem<TResult> _query;
+
+			private IList<TResult> _list;
+
+			public FutureList(IQueryBatch batch, IQueryBatchItem<TResult> query)
+			{
+				_batch = batch;
+				_query = query;
+			}
+
+			public IList<TResult> Value
+			{
+				get
+				{
+					if (_batch == null)
+						return _list;
+
+					if (!_batch.IsExecutedOrEmpty)
+						_batch.Execute();
+					_list = _query.GetResults();
+
+					_batch = null;
+					_query = null;
+
+					return _list;
+				}
+			}
+		}
+
+		class FutureEnumerable<TResult> : IFutureEnumerable<TResult>
+		{
+			private readonly IFutureList<TResult> _result;
+
+			public FutureEnumerable(IQueryBatch batch, IQueryBatchItem<TResult> query)
+			{
+				_result = new FutureList<TResult>(batch, query);
+			}
+
+			public async Task<IEnumerable<TResult>> GetEnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
+			{
+				return await _result.GetValueAsync(cancellationToken);
+			}
+
+			public IEnumerable<TResult> GetEnumerable()
+			{
+				return _result.Value;
+			}
+
+			IEnumerator<TResult> IFutureEnumerable<TResult>.GetEnumerator()
+			{
+				return GetEnumerable().GetEnumerator();
+			}
+
+			IEnumerator<TResult> IEnumerable<TResult>.GetEnumerator()
+			{
+				return GetEnumerable().GetEnumerator();
+			}
+
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				return GetEnumerable().GetEnumerator();
+			}
+		}
+
+		#endregion Helper classes
 	}
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using NHibernate.Criterion;
 using NHibernate.Engine;
+using NHibernate.Multi;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Util;
@@ -457,14 +458,12 @@ namespace NHibernate.Impl
 
 		public IFutureValue<T> FutureValue<T>()
 		{
-			session.FutureCriteriaBatch.Add<T>(this);
-			return session.FutureCriteriaBatch.GetFutureValue<T>();
+			return session.GetFutureBatch().AddAsFutureValue<T>(this);
 		}
 
 		public IFutureEnumerable<T> Future<T>()
 		{
-			session.FutureCriteriaBatch.Add<T>(this);
-			return session.FutureCriteriaBatch.GetEnumerator<T>();
+			return session.GetFutureBatch().AddAsFuture<T>(this);
 		}
 
 		public object UniqueResult()

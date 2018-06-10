@@ -74,6 +74,9 @@ namespace NHibernate.Multi
 		}
 
 		/// <inheritdoc />
+		public bool IsExecutedOrEmpty => _executed || _queries.Count == 0;
+
+		/// <inheritdoc />
 		public void Add(IQueryBatchItem query)
 		{
 			if (query == null)

@@ -15,6 +15,34 @@ namespace NHibernate.Test.Futures
 	public class QueryBatchFixture : TestCaseMappingByCode
 	{
 		private Guid _parentId;
+		private Guid _eagerId;
+
+		[Test]
+		public void CanCombineCriteriaAndHqlInFuture()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var future1 = session.QueryOver<EntityComplex>()
+						.Where(x => x.Version >= 0)
+						.TransformUsing(new ListTransformerToInt()).Future<int>();
+
+				var future2 = session.Query<EntityComplex>().Where(ec => ec.Version > 2).ToFuture();
+				var future3 = session.Query<EntitySimpleChild>().Select(sc => sc.Name).ToFuture();
+
+				var future4 = session
+						.Query<EntitySimpleChild>()
+						.ToFutureValue(sc => sc.FirstOrDefault());
+
+				Assert.That(future1.GetEnumerable().Count(), Is.GreaterThan(0), "Empty results are not expected");
+				Assert.That(future2.GetEnumerable().Count(), Is.EqualTo(0), "This query should not return results");
+				Assert.That(future3.GetEnumerable().Count(), Is.GreaterThan(1), "Empty results are not expected");
+				Assert.That(future4.Value, Is.Not.Null, "Loaded entity should not be null");
+
+				if (SupportsMultipleQueries)
+					Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1));
+			}
+		}
 
 		[Test]
 		public void CanCombineCriteriaAndHqlInBatch()
@@ -45,6 +73,44 @@ namespace NHibernate.Test.Futures
 					batch.GetResult<EntityComplex>("queryOver");
 					batch.GetResult<EntityComplex>(2);
 					batch.GetResult<EntitySimpleChild>("sql");
+					if (SupportsMultipleQueries)
+						Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1));
+				}
+			}
+		}
+
+		[Test]
+		public void CanCombineCriteriaAndHqlInBatchAsFuture()
+		{
+			using (var session = OpenSession())
+			{
+				var batch = session
+					.CreateQueryBatch();
+
+				var future1 = batch.AddAsFuture<int>(
+					session
+						.QueryOver<EntityComplex>()
+						.Where(x => x.Version >= 0)
+						.TransformUsing(new ListTransformerToInt()));
+
+				var future2 = batch.AddAsFutureValue<Guid>(session.QueryOver<EntityComplex>().Where(x => x.Version >= 1).Select(x => x.Id));
+
+				var future3 = batch.AddAsFuture(session.Query<EntityComplex>().Where(ec => ec.Version > 2));
+				var future4 = batch.AddAsFutureValue(session.Query<EntityComplex>().Where(ec => ec.Version > 2), ec => ec.FirstOrDefault());
+
+				var future5 = batch.AddAsFuture<EntitySimpleChild>(
+					session.CreateSQLQuery(
+								$"select * from {nameof(EntitySimpleChild)}")
+							.AddEntity(typeof(EntitySimpleChild)));
+
+				using (var sqlLog = new SqlLogSpy())
+				{
+					var future1List = future1.GetEnumerable().ToList();
+					var future2Value = future2.Value;
+					var future3List = future3.GetEnumerable().ToList();
+					var future4Value = future4.Value;
+					var future5List = future5.GetEnumerable().ToList();
+
 					if (SupportsMultipleQueries)
 						Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1));
 				}
@@ -104,6 +170,30 @@ namespace NHibernate.Test.Futures
 				Assert.That(results, Is.Not.Null);
 				Assert.That(count, Is.GreaterThan(0));
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(0), "Query is expected to be retrieved from cache");
+			}
+		}
+
+		//NH-3350 (Duplicate records using Future())
+		[Test]
+		public void SameCollectionFetches()
+		{
+			using (var session = OpenSession())
+			{
+				var entiyComplex = session.QueryOver<EntityComplex>().Where(c => c.Id == _parentId).FutureValue();
+
+				session.QueryOver<EntityComplex>()
+						.Fetch(SelectMode.Fetch, ec => ec.ChildrenList)
+						.Where(c => c.Id == _parentId).Future();
+
+				session.QueryOver<EntityComplex>()
+						.Fetch(SelectMode.Fetch, ec => ec.ChildrenList)
+						.Where(c => c.Id == _parentId).Future();
+
+				var parent = entiyComplex.Value;
+				Assert.That(NHibernateUtil.IsInitialized(parent), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(parent.ChildrenList), Is.True);
+				Assert.That(parent.ChildrenList.Count, Is.EqualTo(2));
+				
 			}
 		}
 
@@ -252,6 +342,7 @@ namespace NHibernate.Test.Futures
 				transaction.Commit();
 
 				_parentId = complex.Id;
+				_eagerId = eager.Id;
 			}
 		}
 

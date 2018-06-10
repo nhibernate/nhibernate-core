@@ -6,6 +6,8 @@ using NHibernate.Transform;
 
 namespace NHibernate.Impl
 {
+	//Since 5.2
+	[Obsolete("Replaced by QueryBatch")]
 	public abstract partial class FutureBatch<TQueryApproach, TMultiApproach>
 	{
 		private class BatchedQuery

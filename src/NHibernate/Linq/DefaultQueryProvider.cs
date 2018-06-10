@@ -10,12 +10,18 @@ using NHibernate.Impl;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Threading.Tasks;
+using NHibernate.Multi;
 
 namespace NHibernate.Linq
 {
 	public partial interface INhQueryProvider : IQueryProvider
 	{
+		//Since 5.2
+		[Obsolete("Replaced by ISupportFutureBatchNhQueryProvider interface")]
 		IFutureEnumerable<TResult> ExecuteFuture<TResult>(Expression expression);
+
+		//Since 5.2
+		[Obsolete("Replaced by ISupportFutureBatchNhQueryProvider interface")]
 		IFutureValue<TResult> ExecuteFutureValue<TResult>(Expression expression);
 		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);
 		int ExecuteDml<T>(QueryMode queryMode, Expression expression);
@@ -117,26 +123,30 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(this, expression);
 		}
 
+		//Since 5.2
+		[Obsolete("Replaced by ISupportFutureBatchNhQueryProvider interface")]
 		public virtual IFutureEnumerable<TResult> ExecuteFuture<TResult>(Expression expression)
 		{
 			var nhExpression = PrepareQuery(expression, out var query);
 
 			var result = query.Future<TResult>();
-			SetupFutureResult(nhExpression, (IDelayedValue)result);
+			if (result is IDelayedValue delayedValue)
+				SetupFutureResult(nhExpression, delayedValue);
 
 			return result;
 		}
 
+		//Since 5.2
+		[Obsolete("Replaced by ISupportFutureBatchNhQueryProvider interface")]
 		public virtual IFutureValue<TResult> ExecuteFutureValue<TResult>(Expression expression)
 		{
 			var nhExpression = PrepareQuery(expression, out var query);
-
-			var result = query.FutureValue<TResult>();
-			SetupFutureResult(nhExpression, (IDelayedValue)result);
-
-			return result;
+			var linqBatchItem = new LinqBatchItem<TResult>(query, nhExpression);
+			return Session.GetFutureBatch().AddAsFutureValue(linqBatchItem);
 		}
 
+		//Since 5.2
+		[Obsolete]
 		private static void SetupFutureResult(NhLinqExpression nhExpression, IDelayedValue result)
 		{
 			if (nhExpression.ExpressionToHqlTranslationResults.PostExecuteTransformer == null)

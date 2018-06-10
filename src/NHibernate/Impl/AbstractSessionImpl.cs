@@ -31,6 +31,9 @@ namespace NHibernate.Impl
 		private ISessionFactoryImplementor _factory;
 		private FlushMode _flushMode;
 
+		[NonSerialized]
+		private IQueryBatch _futureMultiBatch;
+
 		private bool closed;
 
 		/// <summary>Get the current NHibernate transaction.</summary>
@@ -278,8 +281,16 @@ namespace NHibernate.Impl
 		public abstract string BestGuessEntityName(object entity);
 		public abstract string GuessEntityName(object entity);
 		public abstract int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
+
+		//Since 5.2
+		[Obsolete("Replaced by FutureBatch")]
 		public abstract FutureCriteriaBatch FutureCriteriaBatch { get; protected internal set; }
+		//Since 5.2
+		[Obsolete("Replaced by FutureBatch")]
 		public abstract FutureQueryBatch FutureQueryBatch { get; protected internal set; }
+	
+		public virtual IQueryBatch FutureBatch
+			=>_futureMultiBatch ?? (_futureMultiBatch = new QueryBatch(this, true));
 
 		public virtual IInterceptor Interceptor { get; protected set; }
 

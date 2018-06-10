@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
+	//Since 5.2
+	[Obsolete]
 	internal class DelayedEnumerator<T> : IFutureEnumerable<T>, IDelayedValue
 	{
 		public delegate IEnumerable<T> GetResult();
@@ -73,6 +75,8 @@ namespace NHibernate.Impl
 		}
 	}
 
+	//Since 5.2
+	[Obsolete]
 	internal interface IDelayedValue
 	{
 		Delegate ExecuteOnEval { get; set; }

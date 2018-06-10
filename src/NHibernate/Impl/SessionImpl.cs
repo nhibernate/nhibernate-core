@@ -41,8 +41,12 @@ namespace NHibernate.Impl
 
 		private CacheMode cacheMode = CacheMode.Normal;
 
+		//Since 5.2
+		[Obsolete()]
 		[NonSerialized]
 		private FutureCriteriaBatch futureCriteriaBatch;
+		//Since 5.2
+		[Obsolete()]
 		[NonSerialized]
 		private FutureQueryBatch futureQueryBatch;
 
@@ -201,6 +205,8 @@ namespace NHibernate.Impl
 			}
 		}
 
+		//Since 5.2
+		[Obsolete("Replaced by QueryBatch")]
 		public override FutureCriteriaBatch FutureCriteriaBatch
 		{
 			get
@@ -215,6 +221,8 @@ namespace NHibernate.Impl
 			}
 		}
 
+		//Since 5.2
+		[Obsolete("Replaced by QueryBatch")]
 		public override FutureQueryBatch FutureQueryBatch
 		{
 			get
