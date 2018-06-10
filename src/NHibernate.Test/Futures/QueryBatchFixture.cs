@@ -197,6 +197,75 @@ namespace NHibernate.Test.Futures
 			}
 		}
 
+		//NH-3864 - Cacheable Multicriteria/Future'd query with aliased join throw exception 
+		[Test]
+		public void CacheableCriteriaWithAliasedJoinFuture()
+		{
+			using (var session = OpenSession())
+			{
+				EntitySimpleChild child1 = null;
+				var ecFuture = session.QueryOver<EntityComplex>()
+									.JoinAlias(c => c.Child1, () => child1)
+									.Where(c => c.Id == _parentId)
+									.Cacheable()
+									.FutureValue();
+				EntityComplex value = null;
+				Assert.DoesNotThrow(() => value = ecFuture.Value);
+				Assert.That(value, Is.Not.Null);
+			}
+
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntitySimpleChild child1 = null;
+				var ecFuture = session.QueryOver<EntityComplex>()
+									.JoinAlias(c => c.Child1, () => child1)
+									.Where(c => c.Id == _parentId)
+									.Cacheable()
+									.FutureValue();
+				EntityComplex value = null;
+				Assert.DoesNotThrow(() => value = ecFuture.Value);
+				Assert.That(value, Is.Not.Null);
+
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(0), "Query is expected to be retrieved from cache");
+			}
+		}
+
+		//NH-3334 - 'collection is not associated with any session' upon refreshing objects from QueryOver<>().Future<>()
+		[KnownBug("NH-3334")]
+		[Test]
+		public void RefreshFutureWithEagerCollections()
+		{
+			using (var session = OpenSession())
+			{
+				var ecFutureList = session.QueryOver<EntityEager>().Future();
+
+				foreach(var ec in ecFutureList.GetEnumerable())
+				{
+					//trouble causes ec.ChildrenListEager with eager select mapping
+					Assert.DoesNotThrow(() => session.Refresh(ec), "session.Refresh should not throw exception");
+				}
+			}
+		}
+
+		//Related to NH-3334. Eager mappings are not fetched by Future
+		[KnownBug("NH-3334")]
+		[Test]
+		public void FutureForEagerMappedCollection()
+		{
+			//Note: This behavior might be considered as feature but it's not documented.
+			//Quirk: if this query is also cached - results will be still eager loaded when values retrieved from cache
+			using (var session = OpenSession())
+			{
+				var futureValue = session.QueryOver<EntityEager>().Where(e => e.Id == _eagerId).FutureValue();
+
+				Assert.That(futureValue.Value, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(futureValue.Value), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(futureValue.Value.ChildrenListEager), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(futureValue.Value.ChildrenListSubselect), Is.True);
+			}
+		}
+
 		#region Test Setup
 
 		protected override HbmMapping GetMappings()
