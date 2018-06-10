@@ -1,3 +1,20 @@
+Build 5.1.3
+=============================
+
+Release notes - NHibernate - Version 5.1.3
+
+** Bug
+
+   * #1741 Fix DbType.Binary registration in DB2Dialect
+   * #1732 Dictionary failure in Loader
+   * #1730 Query cache always missed in session having altered the entities
+   * #1711 Fix static proxy serialization
+
+** Task
+
+   * #1716 Release 5.1.3
+
+
 Build 5.1.2
 =============================
 
