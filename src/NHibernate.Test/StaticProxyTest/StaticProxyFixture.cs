@@ -467,15 +467,9 @@ namespace NHibernate.Test.StaticProxyTest
 #if NETFX
 			return new BinaryFormatter();
 #else
-			var selector = new SerializationHelper.SurrogateSelector();
-			selector.AddSurrogate(
-				typeof(CultureInfo),
-				new StreamingContext(StreamingContextStates.All),
-				new CultureInfoSerializationSurrogate());
-			selector.ChainSelector(new SerializationHelper.SurrogateSelector());
 			return new BinaryFormatter
 			{
-				SurrogateSelector = selector
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()
 			};
 #endif
 		}
