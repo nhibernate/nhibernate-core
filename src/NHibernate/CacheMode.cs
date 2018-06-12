@@ -33,7 +33,7 @@ namespace NHibernate
 		/// <summary> 
 		/// The session will never read items from the cache, but will add items
 		/// to the cache as it reads them from the database. In this mode, the
-		/// effect of <tt>hibernate.cache.use_minimal_puts</tt> is bypassed, in
+		/// effect of <c>cache.use_minimal_puts</c> is bypassed, in
 		/// order to <em>force</em> a cache refresh
 		/// </summary>
 		Refresh = Put | 4 // NH: include Put but have a different value
