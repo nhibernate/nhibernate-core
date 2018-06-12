@@ -19,20 +19,20 @@ namespace NHibernate.Test.StaticProxyTest
 		protected override string MappingsAssembly => "NHibernate.Test";
 		protected override IList Mappings => new[] { "StaticProxyTest.Mappings.hbm.xml" };
 
-		private Guid _idSimpleEntity1;
-		private Guid _idSimpleEntity2;
-		private Guid _idInterfacedEntity1;
-		private Guid _idInterfacedEntity2;
-		private Guid _idInterfacedLazyTextEntity1;
-		private Guid _idInterfacedLazyTextEntity2;
-		private Guid _idInterfacedLazyTextEntity3;
-		private Guid _idInterfacedLazyTextEntity4;
-		private Guid _idInterfacedLazyTextEntity5;
-		private Guid _idLazyTextEntity1;
-		private Guid _idLazyTextEntity2;
-		private Guid _idLazyTextEntity3;
-		private Guid _idLazyTextEntity4;
-		private Guid _idLazyTextEntity5;
+		private object _idSimpleEntity1;
+		private object _idSimpleEntity2;
+		private object _idInterfacedEntity1;
+		private object _idInterfacedEntity2;
+		private object _idInterfacedLazyTextEntity1;
+		private object _idInterfacedLazyTextEntity2;
+		private object _idInterfacedLazyTextEntity3;
+		private object _idInterfacedLazyTextEntity4;
+		private object _idInterfacedLazyTextEntity5;
+		private object _idLazyTextEntity1;
+		private object _idLazyTextEntity2;
+		private object _idLazyTextEntity3;
+		private object _idLazyTextEntity4;
+		private object _idLazyTextEntity5;
 
 		protected override void OnSetUp()
 		{
@@ -44,112 +44,98 @@ namespace NHibernate.Test.StaticProxyTest
 					Name = "1",
 					Text = "Text1"
 				};
-				s.Save(se);
-				_idSimpleEntity1 = se.Id;
+				_idSimpleEntity1 = s.Save(se);
 
 				se = new SimpleEntity
 				{
 					Name = "2",
 					Text = "Text2"
 				};
-				s.Save(se);
-				_idSimpleEntity2 = se.Id;
+				_idSimpleEntity2 = s.Save(se);
 
 				IEntity ie = new InterfacedEntity
 				{
 					Name = "1",
 					Text = "Text1"
 				};
-				s.Save(ie);
-				_idInterfacedEntity1 = ie.Id;
+				_idInterfacedEntity1 = s.Save(ie);
 
 				ie = new InterfacedEntity
 				{
 					Name = "2",
 					Text = "Text2"
 				};
-				s.Save(ie);
-				_idInterfacedEntity2 = ie.Id;
+				_idInterfacedEntity2 = s.Save(ie);
 
 				ILazyTextEntity ilte = new InterfacedLazyTextEntity()
 				{
 					Name = "1",
 					Text = "Text1"
 				};
-				s.Save(ilte);
-				_idInterfacedLazyTextEntity1 = ilte.Id;
+				_idInterfacedLazyTextEntity1 = s.Save(ilte);
 
 				ilte = new InterfacedLazyTextEntity
 				{
 					Name = "2",
 					Text = "Text2"
 				};
-				s.Save(ilte);
-				_idInterfacedLazyTextEntity2 = ilte.Id;
+				_idInterfacedLazyTextEntity2 = s.Save(ilte);
 
 				ilte = new InterfacedLazyTextEntity
 				{
 					Name = "3",
 					Text = "Text3"
 				};
-				s.Save(ilte);
-				_idInterfacedLazyTextEntity3 = ilte.Id;
+				_idInterfacedLazyTextEntity3 = s.Save(ilte);
 
 				ilte = new InterfacedLazyTextEntity
 				{
 					Name = "4",
 					Text = "Text4"
 				};
-				s.Save(ilte);
-				_idInterfacedLazyTextEntity4 = ilte.Id;
+				_idInterfacedLazyTextEntity4 = s.Save(ilte);
 
 				ilte = new InterfacedLazyTextEntity
 				{
 					Name = "5",
 					Text = "Text5"
 				};
-				s.Save(ilte);
-				_idInterfacedLazyTextEntity5 = ilte.Id;
+				_idInterfacedLazyTextEntity5 = s.Save(ilte);
 
 				var le = new LazyTextEntity()
 				{
 					Name = "1",
 					Text = "Text1"
 				};
-				s.Save(le);
-				_idLazyTextEntity1 = le.Id;
+				_idLazyTextEntity1 = s.Save(le);
 
 				le = new LazyTextEntity
 				{
 					Name = "2",
 					Text = "Text2"
 				};
-				s.Save(le);
-				_idLazyTextEntity2 = le.Id;
+				_idLazyTextEntity2 = s.Save(le);
 
 				le = new LazyTextEntity
 				{
 					Name = "3",
 					Text = "Text3"
 				};
-				s.Save(le);
-				_idLazyTextEntity3 = le.Id;
+				_idLazyTextEntity3 = s.Save(le);
 
 				le = new LazyTextEntity
 				{
 					Name = "4",
 					Text = "Text4"
 				};
-				s.Save(le);
-				_idLazyTextEntity4 = le.Id;
+				_idLazyTextEntity4 = s.Save(le);
 
 				le = new LazyTextEntity
 				{
 					Name = "5",
 					Text = "Text5"
 				};
-				s.Save(le);
-				_idLazyTextEntity5 = le.Id;
+				_idLazyTextEntity5 = s.Save(le);
 
 				t.Commit();
 			}
