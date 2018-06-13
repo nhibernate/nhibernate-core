@@ -1,10 +1,8 @@
 using System;
-using System.Data.Common;
-using NUnit.Framework;
 using NHibernate.Dialect;
+using NUnit.Framework;
 
-
-namespace NHibernate.Test.NHSpecificTest.NH2204
+namespace NHibernate.Test.NHSpecificTest.NH1316
 {
 	[TestFixture]
 	public class Fixture : BugTestCase
@@ -55,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2204
 
 
 		[Test]
-		public void KnownFailure_Correct_Id_Returned_When_Using_Trigger()
+		public void Correct_Id_Returned_When_Using_Trigger()
 		{
 			//We expected this test to fail - if the problem has been fixed, clean-up the test.
 			var entity1 = new Parent {Name = "Parent1_0"}; // when saved this entity should have the id of 1
@@ -89,13 +87,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2204
 				s.Save(entity3);
 				s.Flush();
 
-				Warn.Unless(
+				Assert.That(
 					entity3.Id,
 					Is.EqualTo(3),
 					"oh uh - it would appear that lastval() is not our friend when a trigger updates other sequences.");
-
-				// now would be a good time to look at the data in the tables and see that they have the IDs as expected
-				// which are not the same as those returned by nhibernate
 			}
 		}
 	}
