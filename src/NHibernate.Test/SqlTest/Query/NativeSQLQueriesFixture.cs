@@ -43,7 +43,7 @@ namespace NHibernate.Test.SqlTest.Query
 
 		protected override IList Mappings
 		{
-			get { return new[] { "SqlTest.Query.NativeSQLQueries.hbm.xml" }; }
+			get { return new[] {"SqlTest.Query.NativeSQLQueries.hbm.xml"}; }
 		}
 
 		protected override string MappingsAssembly
@@ -92,17 +92,17 @@ namespace NHibernate.Test.SqlTest.Query
 			s.Save(emp);
 
 			IList l = s.CreateSQLQuery(OrgEmpRegionSQL)
-				.AddEntity("org", typeof(Organization))
-				.AddJoin("emp", "org.employments")
-				.AddScalar("regionCode", NHibernateUtil.String)
-				.List();
+			           .AddEntity("org", typeof(Organization))
+			           .AddJoin("emp", "org.employments")
+			           .AddScalar("regionCode", NHibernateUtil.String)
+			           .List();
 			Assert.AreEqual(2, l.Count);
 
 			l = s.CreateSQLQuery(OrgEmpPersonSQL)
-				.AddEntity("org", typeof(Organization))
-				.AddJoin("emp", "org.employments")
-				.AddJoin("pers", "emp.employee")
-				.List();
+			     .AddEntity("org", typeof(Organization))
+			     .AddJoin("emp", "org.employments")
+			     .AddJoin("pers", "emp.employee")
+			     .List();
 			Assert.AreEqual(l.Count, 1);
 
 			t.Commit();
@@ -111,13 +111,14 @@ namespace NHibernate.Test.SqlTest.Query
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			l = s.CreateSQLQuery("select {org.*}, {emp.*} " +
-			                     "from ORGANIZATION org " +
-			                     "     left outer join EMPLOYMENT emp on org.ORGID = emp.EMPLOYER, ORGANIZATION org2")
-				.AddEntity("org", typeof(Organization))
-				.AddJoin("emp", "org.employments")
-				.SetResultTransformer(new DistinctRootEntityResultTransformer())
-				.List();
+			l = s.CreateSQLQuery(
+				     "select {org.*}, {emp.*} " +
+				     "from ORGANIZATION org " +
+				     "     left outer join EMPLOYMENT emp on org.ORGID = emp.EMPLOYER, ORGANIZATION org2")
+			     .AddEntity("org", typeof(Organization))
+			     .AddJoin("emp", "org.employments")
+			     .SetResultTransformer(new DistinctRootEntityResultTransformer())
+			     .List();
 			Assert.AreEqual(l.Count, 2);
 
 			t.Commit();
@@ -151,13 +152,13 @@ namespace NHibernate.Test.SqlTest.Query
 			s.Save(emp);
 
 			IList l = s.CreateSQLQuery(OrgEmpRegionSQL)
-				.SetResultSetMapping("org-emp-regionCode")
-				.List();
+			           .SetResultSetMapping("org-emp-regionCode")
+			           .List();
 			Assert.AreEqual(l.Count, 2);
 
 			l = s.CreateSQLQuery(OrgEmpPersonSQL)
-				.SetResultSetMapping("org-emp-person")
-				.List();
+			     .SetResultSetMapping("org-emp-person")
+			     .List();
 			Assert.AreEqual(l.Count, 1);
 
 			s.Delete(emp);
@@ -302,7 +303,7 @@ namespace NHibernate.Test.SqlTest.Query
 				sqlQuery.SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
 				list = sqlQuery.List();
 				Assert.AreEqual(2, list.Count);
-				m = (IDictionary)list[0];
+				m = (IDictionary) list[0];
 				Assert.IsTrue(m.Contains("org"));
 				AssertClassAssignability(m["org"].GetType(), typeof(Organization));
 				Assert.IsTrue(m.Contains("emp"));
@@ -370,28 +371,29 @@ namespace NHibernate.Test.SqlTest.Query
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			object[] o = (object[]) s.CreateSQLQuery("select\r\n" +
-			                                         "        product.orgid as {product.id.orgid}," +
-			                                         "        product.productnumber as {product.id.productnumber}," +
-			                                         "        {prod_orders}.orgid as orgid3_1_,\r\n" +
-			                                         "        {prod_orders}.ordernumber as ordernum2_3_1_,\r\n" +
-			                                         "        product.name as {product.name}," +
-			                                         "        {prod_orders.element.*}," +
-			                                         /*"        orders.PROD_NO as PROD4_3_1_,\r\n" +
-				"        orders.person as person3_1_,\r\n" +
-				"        orders.PROD_ORGID as PROD3_0__,\r\n" +
-				"        orders.PROD_NO as PROD4_0__,\r\n" +
-				"        orders.orgid as orgid0__,\r\n" +
-				"        orders.ordernumber as ordernum2_0__ \r\n" +*/
-			                                         "    from\r\n" +
-			                                         "        Product product \r\n" +
-			                                         "    inner join\r\n" +
-			                                         "        TBL_ORDER {prod_orders} \r\n" +
-			                                         "            on product.orgid={prod_orders}.PROD_ORGID \r\n" +
-			                                         "            and product.productnumber={prod_orders}.PROD_NO")
-			                        	.AddEntity("product", typeof(Product))
-			                        	.AddJoin("prod_orders", "product.orders")
-			                        	.List()[0];
+			object[] o = (object[]) s.CreateSQLQuery(
+				                         "select\r\n" +
+				                         "        product.orgid as {product.id.orgid}," +
+				                         "        product.productnumber as {product.id.productnumber}," +
+				                         "        {prod_orders}.orgid as orgid3_1_,\r\n" +
+				                         "        {prod_orders}.ordernumber as ordernum2_3_1_,\r\n" +
+				                         "        product.name as {product.name}," +
+				                         "        {prod_orders.element.*}," +
+				                         /*"        orders.PROD_NO as PROD4_3_1_,\r\n" +
+	  "        orders.person as person3_1_,\r\n" +
+	  "        orders.PROD_ORGID as PROD3_0__,\r\n" +
+	  "        orders.PROD_NO as PROD4_0__,\r\n" +
+	  "        orders.orgid as orgid0__,\r\n" +
+	  "        orders.ordernumber as ordernum2_0__ \r\n" +*/
+				                         "    from\r\n" +
+				                         "        Product product \r\n" +
+				                         "    inner join\r\n" +
+				                         "        TBL_ORDER {prod_orders} \r\n" +
+				                         "            on product.orgid={prod_orders}.PROD_ORGID \r\n" +
+				                         "            and product.productnumber={prod_orders}.PROD_NO")
+			                         .AddEntity("product", typeof(Product))
+			                         .AddJoin("prod_orders", "product.orders")
+			                         .List()[0];
 
 			p = (Product) o[0];
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Orders));
@@ -421,8 +423,8 @@ namespace NHibernate.Test.SqlTest.Query
 			s = OpenSession();
 			t = s.BeginTransaction();
 			IList list = s.CreateSQLQuery(EmploymentSQL)
-				.AddEntity(typeof(Employment).FullName)
-				.List();
+			              .AddEntity(typeof(Employment).FullName)
+			              .List();
 			Assert.AreEqual(1, list.Count);
 
 			Employment emp2 = (Employment) list[0];
@@ -433,9 +435,9 @@ namespace NHibernate.Test.SqlTest.Query
 			s.Clear();
 
 			list = s.CreateSQLQuery(EmploymentSQL)
-				.AddEntity(typeof(Employment).FullName)
-				.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
-				.List();
+			        .AddEntity(typeof(Employment).FullName)
+			        .SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
+			        .List();
 			Assert.AreEqual(1, list.Count);
 			IDictionary m = (IDictionary) list[0];
 			Assert.IsTrue(m.Contains("Employment"));
@@ -474,17 +476,17 @@ namespace NHibernate.Test.SqlTest.Query
 			s.Clear();
 
 			list = s.CreateSQLQuery(OrganizationJoinEmploymentSQL)
-				.AddEntity("org", typeof(Organization))
-				.AddJoin("emp", "org.employments")
-				.List();
+			        .AddEntity("org", typeof(Organization))
+			        .AddJoin("emp", "org.employments")
+			        .List();
 			Assert.AreEqual(2, list.Count);
 
 			s.Clear();
 
 			list = s.CreateSQLQuery(OrganizationFetchJoinEmploymentSQL)
-				.AddEntity("org", typeof(Organization))
-				.AddJoin("emp", "org.employments")
-				.List();
+			        .AddEntity("org", typeof(Organization))
+			        .AddJoin("emp", "org.employments")
+			        .List();
 			Assert.AreEqual(2, list.Count);
 
 			s.Clear();
@@ -558,8 +560,8 @@ namespace NHibernate.Test.SqlTest.Query
 			s.Clear();
 
 			IList l = s.CreateSQLQuery("select name, id, flength, name as scalarName from Speech")
-				.SetResultSetMapping("speech")
-				.List();
+			           .SetResultSetMapping("speech")
+			           .List();
 			Assert.AreEqual(l.Count, 1);
 
 			t.Rollback();
@@ -572,9 +574,9 @@ namespace NHibernate.Test.SqlTest.Query
 			using (ISession s = OpenSession())
 			{
 				IList l = s.CreateSQLQuery("select id from Speech where id in (:idList)")
-					.AddScalar("id", NHibernateUtil.Int32)
-					.SetParameterList("idList", new int[] {0, 1, 2, 3}, NHibernateUtil.Int32)
-					.List();
+				           .AddScalar("id", NHibernateUtil.Int32)
+				           .SetParameterList("idList", new int[] {0, 1, 2, 3}, NHibernateUtil.Int32)
+				           .List();
 			}
 		}
 
@@ -596,23 +598,26 @@ namespace NHibernate.Test.SqlTest.Query
 
 		public static void AssertClassAssignability(System.Type source, System.Type target)
 		{
-			Assert.IsTrue(target.IsAssignableFrom(source),
-			              "Classes were not assignment-compatible : source<" +
-			              source.FullName +
-			              "> target<" +
-			              target.FullName + ">"
-				);
+			Assert.IsTrue(
+				target.IsAssignableFrom(source),
+				"Classes were not assignment-compatible : source<" +
+				source.FullName +
+				"> target<" +
+				target.FullName + ">"
+			);
 		}
 
 		class TestResultSetTransformer : IResultTransformer
 		{
 			public bool TransformTupleCalled { get; set; }
 			public bool TransformListCalled { get; set; }
+
 			public object TransformTuple(object[] tuple, string[] aliases)
 			{
 				this.TransformTupleCalled = true;
 				return tuple;
 			}
+
 			public IList TransformList(IList collection)
 			{
 				this.TransformListCalled = true;
@@ -703,6 +708,34 @@ namespace NHibernate.Test.SqlTest.Query
 				var v = l.Value;
 
 				Assert.AreEqual("Ricardo", v);
+			}
+		}
+
+		[Test]
+		public void HandlesManualSynchronization()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.SessionFactory.Statistics.IsStatisticsEnabled = true;
+				s.SessionFactory.Statistics.Clear();
+
+				// create an Organization...
+				Organization jboss = new Organization("JBoss");
+				s.Persist(jboss);
+
+				// now query on Employment, this should not cause an auto-flush
+				s.CreateSQLQuery(EmploymentSQL).AddSynchronizedQuerySpace("ABC").List();
+				Assert.AreEqual(0, s.SessionFactory.Statistics.EntityInsertCount);
+
+				// now try to query on Employment but this time add Organization as a synchronized query space...
+				s.CreateSQLQuery(EmploymentSQL).AddSynchronizedEntityClass(typeof(Organization)).List();
+				Assert.AreEqual(1, s.SessionFactory.Statistics.EntityInsertCount);
+
+				// clean up
+				s.Delete(jboss);
+				s.Transaction.Commit();
+				s.Close();
 			}
 		}
 	}

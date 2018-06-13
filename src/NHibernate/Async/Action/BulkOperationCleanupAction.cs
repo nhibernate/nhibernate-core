@@ -10,15 +10,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Action
 {
-	using System.Threading.Tasks;
-	using System.Threading;
-	public partial class BulkOperationCleanupAction: IExecutable
+	public partial class BulkOperationCleanupAction : IExecutable
 	{
 
 		#region IExecutable Members
@@ -57,37 +59,46 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task EvictCollectionRegionsAsync(CancellationToken cancellationToken)
+		private Task EvictCollectionRegionsAsync(CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (affectedCollectionRoles != null)
+			if (cancellationToken.IsCancellationRequested)
 			{
-				foreach (string roleName in affectedCollectionRoles)
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				if (affectedCollectionRoles != null && affectedCollectionRoles.Any())
 				{
-					await (session.Factory.EvictCollectionAsync(roleName, cancellationToken)).ConfigureAwait(false);
+					return session.Factory.EvictCollectionAsync(affectedCollectionRoles, cancellationToken);
 				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
 			}
 		}
 
-		private async Task EvictEntityRegionsAsync(CancellationToken cancellationToken)
+		private Task EvictEntityRegionsAsync(CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (affectedEntityNames != null)
+			if (cancellationToken.IsCancellationRequested)
 			{
-				foreach (string entityName in affectedEntityNames)
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				if (affectedEntityNames != null && affectedEntityNames.Any())
 				{
-					await (session.Factory.EvictEntityAsync(entityName, cancellationToken)).ConfigureAwait(false);
+					return session.Factory.EvictEntityAsync(affectedEntityNames, cancellationToken);
 				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
 			}
 		}
 
 		#endregion
-
-		public virtual async Task InitAsync(CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			await (EvictEntityRegionsAsync(cancellationToken)).ConfigureAwait(false);
-			await (EvictCollectionRegionsAsync(cancellationToken)).ConfigureAwait(false);
-		}
 	}
 }

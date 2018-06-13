@@ -31,7 +31,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		public override async Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			await (CoordinateSharedCacheCleanupAsync(session, cancellationToken)).ConfigureAwait(false);
+			CoordinateSharedCacheCleanup(session);
 
 			await (CreateTemporaryTableIfNecessaryAsync(persister, session, cancellationToken)).ConfigureAwait(false);
 

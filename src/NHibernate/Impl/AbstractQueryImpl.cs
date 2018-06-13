@@ -18,7 +18,7 @@ namespace NHibernate.Impl
 	public abstract partial class AbstractQueryImpl : IQuery
 	{
 		private readonly string queryString;
-		private readonly ISessionImplementor session;
+		protected readonly ISessionImplementor session;
 		protected internal ParameterMetadata parameterMetadata;
 
 		private readonly RowSelection selection;
