@@ -191,13 +191,12 @@ namespace NHibernate.Collection.Generic
 		/// </summary>
 		public override bool EndRead(ICollectionPersister persister)
 		{
-			foreach (T item in _tempList)
+			foreach (var item in _tempList)
 			{
 				WrappedSet.Add(item);
 			}
 			_tempList = null;
-			SetInitialized();
-			return true;
+			return base.EndRead(persister);
 		}
 
 		public override IEnumerable Entries(ICollectionPersister persister)
