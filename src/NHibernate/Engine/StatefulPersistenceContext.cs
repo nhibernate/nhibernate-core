@@ -8,6 +8,7 @@ using System.Text;
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
 using NHibernate.Impl;
+using NHibernate.Intercept;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -1472,6 +1473,15 @@ namespace NHibernate.Engine
 				catch (MappingException me)
 				{
 					throw new InvalidOperationException(me.Message, me);
+				}
+			}
+
+			// Reconnect the lazy property proxies
+			foreach (var p in entitiesByKey)
+			{
+				if (p.Value is IFieldInterceptorAccessor lazyPropertyProxy && lazyPropertyProxy.FieldInterceptor != null)
+				{
+					lazyPropertyProxy.FieldInterceptor.Session = session;
 				}
 			}
 		}
