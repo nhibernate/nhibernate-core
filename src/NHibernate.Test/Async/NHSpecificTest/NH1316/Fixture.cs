@@ -9,10 +9,8 @@
 
 
 using System;
-using System.Data.Common;
-using NUnit.Framework;
 using NHibernate.Dialect;
-
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1316
 {
