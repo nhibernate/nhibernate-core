@@ -484,6 +484,21 @@ namespace NHibernate.AdoNet
 			_connection.EnlistTransaction(transaction);
 		}
 
+		/// <summary>
+		/// If the connection may not be used by a system transaction completion, release it.
+		/// </summary>
+		public void ReleaseConnectionNotNeededForSystemTransaction()
+		{
+			// The current connection will not be used if the dialect supports concurrent writting connections
+			// in the same transaction and if the connection is not user supplied. In such case it uses a dedicated
+			// connection to perform the flush from. (See BeginProcessingFromSystemTransaction.)
+			if (_connection != null && _ownConnection &&
+				Factory.Dialect.SupportsConcurrentWritingConnectionsInSameTransaction)
+			{
+				CloseConnection();
+			}
+		}
+
 		public IDisposable BeginProcessingFromSystemTransaction(bool allowConnectionUsage)
 		{
 			var needSwapping = _ownConnection && allowConnectionUsage &&
