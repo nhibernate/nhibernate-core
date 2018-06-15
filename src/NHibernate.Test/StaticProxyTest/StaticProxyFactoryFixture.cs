@@ -43,6 +43,12 @@ namespace NHibernate.Test.StaticProxyTest
 		}
 
 		[Serializable]
+		public class SimpleTestClass
+		{
+			public virtual int Id { get; set; }
+		}
+
+		[Serializable]
 		public class CustomSerializationClass : ISerializable
 		{
 			public virtual int Id { get; set; }
@@ -133,6 +139,58 @@ namespace NHibernate.Test.StaticProxyTest
 #if NETFX
 				});
 #endif
+		}
+
+		[Test]
+		public void InitializedProxyStaysInitializedAfterDeserialization()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(typeof(SimpleTestClass).FullName, typeof(SimpleTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+			var proxy = factory.GetProxy(2, null);
+			Assert.That(proxy, Is.Not.Null, "proxy");
+			Assert.That(NHibernateUtil.IsInitialized(proxy), Is.False, "proxy already initialized after creation");
+			Assert.That(proxy.HibernateLazyInitializer, Is.Not.Null, "HibernateLazyInitializer");
+
+			var impl = new SimpleTestClass { Id = 2 };
+			proxy.HibernateLazyInitializer.SetImplementation(impl);
+			Assert.That(NHibernateUtil.IsInitialized(proxy), Is.True, "proxy not initialized after setting implementation");
+
+			var serializer = GetFormatter();
+			object deserialized;
+			using (var memoryStream = new MemoryStream())
+			{
+				serializer.Serialize(memoryStream, proxy);
+				memoryStream.Seek(0L, SeekOrigin.Begin);
+				deserialized = serializer.Deserialize(memoryStream);
+			}
+			Assert.That(deserialized, Is.Not.Null, "deserialized");
+			Assert.That(deserialized, Is.InstanceOf<INHibernateProxy>());
+			Assert.That(NHibernateUtil.IsInitialized(deserialized), Is.True, "proxy no more initialized after deserialization");
+			Assert.That(deserialized, Is.InstanceOf<SimpleTestClass>());
+			Assert.That(((SimpleTestClass) deserialized).Id, Is.EqualTo(2));
+		}
+
+		[Test]
+		public void NonInitializedProxyStaysNonInitializedAfterSerialization()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(typeof(SimpleTestClass).FullName, typeof(SimpleTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+			var proxy = factory.GetProxy(2, null);
+			Assert.That(proxy, Is.Not.Null, "proxy");
+			Assert.That(NHibernateUtil.IsInitialized(proxy), Is.False, "proxy already initialized after creation");
+
+			var serializer = GetFormatter();
+			object deserialized;
+			using (var memoryStream = new MemoryStream())
+			{
+				serializer.Serialize(memoryStream, proxy);
+				Assert.That(NHibernateUtil.IsInitialized(proxy), Is.False, "proxy initialized after serialization");
+				memoryStream.Seek(0L, SeekOrigin.Begin);
+				deserialized = serializer.Deserialize(memoryStream);
+			}
+			Assert.That(deserialized, Is.Not.Null, "deserialized");
+			Assert.That(deserialized, Is.InstanceOf<INHibernateProxy>());
+			Assert.That(NHibernateUtil.IsInitialized(deserialized), Is.False, "proxy initialized after deserialization");
 		}
 
 		[Test]

@@ -37,6 +37,16 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			mapper.Cascade(Mapping.ByCode.Cascade.Persist | Mapping.ByCode.Cascade.Remove);
 			Assert.That(hbm.cascade.Split(',').Select(w => w.Trim()), Contains.Item("persist").And.Contains("delete"));
 		}
+		
+		[Test]
+		public void AssignEntityName()
+		{
+			var hbmMapping = new HbmMapping();
+			var hbm = new HbmManyToOne();
+			IManyToOneMapper mapper = new ManyToOneMapper(null, hbm, hbmMapping);
+			mapper.EntityName("MyEntity");
+			Assert.That(hbm.EntityName, Is.EqualTo("MyEntity"));
+		}
 
 		[Test]
 		public void CanSetAccessor()

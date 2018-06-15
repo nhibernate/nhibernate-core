@@ -411,6 +411,10 @@ namespace NHibernate.Transaction
 			/// otherwise.</param>
 			protected virtual void CompleteTransaction(bool isCommitted)
 			{
+				// Some implementations (Mono) may "re-complete" the transaction on the cloned transaction disposal:
+				// do an early exit here in such case.
+				if (!IsInActiveTransaction)
+					return;
 				try
 				{
 					// Allow transaction completed actions to run while others stay blocked.
