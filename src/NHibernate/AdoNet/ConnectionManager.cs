@@ -493,7 +493,8 @@ namespace NHibernate.AdoNet
 			// in the same transaction and if the connection is not user supplied. In such case it uses a dedicated
 			// connection to perform the flush from. (See BeginProcessingFromSystemTransaction.)
 			if (_connection != null && _ownConnection &&
-				Factory.Dialect.SupportsConcurrentWritingConnectionsInSameTransaction)
+				Factory.Dialect.SupportsConcurrentWritingConnectionsInSameTransaction &&
+				Factory.ConnectionProvider.Driver.SupportsClosingConnectionInsideScopeWithEnlistDuringPrepare)
 			{
 				CloseConnection();
 			}

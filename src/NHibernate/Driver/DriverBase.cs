@@ -326,6 +326,9 @@ namespace NHibernate.Driver
 		/// <inheritdoc />
 		public virtual bool SupportsEnlistmentWhenAutoEnlistmentIsDisabled => true;
 
+		/// <inheritdoc />
+		public virtual bool SupportsClosingConnectionInsideScopeWithEnlistDuringPrepare => true;
+
 		public virtual bool HasDelayedDistributedTransactionCompletion => false;
 
 		/// <inheritdoc />

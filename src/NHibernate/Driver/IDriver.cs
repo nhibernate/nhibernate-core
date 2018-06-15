@@ -144,6 +144,12 @@ namespace NHibernate.Driver
 		bool SupportsEnlistmentWhenAutoEnlistmentIsDisabled { get; }
 
 		/// <summary>
+		/// Does this driver connections support being closed during a scope then re-acquired during prepare, including
+		/// in case of concurrent rollback?
+		/// </summary>
+		bool SupportsClosingConnectionInsideScopeWithEnlistDuringPrepare { get; }
+
+		/// <summary>
 		/// Does sometimes this driver finish distributed transaction after end of scope disposal?
 		/// </summary>
 		/// <remarks>
