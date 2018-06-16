@@ -676,8 +676,8 @@ finally
                 </para>
                 <para>
                     When using <literal>transaction.use_connection_on_system_prepare</literal>, if the session is
-                    disposed within the scope, the connection releasing will still occurs from transaction
-                    completion event.
+                    disposed within the scope, the connection releasing may still occurs from transaction
+                    completion event. (This depends on the target database.)
                 </para>
             </listitem>
             <listitem>

@@ -1491,6 +1491,13 @@ namespace NHibernate.Impl
 				if (TransactionContext != null && TransactionContext.CanFlushOnSystemTransactionCompleted)
 				{
 					TransactionContext.ShouldCloseSessionOnSystemTransactionCompleted = true;
+					// If the current connection is not going to be used anymore (by another session or on the flush
+					// from transaction completion or because it is a supplied one), release it now to avoid issues with
+					// data providers not supporting well having them released from transaction completion.
+					if (!IsTransactionCoordinatorShared && Factory.Dialect.SupportsConcurrentWritingConnectionsInSameTransaction)
+					{
+						ConnectionManager.ReleaseConnectionNotNeededForSystemTransaction();
+					}
 					return;
 				}
 				Dispose(true);

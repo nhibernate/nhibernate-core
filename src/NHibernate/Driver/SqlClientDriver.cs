@@ -300,6 +300,14 @@ namespace NHibernate.Driver
 		public override bool HasDelayedDistributedTransactionCompletion => true;
 
 		/// <inheritdoc />
+		/// <remarks>
+		/// The connection gets corrupted in case of rollback of a concurrent resource manager while a prepare phase
+		/// was using it. Furthermore, subsequent usage of a connection with same transaction string freezes.
+		/// See #1750.
+		/// </remarks>
+		public override bool SupportsClosingConnectionInsideScopeWithEnlistDuringPrepare => false;
+
+		/// <inheritdoc />
 		public override DateTime MinDate => new DateTime(1753, 1, 1);
 	}
 }

@@ -648,6 +648,9 @@ namespace NHibernate.Test.TypesTest
 		bool IDriver.SupportsEnlistmentWhenAutoEnlistmentIsDisabled =>
 			_driverImplementation.SupportsEnlistmentWhenAutoEnlistmentIsDisabled;
 
+		bool IDriver.SupportsClosingConnectionInsideScopeWithEnlistDuringPrepare =>
+			_driverImplementation.SupportsClosingConnectionInsideScopeWithEnlistDuringPrepare;
+
 		bool IDriver.HasDelayedDistributedTransactionCompletion =>
 			_driverImplementation.HasDelayedDistributedTransactionCompletion;
 
