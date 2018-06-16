@@ -31,13 +31,15 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <param name="keys">The keys to lock.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task LockManyAsync(object[] keys, CancellationToken cancellationToken);
+		/// <returns>The value that was used to lock the keys.</returns>
+		Task<object> LockManyAsync(object[] keys, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Unlock the objects that were previously locked.
 		/// </summary>
 		/// <param name="keys">The keys to unlock.</param>
+		/// <param name="lockValue">The value that was used to lock the keys.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task UnlockManyAsync(object[] keys, CancellationToken cancellationToken);
+		Task UnlockManyAsync(object[] keys, object lockValue, CancellationToken cancellationToken);
 	}
 }

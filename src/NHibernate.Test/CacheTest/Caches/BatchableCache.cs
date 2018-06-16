@@ -34,12 +34,13 @@ namespace NHibernate.Test.CacheTest.Caches
 			}
 		}
 
-		public void LockMany(object[] keys)
+		public object LockMany(object[] keys)
 		{
 			LockMultipleCalls.Add(keys);
+			return null;
 		}
 
-		public void UnlockMany(object[] keys)
+		public void UnlockMany(object[] keys, object lockValue)
 		{
 			UnlockMultipleCalls.Add(keys);
 		}

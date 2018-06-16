@@ -39,12 +39,12 @@ namespace NHibernate.Test.CacheTest.Caches
 			}
 		}
 
-		public Task LockManyAsync(object[] keys, CancellationToken cancellationToken)
+		public Task<object> LockManyAsync(object[] keys, CancellationToken cancellationToken)
 		{
 			try
 			{
 				LockMultipleCalls.Add(keys);
-				return Task.CompletedTask;
+				return Task.FromResult<object>(null);
 			}
 			catch (Exception ex)
 			{
@@ -52,7 +52,7 @@ namespace NHibernate.Test.CacheTest.Caches
 			}
 		}
 
-		public Task UnlockManyAsync(object[] keys, CancellationToken cancellationToken)
+		public Task UnlockManyAsync(object[] keys, object lockValue, CancellationToken cancellationToken)
 		{
 			try
 			{

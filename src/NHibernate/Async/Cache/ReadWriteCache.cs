@@ -209,9 +209,12 @@ namespace NHibernate.Cache
 						log.Debug("Caching: {0}", string.Join(",", keys.AsEnumerable()));
 					}
 					var keysArr = keys.Cast<object>().ToArray();
+					var lockAquired = false;
+					object lockValue = null;
 					try
 					{
-						await (_batchableCache.LockManyAsync(keysArr, cancellationToken)).ConfigureAwait(false);
+						lockValue = await (_batchableCache.LockManyAsync(keysArr, cancellationToken)).ConfigureAwait(false);
+						lockAquired = true;
 						var putBatch = new Dictionary<object, object>();
 						var lockables = await (_batchableCache.GetManyAsync(keysArr, cancellationToken)).ConfigureAwait(false);
 						for (var i = 0; i < keys.Length; i++)
@@ -254,7 +257,10 @@ namespace NHibernate.Cache
 					}
 					finally
 					{
-						await (_batchableCache.UnlockManyAsync(keysArr, cancellationToken)).ConfigureAwait(false);
+						if (lockAquired)
+						{
+							await (_batchableCache.UnlockManyAsync(keysArr, lockValue, cancellationToken)).ConfigureAwait(false);
+						}
 					}
 				}
 				return result;

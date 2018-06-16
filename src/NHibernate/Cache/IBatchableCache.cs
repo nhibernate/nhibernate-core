@@ -28,12 +28,14 @@ namespace NHibernate.Cache
 		/// Lock the objects from being changed by another thread.
 		/// </summary>
 		/// <param name="keys">The keys to lock.</param>
-		void LockMany(object[] keys);
+		/// <returns>The value that was used to lock the keys.</returns>
+		object LockMany(object[] keys);
 
 		/// <summary>
 		/// Unlock the objects that were previously locked.
 		/// </summary>
 		/// <param name="keys">The keys to unlock.</param>
-		void UnlockMany(object[] keys);
+		/// <param name="lockValue">The value that was used to lock the keys.</param>
+		void UnlockMany(object[] keys, object lockValue);
 	}
 }
