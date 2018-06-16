@@ -18,7 +18,7 @@ namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public sealed partial class EntityIdentityInsertAction : EntityAction
+	public sealed partial class EntityIdentityInsertAction : AbstractEntityInsertAction
 	{
 
 		public override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -41,10 +41,10 @@ namespace NHibernate.Action
 
 			if (!veto)
 			{
-				generatedId = await (persister.InsertAsync(state, instance, Session, cancellationToken)).ConfigureAwait(false);
+				generatedId = await (persister.InsertAsync(State, instance, Session, cancellationToken)).ConfigureAwait(false);
 				if (persister.HasInsertGeneratedProperties)
 				{
-					await (persister.ProcessInsertGeneratedPropertiesAsync(generatedId, instance, state, Session, cancellationToken)).ConfigureAwait(false);
+					await (persister.ProcessInsertGeneratedPropertiesAsync(generatedId, instance, State, Session, cancellationToken)).ConfigureAwait(false);
 				}
 				//need to do that here rather than in the save event listener to let
 				//the post insert events to have a id-filled entity when IDENTITY is used (EJB3)
@@ -77,7 +77,7 @@ namespace NHibernate.Action
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostInsertEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostInsertEvent postEvent = new PostInsertEvent(Instance, generatedId, state, Persister, (IEventSource)Session);
+				PostInsertEvent postEvent = new PostInsertEvent(Instance, generatedId, State, Persister, (IEventSource)Session);
 				foreach (IPostInsertEventListener listener in postListeners)
 				{
 					await (listener.OnPostInsertAsync(postEvent, cancellationToken)).ConfigureAwait(false);
@@ -91,7 +91,7 @@ namespace NHibernate.Action
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostCommitInsertEventListeners;
 			if (postListeners.Length > 0)
 			{
-				var postEvent = new PostInsertEvent(Instance, generatedId, state, Persister, (IEventSource) Session);
+				var postEvent = new PostInsertEvent(Instance, generatedId, State, Persister, (IEventSource) Session);
 				foreach (IPostInsertEventListener listener in postListeners)
 				{
 					await (listener.OnPostInsertAsync(postEvent, cancellationToken)).ConfigureAwait(false);
@@ -106,7 +106,7 @@ namespace NHibernate.Action
 			bool veto = false;
 			if (preListeners.Length > 0)
 			{
-				var preEvent = new PreInsertEvent(Instance, null, state, Persister, (IEventSource) Session);
+				var preEvent = new PreInsertEvent(Instance, null, State, Persister, (IEventSource) Session);
 				foreach (IPreInsertEventListener listener in preListeners)
 				{
 					veto |= await (listener.OnPreInsertAsync(preEvent, cancellationToken)).ConfigureAwait(false);
