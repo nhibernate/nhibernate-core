@@ -139,16 +139,6 @@
         </para>
 
         <para>
-            A composite element mapping does not support null-able properties if you are using
-            a <literal>&lt;set&gt;</literal>. There is no separate primary key column in the
-            composite element table. NHibernate uses each column's value to identify a record
-            when deleting objects, which is not possible with null values. You have to either
-            use only not-null properties in a composite-element or choose a
-            <literal>&lt;list&gt;</literal>, <literal>&lt;map&gt;</literal>,
-            <literal>&lt;bag&gt;</literal> or <literal>&lt;idbag&gt;</literal>.
-        </para>
-
-        <para>
             A special case of a composite element is a composite element with a nested
             <literal>&lt;many-to-one&gt;</literal> element. This mapping allows you to map extra
             columns of a many-to-many association table to the composite element class. The

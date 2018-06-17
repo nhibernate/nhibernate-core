@@ -55,7 +55,7 @@ namespace NHibernate.Persister.Collection
 					{
 						if (await (collection.NeedsUpdatingAsync(entry, i, ElementType, cancellationToken)).ConfigureAwait(false))
 						{
-							DbCommand st = null;
+							DbCommand st;
 							// will still be issued when it used to be null
 							if (useBatch)
 							{
@@ -71,7 +71,9 @@ namespace NHibernate.Persister.Collection
 							try
 							{
 								int loc = await (WriteKeyAsync(st, id, offset, session, cancellationToken)).ConfigureAwait(false);
-								await (WriteElementToWhereAsync(st, collection.GetSnapshotElement(entry, i), loc, session, cancellationToken)).ConfigureAwait(false);
+								// No columnNullness handling: the element is the entity key and should not contain null
+								// values.
+								await (WriteElementToWhereAsync(st, collection.GetSnapshotElement(entry, i), null, loc, session, cancellationToken)).ConfigureAwait(false);
 								if (useBatch)
 								{
 									await (session.Batcher.AddToBatchAsync(deleteExpectation, cancellationToken)).ConfigureAwait(false);
@@ -117,7 +119,7 @@ namespace NHibernate.Persister.Collection
 					{
 						if (await (collection.NeedsUpdatingAsync(entry, i, ElementType, cancellationToken)).ConfigureAwait(false))
 						{
-							DbCommand st = null;
+							DbCommand st;
 							if (useBatch)
 							{
 								st = await (session.Batcher.PrepareBatchCommandAsync(SqlInsertRowString.CommandType, sql.Text,
@@ -137,7 +139,9 @@ namespace NHibernate.Persister.Collection
 								{
 									loc = await (WriteIndexToWhereAsync(st, collection.GetIndex(entry, i, this), loc, session, cancellationToken)).ConfigureAwait(false);
 								}
-								await (WriteElementToWhereAsync(st, collection.GetElement(entry), loc, session, cancellationToken)).ConfigureAwait(false);
+								// No columnNullness handling: the element is the entity key and should not contain null
+								// values.
+								await (WriteElementToWhereAsync(st, collection.GetElement(entry), null, loc, session, cancellationToken)).ConfigureAwait(false);
 								if (useBatch)
 								{
 									await (session.Batcher.AddToBatchAsync(insertExpectation, cancellationToken)).ConfigureAwait(false);

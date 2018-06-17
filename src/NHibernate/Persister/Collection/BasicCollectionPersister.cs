@@ -10,10 +10,10 @@ using NHibernate.Impl;
 using NHibernate.Loader.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Collections.Generic;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Persister.Collection
 {
@@ -113,29 +113,40 @@ namespace NHibernate.Persister.Collection
 			return update.ToSqlCommandInfo();
 		}
 
-		/// <summary>
-		/// Generate the SQL DELETE that deletes a particular row
-		/// </summary>
-		/// <returns></returns>
-		protected override SqlCommandInfo GenerateDeleteRowString()
+		/// <inheritdoc />
+		protected override SqlCommandInfo GenerateDeleteRowString(bool[] columnNullness)
 		{
-			SqlDeleteBuilder delete = new SqlDeleteBuilder(Factory.Dialect, Factory);
+			var delete = new SqlDeleteBuilder(Factory.Dialect, Factory);
 			delete.SetTableName(qualifiedTableName);
+
 			if (hasIdentifier)
 			{
-				delete.AddWhereFragment(new string[] { IdentifierColumnName }, IdentifierType, " = ");
-			}
-			else if (HasIndex && !indexContainsFormula)
-			{
-				delete
-					.AddWhereFragment(KeyColumnNames, KeyType, " = ")
-					.AddWhereFragment(IndexColumnNames, IndexType, " = ");
+				delete.AddWhereFragment(new[] { IdentifierColumnName }, IdentifierType, " = ");
 			}
 			else
 			{
-				string[] cnames = ArrayHelper.Join(KeyColumnNames, ElementColumnNames, elementColumnIsInPrimaryKey);
-				SqlType[] ctypes = ArrayHelper.Join(KeyType.SqlTypes(Factory), ElementType.SqlTypes(Factory), elementColumnIsInPrimaryKey);
+				var useIndex = HasIndex && !indexContainsFormula;
+				var additionalFilterType = useIndex ? IndexType : ElementType;
+				var additionalFilterColumns = useIndex ? IndexColumnNames : ElementColumnNames;
+				var includes = useIndex ? null : Combine(elementColumnIsInPrimaryKey, columnNullness);
+
+				var cnames = includes == null
+					? ArrayHelper.Join(KeyColumnNames, additionalFilterColumns)
+					: ArrayHelper.Join(KeyColumnNames, additionalFilterColumns, includes);
+				var ctypes = includes == null
+					? ArrayHelper.Join(KeyType.SqlTypes(Factory), additionalFilterType.SqlTypes(Factory))
+					: ArrayHelper.Join(KeyType.SqlTypes(Factory), additionalFilterType.SqlTypes(Factory), includes);
 				delete.AddWhereFragment(cnames, ctypes, " = ");
+
+				if (columnNullness != null)
+				{
+					for (var i = 0; i < columnNullness.Length; i++)
+					{
+						if (columnNullness[i])
+							continue;
+						delete.AddWhereFragment($"{additionalFilterColumns[i]} is null");
+					}
+				}
 			}
 
 			if (Factory.Settings.IsCommentsEnabled)
@@ -206,7 +217,10 @@ namespace NHibernate.Persister.Collection
 								}
 								else
 								{
-									WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), loc, session);
+									// No nullness handled on update: updates does not occurs with sets or bags, and
+									// indexed collections allowing formula (maps) force their element columns to
+									// not-nullable.
+									WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), null, loc, session);
 								}
 							}
 

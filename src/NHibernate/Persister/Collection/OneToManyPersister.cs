@@ -114,18 +114,19 @@ namespace NHibernate.Persister.Collection
 		/// <summary>
 		/// Not needed for one-to-many association
 		/// </summary>
-		/// <returns></returns>
 		protected override SqlCommandInfo GenerateUpdateRowString()
 		{
 			return null;
 		}
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Generate the SQL UPDATE that updates a particular row's foreign
-		/// key to null
+		/// key to null.
 		/// </summary>
-		/// <returns></returns>
-		protected override SqlCommandInfo GenerateDeleteRowString()
+		/// <param name="columnNullness">Unused, the element is the entity key and should not contain null
+		/// values.</param>
+		protected override SqlCommandInfo GenerateDeleteRowString(bool[] columnNullness)
 		{
 			var update = new SqlUpdateBuilder(Factory.Dialect, Factory);
 			update.SetTableName(qualifiedTableName)
@@ -184,7 +185,7 @@ namespace NHibernate.Persister.Collection
 					{
 						if (collection.NeedsUpdating(entry, i, ElementType))
 						{
-							DbCommand st = null;
+							DbCommand st;
 							// will still be issued when it used to be null
 							if (useBatch)
 							{
@@ -200,7 +201,9 @@ namespace NHibernate.Persister.Collection
 							try
 							{
 								int loc = WriteKey(st, id, offset, session);
-								WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), loc, session);
+								// No columnNullness handling: the element is the entity key and should not contain null
+								// values.
+								WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), null, loc, session);
 								if (useBatch)
 								{
 									session.Batcher.AddToBatch(deleteExpectation);
@@ -245,7 +248,7 @@ namespace NHibernate.Persister.Collection
 					{
 						if (collection.NeedsUpdating(entry, i, ElementType))
 						{
-							DbCommand st = null;
+							DbCommand st;
 							if (useBatch)
 							{
 								st = session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, sql.Text,
@@ -265,7 +268,9 @@ namespace NHibernate.Persister.Collection
 								{
 									loc = WriteIndexToWhere(st, collection.GetIndex(entry, i, this), loc, session);
 								}
-								WriteElementToWhere(st, collection.GetElement(entry), loc, session);
+								// No columnNullness handling: the element is the entity key and should not contain null
+								// values.
+								WriteElementToWhere(st, collection.GetElement(entry), null, loc, session);
 								if (useBatch)
 								{
 									session.Batcher.AddToBatch(insertExpectation);

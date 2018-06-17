@@ -18,7 +18,13 @@ namespace NHibernate.Test.NHSpecificTest.GH1170
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		[Test, KnownBug("GH1170")]
+		// Only the set case is tested, because other cases were not affected:
+		// - bags delete everything first.
+		// - indexed collections use their index, which is currently not mappable as a composite index with nullable
+		//   column. All index columns are forced to not-nullable by mapping implementation. When using a formula in
+		//   index, they use the element, but its columns are also forced to not-nullable.
+
+		[Test]
 		public async Task DeleteComponentWithNullAsync()
 		{
 			using (var session = OpenSession())
@@ -39,6 +45,32 @@ namespace NHibernate.Test.NHSpecificTest.GH1170
 				Assert.That(
 					parent.ChildComponents,
 					Has.Count.EqualTo(1).And.None.Property(nameof(ChildComponent.SomeString)).Null);
+				await (tx.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task UpdateComponentWithNullAsync()
+		{
+			// Updates on set are indeed handled as delete/insert, so this test is not really needed.
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+				var parent = await (session.Query<Parent>().SingleAsync());
+				Assert.That(
+					parent.ChildComponents,
+					Has.Count.EqualTo(2).And.One.Property(nameof(ChildComponent.SomeString)).Null);
+				parent.ChildComponents.Single(c => c.SomeString == null).SomeString = "no more null";
+				await (tx.CommitAsync());
+			}
+
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+				var parent = await (session.Query<Parent>().SingleAsync());
+				Assert.That(
+					parent.ChildComponents,
+					Has.Count.EqualTo(2).And.None.Property(nameof(ChildComponent.SomeString)).Null);
 				await (tx.CommitAsync());
 			}
 		}

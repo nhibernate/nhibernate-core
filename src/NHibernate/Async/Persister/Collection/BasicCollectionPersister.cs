@@ -20,10 +20,10 @@ using NHibernate.Impl;
 using NHibernate.Loader.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Collections.Generic;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Persister.Collection
 {
@@ -85,7 +85,10 @@ namespace NHibernate.Persister.Collection
 								}
 								else
 								{
-									await (WriteElementToWhereAsync(st, collection.GetSnapshotElement(entry, i), loc, session, cancellationToken)).ConfigureAwait(false);
+									// No nullness handled on update: updates does not occurs with sets or bags, and
+									// indexed collections allowing formula (maps) force their element columns to
+									// not-nullable.
+									await (WriteElementToWhereAsync(st, collection.GetSnapshotElement(entry, i), null, loc, session, cancellationToken)).ConfigureAwait(false);
 								}
 							}
 
