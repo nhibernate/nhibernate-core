@@ -1283,7 +1283,7 @@ namespace NHibernate.Impl
 			{
 				System.Type implClass = ReflectHelper.ClassForName(impl);
 				return
-					(ICurrentSessionContext)Environment.BytecodeProvider.ObjectsFactory.CreateInstance(implClass, new object[] { this });
+					(ICurrentSessionContext)Environment.ObjectsFactory.CreateInstance(implClass, new object[] { this });
 			}
 			catch (Exception e)
 			{

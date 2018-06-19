@@ -542,7 +542,7 @@ namespace NHibernate.Type
 			{
 				try
 				{
-					type = (IType) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(typeClass);
+					type = (IType) Environment.ObjectsFactory.CreateInstance(typeClass);
 				}
 				catch (Exception e)
 				{

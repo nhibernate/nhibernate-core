@@ -382,6 +382,16 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
+		/// NHibernate's object instantiator.
+		/// </summary>
+		/// <remarks>
+		/// This should only be set before a configuration object
+		/// is created, otherwise the change may not take effect.
+		/// For entities see <see cref="IReflectionOptimizer"/> and its implementations.
+		/// </remarks>
+		public static IObjectsFactory ObjectsFactory { get; set; } = new ActivatorObjectsFactory();
+
+		/// <summary>
 		/// Whether to enable the use of reflection optimizer
 		/// </summary>
 		/// <remarks>

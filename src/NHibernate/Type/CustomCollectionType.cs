@@ -28,7 +28,7 @@ namespace NHibernate.Type
 
 			try
 			{
-				userType = (IUserCollectionType) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(userTypeClass);
+				userType = (IUserCollectionType) Cfg.Environment.ObjectsFactory.CreateInstance(userTypeClass);
 			}
 			catch (InstantiationException ie)
 			{
