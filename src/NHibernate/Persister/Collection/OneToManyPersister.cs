@@ -76,7 +76,7 @@ namespace NHibernate.Persister.Collection
 				update.SetJoin(ownerPersister.TableName, KeyColumnNames, KeyType, JoinColumnNames, ownerPersister.GetPropertyColumnNames(CollectionType.LHSPropertyName));
 			}
 
-			if (HasIndex)
+			if (HasIndex && !indexContainsFormula)
 				update.AddColumns(IndexColumnNames, "null");
 
 			if (HasWhere)
