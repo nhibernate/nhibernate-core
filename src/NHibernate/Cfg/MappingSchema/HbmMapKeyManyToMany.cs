@@ -73,5 +73,24 @@ namespace NHibernate.Cfg.MappingSchema
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Columns and Formulas, in declared order
+		/// </summary>
+		[XmlIgnore]
+		public IEnumerable<object> ColumnsAndFormulas
+		{
+			get
+			{
+				if (Items != null)
+					return Items;
+				// Avoid a possible breaking change for mapping having left a column attribute along with a formula one.
+				// This is a mapping error, but previous implementation was silently ignoring the column attribute in
+				// such case.
+				if (!string.IsNullOrEmpty(formula))
+					return AsFormulas();
+				return AsColumns();
+			}
+		}
 	}
 }
