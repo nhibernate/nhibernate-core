@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH1760">
+
+  <class name="User" table="`User`">
+    <id name="Id" generator="guid.comb"/>
+    <property name="Name"/>
+  </class>
+
+  <class name="Group" table="`Group`">
+    <id name="Id" generator="guid.comb"/>
+
+    <property name="Name"/>
+
+    <map name="UsersByName">
+      <key column="GroupId"/>
+      <map-key type="string">
+        <formula>Name</formula>
+      </map-key>
+      <one-to-many class="User"/>
+    </map>
+  </class>
+
+</hibernate-mapping>
