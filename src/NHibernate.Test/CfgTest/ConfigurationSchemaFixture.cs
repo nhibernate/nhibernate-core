@@ -58,6 +58,30 @@ namespace NHibernate.Test.CfgTest
 		}
 
 		[Test]
+		public void ObjectsFactory()
+		{
+			Assume.That(TestsContext.ExecutingWithVsTest, Is.False);
+
+			var xml =
+				@"<?xml version='1.0' encoding='utf-8' ?>
+<hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
+		<objects-factory type='test'/>
+		<session-factory>
+		</session-factory>
+</hibernate-configuration>";
+
+			HibernateConfiguration hc;
+			using (var xtr = new XmlTextReader(xml, XmlNodeType.Document, null))
+			{
+				hc = new HibernateConfiguration(xtr);
+				Assert.That(hc.ObjectsFactoryType, Is.Null);
+			}
+
+			hc = HibernateConfiguration.FromAppConfig(xml);
+			Assert.That(hc.ObjectsFactoryType, Is.EqualTo("test"));
+		}
+
+		[Test]
 		public void EmptyFactoryNotAllowed()
 		{
 			// session-factory omission not allowed out of App.config

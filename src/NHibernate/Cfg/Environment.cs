@@ -201,6 +201,11 @@ namespace NHibernate.Cfg
 		public const string PropertyBytecodeProvider = "bytecode.provider";
 		public const string PropertyUseReflectionOptimizer = "use_reflection_optimizer";
 
+		/// <summary>
+		/// Set the <see cref="IObjectsFactory"/> used to instantiate NHibernate's objects.
+		/// </summary>
+		public const string PropertyObjectsFactory = "objects_factory";
+
 		public const string UseProxyValidator = "use_proxy_validator";
 		public const string ProxyFactoryFactoryClass = "proxyfactory.factory_class";
 
@@ -306,6 +311,10 @@ namespace NHibernate.Cfg
 				HibernateConfiguration = config;
 				GlobalProperties[PropertyBytecodeProvider] = config.ByteCodeProviderType;
 				GlobalProperties[PropertyUseReflectionOptimizer] = config.UseReflectionOptimizer.ToString();
+				if (config is HibernateConfiguration nhConfig)
+				{
+					GlobalProperties[PropertyObjectsFactory] = nhConfig.ObjectsFactoryType;
+				}
 				if (config.SessionFactory != null)
 				{
 					foreach (var kvp in config.SessionFactory.Properties)
@@ -322,6 +331,7 @@ namespace NHibernate.Cfg
 			VerifyProperties(GlobalProperties);
 
 			BytecodeProviderInstance = BuildBytecodeProvider(GlobalProperties);
+			ObjectsFactory = BuildObjectsFactory(GlobalProperties);
 			EnableReflectionOptimizer = PropertiesHelper.GetBoolean(PropertyUseReflectionOptimizer, GlobalProperties);
 
 			if (EnableReflectionOptimizer)
@@ -430,6 +440,18 @@ namespace NHibernate.Cfg
 			}
 		}
 
+		public static IObjectsFactory BuildObjectsFactory(IDictionary<string, string> properties)
+		{
+			var typeAssemblyQualifiedName = PropertiesHelper.GetString(PropertyObjectsFactory, properties, null);
+			if (typeAssemblyQualifiedName == null)
+			{
+				log.Info("Objects factory class : {0}", typeof(ActivatorObjectsFactory));
+				return new ActivatorObjectsFactory();
+			}
+			log.Info("Custom objects factory class : {0}", typeAssemblyQualifiedName);
+			return CreateCustomObjectsFactory(typeAssemblyQualifiedName);
+		}
+
 		private static IBytecodeProvider CreateCustomBytecodeProvider(string assemblyQualifiedName)
 		{
 			try
@@ -457,5 +479,34 @@ namespace NHibernate.Cfg
 				throw new HibernateByteCodeException("Unable to create the instance of Bytecode provider; check inner exception for detail", e);
 			}
 		}
+
+		private static IObjectsFactory CreateCustomObjectsFactory(string assemblyQualifiedName)
+		{
+			try
+			{
+				var type = ReflectHelper.ClassForName(assemblyQualifiedName);
+				try
+				{
+					return (IObjectsFactory) Activator.CreateInstance(type);
+				}
+				catch (MissingMethodException ex)
+				{
+					throw new HibernateObjectsFactoryException("Public constructor was not found for " + type, ex);
+				}
+				catch (InvalidCastException ex)
+				{
+					throw new HibernateObjectsFactoryException(type + "Type does not implement " + typeof(IObjectsFactory), ex);
+				}
+				catch (Exception ex)
+				{
+					throw new HibernateObjectsFactoryException("Unable to instantiate: " + type, ex);
+				}
+			}
+			catch (Exception e)
+			{
+				throw new HibernateObjectsFactoryException("Unable to create the instance of objects factory; check inner exception for detail", e);
+			}
+		}
+
 	}
 }
