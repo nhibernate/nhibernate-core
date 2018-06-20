@@ -165,6 +165,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		/// Value for objects-factory system property.
 		/// </summary>
 		/// <remarks>Default value <see langword="null" />.</remarks>
+		// 6.0 TODO add to IHibernateConfiguration
 		public string ObjectsFactoryType { get; private set; }
 
 		private bool useReflectionOptimizer = true;
