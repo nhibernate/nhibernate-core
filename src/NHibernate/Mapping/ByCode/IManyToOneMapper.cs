@@ -3,6 +3,7 @@ using NHibernate.Mapping.ByCode.Impl;
 
 namespace NHibernate.Mapping.ByCode
 {
+	// 6.0 TODO: inherit from IColumnsAndFormulasMapper
 	public interface IManyToOneMapper : IEntityPropertyMapper, IColumnsMapper
 	{
 		/// <summary>
@@ -19,6 +20,7 @@ namespace NHibernate.Mapping.ByCode
 		void UniqueKey(string uniquekeyName);
 		void Index(string indexName);
 		void Fetch(FetchKind fetchMode);
+		// 6.0 TODO: remove once inhertied from IColumnsAndFormulasMapper
 		void Formula(string formula);
 		void Lazy(LazyRelation lazyRelation);
 		void Update(bool consideredInUpdateQuery);

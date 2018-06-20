@@ -1,34 +1,19 @@
 using System.Linq;
-using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
 	[TestFixture]
-	public class ElementMapperTest
+	public class MapKeyManyToManyMapperTest
 	{
-		[Test]
-		public void WhenSetTypeByICompositeUserTypeThenSetTypeName()
-		{
-			var mapping = new HbmElement();
-			var mapper = new ElementMapper(typeof(object), mapping);
-
-			Assert.That(() => mapper.Type<MyCompoType>(), Throws.Nothing);
-			Assert.That(mapping.Type.name, Does.Contain(nameof(MyCompoType)));
-			Assert.That(mapping.type, Is.Null);
-		}
-
-		private class Element
-		{
-		}
-
 		[Test]
 		public void CanSetColumnsAndFormulas()
 		{
-			var mapping = new HbmElement();
-			IElementMapper mapper = new ElementMapper(typeof(Element), mapping);
+			var mapping = new HbmMapKeyManyToMany();
+			IMapKeyManyToManyMapper mapper = new MapKeyManyToManyMapper(mapping);
 			mapper.ColumnsAndFormulas(x => x.Name("pizza"), x => x.Formula("risotto"), x => x.Name("pasta"));
 
 			Assert.That(mapping.Items, Has.Length.EqualTo(3));
@@ -45,8 +30,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		[Test]
 		public void CanSetMultipleFormulas()
 		{
-			var mapping = new HbmElement();
-			IElementMapper mapper = new ElementMapper(typeof(Element), mapping);
+			var mapping = new HbmMapKeyManyToMany();
+			IMapKeyManyToManyMapper mapper = new MapKeyManyToManyMapper(mapping);
 			mapper.Formulas("formula1", "formula2", "formula3");
 
 			Assert.That(mapping.formula, Is.Null);

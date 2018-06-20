@@ -8,7 +8,8 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class ElementMapper : IElementMapper
+	// 6.0 TODO: remove IColumnsAndFormulasMapper once IElementMapper inherits it.
+	public class ElementMapper : IElementMapper, IColumnsAndFormulasMapper
 	{
 		private const string DefaultColumnName = "element";
 		private readonly HbmElement elementMapping;
@@ -35,7 +36,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		{
 			if (elementMapping.Columns.Count() > 1)
 			{
-				throw new MappingException("Multi-columns property can't be mapped through singlr-column API.");
+				throw new MappingException("Multi-columns property can't be mapped through single-column API.");
 			}
 			elementMapping.formula = null;
 			HbmColumn hbm = elementMapping.Columns.SingleOrDefault();
@@ -102,6 +103,53 @@ namespace NHibernate.Mapping.ByCode.Impl
 			elementMapping.notnull = false;
 			elementMapping.unique = false;
 			elementMapping.formula = null;
+		}
+
+		#endregion
+
+		#region Implementation of IColumnsAndFormulasMapper
+
+		/// <inheritdoc />
+		public void ColumnsAndFormulas(params Action<IColumnOrFormulaMapper>[] columnOrFormulaMapper)
+		{
+			ResetColumnPlainValues();
+
+			elementMapping.Items = ColumnOrFormulaMapper.GetItemsFor(columnOrFormulaMapper, DefaultColumnName);
+		}
+
+		/// <inheritdoc cref="IColumnsAndFormulasMapper.Formula" />
+		public void Formula(string formula)
+		{
+			if (formula == null)
+			{
+				return;
+			}
+
+			ResetColumnPlainValues();
+			elementMapping.Items = null;
+			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
+			if (formulaLines.Length > 1)
+			{
+				elementMapping.Items = new object[] {new HbmFormula {Text = formulaLines}};
+			}
+			else
+			{
+				elementMapping.formula = formula;
+			}
+		}
+
+		/// <inheritdoc />
+		public void Formulas(params string[] formulas)
+		{
+			if (formulas == null)
+				throw new ArgumentNullException(nameof(formulas));
+
+			ResetColumnPlainValues();
+			elementMapping.Items =
+				formulas
+					.Select(
+						f => (object) new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) })
+					.ToArray();
 		}
 
 		#endregion
@@ -188,26 +236,6 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Unique(bool unique)
 		{
 			Column(x => x.Unique(unique));
-		}
-
-		public void Formula(string formula)
-		{
-			if (formula == null)
-			{
-				return;
-			}
-
-			ResetColumnPlainValues();
-			elementMapping.Items = null;
-			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
-			if (formulaLines.Length > 1)
-			{
-				elementMapping.Items = new[] {new HbmFormula {Text = formulaLines}};
-			}
-			else
-			{
-				elementMapping.formula = formula;
-			}
 		}
 
 		#endregion

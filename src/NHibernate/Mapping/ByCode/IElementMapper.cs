@@ -2,6 +2,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping.ByCode
 {
+	// 6.0 TODO: inherit from IColumnsAndFormulasMapper
 	public interface IElementMapper : IColumnsMapper
 	{
 		void Type(IType persistentType);
@@ -13,6 +14,7 @@ namespace NHibernate.Mapping.ByCode
 		void Scale(short scale);
 		void NotNullable(bool notnull);
 		void Unique(bool unique);
+		// 6.0 TODO: remove once inhertied from IColumnsAndFormulasMapper
 		void Formula(string formula);
 	}
 }
