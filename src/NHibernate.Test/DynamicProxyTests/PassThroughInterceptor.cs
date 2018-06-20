@@ -3,6 +3,7 @@ using NHibernate.Proxy.DynamicProxy;
 
 namespace NHibernate.Test.DynamicProxyTests
 {
+	[Obsolete]
 	public class PassThroughInterceptor : NHibernate.Proxy.DynamicProxy.IInterceptor
 	{
 		private readonly object targetInstance;

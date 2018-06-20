@@ -21,6 +21,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1301
 			get { return "NH1301"; }
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
+
 		[Test]
 		public async Task TestAsync()
 		{
@@ -36,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1301
 				//dont know if proxy should be able to refresh
 				//so I eager/join load here just to show it doesn't work anyhow...
 				ClassA loaded = (await (s.CreateCriteria(typeof(ClassA))
-												.SetFetchMode("BCollection", FetchMode.Join)
+												.Fetch("BCollection")
 												.ListAsync<ClassA>()))[0];
 				Assert.AreEqual(1, a.BCollection.Count);
 				loaded.BCollection.RemoveAt(0);

@@ -18,8 +18,22 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private readonly bool componetDefaultNullable;
 		private readonly string propertyBasePath;
 
+		//Since v5.2
+		[Obsolete("Please use constructor without a dialect parameter.")]
 		public PropertiesBinder(Mappings mappings, PersistentClass persistentClass, Dialect.Dialect dialect)
-			: base(mappings, dialect)
+			: this(mappings, persistentClass)
+		{
+		}
+		
+		//Since v5.2
+		[Obsolete("Please use constructor without dialect parameter")]
+		public PropertiesBinder(Mappings mappings, Component component, string className, string path, bool isNullable, Dialect.Dialect dialect)
+			: this(mappings, component, className, path, isNullable)
+		{
+		}
+
+		public PropertiesBinder(Mappings mappings, PersistentClass persistentClass)
+			: base(mappings)
 		{
 			this.persistentClass = persistentClass;
 			entityName = persistentClass.EntityName;
@@ -30,8 +44,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			component = null;
 		}
 
-		public PropertiesBinder(Mappings mappings, Component component, string className, string path, bool isNullable, Dialect.Dialect dialect)
-			: base(mappings, dialect)
+		public PropertiesBinder(Mappings mappings, Component component, string className, string path, bool isNullable)
+			: base(mappings)
 		{
 			persistentClass = component.Owner;
 			this.component = component;
@@ -94,7 +108,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 				else if ((collectionMapping = entityPropertyMapping as ICollectionPropertiesMapping) != null)
 				{
-					var collectionBinder = new CollectionBinder(Mappings, dialect);
+					var collectionBinder = new CollectionBinder(Mappings);
 					string propertyPath = propertyName == null ? null : StringHelper.Qualify(propertyBasePath, propertyName);
 
 					Mapping.Collection collection = collectionBinder.Create(collectionMapping, entityName, propertyPath, persistentClass,

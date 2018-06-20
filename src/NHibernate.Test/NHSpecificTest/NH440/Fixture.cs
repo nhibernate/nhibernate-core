@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using NUnit.Framework;
 
@@ -19,6 +18,11 @@ namespace NHibernate.Test.NHSpecificTest.NH440
 		protected override IList Mappings
 		{
 			get { return new string[] {"NHSpecificTest.NH440.Fruit.hbm.xml", "NHSpecificTest.NH440.Apple.hbm.xml"}; }
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 

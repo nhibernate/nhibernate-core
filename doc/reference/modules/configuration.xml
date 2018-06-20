@@ -1136,6 +1136,10 @@ in the parameter binding.</programlisting>
                                 set in the <literal>hibernate.cfg.xml</literal> configuration file.
                             </para>
                             <para>
+                                Alternatively to using the setting, a logger factory can be programmatically supplied by using
+                                <literal>NHibernateLogger.SetLoggersFactory</literal>.
+                            </para>
+                            <para>
                                 <emphasis role="strong">eg.</emphasis>
                                 <literal>classname.of.LoggerFactory, assembly</literal>
                             </para>

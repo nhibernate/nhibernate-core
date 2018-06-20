@@ -3,6 +3,7 @@ using System.Reflection;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using NHibernate.Util;
 #if !NETFX
 using System.IO;
 using System.Runtime.Serialization;
@@ -62,15 +63,18 @@ namespace NHibernate.Test
 			Assert.That(obj, Is.BinarySerializable, message, args);
 #else
 			if (obj == null) throw new ArgumentNullException(nameof(args));
-			var serializer = new BinaryFormatter();
+			var formatter = new BinaryFormatter
+			{
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()
+			};
 			var isSuccess = false;
 			using (var memoryStream = new MemoryStream())
 			{
 				try
 				{
-					serializer.Serialize(memoryStream, obj);
+					formatter.Serialize(memoryStream, obj);
 					memoryStream.Seek(0L, SeekOrigin.Begin);
-					var deserialized = serializer.Deserialize(memoryStream);
+					var deserialized = formatter.Deserialize(memoryStream);
 					// ReSharper disable once ConditionIsAlwaysTrueOrFalse
 					isSuccess = deserialized != null;
 				}

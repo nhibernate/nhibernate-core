@@ -12,7 +12,6 @@
 		<property name="Decimal" column="`Decimal`" length="19" precision="4" />
 		<property name="Double" column="`Double`" />
 		<property name="DateTime" column="`DateTime`" type="timestamp" />
-		<property name="DateTimeOffset" column="`DateTimeOffset`" />
     <property name="NonNullableDecimal" />
 	</class>
 	<class name="DomainClassBExtendedByA">
@@ -25,7 +24,6 @@
 		<property name="Decimal" column="`Decimal`" length="19" precision="4" />
 		<property name="Double" column="`Double`" />
 		<property name="DateTime" column="`DateTime`" type="timestamp" />
-		<property name="DateTimeOffset" column="`DateTimeOffset`" />
     <property name="NonNullableDecimal" />
 	</class>
 	<class name="DomainClassCExtendedByD">
@@ -38,7 +36,6 @@
 		<property name="Decimal" column="`Decimal`" length="19" precision="4" />
 		<property name="Double" column="`Double`" />
 		<property name="DateTime" column="`DateTime`" type="timestamp" />
-		<property name="DateTimeOffset" column="`DateTimeOffset`" />
     <property name="NonNullableDecimal" />
 	</class>
 	<class name="DomainClassDExtendingC">
@@ -51,7 +48,6 @@
 		<property name="Decimal" column="`Decimal`" length="19" precision="4" />
 		<property name="Double" column="`Double`" />
 		<property name="DateTime" column="`DateTime`" type="timestamp" />
-		<property name="DateTimeOffset" column="`DateTimeOffset`" />
     <property name="NonNullableDecimal" />
 	</class>
 	<class name="DomainClassE">
@@ -64,7 +60,6 @@
 		<property name="Decimal" column="`Decimal`" length="19" precision="4" />
 		<property name="Double" column="`Double`" />
 		<property name="DateTime" column="`DateTime`" type="timestamp" />
-		<property name="DateTimeOffset" column="`DateTimeOffset`" />
     <property name="NonNullableDecimal" />
   </class>
 	<class name="DomainClassF">
@@ -77,7 +72,6 @@
 		<property name="Decimal" column="`Decimal`" length="19" precision="4" />
 		<property name="Double" column="`Double`" />
 		<property name="DateTime" column="`DateTime`" type="timestamp" />
-		<property name="DateTimeOffset" column="`DateTimeOffset`" />
     <property name="NonNullableDecimal" />
   </class>
 	<class name="DomainClassGExtendedByH">
@@ -90,7 +84,6 @@
 		<property name="Decimal" column="`Decimal`" length="19" precision="4" />
 		<property name="Double" column="`Double`" />
 		<property name="DateTime" column="`DateTime`" type="timestamp" />
-		<property name="DateTimeOffset" column="`DateTimeOffset`" />
     <property name="NonNullableDecimal" />
 	</class>
 	<class name="DomainClassHExtendingG">
@@ -103,7 +96,6 @@
 		<property name="Decimal" column="`Decimal`" length="19" precision="4" />
 		<property name="Double" column="`Double`" />
 		<property name="DateTime" column="`DateTime`" type="timestamp" />
-		<property name="DateTimeOffset" column="`DateTimeOffset`" />
     <property name="NonNullableDecimal" />
   </class>
 </hibernate-mapping>

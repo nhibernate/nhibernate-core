@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Collections;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
@@ -22,6 +21,11 @@ namespace NHibernate.Test.NHSpecificTest
 		protected override IList Mappings
 		{
 			get { return new string[] {"NHSpecific.LazyLoadBug.hbm.xml"}; }
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		[Test]

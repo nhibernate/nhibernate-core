@@ -35,6 +35,11 @@ namespace NHibernate.Test.Stateless
 			cfg.SetProperty(Environment.MaxFetchDepth, 1.ToString());
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
+
 		private class TestData
 		{
 			internal readonly IList list = new ArrayList();
@@ -107,7 +112,7 @@ namespace NHibernate.Test.Stateless
 
 			using (IStatelessSession s = Sfi.OpenStatelessSession())
 			{
-				Assert.AreEqual(1, (await (s.CreateCriteria<Contact>().SetFetchMode("Org", FetchMode.Select).ListAsync())).Count);
+				Assert.AreEqual(1, (await (s.CreateCriteria<Contact>().Fetch(SelectMode.Skip, "Org").ListAsync())).Count);
 			}
 
 			await (testData.cleanDataAsync());

@@ -1,4 +1,3 @@
-using System;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH643
@@ -9,6 +8,11 @@ namespace NHibernate.Test.NHSpecificTest.NH643
 		public override string BugNumber
 		{
 			get { return "NH643"; }
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		private object parentId;

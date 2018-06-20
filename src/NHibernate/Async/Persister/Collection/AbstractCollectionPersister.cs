@@ -39,7 +39,7 @@ namespace NHibernate.Persister.Collection
 	using System.Threading.Tasks;
 	using System.Threading;
 	public abstract partial class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
-														IPostInsertIdentityPersister
+		IPostInsertIdentityPersister, ISupportSelectModeJoinable
 	{
 
 		public Task InitializeAsync(object key, ISessionImplementor session, CancellationToken cancellationToken)
@@ -217,6 +217,7 @@ namespace NHibernate.Persister.Collection
 							expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 						}
 					}
+					catch (OperationCanceledException) { throw; }
 					catch (Exception e)
 					{
 						if (useBatch)
@@ -376,6 +377,7 @@ namespace NHibernate.Persister.Collection
 							}
 							count++;
 						}
+						catch (OperationCanceledException) { throw; }
 						catch (Exception e)
 						{
 							if (useBatch)
@@ -517,6 +519,7 @@ namespace NHibernate.Persister.Collection
 					expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				if (useBatch)

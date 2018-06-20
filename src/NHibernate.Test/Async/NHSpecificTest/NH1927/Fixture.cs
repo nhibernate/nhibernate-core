@@ -76,42 +76,42 @@ namespace NHibernate.Test.NHSpecificTest.NH1927
         }
 
         [Test]
-        public Task CriteriaWithEagerFetchAsync()
+        public async Task CriteriaWithEagerFetchAsync()
         {
-            return TestQueryAsync(s => s.CreateCriteria(typeof (Customer))
-				.SetFetchMode("Invoices", FetchMode.Eager)
+            await (TestQueryAsync(s => s.CreateCriteria(typeof (Customer))
+				.Fetch("Invoices")
 				.UniqueResult<Customer>()
-				);
+				));
         }
 
         [Test]
-        public Task CriteriaWithoutEagerFetchAsync()
+        public async Task CriteriaWithoutEagerFetchAsync()
         {
-            return TestQueryAsync(s => s
+            await (TestQueryAsync(s => s
 				.CreateCriteria(typeof(Customer))
 				.UniqueResult<Customer>()
-				);
+				));
         }
 
         [Test]
-        public Task HqlWithEagerFetchAsync()
+        public async Task HqlWithEagerFetchAsync()
         {
-            return TestQueryAsync(s => s.CreateQuery(@"
+            await (TestQueryAsync(s => s.CreateQuery(@"
                     select c
                     from Customer c
                         left join fetch c.Invoices"
                     )
-                    .UniqueResult<Customer>());
+                    .UniqueResult<Customer>()));
         }
         
         [Test]
-        public Task HqlWithoutEagerFetchAsync()
+        public async Task HqlWithoutEagerFetchAsync()
         {
-            return TestQueryAsync(s => s.CreateQuery(@"
+            await (TestQueryAsync(s => s.CreateQuery(@"
                     select c
                     from Customer c"
                     )
-                    .UniqueResult<Customer>());
+                    .UniqueResult<Customer>()));
         }
     }
 }

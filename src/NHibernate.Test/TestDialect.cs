@@ -1,4 +1,5 @@
 ﻿using System;
+using NHibernate.Id;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Test
@@ -25,6 +26,12 @@ namespace NHibernate.Test
 		{
 			_dialect = dialect;
 		}
+
+		/// <summary>
+		/// Has a native generator strategy resolving to identity.
+		/// </summary>
+		public bool HasIdentityNativeGenerator
+			=> _dialect.NativeIdentifierGeneratorClass == typeof(IdentityGenerator);
 
 		public virtual bool SupportsOperatorAll => true;
 		public virtual bool SupportsOperatorSome => true;
@@ -59,6 +66,16 @@ namespace NHibernate.Test
 		public virtual bool SupportsEmptyInserts => true;
 
 		/// <summary>
+		/// Either supports inserting in a table without any column specified in the insert, or has a native
+		/// generator strategy resolving to something else than identity.
+		/// </summary>
+		/// <remarks>This property is useful for cases where empty inserts happens only when the entities
+		/// generator is <c>native</c> while the dialect uses <c>identity</c> for this generator.</remarks>
+		public bool SupportsEmptyInsertsOrHasNonIdentityNativeGenerator
+			=> SupportsEmptyInserts || !HasIdentityNativeGenerator;
+
+
+		/// <summary>
 		/// Supports condition not bound to any data, like "where @p1 = @p2".
 		/// </summary>
 		public virtual bool SupportsNonDataBoundCondition => true;
@@ -80,5 +97,36 @@ namespace NHibernate.Test
 		/// Supports the modulo operator on decimal types
 		/// </summary>
 		public virtual bool SupportsModuloOnDecimal => true;
+
+		/// <summary>
+		/// Supports aggregating sub-selects in order by clause
+		/// </summary>
+		public virtual bool SupportsAggregatingScalarSubSelectsInOrderBy => _dialect.SupportsScalarSubSelects;
+
+		/// <summary>
+		/// Supports order by and limits/top in correlated sub-queries
+		/// </summary>
+		public virtual bool SupportsOrderByAndLimitInSubQueries => true;
+
+		/// <summary>
+		/// Supports selecting a double literal.
+		/// </summary>
+		public virtual bool SupportsSelectingDoubleLiteral => true;
+
+		/// <summary>
+		/// Supports foreign keys on composite keys including a boolean column.
+		/// </summary>
+		public virtual bool SupportsFKOnCompositeKeyWithBoolean => true;
+
+		/// <summary>
+		/// Supports tests involving concurrency.
+		/// </summary>
+		public virtual bool SupportsConcurrencyTests => true;
+
+		/// <summary>
+		/// Supports batching together inserts/updates/Delets among which some depends (auto foreign key) on others
+		/// in the batch.
+		/// </summary>
+		public virtual bool SupportsBatchingDependentDML => true;
 	}
 }

@@ -6,6 +6,7 @@ using NHibernate.DomainModel;
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Tool.hbm2ddl;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.CfgTest
@@ -22,8 +23,6 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void Basic_CRUD_should_work()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			Assembly assembly = Assembly.Load("NHibernate.DomainModel");
 			var cfg = new Configuration();
 			if (TestConfigurationHelper.hibernateConfigFile != null)
@@ -32,7 +31,12 @@ namespace NHibernate.Test.CfgTest
 			}
 			cfg.AddResource("NHibernate.DomainModel.ParentChild.hbm.xml", assembly);
 
-			var formatter = new BinaryFormatter();
+			var formatter = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			var memoryStream = new MemoryStream();
 			formatter.Serialize(memoryStream, cfg);
 			memoryStream.Position = 0;

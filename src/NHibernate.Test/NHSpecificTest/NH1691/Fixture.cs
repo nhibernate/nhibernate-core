@@ -6,6 +6,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1691
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
+
 		private static Component GetInitializedComponent()
 		{
 			var component = new Component();

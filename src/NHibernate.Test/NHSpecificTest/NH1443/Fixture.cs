@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1443
 			else
 				Assert.That(script, Does.Match("drop table nhibernate.dbo.Aclass"));
 
-			Assert.That(script, Does.Match("create table nhibernate.dbo.Aclass"));
+			Assert.That(script, Does.Match("create ((column|row) )?table nhibernate.dbo.Aclass"));
 			
 		}
 

@@ -30,7 +30,7 @@ namespace NHibernate.Engine
 		// Object insertions, updates, and deletions have list semantics because
 		// they must happen in the right order so as to respect referential
 		// integrity
-		private readonly List<IExecutable> insertions;
+		private readonly List<AbstractEntityInsertAction> insertions;
 		private readonly List<EntityDeleteAction> deletions;
 		private readonly List<EntityUpdateAction> updates;
 		// Actually the semantics of the next three are really "Bag"
@@ -48,7 +48,7 @@ namespace NHibernate.Engine
 		public ActionQueue(ISessionImplementor session)
 		{
 			this.session = session;
-			insertions = new List<IExecutable>(InitQueueListSize);
+			insertions = new List<AbstractEntityInsertAction>(InitQueueListSize);
 			deletions = new List<EntityDeleteAction>(InitQueueListSize);
 			updates = new List<EntityUpdateAction>(InitQueueListSize);
 
@@ -550,7 +550,7 @@ namespace NHibernate.Engine
 			private readonly Dictionary<object, int> _entityBatchDependency = new Dictionary<object, int>();
 
 			// the map of batch numbers to EntityInsertAction lists
-			private readonly Dictionary<int, List<EntityInsertAction>> _actionBatches = new Dictionary<int, List<EntityInsertAction>>();
+			private readonly Dictionary<int, List<AbstractEntityInsertAction>> _actionBatches = new Dictionary<int, List<AbstractEntityInsertAction>>();
 
 			/// <summary>
 			/// A sorter aiming to group inserts as much as possible for optimizing batching.
@@ -572,7 +572,7 @@ namespace NHibernate.Engine
 			public void Sort()
 			{
 				// build the map of entity names that indicate the batch number
-				foreach (EntityInsertAction action in _actionQueue.insertions)
+				foreach (var action in _actionQueue.insertions)
 				{
 					var entityName = action.EntityName;
 
@@ -598,7 +598,7 @@ namespace NHibernate.Engine
 				}
 			}
 
-			private int GetBatchNumber(EntityInsertAction action, string entityName)
+			private int GetBatchNumber(AbstractEntityInsertAction action, string entityName)
 			{
 				int batchNumber;
 				if (_latestBatches.TryGetValue(entityName, out batchNumber))
@@ -620,7 +620,7 @@ namespace NHibernate.Engine
 				return batchNumber;
 			}
 
-			private bool RequireNewBatch(EntityInsertAction action, int latestBatchNumberForType)
+			private bool RequireNewBatch(AbstractEntityInsertAction action, int latestBatchNumberForType)
 			{
 				// This method assumes the original action list is already sorted in order to respect dependencies.
 				var propertyValues = action.State;
@@ -658,20 +658,20 @@ namespace NHibernate.Engine
 				return false;
 			}
 
-			private void AddToBatch(int batchNumber, EntityInsertAction action)
+			private void AddToBatch(int batchNumber, AbstractEntityInsertAction action)
 			{
-				List<EntityInsertAction> actions;
+				List<AbstractEntityInsertAction> actions;
 
 				if (!_actionBatches.TryGetValue(batchNumber, out actions))
 				{
-					actions = new List<EntityInsertAction>();
+					actions = new List<AbstractEntityInsertAction>();
 					_actionBatches[batchNumber] = actions;
 				}
 
 				actions.Add(action);
 			}
 
-			private void UpdateChildrenDependencies(int batchNumber, EntityInsertAction action)
+			private void UpdateChildrenDependencies(int batchNumber, AbstractEntityInsertAction action)
 			{
 				var propertyValues = action.State;
 				var propertyTypes = action.Persister.EntityMetamodel?.PropertyTypes;

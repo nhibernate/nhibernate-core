@@ -27,21 +27,38 @@ namespace NHibernate.Impl
 			if (results != null)
 				return results;
 
-			var multiApproach = CreateMultiApproach(isCacheable, cacheRegion);
-			var needTransformer = false;
-			foreach (var query in queries)
+			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				AddTo(multiApproach, query.Query, query.ResultType);
-				if (query.Future?.ExecuteOnEval != null)
-					needTransformer = true;
+				var queriesResults = new List<object>();
+				foreach (var query in queries)
+				{
+					var result = await (ListAsync(query.Query, cancellationToken)).ConfigureAwait(false);
+					if (query.Future != null)
+						result = query.Future.TransformList(result);
+					queriesResults.Add(result);
+				}
+
+				results = queriesResults;
+			}
+			else
+			{
+				var multiApproach = CreateMultiApproach(isCacheable, cacheRegion);
+				var needTransformer = false;
+				foreach (var query in queries)
+				{
+					AddTo(multiApproach, query.Query, query.ResultType);
+					if (query.Future?.ExecuteOnEval != null)
+						needTransformer = true;
+				}
+
+				if (needTransformer)
+					AddResultTransformer(
+						multiApproach, 
+						new FutureResultsTransformer(queries));
+
+				results = await (GetResultsFromAsync(multiApproach, cancellationToken)).ConfigureAwait(false);
 			}
 
-			if (needTransformer)
-				AddResultTransformer(
-					multiApproach, 
-					new FutureResultsTransformer(queries));
-
-			results = await (GetResultsFromAsync(multiApproach, cancellationToken)).ConfigureAwait(false);
 			ClearCurrentFutureBatch();
 			return results;
 		}
@@ -50,6 +67,12 @@ namespace NHibernate.Impl
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			return ((IList) (await (GetResultsAsync(cancellationToken)).ConfigureAwait(false))[currentIndex]).Cast<TResult>();
+		}
+
+		// 6.0 TODO: switch to abstract
+		protected virtual Task<IList> ListAsync(TQueryApproach query, CancellationToken cancellationToken)
+		{
+			throw new NotSupportedException("This FutureBatch implementation does not support executing queries when multiple queries are not supported");
 		}
 		protected abstract Task<IList> GetResultsFromAsync(TMultiApproach multiApproach, CancellationToken cancellationToken);
 	}

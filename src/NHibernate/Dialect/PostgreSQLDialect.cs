@@ -84,6 +84,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("atan2", new StandardSQLFunction("atan2", NHibernateUtil.Double));
 
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
+			RegisterFunction("bxor", new Function.BitwiseNativeOperation("#"));
 
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
@@ -174,7 +175,7 @@ namespace NHibernate.Dialect
 
 		public override SqlString AddIdentifierOutParameterToInsert(SqlString insertString, string identifierColumnName, string parameterName)
 		{
-			return insertString.Append(" returning " + identifierColumnName);
+			return insertString.Append(" returning ").Append(identifierColumnName);
 		}
 
 		public override InsertGeneratedIdentifierRetrievalMethod InsertGeneratedIdentifierRetrievalMethod

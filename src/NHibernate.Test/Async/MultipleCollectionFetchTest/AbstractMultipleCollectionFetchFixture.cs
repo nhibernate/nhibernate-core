@@ -90,17 +90,10 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 
 		// Tests "linear" join fetch, i.e. A join A.B join A.B.C
 		[Test]
-		public Task MultipleCollectionsLinearJoinFetchAsync()
+		public async Task MultipleCollectionsLinearJoinFetchAsync()
 		{
-			try
-			{
-				Person parent = CreateGrandparent();
-				return RunLinearJoinFetchTestAsync(parent);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			Person parent = CreateGrandparent();
+			await (RunLinearJoinFetchTestAsync(parent));
 		}
 
 		private Person CreateParentAndFriend()
@@ -167,17 +160,10 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 
 		// Tests "non-linear" join fetch, i.e. A join A.B join A.C
 		[Test]
-		public Task MultipleCollectionsNonLinearJoinFetchAsync()
+		public async Task MultipleCollectionsNonLinearJoinFetchAsync()
 		{
-			try
-			{
-				Person person = CreateParentAndFriend();
-				return RunNonLinearJoinFetchTestAsync(person);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			Person person = CreateParentAndFriend();
+			await (RunNonLinearJoinFetchTestAsync(person));
 		}
 	}
 }

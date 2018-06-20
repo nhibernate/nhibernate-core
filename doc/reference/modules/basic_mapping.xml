@@ -2019,7 +2019,7 @@
         name="PropertyName" 
         class="ClassName"
         insert="true|false"
-        upate="true|false"
+        update="true|false"
         access="field|property|nosetter|ClassName"
         optimistic-lock="true|false">
 
@@ -2081,7 +2081,8 @@
 
             <para>
                 The <literal>&lt;dynamic-component&gt;</literal> element allows an <literal>IDictionary</literal>
-                to be mapped as a component, where the property names refer to keys of the dictionary.
+                or <literal>IDictionary&lt;string, object&gt;</literal>to be mapped as a component, where the property 
+                names refer to keys of the dictionary.
             </para>
             
         </sect2>

@@ -26,6 +26,7 @@ namespace NHibernate.Tuple.Component
 				propertyIndexes[property.Name] = i;
 				i++;
 			}
+
 			EntityMode = component.HasPocoRepresentation ? EntityMode.Poco : EntityMode.Map;
 
 			var componentTuplizerFactory = new ComponentTuplizerFactory();

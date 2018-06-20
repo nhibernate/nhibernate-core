@@ -423,7 +423,12 @@ namespace NHibernate.Test.UtilityTest
 		public void Serialize()
 		{
 			MemoryStream stream = new MemoryStream();
-			BinaryFormatter f = new BinaryFormatter();
+			var f = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			f.Serialize(stream, _shm);
 			stream.Position = 0;
 

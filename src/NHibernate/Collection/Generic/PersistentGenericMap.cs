@@ -408,24 +408,8 @@ namespace NHibernate.Collection.Generic
 
 		public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
 		{
-			int c = Count;
-			var keys = new TKey[c];
-			var values = new TValue[c];
-			if (Keys != null)
-			{
-				Keys.CopyTo(keys, arrayIndex);
-			}
-			if (Values != null)
-			{
-				Values.CopyTo(values, arrayIndex);
-			}
-			for (int i = arrayIndex; i < c; i++)
-			{
-				if (keys[i] != null || values[i] != null)
-				{
-					array.SetValue(new KeyValuePair<TKey, TValue>(keys[i], values[i]), i);
-				}
-			}
+			Read();
+			WrappedMap.CopyTo(array, arrayIndex);
 		}
 
 		public bool Remove(KeyValuePair<TKey, TValue> item)
@@ -453,9 +437,18 @@ namespace NHibernate.Collection.Generic
 
 		#region ICollection Members
 
-		public void CopyTo(Array array, int index)
+		public void CopyTo(Array array, int arrayIndex)
 		{
-			CopyTo((KeyValuePair<TKey, TValue>[]) array, index);
+			Read();
+			if (WrappedMap is ICollection collection)
+			{
+				collection.CopyTo(array, arrayIndex);
+			}
+			else
+			{
+				foreach (var item in WrappedMap)
+					array.SetValue(item, arrayIndex++);
+			}
 		}
 
 		public object SyncRoot

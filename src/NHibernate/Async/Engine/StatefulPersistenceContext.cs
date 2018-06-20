@@ -18,6 +18,7 @@ using System.Text;
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
 using NHibernate.Impl;
+using NHibernate.Intercept;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;

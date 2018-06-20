@@ -48,8 +48,6 @@ namespace NHibernate.Engine.Query
 		{
 			BulkOperationCleanupAction action = new BulkOperationCleanupAction(session, CustomQuery.QuerySpaces);
 
-			action.Init();
-
 			if (session.IsEventSource)
 			{
 				((IEventSource)session).ActionQueue.AddAction(action);
@@ -151,19 +149,16 @@ namespace NHibernate.Engine.Query
 						string parameterName = parts[1];
 						var filter = (FilterImpl)enabledFilters[filterName];
 
-						object value = filter.GetParameter(parameterName);
+						var collectionSpan = filter.GetParameterSpan(parameterName);
 						IType type = filter.FilterDefinition.GetParameterType(parameterName);
 						int parameterColumnSpan = type.GetColumnSpan(session.Factory);
-						var collectionValue = value as ICollection;
-						int? collectionSpan = null;
 
 						// Add query chunk
-						string typeBindFragment = string.Join(", ", Enumerable.Repeat("?", parameterColumnSpan).ToArray());
+						string typeBindFragment = string.Join(", ", Enumerable.Repeat("?", parameterColumnSpan));
 						string bindFragment;
-						if (collectionValue != null && !type.ReturnedClass.IsArray)
+						if (collectionSpan.HasValue && !type.ReturnedClass.IsArray)
 						{
-							collectionSpan = collectionValue.Count;
-							bindFragment = string.Join(", ", Enumerable.Repeat(typeBindFragment, collectionValue.Count).ToArray());
+							bindFragment = string.Join(", ", Enumerable.Repeat(typeBindFragment, collectionSpan.Value));
 						}
 						else
 						{

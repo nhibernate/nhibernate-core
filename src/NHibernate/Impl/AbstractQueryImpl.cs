@@ -18,7 +18,7 @@ namespace NHibernate.Impl
 	public abstract partial class AbstractQueryImpl : IQuery
 	{
 		private readonly string queryString;
-		private readonly ISessionImplementor session;
+		protected readonly ISessionImplementor session;
 		protected internal ParameterMetadata parameterMetadata;
 
 		private readonly RowSelection selection;
@@ -241,7 +241,7 @@ namespace NHibernate.Impl
 			var type = typedList.Type;
 
 			var typedValues = (from object value in vals
-							   select new TypedValue(type, value))
+							   select new TypedValue(type, value, false))
 				.ToList();
 
 			if (typedValues.Count == 1)
@@ -300,7 +300,7 @@ namespace NHibernate.Impl
 			}
 			else
 			{
-				namedParameters[name] = new TypedValue(type, val);
+				namedParameters[name] = new TypedValue(type, val, false);
 				return this;
 			}
 		}
@@ -723,7 +723,7 @@ namespace NHibernate.Impl
 			{
 				throw new QueryException(string.Format("An empty parameter-list generates wrong SQL; parameter name '{0}'", name));
 			}
-			namedParameterLists[name] = new TypedValue(type, vals);
+			namedParameterLists[name] = new TypedValue(type, vals, true);
 			return this;
 		}
 
@@ -903,22 +903,12 @@ namespace NHibernate.Impl
 
 		public IFutureEnumerable<T> Future<T>()
 		{
-			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
-			{
-				return new DelayedEnumerator<T>(List<T>, async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
-			}
-
 			session.FutureQueryBatch.Add<T>(this);
 			return session.FutureQueryBatch.GetEnumerator<T>();
 		}
 
 		public IFutureValue<T> FutureValue<T>()
 		{
-			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
-			{
-				return new FutureValue<T>(List<T>, async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
-			}
-			
 			session.FutureQueryBatch.Add<T>(this);
 			return session.FutureQueryBatch.GetFutureValue<T>();
 		}

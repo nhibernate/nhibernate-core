@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
@@ -8,12 +9,16 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class MappingRootBinder : Binder
 	{
-		private readonly Dialect.Dialect dialect;
-
+		//Since v5.2
+		[Obsolete("Please use constructor without a dialect parameter.")]
 		public MappingRootBinder(Mappings mappings, Dialect.Dialect dialect)
+			: this(mappings)
+		{
+		}
+
+		public MappingRootBinder(Mappings mappings)
 			: base(mappings)
 		{
-			this.dialect = dialect;
 		}
 
 		public void Bind(HbmMapping mappingSchema)
@@ -78,7 +83,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddRootClasses(HbmClass rootClass, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			var binder = new RootClassBinder(Mappings, dialect);
+			var binder = new RootClassBinder(Mappings);
 
 			binder.Bind(rootClass, inheritedMetas);
 		}
@@ -86,7 +91,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void AddUnionSubclasses(HbmUnionSubclass unionSubclass,
 		                                IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			var binder = new UnionSubclassBinder(Mappings, dialect);
+			var binder = new UnionSubclassBinder(Mappings);
 
 			binder.Bind(unionSubclass, inheritedMetas);
 		}
@@ -94,14 +99,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void AddJoinedSubclasses(HbmJoinedSubclass joinedSubclass,
 		                                 IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			var binder = new JoinedSubclassBinder(Mappings, dialect);
+			var binder = new JoinedSubclassBinder(Mappings);
 
 			binder.Bind(joinedSubclass, inheritedMetas);
 		}
 
 		private void AddSubclasses(HbmSubclass subClass, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			var binder = new SubclassBinder(this, dialect);
+			var binder = new SubclassBinder(Mappings);
 
 			binder.Bind(subClass, inheritedMetas);
 		}

@@ -171,6 +171,8 @@
   analyzation:
     methodConversion:
     - conversion: Copy
+      name: AfterTransactionCompletionProcess_EvictsFromCache
+    - conversion: Copy
       hasAttributeName: OneTimeSetUpAttribute
     - conversion: Copy
       hasAttributeName: OneTimeTearDownAttribute
@@ -189,6 +191,11 @@
     preserveReturnType:
     - hasAttributeName: TestAttribute
     - hasAttributeName: TheoryAttribute
+    alwaysAwait:
+    - hasAttributeName: TestAttribute
+    - hasAttributeName: TheoryAttribute
+    - hasAttributeName: SetUpAttribute
+    - hasAttributeName: TearDownAttribute
     typeConversion:
     - conversion: Ignore
       name: ObjectAssert
@@ -196,6 +203,8 @@
       name: LinqReadonlyTestsContext
     - conversion: Ignore
       name: MultiThreadRunner
+    - conversion: Ignore
+      name: PeVerifier
     - conversion: Ignore
       hasAttributeName: IgnoreAttribute
     - conversion: NewType

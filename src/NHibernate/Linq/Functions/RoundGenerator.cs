@@ -20,6 +20,11 @@ namespace NHibernate.Linq.Functions
 				ReflectHelper.GetMethodDefinition(() => Math.Round(default(decimal), default(int))),
 				ReflectHelper.GetMethodDefinition(() => decimal.Round(default(decimal))),
 				ReflectHelper.GetMethodDefinition(() => decimal.Round(default(decimal), default(int))),
+
+#if NETCOREAPP2_0
+				ReflectHelper.GetMethodDefinition(() => MathF.Round(default(float))),
+				ReflectHelper.GetMethodDefinition(() => MathF.Round(default(float), default(int))),
+#endif
 			};
 		}
 

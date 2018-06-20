@@ -190,8 +190,14 @@ namespace NHibernate.Test.SystemTransactions
 			// ODBC with SQL-Server always causes scopes to go distributed, which causes their transaction completion to run
 			// asynchronously. But ODBC enlistment also check the previous transaction in a way that do not guard against it
 			// being concurrently disposed of. See https://github.com/nhibernate/nhibernate-core/pull/1505 for more details.
-			Assume.That(!(Sfi.ConnectionProvider.Driver is OdbcDriver),
-			            "ODBC sometimes fails on second scope by checking the previous transaction status, which may yield an object disposed exception");
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
+				Assert.Ignore("ODBC sometimes fails on second scope by checking the previous transaction status, which may yield an object disposed exception");
+			// SAP HANA .Net provider always causes system transactions to be distributed, causing them to complete
+			// on concurrent threads. This creates race conditions when chaining scopes, the subsequent scope usage
+			// finding the connection still enlisted in the previous transaction, its complete being still not finished
+			// on its own thread.
+			if (Sfi.ConnectionProvider.Driver is HanaDriverBase)
+				Assert.Ignore("SAP HANA scope handling causes concurrency issues preventing chaining scope usages.");
 
 			using (var s = WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
 			{

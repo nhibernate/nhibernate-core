@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
-using NHibernate.Event;
 using NHibernate.Test.Events.Collections.Association.Bidirectional.ManyToMany;
 using NUnit.Framework;
 
@@ -11,6 +10,11 @@ namespace NHibernate.Test.Events.Collections
 	[TestFixture]
 	public abstract class AbstractCollectionEventFixture : TestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
+
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }

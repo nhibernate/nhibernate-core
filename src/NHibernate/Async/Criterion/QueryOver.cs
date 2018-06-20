@@ -11,11 +11,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using NHibernate.Criterion.Lambda;
 using NHibernate.Engine;
 using NHibernate.Impl;
+using NHibernate.Loader;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 

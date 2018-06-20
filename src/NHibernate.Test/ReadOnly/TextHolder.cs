@@ -10,7 +10,7 @@ namespace NHibernate.Test.ReadOnly
 		/// </summary>
 		public static bool SupportedForDialect(Dialect.Dialect dialect)
 		{
-			return !(dialect is FirebirdDialect || dialect is Oracle8iDialect || dialect is MsSqlCeDialect);
+			return !(dialect is FirebirdDialect || dialect is Oracle8iDialect || dialect is MsSqlCeDialect || dialect is HanaRowStoreDialect);
 		}
 
 

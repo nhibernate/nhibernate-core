@@ -14,6 +14,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using NHibernate.Dialect;
 using NHibernate.Type;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
@@ -144,12 +145,19 @@ namespace NHibernate.Test.TypesTest
 			return bcBinary;
 		}
 
-		private byte[] GetByteArray(int value)
+		private static byte[] GetByteArray(int value)
 		{
-			BinaryFormatter bf = new BinaryFormatter();
-			MemoryStream stream = new MemoryStream();
-			bf.Serialize(stream, value);
-			return stream.ToArray();
+			var bf = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
+			using (var stream = new MemoryStream())
+			{
+				bf.Serialize(stream, value);
+				return stream.ToArray();
+			}
 		}
 	}
 }

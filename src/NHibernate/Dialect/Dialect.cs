@@ -117,10 +117,10 @@ namespace NHibernate.Dialect
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(year from ?1)"));
 
 			// Bitwise operations
-			RegisterFunction("band", new BitwiseNativeOperation("&"));
-			RegisterFunction("bor", new BitwiseNativeOperation("|"));
-			RegisterFunction("bxor", new BitwiseNativeOperation("^"));
-			RegisterFunction("bnot", new BitwiseNativeOperation("~", true));
+			RegisterFunction("band", new Function.BitwiseNativeOperation("&"));
+			RegisterFunction("bor", new Function.BitwiseNativeOperation("|"));
+			RegisterFunction("bxor", new Function.BitwiseNativeOperation("^"));
+			RegisterFunction("bnot", new Function.BitwiseNativeOperation("~", true));
 
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
 
@@ -976,7 +976,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary> 
-		/// Provided we <see cref="SupportsInsertSelectIdentity"/>, then attch the
+		/// Provided we <see cref="SupportsInsertSelectIdentity"/>, then attach the
 		/// "select identity" clause to the  insert statement.
 		/// </summary>
 		/// <param name="insertString">The insert command </param>
@@ -988,6 +988,22 @@ namespace NHibernate.Dialect
 		public virtual SqlString AppendIdentitySelectToInsert(SqlString insertString)
 		{
 			return insertString;
+		}
+
+		/// <summary> 
+		/// Provided we <see cref="SupportsInsertSelectIdentity"/>, then attach the
+		/// "select identity" clause to the  insert statement.
+		/// </summary>
+		/// <param name="insertString">The insert command </param>
+		/// <param name="identifierColumnName">The identifier name</param>
+		/// <returns> 
+		/// The insert command with any necessary identity select clause attached.
+		/// Note, if <see cref="SupportsInsertSelectIdentity"/> == false then
+		/// the insert-string should be returned without modification.
+		/// </returns>
+		public virtual SqlString AppendIdentitySelectToInsert(SqlString insertString, string identifierColumnName)
+		{
+			return AppendIdentitySelectToInsert(insertString);
 		}
 
 		/// <summary>
@@ -2473,11 +2489,19 @@ namespace NHibernate.Dialect
 		public virtual char StatementTerminator => ';';
 
 		/// <summary>
-		/// The syntax used to add a column to a table. Note this is deprecated
+		/// The syntax used to add a column to a table.
 		/// </summary>
 		public virtual string AddColumnString
 		{
 			get { throw new NotSupportedException("No add column syntax supported by Dialect"); }
+		}
+
+		/// <summary>
+		/// The syntax for the suffix used to add a column to a table.
+		/// </summary>
+		public virtual string AddColumnSuffixString
+		{
+			get { return String.Empty; }
 		}
 
 		public virtual string DropForeignKeyString

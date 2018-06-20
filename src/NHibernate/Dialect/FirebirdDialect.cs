@@ -422,10 +422,10 @@ namespace NHibernate.Dialect
 			RegisterFunction("sysdate", new CastedFunction("today", NHibernateUtil.Date));
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
 			// Bitwise operations
-			RegisterFunction("band", new BitwiseFunctionOperation("bin_and"));
-			RegisterFunction("bor", new BitwiseFunctionOperation("bin_or"));
-			RegisterFunction("bxor", new BitwiseFunctionOperation("bin_xor"));
-			RegisterFunction("bnot", new BitwiseFunctionOperation("bin_not"));
+			RegisterFunction("band", new Function.BitwiseFunctionOperation("bin_and"));
+			RegisterFunction("bor", new Function.BitwiseFunctionOperation("bin_or"));
+			RegisterFunction("bxor", new Function.BitwiseFunctionOperation("bin_xor"));
+			RegisterFunction("bnot", new Function.BitwiseFunctionOperation("bin_not"));
 		}
 
 		private void RegisterFirebirdServerEmbeddedFunctions()

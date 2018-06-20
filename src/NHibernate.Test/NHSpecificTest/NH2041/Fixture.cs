@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2041
 		{
 			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2041.Mappings.hbm.xml", GetType().Assembly);
-			var mappings = cfg.CreateMappings(Dialect.Dialect.GetDialect(cfg.Properties));
+			var mappings = cfg.CreateMappings();
 			var table = mappings.GetTable(null, null, "Locations");
 			Assert.That(table, Is.Not.Null);
 			Assert.That(table.ColumnIterator.Select(c => c.Name), Is.EquivalentTo(new [] {"myclassId", "latitudecol", "longitudecol"}));

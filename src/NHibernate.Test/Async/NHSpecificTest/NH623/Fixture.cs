@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH623
@@ -21,6 +22,11 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 		public override string BugNumber
 		{
 			get { return "NH623"; }
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is HanaDialectBase); // The WHERE clause "isactive = '1'" doesn't work on HANA because idactive is a boolean
 		}
 
 		private ISession session;
@@ -75,7 +81,7 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 
 			session.Clear();
 
-			result = await (session.CreateCriteria(typeof(Document)).SetFetchMode("Pages", FetchMode.Join).ListAsync());
+			result = await (session.CreateCriteria(typeof(Document)).Fetch("Pages").ListAsync());
 			d = result[0] as Document;
 
 			// this assertion fails because if the collection is eager fetched it will contain all elements and will ignore the where clause.

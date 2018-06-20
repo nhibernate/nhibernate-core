@@ -53,6 +53,9 @@ namespace NHibernate.Test.GenericTest.Overall
 		[Test]
 		public async Task CRUDABAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			var entity = new A<B>
 			{
 				Property = new B { Prop = 2 },

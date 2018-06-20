@@ -60,35 +60,21 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaUpdate
 		}
 
 		[Test]
-		public Task SimpleColumnAdditionAsync()
+		public async Task SimpleColumnAdditionAsync()
 		{
-			try
-			{
-				String resource2 = "NHibernate.Test.Tools.hbm2ddl.SchemaUpdate.2_Version.hbm.xml";
-				String resource1 = "NHibernate.Test.Tools.hbm2ddl.SchemaUpdate.1_Version.hbm.xml";
+			String resource2 = "NHibernate.Test.Tools.hbm2ddl.SchemaUpdate.2_Version.hbm.xml";
+			String resource1 = "NHibernate.Test.Tools.hbm2ddl.SchemaUpdate.1_Version.hbm.xml";
 
-				return MigrateSchemaAsync(resource1, resource2);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (MigrateSchemaAsync(resource1, resource2));
 		}
 
 		[Test]
-		public Task SimpleColumnReplaceAsync()
+		public async Task SimpleColumnReplaceAsync()
 		{
-			try
-			{
-				String resource2 = "NHibernate.Test.Tools.hbm2ddl.SchemaUpdate.2_Person.hbm.xml";
-				String resource1 = "NHibernate.Test.Tools.hbm2ddl.SchemaUpdate.1_Person.hbm.xml";
+			String resource2 = "NHibernate.Test.Tools.hbm2ddl.SchemaUpdate.2_Person.hbm.xml";
+			String resource1 = "NHibernate.Test.Tools.hbm2ddl.SchemaUpdate.1_Person.hbm.xml";
 
-				return MigrateSchemaAsync(resource1, resource2);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (MigrateSchemaAsync(resource1, resource2));
 		}
 	}
 }

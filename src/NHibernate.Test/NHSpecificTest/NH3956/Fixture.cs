@@ -205,18 +205,5 @@ namespace NHibernate.Test.NHSpecificTest.NH3956
 			Assert.IsFalse(spec1.Equals(spec2));
 			Assert.IsFalse(spec2.Equals(spec1));
 		}
-
-		[Test]
-		public void NativeSQLQuerySpecificationInequalityOnSpaceOrderings()
-		{
-			var spec1 = new NativeSQLQuerySpecification("select blah", null,
-				new[] { "space1", "space2" });
-			var spec2 = new NativeSQLQuerySpecification("select blah", null,
-				new[] { "space2", "space1" });
-
-			TweakHashcode(spec2, spec1.GetHashCode());
-			Assert.IsFalse(spec1.Equals(spec2));
-			Assert.IsFalse(spec2.Equals(spec1));
-		}
 	}
 }

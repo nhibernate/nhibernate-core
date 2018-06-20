@@ -8,12 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using log4net.Appender;
-using log4net.Core;
-using log4net.Repository.Hierarchy;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
@@ -24,6 +18,10 @@ namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
     [TestFixture]
     public class FixtureAsync : TestCase
     {
+        protected override bool AppliesTo(Dialect.Dialect dialect)
+        {
+            return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+        }
 
         protected override IList Mappings
         {
