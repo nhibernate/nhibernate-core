@@ -378,7 +378,7 @@ namespace NHibernate.Cfg
 		/// The bytecode provider to use.
 		/// </summary>
 		/// <remarks>
-		/// This property is read from the <c>&lt;nhibernate&gt;</c> section
+		/// This property is read from the <c>&lt;hibernate-configuration&gt;</c> section
 		/// of the application configuration file by default. Since it is not
 		/// always convenient to configure NHibernate through the application
 		/// configuration file, it is also possible to set the property value
@@ -388,13 +388,27 @@ namespace NHibernate.Cfg
 		public static IBytecodeProvider BytecodeProvider
 		{
 			get { return BytecodeProviderInstance; }
-			set { BytecodeProviderInstance = value; }
+			set
+			{
+				BytecodeProviderInstance = value;
+				// 6.0 TODO: remove following code.
+#pragma warning disable 618
+				var objectsFactory = BytecodeProviderInstance.ObjectsFactory;
+#pragma warning restore 618
+				if (objectsFactory != null)
+					ObjectsFactory = objectsFactory;
+			}
 		}
 
 		/// <summary>
 		/// NHibernate's object instantiator.
 		/// </summary>
 		/// <remarks>
+		/// This property is read from the <c>&lt;hibernate-configuration&gt;</c> section
+		/// of the application configuration file by default. Since it is not
+		/// always convenient to configure NHibernate through the application
+		/// configuration file, it is also possible to set the property value
+		/// manually.
 		/// This should only be set before a configuration object
 		/// is created, otherwise the change may not take effect.
 		/// For entities see <see cref="IReflectionOptimizer"/> and its implementations.
@@ -405,7 +419,7 @@ namespace NHibernate.Cfg
 		/// Whether to enable the use of reflection optimizer
 		/// </summary>
 		/// <remarks>
-		/// This property is read from the <c>&lt;nhibernate&gt;</c> section
+		/// This property is read from the <c>&lt;hibernate-configuration&gt;</c> section
 		/// of the application configuration file by default. Since it is not
 		/// always convenient to configure NHibernate through the application
 		/// configuration file, it is also possible to set the property value
@@ -445,8 +459,12 @@ namespace NHibernate.Cfg
 			var typeAssemblyQualifiedName = PropertiesHelper.GetString(PropertyObjectsFactory, properties, null);
 			if (typeAssemblyQualifiedName == null)
 			{
-				log.Info("Objects factory class : {0}", typeof(ActivatorObjectsFactory));
-				return new ActivatorObjectsFactory();
+				// 6.0 TODO: use default value of ObjectsFactory property
+#pragma warning disable 618
+				var objectsFactory = BytecodeProvider.ObjectsFactory ?? ObjectsFactory;
+#pragma warning restore 618
+				log.Info("Objects factory class : {0}", objectsFactory.GetType());
+				return objectsFactory;
 			}
 			log.Info("Custom objects factory class : {0}", typeAssemblyQualifiedName);
 			return CreateCustomObjectsFactory(typeAssemblyQualifiedName);
