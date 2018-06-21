@@ -254,12 +254,12 @@ namespace Eg
         <para>
             Persistent entities don't necessarily have to be represented as POCO classes
             at runtime. NHibernate also supports dynamic models
-            (using <literal>Dictionaries</literal> of <literal>Dictionary</literal>s at runtime) . With this approach, you don't
+            (using <literal>Dictionaries</literal>). With this approach, you don't
             write persistent classes, only mapping files.
         </para>
 
         <para>
-            The following examples demonstrates the representation using <literal>Map</literal>s (Dictionary).
+            The following examples demonstrates the representation using <literal>Dictionaries</literal>.
             First, in the mapping file, an <literal>entity-name</literal> has to be declared
             instead of a class name:
         </para>
@@ -305,7 +305,7 @@ namespace Eg
         </para>
         
         <para>
-            At runtime we can work with <literal>Dictionaries</literal> of <literal>Dictionaries</literal>:
+            At runtime we can work with <literal>Dictionaries</literal>:
         </para>
         
         <programlisting><![CDATA[using(ISession s = OpenSession())
@@ -336,6 +336,20 @@ using(ITransaction tx = s.BeginTransaction())
             to the NHibernate mapping, the database schema can easily be normalized and sound,
             allowing to add a proper domain model implementation on top later on.
         </para>
+
+        <para>
+            A loaded dynamic entity can be manipulated as an <literal>IDictionary</literal> or
+            <literal>IDictionary&lt;string, object&gt;</literal>.
+        </para>
+
+        <programlisting><![CDATA[using(ISession s = OpenSession())
+using(ITransaction tx = s.BeginTransaction())
+{
+    var customers = s
+        .CreateQuery("from Customer")
+        .List<IDictionary<string, object>>();
+    ...
+}]]></programlisting>
     </sect1>
     
     <sect1 id="persistent-classes-tuplizers" revision="1">
@@ -357,9 +371,9 @@ using(ITransaction tx = s.BeginTransaction())
         </para>
         
         <para>
-            Users may also plug in their own tuplizers.  Perhaps you require that a <literal>System.Collections.IDictionary</literal>
-            implementation other than <literal>System.Collections.Hashtable</literal> be used while in the
-            dynamic-map entity-mode; or perhaps you need to define a different proxy generation strategy
+            Users may also plug in their own tuplizers.  Perhaps you require that a <literal>IDictionary</literal>
+            implementation other than <literal>System.Collections.Generic.Dictionary&lt;string, object&gt;</literal>
+            is used while in the dynamic-map entity-mode; or perhaps you need to define a different proxy generation strategy
             than the one used by default.  Both would be achieved by defining a custom tuplizer
             implementation.  Tuplizers definitions are attached to the entity or component mapping they
             are meant to manage.  Going back to the example of our customer entity:

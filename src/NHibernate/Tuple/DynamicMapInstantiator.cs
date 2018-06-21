@@ -50,7 +50,7 @@ namespace NHibernate.Tuple
 
 		protected virtual IDictionary GenerateMap()
 		{
-			return new Hashtable();
+			return new Dictionary<string, object>();
 		}
 
 		public bool IsInstance(object obj)
