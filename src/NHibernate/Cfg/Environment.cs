@@ -378,7 +378,7 @@ namespace NHibernate.Cfg
 		/// The bytecode provider to use.
 		/// </summary>
 		/// <remarks>
-		/// This property is read from the <c>&lt;nhibernate&gt;</c> section
+		/// This property is read from the <c>&lt;hibernate-configuration&gt;</c> section
 		/// of the application configuration file by default. Since it is not
 		/// always convenient to configure NHibernate through the application
 		/// configuration file, it is also possible to set the property value
@@ -395,6 +395,11 @@ namespace NHibernate.Cfg
 		/// NHibernate's object instantiator.
 		/// </summary>
 		/// <remarks>
+		/// This property is read from the <c>&lt;hibernate-configuration&gt;</c> section
+		/// of the application configuration file by default. Since it is not
+		/// always convenient to configure NHibernate through the application
+		/// configuration file, it is also possible to set the property value
+		/// manually.
 		/// This should only be set before a configuration object
 		/// is created, otherwise the change may not take effect.
 		/// For entities see <see cref="IReflectionOptimizer"/> and its implementations.
@@ -405,7 +410,7 @@ namespace NHibernate.Cfg
 		/// Whether to enable the use of reflection optimizer
 		/// </summary>
 		/// <remarks>
-		/// This property is read from the <c>&lt;nhibernate&gt;</c> section
+		/// This property is read from the <c>&lt;hibernate-configuration&gt;</c> section
 		/// of the application configuration file by default. Since it is not
 		/// always convenient to configure NHibernate through the application
 		/// configuration file, it is also possible to set the property value
