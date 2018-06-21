@@ -326,10 +326,17 @@
 			</xs:sequence>
 			<xs:attribute name="type" default="lcg">
 				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="lcg" />
-						<xs:enumeration value="null" />
-					</xs:restriction>
+					<xs:union>
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="lcg" />
+								<xs:enumeration value="null" />
+							</xs:restriction>
+						</xs:simpleType>
+						<xs:simpleType>
+							<xs:restriction base="xs:string" />
+						</xs:simpleType>
+					</xs:union>
 				</xs:simpleType>
 			</xs:attribute>
 		</xs:complexType>

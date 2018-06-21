@@ -35,6 +35,23 @@ namespace NHibernate.Test.CfgTest
 			Assert.IsTrue(hc.UseReflectionOptimizer);
 			Assert.AreEqual("NHibernate.Test", hc.SessionFactory.Name);
 		}
+ 
+		[Test]
+		public void ByteCodeProvider()
+		{
+			Assume.That(TestsContext.ExecutingWithVsTest, Is.False);
+
+			var xml =
+				@"<?xml version='1.0' encoding='utf-8' ?>
+<hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
+	<bytecode-provider type='test'/>
+	<session-factory>
+	</session-factory>
+</hibernate-configuration>";
+
+			var hc = HibernateConfiguration.FromAppConfig(xml);
+			Assert.That(hc.ByteCodeProviderType, Is.EqualTo("test"));
+		}
 
 		[Test]
 		public void IgnoreSystemOutOfAppConfig()
