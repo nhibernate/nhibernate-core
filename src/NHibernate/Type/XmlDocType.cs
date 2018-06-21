@@ -7,7 +7,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public class XmlDocType : MutableType
+	public partial class XmlDocType : MutableType
 	{
 		public XmlDocType()
 			: base(new XmlSqlType())
@@ -28,14 +28,16 @@ namespace NHibernate.Type
 			get { return typeof (XmlDocument); }
 		}
 
+		/// <inheritdoc />
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			cmd.Parameters[index].Value = ((XmlDocument) value).OuterXml;
+			cmd.Parameters[index].Value = GetStringRepresentation(value);
 		}
 
+		/// <inheritdoc />
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			// according to documentation, GetValue should return a string, at list for MsSQL
+			// according to documentation, GetValue should return a string, at least for MsSQL
 			// hopefully all DataProvider has the same behaviour
 			string xmlString = Convert.ToString(rs.GetValue(index));
 			return FromStringValue(xmlString);
@@ -48,7 +50,7 @@ namespace NHibernate.Type
 
 		public override string ToString(object val)
 		{
-			return val == null ? null : ((XmlDocument) val).OuterXml;
+			return GetStringRepresentation(val);
 		}
 
 		public override object FromStringValue(string xml)
@@ -81,6 +83,23 @@ namespace NHibernate.Type
 				return false;
 			}
 			return ((XmlDocument) x).OuterXml == ((XmlDocument) y).OuterXml;
+		}
+
+		/// <inheritdoc />
+		public override object Assemble(object cached, ISessionImplementor session, object owner)
+		{
+			return FromStringValue(cached as string);
+		}
+
+		/// <inheritdoc />
+		public override object Disassemble(object value, ISessionImplementor session, object owner)
+		{
+			return GetStringRepresentation(value);
+		}
+
+		private string GetStringRepresentation(object value)
+		{
+			return ((XmlDocument) value)?.OuterXml;
 		}
 	}
 }

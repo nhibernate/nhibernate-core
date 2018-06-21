@@ -7,7 +7,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public class XDocType : MutableType
+	public partial class XDocType : MutableType
 	{
 		public XDocType()
 			: base(new XmlSqlType())
@@ -29,14 +29,16 @@ namespace NHibernate.Type
 			get { return typeof (XDocument); }
 		}
 
+		/// <inheritdoc />
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			cmd.Parameters[index].Value = ((XDocument) value).ToString(SaveOptions.DisableFormatting);
+			cmd.Parameters[index].Value = GetStringRepresentation(value);
 		}
 
+		/// <inheritdoc />
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			// according to documentation, GetValue should return a string, at list for MsSQL
+			// according to documentation, GetValue should return a string, at least for MsSQL
 			// hopefully all DataProvider has the same behaviour
 			string xmlString = Convert.ToString(rs.GetValue(index));
 			return FromStringValue(xmlString);
@@ -81,6 +83,23 @@ namespace NHibernate.Type
 			}
 
 			return XNode.DeepEquals((XDocument) x, (XDocument) y);
+		}
+
+		/// <inheritdoc />
+		public override object Assemble(object cached, ISessionImplementor session, object owner)
+		{
+			return FromStringValue(cached as string);
+		}
+
+		/// <inheritdoc />
+		public override object Disassemble(object value, ISessionImplementor session, object owner)
+		{
+			return GetStringRepresentation(value);
+		}
+
+		private string GetStringRepresentation(object value)
+		{
+			return ((XDocument) value)?.ToString(SaveOptions.DisableFormatting);
 		}
 	}
 }
