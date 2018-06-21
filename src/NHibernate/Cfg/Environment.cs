@@ -388,7 +388,16 @@ namespace NHibernate.Cfg
 		public static IBytecodeProvider BytecodeProvider
 		{
 			get { return BytecodeProviderInstance; }
-			set { BytecodeProviderInstance = value; }
+			set
+			{
+				BytecodeProviderInstance = value;
+				// 6.0 TODO: remove following code.
+#pragma warning disable 618
+				var objectsFactory = BytecodeProviderInstance.ObjectsFactory;
+#pragma warning restore 618
+				if (objectsFactory != null)
+					ObjectsFactory = objectsFactory;
+			}
 		}
 
 		/// <summary>
@@ -450,8 +459,12 @@ namespace NHibernate.Cfg
 			var typeAssemblyQualifiedName = PropertiesHelper.GetString(PropertyObjectsFactory, properties, null);
 			if (typeAssemblyQualifiedName == null)
 			{
-				log.Info("Objects factory class : {0}", typeof(ActivatorObjectsFactory));
-				return new ActivatorObjectsFactory();
+				// 6.0 TODO: use default value of ObjectsFactory property
+#pragma warning disable 618
+				var objectsFactory = BytecodeProvider.ObjectsFactory ?? ObjectsFactory;
+#pragma warning restore 618
+				log.Info("Objects factory class : {0}", objectsFactory.GetType());
+				return objectsFactory;
 			}
 			log.Info("Custom objects factory class : {0}", typeAssemblyQualifiedName);
 			return CreateCustomObjectsFactory(typeAssemblyQualifiedName);
