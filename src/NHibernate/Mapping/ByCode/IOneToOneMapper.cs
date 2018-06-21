@@ -23,7 +23,7 @@ namespace NHibernate.Mapping.ByCode
 	}
 
 	// 6.0 TODO: move method into IOneToOneMapper
-	public static class OneToOneMapperExtension
+	public static class OneToOneMapperExtensions
 	{
 		/// <summary>
 		/// Maps many formulas.
