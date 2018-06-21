@@ -1,6 +1,4 @@
-using System;
 using System.Configuration;
-using System.Reflection;
 using NHibernate.Event;
 using NUnit.Framework;
 using NHibernate.Cfg;
@@ -13,7 +11,7 @@ namespace NHibernate.Test.CfgTest
 	public class ConfigurationSchemaFixture
 	{
 		[Test]
-		public void InvalidConfig()
+		public void ThrowIfSessionFactoryIsMissing()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='utf-8' ?>
@@ -22,7 +20,7 @@ namespace NHibernate.Test.CfgTest
 </hibernate-configuration>";
 
 			XmlTextReader xtr = new XmlTextReader(xml, XmlNodeType.Document, null);
-			Assert.Throws<HibernateConfigException>(()=>new HibernateConfiguration(xtr));
+			Assert.Throws<HibernateConfigException>(() => new HibernateConfiguration(xtr));
 		}
 
 		[Test]
