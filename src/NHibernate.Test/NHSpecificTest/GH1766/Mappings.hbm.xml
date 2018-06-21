@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH1766">
+
+  <class name="A" table="a">
+    <id name="Id" generator="guid.comb" />
+    <list name="Items" generic="true" inverse="true" cascade="all">
+      <key column="aid" />
+      <list-index base="1" column="listindex" />
+      <one-to-many class="B"/>
+    </list>
+  </class>
+
+  <class name="B" table="b">
+    <id name="Id" generator="guid.comb" />
+    <many-to-one name="A" column="aid" />
+    <property name="ListIndex" column="listindex" />
+  </class>
+
+</hibernate-mapping>
