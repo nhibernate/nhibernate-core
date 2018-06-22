@@ -11,7 +11,7 @@ namespace NHibernate.Test.CfgTest
 	public class ConfigurationSchemaFixture
 	{
 		[Test]
-		public void ThrowIfSessionFactoryIsMissing()
+		public void SessionFactoryIsRequiredWhenConfigurationIsNotLoadedFromAppConfig()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='utf-8' ?>
