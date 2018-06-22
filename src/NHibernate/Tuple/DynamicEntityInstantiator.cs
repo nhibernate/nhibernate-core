@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Mapping;
 
@@ -39,10 +38,7 @@ namespace NHibernate.Tuple
 		public object Instantiate()
 		{
 			var map = GenerateMap();
-			if (_entityName != null)
-			{
-				map[Key] = _entityName;
-			}
+			map[Key] = _entityName;
 
 			return map;
 		}
@@ -51,12 +47,8 @@ namespace NHibernate.Tuple
 		{
 			if (!(obj is IDictionary<string, object> that))
 				return false;
-			if (_entityName == null)
-				return true;
 
-			var type = (string) that[Key];
-			return type == null || _isInstanceEntityNames.Contains(type);
-
+			return that.TryGetValue(Key, out var type) && _isInstanceEntityNames.Contains(type as string);
 		}
 
 		#endregion
