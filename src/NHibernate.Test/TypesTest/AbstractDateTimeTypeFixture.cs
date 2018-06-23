@@ -368,6 +368,7 @@ namespace NHibernate.Test.TypesTest
 		[TestCase("2011-01-27T15:50:59.6220000+02:00")]
 		[TestCase("2011-01-27T14:50:59.6220000+01:00")]
 		[TestCase("2011-01-27T13:50:59.6220000Z")]
+		[Obsolete]
 		public void FromStringValue_ParseValidValues(string timestampValue)
 		{
 			var timestamp = DateTime.Parse(timestampValue);

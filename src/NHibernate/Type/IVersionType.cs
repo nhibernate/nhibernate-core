@@ -28,6 +28,16 @@ namespace NHibernate.Type
 		/// </summary>
 		IComparer Comparator { get; }
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior.
+		/// <summary>
+		/// Parse the string representation of a value to convert it to the .NET object.
+		/// </summary>
+		/// <param name="xml">A string representation.</param>
+		/// <returns>The value.</returns>
+		/// <remarks>Notably meant for parsing <c>unsave-value</c> mapping attribute value. Contrary to what could
+		/// be expected due to its current name, <paramref name="xml"/> must be a plain string, not a xml encoded
+		/// string.</remarks>
 		object FromStringValue(string xml);
 	}
 }

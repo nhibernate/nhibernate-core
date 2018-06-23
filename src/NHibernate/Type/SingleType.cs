@@ -65,11 +65,15 @@ namespace NHibernate.Type
 			rs.Parameters[index].Value = value;
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public object StringToObject(string xml)
 		{
 			return FromStringValue(xml);
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
 			return Single.Parse(xml);
