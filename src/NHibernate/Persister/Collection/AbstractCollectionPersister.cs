@@ -1649,15 +1649,24 @@ namespace NHibernate.Persister.Collection
 		// 6.0 TODO: Remove (Replace with ISupportSelectModeJoinable.SelectFragment)
 		// Since v5.2
 		[Obsolete("Use overload taking includeLazyProperties parameter")]
-		public abstract string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string currentEntitySuffix,
-											  string currentCollectionSuffix, bool includeCollectionColumns);
-		
+		public virtual string SelectFragment(
+			IJoinable rhs,
+			string rhsAlias,
+			string lhsAlias,
+			string currentEntitySuffix,
+			string currentCollectionSuffix,
+			bool includeCollectionColumns)
+		{
+			return SelectFragment(
+				rhs, rhsAlias, lhsAlias, currentEntitySuffix, currentCollectionSuffix, includeCollectionColumns, false);
+		}
+
 		// 6.0 TODO: Make abstract
 		public virtual string SelectFragment(
 			IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix,
 			bool includeCollectionColumns, bool includeLazyProperties)
 		{
-			throw new NotImplementedException("Fetching lazy properties is not implemented by " + GetType().FullName);
+			throw new NotImplementedException("SelectFragment with fetching lazy properties option is not implemented by " + GetType().FullName);
 		}
 
 		/// <summary>
