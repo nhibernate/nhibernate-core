@@ -29,8 +29,12 @@ namespace NHibernate.Util
 
 		internal static T CastOrThrow<T>(object obj, string supportMessage) where T : class
 		{
-			return obj as T
-				?? throw new ArgumentException($"{obj?.GetType().FullName} requires to implement {typeof(T).FullName} interface to support {supportMessage}.");
+			if (obj is T t)
+				return t;
+
+			var typeKind = typeof(T).IsInterface ? "interface" : "class";
+			var objType = obj?.GetType().FullName ?? "Object must not be null and";
+			throw new ArgumentException($@"{objType} requires to implement {typeof(T).FullName} {typeKind} to support {supportMessage}.");
 		}
 
 		/// <summary>

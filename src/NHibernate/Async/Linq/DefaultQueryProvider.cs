@@ -20,6 +20,7 @@ using NHibernate.Impl;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Threading.Tasks;
+using NHibernate.Multi;
 
 namespace NHibernate.Linq
 {
@@ -28,7 +29,7 @@ namespace NHibernate.Linq
 		Task<int> ExecuteDmlAsync<T>(QueryMode queryMode, Expression expression, CancellationToken cancellationToken);
 	}
 
-	public partial class DefaultQueryProvider : INhQueryProvider, IQueryProviderWithOptions
+	public partial class DefaultQueryProvider : INhQueryProvider, IQueryProviderWithOptions, ISupportFutureBatchNhQueryProvider
 	{
 
 		// Since v5.1

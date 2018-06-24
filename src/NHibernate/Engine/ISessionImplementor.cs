@@ -10,14 +10,16 @@ using NHibernate.Event;
 using NHibernate.Hql;
 using NHibernate.Impl;
 using NHibernate.Loader.Custom;
+using NHibernate.Multi;
 using NHibernate.Persister.Entity;
 using NHibernate.Transaction;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
 	// 6.0 TODO: Convert to interface methods
-	internal static class SessionImplementorExtensions
+	internal static partial class SessionImplementorExtensions
 	{
 		internal static IDisposable BeginContext(this ISessionImplementor session)
 		{
@@ -34,6 +36,17 @@ namespace NHibernate.Engine
 				// This method has only replaced bare call to setting the id, so this fallback is enough for avoiding a
 				// breaking change in case in custom session implementation is used.
 				new SessionIdLoggingContext(session.SessionId);
+		}
+
+		//6.0 TODO: Expose as ISessionImplementor.FutureBatch and replace method usages with property
+		internal static IQueryBatch GetFutureBatch(this ISessionImplementor session)
+		{
+			return ReflectHelper.CastOrThrow<AbstractSessionImpl>(session, "future batch").FutureBatch;
+		}
+
+		internal static void AutoFlushIfRequired(this ISessionImplementor implementor, ISet<string> querySpaces)
+		{
+			(implementor as AbstractSessionImpl)?.AutoFlushIfRequired(querySpaces);
 		}
 	}
 
@@ -246,6 +259,8 @@ namespace NHibernate.Engine
 
 		IQuery GetNamedSQLQuery(string name);
 		
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
 		IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar); // NH specific for MultiQuery
 
 		IInterceptor Interceptor { get; }
@@ -326,8 +341,12 @@ namespace NHibernate.Engine
 		/// <summary> Execute a HQL update or delete query</summary>
 		int ExecuteUpdate(IQueryExpression query, QueryParameters queryParameters);
 
+		//Since 5.2
+		[Obsolete("Replaced by FutureBatch")]
 		FutureCriteriaBatch FutureCriteriaBatch { get; }
 
+		//Since 5.2
+		[Obsolete("Replaced by FutureBatch")]
 		FutureQueryBatch FutureQueryBatch { get; }
 
 		Guid SessionId { get; }

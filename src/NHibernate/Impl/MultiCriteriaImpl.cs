@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Criterion;
 using NHibernate.Driver;
@@ -77,9 +78,14 @@ namespace NHibernate.Impl
 					}
 				}
 
+				var querySpaces = new HashSet<string>(loaders.SelectMany(l => l.QuerySpaces));
+				if (resultSetsCommand.HasQueries)
+				{
+					session.AutoFlushIfRequired(querySpaces);
+				}
 				if (cacheable)
 				{
-					criteriaResults = ListUsingQueryCache();
+					criteriaResults = ListUsingQueryCache(querySpaces);
 				}
 				else
 				{
@@ -90,19 +96,17 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private IList ListUsingQueryCache()
+		private IList ListUsingQueryCache(HashSet<string> querySpaces)
 		{
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
 
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters);
 
-			ISet<string> querySpaces = new HashSet<string>();
 			List<IType[]> resultTypesList = new List<IType[]>();
 			int[] maxRows = new int[loaders.Count];
 			int[] firstRows = new int[loaders.Count];
 			for (int i = 0; i < loaders.Count; i++)
 			{
-				querySpaces.UnionWith(loaders[i].QuerySpaces);
 				resultTypesList.Add(loaders[i].ResultTypes);
 				firstRows[i] = parameters[i].RowSelection.FirstRow;
 				maxRows[i] = parameters[i].RowSelection.MaxRows;
