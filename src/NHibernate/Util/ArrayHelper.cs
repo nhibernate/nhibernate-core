@@ -179,7 +179,7 @@ namespace NHibernate.Util
 
 		public static bool ArrayEquals<T>(T[] a, T[] b)
 		{
-			return ArrayComparer<T>.DefaultWithoutComparer.Equals(a, b);
+			return ArrayComparer<T>.Default.Equals(a, b);
 		}
 
 		public static bool ArrayEquals(byte[] a, byte[] b)
@@ -197,7 +197,7 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		public static int ArrayGetHashCode<T>(T[] array)
 		{
-			return ArrayComparer<T>.DefaultWithoutComparer.GetHashCode(array);
+			return ArrayComparer<T>.Default.GetHashCode(array);
 		}
 
 		internal class ArrayComparer<T> : IEqualityComparer<T[]>
@@ -205,13 +205,12 @@ namespace NHibernate.Util
 			private readonly IEqualityComparer<T> _elementComparer;
 
 			internal static ArrayComparer<T> Default { get; } = new ArrayComparer<T>();
-			internal static ArrayComparer<T> DefaultWithoutComparer { get; } = new ArrayComparer<T>(null);
 
 			internal ArrayComparer() : this(EqualityComparer<T>.Default) { }
 
 			internal ArrayComparer(IEqualityComparer<T> elementComparer)
 			{
-				_elementComparer = elementComparer;
+				_elementComparer = elementComparer ?? throw new ArgumentNullException(nameof(elementComparer));
 			}
 
 			public bool Equals(T[] a, T[] b)
@@ -225,21 +224,10 @@ namespace NHibernate.Util
 				if (a.Length != b.Length)
 					return false;
 
-				if (_elementComparer != null)
+				for (var i = 0; i < a.Length; i++)
 				{
-					for (var i = 0; i < a.Length; i++)
-					{
-						if (!_elementComparer.Equals(a[i], b[i]))
-							return false;
-					}
-				}
-				else
-				{
-					for (var i = 0; i < a.Length; i++)
-					{
-						if (!Equals(a[i], b[i]))
-							return false;
-					}
+					if (!_elementComparer.Equals(a[i], b[i]))
+						return false;
 				}
 
 				return true;
@@ -252,16 +240,8 @@ namespace NHibernate.Util
 
 				var hc = array.Length;
 
-				if (_elementComparer != null)
-				{
-					foreach (var e in array)
-						hc = unchecked(hc * 31 + _elementComparer.GetHashCode(e));
-				}
-				else
-				{
-					foreach (var e in array)
-						hc = unchecked(hc * 31 + (e?.GetHashCode() ?? 0));
-				}
+				foreach (var e in array)
+					hc = unchecked(hc * 31 + _elementComparer.GetHashCode(e));
 
 				return hc;
 			}
