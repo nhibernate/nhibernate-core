@@ -823,7 +823,7 @@ namespace NHibernate.Persister.Collection
 				return columnNullness;
 
 			if (columnNullness.Length != settable.Length)
-				throw new InvalidOperationException("Inconsitent nullness and settable columns lengthes");
+				throw new InvalidOperationException("Inconsistent nullness and settable columns lengthes");
 
 			var result = new bool[settable.Length];
 			for (var idx = 0; idx < settable.Length; idx++)
