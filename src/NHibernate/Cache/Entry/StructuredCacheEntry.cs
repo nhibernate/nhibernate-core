@@ -28,7 +28,13 @@ namespace NHibernate.Cache.Entry
 			{
 				state[i] = map[names[i]];
 			}
-			return new CacheEntry(state, subclass, lazyPropertiesUnfetched, version);
+			return new CacheEntry
+			{
+				Subclass = subclass,
+				DisassembledState = state,
+				Version = version,
+				AreLazyPropertiesUnfetched = lazyPropertiesUnfetched
+			};
 		}
 
 		public object Structure(object item)

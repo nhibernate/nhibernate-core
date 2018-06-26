@@ -9,9 +9,13 @@
 
 
 using System;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
 using NHibernate.Engine;
 using NHibernate.Event;
+using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
+using NHibernate.Properties;
 using NHibernate.Type;
 
 namespace NHibernate.Cache.Entry
@@ -21,10 +25,24 @@ namespace NHibernate.Cache.Entry
 	public sealed partial class CacheEntry
 	{
 
+		public static async Task<CacheEntry> CreateAsync(object[] state, IEntityPersister persister, bool unfetched, object version,
+										ISessionImplementor session, object owner, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			return new CacheEntry
+			{
+				//disassembled state gets put in a new array (we write to cache by value!)
+				DisassembledState = await (TypeHelper.DisassembleAsync(state, persister.PropertyTypes, null, session, owner, cancellationToken)).ConfigureAwait(false),
+				AreLazyPropertiesUnfetched = unfetched || !persister.IsLazyPropertiesCacheable,
+				Subclass = persister.EntityName,
+				Version = version
+			};
+		}
+
 		public Task<object[]> AssembleAsync(object instance, object id, IEntityPersister persister, IInterceptor interceptor,
 		                         ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			if (!persister.EntityName.Equals(subclass))
+			if (!persister.EntityName.Equals(Subclass))
 			{
 				throw new AssertionFailure("Tried to assemble a different subclass instance");
 			}
@@ -33,7 +51,7 @@ namespace NHibernate.Cache.Entry
 				return Task.FromCanceled<object[]>(cancellationToken);
 			}
 
-			return AssembleAsync(disassembledState, instance, id, persister, interceptor, session, cancellationToken);
+			return AssembleAsync(DisassembledState, instance, id, persister, interceptor, session, cancellationToken);
 		}
 
 		private static async Task<object[]> AssembleAsync(object[] values, object result, object id, IEntityPersister persister,

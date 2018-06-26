@@ -112,7 +112,7 @@ namespace NHibernate.Cache
 					ILockable lockable = (ILockable) await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 					long timeout = cache.NextTimestamp() + cache.Timeout;
 					CacheLock @lock = lockable == null ?
-					                  new CacheLock(timeout, NextLockId(), version) :
+					                  CacheLock.Create(timeout, NextLockId(), version) :
 					                  lockable.Lock(timeout, NextLockId());
 					await (cache.PutAsync(key, @lock, cancellationToken)).ConfigureAwait(false);
 					return @lock;
@@ -159,7 +159,7 @@ namespace NHibernate.Cache
 
 					if (puttable)
 					{
-						await (cache.PutAsync(key, new CachedItem(value, cache.NextTimestamp(), version), cancellationToken)).ConfigureAwait(false);
+						await (cache.PutAsync(key, CachedItem.Create(value, cache.NextTimestamp(), version), cancellationToken)).ConfigureAwait(false);
 						if (log.IsDebugEnabled())
 						{
 							log.Debug("Cached: {0}", key);
@@ -252,7 +252,7 @@ namespace NHibernate.Cache
 				log.Warn("An item was expired by the cache while it was locked (increase your cache timeout): {0}", key);
 				long ts = cache.NextTimestamp() + cache.Timeout;
 				// create new lock that times out immediately
-				CacheLock @lock = new CacheLock(ts, NextLockId(), null);
+				CacheLock @lock = CacheLock.Create(ts, NextLockId(), null);
 				@lock.Unlock(ts);
 				return cache.PutAsync(key, @lock, cancellationToken);
 			}
@@ -311,7 +311,7 @@ namespace NHibernate.Cache
 						else
 						{
 							//recache the updated state
-							await (cache.PutAsync(key, new CachedItem(value, cache.NextTimestamp(), version), cancellationToken)).ConfigureAwait(false);
+							await (cache.PutAsync(key, CachedItem.Create(value, cache.NextTimestamp(), version), cancellationToken)).ConfigureAwait(false);
 							if (log.IsDebugEnabled())
 							{
 								log.Debug("Updated: {0}", key);
@@ -349,7 +349,7 @@ namespace NHibernate.Cache
 					ILockable lockable = (ILockable) await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 					if (lockable == null)
 					{
-						await (cache.PutAsync(key, new CachedItem(value, cache.NextTimestamp(), version), cancellationToken)).ConfigureAwait(false);
+						await (cache.PutAsync(key, CachedItem.Create(value, cache.NextTimestamp(), version), cancellationToken)).ConfigureAwait(false);
 						if (log.IsDebugEnabled())
 						{
 							log.Debug("Inserted: {0}", key);

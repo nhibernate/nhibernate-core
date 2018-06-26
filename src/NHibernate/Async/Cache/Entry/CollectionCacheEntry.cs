@@ -9,8 +9,13 @@
 
 
 using System;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
 using NHibernate.Collection;
+using NHibernate.Intercept;
 using NHibernate.Persister.Collection;
+using NHibernate.Properties;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Cache.Entry
@@ -20,10 +25,19 @@ namespace NHibernate.Cache.Entry
 	public partial class CollectionCacheEntry
 	{
 
+		public static async Task<CollectionCacheEntry> CreateAsync(IPersistentCollection collection, ICollectionPersister persister, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			return new CollectionCacheEntry
+			{
+				DisassembledState = await (collection.DisassembleAsync(persister, cancellationToken)).ConfigureAwait(false)
+			};
+		}
+
 		public virtual async Task AssembleAsync(IPersistentCollection collection, ICollectionPersister persister, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			await (collection.InitializeFromCacheAsync(persister, state, owner, cancellationToken)).ConfigureAwait(false);
+			await (collection.InitializeFromCacheAsync(persister, DisassembledState, owner, cancellationToken)).ConfigureAwait(false);
 			collection.AfterInitialize(persister);
 		}
 	}
