@@ -17,7 +17,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Persister.Collection
 {
-	public partial class OneToManyPersister : AbstractCollectionPersister
+	public partial class OneToManyPersister : AbstractCollectionPersister, ISupportSelectModeJoinable
 	{
 		private readonly bool _cascadeDeleteEnabled;
 		private readonly bool _keyIsNullable;
@@ -76,7 +76,7 @@ namespace NHibernate.Persister.Collection
 				update.SetJoin(ownerPersister.TableName, KeyColumnNames, KeyType, JoinColumnNames, ownerPersister.GetPropertyColumnNames(CollectionType.LHSPropertyName));
 			}
 
-			if (HasIndex)
+			if (HasIndex && !indexContainsFormula)
 				update.AddColumns(IndexColumnNames, "null");
 
 			if (HasWhere)
@@ -303,13 +303,20 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix, bool includeCollectionColumns)
+		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix, bool includeCollectionColumns, bool fetchLazyProperties)
 		{
 			var buf = new StringBuilder();
 
 			if (includeCollectionColumns)
 			{
 				buf.Append(SelectFragment(lhsAlias, collectionSuffix)).Append(StringHelper.CommaSpace);
+			}
+
+			if (fetchLazyProperties)
+			{
+				var selectMode = ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(ElementPersister, "fetch lazy properties");
+				if (selectMode != null)
+					return buf.Append(selectMode.SelectFragment(null, null, lhsAlias, entitySuffix, null, false, fetchLazyProperties)).ToString();
 			}
 
 			var ojl = (IOuterJoinLoadable)ElementPersister;

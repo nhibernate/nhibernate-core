@@ -92,7 +92,7 @@ namespace NHibernate.Loader.Collection
 					var skipParameter = new NamedParameterSpecification(1, 0, skipParameterName) { ExpectedType = NHibernateUtil.Int32 };
 					skipSqlParameter = Parameter.Placeholder;
 					skipSqlParameter.BackTrack = skipParameter.GetIdsForBackTrack(sessionFactory).First();
-					parameters.Add(skipParameterName, new TypedValue(skipParameter.ExpectedType, skip.Value));
+					parameters.Add(skipParameterName, new TypedValue(skipParameter.ExpectedType, skip.Value, false));
 					parameterSpecs.Add(skipParameter);
 				}
 				if (take.HasValue)
@@ -101,7 +101,7 @@ namespace NHibernate.Loader.Collection
 					var takeParameter = new NamedParameterSpecification(1, 0, takeParameterName) { ExpectedType = NHibernateUtil.Int32 };
 					takeSqlParameter = Parameter.Placeholder;
 					takeSqlParameter.BackTrack = takeParameter.GetIdsForBackTrack(sessionFactory).First();
-					parameters.Add(takeParameterName, new TypedValue(takeParameter.ExpectedType, take.Value));
+					parameters.Add(takeParameterName, new TypedValue(takeParameter.ExpectedType, take.Value, false));
 					parameterSpecs.Add(takeParameter);
 				}
 

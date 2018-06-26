@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH1719">
+
+  <class name="FileEntryEntity" table="gh1719_entries">
+    <id name="Id" column="id" generator="assigned" />
+    <property name="ParentId" column="parent_id" />
+    <property name="Name" column="name" length="50" not-null="true" />
+    <one-to-one name="Data" lazy="no-proxy" cascade="all-delete-orphan" />
+  </class>
+
+  <class name="FileDataEntity" table="gh1719_entrydata">
+    <id name="Id" column="id">
+      <generator class="foreign">
+        <param name="property">Entry</param>
+      </generator>
+    </id>
+    <one-to-one name="Entry" constrained="true" foreign-key="fk_data_entry" />
+  </class>
+
+</hibernate-mapping>

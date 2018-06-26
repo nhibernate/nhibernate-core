@@ -28,7 +28,7 @@ namespace NHibernate.Type
 
 			try
 			{
-				userType = (ICompositeUserType) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(userTypeClass);
+				userType = (ICompositeUserType) Cfg.Environment.ObjectsFactory.CreateInstance(userTypeClass);
 			}
 			catch (MethodAccessException mae)
 			{

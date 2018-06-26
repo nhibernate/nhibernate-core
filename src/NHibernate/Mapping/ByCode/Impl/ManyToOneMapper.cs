@@ -43,6 +43,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			_manyToOne.@class = entityType.GetShortClassName(_mapDoc);
 		}
 
+		public void EntityName(string entityName)
+		{
+			_manyToOne.entityname = entityName;
+		}
+
 		public void Cascade(Cascade cascadeStyle)
 		{
 			_manyToOne.cascade = cascadeStyle.ToCascadeString();

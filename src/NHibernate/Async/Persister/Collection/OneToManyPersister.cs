@@ -29,7 +29,7 @@ namespace NHibernate.Persister.Collection
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class OneToManyPersister : AbstractCollectionPersister
+	public partial class OneToManyPersister : AbstractCollectionPersister, ISupportSelectModeJoinable
 	{
 
 		protected override async Task<int> DoUpdateRowsAsync(object id, IPersistentCollection collection, ISessionImplementor session, CancellationToken cancellationToken)

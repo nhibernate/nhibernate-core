@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
+using NHibernate.Util;
 
 namespace NHibernate.Transform
 {
@@ -83,7 +85,7 @@ namespace NHibernate.Transform
 			{
 				result = _resultClass.IsClass
 							? _beanConstructor.Invoke(null)
-							: Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(_resultClass, true);
+							: Cfg.Environment.ObjectsFactory.CreateInstance(_resultClass, true);
 
 				for (int i = 0; i < aliases.Length; i++)
 				{
@@ -250,8 +252,13 @@ namespace NHibernate.Transform
 		}
 
 		[Serializable]
-		private struct NamedMember<T> where T : MemberInfo
+		private struct NamedMember<T> : ISerializable
+			where T : MemberInfo
 		{
+			public string Name;
+			public T Member;
+			public T[] AmbiguousMembers;
+
 			public NamedMember(string name, T[] members)
 			{
 				if (members == null)
@@ -269,9 +276,19 @@ namespace NHibernate.Transform
 				}
 			}
 
-			public string Name;
-			public T Member;
-			public T[] AmbiguousMembers;
+			private NamedMember(SerializationInfo info, StreamingContext context)
+			{
+				Name = info.GetString("Name");
+				Member = info.GetValue<T>("Member");
+				AmbiguousMembers = info.GetValueArray<T>("AmbiguousMembers");
+			}
+
+			void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+			{
+				info.AddValue("Name", Name);
+				info.AddValue("Member", Member);
+				info.AddValueArray("AmbiguousMembers", AmbiguousMembers);
+			}
 		}
 
 		#endregion

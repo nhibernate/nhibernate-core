@@ -1,8 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using NHibernate.Transform;
 
 namespace NHibernate.Impl
 {
+	//Since 5.2
+	[Obsolete("Replaced by QueryBatch")]
 	public partial class FutureQueryBatch : FutureBatch<IQuery, IMultiQuery>
 	{
 		public FutureQueryBatch(SessionImpl session) : base(session)

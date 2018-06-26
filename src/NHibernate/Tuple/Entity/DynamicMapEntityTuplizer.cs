@@ -57,7 +57,7 @@ namespace NHibernate.Tuple.Entity
 
 		protected override IInstantiator BuildInstantiator(PersistentClass mappingInfo)
 		{
-			return new DynamicMapInstantiator(mappingInfo);
+			return new DynamicEntityInstantiator(mappingInfo);
 		}
 
 		protected override IProxyFactory BuildProxyFactory(PersistentClass mappingInfo, IGetter idGetter,

@@ -22,12 +22,14 @@ namespace NHibernate.Id
 	///		&lt;param name="column"&gt;id_column&lt;/param&gt;
 	///		&lt;param name="max_lo"&gt;max_lo_value&lt;/param&gt;
 	///		&lt;param name="schema"&gt;db_schema&lt;/param&gt;
+	///		&lt;param name="catalog"&gt;db_catalog&lt;/param&gt;
+	///		&lt;param name="where"&gt;arbitrary additional where clause&lt;/param&gt;
 	///	&lt;/generator&gt;
 	///	</code>
 	/// </p>
 	/// <p>
-	/// The <c>table</c> and <c>column</c> parameters are required, the <c>max_lo</c> and 
-	/// <c>schema</c> are optional.
+	/// The <c>table</c> and <c>column</c> parameters are required, the <c>max_lo</c>,
+	/// <c>schema</c>, <c>catalog</c> and <c>where</c> are optional.
 	/// </p>
 	/// <p>
 	/// The hi value MUST be fecthed in a separate transaction to the <c>ISession</c>

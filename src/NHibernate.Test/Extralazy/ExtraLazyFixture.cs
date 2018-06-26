@@ -295,5 +295,38 @@ namespace NHibernate.Test.Extralazy
 				t.Commit();
 			}
 		}
+
+		[Test]
+		public void AddToUninitializedSetWithLaterLazyLoad()
+		{
+			User gavin;
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = new User("gavin", "secret");
+				var hia = new Document("HiA", "blah blah blah", gavin);
+				gavin.Documents.Add(hia);
+				s.Persist(gavin);
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = s.Get<User>("gavin");
+				var hia2 = new Document("HiA2", "blah blah blah blah", gavin);
+				gavin.Documents.Add(hia2);
+
+				foreach (var _ in gavin.Documents)
+				{
+					//Force Iteration
+				}
+
+				Assert.That(gavin.Documents.Contains(hia2));
+				s.Delete(gavin);
+				t.Commit();
+			}
+		}
 	}
 }

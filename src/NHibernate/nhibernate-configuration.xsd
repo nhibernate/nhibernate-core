@@ -21,6 +21,14 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
+				<xs:element ref="objects-factory" minOccurs="0" maxOccurs="1" >
+					<xs:annotation>
+						<xs:documentation>
+							Specify the AssemblyQualifiedName of your custom objects-factory (implementation of IObjectsFactory).
+							Note: the objects-factory will be effective only when specified in the app.config or web.config.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 				<xs:element ref="reflection-optimizer" maxOccurs="1" minOccurs="0" />
 				<xs:element ref="session-factory" minOccurs="0" maxOccurs="1" />
 			</xs:sequence>
@@ -326,12 +334,25 @@
 			</xs:sequence>
 			<xs:attribute name="type" default="lcg">
 				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="lcg" />
-						<xs:enumeration value="null" />
-					</xs:restriction>
+					<xs:union>
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="lcg" />
+								<xs:enumeration value="null" />
+							</xs:restriction>
+						</xs:simpleType>
+						<xs:simpleType>
+							<xs:restriction base="xs:string" />
+						</xs:simpleType>
+					</xs:union>
 				</xs:simpleType>
 			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="objects-factory">
+		<xs:complexType>
+			<xs:sequence />
+			<xs:attribute name="type" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="reflection-optimizer">

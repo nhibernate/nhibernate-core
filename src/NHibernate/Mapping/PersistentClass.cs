@@ -771,16 +771,30 @@ namespace NHibernate.Mapping
 		/// this type is persisted in.
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> that is used to Alias columns.</param>
+		//Since v5.2
+		[Obsolete("Please use overload without delegate parameter")]
 		public virtual void CreatePrimaryKey(Dialect.Dialect dialect)
 		{
 			//Primary key constraint
 			PrimaryKey pk = new PrimaryKey();
 			Table table = Table;
 			pk.Table = table;
-			pk.Name = PKAlias.ToAliasString(table.Name, dialect);
+			pk.Name = PKAlias.ToAliasString(table.Name);
 			table.PrimaryKey = pk;
 
 			pk.AddColumns(new SafetyEnumerable<Column>(Key.ColumnIterator));
+		}
+
+		/// <summary>
+		/// Creates the <see cref="PrimaryKey"/> for the <see cref="Table"/>
+		/// this type is persisted in.
+		/// </summary>
+		public virtual void CreatePrimaryKey()
+		{
+			//6.0 TODO: Inline the following method call and remove the obsolete method.
+#pragma warning disable 618
+			CreatePrimaryKey(null);
+#pragma warning restore 618
 		}
 
 		/// <summary>

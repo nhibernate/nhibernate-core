@@ -30,7 +30,7 @@ namespace NHibernate.Persister.Collection
 	/// Summary description for AbstractCollectionPersister.
 	/// </summary>
 	public abstract partial class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
-														IPostInsertIdentityPersister
+		IPostInsertIdentityPersister, ISupportSelectModeJoinable
 	{
 		protected static readonly object NotFoundPlaceHolder = new object();
 		private readonly string role;
@@ -1646,8 +1646,40 @@ namespace NHibernate.Persister.Collection
 
 		public abstract SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
 
-		public abstract string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string currentEntitySuffix,
-											  string currentCollectionSuffix, bool includeCollectionColumns);
+		// 6.0 TODO: Remove (Replace with ISupportSelectModeJoinable.SelectFragment)
+		// Since v5.2
+		[Obsolete("Use overload taking includeLazyProperties parameter")]
+		public virtual string SelectFragment(
+			IJoinable rhs,
+			string rhsAlias,
+			string lhsAlias,
+			string currentEntitySuffix,
+			string currentCollectionSuffix,
+			bool includeCollectionColumns)
+		{
+			return SelectFragment(
+				rhs, rhsAlias, lhsAlias, currentEntitySuffix, currentCollectionSuffix, includeCollectionColumns, false);
+		}
+
+		// 6.0 TODO: Make abstract
+		public virtual string SelectFragment(
+			IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix,
+			bool includeCollectionColumns, bool includeLazyProperties)
+		{
+			throw new NotImplementedException("SelectFragment with fetching lazy properties option is not implemented by " + GetType().FullName);
+		}
+
+		/// <summary>
+		/// Given a query alias and an identifying suffix, render the identifier select fragment for collection element entity.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="suffix"></param>
+		/// <returns></returns>
+		public virtual string IdentifierSelectFragment(string name, string suffix)
+		{
+			var persister = ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(ElementPersister, "SelectMode.ChildFetch for collection");
+			return persister.IdentifierSelectFragment(name, suffix);
+		}
 
 		public abstract bool ConsumesCollectionAlias();
 

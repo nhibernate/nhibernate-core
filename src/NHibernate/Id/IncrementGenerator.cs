@@ -22,7 +22,7 @@ namespace NHibernate.Id
 	/// java author Gavin King, .NET port Mark Holden
 	/// </para>
 	/// <para>
-	/// Mapping parameters supported, but not usually needed: table, column.
+	/// Mapping parameters supported, but not usually needed: tables, column, schema, catalog.
 	/// </para>
 	/// </remarks>
 	public partial class IncrementGenerator : IIdentifierGenerator, IConfigurable

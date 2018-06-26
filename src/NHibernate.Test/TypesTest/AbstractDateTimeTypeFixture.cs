@@ -533,7 +533,7 @@ namespace NHibernate.Test.TypesTest
 
 		public ClientDriverWithParamsStats()
 		{
-			_driverImplementation = (IDriver) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(DriverClass);
+			_driverImplementation = (IDriver) Cfg.Environment.ObjectsFactory.CreateInstance(DriverClass);
 		}
 
 		private static void Inc<T>(T type, IDictionary<T, int> dic)

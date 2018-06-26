@@ -28,37 +28,37 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="Eg"
     namespace="Eg">
 
-        <class name="Cat" table="CATS" discriminator-value="C">
-                <id name="Id" column="uid" type="Int64">
-                        <generator class="hilo"/>
-                </id>
-                <discriminator column="subclass" type="Char"/>
-                <property name="BirthDate" type="Date"/>
-                <property name="Color" not-null="true"/>
-                <property name="Sex" not-null="true" update="false"/>
-                <property name="Weight"/>
-                <many-to-one name="Mate" column="mate_id"/>
-                <set name="Kittens">
-                        <key column="mother_id"/>
-                        <one-to-many class="Cat"/>
-                </set>
-                <subclass name="DomesticCat" discriminator-value="D">
-                        <property name="Name" type="String"/>
-                </subclass>
-        </class>
+    <class name="Cat" table="CATS" discriminator-value="C">
+        <id name="Id" column="uid" type="Int64">
+            <generator class="hilo"/>
+        </id>
+        <discriminator column="subclass" type="Char"/>
+        <property name="BirthDate" type="Date"/>
+        <property name="Color" not-null="true"/>
+        <property name="Sex" not-null="true" update="false"/>
+        <property name="Weight"/>
+        <many-to-one name="Mate" column="mate_id"/>
+        <set name="Kittens">
+            <key column="mother_id"/>
+            <one-to-many class="Cat"/>
+        </set>
+        <subclass name="DomesticCat" discriminator-value="D">
+            <property name="Name" type="String"/>
+        </subclass>
+    </class>
 
-        <class name="Dog">
-                <!-- mapping for Dog could go here -->
-        </class>
+    <class name="Dog">
+        <!-- mapping for Dog could go here -->
+    </class>
 
 </hibernate-mapping>]]></programlisting>
 
         <para>
-             We will now discuss the content of the mapping document. We will only describe the
+             We will now discuss the content of the mapping document. We will mainly describe the
              document elements and attributes that are used by NHibernate at runtime. The mapping
              document also contains some extra optional attributes and elements that affect the
-             database schemas exported by the schema export tool. (For example the <literal>
-             not-null</literal> attribute.)
+             database schemas exported by the schema export tool. (By example the
+             <literal>column</literal> sub-element of a property.)
         </para>
 
         <sect2 id="mapping-declaration-xmlns">
@@ -86,9 +86,9 @@
             <title>hibernate-mapping</title>
 
             <para>
-                This element has several optional attributes. The <literal>schema</literal> attribute
-                specifies that tables referred to by this mapping belong to the named schema. If specified, 
-                table names will be qualified by the given schema name. If missing, table names will be 
+                This element has several optional attributes. The <literal>schema</literal> and <literal>catalog</literal> attributes
+                specify that tables referred to by this mapping belong to the named schema and/or catalog. If they are specified,
+                table names will be qualified by the given schema and/or catalog name. If they are missing, table names will be
                 unqualified. The <literal>default-cascade</literal> attribute specifies what cascade style
                 should be assumed for properties and collections which do not specify a
                 <literal>cascade</literal> attribute. The <literal>auto-import</literal> attribute lets us
@@ -97,77 +97,91 @@
                 are located and the namespace they are declared in.
             </para>
  
-             <programlistingco>
-                 <areaspec>
-                     <area id="hm1" coords="2 55"/>
-                     <area id="hm2" coords="3 55"/>
-                     <area id="hm3" coords="4 55"/>
-                     <area id="hm4" coords="5 55"/>
-                     <area id="hm5" coords="6 55"/>
-                   <area id="hm6" coords="7 55"/>
-                   <area id="hm7" coords="8 55"/>
-                 </areaspec>
-                 <programlisting><![CDATA[<hibernate-mapping
-         schema="schemaName"
-         default-cascade="none|save-update"
-         auto-import="true|false"
-         assembly="Eg"
-         namespace="Eg"
-         default-access="field|property|field.camecase..."
-         default-lazy="true|false"
+            <programlistingco>
+                <areaspec>
+                    <area id="hm1" coords="2 55"/>
+                    <area id="hm2" coords="3 55"/>
+                    <area id="hm3" coords="4 55"/>
+                    <area id="hm4" coords="5 55"/>
+                    <area id="hm5" coords="6 55"/>
+                    <area id="hm6" coords="7 55"/>
+                    <area id="hm7" coords="8 55"/>
+                    <area id="hm8" coords="9 55"/>
+                </areaspec>
+                <programlisting><![CDATA[<hibernate-mapping
+    schema="schemaName"
+    catalog="catalogName"
+    default-cascade="none|save-update..."
+    auto-import="true|false"
+    assembly="Eg"
+    namespace="Eg"
+    default-access="field|property|field.camelcase..."
+    default-lazy="true|false"
  />]]></programlisting>
-                 <calloutlist>
-                     <callout arearefs="hm1">
-                         <para>
-                             <literal>schema</literal> (optional): The name of a database schema.
-                         </para>
-                     </callout>
-                     <callout arearefs="hm2">
-                         <para>
-                             <literal>default-cascade</literal> (optional - defaults to <literal>none</literal>):
-                             A default cascade style.
-                         </para>
-                     </callout>
-                     <callout arearefs="hm3">
-                         <para>
-                             <literal>auto-import</literal> (optional - defaults to <literal>true</literal>):
-                             Specifies whether we can use unqualified class names (of classes in this mapping)
-                             in the query language.
-                         </para>
-                     </callout>
-                     <callout arearefs="hm4 hm5">
-                         <para>
-                             <literal>assembly</literal> and <literal>namespace</literal>(optional): Specify
-                             assembly and namespace to assume for unqualified class names in the mapping
-                             document.
-                         </para>
-                     </callout>
-                   <callout arearefs="hm6">
-                     <para>
-                       <literal>default-access</literal> (optional - defaults to property):
-                       The strategy NHibernate should use for accessing a property value
-                     </para>
-                   </callout>
-                   <callout arearefs="hm7">
-                     <para>
-                       <literal>default-lazy</literal> (optional - defaults to <literal>true</literal>):
-                       Lazy fetching may be completely disabled by setting default-lazy="false".
-                     </para>
-                   </callout>
-                 </calloutlist>
-             </programlistingco>
+                <calloutlist>
+                    <callout arearefs="hm1">
+                        <para>
+                            <literal>schema</literal> (optional): The name of a database schema.
+                        </para>
+                    </callout>
+                    <callout arearefs="hm2">
+                        <para>
+                            <literal>catalog</literal> (optional): The name of a database catalog.
+                        </para>
+                    </callout>
+                    <callout arearefs="hm3">
+                        <para>
+                            <literal>default-cascade</literal> (optional - defaults to <literal>none</literal>):
+                            A default cascade style.
+                        </para>
+                    </callout>
+                    <callout arearefs="hm4">
+                        <para>
+                            <literal>auto-import</literal> (optional - defaults to <literal>true</literal>):
+                            Specifies whether we can use unqualified class names of classes in this mapping
+                            in the query language.
+                        </para>
+                    </callout>
+                    <callout arearefs="hm5 hm6">
+                        <para>
+                            <literal>assembly</literal> and <literal>namespace</literal> (optional): Specify
+                            assembly and namespace to use for unqualified class names in the mapping document.
+                        </para>
+                    </callout>
+                    <callout arearefs="hm7">
+                        <para>
+                            <literal>default-access</literal> (optional - defaults to property):
+                            The strategy NHibernate should use for accessing a property value. It can be a custom
+                            implementation of <literal>IPropertyAccessor</literal>.
+                        </para>
+                    </callout>
+                    <callout arearefs="hm8">
+                        <para>
+                            <literal>default-lazy</literal> (optional - defaults to <literal>true</literal>):
+                            The default value for unspecified <literal>lazy</literal> attributes of class and collection mappings.
+                        </para>
+                    </callout>
+                </calloutlist>
+            </programlistingco>
 
-             <para>
-                 If you are not using <literal>assembly</literal> and <literal>namespace</literal>
-                 attributes, you have to specify fully-qualified class names, including the name
-                 of the assembly that classes are declared in.
-             </para>
+            <para>
+                If you are not using <literal>assembly</literal> and <literal>namespace</literal>
+                attributes, you have to specify fully-qualified class names, including the name
+                of the assembly that classes are declared in.
+            </para>
 
-             <para>
-                 If you have two persistent classes with the same (unqualified) name, you should set
-                 <literal>auto-import="false"</literal>. NHibernate will throw an exception if you attempt
-                 to assign two classes to the same "imported" name.
-             </para>
+            <para>
+                If you have two persistent classes with the same (unqualified) name, you should set
+                <literal>auto-import="false"</literal>. NHibernate will throw an exception if you attempt
+                to assign two classes to the same "imported" name.
+            </para>
+
+            <para>
+                The <literal>hibernate-mapping</literal> element allows you to nest several persistent <literal>&lt;class&gt;</literal>
+                mappings, as shown above. It is, however, good practice to map only a single persistent class, or a single class
+                hierarchy, in one mapping file and name it after the persistent super-class. For example, <literal>Cat.hbm.xml</literal>,
+                <literal>Dog.hbm.xml</literal>, or if using inheritance, <literal>Animal.hbm.xml</literal>.
+            </para>
         </sect2>
 
         <sect2 id="mapping-declaration-class">
@@ -195,24 +209,38 @@
                     <area id="class14" coords="15 55"/>
                     <area id="class15" coords="16 55"/>
                     <area id="class16" coords="17 55"/>
+                    <area id="class17" coords="18 55"/>
+                    <area id="class18" coords="19 55"/>
+                    <area id="class19" coords="20 55"/>
+                    <area id="class20" coords="21 55"/>
+                    <area id="class21" coords="22 80"/>
+                    <area id="class22" coords="23 55"/>
+                    <area id="class23" coords="24 55"/>
                 </areaspec>
                 <programlisting><![CDATA[<class
-        name="ClassName"
-        table="tableName"
-        discriminator-value="discriminator_value"
-        mutable="true|false"
-        schema="owner"
-        proxy="ProxyInterface"
-        dynamic-update="true|false"
-        dynamic-insert="true|false"
-        select-before-update="true|false"
-        polymorphism="implicit|explicit"
-        where="arbitrary sql where condition"
-        persister="PersisterClass"
-        batch-size="N"
-        optimistic-lock="none|version|dirty|all"
-        lazy="true|false"
-        abstract="true|false"
+    name="className"
+    table="tableName"
+    discriminator-value="discriminatorValue"
+    mutable="true|false"
+    schema="owner"
+    catalog="catalog"
+    proxy="proxyInterface"
+    dynamic-update="true|false"
+    dynamic-insert="true|false"
+    select-before-update="true|false"
+    polymorphism="implicit|explicit"
+    where="arbitrary sql where condition"
+    persister="persisterClass"
+    batch-size="N"
+    optimistic-lock="none|version|dirty|all"
+    lazy="true|false"
+    abstract="true|false"
+    entity-name="entityName"
+    check="arbitrary sql check condition"
+    subselect="SQL expression"
+    schema-action="none|drop|update|export|validate|all|commaSeparatedValues"
+    rowid="unused"
+    node="unused"
 />]]></programlisting>
                 <calloutlist>
                     <callout arearefs="class1">
@@ -228,46 +256,52 @@
                     </callout>
                     <callout arearefs="class3">
                         <para>
-                            <literal>discriminator-value</literal> (optional - defaults to the class name): A value
+                            <literal>discriminator-value</literal> (optional, defaults to the class name): A value
                             that distinguishes individual subclasses, used for polymorphic behaviour. Acceptable
                             values include <literal>null</literal> and <literal>not null</literal>.
                         </para>
                     </callout>
                     <callout arearefs="class4">
                         <para>
-                            <literal>mutable</literal> (optional, defaults to <literal>true</literal>): Specifies
+                            <literal>mutable</literal> (optional - defaults to <literal>true</literal>): Specifies
                             that instances of the class are (not) mutable.
                         </para>
                     </callout>
                     <callout arearefs="class5">
                         <para>
-                            <literal>schema</literal> (optional): Override the schema name specified by
+                            <literal>schema</literal> (optional): Overrides the schema name specified by
                             the root <literal>&lt;hibernate-mapping&gt;</literal> element.
                         </para>
                     </callout>
                     <callout arearefs="class6">
                         <para>
-                            <literal>proxy</literal> (optional): Specifies an interface to use for lazy
-                            initializing proxies. You may specify the name of the class itself.
+                            <literal>catalog</literal> (optional): Overrides the catalog name specified by
+                            the root <literal>&lt;hibernate-mapping&gt;</literal> element.
                         </para>
                     </callout>
                     <callout arearefs="class7">
                         <para>
-                            <literal>dynamic-update</literal> (optional, defaults to <literal>false</literal>):
-                            Specifies that <literal>UPDATE</literal> SQL should be generated at runtime and 
-                            contain only those columns whose values have changed.
+                            <literal>proxy</literal> (optional): Specifies an interface to use for lazy
+                            initializing proxies. You may specify the name of the class itself.
                         </para>
                     </callout>
                     <callout arearefs="class8">
                         <para>
-                            <literal>dynamic-insert</literal> (optional, defaults to <literal>false</literal>):
-                            Specifies that <literal>INSERT</literal> SQL should be generated at runtime and 
-                            contain only the columns whose values are not null.
+                            <literal>dynamic-update</literal> (optional - defaults to <literal>false</literal>):
+                            Specifies that <literal>UPDATE</literal> SQL should be generated at runtime and
+                            can contain only those columns whose values have changed.
                         </para>
                     </callout>
                     <callout arearefs="class9">
                         <para>
-                            <literal>select-before-update</literal> (optional, defaults to <literal>false</literal>):
+                            <literal>dynamic-insert</literal> (optional - defaults to <literal>false</literal>):
+                            Specifies that <literal>INSERT</literal> SQL should be generated at runtime and
+                            contain only the columns whose values are not null.
+                        </para>
+                    </callout>
+                    <callout arearefs="class10">
+                        <para>
+                            <literal>select-before-update</literal> (optional - defaults to <literal>false</literal>):
                             Specifies that NHibernate should <emphasis>never</emphasis> perform an SQL <literal>UPDATE</literal>
                             unless it is certain that an object is actually modified. In certain cases (actually, only
                             when a transient object has been associated with a new session using <literal>update()</literal>),
@@ -275,45 +309,83 @@
                             if an <literal>UPDATE</literal> is actually required.
                         </para>
                     </callout>
-                    <callout arearefs="class10">
-                        <para>
-                            <literal>polymorphism</literal> (optional, defaults to <literal>implicit</literal>):
-                            Determines whether implicit or explicit query polymorphism is used.
-                        </para>
-                    </callout>
                     <callout arearefs="class11">
                         <para>
-                            <literal>where</literal> (optional) specify an arbitrary SQL <literal>WHERE</literal>
-                            condition to be used when retrieving objects of this class
+                            <literal>polymorphism</literal> (optional - defaults to <literal>implicit</literal>):
+                            Determines whether implicit or explicit query polymorphism is used.
                         </para>
                     </callout>
                     <callout arearefs="class12">
                         <para>
-                            <literal>persister</literal> (optional): Specifies a custom <literal>IClassPersister</literal>.
+                            <literal>where</literal> (optional) specify an arbitrary SQL <literal>WHERE</literal>
+                            condition to be used when retrieving objects of this class.
                         </para>
                     </callout>
                     <callout arearefs="class13">
                         <para>
-                            <literal>batch-size</literal> (optional, defaults to <literal>1</literal>) specify a "batch size"
-                            for fetching instances of this class by identifier.
+                            <literal>persister</literal> (optional): Specifies a custom <literal>IClassPersister</literal>.
                         </para>
                     </callout>
-                   <callout arearefs="class14">
+                    <callout arearefs="class14">
                         <para>
-                            <literal>optimistic-lock</literal> (optional, defaults to <literal>version</literal>):
-                            Determines the optimistic locking strategy.
+                            <literal>batch-size</literal> (optional - defaults to <literal>1</literal>): Specifies a "batch size"
+                            for fetching instances of this class by identifier. See <xref linkend="performance-fetching-batch"/>.
                         </para>
-                    </callout>    
-                    <callout arearefs="class15">
+                    </callout>
+                   <callout arearefs="class15">
                         <para>
-                            <literal>lazy</literal> (optional): Lazy fetching may be completely disabled by setting
-                            <literal>lazy="false"</literal>.
+                            <literal>optimistic-lock</literal> (optional - defaults to <literal>version</literal>):
+                            Determines the optimistic locking strategy.
                         </para>
                     </callout>
                     <callout arearefs="class16">
                         <para>
-                            <literal>abstract</literal> (optional): Used to mark abstract superclasses in
-                            <literal>&lt;union-subclass&gt;</literal> hierarchies.
+                            <literal>lazy</literal> (optional - defaults to <literal>true</literal>): Lazy fetching can be
+                            disabled by setting <literal>lazy="false"</literal>.
+                        </para>
+                    </callout>
+                    <callout arearefs="class17">
+                        <para>
+                            <literal>abstract</literal> (optional - defaults to <literal>false</literal>): Used to mark abstract
+                            super-classes in <literal>&lt;union-subclass&gt;</literal> hierarchies.
+                        </para>
+                    </callout>
+                    <callout arearefs="class18">
+                        <para>
+                            <literal>entity-name</literal> (optional - defaults to the class name): NHibernate allows a class to
+                            be mapped multiple times, potentially to different tables. See <xref linkend="mapping-entityname" />.
+                            It also allows entity mappings that are represented by dictionaries at the .Net level. In these cases,
+                            you should provide an explicit arbitrary name for the entity. See
+                            <xref linkend="persistent-classes-dynamicmodels"/> for more information.
+                        </para>
+                    </callout>
+                    <callout arearefs="class19">
+                        <para>
+                            <literal>check</literal> (optional): An SQL expression used to generate a multi-row check constraint
+                            for automatic schema generation.
+                        </para>
+                    </callout>
+                    <callout arearefs="class20">
+                        <para>
+                            <literal>subselect</literal> (optional): Maps an immutable and read-only entity to a database sub-select.
+                            This is useful if you want to have a view instead of a base table. See
+                            <xref linkend="mapping-declaration-subselect"/> for more information.
+                        </para>
+                    </callout>
+                    <callout arearefs="class21">
+                        <para>
+                            <literal>schema-action</literal> (optional): Specifies which schema actions should be generated for the
+                            class table by the schema export tool. Valid values are <literal>none</literal>, <literal>drop</literal>,
+                            <literal>update</literal>, <literal>export</literal>, <literal>validate</literal>,
+                            <literal>all</literal> and any combination of them separated by commas (<literal>,</literal>).
+                            Not specifying it is treated as <literal>all</literal>. See <xref linkend="toolsetguide-s1" />.
+                        </para>
+                    </callout>
+                    <callout arearefs="class22 class23">
+                        <para>
+                            <literal>rowid</literal> and <literal>node</literal> (optional): These attributes have no
+                            usage in NHibernate. The <literal>node</literal> attribute is present on many more mapping elements, and
+                            has no usage on them too. It will be omitted from the documentation of these other elements.
                         </para>
                     </callout>
                 </calloutlist>
@@ -324,7 +396,8 @@
                 declare implementing classes of that interface using the <literal>&lt;subclass&gt;</literal>
                 element. You may persist any inner class. You should specify the
                 class name using the standard form ie. <literal>Eg.Foo+Bar, Eg</literal>.
-                Due to an HQL parser limitation inner classes can not be used in queries in NHibernate 1.0.
+                Due to an HQL parser limitation inner classes can not be used in queries in NHibernate, unless
+                assigning to them an <literal>entity-name</literal> without the <literal>+</literal> character.
             </para>
 
             <para>
@@ -333,10 +406,15 @@
             </para>
 
             <para>
-                The optional <literal>proxy</literal> attribute enables lazy initialization of persistent
-                instances of the class. NHibernate will initially return proxies which implement
-                the named interface. The actual persistent object will be loaded when a method of the
-                proxy is invoked. See "Proxies for Lazy Initialization" below.
+                The optional <literal>proxy</literal> attribute enables customization of the generated proxy
+                for lazy initialization of persistent instances of the class: by default, the proxy derives
+                from the class. Specifying an interface causes the proxy to implement it and to use
+                <literal>System.Object</literal> as its base class. This enables proxifying a sealed class
+                or a class having non virtual members. The specified interface should declare all the public
+                members of the persistent class. On <literal>ISession.Load</literal> and on
+                <literal>many-to-one</literal> associations, NHibernate will initially return proxies. The
+                actual persistent object will be loaded when a method or property of the proxy is invoked.
+                See <xref linkend="performance-fetching-initialization"/>.
             </para>
 
             <para><emphasis>Implicit</emphasis> polymorphism means that instances of the class will be returned
@@ -372,7 +450,8 @@
 
             <para>
                 Use of <literal>select-before-update</literal> will usually decrease performance. It is very
-                useful to prevent a database update trigger being called unnecessarily.
+                useful to prevent a database update trigger being called unnecessarily if you reattach a graph
+                of detached instances to an <literal>ISession</literal>.
             </para>
 
             <para>
@@ -406,9 +485,6 @@
                 columns for optimistic locking with NHibernate. This is the optimal strategy with
                 respect to performance and is the only strategy that correctly handles modifications
                 made outside of the session (ie. when <literal>ISession.Update()</literal> is used).
-                Keep in mind that a version or timestamp property should never be null, no matter
-                what <literal>unsaved-value</literal> strategy, or an instance will be detected as
-                transient.
             </para>
 
             <para>
@@ -425,7 +501,8 @@
                 An alternative to mapping a class to table or view columns is to map a <emphasis>query</emphasis>.
                 For that, we use the <literal>&lt;subselect&gt;</literal> element, which is mutually
                 exclusive with <literal>&lt;subclass&gt;</literal>, <literal>&lt;joined-subclass&gt;</literal>
-                and <literal>&lt;union-subclass&gt;</literal>.
+                and <literal>&lt;union-subclass&gt;</literal>. The subselect may also be specified as a
+                <literal>&lt;class&gt;</literal> attribute.
                 The content of the <literal>subselect</literal> element is a SQL query:
             </para>
 
@@ -451,7 +528,12 @@
     SELECT cat.ID, cat.NAME, cat.SEX, cat.MATE FROM cat
     ]]&gt;
 &lt;/subselect&gt;
-&lt;syncronize table="cat"/&gt;</programlisting>
+&lt;synchronize table="cat"/&gt;</programlisting>
+
+            <para>
+                This ensures that auto-flush happens correctly and that queries against the derived entity
+                do not return stale data.
+            </para>
 
             <para>
                 You then still have to declare the class id and properties.
@@ -471,20 +553,24 @@
             
             <programlistingco>
                 <areaspec>
-                    <area id="id1" coords="2 50" />
-                    <area id="id2" coords="3 50" />
-                    <area id="id3" coords="4 50" />
-                    <area id="id4" coords="5 50" />
-                    <area id="id5" coords="6 50" />
+                    <area id="id1" coords="2 55" />
+                    <area id="id2" coords="3 55" />
+                    <area id="id3" coords="4 55" />
+                    <area id="id4" coords="5 55" />
+                    <area id="id5" coords="6 55" />
+                    <area id="id6" coords="7 55" />
+                    <area id="id7" coords="8 55" />
                 </areaspec>
                 <programlisting><![CDATA[<id
-        name="PropertyName"
-        type="typename"
-        column="column_name"
-        unsaved-value="any|none|null|id_value"
-        access="field|property|nosetter|ClassName">
+    name="propertyName"
+    type="typeName"
+    length="typeLength"
+    column="columnName"
+    unsaved-value="any|none|null|undefined|idValue"
+    access="field|property|nosetter|className"
+    generator="generatorClass">
 
-        <generator class="generatorClass"/>
+    <generator class="generatorClass"/>
 </id>]]></programlisting>
                 <calloutlist>
                     <callout arearefs="id1">
@@ -499,37 +585,52 @@
                     </callout>
                     <callout arearefs="id3">
                         <para>
-                            <literal>column</literal> (optional - defaults to the property name): The
-                            name of the primary key column.
+                            <literal>length</literal> (optional): If the type takes a length and does not
+                            already specify it, its length.
                         </para>
                     </callout>
                     <callout arearefs="id4">
                         <para>
-                            <literal>unsaved-value</literal> (optional - defaults to a "sensible" value): 
+                            <literal>column</literal> (optional - defaults to the property name): The
+                            name of the primary key column.
+                        </para>
+                    </callout>
+                    <callout arearefs="id5">
+                        <para>
+                            <literal>unsaved-value</literal> (optional - defaults to a "sensible" value):
                             An identifier property value that indicates that an instance is newly instantiated
                             (unsaved), distinguishing it from transient instances that were saved or loaded
                             in a previous session.
                         </para>
                     </callout>
-                   <callout arearefs="id5">
+                   <callout arearefs="id6">
                         <para>
                             <literal>access</literal> (optional - defaults to <literal>property</literal>): The
                             strategy NHibernate should use for accessing the property value.
                         </para>
                     </callout>
+                   <callout arearefs="id7">
+                        <para>
+                            <literal>generator</literal>: The name of a generator class to use for generating
+                            unique identifiers for instances of the persistent class. See the
+                            <link linkend="mapping-declaration-id-generator">generator element</link>. Specifying
+                            either the attribute or the element is required. The attribute takes precedence over
+                            the element.
+                        </para>
+                    </callout>
                 </calloutlist>
             </programlistingco>
-            
+
             <para>
                 If the <literal>name</literal> attribute is missing, it is assumed that the class has no
                 identifier property.
             </para>
 
             <para>
-                The <literal>unsaved-value</literal> attribute is almost never needed in NHibernate 1.0.
+                The <literal>unsaved-value</literal> attribute is almost never needed in NHibernate.
             </para>
 
-             <para>
+            <para>
                 There is an alternative <literal>&lt;composite-id&gt;</literal> declaration to allow access to
                 legacy data with composite keys. We strongly discourage its use for anything else.
             </para>
@@ -547,11 +648,11 @@
                   using <literal>&lt;param&gt;</literal> elements.
                 </para>
 
-                <programlisting><![CDATA[<id name="Id" type="Int64" column="uid" unsaved-value="0">
-        <generator class="NHibernate.Id.TableHiLoGenerator">
-                <param name="table">uid_table</param>
-                <param name="column">next_hi_value_column</param>
-        </generator>
+                <programlisting><![CDATA[<id name="Id" type="Int64" column="uid">
+    <generator class="NHibernate.Id.TableHiLoGenerator">
+        <param name="table">uid_table</param>
+        <param name="column">next_hi_value_column</param>
+    </generator>
 </id>]]></programlisting>
 
                 <para>
@@ -559,7 +660,7 @@
                     attribute directly on the <literal>&lt;id&gt;</literal> element, as follows:
                 </para>
 
-                <programlisting><![CDATA[<id name="Id" type="Int64" column="uid" unsaved-value="0" generator="native" />]]></programlisting>
+                <programlisting><![CDATA[<id name="Id" type="Int64" column="uid" generator="native" />]]></programlisting>
 
                 <para>
                     All generators implement the interface <literal>NHibernate.Id.IIdentifierGenerator</literal>.
@@ -579,12 +680,24 @@
                         </listitem>
                         </varlistentry>
                         <varlistentry>
+                        <term><literal>counter</literal>, <literal>vm</literal></term>
+                        <listitem>
+                            <para>
+                                generates identifiers of 64bits integral type constructed from the system
+                                time and a counter value.
+                                <emphasis>Do not use in a cluster.  May generate colliding identifiers in
+                                a bit less than one year.</emphasis>
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                        <varlistentry>
                         <term><literal>identity</literal></term>
                         <listitem>
                             <para>
-                                supports identity columns in DB2, MySQL, MS SQL Server and Sybase. The identifier
-                                returned by the database is converted to the property type using <literal>
-                                Convert.ChangeType</literal>. Any integral property type is thus supported.
+                                supports identity columns in DB2, MySQL, MS SQL Server, Sybase and some other systems.
+                                The identifier returned by the database is converted to the property type using
+                                <literal>Convert.ChangeType</literal>. Any integral property type is thus supported.
+                                See <xref linkend="mapping-declaration-id-sequences" />.
                             </para>
                         </listitem>
                         </varlistentry>
@@ -592,10 +705,11 @@
                         <term><literal>sequence</literal></term>
                         <listitem>
                             <para>
-                                uses a sequence in DB2, PostgreSQL, Oracle or a generator
+                                uses a sequence in DB2, PostgreSQL, Oracle and some other systems, or a generator
                                 in Firebird. The identifier returned by the database is converted to the property
                                 type using <literal>Convert.ChangeType</literal>. Any integral property type is
                                 thus supported.
+                                See <xref linkend="mapping-declaration-id-sequences" />.
                             </para>
                         </listitem>
                         </varlistentry>
@@ -607,11 +721,8 @@
                                 given a table and column (by default <literal>hibernate_unique_key</literal> and
                                 <literal>next_hi</literal> respectively) as a source of hi values. The hi/lo algorithm
                                 generates identifiers that are unique only for a particular database. <emphasis>Do not
-                                use this generator with a user-supplied connection.</emphasis>
-                            </para>
-                            <para>
-                                You can use the "where" parameter to specify the row to use in a table. This is useful
-                                if you want to use a single table for your identifiers, with different rows for each table.
+                                use this generator with an user-supplied connection.</emphasis> See
+                                <xref linkend="mapping-declaration-id-hilo" />.
                             </para>
                         </listitem>
                         </varlistentry>
@@ -620,7 +731,7 @@
                         <listitem>
                             <para>
                                 uses a hi/lo algorithm to efficiently generate identifiers of any integral type,
-                                given a named database sequence.
+                                given a named database sequence. See <xref linkend="mapping-declaration-id-hilo" />.
                             </para>
                         </listitem>
                         </varlistentry>
@@ -630,7 +741,7 @@
                             <para>
                                 uses <literal>System.Guid</literal> and its <literal>ToString(string format)</literal> method
                                 to generate identifiers of type string.  The length of the string returned depends on the 
-                                configured <literal>format</literal>.
+                                configured <literal>format</literal>. See <xref linkend="mapping-declaration-id-uuid-hex" />.
                             </para>
                         </listitem>
                         </varlistentry>
@@ -639,7 +750,7 @@
                         <listitem>
                             <para>
                                 uses a new <literal>System.Guid</literal> to create a <literal>byte[]</literal> that is
-                                converted to a string.
+                                converted to a string. See <xref linkend="mapping-declaration-id-uuid-string" />.
                             </para>
                         </listitem>
                         </varlistentry>
@@ -647,7 +758,8 @@
                         <term><literal>guid</literal></term>
                         <listitem>
                             <para>
-                                uses a new <literal>System.Guid</literal> as the identifier.
+                                uses a new <literal>System.Guid</literal> as the identifier. It is <emphasis>not equivalent</emphasis>
+                                to the Hibernate <literal>guid</literal> generator. See <xref linkend="mapping-declaration-id-guid" />.
                             </para>
                         </listitem>
                         </varlistentry>
@@ -658,7 +770,15 @@
                                 uses the algorithm to generate a new <literal>System.Guid</literal>
                                 described by Jimmy Nilsson in
                                 <ulink url="https://www.informit.com/articles/article.aspx?p=25862">this
-                                article</ulink>.
+                                article</ulink>. See also <xref linkend="mapping-declaration-id-guid" />.
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                        <term><literal>guid.native</literal></term>
+                        <listitem>
+                            <para>
+                                uses the database server side Guid function.
                             </para>
                         </listitem>
                         </varlistentry>
@@ -669,6 +789,7 @@
                                 picks <literal>identity</literal>, <literal>sequence</literal> or
                                 <literal>hilo</literal> depending upon the capabilities of the
                                 underlying database.
+                                See <xref linkend="mapping-declaration-id-sequences" />.
                             </para>
                         </listitem>
                         </varlistentry>
@@ -678,6 +799,17 @@
                             <para>
                                 lets the application to assign an identifier to the object before
                                 <literal>Save()</literal> is called.
+                                See <xref linkend="mapping-declaration-id-assigned" />.
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                        <term><literal>select</literal></term>
+                        <listitem>
+                            <para>
+                                retrieves a primary key, assigned by a database trigger, by selecting the row by some
+                                unique key and retrieving the primary key value.
+                                See <xref linkend="mapping-declaration-id-select" />.
                             </para>
                         </listitem>
                         </varlistentry>
@@ -685,8 +817,47 @@
                         <term><literal>foreign</literal></term>
                         <listitem>
                             <para>
-                                uses the identifier of another associated object. Usually used in conjunction
+                                uses the identifier of another associated object. It is usually used in conjunction
                                 with a <literal>&lt;one-to-one&gt;</literal> primary key association.
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                        <term><literal>sequence-identity</literal></term>
+                        <listitem>
+                            <para>
+                                a generator which combines sequence generation with immediate retrieval
+                                by attaching an output parameter to the SQL command.
+                                In this respect it works much like ANSI-SQL identity generation.
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                        <term><literal>trigger-identity</literal></term>
+                        <listitem>
+                            <para>
+                                a generator which uses an output parameter to return the identifier generated by the insert
+                                on database server side.
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                        <term><literal>enhanced-sequence</literal></term>
+                        <listitem>
+                            <para>
+                                uses a sequence with database supporting them, otherwise uses a table for emulating the sequence.
+                                See <xref linkend="mapping-declaration-id-enhanced" />. Supports
+                                <xref linkend="mapping-declaration-id-enhanced-optimizers" />.
+                            </para>
+                        </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                        <term><literal>enhanced-table</literal></term>
+                        <listitem>
+                            <para>
+                                uses a table like the <literal>hilo</literal> generator, but can handle multiple increment values
+                                per table. See <xref linkend="mapping-declaration-id-enhanced" />. Supports
+                                <xref linkend="mapping-declaration-id-enhanced-optimizers" />.
                             </para>
                         </listitem>
                         </varlistentry>
@@ -704,25 +875,58 @@
                     The second uses an Oracle-style sequence (where supported).
                 </para>
 
-                <programlisting><![CDATA[<id name="Id" type="Int64" column="cat_id">
-        <generator class="hilo">
-                <param name="table">hi_value</param>
-                <param name="column">next_value</param>
-                <param name="max_lo">100</param>
-        </generator>
-</id>]]></programlisting>
-
-                <programlisting><![CDATA[<id name="Id" type="Int64" column="cat_id">
-        <generator class="seqhilo">
-                <param name="sequence">hi_value</param>
-                <param name="max_lo">100</param>
-        </generator>
-</id>]]></programlisting>
-
                 <para>
                     Unfortunately, you can't use <literal>hilo</literal> when supplying your own
                     <literal>DbConnection</literal> to NHibernate. NHibernate must be able to
                     fetch the "hi" value in a new transaction.
+                </para>
+
+                <programlisting><![CDATA[<id name="Id" type="Int64" column="cat_id">
+    <generator class="hilo">
+        <param name="table">tableName</param>
+        <param name="column">columnName</param>
+        <param name="schema">schemaName</param>
+        <param name="catalog">catalogName</param>
+        <param name="max_lo">100</param>
+        <param name="where">arbitraryWhereClause</param>
+    </generator>
+</id>]]></programlisting>
+
+                <para>
+                    <literal>table</literal> defaults to <literal>hibernate_unique_key</literal>,
+                    <literal>column</literal> defaults to <literal>next_hi</literal>,
+                    and <literal>max_lo</literal> defaults to <literal>32767</literal>.
+                    <literal>schema</literal>, <literal>catalog</literal> and <literal>where</literal>
+                    are optional and have no default value.
+                </para>
+
+                <para>
+                    You can use the optional <literal>where</literal> parameter to specify the row to use in a table. This is
+                    useful if you want to use a single table for your identifiers, with different rows for each table. Do not
+                    include the <literal>where</literal> keyword in its value.
+                    This is not handled by NHibernate schema generation tooling.
+                </para>
+
+                <programlisting><![CDATA[<id name="Id" type="Int64" column="cat_id">
+    <generator class="seqhilo">
+        <param name="sequence">hi_value</param>hibernate_sequence
+        <param name="schema">schemaName</param>
+        <param name="catalog">catalogName</param>
+        <param name="max_lo">100</param>
+        <param name="parameters">arbitrarySqlFragment</param>
+    </generator>
+</id>]]></programlisting>
+
+                <para>
+                    <literal>sequence</literal> defaults to <literal>hibernate_sequence</literal>,
+                    and <literal>max_lo</literal> defaults to <literal>9</literal>.
+                    <literal>schema</literal>, <literal>catalog</literal> and <literal>parameters</literal>
+                    are optional and have no default value.
+                </para>
+
+                <para>
+                    You can use the optional <literal>parameters</literal> parameter to specify some SQL to be
+                    appended to the create sequence DDL.
                 </para>
             </sect3>
             
@@ -730,10 +934,10 @@
                 <title>UUID Hex Algorithm</title>
 
                 <programlisting><![CDATA[<id name="Id" type="String" column="cat_id">
-        <generator class="uuid.hex">
-            <param name="format">format_value</param>
-            <param name="separator">separator_value</param>
-        </generator>
+    <generator class="uuid.hex">
+        <param name="format">format_value</param>
+        <param name="separator">separator_value</param>
+    </generator>
 </id>]]></programlisting>
 
                 <para>
@@ -777,15 +981,15 @@
                 </para>
 
                 <programlisting><![CDATA[<id name="Id" type="Int64" column="uid">
-        <generator class="sequence">
-                <param name="sequence">uid_sequence</param>
-        </generator>
+    <generator class="sequence">
+        <param name="sequence">uid_sequence</param>
+    </generator>
 </id>]]></programlisting>
 
-                <programlisting><![CDATA[<id name="Id" type="Int64" column="uid" unsaved-value="0">
-        <generator class="identity"/>
+                <programlisting><![CDATA[<id name="Id" type="Int64" column="uid">
+    <generator class="identity"/>
 </id>]]></programlisting>
-            
+
                 <para>
                     For cross-platform development, the <literal>native</literal> strategy will
                     choose from the <literal>identity</literal>, <literal>sequence</literal> and
@@ -793,7 +997,7 @@
                     underlying database.
                 </para>
             </sect3>
-            
+
             <sect3 id="mapping-declaration-id-assigned">
                 <title>Assigned Identifiers</title>
                 <para>
@@ -804,24 +1008,92 @@
                     keys with business meaning (almost always a terrible design decision).
                 </para>
                 <para>
-                    Due to its inherent nature, entities that use this generator cannot be saved
-                    via the ISession's SaveOrUpdate() method. Instead you have to explicitly specify to
-                    NHibernate if the object should be saved or updated by calling either the
-                    <literal>Save()</literal> or <literal>Update()</literal> method of the ISession.
+                    Due to its inherent nature, entities that use this generator may, when saved via
+                    the ISession's SaveOrUpdate() method, cause NHibernate to query the database for
+                    checking if the entity exist or not.
+                </para>
+                <para>
+                    To avoid this, either:
+                </para>
+                <itemizedlist>
+                    <listitem>
+                        <para>
+                            ensure that the identifier <literal>unsaved-value</literal> is not defined or is set
+                            to <literal>undefined</literal>, and define an <literal>unsaved-value</literal> on
+                            a <literal>&lt;version&gt;</literal> or <literal>&lt;timestamp&gt;</literal> property
+                            mapping for the class. (Depending on the version type, its default
+                            <literal>unsaved-value</literal> will generally already be suitable.)
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            specify to NHibernate if the object should be saved or updated by calling either the
+                            <literal>Save()</literal> or <literal>Update()</literal> method of the ISession.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            set <literal>unsaved-value="none"</literal> and explicitly <literal>Save()</literal>
+                            newly instantiated objects.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            set <literal>unsaved-value="any"</literal> and explicitly <literal>Update()</literal>
+                            previously persistent objects.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            implement <literal>IInterceptor.IsTransient()</literal> for providing your own strategy
+                            for distinguishing newly instantiated objects. See
+                            <xref linkend="objectstate-interceptors"/>.
+                        </para>
+                    </listitem>
+                </itemizedlist>
+                <para>
+                    For assigned identifiers, <literal>unsaved-value</literal> default value is
+                    <literal>undefined</literal>.
+                </para>
+            </sect3>
+
+            <sect3 id="mapping-declaration-id-select">
+                <title>Primary keys assigned by triggers</title>
+                <para>
+                    NHibernate does not generate DDL with triggers. It is for legacy schemas only.
+                </para>
+
+                <programlisting><![CDATA[<id name="id" type="long" column="person_id">
+    <generator class="select">
+        <param name="key">socialSecurityNumber</param>
+    </generator>
+</id>]]></programlisting>
+
+                <para>
+                    In the above example, there is a unique valued property named
+                    <literal>socialSecurityNumber</literal>. It is defined by the class, as a property.
+                    And a surrogate key named person_id has its value generated by a trigger. Its value
+                    will be retrieved by querying the entity table filtered by the <literal>key</literal>
+                    property.
+                </para>
+
+                <para>
+                    If the class maps a <link linkend="mapping-declaration-naturalid">natural id</link>,
+                    <literal>key</literal> can be omitted. The natural id will be used when
+                    <literal>key</literal> is omitted.
                 </para>
             </sect3>
 
             <sect3 id="mapping-declaration-id-enhanced">
                 <title>Enhanced identifier generators</title>
 
-                <para>Starting with NHibernate release 3.3.0, there are 2 new generators which
-                represent a re-thinking of 2 different aspects of identifier
+                <para>Starting with NHibernate release 3.3.0, there are two new generators which
+                represent a re-thinking of two different aspects of identifier
                 generation. The first aspect is database portability; the second is
                 optimization. Optimization means that you do not have to query the
                 database for every request for a new identifier value. These two new
                 generators are intended to take the place of some of the named
-                generators described above, starting in 3.3.x. However, they are
-                included in the current releases and can be referenced by FQN.</para>
+                generators described above.</para>
 
                 <para>The first of these new generators is
                 <literal>NHibernate.Id.Enhanced.SequenceStyleGenerator</literal>
@@ -843,13 +1115,15 @@
                 emulate with its table-based generators. This generator has a number
                 of configuration parameters: <itemizedlist spacing="compact">
                     <listitem>
-                      <para><literal>sequence_name</literal> (optional, defaults to
+                      <para><literal>sequence_name</literal> (optional - defaults to
                       <literal>hibernate_sequence</literal>): the name of the sequence
-                      or table to be used.</para>
+                      or table to be used. <literal>schema</literal> and
+                      <literal>catalog</literal> parameters can be additionally used
+                      to qualify the sequence name.</para>
                     </listitem>
 
                     <listitem>
-                      <para><literal>initial_value</literal> (optional, defaults to
+                      <para><literal>initial_value</literal> (optional - defaults to
                       <literal>1</literal>): the initial value to be retrieved from
                       the sequence/table. In sequence creation terms, this is
                       analogous to the clause typically named "STARTS WITH".</para>
@@ -878,22 +1152,9 @@
                     </listitem>
 
                     <listitem>
-                      <para><literal>prefer_sequence_per_entity</literal> (optional -
-                      defaults to <literal>false</literal>): should we create
-                      separate sequence for each entity that share current generator
-                      based on its name?</para>
-                    </listitem>
-
-                    <listitem>
-                      <para><literal>sequence_per_entity_suffix</literal> (optional -
-                      defaults to <literal>_SEQ</literal>): suffix added to the name
-                      of a dedicated sequence.</para>
-                    </listitem>
-
-                    <listitem>
                       <para><literal>optimizer</literal> (optional - defaults to
-                      <literal>none</literal>): See <xref
-                      linkend="mapping-declaration-id-enhanced-optimizers" /></para>
+                      <literal>none</literal> if <literal>increment_size</literal> is <literal>1</literal>):
+                       See <xref linkend="mapping-declaration-id-enhanced-optimizers" /></para>
                     </listitem>
                   </itemizedlist></para>
 
@@ -912,7 +1173,9 @@
                     <listitem>
                       <para><literal>table_name</literal> (optional - defaults to
                       <literal>hibernate_sequences</literal>): the name of the table
-                      to be used.</para>
+                      to be used. <literal>schema</literal> and
+                      <literal>catalog</literal> parameters can be additionally used
+                      to qualify the sequence name.</para>
                     </listitem>
 
                     <listitem>
@@ -931,7 +1194,9 @@
 
                     <listitem>
                       <para><literal>segment_value</literal> (optional - defaults to
-                      <literal>default</literal>): The "segment key" value for the
+                      <literal>default</literal> unless
+                      <literal>prefer_entity_table_as_segment_value</literal> is
+                      <literal>true</literal>): The "segment key" value for the
                       segment from which we want to pull increment values for this
                       generator.</para>
                     </listitem>
@@ -940,6 +1205,14 @@
                       <para><literal>segment_value_length</literal> (optional -
                       defaults to <literal>255</literal>): Used for schema generation;
                       the column size to create this segment key column.</para>
+                    </listitem>
+
+                    <listitem>
+                      <para><literal>prefer_entity_table_as_segment_value</literal>
+                      (optional - defaults to <literal>false</literal>): If
+                      <literal>segment_value</literal> is not specified, whether it
+                      should defaults to the entity table name or to
+                      <literal>default</literal>.</para>
                     </listitem>
 
                     <listitem>
@@ -956,7 +1229,7 @@
 
                     <listitem>
                       <para><literal>optimizer</literal> (optional - defaults to
-                      <literal>??</literal>): See <xref
+                      <literal>none</literal> if <literal>increment_size</literal> is <literal>1</literal>): See <xref
                       linkend="mapping-declaration-id-enhanced-optimizers" />.</para>
                     </listitem>
                   </itemizedlist></para>
@@ -1020,14 +1293,15 @@
             <title>composite-id</title>
 
             <programlisting><![CDATA[<composite-id
-        name="PropertyName"
-        class="ClassName"
-        unsaved-value="any|none"
-        access="field|property|nosetter|ClassName">
+    name="propertyName"
+    class="className"
+    unsaved-value="any|none"
+    access="field|property|nosetter|className"
+    mapped="true|false">
 
-        <key-property name="PropertyName" type="typename" column="column_name"/>
-        <key-many-to-one name="PropertyName class="ClassName" column="column_name"/>
-        ......
+    <key-property name="propertyName" type="typeName" column="columnName"/>
+    <key-many-to-one name="propertyName class="className" column="columnName"/>
+    ...
 </composite-id>]]></programlisting>
 
             <para>
@@ -1038,8 +1312,8 @@
             </para>
 
             <programlisting><![CDATA[<composite-id>
-        <key-property name="MedicareNumber"/>
-        <key-property name="Dependent"/>
+    <key-property name="MedicareNumber"/>
+    <key-property name="Dependent"/>
 </composite-id>]]></programlisting>
 
             <para>
@@ -1053,9 +1327,33 @@
                 is its own identifier. There is no convenient "handle" other than the object itself.
                 You must instantiate an instance of the persistent class itself and populate its
                 identifier properties before you can <literal>Load()</literal> the persistent state
-                associated with a composite key. We will describe a much more
-                convenient approach where the composite identifier is implemented as a separate class
-                in <xref linkend="components-compositeid"/>. The attributes described below apply only
+                associated with a composite key. We call this approach an embedded composite identifier,
+                and discourage it for serious applications.
+            </para>
+
+            <itemizedlist spacing="compact">
+                <listitem>
+                    <para>
+                        <literal>unsaved-value</literal> (optional - default to <literal>undefined</literal>):
+                        controls how transient instances are considered. <literal>any</literal> assumes
+                        any transient instance is newly instantiated. In other words, the instance will be
+                        saved (inserted in the database). <literal>none</literal> assumes any transient instance
+                        is already persisted. In other words, the instance will be updated.
+                        <literal>undefined</literal> does not assume anything: NHibernate may query the database
+                        for determining if the entity is already persisted or not.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <literal>mapped</literal> (optional - defaults to <literal>false</literal>):
+                        This attribute has no usage in NHibernate.
+                    </para>
+                </listitem>
+            </itemizedlist>
+
+            <para>
+                A much more convenient approach is to implement the composite identifier as a separate class,
+                as in <xref linkend="components-compositeid"/>. The attributes described below apply only
                 to this alternative approach:
             </para>
 
@@ -1063,7 +1361,7 @@
                 <listitem>
                     <para>
                         <literal>name</literal> (optional, required for this approach): A property of
-                        component type that holds the composite identifier (see next section).
+                        component type that holds the composite identifier (see <xref linkend="components-compositeid"/>).
                     </para>
                 </listitem>
                 <listitem>
@@ -1074,11 +1372,15 @@
                 </listitem>
                 <listitem>
                     <para>
-                        <literal>class</literal> (optional - defaults to the property type determined by 
-                        reflection): The component class used as a composite identifier (see next section).
+                        <literal>class</literal> (optional - defaults to the property type determined by
+                        reflection): The component class used as a composite identifier.
                     </para>
                 </listitem>
             </itemizedlist>
+
+            <para>
+                The second approach, an identifier component, is recommended for almost all applications.
+            </para>
 
         </sect2>
 
@@ -1097,49 +1399,65 @@
 
             <programlistingco>
                 <areaspec>
-                    <area id="discriminator1" coords="2 40"/>
-                    <area id="discriminator2" coords="3 40" />
-                    <area id="discriminator3" coords="4 40" />
-                    <area id="discriminator4" coords="5 40" />
-                    <area id="discriminator5" coords="6 40" />
+                    <area id="discriminator1" coords="2 55"/>
+                    <area id="discriminator2" coords="3 55" />
+                    <area id="discriminator3" coords="4 55" />
+                    <area id="discriminator4" coords="5 55" />
+                    <area id="discriminator5" coords="6 55" />
+                    <area id="discriminator6" coords="7 55" />
+                    <area id="discriminator7" coords="8 55" />
                 </areaspec>
                 <programlisting><![CDATA[<discriminator
-        column="discriminator_column"
-        type="discriminator_type"
-        force="true|false"
-        insert="true|false"
-        formula="arbitrary SQL expression"
+    column="discriminatorColumn"
+    type="discriminatorType"
+    length="typeLength"
+    not-null="true|false"
+    force="true|false"
+    insert="true|false"
+    formula="arbitrary SQL expression"
 />]]></programlisting>
                 <calloutlist>
                     <callout arearefs="discriminator1">
                         <para>
-                            <literal>column</literal> (optional - defaults to <literal>class</literal>) the
+                            <literal>column</literal> (optional - defaults to <literal>class</literal>): the
                             name of the discriminator column.
                         </para>
                     </callout>
                     <callout arearefs="discriminator2">
                         <para>
-                            <literal>type</literal> (optional - defaults to <literal>String</literal>) a
+                            <literal>type</literal> (optional - defaults to <literal>String</literal>): a
                             name that indicates the NHibernate type
                         </para>
                     </callout>
                     <callout arearefs="discriminator3">
                         <para>
-                            <literal>force</literal> (optional - defaults to <literal>false</literal>)
-                            "force" NHibernate to specify allowed discriminator values even when retrieving 
-                            all instances of the root class.
+                            <literal>length</literal> (optional): if the type takes a length and does not
+                            already specify it, its length.
                         </para>
                     </callout>
                     <callout arearefs="discriminator4">
                         <para>
-                            <literal>insert</literal> (optional - defaults to <literal>true</literal>)
-                            set this to <literal>false</literal> if your discriminator column is also part
-                            of a mapped composite identifier.
+                            <literal>not-null</literal> (optional - defaults to <literal>true</literal>):
+                            sets the column nullability for DDL generation.
                         </para>
                     </callout>
                     <callout arearefs="discriminator5">
                         <para>
-                            <literal>formula</literal> (optional) an arbitrary SQL expression that is
+                            <literal>force</literal> (optional - defaults to <literal>false</literal>):
+                            "force" NHibernate to specify allowed discriminator values even when retrieving 
+                            all instances of the root class.
+                        </para>
+                    </callout>
+                    <callout arearefs="discriminator6">
+                        <para>
+                            <literal>insert</literal> (optional - defaults to <literal>true</literal>):
+                            set this to <literal>false</literal> if your discriminator column is also part
+                            of a mapped composite identifier.
+                        </para>
+                    </callout>
+                    <callout arearefs="discriminator7">
+                        <para>
+                            <literal>formula</literal> (optional): an arbitrary SQL expression that is
                             executed when a type has to be evaluated. Allows content-based discrimination.
                         </para>
                     </callout>
@@ -1153,13 +1471,13 @@
             </para>
             
             <para>
-                The <literal>force</literal> attribute is (only) useful if the table contains rows with
+                The <literal>force</literal> attribute is only useful if the table contains rows with
                 "extra" discriminator values that are not mapped to a persistent class. This will not
                 usually be the case.
             </para>
 
             <para>
-                Using the <literal>formula</literal> attribute you can declare an arbitrary SQL expression
+                Using the <literal>formula</literal> attribute, you can declare an arbitrary SQL expression
                 that will be used to evaluate the type of a row:
             </para>
 
@@ -1174,25 +1492,27 @@
             <para>
                 The <literal>&lt;version&gt;</literal> element is optional and indicates that
                 the table contains versioned data. This is particularly useful if you plan to
-                use <emphasis>long transactions</emphasis> (see below).
+                use <emphasis>long transactions</emphasis> (see <xref linkend="transactions-optimistic" />).
             </para>
             
             <programlistingco>
                 <areaspec>
-                    <area id="version1" coords="2 60"/>
-                    <area id="version2" coords="3 60"/>
-                    <area id="version3" coords="4 60"/>
-                    <area id="version4" coords="5 60"/>
-                    <area id="version5" coords="6 60"/>
-                    <area id="version6" coords="7 60"/>
+                    <area id="version1" coords="2 55"/>
+                    <area id="version2" coords="3 55"/>
+                    <area id="version3" coords="4 55"/>
+                    <area id="version4" coords="5 55"/>
+                    <area id="version5" coords="6 55"/>
+                    <area id="version6" coords="7 55"/>
+                    <area id="version7" coords="8 55"/>
                 </areaspec>
                 <programlisting><![CDATA[<version
-        column="version_column"
-        name="PropertyName"
-        type="typename"
-        access="field|property|nosetter|ClassName"
-        unsaved-value="null|negative|undefined|value"
-        generated="never|always"
+    column="versionColumn"
+    name="propertyName"
+    type="typeName"
+    access="field|property|nosetter|className"
+    unsaved-value="null|negative|undefined|value"
+    generated="never|always"
+    insert="false|true"
 />]]></programlisting>
                 <calloutlist>
                     <callout arearefs="version1">
@@ -1223,15 +1543,23 @@
                             <literal>unsaved-value</literal> (optional - defaults to a "sensible" value):
                             A version property value that indicates that an instance is newly instantiated
                             (unsaved), distinguishing it from transient instances that were saved or loaded
-                            in a previous session. (<literal>undefined</literal> specifies that the identifier
-                            property value should be used.)
+                            in a previous session. <literal>undefined</literal> specifies that nothing
+                            should be assumed from the version property. The identifier check on its own
+                            <literal>unsaved-value</literal> will take precedence, unless its own value is
+                            <literal>undefined</literal>.
                         </para>
                     </callout>
                     <callout arearefs="version6">
                         <para>
                             <literal>generated</literal> (optional - defaults to <literal>never</literal>):
                             Specifies that this version property value is actually generated by the database.
-                            See the discussion of <xref linkend="mapping-generated">generated properties</xref>.
+                            See the discussion of <link linkend="mapping-generated">generated properties</link>.
+                        </para>
+                    </callout>
+                    <callout arearefs="version7">
+                        <para>
+                            <literal>insert</literal> (optional - defaults to <literal>false</literal>):
+                            This attribute has no usage in NHibernate.
                         </para>
                     </callout>
                 </calloutlist>
@@ -1241,7 +1569,7 @@
                 Version may be of type <literal>Int64</literal>, <literal>Int32</literal>,
                 <literal>Int16</literal>, <literal>Ticks</literal>, <literal>Timestamp</literal>,
                 <literal>TimeSpan</literal>, <literal>datetimeoffset</literal>, ... (or their nullable
-                counterparts in .NET 2.0). Any type implementing <literal>IVersionType</literal> is
+                counterparts in .NET 2.0 and higher). Any type implementing <literal>IVersionType</literal> is
                 usable as a version.
             </para>
 
@@ -1259,18 +1587,20 @@
 
             <programlistingco>
                 <areaspec>
-                    <area id="timestamp1" coords="2 45"/>
-                    <area id="timestamp2" coords="3 45" />
-                    <area id="timestamp3" coords="4 45" />
-                    <area id="timestamp4" coords="5 45" />
-                    <area id="timestamp5" coords="6 45" />
+                    <area id="timestamp1" coords="2 55"/>
+                    <area id="timestamp2" coords="3 55" />
+                    <area id="timestamp3" coords="4 55" />
+                    <area id="timestamp4" coords="5 55" />
+                    <area id="timestamp5" coords="6 55" />
+                    <area id="timestamp6" coords="7 55" />
                 </areaspec>
                 <programlisting><![CDATA[<timestamp
-        column="timestamp_column"
-        name="PropertyName"
-        access="field|property|nosetter|ClassName"
-        unsaved-value="null|undefined|value"
-        generated="never|always"
+    column="timestampColumn"
+    name="propertyName"
+    access="field|property|nosetter|className"
+    unsaved-value="null|undefined"
+    generated="never|always"
+    source="vm|db"
 />]]></programlisting>
                 <calloutlist>
                     <callout arearefs="timestamp1">
@@ -1296,15 +1626,33 @@
                             <literal>unsaved-value</literal> (optional - defaults to <literal>null</literal>):
                             A timestamp property value that indicates that an instance is newly instantiated
                             (unsaved), distinguishing it from transient instances that were saved or loaded
-                            in a previous session. (<literal>undefined</literal> specifies that the identifier
-                            property value should be used.)
+                            in a previous session. <literal>undefined</literal> specifies that nothing
+                            should be assumed from the timestamp value. The identifier check on its own
+                            <literal>unsaved-value</literal> will take precedence, unless its own value is
+                            <literal>undefined</literal>.
                         </para>
                     </callout>
                     <callout arearefs="timestamp5">
                         <para>
                             <literal>generated</literal> (optional - defaults to <literal>never</literal>):
-                            Specifies that this timestamp property value is actually generated by the database.
-                            See the discussion of <xref linkend="mapping-generated">generated properties</xref>.
+                            Specifies that this timestamp property value is actually generated by the database
+                            on insert and updates.
+                            See the discussion of <link linkend="mapping-generated">generated properties</link>.
+                            It should not to be confused with <literal>source</literal> value
+                            <literal>db</literal>, which mandates NHibernate to retrieve the timestamp from the
+                            database in a dedicated query, in order to get the new value to set in the next insert
+                            or update.
+                        </para>
+                    </callout>
+                   <callout arearefs="timestamp6">
+                        <para>
+                            <literal>source</literal> (optional - defaults to <literal>vm</literal>): Where should
+                            NHibernate retrieve the timestamp value from? From the database, or from the current
+                            runtime? Database-based timestamps incur an overhead because NHibernate must hit the
+                            database in order to determine the "next value". It is safer to use in clustered
+                            environments. Not all dialects are known to support the retrieval of the database's
+                            current timestamp. Others may also be unsafe for usage in locking due to lack of
+                            precision.
                         </para>
                     </callout>
                 </calloutlist>
@@ -1312,10 +1660,10 @@
             
             <para>
                 Note that <literal>&lt;timestamp&gt;</literal> is equivalent to
-                <literal>&lt;version type="timestamp"&gt;</literal>.
+                <literal>&lt;version type="datetime"&gt;</literal>, and <literal>&lt;timestamp source="db"&gt;</literal>
+                is equivalent to <literal>&lt;version type="dbtimestamp"&gt;</literal>.
             </para>
         </sect2>
-
 
         <sect2 id="mapping-declaration-property">
             <title>property</title>
@@ -1327,30 +1675,44 @@
             
             <programlistingco>
                 <areaspec>
-                    <area id="property1" coords="2 45"/>
-                    <area id="property2" coords="3 45"/>
-                    <area id="property3" coords="4 45"/>
+                    <area id="property1" coords="2 55"/>
+                    <area id="property2" coords="3 55"/>
+                    <area id="property3" coords="4 55"/>
                     <areaset id="property4-5" coords="">
-                        <area id="property4" coords='5 45'/>
-                        <area id="property5" coords='6 45'/>
+                        <area id="property4" coords='5 55'/>
+                        <area id="property5" coords='6 55'/>
                     </areaset>
-                    <area id="property6" coords="7 45"/>
-                    <area id="property7" coords="8 45"/>
-                    <area id="property8" coords="9 45"/>
-                    <area id="property9" coords="10 45" />
-                    <area id="property10" coords="11 45" />
+                    <area id="property6" coords="7 55"/>
+                    <area id="property7" coords="8 55"/>
+                    <area id="property8" coords="9 55"/>
+                    <area id="property9" coords="10 55" />
+                    <area id="property10" coords="11 55" />
+                    <area id="property11" coords="12 55" />
+                    <area id="property12" coords="13 55" />
+                    <area id="property13" coords="14 55" />
+                    <area id="property14" coords="15 55" />
+                    <area id="property15" coords="16 55" />
+                    <area id="property16" coords="17 55" />
+                    <area id="property17" coords="18 55" />
                 </areaspec>
                 <programlisting><![CDATA[<property
-        name="propertyName"
-        column="column_name"
-        type="typename"
-        update="true|false"
-        insert="true|false"
-        formula="arbitrary SQL expression"
-        access="field|property|ClassName"
-        optimistic-lock="true|false"
-        generated="never|insert|always"
-        lazy="true|false"
+    name="propertyName"
+    column="columnName"
+    type="typeName"
+    update="true|false"
+    insert="true|false"
+    formula="arbitrary SQL expression"
+    access="field|property|className"
+    optimistic-lock="true|false"
+    generated="never|insert|always"
+    lazy="true|false"
+    not-null="true|false"
+    unique="true|false"
+    unique-key="uniqueKeyName"
+    index="indexName"
+    length="L"
+    precision="P"
+    scale="S"
 />]]></programlisting>
                 <calloutlist>
                     <callout arearefs="property1">
@@ -1371,7 +1733,7 @@
                     </callout>
                     <callout arearefs="property4-5">
                         <para>
-                            <literal>update, insert</literal> (optional - defaults to <literal>true</literal>) :
+                            <literal>update, insert</literal> (optional - defaults to <literal>true</literal>):
                             specifies that the mapped columns should be included in SQL <literal>UPDATE</literal>
                             and/or <literal>INSERT</literal> statements. Setting both to <literal>false</literal>
                             allows a pure "derived" property whose value is initialized from some other
@@ -1387,39 +1749,89 @@
                     </callout>
                    <callout arearefs="property7">
                         <para>
-                            <literal>access</literal> (optional - defaults to <literal>property</literal>): The
+                            <literal>access</literal> (optional - defaults to <literal>property</literal>): the
                             strategy NHibernate should use for accessing the property value.
                         </para>
                     </callout>
                     <callout arearefs="property8">
                         <para>
                             <literal>optimistic-lock</literal> (optional - defaults to <literal>true</literal>):
-                            Specifies that updates to this property do or do not require acquisition of the
-                            optimistic lock. In other words, determines if a version increment should occur when 
+                            specifies that updates to this property do or do not require acquisition of the
+                            optimistic lock. In other words, determines if a version increment should occur when
                             this property is dirty.
                         </para>
                     </callout>
                     <callout arearefs="property9">
                         <para>
                             <literal>generated</literal> (optional - defaults to <literal>never</literal>):
-                            Specifies that this property value is actually generated by the database.
-                            See the discussion of <xref linkend="mapping-generated">generated properties</xref>.
+                            specifies that this property value is actually generated by the database.
+                            See the discussion of <link linkend="mapping-generated">generated properties</link>.
                         </para>
                     </callout>
                     <callout arearefs="property10">
                         <para>
                             <literal>lazy</literal> (optional - defaults to <literal>false</literal>):
-                            Specifies that this property is lazy. A lazy property is not loaded when
+                            specifies that this property is lazy. A lazy property is not loaded when
                             the object is initially loaded, unless the fetch mode has been overridden
                             in a specific query. Values for lazy properties are loaded when any lazy
-                            property of the object is accessed.
+                            property of the object is accessed. Having lazy properties causes instances
+                            of the entity to be loaded as proxies. Theses proxies ignore the class
+                            <literal>proxy</literal> setting and always derives from the persistent class,
+                            requiring its members to be overridable.
+                        </para>
+                    </callout>
+                   <callout arearefs="property11">
+                        <para>
+                            <literal>not-null</literal> (optional - defaults to <literal>false</literal>):
+                            sets the column nullability for DDL generation.
+                        </para>
+                    </callout>
+                   <callout arearefs="property12">
+                        <para>
+                            <literal>unique</literal> (optional - defaults to <literal>false</literal>):
+                            sets the column uniqueness for DDL generation. Use <literal>unique-key</literal>
+                            instead if the value is unique only in combination with other properties.
+                        </para>
+                    </callout>
+                   <callout arearefs="property13">
+                        <para>
+                            <literal>unique-key</literal> (optional):
+                            a logical name for an unique index for DDL generation. The column will be included in
+                            the index, along with other columns sharing the same <literal>unique-key</literal>
+                            logical name. The actual index name depends on the dialect.
+                        </para>
+                    </callout>
+                   <callout arearefs="property14">
+                        <para>
+                            <literal>index</literal> (optional):
+                            a logical name for an index for DDL generation. The column will be included in
+                            the index, along with other columns sharing the same <literal>index</literal> logical
+                            name. The actual index name depends on the dialect.
+                        </para>
+                    </callout>
+                   <callout arearefs="property15">
+                        <para>
+                            <literal>length</literal> (optional): if the type takes a length and does not
+                            already specify it, its length.
+                        </para>
+                    </callout>
+                   <callout arearefs="property16">
+                        <para>
+                            <literal>precision</literal> (optional): if the type takes a precision and does not
+                            already specify it, its precision.
+                        </para>
+                    </callout>
+                   <callout arearefs="property17">
+                        <para>
+                            <literal>scale</literal> (optional): if the type takes a scale and does not
+                            already specify it, its scale.
                         </para>
                     </callout>
                 </calloutlist>
             </programlistingco>
 
             <para>
-                <emphasis>typename</emphasis> could be:
+                <emphasis>typeName</emphasis> could be:
             </para>
 
             <orderedlist spacing="compact">
@@ -1473,7 +1885,7 @@
                 4 in that order. However, this is not always enough.
                 In certain cases you will still need the <literal>type</literal>
                 attribute. (For example, to distinguish between <literal>NHibernateUtil.DateTime</literal> and
-                <literal>NHibernateUtil.Timestamp</literal>, or to specify a custom type.)
+                <literal>NHibernateUtil.UtcDateTime</literal>, or to specify a custom type.)
             </para>
 
             <para>
@@ -1521,6 +1933,15 @@
                                 </entry>
                             </row>
                             <row>
+                                <entry><literal>backfield</literal></entry>
+                                <entry>
+                                    <para>
+                                        NHibernate will access the field of an auto-property directly.
+                                        This can be used when a property's setter is not accessible.
+                                    </para>
+                                </entry>
+                            </row>
+                            <row>
                                 <entry><literal>nosetter</literal></entry>
                                 <entry>
                                     <para>
@@ -1534,7 +1955,25 @@
                                 </entry>
                             </row>
                             <row>
-                                <entry><literal>ClassName</literal></entry>
+                                <entry><literal>readonly</literal></entry>
+                                <entry>
+                                    <para>
+                                        Access the mapped property through a Property <literal>get</literal> to get the value
+                                        and do nothing to set the value. This is useful to allow calculated properties in the
+                                        domain that will never be recovered from the DB but can be used for querying.
+                                    </para>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry><literal>noop</literal> / <literal>none</literal></entry>
+                                <entry>
+                                    <para>
+                                        Used to declare properties not represented at the poco level.
+                                    </para>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry><literal>className</literal></entry>
                                 <entry>
                                     <para>
                                         If NHibernate's built in access strategies are not what is needed for your situation
@@ -1643,6 +2082,29 @@
                 </table>
             </para>
 
+            <para>
+                A powerful feature is derived properties. These properties are by definition read-only. The property value is computed at
+                load time. You declare the computation as an SQL expression. This then translates to a <literal>SELECT</literal> clause
+                subquery in the SQL query that loads an instance:
+            </para>
+
+            <programlisting><![CDATA[<property name="totalPrice"
+    formula="( SELECT SUM (li.quantity*p.price) FROM LineItem li, Product p
+                WHERE li.productId = p.productId
+                AND li.customerId = customerId
+                AND li.orderNumber = orderNumber )"/>]]></programlisting>
+
+            <para>
+                You can reference the entity table by not declaring an alias on a particular column. This would be
+                <literal>customerId</literal> in the given example. You can also use the nested <literal>&lt;formula&gt;</literal> mapping
+                element if you do not want to use the attribute.
+            </para>
+
+            <para>
+                The nested <literal>&lt;column&gt;</literal> mapping element can also be used instead of the <literal>column</literal>
+                attribute.
+            </para>
+
         </sect2>
 
         <sect2 id="mapping-declaration-manytoone" revision="1">
@@ -1651,7 +2113,7 @@
             <para>
                 An ordinary association to another persistent class is declared using a
                 <literal>many-to-one</literal> element. The relational model is a
-                many-to-one association. (It's really just an object reference.)
+                many-to-one association. (It is really just an object reference.)
             </para>
 
             <programlistingco>
@@ -1661,29 +2123,45 @@
                     <area id="manytoone3" coords="4 60"/>
                     <area id="manytoone4" coords="5 60"/>
                     <area id="manytoone5" coords="6 60"/>
-                    <areaset id="manytoone6-7" coords="">
-                        <area id="manytoone6" coords='7 60'/>
+                    <area id="manytoone6" coords="7 60"/>
+                    <areaset id="manytoone7-8" coords="">
                         <area id="manytoone7" coords='8 60'/>
+                        <area id="manytoone8" coords='9 60'/>
                     </areaset>
-                    <area id="manytoone8" coords="9 60"/>
                     <area id="manytoone9" coords="10 60"/>
                     <area id="manytoone10" coords="11 60"/>
                     <area id="manytoone11" coords="12 60"/>
                     <area id="manytoone12" coords="13 60"/>
+                    <area id="manytoone13" coords="14 60"/>
+                    <area id="manytoone14" coords="15 60"/>
+                    <area id="manytoone15" coords="16 60"/>
+                    <area id="manytoone16" coords="17 60"/>
+                    <area id="manytoone17" coords="18 60"/>
+                    <area id="manytoone18" coords="19 60"/>
+                    <area id="manytoone19" coords="20 60"/>
+                    <area id="manytoone20" coords="21 60"/>
                 </areaspec>
                 <programlisting><![CDATA[<many-to-one
-        name="PropertyName"
-        column="column_name"
-        class="ClassName"
-        cascade="all|none|save-update|delete|delete-orphan|all-delete-orphan"
-        fetch="join|select"
-        update="true|false"
-        insert="true|false"
-        property-ref="PropertyNameFromAssociatedClass"
-        access="field|property|nosetter|ClassName"
-        unique="true|false"
-        optimistic-lock="true|false"
-        not-found="ignore|exception"
+    name="propertyName"
+    column="columnName"
+    class="className"
+    cascade="all|none|save-update|delete|delete-orphan|all-delete-orphan"
+    fetch="join|select"
+    lazy="proxy|no-proxy|false"
+    update="true|false"
+    insert="true|false"
+    property-ref="propertyNameFromAssociatedClass"
+    access="field|property|nosetter|className"
+    optimistic-lock="true|false"
+    not-found="ignore|exception"
+    entity-name="entityName"
+    formula="arbitrary SQL expression"
+    not-null="true|false"
+    unique="true|false"
+    unique-key="uniqueKeyName"
+    index="indexName"
+    foreign-key="foreignKeyName"
+    outer-join="auto|true|false"
 />]]></programlisting>
                 <calloutlist>
                     <callout arearefs="manytoone1">
@@ -1693,7 +2171,8 @@
                     </callout>
                     <callout arearefs="manytoone2">
                         <para>
-                            <literal>column</literal> (optional): The name of the column.
+                            <literal>column</literal> (optional): The name of the column. This can also be
+                            specified by nested <literal>&lt;column&gt;</literal> element(s).
                         </para>
                     </callout>
                     <callout arearefs="manytoone3">
@@ -1712,34 +2191,40 @@
                         <para>
                             <literal>fetch</literal> (optional - defaults to <literal>select</literal>):
                             Chooses between outer-join fetching or sequential select fetching.
+                            <literal>join</literal> takes precedence over the <literal>lazy</literal>
+                            attribute and causes the association to be eagerly fetched.
                         </para>
                     </callout>
-                    <callout arearefs="manytoone6-7">
+                    <callout arearefs="manytoone6">
                         <para>
-                            <literal>update, insert</literal> (optional - defaults to <literal>true</literal>) 
-                            specifies that the mapped columns should be included in SQL <literal>UPDATE</literal> 
+                            <literal>lazy</literal> (optional - defaults to <literal>proxy</literal>):
+                            By default, single point associations are proxied. <literal>lazy="no-proxy"</literal>
+                            specifies that the property should be fetched lazily when the instance property is first
+                            accessed. It works similarly to lazy properties, and causes the entity owning the
+                            association to be proxied instead of the association. <literal>lazy="false"</literal>
+                            specifies that the association will be eagerly fetched.
+                        </para>
+                    </callout>
+                    <callout arearefs="manytoone7-8">
+                        <para>
+                            <literal>update, insert</literal> (optional - defaults to <literal>true</literal>):
+                            Specifies that the mapped columns should be included in SQL <literal>UPDATE</literal>
                             and/or <literal>INSERT</literal> statements. Setting both to <literal>false</literal>
                             allows a pure "derived" association whose value is initialized from some other
                             property that maps to the same column(s) or by a trigger or other application.
                         </para>
                     </callout>
-                    <callout arearefs="manytoone8">
+                    <callout arearefs="manytoone9">
                         <para>
-                            <literal>property-ref</literal>: (optional) The name of a property of the associated
+                            <literal>property-ref</literal> (optional): The name of a property of the associated
                             class that is joined to this foreign key. If not specified, the primary key of
                             the associated class is used.
                         </para>
                     </callout>
-                   <callout arearefs="manytoone9">
+                   <callout arearefs="manytoone10">
                         <para>
                             <literal>access</literal> (optional - defaults to <literal>property</literal>): The
                             strategy NHibernate should use for accessing the property value.
-                        </para>
-                    </callout>
-                    <callout arearefs="manytoone10">
-                        <para>
-                            <literal>unique</literal> (optional): Enable the DDL generation of a unique
-                            constraint for the foreign-key column.
                         </para>
                     </callout>
                     <callout arearefs="manytoone11">
@@ -1753,65 +2238,117 @@
                     <callout arearefs="manytoone12">
                         <para>
                             <literal>not-found</literal> (optional - defaults to <literal>exception</literal>):
-                            Specifies how foreign keys that reference missing rows will be handled:
+                            Specifies how foreign keys that reference missing rows will be handled.
                             <literal>ignore</literal> will treat a missing row as a null association.
+                        </para>
+                    </callout>
+                    <callout arearefs="manytoone13">
+                        <para>
+                            <literal>entity-name</literal> (optional): The entity name of the associated class.
+                        </para>
+                    </callout>
+                    <callout arearefs="manytoone14">
+                        <para>
+                            <literal>formula</literal> (optional): An SQL expression that defines the value for
+                            a <emphasis>computed</emphasis> foreign key.
+                        </para>
+                    </callout>
+                    <callout arearefs="manytoone15">
+                        <para>
+                            <literal>not-null</literal> (optional - defaults to <literal>false</literal>): Enables
+                            the DDL generation of a nullability constraint for the foreign key column.
+                        </para>
+                    </callout>
+                    <callout arearefs="manytoone16">
+                        <para>
+                            <literal>unique</literal> (optional - defaults to <literal>false</literal>): Enables
+                            the DDL generation of an unique constraint for the foreign-key column.
+                        </para>
+                    </callout>
+                   <callout arearefs="manytoone17">
+                        <para>
+                            <literal>unique-key</literal> (optional):
+                            A logical name for an unique index for DDL generation. The column will be included in
+                            the index, along with other columns sharing the same <literal>unique-key</literal>
+                            logical name. The actual index name depends on the dialect.
+                        </para>
+                    </callout>
+                   <callout arearefs="manytoone18">
+                        <para>
+                            <literal>index</literal> (optional):
+                            A logical name for an index for DDL generation. The column will be included in
+                            the index, along with other columns sharing the same <literal>index</literal> logical
+                            name. The actual index name depends on the dialect.
+                        </para>
+                    </callout>
+                    <callout arearefs="manytoone19">
+                        <para>
+                            <literal>foreign-key</literal> (optional): Specifies the name of the foreign key
+                            constraint for DDL generation.
+                        </para>
+                    </callout>
+                    <callout arearefs="manytoone20">
+                        <para>
+                            <literal>outer-join</literal> (optional): This attribute is obsoleted in favor of
+                            <literal>fetch</literal>. <literal>auto</literal> is equivalent to not specifying
+                            <literal>fetch</literal>, <literal>true</literal> is equivalent to
+                            <literal>join</literal> and <literal>false</literal> is equivalent to
+                            <literal>select</literal>. This obsolete attribute also appears on other elements,
+                            with the same usage. It will be omitted from the documentation of these other
+                            elements.
                         </para>
                     </callout>
                 </calloutlist>
             </programlistingco>
 
             <para>
-                The <literal>cascade</literal> attribute permits the following values: 
-                <literal>all</literal>, <literal>save-update</literal>, <literal>delete</literal>,
-                <literal>delete-orphan</literal>, <literal>all-delete-orphan</literal> and
-                <literal>none</literal>. Setting a value other than <literal>none</literal>
-                will propagate certain operations to the associated (child) object.
-                See "Lifecycle Objects" below.
+                 Setting a value of the <literal>cascade</literal> attribute to any meaningful value other than
+                 <literal>none</literal> will propagate certain operations to the associated object. The
+                 meaningful values are divided into three categories. First, basic operations, which include:
+                 <literal>persist</literal>, <literal>merge</literal>, <literal>delete</literal>,
+                 <literal>save-update</literal>, <literal>evict</literal>, <literal>replicate</literal>,
+                 <literal>lock</literal> and <literal>refresh</literal>; second, special values:
+                 <literal>delete-orphan</literal>; and third, all comma-separated combinations of operation names:
+                 <literal>cascade="persist,merge,evict"</literal> or <literal>cascade="all,delete-orphan"</literal>.
+                 See <xref linkend="manipulatingdata-graphs"/>.
             </para>
 
             <para>
-                The <literal>fetch</literal> attribute accepts two different values:
-            </para>
-
-            <itemizedlist spacing="compact">
-                <listitem>
-                    <para>
-                        <literal>join</literal> Fetch the association using an outer join
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-                        <literal>select</literal> Fetch the association using a separate query
-                    </para>
-                </listitem>
-            </itemizedlist>
-
-            <para>
-                A typical <literal>many-to-one</literal> declaration looks as simple as
+                Here is an example of a typical many-to-one declaration:
             </para>
 
             <programlisting><![CDATA[<many-to-one name="product" class="Product" column="PRODUCT_ID"/>]]></programlisting>
-            
+
             <para>
-                The <literal>property-ref</literal> attribute should only be used for mapping legacy
-                data where a foreign key refers to a unique key of the associated table other than
-                the primary key. This is an ugly relational model. For example, suppose the 
-                <literal>Product</literal> class had a unique serial number, that is not the primary
-                key. (The <literal>unique</literal> attribute controls NHibernate's DDL generation with
-                the SchemaExport tool.)
+                The <literal>property-ref</literal> attribute should only be used for mapping legacy data where a
+                foreign key refers to a unique key of the associated table other than the primary key. This is a
+                complicated and confusing relational model. For example, if the Product class had a unique serial
+                number that is not the primary key, mapped as below:
             </para>
 
             <programlisting><![CDATA[<property name="serialNumber" unique="true" type="string" column="SERIAL_NUMBER"/>]]></programlisting>
 
             <para>
-                Then the mapping for <literal>OrderItem</literal> might use:
+                The unique attribute controls NHibernate's DDL generation with the SchemaExport tool. Then the
+                mapping for OrderItem might use:
             </para>
 
             <programlisting><![CDATA[<many-to-one name="product" property-ref="serialNumber" column="PRODUCT_SERIAL_NUMBER"/>]]></programlisting>
-            
+
             <para>
-                This is certainly not encouraged, however.
+                This is not encouraged, however.
             </para>
+
+            <para>
+                If the referenced unique key comprises multiple properties of the associated entity, you should map
+                the referenced properties inside a named <literal>&lt;properties&gt;</literal> element.
+            </para>
+
+            <para>
+                If the referenced unique key is the property of a component, you can specify a property path:
+            </para>
+
+            <programlisting><![CDATA[<many-to-one name="owner" property-ref="Identity.Ssn" column="OWNER_SSN"/>]]></programlisting>
 
         </sect2>
 
@@ -1832,15 +2369,23 @@
                     <area id="onetoone5" coords="6 60"/>
                     <area id="onetoone6" coords="7 60"/>
                     <area id="onetoone7" coords="8 60"/>
+                    <area id="onetoone8" coords="9 60"/>
+                    <area id="onetoone9" coords="10 60"/>
+                    <area id="onetoone10" coords="11 60"/>
+                    <area id="onetoone11" coords="12 60"/>
                 </areaspec>
                 <programlisting><![CDATA[<one-to-one
-        name="PropertyName"
-        class="ClassName"
-        cascade="all|none|save-update|delete|delete-orphan|all-delete-orphan"
-        constrained="true|false"
-        fetch="join|select"
-        property-ref="PropertyNameFromAssociatedClass"
-        access="field|property|nosetter|ClassName"
+    name="propertyName"
+    class="className"
+    cascade="all|none|save-update|delete|delete-orphan|all-delete-orphan"
+    constrained="true|false"
+    fetch="join|select"
+    lazy="proxy|no-proxy|false"
+    property-ref="propertyNameFromAssociatedClass"
+    access="field|property|nosetter|className"
+    formula="any SQL expression"
+    entity-name="entityName"
+    foreign-key="foreignKeyName"
 />]]></programlisting>
                 <calloutlist>
                     <callout arearefs="onetoone1">
@@ -1856,17 +2401,18 @@
                     </callout>
                     <callout arearefs="onetoone3">
                         <para>
-                            <literal>cascade</literal> (optional) specifies which operations should
+                            <literal>cascade</literal> (optional): Specifies which operations should
                             be cascaded from the parent object to the associated object.
                         </para>
                     </callout>
                     <callout arearefs="onetoone4">
                         <para>
-                            <literal>constrained</literal> (optional) specifies that a foreign key constraint
-                            on the primary key of the mapped table references the table of the associated
-                            class. This option affects the order in which <literal>Save()</literal> and
-                            <literal>Delete()</literal> are cascaded (and is also used by the schema export
-                            tool).
+                            <literal>constrained</literal> (optional - default to <literal>false</literal>):
+                            Specifies that a foreign key constraint on the primary key of the mapped table
+                            references the table of the associated class. This option affects the order in
+                            which <literal>Save()</literal> and <literal>Delete()</literal> are cascaded,
+                            and determines whether the association can be proxied. It is also used by the
+                            schema export tool.
                         </para>
                     </callout>
                     <callout arearefs="onetoone5">
@@ -1877,15 +2423,46 @@
                     </callout>
                     <callout arearefs="onetoone6">
                         <para>
-                            <literal>property-ref</literal>: (optional) The name of a property of the associated class
-                            that is joined to the primary key of this class. If not specified, the primary key of
-                            the associated class is used.
+                            <literal>lazy</literal> (optional - defaults to <literal>proxy</literal>):
+                            By default, single point associations are proxied. <literal>lazy="no-proxy"</literal>
+                            specifies that the property should be fetched lazily when the instance property is first
+                            accessed. It works similarly to lazy properties, and causes the entity owning the
+                            association to be proxied instead of the association. <literal>lazy="false"</literal>
+                            specifies that the association will be eagerly fetched. <emphasis>Note that if
+                            <literal>constrained="false"</literal>, proxying the association is impossible and
+                            NHibernate will eagerly fetch the association.</emphasis>
                         </para>
                     </callout>
                     <callout arearefs="onetoone7">
                         <para>
+                            <literal>property-ref</literal>: (optional): The name of a property of the associated class
+                            that is joined to the primary key of this class (or to the <literal>formula</literal> of
+                            this association). If not specified, the primary key of the associated class is used.
+                        </para>
+                    </callout>
+                    <callout arearefs="onetoone8">
+                        <para>
                             <literal>access</literal> (optional - defaults to <literal>property</literal>): The
                             strategy NHibernate should use for accessing the property value.
+                        </para>
+                    </callout>
+                    <callout arearefs="onetoone9">
+                        <para>
+                            <literal>formula</literal> (optional): Almost all one-to-one associations map to the primary
+                            key of the owning entity. If this is not the case, you can specify another column or expression
+                            to join on using an SQL formula. This can also be specified by nested
+                            <literal>&lt;formula&gt;</literal> element(s).
+                        </para>
+                    </callout>
+                    <callout arearefs="onetoone10">
+                        <para>
+                            <literal>entity-name</literal> (optional): The entity name of the associated class.
+                        </para>
+                    </callout>
+                    <callout arearefs="manytoone11">
+                        <para>
+                            <literal>foreign-key</literal> (optional): Specifies the name of the foreign key
+                            constraint for DDL generation.
                         </para>
                     </callout>
                 </calloutlist>
@@ -1962,9 +2539,9 @@
             <title>natural-id</title>
 
             <programlisting><![CDATA[<natural-id mutable="true|false"/>
-        <property ... />
-        <many-to-one ... />
-        ......
+    <property ... />
+    <many-to-one ... />
+    ...
 </natural-id>]]></programlisting>
 
             <para>
@@ -1975,16 +2552,21 @@
                 NHibernate will generate the necessary unique key and nullability constraints, and your
                 mapping will be more self-documenting.
             </para>
-            
+
+            <para>
+                The <literal>&lt;natural-id&gt;</literal> element can only appear before the other
+                properties, including version.
+            </para>
+
             <para>
                 We strongly recommend that you implement <literal>Equals()</literal> and
                 <literal>GetHashCode()</literal> to compare the natural key properties of the entity.
             </para>
-            
+
             <para>
                 This mapping is not intended for use with entities with natural primary keys.
             </para>
-            
+
             <itemizedlist spacing="compact">
                 <listitem>
                     <para>
@@ -1993,9 +2575,9 @@
                     </para>
                 </listitem>
             </itemizedlist>
-            
+
         </sect2>
-        
+
         <sect2 id="mapping-declaration-component">
             <title>component, dynamic-component</title>
 
@@ -2003,7 +2585,7 @@
                 The <literal>&lt;component&gt;</literal> element maps properties of a
                 child object to columns of the table of a parent class. Components may, in
                 turn, declare their own properties, components or collections. See
-                "Components" below.
+                <xref linkend="components"/>.
             </para>
 
             <programlistingco>
@@ -2014,18 +2596,22 @@
                     <area id="component4" coords="5 60"/>
                     <area id="component5" coords="6 60"/>
                     <area id="component6" coords="7 60"/>
+                    <area id="component7" coords="8 60"/>
+                    <area id="component8" coords="9 60"/>
                 </areaspec>
-                <programlisting><![CDATA[<component 
-        name="PropertyName" 
-        class="ClassName"
-        insert="true|false"
-        upate="true|false"
-        access="field|property|nosetter|ClassName"
-        optimistic-lock="true|false">
+                <programlisting><![CDATA[<component
+    name="propertyName"
+    class="className"
+    insert="true|false"
+    update="true|false"
+    access="field|property|nosetter|className"
+    optimistic-lock="true|false"
+    lazy="true|false"
+    unique="true|false">
 
-        <property ...../>
-        <many-to-one .... />
-        ........
+        <property ... />
+        <many-to-one ... />
+        ...
 </component>]]></programlisting>
                 <calloutlist>
                     <callout arearefs="component1">
@@ -2041,14 +2627,14 @@
                     </callout>
                     <callout arearefs="component3">
                         <para>
-                            <literal>insert</literal>: Do the mapped columns appear in SQL
-                            <literal>INSERT</literal>s?
+                            <literal>insert</literal> (optional - defaults to <literal>true</literal>):
+                            Do the mapped columns appear in SQL <literal>INSERT</literal>s?
                         </para>
                     </callout>
                     <callout arearefs="component4">
                         <para>
-                            <literal>update</literal>: Do the mapped columns appear in SQL
-                            <literal>UPDATE</literal>s?
+                            <literal>update</literal> (optional - defaults to <literal>true</literal>):
+                            Do the mapped columns appear in SQL <literal>UPDATE</literal>s?
                         </para>
                     </callout>
                     <callout arearefs="component5">
@@ -2063,6 +2649,20 @@
                             Specifies that updates to this component do or do not require acquisition of the
                             optimistic lock. In other words, determines if a version increment should occur when
                             this property is dirty.
+                        </para>
+                    </callout>
+                    <callout arearefs="component7">
+                        <para>
+                            <literal>lazy</literal> (optional - defaults to <literal>false</literal>): Specifies
+                            that this component should be fetched lazily when the instance property is first
+                            accessed. For more informations, see <literal>lazy</literal> on
+                            <link linkend="mapping-declaration-property"><literal>property</literal> element</link>.
+                        </para>
+                    </callout>
+                    <callout arearefs="component8">
+                        <para>
+                            <literal>unique</literal> (optional - defaults to <literal>false</literal>): Specifies
+                            that an unique constraint exists upon all mapped columns of the component.
                         </para>
                     </callout>
                 </calloutlist>
@@ -2081,7 +2681,8 @@
 
             <para>
                 The <literal>&lt;dynamic-component&gt;</literal> element allows an <literal>IDictionary</literal>
-                to be mapped as a component, where the property names refer to keys of the dictionary.
+                or <literal>IDictionary&lt;string, object&gt;</literal> to be mapped as a component, where the
+                property names refer to keys of the dictionary. See <xref linkend="components-dynamic" />.
             </para>
             
         </sect2>
@@ -2108,15 +2709,15 @@
             </areaspec>
 
             <programlisting><![CDATA[<properties
-      name="logicalName"
-      insert="true|false"
-      update="true|false"
-      optimistic-lock="true|false"
-      unique="true|false">
+    name="logicalName"
+    insert="true|false"
+    update="true|false"
+    optimistic-lock="true|false"
+    unique="true|false">
 
-      <property .../>
-      <many-to-one .../>
-      ........
+    <property .../>
+    <many-to-one .../>
+    ...
 </properties>]]></programlisting>
 
             <calloutlist>
@@ -2129,15 +2730,15 @@
 
               <callout arearefs="properties2">
                 <para>
-                  <literal>insert</literal>: do the mapped columns appear in
-                  SQL <literal>INSERTs</literal>?
+                  <literal>insert</literal> (optional - defaults to <literal>true</literal>):
+                  do the mapped columns appear in SQL <literal>INSERTs</literal>?
                 </para>
               </callout>
 
               <callout arearefs="properties3">
                 <para>
-                  <literal>update</literal>: do the mapped columns appear in
-                  SQL <literal>UPDATEs</literal>?
+                  <literal>update</literal> (optional - defaults to <literal>true</literal>):
+                  do the mapped columns appear in SQL <literal>UPDATEs</literal>?
                 </para>
               </callout>
 
@@ -2167,12 +2768,12 @@
           </para>
 
           <programlisting role="XML"><![CDATA[<class name="Person">
-      <id name="personNumber" />
-      <properties name="name" unique="true" update="false">
-          <property name="firstName" />
-          <property name="lastName" />
-          <property name="initial" />
-      </properties>
+    <id name="personNumber" />
+    <properties name="name" unique="true" update="false">
+        <property name="firstName" />
+        <property name="lastName" />
+        <property name="initial" />
+    </properties>
 </class>]]></programlisting>
 
           <para>
@@ -2182,9 +2783,9 @@
           </para>
 
           <programlisting role="XML"><![CDATA[<many-to-one name="owner" class="Person" property-ref="name">
-        <column name="firstName" />
-        <column name="lastName" />
-        <column name="initial" />
+    <column name="firstName" />
+    <column name="lastName" />
+    <column name="initial" />
 </many-to-one>]]></programlisting>
 
           <para>
@@ -2197,7 +2798,7 @@
             <title>subclass</title>
 
             <para>
-                Finally, polymorphic persistence requires the declaration of each subclass of
+                Polymorphic persistence requires the declaration of each subclass of
                 the root persistent class. For the (recommended) table-per-class-hierarchy
                 mapping strategy, the <literal>&lt;subclass&gt;</literal> declaration is used.
             </para>
@@ -2210,16 +2811,14 @@
                     <area id="subclass4" coords="5 55"/>
                 </areaspec>
                 <programlisting><![CDATA[<subclass
-        name="ClassName"
-        discriminator-value="discriminator_value"
-        proxy="ProxyInterface"
-        lazy="true|false"
-        dynamic-update="true|false"
-        dynamic-insert="true|false">
+    name="className"
+    discriminator-value="discriminatorValue"
+    extends="superclassName"
+    ...>
 
-        <property .... />
-        <properties .... />
-        .....
+    <property ... />
+    <properties ... />
+    ...
 </subclass>]]></programlisting>
                 <calloutlist>
                     <callout arearefs="subclass1">
@@ -2236,14 +2835,20 @@
                     </callout>
                     <callout arearefs="subclass3">
                         <para>
-                            <literal>proxy</literal> (optional): Specifies a class or interface to use for
-                            lazy initializing proxies.
+                            <literal>extends</literal> (optional if the <literal>&lt;subclass&gt;</literal>
+                            element is nested into its superclass mapping declaration): Specifies the name of
+                            a mapped class as the superclass for the subclass.
                         </para>
                     </callout>
                     <callout arearefs="subclass4">
                         <para>
-                            <literal>lazy</literal> (optional, defaults to <literal>true</literal>): Setting
-                            <literal>lazy="false"</literal> disables the use of lazy fetching.
+                            Many attributes available on the <literal>&lt;class&gt;</literal> mapping element
+                            are also available on <literal>&lt;subclass&gt;</literal> with the same usage:
+                            <literal>proxy</literal>, <literal>dynamic-update</literal>,
+                            <literal>dynamic-insert</literal>, <literal>select-before-update</literal>,
+                            <literal>persister</literal>, <literal>batch-size</literal>, <literal>lazy</literal>,
+                            <literal>entity-name</literal>, <literal>abstract</literal>. See
+                            <xref linkend="mapping-declaration-class"/>.
                         </para>
                     </callout>
                 </calloutlist>
@@ -2260,36 +2865,36 @@
             <para>
                 For information about inheritance mappings, see <xref linkend="inheritance"/>.
             </para>
-            
+
         </sect2>
 
-         <sect2 id="mapping-declaration-joinedsubclass" revision="1">
+        <sect2 id="mapping-declaration-joinedsubclass" revision="1">
             <title>joined-subclass</title>
 
             <para>
-                Alternatively, a subclass that is persisted to its own table (table-per-subclass
-                mapping strategy) is declared using a <literal>&lt;joined-subclass&gt;</literal>
-                element.
+                Each subclass can also be mapped to its own table. This is called the table-per-subclass
+                mapping strategy. An inherited state is retrieved by joining with the table of the
+                superclass. To do this you use the <literal>&lt;joined-subclass&gt;</literal> element.
             </para>
 
             <programlistingco>
                 <areaspec>
-                    <area id="joinedsubclass1" coords="2 45"/>
-                    <area id="joinedsubclass2" coords="3 45"/>
-                    <area id="joinedsubclass3" coords="4 45"/>
+                    <area id="joinedsubclass1" coords="2 55"/>
+                    <area id="joinedsubclass2" coords="3 55"/>
+                    <area id="joinedsubclass3" coords="4 55"/>
+                    <area id="joinedsubclass4" coords="5 55"/>
                 </areaspec>
                 <programlisting><![CDATA[<joined-subclass
-        name="ClassName"
-        proxy="ProxyInterface"
-        lazy="true|false"
-        dynamic-update="true|false"
-        dynamic-insert="true|false">
+    name="className"
+    table="tableName"
+    extends="superclassName"
+    ...>
 
-        <key .... >
+    <key ... />
 
-        <property .... />
-        <properties .... />
-        .....
+    <property ... />
+    <properties ... />
+    ...
 </joined-subclass>]]></programlisting>
                 <calloutlist>
                     <callout arearefs="joinedsubclass1">
@@ -2299,15 +2904,27 @@
                     </callout>
                     <callout arearefs="joinedsubclass2">
                         <para>
-                            <literal>proxy</literal> (optional): Specifies a class or interface to use
-                            for lazy initializing proxies.
+                            <literal>table</literal> (optional - defaults to the unqualified subclass name):
+                            The name of the subclass table.
                         </para>
                     </callout>
                     <callout arearefs="joinedsubclass3">
                         <para>
-                            <literal>lazy</literal> (optional): Setting <literal>lazy="true"</literal> is a shortcut
-                            equivalent to specifying the name of the class itself as the <literal>proxy</literal>
-                            interface.
+                            <literal>extends</literal> (optional if the <literal>&lt;joined-subclass&gt;</literal>
+                            element is nested into its superclass mapping declaration): Specifies the name of
+                            a mapped class as the superclass for the subclass.
+                        </para>
+                    </callout>
+                    <callout arearefs="joinedsubclass4">
+                        <para>
+                            Many attributes available on the <literal>&lt;class&gt;</literal> mapping element
+                            are also available on <literal>&lt;joined-subclass&gt;</literal> with the same usage:
+                            <literal>schema</literal>, <literal>catalog</literal>, <literal>proxy</literal>,
+                            <literal>subselect</literal>, <literal>dynamic-update</literal>,
+                            <literal>dynamic-insert</literal>, <literal>select-before-update</literal>,
+                            <literal>persister</literal>, <literal>batch-size</literal>, <literal>lazy</literal>,
+                            <literal>entity-name</literal>, <literal>abstract</literal>, <literal>check</literal>,
+                            <literal>schema-action</literal>. See <xref linkend="mapping-declaration-class"/>.
                         </para>
                     </callout>
                 </calloutlist>
@@ -2319,33 +2936,33 @@
                 <literal>&lt;key&gt;</literal> element. The mapping at the start of the chapter
                 would be re-written as:
             </para>
-            
-        <programlisting><![CDATA[<?xml version="1.0"?>
+
+            <programlisting><![CDATA[<?xml version="1.0"?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="Eg"
     namespace="Eg">
 
-        <class name="Cat" table="CATS">
-                <id name="Id" column="uid" type="Int64">
-                        <generator class="hilo"/>
-                </id>
-                <property name="BirthDate" type="Date"/>
-                <property name="Color" not-null="true"/>
-                <property name="Sex" not-null="true"/>
-                <property name="Weight"/>
-                <many-to-one name="Mate"/>
-                <set name="Kittens">
-                        <key column="MOTHER"/>
-                        <one-to-many class="Cat"/>
-                </set>
-                <joined-subclass name="DomesticCat" table="DOMESTIC_CATS">
-                    <key column="CAT"/>
-                        <property name="Name" type="String"/>
-                </joined-subclass>
-        </class>
+    <class name="Cat" table="CATS">
+        <id name="Id" column="uid" type="Int64">
+            <generator class="hilo"/>
+        </id>
+        <property name="BirthDate" type="Date"/>
+        <property name="Color" not-null="true"/>
+        <property name="Sex" not-null="true"/>
+        <property name="Weight"/>
+        <many-to-one name="Mate"/>
+        <set name="Kittens">
+            <key column="MOTHER"/>
+            <one-to-many class="Cat"/>
+        </set>
+        <joined-subclass name="DomesticCat" table="DOMESTIC_CATS">
+            <key column="CAT"/>
+            <property name="Name" type="String"/>
+        </joined-subclass>
+    </class>
 
-        <class name="Dog">
-                <!-- mapping for Dog could go here -->
-        </class>
+    <class name="Dog">
+        <!-- mapping for Dog could go here -->
+    </class>
 
 </hibernate-mapping>]]></programlisting>
 
@@ -2371,30 +2988,20 @@
 
             <programlistingco>
                 <areaspec>
-                    <area id="unionsubclass1" coords="2 45"/>
-                    <area id="unionsubclass2" coords="3 45"/>
-                    <area id="unionsubclass3" coords="4 45"/>
-                    <area id="unionsubclass4" coords="5 45"/>
+                    <area id="unionsubclass1" coords="2 55"/>
+                    <area id="unionsubclass2" coords="3 55"/>
+                    <area id="unionsubclass3" coords="4 55"/>
+                    <area id="unionsubclass4" coords="5 55"/>
                 </areaspec>
                 <programlisting><![CDATA[<union-subclass
-        name="ClassName"
-        table="tablename"
-        proxy="ProxyInterface"
-        lazy="true|false"
-        dynamic-update="true|false"
-        dynamic-insert="true|false"
-        schema="schema"
-        catalog="catalog"
-        extends="SuperclassName"
-        abstract="true|false"
-        persister="ClassName"
-        subselect="SQL expression"
-        entity-name="EntityName"
-        node="element-name">
+    name="className"
+    table="tableName"
+    extends="superclassName"
+    ...>
 
-        <property .... />
-        <properties .... />
-        .....
+    <property ... />
+    <properties ... />
+    ...
 </union-subclass>]]></programlisting>
                 <calloutlist>
                     <callout arearefs="unionsubclass1">
@@ -2404,19 +3011,27 @@
                     </callout>
                     <callout arearefs="unionsubclass2">
                         <para>
-                            <literal>table</literal>: The name of the subclass table.
+                            <literal>table</literal> (optional - defaults to the unqualified subclass name):
+                            The name of the subclass table.
                         </para>
                     </callout>
                     <callout arearefs="unionsubclass3">
                         <para>
-                            <literal>proxy</literal> (optional): Specifies a class or interface to use
-                            for lazy initializing proxies.
+                            <literal>extends</literal> (optional if the <literal>&lt;union-subclass&gt;</literal>
+                            element is nested into its superclass mapping declaration): Specifies the name of
+                            a mapped class as the superclass for the subclass.
                         </para>
                     </callout>
                     <callout arearefs="unionsubclass4">
                         <para>
-                            <literal>lazy</literal> (optional, defaults to <literal>true</literal>): Setting
-                            <literal>lazy="false"</literal> disables the use of lazy fetching.
+                            Many attributes available on the <literal>&lt;class&gt;</literal> mapping element
+                            are also available on <literal>&lt;union-subclass&gt;</literal> with the same usage:
+                            <literal>schema</literal>, <literal>catalog</literal>, <literal>proxy</literal>,
+                            <literal>subselect</literal>, <literal>dynamic-update</literal>,
+                            <literal>dynamic-insert</literal>, <literal>select-before-update</literal>,
+                            <literal>persister</literal>, <literal>batch-size</literal>, <literal>lazy</literal>,
+                            <literal>entity-name</literal>, <literal>abstract</literal>, <literal>check</literal>.
+                            See <xref linkend="mapping-declaration-class"/>.
                          </para>
                     </callout>
                 </calloutlist>
@@ -2447,18 +3062,22 @@
                     <area id="join3" coords="4 50"/>
                     <area id="join4" coords="5 50"/>
                     <area id="join5" coords="6 50"/>
+                    <area id="join6" coords="7 50"/>
+                    <area id="join7" coords="8 50"/>
                 </areaspec>
                 <programlisting><![CDATA[<join
-        table="tablename"
-        schema="owner"
-        fetch="join|select"
-        inverse="true|false"
-        optional="true|false">
+    table="tableName"
+    schema="owner"
+    catalog="catalog"
+    fetch="join|select"
+    inverse="true|false"
+    optional="true|false"
+    subselect="SQL expression">
 
-        <key ... />
+    <key ... />
 
-        <property ... />
-        ...
+    <property ... />
+    ...
 </join>]]></programlisting>
 
                 <calloutlist>
@@ -2469,12 +3088,17 @@
                     </callout>
                     <callout arearefs="join2">
                         <para>
-                            <literal>schema</literal> (optional): Override the schema name specified by
+                            <literal>schema</literal> (optional): Overrides the schema name specified by
                             the root <literal>&lt;hibernate-mapping&gt;</literal> element.
                         </para>
                     </callout>
-
                     <callout arearefs="join3">
+                        <para>
+                            <literal>catalog</literal> (optional): Overrides the catalog name specified by
+                            the root <literal>&lt;hibernate-mapping&gt;</literal> element.
+                        </para>
+                    </callout>
+                    <callout arearefs="join4">
                         <para>
                             <literal>fetch</literal> (optional - defaults to <literal>join</literal>):
                             If set to <literal>join</literal>, the default, NHibernate will use an inner join
@@ -2487,18 +3111,25 @@
                             superclasses.
                         </para>
                     </callout>
-                    <callout arearefs="join4">
+                    <callout arearefs="join5">
                         <para>
                             <literal>inverse</literal> (optional - defaults to <literal>false</literal>):
                             If enabled, NHibernate will not try to insert or update the properties defined
                             by this join.
                         </para>
                     </callout>
-                    <callout arearefs="join5">
+                    <callout arearefs="join6">
                         <para>
                             <literal>optional</literal> (optional - defaults to <literal>false</literal>):
                             If enabled, NHibernate will insert a row only if the properties defined by this
                             join are non-null and will always use an outer join to retrieve the properties.
+                        </para>
+                    </callout>
+                    <callout arearefs="join7">
+                        <para>
+                            <literal>subselect</literal> (optional): Maps an immutable and read-only join to
+                            a database sub-select. This is useful if you want to have a view instead of a
+                            table. See <xref linkend="mapping-declaration-subselect"/> for more information.
                         </para>
                     </callout>
                 </calloutlist>
@@ -2509,9 +3140,7 @@
                 table (while preserving value type semantics for all properties):
             </para>
 
-            <programlisting><![CDATA[<class name="Person"
-    table="PERSON">
-
+            <programlisting><![CDATA[<class name="Person" table="PERSON">
     <id name="id" column="PERSON_ID">...</id>
 
     <join table="ADDRESS">
@@ -2531,11 +3160,145 @@
 
         </sect2>
 
+        <sect2 id="mapping-declaration-key">
+            <title>key</title>
+
+            <para>
+                The <literal>&lt;key&gt;</literal> element has featured a few times within this guide. It appears
+                anywhere the parent mapping element defines a join to a new table that references the primary key
+                of the original table. It also defines the foreign key in the joined table:
+            </para>
+
+            <programlistingco>
+                <areaspec>
+                    <area id="key1" coords="2 50"/>
+                    <area id="key2" coords="3 50"/>
+                    <area id="key3" coords="4 50"/>
+                    <area id="key4" coords="5 50"/>
+                    <area id="key5" coords="6 50"/>
+                    <area id="key6" coords="7 50"/>
+                    <area id="key7" coords="8 50"/>
+                </areaspec>
+                <programlisting><![CDATA[<key
+        column="columnName"
+        on-delete="noaction|cascade"
+        property-ref="propertyName"
+        not-null="true|false"
+        update="true|false"
+        unique="true|false"
+        foreign-key="foreignKeyName"
+/>]]></programlisting>
+
+                <calloutlist>
+                    <callout arearefs="key1">
+                        <para>
+                            <literal>column</literal>: the name of the foreign key column. This can also be specified
+                            by nested <literal>&lt;column&gt;</literal> element(s).
+                        </para>
+                    </callout>
+                    <callout arearefs="key2">
+                        <para>
+                            <literal>on-delete</literal> (optional - defaults to <literal>noaction</literal>): specifies
+                            whether the foreign key constraint has database-level cascade delete enabled.
+                        </para>
+                    </callout>
+                    <callout arearefs="key3">
+                        <para>
+                            <literal>property-ref</literal> (optional): specifies that the foreign key refers to columns
+                            that are not the primary key of the original table. It is provided for legacy data.
+                        </para>
+                    </callout>
+                    <callout arearefs="key4">
+                        <para>
+                            <literal>not-null</literal> (optional): specifies that the foreign key columns are not nullable.
+                            This is implied whenever the foreign key is also part of the primary key.
+                        </para>
+                    </callout>
+                    <callout arearefs="key5">
+                        <para>
+                            <literal>update</literal> (optional): specifies that the foreign key should never be updated.
+                            This is implied whenever the foreign key is also part of the primary key.
+                        </para>
+                    </callout>
+                    <callout arearefs="key6">
+                        <para>
+                            <literal>unique</literal> (optional): specifies that the foreign key should have a unique
+                            constraint. This is implied whenever the foreign key is also the primary key.
+                        </para>
+                    </callout>
+                    <callout arearefs="key7">
+                        <para>
+                            <literal>foreign-key</literal> (optional): specifies the name of the foreign key
+                            constraint for DDL generation.
+                        </para>
+                    </callout>
+                </calloutlist>
+            </programlistingco>
+
+            <para>
+                For systems where delete performance is important, we recommend that all keys should be defined
+                <literal>on-delete="cascade"</literal>. NHibernate uses a database-level
+                <literal>ON CASCADE DELETE</literal> constraint, instead of many individual <literal>DELETE</literal>
+                statements. Be aware that this feature bypasses NHibernate's usual optimistic locking strategy for
+                versioned data.
+            </para>
+
+            <para>
+                The <literal>not-null</literal> and <literal>update</literal> attributes are useful when mapping an
+                unidirectional one-to-many association. If you map an unidirectional one-to-many association to a
+                non-nullable foreign key, you <emphasis>must</emphasis> declare the key column using
+                <literal>&lt;key not-null="true"&gt;</literal>.
+            </para>
+
+        </sect2>
+
+        <sect2 id="mapping-column">
+            <title>column and formula elements</title>
+
+            <para>
+                Mapping elements which accept a <literal>column</literal> attribute will alternatively accept a
+                <literal>&lt;column&gt;</literal> subelement. Likewise, <literal>&lt;formula&gt;</literal> is an
+                alternative to the <literal>formula</literal> attribute. For example:
+            </para>
+
+            <programlisting><![CDATA[<column
+        name="columnName"
+        length="N"
+        precision="N"
+        scale="N"
+        not-null="true|false"
+        unique="true|false"
+        unique-key="multicolumnUniqueKeyName"
+        index="indexName"
+        sql-type="sqlTypeName"
+        check="SQL expression"
+        default="SQL expression"/>]]></programlisting>
+
+            <programlisting><![CDATA[<formula>SQL expression</formula>]]></programlisting>
+
+            <para>
+                Most of the attributes on <literal>column</literal> provide a means of tailoring the DDL during
+                automatic schema generation. See <xref linkend="toolsetguide-s1-2" />.
+            </para>
+
+            <para>
+                The <literal>column</literal> and <literal>formula</literal> elements can even be combined within
+                the same property or association mapping to express, for example, exotic join conditions.
+            </para>
+
+            <programlisting><![CDATA[<many-to-one name="HomeAddress" class="Address"
+        insert="false" update="false">
+    <column name="person_id" not-null="true" length="10"/>
+    <formula>'MAILING'</formula>
+</many-to-one>]]></programlisting>
+
+        </sect2>
+
         <sect2 id="mapping-declaration-collections">
             <title>map, set, list, bag</title>
 
             <para>
-                Collections are discussed later.
+                Collections are discussed in <xref linkend="collections" />.
             </para>
         </sect2>
 
@@ -2548,17 +3311,17 @@
                 explicitly, rather than relying upon <literal>auto-import="true"</literal>. You may even import 
                 classes and interfaces that are not explicitly mapped.
             </para>
-            
+
             <programlisting><![CDATA[<import class="System.Object" rename="Universe"/>]]></programlisting>
-            
+
             <programlistingco>
                 <areaspec>
                     <area id="import1" coords="2 40"/>
                     <area id="import2" coords="3 40"/>
                 </areaspec>
                 <programlisting><![CDATA[<import
-        class="ClassName"
-        rename="ShortName"
+    class="className"
+    rename="shortName"
 />]]></programlisting>
                 <calloutlist>
                     <callout arearefs="import1">
@@ -2575,7 +3338,147 @@
                     </callout>
                 </calloutlist>
             </programlistingco>
-            
+
+        </sect2>
+
+        <sect2 id="mapping-types-anymapping">
+            <title>any</title>
+
+            <para>
+                There is one more type of property mapping. The <literal>&lt;any&gt;</literal> mapping element defines a
+                polymorphic association to classes from multiple tables. This type of mapping requires more than one
+                column. The first column contains the type of the associated entity. The remaining columns contain the
+                identifier. It is impossible to specify a foreign key constraint for this kind of association. This is
+                not the usual way of mapping polymorphic associations and you should use this only in special cases. For
+                example, for audit logs, user session data, etc.
+            </para>
+
+            <programlisting><![CDATA[<any name="AnyEntity" id-type="Int64" meta-type="Eg.Custom.Class2TablenameType">
+    <column name="table_name"/>
+    <column name="id"/>
+</any>]]></programlisting>
+
+            <para>
+                The <literal>meta-type</literal> attribute allows the application to specify a custom type that maps
+                database column values to persistent classes that have identifier properties of the type specified by
+                <literal>id-type</literal>. If the meta-type returns instances of <literal>System.Type</literal>,
+                nothing else is required. On the other hand, if it is a basic type like <literal>String</literal> or
+                <literal>Char</literal>, you must specify the mapping from values to classes.
+            </para>
+
+            <programlisting><![CDATA[<any name="being" id-type="long" meta-type="string">
+    <meta-value value="TBL_ANIMAL" class="Animal"/>
+    <meta-value value="TBL_HUMAN" class="Human"/>
+    <meta-value value="TBL_ALIEN" class="Alien"/>
+    <column name="table_name"/>
+    <column name="id"/>
+</any>]]></programlisting>
+
+            <programlistingco>
+                <areaspec>
+                    <area id="any1" coords="2 55"/>
+                    <area id="any2" coords="3 55"/>
+                    <area id="any3" coords="4 55"/>
+                    <area id="any4" coords="5 55"/>
+                    <area id="any5" coords="6 55"/>
+                    <area id="any6" coords="7 55"/>
+                    <area id="any7" coords="8 55"/>
+                    <area id="any8" coords="9 55"/>
+                    <area id="any9" coords="10 55"/>
+                    <area id="any10" coords="11 55"/>
+                </areaspec>
+                <programlisting><![CDATA[<any
+    name="propertyName"
+    id-type="idTypeName"
+    meta-type="metaTypeName"
+    cascade="cascadeStyle"
+    access="field|property|className"
+    optimistic-lock="true|false"
+    lazy="true|false"
+    update="true|false"
+    insert="true|false"
+    index="indexName">
+
+    <meta-value ... />
+    <meta-value ... />
+    ...
+    <column ... />
+    <column ... />
+    ...
+</any>]]></programlisting>
+                <calloutlist>
+                    <callout arearefs="any1">
+                        <para>
+                            <literal>name</literal>: the property name.
+                        </para>
+                    </callout>
+                    <callout arearefs="any2">
+                        <para>
+                            <literal>id-type</literal>: the identifier type.
+                        </para>
+                    </callout>
+                    <callout arearefs="any3">
+                        <para>
+                            <literal>meta-type</literal> (optional - defaults to <literal>Type</literal>): a type that
+                            maps <literal>System.Type</literal> to a single database column or, alternatively, a type
+                            that is allowed for a discriminator mapping.
+                        </para>
+                    </callout>
+                    <callout arearefs="any4">
+                        <para>
+                            <literal>cascade</literal> (optional - defaults to <literal>none</literal>): the cascade style.
+                        </para>
+                    </callout>
+                    <callout arearefs="any5">
+                        <para>
+                            <literal>access</literal> (optional - defaults to <literal>property</literal>): the strategy
+                            Hibernate uses for accessing the property value.
+                        </para>
+                    </callout>
+                    <callout arearefs="any6">
+                        <para>
+                            <literal>optimistic-lock</literal> (optional - defaults to <literal>true</literal>): specifies
+                            that updates to this property either do or do not require acquisition of the optimistic lock.
+                            It defines whether a version increment should occur if this property is dirty.
+                        </para>
+                    </callout>
+                    <callout arearefs="any7">
+                        <para>
+                            <literal>lazy</literal> (optional - defaults to <literal>false</literal>): specifies that this
+                            property should be fetched lazily when the it is first accessed. For more informations, see
+                            <literal>lazy</literal> on
+                            <link linkend="mapping-declaration-property"><literal>property</literal> element</link>.
+                        </para>
+                    </callout>
+                    <callout arearefs="any8">
+                        <para>
+                            <literal>update</literal> (optional - defaults to <literal>true</literal>):
+                            Do the mapped columns appear in SQL <literal>UPDATE</literal>s?
+                        </para>
+                    </callout>
+                    <callout arearefs="any9">
+                        <para>
+                            <literal>insert</literal> (optional - defaults to <literal>true</literal>):
+                            Do the mapped columns appear in SQL <literal>INSERT</literal>s?
+                        </para>
+                    </callout>
+                    <callout arearefs="any10">
+                        <para>
+                            <literal>index</literal> (optional):
+                            a logical name for an index for DDL generation. The column will be included in
+                            the index, along with other columns sharing the same <literal>index</literal> logical
+                            name. The actual index name depends on the dialect.
+                        </para>
+                    </callout>
+                </calloutlist>
+            </programlistingco>
+
+            <para>
+                Do not confuse <literal>&lt;meta-value&gt;</literal> elements with <literal>&lt;meta&gt;</literal>
+                elements. <literal>&lt;meta&gt;</literal> elements have no functionnal impact on
+                <literal>&lt;any&gt;</literal>, see <xref linkend="mapping-meta"/> for more information on them.
+            </para>
+
         </sect2>
     </sect1>
 
@@ -2622,6 +3525,18 @@
                 entities. We will continue to do that. Strictly speaking, however, not all
                 user-defined classes with persistent state are entities. A
                 <emphasis>component</emphasis> is a user defined class with value semantics.
+            </para>
+
+            <para>
+                The challenge is to map the .Net type system, and the developers' definition of
+                entities and value types, to the SQL/database type system. The bridge between both
+                systems is provided by NHibernate. For entities, <literal>&lt;class&gt;</literal>,
+                <literal>&lt;subclass&gt;</literal> and so on are used. For value types we use
+                <literal>&lt;property&gt;</literal>, <literal>&lt;component&gt;</literal>, etc.,
+                that usually have a type attribute. The value of this attribute is the name of a
+                NHibernate mapping type. NHibernate provides a range of mappings for standard .Net
+                value types out of the box. You can write your own mapping types and implement
+                your own custom conversion strategies.
             </para>
         </sect2>
 
@@ -3057,8 +3972,8 @@
 
             <programlisting><![CDATA[<property name="TwoStrings"
     type="NHibernate.DomainModel.DoubleStringType, NHibernate.DomainModel">
-  <column name="first_string"/>
-  <column name="second_string"/>
+    <column name="first_string"/>
+    <column name="second_string"/>
 </property>]]></programlisting>
 
             <para>
@@ -3122,107 +4037,40 @@
 
         </sect2>
 
-        <sect2 id="mapping-types-anymapping">
-            <title>Any type mappings</title>
+    </sect1>
 
-            <para>
-                There is one further type of property mapping. The <literal>&lt;any&gt;</literal> mapping element
-                defines a polymorphic association to classes from multiple tables. This type of mapping always
-                requires more than one column. The first column holds the type of the associated entity.
-                The remaining columns hold the identifier. It is impossible to specify a foreign key constraint
-                for this kind of association, so this is most certainly not meant as the usual way of mapping
-                (polymorphic) associations. You should use this only in very special cases (eg. audit logs,
-                user session data, etc).
-            </para>
+    <sect1 id="mapping-entityname">
+        <title>Mapping a class more than once</title>
+        <para>
+            It is possible to provide more than one mapping for a particular persistent class. In this case,
+            you must specify an <emphasis>entity name</emphasis> to disambiguate between instances of the two
+            mapped entities. By default, the entity name is the same as the class name. NHibernate lets you
+            specify the entity name when working with persistent objects, when writing queries, or when
+            mapping associations to the named entity. 
+        </para>
 
-            <programlisting><![CDATA[<any name="AnyEntity" id-type="Int64" meta-type="Eg.Custom.Class2TablenameType">
-    <column name="table_name"/>
-    <column name="id"/>
-</any>]]></programlisting>
+        <programlisting><![CDATA[<class name="Contract" table="Contracts"
+        entity-name="CurrentContract">
+    ...
+    <set name="History" inverse="true"
+            order-by="effectiveEndDate desc">
+        <key column="currentContractId"/>
+        <one-to-many entity-name="HistoricalContract"/>
+    </set>
+</class>
 
-            <para>
-                 The <literal>meta-type</literal> attribute lets the application specify a custom type that
-                 maps database column values to persistent classes which have identifier properties of the
-                 type specified by <literal>id-type</literal>. If the meta-type returns instances of
-                 <literal>System.Type</literal>, nothing else is required. On the other hand, if it is
-                 a basic type like <literal>String</literal> or <literal>Char</literal>, you must
-                 specify the mapping from values to classes.
-            </para>
+<class name="Contract" table="ContractHistory"
+        entity-name="HistoricalContract">
+    ...
+    <many-to-one name="CurrentContract"
+            column="currentContractId"
+            entity-name="CurrentContract"/>
+</class>]]></programlisting>
 
-            <programlisting><![CDATA[<any name="AnyEntity" id-type="Int64" meta-type="String">
-    <meta-value value="TBL_ANIMAL" class="Animal"/>
-    <meta-value value="TBL_HUMAN" class="Human"/>
-    <meta-value value="TBL_ALIEN" class="Alien"/>
-    <column name="table_name"/>
-    <column name="id"/>
-</any>]]></programlisting>
-
-            <programlistingco>
-                <areaspec>
-                    <area id="any1" coords="2 60"/>
-                    <area id="any2" coords="3 60"/>
-                    <area id="any3" coords="4 60"/>
-                    <area id="any4" coords="5 60"/>
-                    <area id="any5" coords="6 60"/>
-                    <area id="any6" coords="7 60"/>
-                </areaspec>
-                <programlisting><![CDATA[<any
-        name="PropertyName"
-        id-type="idtypename"
-        meta-type="metatypename"
-        cascade="none|all|save-update"
-        access="field|property|nosetter|ClassName"
-        optimistic-lock="true|false"
->
-        <meta-value ... />
-        <meta-value ... />
-        .....
-        <column .... />
-        <column .... />
-        .....
-</any>]]></programlisting>
-                <calloutlist>
-                    <callout arearefs="any1">
-                        <para>
-                            <literal>name</literal>: the property name.
-                        </para>
-                    </callout>
-                    <callout arearefs="any2">
-                        <para>
-                            <literal>id-type</literal>: the identifier type.
-                        </para>
-                    </callout>
-                    <callout arearefs="any3">
-                        <para>
-                            <literal>meta-type</literal> (optional - defaults to <literal>Type</literal>):
-                            a type that maps <literal>System.Type</literal> to a single database column
-                            or, alternatively, a type that is allowed for a discriminator mapping.
-                        </para>
-                    </callout>
-                    <callout arearefs="any4">
-                        <para>
-                            <literal>cascade</literal> (optional - defaults to <literal>none</literal>):
-                            the cascade style.
-                        </para>
-                    </callout>
-                    <callout arearefs="any5">
-                        <para>
-                            <literal>access</literal> (optional - defaults to <literal>property</literal>): The
-                            strategy NHibernate should use for accessing the property value.
-                        </para>
-                    </callout>
-                    <callout arearefs="any6">
-                        <para>
-                            <literal>optimistic-lock</literal> (optional - defaults to <literal>true</literal>):
-                            Specifies that updates to this property do or do not require acquisition of the
-                            optimistic lock. In other words, define if a version increment should occur if this
-                            property is dirty.
-                        </para>
-                    </callout>
-                </calloutlist>
-            </programlistingco>
-
-        </sect2>
+        <para>
+            Associations are now specified using <literal>entity-name</literal> instead of
+            <literal>class</literal>.
+        </para>
 
     </sect1>
 
@@ -3236,7 +4084,9 @@
         </para>
 
         <programlisting><![CDATA[<class name="LineItem" table="`Line Item`">
-    <id name="Id" column="`Item Id`"/><generator class="assigned"/></id>
+    <id name="Id" column="`Item Id`">
+        <generator class="assigned"/>
+    </id>
     <property name="ItemNumber" column="`Item #`"/>
     ...
 </class>]]></programlisting>
@@ -3255,15 +4105,16 @@
             mappings in separate mapping documents, directly beneath <literal>hibernate-mapping</literal>.
             This allows you to extend a class hierarchy just by adding a new mapping file. You must
             specify an <literal>extends</literal> attribute in the subclass mapping, naming a previously
-            mapped superclass. Use of this feature makes the ordering of the mapping documents important!
+            mapped superclass.
         </para>
 
         <programlisting><![CDATA[
 <hibernate-mapping>
-        <subclass name="Eg.Subclass.DomesticCat, Eg"
-            extends="Eg.Cat, Eg" discriminator-value="D">
-             <property name="name" type="string"/>
-        </subclass>
+    <subclass name="Eg.Subclass.DomesticCat, Eg"
+        extends="Eg.Cat, Eg" discriminator-value="D">
+
+        <property name="name" type="string"/>
+    </subclass>
 </hibernate-mapping>]]></programlisting>
 
     </sect1>
@@ -3281,9 +4132,9 @@
         </para>
         <para>
             Properties marked as generated must additionally be non-insertable and non-updatable.
-            Only <xref linkend="mapping-declaration-version">versions</xref>,
-            <xref linkend="mapping-declaration-timestamp">timestamps</xref>, and
-            <xref linkend="mapping-declaration-property">simple properties</xref> can be marked as
+            Only <link linkend="mapping-declaration-version">versions</link>,
+            <link linkend="mapping-declaration-timestamp">timestamps</link>, and
+            <link linkend="mapping-declaration-property">simple properties</link> can be marked as
             generated.
         </para>
         <para>
@@ -3294,9 +4145,9 @@
             <literal>insert</literal> - states that the given property value is generated on
             insert, but is not regenerated on subsequent updates.  Things like created-date would
             fall into this category.  Note that even though
-            <xref linkend="mapping-declaration-version">version</xref> and
-            <xref linkend="mapping-declaration-timestamp">timestamp</xref> properties can
-            be marked as generated, this option is not available there...
+            <link linkend="mapping-declaration-version">version</link> and
+            <link linkend="mapping-declaration-timestamp">timestamp</link> properties can
+            be marked as generated, this option is not available for them.
         </para>
         <para>
             <literal>always</literal> - states that the property value is generated both
@@ -3307,17 +4158,16 @@
     <sect1 id="mapping-database-object">
         <title>Auxiliary Database Objects</title>
         <para>
-            Allows CREATE and DROP of arbitrary database objects, in conjunction with
-            NHibernate's schema evolution tools, to provide the ability to fully define
-            a user schema within the NHibernate mapping files.  Although designed specifically
-            for creating and dropping things like triggers or stored procedures, really any
-            SQL command that can be run via a <literal>DbCommand.ExecuteNonQuery()</literal>
-            method is valid here (ALTERs, INSERTS, etc).  There are essentially two modes for
-            defining auxiliary database objects.
+            Auxiliary database objects allow CREATE and DROP of arbitrary database objects. In
+            conjunction with NHibernate's schema evolution tools, they have the ability to fully
+            define a user schema within the NHibernate mapping files. Although designed specifically
+            for creating and dropping things like triggers or stored procedures, any SQL command
+            that can be run via a <literal>DbCommand.ExecuteNonQuery()</literal> method is valid
+            (for example, ALTERs, INSERTS, etc.). There are essentially two modes for defining
+            auxiliary database objects:
         </para>
         <para>
-            The first mode is to explicitly list the CREATE and DROP commands out in the mapping
-            file:
+            The first mode is to explicitly list the CREATE and DROP commands in the mapping file:
         </para>
         <programlisting><![CDATA[<nhibernate-mapping>
     ...
@@ -3327,7 +4177,7 @@
     </database-object>
 </nhibernate-mapping>]]></programlisting>
         <para>
-            The second mode is to supply a custom class which knows how to construct the
+            The second mode is to supply a custom class that constructs the
             CREATE and DROP commands.  This custom class must implement the
             <literal>NHibernate.Mapping.IAuxiliaryDatabaseObject</literal> interface.
         </para>
@@ -3364,6 +4214,49 @@
         <dialect-scope name="NHibernate.Dialect.Oracle8iDialect"/>
     </database-object>
 </hibernate-mapping>]]></programlisting>
+    </sect1>
+
+    <sect1 id="mapping-meta">
+        <title>Meta data</title>
+
+        <para>
+            You may declare additional metadata in your mappings by using the <literal>meta</literal> element. This element
+            can be added to the main mapping elements.
+        </para>
+
+        <programlistingco>
+            <areaspec>
+                <area id="meta1" coords="2 55"/>
+                <area id="meta2" coords="3 55"/>
+                <area id="meta3" coords="4 55"/>
+            </areaspec>
+            <programlisting><![CDATA[<meta
+    attribute="metaName"
+    inherit="true|false"
+    >metaData</meta>]]></programlisting>
+            <calloutlist>
+                <callout arearefs="meta1">
+                    <para>
+                        <literal>attribute</literal>: The name of the metadata.
+                    </para>
+                </callout>
+                <callout arearefs="meta2">
+                    <para>
+                        <literal>inherit</literal> (optional - defaults to <literal>true</literal>):
+                        Whether the metadata is inherited by mapping sub-elements or not.
+                    </para>
+                </callout>
+                <callout arearefs="meta3">
+                    <para>
+                        The text content of the meta element is its data.
+                    </para>
+                </callout>
+            </calloutlist>
+        </programlistingco>
+
+        <para>
+            The metadata can be retrieved at runtime from the <xref linkend="manipulatingdata-metadata"/>.
+        </para>
     </sect1>
 
 </chapter>

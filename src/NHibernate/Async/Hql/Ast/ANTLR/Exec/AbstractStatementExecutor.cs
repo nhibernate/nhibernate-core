@@ -24,28 +24,15 @@ using NHibernate.SqlTypes;
 using NHibernate.Transaction;
 using NHibernate.Util;
 using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
-	using System.Threading.Tasks;
-	using System.Threading;
 	public abstract partial class AbstractStatementExecutor : IStatementExecutor
 	{
 
 		public abstract Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session, CancellationToken cancellationToken);
-
-		protected virtual async Task CoordinateSharedCacheCleanupAsync(ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			var action = new BulkOperationCleanupAction(session, AffectedQueryables);
-
-			await (action.InitAsync(cancellationToken)).ConfigureAwait(false);
-
-			if (session.IsEventSource)
-			{
-				((IEventSource)session).ActionQueue.AddAction(action);
-			}
-		}
 
 		protected virtual async Task CreateTemporaryTableIfNecessaryAsync(IQueryable persister, ISessionImplementor session, CancellationToken cancellationToken)
 		{

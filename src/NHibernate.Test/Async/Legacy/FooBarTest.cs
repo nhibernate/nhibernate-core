@@ -2058,8 +2058,8 @@ namespace NHibernate.Test.Legacy
 				.Add(Expression.EqProperty("Integer", "Integer"))
 				.Add(Expression.Like("String", f.String))
 				.Add(Expression.In("Boolean", new bool[] {f.Boolean, f.Boolean}))
-				.SetFetchMode("TheFoo", FetchMode.Eager)
-				.SetFetchMode("Baz", FetchMode.Lazy)
+				.Fetch("TheFoo")
+				.Fetch(SelectMode.Skip, "Baz")
 				.ListAsync());
 
 			Assert.IsTrue(list.Count == 1 && list[0] == f);
@@ -2119,11 +2119,11 @@ namespace NHibernate.Test.Legacy
 				.Add(Expression.Like("String", f.String))
 				.Add(Expression.In("Boolean", new bool[] {f.Boolean, f.Boolean}))
 				.Add(Expression.IsNotNull("TheFoo"))
-				.SetFetchMode("TheFoo", FetchMode.Eager)
-				.SetFetchMode("Baz", FetchMode.Lazy)
-				.SetFetchMode("Component.Glarch", FetchMode.Lazy)
-				.SetFetchMode("TheFoo.Baz", FetchMode.Lazy)
-				.SetFetchMode("TheFoo.Component.Glarch", FetchMode.Lazy)
+				.Fetch("TheFoo")
+				.Fetch(SelectMode.Skip, "Baz")
+				.Fetch(SelectMode.Skip, "Component.Glarch")
+				.Fetch(SelectMode.Skip, "TheFoo.Baz")
+				.Fetch(SelectMode.Skip, "TheFoo.Component.Glarch")
 				.ListAsync());
 
 			f = (Foo) list[0];
@@ -2644,8 +2644,6 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task PersistCollectionsAsync()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			ISession s = OpenSession();
 			ITransaction txn = s.BeginTransaction();
 			IEnumerator enumer = (await (s.CreateQuery("select count(*) from b in class Bar").EnumerableAsync())).GetEnumerator();
@@ -2843,7 +2841,20 @@ namespace NHibernate.Test.Legacy
 
 			// serialize and then deserialize the session.
 			Stream stream = new MemoryStream();
-			IFormatter formatter = new BinaryFormatter();
+#if NETFX
+			var formatter = new BinaryFormatter();
+#else
+			var selector = new SurrogateSelector();
+			selector.AddSurrogate(
+				typeof(CultureInfo),
+				new StreamingContext(StreamingContextStates.All),
+				new CultureInfoSerializationSurrogate());
+			selector.ChainSelector(new SerializationHelper.SurrogateSelector());
+			var formatter = new BinaryFormatter
+			{
+				SurrogateSelector = selector
+			};
+#endif
 			formatter.Serialize(stream, s);
 
 			s.Close();
@@ -4659,8 +4670,6 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task ProxyArrayAsync()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			ISession s = OpenSession();
 			GlarchProxy g = new Glarch();
 			Glarch g1 = new Glarch();
@@ -4697,7 +4706,12 @@ namespace NHibernate.Test.Legacy
 
 			// serialize the session.
 			Stream stream = new MemoryStream();
-			IFormatter formatter = new BinaryFormatter();
+			var formatter = new BinaryFormatter()
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			formatter.Serialize(stream, s);
 
 			// close the original session

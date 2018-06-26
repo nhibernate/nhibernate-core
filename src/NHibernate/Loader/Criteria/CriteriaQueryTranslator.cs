@@ -815,13 +815,13 @@ namespace NHibernate.Loader.Criteria
 
 		public Parameter CreateSkipParameter(int value)
 		{
-			var typedValue = new TypedValue(NHibernateUtil.Int32, value);
+			var typedValue = new TypedValue(NHibernateUtil.Int32, value, false);
 			return NewQueryParameter("skip_", typedValue).Single();
 		}
 		
 		public Parameter CreateTakeParameter(int value)
 		{
-			var typedValue = new TypedValue(NHibernateUtil.Int32, value);
+			var typedValue = new TypedValue(NHibernateUtil.Int32, value, false);
 			return NewQueryParameter("take_",typedValue).Single();
 		}
 

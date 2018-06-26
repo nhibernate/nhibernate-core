@@ -20,6 +20,21 @@ namespace NHibernate.Loader
 		private readonly JoinType joinType;
 		private readonly SqlString on;
 		private readonly IDictionary<string, IFilter> enabledFilters;
+		private readonly SelectMode _selectMode;
+
+		public OuterJoinableAssociation(
+			IAssociationType joinableType,
+			String lhsAlias,
+			String[] lhsColumns,
+			String rhsAlias,
+			JoinType joinType,
+			SqlString withClause,
+			ISessionFactoryImplementor factory,
+			IDictionary<string, IFilter> enabledFilters,
+			SelectMode selectMode) : this(joinableType, lhsAlias, lhsColumns, rhsAlias, joinType, withClause, factory, enabledFilters)
+		{
+			_selectMode = selectMode;
+		}
 
 		public OuterJoinableAssociation(IAssociationType joinableType, String lhsAlias, String[] lhsColumns, String rhsAlias,
 										JoinType joinType, SqlString withClause, ISessionFactoryImplementor factory,
@@ -87,6 +102,11 @@ namespace NHibernate.Loader
 		public IJoinable Joinable
 		{
 			get { return joinable; }
+		}
+
+		public SelectMode SelectMode
+		{
+			get { return _selectMode; }
 		}
 
 		public int GetOwner(IList<OuterJoinableAssociation> associations)
@@ -162,6 +182,28 @@ namespace NHibernate.Loader
 			outerjoin.AddJoin(joinable.TableName, rhsAlias, lhsColumns, rhsColumns, joinType, condition);
 			outerjoin.AddJoins(joinable.FromJoinFragment(rhsAlias, false, true),
 							   joinable.WhereJoinFragment(rhsAlias, false, true));
+		}
+
+		internal bool ShouldFetchCollectionPersister()
+		{
+			if (!Joinable.IsCollection)
+				return false;
+
+			switch (SelectMode)
+			{
+				case SelectMode.Undefined:
+					return JoinType == JoinType.LeftOuterJoin;
+
+				case SelectMode.Fetch:
+				case SelectMode.FetchLazyProperties:
+					return true;
+
+				case SelectMode.ChildFetch:
+				case SelectMode.JoinOnly:
+					return false;
+			}
+
+			throw new ArgumentOutOfRangeException(nameof(SelectMode), SelectMode.ToString());
 		}
 	}
 }

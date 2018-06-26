@@ -3,12 +3,15 @@
   <PropertyGroup>
     <VersionMajor Condition="'$(VersionMajor)' == ''">5</VersionMajor>
     <VersionMinor Condition="'$(VersionMinor)' == ''">1</VersionMinor>
-    <VersionPatch Condition="'$(VersionPatch)' == ''">2</VersionPatch>
+    <VersionPatch Condition="'$(VersionPatch)' == ''">3</VersionPatch>
     <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
 
     <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>
     <AssemblyVersion>$(VersionMajor).$(VersionMinor).0.0</AssemblyVersion>
     <FileVersion>$(VersionPrefix).0</FileVersion>
+
+    <NhAppTargetFrameworks>net461;netcoreapp2.0</NhAppTargetFrameworks>
+    <NhLibTargetFrameworks>net461;netcoreapp2.0;netstandard2.0</NhLibTargetFrameworks>
 
     <Product>NHibernate</Product>
     <Company>NHibernate.info</Company>

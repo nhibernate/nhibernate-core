@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1301
 				//dont know if proxy should be able to refresh
 				//so I eager/join load here just to show it doesn't work anyhow...
 				ClassA loaded = s.CreateCriteria(typeof(ClassA))
-												.SetFetchMode("BCollection", FetchMode.Join)
+												.Fetch("BCollection")
 												.List<ClassA>()[0];
 				Assert.AreEqual(1, a.BCollection.Count);
 				loaded.BCollection.RemoveAt(0);

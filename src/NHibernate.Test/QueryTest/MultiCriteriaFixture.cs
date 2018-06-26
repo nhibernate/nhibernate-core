@@ -520,5 +520,32 @@ namespace NHibernate.Test.QueryTest
 				}
 			}
 		}
+
+		//NH-2428 - Session.MultiCriteria and FlushMode.Auto inside transaction (GH865)
+		[Test]
+		public void MultiCriteriaAutoFlush()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.FlushMode = FlushMode.Auto;
+				var p1 = new Item
+				{
+					Name = "Person name",
+					Id = 15
+				};
+				s.Save(p1);
+				s.Flush();
+
+				s.Delete(p1);
+				var multi = s.CreateMultiCriteria();
+				multi.Add<int>(s.QueryOver<Item>().ToRowCountQuery());
+				var count = (int) ((IList) multi.List()[0])[0];
+				tx.Commit();
+
+				Assert.That(count, Is.EqualTo(0), "Session wasn't auto flushed.");
+
+			}
+		}
 	}
 }

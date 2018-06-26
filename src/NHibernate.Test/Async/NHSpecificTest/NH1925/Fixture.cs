@@ -81,9 +81,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1925
 		}
 
 		[Test]
-		public Task Query1Async()
+		public async Task Query1Async()
 		{
-			return FindJoesLatestInvoiceAsync(
+			await (FindJoesLatestInvoiceAsync(
 				@"
                     select invoice
                     from Invoice invoice
@@ -98,13 +98,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1925
                                 d2 = customer
                         )
                         and customer.Name = :name
-                ");
+                "));
 		}
 
 		[Test]
-		public Task Query2Async()
+		public async Task Query2Async()
 		{
-			return FindJoesLatestInvoiceAsync(
+			await (FindJoesLatestInvoiceAsync(
 				@"
                     select invoice
                     from Invoice invoice
@@ -112,7 +112,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1925
                     where
                         invoice.Number = (select max(invoice2.Number) from customer.Invoices invoice2)
                         and customer.Name = :name
-                ");
+                "));
 		}
 	}
 }

@@ -31,6 +31,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly int resultRowLength;
 		// caching NH-3486
 		private readonly string[] cachedProjectedColumnAliases;
+		private bool[] childFetchEntities;
 
 		public CriteriaLoader(IOuterJoinLoadable persister, ISessionFactoryImplementor factory, CriteriaImpl rootCriteria,
 							  string rootEntityName, IDictionary<string, IFilter> enabledFilters)
@@ -49,6 +50,7 @@ namespace NHibernate.Loader.Criteria
 			ResultTypes = walker.ResultTypes;
 			includeInResultRow = walker.IncludeInResultRow;
 			resultRowLength = ArrayHelper.CountTrue(IncludeInResultRow);
+			childFetchEntities = walker.ChildFetchEntities;
 			// fill caching objects only if there is a projection
 			if (translator.HasProjection)
 			{
@@ -83,6 +85,11 @@ namespace NHibernate.Loader.Criteria
 		protected override bool[] IncludeInResultRow
 		{
 			get { return includeInResultRow; }
+		}
+
+		protected override bool IsChildFetchEntity(int i)
+		{
+			return childFetchEntities?[i] == true;
 		}
 
 		public IList List(ISessionImplementor session)

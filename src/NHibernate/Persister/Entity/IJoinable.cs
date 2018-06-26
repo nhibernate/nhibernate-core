@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.SqlCommand;
 
@@ -35,9 +36,12 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		string TableName { get; }
 
+		//6.0 TODO: Replace by ISupportSelectModeJoinable.SelectFragment
 		/// <summary>
 		/// All columns to select, when loading.
 		/// </summary>
+		// Since v5.2
+		[Obsolete("Have ISupportSelectModeJoinable implemented and use ISupportSelectModeJoinable.SelectFragment instead")]
 		string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string currentEntitySuffix,
 							  string currentCollectionSuffix, bool includeCollectionColumns);
 

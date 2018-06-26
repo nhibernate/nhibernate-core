@@ -1,6 +1,6 @@
 language: csharp
 mono: latest
-dotnet: 2.1.2
+dotnet: 2.1.300
 sudo: required
 services:
   - mysql

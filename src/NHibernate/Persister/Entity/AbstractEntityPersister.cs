@@ -38,7 +38,9 @@ namespace NHibernate.Persister.Entity
 	/// <remarks>
 	/// May be considered an immutable view of the mapping object
 	/// </remarks>
-	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata, IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable
+	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
+		IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable,
+		ISupportSelectModeJoinable
 	{
 		#region InclusionChecker
 
@@ -1364,7 +1366,12 @@ namespace NHibernate.Persister.Entity
 
 		public string SelectFragment(string alias, string suffix)
 		{
-			return IdentifierSelectFragment(alias, suffix) + PropertySelectFragment(alias, suffix, false);
+			return SelectFragment(alias, suffix, false);
+		}
+
+		public string SelectFragment(string alias, string suffix, bool fetchLazyProperties)
+		{
+			return IdentifierSelectFragment(alias, suffix) + PropertySelectFragment(alias, suffix, fetchLazyProperties);
 		}
 
 		public string[] GetIdentifierAliases(string suffix)
@@ -3910,10 +3917,20 @@ namespace NHibernate.Persister.Entity
 			return StringHelper.Unqualify(GetType().FullName) + '(' + entityMetamodel.Name + ')';
 		}
 
+		// 6.0 TODO: Remove (to inline usages)
+		// Since v5.2
+		[Obsolete("Use overload taking includeLazyProperties parameter")]
 		public string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias,
 			string entitySuffix, string collectionSuffix, bool includeCollectionColumns)
 		{
-			return SelectFragment(lhsAlias, entitySuffix);
+			return SelectFragment(rhs, rhsAlias, lhsAlias, entitySuffix, collectionSuffix, includeCollectionColumns, false);
+		}
+
+		public string SelectFragment(
+			IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix,
+			bool includeCollectionColumns, bool includeLazyProperties)
+		{
+			return SelectFragment(lhsAlias, entitySuffix, includeLazyProperties);
 		}
 
 		public bool IsInstrumented

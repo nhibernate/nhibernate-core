@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -31,17 +32,21 @@ namespace NHibernate.Loader
 	/// Abstract superclass of object loading (and querying) strategies.
 	/// </summary>
 	/// <remarks>
-	/// <p>
+	/// <para>
 	/// This class implements useful common functionality that concrete loaders would delegate to.
 	/// It is not intended that this functionality would be directly accessed by client code (Hence,
 	/// all methods of this class are declared <c>protected</c> or <c>private</c>.) This class relies heavily upon the
-	/// <see cref="ILoadable" /> interface, which is the contract between this class and 
+	/// <see cref="ILoadable" /> interface, which is the contract between this class and
 	/// <see cref="IEntityPersister" />s that may be loaded by it.
-	/// </p>
-	/// <p>
-	/// The present implementation is able to load any number of columns of entities and at most 
+	/// </para>
+	/// <para>
+	/// The present implementation is able to load any number of columns of entities and at most
 	/// one collection role per query.
-	/// </p>
+	/// </para>
+	/// <para>
+	/// All this class members are thread safe. Entity and collection loaders are held in persisters shared among
+	/// sessions built from the same session factory. They must be thread safe.
+	/// </para>
 	/// </remarks>
 	/// <seealso cref="NHibernate.Persister.Entity.ILoadable"/>
 	public abstract partial class Loader
@@ -63,8 +68,8 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Caches subclass entity aliases for given persister index in <see cref="EntityPersisters"/>  and subclass entity name
 		/// </summary>
-		private readonly Dictionary<Tuple<int, string>, string[][]> _subclassEntityAliasesMap = new Dictionary<Tuple<int, string>, string[][]>();
-			
+		private readonly ConcurrentDictionary<Tuple<int, string>, string[][]> _subclassEntityAliasesMap = new ConcurrentDictionary<Tuple<int, string>, string[][]>();
+
 		protected Loader(ISessionFactoryImplementor factory)
 		{
 			_factory = factory;
@@ -362,7 +367,7 @@ namespace NHibernate.Loader
 			// this call is side-effecty
 			object[] row =
 				GetRow(resultSet, persisters, keys, queryParameters.OptionalObject, optionalObjectKey, lockModeArray,
-					   hydratedObjects, session);
+					   hydratedObjects, session, !returnProxies);
 
 			ReadCollectionElements(row, resultSet, session);
 
@@ -372,13 +377,23 @@ namespace NHibernate.Loader
 				for (int i = 0; i < entitySpan; i++)
 				{
 					object entity = row[i];
-					object proxy = session.PersistenceContext.ProxyFor(persisters[i], keys[i], entity);
-
-					if (entity != proxy)
+					var key = keys[i];
+					if (entity == null && key != null && IsChildFetchEntity(i))
 					{
-						// Force the proxy to resolve itself
-						((INHibernateProxy)proxy).HibernateLazyInitializer.SetImplementation(entity);
-						row[i] = proxy;
+						// The entity was missing in the session, fallback on internal load (which will just yield a
+						// proxy if the persister supports it).
+						row[i] = session.InternalLoad(key.EntityName, key.Identifier, false, false);
+					}
+					else
+					{
+						object proxy = session.PersistenceContext.ProxyFor(persisters[i], keys[i], entity);
+
+						if (entity != proxy)
+						{
+							// Force the proxy to resolve itself
+							((INHibernateProxy) proxy).HibernateLazyInitializer.SetImplementation(entity);
+							row[i] = proxy;
+						}
 					}
 				}
 			}
@@ -909,10 +924,9 @@ namespace NHibernate.Loader
 		/// </summary>
 		private object[] GetRow(DbDataReader rs, ILoadable[] persisters, EntityKey[] keys, object optionalObject,
 								EntityKey optionalObjectKey, LockMode[] lockModes, IList hydratedObjects,
-								ISessionImplementor session)
+								ISessionImplementor session, bool mustLoadMissingEntity)
 		{
 			int cols = persisters.Length;
-			IEntityAliases[] descriptors = EntityAliases;
 
 			if (Log.IsDebugEnabled())
 			{
@@ -940,6 +954,17 @@ namespace NHibernate.Loader
 					obj = session.GetEntityUsingInterceptor(key);
 					var alreadyLoaded = obj != null;
 					var persister = persisters[i];
+					if (IsChildFetchEntity(i))
+					{
+						if (!alreadyLoaded && mustLoadMissingEntity)
+						{
+							// Missing in session while its data has not been selected: fallback on immediate load
+							obj = session.ImmediateLoad(key.EntityName, key.Identifier);
+						}
+						rowResults[i] = obj;
+						continue;
+					}
+
 					if (alreadyLoaded)
 					{
 						//its already loaded so dont need to hydrate it
@@ -948,7 +973,7 @@ namespace NHibernate.Loader
 					else
 					{
 						obj =
-							InstanceNotYetLoaded(rs, i, persister, key, lockModes[i], descriptors[i].RowIdAlias, optionalObjectKey,
+							InstanceNotYetLoaded(rs, i, persister, key, lockModes[i], optionalObjectKey,
 												 optionalObject, hydratedObjects, session);
 					}
 					// #1226: Even if it is already loaded, if it can be loaded from an association with a property ref, make
@@ -1027,7 +1052,7 @@ namespace NHibernate.Loader
 		/// The entity instance is not in the session cache
 		/// </summary>
 		private object InstanceNotYetLoaded(DbDataReader dr, int i, ILoadable persister, EntityKey key, LockMode lockMode,
-											string rowIdAlias, EntityKey optionalObjectKey, object optionalObject,
+											EntityKey optionalObjectKey, object optionalObject,
 											IList hydratedObjects, ISessionImplementor session)
 		{
 			object obj;
@@ -1050,12 +1075,17 @@ namespace NHibernate.Loader
 			// (but don't yet initialize the object itself)
 			// note that we acquired LockMode.READ even if it was not requested
 			LockMode acquiredLockMode = lockMode == LockMode.None ? LockMode.Read : lockMode;
-			LoadFromResultSet(dr, i, obj, instanceClass, key, rowIdAlias, acquiredLockMode, persister, session);
+			LoadFromResultSet(dr, i, obj, instanceClass, key, acquiredLockMode, persister, session);
 
 			// materialize associations (and initialize the object) later
 			hydratedObjects.Add(obj);
 
 			return obj;
+		}
+
+		protected virtual bool IsChildFetchEntity(int i)
+		{
+			return false;
 		}
 
 		private bool IsEagerPropertyFetchEnabled(int i)
@@ -1070,7 +1100,7 @@ namespace NHibernate.Loader
 		/// and pass the hydrated state to the session.
 		/// </summary>
 		private void LoadFromResultSet(DbDataReader rs, int i, object obj, string instanceClass, EntityKey key,
-									   string rowIdAlias, LockMode lockMode, ILoadable rootPersister,
+									   LockMode lockMode, ILoadable rootPersister,
 									   ISessionImplementor session)
 		{
 			object id = key.Identifier;
@@ -1098,7 +1128,7 @@ namespace NHibernate.Loader
 
 			object[] values = persister.Hydrate(rs, id, obj, rootPersister, cols, eagerPropertyFetch, session);
 
-			object rowId = persister.HasRowId ? rs[rowIdAlias] : null;
+			object rowId = persister.HasRowId ? rs[EntityAliases[i].RowIdAlias] : null;
 
 			TwoPhaseLoad.PostHydrate(persister, id, values, rowId, obj, lockMode, !eagerPropertyFetch, session);
 		}
@@ -1106,14 +1136,9 @@ namespace NHibernate.Loader
 		private string[][] GetSubclassEntityAliases(int i, ILoadable persister)
 		{
 			var cacheKey = System.Tuple.Create(i, persister.EntityName);
-			if (_subclassEntityAliasesMap.TryGetValue(cacheKey, out string[][] cols))
-			{
-				return cols;
-			}
-
-			cols = EntityAliases[i].GetSuffixedPropertyAliases(persister);
-			_subclassEntityAliasesMap[cacheKey] = cols;
-			return cols;
+			return _subclassEntityAliasesMap.GetOrAdd(
+				cacheKey,
+				k => EntityAliases[i].GetSuffixedPropertyAliases(persister));
 		}
 
 		/// <summary>
@@ -1615,13 +1640,18 @@ namespace NHibernate.Loader
 		/// <returns></returns>
 		protected IList List(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces)
 		{
-			bool cacheable = _factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
+			var cacheable = IsCacheable(queryParameters);
 
 			if (cacheable)
 			{
 				return ListUsingQueryCache(session, queryParameters, querySpaces);
 			}
 			return ListIgnoreQueryCache(session, queryParameters);
+		}
+
+		internal bool IsCacheable(QueryParameters queryParameters)
+		{
+			return _factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
 		}
 
 		private IList ListIgnoreQueryCache(ISessionImplementor session, QueryParameters queryParameters)
@@ -1643,23 +1673,28 @@ namespace NHibernate.Loader
 				PutResultInQueryCache(session, queryParameters, queryCache, key, result);
 			}
 
-			IResultTransformer resolvedTransformer = ResolveResultTransformer(queryParameters.ResultTransformer);
-			if (resolvedTransformer != null)
-			{
-				result = (AreResultSetRowsTransformedImmediately()
-							  ? key.ResultTransformer.RetransformResults(
-								  result,
-								  ResultRowAliases,
-								  queryParameters.ResultTransformer,
-								  IncludeInResultRow)
-							  : key.ResultTransformer.UntransformToTuples(result)
-						 );
-			}
+			result = TransformCacheableResults(queryParameters, key.ResultTransformer, result);
 
 			return GetResultList(result, queryParameters.ResultTransformer);
 		}
 
-		private QueryKey GenerateQueryKey(ISessionImplementor session, QueryParameters queryParameters)
+		internal IList TransformCacheableResults(QueryParameters queryParameters, CacheableResultTransformer transformer, IList result)
+		{
+			var resolvedTransformer = ResolveResultTransformer(queryParameters.ResultTransformer);
+			if (resolvedTransformer == null)
+				return result;
+
+			return (AreResultSetRowsTransformedImmediately()
+					? transformer.RetransformResults(
+						result,
+						ResultRowAliases,
+						queryParameters.ResultTransformer,
+						IncludeInResultRow)
+					: transformer.UntransformToTuples(result)
+				);
+		}
+
+		internal QueryKey GenerateQueryKey(ISessionImplementor session, QueryParameters queryParameters)
 		{
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters);
 			return new QueryKey(Factory, SqlString, queryParameters, filterKeys,
@@ -1673,7 +1708,7 @@ namespace NHibernate.Loader
 				queryParameters.HasAutoDiscoverScalarTypes, SqlString);
 		}
 
-		private IList GetResultFromQueryCache(ISessionImplementor session, QueryParameters queryParameters,
+		internal IList GetResultFromQueryCache(ISessionImplementor session, QueryParameters queryParameters,
 											  ISet<string> querySpaces, IQueryCache queryCache,
 											  QueryKey key)
 		{
@@ -1717,7 +1752,7 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		private void PutResultInQueryCache(ISessionImplementor session, QueryParameters queryParameters,
+		internal void PutResultInQueryCache(ISessionImplementor session, QueryParameters queryParameters,
 										   IQueryCache queryCache, QueryKey key, IList result)
 		{
 			if (session.CacheMode.HasFlag(CacheMode.Put))

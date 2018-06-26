@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using NHibernate.Criterion;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
+using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -63,8 +64,7 @@ namespace NHibernate
 
 		private static T CastOrThrow<T>(object obj) where T : class
 		{
-			return obj as T
-					?? throw new ArgumentException($"{obj.GetType().FullName} requires to implement {typeof(T).FullName} interface to support explicit entity joins.");
+			return ReflectHelper.CastOrThrow<T>(obj, "explicit entity joins");
 		}
 	}
 }

@@ -10,16 +10,29 @@ using NHibernate.Impl;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Threading.Tasks;
+using NHibernate.Multi;
 
 namespace NHibernate.Linq
 {
 	public partial interface INhQueryProvider : IQueryProvider
 	{
+		//Since 5.2
+		[Obsolete("Replaced by ISupportFutureBatchNhQueryProvider interface")]
 		IFutureEnumerable<TResult> ExecuteFuture<TResult>(Expression expression);
+
+		//Since 5.2
+		[Obsolete("Replaced by ISupportFutureBatchNhQueryProvider interface")]
 		IFutureValue<TResult> ExecuteFutureValue<TResult>(Expression expression);
 		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);
 		int ExecuteDml<T>(QueryMode queryMode, Expression expression);
 		Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken);
+	}
+
+	// 6.0 TODO: merge into INhQueryProvider.
+	public interface ISupportFutureBatchNhQueryProvider
+	{
+		IQuery GetPreparedQuery(Expression expression, out NhLinqExpression nhExpression);
+		ISessionImplementor Session { get; }
 	}
 
 	/// <summary>
@@ -35,7 +48,7 @@ namespace NHibernate.Linq
 		IQueryProvider WithOptions(Action<NhQueryableOptions> setOptions);
 	}
 
-	public partial class DefaultQueryProvider : INhQueryProvider, IQueryProviderWithOptions
+	public partial class DefaultQueryProvider : INhQueryProvider, IQueryProviderWithOptions, ISupportFutureBatchNhQueryProvider
 	{
 		private static readonly MethodInfo CreateQueryMethodDefinition = ReflectHelper.GetMethodDefinition((INhQueryProvider p) => p.CreateQuery<object>(null));
 
@@ -65,7 +78,7 @@ namespace NHibernate.Linq
 
 		public object Collection { get; }
 
-		protected virtual ISessionImplementor Session
+		public virtual ISessionImplementor Session
 		{
 			get
 			{
@@ -110,26 +123,30 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(this, expression);
 		}
 
+		//Since 5.2
+		[Obsolete("Replaced by ISupportFutureBatchNhQueryProvider interface")]
 		public virtual IFutureEnumerable<TResult> ExecuteFuture<TResult>(Expression expression)
 		{
 			var nhExpression = PrepareQuery(expression, out var query);
 
 			var result = query.Future<TResult>();
-			SetupFutureResult(nhExpression, (IDelayedValue)result);
+			if (result is IDelayedValue delayedValue)
+				SetupFutureResult(nhExpression, delayedValue);
 
 			return result;
 		}
 
+		//Since 5.2
+		[Obsolete("Replaced by ISupportFutureBatchNhQueryProvider interface")]
 		public virtual IFutureValue<TResult> ExecuteFutureValue<TResult>(Expression expression)
 		{
 			var nhExpression = PrepareQuery(expression, out var query);
-
-			var result = query.FutureValue<TResult>();
-			SetupFutureResult(nhExpression, (IDelayedValue)result);
-
-			return result;
+			var linqBatchItem = new LinqBatchItem<TResult>(query, nhExpression);
+			return Session.GetFutureBatch().AddAsFutureValue(linqBatchItem);
 		}
 
+		//Since 5.2
+		[Obsolete]
 		private static void SetupFutureResult(NhLinqExpression nhExpression, IDelayedValue result)
 		{
 			if (nhExpression.ExpressionToHqlTranslationResults.PostExecuteTransformer == null)
@@ -272,6 +289,12 @@ namespace NHibernate.Linq
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
 			_options?.Apply(query);
 			return query.ExecuteUpdate();
+		}
+
+		public IQuery GetPreparedQuery(Expression expression, out NhLinqExpression nhExpression)
+		{
+			nhExpression = PrepareQuery(expression, out var query);
+			return query;
 		}
 	}
 }

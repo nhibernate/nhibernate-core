@@ -1,3 +1,6 @@
+using System;
+using NHibernate.Mapping.ByCode.Impl;
+
 namespace NHibernate.Mapping.ByCode
 {
 	public interface IManyToOneMapper : IEntityPropertyMapper, IColumnsMapper
@@ -10,7 +13,6 @@ namespace NHibernate.Mapping.ByCode
 		/// Useful when the property is an interface and you need the mapping to a concrete class mapped as entity.
 		/// </remarks>
 		void Class(System.Type entityType);
-
 		void Cascade(Cascade cascadeStyle);
 		void NotNullable(bool notnull);
 		void Unique(bool unique);
@@ -24,5 +26,29 @@ namespace NHibernate.Mapping.ByCode
 		void ForeignKey(string foreignKeyName);
 		void PropertyRef(string propertyReferencedName);
 		void NotFound(NotFoundMode mode);
+		//6.0 TODO: Uncomment
+		//void EntityName(string entityName);
+	}
+
+	//6.0 TODO: Remove
+	public static class ManyToOneMapperExtensions
+	{
+		public static void EntityName(this IManyToOneMapper mapper, string entityName)
+		{
+			switch (mapper)
+			{
+				case KeyManyToOneMapper m:
+					m.EntityName(entityName);
+					break;
+				case ManyToOneMapper m:
+					m.EntityName(entityName);
+					break;
+				default:
+					throw new ArgumentException(
+						"Only mappers of type 'KeyManyToOneMapper' and 'ManyToOneMapper' are supported, got " +
+						mapper.GetType().FullName,
+						nameof(mapper));
+			}
+		}
 	}
 }

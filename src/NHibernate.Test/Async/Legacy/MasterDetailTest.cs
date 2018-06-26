@@ -18,6 +18,7 @@ using NHibernate.DomainModel;
 using NHibernate.Engine;
 using NHibernate.Criterion;
 using NHibernate.Mapping;
+using NHibernate.Util;
 using NUnit.Framework;
 using Single=NHibernate.DomainModel.Single;
 
@@ -643,8 +644,6 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task SerializationAsync()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			ISession s = OpenSession();
 			Master m = new Master();
 			Detail d1 = new Detail();
@@ -665,7 +664,12 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Disconnect();
 			MemoryStream stream = new MemoryStream();
-			BinaryFormatter f = new BinaryFormatter();
+			var f = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			f.Serialize(stream, s);
 			s.Close();
 			stream.Position = 0;

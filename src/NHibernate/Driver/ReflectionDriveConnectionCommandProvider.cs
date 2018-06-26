@@ -27,12 +27,12 @@ namespace NHibernate.Driver
 
 		public DbConnection CreateConnection()
 		{
-			return (DbConnection) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(connectionType);
+			return (DbConnection) Environment.ObjectsFactory.CreateInstance(connectionType);
 		}
 
 		public DbCommand CreateCommand()
 		{
-			return (DbCommand) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(commandType);
+			return (DbCommand) Environment.ObjectsFactory.CreateInstance(commandType);
 		}
 
 		#endregion

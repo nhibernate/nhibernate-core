@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -120,14 +121,16 @@ namespace NHibernate.Type
 			return FromBytes(ToBytes(value));
 		}
 
-		private byte[] ToBytes(object obj)
+		private static byte[] ToBytes(object obj)
 		{
 			try
 			{
-				BinaryFormatter bf = new BinaryFormatter();
-				MemoryStream stream = new MemoryStream();
-				bf.Serialize(stream, obj);
-				return stream.ToArray();
+				var formatter = new BinaryFormatter();
+				using (var ms = new MemoryStream())
+				{
+					formatter.Serialize(ms, obj);
+					return ms.ToArray();
+				}
 			}
 			catch (Exception e)
 			{
@@ -144,8 +147,11 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				BinaryFormatter bf = new BinaryFormatter();
-				return bf.Deserialize(new MemoryStream(bytes));
+				var formatter = new BinaryFormatter();
+				using (var ms = new MemoryStream(bytes))
+				{
+					return formatter.Deserialize(ms);
+				}
 			}
 			catch (Exception e)
 			{

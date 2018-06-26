@@ -19,7 +19,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			                                             		c.Alias = "HighLow";
 			                                             		c.Properties = new {max_lo = 99};
 			                                             	});
-			var mappings = configure.CreateMappings(Dialect.Dialect.GetDialect(configure.Properties));
+			var mappings = configure.CreateMappings();
 			var typeDef = mappings.GetTypeDef("HighLow");
 			Assert.That(typeDef, Is.Not.Null);
 			Assert.That(typeDef.Parameters["max_lo"], Is.EqualTo("99"));

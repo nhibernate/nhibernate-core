@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
 using NHibernate.Criterion;
 using NHibernate.Engine;
+using NHibernate.Multi;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Util;
@@ -15,12 +15,12 @@ namespace NHibernate.Impl
 	/// Implementation of the <see cref="ICriteria"/> interface
 	/// </summary>
 	[Serializable]
-	public partial class CriteriaImpl : ICriteria, ISupportEntityJoinCriteria
+	public partial class CriteriaImpl : ICriteria, ISupportEntityJoinCriteria, ISupportSelectModeCriteria
 	{
 		private readonly System.Type persistentClass;
 		private readonly List<CriterionEntry> criteria = new List<CriterionEntry>();
 		private readonly List<OrderEntry> orderEntries = new List<OrderEntry>(10);
-		private readonly Dictionary<string, FetchMode> fetchModes = new Dictionary<string, FetchMode>();
+		private readonly Dictionary<string, SelectMode> selectModes = new Dictionary<string, SelectMode>();
 		private readonly Dictionary<string, LockMode> lockModes = new Dictionary<string, LockMode>();
 		private int maxResults = RowSelection.NoValue;
 		private int firstResult;
@@ -143,12 +143,26 @@ namespace NHibernate.Impl
 			}
 		}
 
+		//Since 5.2
+		[Obsolete("Use GetSelectMode instead")]
 		public FetchMode GetFetchMode(string path)
 		{
-			FetchMode result;
-			if (!fetchModes.TryGetValue(path, out result))
+			switch (GetSelectMode(path))
 			{
-				result = FetchMode.Default;
+				case SelectMode.Undefined:
+					return FetchMode.Default;
+				case SelectMode.Skip:
+					return FetchMode.Lazy;
+				default:
+					return FetchMode.Join;
+			}
+		}
+		
+		public SelectMode GetSelectMode(string path)
+		{
+			if (!selectModes.TryGetValue(path, out var result))
+			{
+				result = SelectMode.Undefined;
 			}
 			return result;
 		}
@@ -341,16 +355,51 @@ namespace NHibernate.Impl
 			return builder.ToString();
 		}
 
+		public ICriteria Fetch(SelectMode selectMode, string associationPath, string alias)
+		{
+			if (!string.IsNullOrEmpty(alias))
+			{
+				var criteriaByAlias = GetCriteriaByAlias(alias);
+				criteriaByAlias.Fetch(selectMode, associationPath, null);
+				return this;
+			}
+
+			selectModes[associationPath] = selectMode;
+			return this;
+		}
+
 		public ICriteria AddOrder(Order ordering)
 		{
 			orderEntries.Add(new OrderEntry(ordering, this));
 			return this;
 		}
 
+		//Since 5.2
+		[Obsolete("Use Fetch instead")]
 		public ICriteria SetFetchMode(string associationPath, FetchMode mode)
 		{
-			fetchModes[associationPath] = mode;
+			Fetch(GetSelectMode(mode), associationPath, null);
 			return this;
+		}
+
+		//Since 5.2
+		[Obsolete]
+		private SelectMode GetSelectMode(FetchMode mode)
+		{
+			switch (mode)
+			{
+				case FetchMode.Default:
+					return SelectMode.Undefined;
+
+				case FetchMode.Select:
+					return SelectMode.Skip;
+
+				case FetchMode.Join:
+					return SelectMode.Fetch;
+
+				default:
+					throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
+			}
 		}
 
 		public ICriteria CreateAlias(string associationPath, string alias)
@@ -409,14 +458,12 @@ namespace NHibernate.Impl
 
 		public IFutureValue<T> FutureValue<T>()
 		{
-			session.FutureCriteriaBatch.Add<T>(this);
-			return session.FutureCriteriaBatch.GetFutureValue<T>();
+			return session.GetFutureBatch().AddAsFutureValue<T>(this);
 		}
 
 		public IFutureEnumerable<T> Future<T>()
 		{
-			session.FutureCriteriaBatch.Add<T>(this);
-			return session.FutureCriteriaBatch.GetEnumerator<T>();
+			return session.GetFutureBatch().AddAsFuture<T>(this);
 		}
 
 		public object UniqueResult()
@@ -523,14 +570,11 @@ namespace NHibernate.Impl
 				clone = new CriteriaImpl(entityOrClassName, Alias, Session);
 			}
 			CloneSubcriteria(clone);
-			foreach (KeyValuePair<string, FetchMode> de in fetchModes)
-			{
-				clone.fetchModes.Add(de.Key, de.Value);
-			}
 			foreach (KeyValuePair<string, LockMode> de in lockModes)
 			{
 				clone.lockModes.Add(de.Key, de.Value);
 			}
+			clone.selectModes.AddOrOverride(selectModes);
 			clone.maxResults = maxResults;
 			clone.firstResult = firstResult;
 			clone.timeout = timeout;
@@ -541,6 +585,7 @@ namespace NHibernate.Impl
 			CloneProjectCrtieria(clone);
 			clone.SetResultTransformer(resultTransformer);
 			clone.comment = comment;
+			clone.readOnly = readOnly;
 			if (flushMode.HasValue)
 			{
 				clone.SetFlushMode(flushMode.Value);
@@ -630,7 +675,7 @@ namespace NHibernate.Impl
 		}
 
 		[Serializable]
-		public sealed partial class Subcriteria : ICriteria
+		public sealed partial class Subcriteria : ICriteria, ISupportSelectModeCriteria
 		{
 			// Added to simulate Java-style inner class
 			private readonly CriteriaImpl root;
@@ -827,9 +872,23 @@ namespace NHibernate.Impl
 				return root.UniqueResult();
 			}
 
+			//Since 5.2
+			[Obsolete("Use Fetch instead")]
 			public ICriteria SetFetchMode(string associationPath, FetchMode mode)
 			{
 				root.SetFetchMode(StringHelper.Qualify(path, associationPath), mode);
+				return this;
+			}
+
+			public ICriteria Fetch(SelectMode selectMode, string associationPath, string alias)
+			{
+				if (!string.IsNullOrEmpty(alias))
+				{
+					root.Fetch(selectMode, associationPath, alias);
+					return this;
+				}
+
+				root.Fetch(selectMode, string.IsNullOrEmpty(associationPath) ? path : StringHelper.Qualify(path, associationPath), null);
 				return this;
 			}
 

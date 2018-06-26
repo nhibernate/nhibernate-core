@@ -54,8 +54,6 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void DetachedCriteriaItSelf()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
 				.Add(Expression.Eq("Name", "Gavin King"));
 			SerializeAndList(dc);
@@ -185,8 +183,6 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void SubqueriesExpressions()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
 				.Add(Expression.Eq("Name", "Gavin King"));
 			ICriterion c = Subqueries.Eq("Gavin King", dc);
@@ -300,8 +296,6 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void AliasToBeanConstructorResultTransformerIsSerializable()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-			
 			var rt = new AliasToBeanConstructorResultTransformer(typeof(StudentDTO).GetConstructor(System.Type.EmptyTypes));
 			NHAssert.IsSerializable(rt);
 		}
@@ -309,8 +303,6 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void AliasToBeanResultTransformerIsSerializable()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-			
 			var rt = new AliasToBeanResultTransformer(typeof(StudentDTO));
 			NHAssert.IsSerializable(rt);
 		}
@@ -318,8 +310,6 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void ExecutableCriteria()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			// All query below don't have sense, are only to test if all needed classes are serializable
 
 			// Basic criterion

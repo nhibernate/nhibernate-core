@@ -12,7 +12,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class CollectionBinder : ClassBinder
 	{
+		//Since v5.2
+		[Obsolete("Please use constructor without a dialect parameter.")]
 		public CollectionBinder(Mappings mappings, Dialect.Dialect dialect) : base(mappings, dialect)
+		{
+		}
+		
+		public CollectionBinder(Mappings mappings) : base(mappings)
 		{
 		}
 

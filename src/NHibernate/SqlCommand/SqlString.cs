@@ -374,7 +374,7 @@ namespace NHibernate.SqlCommand
 		{
 			return value != null
 				&& value.Length <= _length
-				&& IndexOf(value, _length - value.Length, value.Length, StringComparison.CurrentCultureIgnoreCase) >= 0;
+				&& IndexOf(value, _length - value.Length, value.Length, StringComparison.InvariantCultureIgnoreCase) >= 0;
 		}
 
 		public IEnumerable<Parameter> GetParameters()

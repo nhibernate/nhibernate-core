@@ -184,7 +184,7 @@ namespace NHibernate.Dialect
 		{
 			try
 			{
-				var dialect = (Dialect)Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(dialectName));
+				var dialect = (Dialect)Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(dialectName));
 				dialect.Configure(props);
 				return dialect;
 			}
@@ -976,7 +976,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary> 
-		/// Provided we <see cref="SupportsInsertSelectIdentity"/>, then attch the
+		/// Provided we <see cref="SupportsInsertSelectIdentity"/>, then attach the
 		/// "select identity" clause to the  insert statement.
 		/// </summary>
 		/// <param name="insertString">The insert command </param>
@@ -988,6 +988,22 @@ namespace NHibernate.Dialect
 		public virtual SqlString AppendIdentitySelectToInsert(SqlString insertString)
 		{
 			return insertString;
+		}
+
+		/// <summary> 
+		/// Provided we <see cref="SupportsInsertSelectIdentity"/>, then attach the
+		/// "select identity" clause to the  insert statement.
+		/// </summary>
+		/// <param name="insertString">The insert command </param>
+		/// <param name="identifierColumnName">The identifier name</param>
+		/// <returns> 
+		/// The insert command with any necessary identity select clause attached.
+		/// Note, if <see cref="SupportsInsertSelectIdentity"/> == false then
+		/// the insert-string should be returned without modification.
+		/// </returns>
+		public virtual SqlString AppendIdentitySelectToInsert(SqlString insertString, string identifierColumnName)
+		{
+			return AppendIdentitySelectToInsert(insertString);
 		}
 
 		/// <summary>

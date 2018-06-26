@@ -12,6 +12,8 @@ using System.Reflection.Emit;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
+	// Since v5.2
+	[Obsolete("DynamicProxy namespace has been obsoleted, use static proxies instead (see StaticProxyFactory)")]
 	internal class ProxyImplementor
 	{
 		private const MethodAttributes InterceptorMethodsAttributes = MethodAttributes.Public | MethodAttributes.HideBySig |
