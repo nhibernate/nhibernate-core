@@ -3,6 +3,7 @@
 
 	<property name="root.dir" value="." />
 	<property name="config.teamcity" value="default"/>
+	<property name="skip.db-service" value="true" overwrite="false" />
 
 	<include buildfile="${root.dir}/default.build" />
 
@@ -12,7 +13,15 @@
 
 	<property name="build.number" value="${CCNetLabel}" if="${property::exists('CCNetLabel')}" />
 
-	<target name="clean-configure-test" depends="cleanall init copy-teamcity-configuration binaries test verify-test-results binaries-zip" />
+	<target name="clean-configure-test" depends="cleanall init copy-teamcity-configuration binaries start-db-service test stop-db-service verify-test-results binaries-zip" />
+
+	<target name="start-db-service" unless="${skip.db-service or not property::exists('db-service')}">
+		<servicecontroller action="Start" service="${db-service}" timeout="120000" />
+	</target>
+
+	<target name="stop-db-service" unless="${skip.db-service or not property::exists('db-service')}">
+		<servicecontroller action="Stop" service="${db-service}" timeout="120000" />
+	</target>
 
 	<target name="copy-teamcity-configuration">
 		<copy file="build-common/teamcity-hibernate.cfg.xml" tofile="${bin.dir}/hibernate.cfg.xml" />
@@ -32,10 +41,12 @@
 	</target>
 
 	<target name="setup-teamcity-default">
+		<property name="db-service" value="MSSQL$SQLEXPRESS" />
 		<!-- default (SQL Server) does not require any additional settings/binaries -->
 	</target>
 
 	<target name="setup-teamcity-sqlServerOdbc">
+		<property name="db-service" value="MSSQL$SQLEXPRESS" />
 		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.OdbcDriver" />
 		<property name="nhibernate.odbc.explicit_datetime_scale" value="3" />
 	<!-- We need to use a dialect that avoids mapping DbType.Time to TIME on MSSQL. On modern SQL Server
@@ -51,10 +62,12 @@
 	</target>
 
 	<target name="setup-teamcity-sqlServer-Sql2008ClientDriver">
+		<property name="db-service" value="MSSQL$SQLEXPRESS" />
 		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.Sql2008ClientDriver" />
 	</target>
 
 	<target name="setup-teamcity-sqlServer2012">
+		<property name="db-service" value="MSSQL$SQLEXPRESS" />
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2012Dialect" />
 	</target>
 
@@ -74,12 +87,14 @@
 	</target>
 
 	<target name="setup-teamcity-firebird32">
+		<property name="db-service" value="FirebirdServerDefaultInstance" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
 		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;" />
 	</target>
 
 	<target name="setup-teamcity-firebird64">
+		<property name="db-service" value="FirebirdServerDefaultInstance" />
 		<property name="nunit-x64" value="true" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
@@ -108,12 +123,14 @@
 	</target>
 
 	<target name="setup-teamcity-postgresql">
+		<property name="db-service" value="postgresql-x64-10" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.NpgsqlDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.PostgreSQL83Dialect" />
 		<property name="nhibernate.connection.connection_string"	value="Host=localhost;Port=5432;Database=nhibernate;Username=nhibernate;Password=nhibernate;Enlist=true" />
 	</target>
 
 	<target name="setup-teamcity-oracle">
+		<property name="db-service" value="OracleServiceXE" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=XE" />
@@ -122,6 +139,7 @@
 	</target>
 
 	<target name="setup-teamcity-oracle32">
+		<property name="db-service" value="OracleServiceXE" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleDataClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
@@ -137,6 +155,7 @@
 	</target>
 
 	<target name="setup-teamcity-oracle64">
+		<property name="db-service" value="OracleServiceXE" />
 		<property name="nunit-x64" value="true" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleDataClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
@@ -153,6 +172,7 @@
 	</target>
 
 	<target name="setup-teamcity-oracle-managed32">
+		<property name="db-service" value="OracleServiceXE" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleManagedDataClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
@@ -161,6 +181,7 @@
 	</target>
 
 	<target name="setup-teamcity-oracle-managed64">
+		<property name="db-service" value="OracleServiceXE" />
 		<property name="nunit-x64" value="true" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleManagedDataClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
@@ -170,6 +191,7 @@
 	</target>
 
 	<target name="setup-teamcity-mysql">
+		<property name="db-service" value="MySQL57" />
 		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.MySqlDataDriver" />
 		<property name="nhibernate.dialect"	value="NHibernate.Dialect.MySQL5Dialect" />
 		<property name="nhibernate.connection.connection_string" value="Data Source=localhost;Database=nhibernate;User ID=nhibernate;Password=nhibernate;Protocol=memory;Old Guids=True;" />
