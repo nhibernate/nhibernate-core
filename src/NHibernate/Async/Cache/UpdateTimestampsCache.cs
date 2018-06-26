@@ -33,7 +33,7 @@ namespace NHibernate.Cache
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return updateTimestamps.ClearAsync(cancellationToken);
+			return _updateTimestamps.ClearAsync(cancellationToken);
 		}
 
 		//Since v5.1
@@ -62,7 +62,7 @@ namespace NHibernate.Cache
 			using (await _preInvalidate.LockAsync())
 			{
 				//TODO: to handle concurrent writes correctly, this should return a Lock to the client
-				var ts = updateTimestamps.NextTimestamp() + updateTimestamps.Timeout;
+				var ts = _updateTimestamps.NextTimestamp() + _updateTimestamps.Timeout;
 				await (SetSpacesTimestampAsync(spaces, ts, cancellationToken)).ConfigureAwait(false);
 
 				//TODO: return new Lock(ts);
@@ -97,7 +97,7 @@ namespace NHibernate.Cache
 			using (await _invalidate.LockAsync())
 			{
 				//TODO: to handle concurrent writes correctly, the client should pass in a Lock
-				long ts = updateTimestamps.NextTimestamp();
+				long ts = _updateTimestamps.NextTimestamp();
 				//TODO: if lock.getTimestamp().equals(ts)
 				if (log.IsDebugEnabled())
 					log.Debug("Invalidating spaces [{0}]", StringHelper.CollectionToString(spaces));
@@ -105,13 +105,16 @@ namespace NHibernate.Cache
 			}
 		}
 
-		private async Task SetSpacesTimestampAsync(IReadOnlyCollection<string> spaces, long ts, CancellationToken cancellationToken)
+		private Task SetSpacesTimestampAsync(IReadOnlyCollection<string> spaces, long ts, CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (_batchUpdateTimestamps != null)
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
 			{
 				if (spaces.Count == 0)
-					return;
+					return Task.CompletedTask;
 
 				var timestamps = new object[spaces.Count];
 				for (var i = 0; i < timestamps.Length; i++)
@@ -119,14 +122,11 @@ namespace NHibernate.Cache
 					timestamps[i] = ts;
 				}
 
-				await (_batchUpdateTimestamps.PutManyAsync(spaces.ToArray(), timestamps, cancellationToken)).ConfigureAwait(false);
+				return _updateTimestamps.PutManyAsync(spaces.ToArray(), timestamps, cancellationToken);
 			}
-			else
+			catch (Exception ex)
 			{
-				foreach (var space in spaces)
-				{
-					await (updateTimestamps.PutAsync(space, ts, cancellationToken)).ConfigureAwait(false);
-				}
+				return Task.FromException<object>(ex);
 			}
 		}
 
@@ -136,23 +136,17 @@ namespace NHibernate.Cache
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _isUpToDate.LockAsync())
 			{
-				if (_batchReadOnlyUpdateTimestamps != null)
+				if (spaces.Count == 0)
+					return true;
+
+				var keys = new object[spaces.Count];
+				var index = 0;
+				foreach (var space in spaces)
 				{
-					if (spaces.Count == 0)
-						return true;
-
-					var keys = new object[spaces.Count];
-					var index = 0;
-					foreach (var space in spaces)
-					{
-						keys[index++] = space;
-					}
-					var lastUpdates = await (_batchReadOnlyUpdateTimestamps.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
-					return lastUpdates.All(lastUpdate => !IsOutdated(lastUpdate as long?, timestamp));
+					keys[index++] = space;
 				}
-
-				return spaces.Select(space => updateTimestamps.Get(space))
-			             .All(lastUpdate => !IsOutdated(lastUpdate as long?, timestamp));
+				var lastUpdates = await (_updateTimestamps.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
+				return lastUpdates.All(lastUpdate => !IsOutdated(lastUpdate as long?, timestamp));
 			}
 		}
 
@@ -169,43 +163,33 @@ namespace NHibernate.Cache
 					allSpaces.UnionWith(sp);
 				}
 
-				if (_batchReadOnlyUpdateTimestamps != null)
+				if (allSpaces.Count == 0)
 				{
-					if (allSpaces.Count == 0)
-					{
-						for (var i = 0; i < spaces.Length; i++)
-						{
-							results[i] = true;
-						}
-
-						return results;
-					}
-
-					var keys = new object[allSpaces.Count];
-					var index = 0;
-					foreach (var space in allSpaces)
-					{
-						keys[index++] = space;
-					}
-
-					index = 0;
-					var lastUpdatesBySpace =
-					(await (_batchReadOnlyUpdateTimestamps
-						.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false))
-						.ToDictionary(u => keys[index++], u => u as long?);
-
 					for (var i = 0; i < spaces.Length; i++)
 					{
-						var timestamp = timestamps[i];
-						results[i] = spaces[i].All(space => !IsOutdated(lastUpdatesBySpace[space], timestamp));
+						results[i] = true;
 					}
+
+					return results;
 				}
-				else
+
+				var keys = new object[allSpaces.Count];
+				var index = 0;
+				foreach (var space in allSpaces)
 				{
-					for (var i = 0; i < spaces.Length; i++)
-					{
-						results[i] = await (IsUpToDateAsync(spaces[i], timestamps[i], cancellationToken)).ConfigureAwait(false);
-					}
+					keys[index++] = space;
+				}
+
+				index = 0;
+				var lastUpdatesBySpace =
+				(await (_updateTimestamps
+					.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false))
+					.ToDictionary(u => keys[index++], u => u as long?);
+
+				for (var i = 0; i < spaces.Length; i++)
+				{
+					var timestamp = timestamps[i];
+					results[i] = spaces[i].All(space => !IsOutdated(lastUpdatesBySpace[space], timestamp));
 				}
 
 				return results;

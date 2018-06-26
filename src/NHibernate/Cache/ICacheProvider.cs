@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace NHibernate.Cache
@@ -8,12 +9,15 @@ namespace NHibernate.Cache
 	public interface ICacheProvider
 	{
 		/// <summary>
-		/// Configure the cache
+		/// Build a cache.
 		/// </summary>
-		/// <param name="regionName">the name of the cache region</param>
-		/// <param name="properties">configuration settings</param>
-		/// <returns></returns>
+		/// <param name="regionName">The name of the cache region.</param>
+		/// <param name="properties">Configuration settings.</param>
+		/// <returns>A cache.</returns>
+		// 6.0 TODO: return a CacheBase instead
+#pragma warning disable 618
 		ICache BuildCache(string regionName, IDictionary<string, string> properties);
+#pragma warning restore 618
 
 		/// <summary>
 		/// generate a timestamp

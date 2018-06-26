@@ -20,26 +20,27 @@ namespace NHibernate.Cache
 	public partial interface IBatchableCacheConcurrencyStrategy : ICacheConcurrencyStrategy
 	{
 		/// <summary>
-		/// Attempt to retrieve multiple objects from the Cache
+		/// Attempt to retrieve multiple items from the cache.
 		/// </summary>
-		/// <param name="keys">The keys (id) of the objects to get out of the Cache.</param>
-		/// <param name="timestamp">A timestamp prior to the transaction start time</param>
+		/// <param name="keys">The keys of the items.</param>
+		/// <param name="timestamp">A timestamp prior to the transaction start time.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns>An array of cached objects or <see langword="null" /></returns>
+		/// <returns>The cached items, matching each key of <paramref name="keys"/> respectively. For each missed key,
+		/// it will contain a <see langword="null" />.</returns>
 		/// <exception cref="CacheException"></exception>
 		Task<object[]> GetManyAsync(CacheKey[] keys, long timestamp, CancellationToken cancellationToken);
 
 		/// <summary>
-		/// Attempt to cache objects, after loading them from the database.
+		/// Attempt to cache items, after loading them from the database.
 		/// </summary>
-		/// <param name="keys">The keys (id) of the objects to put in the Cache.</param>
-		/// <param name="values">The objects to put in the cache.</param>
+		/// <param name="keys">The keys of the items.</param>
+		/// <param name="values">The items.</param>
 		/// <param name="timestamp">A timestamp prior to the transaction start time.</param>
-		/// <param name="versions">The version numbers of the objects we are putting.</param>
-		/// <param name="versionComparers">The comparers to be used to compare version numbers</param>
+		/// <param name="versions">The version numbers of the items.</param>
+		/// <param name="versionComparers">The comparers to be used to compare version numbers.</param>
 		/// <param name="minimalPuts">Indicates that the cache should avoid a put if the item is already cached.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns><see langword="true" /> if the objects were successfully cached.</returns>
+		/// <returns>An array of boolean indicating if each item was successfully cached.</returns>
 		/// <exception cref="CacheException"></exception>
 		Task<bool[]> PutManyAsync(CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
 								  bool[] minimalPuts, CancellationToken cancellationToken);

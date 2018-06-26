@@ -1,7 +1,7 @@
-using System;
 using System.Collections;
 using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
+using NHibernate.Util;
 
 namespace NHibernate.Cache
 {
@@ -134,13 +134,17 @@ namespace NHibernate.Cache
 		/// </summary>
 		string RegionName { get; }
 
+		// 6.0 TODO: type as CacheBase instead
+#pragma warning disable 618
 		/// <summary>
 		/// Gets or sets the <see cref="ICache"/> for this strategy to use.
 		/// </summary>
 		/// <value>The <see cref="ICache"/> for this strategy to use.</value>
 		ICache Cache { get; set; }
+#pragma warning restore 618
 	}
 
+	// 6.0 TODO: remove
 	internal static partial class CacheConcurrencyStrategyExtensions
 	{
 		/// <summary>
@@ -153,11 +157,11 @@ namespace NHibernate.Cache
 		/// <exception cref="CacheException"></exception>
 		public static object[] GetMany(this ICacheConcurrencyStrategy cache, CacheKey[] keys, long timestamp)
 		{
-			if (!(cache is IBatchableCacheConcurrencyStrategy batchableCache))
-			{
-				throw new InvalidOperationException($"Cache concurrency strategy {cache.GetType()} does not support batching");
-			}
-			return batchableCache.GetMany(keys, timestamp);
+			// PreferMultipleGet yields false if !IBatchableCacheConcurrencyStrategy, no GetMany call should be done
+			// in such case.
+			return ReflectHelper
+				.CastOrThrow<IBatchableCacheConcurrencyStrategy>(cache, "batching")
+				.GetMany(keys, timestamp);
 		}
 
 		/// <summary>
@@ -175,23 +179,37 @@ namespace NHibernate.Cache
 		public static bool[] PutMany(this ICacheConcurrencyStrategy cache, CacheKey[] keys, object[] values, long timestamp,
 		                          object[] versions, IComparer[] versionComparers, bool[] minimalPuts)
 		{
-			if (!(cache is IBatchableCacheConcurrencyStrategy batchableCache))
+			if (cache is IBatchableCacheConcurrencyStrategy batchableCache)
 			{
-				throw new InvalidOperationException($"Cache concurrency strategy {cache.GetType()} does not support batching");
+				return batchableCache.PutMany(keys, values, timestamp, versions, versionComparers, minimalPuts);
 			}
-			return batchableCache.PutMany(keys, values, timestamp, versions, versionComparers, minimalPuts);
+
+			var result = new bool[keys.Length];
+			for (var i = 0; i < keys.Length; i++)
+			{
+				result[i] = cache.Put(keys[i], values[i], timestamp, versions[i], versionComparers[i], minimalPuts[i]);
+			}
+
+			return result;
 		}
 
-		public static bool IsBatchingGetSupported(this ICacheConcurrencyStrategy cache)
+		// 6.0 TODO: remove
+		internal static bool PreferMultipleGet(this ICacheConcurrencyStrategy cache)
 		{
-			// ReSharper disable once SuspiciousTypeConversion.Global
-			return cache.Cache is IBatchableReadOnlyCache && cache is IBatchableCacheConcurrencyStrategy;
+			if (cache is IBatchableCacheConcurrencyStrategy batchableCache)
+				return batchableCache.Cache.PreferMultipleGet;
+			return false;
 		}
 
-		public static bool IsBatchingPutSupported(this ICacheConcurrencyStrategy cache)
+		// 6.0 TODO: remove
+		internal static CacheBase GetCacheBase(this ICacheConcurrencyStrategy cache)
 		{
-			// ReSharper disable once SuspiciousTypeConversion.Global
-			return cache.Cache is IBatchableCache && cache is IBatchableCacheConcurrencyStrategy;
+			if (cache is IBatchableCacheConcurrencyStrategy batchableCache)
+				return batchableCache.Cache;
+			var concreteCache = cache.Cache;
+			if (concreteCache == null)
+				return null;
+			return concreteCache as CacheBase ?? new ObsoleteCacheWrapper(concreteCache);
 		}
 	}
 }

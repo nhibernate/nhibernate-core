@@ -135,7 +135,7 @@ namespace NHibernate.Engine
 					CacheEntry.Create(hydratedState, persister, entityEntry.LoadedWithLazyPropertiesUnfetched, version, session, entity);
 				CacheKey cacheKey = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
 
-				if (cacheBatchingHandler != null && persister.IsBatchLoadable && persister.Cache.IsBatchingPutSupported())
+				if (cacheBatchingHandler != null && persister.IsBatchLoadable)
 				{
 					cacheBatchingHandler(
 						persister,
