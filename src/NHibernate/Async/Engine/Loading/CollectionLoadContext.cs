@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -110,10 +111,13 @@ namespace NHibernate.Engine.Loading
 				log.Debug("{0} collections were found in result set for role: {1}", count, persister.Role);
 			}
 
+			var cacheBatcher = new CacheBatcher(LoadContext.PersistenceContext.Session);
 			for (int i = 0; i < count; i++)
 			{
-				await (EndLoadingCollectionAsync(matchedCollectionEntries[i], persister, cancellationToken)).ConfigureAwait(false);
+				await (EndLoadingCollectionAsync(matchedCollectionEntries[i], persister,
+				                     data => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
 			}
+			await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 
 			if (log.IsDebugEnabled())
 			{
@@ -121,7 +125,8 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		private async Task EndLoadingCollectionAsync(LoadingCollectionEntry lce, ICollectionPersister persister, CancellationToken cancellationToken)
+		private async Task EndLoadingCollectionAsync(LoadingCollectionEntry lce, ICollectionPersister persister,
+		                                  Action<CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled())
@@ -161,7 +166,7 @@ namespace NHibernate.Engine.Loading
 
 			if (addToCache)
 			{
-				await (AddCollectionToCacheAsync(lce, persister, cancellationToken)).ConfigureAwait(false);
+				await (AddCollectionToCacheAsync(lce, persister, cacheBatchingHandler, cancellationToken)).ConfigureAwait(false);
 			}
 
 			if (log.IsDebugEnabled())
@@ -179,8 +184,10 @@ namespace NHibernate.Engine.Loading
 		/// <summary> Add the collection to the second-level cache </summary>
 		/// <param name="lce">The entry representing the collection to add </param>
 		/// <param name="persister">The persister </param>
+		/// <param name="cacheBatchingHandler">The action for handling cache batching</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		private async Task AddCollectionToCacheAsync(LoadingCollectionEntry lce, ICollectionPersister persister, CancellationToken cancellationToken)
+		private async Task AddCollectionToCacheAsync(LoadingCollectionEntry lce, ICollectionPersister persister,
+		                                  Action<CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor session = LoadContext.PersistenceContext.Session;
@@ -221,13 +228,27 @@ namespace NHibernate.Engine.Loading
 
 			CollectionCacheEntry entry = new CollectionCacheEntry(lce.Collection, persister);
 			CacheKey cacheKey = session.GenerateCacheKey(lce.Key, persister.KeyType, persister.Role);
-			bool put = await (persister.Cache.PutAsync(cacheKey, persister.CacheEntryStructure.Structure(entry), 
-								session.Timestamp, version, versionComparator,
-													factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh, cancellationToken)).ConfigureAwait(false);
 
-			if (put && factory.Statistics.IsStatisticsEnabled)
+			if (persister.GetBatchSize() > 1 && persister.Cache.IsBatchingPutSupported())
 			{
-				factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+				cacheBatchingHandler(
+					new CachePutData(
+						cacheKey,
+						persister.CacheEntryStructure.Structure(entry),
+						version,
+						versionComparator,
+						factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh));
+			}
+			else
+			{
+				bool put = await (persister.Cache.PutAsync(cacheKey, persister.CacheEntryStructure.Structure(entry),
+				                               session.Timestamp, version, versionComparator,
+				                               factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh, cancellationToken)).ConfigureAwait(false);
+
+				if (put && factory.Statistics.IsStatisticsEnabled)
+				{
+					factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+				}
 			}
 		}
 	}

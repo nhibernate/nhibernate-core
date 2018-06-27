@@ -641,10 +641,13 @@ namespace NHibernate.Loader
 					Log.Debug("total objects hydrated: {0}", hydratedObjectsSize);
 				}
 
+				var cacheBatcher = new CacheBatcher(session);
 				for (int i = 0; i < hydratedObjectsSize; i++)
 				{
-					TwoPhaseLoad.InitializeEntity(hydratedObjects[i], readOnly, session, pre, post);
+					TwoPhaseLoad.InitializeEntity(hydratedObjects[i], readOnly, session, pre, post,
+					                              (persister, data) => cacheBatcher.AddToBatch(persister, data));
 				}
+				cacheBatcher.ExecuteBatch();
 			}
 
 			if (collectionPersisters != null)
