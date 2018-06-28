@@ -1,11 +1,8 @@
 using System;
 using System.Runtime.Serialization;
-using System.Xml.Serialization;
 using NHibernate.Engine;
 using NHibernate.Event;
-using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
-using NHibernate.Properties;
 using NHibernate.Type;
 
 namespace NHibernate.Cache.Entry
@@ -14,15 +11,7 @@ namespace NHibernate.Cache.Entry
 	/// A cached instance of a persistent class
 	/// </summary>
 	[Serializable]
-	[XmlInclude(typeof(AnyType.ObjectTypeCacheEntry))]
-	[XmlInclude(typeof(UnfetchedLazyProperty))]
-	[XmlInclude(typeof(UnknownBackrefProperty))]
 	[DataContract]
-	[KnownType(typeof(AnyType.ObjectTypeCacheEntry))]
-	[KnownType(typeof(DateTimeOffset))]
-	[KnownType(typeof(TimeSpan))]
-	[KnownType(typeof(UnfetchedLazyProperty))]
-	[KnownType(typeof(UnknownBackrefProperty))]
 	public sealed partial class CacheEntry
 	{
 		private object[] disassembledState;

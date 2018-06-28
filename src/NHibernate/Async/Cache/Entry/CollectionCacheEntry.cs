@@ -10,12 +10,8 @@
 
 using System;
 using System.Runtime.Serialization;
-using System.Xml.Serialization;
 using NHibernate.Collection;
-using NHibernate.Intercept;
 using NHibernate.Persister.Collection;
-using NHibernate.Properties;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Cache.Entry

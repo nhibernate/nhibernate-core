@@ -9,7 +9,6 @@
 
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -17,15 +16,12 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using System.Xml.Serialization;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Engine;
 using NHibernate.Intercept;
-using NHibernate.Persister.Entity;
 using NHibernate.Properties;
 using NHibernate.Type;
 using NSubstitute;
@@ -33,40 +29,42 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.CacheTest
 {
+	using System.Threading.Tasks;
 	[TestFixture]
 	public class SerializationFixtureAsync
 	{
-		// XmlSerializer does not support DateTimeOffset and TimeSpan types
-		private readonly Func<KeyValuePair<IType, object>, bool> _xmlSerializerTypePredicate =
-			o => !(o.Value is DateTimeOffset) && !(o.Value is TimeSpan);
+		private static readonly List<System.Type> KnownTypes = new List<System.Type>
+		{
+			typeof(AnyType.ObjectTypeCacheEntry),
+			typeof(DateTimeOffset),
+			typeof(TimeSpan),
+			typeof(UnfetchedLazyProperty),
+			typeof(UnknownBackrefProperty),
+			typeof(object[]),
+			typeof(CacheEntry),
+			typeof(CacheLock),
+			typeof(CollectionCacheEntry)
+		};
 
 		[Test]
 		public async Task TestCacheEntrySerializationAsync()
 		{
-			var item = CreateCacheEntry(null);
+			var item = CreateCacheEntry();
 			var copy = await (TestDataContractSerializerAsync(item));
 			CheckCacheEntry(item, copy);
 
 			copy = TestBinaryFormatter(item);
-			CheckCacheEntry(item, copy);
-
-			item = CreateCacheEntry(_xmlSerializerTypePredicate);
-			copy = TestXmlSerializer(item);
 			CheckCacheEntry(item, copy);
 		}
 
 		[Test]
 		public async Task TestCollectionCacheEntrySerializationAsync()
 		{
-			var item = CreateCollectionCacheEntry(null);
+			var item = CreateCollectionCacheEntry();
 			var copy = await (TestDataContractSerializerAsync(item));
 			CheckCollectionCacheEntry(item, copy);
 
 			copy = TestBinaryFormatter(item);
-			CheckCollectionCacheEntry(item, copy);
-
-			item = CreateCollectionCacheEntry(_xmlSerializerTypePredicate);
-			copy = TestXmlSerializer(item);
 			CheckCollectionCacheEntry(item, copy);
 		}
 
@@ -74,27 +72,19 @@ namespace NHibernate.Test.CacheTest
 		public async Task TestCachedItemSerializationAsync()
 		{
 			// CacheEntry
-			var item = CreateCachedItem(CreateCacheEntry(null));
+			var item = CreateCachedItem(CreateCacheEntry());
 			var copy = await (TestDataContractSerializerAsync(item));
 			CheckCachedItem(item, copy);
 
 			copy = TestBinaryFormatter(item);
 			CheckCachedItem(item, copy);
 
-			item = CreateCachedItem(CreateCacheEntry(_xmlSerializerTypePredicate));
-			copy = TestXmlSerializer(item);
-			CheckCachedItem(item, copy);
-
 			// CollectionCacheEntry
-			item = CreateCachedItem(CreateCollectionCacheEntry(null));
+			item = CreateCachedItem(CreateCollectionCacheEntry());
 			copy = await (TestDataContractSerializerAsync(item));
 			CheckCachedItem(item, copy);
 
 			copy = TestBinaryFormatter(item);
-			CheckCachedItem(item, copy);
-
-			item = CreateCachedItem(CreateCollectionCacheEntry(_xmlSerializerTypePredicate));
-			copy = TestXmlSerializer(item);
 			CheckCachedItem(item, copy);
 		}
 
@@ -115,9 +105,6 @@ namespace NHibernate.Test.CacheTest
 
 			copy = TestBinaryFormatter(item);
 			CheckCacheLock(item, copy);
-
-			copy = TestXmlSerializer(item);
-			CheckCacheLock(item, copy);
 		}
 
 		[Test]
@@ -128,9 +115,6 @@ namespace NHibernate.Test.CacheTest
 			CheckObjectTypeCacheEntry(item, copy);
 
 			copy = TestBinaryFormatter(item);
-			CheckObjectTypeCacheEntry(item, copy);
-
-			copy = TestXmlSerializer(item);
 			CheckObjectTypeCacheEntry(item, copy);
 		}
 
@@ -151,26 +135,26 @@ namespace NHibernate.Test.CacheTest
 			};
 		}
 
-		private CacheEntry CreateCacheEntry(Func<KeyValuePair<IType, object>, bool> predicate)
+		private CacheEntry CreateCacheEntry()
 		{
 			return new CacheEntry
 			{
-				DisassembledState = GetAllKnownTypeValues(predicate),
+				DisassembledState = GetAllKnownTypeValues(),
 				Version = 55,
 				Subclass = "Test",
 				AreLazyPropertiesUnfetched = true
 			};
 		}
 
-		private CollectionCacheEntry CreateCollectionCacheEntry(Func<KeyValuePair<IType, object>, bool> predicate)
+		private CollectionCacheEntry CreateCollectionCacheEntry()
 		{
 			return new CollectionCacheEntry
 			{
-				DisassembledState = GetAllKnownTypeValues(predicate)
+				DisassembledState = GetAllKnownTypeValues()
 			};
 		}
 
-		private object[] GetAllKnownTypeValues(Func<KeyValuePair<IType, object>, bool> predicate)
+		private object[] GetAllKnownTypeValues()
 		{
 			var entityName = nameof(MyEntity);
 			var xmlDoc = new XmlDocument();
@@ -222,10 +206,6 @@ namespace NHibernate.Test.CacheTest
 				{NHibernateUtil.XDoc, XDocument.Parse("<Root>XDoc</Root>")},
 				{NHibernateUtil.Uri, new Uri("http://test.com")}
 			};
-			if (predicate != null)
-			{
-				types = types.Where(predicate).ToDictionary(o => o.Key, o => o.Value);
-			}
 
 			var sessionImpl = Substitute.For<ISessionImplementor>();
 			sessionImpl.BestGuessEntityName(Arg.Any<object>()).Returns(o => o[0].GetType().Name);
@@ -342,14 +322,6 @@ namespace NHibernate.Test.CacheTest
 			return obj;
 		}
 
-		private static T TestXmlSerializer<T>(T obj)
-		{
-			var xml = XmlSerializerToXml(obj);
-			obj = XmlSerializerFromXml<T>(xml);
-			Assert.That(xml, Is.EqualTo(XmlSerializerToXml(obj)));
-			return obj;
-		}
-
 		private static T TestBinaryFormatter<T>(T obj)
 		{
 			var bytes = BinaryFormatterToBinary(obj);
@@ -363,8 +335,7 @@ namespace NHibernate.Test.CacheTest
 			using (var memoryStream = new MemoryStream())
 			using (var reader = new StreamReader(memoryStream))
 			{
-
-				var serializer = new DataContractSerializer(typeof(T));
+				var serializer = new DataContractSerializer(typeof(T), KnownTypes);
 				serializer.WriteObject(memoryStream, obj);
 				memoryStream.Position = 0;
 				return await (reader.ReadToEndAsync());
@@ -378,27 +349,8 @@ namespace NHibernate.Test.CacheTest
 				var data = Encoding.UTF8.GetBytes(xml);
 				stream.Write(data, 0, data.Length);
 				stream.Position = 0;
-				var deserializer = new DataContractSerializer(typeof(T));
+				var deserializer = new DataContractSerializer(typeof(T), KnownTypes);
 				return (T) deserializer.ReadObject(stream);
-			}
-		}
-
-		private static string XmlSerializerToXml<T>(T obj)
-		{
-			var serializer = new XmlSerializer(typeof(T));
-			using (var writer = new StringWriter())
-			{
-				serializer.Serialize(writer, obj);
-				return writer.ToString();
-			}
-		}
-
-		private static T XmlSerializerFromXml<T>(string xml)
-		{
-			var serializer = new XmlSerializer(typeof(T));
-			using (var reader = new StringReader(xml))
-			{
-				return (T) serializer.Deserialize(reader);
 			}
 		}
 

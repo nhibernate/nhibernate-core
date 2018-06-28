@@ -266,7 +266,7 @@ namespace NHibernate.Cache
 						                lockable.IsPuttable(timestamp, version, versionComparers[i]);
 						if (puttable)
 						{
-							putBatch.Add(key, new CachedItem(values[i], cache.NextTimestamp(), version));
+							putBatch.Add(key, CachedItem.Create(values[i], cache.NextTimestamp(), version));
 							if (log.IsDebugEnabled())
 							{
 								log.Debug("Cached: {0}", key);

@@ -1,27 +1,13 @@
 using System;
 using System.Runtime.Serialization;
-using System.Xml.Serialization;
 using NHibernate.Collection;
-using NHibernate.Intercept;
 using NHibernate.Persister.Collection;
-using NHibernate.Properties;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Cache.Entry
 {
 	[Serializable]
-	[XmlInclude(typeof(AnyType.ObjectTypeCacheEntry))]
-	[XmlInclude(typeof(object[]))]
-	[XmlInclude(typeof(UnfetchedLazyProperty))]
-	[XmlInclude(typeof(UnknownBackrefProperty))]
 	[DataContract]
-	[KnownType(typeof(AnyType.ObjectTypeCacheEntry))]
-	[KnownType(typeof(object[]))]
-	[KnownType(typeof(DateTimeOffset))]
-	[KnownType(typeof(TimeSpan))]
-	[KnownType(typeof(UnfetchedLazyProperty))]
-	[KnownType(typeof(UnknownBackrefProperty))]
 	public partial class CollectionCacheEntry
 	{
 		private object state;

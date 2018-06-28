@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Runtime.Serialization;
-using System.Xml.Serialization;
-using NHibernate.Cache.Entry;
 
 namespace NHibernate.Cache
 {
@@ -11,11 +9,7 @@ namespace NHibernate.Cache
 	/// when it was unlocked
 	/// </summary>
 	[Serializable]
-	[XmlInclude(typeof(CacheEntry))]
-	[XmlInclude(typeof(CollectionCacheEntry))]
 	[DataContract]
-	[KnownType(typeof(CacheEntry))]
-	[KnownType(typeof(CollectionCacheEntry))]
 	public class CachedItem : ReadWriteCache.ILockable
 	{
 		private long freshTimestamp;
