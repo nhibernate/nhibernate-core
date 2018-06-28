@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 
 namespace NHibernate.Proxy.Map
 {
 	/// <summary> Proxy for "dynamic-map" entity representations. </summary>
 	[Serializable]
-	public class MapProxy : INHibernateProxy, IDictionary, IDictionary<string, object>
+	public class MapProxy : DynamicObject, INHibernateProxy, IDictionary, IDictionary<string, object>
 	{
 		private readonly MapLazyInitializer li;
 
@@ -19,6 +20,69 @@ namespace NHibernate.Proxy.Map
 		{
 			get { return li; }
 		}
+
+		#region DynamecObject overrides
+
+		public override bool TryGetMember(GetMemberBinder binder, out object result)
+		{
+			return li.GenericMap.TryGetValue(binder.Name, out result);
+		}
+
+		public override bool TrySetMember(SetMemberBinder binder, object value)
+		{
+			li.GenericMap[binder.Name] = value;
+			return true;
+		}
+
+		public override bool TryDeleteMember(DeleteMemberBinder binder)
+		{
+			return li.GenericMap.Remove(binder.Name);
+		}
+
+		public override IEnumerable<string> GetDynamicMemberNames()
+		{
+			return li.GenericMap.Keys;
+		}
+
+		public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
+		{
+			if (indexes.Length == 1 && indexes[0] is string key)
+				return li.GenericMap.TryGetValue(key, out result);
+			return base.TryGetIndex(binder, indexes, out result);
+		}
+		
+		public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
+		{
+			if (indexes.Length == 1 && indexes[0] is string key)
+			{
+				li.GenericMap[key] = value;
+				return true;
+			}
+			return base.TrySetIndex(binder, indexes, value);
+		}
+
+		public override bool TryDeleteIndex(DeleteIndexBinder binder, object[] indexes)
+		{
+			if (indexes.Length == 1 && indexes[0] is string key)
+				return li.GenericMap.Remove(key);
+
+			return base.TryDeleteIndex(binder, indexes);
+		}
+
+		public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+		{
+			if (li.GenericMap.TryGetValue(binder.Name, out var possibleDeligate) && possibleDeligate is Delegate @delegate)
+			{
+				result = @delegate.DynamicInvoke(args);
+				return true;
+			}
+
+			return base.TryInvokeMember(binder, args, out result);
+		}
+
+		#endregion
+
+		#region IDictionary Members
 
 		public bool Contains(object key)
 		{
@@ -65,8 +129,6 @@ namespace NHibernate.Proxy.Map
 		{
 			get { return li.Map.IsReadOnly; }
 		}
-
-		#region IDictionary Members
 
 		public bool IsFixedSize
 		{
