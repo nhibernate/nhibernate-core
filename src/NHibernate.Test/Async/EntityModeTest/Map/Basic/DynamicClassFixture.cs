@@ -10,9 +10,13 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq.Dynamic.Core;
+using System.Linq;
 using Antlr.Runtime.Misc;
 using NUnit.Framework;
 using NHibernate.Criterion;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.EntityModeTest.Map.Basic
 {
@@ -126,6 +130,14 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 				s => s.CreateCriteria("Model").List<IDictionary<string, object>>()));
 		}
 
+		[Test]
+		public async Task ShouldWorkWithLinqAndGenericsAsync()
+		{
+			await (TestLazyDynamicClassAsync(
+				s => (IDictionary<string, object>) s.Query<dynamic>("ProductLine").OrderBy("Description").Single(),
+				s => s.Query<dynamic>("Model").ToList().Cast<IDictionary<string, object>>().ToList()));
+		}
+
 		public async Task TestLazyDynamicClassAsync(
 			Func<ISession, IDictionary<string, object>> singleCarQueryHandler,
 			Func<ISession, IList<IDictionary<string, object>>> allModelQueryHandler, CancellationToken cancellationToken = default(CancellationToken))
@@ -176,6 +188,56 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 				s.Clear();
 
 				await (t.CommitAsync(cancellationToken));
+			}
+		}
+
+		[Test]
+		public async Task ShouldWorkWithLinqAndDynamicsAsync()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				dynamic cars = new ExpandoObject();
+				cars.Description = "Cars";
+
+				dynamic monaro = new ExpandoObject();
+				monaro.ProductLine = cars;
+				monaro.Name = "Monaro";
+				monaro.Description = "Holden Monaro";
+
+				dynamic hsv = new ExpandoObject();
+				hsv.ProductLine = cars;
+				hsv.Name = "hsv";
+				hsv.Description = "Holden hsv";
+
+				var models = new List<dynamic> {monaro, hsv};
+
+				cars.Models = models;
+
+				await (s.SaveAsync("ProductLine", cars));
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var cars = await (s.Query<dynamic>("ProductLine").OrderBy("Description").SingleAsync());
+				var models = cars.Models;
+				Assert.That(NHibernateUtil.IsInitialized(models), Is.False);
+				Assert.That(models.Count, Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(models), Is.True);
+				s.Clear();
+
+				var list = await (s.Query<dynamic>("Model").Where("ProductLine.Description = @0", "Cars").ToListAsync());
+				foreach (var model in list)
+				{
+					Assert.That(NHibernateUtil.IsInitialized(model.ProductLine), Is.False);
+				}
+				var model1 = list[0];
+				Assert.That(model1.ProductLine.Models.Contains(model1), Is.True);
+				s.Clear();
+
+				await (t.CommitAsync());
 			}
 		}
 

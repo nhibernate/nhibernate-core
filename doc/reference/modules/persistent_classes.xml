@@ -254,60 +254,56 @@ namespace Eg
         <para>
             Persistent entities don't necessarily have to be represented as POCO classes
             at runtime. NHibernate also supports dynamic models
-            (using <literal>Dictionaries</literal>). With this approach, you don't
-            write persistent classes, only mapping files.
+            (using <literal>Dictionaries</literal> or C# <literal>dynamic</literal>). With this approach,
+            you don't write persistent classes, only mapping files.
         </para>
 
         <para>
-            The following examples demonstrates the representation using <literal>Dictionaries</literal>.
+            The following examples demonstrates the dynamic model feature.
             First, in the mapping file, an <literal>entity-name</literal> has to be declared
             instead of a class name:
         </para>
-        
+
         <programlisting><![CDATA[<hibernate-mapping>
-
     <class entity-name="Customer">
-
-        <id name="id"
+        <id name="Id"
             type="long"
             column="ID">
             <generator class="sequence"/>
         </id>
 
-        <property name="name"
+        <property name="Name"
             column="NAME"
             type="string"/>
 
-        <property name="address"
+        <property name="Address"
             column="ADDRESS"
             type="string"/>
 
-        <many-to-one name="organization"
+        <many-to-one name="Organization"
             column="ORGANIZATION_ID"
             class="Organization"/>
 
-        <bag name="orders"
+        <bag name="Orders"
             inverse="true"
             lazy="false"
             cascade="all">
             <key column="CUSTOMER_ID"/>
             <one-to-many class="Order"/>
         </bag>
-
     </class>
-    
 </hibernate-mapping>]]></programlisting>
-        
+
         <para>
             Note that even though associations are declared using target class names,
             the target type of an associations may also be a dynamic entity instead
             of a POCO.
         </para>
-        
+
         <para>
             At runtime we can work with <literal>Dictionaries</literal>:
         </para>
-        
+
         <programlisting><![CDATA[using(ISession s = OpenSession())
 using(ITransaction tx = s.BeginTransaction())
 {
@@ -328,7 +324,32 @@ using(ITransaction tx = s.BeginTransaction())
 
     tx.Commit();
 }]]></programlisting>
-        
+
+        <para>
+           Or we can work with <literal>dynamic</literal>:
+        </para>
+
+        <programlisting><![CDATA[using(var s = OpenSession())
+using(var tx = s.BeginTransaction())
+{
+    // Create a customer
+    dynamic frank = new ExpandoObject();
+    frank.Name = "Frank";
+
+    // Create an organization
+    dynamic foobar = new ExpandoObject();
+    foobar.Name = "Foobar Inc.";
+
+    // Link both
+    frank.Organization = foobar;
+
+    // Save both
+    s.Save("Customer", frank);
+    s.Save("Organization", foobar);
+
+    tx.Commit();
+}]]></programlisting>
+
         <para>
             The advantages of a dynamic mapping are quick turnaround time for prototyping
             without the need for entity class implementation. However, you lose compile-time
@@ -338,8 +359,9 @@ using(ITransaction tx = s.BeginTransaction())
         </para>
 
         <para>
-            A loaded dynamic entity can be manipulated as an <literal>IDictionary</literal> or
-            <literal>IDictionary&lt;string, object&gt;</literal>.
+            A loaded dynamic entity can be manipulated as an <literal>IDictionary</literal>,
+            an <literal>IDictionary&lt;string, object&gt;</literal> or a C#
+            <literal>dynamic</literal>.
         </para>
 
         <programlisting><![CDATA[using(ISession s = OpenSession())
@@ -350,8 +372,23 @@ using(ITransaction tx = s.BeginTransaction())
         .List<IDictionary<string, object>>();
     ...
 }]]></programlisting>
+
+        <programlisting><![CDATA[using System.Linq.Dynamic.Core;
+
+...
+
+using(ISession s = OpenSession())
+using(ITransaction tx = s.BeginTransaction())
+{
+    var customers = s
+        .Query<dynamic>("Customer")
+        .OrderBy("Name")
+        .ToList();
+    ...
+}]]></programlisting>
+
     </sect1>
-    
+
     <sect1 id="persistent-classes-tuplizers" revision="1">
         <title>Tuplizers</title>
         
@@ -371,9 +408,9 @@ using(ITransaction tx = s.BeginTransaction())
         </para>
         
         <para>
-            Users may also plug in their own tuplizers.  Perhaps you require that a <literal>IDictionary</literal>
-            implementation other than <literal>System.Collections.Generic.Dictionary&lt;string, object&gt;</literal>
-            is used while in the dynamic-map entity-mode; or perhaps you need to define a different proxy generation strategy
+            Users may also plug in their own tuplizers.  Perhaps you require that a <literal>IDictionary</literal> /
+            <literal>DynamicObject</literal> implementation other than NHibernate own implementation is used while
+            in the dynamic-map entity-mode; or perhaps you need to define a different proxy generation strategy
             than the one used by default.  Both would be achieved by defining a custom tuplizer
             implementation.  Tuplizers definitions are attached to the entity or component mapping they
             are meant to manage.  Going back to the example of our customer entity:
