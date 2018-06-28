@@ -6,7 +6,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public class UriType : ImmutableType, IDiscriminatorType
+	public partial class UriType : ImmutableType, IDiscriminatorType
 	{
 		public UriType()
 			: base(new StringSqlType())
@@ -60,6 +60,19 @@ namespace NHibernate.Type
 		public string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
 			return "'" + ((Uri)value).OriginalString + "'";
+		}
+
+		/// <inheritdoc />
+		public override object Assemble(object cached, ISessionImplementor session, object owner)
+		{
+			var str = cached as string;
+			return str == null ? null : StringToObject(cached as string);
+		}
+
+		/// <inheritdoc />
+		public override object Disassemble(object value, ISessionImplementor session, object owner)
+		{
+			return value == null ? null : ToString(value);
 		}
 	}
 }

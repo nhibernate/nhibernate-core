@@ -18,6 +18,7 @@ namespace NHibernate.Cache
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(UpdateTimestampsCache));
 		private ICache updateTimestamps;
+		private readonly IBatchableReadOnlyCache _batchUpdateTimestamps;
 
 		private readonly string regionName = typeof(UpdateTimestampsCache).Name;
 
@@ -32,6 +33,8 @@ namespace NHibernate.Cache
 			regionName = prefix == null ? regionName : prefix + '.' + regionName;
 			log.Info("starting update timestamps cache at region: {0}", regionName);
 			updateTimestamps = settings.CacheProvider.BuildCache(regionName, props);
+			// ReSharper disable once SuspiciousTypeConversion.Global
+			_batchUpdateTimestamps = updateTimestamps as IBatchableReadOnlyCache;
 		}
 
 		//Since v5.1
@@ -79,35 +82,33 @@ namespace NHibernate.Cache
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual bool IsUpToDate(ISet<string> spaces, long timestamp /* H2.1 has Long here */)
 		{
-			foreach (string space in spaces)
+			if (_batchUpdateTimestamps != null)
 			{
-				object lastUpdate = updateTimestamps.Get(space);
-				if (lastUpdate == null)
+				var keys = new object[spaces.Count];
+				var index = 0;
+				foreach (var space in spaces)
 				{
-					//the last update timestamp was lost from the cache
-					//(or there were no updates since startup!)
-
-					//NOTE: commented out, since users found the "safe" behavior
-					//      counter-intuitive when testing, and we couldn't deal
-					//      with all the forum posts :-(
-					//updateTimestamps.put( space, new Long( updateTimestamps.nextTimestamp() ) );
-					//result = false; // safer
-
-					//OR: put a timestamp there, to avoid subsequent expensive
-					//    lookups to a distributed cache - this is no good, since
-					//    it is non-threadsafe (could hammer effect of an actual
-					//    invalidation), and because this is not the way our
-					//    preferred distributed caches work (they work by
-					//    replication)
-					//updateTimestamps.put( space, new Long(Long.MIN_VALUE) );
+					keys[index++] = space;
 				}
-				else
+				var lastUpdates = _batchUpdateTimestamps.GetMany(keys);
+				foreach (var lastUpdate in lastUpdates)
 				{
-					if ((long) lastUpdate >= timestamp)
+					if (IsOutdated(lastUpdate, timestamp))
 					{
 						return false;
 					}
 				}
+				return true;
+			}
+
+			foreach (string space in spaces)
+			{
+				object lastUpdate = updateTimestamps.Get(space);
+				if (IsOutdated(lastUpdate, timestamp))
+				{
+					return false;
+				}
+				
 			}
 			return true;
 		}
@@ -122,6 +123,38 @@ namespace NHibernate.Cache
 			{
 				log.Warn(e, "could not destroy UpdateTimestamps cache");
 			}
+		}
+
+		private bool IsOutdated(object lastUpdate, long timestamp)
+		{
+			if (lastUpdate == null)
+			{
+				//the last update timestamp was lost from the cache
+				//(or there were no updates since startup!)
+
+				//NOTE: commented out, since users found the "safe" behavior
+				//      counter-intuitive when testing, and we couldn't deal
+				//      with all the forum posts :-(
+				//updateTimestamps.put( space, new Long( updateTimestamps.nextTimestamp() ) );
+				//result = false; // safer
+
+				//OR: put a timestamp there, to avoid subsequent expensive
+				//    lookups to a distributed cache - this is no good, since
+				//    it is non-threadsafe (could hammer effect of an actual
+				//    invalidation), and because this is not the way our
+				//    preferred distributed caches work (they work by
+				//    replication)
+				//updateTimestamps.put( space, new Long(Long.MIN_VALUE) );
+			}
+			else
+			{
+				if ((long) lastUpdate >= timestamp)
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 	}
 }

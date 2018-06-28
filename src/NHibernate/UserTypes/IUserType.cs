@@ -83,8 +83,8 @@ namespace NHibernate.UserTypes
 		/// <summary>
 		/// Return a deep copy of the persistent state, stopping at entities and at collections.
 		/// </summary>
-		/// <param name="value">generally a collection element or entity field</param>
-		/// <returns>a copy</returns>
+		/// <param name="value">Generally a collection element or entity field value mapped as this user type.</param>
+		/// <returns>A copy.</returns>
 		object DeepCopy(object value);
 
 		/// <summary>
@@ -108,21 +108,24 @@ namespace NHibernate.UserTypes
 
 		/// <summary>
 		/// Reconstruct an object from the cacheable representation. At the very least this
-		/// method should perform a deep copy if the type is mutable. (optional operation)
+		/// method should perform a deep copy if the type is mutable. See
+		/// <see cref="Disassemble"/>. (Optional operation if the second level cache is not used.)
 		/// </summary>
-		/// <param name="cached">the object to be cached</param>
-		/// <param name="owner">the owner of the cached object</param>
-		/// <returns>a reconstructed object from the cachable representation</returns>
+		/// <param name="cached">The cacheable representation.</param>
+		/// <param name="owner">The owner of the cached object.</param>
+		/// <returns>A reconstructed object from the cachable representation.</returns>
 		object Assemble(object cached, object owner);
 
 		/// <summary>
 		/// Transform the object into its cacheable representation. At the very least this
 		/// method should perform a deep copy if the type is mutable. That may not be enough
 		/// for some implementations, however; for example, associations must be cached as
-		/// identifier values. (optional operation)
+		/// identifier values. (Optional operation if the second level cache is not used.)
+		/// Second level cache implementations may have additional requirements, like the
+		/// cacheable representation being binary serializable.
 		/// </summary>
-		/// <param name="value">the object to be cached</param>
-		/// <returns>a cacheable representation of the object</returns>
+		/// <param name="value">The object to be cached.</param>
+		/// <returns>A cacheable representation of the object.</returns>
 		object Disassemble(object value);
 	}
 }

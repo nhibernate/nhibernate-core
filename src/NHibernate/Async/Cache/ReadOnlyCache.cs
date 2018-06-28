@@ -10,13 +10,15 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Cache.Access;
 
 namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class ReadOnlyCache : ICacheConcurrencyStrategy
+	public partial class ReadOnlyCache : IBatchableCacheConcurrencyStrategy
 	{
 
 		public async Task<object> GetAsync(CacheKey key, long timestamp, CancellationToken cancellationToken)
@@ -28,6 +30,36 @@ namespace NHibernate.Cache
 				log.Debug("Cache hit: {0}", key);
 			}
 			return result;	
+		}
+
+		public Task<object[]> GetManyAsync(CacheKey[] keys, long timestamp, CancellationToken cancellationToken)
+		{
+			if (_batchableReadOnlyCache == null)
+			{
+				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching get operation");
+			}
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object[]>(cancellationToken);
+			}
+			return InternalGetManyAsync();
+			async Task<object[]> InternalGetManyAsync()
+			{
+				if (log.IsDebugEnabled())
+				{
+					log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
+				}
+				var results = await (_batchableReadOnlyCache.GetManyAsync(keys.Select(o => (object) o).ToArray(), cancellationToken)).ConfigureAwait(false);
+				if (!log.IsDebugEnabled())
+				{
+					return results;
+				}
+				for (var i = 0; i < keys.Length; i++)
+				{
+					log.Debug(results[i] != null ? $"Cache hit: {keys[i]}" : $"Cache miss: {keys[i]}");
+				}
+				return results;
+			}
 		}
 
 		/// <summary>
@@ -46,6 +78,77 @@ namespace NHibernate.Cache
 			catch (Exception ex)
 			{
 				return Task.FromException<ISoftLock>(ex);
+			}
+		}
+
+		public Task<bool[]> PutManyAsync(CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
+		                          bool[] minimalPuts, CancellationToken cancellationToken)
+		{
+			if (_batchableCache == null)
+			{
+				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching operations");
+			}
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool[]>(cancellationToken);
+			}
+			return InternalPutManyAsync();
+			async Task<bool[]> InternalPutManyAsync()
+			{
+				var result = new bool[keys.Length];
+				if (timestamp == long.MinValue)
+				{
+					// MinValue means cache is disabled
+					return result;
+				}
+
+				var checkKeys = new List<CacheKey>();
+				var checkKeyIndexes = new List<int>();
+				for (var i = 0; i < minimalPuts.Length; i++)
+				{
+					if (minimalPuts[i])
+					{
+						checkKeys.Add(keys[i]);
+						checkKeyIndexes.Add(i);
+					}
+				}
+				var skipKeyIndexes = new HashSet<int>();
+				if (checkKeys.Any())
+				{
+					var objects = await (_batchableCache.GetManyAsync(checkKeys.Select(o => (object) o).ToArray(), cancellationToken)).ConfigureAwait(false);
+					for (var i = 0; i < objects.Length; i++)
+					{
+						if (objects[i] != null)
+						{
+							if (log.IsDebugEnabled())
+							{
+								log.Debug("item already cached: {0}", checkKeys[i]);
+							}
+							skipKeyIndexes.Add(checkKeyIndexes[i]);
+						}
+					}
+				}
+
+				if (skipKeyIndexes.Count == keys.Length)
+				{
+					return result;
+				}
+
+				var putKeys = new object[keys.Length - skipKeyIndexes.Count];
+				var putValues = new object[putKeys.Length];
+				var j = 0;
+				for (var i = 0; i < keys.Length; i++)
+				{
+					if (skipKeyIndexes.Contains(i))
+					{
+						continue;
+					}
+					putKeys[j] = keys[i];
+					putValues[j++] = values[i];
+					result[i] = true;
+				}
+				await (_batchableCache.PutManyAsync(putKeys, putValues, cancellationToken)).ConfigureAwait(false);
+				return result;
 			}
 		}
 

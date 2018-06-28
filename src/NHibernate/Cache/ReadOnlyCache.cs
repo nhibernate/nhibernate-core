@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Cache.Access;
 
 namespace NHibernate.Cache
@@ -7,9 +9,11 @@ namespace NHibernate.Cache
 	/// <summary>
 	/// Caches data that is never updated
 	/// </summary>
-	public partial class ReadOnlyCache : ICacheConcurrencyStrategy
+	public partial class ReadOnlyCache : IBatchableCacheConcurrencyStrategy
 	{
 		private ICache cache;
+		private IBatchableReadOnlyCache _batchableReadOnlyCache;
+		private IBatchableCache _batchableCache;
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ReadOnlyCache));
 
 		/// <summary>
@@ -23,7 +27,13 @@ namespace NHibernate.Cache
 		public ICache Cache
 		{
 			get { return cache; }
-			set { cache = value; }
+			set
+			{
+				cache = value;
+				// ReSharper disable once SuspiciousTypeConversion.Global
+				_batchableReadOnlyCache = value as IBatchableReadOnlyCache;
+				_batchableCache = value as IBatchableCache;
+			}
 		}
 
 		public object Get(CacheKey key, long timestamp)
@@ -36,6 +46,28 @@ namespace NHibernate.Cache
 			return result;	
 		}
 
+		public object[] GetMany(CacheKey[] keys, long timestamp)
+		{
+			if (_batchableReadOnlyCache == null)
+			{
+				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching get operation");
+			}
+			if (log.IsDebugEnabled())
+			{
+				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
+			}
+			var results = _batchableReadOnlyCache.GetMany(keys.Select(o => (object) o).ToArray());
+			if (!log.IsDebugEnabled())
+			{
+				return results;
+			}
+			for (var i = 0; i < keys.Length; i++)
+			{
+				log.Debug(results[i] != null ? $"Cache hit: {keys[i]}" : $"Cache miss: {keys[i]}");
+			}
+			return results;
+		}
+
 		/// <summary>
 		/// Unsupported!
 		/// </summary>
@@ -43,6 +75,69 @@ namespace NHibernate.Cache
 		{
 			log.Error("Application attempted to edit read only item: {0}", key);
 			throw new InvalidOperationException("ReadOnlyCache: Can't write to a readonly object " + key.EntityOrRoleName);
+		}
+
+		public bool[] PutMany(CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
+		                          bool[] minimalPuts)
+		{
+			if (_batchableCache == null)
+			{
+				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching operations");
+			}
+			var result = new bool[keys.Length];
+			if (timestamp == long.MinValue)
+			{
+				// MinValue means cache is disabled
+				return result;
+			}
+
+			var checkKeys = new List<CacheKey>();
+			var checkKeyIndexes = new List<int>();
+			for (var i = 0; i < minimalPuts.Length; i++)
+			{
+				if (minimalPuts[i])
+				{
+					checkKeys.Add(keys[i]);
+					checkKeyIndexes.Add(i);
+				}
+			}
+			var skipKeyIndexes = new HashSet<int>();
+			if (checkKeys.Any())
+			{
+				var objects = _batchableCache.GetMany(checkKeys.Select(o => (object) o).ToArray());
+				for (var i = 0; i < objects.Length; i++)
+				{
+					if (objects[i] != null)
+					{
+						if (log.IsDebugEnabled())
+						{
+							log.Debug("item already cached: {0}", checkKeys[i]);
+						}
+						skipKeyIndexes.Add(checkKeyIndexes[i]);
+					}
+				}
+			}
+
+			if (skipKeyIndexes.Count == keys.Length)
+			{
+				return result;
+			}
+
+			var putKeys = new object[keys.Length - skipKeyIndexes.Count];
+			var putValues = new object[putKeys.Length];
+			var j = 0;
+			for (var i = 0; i < keys.Length; i++)
+			{
+				if (skipKeyIndexes.Contains(i))
+				{
+					continue;
+				}
+				putKeys[j] = keys[i];
+				putValues[j++] = values[i];
+				result[i] = true;
+			}
+			_batchableCache.PutMany(putKeys, putValues);
+			return result;
 		}
 
 		public bool Put(CacheKey key, object value, long timestamp, object version, IComparer versionComparator,

@@ -16,51 +16,37 @@ namespace NHibernate.Type
 	/// <see cref="System.Globalization.CultureInfo"/> in the DB.
 	/// </remarks>
 	[Serializable]
-	public class CultureInfoType : ImmutableType, ILiteralType
+	public partial class CultureInfoType : ImmutableType, ILiteralType
 	{
-		/// <summary></summary>
 		internal CultureInfoType() : base(new StringSqlType(5))
 		{
 		}
 
+		/// <inheritdoc />
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			string str = (string) NHibernateUtil.String.Get(rs, index, session);
-			if (str == null)
-			{
-				return null;
-			}
-			else
-			{
-				return new CultureInfo(str);
-			}
+			return ParseStringRepresentation(NHibernateUtil.String.Get(rs, index, session));
 		}
 
+		/// <inheritdoc />
 		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
 			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
+		/// <inheritdoc />
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			NHibernateUtil.String.Set(cmd, ((CultureInfo) value).Name, index, session);
+			NHibernateUtil.String.Set(cmd, GetStringRepresentation(value), index, session);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
+		/// <inheritdoc />
 		public override string ToString(object value)
 		{
-			return ((CultureInfo) value).Name;
+			return GetStringRepresentation(value);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
+		/// <inheritdoc />
 		public override object FromStringValue(string xml)
 		{
 			return CultureInfo.CreateSpecificCulture(xml);
@@ -81,6 +67,29 @@ namespace NHibernate.Type
 		public string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
 			return ((ILiteralType) NHibernateUtil.String).ObjectToSQLString(value.ToString(), dialect);
+		}
+
+		/// <inheritdoc />
+		public override object Assemble(object cached, ISessionImplementor session, object owner)
+		{
+			return ParseStringRepresentation(cached);
+		}
+
+		/// <inheritdoc />
+		public override object Disassemble(object value, ISessionImplementor session, object owner)
+		{
+			return GetStringRepresentation(value);
+		}
+
+		private string GetStringRepresentation(object value)
+		{
+			return ((CultureInfo) value)?.Name;
+		}
+
+		private static object ParseStringRepresentation(object value)
+		{
+			var str = value as string;
+			return str == null ? null : new CultureInfo(str);
 		}
 	}
 }
