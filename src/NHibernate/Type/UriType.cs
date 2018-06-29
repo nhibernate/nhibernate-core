@@ -35,6 +35,11 @@ namespace NHibernate.Type
 			return new Uri(xml, UriKind.RelativeOrAbsolute);
 		}
 
+		private static string GetStringRepresentation(object value)
+		{
+			return ((Uri)value).OriginalString;
+		}
+
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			cmd.Parameters[index].Value =
@@ -68,7 +73,7 @@ namespace NHibernate.Type
 		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object val)
 		{
-			return ((Uri)val).OriginalString;
+			return GetStringRepresentation(val);
 		}
 
 		// Since 5.2
@@ -93,7 +98,7 @@ namespace NHibernate.Type
 		/// <inheritdoc />
 		public override object Disassemble(object value, ISessionImplementor session, object owner)
 		{
-			return value == null ? null : ToString(value);
+			return value == null ? null : GetStringRepresentation(value);
 		}
 	}
 }

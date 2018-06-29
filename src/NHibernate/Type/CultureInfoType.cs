@@ -93,15 +93,14 @@ namespace NHibernate.Type
 			return GetStringRepresentation(value);
 		}
 
-		private string GetStringRepresentation(object value)
+		private static string GetStringRepresentation(object value)
 		{
 			return ((CultureInfo) value)?.Name;
 		}
 
 		private static object ParseStringRepresentation(object value)
 		{
-			var str = value as string;
-			return str == null ? null : new CultureInfo(str);
+			return value is string str ? new CultureInfo(str) : null;
 		}
 	}
 }

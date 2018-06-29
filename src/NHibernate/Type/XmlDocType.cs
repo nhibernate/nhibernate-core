@@ -72,13 +72,7 @@ namespace NHibernate.Type
 		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
-			if (xml != null)
-			{
-				var xmlDocument = new XmlDocument();
-				xmlDocument.LoadXml(xml);
-				return xmlDocument;
-			}
-			return null;
+			return ParseStringRepresentation(xml);
 		}
 
 		public override object DeepCopyNotNull(object value)
@@ -105,7 +99,7 @@ namespace NHibernate.Type
 		/// <inheritdoc />
 		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			return FromStringValue(cached as string);
+			return ParseStringRepresentation(cached as string);
 		}
 
 		/// <inheritdoc />
@@ -114,9 +108,19 @@ namespace NHibernate.Type
 			return GetStringRepresentation(value);
 		}
 
-		private string GetStringRepresentation(object value)
+		private static string GetStringRepresentation(object value)
 		{
 			return ((XmlDocument) value)?.OuterXml;
+		}
+
+		private static object ParseStringRepresentation(string value)
+		{
+			if (value == null)
+				return null;
+
+			var xmlDocument = new XmlDocument();
+			xmlDocument.LoadXml(value);
+			return xmlDocument;
 		}
 	}
 }

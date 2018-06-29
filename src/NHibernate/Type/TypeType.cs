@@ -143,7 +143,7 @@ namespace NHibernate.Type
 			return GetStringRepresentation(value);
 		}
 
-		private string GetStringRepresentation(object value)
+		private static string GetStringRepresentation(object value)
 		{
 			return ((System.Type) value)?.AssemblyQualifiedName;
 		}
