@@ -43,6 +43,7 @@ namespace NHibernate.Test.CacheTest
 			typeof(object[]),
 			typeof(CacheEntry),
 			typeof(CacheLock),
+			typeof(CachedItem),
 			typeof(CollectionCacheEntry)
 		};
 
@@ -150,7 +151,7 @@ namespace NHibernate.Test.CacheTest
 		{
 			return new CollectionCacheEntry
 			{
-				DisassembledState = GetAllKnownTypeValues()
+				State = GetAllKnownTypeValues()
 			};
 		}
 
@@ -277,10 +278,10 @@ namespace NHibernate.Test.CacheTest
 
 		private void CheckCollectionCacheEntry(CollectionCacheEntry original, CollectionCacheEntry copy)
 		{
-			Assert.That(copy.DisassembledState, Is.TypeOf(original.DisassembledState.GetType()));
+			Assert.That(copy.State, Is.TypeOf(original.State.GetType()));
 
-			var originalArray = (object[]) original.DisassembledState;
-			var copyArray = (object[]) copy.DisassembledState;
+			var originalArray = original.State;
+			var copyArray = copy.State;
 
 			for (var i = 0; i < copyArray.Length; i++)
 			{

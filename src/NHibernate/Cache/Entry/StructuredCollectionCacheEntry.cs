@@ -11,7 +11,7 @@ namespace NHibernate.Cache.Entry
 		public virtual object Structure(object item)
 		{
 			var entry = (CollectionCacheEntry)item;
-			return new List<object>((object[])entry.DisassembledState);
+			return new List<object>(entry.State);
 		}
 
 		public virtual object Destructure(object item, ISessionFactoryImplementor factory)
@@ -20,7 +20,7 @@ namespace NHibernate.Cache.Entry
 			var objects = collection != null
 							  ? collection.Cast<object>().ToArray()
 							  : Array.Empty<object>();
-			return new CollectionCacheEntry {DisassembledState = objects};
+			return new CollectionCacheEntry {State = objects};
 		}
 	}
 }

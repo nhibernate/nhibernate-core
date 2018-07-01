@@ -26,14 +26,14 @@ namespace NHibernate.Cache.Entry
 			cancellationToken.ThrowIfCancellationRequested();
 			return new CollectionCacheEntry
 			{
-				DisassembledState = await (collection.DisassembleAsync(persister, cancellationToken)).ConfigureAwait(false)
+				state = await (collection.DisassembleAsync(persister, cancellationToken)).ConfigureAwait(false)
 			};
 		}
 
 		public virtual async Task AssembleAsync(IPersistentCollection collection, ICollectionPersister persister, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			await (collection.InitializeFromCacheAsync(persister, DisassembledState, owner, cancellationToken)).ConfigureAwait(false);
+			await (collection.InitializeFromCacheAsync(persister, state, owner, cancellationToken)).ConfigureAwait(false);
 			collection.AfterInitialize(persister);
 		}
 	}

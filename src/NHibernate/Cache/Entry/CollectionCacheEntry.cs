@@ -20,43 +20,34 @@ namespace NHibernate.Cache.Entry
 		[Obsolete("Use CollectionCacheEntry.Create method instead.")]
 		public CollectionCacheEntry(IPersistentCollection collection, ICollectionPersister persister)
 		{
-			DisassembledState = collection.Disassemble(persister);
+			state = collection.Disassemble(persister);
 		}
 
 		public static CollectionCacheEntry Create(IPersistentCollection collection, ICollectionPersister persister)
 		{
 			return new CollectionCacheEntry
 			{
-				DisassembledState = collection.Disassemble(persister)
+				state = collection.Disassemble(persister)
 			};
 		}
 
 		// 6.0 TODO convert to auto-property
 		[DataMember]
-		public object DisassembledState
+		public virtual object[] State
 		{
-			get => state;
+			get => (object[]) state; //TODO: assumes all collections disassemble to an array!
 			set => state = value;
 		}
 
-		//TODO: assumes all collections disassemble to an array!
-		[Obsolete("Please use DisassembledState property instead.")]
-		public virtual object[] State => (object[]) DisassembledState;
-
 		public virtual void Assemble(IPersistentCollection collection, ICollectionPersister persister, object owner)
 		{
-			collection.InitializeFromCache(persister, DisassembledState, owner);
+			collection.InitializeFromCache(persister, state, owner);
 			collection.AfterInitialize(persister);
 		}
 
 		public override string ToString()
 		{
-			if (DisassembledState is object[] array)
-			{
-				return "CollectionCacheEntry" + ArrayHelper.ToString(array);
-			}
-			return "CollectionCacheEntry" + StringHelper.Unqualify(DisassembledState.GetType().FullName) + "@" +
-			       DisassembledState.GetHashCode();
+			return "CollectionCacheEntry" + ArrayHelper.ToString(State);
 		}
 	}
 }

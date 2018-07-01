@@ -8,7 +8,7 @@ namespace NHibernate.Cache.Entry
 		public object Structure(object item)
 		{
 			CollectionCacheEntry entry = (CollectionCacheEntry)item;
-			object[] state = (object[])entry.DisassembledState;
+			object[] state = entry.State;
 			IDictionary map = new Hashtable(state.Length);
 			for (int i = 0; i < state.Length; )
 			{
@@ -27,7 +27,7 @@ namespace NHibernate.Cache.Entry
 				state[i++] = me.Key;
 				state[i++] = me.Value;				
 			}
-			return new CollectionCacheEntry {DisassembledState = state};
+			return new CollectionCacheEntry {State = state};
 		}
 	}
 }
