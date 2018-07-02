@@ -110,7 +110,7 @@ namespace NHibernate.Engine
 
 				object version = Versioning.GetVersion(hydratedState, persister);
 				CacheEntry entry =
-					new CacheEntry(hydratedState, persister, entityEntry.LoadedWithLazyPropertiesUnfetched, version, session, entity);
+					await (CacheEntry.CreateAsync(hydratedState, persister, entityEntry.LoadedWithLazyPropertiesUnfetched, version, session, entity, cancellationToken)).ConfigureAwait(false);
 				CacheKey cacheKey = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
 
 				if (cacheBatchingHandler != null && persister.IsBatchLoadable && persister.Cache.IsBatchingPutSupported())

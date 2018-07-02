@@ -208,7 +208,7 @@ namespace NHibernate.Cache
 					ILockable lockable = (ILockable) cache.Get(key);
 					long timeout = cache.NextTimestamp() + cache.Timeout;
 					CacheLock @lock = lockable == null ?
-					                  new CacheLock(timeout, NextLockId(), version) :
+					                  CacheLock.Create(timeout, NextLockId(), version) :
 					                  lockable.Lock(timeout, NextLockId());
 					cache.Put(key, @lock);
 					return @lock;
@@ -266,7 +266,7 @@ namespace NHibernate.Cache
 						                lockable.IsPuttable(timestamp, version, versionComparers[i]);
 						if (puttable)
 						{
-							putBatch.Add(key, new CachedItem(values[i], cache.NextTimestamp(), version));
+							putBatch.Add(key, CachedItem.Create(values[i], cache.NextTimestamp(), version));
 							if (log.IsDebugEnabled())
 							{
 								log.Debug("Cached: {0}", key);
@@ -340,7 +340,7 @@ namespace NHibernate.Cache
 
 					if (puttable)
 					{
-						cache.Put(key, new CachedItem(value, cache.NextTimestamp(), version));
+						cache.Put(key, CachedItem.Create(value, cache.NextTimestamp(), version));
 						if (log.IsDebugEnabled())
 						{
 							log.Debug("Cached: {0}", key);
@@ -415,7 +415,7 @@ namespace NHibernate.Cache
 			log.Warn("An item was expired by the cache while it was locked (increase your cache timeout): {0}", key);
 			long ts = cache.NextTimestamp() + cache.Timeout;
 			// create new lock that times out immediately
-			CacheLock @lock = new CacheLock(ts, NextLockId(), null);
+			CacheLock @lock = CacheLock.Create(ts, NextLockId(), null);
 			@lock.Unlock(ts);
 			cache.Put(key, @lock);
 		}
@@ -472,7 +472,7 @@ namespace NHibernate.Cache
 						else
 						{
 							//recache the updated state
-							cache.Put(key, new CachedItem(value, cache.NextTimestamp(), version));
+							cache.Put(key, CachedItem.Create(value, cache.NextTimestamp(), version));
 							if (log.IsDebugEnabled())
 							{
 								log.Debug("Updated: {0}", key);
@@ -509,7 +509,7 @@ namespace NHibernate.Cache
 					ILockable lockable = (ILockable) cache.Get(key);
 					if (lockable == null)
 					{
-						cache.Put(key, new CachedItem(value, cache.NextTimestamp(), version));
+						cache.Put(key, CachedItem.Create(value, cache.NextTimestamp(), version));
 						if (log.IsDebugEnabled())
 						{
 							log.Debug("Inserted: {0}", key);
