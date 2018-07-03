@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using NHibernate.Engine;
@@ -6,13 +7,25 @@ namespace NHibernate.Context
 {
 	public abstract class MapBasedSessionContext : CurrentSessionContext
 	{
-		private readonly ISessionFactoryImplementor _factory;
+		private ISessionFactoryImplementor _factory;
 
 		// Must be static, different instances of MapBasedSessionContext may have to yield the same map.
 		private static readonly object _locker = new object();
 
+		// Since v5.2
+		[Obsolete("This constructor has no more usages and will be removed in a future version")]
 		protected MapBasedSessionContext(ISessionFactoryImplementor factory)
 		{
+			_factory = factory;
+		}
+
+		protected MapBasedSessionContext() { }
+
+		/// <inheritdoc />
+		public override void SetFactory(ISessionFactoryImplementor factory)
+		{
+			if (_factory != null)
+				throw new InvalidOperationException("The factory has already been set");
 			_factory = factory;
 		}
 

@@ -21,8 +21,11 @@ namespace NHibernate.Context
 	{
 		private readonly AsyncLocal<ISession> _session = new AsyncLocal<ISession>();
 
-		// Constructor signature required for dynamic invocation code.
+		// Since v5.2
+		[Obsolete("This constructor has no more usages and will be removed in a future version")]
 		public AsyncLocalSessionContext(ISessionFactoryImplementor factory) { }
+
+		public AsyncLocalSessionContext() { }
 
 		protected override ISession Session
 		{

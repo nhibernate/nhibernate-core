@@ -1261,35 +1261,65 @@ namespace NHibernate.Impl
 
 		private ICurrentSessionContext BuildCurrentSessionContext()
 		{
-			string impl = PropertiesHelper.GetString(Environment.CurrentSessionContextClass, properties, null);
+			var impl = PropertiesHelper.GetString(Environment.CurrentSessionContextClass, properties, null);
 
+			ICurrentSessionContextWithFactory context;
 			switch (impl)
 			{
 				case null:
 					return null;
 				case "async_local":
-					return new AsyncLocalSessionContext(this);
+					context = new AsyncLocalSessionContext();
+					break;
 				case "call":
-					return new CallSessionContext(this);
+					context = new CallSessionContext();
+					break;
 				case "thread_static":
-					return new ThreadStaticSessionContext(this);
+					context = new ThreadStaticSessionContext();
+					break;
 				case "web":
-					return new WebSessionContext(this);
+					context = new WebSessionContext();
+					break;
 				case "wcf_operation":
-					return new WcfOperationSessionContext(this);
+					context = new WcfOperationSessionContext();
+					break;
+				default:
+					context = null;
+					break;
 			}
 
-			try
+			if (context == null)
 			{
-				System.Type implClass = ReflectHelper.ClassForName(impl);
-				return
-					(ICurrentSessionContext)Environment.ObjectsFactory.CreateInstance(implClass, new object[] { this });
+				try
+				{
+					var implClass = ReflectHelper.ClassForName(impl);
+					if (!typeof(ICurrentSessionContextWithFactory).IsAssignableFrom(implClass))
+					{
+						log.Warn(
+							"{0} implementations should implement {1}.{2} and a parameter-less constructor. Instantiating " +
+							"them with a constructor taking an {3} is obsolete. Concrete type not implementing {1}: {4}",
+							nameof(ICurrentSessionContext),
+							nameof(ICurrentSessionContextWithFactory),
+							nameof(ICurrentSessionContextWithFactory.SetFactory),
+							nameof(ISessionFactoryImplementor),
+							implClass);
+						return
+#pragma warning disable 618
+							(ICurrentSessionContext) Environment.ObjectsFactory.CreateInstance(implClass, this);
+#pragma warning restore 618
+					}
+
+					context = (ICurrentSessionContextWithFactory) Environment.ObjectsFactory.CreateInstance(implClass);
+				}
+				catch (Exception e)
+				{
+					log.Error(e, "Unable to construct current session context [{0}]", impl);
+					return null;
+				}
 			}
-			catch (Exception e)
-			{
-				log.Error(e, "Unable to construct current session context [{0}]", impl);
-				return null;
-			}
+
+			context.SetFactory(this);
+			return context;
 		}
 
 		#region NHibernate specific

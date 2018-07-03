@@ -203,10 +203,7 @@ namespace NHibernate.Tool.hbm2ddl
 		{
 			if (dialect.SupportsSqlBatches)
 			{
-				var objFactory = Environment.ObjectsFactory;
-				ScriptSplitter splitter = (ScriptSplitter)objFactory.CreateInstance(typeof(ScriptSplitter), sql);
-
-				foreach (string stmt in splitter)
+				foreach (var stmt in new ScriptSplitter(sql))
 				{
 					log.Debug("SQL Batch: {0}", stmt);
 					cmd.CommandText = stmt;

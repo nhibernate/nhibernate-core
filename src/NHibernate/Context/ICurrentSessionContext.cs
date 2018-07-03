@@ -1,4 +1,3 @@
-using System;
 using NHibernate.Engine;
 
 namespace NHibernate.Context
@@ -41,5 +40,18 @@ namespace NHibernate.Context
 		/// <exception cref="HibernateException">Typically indicates an issue
 		/// locating or creating the current session.</exception>
 		ISession CurrentSession();
+	}
+
+	// 6.0 TODO: merge into ICurrentSessionContext
+	/// <summary>
+	/// Transitional interface for <see cref="ICurrentSessionContext"/>.
+	/// </summary>
+	public interface ICurrentSessionContextWithFactory : ICurrentSessionContext
+	{
+		/// <summary>
+		/// Sets the factory. This method should be called once after creating the context.
+		/// </summary>
+		/// <param name="factory">The factory.</param>
+		void SetFactory(ISessionFactoryImplementor factory);
 	}
 }

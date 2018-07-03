@@ -2,7 +2,6 @@ using System.Collections;
 using System.Threading;
 using NHibernate.Cfg;
 using NHibernate.Context;
-using NHibernate.Engine;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ConnectionTest
@@ -59,8 +58,6 @@ namespace NHibernate.Test.ConnectionTest
 
 	public class TestableMapBasedSessionContext : MapBasedSessionContext
 	{
-		public TestableMapBasedSessionContext(ISessionFactoryImplementor factory) : base(factory) { }
-
 		// Context is the app with such implementation. Just for the test case.
 		internal static IDictionary _map;
 

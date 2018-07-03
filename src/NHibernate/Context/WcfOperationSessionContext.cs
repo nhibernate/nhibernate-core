@@ -12,7 +12,11 @@ namespace NHibernate.Context
 	/// </summary>
 	public class WcfOperationSessionContext : MapBasedSessionContext
 	{
+		// Since v5.2
+		[Obsolete("This constructor has no more usages and will be removed in a future version")]
 		public WcfOperationSessionContext(ISessionFactoryImplementor factory) : base(factory) {}
+
+		public WcfOperationSessionContext() { }
 
 		private static WcfStateExtension WcfOperationState
 		{

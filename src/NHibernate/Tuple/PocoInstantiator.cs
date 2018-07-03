@@ -103,7 +103,7 @@ namespace NHibernate.Tuple
 			}
 			if (mappedClass.IsValueType)
 			{
-				return Cfg.Environment.ObjectsFactory.CreateInstance(mappedClass, true);
+				return Activator.CreateInstance(mappedClass, true);
 			}
 			if (constructor == null)
 			{
