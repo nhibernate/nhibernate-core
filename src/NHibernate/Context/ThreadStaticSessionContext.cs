@@ -14,11 +14,7 @@ namespace NHibernate.Context
 		[ThreadStatic]
 		private static IDictionary _map;
 
-		// Since v5.2
-		[Obsolete("This constructor has no more usages and will be removed in a future version")]
 		public ThreadStaticSessionContext(ISessionFactoryImplementor factory) : base (factory) { }
-
-		public ThreadStaticSessionContext() { }
 
 		protected override IDictionary GetMap()
 		{

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using NHibernate;
 using NHibernate.Engine;
 
 namespace NHibernate.Context
@@ -30,24 +31,20 @@ namespace NHibernate.Context
 	/// <para>The cleanup on transaction end is indeed not implemented.</para>
 	/// </summary>
 	[Serializable]
-	public partial class ThreadLocalSessionContext : ICurrentSessionContextWithFactory
+	public partial class ThreadLocalSessionContext : ICurrentSessionContext
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ThreadLocalSessionContext));
 
 		[ThreadStatic]
 		protected static IDictionary<ISessionFactory, ISession> context;
 
-		protected ISessionFactoryImplementor factory;
+		protected readonly ISessionFactoryImplementor factory;
 
 
-		// Since v5.2
-		[Obsolete("This constructor has no more usages and will be removed in a future version")]
 		public ThreadLocalSessionContext(ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
 		}
-
-		public ThreadLocalSessionContext() { }
 
 		#region ICurrentSessionContext Members
 
@@ -67,14 +64,6 @@ namespace NHibernate.Context
 				DoBind(current, factory);
 			}
 			return current;
-		}
-
-		/// <inheritdoc />
-		public void SetFactory(ISessionFactoryImplementor factory)
-		{
-			if (this.factory != null)
-				throw new InvalidOperationException("The factory has already been set");
-			this.factory = factory;
 		}
 
 		#endregion

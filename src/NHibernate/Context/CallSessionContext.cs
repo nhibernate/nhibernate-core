@@ -27,13 +27,9 @@ namespace NHibernate.Context
 		private static readonly AsyncLocal<IDictionary> SessionFactoryMap = new AsyncLocal<IDictionary>();
 		#endif
 
-		// Since v5.2
-		[Obsolete("This constructor has no more usages and will be removed in a future version")]
 		public CallSessionContext(ISessionFactoryImplementor factory) : base(factory)
 		{
 		}
-
-		public CallSessionContext() { }
 
 		/// <summary>
 		/// The key is the session factory and the value is the bound session.

@@ -11,13 +11,14 @@
 using System;
 using System.Collections.Generic;
 
+using NHibernate;
 using NHibernate.Engine;
 
 namespace NHibernate.Context
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class ThreadLocalSessionContext : ICurrentSessionContextWithFactory
+	public partial class ThreadLocalSessionContext : ICurrentSessionContext
 	{
 
 		private static async Task CleanupAnyOrphanedSessionAsync(ISessionFactory factory, CancellationToken cancellationToken)

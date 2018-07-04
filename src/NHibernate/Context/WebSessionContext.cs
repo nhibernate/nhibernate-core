@@ -13,11 +13,7 @@ namespace NHibernate.Context
 	{
 		private const string SessionFactoryMapKey = "NHibernate.Context.WebSessionContext.SessionFactoryMapKey";
 
-		// Since v5.2
-		[Obsolete("This constructor has no more usages and will be removed in a future version")]
 		public WebSessionContext(ISessionFactoryImplementor factory) : base(factory) {}
-
-		public WebSessionContext() { }
 
 		protected override IDictionary GetMap()
 		{

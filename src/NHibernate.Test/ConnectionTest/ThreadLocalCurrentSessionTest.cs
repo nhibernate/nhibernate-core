@@ -1,5 +1,6 @@
 using NHibernate.Cfg;
 using NHibernate.Context;
+using NHibernate.Engine;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ConnectionTest
@@ -70,7 +71,8 @@ namespace NHibernate.Test.ConnectionTest
 	{
 		private static TestableThreadLocalContext me;
 
-		public TestableThreadLocalContext()
+		public TestableThreadLocalContext(ISessionFactoryImplementor factory)
+			: base(factory)
 		{
 			me = this;
 		}
