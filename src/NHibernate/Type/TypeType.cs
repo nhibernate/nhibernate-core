@@ -84,6 +84,23 @@ namespace NHibernate.Type
 		}
 
 		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
+		/// <summary>
+		/// A representation of the value to be embedded in an XML element 
+		/// </summary>
+		/// <param name="value">The <see cref="System.Type"/> that contains the values.
+		/// </param>
+		/// <returns>An Xml formatted string that contains the Assembly Qualified Name.</returns>
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object value)
 		{
 			return GetStringRepresentation(value);
@@ -107,7 +124,8 @@ namespace NHibernate.Type
 			get { return "Type"; }
 		}
 
-		/// <inheritdoc />
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
 			return ParseStringRepresentation(xml);
@@ -125,7 +143,7 @@ namespace NHibernate.Type
 			return GetStringRepresentation(value);
 		}
 
-		private string GetStringRepresentation(object value)
+		private static string GetStringRepresentation(object value)
 		{
 			return ((System.Type) value)?.AssemblyQualifiedName;
 		}

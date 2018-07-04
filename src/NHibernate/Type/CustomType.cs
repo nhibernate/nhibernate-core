@@ -107,22 +107,20 @@ namespace NHibernate.Type
 			userType.NullSafeSet(cmd, value, index, session);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="factory"></param>
-		/// <returns></returns>
+		/// <inheritdoc />
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{
 			if (value == null)
 			{
 				return "null";
 			}
-			IEnhancedUserType eut = userType as IEnhancedUserType;
-			if (eut != null)
+
+			if (userType is IEnhancedUserType eut)
 			{
+				// 6.0 TODO: remove warning disable/restore
+#pragma warning disable 618
 				return eut.ToXMLString(value);
+#pragma warning restore 618
 			}
 			return value.ToString();
 		}
@@ -169,14 +167,26 @@ namespace NHibernate.Type
 			return checkable[0] && IsDirty(old, current, session);
 		}
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior.
+		/// <inheritdoc />
 		public object StringToObject(string xml)
 		{
+			// 6.0 TODO: remove warning disable/restore
+#pragma warning disable 618
 			return ((IEnhancedUserType) userType).FromXMLString(xml);
+#pragma warning restore 618
 		}
-		
+
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior.
+		/// <inheritdoc cref="IVersionType.FromStringValue"/>
 		public object FromStringValue(string xml)
 		{
-			return ((IEnhancedUserType)userType).FromXMLString(xml);
+			// 6.0 TODO: remove warning disable/restore
+#pragma warning disable 618
+			return ((IEnhancedUserType) userType).FromXMLString(xml);
+#pragma warning restore 618
 		}
 
 		public virtual string ObjectToSQLString(object value, Dialect.Dialect dialect)

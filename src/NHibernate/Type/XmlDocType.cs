@@ -40,7 +40,10 @@ namespace NHibernate.Type
 			// according to documentation, GetValue should return a string, at least for MsSQL
 			// hopefully all DataProvider has the same behaviour
 			string xmlString = Convert.ToString(rs.GetValue(index));
+			// 6.0 TODO: inline the call.
+#pragma warning disable 618
 			return FromStringValue(xmlString);
+#pragma warning restore 618
 		}
 
 		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
@@ -48,20 +51,28 @@ namespace NHibernate.Type
 			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
+		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object val)
 		{
 			return GetStringRepresentation(val);
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
-			if (xml != null)
-			{
-				var xmlDocument = new XmlDocument();
-				xmlDocument.LoadXml(xml);
-				return xmlDocument;
-			}
-			return null;
+			return ParseStringRepresentation(xml);
 		}
 
 		public override object DeepCopyNotNull(object value)
@@ -88,7 +99,7 @@ namespace NHibernate.Type
 		/// <inheritdoc />
 		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			return FromStringValue(cached as string);
+			return ParseStringRepresentation(cached as string);
 		}
 
 		/// <inheritdoc />
@@ -97,9 +108,19 @@ namespace NHibernate.Type
 			return GetStringRepresentation(value);
 		}
 
-		private string GetStringRepresentation(object value)
+		private static string GetStringRepresentation(object value)
 		{
 			return ((XmlDocument) value)?.OuterXml;
+		}
+
+		private static object ParseStringRepresentation(string value)
+		{
+			if (value == null)
+				return null;
+
+			var xmlDocument = new XmlDocument();
+			xmlDocument.LoadXml(value);
+			return xmlDocument;
 		}
 	}
 }

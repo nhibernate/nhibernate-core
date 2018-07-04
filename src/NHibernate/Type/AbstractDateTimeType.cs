@@ -129,15 +129,38 @@ namespace NHibernate.Type
 			(Kind == DateTimeKind.Unspecified || x == null || ((DateTime) x).Kind == ((DateTime) y).Kind);
 
 		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
+		// Since 5.2
+		/// <inheritdoc />
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object val) =>
 			((DateTime) val).ToString(CultureInfo.CurrentCulture);
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior.
 		/// <inheritdoc />
 		public object StringToObject(string xml) =>
-			string.IsNullOrEmpty(xml) ? null : FromStringValue(xml);
+			string.IsNullOrEmpty(xml) ? null :
+				// 6.0 TODO: remove warning disable/restore
+#pragma warning disable 618
+				FromStringValue(xml);
+#pragma warning restore 618
 
-		/// <inheritdoc />
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior. Replace override keyword by virtual after having
+		// removed the obsoleted base.
+		/// <inheritdoc cref="IVersionType.FromStringValue"/>
+#pragma warning disable 672
 		public override object FromStringValue(string xml)
+#pragma warning restore 672
 		{
 			// Parsing with .Net always yield a Local date.
 			var date = DateTime.Parse(xml);

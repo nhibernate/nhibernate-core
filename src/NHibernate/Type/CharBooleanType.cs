@@ -61,11 +61,9 @@ namespace NHibernate.Type
 			return "'" + ToCharacter(value) + "'";
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior.
+		/// <inheritdoc />
 		public override object StringToObject(String xml)
 		{
 			if (string.Equals(TrueString, xml, StringComparison.InvariantCultureIgnoreCase))
