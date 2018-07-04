@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Criterion;
+using NHibernate.Multi;
 using NHibernate.Stat;
 using NUnit.Framework;
 
@@ -243,16 +244,40 @@ namespace NHibernate.Test.Stats
 			{
 				using (var s = OpenSession())
 				{
+#pragma warning disable 618
 					var r = s.CreateMultiQuery().Add("from Country").Add("from Continent").List();
+#pragma warning restore 618
 				}
 				Assert.AreEqual(1, stats.QueryExecutionCount);
 
 				stats.Clear();
 				using (var s = OpenSession())
 				{
+#pragma warning disable 618
 					var r = s.CreateMultiCriteria().Add(DetachedCriteria.For<Country>()).Add(DetachedCriteria.For<Continent>()).List();
+#pragma warning restore 618
 				}
 				Assert.AreEqual(1, stats.QueryExecutionCount);
+
+				stats.Clear();
+				using (var s = OpenSession())
+				{
+					s.CreateQueryBatch()
+					 .Add<Country>(s.CreateQuery("from Country"))
+					 .Add<Continent>(s.CreateQuery("from Continent"))
+					 .Execute();
+				}
+				Assert.That(stats.QueryExecutionCount, Is.EqualTo(1));
+
+				stats.Clear();
+				using (var s = OpenSession())
+				{
+					s.CreateQueryBatch()
+					 .Add<Country>(DetachedCriteria.For<Country>())
+					 .Add<Continent>(DetachedCriteria.For<Continent>())
+					 .Execute();
+				}
+				Assert.That(stats.QueryExecutionCount, Is.EqualTo(1));
 			}
 
 			using (ISession s = OpenSession())

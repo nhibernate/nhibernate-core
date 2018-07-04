@@ -21,7 +21,7 @@ namespace NHibernate.Test.QueryTest
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	[TestFixture]
+	[TestFixture, Obsolete]
 	public class MultipleQueriesFixtureAsync : TestCase
 	{
 		protected override string MappingsAssembly

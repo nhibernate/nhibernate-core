@@ -1216,131 +1216,194 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens");]]></programlisting>
     </sect1>
 
     <sect1 id="performance-multi-query">
-        <title>Multi Query</title>
-        
+        <title>Query batch</title>
+
         <para>
-            This functionality allows you to execute several HQL queries in one round-trip
+            This functionality allows you to execute several queries in one round-trip
             against the database server. A simple use case is executing a paged query while
-            also getting the total count of results, in a single round-trip. Here is a simple
+            also getting the total count of results, in a single round-trip. Here is an
             example:
         </para>
+
+        <programlisting><![CDATA[using NHibernate.Multi;
+
+...
+
+IQueryBatch queries = s.CreateQueryBatch()
+    .Add<Item>(
+        s.CreateQuery("from Item i where i.Id > ?")
+         .SetInt32(0, 50).SetFirstResult(10))
+    .Add<long>(
+        s.CreateQuery("select count(*) from Item i where i.Id > :id")
+         .SetInt32("id", 50));
+IList<Item> items = queries.GetResult<Item>(0);
+long count = queries.GetResult<long>(1).Single();]]></programlisting>
+
+        <para>
+            The results are got by index, ordered according to the order of queries
+            added to the query batch. Instead of relying on this ordering, a key can be
+            associated with each query for later retrieval:
+        </para>
+
+        <programlisting><![CDATA[using NHibernate.Multi;
+
+...
+
+var queries = s.CreateQueryBatch()
+    .Add("list", s.Query<Item>().Where(i => i.Id > 50))
+    .Add("count", s.Query<Item>().Where(i => i.Id > 50), q => q.Count());
+var count = queries.GetResult<int>("count").Single();
+var items = queries.GetResult<Item>("list");]]></programlisting>
+
+        <para>
+            The namespace <literal>NHibernate.Multi</literal> has to be imported since most query
+            batch methods are extension methods.
+        </para>
+
+        <para>
+            Criteria queries are also supported by the query batch:
+        </para>
         
-        <programlisting><![CDATA[IMultiQuery multiQuery = s.CreateMultiQuery()
-    .Add(s.CreateQuery("from Item i where i.Id > ?")
-          .SetInt32(0, 50).SetFirstResult(10))
-    .Add(s.CreateQuery("select count(*) from Item i where i.Id > ?")
-          .SetInt32(0, 50));
-IList results = multiQuery.List();
-IList items = (IList)results[0];
-long count = (long)((IList)results[1])[0];]]></programlisting>
+        <programlisting><![CDATA[var queries = s.CreateQueryBatch()
+    .Add<Item>(
+        s.CreateCriteria(typeof(Item))
+         .Add(Expression.Gt("Id", 50))
+         .SetFirstResult(10))
+    .Add<long>(
+        s.CreateCriteria(typeof(Item))
+         .Add(Expression.Gt("Id", 50))
+         .SetProject(Projections.RowCount()));
+var items = queries.GetResult<Item>(0);
+var count = queries.GetResult<long>(1).Single();]]></programlisting>
 
         <para>
-            The result is a list of query results, ordered according to the order of queries
-            added to the multi query. Named parameters can be set on the multi query, and are
-            shared among all the queries contained in the multi query, like this:
+            You can add <literal>ICriteria</literal> or <literal>DetachedCriteria</literal> to the query batch.
+            In fact, using DetachedCriteria in this fashion has some interesting implications.
         </para>
+        <programlisting><![CDATA[DetachedCriteria customersCriteria = AuthorizationService.GetAssociatedCustomersQuery();
+IQueryBatch queries = session.CreateQueryBatch()
+    .Add<Customer>(customersCriteria)
+    .Add<Policy>(DetachedCriteria.For<Policy>()
+        .Add(Subqueries.PropertyIn("id",
+            CriteriaTransformer.Clone(customersCriteria)
+                .SetProjection(Projections.Id())
+            )));
 
-        <programlisting><![CDATA[IList results = s.CreateMultiQuery()
-    .Add(s.CreateQuery("from Item i where i.Id > :id")
-          .SetFirstResult(10))
-    .Add("select count(*) from Item i where i.Id > :id")
-    .SetInt32("id", 50)
-    .List();
-IList items = (IList)results[0];
-long count = (long)((IList)results[1])[0];]]></programlisting>
-
-        <para>
-            Positional parameters are not supported on the multi query, only on the individual
-            queries.
-        </para>
+IList<Customer> customers = queries.GetResult<Customer>(0);
+IList<Policy> policies = queries.GetResult<Policy>(1);]]></programlisting>
 
         <para>
-            As shown above, if you do not need to configure the query separately, you can simply
-            pass the HQL directly to the <literal>IMultiQuery.Add()</literal> method.
+            We get a query that represents the customers we can access, and then we can utilize this
+            query further in order to perform additional logic (getting the policies of the customers we are
+            associated with), all in a single database round-trip.
         </para>
+
+        <para>
+            The query batch also supports QueryOver and sql queries. All kind of queries can be mixed in the
+            same batch.
+        </para>
+
+        <programlisting><![CDATA[using NHibernate.Multi;
+
+...
+
+var queries = s.CreateQueryBatch()
+    .Add("queryOverList", s.QueryOver<Item>().Where(i => i.Category == "Food"))
+    .Add<long>("sqlCount",
+        s.CreateSQLQuery("select count(*) as count from Item i where i.Category = :cat")
+         .AddScalar("count", NHibernateUtil.Int64)
+         .SetString("cat", "Food"));
+var count = queries.GetResult<long>("sqlCount").Single();
+var items = queries.GetResult<Item>("queryOverList");]]></programlisting>
+
+        <para>
+            Second level cache is supported by the query batch. Queries flagged as cacheable will be retrieved
+            from the cache if already cached, otherwise their results will be put in the cache.
+        </para>
+
+        <programlisting><![CDATA[using NHibernate.Multi;
+
+...
+
+var queries = s.CreateQueryBatch()
+    .Add("list",
+        s.Query<Item>()
+         .Where(i => i.Id > 50)
+         .WithOptions(o => o.SetCacheable(true)))
+    .Add<long>("count",
+        s.CreateQuery("select count(*) from Item i where i.Id > :id")
+         .SetInt32("id", 50)
+         .SetCacheable(true));
+var count = queries.GetResult<long>("count").Single();
+var items = queries.GetResult<Item>("list");]]></programlisting>
 
         <para>
             Multi query is executed by concatenating the queries and sending the query to the database
             as a single string. This means that the database should support returning several result sets
-            in a single query. At the moment this functionality is only enabled for Microsoft SQL Server and SQLite.
+            in a single query. Otherwise each query will be individually executed instead.
         </para>
 
         <para>
-            Note that the database server is likely to impose a limit on the maximum number of parameters
-            in a query, in which case the limit applies to the multi query as a whole. Queries using
+            The first <literal>GetResult</literal> call triggers execution of the whole query batch, which
+            then stores all results. Later calls only retrieve the stored results. A query batch can be
+            re-executed by calling its <literal>Execute</literal> method. Once executed, no new query can be
+            added to the batch.
+        </para>
+
+        <para>
+            Note that the database server is likely to enforce a limit on the maximum number of parameters
+            in a query, in which case the limit applies to the query batch as a whole. Queries using
             <literal>in</literal> with a large number of arguments passed as parameters may easily exceed
             this limit. For example, SQL Server has a limit of 2,100 parameters per round-trip, and will
             throw an exception executing this query:
         </para>
-        
-        <programlisting><![CDATA[IList allEmployeesId  = ...; //1,500 items
-IMultiQuery multiQuery = s.CreateMultiQuery()
-    .Add(s.CreateQuery("from Employee e where e.Id in :empIds")
-          .SetParameter("empIds", allEmployeesId).SetFirstResult(10))
-    .Add(s.CreateQuery("select count(*) from Employee e where e.Id in :empIds")
-          .SetParameter("empIds", allEmployeesId));
-IList results = multiQuery.List(); // will throw an exception from SQL Server]]></programlisting>
+
+        <programlisting><![CDATA[int[] allEmployeesId  = ...; // 1,500 items
+var queries = s.CreateQueryBatch()
+    .Add<Employee>(
+        s.CreateQuery("from Employee e where e.Id in :empIds")
+         .SetParameterList("empIds", allEmployeesId)
+         .SetFirstResult(10))
+    .Add<long>(
+        s.CreateQuery("select count(*) from Employee e where e.Id in :empIds")
+         .SetParameterList("empIds", allEmployeesId));
+queries.Execute(); // will throw an exception from SQL Server]]></programlisting>
 
         <para>
-            An interesting usage of this feature is to load several collections of an object in one
+            An interesting usage of the query batch is to load several collections of an object in one
             round-trip, without an expensive cartesian product (blog * users * posts).
         </para>
 
-        <programlisting><![CDATA[Blog blog = s.CreateMultiQuery()
-    .Add("select b from Blog b left join fetch b.Users where b.Id = :id")
-    .Add("select b from Blog b left join fetch b.Posts where b.Id = :id")
-    .SetInt32("id", 123)
-    .UniqueResult<Blog>();]]></programlisting>
-
-    </sect1>
-    
-     <sect1 id="performance-multi-criteria">
-        <title>Multi Criteria</title>
-        
-        <para>
-            This is the counter-part to Multi Query, and allows you to perform several criteria queries
-            in a single round trip. A simple use case is executing a paged query while
-            also getting the total count of results, in a single round-trip. Here is a simple
-            example:
-        </para>
-        
-        <programlisting><![CDATA[IMultiCriteria multiCrit = s.CreateMultiCriteria()
-    .Add(s.CreateCriteria(typeof(Item))
-          .Add(Expression.Gt("Id", 50))
-          .SetFirstResult(10))
-    .Add(s.CreateCriteria(typeof(Item))
-          .Add(Expression.Gt("Id", 50))
-          .SetProject(Projections.RowCount()));
-IList results = multiCrit.List();
-IList items = (IList)results[0];
-long count = (long)((IList)results[1])[0];]]></programlisting>
+        <programlisting><![CDATA[Blog blog = s.CreateQueryBatch()
+    .Add(
+        s.CreateQuery("select b from Blog b left join fetch b.Users where b.Id = :id")
+         .SetInt32("id", 123))
+    .Add(
+        s.CreateQuery("select b from Blog b left join fetch b.Posts where b.Id = :id")
+         .SetInt32("id", 123))
+    .GetResult<Blog>(0).FirstOrDefault();]]></programlisting>
 
         <para>
-            The result is a list of query results, ordered according to the order of queries
-            added to the multi criteria. 
+            You can also add queries as future queries to a query batch:
         </para>
+
+        <programlisting><![CDATA[using NHibernate.Multi;
+
+...
+
+var queries = s.CreateQueryBatch();
+var list = queries.AddAsFuture(s.Query<Item>().Where(i => i.Id > 50)));
+var countValue = queries.AddAsFutureValue<long>(
+    s.CreateQuery("select count(*) from Item i where i.Id > :id")
+     .SetInt32("id", 50));
+var count = countValue.Value;
+var items = list.GetEnumerable();]]></programlisting>
 
         <para>
-            You can add <literal>ICriteria</literal> or <literal>DetachedCriteria</literal> to the Multi Criteria query.
-            In fact, using DetachedCriteria in this fashion has some interesting implications. 
+            Futures built from a query batch are executed together the first time the result of one of
+            them is accessed. They are independent of futures obtained directly from the queries.
         </para>
-        <programlisting><![CDATA[DetachedCriteria customersCriteria = AuthorizationService.GetAssociatedCustomersQuery();
-IList results = session.CreateMultiCriteria()
-    .Add(customersCriteria)
-    .Add(DetachedCriteria.For<Policy>()
-        .Add(Subqueries.PropertyIn("id",
-            CriteriaTransformer.Clone(customersCriteria)
-                .SetProjection(Projections.Id())
-            )))
-    .List();
 
-ICollection<Customer> customers = CollectionHelper.ToArray<Customer>(results[0]);
-ICollection<Policy> policies = CollectionHelper.ToArray<Policy>(results[1]);]]></programlisting>
-
-        <para>
-          As you see, we get a query that represents the customers we can access, and then we can utilize this query further in order to 
-          perform additional logic (getting the policies of the customers we are associated with), all in a single database round-trip.
-        </para>
     </sect1>
 
      <sect1 id="performance-future">

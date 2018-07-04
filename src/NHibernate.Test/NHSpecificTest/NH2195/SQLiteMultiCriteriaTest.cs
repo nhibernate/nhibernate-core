@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
-using NHibernate.Tool.hbm2ddl;
+using NHibernate.Multi;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2195
@@ -86,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public void MultiCriteriaQueriesWithIntsShouldExecuteCorrectly()
 		{
 			var driver = Sfi.ConnectionProvider.Driver;
@@ -115,7 +115,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public void MultiCriteriaQueriesWithStringsShouldExecuteCorrectly()
 		{
 			var driver = Sfi.ConnectionProvider.Driver;
@@ -142,6 +142,64 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 
 				Assert.AreEqual(2, criteriaWithRowCount.UniqueResult<long>());
 				Assert.AreEqual(1, list.Count);
+			}
+		}
+
+		[Test]
+		public void QueryBatchWithIntsShouldExecuteCorrectly()
+		{
+			var driver = Sfi.ConnectionProvider.Driver;
+			if (!driver.SupportsMultipleQueries)
+				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
+
+			// Test querying IntData
+			using (var session = OpenSession())
+			{
+				var criteriaWithPagination = session.CreateCriteria<DomainClass>();
+				criteriaWithPagination.Add(Restrictions.Le("IntData", 2));
+				var criteriaWithRowCount = CriteriaTransformer.Clone(criteriaWithPagination);
+				criteriaWithPagination.SetFirstResult(0).SetMaxResults(1);
+				criteriaWithRowCount.SetProjection(Projections.RowCountInt64());
+
+				var multi = session.CreateQueryBatch();
+				multi.Add<DomainClass>(criteriaWithPagination);
+				multi.Add<long>(criteriaWithRowCount);
+
+				var numResults = multi.GetResult<long>(1).Single();
+				var list = multi.GetResult<DomainClass>(0);
+
+				Assert.That(numResults, Is.EqualTo(2));
+				Assert.That(list.Count, Is.EqualTo(1));
+				Assert.That(criteriaWithRowCount.UniqueResult<long>(), Is.EqualTo(2));
+			}
+		}
+
+		[Test]
+		public void QueryBatchWithStringsShouldExecuteCorrectly()
+		{
+			var driver = Sfi.ConnectionProvider.Driver;
+			if (!driver.SupportsMultipleQueries)
+				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
+
+			// Test querying StringData
+			using (var session = OpenSession())
+			{
+				var criteriaWithPagination = session.CreateCriteria<DomainClass>();
+				criteriaWithPagination.Add(Restrictions.Like("StringData", "%Doe%"));
+				var criteriaWithRowCount = CriteriaTransformer.Clone(criteriaWithPagination);
+				criteriaWithPagination.SetFirstResult(0).SetMaxResults(1);
+				criteriaWithRowCount.SetProjection(Projections.RowCountInt64());
+
+				var multi = session.CreateQueryBatch();
+				multi.Add<DomainClass>(criteriaWithPagination);
+				multi.Add<long>(criteriaWithRowCount);
+
+				var numResults = multi.GetResult<long>(1).Single();
+				var list = multi.GetResult<DomainClass>(0);
+
+				Assert.That(numResults, Is.EqualTo(2));
+				Assert.That(list.Count, Is.EqualTo(1));
+				Assert.That(criteriaWithRowCount.UniqueResult<long>(), Is.EqualTo(2));
 			}
 		}
 	}

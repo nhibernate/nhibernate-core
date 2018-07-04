@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Cache;
@@ -6,6 +7,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Impl
 {
+	[Obsolete("This class has no more usage and will be removed in a future version")]
 	internal partial class MultipleQueriesCacheAssembler : ICacheAssembler
 	{
 		private readonly IList assemblersList;

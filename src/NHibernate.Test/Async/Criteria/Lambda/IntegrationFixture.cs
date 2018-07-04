@@ -16,6 +16,7 @@ using System.Linq;
 using NUnit.Framework;
 
 using NHibernate.Criterion;
+using NHibernate.Multi;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
@@ -352,7 +353,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public async Task MultiCriteriaAsync()
 		{
 			var driver = Sfi.ConnectionProvider.Driver;
@@ -400,6 +401,62 @@ namespace NHibernate.Test.Criteria.Lambda
 
 				var pageResults = (IList<Person>) await (multiCriteria.GetResultAsync("page"));
 				var countResults = (IList<int>) await (multiCriteria.GetResultAsync("count"));
+
+				Assert.That(pageResults.Count, Is.EqualTo(1));
+				Assert.That(pageResults[0].Name, Is.EqualTo("Name 3"));
+				Assert.That(countResults.Count, Is.EqualTo(1));
+				Assert.That(countResults[0], Is.EqualTo(4));
+			}
+		}
+
+		[Test]
+		public async Task MultiQueryAsync()
+		{
+			var driver = Sfi.ConnectionProvider.Driver;
+			if (!driver.SupportsMultipleQueries)
+				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
+
+			await (SetupPagingDataAsync());
+
+			using (var s = OpenSession())
+			{
+				var query =
+					s.QueryOver<Person>()
+					 .JoinQueryOver(p => p.Children)
+					 .OrderBy(c => c.Age).Desc
+					 .Skip(2)
+					 .Take(1);
+
+				var multiQuery =
+					s.CreateQueryBatch()
+					 .Add("page", query)
+					 .Add<int>("count", query.ToRowCountQuery());
+
+				var pageResults = await (multiQuery.GetResultAsync<Person>("page", CancellationToken.None));
+				var countResults = await (multiQuery.GetResultAsync<int>("count", CancellationToken.None));
+
+				Assert.That(pageResults.Count, Is.EqualTo(1));
+				Assert.That(pageResults[0].Name, Is.EqualTo("Name 3"));
+				Assert.That(countResults.Count, Is.EqualTo(1));
+				Assert.That(countResults[0], Is.EqualTo(4));
+			}
+
+			using (var s = OpenSession())
+			{
+				var query =
+					QueryOver.Of<Person>()
+					         .JoinQueryOver(p => p.Children)
+					         .OrderBy(c => c.Age).Desc
+					         .Skip(2)
+					         .Take(1);
+
+				var multiCriteria =
+					s.CreateQueryBatch()
+					 .Add("page", query)
+					 .Add<int>("count", query.ToRowCountQuery());
+
+				var pageResults = await (multiCriteria.GetResultAsync<Person>("page", CancellationToken.None));
+				var countResults = await (multiCriteria.GetResultAsync<int>("count", CancellationToken.None));
 
 				Assert.That(pageResults.Count, Is.EqualTo(1));
 				Assert.That(pageResults[0].Name, Is.EqualTo("Name 3"));

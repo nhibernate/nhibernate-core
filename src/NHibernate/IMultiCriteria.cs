@@ -9,6 +9,8 @@ namespace NHibernate
 	/// <summary>
 	/// Combines several queries into a single DB call
 	/// </summary>
+	// Since v5.2
+	[Obsolete("Use Multi.IQueryBatch instead, obtainable with ISession.CreateQueryBatch.")]
 	public partial interface IMultiCriteria
 	{
 		/// <summary>
@@ -157,9 +159,10 @@ namespace NHibernate
 		object GetResult(string key);
 	}
 
+	// Since v5.2
+	[Obsolete("Use Multi.IQueryBatch instead, obtainable with ISession.CreateQueryBatch.")]
 	public static class MultiCriteriaExtensions
 	{
-		//6.0 TODO: Convert to interface method
 		/// <summary>
 		/// Set a timeout for the underlying ADO.NET query.
 		/// </summary>

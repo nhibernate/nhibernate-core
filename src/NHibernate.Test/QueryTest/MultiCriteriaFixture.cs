@@ -9,7 +9,7 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.QueryTest
 {
-	[TestFixture]
+	[TestFixture, Obsolete]
 	public class MultiCriteriaFixture : TestCase
 	{
 		protected override string MappingsAssembly

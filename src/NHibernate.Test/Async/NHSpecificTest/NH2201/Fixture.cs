@@ -10,11 +10,13 @@
 
 using System;
 using System.Collections.Generic;
+using NHibernate.Multi;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2201
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -45,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2201
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public async Task CanUseMutliCriteriaAndFetchSelectAsync()
 		{
 			using (var s = OpenSession())
@@ -59,6 +61,26 @@ namespace NHibernate.Test.NHSpecificTest.NH2201
 
 				var result1 = (IList<Parent>)results[0];
 				var result2 = (IList<Parent>)results[1];
+
+				Assert.That(result1.Count, Is.EqualTo(2));
+				Assert.That(result2.Count, Is.EqualTo(2));
+				Console.WriteLine("*** end");
+			}
+		}
+
+		[Test]
+		public async Task CanUseQueryBatchAndFetchSelectAsync()
+		{
+			using (var s = OpenSession())
+			{
+				Console.WriteLine("*** start");
+				var multi =
+					s.CreateQueryBatch()
+					 .Add<Parent>(s.CreateCriteria<Parent>())
+					 .Add<Parent>(s.CreateCriteria<Parent>());
+
+				var result1 = await (multi.GetResultAsync<Parent>(0, CancellationToken.None));
+				var result2 = await (multi.GetResultAsync<Parent>(1, CancellationToken.None));
 
 				Assert.That(result1.Count, Is.EqualTo(2));
 				Assert.That(result2.Count, Is.EqualTo(2));
