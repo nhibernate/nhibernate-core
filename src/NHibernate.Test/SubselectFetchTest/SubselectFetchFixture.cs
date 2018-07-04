@@ -366,7 +366,7 @@ namespace NHibernate.Test.SubselectFetchTest
 			s.Close();
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"SubselectFetchTest.ParentChild.hbm.xml"}; }
 		}

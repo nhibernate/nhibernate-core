@@ -19,11 +19,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1039Generic
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1039Generic";  }
-		}
-
 		protected override void OnTearDown()
 		{
 			base.OnTearDown();

@@ -20,7 +20,7 @@ namespace NHibernate.Test.LazyOneToOne
 	[TestFixture]
 	public class LazyOneToOneTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"LazyOneToOne.Person.hbm.xml"}; }
 		}

@@ -15,7 +15,7 @@ namespace NHibernate.Test.Subclass
 	[TestFixture]
 	public class SubclassExtendsFixture : SubclassFixture
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

@@ -9,7 +9,7 @@ namespace NHibernate.Test.Legacy
 	[TestFixture]
 	public class ABCProxyTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"ABCProxy.hbm.xml"}; }
 		}

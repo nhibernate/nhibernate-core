@@ -14,7 +14,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 	[TestFixture]
 	public class Fixture : TestCase
 	{
-		protected override IList Mappings => Array.Empty<string>();
+		protected override string[] Mappings => Array.Empty<string>();
 
 		protected override void Configure(Cfg.Configuration configuration)
 		{

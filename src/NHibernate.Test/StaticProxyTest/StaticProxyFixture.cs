@@ -17,7 +17,7 @@ namespace NHibernate.Test.StaticProxyTest
 	public class StaticProxyFixture : TestCase
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
-		protected override IList Mappings => new[] { "StaticProxyTest.Mappings.hbm.xml" };
+		protected override string[] Mappings => new[] { "StaticProxyTest.Mappings.hbm.xml" };
 
 		private object _idSimpleEntity1;
 		private object _idSimpleEntity2;

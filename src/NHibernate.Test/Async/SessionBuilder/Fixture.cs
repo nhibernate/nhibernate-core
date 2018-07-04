@@ -24,7 +24,7 @@ namespace NHibernate.Test.SessionBuilder
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings => new[] { "SessionBuilder.Mappings.hbm.xml" };
+		protected override string[] Mappings => new[] { "SessionBuilder.Mappings.hbm.xml" };
 
 		protected override void Configure(Configuration configuration)
 		{

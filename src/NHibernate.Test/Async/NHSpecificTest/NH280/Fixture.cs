@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH280
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "NHSpecificTest.NH280.Foo.hbm.xml" }; }
 		}

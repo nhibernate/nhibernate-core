@@ -20,11 +20,6 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 	{
 		protected bool isDynamic;
 
-		public override string BugNumber
-		{
-			get { return "NH372"; }
-		}
-
 		private async Task ComponentFieldNotInserted_GenericAsync(System.Type type, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			int id;

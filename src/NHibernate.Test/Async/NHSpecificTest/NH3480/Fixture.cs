@@ -20,11 +20,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3480
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH3480"; }
-		}
-
 		protected override void OnSetUp()
 		{
 			using (ISession session = OpenSession())

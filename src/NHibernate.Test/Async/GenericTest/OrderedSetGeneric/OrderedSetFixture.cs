@@ -17,7 +17,7 @@ namespace NHibernate.Test.GenericTest.OrderedSetGeneric
 	[TestFixture]
 	public class OrderedSetFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"GenericTest.OrderedSetGeneric.OrderedSetFixture.hbm.xml"}; }
 		}

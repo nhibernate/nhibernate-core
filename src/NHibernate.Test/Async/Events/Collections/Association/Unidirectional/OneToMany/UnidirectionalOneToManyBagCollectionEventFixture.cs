@@ -18,7 +18,7 @@ namespace NHibernate.Test.Events.Collections.Association.Unidirectional.OneToMan
 	[TestFixture]
 	public class UnidirectionalOneToManyBagCollectionEventFixtureAsync : AbstractAssociationCollectionEventFixtureAsync
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "Events.Collections.Association.Unidirectional.OneToMany.UnidirectionalOneToManyBagMapping.hbm.xml" }; }
 		}

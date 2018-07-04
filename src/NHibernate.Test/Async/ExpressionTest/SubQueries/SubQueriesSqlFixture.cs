@@ -27,7 +27,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"ExpressionTest.SubQueries.Mappings.hbm.xml"}; }
 		}

@@ -20,7 +20,7 @@ namespace NHibernate.Test.TransactionTest
 	[TestFixture]
 	public class TransactionNotificationFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return Array.Empty<string>(); }
 		}

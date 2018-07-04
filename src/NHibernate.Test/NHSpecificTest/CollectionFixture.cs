@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class CollectionFixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"NHSpecific.LazyLoadBug.hbm.xml"}; }
 		}

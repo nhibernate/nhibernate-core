@@ -17,7 +17,7 @@ namespace NHibernate.Test.ListIndex
 	[TestFixture]
 	public class SimpleOneToManyTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "ListIndex.SimpleOneToMany.hbm.xml" }; }
 		}

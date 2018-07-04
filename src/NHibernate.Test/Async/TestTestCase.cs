@@ -21,10 +21,7 @@ namespace NHibernate.Test
 	[TestFixture]
 	public class TestTestCaseAsync : TestCase
 	{
-		protected override IList Mappings
-		{
-			get { return Array.Empty<string>(); }
-		}
+		protected override string[] Mappings => Array.Empty<string>();
 
 		private bool _failOnTearDown;
 

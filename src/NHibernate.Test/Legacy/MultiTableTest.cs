@@ -15,7 +15,7 @@ namespace NHibernate.Test.Legacy
 	[TestFixture]
 	public class MultiTableTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Multi.hbm.xml", "MultiExtends.hbm.xml"}; }
 		}

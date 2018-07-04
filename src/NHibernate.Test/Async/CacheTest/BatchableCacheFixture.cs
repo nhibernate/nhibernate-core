@@ -29,7 +29,7 @@ namespace NHibernate.Test.CacheTest
 	[TestFixture]
 	public class BatchableCacheFixtureAsync : TestCase
 	{
-		protected override IList Mappings => new[]
+		protected override string[] Mappings => new[]
 		{
 			"CacheTest.ReadOnly.hbm.xml",
 			"CacheTest.ReadWrite.hbm.xml"

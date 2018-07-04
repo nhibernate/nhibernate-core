@@ -6,7 +6,7 @@ namespace NHibernate.Test
 {
 	public abstract class TestCaseMappingByCode:TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return Array.Empty<string>(); }
 		}

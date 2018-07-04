@@ -24,7 +24,7 @@ namespace NHibernate.Test.GenericTest.EnumGeneric
 	[TestFixture]
 	public class EnumGenericFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new String[] {"GenericTest.EnumGeneric.EnumGenericFixture.hbm.xml"}; }
 		}

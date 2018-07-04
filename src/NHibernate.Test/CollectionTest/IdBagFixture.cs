@@ -8,7 +8,7 @@ namespace NHibernate.Test.CollectionTest
 	[TestFixture]
 	public class IdBagFixture : TestCase
 	{
-		protected override System.Collections.IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "CollectionTest.IdBagFixture.hbm.xml" }; }
 		}

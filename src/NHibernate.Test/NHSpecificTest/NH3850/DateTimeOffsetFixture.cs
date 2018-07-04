@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 	[TestFixture]
 	public class DateTimeOffsetFixture : FixtureBase
 	{
-		protected override IList Mappings => new[] { $"NHSpecificTest.{BugNumber}.DateTimeOffsetMappings.hbm.xml" };
+		protected override string[] Mappings => new[] { "DateTimeOffsetMappings.hbm.xml" };
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{

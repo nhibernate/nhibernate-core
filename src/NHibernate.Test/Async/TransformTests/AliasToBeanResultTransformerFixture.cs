@@ -129,7 +129,7 @@ namespace NHibernate.Test.TransformTests
 
 		#region Overrides of TestCase
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "TransformTests.Simple.hbm.xml" }; }
 		}

@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class GetTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

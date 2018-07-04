@@ -24,7 +24,7 @@ namespace NHibernate.Test.CacheTest
 	[TestFixture]
 	public class BatchableCacheSubclassFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

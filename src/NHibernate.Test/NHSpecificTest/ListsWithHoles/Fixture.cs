@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
             return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
         }
 
-        protected override IList Mappings
+        protected override string[] Mappings
         {
             get { return new string[] { "NHSpecificTest.ListsWithHoles.Mappings.hbm.xml" }; }
         }

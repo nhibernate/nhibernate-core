@@ -11,7 +11,7 @@ namespace NHibernate.Test
 	[TestFixture]
 	public class SessionCacheTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Simple.hbm.xml"}; }
 		}

@@ -8,11 +8,6 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH720"; }
-		}
-
 		[Test]
 		public void CacheTest()
 		{

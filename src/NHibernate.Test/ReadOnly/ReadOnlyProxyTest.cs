@@ -17,7 +17,7 @@ namespace NHibernate.Test.ReadOnly
 	[TestFixture]
 	public class ReadOnlyProxyTest : AbstractReadOnlyTest
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

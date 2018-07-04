@@ -14,7 +14,7 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"EntityModeTest.Map.Basic.ProductLine.hbm.xml"}; }
 		}

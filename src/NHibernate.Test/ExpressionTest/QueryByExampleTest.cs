@@ -9,7 +9,7 @@ namespace NHibernate.Test.ExpressionTest
 	[TestFixture]
 	public class QueryByExampleTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Componentizable.hbm.xml"}; }
 		}

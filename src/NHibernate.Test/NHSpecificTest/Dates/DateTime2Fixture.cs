@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 	[TestFixture]
 	public class DateTime2Fixture : FixtureBase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"NHSpecificTest.Dates.Mappings.DateTime2.hbm.xml"}; }
 		}

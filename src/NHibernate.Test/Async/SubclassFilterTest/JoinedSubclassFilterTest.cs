@@ -20,7 +20,7 @@ namespace NHibernate.Test.SubclassFilterTest
 	[TestFixture]
 	public class JoinedSubclassFilterTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"SubclassFilterTest.joined-subclass.hbm.xml"}; }
 		}

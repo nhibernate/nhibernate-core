@@ -8,13 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
     [TestFixture]
     public class Fixture : BugTestCase
     {
-        public override string BugNumber
-        {
-            get { return "NH1080"; }
-        }
-
-
-        /* Bug occurs when an HQL query joins a OneToOne association (A.C), followed by a ManyToOne (A.B2) that 
+	    /* Bug occurs when an HQL query joins a OneToOne association (A.C), followed by a ManyToOne (A.B2) that 
            * returns null in the resultset.
            * 
            * This results in both associations being (incorrectly) marked as one-to-one's, due to an instance variable in

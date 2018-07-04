@@ -12,7 +12,7 @@ namespace NHibernate.Test.Subclass.EnumDiscriminator
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new String[] {"Subclass.EnumDiscriminator.EnumDiscriminator.hbm.xml"}; }
 		}

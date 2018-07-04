@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2664Generic
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings => new[] {"NHSpecificTest.NH2664Generic.Mappings.hbm.xml"};
+		protected override string[] Mappings => new[] {"NHSpecificTest.NH2664Generic.Mappings.hbm.xml"};
 
 		/// <summary>
 		/// push some data into the database

@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class OptimisticConcurrencyFixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Multi.hbm.xml", "NHSpecific.Optimistic.hbm.xml"}; }
 		}

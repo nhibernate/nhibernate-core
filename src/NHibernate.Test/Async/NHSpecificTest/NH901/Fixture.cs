@@ -108,7 +108,7 @@ namespace NHibernate.Test.NHSpecificTest.NH901
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"NHSpecificTest.NH901.Mappings.hbm.xml"}; }
 		}
@@ -117,7 +117,7 @@ namespace NHibernate.Test.NHSpecificTest.NH901
 	[TestFixture]
 	public class FixtureByCodeAsync : FixtureBaseAsync
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return Array.Empty<string>(); }
 		}

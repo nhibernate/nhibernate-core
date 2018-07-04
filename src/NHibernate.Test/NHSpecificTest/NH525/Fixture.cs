@@ -6,11 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH525
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH525"; }
-		}
-
 		[Test]
 		public void DoSomething()
 		{

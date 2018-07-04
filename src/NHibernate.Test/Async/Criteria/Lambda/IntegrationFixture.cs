@@ -26,7 +26,7 @@ namespace NHibernate.Test.Criteria.Lambda
 	{
 		protected override string MappingsAssembly { get { return "NHibernate.Test"; } }
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Criteria.Lambda.Mappings.hbm.xml" }; }
 		}

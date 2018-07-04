@@ -10,7 +10,7 @@ namespace NHibernate.Test.ProjectionFixtures
     [TestFixture]
     public class Fixture : TestCase
     {
-        protected override System.Collections.IList Mappings
+        protected override string[] Mappings
         {
             get { return new string[] { "ProjectionFixtures.Mapping.hbm.xml" }; }
         }

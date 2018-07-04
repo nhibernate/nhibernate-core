@@ -586,7 +586,7 @@ namespace NHibernate.Test.FilterTest
 
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings => new []
+		protected override string[] Mappings => new []
 		{
 			"FilterTest.defs.hbm.xml",
 			"FilterTest.classes.hbm.xml",

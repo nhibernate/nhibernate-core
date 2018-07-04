@@ -10,15 +10,11 @@ namespace NHibernate.Test.NHSpecificTest.NH440
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
+		protected override string[] Mappings => new[]
 		{
-			get { return "NH440"; }
-		}
-
-		protected override IList Mappings
-		{
-			get { return new string[] {"NHSpecificTest.NH440.Fruit.hbm.xml", "NHSpecificTest.NH440.Apple.hbm.xml"}; }
-		}
+			"Fruit.hbm.xml",
+			"Apple.hbm.xml"
+		};
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{

@@ -30,7 +30,7 @@ namespace NHibernate.Test.Legacy
 	{
 		protected static short fumKeyShort = 1;
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

@@ -11,7 +11,7 @@ namespace NHibernate.Test.QueryTest
 	[TestFixture]
 	public class NamedParametersFixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Simple.hbm.xml"}; }
 		}

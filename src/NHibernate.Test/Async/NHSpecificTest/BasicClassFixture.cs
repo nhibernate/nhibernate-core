@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class BasicClassFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"NHSpecific.BasicClass.hbm.xml"}; }
 		}

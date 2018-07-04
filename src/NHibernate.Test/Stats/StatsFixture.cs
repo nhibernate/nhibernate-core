@@ -14,7 +14,7 @@ namespace NHibernate.Test.Stats
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "Stats.Continent.hbm.xml" }; }
 		}

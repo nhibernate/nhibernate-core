@@ -26,7 +26,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2825
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "MappingByCode.IntegrationTests.NH2825.Mappings.hbm.xml" }; }
 		}

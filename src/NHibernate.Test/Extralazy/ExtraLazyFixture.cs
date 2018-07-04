@@ -12,7 +12,7 @@ namespace NHibernate.Test.Extralazy
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"Extralazy.UserGroup.hbm.xml"}; }
 		}

@@ -6,7 +6,7 @@ namespace NHibernate.Test.Futures
 {
 	public abstract class FutureFixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Futures.Mappings.hbm.xml" }; }
 		}

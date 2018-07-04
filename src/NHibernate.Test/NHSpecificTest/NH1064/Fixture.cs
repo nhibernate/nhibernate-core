@@ -9,11 +9,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1064
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1064"; }
-		}
-
 		protected override void OnTearDown()
 		{
 			base.OnTearDown();

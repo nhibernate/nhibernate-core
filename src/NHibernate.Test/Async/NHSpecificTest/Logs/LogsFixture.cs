@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 	[TestFixture]
 	public class LogsFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "NHSpecificTest.Logs.Mappings.hbm.xml" }; }
 		}

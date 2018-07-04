@@ -132,7 +132,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Reversed.Unidirection
 	[TestFixture]
 	public class DeleteOneToOneOrphansTestHbm : DeleteOneToOneOrphansTest
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Cascade.OneToOneCascadeDelete.Fk.Reversed.Unidirectional.Mappings.hbm.xml" }; }
 		}
@@ -141,7 +141,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Reversed.Unidirection
 	[TestFixture]
 	public class DeleteOneToOneOrphansTestByCode : DeleteOneToOneOrphansTest
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return Array.Empty<string>(); }
 		}

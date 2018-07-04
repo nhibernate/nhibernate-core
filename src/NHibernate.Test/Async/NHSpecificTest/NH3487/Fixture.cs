@@ -23,11 +23,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3487
 		private Key _key1;
 		private Key _key2;
 
-		public override string BugNumber
-		{
-			get { return "NH3487"; }
-		}
-
 		protected override void OnSetUp()
 		{
 			using (ISession session = OpenSession())

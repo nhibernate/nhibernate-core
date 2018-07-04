@@ -18,11 +18,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1619
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1619"; }
-		}
-
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			return dialect is PostgreSQLDialect;

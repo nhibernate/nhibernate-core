@@ -15,7 +15,7 @@ namespace NHibernate.Test.DynamicEntity.Tuplizer
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"DynamicEntity.Tuplizer.Customer.hbm.xml"}; }
 		}

@@ -10,7 +10,7 @@ namespace NHibernate.Test.Legacy
 	[TestFixture]
 	public class CriteriaTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
