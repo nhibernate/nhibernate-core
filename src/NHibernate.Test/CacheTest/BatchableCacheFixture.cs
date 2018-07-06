@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using NHibernate.Cache;
 using NHibernate.Cfg;
-using NHibernate.DomainModel;
+using NHibernate.Linq;
+using NHibernate.Multi;
 using NHibernate.Test.CacheTest.Caches;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
@@ -32,12 +30,6 @@ namespace NHibernate.Test.CacheTest
 			configuration.SetProperty(Environment.UseSecondLevelCache, "true");
 			configuration.SetProperty(Environment.UseQueryCache, "true");
 			configuration.SetProperty(Environment.CacheProvider, typeof(BatchableCacheProvider).AssemblyQualifiedName);
-		}
-
-		protected override bool CheckDatabaseWasCleaned()
-		{
-			base.CheckDatabaseWasCleaned();
-			return true; // We are unable to delete read-only items.
 		}
 
 		protected override void OnSetUp()
@@ -87,9 +79,16 @@ namespace NHibernate.Test.CacheTest
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				s.Delete("from ReadWrite");
+				s.CreateQuery("delete from ReadOnlyItem").ExecuteUpdate();
+				s.CreateQuery("delete from ReadWriteItem").ExecuteUpdate();
+				s.CreateQuery("delete from ReadOnly").ExecuteUpdate();
+				s.CreateQuery("delete from ReadWrite").ExecuteUpdate();
 				tx.Commit();
 			}
+			// Must manually evict "readonly" entities since their caches are readonly
+			Sfi.Evict(typeof(ReadOnly));
+			Sfi.Evict(typeof(ReadOnlyItem));
+			Sfi.EvictQueries();
 		}
 
 		[Test]
@@ -98,7 +97,6 @@ namespace NHibernate.Test.CacheTest
 			var persister = Sfi.GetCollectionPersister($"{typeof(ReadOnly).FullName}.Items");
 			Assert.That(persister.Cache.Cache, Is.Not.Null);
 			Assert.That(persister.Cache.Cache, Is.TypeOf<BatchableCache>());
-			var cache = (BatchableCache) persister.Cache.Cache;
 			var ids = new List<int>();
 			
 			using (var s = Sfi.OpenSession())
@@ -116,7 +114,7 @@ namespace NHibernate.Test.CacheTest
 				// DefaultInitializeCollectionEventListener and the other time in BatchingCollectionInitializer.
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					0,
-					new int[][]
+					new[]
 					{
 						new[] {0, 1, 2, 3, 4}, // triggered by InitializeCollectionFromCache method of DefaultInitializeCollectionEventListener type
 						new[] {1, 2, 3, 4, 5}, // triggered by Initialize method of BatchingCollectionInitializer type
@@ -128,7 +126,7 @@ namespace NHibernate.Test.CacheTest
 				// the nearest before the demanded collection are added.
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					4,
-					new int[][]
+					new[]
 					{
 						new[] {4, 5, 3, 2, 1},
 						new[] {5, 3, 2, 1, 0},
@@ -138,7 +136,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					5,
-					new int[][]
+					new[]
 					{
 						new[] {5, 4, 3, 2, 1},
 						new[] {4, 3, 2, 1, 0},
@@ -148,7 +146,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					0,
-					new int[][]
+					new[]
 					{
 						new[] {0, 1, 2, 3, 4} // 0 get assembled and no further processing is done
 					},
@@ -157,7 +155,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					1,
-					new int[][]
+					new[]
 					{
 						new[] {1, 2, 3, 4, 5}, // 2 and 4 get assembled inside InitializeCollectionFromCache
 						new[] {3, 5, 0}
@@ -167,7 +165,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					5,
-					new int[][]
+					new[]
 					{
 						new[] {5, 4, 3, 2, 1}, // 4 and 2 get assembled inside InitializeCollectionFromCache
 						new[] {3, 1, 0}
@@ -177,7 +175,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					0,
-					new int[][]
+					new[]
 					{
 						new[] {0, 1, 2, 3, 4}, // 1 and 3 get assembled inside InitializeCollectionFromCache
 						new[] {2, 4, 5}
@@ -187,7 +185,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					4,
-					new int[][]
+					new[]
 					{
 						new[] {4, 5, 3, 2, 1}, // 5, 3 and 1 get assembled inside InitializeCollectionFromCache
 						new[] {2, 0}
@@ -209,7 +207,6 @@ namespace NHibernate.Test.CacheTest
 			var persister = Sfi.GetEntityPersister(typeof(ReadOnly).FullName);
 			Assert.That(persister.Cache.Cache, Is.Not.Null);
 			Assert.That(persister.Cache.Cache, Is.TypeOf<BatchableCache>());
-			var cache = (BatchableCache) persister.Cache.Cache;
 			var ids = new List<int>();
 
 			using (var s = Sfi.OpenSession())
@@ -226,7 +223,7 @@ namespace NHibernate.Test.CacheTest
 				// DefaultLoadEventListener and the other time in BatchingEntityLoader.
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					0,
-					new int[][]
+					new[]
 					{
 						new[] {0, 1, 2}, // triggered by LoadFromSecondLevelCache method of DefaultLoadEventListener type
 						new[] {1, 2, 3}, // triggered by Load method of BatchingEntityLoader type
@@ -238,7 +235,7 @@ namespace NHibernate.Test.CacheTest
 				// the nearest before the demanded entity are added.
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					4,
-					new int[][]
+					new[]
 					{
 						new[] {4, 5, 3},
 						new[] {5, 3, 2},
@@ -248,7 +245,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					5,
-					new int[][]
+					new[]
 					{
 						new[] {5, 4, 3},
 						new[] {4, 3, 2},
@@ -258,7 +255,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					0,
-					new int[][]
+					new[]
 					{
 						new[] {0, 1, 2} // 0 get assembled and no further processing is done
 					},
@@ -267,7 +264,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					1,
-					new int[][]
+					new[]
 					{
 						new[] {1, 2, 3}, // 2 gets assembled inside LoadFromSecondLevelCache
 						new[] {3, 4, 5}
@@ -277,7 +274,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					5,
-					new int[][]
+					new[]
 					{
 						new[] {5, 4, 3}, // 4 gets assembled inside LoadFromSecondLevelCache
 						new[] {3, 2, 1}
@@ -287,7 +284,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					0,
-					new int[][]
+					new[]
 					{
 						new[] {0, 1, 2}, // 1 gets assembled inside LoadFromSecondLevelCache
 						new[] {2, 3, 4}
@@ -297,7 +294,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					4,
-					new int[][]
+					new[]
 					{
 						new[] {4, 5, 3}, // 5 and 3 get assembled inside LoadFromSecondLevelCache
 						new[] {2, 1, 0}
@@ -319,7 +316,6 @@ namespace NHibernate.Test.CacheTest
 			var persister = Sfi.GetEntityPersister(typeof(ReadOnlyItem).FullName);
 			Assert.That(persister.Cache.Cache, Is.Not.Null);
 			Assert.That(persister.Cache.Cache, Is.TypeOf<BatchableCache>());
-			var cache = (BatchableCache) persister.Cache.Cache;
 			var ids = new List<int>();
 
 			using (var s = Sfi.OpenSession())
@@ -336,7 +332,7 @@ namespace NHibernate.Test.CacheTest
 				// DefaultLoadEventListener and the other time in BatchingEntityLoader.
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					0,
-					new int[][]
+					new[]
 					{
 						new[] {0, 1, 2, 3}, // triggered by LoadFromSecondLevelCache method of DefaultLoadEventListener type
 						new[] {1, 2, 3, 4}, // triggered by Load method of BatchingEntityLoader type
@@ -348,7 +344,7 @@ namespace NHibernate.Test.CacheTest
 				// the nearest before the demanded entity are added.
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					4,
-					new int[][]
+					new[]
 					{
 						new[] {4, 5, 3, 2},
 						new[] {5, 3, 2, 1},
@@ -358,7 +354,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					5,
-					new int[][]
+					new[]
 					{
 						new[] {5, 4, 3, 2},
 						new[] {4, 3, 2, 1},
@@ -368,7 +364,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					0,
-					new int[][]
+					new[]
 					{
 						new[] {0, 1, 2, 3} // 0 get assembled and no further processing is done
 					},
@@ -377,7 +373,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					1,
-					new int[][]
+					new[]
 					{
 						new[] {1, 2, 3, 4}, // 2 and 4 get assembled inside LoadFromSecondLevelCache
 						new[] {3, 5, 0}
@@ -387,7 +383,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					5,
-					new int[][]
+					new[]
 					{
 						new[] {5, 4, 3, 2}, // 4 and 2 get assembled inside LoadFromSecondLevelCache
 						new[] {3, 1, 0}
@@ -397,7 +393,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					0,
-					new int[][]
+					new[]
 					{
 						new[] {0, 1, 2, 3}, // 1 and 3 get assembled inside LoadFromSecondLevelCache
 						new[] {2, 4, 5}
@@ -407,7 +403,7 @@ namespace NHibernate.Test.CacheTest
 				),
 				new Tuple<int, int[][], int[], Func<int, bool>>(
 					4,
-					new int[][]
+					new[]
 					{
 						new[] {4, 5, 3, 2}, // 5 and 3 get assembled inside LoadFromSecondLevelCache
 						new[] {2, 1, 0}
@@ -447,7 +443,7 @@ namespace NHibernate.Test.CacheTest
 
 			AssertEquivalent(
 				ids,
-				new int[][]
+				new[]
 				{
 					new[] {0, 1, 2},
 					new[] {3, 4, 5}
@@ -456,7 +452,7 @@ namespace NHibernate.Test.CacheTest
 			);
 			AssertEquivalent(
 				ids,
-				new int[][]
+				new[]
 				{
 					new[] {0, 1, 2},
 					new[] {3, 4, 5}
@@ -465,7 +461,7 @@ namespace NHibernate.Test.CacheTest
 			);
 			AssertEquivalent(
 				ids,
-				new int[][]
+				new[]
 				{
 					new[] {0, 1, 2},
 					new[] {3, 4, 5}
@@ -502,7 +498,7 @@ namespace NHibernate.Test.CacheTest
 
 			AssertEquivalent(
 				ids,
-				new int[][]
+				new[]
 				{
 					new[] {0, 1, 2, 3, 4}
 				},
@@ -510,7 +506,7 @@ namespace NHibernate.Test.CacheTest
 			);
 			AssertEquivalent(
 				ids,
-				new int[][]
+				new[]
 				{
 					new[] {0, 1, 2, 3, 4}
 				},
@@ -518,7 +514,7 @@ namespace NHibernate.Test.CacheTest
 			);
 			AssertEquivalent(
 				ids,
-				new int[][]
+				new[]
 				{
 					new[] {0, 1, 2, 3, 4}
 				},
@@ -530,33 +526,240 @@ namespace NHibernate.Test.CacheTest
 		public void UpdateTimestampsCacheTest()
 		{
 			var timestamp = Sfi.UpdateTimestampsCache;
+			var fieldReadonly = typeof(UpdateTimestampsCache).GetField(
+				"_batchReadOnlyUpdateTimestamps",
+				BindingFlags.NonPublic | BindingFlags.Instance);
+			Assert.That(fieldReadonly, Is.Not.Null, "Unable to find _batchReadOnlyUpdateTimestamps field");
+			Assert.That(fieldReadonly.GetValue(timestamp), Is.Not.Null, "_batchReadOnlyUpdateTimestamps is null");
 			var field = typeof(UpdateTimestampsCache).GetField(
 				"_batchUpdateTimestamps",
 				BindingFlags.NonPublic | BindingFlags.Instance);
-			Assert.That(field, Is.Not.Null);
+			Assert.That(field, Is.Not.Null, "Unable to find _batchUpdateTimestamps field");
 			var cache = (BatchableCache) field.GetValue(timestamp);
-			Assert.That(cache, Is.Not.Null);
+			Assert.That(cache, Is.Not.Null, "_batchUpdateTimestamps is null");
 
+			cache.Clear();
+			cache.ClearStatistics();
+
+			const string query = "from ReadOnly e where e.Name = :name";
+			const string name = "Name1";
 			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				const string query = "from ReadOnly e where e.Name = :name";
-				const string name = "Name1";
 				s
 					.CreateQuery(query)
 					.SetString("name", name)
 					.SetCacheable(true)
 					.UniqueResult();
+				t.Commit();
+			}
 
-				// Run a second time, just to test the query cache
-				var result = s
-				             .CreateQuery(query)
-				             .SetString("name", name)
-				             .SetCacheable(true)
-				             .UniqueResult();
+			// Run a second time, to test the query cache
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var result =
+					s
+						.CreateQuery(query)
+						.SetString("name", name)
+						.SetCacheable(true)
+						.UniqueResult();
 
 				Assert.That(result, Is.Not.Null);
-				Assert.That(cache.GetMultipleCalls, Has.Count.EqualTo(1));
-				Assert.That(cache.GetCalls, Has.Count.EqualTo(0));
+				t.Commit();
+			}
+
+			Assert.That(cache.GetMultipleCalls, Has.Count.EqualTo(1), "GetMany");
+			Assert.That(cache.GetCalls, Has.Count.EqualTo(0), "Get");
+			Assert.That(cache.PutMultipleCalls, Has.Count.EqualTo(0), "PutMany");
+			Assert.That(cache.PutCalls, Has.Count.EqualTo(0), "Put");
+
+			// Update entities to put some update ts
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var readwrite1 = s.Query<ReadWrite>().First();
+				readwrite1.Name = "NewName";
+				t.Commit();
+			}
+			// PreInvalidate + Invalidate => 2 calls
+			Assert.That(cache.PutMultipleCalls, Has.Count.EqualTo(2), "PutMany after update");
+			Assert.That(cache.PutCalls, Has.Count.EqualTo(0), "Put after update");
+		}
+
+		[Test]
+		public void QueryCacheTest()
+		{
+			// QueryCache batching is used by QueryBatch.
+			if (!Sfi.ConnectionProvider.Driver.SupportsMultipleQueries)
+				Assert.Ignore($"{Sfi.ConnectionProvider.Driver} does not support multiple queries");
+
+			var queryCache = Sfi.GetQueryCache(null);
+			var readonlyField = typeof(StandardQueryCache).GetField(
+				"_batchableReadOnlyCache",
+				BindingFlags.NonPublic | BindingFlags.Instance);
+			Assert.That(readonlyField, Is.Not.Null, "Unable to find _batchableReadOnlyCache field");
+			Assert.That(readonlyField.GetValue(queryCache), Is.Not.Null, "_batchableReadOnlyCache is null");
+			var field = typeof(StandardQueryCache).GetField(
+				"_batchableCache",
+				BindingFlags.NonPublic | BindingFlags.Instance);
+			Assert.That(field, Is.Not.Null, "Unable to find _batchableCache field");
+			var cache = (BatchableCache) field.GetValue(queryCache);
+			Assert.That(cache, Is.Not.Null, "_batchableCache is null");
+
+			var timestamp = Sfi.UpdateTimestampsCache;
+			var tsField = typeof(UpdateTimestampsCache).GetField(
+				"_batchUpdateTimestamps",
+				BindingFlags.NonPublic | BindingFlags.Instance);
+			Assert.That(tsField, Is.Not.Null, "Unable to find _batchUpdateTimestamps field");
+			var tsCache = (BatchableCache) tsField.GetValue(timestamp);
+			Assert.That(tsCache, Is.Not.Null, "_batchUpdateTimestamps is null");
+
+			cache.Clear();
+			cache.ClearStatistics();
+			tsCache.Clear();
+			tsCache.ClearStatistics();
+
+			using (var s = OpenSession())
+			{
+				const string query = "from ReadOnly e where e.Name = :name";
+				const string name1 = "Name1";
+				const string name2 = "Name2";
+				const string name3 = "Name3";
+				const string name4 = "Name4";
+				const string name5 = "Name5";
+				var q1 =
+					s
+						.CreateQuery(query)
+						.SetString("name", name1)
+						.SetCacheable(true);
+				var q2 =
+					s
+						.CreateQuery(query)
+						.SetString("name", name2)
+						.SetCacheable(true);
+				var q3 =
+					s
+						.Query<ReadWrite>()
+						.Where(r => r.Name == name3)
+						.WithOptions(o => o.SetCacheable(true));
+				var q4 =
+					s
+						.QueryOver<ReadWrite>()
+						.Where(r => r.Name == name4)
+						.Cacheable();
+				var q5 =
+					s
+						.CreateSQLQuery("select * " + query)
+						.AddEntity(typeof(ReadOnly))
+						.SetString("name", name5)
+						.SetCacheable(true);
+
+				var queries =
+					s
+						.CreateQueryBatch()
+						.Add<ReadOnly>(q1)
+						.Add<ReadOnly>(q2)
+						.Add(q3)
+						.Add(q4)
+						.Add<ReadOnly>(q5);
+
+				using (var t = s.BeginTransaction())
+				{
+					queries.Execute();
+					t.Commit();
+				}
+
+				Assert.That(cache.GetMultipleCalls, Has.Count.EqualTo(1), "cache GetMany first execution");
+				Assert.That(cache.GetCalls, Has.Count.EqualTo(0), "cache Get first execution");
+				Assert.That(cache.PutMultipleCalls, Has.Count.EqualTo(1), "cache PutMany first execution");
+				Assert.That(cache.PutCalls, Has.Count.EqualTo(0), "cache Put first execution");
+
+				Assert.That(tsCache.GetMultipleCalls, Has.Count.EqualTo(0), "tsCache GetMany first execution");
+				Assert.That(tsCache.GetCalls, Has.Count.EqualTo(0), "tsCache Get first execution");
+
+				// Run a second time, to test the query cache
+				using (var t = s.BeginTransaction())
+				{
+					queries.Execute();
+					t.Commit();
+				}
+
+				Assert.That(
+					queries.GetResult<ReadOnly>(0),
+					Has.Count.EqualTo(1).And.One.Property(nameof(ReadOnly.Name)).EqualTo(name1), "q1");
+				Assert.That(
+					queries.GetResult<ReadOnly>(1),
+					Has.Count.EqualTo(1).And.One.Property(nameof(ReadOnly.Name)).EqualTo(name2), "q2");
+				Assert.That(
+					queries.GetResult<ReadWrite>(2),
+					Has.Count.EqualTo(1).And.One.Property(nameof(ReadWrite.Name)).EqualTo(name3), "q3");
+				Assert.That(
+					queries.GetResult<ReadWrite>(3),
+					Has.Count.EqualTo(1).And.One.Property(nameof(ReadWrite.Name)).EqualTo(name4), "q4");
+				Assert.That(
+					queries.GetResult<ReadOnly>(4),
+					Has.Count.EqualTo(1).And.One.Property(nameof(ReadOnly.Name)).EqualTo(name5), "q5");
+
+				Assert.That(cache.GetMultipleCalls, Has.Count.EqualTo(2), "cache GetMany secondExecution");
+				Assert.That(cache.GetCalls, Has.Count.EqualTo(0), "cache Get secondExecution");
+				Assert.That(cache.PutMultipleCalls, Has.Count.EqualTo(1), "cache PutMany secondExecution");
+				Assert.That(cache.PutCalls, Has.Count.EqualTo(0), "cache Put secondExecution");
+
+				Assert.That(tsCache.GetMultipleCalls, Has.Count.EqualTo(1), "tsCache GetMany secondExecution");
+				Assert.That(tsCache.GetCalls, Has.Count.EqualTo(0), "tsCache Get secondExecution");
+				Assert.That(tsCache.PutMultipleCalls, Has.Count.EqualTo(0), "tsCache PutMany secondExecution");
+				Assert.That(tsCache.PutCalls, Has.Count.EqualTo(0), "tsCache Put secondExecution");
+
+				// Update an entity to invalidate them
+				using (var t = s.BeginTransaction())
+				{
+					var readwrite1 = s.Query<ReadWrite>().Single(e => e.Name == name3);
+					readwrite1.Name = "NewName";
+					t.Commit();
+				}
+
+				Assert.That(tsCache.GetMultipleCalls, Has.Count.EqualTo(1), "tsCache GetMany after update");
+				Assert.That(tsCache.GetCalls, Has.Count.EqualTo(0), "tsCache Get  after update");
+				// Pre-invalidate + invalidate => 2 calls
+				Assert.That(tsCache.PutMultipleCalls, Has.Count.EqualTo(2), "tsCache PutMany  after update");
+				Assert.That(tsCache.PutCalls, Has.Count.EqualTo(0), "tsCache Put  after update");
+
+				// Run a third time, to re-test the query cache
+				using (var t = s.BeginTransaction())
+				{
+					queries.Execute();
+					t.Commit();
+				}
+
+				Assert.That(
+					queries.GetResult<ReadOnly>(0),
+					Has.Count.EqualTo(1).And.One.Property(nameof(ReadOnly.Name)).EqualTo(name1), "q1 after update");
+				Assert.That(
+					queries.GetResult<ReadOnly>(1),
+					Has.Count.EqualTo(1).And.One.Property(nameof(ReadOnly.Name)).EqualTo(name2), "q2 after update");
+				Assert.That(
+					queries.GetResult<ReadWrite>(2),
+					Has.Count.EqualTo(0), "q3 after update");
+				Assert.That(
+					queries.GetResult<ReadWrite>(3),
+					Has.Count.EqualTo(1).And.One.Property(nameof(ReadWrite.Name)).EqualTo(name4), "q4 after update");
+				Assert.That(
+					queries.GetResult<ReadOnly>(4),
+					Has.Count.EqualTo(1).And.One.Property(nameof(ReadOnly.Name)).EqualTo(name5), "q5 after update");
+
+				Assert.That(cache.GetMultipleCalls, Has.Count.EqualTo(3), "cache GetMany thirdExecution");
+				Assert.That(cache.GetCalls, Has.Count.EqualTo(0), "cache Get thirdExecution");
+				// ReadWrite queries should have been re-put, so count should have been incremented
+				Assert.That(cache.PutMultipleCalls, Has.Count.EqualTo(2), "cache PutMany thirdExecution");
+				Assert.That(cache.PutCalls, Has.Count.EqualTo(0), "cache Put thirdExecution");
+
+				// Readonly entities should have been still cached, so their queries timestamp should have been
+				// rechecked and the get count incremented
+				Assert.That(tsCache.GetMultipleCalls, Has.Count.EqualTo(2), "tsCache GetMany thirdExecution");
+				Assert.That(tsCache.GetCalls, Has.Count.EqualTo(0), "tsCache Get thirdExecution");
+				Assert.That(tsCache.PutMultipleCalls, Has.Count.EqualTo(2), "tsCache PutMany thirdExecution");
+				Assert.That(tsCache.PutCalls, Has.Count.EqualTo(0), "tsCache Put thirdExecution");
 			}
 		}
 

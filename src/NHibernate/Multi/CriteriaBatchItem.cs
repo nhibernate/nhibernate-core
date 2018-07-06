@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader.Criteria;
 using NHibernate.Persister.Entity;
@@ -15,7 +16,7 @@ namespace NHibernate.Multi
 			_criteria = (CriteriaImpl) query ?? throw new ArgumentNullException(nameof(query));
 		}
 
-		protected override List<QueryLoadInfo> GetQueryLoadInfo()
+		protected override List<QueryInfo> GetQueryInformation(ISessionImplementor session)
 		{
 			var factory = Session.Factory;
 			//for detached criteria
@@ -24,7 +25,7 @@ namespace NHibernate.Multi
 
 			string[] implementors = factory.GetImplementors(_criteria.EntityOrClassName);
 			int size = implementors.Length;
-			var list = new List<QueryLoadInfo>(size);
+			var list = new List<QueryInfo>(size);
 			for (int i = 0; i < size; i++)
 			{
 				CriteriaLoader loader = new CriteriaLoader(
@@ -35,13 +36,7 @@ namespace NHibernate.Multi
 					Session.EnabledFilters
 				);
 
-				list.Add(
-					new QueryLoadInfo()
-					{
-						Loader = loader,
-						Parameters = loader.Translator.GetQueryParameters(),
-						QuerySpaces = loader.QuerySpaces,
-					});
+				list.Add(new QueryInfo(loader.Translator.GetQueryParameters(), loader, loader.QuerySpaces, session));
 			}
 
 			return list;

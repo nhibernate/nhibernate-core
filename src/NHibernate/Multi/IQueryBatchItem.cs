@@ -30,6 +30,14 @@ namespace NHibernate.Multi
 	public partial interface IQueryBatchItem
 	{
 		/// <summary>
+		/// Optionally, the query caching information list, for batching. Each element matches
+		/// a SQL-Query resulting from the query translation, in the order they are translated.
+		/// It should yield an empty enumerable if no batching of caching is handled for this
+		/// query.
+		/// </summary>
+		IEnumerable<ICachingInformation> CachingInformation { get; }
+
+		/// <summary>
 		/// Initialize the query. Method is called right before batch execution.
 		/// Can be used for various delayed initialization logic.
 		/// </summary>
