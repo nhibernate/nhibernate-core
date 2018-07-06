@@ -4,7 +4,7 @@ namespace NHibernate.UserTypes
 {
 	/// <summary>
 	/// A custom type that may function as an identifier or discriminator
-	/// type, or may be marshalled to and from an XML document.
+	/// type.
 	/// </summary>
 	public interface IEnhancedUserType : IUserType
 	{

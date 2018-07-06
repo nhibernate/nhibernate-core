@@ -3982,12 +3982,11 @@
             </para>
 
             <para>
-                The <literal>ICompositeUserType</literal>, <literal>IEnhancedUserType</literal>,
-                <literal>INullableUserType</literal>, <literal>IUserCollectionType</literal>,
-                and <literal>IUserVersionType</literal> interfaces provide support for more specialized
-                uses.
+                The <literal>IEnhancedUserType</literal>, <literal>IUserVersionType</literal>,
+                and <literal>IUserCollectionType</literal> interfaces provide support for more specialized
+                uses. The later is to be used with collections, see <xref linkend="collections-persistent" />.
             </para>
-            
+
             <para>
                 You may even supply parameters to an <literal>IUserType</literal> in the mapping file. To
                 do this, your <literal>IUserType</literal> must implement the

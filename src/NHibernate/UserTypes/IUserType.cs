@@ -10,19 +10,23 @@ namespace NHibernate.UserTypes
 	/// <remarks>
 	/// <para>
 	/// The interface abstracts user code from future changes to the <see cref="Type.IType"/> interface,
-	/// simplifies the implementation of custom types and hides certain "internal interfaces from
+	/// simplifies the implementation of custom types and hides certain "internal interfaces" from
 	/// user code.
 	/// </para>
 	/// <para>
-	/// Implementers must be immutable and must declare a public default constructor.
+	/// Implementers must declare a public default constructor.
 	/// </para>
 	/// <para>
-	/// The actual class mapped by a <c>IUserType</c> may be just about anything. However, if it is to
-	/// be cacheble by a persistent cache, it must be serializable.
+	/// The actual class mapped by a <c>IUserType</c> may be just about anything.
+	/// </para>
+	/// <para>
+	/// For ensuring cacheability, <see cref="Assemble" /> and
+	/// <see cref="Disassemble" /> must provide conversion to/from a cacheable
+	/// representation.
 	/// </para>
 	/// <para>
 	/// Alternatively, custom types could implement <see cref="Type.IType"/> directly or extend one of the
-	/// abstract classes in <c>NHibernate.Type</c>. This approach risks future incompatible changes
+	/// abstract classes in <c>NHibernate.Type</c>. This approach risks more future incompatible changes
 	/// to classes or interfaces in the package.
 	/// </para>
 	/// </remarks>
