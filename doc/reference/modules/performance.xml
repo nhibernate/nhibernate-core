@@ -1354,7 +1354,7 @@ ICollection<Policy> policies = CollectionHelper.ToArray<Policy>(results[1]);]]><
 
         <para>
             Future results are an alternative to using <xref linkend="performance-multi-query"/>.
-            They avoid the need to explicitly regroup queries, but they also hides which queries will
+            They avoid the need to explicitly regroup queries, but they also hide which queries will
             get executed: any pending future results of the session will be batched together, no
             matter where they were defined, included out-of-scope pending future results.
         </para>
