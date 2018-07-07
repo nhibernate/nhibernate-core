@@ -1342,4 +1342,67 @@ ICollection<Policy> policies = CollectionHelper.ToArray<Policy>(results[1]);]]><
           perform additional logic (getting the policies of the customers we are associated with), all in a single database round-trip.
         </para>
     </sect1>
+
+     <sect1 id="performance-future">
+        <title>Future results</title>
+
+        <para>
+            Queries can be converted to future results instead of being directly executed. Future
+            results are not evaluated till one gets executed. At that point, all defined future
+            results are evaluated in one single round-trip to the database.
+        </para>
+
+        <para>
+            Future results are an alternative to using <xref linkend="performance-multi-query"/>.
+            They avoid the need to explicitly regroup queries, but they also hide which queries will
+            get executed: any pending future results of the session will be batched together, no
+            matter where they were defined, included out-of-scope pending future results.
+        </para>
+
+        <para>
+            Future results are obtained by calling <literal>Future</literal> or
+            <literal>FutureValue</literal> methods of a HQL, Criteria, QueryOver or SQL query.
+            For LINQ queries, the methods are named <literal>ToFuture</literal> and
+            <literal>ToFutureValue</literal>, see <xref linkend="querylinq-futureresults"/> for
+            an example.
+        </para>
+
+        <programlisting><![CDATA[// Define queries
+IFutureEnumerable<Cat> cats =
+    session.CreateQuery("from Cat c where c.Color = :color")
+        .SetString("color", "black")
+        .Future();
+IFutureValue<int> catCount =
+    session.QueryOver<Cat>()
+        .ToRowCountQuery()
+        .FutureValue<int>();
+// Execute them
+foreach(Cat cat in cats.GetEnumerable())
+{
+    // Do something
+}
+if (catCount.Value > 10)
+{
+    // Do something
+}
+]]></programlisting>
+
+        <para>
+            In the above example, accessing <literal>catCount.Value</literal> does not trigger a round-trip
+            to the database: it has been evaluated with <literal>cats.GetEnumerable()</literal> call. If
+            instead <literal>catCount.Value</literal> was accessed first, it would have executed both
+            future results and <literal>cats.GetEnumerable()</literal> would not have triggered a round-trip
+            to the database.
+        </para>
+
+        <para>
+            As showcased in the previous example, <literal>Future</literal> allows to get a future enumerable
+            result, and <literal>FutureValue</literal> is meant to obtain a single value result.
+        </para>
+
+        <para>
+            Note: in NHibernate v5.1 and previous versions, Criteria/QueryOver future results were batched
+            separately. Since NHibernate v5.2, they are batched with other querying API future results.
+        </para>
+    </sect1>
 </chapter>
