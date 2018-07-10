@@ -119,7 +119,7 @@ namespace NHibernate.Multi
 			// calling CombineQueries.
 			await (CombineQueriesAsync(resultSetsCommand, cancellationToken)).ConfigureAwait(false);
 
-			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
+			var statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
 			Stopwatch stopWatch = null;
 			if (statsEnabled)
 			{
@@ -132,7 +132,7 @@ namespace NHibernate.Multi
 				Log.Debug("Multi query with {0} queries: {1}", _queries.Count, resultSetsCommand.Sql);
 			}
 
-			int rowCount = 0;
+			var rowCount = 0;
 			try
 			{
 				if (resultSetsCommand.HasQueries)

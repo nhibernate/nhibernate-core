@@ -37,6 +37,7 @@ namespace NHibernate.Multi
 
 		protected abstract List<QueryLoadInfo> GetQueryLoadInfo();
 
+		/// <inheritdoc />
 		public virtual void Init(ISessionImplementor session)
 		{
 			Session = session;
@@ -50,11 +51,13 @@ namespace NHibernate.Multi
 			_finalResults = null;
 		}
 
-		/// <summary>
-		/// Gets the commands to execute for getting the not-already cached results of this query. Does retrieves
-		/// already cached results by side-effect.
-		/// </summary>
-		/// <returns>The commands for obtaining the results not already cached.</returns>
+		/// <inheritdoc />
+		public IEnumerable<string> GetQuerySpaces()
+		{
+			return _queryInfos.SelectMany(q => q.QuerySpaces);
+		}
+
+		/// <inheritdoc />
 		public IEnumerable<ISqlCommand> GetCommands()
 		{
 			for (var index = 0; index < _queryInfos.Count; index++)
@@ -82,6 +85,7 @@ namespace NHibernate.Multi
 			}
 		}
 
+		/// <inheritdoc />
 		public int ProcessResultsSet(DbDataReader reader)
 		{
 			var dialect = Session.Factory.Dialect;
@@ -161,9 +165,10 @@ namespace NHibernate.Multi
 			return rowCount;
 		}
 
+		/// <inheritdoc />
 		public void ProcessResults()
 		{
-			for (int i = 0; i < _queryInfos.Count; i++)
+			for (var i = 0; i < _queryInfos.Count; i++)
 			{
 				var queryInfo = _queryInfos[i];
 				if (_subselectResultKeys[i] != null)
@@ -192,15 +197,11 @@ namespace NHibernate.Multi
 			AfterLoadCallback?.Invoke(GetResults());
 		}
 
+		/// <inheritdoc />
 		public void ExecuteNonBatched()
 		{
 			_finalResults = GetResultsNonBatched();
 			AfterLoadCallback?.Invoke(_finalResults);
-		}
-
-		public IEnumerable<string> GetQuerySpaces()
-		{
-			return _queryInfos.SelectMany(q => q.QuerySpaces);
 		}
 
 		protected abstract IList<TResult> GetResultsNonBatched();
@@ -211,8 +212,8 @@ namespace NHibernate.Multi
 			{
 				throw new HibernateException("Batch wasn't executed. You must call IQueryBatch.Execute() before accessing results.");
 			}
-			List<T> results = new List<T>(_loaderResults.Sum(tr => tr.Count));
-			for (int i = 0; i < _queryInfos.Count; i++)
+			var results = new List<T>(_loaderResults.Sum(tr => tr.Count));
+			for (var i = 0; i < _queryInfos.Count; i++)
 			{
 				var list = _queryInfos[i].Loader.GetResultList(
 					_loaderResults[i],
@@ -223,11 +224,13 @@ namespace NHibernate.Multi
 			return results;
 		}
 
+		/// <inheritdoc />
 		public IList<TResult> GetResults()
 		{
 			return _finalResults ?? (_finalResults = DoGetResults());
 		}
 
+		/// <inheritdoc />
 		public Action<IList<TResult>> AfterLoadCallback { get; set; }
 
 		protected abstract List<TResult> DoGetResults();

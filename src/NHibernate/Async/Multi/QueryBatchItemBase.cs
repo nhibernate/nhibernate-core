@@ -25,12 +25,7 @@ namespace NHibernate.Multi
 	public abstract partial class QueryBatchItemBase<TResult> : IQueryBatchItem<TResult>
 	{
 
-		/// <summary>
-		/// Gets the commands to execute for getting the not-already cached results of this query. Does retrieves
-		/// already cached results by side-effect.
-		/// </summary>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns>The commands for obtaining the results not already cached.</returns>
+		/// <inheritdoc />
 		public async Task<IEnumerable<ISqlCommand>> GetCommandsAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -60,6 +55,7 @@ namespace NHibernate.Multi
 			return yields;
 		}
 
+		/// <inheritdoc />
 		public async Task<int> ProcessResultsSetAsync(DbDataReader reader, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -140,10 +136,11 @@ namespace NHibernate.Multi
 			return rowCount;
 		}
 
+		/// <inheritdoc />
 		public async Task ProcessResultsAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			for (int i = 0; i < _queryInfos.Count; i++)
+			for (var i = 0; i < _queryInfos.Count; i++)
 			{
 				var queryInfo = _queryInfos[i];
 				if (_subselectResultKeys[i] != null)
@@ -172,6 +169,7 @@ namespace NHibernate.Multi
 			AfterLoadCallback?.Invoke(GetResults());
 		}
 
+		/// <inheritdoc />
 		public async Task ExecuteNonBatchedAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();

@@ -384,6 +384,7 @@ namespace NHibernate.Test.Futures
 						.ToList();
 
 				Assert.That(results.Count, Is.EqualTo(2));
+				await (t.CommitAsync());
 			}
 		}
 
