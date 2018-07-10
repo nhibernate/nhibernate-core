@@ -13,7 +13,7 @@ namespace NHibernate.Context
 	/// <list type="bullet">
 	/// <item><description>contain a constructor accepting a single argument of type
 	/// <see cref="ISessionFactoryImplementor" />, or implement
-	/// <see cref="ICurrentSessionContextWithFactory"/></description></item>
+	/// <see cref="ISessionFactoryAwareCurrentSessionContext"/></description></item>
 	/// <item><description>should be thread safe</description></item>
 	/// <item><description>should be fully serializable</description></item>
 	/// </list>
@@ -49,7 +49,7 @@ namespace NHibernate.Context
 	/// this interface allows the <see cref="IObjectsFactory"/> to be used for instantiating the
 	/// session context.
 	/// </summary>
-	public interface ICurrentSessionContextWithFactory : ICurrentSessionContext
+	public interface ISessionFactoryAwareCurrentSessionContext : ICurrentSessionContext
 	{
 		/// <summary>
 		/// Sets the factory. This method should be called once after creating the context.

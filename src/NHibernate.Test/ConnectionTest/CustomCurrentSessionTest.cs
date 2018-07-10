@@ -37,7 +37,7 @@ namespace NHibernate.Test.ConnectionTest
 		}
 	}
 
-	public class CustomContext : ICurrentSessionContextWithFactory
+	public class CustomContext : ISessionFactoryAwareCurrentSessionContext
 	{
 		internal ISessionFactoryImplementor Factory;
 		internal static ISession Session;
