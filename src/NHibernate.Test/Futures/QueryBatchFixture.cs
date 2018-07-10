@@ -266,6 +266,116 @@ namespace NHibernate.Test.Futures
 			}
 		}
 
+		[Test]
+		public void AutoDiscoverWorksWithFuture()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var future =
+					s
+						.CreateSQLQuery("select count(*) as count from EntitySimpleChild where Name like :pattern")
+						.AddScalar("count", NHibernateUtil.Int64)
+						.SetString("pattern", "Chi%")
+						.SetCacheable(true)
+					.FutureValue<long>();
+
+				Assert.That(future.Value, Is.EqualTo(2L), "From DB");
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var future =
+					s
+						.CreateSQLQuery("select count(*) as count from EntitySimpleChild where Name like :pattern")
+						.AddScalar("count", NHibernateUtil.Int64)
+						.SetString("pattern", "Chi%")
+						.SetCacheable(true)
+						.FutureValue<long>();
+
+				Assert.That(future.Value, Is.EqualTo(2L), "From cache");
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void AutoFlushCacheInvalidationWorksWithFuture()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var futureResults =
+					s
+						.CreateQuery("from EntitySimpleChild")
+						.SetCacheable(true)
+						.Future<EntitySimpleChild>()
+						.GetEnumerable()
+						.ToList();
+
+				Assert.That(futureResults, Has.Count.EqualTo(2), "First call");
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var deleted = s.Query<EntitySimpleChild>().First();
+				// We need to get rid of a referencing entity for the delete.
+				deleted.Parent.Child1 = null;
+				deleted.Parent.Child2 = null;
+				s.Delete(deleted);
+
+				var future =
+					s
+						.CreateQuery("from EntitySimpleChild")
+						.SetCacheable(true)
+						.Future<EntitySimpleChild>();
+
+				Assert.That(future.GetEnumerable().ToList(), Has.Count.EqualTo(1), "After delete");
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void UsingHqlToFutureWithCacheAndTransformerDoesntThrow()
+		{
+			// Adapted from #383
+			using (var session = OpenSession())
+			using (var t = session.BeginTransaction())
+			{
+				//store values in cache
+				session
+					.CreateQuery("from EntitySimpleChild")
+					.SetResultTransformer(Transformers.DistinctRootEntity)
+					.SetCacheable(true)
+					.SetCacheMode(CacheMode.Normal)
+					.Future<EntitySimpleChild>()
+					.GetEnumerable();
+				t.Commit();
+			}
+
+			using (var session = OpenSession())
+			using (var t = session.BeginTransaction())
+			{
+				//get values from cache
+				var results =
+					session
+						.CreateQuery("from EntitySimpleChild")
+						.SetResultTransformer(Transformers.DistinctRootEntity)
+						.SetCacheable(true)
+						.SetCacheMode(CacheMode.Normal)
+						.Future<EntitySimpleChild>()
+						.GetEnumerable()
+						.ToList();
+
+				Assert.That(results.Count, Is.EqualTo(2));
+				t.Commit();
+			}
+		}
+
 		#region Test Setup
 
 		protected override HbmMapping GetMappings()
