@@ -28,13 +28,16 @@ namespace NHibernate.Multi
 			public QueryParameters Parameters;
 			
 			//Cache related properties:
+			public bool IsCacheable;
 			public ISet<string> QuerySpaces;
 			public IQueryCache Cache;
 			public QueryKey CacheKey;
+			public bool IsResultFromCache;
 		}
 
 		protected abstract List<QueryLoadInfo> GetQueryLoadInfo();
 
+		/// <inheritdoc />
 		public virtual void Init(ISessionImplementor session)
 		{
 			Session = session;
@@ -48,11 +51,13 @@ namespace NHibernate.Multi
 			_finalResults = null;
 		}
 
-		/// <summary>
-		/// Gets the commands to execute for getting the not-already cached results of this query. Does retrieves
-		/// already cached results by side-effect.
-		/// </summary>
-		/// <returns>The commands for obtaining the results not already cached.</returns>
+		/// <inheritdoc />
+		public IEnumerable<string> GetQuerySpaces()
+		{
+			return _queryInfos.SelectMany(q => q.QuerySpaces);
+		}
+
+		/// <inheritdoc />
 		public IEnumerable<ISqlCommand> GetCommands()
 		{
 			for (var index = 0; index < _queryInfos.Count; index++)
@@ -61,6 +66,7 @@ namespace NHibernate.Multi
 
 				if (qi.Loader.IsCacheable(qi.Parameters))
 				{
+					qi.IsCacheable = true;
 					// Check if the results are available in the cache
 					qi.Cache = Session.Factory.GetQueryCache(qi.Parameters.CacheRegion);
 					qi.CacheKey = qi.Loader.GenerateQueryKey(Session, qi.Parameters);
@@ -69,8 +75,8 @@ namespace NHibernate.Multi
 					if (resultsFromCache != null)
 					{
 						// Cached results available, skip the command for them and stores them.
-						qi.Cache = null;
 						_loaderResults[index] = resultsFromCache;
+						qi.IsResultFromCache = true;
 						continue;
 					}
 				}
@@ -79,90 +85,90 @@ namespace NHibernate.Multi
 			}
 		}
 
-		public IEnumerable<Func<DbDataReader, int>> GetResultSetHandler()
+		/// <inheritdoc />
+		public int ProcessResultsSet(DbDataReader reader)
 		{
 			var dialect = Session.Factory.Dialect;
-			List<object>[] hydratedObjects = new List<object>[_queryInfos.Count];
+			var hydratedObjects = new List<object>[_queryInfos.Count];
 
+			var rowCount = 0;
 			for (var i = 0; i < _queryInfos.Count; i++)
 			{
-				Loader.Loader loader = _queryInfos[i].Loader;
-				var queryParameters = _queryInfos[i].Parameters;
+				var queryInfo = _queryInfos[i];
+				var loader = queryInfo.Loader;
+				var queryParameters = queryInfo.Parameters;
 
 				//Skip processing for items already loaded from cache
-				if (_queryInfos[i].CacheKey?.ResultTransformer != null && _loaderResults[i] != null)
+				if (queryInfo.IsResultFromCache)
 				{
-					_loaderResults[i] = loader.TransformCacheableResults(queryParameters, _queryInfos[i].CacheKey.ResultTransformer, _loaderResults[i]);
 					continue;
 				}
 
-				int entitySpan = loader.EntityPersisters.Length;
+				var entitySpan = loader.EntityPersisters.Length;
 				hydratedObjects[i] = entitySpan == 0 ? null : new List<object>(entitySpan);
-				EntityKey[] keys = new EntityKey[entitySpan];
+				var keys = new EntityKey[entitySpan];
 
-				RowSelection selection = queryParameters.RowSelection;
-				bool createSubselects = loader.IsSubselectLoadingEnabled;
+				var selection = queryParameters.RowSelection;
+				var createSubselects = loader.IsSubselectLoadingEnabled;
 
 				_subselectResultKeys[i] = createSubselects ? new List<EntityKey[]>() : null;
-				int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
-				bool advanceSelection = !dialect.SupportsLimitOffset || !loader.UseLimit(selection, dialect);
+				var maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
+				var advanceSelection = !dialect.SupportsLimitOffset || !loader.UseLimit(selection, dialect);
 
-				var index = i;
-				yield return reader =>
+				if (advanceSelection)
 				{
-					if (advanceSelection)
+					Loader.Loader.Advance(reader, selection);
+				}
+
+				var forcedResultTransformer = queryInfo.CacheKey?.ResultTransformer;
+				if (queryParameters.HasAutoDiscoverScalarTypes)
+				{
+					loader.AutoDiscoverTypes(reader, queryParameters, forcedResultTransformer);
+				}
+
+				var lockModeArray = loader.GetLockModes(queryParameters.LockModes);
+				var optionalObjectKey = Loader.Loader.GetOptionalObjectKey(queryParameters, Session);
+				var tmpResults = new List<object>();
+
+				for (var count = 0; count < maxRows && reader.Read(); count++)
+				{
+					rowCount++;
+
+					var o =
+						loader.GetRowFromResultSet(
+							reader,
+							Session,
+							queryParameters,
+							lockModeArray,
+							optionalObjectKey,
+							hydratedObjects[i],
+							keys,
+							true,
+							forcedResultTransformer
+						);
+					if (loader.IsSubselectLoadingEnabled)
 					{
-						Loader.Loader.Advance(reader, selection);
-					}
-					if (queryParameters.HasAutoDiscoverScalarTypes)
-					{
-						loader.AutoDiscoverTypes(reader, queryParameters, null);
+						_subselectResultKeys[i].Add(keys);
+						keys = new EntityKey[entitySpan]; //can't reuse in this case
 					}
 
-					LockMode[] lockModeArray = loader.GetLockModes(queryParameters.LockModes);
-					EntityKey optionalObjectKey = Loader.Loader.GetOptionalObjectKey(queryParameters, Session);
-					int rowCount = 0;
-					var tmpResults = new List<object>();
+					tmpResults.Add(o);
+				}
 
-					int count;
-					for (count = 0; count < maxRows && reader.Read(); count++)
-					{
-						rowCount++;
+				_loaderResults[i] = tmpResults;
 
-						object o =
-							loader.GetRowFromResultSet(
-								reader,
-								Session,
-								queryParameters,
-								lockModeArray,
-								optionalObjectKey,
-								hydratedObjects[index],
-								keys,
-								true,
-								_queryInfos[index].CacheKey?.ResultTransformer
-							);
-						if (loader.IsSubselectLoadingEnabled)
-						{
-							_subselectResultKeys[index].Add(keys);
-							keys = new EntityKey[entitySpan]; //can't reuse in this case
-						}
-
-						tmpResults.Add(o);
-					}
-					_loaderResults[index] = tmpResults;
-
-					if (index == _queryInfos.Count - 1)
-					{
-						InitializeEntitiesAndCollections(reader, hydratedObjects);
-					}
-					return rowCount;
-				};
+				reader.NextResult();
 			}
+
+			InitializeEntitiesAndCollections(reader, hydratedObjects);
+
+			return rowCount;
 		}
 
+		/// <inheritdoc />
 		public void ProcessResults()
 		{
-			for (int i = 0; i < _queryInfos.Count; i++)
+			for (var i = 0; i < _queryInfos.Count; i++)
 			{
 				var queryInfo = _queryInfos[i];
 				if (_subselectResultKeys[i] != null)
@@ -171,23 +177,31 @@ namespace NHibernate.Multi
 				}
 
 				// Handle cache if cacheable.
-				if (queryInfo.Cache != null)
+				if (queryInfo.IsCacheable)
 				{
-					queryInfo.Loader.PutResultInQueryCache(Session, queryInfo.Parameters, queryInfo.Cache, queryInfo.CacheKey, _loaderResults[i]);
+					if (!queryInfo.IsResultFromCache)
+					{
+						queryInfo.Loader.PutResultInQueryCache(
+							Session,
+							queryInfo.Parameters,
+							queryInfo.Cache,
+							queryInfo.CacheKey,
+							_loaderResults[i]);
+					}
+
+					_loaderResults[i] =
+						queryInfo.Loader.TransformCacheableResults(
+							queryInfo.Parameters, queryInfo.CacheKey.ResultTransformer, _loaderResults[i]);
 				}
 			}
 			AfterLoadCallback?.Invoke(GetResults());
 		}
 
+		/// <inheritdoc />
 		public void ExecuteNonBatched()
 		{
 			_finalResults = GetResultsNonBatched();
 			AfterLoadCallback?.Invoke(_finalResults);
-		}
-
-		public IEnumerable<string> GetQuerySpaces()
-		{
-			return _queryInfos.SelectMany(q => q.QuerySpaces);
 		}
 
 		protected abstract IList<TResult> GetResultsNonBatched();
@@ -198,8 +212,8 @@ namespace NHibernate.Multi
 			{
 				throw new HibernateException("Batch wasn't executed. You must call IQueryBatch.Execute() before accessing results.");
 			}
-			List<T> results = new List<T>(_loaderResults.Sum(tr => tr.Count));
-			for (int i = 0; i < _queryInfos.Count; i++)
+			var results = new List<T>(_loaderResults.Sum(tr => tr.Count));
+			for (var i = 0; i < _queryInfos.Count; i++)
 			{
 				var list = _queryInfos[i].Loader.GetResultList(
 					_loaderResults[i],
@@ -210,21 +224,26 @@ namespace NHibernate.Multi
 			return results;
 		}
 
+		/// <inheritdoc />
 		public IList<TResult> GetResults()
 		{
 			return _finalResults ?? (_finalResults = DoGetResults());
 		}
 
+		/// <inheritdoc />
 		public Action<IList<TResult>> AfterLoadCallback { get; set; }
 
 		protected abstract List<TResult> DoGetResults();
 
 		private void InitializeEntitiesAndCollections(DbDataReader reader, List<object>[] hydratedObjects)
 		{
-			for (int i = 0; i < _queryInfos.Count; i++)
+			for (var i = 0; i < _queryInfos.Count; i++)
 			{
-				_queryInfos[i].Loader.InitializeEntitiesAndCollections(
-									hydratedObjects[i], reader, Session, Session.PersistenceContext.DefaultReadOnly);
+				var queryInfo = _queryInfos[i];
+				if (queryInfo.IsResultFromCache)
+					continue;
+				queryInfo.Loader.InitializeEntitiesAndCollections(
+					hydratedObjects[i], reader, Session, Session.PersistenceContext.DefaultReadOnly);
 			}
 		}
 	}

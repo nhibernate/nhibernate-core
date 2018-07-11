@@ -278,6 +278,116 @@ namespace NHibernate.Test.Futures
 			}
 		}
 
+		[Test]
+		public async Task AutoDiscoverWorksWithFutureAsync()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var future =
+					s
+						.CreateSQLQuery("select count(*) as childCount from EntitySimpleChild where Name like :pattern")
+						.AddScalar("childCount", NHibernateUtil.Int64)
+						.SetString("pattern", "Chi%")
+						.SetCacheable(true)
+						.FutureValue<long>();
+
+				Assert.That(await (future.GetValueAsync()), Is.EqualTo(2L), "From DB");
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var future =
+					s
+						.CreateSQLQuery("select count(*) as childCount from EntitySimpleChild where Name like :pattern")
+						.AddScalar("childCount", NHibernateUtil.Int64)
+						.SetString("pattern", "Chi%")
+						.SetCacheable(true)
+						.FutureValue<long>();
+
+				Assert.That(await (future.GetValueAsync()), Is.EqualTo(2L), "From cache");
+				await (t.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task AutoFlushCacheInvalidationWorksWithFutureAsync()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var futureResults =
+					(await (s
+						.CreateQuery("from EntitySimpleChild")
+						.SetCacheable(true)
+						.Future<EntitySimpleChild>()
+						.GetEnumerableAsync()))
+						.ToList();
+
+				Assert.That(futureResults, Has.Count.EqualTo(2), "First call");
+
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var deleted = await (s.Query<EntitySimpleChild>().FirstAsync());
+				// We need to get rid of a referencing entity for the delete.
+				deleted.Parent.Child1 = null;
+				deleted.Parent.Child2 = null;
+				await (s.DeleteAsync(deleted));
+
+				var future =
+					s
+						.CreateQuery("from EntitySimpleChild")
+						.SetCacheable(true)
+						.Future<EntitySimpleChild>();
+
+				Assert.That((await (future.GetEnumerableAsync())).ToList(), Has.Count.EqualTo(1), "After delete");
+				await (t.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task UsingHqlToFutureWithCacheAndTransformerDoesntThrowAsync()
+		{
+			// Adapted from #383
+			using (var session = OpenSession())
+			using (var t = session.BeginTransaction())
+			{
+				//store values in cache
+				await (session
+					.CreateQuery("from EntitySimpleChild")
+					.SetResultTransformer(Transformers.DistinctRootEntity)
+					.SetCacheable(true)
+					.SetCacheMode(CacheMode.Normal)
+					.Future<EntitySimpleChild>()
+					.GetEnumerableAsync());
+				await (t.CommitAsync());
+			}
+
+			using (var session = OpenSession())
+			using (var t = session.BeginTransaction())
+			{
+				//get values from cache
+				var results =
+					(await (session
+						.CreateQuery("from EntitySimpleChild")
+						.SetResultTransformer(Transformers.DistinctRootEntity)
+						.SetCacheable(true)
+						.SetCacheMode(CacheMode.Normal)
+						.Future<EntitySimpleChild>()
+						.GetEnumerableAsync()))
+						.ToList();
+
+				Assert.That(results.Count, Is.EqualTo(2));
+				await (t.CommitAsync());
+			}
+		}
+
 		#region Test Setup
 
 		protected override HbmMapping GetMappings()

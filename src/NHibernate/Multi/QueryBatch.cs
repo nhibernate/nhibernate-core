@@ -37,39 +37,40 @@ namespace NHibernate.Multi
 		{
 			if (_queries.Count == 0)
 				return;
-			var sessionFlushMode = Session.FlushMode;
-			if (FlushMode.HasValue)
-				Session.FlushMode = FlushMode.Value;
-			try
+			using (Session.BeginProcess())
 			{
-				Init();
-
-				if (!Session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
-				{
-					foreach (var query in _queries)
-					{
-						query.ExecuteNonBatched();
-					}
-					return;
-				}
-
-				using (Session.BeginProcess())
-				{
-					DoExecute();
-				}
-			}
-			finally
-			{
-				if (_autoReset)
-				{
-					_queries.Clear();
-					_queriesByKey.Clear();
-				}
-				else
-					_executed = true;
-
+				var sessionFlushMode = Session.FlushMode;
 				if (FlushMode.HasValue)
-					Session.FlushMode = sessionFlushMode;
+					Session.FlushMode = FlushMode.Value;
+				try
+				{
+					Init();
+
+					if (!Session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
+					{
+						foreach (var query in _queries)
+						{
+							query.ExecuteNonBatched();
+						}
+
+						return;
+					}
+
+					ExecuteBatched();
+				}
+				finally
+				{
+					if (_autoReset)
+					{
+						_queries.Clear();
+						_queriesByKey.Clear();
+					}
+					else
+						_executed = true;
+
+					if (FlushMode.HasValue)
+						Session.FlushMode = sessionFlushMode;
+				}
 			}
 		}
 
@@ -109,7 +110,7 @@ namespace NHibernate.Multi
 		{
 			if (!_executed)
 				Execute();
-			return ((IQueryBatchItem<TResult>)query).GetResults();
+			return ((IQueryBatchItem<TResult>) query).GetResults();
 		}
 
 		private void Init()
@@ -129,30 +130,34 @@ namespace NHibernate.Multi
 			}
 		}
 
-		protected void DoExecute()
+		protected void ExecuteBatched()
 		{
-			var resultSetsCommand = Session.Factory.ConnectionProvider.Driver.GetResultSetsCommand(Session);
-			CombineQueries(resultSetsCommand);
-
 			var querySpaces = new HashSet<string>(_queries.SelectMany(t => t.GetQuerySpaces()));
-			if (resultSetsCommand.HasQueries)
+			if (querySpaces.Count > 0)
 			{
 				Session.AutoFlushIfRequired(querySpaces);
 			}
 
-			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
+			var resultSetsCommand = Session.Factory.ConnectionProvider.Driver.GetResultSetsCommand(Session);
+			// CombineQueries queries the second level cache, which may contain stale data in regard to
+			// the session changes. For having them invalidated, auto-flush must have been handled before
+			// calling CombineQueries.
+			CombineQueries(resultSetsCommand);
+
+			var statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
 			Stopwatch stopWatch = null;
 			if (statsEnabled)
 			{
 				stopWatch = new Stopwatch();
 				stopWatch.Start();
 			}
+
 			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("Multi query with {0} queries: {1}", _queries.Count, resultSetsCommand.Sql);
 			}
 
-			int rowCount = 0;
+			var rowCount = 0;
 			try
 			{
 				if (resultSetsCommand.HasQueries)
@@ -161,11 +166,7 @@ namespace NHibernate.Multi
 					{
 						foreach (var multiSource in _queries)
 						{
-							foreach (var resultSetHandler in multiSource.GetResultSetHandler())
-							{
-								rowCount += resultSetHandler(reader);
-								reader.NextResult();
-							}
+							rowCount += multiSource.ProcessResultsSet(reader);
 						}
 					}
 				}
@@ -178,13 +179,20 @@ namespace NHibernate.Multi
 			catch (Exception sqle)
 			{
 				Log.Error(sqle, "Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
-				throw ADOExceptionHelper.Convert(Session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi query", resultSetsCommand.Sql);
+				throw ADOExceptionHelper.Convert(
+					Session.Factory.SQLExceptionConverter,
+					sqle,
+					"Failed to execute multi query",
+					resultSetsCommand.Sql);
 			}
 
 			if (statsEnabled)
 			{
 				stopWatch.Stop();
-				Session.Factory.StatisticsImplementor.QueryExecuted($"{_queries.Count} queries", rowCount, stopWatch.Elapsed);
+				Session.Factory.StatisticsImplementor.QueryExecuted(
+					$"{_queries.Count} queries",
+					rowCount,
+					stopWatch.Elapsed);
 			}
 		}
 	}

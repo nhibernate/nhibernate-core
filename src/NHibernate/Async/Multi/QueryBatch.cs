@@ -29,39 +29,40 @@ namespace NHibernate.Multi
 			cancellationToken.ThrowIfCancellationRequested();
 			if (_queries.Count == 0)
 				return;
-			var sessionFlushMode = Session.FlushMode;
-			if (FlushMode.HasValue)
-				Session.FlushMode = FlushMode.Value;
-			try
+			using (Session.BeginProcess())
 			{
-				Init();
-
-				if (!Session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
-				{
-					foreach (var query in _queries)
-					{
-						await (query.ExecuteNonBatchedAsync(cancellationToken)).ConfigureAwait(false);
-					}
-					return;
-				}
-
-				using (Session.BeginProcess())
-				{
-					await (DoExecuteAsync(cancellationToken)).ConfigureAwait(false);
-				}
-			}
-			finally
-			{
-				if (_autoReset)
-				{
-					_queries.Clear();
-					_queriesByKey.Clear();
-				}
-				else
-					_executed = true;
-
+				var sessionFlushMode = Session.FlushMode;
 				if (FlushMode.HasValue)
-					Session.FlushMode = sessionFlushMode;
+					Session.FlushMode = FlushMode.Value;
+				try
+				{
+					Init();
+
+					if (!Session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
+					{
+						foreach (var query in _queries)
+						{
+							await (query.ExecuteNonBatchedAsync(cancellationToken)).ConfigureAwait(false);
+						}
+
+						return;
+					}
+
+					await (ExecuteBatchedAsync(cancellationToken)).ConfigureAwait(false);
+				}
+				finally
+				{
+					if (_autoReset)
+					{
+						_queries.Clear();
+						_queriesByKey.Clear();
+					}
+					else
+						_executed = true;
+
+					if (FlushMode.HasValue)
+						Session.FlushMode = sessionFlushMode;
+				}
 			}
 		}
 
@@ -90,7 +91,7 @@ namespace NHibernate.Multi
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!_executed)
 				await (ExecuteAsync(cancellationToken)).ConfigureAwait(false);
-			return ((IQueryBatchItem<TResult>)query).GetResults();
+			return ((IQueryBatchItem<TResult>) query).GetResults();
 		}
 
 		private async Task CombineQueriesAsync(IResultSetsCommand resultSetsCommand, CancellationToken cancellationToken)
@@ -103,31 +104,35 @@ namespace NHibernate.Multi
 			}
 		}
 
-		protected async Task DoExecuteAsync(CancellationToken cancellationToken)
+		protected async Task ExecuteBatchedAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var resultSetsCommand = Session.Factory.ConnectionProvider.Driver.GetResultSetsCommand(Session);
-			await (CombineQueriesAsync(resultSetsCommand, cancellationToken)).ConfigureAwait(false);
-
 			var querySpaces = new HashSet<string>(_queries.SelectMany(t => t.GetQuerySpaces()));
-			if (resultSetsCommand.HasQueries)
+			if (querySpaces.Count > 0)
 			{
 				await (Session.AutoFlushIfRequiredAsync(querySpaces, cancellationToken)).ConfigureAwait(false);
 			}
 
-			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
+			var resultSetsCommand = Session.Factory.ConnectionProvider.Driver.GetResultSetsCommand(Session);
+			// CombineQueries queries the second level cache, which may contain stale data in regard to
+			// the session changes. For having them invalidated, auto-flush must have been handled before
+			// calling CombineQueries.
+			await (CombineQueriesAsync(resultSetsCommand, cancellationToken)).ConfigureAwait(false);
+
+			var statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
 			Stopwatch stopWatch = null;
 			if (statsEnabled)
 			{
 				stopWatch = new Stopwatch();
 				stopWatch.Start();
 			}
+
 			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("Multi query with {0} queries: {1}", _queries.Count, resultSetsCommand.Sql);
 			}
 
-			int rowCount = 0;
+			var rowCount = 0;
 			try
 			{
 				if (resultSetsCommand.HasQueries)
@@ -136,11 +141,7 @@ namespace NHibernate.Multi
 					{
 						foreach (var multiSource in _queries)
 						{
-							foreach (var resultSetHandler in multiSource.GetResultSetHandler())
-							{
-								rowCount += resultSetHandler(reader);
-								await (reader.NextResultAsync(cancellationToken)).ConfigureAwait(false);
-							}
+							rowCount += await (multiSource.ProcessResultsSetAsync(reader, cancellationToken)).ConfigureAwait(false);
 						}
 					}
 				}
@@ -154,13 +155,20 @@ namespace NHibernate.Multi
 			catch (Exception sqle)
 			{
 				Log.Error(sqle, "Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
-				throw ADOExceptionHelper.Convert(Session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi query", resultSetsCommand.Sql);
+				throw ADOExceptionHelper.Convert(
+					Session.Factory.SQLExceptionConverter,
+					sqle,
+					"Failed to execute multi query",
+					resultSetsCommand.Sql);
 			}
 
 			if (statsEnabled)
 			{
 				stopWatch.Stop();
-				Session.Factory.StatisticsImplementor.QueryExecuted($"{_queries.Count} queries", rowCount, stopWatch.Elapsed);
+				Session.Factory.StatisticsImplementor.QueryExecuted(
+					$"{_queries.Count} queries",
+					rowCount,
+					stopWatch.Elapsed);
 			}
 		}
 	}
