@@ -10,86 +10,30 @@ namespace NHibernate.Dialect.Schema
 		[Obsolete("Use overload with dialect argument.")]
 		public SQLiteDataBaseMetaData(DbConnection connection) : this(connection, Dialect.GetDialect()) {}
 
-		public SQLiteDataBaseMetaData(DbConnection connection, Dialect dialect) : base(connection)
+		public SQLiteDataBaseMetaData(DbConnection connection, Dialect dialect) : base(connection, dialect)
 		{
-			_dialect = dialect;
+			UseDialectQualifyInsteadOfTableName = dialect is SQLiteDialect;
 		}
 
-		private readonly Dialect _dialect;
+		public override bool UseDialectQualifyInsteadOfTableName { get; }
 
 		public override DataTable GetTables(string catalog, string schemaPattern, string tableNamePattern, string[] types)
 		{
-			if (_dialect is SQLiteDialect)
+			var tables = base.GetTables(catalog, schemaPattern, tableNamePattern, types);
+			if (UseDialectQualifyInsteadOfTableName)
 			{
-				// SQLiteDialect concatenates catalog and schema to the table name.
-				var actualTablePattern = _dialect.Qualify(catalog, schemaPattern, tableNamePattern);
-				var tables = base.GetTables(null, null, actualTablePattern, types);
-				// Caller may check the table name of yielded results, we need to patch them
 				foreach (DataRow tableRow in tables.Rows)
 				{
 					var tableName = Convert.ToString(tableRow[ColumnNameForTableName]);
-					if (tableName.Equals(actualTablePattern, StringComparison.InvariantCultureIgnoreCase))
+					if (tableName.Equals(tableNamePattern, StringComparison.InvariantCultureIgnoreCase))
 					{
-						tableRow[ColumnNameForTableName] = tableNamePattern;
-						// Columns are looked-up according to the row table name, and schema and catalog data.
-						// We need to patch schema and catalog for being able to reconstruct the adequate table name.
-						if (!string.IsNullOrEmpty(catalog))
-						{
-							tableRow["TABLE_CATALOG"] = catalog;
-						}
-						else
-						{
-							// SQLite indicates "main" here by default, wrecking the other Get method
-							// overrides.
-							tableRow["TABLE_CATALOG"] = string.Empty;
-						}
-						if (!string.IsNullOrEmpty(schemaPattern))
-						{
-							tableRow["TABLE_SCHEMA"] = schemaPattern;
-						}
+						// SQLite indicates "main" here by default, wrecking the other Get methods.
+						tableRow["TABLE_CATALOG"] = string.Empty;
 					}
 				}
-
-				return tables;
 			}
 
-			return base.GetTables(catalog, schemaPattern, tableNamePattern, types);
-		}
-
-		public override DataTable GetColumns(string catalog, string schemaPattern, string tableNamePattern, string columnNamePattern)
-		{
-			if (_dialect is SQLiteDialect)
-			{
-				// SQLiteDialect concatenates catalog and schema to the table name.
-				var actualTablePattern = _dialect.Qualify(catalog, schemaPattern, tableNamePattern);
-				return base.GetColumns(null, null, actualTablePattern, columnNamePattern);
-			}
-
-			return base.GetColumns(catalog, schemaPattern, tableNamePattern, columnNamePattern);
-		}
-
-		public override DataTable GetForeignKeys(string catalog, string schema, string table)
-		{
-			if (_dialect is SQLiteDialect)
-			{
-				// SQLiteDialect concatenates catalog and schema to the table name.
-				var actualTable = _dialect.Qualify(catalog, schema, table);
-				return base.GetForeignKeys(null, null, actualTable);
-			}
-
-			return base.GetForeignKeys(catalog, schema, table);
-		}
-
-		public override DataTable GetIndexColumns(string catalog, string schemaPattern, string tableName, string indexName)
-		{
-			if (_dialect is SQLiteDialect)
-			{
-				// SQLiteDialect concatenates catalog and schema to the table name.
-				var actualTableName = _dialect.Qualify(catalog, schemaPattern, tableName);
-				return base.GetIndexColumns(null, null, actualTableName, indexName);
-			}
-
-			return base.GetIndexColumns(catalog, schemaPattern, tableName, indexName);
+			return tables;
 		}
 
 		public override ITableMetadata GetTableMetadata(DataRow rs, bool extras)
