@@ -274,11 +274,11 @@ namespace NHibernate.Test.Futures
 			{
 				var future =
 					s
-						.CreateSQLQuery("select count(*) as count from EntitySimpleChild where Name like :pattern")
-						.AddScalar("count", NHibernateUtil.Int64)
+						.CreateSQLQuery("select count(*) as childCount from EntitySimpleChild where Name like :pattern")
+						.AddScalar("childCount", NHibernateUtil.Int64)
 						.SetString("pattern", "Chi%")
 						.SetCacheable(true)
-					.FutureValue<long>();
+						.FutureValue<long>();
 
 				Assert.That(future.Value, Is.EqualTo(2L), "From DB");
 				t.Commit();
@@ -289,8 +289,8 @@ namespace NHibernate.Test.Futures
 			{
 				var future =
 					s
-						.CreateSQLQuery("select count(*) as count from EntitySimpleChild where Name like :pattern")
-						.AddScalar("count", NHibernateUtil.Int64)
+						.CreateSQLQuery("select count(*) as childCount from EntitySimpleChild where Name like :pattern")
+						.AddScalar("childCount", NHibernateUtil.Int64)
 						.SetString("pattern", "Chi%")
 						.SetCacheable(true)
 						.FutureValue<long>();
