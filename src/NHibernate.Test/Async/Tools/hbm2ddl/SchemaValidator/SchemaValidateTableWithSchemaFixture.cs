@@ -9,7 +9,6 @@
 
 
 using System;
-using System.Data;
 using NHibernate.Dialect;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -31,8 +30,16 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 				case MsSql2000Dialect _:
 				case PostgreSQLDialect _:
 				case SQLiteDialect _:
+				case MsSqlCeDialect _:
 					return true;
 				default:
+					// Firebird does not support schema. Its current dialect leave table name being schema prefixed,
+					// which causes SQL parse errors. It has a "create schema" command but instead creates a new
+					// database.
+					// MySql does not truly support schema. Its current dialect leave table name being schema prefixed,
+					// which is interpreted as a database name. It has a "create schema" command but instead creates
+					// a new database.
+					// Oracle tightly bounds schema to users.
 					return false;
 			}
 		}
@@ -72,7 +79,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 
 		protected override void DropSchema()
 		{
-			// SQL-Server do not need this call, but Postgres does not accept dropping a schema carrying objects.
+			// SQL-Server does not need this call, but Postgres does not accept dropping a schema carrying objects.
 			base.DropSchema();
 
 			switch (Dialect)
