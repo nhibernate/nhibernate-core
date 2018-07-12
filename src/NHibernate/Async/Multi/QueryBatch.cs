@@ -134,17 +134,17 @@ namespace NHibernate.Multi
 					using (var reader = await (resultSetsCommand.GetReaderAsync(Timeout, cancellationToken)).ConfigureAwait(false))
 					{
 						var cacheBatcher = new CacheBatcher(Session);
-						foreach (var multiSource in _queries)
+						foreach (var query in _queries)
 						{
-							if (multiSource.CachingInformation != null)
+							if (query.CachingInformation != null)
 							{
-								foreach (var cachingInfo in multiSource.CachingInformation.Where(ci => ci.IsCacheable))
+								foreach (var cachingInfo in query.CachingInformation.Where(ci => ci.IsCacheable))
 								{
 									cachingInfo.SetCacheBatcher(cacheBatcher);
 								}
 							}
 
-							rowCount += await (multiSource.ProcessResultsSetAsync(reader, cancellationToken)).ConfigureAwait(false);
+							rowCount += await (query.ProcessResultsSetAsync(reader, cancellationToken)).ConfigureAwait(false);
 						}
 						await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 					}
@@ -154,9 +154,9 @@ namespace NHibernate.Multi
 				// the ProcessResults.
 				await (PutCacheableResultsAsync(cancellationToken)).ConfigureAwait(false);
 
-				foreach (var multiSource in _queries)
+				foreach (var query in _queries)
 				{
-					multiSource.ProcessResults();
+					query.ProcessResults();
 				}
 			}
 			catch (OperationCanceledException) { throw; }

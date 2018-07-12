@@ -160,17 +160,17 @@ namespace NHibernate.Multi
 					using (var reader = resultSetsCommand.GetReader(Timeout))
 					{
 						var cacheBatcher = new CacheBatcher(Session);
-						foreach (var multiSource in _queries)
+						foreach (var query in _queries)
 						{
-							if (multiSource.CachingInformation != null)
+							if (query.CachingInformation != null)
 							{
-								foreach (var cachingInfo in multiSource.CachingInformation.Where(ci => ci.IsCacheable))
+								foreach (var cachingInfo in query.CachingInformation.Where(ci => ci.IsCacheable))
 								{
 									cachingInfo.SetCacheBatcher(cacheBatcher);
 								}
 							}
 
-							rowCount += multiSource.ProcessResultsSet(reader);
+							rowCount += query.ProcessResultsSet(reader);
 						}
 						cacheBatcher.ExecuteBatch();
 					}
@@ -180,9 +180,9 @@ namespace NHibernate.Multi
 				// the ProcessResults.
 				PutCacheableResults();
 
-				foreach (var multiSource in _queries)
+				foreach (var query in _queries)
 				{
-					multiSource.ProcessResults();
+					query.ProcessResults();
 				}
 			}
 			catch (Exception sqle)
@@ -252,8 +252,8 @@ namespace NHibernate.Multi
 
 		private void CombineQueries(IResultSetsCommand resultSetsCommand)
 		{
-			foreach (var multiSource in _queries)
-			foreach (var cmd in multiSource.GetCommands())
+			foreach (var query in _queries)
+			foreach (var cmd in query.GetCommands())
 			{
 				resultSetsCommand.Append(cmd);
 			}
