@@ -21,6 +21,7 @@ namespace NHibernate.Cache
 		/// The underlying <see cref="ICache"/>.
 		/// </summary>
 		ICache Cache { get; }
+
 		/// <summary>
 		/// The cache region.
 		/// </summary>
@@ -30,12 +31,15 @@ namespace NHibernate.Cache
 		/// Clear the cache.
 		/// </summary>
 		void Clear();
+
 		// Since 5.2
 		[Obsolete("Have the query cache implement IBatchableQueryCache, and use IBatchableQueryCache.Put")]
 		bool Put(QueryKey key, ICacheAssembler[] returnTypes, IList result, bool isNaturalKeyLookup, ISessionImplementor session);
+
 		// Since 5.2
 		[Obsolete("Have the query cache implement IBatchableQueryCache, and use IBatchableQueryCache.Get")]
 		IList Get(QueryKey key, ICacheAssembler[] returnTypes, bool isNaturalKeyLookup, ISet<string> spaces, ISessionImplementor session);
+
 		/// <summary>
 		/// Clean up all resources.
 		/// </summary>

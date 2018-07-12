@@ -26,9 +26,11 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		Task ClearAsync(CancellationToken cancellationToken);
+
 		// Since 5.2
 		[Obsolete("Have the query cache implement IBatchableQueryCache, and use IBatchableQueryCache.Put")]
 		Task<bool> PutAsync(QueryKey key, ICacheAssembler[] returnTypes, IList result, bool isNaturalKeyLookup, ISessionImplementor session, CancellationToken cancellationToken);
+
 		// Since 5.2
 		[Obsolete("Have the query cache implement IBatchableQueryCache, and use IBatchableQueryCache.Get")]
 		Task<IList> GetAsync(QueryKey key, ICacheAssembler[] returnTypes, bool isNaturalKeyLookup, ISet<string> spaces, ISessionImplementor session, CancellationToken cancellationToken);
