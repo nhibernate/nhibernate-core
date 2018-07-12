@@ -187,11 +187,11 @@ namespace NHibernate.Multi
 			}
 			catch (Exception sqle)
 			{
-				Log.Error(sqle, "Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
+				Log.Error(sqle, "Failed to execute query batch: [{0}]", resultSetsCommand.Sql);
 				throw ADOExceptionHelper.Convert(
 					Session.Factory.SQLExceptionConverter,
 					sqle,
-					"Failed to execute multi query",
+					"Failed to execute query batch",
 					resultSetsCommand.Sql);
 			}
 
@@ -199,7 +199,7 @@ namespace NHibernate.Multi
 			{
 				stopWatch.Stop();
 				Session.Factory.StatisticsImplementor.QueryExecuted(
-					$"{_queries.Count} queries",
+					resultSetsCommand.Sql.ToString(),
 					rowCount,
 					stopWatch.Elapsed);
 			}
