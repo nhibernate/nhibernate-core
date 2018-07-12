@@ -100,6 +100,8 @@ namespace NHibernate.Multi
 				}
 
 				queryInfo.Result = tmpResults;
+				if (queryInfo.CanPutToCache)
+					queryInfo.ResultToCache = tmpResults;
 
 				await (reader.NextResultAsync(cancellationToken)).ConfigureAwait(false);
 			}

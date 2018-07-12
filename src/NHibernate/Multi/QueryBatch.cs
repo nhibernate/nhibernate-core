@@ -176,7 +176,8 @@ namespace NHibernate.Multi
 					}
 				}
 
-				// Query cacheable results must be put in cache before being transformed by ProcessResults.
+				// Query cacheable results must be cached untransformed: the put does not need to wait for
+				// the ProcessResults.
 				PutCacheableResults();
 
 				foreach (var multiSource in _queries)
@@ -260,11 +261,8 @@ namespace NHibernate.Multi
 
 		private void PutCacheableResults()
 		{
-			if (!Session.CacheMode.HasFlag(CacheMode.Put))
-				return;
-
 			var statisticsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
-			var queriesByCaches = GetQueriesByCaches(ci => ci.IsCacheable && !ci.IsResultFromCache);
+			var queriesByCaches = GetQueriesByCaches(ci => ci.ResultToCache != null);
 			foreach (var queriesByCache in queriesByCaches)
 			{
 				var queryInfos = queriesByCache.ToArray();
@@ -279,7 +277,7 @@ namespace NHibernate.Multi
 					keys[i] = queryInfo.CacheKey;
 					parameters[i] = queryInfo.Parameters;
 					returnTypes[i] = queryInfo.CacheKey.ResultTransformer.GetCachedResultTypes(queryInfo.ResultTypes);
-					results[i] = queryInfo.Result;
+					results[i] = queryInfo.ResultToCache;
 				}
 
 				var putted = cache.PutMany(keys, parameters, returnTypes, results, Session);

@@ -27,28 +27,50 @@ namespace NHibernate.Multi
 			/// The query loader.
 			/// </summary>
 			public Loader.Loader Loader { get; set; }
+
+			/// <summary>
+			/// The query result.
+			/// </summary>
+			public IList Result { get; set; }
+
 			/// <inheritdoc />
 			public QueryParameters Parameters { get; }
-			/// <inheritdoc />
-			public IList Result { get; set; }
+
 			/// <inheritdoc />
 			public ISet<string> QuerySpaces { get; }
 
 			//Cache related properties:
+
 			/// <inheritdoc />
 			public bool IsCacheable { get; }
+
 			/// <inheritdoc />
 			public QueryKey CacheKey { get;}
+
 			/// <inheritdoc />
 			public bool CanGetFromCache { get; }
+
 			// Do not store but forward instead: Loader.ResultTypes can be null initially (if AutoDiscoverTypes
 			// is enabled).
 			/// <inheritdoc />
 			public IType[] ResultTypes => Loader.ResultTypes;
+
 			/// <inheritdoc />
 			public string QueryIdentifier => Loader.QueryIdentifier;
+
 			/// <inheritdoc />
+			public IList ResultToCache { get; set; }
+
+			/// <summary>
+			/// Indicates if the query result was obtained from the cache.
+			/// </summary>
 			public bool IsResultFromCache { get; private set; }
+
+			/// <summary>
+			/// Should a result retrieved from database be cached?
+			/// </summary>
+			public bool CanPutToCache { get; }
+
 			/// <summary>
 			/// The cache batcher to use for entities and collections puts.
 			/// </summary>
@@ -75,6 +97,7 @@ namespace NHibernate.Multi
 
 				CacheKey = Loader.GenerateQueryKey(session, Parameters);
 				CanGetFromCache = Loader.CanGetFromCache(session, Parameters);
+				CanPutToCache = session.CacheMode.HasFlag(CacheMode.Put);
 			}
 
 			/// <inheritdoc />
@@ -213,6 +236,8 @@ namespace NHibernate.Multi
 				}
 
 				queryInfo.Result = tmpResults;
+				if (queryInfo.CanPutToCache)
+					queryInfo.ResultToCache = tmpResults;
 
 				reader.NextResult();
 			}
@@ -237,8 +262,7 @@ namespace NHibernate.Multi
 
 				if (queryInfo.IsCacheable)
 				{
-					// This transformation must be done after result has been put in cache (if it was
-					// to be put). So the batcher must handle cache puts before calling ProcessResults.
+					// This transformation must not be applied to ResultToCache.
 					queryInfo.Result =
 						queryInfo.Loader.TransformCacheableResults(
 							queryInfo.Parameters, queryInfo.CacheKey.ResultTransformer, queryInfo.Result);
@@ -261,7 +285,7 @@ namespace NHibernate.Multi
 			ThrowIfNotInitialized();
 			if (_queryInfos.Any(qi => qi.Result == null))
 			{
-				throw new InvalidOperationException("Batch is not executed yet. You must call IQueryBatch.Execute() before accessing results.");
+				throw new InvalidOperationException("Some query results are missing, batch is likely not fully executed yet.");
 			}
 			var results = new List<T>(_queryInfos.Sum(qi => qi.Result.Count));
 			foreach (var queryInfo in _queryInfos)
@@ -302,7 +326,11 @@ namespace NHibernate.Multi
 		private void ThrowIfNotInitialized()
 		{
 			if (_queryInfos == null)
-				throw new InvalidOperationException("The query item has not been initialized.");
+				throw new InvalidOperationException(
+					"The query item has not been initialized. A query item must belong to a batch " +
+					$"({nameof(IQueryBatch)}) and the batch must be executed ({nameof(IQueryBatch)}." +
+					$"{nameof(IQueryBatch.Execute)} or {nameof(IQueryBatch)}.{nameof(IQueryBatch.GetResult)}) " +
+					"before retrieving the item result.");
 		}
 	}
 }

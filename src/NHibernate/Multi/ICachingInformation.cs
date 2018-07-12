@@ -12,14 +12,19 @@ namespace NHibernate.Multi
 	public interface ICachingInformation
 	{
 		/// <summary>
+		/// Is the query cacheable?
+		/// </summary>
+		bool IsCacheable { get; }
+
+		/// <summary>
+		/// The query cache key.
+		/// </summary>
+		QueryKey CacheKey { get; }
+
+		/// <summary>
 		/// The query parameters.
 		/// </summary>
 		QueryParameters Parameters { get; }
-
-		/// <summary>
-		/// The query result.
-		/// </summary>
-		IList Result { get; }
 
 		/// <summary>
 		/// The query spaces.
@@ -32,19 +37,9 @@ namespace NHibernate.Multi
 		ISet<string> QuerySpaces { get; }
 
 		/// <summary>
-		/// Is the query cacheable?
-		/// </summary>
-		bool IsCacheable { get; }
-
-		/// <summary>
 		/// Can the query be obtained from cache?
 		/// </summary>
 		bool CanGetFromCache { get; }
-
-		/// <summary>
-		/// Indicates if <see cref="Result"/> was obtained from the cache.
-		/// </summary>
-		bool IsResultFromCache { get; }
 
 		/// <summary>
 		/// The query result types.
@@ -52,14 +47,14 @@ namespace NHibernate.Multi
 		IType[] ResultTypes { get; }
 
 		/// <summary>
+		/// The query result to put in the cache. <see langword="null" /> if no put should be done.
+		/// </summary>
+		IList ResultToCache { get; }
+
+		/// <summary>
 		/// The query identifier, for statistics purpose.
 		/// </summary>
 		string QueryIdentifier { get; }
-
-		/// <summary>
-		/// The query cache key.
-		/// </summary>
-		QueryKey CacheKey { get; }
 
 		/// <summary>
 		/// Set the result retrieved from the cache.
