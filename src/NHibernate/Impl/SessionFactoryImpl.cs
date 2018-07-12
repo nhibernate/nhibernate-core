@@ -1266,7 +1266,7 @@ namespace NHibernate.Impl
 			switch (impl)
 			{
 				case null:
-					return null;
+					break;
 				case "async_local":
 					return new AsyncLocalSessionContext(this);
 				case "call":
@@ -1281,8 +1281,8 @@ namespace NHibernate.Impl
 
 			try
 			{
-				var implClass = ReflectHelper.ClassForName(impl);
-				var constructor = implClass.GetConstructor(new [] { typeof(ISessionFactoryImplementor) });
+				var implClass = impl != null ? ReflectHelper.ClassForName(impl) : null;
+				var constructor = implClass?.GetConstructor(new [] { typeof(ISessionFactoryImplementor) });
 				ICurrentSessionContext context;
 				if (constructor != null)
 				{
@@ -1290,7 +1290,8 @@ namespace NHibernate.Impl
 				}
 				else
 				{
-					context = (ICurrentSessionContext) Environment.ObjectsFactory.CreateInstance(implClass);
+					context = (ICurrentSessionContext) Environment.ServiceProvider.GetInstance(
+						implClass ?? typeof(ICurrentSessionContext));
 				}
 				if (context is ISessionFactoryAwareCurrentSessionContext sessionFactoryAwareContext)
 				{

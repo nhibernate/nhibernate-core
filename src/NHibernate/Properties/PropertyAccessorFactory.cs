@@ -260,7 +260,7 @@ namespace NHibernate.Properties
 
 			try
 			{
-				var result = (IPropertyAccessor) Cfg.Environment.ObjectsFactory.CreateInstance(accessorClass);
+				var result = (IPropertyAccessor) Cfg.Environment.ServiceProvider.GetInstance(accessorClass);
 				accessors[accessorName] = result;
 				return result;
 			}

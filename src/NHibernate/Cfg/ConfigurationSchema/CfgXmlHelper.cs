@@ -35,7 +35,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			nsMgr.AddNamespace(CfgNamespacePrefix, CfgSchemaXMLNS);
 
 			ByteCodeProviderExpression = XPathExpression.Compile(RootPrefixPath + "bytecode-provider", nsMgr);
-			ObjectsFactoryExpression = XPathExpression.Compile(RootPrefixPath + "objects-factory", nsMgr);
+			ServiceProviderExpression = XPathExpression.Compile(RootPrefixPath + "service-provider", nsMgr);
 			ReflectionOptimizerExpression = XPathExpression.Compile(RootPrefixPath + "reflection-optimizer", nsMgr);
 			SessionFactoryExpression = XPathExpression.Compile(RootPrefixPath + "session-factory", nsMgr);
 			SessionFactoryPropertiesExpression = XPathExpression.Compile(RootPrefixPath + "session-factory/" + ChildPrefixPath + "property", nsMgr);
@@ -49,7 +49,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		/// <summary>XPath expression for bytecode-provider property.</summary>
 		public static readonly XPathExpression ByteCodeProviderExpression;
 		/// <summary>XPath expression for objects-factory property.</summary>
-		public static readonly XPathExpression ObjectsFactoryExpression;
+		public static readonly XPathExpression ServiceProviderExpression;
 		/// <summary>XPath expression for reflection-optimizer property.</summary>
 		public static readonly XPathExpression ReflectionOptimizerExpression;
 		/// <summary>XPath expression for session-factory whole node.</summary>

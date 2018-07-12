@@ -6,6 +6,7 @@ using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
+using NHibernate.Util;
 using System.Collections.Generic;
 
 namespace NHibernate.Type
@@ -28,7 +29,7 @@ namespace NHibernate.Type
 
 			try
 			{
-				userType = (ICompositeUserType) Cfg.Environment.ObjectsFactory.CreateInstance(userTypeClass);
+				userType = (ICompositeUserType) Cfg.Environment.ServiceProvider.GetInstance(userTypeClass);
 			}
 			catch (MethodAccessException mae)
 			{

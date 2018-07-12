@@ -17,15 +17,14 @@ namespace NHibernate.Connection
 		public static IConnectionProvider NewConnectionProvider(IDictionary<string, string> settings)
 		{
 			IConnectionProvider connections;
-			string providerClass;
-			if (settings.TryGetValue(Environment.ConnectionProvider, out providerClass))
+			if (settings.TryGetValue(Environment.ConnectionProvider, out var providerClass))
 			{
 				try
 				{
 					log.Info("Initializing connection provider: {0}", providerClass);
 					connections =
 						(IConnectionProvider)
-						Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(providerClass));
+						Environment.ServiceProvider.GetInstance(ReflectHelper.ClassForName(providerClass));
 				}
 				catch (Exception e)
 				{
@@ -39,8 +38,20 @@ namespace NHibernate.Connection
 			}
 			else
 			{
-				log.Info("No connection provider specified, UserSuppliedConnectionProvider will be used.");
-				connections = new UserSuppliedConnectionProvider();
+				try
+				{
+					connections = (IConnectionProvider) Environment.ServiceProvider.GetService(typeof(IConnectionProvider));
+				}
+				catch (Exception e)
+				{
+					log.Fatal(e, "Could not instantiate connection provider");
+					throw new HibernateException($"Could not instantiate connection provider: {typeof(IConnectionProvider)}", e);
+				}
+				if (connections == null)
+				{
+					log.Info("No connection provider specified, UserSuppliedConnectionProvider will be used.");
+					connections = new UserSuppliedConnectionProvider();
+				}
 			}
 			connections.Configure(settings);
 			return connections;

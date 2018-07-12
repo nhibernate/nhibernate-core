@@ -77,7 +77,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		private void Parse(XPathNavigator navigator, bool fromAppConfig)
 		{
 			ParseByteCodeProvider(navigator, fromAppConfig);
-			ParseObjectsFactory(navigator, fromAppConfig);
+			ParseServiceProvider(navigator, fromAppConfig);
 			ParseReflectionOptimizer(navigator, fromAppConfig);
 			XPathNavigator xpn = navigator.SelectSingleNode(CfgXmlHelper.SessionFactoryExpression);
 			if (xpn != null)
@@ -111,19 +111,19 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			}
 		}
 
-		private void ParseObjectsFactory(XPathNavigator navigator, bool fromAppConfig)
+		private void ParseServiceProvider(XPathNavigator navigator, bool fromAppConfig)
 		{
-			var xpn = navigator.SelectSingleNode(CfgXmlHelper.ObjectsFactoryExpression);
+			var xpn = navigator.SelectSingleNode(CfgXmlHelper.ServiceProviderExpression);
 			if (xpn != null)
 			{
 				if (fromAppConfig)
 				{
 					xpn.MoveToFirstAttribute();
-					ObjectsFactoryType = xpn.Value;
+					ServiceProviderType = xpn.Value;
 				}
 				else
 				{
-					LogWarnIgnoredProperty("objects-factory");
+					LogWarnIgnoredProperty("service-provider");
 				}
 			}
 		}
@@ -166,7 +166,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		/// </summary>
 		/// <remarks>Default value <see langword="null" />.</remarks>
 		// 6.0 TODO add to IHibernateConfiguration
-		public string ObjectsFactoryType { get; private set; }
+		public string ServiceProviderType { get; private set; }
 
 		private bool useReflectionOptimizer = true;
 		/// <summary>

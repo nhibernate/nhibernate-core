@@ -42,7 +42,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				System.Type customType = ReflectHelper.ClassForName(className);
 
 				IAuxiliaryDatabaseObject customObject =
-					(IAuxiliaryDatabaseObject) Environment.ObjectsFactory.CreateInstance(customType);
+					(IAuxiliaryDatabaseObject) Environment.ServiceProvider.GetInstance(customType);
 
 				foreach (string dialectName in databaseObjectSchema.FindDialectScopeNames())
 				{

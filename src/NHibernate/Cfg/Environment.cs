@@ -202,9 +202,9 @@ namespace NHibernate.Cfg
 		public const string PropertyUseReflectionOptimizer = "use_reflection_optimizer";
 
 		/// <summary>
-		/// Set the <see cref="IObjectsFactory"/> used to instantiate NHibernate's objects.
+		/// Set the <see cref="IServiceProvider"/> used to instantiate NHibernate's objects.
 		/// </summary>
-		public const string PropertyObjectsFactory = "objects_factory";
+		public const string PropertyServiceProvider = "service_provider";
 
 		public const string UseProxyValidator = "use_proxy_validator";
 		public const string ProxyFactoryFactoryClass = "proxyfactory.factory_class";
@@ -313,7 +313,7 @@ namespace NHibernate.Cfg
 				GlobalProperties[PropertyUseReflectionOptimizer] = config.UseReflectionOptimizer.ToString();
 				if (config is HibernateConfiguration nhConfig)
 				{
-					GlobalProperties[PropertyObjectsFactory] = nhConfig.ObjectsFactoryType;
+					GlobalProperties[PropertyServiceProvider] = nhConfig.ServiceProviderType;
 				}
 				if (config.SessionFactory != null)
 				{
@@ -331,7 +331,7 @@ namespace NHibernate.Cfg
 			VerifyProperties(GlobalProperties);
 
 			BytecodeProviderInstance = BuildBytecodeProvider(GlobalProperties);
-			ObjectsFactory = BuildObjectsFactory(GlobalProperties);
+			ServiceProvider = BuildServiceProvider(GlobalProperties);
 			EnableReflectionOptimizer = PropertiesHelper.GetBoolean(PropertyUseReflectionOptimizer, GlobalProperties);
 
 			if (EnableReflectionOptimizer)
@@ -388,16 +388,7 @@ namespace NHibernate.Cfg
 		public static IBytecodeProvider BytecodeProvider
 		{
 			get { return BytecodeProviderInstance; }
-			set
-			{
-				BytecodeProviderInstance = value;
-				// 6.0 TODO: remove following code.
-#pragma warning disable 618
-				var objectsFactory = BytecodeProviderInstance.ObjectsFactory;
-#pragma warning restore 618
-				if (objectsFactory != null)
-					ObjectsFactory = objectsFactory;
-			}
+			set { BytecodeProviderInstance = value; }
 		}
 
 		/// <summary>
@@ -413,7 +404,7 @@ namespace NHibernate.Cfg
 		/// is created, otherwise the change may not take effect.
 		/// For entities see <see cref="IReflectionOptimizer"/> and its implementations.
 		/// </remarks>
-		public static IObjectsFactory ObjectsFactory { get; set; } = new ActivatorObjectsFactory();
+		public static IServiceProvider ServiceProvider { get; set; } = new DefaultServiceProvider();
 
 		/// <summary>
 		/// Whether to enable the use of reflection optimizer
@@ -454,20 +445,17 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public static IObjectsFactory BuildObjectsFactory(IDictionary<string, string> properties)
+		public static IServiceProvider BuildServiceProvider(IDictionary<string, string> properties)
 		{
-			var typeAssemblyQualifiedName = PropertiesHelper.GetString(PropertyObjectsFactory, properties, null);
+			var typeAssemblyQualifiedName = PropertiesHelper.GetString(PropertyServiceProvider, properties, null);
 			if (typeAssemblyQualifiedName == null)
 			{
-				// 6.0 TODO: use default value of ObjectsFactory property
-#pragma warning disable 618
-				var objectsFactory = BytecodeProvider.ObjectsFactory ?? ObjectsFactory;
-#pragma warning restore 618
-				log.Info("Objects factory class : {0}", objectsFactory.GetType());
-				return objectsFactory;
+				var serviceProvider = new DefaultServiceProvider();
+				log.Info("Service provider class : {0}", serviceProvider.GetType());
+				return serviceProvider;
 			}
-			log.Info("Custom objects factory class : {0}", typeAssemblyQualifiedName);
-			return CreateCustomObjectsFactory(typeAssemblyQualifiedName);
+			log.Info("Custom service provider class : {0}", typeAssemblyQualifiedName);
+			return CreateCustomServiceProvider(typeAssemblyQualifiedName);
 		}
 
 		private static IBytecodeProvider CreateCustomBytecodeProvider(string assemblyQualifiedName)
@@ -498,31 +486,31 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private static IObjectsFactory CreateCustomObjectsFactory(string assemblyQualifiedName)
+		private static IServiceProvider CreateCustomServiceProvider(string assemblyQualifiedName)
 		{
 			try
 			{
 				var type = ReflectHelper.ClassForName(assemblyQualifiedName);
 				try
 				{
-					return (IObjectsFactory) Activator.CreateInstance(type);
+					return (IServiceProvider) Activator.CreateInstance(type);
 				}
 				catch (MissingMethodException ex)
 				{
-					throw new HibernateObjectsFactoryException("Public constructor was not found for " + type, ex);
+					throw new HibernateServiceProviderException("Public constructor was not found for " + type, ex);
 				}
 				catch (InvalidCastException ex)
 				{
-					throw new HibernateObjectsFactoryException(type + "Type does not implement " + typeof(IObjectsFactory), ex);
+					throw new HibernateServiceProviderException(type + "Type does not implement " + typeof(IServiceProvider), ex);
 				}
 				catch (Exception ex)
 				{
-					throw new HibernateObjectsFactoryException("Unable to instantiate: " + type, ex);
+					throw new HibernateServiceProviderException("Unable to instantiate: " + type, ex);
 				}
 			}
 			catch (Exception e)
 			{
-				throw new HibernateObjectsFactoryException("Unable to create the instance of objects factory; check inner exception for detail", e);
+				throw new HibernateServiceProviderException("Unable to create the instance of service provider; check inner exception for detail", e);
 			}
 		}
 

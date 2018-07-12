@@ -152,7 +152,7 @@ namespace NHibernate.Mapping
 				{
 					try
 					{
-						comparer = Cfg.Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(ComparerClassName));
+						comparer = Cfg.Environment.ServiceProvider.GetInstance(ReflectHelper.ClassForName(ComparerClassName));
 					}
 					catch (Exception ex)
 					{

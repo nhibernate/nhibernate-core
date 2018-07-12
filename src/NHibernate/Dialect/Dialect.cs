@@ -169,9 +169,22 @@ namespace NHibernate.Dialect
 		{
 			if (props == null)
 				throw new ArgumentNullException(nameof(props));
-			string dialectName;
-			if (props.TryGetValue(Environment.Dialect, out dialectName) == false)
+			if (props.TryGetValue(Environment.Dialect, out var dialectName) == false)
+			{
+				try
+				{
+					var dialect = (Dialect) Environment.ServiceProvider.GetService(typeof(Dialect));
+					if (dialect != null)
+					{
+						return dialect;
+					}
+				}
+				catch (Exception e)
+				{
+					throw new HibernateException($"Could not instantiate dialect class {typeof(Dialect)}", e);
+				}
 				throw new InvalidOperationException("Could not find the dialect in the configuration");
+			}
 			if (dialectName == null)
 			{
 				return GetDialect();
@@ -184,7 +197,7 @@ namespace NHibernate.Dialect
 		{
 			try
 			{
-				var dialect = (Dialect)Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(dialectName));
+				var dialect = (Dialect) Environment.ServiceProvider.GetInstance(ReflectHelper.ClassForName(dialectName));
 				dialect.Configure(props);
 				return dialect;
 			}

@@ -6,6 +6,9 @@ namespace NHibernate.Bytecode
 {
 	public abstract class AbstractBytecodeProvider : IBytecodeProvider, IInjectableProxyFactoryFactory, IInjectableCollectionTypeFactoryClass
 	{
+#pragma warning disable 618
+		private static readonly IObjectsFactory ObjectFactory = new ActivatorObjectsFactory();
+#pragma warning restore 618
 		protected System.Type proxyFactoryFactory;
 		private ICollectionTypeFactory collectionTypeFactory;
 		private System.Type collectionTypeFactoryClass = typeof(Type.DefaultCollectionTypeFactory);
@@ -20,7 +23,7 @@ namespace NHibernate.Bytecode
 				{
 					try
 					{
-						return (IProxyFactoryFactory) Cfg.Environment.ObjectsFactory.CreateInstance(proxyFactoryFactory);
+						return (IProxyFactoryFactory) Cfg.Environment.ServiceProvider.GetService(proxyFactoryFactory);
 					}
 					catch (Exception e)
 					{
@@ -35,8 +38,8 @@ namespace NHibernate.Bytecode
 		public abstract IReflectionOptimizer GetReflectionOptimizer(System.Type clazz, IGetter[] getters, ISetter[] setters);
 
 		// Since 5.2
-		[Obsolete("Please use NHibernate.Cfg.Environment.ObjectsFactory instead")]
-		public virtual IObjectsFactory ObjectsFactory => Cfg.Environment.ObjectsFactory;
+		[Obsolete("Please use NHibernate.Cfg.Environment.ServiceProvider instead")]
+		public virtual IObjectsFactory ObjectsFactory => ObjectFactory;
 
 		public virtual ICollectionTypeFactory CollectionTypeFactory
 		{
@@ -47,7 +50,7 @@ namespace NHibernate.Bytecode
 					try
 					{
 						collectionTypeFactory =
-							(ICollectionTypeFactory) Cfg.Environment.ObjectsFactory.CreateInstance(collectionTypeFactoryClass);
+							(ICollectionTypeFactory) Cfg.Environment.ServiceProvider.GetInstance(collectionTypeFactoryClass);
 					}
 					catch (Exception e)
 					{

@@ -4,6 +4,7 @@ using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.UserTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -28,7 +29,7 @@ namespace NHibernate.Type
 
 			try
 			{
-				userType = (IUserCollectionType) Cfg.Environment.ObjectsFactory.CreateInstance(userTypeClass);
+				userType = (IUserCollectionType) Cfg.Environment.ServiceProvider.GetInstance(userTypeClass);
 			}
 			catch (InstantiationException ie)
 			{

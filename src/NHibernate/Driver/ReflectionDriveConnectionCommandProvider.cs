@@ -1,5 +1,6 @@
 using System;
 using System.Data.Common;
+using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Driver
@@ -27,12 +28,12 @@ namespace NHibernate.Driver
 
 		public DbConnection CreateConnection()
 		{
-			return (DbConnection) Environment.ObjectsFactory.CreateInstance(connectionType);
+			return (DbConnection) Environment.ServiceProvider.GetInstance(connectionType);
 		}
 
 		public DbCommand CreateCommand()
 		{
-			return (DbCommand) Environment.ObjectsFactory.CreateInstance(commandType);
+			return (DbCommand) Environment.ServiceProvider.GetInstance(commandType);
 		}
 
 		#endregion

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NHibernate.Cfg;
 
 namespace NHibernate.Util
 {
@@ -74,6 +75,38 @@ namespace NHibernate.Util
 				}
 			}
 			return map;
+		}
+
+		/// <summary>
+		/// Get an instance of <typeparamref name="TService"/> type by using the <see cref="Cfg.Environment.ServiceProvider"/>.
+		/// </summary>
+		/// <typeparam name="TService">The type to instantiate.</typeparam>
+		/// <param name="property">The configuration property name.</param>
+		/// <param name="properties">The configuration properties.</param>
+		/// <param name="defaultType">The default type to instantiate.</param>
+		/// <returns>The instance of the <typeparamref name="TService"/> type.</returns>
+		public static TService GetInstance<TService>(string property, IDictionary<string, string> properties, System.Type defaultType)
+		{
+			var className = GetString(property, properties, null);
+			try
+			{
+				if (className != null)
+				{
+					return (TService) Cfg.Environment.ServiceProvider.GetInstance(ReflectHelper.ClassForName(className));
+				}
+
+				var instance = (TService) Cfg.Environment.ServiceProvider.GetService(typeof(TService));
+				if (instance != null)
+				{
+					return instance;
+				}
+
+				return (TService) Cfg.Environment.ServiceProvider.GetInstance(defaultType);
+			}
+			catch (Exception e)
+			{
+				throw new HibernateException($"could not instantiate {typeof(TService).Name}: {className ?? defaultType.AssemblyQualifiedName}", e);
+			}
 		}
 	}
 }
