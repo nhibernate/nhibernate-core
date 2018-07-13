@@ -242,5 +242,19 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			await (db.Orders.Select(o => o.ShippedTo).Distinct().OrderBy(o => o).Take(1000).ToListAsync());
 		}
+		
+		[Test]
+		public async Task BooleanOrderByDescendingClauseAsync()
+		{
+			var query = from c in db.Customers
+			            orderby c.Address.Country == "Belgium" descending, c.Address.Country
+			            select c;
+
+			var customers = await (query.ToListAsync());
+			if (customers.Count > 1)
+			{
+				Assert.That(customers[0].Address.Country, Is.EqualTo("Belgium"));
+			}
+		}
 	}
 }
