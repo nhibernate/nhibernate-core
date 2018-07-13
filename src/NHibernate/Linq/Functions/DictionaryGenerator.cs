@@ -19,7 +19,7 @@ namespace NHibernate.Linq.Functions
 			{
 				return treeBuilder.Dot(visitor.Visit(targetObject).AsExpression(), treeBuilder.Ident(memberName));
 			}
-			return treeBuilder.DictionaryItem(visitor.Visit(targetObject).AsExpression(), visitor.Visit(arguments[0]).AsExpression());
+			return treeBuilder.Index(visitor.Visit(targetObject).AsExpression(), visitor.Visit(arguments[0]).AsExpression());
 		}
 	}
 
