@@ -60,6 +60,10 @@ namespace NHibernate.Linq.Functions
 			this.Merge(new DecimalNegateGenerator());
 			this.Merge(new RoundGenerator());
 			this.Merge(new TruncateGenerator());
+
+			var indexerGenerator = new ListIndexerGenerator();
+			RegisterGenerator(indexerGenerator);
+			this.Merge(indexerGenerator);
 		}
 
 		protected bool GetRuntimeMethodGenerator(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)
