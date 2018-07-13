@@ -129,7 +129,7 @@ namespace NHibernate.Loader
 												 queryParameters.NamedParameters);
 			}
 
-			await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session), cancellationToken)).ConfigureAwait(false);
+			await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session), cancellationToken: cancellationToken)).ConfigureAwait(false);
 			await (session.PersistenceContext.InitializeNonLazyCollectionsAsync(cancellationToken)).ConfigureAwait(false);
 			return result;
 		}
@@ -321,7 +321,7 @@ namespace NHibernate.Loader
 					session.Batcher.CloseCommand(st, rs);
 				}
 
-				await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, rs, session, queryParameters.IsReadOnly(session), cancellationToken)).ConfigureAwait(false);
+				await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, rs, session, queryParameters.IsReadOnly(session), cancellationToken: cancellationToken)).ConfigureAwait(false);
 
 				if (createSubselects)
 				{
@@ -332,7 +332,9 @@ namespace NHibernate.Loader
 			}
 		}
 
-		internal async Task InitializeEntitiesAndCollectionsAsync(IList hydratedObjects, object resultSetId, ISessionImplementor session, bool readOnly, CancellationToken cancellationToken)
+		internal async Task InitializeEntitiesAndCollectionsAsync(
+			IList hydratedObjects, object resultSetId, ISessionImplementor session, bool readOnly,
+			CacheBatcher cacheBatcher = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
@@ -375,13 +377,17 @@ namespace NHibernate.Loader
 					Log.Debug("total objects hydrated: {0}", hydratedObjectsSize);
 				}
 
-				var cacheBatcher = new CacheBatcher(session);
+				var ownCacheBatcher = cacheBatcher == null;
+				if (ownCacheBatcher)
+					cacheBatcher = new CacheBatcher(session);
 				for (int i = 0; i < hydratedObjectsSize; i++)
 				{
-					await (TwoPhaseLoad.InitializeEntityAsync(hydratedObjects[i], readOnly, session, pre, post,
-					                              (persister, data) => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
+					await (TwoPhaseLoad.InitializeEntityAsync(
+						hydratedObjects[i], readOnly, session, pre, post,
+						(persister, data) => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
 				}
-				await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
+				if (ownCacheBatcher)
+					await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 			}
 
 			if (collectionPersisters != null)
@@ -1216,62 +1222,51 @@ namespace NHibernate.Loader
 			return GetResultList(result, queryParameters.ResultTransformer);
 		}
 
-		internal async Task<IList> GetResultFromQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters,
-											  ISet<string> querySpaces, IQueryCache queryCache,
-											  QueryKey key, CancellationToken cancellationToken)
+		private async Task<IList> GetResultFromQueryCacheAsync(
+			ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces,
+			IQueryCache queryCache, QueryKey key, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			IList result = null;
+			if (!CanGetFromCache(session, queryParameters))
+				return null;
 
-			if (!queryParameters.ForceCacheRefresh && session.CacheMode.HasFlag(CacheMode.Get))
+			var result = await (queryCache.GetAsync(
+				key, queryParameters, 
+				queryParameters.HasAutoDiscoverScalarTypes
+					? null
+					: key.ResultTransformer.GetCachedResultTypes(ResultTypes),
+				querySpaces, session, cancellationToken)).ConfigureAwait(false);
+
+			if (_factory.Statistics.IsStatisticsEnabled)
 			{
-				IPersistenceContext persistenceContext = session.PersistenceContext;
-
-				bool defaultReadOnlyOrig = persistenceContext.DefaultReadOnly;
-
-				if (queryParameters.IsReadOnlyInitialized)
-					persistenceContext.DefaultReadOnly = queryParameters.ReadOnly;
+				if (result == null)
+				{
+					_factory.StatisticsImplementor.QueryCacheMiss(QueryIdentifier, queryCache.RegionName);
+				}
 				else
-					queryParameters.ReadOnly = persistenceContext.DefaultReadOnly;
-
-				try
 				{
-					result = await (queryCache.GetAsync(
-						key,
-						queryParameters.HasAutoDiscoverScalarTypes ? null : key.ResultTransformer.GetCachedResultTypes(ResultTypes),
-						queryParameters.NaturalKeyLookup, querySpaces, session, cancellationToken)).ConfigureAwait(false);
-					if (_factory.Statistics.IsStatisticsEnabled)
-					{
-						if (result == null)
-						{
-							_factory.StatisticsImplementor.QueryCacheMiss(QueryIdentifier, queryCache.RegionName);
-						}
-						else
-						{
-							_factory.StatisticsImplementor.QueryCacheHit(QueryIdentifier, queryCache.RegionName);
-						}
-					}
+					_factory.StatisticsImplementor.QueryCacheHit(QueryIdentifier, queryCache.RegionName);
 				}
-				finally
-				{
-					persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
-				}
-
 			}
+
 			return result;
 		}
 
-		internal async Task PutResultInQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters,
+		private async Task PutResultInQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters,
 										   IQueryCache queryCache, QueryKey key, IList result, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (session.CacheMode.HasFlag(CacheMode.Put))
+			if (!session.CacheMode.HasFlag(CacheMode.Put))
+				return;
+
+			var put = await (queryCache.PutAsync(
+				key, queryParameters,
+				key.ResultTransformer.GetCachedResultTypes(ResultTypes),
+				result, session, cancellationToken)).ConfigureAwait(false);
+
+			if (put && _factory.Statistics.IsStatisticsEnabled)
 			{
-				bool put = await (queryCache.PutAsync(key, key.ResultTransformer.GetCachedResultTypes(ResultTypes), result, queryParameters.NaturalKeyLookup, session, cancellationToken)).ConfigureAwait(false);
-				if (put && _factory.Statistics.IsStatisticsEnabled)
-				{
-					_factory.StatisticsImplementor.QueryCachePut(QueryIdentifier, queryCache.RegionName);
-				}
+				_factory.StatisticsImplementor.QueryCachePut(QueryIdentifier, queryCache.RegionName);
 			}
 		}
 

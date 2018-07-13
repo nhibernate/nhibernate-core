@@ -117,7 +117,7 @@ namespace NHibernate.Impl
 				result = list;
 				if (session.CacheMode.HasFlag(CacheMode.Put))
 				{
-					bool put = await (queryCache.PutAsync(key, new ICacheAssembler[] { assembler }, new object[] { list }, combinedParameters.NaturalKeyLookup, session, cancellationToken)).ConfigureAwait(false);
+					bool put = await (queryCache.PutAsync(key, combinedParameters, new ICacheAssembler[] { assembler }, new object[] { list }, session, cancellationToken)).ConfigureAwait(false);
 					if (put && factory.Statistics.IsStatisticsEnabled)
 					{
 						factory.StatisticsImplementor.QueryCachePut(key.ToString(), queryCache.RegionName);
@@ -200,7 +200,7 @@ namespace NHibernate.Impl
 					for (int i = 0; i < loaders.Count; i++)
 					{
 						CriteriaLoader loader = loaders[i];
-						await (loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, session.DefaultReadOnly, cancellationToken)).ConfigureAwait(false);
+						await (loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, session.DefaultReadOnly, cancellationToken: cancellationToken)).ConfigureAwait(false);
 
 						if (createSubselects[i])
 						{

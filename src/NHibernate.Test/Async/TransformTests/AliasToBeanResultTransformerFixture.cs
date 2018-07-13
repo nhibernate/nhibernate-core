@@ -304,7 +304,7 @@ namespace NHibernate.Test.TransformTests
 				var transformer = Transformers.AliasToBean<T>();
 				var bytes = SerializationHelper.Serialize(transformer);
 				transformer = (IResultTransformer)SerializationHelper.Deserialize(bytes);
-				return AssertCardinalityNameAndIdAsync<T>(transformer: transformer, cancellationToken:cancellationToken);
+				return AssertCardinalityNameAndIdAsync<T>(transformer: transformer, cancellationToken: cancellationToken);
 			}
 			catch (System.Exception ex)
 			{

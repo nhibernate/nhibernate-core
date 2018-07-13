@@ -8,11 +8,7 @@
 //------------------------------------------------------------------------------
 
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
-using NHibernate.Cache.Access;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -21,7 +17,7 @@ namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	internal partial class CacheBatcher
+	public sealed partial class CacheBatcher
 	{
 
 		/// <summary>
@@ -31,7 +27,7 @@ namespace NHibernate.Cache
 		/// <param name="persister">The entity persister.</param>
 		/// <param name="data">The data to put in the cache.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public async Task AddToBatchAsync(IEntityPersister persister, CachePutData data, CancellationToken cancellationToken)
+		internal async Task AddToBatchAsync(IEntityPersister persister, CachePutData data, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (ShouldExecuteBatch(persister, _putBatch))
@@ -54,7 +50,7 @@ namespace NHibernate.Cache
 		/// <param name="persister">The collection persister.</param>
 		/// <param name="data">The data to put in the cache.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public async Task AddToBatchAsync(ICollectionPersister persister, CachePutData data, CancellationToken cancellationToken)
+		internal async Task AddToBatchAsync(ICollectionPersister persister, CachePutData data, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (ShouldExecuteBatch(persister, _putBatch))
@@ -74,7 +70,7 @@ namespace NHibernate.Cache
 		/// Executes the current batch.
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public async Task ExecuteBatchAsync(CancellationToken cancellationToken)
+		internal async Task ExecuteBatchAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (_currentBatch == null || _currentBatch.BatchSize == 0)

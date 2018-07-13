@@ -101,7 +101,7 @@ namespace NHibernate.Impl
 			if (!queryParameters.ForceCacheRefresh)
 			{
 				IList list =
-					await (queryCache.GetAsync(key, new ICacheAssembler[] {this}, queryParameters.NaturalKeyLookup, querySpaces, session, cancellationToken)).ConfigureAwait(false);
+					await (queryCache.GetAsync(key, queryParameters, new ICacheAssembler[] {this}, querySpaces, session, cancellationToken)).ConfigureAwait(false);
 				//we had to wrap the query results in another list in order to save all
 				//the queries in the same bucket, now we need to do it the other way around.
 				if (list != null)

@@ -16,6 +16,7 @@ using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Multi
@@ -26,39 +27,11 @@ namespace NHibernate.Multi
 	{
 
 		/// <inheritdoc />
-		public async Task<IEnumerable<ISqlCommand>> GetCommandsAsync(CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			var yields = new List<ISqlCommand>();
-			for (var index = 0; index < _queryInfos.Count; index++)
-			{
-				var qi = _queryInfos[index];
-
-				if (qi.Loader.IsCacheable(qi.Parameters))
-				{
-					qi.IsCacheable = true;
-					// Check if the results are available in the cache
-					qi.Cache = Session.Factory.GetQueryCache(qi.Parameters.CacheRegion);
-					qi.CacheKey = qi.Loader.GenerateQueryKey(Session, qi.Parameters);
-					var resultsFromCache = await (qi.Loader.GetResultFromQueryCacheAsync(Session, qi.Parameters, qi.QuerySpaces, qi.Cache, qi.CacheKey, cancellationToken)).ConfigureAwait(false);
-
-					if (resultsFromCache != null)
-					{
-						// Cached results available, skip the command for them and stores them.
-						_loaderResults[index] = resultsFromCache;
-						qi.IsResultFromCache = true;
-						continue;
-					}
-				}
-			yields.Add(qi.Loader.CreateSqlCommand(qi.Parameters, Session));
-			}
-			return yields;
-		}
-
-		/// <inheritdoc />
 		public async Task<int> ProcessResultsSetAsync(DbDataReader reader, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			ThrowIfNotInitialized();
+
 			var dialect = Session.Factory.Dialect;
 			var hydratedObjects = new List<object>[_queryInfos.Count];
 
@@ -126,7 +99,9 @@ namespace NHibernate.Multi
 					tmpResults.Add(o);
 				}
 
-				_loaderResults[i] = tmpResults;
+				queryInfo.Result = tmpResults;
+				if (queryInfo.CanPutToCache)
+					queryInfo.ResultToCache = tmpResults;
 
 				await (reader.NextResultAsync(cancellationToken)).ConfigureAwait(false);
 			}
@@ -134,39 +109,6 @@ namespace NHibernate.Multi
 			await (InitializeEntitiesAndCollectionsAsync(reader, hydratedObjects, cancellationToken)).ConfigureAwait(false);
 
 			return rowCount;
-		}
-
-		/// <inheritdoc />
-		public async Task ProcessResultsAsync(CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			for (var i = 0; i < _queryInfos.Count; i++)
-			{
-				var queryInfo = _queryInfos[i];
-				if (_subselectResultKeys[i] != null)
-				{
-					queryInfo.Loader.CreateSubselects(_subselectResultKeys[i], queryInfo.Parameters, Session);
-				}
-
-				// Handle cache if cacheable.
-				if (queryInfo.IsCacheable)
-				{
-					if (!queryInfo.IsResultFromCache)
-					{
-						await (queryInfo.Loader.PutResultInQueryCacheAsync(
-							Session,
-							queryInfo.Parameters,
-							queryInfo.Cache,
-							queryInfo.CacheKey,
-							_loaderResults[i], cancellationToken)).ConfigureAwait(false);
-					}
-
-					_loaderResults[i] =
-						queryInfo.Loader.TransformCacheableResults(
-							queryInfo.Parameters, queryInfo.CacheKey.ResultTransformer, _loaderResults[i]);
-				}
-			}
-			AfterLoadCallback?.Invoke(GetResults());
 		}
 
 		/// <inheritdoc />
@@ -188,7 +130,8 @@ namespace NHibernate.Multi
 				if (queryInfo.IsResultFromCache)
 					continue;
 				await (queryInfo.Loader.InitializeEntitiesAndCollectionsAsync(
-					hydratedObjects[i], reader, Session, Session.PersistenceContext.DefaultReadOnly, cancellationToken)).ConfigureAwait(false);
+					hydratedObjects[i], reader, Session, queryInfo.Parameters.IsReadOnly(Session),
+					queryInfo.CacheBatcher, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 	}

@@ -726,7 +726,7 @@ namespace NHibernate.Impl
 			{
 				log.Debug("Cache miss for multi query");
 				var list = DoList();
-				queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, false, session);
+				queryCache.Put(key, combinedParameters, new ICacheAssembler[] { assembler }, new object[] { list }, session);
 				result = list;
 			}
 

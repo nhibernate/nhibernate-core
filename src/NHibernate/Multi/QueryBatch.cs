@@ -1,10 +1,13 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using NHibernate.Cache;
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
+using NHibernate.Type;
 
 namespace NHibernate.Multi
 {
@@ -121,27 +124,19 @@ namespace NHibernate.Multi
 			}
 		}
 
-		private void CombineQueries(IResultSetsCommand resultSetsCommand)
-		{
-			foreach (var multiSource in _queries)
-			foreach (var cmd in multiSource.GetCommands())
-			{
-				resultSetsCommand.Append(cmd);
-			}
-		}
-
 		protected void ExecuteBatched()
 		{
 			var querySpaces = new HashSet<string>(_queries.SelectMany(t => t.GetQuerySpaces()));
 			if (querySpaces.Count > 0)
 			{
+				// The auto-flush must be handled before querying the cache, because an auto-flush may
+				// have to invalidate cached data, data which otherwise would cause a command to be skipped.
 				Session.AutoFlushIfRequired(querySpaces);
 			}
 
+			GetCachedResults();
+
 			var resultSetsCommand = Session.Factory.ConnectionProvider.Driver.GetResultSetsCommand(Session);
-			// CombineQueries queries the second level cache, which may contain stale data in regard to
-			// the session changes. For having them invalidated, auto-flush must have been handled before
-			// calling CombineQueries.
 			CombineQueries(resultSetsCommand);
 
 			var statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
@@ -164,25 +159,39 @@ namespace NHibernate.Multi
 				{
 					using (var reader = resultSetsCommand.GetReader(Timeout))
 					{
-						foreach (var multiSource in _queries)
+						var cacheBatcher = new CacheBatcher(Session);
+						foreach (var query in _queries)
 						{
-							rowCount += multiSource.ProcessResultsSet(reader);
+							if (query.CachingInformation != null)
+							{
+								foreach (var cachingInfo in query.CachingInformation.Where(ci => ci.IsCacheable))
+								{
+									cachingInfo.SetCacheBatcher(cacheBatcher);
+								}
+							}
+
+							rowCount += query.ProcessResultsSet(reader);
 						}
+						cacheBatcher.ExecuteBatch();
 					}
 				}
 
-				foreach (var multiSource in _queries)
+				// Query cacheable results must be cached untransformed: the put does not need to wait for
+				// the ProcessResults.
+				PutCacheableResults();
+
+				foreach (var query in _queries)
 				{
-					multiSource.ProcessResults();
+					query.ProcessResults();
 				}
 			}
 			catch (Exception sqle)
 			{
-				Log.Error(sqle, "Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
+				Log.Error(sqle, "Failed to execute query batch: [{0}]", resultSetsCommand.Sql);
 				throw ADOExceptionHelper.Convert(
 					Session.Factory.SQLExceptionConverter,
 					sqle,
-					"Failed to execute multi query",
+					"Failed to execute query batch",
 					resultSetsCommand.Sql);
 			}
 
@@ -190,10 +199,112 @@ namespace NHibernate.Multi
 			{
 				stopWatch.Stop();
 				Session.Factory.StatisticsImplementor.QueryExecuted(
-					$"{_queries.Count} queries",
+					resultSetsCommand.Sql.ToString(),
 					rowCount,
 					stopWatch.Elapsed);
 			}
+		}
+
+		private void GetCachedResults()
+		{
+			var statisticsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
+			var queriesByCaches = GetQueriesByCaches(ci => ci.CanGetFromCache);
+			foreach (var queriesByCache in queriesByCaches)
+			{
+				var queryInfos = queriesByCache.ToArray();
+				var cache = queriesByCache.Key;
+				var keys = new QueryKey[queryInfos.Length];
+				var parameters = new QueryParameters[queryInfos.Length];
+				var returnTypes = new ICacheAssembler[queryInfos.Length][];
+				var spaces = new ISet<string>[queryInfos.Length];
+				for (var i = 0; i < queryInfos.Length; i++)
+				{
+					var queryInfo = queryInfos[i];
+					keys[i] = queryInfo.CacheKey;
+					parameters[i] = queryInfo.Parameters;
+					returnTypes[i] = queryInfo.Parameters.HasAutoDiscoverScalarTypes
+						? null
+						: queryInfo.CacheKey.ResultTransformer.GetCachedResultTypes(queryInfo.ResultTypes);
+					spaces[i] = queryInfo.QuerySpaces;
+				}
+
+				var results = cache.GetMany(keys, parameters, returnTypes, spaces, Session);
+
+				for (var i = 0; i < queryInfos.Length; i++)
+				{
+					queryInfos[i].SetCachedResult(results[i]);
+
+					if (statisticsEnabled)
+					{
+						var queryIdentifier = queryInfos[i].QueryIdentifier;
+						if (results[i] == null)
+						{
+							Session.Factory.StatisticsImplementor.QueryCacheMiss(queryIdentifier, cache.RegionName);
+						}
+						else
+						{
+							Session.Factory.StatisticsImplementor.QueryCacheHit(queryIdentifier, cache.RegionName);
+						}
+					}
+				}
+			}
+		}
+
+		private void CombineQueries(IResultSetsCommand resultSetsCommand)
+		{
+			foreach (var query in _queries)
+			foreach (var cmd in query.GetCommands())
+			{
+				resultSetsCommand.Append(cmd);
+			}
+		}
+
+		private void PutCacheableResults()
+		{
+			var statisticsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
+			var queriesByCaches = GetQueriesByCaches(ci => ci.ResultToCache != null);
+			foreach (var queriesByCache in queriesByCaches)
+			{
+				var queryInfos = queriesByCache.ToArray();
+				var cache = queriesByCache.Key;
+				var keys = new QueryKey[queryInfos.Length];
+				var parameters = new QueryParameters[queryInfos.Length];
+				var returnTypes = new ICacheAssembler[queryInfos.Length][];
+				var results = new IList[queryInfos.Length];
+				for (var i = 0; i < queryInfos.Length; i++)
+				{
+					var queryInfo = queryInfos[i];
+					keys[i] = queryInfo.CacheKey;
+					parameters[i] = queryInfo.Parameters;
+					returnTypes[i] = queryInfo.CacheKey.ResultTransformer.GetCachedResultTypes(queryInfo.ResultTypes);
+					results[i] = queryInfo.ResultToCache;
+				}
+
+				var putted = cache.PutMany(keys, parameters, returnTypes, results, Session);
+
+				if (!statisticsEnabled)
+					continue;
+
+				for (var i = 0; i < queryInfos.Length; i++)
+				{
+					if (putted[i])
+					{
+						Session.Factory.StatisticsImplementor.QueryCachePut(
+							queryInfos[i].QueryIdentifier, cache.RegionName);
+					}
+				}
+			}
+		}
+
+		private IEnumerable<IGrouping<IQueryCache, ICachingInformation>> GetQueriesByCaches(Func<ICachingInformation, bool> cachingInformationFilter)
+		{
+			return
+				_queries
+					.Where(q => q.CachingInformation != null)
+					.SelectMany(q => q.CachingInformation)
+					.Where(ci => ci != null && cachingInformationFilter(ci))
+					.GroupBy(
+						ci => Session.Factory.GetQueryCache(ci.Parameters.CacheRegion));
 		}
 	}
 }

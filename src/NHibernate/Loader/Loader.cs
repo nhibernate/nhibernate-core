@@ -599,7 +599,9 @@ namespace NHibernate.Loader
 			}
 		}
 
-		internal void InitializeEntitiesAndCollections(IList hydratedObjects, object resultSetId, ISessionImplementor session, bool readOnly)
+		internal void InitializeEntitiesAndCollections(
+			IList hydratedObjects, object resultSetId, ISessionImplementor session, bool readOnly,
+			CacheBatcher cacheBatcher = null)
 		{
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
 			if (collectionPersisters != null)
@@ -641,13 +643,17 @@ namespace NHibernate.Loader
 					Log.Debug("total objects hydrated: {0}", hydratedObjectsSize);
 				}
 
-				var cacheBatcher = new CacheBatcher(session);
+				var ownCacheBatcher = cacheBatcher == null;
+				if (ownCacheBatcher)
+					cacheBatcher = new CacheBatcher(session);
 				for (int i = 0; i < hydratedObjectsSize; i++)
 				{
-					TwoPhaseLoad.InitializeEntity(hydratedObjects[i], readOnly, session, pre, post,
-					                              (persister, data) => cacheBatcher.AddToBatch(persister, data));
+					TwoPhaseLoad.InitializeEntity(
+						hydratedObjects[i], readOnly, session, pre, post,
+						(persister, data) => cacheBatcher.AddToBatch(persister, data));
 				}
-				cacheBatcher.ExecuteBatch();
+				if (ownCacheBatcher)
+					cacheBatcher.ExecuteBatch();
 			}
 
 			if (collectionPersisters != null)
@@ -1708,60 +1714,54 @@ namespace NHibernate.Loader
 				queryParameters.HasAutoDiscoverScalarTypes, SqlString);
 		}
 
-		internal IList GetResultFromQueryCache(ISessionImplementor session, QueryParameters queryParameters,
-											  ISet<string> querySpaces, IQueryCache queryCache,
-											  QueryKey key)
+		internal bool CanGetFromCache(ISessionImplementor session, QueryParameters queryParameters)
 		{
-			IList result = null;
+			return !queryParameters.ForceCacheRefresh && session.CacheMode.HasFlag(CacheMode.Get);
+		}
 
-			if (!queryParameters.ForceCacheRefresh && session.CacheMode.HasFlag(CacheMode.Get))
+		private IList GetResultFromQueryCache(
+			ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces,
+			IQueryCache queryCache, QueryKey key)
+		{
+			if (!CanGetFromCache(session, queryParameters))
+				return null;
+
+			var result = queryCache.Get(
+				key, queryParameters, 
+				queryParameters.HasAutoDiscoverScalarTypes
+					? null
+					: key.ResultTransformer.GetCachedResultTypes(ResultTypes),
+				querySpaces, session);
+
+			if (_factory.Statistics.IsStatisticsEnabled)
 			{
-				IPersistenceContext persistenceContext = session.PersistenceContext;
-
-				bool defaultReadOnlyOrig = persistenceContext.DefaultReadOnly;
-
-				if (queryParameters.IsReadOnlyInitialized)
-					persistenceContext.DefaultReadOnly = queryParameters.ReadOnly;
+				if (result == null)
+				{
+					_factory.StatisticsImplementor.QueryCacheMiss(QueryIdentifier, queryCache.RegionName);
+				}
 				else
-					queryParameters.ReadOnly = persistenceContext.DefaultReadOnly;
-
-				try
 				{
-					result = queryCache.Get(
-						key,
-						queryParameters.HasAutoDiscoverScalarTypes ? null : key.ResultTransformer.GetCachedResultTypes(ResultTypes),
-						queryParameters.NaturalKeyLookup, querySpaces, session);
-					if (_factory.Statistics.IsStatisticsEnabled)
-					{
-						if (result == null)
-						{
-							_factory.StatisticsImplementor.QueryCacheMiss(QueryIdentifier, queryCache.RegionName);
-						}
-						else
-						{
-							_factory.StatisticsImplementor.QueryCacheHit(QueryIdentifier, queryCache.RegionName);
-						}
-					}
+					_factory.StatisticsImplementor.QueryCacheHit(QueryIdentifier, queryCache.RegionName);
 				}
-				finally
-				{
-					persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
-				}
-
 			}
+
 			return result;
 		}
 
-		internal void PutResultInQueryCache(ISessionImplementor session, QueryParameters queryParameters,
+		private void PutResultInQueryCache(ISessionImplementor session, QueryParameters queryParameters,
 										   IQueryCache queryCache, QueryKey key, IList result)
 		{
-			if (session.CacheMode.HasFlag(CacheMode.Put))
+			if (!session.CacheMode.HasFlag(CacheMode.Put))
+				return;
+
+			var put = queryCache.Put(
+				key, queryParameters,
+				key.ResultTransformer.GetCachedResultTypes(ResultTypes),
+				result, session);
+
+			if (put && _factory.Statistics.IsStatisticsEnabled)
 			{
-				bool put = queryCache.Put(key, key.ResultTransformer.GetCachedResultTypes(ResultTypes), result, queryParameters.NaturalKeyLookup, session);
-				if (put && _factory.Statistics.IsStatisticsEnabled)
-				{
-					_factory.StatisticsImplementor.QueryCachePut(QueryIdentifier, queryCache.RegionName);
-				}
+				_factory.StatisticsImplementor.QueryCachePut(QueryIdentifier, queryCache.RegionName);
 			}
 		}
 
