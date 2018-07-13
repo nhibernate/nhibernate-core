@@ -19,6 +19,8 @@ namespace NHibernate.Multi
 		protected ISessionImplementor Session;
 		private List<EntityKey[]>[] _subselectResultKeys;
 		private List<QueryInfo> _queryInfos;
+		private CacheMode? _cacheMode;
+		private bool? _isReadOnly;
 		private IList<TResult> _finalResults;
 
 		protected class QueryInfo : ICachingInformation
@@ -96,8 +98,8 @@ namespace NHibernate.Multi
 					return;
 
 				CacheKey = Loader.GenerateQueryKey(session, Parameters);
-				CanGetFromCache = Loader.CanGetFromCache(session, Parameters);
-				CanPutToCache = session.CacheMode.HasFlag(CacheMode.Put);
+				CanGetFromCache = Parameters.CanGetFromCache(session);
+				CanPutToCache = Parameters.CanPutToCache(session);
 			}
 
 			/// <inheritdoc />
@@ -136,6 +138,10 @@ namespace NHibernate.Multi
 			Session = session;
 
 			_queryInfos = GetQueryInformation(session);
+			// Cache and readonly parameters are the same for all translators
+			var queryParameters = _queryInfos.First().Parameters;
+			_cacheMode = queryParameters.CacheMode;
+			_isReadOnly = queryParameters.IsReadOnlyInitialized ? queryParameters.ReadOnly : default(bool?);
 
 			var count = _queryInfos.Count;
 			_subselectResultKeys = new List<EntityKey[]>[count];
@@ -171,80 +177,96 @@ namespace NHibernate.Multi
 			var dialect = Session.Factory.Dialect;
 			var hydratedObjects = new List<object>[_queryInfos.Count];
 
-			var rowCount = 0;
-			for (var i = 0; i < _queryInfos.Count; i++)
+			var cacheModeOrig = Session.CacheMode;
+			if (_cacheMode.HasValue &&
+				// Avoid setting the cache mode with the same value as the setter is not just affecting
+				// the backing field
+				_cacheMode != cacheModeOrig)
 			{
-				var queryInfo = _queryInfos[i];
-				var loader = queryInfo.Loader;
-				var queryParameters = queryInfo.Parameters;
-
-				//Skip processing for items already loaded from cache
-				if (queryInfo.IsResultFromCache)
+				Session.CacheMode = _cacheMode.Value;
+			}
+			try
+			{
+				var rowCount = 0;
+				for (var i = 0; i < _queryInfos.Count; i++)
 				{
-					continue;
-				}
+					var queryInfo = _queryInfos[i];
+					var loader = queryInfo.Loader;
+					var queryParameters = queryInfo.Parameters;
 
-				var entitySpan = loader.EntityPersisters.Length;
-				hydratedObjects[i] = entitySpan == 0 ? null : new List<object>(entitySpan);
-				var keys = new EntityKey[entitySpan];
-
-				var selection = queryParameters.RowSelection;
-				var createSubselects = loader.IsSubselectLoadingEnabled;
-
-				_subselectResultKeys[i] = createSubselects ? new List<EntityKey[]>() : null;
-				var maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
-				var advanceSelection = !dialect.SupportsLimitOffset || !loader.UseLimit(selection, dialect);
-
-				if (advanceSelection)
-				{
-					Loader.Loader.Advance(reader, selection);
-				}
-
-				var forcedResultTransformer = queryInfo.CacheKey?.ResultTransformer;
-				if (queryParameters.HasAutoDiscoverScalarTypes)
-				{
-					loader.AutoDiscoverTypes(reader, queryParameters, forcedResultTransformer);
-				}
-
-				var lockModeArray = loader.GetLockModes(queryParameters.LockModes);
-				var optionalObjectKey = Loader.Loader.GetOptionalObjectKey(queryParameters, Session);
-				var tmpResults = new List<object>();
-
-				for (var count = 0; count < maxRows && reader.Read(); count++)
-				{
-					rowCount++;
-
-					var o =
-						loader.GetRowFromResultSet(
-							reader,
-							Session,
-							queryParameters,
-							lockModeArray,
-							optionalObjectKey,
-							hydratedObjects[i],
-							keys,
-							true,
-							forcedResultTransformer
-						);
-					if (loader.IsSubselectLoadingEnabled)
+					//Skip processing for items already loaded from cache
+					if (queryInfo.IsResultFromCache)
 					{
-						_subselectResultKeys[i].Add(keys);
-						keys = new EntityKey[entitySpan]; //can't reuse in this case
+						continue;
 					}
 
-					tmpResults.Add(o);
+					var entitySpan = loader.EntityPersisters.Length;
+					hydratedObjects[i] = entitySpan == 0 ? null : new List<object>(entitySpan);
+					var keys = new EntityKey[entitySpan];
+
+					var selection = queryParameters.RowSelection;
+					var createSubselects = loader.IsSubselectLoadingEnabled;
+
+					_subselectResultKeys[i] = createSubselects ? new List<EntityKey[]>() : null;
+					var maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
+					var advanceSelection = !dialect.SupportsLimitOffset || !loader.UseLimit(selection, dialect);
+
+					if (advanceSelection)
+					{
+						Loader.Loader.Advance(reader, selection);
+					}
+
+					var forcedResultTransformer = queryInfo.CacheKey?.ResultTransformer;
+					if (queryParameters.HasAutoDiscoverScalarTypes)
+					{
+						loader.AutoDiscoverTypes(reader, queryParameters, forcedResultTransformer);
+					}
+
+					var lockModeArray = loader.GetLockModes(queryParameters.LockModes);
+					var optionalObjectKey = Loader.Loader.GetOptionalObjectKey(queryParameters, Session);
+					var tmpResults = new List<object>();
+
+					for (var count = 0; count < maxRows && reader.Read(); count++)
+					{
+						rowCount++;
+
+						var o =
+							loader.GetRowFromResultSet(
+								reader,
+								Session,
+								queryParameters,
+								lockModeArray,
+								optionalObjectKey,
+								hydratedObjects[i],
+								keys,
+								true,
+								forcedResultTransformer
+							);
+						if (loader.IsSubselectLoadingEnabled)
+						{
+							_subselectResultKeys[i].Add(keys);
+							keys = new EntityKey[entitySpan]; //can't reuse in this case
+						}
+
+						tmpResults.Add(o);
+					}
+
+					queryInfo.Result = tmpResults;
+					if (queryInfo.CanPutToCache)
+						queryInfo.ResultToCache = tmpResults;
+
+					reader.NextResult();
 				}
 
-				queryInfo.Result = tmpResults;
-				if (queryInfo.CanPutToCache)
-					queryInfo.ResultToCache = tmpResults;
+				InitializeEntitiesAndCollections(reader, hydratedObjects);
 
-				reader.NextResult();
+				return rowCount;
 			}
-
-			InitializeEntitiesAndCollections(reader, hydratedObjects);
-
-			return rowCount;
+			finally
+			{
+				if (Session.CacheMode != cacheModeOrig)
+					Session.CacheMode = cacheModeOrig;
+			}
 		}
 
 		/// <inheritdoc />

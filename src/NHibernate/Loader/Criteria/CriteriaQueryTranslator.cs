@@ -167,7 +167,10 @@ namespace NHibernate.Loader.Criteria
 					rootCriteria.CacheRegion,
 					rootCriteria.Comment,
 					rootCriteria.LookupByNaturalKey,
-					rootCriteria.ResultTransformer);
+					rootCriteria.ResultTransformer)
+				{
+					CacheMode = rootCriteria.CacheMode
+				};
 		}
 		
 		public SqlString GetGroupBy()

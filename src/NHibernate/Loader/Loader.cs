@@ -1714,16 +1714,11 @@ namespace NHibernate.Loader
 				queryParameters.HasAutoDiscoverScalarTypes, SqlString);
 		}
 
-		internal bool CanGetFromCache(ISessionImplementor session, QueryParameters queryParameters)
-		{
-			return !queryParameters.ForceCacheRefresh && session.CacheMode.HasFlag(CacheMode.Get);
-		}
-
 		private IList GetResultFromQueryCache(
 			ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces,
 			IQueryCache queryCache, QueryKey key)
 		{
-			if (!CanGetFromCache(session, queryParameters))
+			if (!queryParameters.CanGetFromCache(session))
 				return null;
 
 			var result = queryCache.Get(
@@ -1751,7 +1746,7 @@ namespace NHibernate.Loader
 		private void PutResultInQueryCache(ISessionImplementor session, QueryParameters queryParameters,
 										   IQueryCache queryCache, QueryKey key, IList result)
 		{
-			if (!session.CacheMode.HasFlag(CacheMode.Put))
+			if (!queryParameters.CanPutToCache(session))
 				return;
 
 			var put = queryCache.Put(
