@@ -93,10 +93,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 		[Test]
 		public void QueryBatchSingleInList()
 		{
-			var driver = Sfi.ConnectionProvider.Driver;
-			if (!driver.SupportsMultipleQueries)
-				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
-
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{

@@ -58,10 +58,6 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 		[Test]
 		public void QueryBatchShouldThrowUserException()
 		{
-			var driver = Sfi.ConnectionProvider.Driver;
-			if (!driver.SupportsMultipleQueries)
-				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
-
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
 			{
@@ -104,10 +100,6 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 		[Test]
 		public void CriteriaQueryBatchShouldThrowUserException()
 		{
-			var driver = Sfi.ConnectionProvider.Driver;
-			if (!driver.SupportsMultipleQueries)
-				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
-
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
 			{

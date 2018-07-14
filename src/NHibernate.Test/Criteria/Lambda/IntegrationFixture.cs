@@ -400,10 +400,6 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public void MultiQuery()
 		{
-			var driver = Sfi.ConnectionProvider.Driver;
-			if (!driver.SupportsMultipleQueries)
-				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
-
 			SetupPagingData();
 
 			using (var s = OpenSession())

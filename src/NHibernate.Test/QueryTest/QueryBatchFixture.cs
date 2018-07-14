@@ -23,11 +23,6 @@ namespace NHibernate.Test.QueryTest
 
 		protected override string[] Mappings => new[] { "SecondLevelCacheTest.Item.hbm.xml" };
 
-		protected override bool AppliesTo(ISessionFactoryImplementor factory)
-		{
-			return factory.ConnectionProvider.Driver.SupportsMultipleQueries;
-		}
-
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(Environment.GenerateStatistics, "true");
@@ -732,8 +727,8 @@ namespace NHibernate.Test.QueryTest
 					                   .SetFirstResult(10)
 					                   .SetCacheable(true))
 				                  .Add<long>(
-					                  s.CreateSQLQuery("select count(*) as count from ITEM where Id > ?")
-					                   .AddScalar("count", NHibernateUtil.Int64)
+					                  s.CreateSQLQuery("select count(*) as itemCount from ITEM where Id > ?")
+					                   .AddScalar("itemCount", NHibernateUtil.Int64)
 					                   .SetInt32(0, 50)
 					                   .SetCacheable(true));
 
@@ -752,8 +747,8 @@ namespace NHibernate.Test.QueryTest
 					                   .SetFirstResult(20)
 					                   .SetCacheable(true))
 				                  .Add<long>(
-					                  s.CreateSQLQuery("select count(*) as count from ITEM where Id > ?")
-					                   .AddScalar("count", NHibernateUtil.Int64)
+					                  s.CreateSQLQuery("select count(*) as itemCount from ITEM where Id > ?")
+					                   .AddScalar("itemCount", NHibernateUtil.Int64)
 					                   .SetInt32(0, 50)
 					                   .SetCacheable(true));
 				var items = multiQuery.GetResult<Item>(0);
