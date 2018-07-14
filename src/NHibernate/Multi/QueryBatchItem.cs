@@ -15,19 +15,17 @@ namespace NHibernate.Multi
 			Query = (AbstractQueryImpl) query ?? throw new ArgumentNullException(nameof(query));
 		}
 
-		protected override List<QueryLoadInfo> GetQueryLoadInfo()
+		protected override List<QueryInfo> GetQueryInformation(ISessionImplementor session)
 		{
 			Query.VerifyParameters();
 			QueryParameters queryParameters = Query.GetQueryParameters();
 			queryParameters.ValidateParameters();
 
-			return Query.GetTranslators(Session, queryParameters).Select(
-				t => new QueryLoadInfo()
-				{
-					Loader = t.Loader,
-					Parameters = queryParameters,
-					QuerySpaces = new HashSet<string>(t.QuerySpaces),
-				}).ToList();
+			return
+				Query
+					.GetTranslators(Session, queryParameters)
+					.Select(t => new QueryInfo(queryParameters, t.Loader, new HashSet<string>(t.QuerySpaces), session))
+					.ToList();
 		}
 
 		protected override IList<TResult> GetResultsNonBatched()

@@ -98,6 +98,12 @@
     - conversion: Ignore
       name: QuoteTableAndColumns
       containingTypeName: SchemaMetadataUpdater
+    - conversion: Ignore
+      name: GetEnumerator
+      containingTypeName: DelayedEnumerator
+    - conversion: Ignore
+      name: GetEnumerator
+      containingTypeName: IFutureEnumerable
     - conversion: ToAsync
       name: ExecuteReader
       containingTypeName: IBatcher

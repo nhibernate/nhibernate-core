@@ -79,7 +79,7 @@ namespace NHibernate.Impl
 			if (!queryParameters.ForceCacheRefresh)
 			{
 				IList list =
-					queryCache.Get(key, new ICacheAssembler[] {this}, queryParameters.NaturalKeyLookup, querySpaces, session);
+					queryCache.Get(key, queryParameters, new ICacheAssembler[] {this}, querySpaces, session);
 				//we had to wrap the query results in another list in order to save all
 				//the queries in the same bucket, now we need to do it the other way around.
 				if (list != null)

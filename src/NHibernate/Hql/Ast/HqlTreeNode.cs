@@ -724,10 +724,20 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlDictionaryIndex : HqlExpression
+	public class HqlIndex : HqlExpression
+	{
+		public HqlIndex(IASTFactory factory, HqlExpression collection, HqlExpression index)
+			: base(HqlSqlWalker.INDEX_OP, "[", factory, collection, index)
+		{
+		}
+	}
+
+	//Since v5.2
+	[Obsolete("Please use HqlIndex instead")]
+	public class HqlDictionaryIndex : HqlIndex
 	{
 		public HqlDictionaryIndex(IASTFactory factory, HqlExpression dictionary, HqlExpression index)
-			: base(HqlSqlWalker.INDEX_OP, "[", factory, dictionary, index)
+			: base(factory, dictionary, index)
 		{
 		}
 	}

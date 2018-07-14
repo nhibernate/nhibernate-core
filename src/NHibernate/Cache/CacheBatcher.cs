@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using NHibernate.Cache.Access;
+﻿using System.Diagnostics;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -10,20 +6,20 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Cache
 {
 	/// <summary>
-	/// A batcher for batching operations of <see cref="ICacheConcurrencyStrategy"/>, where the batch size is retrived
+	/// A batcher for batching operations of <see cref="ICacheConcurrencyStrategy"/>, where the batch size is retrieved
 	/// from an <see cref="IEntityPersister"/> or <see cref="ICollectionPersister"/>.
 	/// When a different persister or a different operation is added to the batch, the current batch will be executed.
 	/// </summary>
-	internal partial class CacheBatcher
+	public sealed partial class CacheBatcher
 	{
 		private CachePutBatch _putBatch;
-		private ISessionImplementor _session;
+		private readonly ISessionImplementor _session;
 		private AbstractCacheBatch _currentBatch;
 		private object _currentPersister;
 
-		protected static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(CacheBatcher));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(CacheBatcher));
 
-		public CacheBatcher(ISessionImplementor session)
+		internal CacheBatcher(ISessionImplementor session)
 		{
 			_session = session;
 		}
@@ -34,7 +30,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <param name="persister">The entity persister.</param>
 		/// <param name="data">The data to put in the cache.</param>
-		public void AddToBatch(IEntityPersister persister, CachePutData data)
+		internal void AddToBatch(IEntityPersister persister, CachePutData data)
 		{
 			if (ShouldExecuteBatch(persister, _putBatch))
 			{
@@ -55,7 +51,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <param name="persister">The collection persister.</param>
 		/// <param name="data">The data to put in the cache.</param>
-		public void AddToBatch(ICollectionPersister persister, CachePutData data)
+		internal void AddToBatch(ICollectionPersister persister, CachePutData data)
 		{
 			if (ShouldExecuteBatch(persister, _putBatch))
 			{
@@ -73,7 +69,7 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Executes the current batch.
 		/// </summary>
-		public void ExecuteBatch()
+		internal void ExecuteBatch()
 		{
 			if (_currentBatch == null || _currentBatch.BatchSize == 0)
 			{
@@ -102,7 +98,7 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Cleans up the current batch.
 		/// </summary>
-		public void Cleanup()
+		internal void Cleanup()
 		{
 			_putBatch = null;
 

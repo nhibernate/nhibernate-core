@@ -172,7 +172,7 @@ namespace NHibernate.Impl
 						ITranslator translator = translators[i];
 						QueryParameters parameter = parameters[i];
 
-						await (translator.Loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, false, cancellationToken)).ConfigureAwait(false);
+						await (translator.Loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, false, cancellationToken: cancellationToken)).ConfigureAwait(false);
 
 						if (createSubselects[i])
 						{
@@ -253,7 +253,7 @@ namespace NHibernate.Impl
 			{
 				log.Debug("Cache miss for multi query");
 				var list = await (DoListAsync(cancellationToken)).ConfigureAwait(false);
-				await (queryCache.PutAsync(key, new ICacheAssembler[] { assembler }, new object[] { list }, false, session, cancellationToken)).ConfigureAwait(false);
+				await (queryCache.PutAsync(key, combinedParameters, new ICacheAssembler[] { assembler }, new object[] { list }, session, cancellationToken)).ConfigureAwait(false);
 				result = list;
 			}
 

@@ -5,7 +5,6 @@ using System.Data.Common;
 using System.Diagnostics;
 using NHibernate.Engine;
 using NHibernate.Event;
-using NHibernate.Hql;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Impl;
@@ -204,7 +203,7 @@ namespace NHibernate.Loader.Hql
 			//sqlResultTypes = selectClause.getSqlResultTypes();
 			ResultTypes = selectClause.QueryReturnTypes;
 
-			_selectNewTransformer = HolderInstantiator.CreateSelectNewTransformer(selectClause.Constructor, selectClause.IsMap, selectClause.IsList);
+			_selectNewTransformer = GetSelectNewTransformer(selectClause);
 			_queryReturnAliases = selectClause.QueryReturnAliases;
 
 			IList<FromElement> collectionFromElements = selectClause.CollectionFromElements;
@@ -291,15 +290,13 @@ namespace NHibernate.Loader.Hql
 		public override IList GetResultList(IList results, IResultTransformer resultTransformer)
 		{
 			// meant to handle dynamic instantiation queries...
-			HolderInstantiator holderInstantiator = HolderInstantiator.GetHolderInstantiator(_selectNewTransformer,
-																							 resultTransformer,
-																							 _queryReturnAliases);
-			if (holderInstantiator.IsRequired)
+			var transformer = _selectNewTransformer ?? resultTransformer;
+			if (transformer != null)
 			{
 				for (int i = 0; i < results.Count; i++)
 				{
-					var row = (Object[]) results[i];
-					Object result = holderInstantiator.Instantiate(row);
+					var row = (object[]) results[i];
+					object result = transformer.TransformTuple(row, _queryReturnAliases);
 					results[i] = result;
 				}
 
@@ -320,7 +317,7 @@ namespace NHibernate.Loader.Hql
 
 		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
 		{
-			return HolderInstantiator.ResolveResultTransformer(_selectNewTransformer, resultTransformer);
+			return _selectNewTransformer ?? resultTransformer;
 		}
 
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, DbDataReader rs,
@@ -426,11 +423,9 @@ namespace NHibernate.Loader.Hql
 			// This DbDataReader is disposed of in EnumerableImpl.Dispose
 			var rs = GetResultSet(cmd, queryParameters, session, null);
 
-			HolderInstantiator hi = 
-				HolderInstantiator.GetHolderInstantiator(_selectNewTransformer, queryParameters.ResultTransformer, _queryReturnAliases);
-
+			var resultTransformer = _selectNewTransformer ?? queryParameters.ResultTransformer;
 			IEnumerable result = 
-				new EnumerableImpl(rs, cmd, session, queryParameters.IsReadOnly(session), _queryTranslator.ReturnTypes, _queryTranslator.GetColumnNames(), queryParameters.RowSelection, hi);
+				new EnumerableImpl(rs, cmd, session, queryParameters.IsReadOnly(session), _queryTranslator.ReturnTypes, _queryTranslator.GetColumnNames(), queryParameters.RowSelection, resultTransformer, _queryReturnAliases);
 
 			if (statsEnabled)
 			{
@@ -451,6 +446,27 @@ namespace NHibernate.Loader.Hql
 		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()
 		{
 			return _queryTranslator.CollectedParameterSpecifications;
+		}
+
+		private static IResultTransformer GetSelectNewTransformer(SelectClause selectClause)
+		{
+			var constructor = selectClause.Constructor;
+			if (constructor != null)
+			{
+				return new AliasToBeanConstructorResultTransformer(constructor);
+			}
+
+			if (selectClause.IsMap)
+			{
+				return Transformers.AliasToEntityMap;
+			}
+
+			if (selectClause.IsList)
+			{
+				return Transformers.ToList;
+			}
+
+			return null;
 		}
 	}
 }

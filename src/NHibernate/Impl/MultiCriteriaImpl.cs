@@ -146,7 +146,7 @@ namespace NHibernate.Impl
 				result = list;
 				if (session.CacheMode.HasFlag(CacheMode.Put))
 				{
-					bool put = queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, combinedParameters.NaturalKeyLookup, session);
+					bool put = queryCache.Put(key, combinedParameters, new ICacheAssembler[] { assembler }, new object[] { list }, session);
 					if (put && factory.Statistics.IsStatisticsEnabled)
 					{
 						factory.StatisticsImplementor.QueryCachePut(key.ToString(), queryCache.RegionName);

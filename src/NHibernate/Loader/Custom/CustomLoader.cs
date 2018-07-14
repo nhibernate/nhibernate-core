@@ -301,7 +301,7 @@ namespace NHibernate.Loader.Custom
 
 		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
 		{
-			return HolderInstantiator.ResolveResultTransformer(null, resultTransformer);
+			return resultTransformer;
 		}
 
 		protected override bool[] IncludeInResultRow
@@ -312,23 +312,20 @@ namespace NHibernate.Loader.Custom
 		public override IList GetResultList(IList results, IResultTransformer resultTransformer)
 		{
 			// meant to handle dynamic instantiation queries...(Copy from QueryLoader)
-			HolderInstantiator holderInstantiator =
-				HolderInstantiator.GetHolderInstantiator(null, resultTransformer, ReturnAliasesForTransformer);
-			if (holderInstantiator.IsRequired)
+			var returnAliases = ReturnAliasesForTransformer;
+
+			if (resultTransformer != null)
 			{
-				for (int i = 0; i < results.Count; i++)
+				for (var i = 0; i < results.Count; i++)
 				{
-					object[] row = (object[]) results[i];
-					object result = holderInstantiator.Instantiate(row);
-					results[i] = result;
+					var row = (object[]) results[i];
+					results[i] = resultTransformer.TransformTuple(row, returnAliases);
 				}
 
 				return resultTransformer.TransformList(results);
 			}
-			else
-			{
-				return results;
-			}
+
+			return results;
 		}
 
 		protected internal override void AutoDiscoverTypes(
