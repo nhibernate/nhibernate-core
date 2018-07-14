@@ -58,7 +58,7 @@ namespace NHibernate.Engine
 		/// dispose will set the session cache mode back to its original value.</returns>
 		internal static IDisposable SwitchCacheMode(this ISessionImplementor session, CacheMode? cacheMode)
 		{
-			if (session == null || !cacheMode.HasValue || cacheMode == session.CacheMode)
+			if (!cacheMode.HasValue || cacheMode == session.CacheMode)
 				return null;
 			return new CacheModeSwitch(session, cacheMode.Value);
 		}
