@@ -35,7 +35,7 @@ namespace NHibernate.Multi
 			var dialect = Session.Factory.Dialect;
 			var hydratedObjects = new List<object>[_queryInfos.Count];
 
-			using (Session.SwitchCacheMode(CacheMode.Get))
+			using (Session.SwitchCacheMode(_cacheMode))
 			{
 				var rowCount = 0;
 				for (var i = 0; i < _queryInfos.Count; i++)

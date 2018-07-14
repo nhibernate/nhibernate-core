@@ -20,7 +20,6 @@ namespace NHibernate.Multi
 		private List<EntityKey[]>[] _subselectResultKeys;
 		private List<QueryInfo> _queryInfos;
 		private CacheMode? _cacheMode;
-		private bool? _isReadOnly;
 		private IList<TResult> _finalResults;
 
 		protected class QueryInfo : ICachingInformation
@@ -139,9 +138,7 @@ namespace NHibernate.Multi
 
 			_queryInfos = GetQueryInformation(session);
 			// Cache and readonly parameters are the same for all translators
-			var queryParameters = _queryInfos.First().Parameters;
-			_cacheMode = queryParameters.CacheMode;
-			_isReadOnly = queryParameters.IsReadOnlyInitialized ? queryParameters.ReadOnly : default(bool?);
+			_cacheMode = _queryInfos.First().Parameters.CacheMode;
 
 			var count = _queryInfos.Count;
 			_subselectResultKeys = new List<EntityKey[]>[count];
@@ -177,7 +174,7 @@ namespace NHibernate.Multi
 			var dialect = Session.Factory.Dialect;
 			var hydratedObjects = new List<object>[_queryInfos.Count];
 
-			using (Session.SwitchCacheMode(CacheMode.Get))
+			using (Session.SwitchCacheMode(_cacheMode))
 			{
 				var rowCount = 0;
 				for (var i = 0; i < _queryInfos.Count; i++)
