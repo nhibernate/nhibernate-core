@@ -35,15 +35,7 @@ namespace NHibernate.Multi
 			var dialect = Session.Factory.Dialect;
 			var hydratedObjects = new List<object>[_queryInfos.Count];
 
-			var cacheModeOrig = Session.CacheMode;
-			if (_cacheMode.HasValue &&
-				// Avoid setting the cache mode with the same value as the setter is not just affecting
-				// the backing field
-				_cacheMode != cacheModeOrig)
-			{
-				Session.CacheMode = _cacheMode.Value;
-			}
-			try
+			using (Session.SwitchCacheMode(CacheMode.Get))
 			{
 				var rowCount = 0;
 				for (var i = 0; i < _queryInfos.Count; i++)
@@ -119,11 +111,6 @@ namespace NHibernate.Multi
 				await (InitializeEntitiesAndCollectionsAsync(reader, hydratedObjects, cancellationToken)).ConfigureAwait(false);
 
 				return rowCount;
-			}
-			finally
-			{
-				if (Session.CacheMode != cacheModeOrig)
-					Session.CacheMode = cacheModeOrig;
 			}
 		}
 

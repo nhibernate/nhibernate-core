@@ -241,7 +241,6 @@ namespace NHibernate.Cache
 			var upToDatesIndex = 0;
 			var persistenceContext = session.PersistenceContext;
 			var defaultReadOnlyOrig = persistenceContext.DefaultReadOnly;
-			var cacheModeOrig = session.CacheMode;
 			for (var i = 0; i < keys.Length; i++)
 			{
 				var cacheable = cacheables[i];
@@ -263,23 +262,21 @@ namespace NHibernate.Cache
 
 				// Adjust the session cache mode, as GetResultFromCacheable assemble types which may cause
 				// entity loads, which may interact with the cache.
-				if (queryParams.CacheMode.HasValue &&
-					// Avoid setting the cache mode with the same value as the setter is not just affecting
-					// the backing field
-					queryParams.CacheMode != cacheModeOrig)
+				using (session.SwitchCacheMode(queryParams.CacheMode))
 				{
-					session.CacheMode = queryParams.CacheMode.Value;
-				}
-
-				try
-				{
-					results[i] = GetResultFromCacheable(key, returnTypes[i], queryParams.NaturalKeyLookup, session, cacheable);
-				}
-				finally
-				{
-					persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
-					if (session.CacheMode != cacheModeOrig)
-						session.CacheMode = cacheModeOrig;
+					try
+					{
+						results[i] = GetResultFromCacheable(
+							key,
+							returnTypes[i],
+							queryParams.NaturalKeyLookup,
+							session,
+							cacheable);
+					}
+					finally
+					{
+						persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
+					}
 				}
 			}
 

@@ -34,7 +34,7 @@ namespace NHibernate.Engine
 				return null;
 			return (session as AbstractSessionImpl)?.BeginProcess() ??
 				// This method has only replaced bare call to setting the id, so this fallback is enough for avoiding a
-				// breaking change in case in custom session implementation is used.
+				// breaking change in case a custom session implementation is used.
 				new SessionIdLoggingContext(session.SessionId);
 		}
 
@@ -47,6 +47,41 @@ namespace NHibernate.Engine
 		internal static void AutoFlushIfRequired(this ISessionImplementor implementor, ISet<string> querySpaces)
 		{
 			(implementor as AbstractSessionImpl)?.AutoFlushIfRequired(querySpaces);
+		}
+
+		/// <summary>
+		/// Switch the session current cache mode.
+		/// </summary>
+		/// <param name="session">The session for which the cache mode has to be switched.</param>
+		/// <param name="cacheMode">The desired cache mode. <see langword="null" /> for not actually switching.</param>
+		/// <returns><see langword="null" /> if no switch is required, otherwise an <see cref="IDisposable"/> which
+		/// dispose will set the session cache mode back to its original value.</returns>
+		internal static IDisposable SwitchCacheMode(this ISessionImplementor session, CacheMode? cacheMode)
+		{
+			if (session == null || !cacheMode.HasValue || cacheMode == session.CacheMode)
+				return null;
+			return new CacheModeSwitch(session, cacheMode.Value);
+		}
+
+		private sealed class CacheModeSwitch : IDisposable
+		{
+			private ISessionImplementor _session;
+			private readonly CacheMode _originalCacheMode;
+
+			public CacheModeSwitch(ISessionImplementor session, CacheMode cacheMode)
+			{
+				_session = session;
+				_originalCacheMode = session.CacheMode;
+				_session.CacheMode = cacheMode;
+			}
+
+			public void Dispose()
+			{
+				if (_session == null)
+					throw new ObjectDisposedException("The session cache mode switch has been disposed already");
+				_session.CacheMode = _originalCacheMode;
+				_session = null;
+			}
 		}
 	}
 
