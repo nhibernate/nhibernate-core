@@ -8,7 +8,9 @@
 //------------------------------------------------------------------------------
 
 
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -21,59 +23,13 @@ namespace NHibernate.Cache
 	{
 
 		/// <summary>
-		/// Adds a put operation to the batch. If the batch size reached the persister batch
-		/// size, the batch will be executed.
-		/// </summary>
-		/// <param name="persister">The entity persister.</param>
-		/// <param name="data">The data to put in the cache.</param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		internal async Task AddToBatchAsync(IEntityPersister persister, CachePutData data, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (ShouldExecuteBatch(persister, _putBatch))
-			{
-				await (ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
-				_currentPersister = persister;
-				_currentBatch = _putBatch = new CachePutBatch(_session, persister.Cache);
-			}
-			if (Log.IsDebugEnabled())
-			{
-				Log.Debug("Adding a put operation to batch for entity {0} and key {1}", persister.EntityName, data.Key);
-			}
-			_putBatch.Add(data);
-		}
-
-		/// <summary>
-		/// Adds a put operation to the batch. If the batch size reached the persister batch
-		/// size, the batch will be executed.
-		/// </summary>
-		/// <param name="persister">The collection persister.</param>
-		/// <param name="data">The data to put in the cache.</param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		internal async Task AddToBatchAsync(ICollectionPersister persister, CachePutData data, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (ShouldExecuteBatch(persister, _putBatch))
-			{
-				await (ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
-				_currentPersister = persister;
-				_currentBatch = _putBatch = new CachePutBatch(_session, persister.Cache);
-			}
-			if (Log.IsDebugEnabled())
-			{
-				Log.Debug("Adding a put operation to batch for collection role {0} and key {1}", persister.Role, data.Key);
-			}
-			_putBatch.Add(data);
-		}
-
-		/// <summary>
-		/// Executes the current batch.
+		/// Executes the pending batches.
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		internal async Task ExecuteBatchAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (_currentBatch == null || _currentBatch.BatchSize == 0)
+			if (_putBatches.Count == 0)
 			{
 				return;
 			}
@@ -85,10 +41,18 @@ namespace NHibernate.Cache
 				{
 					duration = Stopwatch.StartNew();
 				}
-				await (_currentBatch.ExecuteAsync(cancellationToken)).ConfigureAwait(false);
+
+				foreach (var batch in _putBatches.Values)
+				{
+					await (batch.ExecuteAsync(cancellationToken)).ConfigureAwait(false);
+				}
+
 				if (Log.IsDebugEnabled() && duration != null)
 				{
-					Log.Debug("ExecuteBatch for {0} keys took {1} ms", _currentBatch.BatchSize, duration.ElapsedMilliseconds);
+					Log.Debug(
+						"ExecuteBatch for {0} batches totaling {1} keys took {2} ms",
+						_putBatches.Count, _putBatches.Values.Sum(b => b.BatchSize),
+						duration.ElapsedMilliseconds);
 				}
 			}
 			finally
