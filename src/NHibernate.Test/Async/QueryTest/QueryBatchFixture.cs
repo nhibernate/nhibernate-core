@@ -8,14 +8,10 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
-using NHibernate.Engine;
 using NHibernate.Multi;
 using NHibernate.Test.SecondLevelCacheTests;
 using NUnit.Framework;
@@ -125,14 +121,15 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanUseSecondLevelCacheWithPositionalParametersAndCriteriaAsync()
 		{
-			var cacheHashtable = GetHashTableUsedAsQueryCache(Sfi);
-			cacheHashtable.Clear();
+			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
 			await (CreateItemsAsync());
 
+			Sfi.Statistics.Clear();
+
 			await (DoMultiCriteriaAndAssertAsync());
 
-			Assert.That(cacheHashtable.Count, Is.EqualTo(2));
+			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -475,14 +472,16 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanUseSecondLevelCacheWithPositionalParametersAndHqlAsync()
 		{
-			var cacheHashtable = GetHashTableUsedAsQueryCache(Sfi);
-			cacheHashtable.Clear();
+			
+			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
 			await (CreateItemsAsync());
 
+			Sfi.Statistics.Clear();
+
 			await (DoMultiHqlAndAssertAsync());
 
-			Assert.That(cacheHashtable.Count, Is.EqualTo(2));
+			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -737,14 +736,16 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanUseSecondLevelCacheWithPositionalParametersAsync()
 		{
-			var cacheHashtable = GetHashTableUsedAsQueryCache(Sfi);
-			cacheHashtable.Clear();
+			
+			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
 			await (CreateItemsAsync());
 
+			Sfi.Statistics.Clear();
+
 			await (DoMultiQueryAndAssertAsync());
 
-			Assert.That(cacheHashtable.Count, Is.EqualTo(2));
+			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -932,20 +933,6 @@ namespace NHibernate.Test.QueryTest
 
 				await (t.CommitAsync(cancellationToken));
 			}
-		}
-
-		/// <summary>
-		/// Get the inner Hashtable from the IQueryCache.Cache
-		/// </summary>
-		/// <returns></returns>
-		public static Hashtable GetHashTableUsedAsQueryCache(ISessionFactoryImplementor factory)
-		{
-			var cache = (HashtableCache) factory.GetQueryCache(null).Cache;
-			var fieldInfo = typeof(HashtableCache).GetField(
-				"hashtable",
-				BindingFlags.Instance | BindingFlags.NonPublic);
-			Assert.That(fieldInfo, Is.Not.Null, "Unable to find hashtable field");
-			return (Hashtable) fieldInfo.GetValue(cache);
 		}
 	}
 }

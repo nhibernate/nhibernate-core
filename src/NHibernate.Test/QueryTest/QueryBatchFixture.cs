@@ -1,11 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
-using NHibernate.Engine;
 using NHibernate.Multi;
 using NHibernate.Test.SecondLevelCacheTests;
 using NUnit.Framework;
@@ -113,14 +109,15 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void CanUseSecondLevelCacheWithPositionalParametersAndCriteria()
 		{
-			var cacheHashtable = GetHashTableUsedAsQueryCache(Sfi);
-			cacheHashtable.Clear();
+			Sfi.QueryCache.Clear();
 
 			CreateItems();
 
+			Sfi.Statistics.Clear();
+
 			DoMultiCriteriaAndAssert();
 
-			Assert.That(cacheHashtable.Count, Is.EqualTo(2));
+			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -482,14 +479,16 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void CanUseSecondLevelCacheWithPositionalParametersAndHql()
 		{
-			var cacheHashtable = GetHashTableUsedAsQueryCache(Sfi);
-			cacheHashtable.Clear();
+			
+			Sfi.QueryCache.Clear();
 
 			CreateItems();
 
+			Sfi.Statistics.Clear();
+
 			DoMultiHqlAndAssert();
 
-			Assert.That(cacheHashtable.Count, Is.EqualTo(2));
+			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -764,14 +763,16 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void CanUseSecondLevelCacheWithPositionalParameters()
 		{
-			var cacheHashtable = GetHashTableUsedAsQueryCache(Sfi);
-			cacheHashtable.Clear();
+			
+			Sfi.QueryCache.Clear();
 
 			CreateItems();
 
+			Sfi.Statistics.Clear();
+
 			DoMultiQueryAndAssert();
 
-			Assert.That(cacheHashtable.Count, Is.EqualTo(2));
+			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -979,20 +980,6 @@ namespace NHibernate.Test.QueryTest
 
 				t.Commit();
 			}
-		}
-
-		/// <summary>
-		/// Get the inner Hashtable from the IQueryCache.Cache
-		/// </summary>
-		/// <returns></returns>
-		public static Hashtable GetHashTableUsedAsQueryCache(ISessionFactoryImplementor factory)
-		{
-			var cache = (HashtableCache) factory.GetQueryCache(null).Cache;
-			var fieldInfo = typeof(HashtableCache).GetField(
-				"hashtable",
-				BindingFlags.Instance | BindingFlags.NonPublic);
-			Assert.That(fieldInfo, Is.Not.Null, "Unable to find hashtable field");
-			return (Hashtable) fieldInfo.GetValue(cache);
 		}
 	}
 }
