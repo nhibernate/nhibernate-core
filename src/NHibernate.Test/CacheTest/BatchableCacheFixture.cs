@@ -438,15 +438,16 @@ namespace NHibernate.Test.CacheTest
 				ids.AddRange(items.OrderBy(o => o.Id).Select(o => o.Id));
 				tx.Commit();
 			}
-			Assert.That(cache.PutCalls, Has.Count.EqualTo(0));
-			Assert.That(cache.GetMultipleCalls, Has.Count.EqualTo(2));
+			Assert.That(cache.PutCalls, Has.Count.EqualTo(0), "Cache put");
+			Assert.That(cache.PutMultipleCalls, Has.Count.EqualTo(1), "Cache put many");
+			// Lock get
+			Assert.That(cache.GetMultipleCalls, Has.Count.EqualTo(1), "Cache get many");
 
 			AssertEquivalent(
 				ids,
 				new[]
 				{
-					new[] {0, 1, 2},
-					new[] {3, 4, 5}
+					new[] {0, 1, 2, 3, 4, 5}
 				},
 				cache.PutMultipleCalls
 			);
@@ -454,8 +455,7 @@ namespace NHibernate.Test.CacheTest
 				ids,
 				new[]
 				{
-					new[] {0, 1, 2},
-					new[] {3, 4, 5}
+					new[] {0, 1, 2, 3, 4, 5}
 				},
 				cache.LockMultipleCalls
 			);
@@ -463,8 +463,7 @@ namespace NHibernate.Test.CacheTest
 				ids,
 				new[]
 				{
-					new[] {0, 1, 2},
-					new[] {3, 4, 5}
+					new[] {0, 1, 2, 3, 4, 5}
 				},
 				cache.UnlockMultipleCalls
 			);
