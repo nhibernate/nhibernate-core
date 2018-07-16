@@ -61,7 +61,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2201
 		{
 			using (var s = OpenSession())
 			{
-				Console.WriteLine("*** start");
 				var multi =
 					s.CreateQueryBatch()
 					 .Add<Parent>(s.CreateCriteria<Parent>())
@@ -72,7 +71,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2201
 
 				Assert.That(result1.Count, Is.EqualTo(2));
 				Assert.That(result2.Count, Is.EqualTo(2));
-				Console.WriteLine("*** end");
 			}
 		}
 	}

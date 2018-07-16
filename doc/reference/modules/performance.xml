@@ -1310,8 +1310,8 @@ IList<Policy> policies = queries.GetResult<Policy>(1);]]></programlisting>
 var queries = s.CreateQueryBatch()
     .Add("queryOverList", s.QueryOver<Item>().Where(i => i.Category == "Food"))
     .Add<long>("sqlCount",
-        s.CreateSQLQuery("select count(*) as count from Item i where i.Category = :cat")
-         .AddScalar("count", NHibernateUtil.Int64)
+        s.CreateSQLQuery("select count(*) as itemCount from Item i where i.Category = :cat")
+         .AddScalar("itemCount", NHibernateUtil.Int64)
          .SetString("cat", "Food"));
 var count = queries.GetResult<long>("sqlCount").Single();
 var items = queries.GetResult<Item>("queryOverList");]]></programlisting>
