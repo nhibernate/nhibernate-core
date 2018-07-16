@@ -18,7 +18,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
-	// 6.0 TODO: Convert to interface methods
+	// 6.0 TODO: Convert to interface methods, excepted SwitchCacheMode
 	internal static partial class SessionImplementorExtensions
 	{
 		internal static IDisposable BeginContext(this ISessionImplementor session)
