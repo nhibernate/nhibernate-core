@@ -826,7 +826,7 @@ var session = sessions.OpenSession(conn);
                         </entry>
                         <entry>
                             The class name of a custom <literal>IProxyFactoryFactory</literal> implementation.
-                            Defaults to the built-in <literal>DefaultProxyFactoryFactory</literal>.
+                            Defaults to the built-in <literal>StaticProxyFactoryFactory</literal>.
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
                                 <literal>classname.of.ProxyFactoryFactory, assembly</literal>
