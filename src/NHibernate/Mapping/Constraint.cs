@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Util;
@@ -74,94 +73,11 @@ namespace NHibernate.Mapping
 			// Hash the generated name for avoiding collisions with user choosen names.
 			// This is not 100% reliable, as hashing may still have a chance of generating
 			// collisions.
-			var name = prefix + HashName(sb.ToString());
-
-			// Hibernate uses an algorithm yielding names shorter than 30 characters. But we cannot
-			// use it (see HashName). And also we have DB limited to even less (Informix)...
-			if (name.Length > 30)
-			{
-				// This, of course, increases the collision risk.
-				name = name.Substring(0, 30);
-			}
+			// Hibernate uses MD5 here, which .Net standrad implementation is rejected by
+			// FIPS enabled machine. Better use a non-cryptographic hash.
+			var name = prefix + Hasher.HashToString(sb.ToString());
 
 			return name;
-		}
-
-		#region Name generation support methods
-
-		/// <summary>
-		/// Hash a constraint name. Convert the hash digest to base 32
-		/// (full alphanumeric) for shortening the hash string representation
-		/// while keeping it suitable for db names.
-		/// </summary>
-		/// <param name="name">The name to be hashed.</param>
-		/// <returns>The hased name.</returns>
-		private static string HashName(string name)
-		{
-			// Hibernate uses MD5, but with .Net this would throw on FIPS enabled machine.
-			// As a consequence generated names will be quite longer.
-			using (var hasher = SHA256.Create())
-			{
-				var hash = hasher.ComputeHash(Encoding.UTF8.GetBytes(name));
-				// Converting to base 32 for shortening the name.
-				// Hibernate uses base 35, but we do not have a native implementation
-				// in .Net, and base 32 is easier to implement.
-				return ToBase32String(hash);
-			}
-		}
-
-		// Adapted from https://stackoverflow.com/a/7135008/1178314
-		// Changed for not padding with "="
-		private static string ToBase32String(byte[] input)
-		{
-			if (input == null || input.Length == 0)
-			{
-				throw new ArgumentNullException(nameof(input));
-			}
-
-			var charCount = (int) Math.Ceiling(input.Length / 5d) * 8;
-			var result = new StringBuilder(charCount);
-
-			byte nextChar = 0, bitsRemaining = 5;
-
-			foreach (var b in input)
-			{
-				nextChar = (byte)(nextChar | (b >> (8 - bitsRemaining)));
-				result.Append(ValueToChar(nextChar));
-
-				if (bitsRemaining < 4)
-				{
-					nextChar = (byte)((b >> (3 - bitsRemaining)) & 31);
-					result.Append(ValueToChar(nextChar));
-					bitsRemaining += 5;
-				}
-
-				bitsRemaining -= 3;
-				nextChar = (byte)((b << bitsRemaining) & 31);
-			}
-
-			// If we didn't end with a full char
-			if (result.Length != charCount)
-			{
-				result.Append(ValueToChar(nextChar));
-			}
-
-			return result.ToString();
-		}
-
-		private static char ValueToChar(byte b)
-		{
-			if (b < 26)
-			{
-				return (char)(b + 65);
-			}
-
-			if (b < 32)
-			{
-				return (char)(b + 24);
-			}
-
-			throw new ArgumentException("Byte is not a value Base32 value.", "b");
 		}
 
 		private class ColumnComparator : IComparer<Column>
@@ -172,8 +88,6 @@ namespace NHibernate.Mapping
 				return StringComparer.Ordinal.Compare(col1?.Name, col2?.Name);
 			}
 		}
-
-		#endregion
 
 		/// <summary>
 		/// Adds the <see cref="Column"/> to the <see cref="ICollection"/> of 
