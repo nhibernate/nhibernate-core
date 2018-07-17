@@ -202,6 +202,8 @@ namespace NHibernate.Impl
 			get { return cacheRegion; }
 		}
 
+		public CacheMode? CacheMode => cacheMode;
+
 		public string Comment
 		{
 			get { return comment; }

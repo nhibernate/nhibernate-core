@@ -997,21 +997,24 @@ namespace NHibernate.Impl
 		public virtual QueryParameters GetQueryParameters(IDictionary<string, TypedValue> namedParams)
 		{
 			return new QueryParameters(
-					TypeArray(),
-					ValueArray(),
-					namedParams,
-					LockModes,
-					Selection,
-					true,
-					IsReadOnly,
-					cacheable,
-					cacheRegion,
-					comment,
-					collectionKey == null ? null : new[] { collectionKey },
-					optionalObject,
-					optionalEntityName,
-					optionalId,
-					resultTransformer);
+				TypeArray(),
+				ValueArray(),
+				namedParams,
+				LockModes,
+				Selection,
+				true,
+				IsReadOnly,
+				cacheable,
+				cacheRegion,
+				comment,
+				collectionKey == null ? null : new[] { collectionKey },
+				optionalObject,
+				optionalEntityName,
+				optionalId,
+				resultTransformer)
+			{
+				CacheMode = cacheMode
+			};
 		}
 
 		protected void Before()

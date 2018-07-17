@@ -1227,7 +1227,7 @@ namespace NHibernate.Loader
 			IQueryCache queryCache, QueryKey key, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (!CanGetFromCache(session, queryParameters))
+			if (!queryParameters.CanGetFromCache(session))
 				return null;
 
 			var result = await (queryCache.GetAsync(
@@ -1256,7 +1256,7 @@ namespace NHibernate.Loader
 										   IQueryCache queryCache, QueryKey key, IList result, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (!session.CacheMode.HasFlag(CacheMode.Put))
+			if (!queryParameters.CanPutToCache(session))
 				return;
 
 			var put = await (queryCache.PutAsync(

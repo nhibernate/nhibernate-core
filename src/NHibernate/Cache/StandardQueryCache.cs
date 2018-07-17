@@ -260,13 +260,23 @@ namespace NHibernate.Cache
 				else
 					queryParams.ReadOnly = persistenceContext.DefaultReadOnly;
 
-				try
+				// Adjust the session cache mode, as GetResultFromCacheable assemble types which may cause
+				// entity loads, which may interact with the cache.
+				using (session.SwitchCacheMode(queryParams.CacheMode))
 				{
-					results[i] = GetResultFromCacheable(key, returnTypes[i], queryParams.NaturalKeyLookup, session, cacheable);
-				}
-				finally
-				{
-					persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
+					try
+					{
+						results[i] = GetResultFromCacheable(
+							key,
+							returnTypes[i],
+							queryParams.NaturalKeyLookup,
+							session,
+							cacheable);
+					}
+					finally
+					{
+						persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
+					}
 				}
 			}
 

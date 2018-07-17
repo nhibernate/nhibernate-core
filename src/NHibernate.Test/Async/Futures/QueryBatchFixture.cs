@@ -388,6 +388,116 @@ namespace NHibernate.Test.Futures
 			}
 		}
 
+		[Test]
+		public async Task ReadOnlyWorksWithFutureAsync()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var futureSimples =
+					s
+						.CreateQuery("from EntitySimpleChild")
+						.SetReadOnly(true)
+						.Future<EntitySimpleChild>();
+				var futureSubselect =
+					s
+						.CreateQuery("from EntitySubselectChild")
+						.Future<EntitySubselectChild>();
+
+				var simples = (await (futureSimples.GetEnumerableAsync())).ToList();
+				Assert.That(simples, Has.Count.GreaterThan(0));
+				foreach (var entity in simples)
+				{
+					Assert.That(s.IsReadOnly(entity), Is.True, entity.Name);
+				}
+
+				var subselect = (await (futureSubselect.GetEnumerableAsync())).ToList();
+				Assert.That(subselect, Has.Count.GreaterThan(0));
+				foreach (var entity in subselect)
+				{
+					Assert.That(s.IsReadOnly(entity), Is.False, entity.Name);
+				}
+
+				await (t.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task CacheModeWorksWithFutureAsync()
+		{
+			Sfi.Statistics.IsStatisticsEnabled = true;
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s
+					.CreateQuery("from EntitySimpleChild")
+					.SetCacheable(true)
+					.SetCacheMode(CacheMode.Get)
+					.Future<EntitySimpleChild>();
+				s
+					.CreateQuery("from EntityComplex")
+					.SetCacheable(true)
+					.SetCacheMode(CacheMode.Put)
+					.Future<EntityComplex>();
+				await (s
+					.CreateQuery("from EntitySubselectChild")
+					.SetCacheable(true)
+					.Future<EntitySubselectChild>()
+					.GetEnumerableAsync());
+				Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(2), "Future put");
+
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				Sfi.Statistics.Clear();
+				await (s
+					.CreateQuery("from EntitySimpleChild")
+					.SetCacheable(true)
+					.ListAsync<EntitySimpleChild>());
+				Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0), "EntitySimpleChild query hit");
+
+				Sfi.Statistics.Clear();
+				await (s
+					.CreateQuery("from EntityComplex")
+					.SetCacheable(true)
+					.ListAsync<EntityComplex>());
+				Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1), "EntityComplex query hit");
+
+				Sfi.Statistics.Clear();
+				await (s
+					.CreateQuery("from EntitySubselectChild")
+					.SetCacheable(true)
+					.ListAsync<EntitySubselectChild>());
+				Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1), "EntitySubselectChild query hit");
+
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				Sfi.Statistics.Clear();
+				s
+					.CreateQuery("from EntitySimpleChild")
+					.SetCacheable(true)
+					.SetCacheMode(CacheMode.Get)
+					.Future<EntitySimpleChild>();
+				await (s
+					.CreateQuery("from EntitySubselectChild")
+					.SetCacheable(true)
+					.Future<EntitySubselectChild>()
+					.GetEnumerableAsync());
+				Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(0), "Second future put");
+				Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(2), "Second future hit");
+
+				await (t.CommitAsync());
+			}
+		}
+
 		#region Test Setup
 
 		protected override HbmMapping GetMappings()
@@ -471,6 +581,7 @@ namespace NHibernate.Test.Futures
 				session.Flush();
 				transaction.Commit();
 			}
+			Sfi.Statistics.IsStatisticsEnabled = false;
 		}
 
 		protected override void OnSetUp()
