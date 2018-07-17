@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Cache;
@@ -86,7 +87,7 @@ namespace NHibernate.Impl
 				BeforeAssemble(cached, session);
 				return Task.CompletedTask;
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}

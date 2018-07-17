@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using NUnit.Framework;
+using NHibernate.Multi;
 
 namespace NHibernate.Test.NHSpecificTest.DataReaderWrapperTest
 {
@@ -7,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.DataReaderWrapperTest
 	public class Fixture : BugTestCase
 	{
 		private const int id = 1333;
-		
+
 		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
 		{
 			return factory.ConnectionProvider.Driver.SupportsMultipleQueries;
@@ -34,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.DataReaderWrapperTest
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public void CanUseDatareadersGetValue()
 		{
 			using (var s = OpenSession())
@@ -44,6 +46,20 @@ namespace NHibernate.Test.NHSpecificTest.DataReaderWrapperTest
 				var multi = s.CreateMultiCriteria();
 				multi.Add(crit);
 				var res = (IList) multi.List()[0];
+				Assert.That(res.Count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public void CanUseDatareadersGetValueWithQueryBatch()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var crit = s.CreateCriteria(typeof (TheEntity));
+				var multi = s.CreateQueryBatch();
+				multi.Add<TheEntity>(crit);
+				var res = multi.GetResult<TheEntity>(0);
 				Assert.That(res.Count, Is.EqualTo(1));
 			}
 		}

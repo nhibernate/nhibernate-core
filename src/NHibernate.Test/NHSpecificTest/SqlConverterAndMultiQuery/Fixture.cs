@@ -1,6 +1,8 @@
+using System;
 using NHibernate.Cfg;
 using NHibernate.Driver;
 using NHibernate.Engine;
+using NHibernate.Multi;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
@@ -36,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public void MultiHqlShouldThrowUserException()
 		{
 			var driver = Sfi.ConnectionProvider.Driver;
@@ -54,6 +56,19 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 		}
 
 		[Test]
+		public void QueryBatchShouldThrowUserException()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var multi = s.CreateQueryBatch();
+				multi.Add<int>(s.CreateQuery(hqlQuery));
+				s.Connection.Close();
+				Assert.Throws<UnitTestException>(multi.Execute);
+			}
+		}
+
+		[Test]
 		public void NormalCriteriaShouldThrowUserException()
 		{
 			using (var s = OpenSession())
@@ -65,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public void MultiCriteriaShouldThrowUserException()
 		{
 			var driver = Sfi.ConnectionProvider.Driver;
@@ -79,6 +94,19 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 				multi.Add(s.CreateCriteria(typeof (ClassA)));
 				s.Connection.Close();
 				Assert.Throws<UnitTestException>(() => multi.List());
+			}
+		}
+
+		[Test]
+		public void CriteriaQueryBatchShouldThrowUserException()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var multi = s.CreateQueryBatch();
+				multi.Add<ClassA>(s.CreateCriteria(typeof(ClassA)));
+				s.Connection.Close();
+				Assert.Throws<UnitTestException>(multi.Execute);
 			}
 		}
 	}

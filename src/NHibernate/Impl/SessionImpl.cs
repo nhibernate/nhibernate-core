@@ -1954,6 +1954,8 @@ namespace NHibernate.Impl
 			return new[] { filterName, parameterName };
 		}
 
+		// Since v5.2
+		[Obsolete("Use ISession.CreateQueryBatch instead.")]
 		public IMultiQuery CreateMultiQuery()
 		{
 			using (BeginProcess())
@@ -1962,6 +1964,8 @@ namespace NHibernate.Impl
 			}
 		}
 
+		// Since v5.2
+		[Obsolete("Use ISession.CreateQueryBatch instead.")]
 		public IMultiCriteria CreateMultiCriteria()
 		{
 			using (BeginProcess())

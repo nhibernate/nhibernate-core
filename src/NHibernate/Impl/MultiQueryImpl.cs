@@ -18,6 +18,8 @@ using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
+	// Since v5.2
+	[Obsolete("Use Multi.QueryBatch instead, obtainable with ISession.CreateQueryBatch.")]
 	public partial class MultiQueryImpl : IMultiQuery
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(MultiQueryImpl));

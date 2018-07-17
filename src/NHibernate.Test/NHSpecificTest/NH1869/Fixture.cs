@@ -1,5 +1,6 @@
+using System;
 using System.Collections;
-using NHibernate.Driver;
+using NHibernate.Multi;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1869
@@ -26,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1869
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public void Test()
 		{
 			using (var session = Sfi.OpenSession())
@@ -45,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1869
 
 			using (var session = Sfi.OpenSession())
 			{
-				//If uncomment the line below the test will pass
+				//If querying twice the test will pass
 				//GetResult(session);
 				var result = GetResult(session);
 				Assert.That(result, Has.Count.EqualTo(2));
@@ -54,6 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1869
 			}
 		}
 
+		[Obsolete]
 		private IList GetResult(ISession session)
 		{
 			var query1 = session.CreateQuery("from NodeKeyword nk");
@@ -62,6 +64,44 @@ namespace NHibernate.Test.NHSpecificTest.NH1869
 			var multi = session.CreateMultiQuery();
 			multi.Add(query1).Add(query2);
 			return multi.List();
+		}
+
+		[Test]
+		public void TestWithQueryBatch()
+		{
+			using (var session = Sfi.OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				_keyword = new Keyword();
+				session.Save(_keyword);
+
+				var nodeKeyword = new NodeKeyword
+				{
+					NodeId = 1,
+					Keyword = _keyword
+				};
+				session.Save(nodeKeyword);
+
+				transaction.Commit();
+			}
+
+			using (var session = Sfi.OpenSession())
+			{
+				var result = GetResultWithQueryBatch(session);
+				Assert.That(result.GetResult<NodeKeyword>(0), Has.Count.EqualTo(1));
+				Assert.That(result.GetResult<NodeKeyword>(1), Has.Count.EqualTo(1));
+			}
+		}
+
+		private IQueryBatch GetResultWithQueryBatch(ISession session)
+		{
+			var query1 = session.CreateQuery("from NodeKeyword nk");
+			var query2 = session.CreateQuery("from NodeKeyword nk");
+
+			var multi = session.CreateQueryBatch();
+			multi.Add<NodeKeyword>(query1).Add<NodeKeyword>(query2);
+			multi.Execute();
+			return multi;
 		}
 	}
 }
