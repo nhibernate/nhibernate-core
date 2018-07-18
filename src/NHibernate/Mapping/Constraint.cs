@@ -55,9 +55,9 @@ namespace NHibernate.Mapping
 		{
 			// Use a concatenation that guarantees uniqueness, even if identical names
 			// exist between all table and column identifiers.
-			var sb = new StringBuilder("table`" + table.Name + "`");
+			var sb = new StringBuilder("table`").Append(table.Name).Append("`");
 			if (referencedTable != null)
-				sb.Append("references`" + referencedTable.Name + "`");
+				sb.Append("references`").Append(referencedTable.Name).Append("`");
 
 			// Ensure a consistent ordering of columns, regardless of the order
 			// they were bound.
