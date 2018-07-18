@@ -100,5 +100,37 @@ namespace NHibernate.Test.NHSpecificTest.GH1774
 				Assert.That(boxes[0].Name, Is.EqualTo("Box2"));
 			}
 		}
+
+		[Test]
+		public void AnyIs_HqlWorksWithParameterInTheRight()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var boxes =
+					s.CreateQuery("from ToyBox t where t.Shape.class = :c")
+					 .SetParameter("c", typeof(Square).FullName)
+					 .List<ToyBox>();
+
+				Assert.That(boxes.Count, Is.EqualTo(1));
+				Assert.That(boxes[0].Name, Is.EqualTo("Box2"));
+			}
+		}
+
+		[Test]
+		public void AnyIs_HqlWorksWithParameterInTheLeft()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var boxes =
+					s.CreateQuery("from ToyBox t where :c = t.Shape.class")
+					 .SetParameter("c", typeof(Square).FullName)
+					 .List<ToyBox>();
+
+				Assert.That(boxes.Count, Is.EqualTo(1));
+				Assert.That(boxes[0].Name, Is.EqualTo("Box2"));
+			}
+		}
 	}
 }

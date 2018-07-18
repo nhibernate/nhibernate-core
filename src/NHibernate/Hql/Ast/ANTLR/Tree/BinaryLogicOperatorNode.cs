@@ -271,20 +271,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private void ProcessMetaTypeDiscriminatorIfNecessary(IASTNode lhs, IASTNode rhs)
 		{
 			// this method inserts the discriminator value for the rhs node so that .class queries on <any> mappings work with the class name
-			var lhsNode = lhs as SqlNode;
-			var rhsNode = rhs as SqlNode;
-			if (lhsNode == null || rhsNode == null)
+			if (!(lhs is SqlNode lhsNode) || !(rhs is SqlNode rhsNode))
 			{
 				return;
 			}
 
-			if (lhsNode.DataType is IMetaType lhsNodeMetaType)
+			if (rhsNode is IdentNode && lhsNode.DataType is IMetaType lhsNodeMetaType)
 			{
 				EvaluateType(rhsNode, lhsNodeMetaType);
 				return;
 			}
 
-			if (rhsNode.DataType is IMetaType rhsNodeMetaType)
+			if (lhsNode is IdentNode && rhsNode.DataType is IMetaType rhsNodeMetaType)
 			{
 				EvaluateType(lhsNode, rhsNodeMetaType);
 			}
