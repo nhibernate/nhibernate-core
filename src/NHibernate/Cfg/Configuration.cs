@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -1191,6 +1190,13 @@ namespace NHibernate.Cfg
 						try
 						{
 							fk.AddReferencedTable(referencedClass);
+
+							if (string.IsNullOrEmpty(fk.Name))
+							{
+								fk.Name = Constraint.GenerateName(
+									fk.GeneratedConstraintNamePrefix, table, fk.ReferencedTable, fk.Columns);
+							}
+
 							fk.AlignColumns();
 						}
 						catch (MappingException me)
