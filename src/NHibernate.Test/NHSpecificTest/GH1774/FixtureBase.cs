@@ -1,10 +1,9 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.NH2328
+namespace NHibernate.Test.NHSpecificTest.GH1774
 {
-	[TestFixture]
-	public class Fixture : BugTestCase
+	public abstract class FixtureBase : BugTestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
@@ -13,10 +12,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2328
 
 		protected override void OnSetUp()
 		{
-			base.OnSetUp();
-
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				var circle = new Circle();
 				var square = new Square();
@@ -24,18 +21,16 @@ namespace NHibernate.Test.NHSpecificTest.NH2328
 				s.Save(circle);
 				s.Save(square);
 
-				s.Save(new ToyBox() { Name = "Box1", Shape = circle });
-				s.Save(new ToyBox() { Name = "Box2", Shape = square });
+				s.Save(new ToyBox { Name = "Box1", Shape = circle });
+				s.Save(new ToyBox { Name = "Box2", Shape = square });
 				t.Commit();
 			}
 		}
 
 		protected override void OnTearDown()
 		{
-			base.OnTearDown();
-
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				s.CreateQuery("delete from ToyBox").ExecuteUpdate();
 				s.CreateQuery("delete from Circle").ExecuteUpdate();
@@ -47,12 +42,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2328
 		[Test]
 		public void AnyIs_QueryOver()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
 			{
 				var boxes =
 					s.QueryOver<ToyBox>()
-						.Where(t => t.Shape is Square)
-						.List();
+					 .Where(t => t.Shape is Square)
+					 .List();
 
 				Assert.That(boxes.Count, Is.EqualTo(1));
 				Assert.That(boxes[0].Name, Is.EqualTo("Box2"));
@@ -62,7 +58,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2328
 		[Test]
 		public void AnyIs_Linq()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
 			{
 				var boxes =
 					(from t in s.Query<ToyBox>()
@@ -77,11 +74,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2328
 		[Test]
 		public void AnyIs_HqlWorksWithClassNameInTheRight()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
 			{
 				var boxes =
 					s.CreateQuery("from ToyBox t where t.Shape.class = Square")
-						.List<ToyBox>();
+					 .List<ToyBox>();
 
 				Assert.That(boxes.Count, Is.EqualTo(1));
 				Assert.That(boxes[0].Name, Is.EqualTo("Box2"));
@@ -91,11 +89,44 @@ namespace NHibernate.Test.NHSpecificTest.NH2328
 		[Test]
 		public void AnyIs_HqlWorksWithClassNameInTheLeft()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
 			{
 				var boxes =
 					s.CreateQuery("from ToyBox t where Square = t.Shape.class")
-						.List<ToyBox>();
+					 .List<ToyBox>();
+
+				Assert.That(boxes.Count, Is.EqualTo(1));
+				Assert.That(boxes[0].Name, Is.EqualTo("Box2"));
+			}
+		}
+
+		[Test]
+		public void AnyIs_HqlWorksWithParameterInTheRight()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var boxes =
+					s.CreateQuery("from ToyBox t where t.Shape.class = :c")
+					 .SetParameter("c", typeof(Square).FullName)
+					 .List<ToyBox>();
+
+				Assert.That(boxes.Count, Is.EqualTo(1));
+				Assert.That(boxes[0].Name, Is.EqualTo("Box2"));
+			}
+		}
+
+		[Test]
+		public void AnyIs_HqlWorksWithParameterInTheLeft()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var boxes =
+					s.CreateQuery("from ToyBox t where :c = t.Shape.class")
+					 .SetParameter("c", typeof(Square).FullName)
+					 .List<ToyBox>();
 
 				Assert.That(boxes.Count, Is.EqualTo(1));
 				Assert.That(boxes[0].Name, Is.EqualTo("Box2"));
