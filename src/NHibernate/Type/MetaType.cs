@@ -8,7 +8,7 @@ using NHibernate.Util;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public partial class MetaType : AbstractType
+	public partial class MetaType : AbstractType, IMetaType
 	{
 		private readonly IDictionary<object, string> values;
 		private readonly IDictionary<string, object> keys;
@@ -97,7 +97,7 @@ namespace NHibernate.Type
 			return baseType.ToColumnNullness(value, mapping);
 		}
 
-		internal string GetMetaValue(string className, Dialect.Dialect dialect)
+		string IMetaType.GetMetaValue(string className, Dialect.Dialect dialect)
 		{
 			var raw = keys[className];
 			if (baseType is ILiteralType literalType)

@@ -19,6 +19,7 @@ namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
 	using System.Threading;
+
 	public partial class MetaType : AbstractType
 	{
 

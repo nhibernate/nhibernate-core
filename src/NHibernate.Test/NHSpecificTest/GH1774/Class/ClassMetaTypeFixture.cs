@@ -2,7 +2,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1774.Class
 {
-	[TestFixture, Ignore("Not fixed yet")]
+	[TestFixture]
 	public class ClassMetaTypeFixture : FixtureBase
 	{
 	}
