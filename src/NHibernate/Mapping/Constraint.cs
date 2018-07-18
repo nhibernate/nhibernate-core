@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Util;
@@ -61,14 +62,9 @@ namespace NHibernate.Mapping
 
 			// Ensure a consistent ordering of columns, regardless of the order
 			// they were bound.
-			// Clone the list, as sometimes a set of order-dependent Column
-			// bindings are given.
-			var alphabeticalColumns = new List<Column>(columns);
-			alphabeticalColumns.Sort(ColumnComparator.Instance);
-			foreach (var column in alphabeticalColumns)
+			foreach (var column in columns.OrderBy(c => c.CanonicalName))
 			{
-				var columnName = column == null ? "" : column.Name;
-				sb.Append("column`").Append(columnName).Append("`");
+				sb.Append("column`").Append(column.CanonicalName).Append("`");
 			}
 			// Hash the generated name for avoiding collisions with user choosen names.
 			// This is not 100% reliable, as hashing may still have a chance of generating
@@ -78,15 +74,6 @@ namespace NHibernate.Mapping
 			var name = prefix + Hasher.HashToString(sb.ToString());
 
 			return name;
-		}
-
-		private class ColumnComparator : IComparer<Column>
-		{
-			public static readonly ColumnComparator Instance = new ColumnComparator();
-
-			public int Compare(Column col1, Column col2) {
-				return StringComparer.Ordinal.Compare(col1?.Name, col2?.Name);
-			}
 		}
 
 		/// <summary>
