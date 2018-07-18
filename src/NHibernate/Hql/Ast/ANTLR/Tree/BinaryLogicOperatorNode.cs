@@ -51,6 +51,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				throw new SemanticException( "right-hand operand of a binary operator was null" );
 			}
+
 			ProcessMetaTypeDiscriminatorIfNecessary(lhs, rhs);
 			IType lhsType = ExtractDataType( lhs );
 			IType rhsType = ExtractDataType( rhs );
@@ -277,25 +278,29 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				return;
 			}
 
-			var lhsNodeMetaType = lhsNode.DataType as MetaType;
-			if (lhsNodeMetaType != null)
+			if (lhsNode.DataType is MetaType lhsNodeMetaType)
 			{
-				string className = SessionFactoryHelper.GetImportedClassName(rhsNode.OriginalText);
-
-				object discriminatorValue = lhsNodeMetaType.GetMetaValue(TypeNameParser.Parse(className).Type);
-				rhsNode.Text = discriminatorValue.ToString();
+				EvaluateType(rhsNode, lhsNodeMetaType);
 				return;
 			}
 
-			var rhsNodeMetaType = rhsNode.DataType as MetaType;
-			if (rhsNodeMetaType != null)
+			if (rhsNode.DataType is MetaType rhsNodeMetaType)
 			{
-				string className = SessionFactoryHelper.GetImportedClassName(lhsNode.OriginalText);
-
-				object discriminatorValue = rhsNodeMetaType.GetMetaValue(TypeNameParser.Parse(className).Type);
-				lhsNode.Text = discriminatorValue.ToString();
-				return;
+				EvaluateType(lhsNode, rhsNodeMetaType);
 			}
+		}
+
+		private void EvaluateType(SqlNode node, MetaType metaType)
+		{
+			var sessionFactory = SessionFactoryHelper.Factory;
+
+			var className = sessionFactory.GetImportedClassName(node.OriginalText);
+
+			var discriminatorValue = metaType.GetMetaValue(
+				TypeNameParser.Parse(className).Type,
+				sessionFactory.Dialect);
+
+			node.Text = discriminatorValue;
 		}
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -96,9 +97,15 @@ namespace NHibernate.Type
 			return baseType.ToColumnNullness(value, mapping);
 		}
 
-		internal object GetMetaValue(string className)
+		internal string GetMetaValue(string className, Dialect.Dialect dialect)
 		{
-			return keys[className];
+			var raw = keys[className];
+			if (baseType is ILiteralType literalType)
+			{
+				return literalType.ObjectToSQLString(raw, dialect);
+			}
+
+			return raw?.ToString();
 		}
 	}
 }

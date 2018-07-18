@@ -1,4 +1,4 @@
-namespace NHibernate.Test.NHSpecificTest.NH2328
+namespace NHibernate.Test.NHSpecificTest.GH1774
 {
 	public class ToyBox
 	{

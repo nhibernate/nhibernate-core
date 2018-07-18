@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
