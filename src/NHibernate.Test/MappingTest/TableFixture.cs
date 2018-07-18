@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading;
 using NHibernate.Dialect;
 using NHibernate.Mapping;
 using NUnit.Framework;
@@ -60,6 +58,15 @@ namespace NHibernate.Test.MappingTest
 			Dialect.Dialect dialect = new MsSql2000Dialect();
 
 			Assert.AreEqual("[schema].name", tbl.GetQualifiedName(dialect));
+		}
+
+		[Test]
+		public void NameIsStable()
+		{
+			var tbl = new Table { Name = "name" };
+			Assert.That(
+				Constraint.GenerateName("FK_", tbl, null, new[] {new Column("col1"), new Column("col2")}),
+				Is.EqualTo("FK_3B355A0C"));
 		}
 	}
 }

@@ -1,9 +1,10 @@
+using System;
 using NHibernate.Mapping;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1399
 {
-	[TestFixture]
+	[TestFixture, Obsolete]
 	public class Fixture
 	{
 		[Test]
