@@ -3353,24 +3353,25 @@
                 example, for audit logs, user session data, etc.
             </para>
 
-            <programlisting><![CDATA[<any name="AnyEntity" id-type="Int64" meta-type="Eg.Custom.Class2TablenameType">
-    <column name="table_name"/>
+            <programlisting><![CDATA[<any name="AnyEntity" id-type="long" meta-type="class">
+    <column name="type"/>
     <column name="id"/>
 </any>]]></programlisting>
 
             <para>
                 The <literal>meta-type</literal> attribute allows the application to specify a custom type that maps
                 database column values to persistent classes that have identifier properties of the type specified by
-                <literal>id-type</literal>. If the meta-type returns instances of <literal>System.Type</literal>,
-                nothing else is required. On the other hand, if it is a basic type like <literal>String</literal> or
-                <literal>Char</literal>, you must specify the mapping from values to classes.
+                <literal>id-type</literal>. If the meta-type is <literal>class</literal>, nothing else is required.
+                The class full name will be persisted in the database as the type of the associated entity.
+                On the other hand, if it is a basic type like <literal>string</literal> or
+                <literal>char</literal>, you must specify the mapping from values to classes.
             </para>
 
             <programlisting><![CDATA[<any name="being" id-type="long" meta-type="string">
-    <meta-value value="TBL_ANIMAL" class="Animal"/>
-    <meta-value value="TBL_HUMAN" class="Human"/>
-    <meta-value value="TBL_ALIEN" class="Alien"/>
-    <column name="table_name"/>
+    <meta-value value="ANIMAL_TYPE" class="Animal"/>
+    <meta-value value="HUMAN_TYPE" class="Human"/>
+    <meta-value value="ALIEN_TYPE" class="Alien"/>
+    <column name="type"/>
     <column name="id"/>
 </any>]]></programlisting>
 
@@ -3419,9 +3420,8 @@
                     </callout>
                     <callout arearefs="any3">
                         <para>
-                            <literal>meta-type</literal> (optional - defaults to <literal>Type</literal>): a type that
-                            maps <literal>System.Type</literal> to a single database column or, alternatively, a type
-                            that is allowed for a discriminator mapping.
+                            <literal>meta-type</literal> (optional - defaults to <literal>string</literal>): a type
+                            that is allowed for a discriminator mapping, or <literal>class</literal>.
                         </para>
                     </callout>
                     <callout arearefs="any4">

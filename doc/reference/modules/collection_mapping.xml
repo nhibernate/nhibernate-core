@@ -1284,7 +1284,7 @@ session.Update(category);      // The relationship will be saved]]></programlist
             <para>
                 The <literal>&lt;many-to-any&gt;</literal> and <literal>&lt;index-many-to-any&gt;</literal>
                 elements provide for true heterogeneous associations. These mapping elements work in the
-                same way as the <link linkend="mapping-types-anymapping"><literal>&lt;any&gt;</literal>
+                same way than the <link linkend="mapping-types-anymapping"><literal>&lt;any&gt;</literal>
                 element</link> - and should also be used rarely, if ever.
             </para>
 
