@@ -41,6 +41,7 @@ namespace NHibernate.Linq.Functions
 			this.Merge(new IndexOfGenerator());
 			this.Merge(new ReplaceGenerator());
 			this.Merge(new LengthGenerator());
+			this.Merge(new GetCharsGenerator());
 			this.Merge(new TrimGenerator());
 			this.Merge(new MathGenerator());
 
