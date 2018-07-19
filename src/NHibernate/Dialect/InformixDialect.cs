@@ -337,7 +337,7 @@ namespace NHibernate.Dialect
 		/// <returns> The appropriate SQL literal. </returns>
 		public override string ToBooleanValueString(bool value)
 		{
-			return value ? "t" : "f";
+			return value ? "'t'" : "'f'";
 		}
 
 		/// <summary>
