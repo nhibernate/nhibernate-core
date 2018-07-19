@@ -3364,8 +3364,8 @@
                 database column values to persistent classes that have identifier properties of the type specified by
                 <literal>id-type</literal>. If the meta-type is <literal>class</literal>, nothing else is required.
                 The class full name will be persisted in the database as the type of the associated entity.
-                On the other hand, if it is a basic type like <literal>string</literal> or
-                <literal>char</literal>, you must specify the mapping from values to classes.
+                On the other hand, if it is a basic type like <literal>int</literal> or <literal>char</literal>, you
+                must specify the mapping from values to classes. Here is an example with <literal>string</literal>.
             </para>
 
             <programlisting><![CDATA[<any name="being" id-type="long" meta-type="string">
@@ -3375,6 +3375,11 @@
     <column name="type"/>
     <column name="id"/>
 </any>]]></programlisting>
+
+            <para>
+                String types are a special case: they can be used without meta-values, in which case they will behave
+                much like the <literal>class</literal> meta-type.
+            </para>
 
             <programlistingco>
                 <areaspec>

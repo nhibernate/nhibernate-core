@@ -268,7 +268,14 @@ namespace NHibernate
 		/// NHibernate class meta type for association of kind <code>any</code>.
 		/// </summary>
 		/// <seealso cref="AnyType"/>
+		[Obsolete("Use MetaType without meta-values instead.")]
 		public static readonly ClassMetaType ClassMetaType = new ClassMetaType();
+
+		/// <summary>
+		/// NHibernate meta type for association of kind <code>any</code> without meta-values.
+		/// </summary>
+		/// <seealso cref="AnyType"/>
+		public static readonly MetaType MetaType = new MetaType(null, String);
 
 		/// <summary>
 		/// NHibernate serializable type

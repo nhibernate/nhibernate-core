@@ -13,27 +13,24 @@ using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
-using NHibernate.Util;
 
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class MetaType : AbstractType, IMetaType
+	public partial class MetaType : AbstractType
 	{
 
 		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			object key = await (baseType.NullSafeGetAsync(rs, names, session, owner, cancellationToken)).ConfigureAwait(false);
-			return key == null ? null : values[key];
+			return GetValueForKey(await (_baseType.NullSafeGetAsync(rs, names, session, owner, cancellationToken)).ConfigureAwait(false));
 		}
 
-		public override async Task<object> NullSafeGetAsync(DbDataReader rs,string name,ISessionImplementor session,object owner, CancellationToken cancellationToken)
+		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			object key = await (baseType.NullSafeGetAsync(rs, name, session, owner, cancellationToken)).ConfigureAwait(false);
-			return key == null ? null : values[key];
+			return GetValueForKey(await (_baseType.NullSafeGetAsync(rs, name, session, owner, cancellationToken)).ConfigureAwait(false));
 		}
 
 		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken)
@@ -53,13 +50,25 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task NullSafeSetAsync(DbCommand st,object value,int index,ISessionImplementor session, CancellationToken cancellationToken)
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return baseType.NullSafeSetAsync(st, value == null ? null : keys[(string)value], index, session, cancellationToken);
+			try
+			{
+				// "_keys?[(string) value]" is valid code provided "_keys[(string) value]" can never yield null. It is the
+				// case because we use a dictionary interface which throws in case of missing key, and because it is not
+				// possible to have a value associated to a null key since generic dictionaries do not support null keys.
+				var key = value == null ? null : _keys?[(string) value] ?? value;
+
+				return _baseType.NullSafeSetAsync(st, key, index, session, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
