@@ -89,15 +89,22 @@ namespace NHibernate.Proxy
 			il.Emit(OpCodes.Call, baseConstructor);
 		}
 
-		internal static IEnumerable<MethodInfo> GetProxiableMethods(System.Type type, IEnumerable<System.Type> interfaces)
+		internal static IEnumerable<MethodInfo> GetProxiableMethods(System.Type type)
 		{
 			const BindingFlags candidateMethodsBindingFlags =
 				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-			return
-				type.GetMethods(candidateMethodsBindingFlags)
-				    .Where(method => method.IsProxiable())
-				    .Concat(interfaces.SelectMany(interfaceType => interfaceType.GetMethods()))
-				    .Distinct();
+
+			return type.GetMethods(candidateMethodsBindingFlags).Where(m => m.IsProxiable());
+		}
+
+		internal static IEnumerable<MethodInfo> GetProxiableMethods(System.Type type, IEnumerable<System.Type> interfaces)
+		{
+			var proxiableMethods =
+				GetProxiableMethods(type)
+					.Concat(interfaces.SelectMany(i => i.GetMethods()))
+					.Distinct();
+			
+			return proxiableMethods;
 		}
 
 		internal static void MakeProxySerializable(TypeBuilder typeBuilder)

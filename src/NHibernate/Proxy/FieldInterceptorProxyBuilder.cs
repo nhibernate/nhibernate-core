@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.Serialization;
@@ -37,6 +35,13 @@ namespace NHibernate.Proxy
 
 		public static TypeInfo CreateProxyType(System.Type baseType)
 		{
+			if (baseType.IsInterface)
+			{
+				throw new ArgumentException(
+					$"Field interceptor proxy does not support being build on an interface baseType ({baseType.FullName}).",
+					nameof(baseType));
+			}
+
 			// Avoid having a suffix ending with "Proxy", for disambiguation with INHibernateProxy proxies
 			var typeName = $"{baseType.Name}ProxyForFieldInterceptor";
 			var assemblyName = $"{typeName}Assembly";
@@ -49,40 +54,25 @@ namespace NHibernate.Proxy
 
 			const TypeAttributes typeAttributes = TypeAttributes.AutoClass | TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.BeforeFieldInit;
 
-			var interfaces = new HashSet<System.Type>
+			var interfaces = new[]
 			{
 				typeof(IFieldInterceptorAccessor),
 				typeof(ISerializable)
 			};
-
-			// Use the object as the base type
-			// since we're not inheriting from any class type
-			var parentType = baseType;
-			if (baseType.IsInterface)
-			{
-				throw new ArgumentException(
-					$"Field interceptor proxy does not support being build on an interface baseType ({baseType.FullName}).",
-					nameof(baseType));
-			}
-
-			interfaces.RemoveWhere(i => !i.IsVisible);
-
-			var typeBuilder = moduleBuilder.DefineType(typeName, typeAttributes, parentType, interfaces.ToArray());
+			var typeBuilder = moduleBuilder.DefineType(typeName, typeAttributes, baseType, interfaces);
 
 			var fieldInterceptorField = typeBuilder.DefineField("__fieldInterceptor", FieldInterceptorType, FieldAttributes.Private);
 			var proxyInfoField = typeBuilder.DefineField("__proxyInfo", typeof(NHibernateProxyFactoryInfo), FieldAttributes.Private);
 
-			ImplementConstructor(typeBuilder, parentType, proxyInfoField);
-
-			// Provide a custom implementation of ISerializable instead of redirecting it back to the interceptor
-			foreach (var method in ProxyBuilderHelper.GetProxiableMethods(baseType, interfaces.Except(new[] { typeof(ISerializable) })))
+			ImplementConstructor(typeBuilder, baseType, proxyInfoField);
+			
+			foreach (var method in ProxyBuilderHelper.GetProxiableMethods(baseType))
 			{
 				CreateProxiedMethod(typeBuilder, method, fieldInterceptorField);
 			}
 
-			ProxyBuilderHelper.MakeProxySerializable(typeBuilder);
-			ImplementDeserializationConstructor(typeBuilder, parentType);
-			ImplementGetObjectData(typeBuilder, proxyInfoField, fieldInterceptorField, parentType);
+			ImplementIFieldInterceptorAccessor(typeBuilder, fieldInterceptorField);
+			ImplementISerializable(typeBuilder, proxyInfoField, fieldInterceptorField, baseType);
 
 			var proxyType = typeBuilder.CreateTypeInfo();
 
@@ -93,15 +83,7 @@ namespace NHibernate.Proxy
 
 		private static void CreateProxiedMethod(TypeBuilder typeBuilder, MethodInfo method, FieldInfo fieldInterceptorField)
 		{
-			if (method == AccessorTypeFieldInterceptorProperty.GetMethod)
-			{
-				ImplementGetFieldInterceptor(typeBuilder, method, fieldInterceptorField);
-			}
-			else if (method == AccessorTypeFieldInterceptorProperty.SetMethod)
-			{
-				ImplementSetFieldInterceptor(typeBuilder, method, fieldInterceptorField);
-			}
-			else if (ReflectHelper.IsPropertyGet(method))
+			if (ReflectHelper.IsPropertyGet(method))
 			{
 				ImplementGet(typeBuilder, method, fieldInterceptorField);
 			}
@@ -131,6 +113,17 @@ namespace NHibernate.Proxy
 			IL.Emit(OpCodes.Stfld, proxyInfoField);
 
 			IL.Emit(OpCodes.Ret);
+		}
+
+		private static void ImplementISerializable(
+			TypeBuilder typeBuilder,
+			FieldInfo proxyInfoField,
+			FieldInfo fieldInterceptorField,
+			System.Type baseType)
+		{
+			ProxyBuilderHelper.MakeProxySerializable(typeBuilder);
+			ImplementDeserializationConstructor(typeBuilder, baseType);
+			ImplementGetObjectData(typeBuilder, proxyInfoField, fieldInterceptorField, baseType);
 		}
 
 		private static void ImplementDeserializationConstructor(TypeBuilder typeBuilder, System.Type parentType)
@@ -249,7 +242,13 @@ namespace NHibernate.Proxy
 			typeBuilder.DefineMethodOverride(methodBuilder, ProxyBuilderHelper.SerializableGetObjectDataMethod);
 		}
 
-		private static void ImplementGetFieldInterceptor(TypeBuilder typeBuilder, MethodInfo method, FieldInfo fieldInterceptorField)
+		private static void ImplementIFieldInterceptorAccessor(TypeBuilder typeBuilder, FieldInfo fieldInterceptorField)
+		{
+			ImplementGetFieldInterceptor(typeBuilder, fieldInterceptorField);
+			ImplementSetFieldInterceptor(typeBuilder, fieldInterceptorField);
+		}
+
+		private static void ImplementGetFieldInterceptor(TypeBuilder typeBuilder, FieldInfo fieldInterceptorField)
 		{
 			// get { return this.__fieldInterceptor; }
 
@@ -268,10 +267,10 @@ namespace NHibernate.Proxy
 			IL.Emit(OpCodes.Ldfld, fieldInterceptorField);
 			IL.Emit(OpCodes.Ret);
 
-			typeBuilder.DefineMethodOverride(getMethod, method);
+			typeBuilder.DefineMethodOverride(getMethod, AccessorTypeFieldInterceptorProperty.GetMethod);
 		}
 
-		private static void ImplementSetFieldInterceptor(TypeBuilder typeBuilder, MethodInfo method, FieldInfo fieldInterceptorField)
+		private static void ImplementSetFieldInterceptor(TypeBuilder typeBuilder, FieldInfo fieldInterceptorField)
 		{
 			// set { this.__fieldInterceptor = value; }
 
@@ -291,7 +290,7 @@ namespace NHibernate.Proxy
 			IL.Emit(OpCodes.Stfld, fieldInterceptorField);
 			IL.Emit(OpCodes.Ret);
 
-			typeBuilder.DefineMethodOverride(setMethod, method);
+			typeBuilder.DefineMethodOverride(setMethod, AccessorTypeFieldInterceptorProperty.SetMethod);
 		}
 
 		private static void ImplementGet(TypeBuilder typeBuilder, MethodInfo getter, FieldInfo fieldInterceptorField)
