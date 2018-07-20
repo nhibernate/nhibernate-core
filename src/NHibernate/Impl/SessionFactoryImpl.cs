@@ -1296,6 +1296,7 @@ namespace NHibernate.Impl
 				{
 					sessionFactoryAwareContext.SetFactory(this);
 				}
+				return context;
 			}
 			catch (Exception e)
 			{
