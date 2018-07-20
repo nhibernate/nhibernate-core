@@ -325,6 +325,8 @@ namespace NHibernate.Dialect
 
 		public override bool SupportsUnboundedLobLocatorMaterialization => false;
 
+		public override string QuerySequencesString => "SELECT c.relname FROM pg_class c WHERE c.relkind = 'S'";
+
 		#endregion
 
 		[Serializable]
