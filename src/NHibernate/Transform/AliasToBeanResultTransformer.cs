@@ -85,7 +85,7 @@ namespace NHibernate.Transform
 			{
 				result = _resultClass.IsClass
 							? _beanConstructor.Invoke(null)
-							: Cfg.Environment.ObjectsFactory.CreateInstance(_resultClass, true);
+							: Activator.CreateInstance(_resultClass, true);
 
 				for (int i = 0; i < aliases.Length; i++)
 				{

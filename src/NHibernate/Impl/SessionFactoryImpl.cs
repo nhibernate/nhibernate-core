@@ -1281,9 +1281,22 @@ namespace NHibernate.Impl
 
 			try
 			{
-				System.Type implClass = ReflectHelper.ClassForName(impl);
-				return
-					(ICurrentSessionContext)Environment.ObjectsFactory.CreateInstance(implClass, new object[] { this });
+				var implClass = ReflectHelper.ClassForName(impl);
+				var constructor = implClass.GetConstructor(new [] { typeof(ISessionFactoryImplementor) });
+				ICurrentSessionContext context;
+				if (constructor != null)
+				{
+					context = (ICurrentSessionContext) constructor.Invoke(new object[] { this });
+				}
+				else
+				{
+					context = (ICurrentSessionContext) Environment.ObjectsFactory.CreateInstance(implClass);
+				}
+				if (context is ISessionFactoryAwareCurrentSessionContext sessionFactoryAwareContext)
+				{
+					sessionFactoryAwareContext.SetFactory(this);
+				}
+				return context;
 			}
 			catch (Exception e)
 			{
