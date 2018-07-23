@@ -80,14 +80,15 @@ namespace NHibernate.Cfg.MappingSchema
 		{
 			get
 			{
-				if (Items != null)
-					return Items;
-				// Avoid a possible breaking change for mapping having left a column attribute along with a formula one.
-				// This is a mapping error, but previous implementation was silently ignoring the column attribute in
-				// such case.
-				if (!string.IsNullOrEmpty(formula))
-					return AsFormulas();
-				return AsColumns();
+				if (Items != null && (!string.IsNullOrEmpty(column) || !string.IsNullOrEmpty(formula)))
+					throw new MappingException(
+						$"On an element: specifying columns or formulas with both attributes and xml sub-elements is " +
+						$"invalid. Please use only xml sub-elements, or only one of them as attribute");
+				if (!string.IsNullOrEmpty(column) && !string.IsNullOrEmpty(formula))
+					throw new MappingException(
+						$"On an element: specifying both column and formula attributes is invalid. Please " +
+						$"specify only one of them, or use xml sub-elements");
+				return Items ?? AsColumns().Cast<object>().Concat(AsFormulas().Cast<object>());
 			}
 		}
 	}
