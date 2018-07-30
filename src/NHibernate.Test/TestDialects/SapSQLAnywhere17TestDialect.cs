@@ -38,5 +38,10 @@
 		/// <c>numeric</c>. See https://stackoverflow.com/q/52558715/1178314.
 		/// </remarks>
 		public override bool HasBrokenTypeInferenceOnSelectedParameters => true;
+
+		/// <summary>
+		/// Does not support SELECT FOR UPDATE 
+		/// </summary>
+		public override bool SupportsSelectForUpdate => false;
 	}
 }

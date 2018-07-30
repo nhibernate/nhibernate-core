@@ -12,9 +12,9 @@ namespace NHibernate.Linq.Visitors
 	{
 		private static readonly System.Type[] FlattenableResultOperators =
 		{
-			typeof (LockResultOperator),
-			typeof (FetchOneRequest),
-			typeof (FetchManyRequest)
+			typeof(LockResultOperator),
+			typeof(FetchOneRequest),
+			typeof(FetchManyRequest)
 		};
 
 		public static void ReWrite(QueryModel queryModel)
@@ -24,16 +24,14 @@ namespace NHibernate.Linq.Visitors
 
 		public override void VisitAdditionalFromClause(AdditionalFromClause fromClause, QueryModel queryModel, int index)
 		{
-			var subQueryExpression = fromClause.FromExpression as SubQueryExpression;
-			if (subQueryExpression != null)
+			if (fromClause.FromExpression is SubQueryExpression subQueryExpression)
 				FlattenSubQuery(subQueryExpression, fromClause, queryModel, index + 1);
 			base.VisitAdditionalFromClause(fromClause, queryModel, index);
 		}
 
 		public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
 		{
-			var subQueryExpression = fromClause.FromExpression as SubQueryExpression;
-			if (subQueryExpression != null)
+			if (fromClause.FromExpression is SubQueryExpression subQueryExpression)
 				FlattenSubQuery(subQueryExpression, fromClause, queryModel, 0);
 			base.VisitMainFromClause(fromClause, queryModel);
 		}

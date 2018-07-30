@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Linq.ExpressionTransformers;
@@ -81,7 +83,11 @@ namespace NHibernate.Linq
 				new[] { ReflectHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.ThenFetchMany<object, object, object>(null, null)) },
 				typeof(ThenFetchManyExpressionNode));
 			methodInfoRegistry.Register(
-				new[] { ReflectHelper.GetMethodDefinition(() => LinqExtensionMethods.SetLockMode<object>(null, LockMode.Read)) }, 
+				new[]
+				{
+					ReflectHelper.GetMethodDefinition(() => default(IQueryable<object>).WithLock(LockMode.Read)),
+					ReflectHelper.GetMethodDefinition(() => default(IEnumerable<object>).WithLock(LockMode.Read))
+				}, 
 				typeof(LockExpressionNode));
 
 			var nodeTypeProvider = ExpressionTreeParser.CreateDefaultNodeTypeProvider();
