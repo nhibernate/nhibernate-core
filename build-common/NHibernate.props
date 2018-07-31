@@ -10,8 +10,8 @@
     <AssemblyVersion>$(VersionMajor).$(VersionMinor).0.0</AssemblyVersion>
     <FileVersion>$(VersionPrefix).0</FileVersion>
 
-    <NhAppTargetFrameworks>net461;netcoreapp2.0</NhAppTargetFrameworks>
-    <NhLibTargetFrameworks>net461;netcoreapp2.0;netstandard2.0</NhLibTargetFrameworks>
+    <NhAppTargetFrameworks>net461;netcoreapp2.0;netcoreapp2.1</NhAppTargetFrameworks>
+    <NhLibTargetFrameworks>net461;netcoreapp2.0;netcoreapp2.1;netstandard2.0</NhLibTargetFrameworks>
 
     <Product>NHibernate</Product>
     <Company>NHibernate.info</Company>
