@@ -388,7 +388,35 @@ namespace NHibernate.Cfg
 		public static IBytecodeProvider BytecodeProvider
 		{
 			get { return BytecodeProviderInstance; }
-			set { BytecodeProviderInstance = value; }
+			set
+			{
+				BytecodeProviderInstance = value;
+
+				// 6.0 TODO: remove following code.
+#pragma warning disable 618
+				var objectsFactory = BytecodeProviderInstance.ObjectsFactory;
+				if (objectsFactory != null && !(objectsFactory is ActivatorObjectsFactory))
+					ServiceProvider = new ObjectsFactoryWrapper(objectsFactory);
+#pragma warning restore 618
+			}
+		}
+
+		// Since its creation
+		[Obsolete("Transition class")]
+		private class ObjectsFactoryWrapper : IServiceProvider
+		{
+			private readonly IObjectsFactory _objectsFactory;
+			public ObjectsFactoryWrapper(IObjectsFactory objectsFactory)
+			{
+				_objectsFactory = objectsFactory;
+			}
+
+			public object GetService(System.Type serviceType)
+			{
+				if (serviceType.IsAbstract || serviceType.IsInterface)
+					return null;
+				return _objectsFactory.CreateInstance(serviceType);
+			}
 		}
 
 		/// <summary>
