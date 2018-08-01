@@ -1290,7 +1290,7 @@ namespace NHibernate.Impl
 				}
 				else
 				{
-					context = (ICurrentSessionContext) Environment.ServiceProvider.GetInstance(
+					context = (ICurrentSessionContext) Environment.ServiceProvider.GetService(
 						implClass ?? typeof(ICurrentSessionContext));
 				}
 				if (context is ISessionFactoryAwareCurrentSessionContext sessionFactoryAwareContext)
