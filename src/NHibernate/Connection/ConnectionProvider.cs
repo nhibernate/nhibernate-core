@@ -94,35 +94,16 @@ namespace NHibernate.Connection
 		/// </exception>
 		protected virtual void ConfigureDriver(IDictionary<string, string> settings)
 		{
-			if (!settings.TryGetValue(Environment.ConnectionDriver, out var driverClass))
-			{
-				try
-				{
-					driver = (IDriver) Environment.ServiceProvider.GetService(typeof(IDriver));
-					if (driver != null)
-					{
-						driver.Configure(settings);
-						return;
-					}
-				}
-				catch (Exception e)
-				{
-					throw new HibernateException($"Could not create the driver from {typeof(IDriver)}.", e);
-				}
+			driver = PropertiesHelper.GetInstance<IDriver>(
+				Environment.ConnectionDriver,
+				settings,
+				null);
+			if (driver == null)
 				throw new HibernateException(
-					$"The {Environment.ConnectionDriver} must be specified in the NHibernate configuration section.");
-			}
+					$"The {Environment.ConnectionDriver} must be specified in the NHibernate configuration section," +
+					"or Environment.ServiceProvider must be setup in order to resolve it.");
 
-			try
-			{
-				driver =
-					(IDriver) Environment.ServiceProvider.GetInstance(ReflectHelper.ClassForName(driverClass));
-				driver.Configure(settings);
-			}
-			catch (Exception e)
-			{
-				throw new HibernateException($"Could not create the driver from {driverClass}.", e);
-			}
+			driver.Configure(settings);
 		}
 
 		/// <summary>

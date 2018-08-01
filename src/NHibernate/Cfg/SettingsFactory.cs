@@ -396,40 +396,12 @@ namespace NHibernate.Cfg
 
 		private static IQueryModelRewriterFactory CreateQueryModelRewriterFactory(IDictionary<string, string> properties)
 		{
-			var className = PropertiesHelper.GetString(Environment.QueryModelRewriterFactory, properties, null);
-
-			if (className == null)
-			{
-				try
-				{
-					var instance =
-						(IQueryModelRewriterFactory)
-						Environment.ServiceProvider.GetService(typeof(IQueryModelRewriterFactory));
-					if (instance == null)
-					{
-						return null;
-					}
-					log.Info("Query model rewriter factory factory: {0}", instance.GetType().AssemblyQualifiedName);
-					return instance;
-				}
-				catch (Exception cnfe)
-				{
-					throw new HibernateException("could not instantiate IQueryModelRewriterFactory", cnfe);
-				}
-			}
-
-			log.Info("Query model rewriter factory factory: {0}", className);
-
-			try
-			{
-				return
-					(IQueryModelRewriterFactory)
-					Environment.ServiceProvider.GetInstance(ReflectHelper.ClassForName(className));
-			}
-			catch (Exception cnfe)
-			{
-				throw new HibernateException("could not instantiate IQueryModelRewriterFactory: " + className, cnfe);
-			}
+			var instance = PropertiesHelper.GetInstance<IQueryModelRewriterFactory>(
+				Environment.QueryModelRewriterFactory,
+				properties,
+				null);
+			log.Info("Query model rewriter factory factory: '{0}'", instance?.GetType().AssemblyQualifiedName ?? "none");
+			return instance;
 		}
 	}
 }

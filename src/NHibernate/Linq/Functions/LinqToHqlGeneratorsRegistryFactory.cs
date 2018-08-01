@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 using NHibernate.Util;
@@ -12,30 +11,12 @@ namespace NHibernate.Linq.Functions
 
 		public static ILinqToHqlGeneratorsRegistry CreateGeneratorsRegistry(IDictionary<string, string> properties)
 		{
-			if (properties.TryGetValue(Environment.LinqToHqlGeneratorsRegistry, out var registry))
-			{
-				try
-				{
-					log.Info("Initializing LinqToHqlGeneratorsRegistry: {0}", registry);
-					return (ILinqToHqlGeneratorsRegistry) Environment.ServiceProvider.GetInstance(ReflectHelper.ClassForName(registry));
-				}
-				catch (Exception e)
-				{
-					log.Fatal(e, "Could not instantiate LinqToHqlGeneratorsRegistry");
-					throw new HibernateException("Could not instantiate LinqToHqlGeneratorsRegistry: " + registry, e);
-				}
-			}
-			try
-			{
-				return (ILinqToHqlGeneratorsRegistry)
-				       Environment.ServiceProvider.GetService(typeof(ILinqToHqlGeneratorsRegistry)) ??
-				       new DefaultLinqToHqlGeneratorsRegistry();
-			}
-			catch (Exception e)
-			{
-				log.Fatal(e, "Could not instantiate LinqToHqlGeneratorsRegistry");
-				throw new HibernateException($"Could not instantiate LinqToHqlGeneratorsRegistry: {typeof(ILinqToHqlGeneratorsRegistry)}", e);
-			}
+			var instance = PropertiesHelper.GetInstance<ILinqToHqlGeneratorsRegistry>(
+				Environment.LinqToHqlGeneratorsRegistry,
+				properties,
+				typeof(DefaultLinqToHqlGeneratorsRegistry));
+			log.Info("LinqToHqlGeneratorsRegistry: '{0}'", instance.GetType().AssemblyQualifiedName);
+			return instance;
 		}
 	}
 }
