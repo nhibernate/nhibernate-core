@@ -389,6 +389,7 @@ namespace NHibernate.Cfg
 				Environment.TransactionStrategy,
 				properties,
 				typeof(AdoNetWithSystemTransactionFactory));
+			instance.Configure(properties);
 			log.Info("Transaction factory: {0}", instance.GetType().AssemblyQualifiedName);
 			return instance;
 		}
