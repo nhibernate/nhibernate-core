@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Bytecode;
 using NHibernate.Connection;
@@ -59,7 +60,6 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void GetInstanceByRegistration()
 		{
-			var originalSp = Cfg.Environment.ServiceProvider;
 			var sp = new DefaultServiceProvider();
 			sp.Register<IConnectionProvider, DriverConnectionProvider>();
 			Cfg.Environment.ServiceProvider = sp;
@@ -69,8 +69,6 @@ namespace NHibernate.Test.UtilityTest
 				typeof(DebugConnectionProvider));
 			Assert.That(instance, Is.Not.Null);
 			Assert.That(instance, Is.TypeOf<DriverConnectionProvider>());
-
-			Cfg.Environment.ServiceProvider = originalSp;
 		}
 
 		[Test]
@@ -100,7 +98,6 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void GetInstanceByInvalidRegistration()
 		{
-			var originalSp = Cfg.Environment.ServiceProvider;
 			var sp = new DefaultServiceProvider();
 			sp.Register(typeof(IConnectionProvider), () => new PropertiesHelperTest());
 			Cfg.Environment.ServiceProvider = sp;
@@ -112,7 +109,6 @@ namespace NHibernate.Test.UtilityTest
 						new Dictionary<string, string>(),
 						typeof(DriverConnectionProvider));
 				});
-			Cfg.Environment.ServiceProvider = originalSp;
 		}
 
 		[Test]
@@ -126,6 +122,20 @@ namespace NHibernate.Test.UtilityTest
 						new Dictionary<string, string> {{"conn", typeof(PropertiesHelperTest).AssemblyQualifiedName}},
 						typeof(DriverConnectionProvider));
 				});
+		}
+
+		private IServiceProvider _originalSp;
+
+		[SetUp]
+		public void Setup()
+		{
+			_originalSp = Cfg.Environment.ServiceProvider;
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			Cfg.Environment.ServiceProvider = _originalSp;
 		}
 	}
 }

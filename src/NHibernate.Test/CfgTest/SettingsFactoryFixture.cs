@@ -57,8 +57,6 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void RegisteredServices()
 		{
-			var originalSp = Environment.ServiceProvider;
-
 			var batcherFactory = Substitute.For<IBatcherFactory>();
 			var cacheProvider = Substitute.For<ICacheProvider>();
 			var connectionProvider = Substitute.For<IConnectionProvider>();
@@ -99,8 +97,6 @@ namespace NHibernate.Test.CfgTest
 			Assert.That(settings.QueryTranslatorFactory, Is.EqualTo(queryTranslatorFactory));
 			Assert.That(settings.SqlExceptionConverter, Is.EqualTo(sqlExceptionConverter));
 			Assert.That(settings.TransactionFactory, Is.EqualTo(transactionFactory));
-
-			Environment.ServiceProvider = originalSp;
 		}
 
 		[Test]
@@ -119,8 +115,6 @@ namespace NHibernate.Test.CfgTest
 
 		private void InvalidRegisteredService<TService>()
 		{
-			var originalSp = Environment.ServiceProvider;
-
 			var sp = new DefaultServiceProvider();
 			sp.Register<TService>(() => throw new InvalidOperationException());
 
@@ -138,8 +132,20 @@ namespace NHibernate.Test.CfgTest
 			Assert.Throws<HibernateException>(
 				() => new SettingsFactory().BuildSettings(properties),
 				$"HibernateException should be thrown for service {typeof(TService)}");
+		}
 
-			Environment.ServiceProvider = originalSp;
+		private IServiceProvider _originalSp;
+
+		[SetUp]
+		public void Setup()
+		{
+			_originalSp = Environment.ServiceProvider;
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			Environment.ServiceProvider = _originalSp;
 		}
 	}
 }

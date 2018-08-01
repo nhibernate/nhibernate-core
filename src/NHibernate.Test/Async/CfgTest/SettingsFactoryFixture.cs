@@ -50,8 +50,6 @@ namespace NHibernate.Test.CfgTest
 		{
 			try
 			{
-				var originalSp = Environment.ServiceProvider;
-
 				var sp = new DefaultServiceProvider();
 				sp.Register<TService>(() => throw new InvalidOperationException());
 
@@ -69,14 +67,26 @@ namespace NHibernate.Test.CfgTest
 				Assert.Throws<HibernateException>(
 				() => new SettingsFactory().BuildSettings(properties),
 				$"HibernateException should be thrown for service {typeof(TService)}");
-
-				Environment.ServiceProvider = originalSp;
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
+		}
+
+		private IServiceProvider _originalSp;
+
+		[SetUp]
+		public void Setup()
+		{
+			_originalSp = Environment.ServiceProvider;
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			Environment.ServiceProvider = _originalSp;
 		}
 	}
 }
