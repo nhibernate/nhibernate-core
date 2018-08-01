@@ -4,10 +4,7 @@ namespace NHibernate.Bytecode
 {
 	// Since v5.2
 	[Obsolete("This type has no more usages and will be removed in a future version")]
-	public class ActivatorObjectsFactory :
-#pragma warning disable 618
-		IObjectsFactory
-#pragma warning restore 618
+	public class ActivatorObjectsFactory : IObjectsFactory
 	{
 		public object CreateInstance(System.Type type)
 		{
