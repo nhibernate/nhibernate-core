@@ -4,53 +4,56 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+using static System.Console;
+
 namespace BuildTool
 {
-    class Program
-    {
-        static int Main(string[] args)
-        {
-            string command = args[0];
+	public class Program
+	{
+		public static int Main(string[] args)
+		{
+			string command = args[0];
+			switch (command)
+			{
+				case "pick-folder":
+					string[] folders = Directory.GetDirectories(args[1]);
+					for (int i = 0; i < folders.Length; i++)
+					{
+						WriteLine((char) ('A' + i) + ": " + Path.GetFileName(folders[i]));
+					}
 
-            if (command == "pick-folder")
-            {
-                string[] folders = Directory.GetDirectories(args[1]);
-                for (int i = 0; i < folders.Length; i++)
-                {
-                    Console.WriteLine((char)('A' + i) + ": " + Path.GetFileName(folders[i]));
-                }
-                while (true)
-                {
-                    Console.WriteLine(args[3]);
-                    var key = Console.ReadKey();
-                    Console.WriteLine();
-                    if (key.KeyChar >= 'A' && key.KeyChar <= 'Z' || key.KeyChar >= 'a' && key.KeyChar <= 'z')
-                    {
-                        int index = key.KeyChar.ToString().ToUpper()[0] - 'A';
-                        File.WriteAllText(args[2], folders[index]);
-                        break;
-                    }
-                }
+					var sb = new StringBuilder();
+					for (int i = 3; i < args.Length; i++)
+						sb.Append(args[i]);
+					while (true)
+					{
+						
+						WriteLine(sb.ToString());
+						ConsoleKeyInfo key = ReadKey();
+						WriteLine();
 
-                return 0;
-            }
-            else if (command == "prompt")
-            {
-                while(true)
-                {
-                    Console.WriteLine("[" + string.Join(", ", args[1].ToCharArray().Select(c => c.ToString()).ToArray()) + "]?");
-                    char[] characters = args[1].ToLower().ToCharArray();
-                    var key = char.ToLower(Console.ReadKey().KeyChar);
-                    Console.WriteLine();
-                    if (characters.Contains(key))
-                        return characters.ToList().IndexOf(key);
-                }
-            }
-            else
-            {
-                Console.WriteLine("Invalid command: " + command);
-                return 255;
-            }
-        }
-    }
+						if (char.IsLetter(key.KeyChar))
+						{
+							int index = key.KeyChar.ToString().ToUpper()[0] - 'A';
+							File.WriteAllText(args[2], folders[index]);
+							break;
+						}
+					}
+					return 0;
+				case "prompt":
+					List<char> characters = args[1].ToUpper().ToCharArray().ToList();
+					while (true)
+					{
+						WriteLine($"[{string.Join(", ", characters).ToUpper()}]?");
+						char key = char.ToUpper(ReadKey().KeyChar);
+						WriteLine();
+						if (characters.Contains(key))
+							return characters.IndexOf(key);
+					}
+				default:
+					WriteLine($"Invalid command: {command}");
+					return 255;
+			}
+		}
+	}
 }

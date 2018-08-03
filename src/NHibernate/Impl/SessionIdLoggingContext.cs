@@ -1,5 +1,5 @@
 using System;
-#if !NETSTANDARD2_0 && !NETCOREAPP2_0 
+#if !NETSTANDARD2_0 && !NETCOREAPP2_0 && !NETCOREAPP2_1 
 using System.Runtime.Remoting.Messaging;
 #else
 using System.Threading;
