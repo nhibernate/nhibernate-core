@@ -68,7 +68,7 @@ namespace NHibernate.Test.CfgTest
 			var sqlExceptionConverter = Substitute.For<ISQLExceptionConverter>();
 			var transactionFactory = Substitute.For<ITransactionFactory>();
 
-			var sp = new DefaultServiceProvider();
+			var sp = new SimpleServiceProvider();
 			sp.Register(() => batcherFactory);
 			sp.Register(() => cacheProvider);
 			sp.Register(() => connectionProvider);
@@ -115,7 +115,7 @@ namespace NHibernate.Test.CfgTest
 
 		private void InvalidRegisteredService<TService>()
 		{
-			var sp = new DefaultServiceProvider();
+			var sp = new SimpleServiceProvider();
 			sp.Register<TService>(() => throw new InvalidOperationException());
 
 			Environment.ServiceProvider = sp;

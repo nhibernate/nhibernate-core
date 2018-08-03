@@ -50,7 +50,7 @@ namespace NHibernate.Test.CfgTest
 		{
 			try
 			{
-				var sp = new DefaultServiceProvider();
+				var sp = new SimpleServiceProvider();
 				sp.Register<TService>(() => throw new InvalidOperationException());
 
 				Environment.ServiceProvider = sp;

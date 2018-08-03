@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NHibernate.Bytecode;
 using NHibernate.Connection;
+using NHibernate.Test.CfgTest;
 using NHibernate.Util;
 using NUnit.Framework;
 
@@ -60,7 +61,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void GetInstanceByRegistration()
 		{
-			var sp = new DefaultServiceProvider();
+			var sp = new SimpleServiceProvider();
 			sp.Register<IConnectionProvider, DriverConnectionProvider>();
 			Cfg.Environment.ServiceProvider = sp;
 			var instance = PropertiesHelper.GetInstance<IConnectionProvider>(
@@ -98,7 +99,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void GetInstanceByInvalidRegistration()
 		{
-			var sp = new DefaultServiceProvider();
+			var sp = new SimpleServiceProvider();
 			sp.Register(typeof(IConnectionProvider), () => new PropertiesHelperTest());
 			Cfg.Environment.ServiceProvider = sp;
 			Assert.Throws<HibernateException>(

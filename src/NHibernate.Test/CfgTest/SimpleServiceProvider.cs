@@ -5,13 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NHibernate.Bytecode
+namespace NHibernate.Test.CfgTest
 {
-	/// <summary>
-	/// The default NHibernate service provider that uses <see cref="Activator.CreateInstance(System.Type)"/> to instantiate
-	/// services by default.
-	/// </summary>
-	public class DefaultServiceProvider : IServiceProvider
+	public class SimpleServiceProvider : IServiceProvider
 	{
 		private readonly ConcurrentDictionary<System.Type, Func<object>> _registeredTypeProviders =
 			new ConcurrentDictionary<System.Type, Func<object>>();

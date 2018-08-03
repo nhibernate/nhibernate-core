@@ -432,7 +432,7 @@ namespace NHibernate.Cfg
 		/// is created, otherwise the change may not take effect.
 		/// For entities see <see cref="IReflectionOptimizer"/> and its implementations.
 		/// </remarks>
-		public static IServiceProvider ServiceProvider { get; set; } = new DefaultServiceProvider();
+		public static IServiceProvider ServiceProvider { get; set; } = new ActivatorServiceProvider();
 
 		/// <summary>
 		/// Whether to enable the use of reflection optimizer
@@ -478,7 +478,7 @@ namespace NHibernate.Cfg
 			var typeAssemblyQualifiedName = PropertiesHelper.GetString(PropertyServiceProvider, properties, null);
 			if (typeAssemblyQualifiedName == null)
 			{
-				var serviceProvider = new DefaultServiceProvider();
+				var serviceProvider = new ActivatorServiceProvider();
 				log.Info("Service provider class : {0}", serviceProvider.GetType());
 				return serviceProvider;
 			}
