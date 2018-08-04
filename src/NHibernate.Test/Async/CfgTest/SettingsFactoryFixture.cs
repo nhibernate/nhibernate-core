@@ -33,6 +33,28 @@ namespace NHibernate.Test.CfgTest
 	{
 
 		[Test]
+		public void DefaultServices()
+		{
+			var properties = new Dictionary<string, string>
+			{
+				{Environment.Dialect, typeof(Dialect.PostgreSQL83Dialect).FullName},
+				{Environment.UseQueryCache, "true"}
+			};
+			var settings = new SettingsFactory().BuildSettings(properties);
+			Assert.That(settings.BatcherFactory, Is.TypeOf<NonBatchingBatcherFactory>());
+			Assert.That(settings.CacheProvider, Is.TypeOf<NoCacheProvider>());
+			Assert.That(settings.ConnectionProvider, Is.TypeOf<UserSuppliedConnectionProvider>());
+			Assert.That(settings.Dialect, Is.TypeOf<Dialect.PostgreSQL83Dialect>());
+			Assert.That(settings.LinqToHqlGeneratorsRegistry, Is.TypeOf<DefaultLinqToHqlGeneratorsRegistry>());
+			Assert.That(settings.QueryCacheFactory, Is.TypeOf<StandardQueryCacheFactory>());
+			Assert.That(settings.QueryModelRewriterFactory, Is.Null);
+			Assert.That(settings.QueryTranslatorFactory, Is.TypeOf<ASTQueryTranslatorFactory>());
+			Assert.That(settings.QueryCacheFactory, Is.TypeOf<StandardQueryCacheFactory>());
+			Assert.That(settings.SqlExceptionConverter, Is.TypeOf<SQLStateConverter>());
+			Assert.That(settings.TransactionFactory, Is.TypeOf<AdoNetWithSystemTransactionFactory>());
+		}
+
+		[Test]
 		public async Task InvalidRegisteredServicesAsync()
 		{
 			await (InvalidRegisteredServiceAsync<IBatcherFactory>());
