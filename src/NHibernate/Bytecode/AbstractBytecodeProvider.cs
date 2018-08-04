@@ -23,7 +23,7 @@ namespace NHibernate.Bytecode
 				{
 					try
 					{
-						return (IProxyFactoryFactory) Cfg.Environment.ServiceProvider.GetService(proxyFactoryFactory);
+						return (IProxyFactoryFactory) Cfg.Environment.ServiceProvider.GetMandatoryService(proxyFactoryFactory);
 					}
 					catch (Exception e)
 					{
