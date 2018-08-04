@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Reflection;
 using NHibernate.Bytecode;
 
 namespace NHibernate.Util
 {
 	internal static class ServiceProviderExtensions
 	{
+		private static readonly string InternalAssemblyName = typeof(ServiceProviderExtensions).Assembly.GetName().ToString();
+
 		/// <summary>
 		/// Get a service, throwing if it cannot be resolved.
 		/// </summary>
@@ -18,11 +21,29 @@ namespace NHibernate.Util
 			if (serviceType == null)
 				throw new ArgumentNullException(nameof(serviceType));
 			var service = serviceProvider.GetService(serviceType);
+			if (service != null)
+			{
+				return service;
+			}
 
-			if (service == null)
-				throw new HibernateServiceProviderException(
-					$"Unable to resolve an instance for {serviceType.AssemblyQualifiedName}");
-			return service;
+			// Some IoC containers require explicit registration for concete types. In order to avoid registering all NHibernate types
+			// the Activator.CreateInstance is used for internal types, but the strictness is respected for external types.
+			Exception innerException = null;
+			if (serviceType.IsClass && !serviceType.IsAbstract && InternalAssemblyName.Equals(serviceType.Assembly.GetName().ToString()))
+			{
+				try
+				{
+					return Activator.CreateInstance(serviceType);
+				}
+				catch (Exception e)
+				{
+					innerException = e;
+				}
+			}
+
+			throw new HibernateServiceProviderException(
+				$"Unable to resolve an instance for {serviceType.AssemblyQualifiedName}, " +
+				"make sure that the service is registered and a non-null value is returned for it.", innerException);
 		}
 	}
 }

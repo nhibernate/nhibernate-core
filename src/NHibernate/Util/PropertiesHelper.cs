@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NHibernate.Bytecode;
 using NHibernate.Cfg;
 
 namespace NHibernate.Util
@@ -95,10 +96,13 @@ namespace NHibernate.Util
 			System.Type type = null;
 			try
 			{
-				type = className != null
-					? ReflectHelper.ClassForName(className)
-					: typeof(TService);
+				if (className != null)
+				{
+					type = ReflectHelper.ClassForName(className);
+					return (TService) Cfg.Environment.ServiceProvider.GetInstance(type);
+				}
 
+				type = typeof(TService);
 				var instance = (TService) Cfg.Environment.ServiceProvider.GetService(type);
 				if (instance != null)
 				{

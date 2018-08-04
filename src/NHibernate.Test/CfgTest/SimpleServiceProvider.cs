@@ -11,6 +11,17 @@ namespace NHibernate.Test.CfgTest
 	{
 		private readonly ConcurrentDictionary<System.Type, Func<object>> _registeredTypeProviders =
 			new ConcurrentDictionary<System.Type, Func<object>>();
+		private readonly bool _explicit;
+
+		public SimpleServiceProvider()
+		{
+			
+		}
+
+		public SimpleServiceProvider(bool @explicit)
+		{
+			_explicit = @explicit;
+		}
 
 		/// <inheritdoc />
 		public object GetService(System.Type serviceType)
@@ -25,7 +36,7 @@ namespace NHibernate.Test.CfgTest
 				return serviceProvider();
 			}
 
-			if (serviceType.IsInterface || serviceType.IsAbstract)
+			if (_explicit || serviceType.IsInterface || serviceType.IsAbstract)
 			{
 				return null;
 			}

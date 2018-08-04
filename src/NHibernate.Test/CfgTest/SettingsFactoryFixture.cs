@@ -33,6 +33,13 @@ namespace NHibernate.Test.CfgTest
 		}
 
 		[Test]
+		public void DefaultServicesWithExplicitServiceProvider()
+		{
+			Environment.ServiceProvider = new SimpleServiceProvider(true);
+			DefaultServices();
+		}
+
+		[Test]
 		public void DefaultServices()
 		{
 			var properties = new Dictionary<string, string>
