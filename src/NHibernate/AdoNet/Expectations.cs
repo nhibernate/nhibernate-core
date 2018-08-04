@@ -1,6 +1,7 @@
 using System;
 using System.Data.Common;
 using NHibernate.Engine;
+using NHibernate.Exceptions;
 
 namespace NHibernate.AdoNet
 {
@@ -99,6 +100,8 @@ namespace NHibernate.AdoNet
 		{
 		}
 
+		// Since 5.2
+		[Obsolete]
 		public static void VerifyOutcomeBatched(int expectedRowCount, int rowCount)
 		{
 			if (expectedRowCount > rowCount)
@@ -113,6 +116,31 @@ namespace NHibernate.AdoNet
 				string msg = "Batch update returned unexpected row count from update; actual row count: " + rowCount +
 				             "; expected: " + expectedRowCount;
 				throw new TooManyRowsAffectedException(msg, expectedRowCount, rowCount);
+			}
+		}
+
+		public static void VerifyOutcomeBatched(int expectedRowCount, int rowCount, DbCommand statement)
+		{
+			if (expectedRowCount > rowCount)
+			{
+				throw new StaleStateException(
+					ADOExceptionHelper.ExtendMessage(
+						$"Batch update returned unexpected row count from update; actual row count: {rowCount}; expected: {expectedRowCount}",
+						statement.CommandText,
+						null,
+						null)
+				);
+			}
+			if (expectedRowCount < rowCount)
+			{
+				throw new TooManyRowsAffectedException(
+					ADOExceptionHelper.ExtendMessage(
+						$"Batch update returned unexpected row count from update; actual row count: {rowCount}; expected: {expectedRowCount}",
+						statement.CommandText,
+						null,
+						null),
+					expectedRowCount,
+					rowCount);
 			}
 		}
 	}
