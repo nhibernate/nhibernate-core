@@ -85,14 +85,12 @@ namespace NHibernate.Test.UtilityTest
 		public void GetExternalInstanceByDefaultWithExplicitServiceProvider()
 		{
 			Cfg.Environment.ServiceProvider = new SimpleServiceProvider(true);
-			Assert.Throws<HibernateException>(
-				() =>
-				{
-					PropertiesHelper.GetInstance<IConnectionProvider>(
-						"conn",
-						new Dictionary<string, string>(),
-						typeof(DebugConnectionProvider));
-				});
+			var instance = PropertiesHelper.GetInstance<IConnectionProvider>(
+				"conn",
+				new Dictionary<string, string>(),
+				typeof(DebugConnectionProvider));
+			Assert.That(instance, Is.Not.Null);
+			Assert.That(instance, Is.TypeOf<DebugConnectionProvider>());
 		}
 
 		[Test]
@@ -136,14 +134,12 @@ namespace NHibernate.Test.UtilityTest
 		public void GetExternalInstanceByPropertyWithExplicitServiceProvider()
 		{
 			Cfg.Environment.ServiceProvider = new SimpleServiceProvider(true);
-			Assert.Throws<HibernateException>(
-				() =>
-				{
-					PropertiesHelper.GetInstance<IConnectionProvider>(
-						"conn",
-						new Dictionary<string, string> {{"conn", typeof(DebugConnectionProvider).AssemblyQualifiedName}},
-						typeof(DriverConnectionProvider));
-				});
+			var instance = PropertiesHelper.GetInstance<IConnectionProvider>(
+				"conn",
+				new Dictionary<string, string> {{"conn", typeof(DebugConnectionProvider).AssemblyQualifiedName}},
+				typeof(DriverConnectionProvider));
+			Assert.That(instance, Is.Not.Null);
+			Assert.That(instance, Is.TypeOf<DebugConnectionProvider>());
 		}
 
 		[Test]

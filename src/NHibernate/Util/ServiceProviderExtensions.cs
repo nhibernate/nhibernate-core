@@ -6,8 +6,6 @@ namespace NHibernate.Util
 {
 	internal static class ServiceProviderExtensions
 	{
-		private static readonly string InternalAssemblyName = typeof(ServiceProviderExtensions).Assembly.GetName().ToString();
-
 		/// <summary>
 		/// Get a service, throwing if it cannot be resolved.
 		/// </summary>
@@ -27,9 +25,9 @@ namespace NHibernate.Util
 			}
 
 			// Some IoC containers require explicit registration for concete types. In order to avoid registering all NHibernate types
-			// the Activator.CreateInstance is used for internal types, but the strictness is respected for external types.
+			// the Activator.CreateInstance is used for them.
 			Exception innerException = null;
-			if (serviceType.IsClass && !serviceType.IsAbstract && InternalAssemblyName.Equals(serviceType.Assembly.GetName().ToString()))
+			if (serviceType.IsClass && !serviceType.IsAbstract)
 			{
 				try
 				{
