@@ -78,7 +78,7 @@ namespace NHibernate.Tool.hbm2ddl
 						{
 							cfg.SetNamingStrategy(
 								(INamingStrategy)
-								Environment.ServiceProvider.GetInstance(ReflectHelper.ClassForName(args[i].Substring(9))));
+								Environment.ServiceProvider.GetMandatoryService(ReflectHelper.ClassForName(args[i].Substring(9))));
 						}
 					}
 					else

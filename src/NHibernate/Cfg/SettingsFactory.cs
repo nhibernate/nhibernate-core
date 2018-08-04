@@ -331,7 +331,7 @@ namespace NHibernate.Cfg
 				}
 				if (instance == null)
 				{
-					instance = (IBatcherFactory) Environment.ServiceProvider.GetInstance(tBatcher ?? typeof(NonBatchingBatcherFactory));
+					instance = (IBatcherFactory) Environment.ServiceProvider.GetMandatoryService(tBatcher ?? typeof(NonBatchingBatcherFactory));
 				}
 			}
 			catch (Exception cnfe)

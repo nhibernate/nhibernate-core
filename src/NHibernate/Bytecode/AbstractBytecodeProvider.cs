@@ -50,7 +50,7 @@ namespace NHibernate.Bytecode
 					try
 					{
 						collectionTypeFactory =
-							(ICollectionTypeFactory) Cfg.Environment.ServiceProvider.GetInstance(collectionTypeFactoryClass);
+							(ICollectionTypeFactory) Cfg.Environment.ServiceProvider.GetMandatoryService(collectionTypeFactoryClass);
 					}
 					catch (Exception e)
 					{

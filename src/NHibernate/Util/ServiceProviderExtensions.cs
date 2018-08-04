@@ -14,7 +14,7 @@ namespace NHibernate.Util
 		/// <returns>The service instance.</returns>
 		/// <exception cref="ArgumentNullException">thrown if <paramref name="serviceType"/> is <see langword="null" />.</exception>
 		/// <exception cref="HibernateServiceProviderException">thrown if the service cannot be resolved.</exception>
-		public static object GetInstance(this IServiceProvider serviceProvider, System.Type serviceType)
+		public static object GetMandatoryService(this IServiceProvider serviceProvider, System.Type serviceType)
 		{
 			if (serviceType == null)
 				throw new ArgumentNullException(nameof(serviceType));

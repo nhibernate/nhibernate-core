@@ -99,7 +99,7 @@ namespace NHibernate.Util
 				if (className != null)
 				{
 					type = ReflectHelper.ClassForName(className);
-					return (TService) Cfg.Environment.ServiceProvider.GetInstance(type);
+					return (TService) Cfg.Environment.ServiceProvider.GetMandatoryService(type);
 				}
 
 				type = typeof(TService);
@@ -110,7 +110,7 @@ namespace NHibernate.Util
 				}
 
 				type = defaultType;
-				return defaultType != null ? (TService) Cfg.Environment.ServiceProvider.GetInstance(defaultType) : null;
+				return defaultType != null ? (TService) Cfg.Environment.ServiceProvider.GetMandatoryService(defaultType) : null;
 			}
 			catch (Exception e)
 			{

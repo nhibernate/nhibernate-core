@@ -29,7 +29,7 @@ namespace NHibernate.Type
 
 			try
 			{
-				userType = (ICompositeUserType) Cfg.Environment.ServiceProvider.GetInstance(userTypeClass);
+				userType = (ICompositeUserType) Cfg.Environment.ServiceProvider.GetMandatoryService(userTypeClass);
 			}
 			catch (MethodAccessException mae)
 			{

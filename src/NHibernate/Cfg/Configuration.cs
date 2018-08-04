@@ -1908,7 +1908,7 @@ namespace NHibernate.Cfg
 				{
 					try
 					{
-						listeners[i] = Environment.ServiceProvider.GetInstance(ReflectHelper.ClassForName(listenerClasses[i]));
+						listeners[i] = Environment.ServiceProvider.GetMandatoryService(ReflectHelper.ClassForName(listenerClasses[i]));
 					}
 					catch (Exception e)
 					{
