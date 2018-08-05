@@ -137,6 +137,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("bxor", new Function.BitwiseFunctionOperation("bitxor"));
 			RegisterFunction("bnot", new Function.BitwiseFunctionOperation("bitnot"));
 
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.DateTime, false));
+
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.DB2Driver";
 		}
 
