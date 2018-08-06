@@ -1276,7 +1276,13 @@ namespace NHibernate.Impl
 				case "web":
 					return new WebSessionContext(this);
 				case "wcf_operation":
-					return new WcfOperationSessionContext(this);
+					// The WCF session context used to be included in this assembly,
+					// but now is in an optional external assembly, so to maintain
+					// compatibility we map the well-known name to a assembly qualified
+					// type name so it can be loaded via reflection below.
+					var assemblyName = typeof(SessionFactoryImpl).Assembly.FullName.Replace("NHibernate,", "NHibernate.Wcf,");
+					impl = "NHibernate.Context.WcfOperationSessionContext, " + assemblyName;
+					break;
 			}
 
 			try

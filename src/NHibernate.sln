@@ -1,17 +1,18 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{593DCEA7-C933-46F3-939F-D8172399AB05}"
 	ProjectSection(SolutionItems) = preProject
+		..\appveyor.yml = ..\appveyor.yml
 		AsyncGenerator.yml = AsyncGenerator.yml
+		..\build-common\common.xml = ..\build-common\common.xml
 		..\default.build = ..\default.build
 		..\build-common\NHibernate.props = ..\build-common\NHibernate.props
 		..\releasenotes.txt = ..\releasenotes.txt
-		..\teamcity.build = ..\teamcity.build
-		..\build-common\common.xml = ..\build-common\common.xml
-		..\appveyor.yml = ..\appveyor.yml
 		..\ReleaseProcedure.txt = ..\ReleaseProcedure.txt
+		..\teamcity.build = ..\teamcity.build
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate", "NHibernate\NHibernate.csproj", "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}"
@@ -23,6 +24,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.TestDatabaseSetup", "NHibernate.TestDatabaseSetup\NHibernate.TestDatabaseSetup.csproj", "{BEEC1564-6FB6-49F7-BBE5-8EBD2F0F6E8A}"
 EndProject
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "NHibernate.Test.VisualBasic", "NHibernate.Test.VisualBasic\NHibernate.Test.VisualBasic.vbproj", "{7C2EF610-BCA0-4D1F-898A-DE9908E4970C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Wcf", "NHibernate.Wcf\NHibernate.Wcf.csproj", "{0FE89152-D42C-4162-8023-0A45857225B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +53,10 @@ Global
 		{7C2EF610-BCA0-4D1F-898A-DE9908E4970C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C2EF610-BCA0-4D1F-898A-DE9908E4970C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C2EF610-BCA0-4D1F-898A-DE9908E4970C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FE89152-D42C-4162-8023-0A45857225B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FE89152-D42C-4162-8023-0A45857225B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FE89152-D42C-4162-8023-0A45857225B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FE89152-D42C-4162-8023-0A45857225B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
