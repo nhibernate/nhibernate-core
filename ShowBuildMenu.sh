@@ -54,7 +54,9 @@ testSetupGeneric() {
 	then
 		CFGNAME="$CONFIG_NAME-$TEST_PLATFORM"
 	fi
-	mkdir "$AVAILABLE_CONFIGURATIONS/$CFGNAME"
+	
+	mkdir -p $AVAILABLE_CONFIGURATIONS/$CFGNAME
+
 	if [ $LIB_FILES == ""]
 	then
 		testSetupGenericSkipCopy
@@ -238,7 +240,7 @@ mainMenu() {
 	if [ $OPTION -eq 5 ]	
 	then
 		buildRelease
-	if [ $OPTION -eq 4 ]	
+	elif [ $OPTION -eq 4 ]	
 	then
 		buildDebug
 	elif [ $OPTION -eq 1 ]	
