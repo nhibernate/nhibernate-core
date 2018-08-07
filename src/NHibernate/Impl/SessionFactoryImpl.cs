@@ -1275,18 +1275,21 @@ namespace NHibernate.Impl
 					return new ThreadStaticSessionContext(this);
 				case "web":
 					return new WebSessionContext(this);
-				case "wcf_operation":
-					// The WCF session context used to be included in this assembly,
-					// but now is in an optional external assembly, so to maintain
-					// compatibility we map the well-known name to a assembly qualified
-					// type name so it can be loaded via reflection below.
-					var assemblyName = typeof(SessionFactoryImpl).Assembly.FullName.Replace("NHibernate,", "NHibernate.Wcf,");
-					impl = "NHibernate.Context.WcfOperationSessionContext, " + assemblyName;
-					break;
 			}
 
 			try
 			{
+				// The WcfOperationSessionContext type that was previously included in this
+				// assembly is now in an optional external assembly, so to maintain
+				// compatibility we map the old alias and type names to the updated type name.
+				const string wcfTypeName = "NHibernate.Context.WcfOperationSessionContext";
+				if (impl.Equals("wcf_operation", StringComparison.Ordinal) ||
+					impl.StartsWith(wcfTypeName, StringComparison.OrdinalIgnoreCase))
+				{
+					var wcfAssemblyName = typeof(SessionFactoryImpl).Assembly.FullName.Replace("NHibernate,", "NHibernate.Wcf,");
+					impl = string.Concat(wcfTypeName, ", ", wcfAssemblyName);
+				}
+
 				var implClass = ReflectHelper.ClassForName(impl);
 				var constructor = implClass.GetConstructor(new [] { typeof(ISessionFactoryImplementor) });
 				ICurrentSessionContext context;
