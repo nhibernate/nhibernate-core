@@ -82,12 +82,12 @@ namespace NHibernate.Cfg.MappingSchema
 			{
 				if (!ArrayHelper.IsNullOrEmpty(Items) && (!string.IsNullOrEmpty(column) || !string.IsNullOrEmpty(formula)))
 					throw new MappingException(
-						$"On an element: specifying columns or formulas with both attributes and xml sub-elements is " +
-						$"invalid. Please use only xml sub-elements, or only one of them as attribute");
+						"On an element: specifying columns or formulas with both attributes and xml sub-elements is " +
+						"invalid. Please use only xml sub-elements, or only one of them as attribute");
 				if (!string.IsNullOrEmpty(column) && !string.IsNullOrEmpty(formula))
 					throw new MappingException(
-						$"On an element: specifying both column and formula attributes is invalid. Please " +
-						$"specify only one of them, or use xml sub-elements");
+						"On an element: specifying both column and formula attributes is invalid. Please " +
+						"specify only one of them, or use xml sub-elements");
 				return !ArrayHelper.IsNullOrEmpty(Items) ? Items : AsColumns().Cast<object>().Concat(AsFormulas());
 			}
 		}

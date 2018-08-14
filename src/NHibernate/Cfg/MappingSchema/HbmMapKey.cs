@@ -75,12 +75,12 @@ namespace NHibernate.Cfg.MappingSchema
 			{
 				if (!ArrayHelper.IsNullOrEmpty(Items) && (!string.IsNullOrEmpty(column) || !string.IsNullOrEmpty(formula)))
 					throw new MappingException(
-						$"On a map-key: specifying columns or formulas with both attributes and sub-elements is " +
-						$"invalid. Please use only sub-elements, or only one of them as attribute");
+						"On a map-key: specifying columns or formulas with both attributes and sub-elements is " +
+						"invalid. Please use only sub-elements, or only one of them as attribute");
 				if (!string.IsNullOrEmpty(column) && !string.IsNullOrEmpty(formula))
 					throw new MappingException(
-						$"On a map-key: specifying both column and formula attributes is invalid. Please specify " +
-						$"only one of them, or use sub-elements");
+						"On a map-key: specifying both column and formula attributes is invalid. Please specify " +
+						"only one of them, or use sub-elements");
 				return !ArrayHelper.IsNullOrEmpty(Items) ? Items : AsColumns().Cast<object>().Concat(AsFormulas());
 			}
 		}
