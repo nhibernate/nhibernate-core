@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
+using NHibernate.Util;
 
 namespace NHibernate.Cfg.MappingSchema
 {
@@ -13,7 +13,7 @@ namespace NHibernate.Cfg.MappingSchema
 		[XmlIgnore]
 		public IEnumerable<HbmColumn> Columns
 		{
-			get { return Items != null ? Items.OfType<HbmColumn>() : AsColumns(); }
+			get { return !ArrayHelper.IsNullOrEmpty(Items) ? Items.OfType<HbmColumn>() : AsColumns(); }
 		}
 
 		#endregion
@@ -39,7 +39,7 @@ namespace NHibernate.Cfg.MappingSchema
 		[XmlIgnore]
 		public IEnumerable<HbmFormula> Formulas
 		{
-			get { return Items != null ? Items.OfType<HbmFormula>() : AsFormulas(); }
+			get { return !ArrayHelper.IsNullOrEmpty(Items) ? Items.OfType<HbmFormula>() : AsFormulas(); }
 		}
 
 		private IEnumerable<HbmFormula> AsFormulas()
@@ -73,7 +73,7 @@ namespace NHibernate.Cfg.MappingSchema
 		{
 			get
 			{
-				if (Items != null && (!string.IsNullOrEmpty(column) || !string.IsNullOrEmpty(formula)))
+				if (!ArrayHelper.IsNullOrEmpty(Items) && (!string.IsNullOrEmpty(column) || !string.IsNullOrEmpty(formula)))
 					throw new MappingException(
 						$"On a map-key: specifying columns or formulas with both attributes and sub-elements is " +
 						$"invalid. Please use only sub-elements, or only one of them as attribute");
@@ -81,7 +81,7 @@ namespace NHibernate.Cfg.MappingSchema
 					throw new MappingException(
 						$"On a map-key: specifying both column and formula attributes is invalid. Please specify " +
 						$"only one of them, or use sub-elements");
-				return Items ?? AsColumns().Cast<object>().Concat(AsFormulas().Cast<object>());
+				return !ArrayHelper.IsNullOrEmpty(Items) ? Items : AsColumns().Cast<object>().Concat(AsFormulas());
 			}
 		}
 	}
