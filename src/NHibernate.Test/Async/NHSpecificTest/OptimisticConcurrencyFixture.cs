@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using NHibernate.DomainModel;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 namespace NHibernate.Test.NHSpecificTest
 {
@@ -68,7 +69,7 @@ namespace NHibernate.Test.NHSpecificTest
 					top.Name = "new name";
 
 					var expectedException = Sfi.Settings.IsBatchVersionedDataEnabled
-						? Throws.InstanceOf<StaleStateException>()
+						? (IResolveConstraint) Throws.InstanceOf<StaleStateException>().And.Message.Contains("UPDATE rootclass")
 						: Throws.InstanceOf<StaleObjectStateException>();
 
 					Assert.That(() => session.FlushAsync(), expectedException);
@@ -107,7 +108,7 @@ namespace NHibernate.Test.NHSpecificTest
 					optimistic.String = "new string";
 
 					var expectedException = Sfi.Settings.IsBatchVersionedDataEnabled
-						? Throws.InstanceOf<StaleStateException>()
+						? (IResolveConstraint) Throws.InstanceOf<StaleStateException>().And.Message.Contains("UPDATE Optimistic")
 						: Throws.InstanceOf<StaleObjectStateException>();
 
 					Assert.That(() => session.FlushAsync(), expectedException);

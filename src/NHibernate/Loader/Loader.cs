@@ -1424,7 +1424,7 @@ namespace NHibernate.Loader
 			if (_columnNameCache == null)
 			{
 				Log.Debug("Building columnName->columnIndex cache");
-				_columnNameCache = new ColumnNameCache(rs.GetSchemaTable().Rows.Count);
+				_columnNameCache = new ColumnNameCache(rs.FieldCount);
 			}
 
 			return _columnNameCache;

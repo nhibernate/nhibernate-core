@@ -116,7 +116,7 @@ namespace NHibernate.AdoNet
 					}
 				}
 
-				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowCount);
+				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowCount, ps);
 			}
 			finally
 			{
