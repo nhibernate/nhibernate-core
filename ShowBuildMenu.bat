@@ -2,10 +2,14 @@
 pushd %~dp0
 
 set NANT="%~dp0Tools\nant\bin\NAnt.exe" -t:net-4.0
-set BUILDTOOL="%~dp0Tools/BuildTool/BuildTool.csproj"
+set BUILD_TOOL_PATH=%~dp0Tools\BuildTool\BuildTool.csproj
+set BUILD_TOOL_SLN_PATH=%~dp0Tools\BuildTool\BuildTool.sln
+set BUILDTOOL=dotnet run -p %BUILD_TOOL_PATH% -c Release --no-build
 set AVAILABLE_CONFIGURATIONS=%~dp0available-test-configurations
 set CURRENT_CONFIGURATION=%~dp0current-test-configuration
 set NUNIT="%~dp0Tools\NUnit.ConsoleRunner.3.7.0\tools\nunit3-console.exe"
+
+dotnet build %BUILD_TOOL_SLN_PATH% -c Release
 
 :main-menu
 echo ========================= NHIBERNATE BUILD MENU ==========================
@@ -30,7 +34,9 @@ echo --- Exit ---
 echo X. Make the beautiful build menu go away.
 echo.
 
-dotnet run %BUILDTOOL% prompt ABCDEFGHIX -c Release --no-build
+
+
+%BUILDTOOL% prompt ABCDEFGHIX
 if errorlevel 9 goto end
 if errorlevel 8 goto teamcity-menu
 if errorlevel 7 goto build-async
@@ -56,7 +62,7 @@ echo.
 echo X.  Exit to main menu.
 echo.
 
-dotnet run %BUILDTOOL% prompt ABCDEFGHIX -c Release --no-build
+%BUILDTOOL% prompt ABCDEFGHIX
 if errorlevel 9 goto main-menu
 if errorlevel 8 goto test-setup-hana
 if errorlevel 7 goto test-setup-mysql
@@ -150,7 +156,7 @@ goto main-menu
 
 
 :test-activate
-dotnet run %BUILDTOOL% pick-folder "%AVAILABLE_CONFIGURATIONS%" folder.tmp "Which test configuration should be activated?" -c Release --no-build
+%BUILDTOOL% pick-folder "%AVAILABLE_CONFIGURATIONS%" folder.tmp "Which test configuration should be activated?"
 set /p FOLDER=<folder.tmp
 del folder.tmp
 mkdir "%CURRENT_CONFIGURATION%" 2> nul
@@ -220,7 +226,7 @@ echo.
 echo X.  Exit to main menu.
 echo.
 
-dotnet run %BUILDTOOL% prompt ABCDEFGHIJKLX -c Release --no-build
+%BUILDTOOL% prompt ABCDEFGHIJKLX
 if errorlevel 12 goto main-menu
 if errorlevel 11 goto teamcity-sqlServerOdbc
 if errorlevel 10 goto teamcity-sqlServerCe64

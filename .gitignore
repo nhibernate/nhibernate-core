@@ -14,3 +14,6 @@ NHibernate.dll
 TestResult.xml
 .vscode
 .DS_Store
+
+.idea/
+.vs/

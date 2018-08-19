@@ -7,10 +7,11 @@ TEST_PLATFORM=""
 LIB_FILES=""
 LIB_FILES2=""
 CURRENT_CONFIGURATION="./current-test-configuration"
+BUILD_TOOL=dotnet run -p $BUILD_PROJECT -c Release --no-build
 OPTION=0
 
 buildDebug(){
-	eval "dotnet build -p ./src/NHibernate.sln"
+	eval "dotnet build ./src/NHibernate.sln"
 	echo "."
 	echo "Assuming the build succeeded, your results will be in the build folder."
 	echo "."
@@ -18,7 +19,7 @@ buildDebug(){
 }
 
 buildRelease(){
-	eval "dotnet build -p ./src/NHibernate.sln -c Release"
+	eval "dotnet build ./src/NHibernate.sln -c Release"
 	echo "."
 	echo "Assuming the build succeeded, your results will be in the build folder."
 	echo "."
@@ -26,10 +27,9 @@ buildRelease(){
 }
 
 testActivate(){
-	
 	FILE_TEMP="folder.tmp"
-	TEXT="Which test configuration should be activated?"
-	eval "dotnet run -p $BUILD_PROJECT pick-folder $AVAILABLE_CONFIGURATIONS $FILE_TEMP $TEXT -c Release --no-build"	
+	
+	$BUILD_TOOL pick-folder $AVAILABLE_CONFIGURATIONS $FILE_TEMP "Which test configuration should be activated?"
 	
 	if [ -d $CURRENT_CONFIGURATION ]
 	then
@@ -167,7 +167,8 @@ testSetupMenu() {
 	echo "."
 	echo "X.  Exit to main menu."
 	echo "."
-	eval "dotnet run -p $BUILD_PROJECT prompt ABCDEFGHIX -c Release --no-build"
+	
+	$BUILD_TOOL prompt ABCDEFGHIX
 	
 	OPTION=$?
 	if	[ $OPTION -eq 9 ]
@@ -242,8 +243,10 @@ mainMenu() {
 	echo  "X. Make the beautiful build menu go away."
 	echo  "."
 
-	eval "dotnet run -p $BUILD_PROJECT prompt ABCDEX -c Release --no-build"
+	$BUILD_TOOL prompt ABCDEX
+	
 	OPTION=$?
+	
 	if [ $OPTION -eq 4 ]	
 	then
 		buildRelease
@@ -262,8 +265,7 @@ mainMenu() {
 	fi
 }
 
-eval "dotnet build -p $BUILD_PROJECT -c Release"
-
+dotnet build ./Tools/BuildTool/BuildTool.sln -c Release
 mainMenu
 
 
