@@ -7,7 +7,7 @@ TEST_PLATFORM=""
 LIB_FILES=""
 LIB_FILES2=""
 CURRENT_CONFIGURATION="./current-test-configuration"
-BUILD_TOOL=dotnet run -p $BUILD_PROJECT -c Release --no-build
+BUILD_TOOL="dotnet run -p $BUILD_PROJECT -c Release --no-build"
 OPTION=0
 
 buildDebug(){
