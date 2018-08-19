@@ -65,21 +65,21 @@ testSetupGeneric() {
 		echo $CFGNAME
 	fi
 	
-#		mkdir -p $AVAILABLE_CONFIGURATIONS/$CFGNAME
+	mkdir -p $AVAILABLE_CONFIGURATIONS/$CFGNAME
 
-#	if [ $LIB_FILES == ""]
-#	then
-#		testSetupGenericSkipCopy
-#	else
-#		cp $LIB_FILES $AVAILABLE_CONFIGURATIONS/$CFGNAME
-#	fi
+	if [ $LIB_FILES == ""]
+	then
+		testSetupGenericSkipCopy
+	else
+		cp $LIB_FILES $AVAILABLE_CONFIGURATIONS/$CFGNAME
+	fi
 	
-#	if [ $LIB_FILES2 == ""]
-#	then
-#		testSetupGenericSkipCopy
-#	else	
-#		cp $LIB_FILES2 $AVAILABLE_CONFIGURATIONS/$CFGNAME
-#	fi
+	if [ $LIB_FILES2 == ""]
+	then
+		testSetupGenericSkipCopy
+	else	
+		cp $LIB_FILES2 $AVAILABLE_CONFIGURATIONS/$CFGNAME
+	fi
 }
 
 testSetupSqlServer() {
@@ -159,11 +159,11 @@ testSetupMenu() {
 	echo "B. Add a test configuration for Firebird."
 	echo "C. Add a test configuration for SQLite."
 	echo "D. Add a test configuration for PostgreSQL."
-	echo "E. Add a test configuration for Oracle."
-	echo "F. Add a test configuration for Oracle with managed driver."
+	echo "E. Add a test configuration for Oracle(NOT Support yet)."
+	echo "F. Add a test configuration for Oracle with managed driver (NOT Support yet)."
 	echo "G. Add a test configuration for SQL Server Compact."
 	echo "H. Add a test configuration for MySql."
-	echo "I. Add a test configuration for SAP HANA."
+	echo "I. Add a test configuration for SAP HANA(NOT Support yet)."
 	echo "."
 	echo "X.  Exit to main menu."
 	echo "."
@@ -222,37 +222,37 @@ testSetupMenu() {
 	fi
 }
 
+function testRun(){
+	eval "dotnet test ./src/NHibernate.Test/NHibernate.Test.csproj"
+	eval "dotnet test ./src/NHibernate.Test.VisualBasic/NHibernate.Test.VisualBasic.csproj"
+}
+
 mainMenu() {
-	echo "========================= NHIBERNATE BUILD MENU =========================="
-	echo "--- TESTING ---"
+	echo  "========================= NHIBERNATE BUILD MENU =========================="
+	echo  "--- TESTING ---"
 	echo  "A. (Step 1) Set up a new test configuration for a particular database."
 	echo  "B. (Step 2) Activate a test configuration."
-	echo  "C. (Step 3) Run tests using active configuration with 32bits runner (Needs built in Visual Studio).(TODO)"
-	echo  "D.       Or run tests using active configuration with 64bits runner (Needs built in Visual Studio).(TODO)"
-	echo "."
+	echo  "C. (Step 3) Run tests."
+	echo  "."
 	echo  "--- BUILD ---"
-	echo  "E. Build NHibernate (Debug)"
-	echo  "F. Build NHibernate (Release)"
-	echo  "G. Build Release Package (Also runs tests and creates documentation)(TODO)"
-	echo "."
-	echo  "--- Code generation ---"
-	echo  "H. Generate async code (Generates files in Async sub-folders)"
-	echo "."
-	echo  "--- TeamCity (CI) build options(TODO)"
-	echo  "I. TeamCity build menu"
-	echo "."
+	echo  "D. Build NHibernate (Debug)"
+	echo  "E. Build NHibernate (Release)"
+	echo  "."
 	echo  "--- Exit ---"
 	echo  "X. Make the beautiful build menu go away."
-	echo "."
+	echo  "."
 
-	eval "dotnet run -p $BUILD_PROJECT prompt ABCDEFGHIX -c Release --no-build"
+	eval "dotnet run -p $BUILD_PROJECT prompt ABCDEX -c Release --no-build"
 	OPTION=$?
-	if [ $OPTION -eq 5 ]	
+	if [ $OPTION -eq 4 ]	
 	then
 		buildRelease
-	elif [ $OPTION -eq 4 ]	
+	elif [ $OPTION -eq 3 ]	
 	then
 		buildDebug
+	elif [ $OPTION -eq 2 ]	
+	then
+		testRun
 	elif [ $OPTION -eq 1 ]	
 	then
 		testActivate

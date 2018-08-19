@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8363565e-b902-47ce-a59f-4248b49f72a8" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/../../ShowBuildMenu.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../../ShowBuildMenu.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.BuildTool/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.BuildTool/.idea/contentModel.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.BuildTool/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.BuildTool/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
-    </list>
+    <list default="true" id="8363565e-b902-47ce-a59f-4248b49f72a8" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,7 +14,7 @@
       <file leaf-file-name="Program.cs" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Program.cs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="690">
+            <state relative-caret-position="555">
               <caret line="51" column="25" lean-forward="true" selection-start-line="51" selection-start-column="25" selection-end-line="51" selection-end-column="25" />
               <folding>
                 <marker date="1534644975180" expanded="false" signature="6:131" ph="..." />
@@ -153,12 +148,12 @@
       <workItem from="1532993226448" duration="708000" />
       <workItem from="1532995522081" duration="847000" />
       <workItem from="1534643139845" duration="423000" />
-      <workItem from="1534644876032" duration="640000" />
+      <workItem from="1534644876032" duration="1239000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="6842000" />
+    <option name="totallyTimeSpent" value="7441000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -171,7 +166,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="1299" height="743" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="right" id="Errors In Solution" order="3" />
@@ -356,7 +350,7 @@
     <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/62D985EE-BBF8-4380-A369-6E9A1B3CF6CB/78/be594b0f/File.cs" />
     <entry file="file://$PROJECT_DIR$/Program.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="690">
+        <state relative-caret-position="555">
           <caret line="51" column="25" lean-forward="true" selection-start-line="51" selection-start-column="25" selection-end-line="51" selection-end-column="25" />
           <folding>
             <marker date="1534644975180" expanded="false" signature="6:131" ph="..." />
