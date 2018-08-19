@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-
 using static System.Console;
 
 namespace BuildTool
@@ -27,7 +26,6 @@ namespace BuildTool
 						sb.Append(args[i]);
 					while (true)
 					{
-						
 						WriteLine(sb.ToString());
 						ConsoleKeyInfo key = ReadKey();
 						WriteLine();
@@ -39,6 +37,7 @@ namespace BuildTool
 							break;
 						}
 					}
+
 					return 0;
 				case "prompt":
 					List<char> characters = args[1].ToUpper().ToCharArray().ToList();
@@ -48,7 +47,9 @@ namespace BuildTool
 						char key = char.ToUpper(ReadKey().KeyChar);
 						WriteLine();
 						if (characters.Contains(key))
+						{
 							return characters.IndexOf(key);
+						}
 					}
 				default:
 					WriteLine($"Invalid command: {command}");

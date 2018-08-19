@@ -7,6 +7,7 @@ TEST_PLATFORM=""
 LIB_FILES=""
 LIB_FILES2=""
 CURRENT_CONFIGURATION="./current-test-configuration"
+OPTION=0
 
 buildDebug(){
 	eval "dotnet build -p ./src/NHibernate.sln"
@@ -25,16 +26,24 @@ buildRelease(){
 }
 
 testActivate(){
+	
+	FILE_TEMP="folder.tmp"
 	TEXT="Which test configuration should be activated?"
-	eval "dotnet run -p $BUILD_PROJECT pick-folder $AVAILABLE_CONFIGURATIONS folder.tmp $TEXT --no-build"
-	FOLDER=$(<folder.tmp)
+	eval "dotnet run -p $BUILD_PROJECT pick-folder $AVAILABLE_CONFIGURATIONS $FILE_TEMP $TEXT -c Release --no-build"	
+	
 	if [ -d $CURRENT_CONFIGURATION ]
 	then
 		rm -r $CURRENT_CONFIGURATION/
 	fi
-	cp -r $FOLDER/ $CURRENT_CONFIGURATION
-	rm folder.tmp
+
+	CURRENT_FOLDER=$(pwd)
+	INFORMATION=$(cat $CURRENT_FOLDER/$FILE_TEMP)
+	cp -r $INFORMATION/ $CURRENT_CONFIGURATION
+
+	rm $FILE_TEMP
+
 	echo "Configuration activated."	
+
 	mainMenu
 }
 
@@ -53,23 +62,24 @@ testSetupGeneric() {
 	if [ $CFGNAME = ""]
 	then
 		CFGNAME="$CONFIG_NAME-$TEST_PLATFORM"
+		echo $CFGNAME
 	fi
 	
-	mkdir -p $AVAILABLE_CONFIGURATIONS/$CFGNAME
+#		mkdir -p $AVAILABLE_CONFIGURATIONS/$CFGNAME
 
-	if [ $LIB_FILES == ""]
-	then
-		testSetupGenericSkipCopy
-	else
-		cp $LIB_FILES $AVAILABLE_CONFIGURATIONS/$CFGNAME
-	fi
+#	if [ $LIB_FILES == ""]
+#	then
+#		testSetupGenericSkipCopy
+#	else
+#		cp $LIB_FILES $AVAILABLE_CONFIGURATIONS/$CFGNAME
+#	fi
 	
-	if [ $LIB_FILES2 == ""]
-	then
-		testSetupGenericSkipCopy
-	else	
-		cp $LIB_FILES2 $AVAILABLE_CONFIGURATIONS/$CFGNAME
-	fi
+#	if [ $LIB_FILES2 == ""]
+#	then
+#		testSetupGenericSkipCopy
+#	else	
+#		cp $LIB_FILES2 $AVAILABLE_CONFIGURATIONS/$CFGNAME
+#	fi
 }
 
 testSetupSqlServer() {
@@ -157,7 +167,7 @@ testSetupMenu() {
 	echo "."
 	echo "X.  Exit to main menu."
 	echo "."
-	eval "dotnet run -p $BUILD_PROJECT prompt ABCDEFGHIX --no-build"
+	eval "dotnet run -p $BUILD_PROJECT prompt ABCDEFGHIX -c Release --no-build"
 	
 	OPTION=$?
 	if	[ $OPTION -eq 9 ]
@@ -214,7 +224,7 @@ testSetupMenu() {
 
 mainMenu() {
 	echo "========================= NHIBERNATE BUILD MENU =========================="
-    echo "--- TESTING ---"
+	echo "--- TESTING ---"
 	echo  "A. (Step 1) Set up a new test configuration for a particular database."
 	echo  "B. (Step 2) Activate a test configuration."
 	echo  "C. (Step 3) Run tests using active configuration with 32bits runner (Needs built in Visual Studio).(TODO)"
