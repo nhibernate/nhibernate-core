@@ -182,7 +182,7 @@ namespace NHibernate
 		/// <param name="sql">sql to be prepared </param>
 		/// <returns> original or modified sql </returns>
 		SqlString OnPrepareStatement(SqlString sql);
-		
+
 		#region NH specific
 
 		/// <summary>

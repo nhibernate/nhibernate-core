@@ -43,11 +43,8 @@
     <PackageReference Include="Iesi.Collections" Version="[4.0.4, 5.0)" />
     <PackageReference Include="Remotion.Linq" Version="[2.2.0, 3.0)" />
     <PackageReference Include="Remotion.Linq.EagerFetching" Version="[2.2.0, 3.0)" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
-    <PackageReference Include="System.Security.Permissions" Version="4.5.0" />
-    <PackageReference Include="System.ServiceModel.Primitives" Version="4.5.3" />
   </ItemGroup>
-
+  
   <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />

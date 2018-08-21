@@ -11,9 +11,9 @@
     <FileVersion>$(VersionPrefix).0</FileVersion>
 
     <NhAppTargetFrameworks Condition="'$(OS)' == 'Windows_NT'">net461;netcoreapp2.0</NhAppTargetFrameworks>
-	<NhAppTargetFrameworks Condition="'$(OS)' != 'Windows_NT'">netcoreapp2.0</NhAppTargetFrameworks>
+    <NhAppTargetFrameworks Condition="'$(OS)' != 'Windows_NT'">netcoreapp2.0</NhAppTargetFrameworks>
     <NhLibTargetFrameworks Condition="'$(OS)' == 'Windows_NT'">net461;netcoreapp2.0;netstandard2.0</NhLibTargetFrameworks>
-	<NhLibTargetFrameworks Condition="'$(OS)' != 'Windows_NT'">netcoreapp2.0;netstandard2.0</NhLibTargetFrameworks>
+    <NhLibTargetFrameworks Condition="'$(OS)' != 'Windows_NT'">netcoreapp2.0;netstandard2.0</NhLibTargetFrameworks>
 
     <Product>NHibernate</Product>
     <Company>NHibernate.info</Company>
@@ -31,7 +31,7 @@
 
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <TreatSpecificWarningsAsErrors />
-    
+
     <DisableImplicitPackageTargetFallback>True</DisableImplicitPackageTargetFallback>
   </PropertyGroup>
 </Project>
