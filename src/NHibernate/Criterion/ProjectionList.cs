@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -14,17 +14,28 @@ namespace NHibernate.Criterion
 	{
 		private IList<IProjection> elements = new List<IProjection>();
 
-		protected internal ProjectionList()
+		private IType[] typesCache;
+		private readonly Dictionary<int, string[]> columnPositionAliasesCache = new Dictionary<int, string[]>();
+		private readonly Dictionary<string, string[]> columnAliasesCache = new Dictionary<string, string[]>();
+		private readonly Dictionary<string, IType[]> typesAliasCache = new Dictionary<string, IType[]>();
+		private readonly bool enableMappingCaching;
+
+		protected internal ProjectionList(bool enableMappingCaching = true)
 		{
+			this.enableMappingCaching = enableMappingCaching;
 		}
 
-		public ProjectionList Create()
+		public ProjectionList Create(bool enableMappingCaching = true)
 		{
-			return new ProjectionList();
+			return new ProjectionList(enableMappingCaching);
 		}
 
 		public ProjectionList Add(IProjection proj)
 		{
+			typesCache = null;
+			columnPositionAliasesCache.Clear();
+			columnAliasesCache.Clear();
+			typesAliasCache.Clear();
 			elements.Add(proj);
 			return this;
 		}
@@ -39,10 +50,18 @@ namespace NHibernate.Criterion
 			return Add(projection, ExpressionProcessor.FindMemberExpression(alias.Body));
 		}
 
+
 		public IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
+			if (!enableMappingCaching)
+				return GetTypesInternal(criteria, criteriaQuery);
+			return typesCache ?? (typesCache = GetTypesInternal(criteria, criteriaQuery));
+		}
+
+		private IType[] GetTypesInternal(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
 			IList<IType> types = new List<IType>(Length);
-			
+
 			for (int i = 0; i < Length; i++)
 			{
 				IType[] elemTypes = this[i].GetTypes(criteria, criteriaQuery);
@@ -79,7 +98,7 @@ namespace NHibernate.Criterion
 				if (proj.IsGrouped)
 				{
 					buf.Add(proj.ToGroupSqlString(criteria, criteriaQuery))
-						.Add(", ");
+					   .Add(", ");
 				}
 			}
 			if (buf.Count >= 2)
@@ -91,6 +110,13 @@ namespace NHibernate.Criterion
 
 		public string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
+			if (!enableMappingCaching)
+				return GetColumnAliasesInternal(position, criteria, criteriaQuery);
+			return columnPositionAliasesCache.GetOrAdd(position, (p => GetColumnAliasesInternal(p, criteria, criteriaQuery)));
+		}
+
+		public string[] GetColumnAliasesInternal(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
 			var result = new List<string>(Length);
 			for (var i = 0; i < Length; i++)
 			{
@@ -100,8 +126,19 @@ namespace NHibernate.Criterion
 			}
 			return result.ToArray();
 		}
-		
+
 		public string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			if (!enableMappingCaching)
+				return GetColumnAliasesInternal(alias, position, criteria, criteriaQuery);
+			return columnAliasesCache.GetOrAdd(alias, (ca => GetColumnAliasesInternal(ca, position, criteria, criteriaQuery)));
+		}
+
+		private string[] GetColumnAliasesInternal(
+			string alias,
+			int position,
+			ICriteria criteria,
+			ICriteriaQuery criteriaQuery)
 		{
 			for (int i = 0; i < Length; i++)
 			{
@@ -112,7 +149,15 @@ namespace NHibernate.Criterion
 			return null;
 		}
 
+
 		public IType[] GetTypes(string alias, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			if (!enableMappingCaching)
+				return GetTypesInternal(alias, criteria, criteriaQuery);
+			return typesAliasCache.GetOrAdd(alias, (ca => GetTypesInternal(ca, criteria, criteriaQuery)));
+		}
+
+		public IType[] GetTypesInternal(string alias, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			for (int i = 0; i < Length; i++)
 			{
@@ -142,10 +187,7 @@ namespace NHibernate.Criterion
 
 		public IProjection this[int index]
 		{
-			get
-			{
-				return elements[index];
-			}
+			get { return elements[index]; }
 		}
 
 		public int Length
@@ -175,9 +217,9 @@ namespace NHibernate.Criterion
 		{
 			get
 			{
-				for(int i = 0; i < Length; i++)
+				for (int i = 0; i < Length; i++)
 				{
-					if(this[i].IsAggregate)
+					if (this[i].IsAggregate)
 						return true;
 				}
 				return false;
@@ -200,4 +242,5 @@ namespace NHibernate.Criterion
 			return values.ToArray();
 		}
 	}
+
 }
