@@ -255,7 +255,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		public void BeforeTransactionCompletion() 
 		{
-			beforeTransactionProcesses.Execute();
+			beforeTransactionProcesses.BeforeTransactionCompletion();
 		}
 
 		/// <summary> 
@@ -264,7 +264,7 @@ namespace NHibernate.Engine
 		/// <param name="success">Was the transaction successful.</param>
 		public void AfterTransactionCompletion(bool success)
 		{
-			afterTransactionProcesses.Execute(success);
+			afterTransactionProcesses.AfterTransactionCompletion(success);
 
 			InvalidateCaches();
 		}
@@ -470,15 +470,15 @@ namespace NHibernate.Engine
 				processes.Add(process);
 			}
 	
-			public void Execute() 
+			public void BeforeTransactionCompletion() 
 			{
 				int size = processes.Count;
 				for (int i = 0; i < size; i++)
 				{
 					try 
 					{
-						IBeforeTransactionCompletionProcess process = processes[i];
-						process.Execute();
+						var process = processes[i];
+						process.ExecuteBeforeTransactionCompletion();
 					}
 					catch (HibernateException)
 					{
@@ -512,7 +512,7 @@ namespace NHibernate.Engine
 				processes.Add(process);
 			}
 	
-			public void Execute(bool success) 
+			public void AfterTransactionCompletion(bool success) 
 			{
 				int size = processes.Count;
 				
@@ -520,8 +520,8 @@ namespace NHibernate.Engine
 				{
 					try
 					{
-						IAfterTransactionCompletionProcess process = processes[i];
-						process.Execute(success);
+						var process = processes[i];
+						process.ExecuteAfterTransactionCompletion(success);
 					}
 					catch (CacheException e)
 					{

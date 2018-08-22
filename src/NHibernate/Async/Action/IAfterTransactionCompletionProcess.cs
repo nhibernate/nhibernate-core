@@ -19,6 +19,6 @@ namespace NHibernate.Action
 		/// </summary>
 		/// <param name="success">Did the transaction complete successfully?  True means it did.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task ExecuteAsync(bool success, CancellationToken cancellationToken);
+		Task ExecuteAfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken);
 	}
 }

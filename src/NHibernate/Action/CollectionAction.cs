@@ -14,7 +14,7 @@ namespace NHibernate.Action
 	/// Any action relating to insert/update/delete of a collection
 	/// </summary>
 	[Serializable]
-	public abstract partial class CollectionAction : IExecutable, IComparable<CollectionAction>, IDeserializationCallback
+	public abstract partial class CollectionAction : IExecutable, IComparable<CollectionAction>, IDeserializationCallback, IAfterTransactionCompletionProcess
 	{
 		private readonly object key;
 		private object finalKey;
@@ -104,39 +104,17 @@ namespace NHibernate.Action
 		/// <summary>Execute this action</summary>
 		public abstract void Execute();
 
-		public virtual IBeforeTransactionCompletionProcess BeforeTransactionCompletionProcess
+		public virtual IBeforeTransactionCompletionProcess BeforeTransactionCompletionProcess => null;
+
+		// Only make sense to add the delegate if there is a cache.
+		public virtual IAfterTransactionCompletionProcess AfterTransactionCompletionProcess => persister.HasCache ? this : null;
+
+		public virtual void ExecuteAfterTransactionCompletion(bool success)
 		{
-			get 
-			{ 
-				return null; 
-			}
+			var ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
+			persister.Cache.Release(ck, softLock);
 		}
 
-		public virtual IAfterTransactionCompletionProcess AfterTransactionCompletionProcess
-		{
-
-			get
-			{
-				// Only make sense to add the delegate if there is a cache.
-				if (persister.HasCache)
-				{
-					return new AfterTransactionCompletionProcess(
-						(success) =>
-						{
-							var ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
-							persister.Cache.Release(ck, softLock);
-						},
-						async (success, cancellationToken) =>
-						{
-							var ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
-							await persister.Cache.ReleaseAsync(ck, softLock, cancellationToken).ConfigureAwait(false);
-						}
-					);
-				}
-				return null; 
-			}
-		}
-		
 		#endregion
 
 		public ISoftLock Lock

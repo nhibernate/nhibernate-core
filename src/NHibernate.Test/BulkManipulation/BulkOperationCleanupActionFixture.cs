@@ -45,7 +45,7 @@ namespace NHibernate.Test.BulkManipulation
 
 			var target = new BulkOperationCleanupAction(_session, new HashSet<string>(querySpaces.Split(new []{','},StringSplitOptions.RemoveEmptyEntries)));
 
-			target.AfterTransactionCompletionProcess(true);
+			target.AfterTransactionCompletionProcess.ExecuteAfterTransactionCompletion(true);
 
 			Assert.AreEqual(expectedPropertySpaceLength, target.PropertySpaces.Length);
 

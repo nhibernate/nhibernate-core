@@ -13,7 +13,9 @@ namespace NHibernate.Action
 	/// instance.
 	/// </summary>
 	[Serializable]
-	public abstract partial class EntityAction : IExecutable, IComparable<EntityAction>, IDeserializationCallback
+	public abstract partial class EntityAction : IExecutable, IComparable<EntityAction>, IDeserializationCallback, 
+		IBeforeTransactionCompletionProcess,
+		IAfterTransactionCompletionProcess
 	{
 		private readonly string entityName;
 		private readonly object id;
@@ -102,26 +104,12 @@ namespace NHibernate.Action
 
 		public abstract void Execute();
 
-		public virtual IBeforeTransactionCompletionProcess BeforeTransactionCompletionProcess
-		{
-			get
-			{
-				return NeedsBeforeTransactionCompletion()
-					? new BeforeTransactionCompletionProcess(BeforeTransactionCompletionProcessImpl, BeforeTransactionCompletionProcessImplAsync)
-					: null;
-			}
-		}
-		
-		public virtual IAfterTransactionCompletionProcess AfterTransactionCompletionProcess
-		{
-			get
-			{
-				return NeedsAfterTransactionCompletion()
-					? new AfterTransactionCompletionProcess(AfterTransactionCompletionProcessImpl, AfterTransactionCompletionProcessImplAsync)
-					: null;
-			}
-		}
-		
+		public virtual IBeforeTransactionCompletionProcess BeforeTransactionCompletionProcess =>
+			NeedsBeforeTransactionCompletion() ? this : null;
+
+		public virtual IAfterTransactionCompletionProcess AfterTransactionCompletionProcess =>
+			NeedsAfterTransactionCompletion() ? this : null;
+
 		protected virtual bool NeedsAfterTransactionCompletion()
 		{
 			return persister.HasCache || HasPostCommitEventListeners;
@@ -140,6 +128,16 @@ namespace NHibernate.Action
 		
 		protected virtual void AfterTransactionCompletionProcessImpl(bool success)
 		{
+		}
+
+		public void ExecuteBeforeTransactionCompletion()
+		{
+			BeforeTransactionCompletionProcessImpl();
+		}
+
+		public void ExecuteAfterTransactionCompletion(bool success)
+		{
+			AfterTransactionCompletionProcessImpl(success);
 		}
 
 		#endregion

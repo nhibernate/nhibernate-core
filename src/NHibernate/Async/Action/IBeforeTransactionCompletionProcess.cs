@@ -14,6 +14,10 @@ namespace NHibernate.Action
 	using System.Threading;
 	public partial interface IBeforeTransactionCompletionProcess
 	{
-		Task ExecuteAsync(CancellationToken cancellationToken);
+		/// <summary>
+		/// Perform whatever processing is encapsulated here before completion of the transaction.
+		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task ExecuteBeforeTransactionCompletionAsync(CancellationToken cancellationToken);
 	}
 }

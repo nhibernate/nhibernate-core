@@ -20,7 +20,9 @@ namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public abstract partial class EntityAction : IExecutable, IComparable<EntityAction>, IDeserializationCallback
+	public abstract partial class EntityAction : IExecutable, IComparable<EntityAction>, IDeserializationCallback, 
+		IBeforeTransactionCompletionProcess,
+		IAfterTransactionCompletionProcess
 	{
 
 		#region IExecutable Members
@@ -64,6 +66,24 @@ namespace NHibernate.Action
 			{
 				return Task.FromException<object>(ex);
 			}
+		}
+
+		public Task ExecuteBeforeTransactionCompletionAsync(CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return BeforeTransactionCompletionProcessImplAsync(cancellationToken);
+		}
+
+		public Task ExecuteAfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return AfterTransactionCompletionProcessImplAsync(success, cancellationToken);
 		}
 
 		#endregion

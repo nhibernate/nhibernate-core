@@ -1,8 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NSubstitute;
@@ -71,6 +71,7 @@ namespace NHibernate.Test.BulkManipulation
 				 var cache = Substitute.For<ICache>();
 				 cache.RegionName.Returns(regionName);
 				 cache.When(c => c.Clear()).Do(c => _onClear?.Invoke(regionName));
+				 cache.When(c => c.ClearAsync(Arg.Any<CancellationToken>())).Do(c => _onClear?.Invoke(regionName));
 				 return cache;
 			 })).Value;
 		}

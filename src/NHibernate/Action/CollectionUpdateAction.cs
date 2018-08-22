@@ -12,7 +12,7 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Action
 {
 	[Serializable]
-	public sealed partial class CollectionUpdateAction : CollectionAction
+	public sealed partial class CollectionUpdateAction : CollectionAction, IAfterTransactionCompletionProcess
 	{
 		private readonly bool emptySnapshot;
 
@@ -114,65 +114,28 @@ namespace NHibernate.Action
 			}
 		}
 
-		public override IBeforeTransactionCompletionProcess BeforeTransactionCompletionProcess
+		public override void ExecuteAfterTransactionCompletion(bool success)
 		{
-			get 
-			{ 
-				return null; 
-			}
-		}
+			CacheKey ck = Session.GenerateCacheKey(Key, Persister.KeyType, Persister.Role);
 
-		public override IAfterTransactionCompletionProcess AfterTransactionCompletionProcess
-		{
-			get
+			if (success)
 			{
-				// Only make sense to add the delegate if there is a cache.
-				if (Persister.HasCache)
+				// we can't disassemble a collection if it was uninitialized 
+				// or detached from the session
+				if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
 				{
-					return new CollectionCacheUpdate(this);
-				}
-				return null;
-			}
-		}
+					CollectionCacheEntry entry = CollectionCacheEntry.Create(Collection, Persister);
+					bool put = Persister.Cache.AfterUpdate(ck, entry, null, Lock);
 
-		private partial class CollectionCacheUpdate : IAfterTransactionCompletionProcess
-		{
-
-			private CollectionUpdateAction _action;
-
-			internal CollectionCacheUpdate(CollectionUpdateAction action)
-			{
-				_action = action;
-			}
-
-			public void Execute(bool success)
-			{
-				var session = _action.Session;
-				var persister = _action.Persister;
-				var cacheLock = _action.Lock;
-				CacheKey ck = session.GenerateCacheKey(_action.Key, persister.KeyType, persister.Role);
-
-				if (success)
-				{
-					var collection = _action.Collection;
-					
-					// we can't disassemble a collection if it was uninitialized 
-					// or detached from the session
-					if (collection.WasInitialized && session.PersistenceContext.ContainsCollection(collection))
+					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
 					{
-						CollectionCacheEntry entry = CollectionCacheEntry.Create(collection, persister);
-						bool put = persister.Cache.AfterUpdate(ck, entry, null, cacheLock);
-
-						if (put && session.Factory.Statistics.IsStatisticsEnabled)
-						{
-							session.Factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
-						}
+						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
 					}
 				}
-				else
-				{
-					persister.Cache.Release(ck, cacheLock);
-				}
+			}
+			else
+			{
+				Persister.Cache.Release(ck, Lock);
 			}
 		}
 	}

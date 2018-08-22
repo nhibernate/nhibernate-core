@@ -23,7 +23,7 @@ namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public sealed partial class CollectionUpdateAction : CollectionAction
+	public sealed partial class CollectionUpdateAction : CollectionAction, IAfterTransactionCompletionProcess
 	{
 
 		public override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -120,38 +120,29 @@ namespace NHibernate.Action
 			}
 		}
 
-		private partial class CollectionCacheUpdate : IAfterTransactionCompletionProcess
+		public override async Task ExecuteAfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
+			CacheKey ck = Session.GenerateCacheKey(Key, Persister.KeyType, Persister.Role);
 
-			public async Task ExecuteAsync(bool success, CancellationToken cancellationToken)
+			if (success)
 			{
-				cancellationToken.ThrowIfCancellationRequested();
-				var session = _action.Session;
-				var persister = _action.Persister;
-				var cacheLock = _action.Lock;
-				CacheKey ck = session.GenerateCacheKey(_action.Key, persister.KeyType, persister.Role);
-
-				if (success)
+				// we can't disassemble a collection if it was uninitialized 
+				// or detached from the session
+				if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
 				{
-					var collection = _action.Collection;
-					
-					// we can't disassemble a collection if it was uninitialized 
-					// or detached from the session
-					if (collection.WasInitialized && session.PersistenceContext.ContainsCollection(collection))
-					{
-						CollectionCacheEntry entry = new CollectionCacheEntry(collection, persister);
-						bool put = await (persister.Cache.AfterUpdateAsync(ck, entry, null, cacheLock, cancellationToken)).ConfigureAwait(false);
+					CollectionCacheEntry entry = await (CollectionCacheEntry.CreateAsync(Collection, Persister, cancellationToken)).ConfigureAwait(false);
+					bool put = await (Persister.Cache.AfterUpdateAsync(ck, entry, null, Lock, cancellationToken)).ConfigureAwait(false);
 
-						if (put && session.Factory.Statistics.IsStatisticsEnabled)
-						{
-							session.Factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
-						}
+					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
+					{
+						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
 					}
 				}
-				else
-				{
-					await (persister.Cache.ReleaseAsync(ck, cacheLock, cancellationToken)).ConfigureAwait(false);
-				}
+			}
+			else
+			{
+				await (Persister.Cache.ReleaseAsync(ck, Lock, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 	}

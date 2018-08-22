@@ -158,7 +158,7 @@ namespace NHibernate.Engine
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return beforeTransactionProcesses.ExecuteAsync(cancellationToken);
+			return beforeTransactionProcesses.BeforeTransactionCompletionAsync(cancellationToken);
 		}
 
 		/// <summary> 
@@ -169,7 +169,7 @@ namespace NHibernate.Engine
 		public async Task AfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			await (afterTransactionProcesses.ExecuteAsync(success, cancellationToken)).ConfigureAwait(false);
+			await (afterTransactionProcesses.AfterTransactionCompletionAsync(success, cancellationToken)).ConfigureAwait(false);
 
 			await (InvalidateCachesAsync(cancellationToken)).ConfigureAwait(false);
 		}
@@ -187,7 +187,7 @@ namespace NHibernate.Engine
 		private partial class BeforeTransactionCompletionProcessQueue 
 		{
 	
-			public async Task ExecuteAsync(CancellationToken cancellationToken) 
+			public async Task BeforeTransactionCompletionAsync(CancellationToken cancellationToken) 
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				int size = processes.Count;
@@ -195,9 +195,10 @@ namespace NHibernate.Engine
 				{
 					try 
 					{
-						IBeforeTransactionCompletionProcess process = processes[i];
-						await (process.ExecuteAsync(cancellationToken)).ConfigureAwait(false);
+						var process = processes[i];
+						await (process.ExecuteBeforeTransactionCompletionAsync(cancellationToken)).ConfigureAwait(false);
 					}
+					catch (OperationCanceledException) { throw; }
 					catch (HibernateException)
 					{
 						throw;
@@ -213,7 +214,7 @@ namespace NHibernate.Engine
 		private partial class AfterTransactionCompletionProcessQueue 
 		{
 	
-			public async Task ExecuteAsync(bool success, CancellationToken cancellationToken) 
+			public async Task AfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken) 
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				int size = processes.Count;
@@ -222,9 +223,10 @@ namespace NHibernate.Engine
 				{
 					try
 					{
-						IAfterTransactionCompletionProcess process = processes[i];
-						await (process.ExecuteAsync(success, cancellationToken)).ConfigureAwait(false);
+						var process = processes[i];
+						await (process.ExecuteAfterTransactionCompletionAsync(success, cancellationToken)).ConfigureAwait(false);
 					}
+					catch (OperationCanceledException) { throw; }
 					catch (CacheException e)
 					{
 						log.Error(e, "could not release a cache lock");
