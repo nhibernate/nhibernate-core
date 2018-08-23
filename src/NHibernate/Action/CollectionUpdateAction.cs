@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using NHibernate.Cache;
-using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -12,7 +11,7 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Action
 {
 	[Serializable]
-	public sealed partial class CollectionUpdateAction : CollectionAction, IAfterTransactionCompletionProcess
+	public sealed partial class CollectionUpdateAction : CollectionAction
 	{
 		private readonly bool emptySnapshot;
 
@@ -116,6 +115,8 @@ namespace NHibernate.Action
 
 		public override void ExecuteAfterTransactionCompletion(bool success)
 		{
+			// NH Different behavior: to support unlocking collections from the cache.(r3260)
+
 			CacheKey ck = Session.GenerateCacheKey(Key, Persister.KeyType, Persister.Role);
 
 			if (success)

@@ -13,9 +13,12 @@ namespace NHibernate.Action
 	/// instance.
 	/// </summary>
 	[Serializable]
-	public abstract partial class EntityAction : IExecutable, IComparable<EntityAction>, IDeserializationCallback, 
+	public abstract partial class EntityAction : 
+		IAsyncExecutable,
 		IBeforeTransactionCompletionProcess,
-		IAfterTransactionCompletionProcess
+		IAfterTransactionCompletionProcess,
+		IComparable<EntityAction>, 
+		IDeserializationCallback
 	{
 		private readonly string entityName;
 		private readonly object id;
@@ -104,11 +107,21 @@ namespace NHibernate.Action
 
 		public abstract void Execute();
 
-		public virtual IBeforeTransactionCompletionProcess BeforeTransactionCompletionProcess =>
+		IBeforeTransactionCompletionProcess IAsyncExecutable.BeforeTransactionCompletionProcess =>
 			NeedsBeforeTransactionCompletion() ? this : null;
 
-		public virtual IAfterTransactionCompletionProcess AfterTransactionCompletionProcess =>
+		IAfterTransactionCompletionProcess IAsyncExecutable.AfterTransactionCompletionProcess =>
 			NeedsAfterTransactionCompletion() ? this : null;
+
+		public virtual BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess =>
+			NeedsBeforeTransactionCompletion()
+				? BeforeTransactionCompletionProcessImpl
+				: default(BeforeTransactionCompletionProcessDelegate);
+
+		public virtual AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess =>
+			NeedsAfterTransactionCompletion()
+				? AfterTransactionCompletionProcessImpl
+				: default(AfterTransactionCompletionProcessDelegate);
 
 		protected virtual bool NeedsAfterTransactionCompletion()
 		{
@@ -128,16 +141,6 @@ namespace NHibernate.Action
 		
 		protected virtual void AfterTransactionCompletionProcessImpl(bool success)
 		{
-		}
-
-		public void ExecuteBeforeTransactionCompletion()
-		{
-			BeforeTransactionCompletionProcessImpl();
-		}
-
-		public void ExecuteAfterTransactionCompletion(bool success)
-		{
-			AfterTransactionCompletionProcessImpl(success);
 		}
 
 		#endregion
@@ -177,6 +180,16 @@ namespace NHibernate.Action
 		public override string ToString()
 		{
 			return StringHelper.Unqualify(GetType().FullName) + MessageHelper.InfoString(entityName, id);
+		}
+
+		public void ExecuteBeforeTransactionCompletion()
+		{
+			BeforeTransactionCompletionProcessImpl();
+		}
+
+		public void ExecuteAfterTransactionCompletion(bool success)
+		{
+			AfterTransactionCompletionProcessImpl(success);
 		}
 	}
 }

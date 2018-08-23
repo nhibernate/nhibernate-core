@@ -23,7 +23,7 @@ namespace NHibernate.Engine
 {
 	public partial class ActionQueue
 	{
-	
+
 		private async Task ExecuteActionsAsync(IList list, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -238,6 +238,48 @@ namespace NHibernate.Engine
 					}
 				}
 				processes.Clear();
+			}
+		}
+
+		private partial class BeforeTransactionCompletionDelegatedProcess : IBeforeTransactionCompletionProcess
+		{
+
+			public Task ExecuteBeforeTransactionCompletionAsync(CancellationToken cancellationToken)
+			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
+				try
+				{
+					ExecuteBeforeTransactionCompletion();
+					return Task.CompletedTask;
+				}
+				catch (Exception ex)
+				{
+					return Task.FromException<object>(ex);
+				}
+			}
+		}
+
+		private partial class AfterTransactionCompletionDelegatedProcess : IAfterTransactionCompletionProcess
+		{
+
+			public Task ExecuteAfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
+			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
+				try
+				{
+					ExecuteAfterTransactionCompletion(success);
+					return Task.CompletedTask;
+				}
+				catch (Exception ex)
+				{
+					return Task.FromException<object>(ex);
+				}
 			}
 		}
 	}

@@ -29,7 +29,7 @@ namespace NHibernate.Test.BulkManipulation
 		public void SimpleNativeSQLInsert_DoesNotEvictEntireCacheWhenQuerySpacesAreAdded()
 		{
 			List<string> clearCalls = new List<string>();
-			(Sfi.Settings.CacheProvider as SubstituteCacheProvider).OnClear(x =>
+			((SubstituteCacheProvider) Sfi.Settings.CacheProvider).OnClear(x =>
 			{
 				clearCalls.Add(x);
 			});

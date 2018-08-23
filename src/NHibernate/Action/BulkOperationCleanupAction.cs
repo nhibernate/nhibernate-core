@@ -14,7 +14,7 @@ namespace NHibernate.Action
 	/// Implementation of BulkOperationCleanupAction.
 	/// </summary>
 	[Serializable]
-	public partial class BulkOperationCleanupAction : IExecutable, IAfterTransactionCompletionProcess
+	public partial class BulkOperationCleanupAction : IAsyncExecutable, IAfterTransactionCompletionProcess
 	{
 		private readonly ISessionImplementor session;
 		private readonly HashSet<string> affectedEntityNames = new HashSet<string>();
@@ -109,9 +109,17 @@ namespace NHibernate.Action
 			// nothing to do
 		}
 
-		public IBeforeTransactionCompletionProcess BeforeTransactionCompletionProcess => null;
+		public BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess =>
+			null;
 
-		public IAfterTransactionCompletionProcess AfterTransactionCompletionProcess => this;
+		public AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess =>
+			ExecuteAfterTransactionCompletion;
+
+		IBeforeTransactionCompletionProcess IAsyncExecutable.BeforeTransactionCompletionProcess =>
+			null;
+
+		IAfterTransactionCompletionProcess IAsyncExecutable.AfterTransactionCompletionProcess => 
+			this;
 
 		public void ExecuteAfterTransactionCompletion(bool success)
 		{

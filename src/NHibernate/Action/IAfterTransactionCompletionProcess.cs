@@ -1,5 +1,8 @@
 namespace NHibernate.Action
 {
+	/// <summary>
+	/// Contract representing some process that needs to occur during after transaction completion.
+	/// </summary>
 	public partial interface IAfterTransactionCompletionProcess
 	{
 		/// <summary>

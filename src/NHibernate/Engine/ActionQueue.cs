@@ -132,16 +132,26 @@ namespace NHibernate.Engine
 			}
 		}
 
-		public void RegisterProcess(IAfterTransactionCompletionProcess process)
-		{
-			afterTransactionProcesses.Register(process);
-		}
-	
 		public void RegisterProcess(IBeforeTransactionCompletionProcess process)
 		{
 			beforeTransactionProcesses.Register(process);
 		}
-	
+
+		public void RegisterProcess(IAfterTransactionCompletionProcess process)
+		{
+			afterTransactionProcesses.Register(process);
+		}
+
+		public void RegisterProcess(BeforeTransactionCompletionProcessDelegate process)
+		{
+			RegisterProcess(new BeforeTransactionCompletionDelegatedProcess(process));
+		}
+
+		public void RegisterProcess(AfterTransactionCompletionProcessDelegate process)
+		{
+			RegisterProcess(new AfterTransactionCompletionDelegatedProcess(process));
+		}
+
 		private void ExecuteActions(IList list)
 		{
 			// Actions may raise events to which user code can react and cause changes to action list.
@@ -195,8 +205,16 @@ namespace NHibernate.Engine
 
 		private void RegisterCleanupActions(IExecutable executable)
 		{
-			beforeTransactionProcesses.Register(executable.BeforeTransactionCompletionProcess);
-			afterTransactionProcesses.Register(executable.AfterTransactionCompletionProcess);
+			if (executable is IAsyncExecutable asyncExecutable)
+			{
+				beforeTransactionProcesses.Register(asyncExecutable.BeforeTransactionCompletionProcess);
+				afterTransactionProcesses.Register(asyncExecutable.AfterTransactionCompletionProcess);
+			}
+			else
+			{
+				RegisterProcess(executable.BeforeTransactionCompletionProcess);
+				RegisterProcess(executable.AfterTransactionCompletionProcess);
+			}
 		}
 
 		/// <summary> 
@@ -534,6 +552,36 @@ namespace NHibernate.Engine
 					}
 				}
 				processes.Clear();
+			}
+		}
+
+		private partial class BeforeTransactionCompletionDelegatedProcess : IBeforeTransactionCompletionProcess
+		{
+			private readonly BeforeTransactionCompletionProcessDelegate _delegate;
+
+			public BeforeTransactionCompletionDelegatedProcess(BeforeTransactionCompletionProcessDelegate @delegate)
+			{
+				_delegate = @delegate;
+			}
+
+			public void ExecuteBeforeTransactionCompletion()
+			{
+				_delegate?.Invoke();
+			}
+		}
+
+		private partial class AfterTransactionCompletionDelegatedProcess : IAfterTransactionCompletionProcess
+		{
+			private readonly AfterTransactionCompletionProcessDelegate _delegate;
+
+			public AfterTransactionCompletionDelegatedProcess(AfterTransactionCompletionProcessDelegate @delegate)
+			{
+				_delegate = @delegate;
+			}
+
+			public void ExecuteAfterTransactionCompletion(bool success)
+			{
+				_delegate?.Invoke(success);
 			}
 		}
 

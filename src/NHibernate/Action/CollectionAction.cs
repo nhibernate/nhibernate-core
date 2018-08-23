@@ -14,7 +14,7 @@ namespace NHibernate.Action
 	/// Any action relating to insert/update/delete of a collection
 	/// </summary>
 	[Serializable]
-	public abstract partial class CollectionAction : IExecutable, IComparable<CollectionAction>, IDeserializationCallback, IAfterTransactionCompletionProcess
+	public abstract partial class CollectionAction : IAsyncExecutable, IComparable<CollectionAction>, IDeserializationCallback, IAfterTransactionCompletionProcess
 	{
 		private readonly object key;
 		private object finalKey;
@@ -104,10 +104,17 @@ namespace NHibernate.Action
 		/// <summary>Execute this action</summary>
 		public abstract void Execute();
 
-		public virtual IBeforeTransactionCompletionProcess BeforeTransactionCompletionProcess => null;
+		IBeforeTransactionCompletionProcess IAsyncExecutable.BeforeTransactionCompletionProcess => 
+			null;
 
-		// Only make sense to add the delegate if there is a cache.
-		public virtual IAfterTransactionCompletionProcess AfterTransactionCompletionProcess => persister.HasCache ? this : null;
+		IAfterTransactionCompletionProcess IAsyncExecutable.AfterTransactionCompletionProcess =>
+			persister.HasCache ? this : null;
+
+		public virtual BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess => 
+			null;
+
+		public virtual AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess =>
+			persister.HasCache ? ExecuteAfterTransactionCompletion : default(AfterTransactionCompletionProcessDelegate);
 
 		public virtual void ExecuteAfterTransactionCompletion(bool success)
 		{

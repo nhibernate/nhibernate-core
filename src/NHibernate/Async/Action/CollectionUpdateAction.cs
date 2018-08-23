@@ -11,7 +11,6 @@
 using System;
 using System.Diagnostics;
 using NHibernate.Cache;
-using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -23,7 +22,7 @@ namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public sealed partial class CollectionUpdateAction : CollectionAction, IAfterTransactionCompletionProcess
+	public sealed partial class CollectionUpdateAction : CollectionAction
 	{
 
 		public override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -123,6 +122,8 @@ namespace NHibernate.Action
 		public override async Task ExecuteAfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			// NH Different behavior: to support unlocking collections from the cache.(r3260)
+
 			CacheKey ck = Session.GenerateCacheKey(Key, Persister.KeyType, Persister.Role);
 
 			if (success)
