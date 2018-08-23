@@ -14,3 +14,6 @@ NHibernate.dll
 TestResult.xml
 .vscode
 .DS_Store
+/.vs/VSWorkspaceState.json
+/.vs/slnx.sqlite
+/.vs/nhibernate/v15/.suo
