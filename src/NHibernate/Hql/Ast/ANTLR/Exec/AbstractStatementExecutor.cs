@@ -55,7 +55,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 			else
 			{
-				action.AfterTransactionCompletionProcess.ExecuteAfterTransactionCompletion(true);
+				action.ExecuteAfterTransactionCompletion(true);
 			}
 		}
 
