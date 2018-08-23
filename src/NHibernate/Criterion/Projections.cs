@@ -72,9 +72,9 @@ namespace NHibernate.Criterion
 		/// Create a new projection list
 		/// </summary>
 		/// <returns></returns>
-		public static ProjectionList ProjectionList(bool enableMappingCaching = true)
+		public static ProjectionList ProjectionList()
 		{
-			return new ProjectionList(enableMappingCaching);
+			return new ProjectionList();
 		}
 
 		/// <summary>

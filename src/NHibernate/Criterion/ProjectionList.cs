@@ -5,7 +5,6 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -18,16 +17,14 @@ namespace NHibernate.Criterion
 		private readonly Dictionary<int, string[]> columnPositionAliasesCache = new Dictionary<int, string[]>();
 		private readonly Dictionary<string, string[]> columnAliasesCache = new Dictionary<string, string[]>();
 		private readonly Dictionary<string, IType[]> typesAliasCache = new Dictionary<string, IType[]>();
-		private readonly bool enableMappingCaching;
 
-		protected internal ProjectionList(bool enableMappingCaching = true)
+		protected internal ProjectionList()
 		{
-			this.enableMappingCaching = enableMappingCaching;
 		}
 
-		public ProjectionList Create(bool enableMappingCaching = true)
+		public ProjectionList Create()
 		{
-			return new ProjectionList(enableMappingCaching);
+			return new ProjectionList();
 		}
 
 		public ProjectionList Add(IProjection proj)
@@ -53,8 +50,6 @@ namespace NHibernate.Criterion
 
 		public IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			if (!enableMappingCaching)
-				return GetTypesInternal(criteria, criteriaQuery);
 			return typesCache ?? (typesCache = GetTypesInternal(criteria, criteriaQuery));
 		}
 
@@ -110,9 +105,12 @@ namespace NHibernate.Criterion
 
 		public string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			if (!enableMappingCaching)
-				return GetColumnAliasesInternal(position, criteria, criteriaQuery);
-			return columnPositionAliasesCache.GetOrAdd(position, (p => GetColumnAliasesInternal(p, criteria, criteriaQuery)));
+			if (!columnPositionAliasesCache.TryGetValue(position, out var value))
+			{
+				value = GetColumnAliasesInternal(position, criteria, criteriaQuery);
+				columnPositionAliasesCache.Add(position, value);
+			}
+			return value;
 		}
 
 		public string[] GetColumnAliasesInternal(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
@@ -129,9 +127,12 @@ namespace NHibernate.Criterion
 
 		public string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			if (!enableMappingCaching)
-				return GetColumnAliasesInternal(alias, position, criteria, criteriaQuery);
-			return columnAliasesCache.GetOrAdd(alias, (ca => GetColumnAliasesInternal(ca, position, criteria, criteriaQuery)));
+			if (!columnAliasesCache.TryGetValue(alias, out var value))
+			{
+				value = GetColumnAliasesInternal(alias, position, criteria, criteriaQuery);
+				columnAliasesCache.Add(alias, value);
+			}
+			return value;
 		}
 
 		private string[] GetColumnAliasesInternal(
@@ -152,9 +153,12 @@ namespace NHibernate.Criterion
 
 		public IType[] GetTypes(string alias, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			if (!enableMappingCaching)
-				return GetTypesInternal(alias, criteria, criteriaQuery);
-			return typesAliasCache.GetOrAdd(alias, (ca => GetTypesInternal(ca, criteria, criteriaQuery)));
+			if (!typesAliasCache.TryGetValue(alias, out var value))
+			{
+				value = GetTypesInternal(alias, criteria, criteriaQuery);
+				typesAliasCache.Add(alias, value);
+			}
+			return value;
 		}
 
 		public IType[] GetTypesInternal(string alias, ICriteria criteria, ICriteriaQuery criteriaQuery)
@@ -242,5 +246,4 @@ namespace NHibernate.Criterion
 			return values.ToArray();
 		}
 	}
-
 }
