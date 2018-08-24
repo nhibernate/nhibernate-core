@@ -110,9 +110,13 @@ namespace NHibernate.Action
 		IAfterTransactionCompletionProcess IAsyncExecutable.AfterTransactionCompletionProcess =>
 			persister.HasCache ? this : null;
 
+		//Since v5.2
+		[Obsolete("This property is not used and will be removed in a future version.")]
 		public virtual BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess => 
 			null;
 
+		//Since v5.2
+		[Obsolete("This property is not used and will be removed in a future version.")]
 		public virtual AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess =>
 			persister.HasCache ? ExecuteAfterTransactionCompletion : default(AfterTransactionCompletionProcessDelegate);
 

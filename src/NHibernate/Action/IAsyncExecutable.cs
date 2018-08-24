@@ -1,5 +1,10 @@
 ﻿namespace NHibernate.Action
 {
+	/// <summary>
+	/// An extension to <see cref="IExecutable"/> which allows async cleanup operations to be
+	/// scheduled on transaction completion.
+	/// </summary>
+	//6.0 TODO: Merge into IExecutable
 	public interface IAsyncExecutable : IExecutable
 	{
 		/// <summary>

@@ -142,11 +142,15 @@ namespace NHibernate.Engine
 			afterTransactionProcesses.Register(process);
 		}
 
+		//Since v5.2
+		[Obsolete("This method is not used and will be removed in a future version.")]
 		public void RegisterProcess(BeforeTransactionCompletionProcessDelegate process)
 		{
 			RegisterProcess(new BeforeTransactionCompletionDelegatedProcess(process));
 		}
 
+		//Since v5.2
+		[Obsolete("This method is not used and will be removed in a future version.")]
 		public void RegisterProcess(AfterTransactionCompletionProcessDelegate process)
 		{
 			RegisterProcess(new AfterTransactionCompletionDelegatedProcess(process));
@@ -207,13 +211,15 @@ namespace NHibernate.Engine
 		{
 			if (executable is IAsyncExecutable asyncExecutable)
 			{
-				beforeTransactionProcesses.Register(asyncExecutable.BeforeTransactionCompletionProcess);
-				afterTransactionProcesses.Register(asyncExecutable.AfterTransactionCompletionProcess);
+				RegisterProcess(asyncExecutable.BeforeTransactionCompletionProcess);
+				RegisterProcess(asyncExecutable.AfterTransactionCompletionProcess);
 			}
 			else
 			{
+#pragma warning disable 618,619
 				RegisterProcess(executable.BeforeTransactionCompletionProcess);
 				RegisterProcess(executable.AfterTransactionCompletionProcess);
+#pragma warning restore 618,619
 			}
 		}
 
@@ -555,6 +561,8 @@ namespace NHibernate.Engine
 			}
 		}
 
+		//6.0 TODO: Remove
+		[Obsolete]
 		private partial class BeforeTransactionCompletionDelegatedProcess : IBeforeTransactionCompletionProcess
 		{
 			private readonly BeforeTransactionCompletionProcessDelegate _delegate;
@@ -570,6 +578,8 @@ namespace NHibernate.Engine
 			}
 		}
 
+		//6.0 TODO: Remove
+		[Obsolete]
 		private partial class AfterTransactionCompletionDelegatedProcess : IAfterTransactionCompletionProcess
 		{
 			private readonly AfterTransactionCompletionProcessDelegate _delegate;

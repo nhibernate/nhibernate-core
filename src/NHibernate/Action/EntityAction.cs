@@ -107,21 +107,25 @@ namespace NHibernate.Action
 
 		public abstract void Execute();
 
-		IBeforeTransactionCompletionProcess IAsyncExecutable.BeforeTransactionCompletionProcess =>
-			NeedsBeforeTransactionCompletion() ? this : null;
-
-		IAfterTransactionCompletionProcess IAsyncExecutable.AfterTransactionCompletionProcess =>
-			NeedsAfterTransactionCompletion() ? this : null;
-
+		//Since v5.2
+		[Obsolete("This property is not used and will be removed in a future version.")]
 		public virtual BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess =>
 			NeedsBeforeTransactionCompletion()
 				? BeforeTransactionCompletionProcessImpl
 				: default(BeforeTransactionCompletionProcessDelegate);
 
+		//Since v5.2
+		[Obsolete("This property is not used and will be removed in a future version.")]
 		public virtual AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess =>
 			NeedsAfterTransactionCompletion()
 				? AfterTransactionCompletionProcessImpl
 				: default(AfterTransactionCompletionProcessDelegate);
+
+		IBeforeTransactionCompletionProcess IAsyncExecutable.BeforeTransactionCompletionProcess =>
+			NeedsBeforeTransactionCompletion() ? this : null;
+
+		IAfterTransactionCompletionProcess IAsyncExecutable.AfterTransactionCompletionProcess =>
+			NeedsAfterTransactionCompletion() ? this : null;
 
 		protected virtual bool NeedsAfterTransactionCompletion()
 		{

@@ -109,9 +109,13 @@ namespace NHibernate.Action
 			// nothing to do
 		}
 
+		//Since v5.2
+		[Obsolete("This property is not used and will be removed in a future version.")]
 		public BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess =>
 			null;
 
+		//Since v5.2
+		[Obsolete("This property is not used and will be removed in a future version.")]
 		public AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess =>
 			ExecuteAfterTransactionCompletion;
 
