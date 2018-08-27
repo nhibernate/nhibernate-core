@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH1833">
+
+  <class name="Entity">
+    <id name="Id" generator="assigned">
+      <type name="string">
+        <param name="CaseSensitive">false</param>
+      </type>
+    </id>
+    <property name="Name"/>
+    <set name="Children" >
+      <key column="ParentName"/>
+      <one-to-many class="Child"/>
+    </set>
+  </class>
+  
+  <class name="Child">
+    <id name="Id" generator="guid.comb"/>
+    <property name="Name"/>
+    <property name="ParentName"/>
+  </class>
+
+</hibernate-mapping>

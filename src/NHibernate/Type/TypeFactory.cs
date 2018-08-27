@@ -387,6 +387,22 @@ namespace NHibernate.Type
 		/// </remarks>
 		public static IType Basic(string name)
 		{
+			return Basic(name, null);
+		}
+
+		/// <summary>
+		/// Given the name of a Hibernate type such as Decimal, Decimal(19,0),
+		/// Int32, or even NHibernate.Type.DecimalType, NHibernate.Type.DecimalType(19,0),
+		/// NHibernate.Type.Int32Type, then return an instance of NHibernate.Type.IType
+		/// </summary>
+		/// <param name="name">The name of the type.</param>
+		/// <param name="parameters">The parameters for the type, if any.</param>
+		/// <returns>The instance of the IType that the string represents.</returns>
+		/// <remarks>
+		/// This method will return null if the name is not found in the basicNameMap.
+		/// </remarks>
+		public static IType Basic(string name, IDictionary<string, string> parameters)
+		{
 			string typeName;
 
 			// Use the basic name (such as String or String(255)) to get the
@@ -396,6 +412,15 @@ namespace NHibernate.Type
 			{
 				if (_obsoleteMessageByAlias.TryGetValue(name, out string obsoleteMessage))
 					_log.Warn("{0} is obsolete. {1}", name, obsoleteMessage);
+
+				if (parameters?.Count > 0 && returnType is IParameterizedType)
+				{
+					// The type is parameterized, must apply the parameters to a new instance of the type.
+					// Some built-in types have internal default constructor like StringType, so we need to
+					// allow non-public constructors.
+					returnType = (IType) Activator.CreateInstance(returnType.GetType(), true);
+					InjectParameters(returnType, parameters);
+				}
 				return returnType;
 			}
 
@@ -419,7 +444,7 @@ namespace NHibernate.Type
 				byte precision = Byte.Parse(parsedName[1].Trim());
 				byte scale = Byte.Parse(parsedName[2].Trim());
 
-				return BuiltInType(typeName, precision, scale);
+				returnType = BuiltInType(typeName, precision, scale);
 			}
 			else if (typeClassification == TypeClassification.LengthOrScale)
 			{
@@ -435,7 +460,7 @@ namespace NHibernate.Type
 				typeName = parsedName[0].Trim();
 				int length = Int32.Parse(parsedName[1].Trim());
 
-				return BuiltInType(typeName, length);
+				returnType = BuiltInType(typeName, length);
 			}
 
 			else
@@ -446,6 +471,9 @@ namespace NHibernate.Type
 				// doesn't have built into it.
 				return null;
 			}
+
+			InjectParameters(returnType, parameters);
+			return returnType;
 		}
 
 		internal static IType BuiltInType(string typeName, int lengthOrScale)
@@ -512,7 +540,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static IType HeuristicType(string typeName, IDictionary<string, string> parameters, int? length)
 		{
-			IType type = Basic(typeName);
+			IType type = Basic(typeName, parameters);
 
 			if (type != null)
 				return type;

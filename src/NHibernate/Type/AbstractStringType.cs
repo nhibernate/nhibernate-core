@@ -1,13 +1,42 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
+using System.Globalization;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using NHibernate.UserTypes;
 
 namespace NHibernate.Type
 {
 	[Serializable]
-	public abstract class AbstractStringType: ImmutableType, IDiscriminatorType
+	public abstract class AbstractStringType: ImmutableType, IDiscriminatorType, IParameterizedType
 	{
+		/// <summary>
+		/// The comparer culture parameter name. Value should be <c>Current</c>, <c>Invariant</c>,
+		/// <c>Ordinal</c> or any valid culture name.
+		/// </summary>
+		/// <remarks>Default comparison is ordinal.</remarks>
+		public const string ComparerCultureParameterName = "ComparerCulture";
+
+		/// <summary>
+		/// The case sensitivity parameter name. Value should be a boolean, <c>false</c> meaning
+		/// case insensitive.
+		/// </summary>
+		/// <remarks>Default comparison is case sensitive.</remarks>
+		public const string CaseSensitiveParameterName = "CaseSensitive";
+
+		/// <summary>
+		/// The default string comparer for string equality and hashcodes. <see langword="null" /> for
+		/// using .Net default equality and hashcode computation.
+		/// </summary>
+		public static StringComparer DefaultComparer { get; set; }
+
+		/// <summary>
+		/// The string comparer of this instance of string type, for string equality and hashcodes.
+		/// <see langword="null" /> for using <see cref="DefaultComparer"/>.
+		/// </summary>
+		protected StringComparer Comparer { get; set; }
+
 		public AbstractStringType(SqlType sqlType)
 			: base(sqlType)
 		{
@@ -32,6 +61,16 @@ namespace NHibernate.Type
 		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
 			return Convert.ToString(rs[name]);
+		}
+
+		public override bool IsEqual(object x, object y)
+		{
+			return (Comparer ?? DefaultComparer)?.Equals(x, y) ?? base.IsEqual(x, y);
+		}
+
+		public override int GetHashCode(object x)
+		{
+			return (Comparer ?? DefaultComparer)?.GetHashCode(x) ?? base.GetHashCode(x);
 		}
 
 		/// <inheritdoc />
@@ -80,6 +119,47 @@ namespace NHibernate.Type
 		public string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
 			return "'" + (string)value + "'";
+		}
+
+		#endregion
+
+		#region IParameterizedType Members
+
+		public void SetParameterValues(IDictionary<string, string> parameters)
+		{
+			if (parameters == null)
+				return;
+
+			bool? caseSensitive = null;
+			if (parameters.TryGetValue(CaseSensitiveParameterName, out var value))
+			{
+				caseSensitive = !StringComparer.OrdinalIgnoreCase.Equals("false", value);
+			}
+
+			parameters.TryGetValue(ComparerCultureParameterName, out var cultureName);
+			switch (cultureName?.ToLowerInvariant())
+			{
+				case null:
+					if (caseSensitive.HasValue)
+					{
+						Comparer = caseSensitive.Value ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
+					}
+					// else use default comparer
+					break;
+				case "current":
+					Comparer = caseSensitive == false ? StringComparer.CurrentCultureIgnoreCase : StringComparer.CurrentCulture;
+					break;
+				case "invariant":
+					Comparer = caseSensitive == false ? StringComparer.InvariantCultureIgnoreCase : StringComparer.InvariantCulture;
+					break;
+				case "ordinal":
+					Comparer = caseSensitive == false ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+					break;
+				default:
+					var culture = CultureInfo.GetCultureInfo(cultureName);
+					Comparer = StringComparer.Create(culture, caseSensitive == false);
+					break;
+			}
 		}
 
 		#endregion

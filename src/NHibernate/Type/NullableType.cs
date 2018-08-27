@@ -332,11 +332,6 @@ namespace NHibernate.Type
 			return value == null ? ArrayHelper.False : ArrayHelper.True;
 		}
 
-		public override bool IsEqual(object x, object y)
-		{
-			return Equals(x, y);
-		}
-
 		#region override of System.Object Members
 
 		/// <summary>
