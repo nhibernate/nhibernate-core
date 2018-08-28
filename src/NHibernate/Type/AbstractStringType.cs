@@ -163,5 +163,37 @@ namespace NHibernate.Type
 		}
 
 		#endregion
+
+		#region override of System.Object Members
+
+		/// <summary>
+		/// Determines whether the specified <see cref="Object"/> is equal to this
+		/// <see cref="AbstractStringType"/>.
+		/// </summary>
+		/// <param name="obj">The <see cref="Object"/> to compare with this <c>AbstractStringType</c>.</param>
+		/// <returns><see langword="true"/> if the SqlType, Name and Comparer properties are the same.</returns>
+		public override bool Equals(object obj)
+		{
+			if (!base.Equals(obj))
+				return false;
+
+			return Equals(Comparer, ((AbstractStringType) obj).Comparer);
+		}
+
+		/// <summary>
+		/// Serves as a hash function for the <see cref="AbstractStringType"/>, 
+		/// suitable for use in hashing algorithms and data structures like a hash table.
+		/// </summary>
+		/// <returns>
+		/// A hash code that is based on the <see cref="NullableType.SqlType"/>'s
+		/// hash code, the <see cref="AbstractType.Name"/>'s hash code and the <see cref="Comparer"/> hash
+		/// code.</returns>
+		public override int GetHashCode()
+		{
+			var hashcode = base.GetHashCode();
+			return (hashcode * 37) ^ (Comparer?.GetHashCode() ?? 0);
+		}
+
+		#endregion
 	}
 }

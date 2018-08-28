@@ -99,6 +99,7 @@ namespace NHibernate.Test.TypesTest
 						});
 					Assert.That(type.IsEqual("ABC", "abc"), Is.True, "Current CI Equality");
 					Assert.That(type.GetHashCode("ABC"), Is.EqualTo(type.GetHashCode("abc")), "Current CI Hashcode");
+					Assert.That(type, Is.Not.EqualTo(NHibernateUtil.String), "A cached instance has been returned");
 
 					type = TypeFactory.HeuristicType(
 						"string",
