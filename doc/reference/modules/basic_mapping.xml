@@ -3884,6 +3884,63 @@
                 </tgroup>
             </table>
 
+            <para>
+                String types use by default .Net default string equality, which is case sensitive and culture
+                insensitive. When a string type is used as an identifier, if the underlying database string
+                equality semantic differs, it may create issues. By example, loading a children collection by
+                a string parent key stored in a case insensitive column may cause matching children having
+                their parent key differing by the case to be ignored by NHibernate by default.
+            </para>
+
+            <para>
+                String types comparer can be set for matching the database or column behavior. To set the
+                default comparer for all string types, affect by code a <literal>StringComparer</literal> to
+                <literal>AbstractStringType.DefaultComparer</literal> static property. To set the comparer used
+                only for a specific <literal>&lt;property&gt;</literal> or <literal>&lt;id&gt;</literal>,
+                specify its type as a sub-element and supply <literal>CaseSensitive</literal> and/or
+                <literal>ComparerCulture</literal> parameters.
+            </para>
+
+            <programlistingco>
+                <areaspec>
+                    <area id="stringcomp1" coords="3 55"/>
+                    <area id="stringcomp2" coords="4 55"/>
+                </areaspec>
+                <programlisting><![CDATA[<id name="Id" generator="assigned">
+    <type name="string">
+        <param name="CaseSensitive">false</param>
+        <param name="ComparerCulture">en-US</param>
+    </type>
+</id>]]></programlisting>
+                <calloutlist>
+                    <callout arearefs="stringcomp1">
+                        <para>
+                            <literal>CaseSensitive</literal>: <literal>false</literal> for case insensitive comparisons.
+                            Any other value will result in case sensitive comparisons.
+                        </para>
+                    </callout>
+                    <callout arearefs="stringcomp2">
+                        <para>
+                            <literal>ComparerCulture</literal>: <literal>Current</literal> for using the application
+                            current culture, <literal>Invariant</literal> for using the invariant culture,
+                            <literal>Ordinal</literal> for using ordinal comparison, or any valid culture name for
+                            using another culture. By default, ordinal comparisons are used.
+                        </para>
+                    </callout>
+                </calloutlist>
+            </programlistingco>
+
+            <para>
+                If you have many properties to map with these parameters, consider using <literal>&lt;typedef&gt;</literal>.
+                See <xref linkend="mapping-types-custom"/> for more information.
+            </para>
+
+            <para>
+                These settings should be used in order to match the database or column behavior. They are not taken into
+                account by the hbm2ddl tool for generating the database schema. (In other words, it will not generate
+                matching <literal>collate</literal> statements for SQL-Server.)
+            </para>
+
             <table>
                 <title>Large Object Mapping Types</title>
                 <tgroup cols="4">
