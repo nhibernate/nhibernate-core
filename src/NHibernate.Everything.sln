@@ -74,6 +74,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Example.Web", "N
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.TestDatabaseSetup", "NHibernate.TestDatabaseSetup\NHibernate.TestDatabaseSetup.csproj", "{783DB85E-2EED-4377-8EF4-8D6EFE042007}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Wcf", "NHibernate.Wcf\NHibernate.Wcf.csproj", "{B225A2A6-8CDE-4578-A1E7-72466EDEA0C0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|.NET = Debug|.NET
@@ -157,6 +159,18 @@ Global
 		{783DB85E-2EED-4377-8EF4-8D6EFE042007}.Release|Any CPU.Build.0 = Release|Any CPU
 		{783DB85E-2EED-4377-8EF4-8D6EFE042007}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{783DB85E-2EED-4377-8EF4-8D6EFE042007}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B225A2A6-8CDE-4578-A1E7-72466EDEA0C0}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{B225A2A6-8CDE-4578-A1E7-72466EDEA0C0}.Debug|.NET.Build.0 = Debug|Any CPU
+		{B225A2A6-8CDE-4578-A1E7-72466EDEA0C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B225A2A6-8CDE-4578-A1E7-72466EDEA0C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B225A2A6-8CDE-4578-A1E7-72466EDEA0C0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B225A2A6-8CDE-4578-A1E7-72466EDEA0C0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B225A2A6-8CDE-4578-A1E7-72466EDEA0C0}.Release|.NET.ActiveCfg = Release|Any CPU
+		{B225A2A6-8CDE-4578-A1E7-72466EDEA0C0}.Release|.NET.Build.0 = Release|Any CPU
+		{B225A2A6-8CDE-4578-A1E7-72466EDEA0C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B225A2A6-8CDE-4578-A1E7-72466EDEA0C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B225A2A6-8CDE-4578-A1E7-72466EDEA0C0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B225A2A6-8CDE-4578-A1E7-72466EDEA0C0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -173,6 +187,7 @@ Global
 		{446E148D-A9D5-4D7D-A706-BEDD45B2BC7D} = {92509065-DAEA-4457-8300-C7B64CD0E9F4}
 		{7C2EF610-BCA0-4D1F-898A-DE9908E4970C} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
 		{783DB85E-2EED-4377-8EF4-8D6EFE042007} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
+		{B225A2A6-8CDE-4578-A1E7-72466EDEA0C0} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A41913C2-EDEB-440A-BBDE-0AEB56C1CBA6}

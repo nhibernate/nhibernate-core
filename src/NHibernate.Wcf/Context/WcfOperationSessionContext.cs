@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using System.ServiceModel;
 
 using NHibernate.Engine;
@@ -10,6 +10,7 @@ namespace NHibernate.Context
 	/// Provides a <see cref="ISessionFactory.GetCurrentSession()">current session</see>
 	/// for the current OperationContext in WCF. Works only during the lifetime of a WCF operation.
 	/// </summary>
+	[TypeForwardedFrom("NHibernate, Version=5.1.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4")]
 	public class WcfOperationSessionContext : MapBasedSessionContext
 	{
 		public WcfOperationSessionContext(ISessionFactoryImplementor factory) : base(factory) {}
