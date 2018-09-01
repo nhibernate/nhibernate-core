@@ -44,7 +44,7 @@
     <PackageReference Include="Remotion.Linq" Version="[2.2.0, 3.0)" />
     <PackageReference Include="Remotion.Linq.EagerFetching" Version="[2.2.0, 3.0)" />
   </ItemGroup>
-  
+
   <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />

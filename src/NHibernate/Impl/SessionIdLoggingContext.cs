@@ -1,5 +1,5 @@
 using System;
-#if !NETSTANDARD2_0 && !NETCOREAPP2_0
+#if !NETSTANDARD2_0 && !NETCOREAPP2_0 
 using System.Runtime.Remoting.Messaging;
 #else
 using System.Threading;
@@ -9,7 +9,7 @@ namespace NHibernate.Impl
 {
 	public class SessionIdLoggingContext : IDisposable
 	{
-#if NETSTANDARD2_0 || NETCOREAPP2_0 
+#if NETSTANDARD2_0 || NETCOREAPP2_0
 		private static readonly Lazy<AsyncLocal<Guid?>> _currentSessionId =
 			new Lazy<AsyncLocal<Guid?>>(() => new AsyncLocal<Guid?>(), true);
 #else

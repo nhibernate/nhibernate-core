@@ -12,7 +12,6 @@
 
     <NhAppTargetFrameworks>net461;netcoreapp2.0</NhAppTargetFrameworks>
     <NhLibTargetFrameworks>net461;netcoreapp2.0;netstandard2.0</NhLibTargetFrameworks>
-   
 
     <Product>NHibernate</Product>
     <Company>NHibernate.info</Company>
@@ -30,7 +29,7 @@
 
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <TreatSpecificWarningsAsErrors />
-
+    
     <DisableImplicitPackageTargetFallback>True</DisableImplicitPackageTargetFallback>
   </PropertyGroup>
 </Project>
