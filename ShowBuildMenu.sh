@@ -223,7 +223,7 @@ testSetupMenu() {
 	fi
 }
 
-function testRun(){
+testRun(){
 	eval "dotnet test ./src/NHibernate.Test/NHibernate.Test.csproj"
 	eval "dotnet test ./src/NHibernate.Test.VisualBasic/NHibernate.Test.VisualBasic.csproj"
 }
