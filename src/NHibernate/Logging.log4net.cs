@@ -12,12 +12,13 @@ namespace NHibernate
 	public class Log4NetLoggerFactory: ILoggerFactory
 #pragma warning restore 618
 	{
-		private static readonly System.Type LogManagerType = System.Type.GetType("log4net.LogManager, log4net");
+		private static readonly System.Type LogManagerType;
 		private static readonly Func<Assembly, string, object> GetLoggerByNameDelegate;
 		private static readonly Func<System.Type, object> GetLoggerByTypeDelegate;
 
 		static Log4NetLoggerFactory()
 		{
+			LogManagerType = System.Type.GetType("log4net.LogManager, log4net", true);
 			GetLoggerByNameDelegate = GetGetLoggerByNameMethodCall();
 			GetLoggerByTypeDelegate = GetGetLoggerMethodCall<System.Type>();
 		}
@@ -39,6 +40,8 @@ namespace NHibernate
 		private static Func<TParameter, object> GetGetLoggerMethodCall<TParameter>()
 		{
 			var method = LogManagerType.GetMethod("GetLogger", new[] { typeof(TParameter) });
+			if (method == null)
+				throw new InvalidOperationException($"Unable to find LogManager.GetLogger({typeof(TParameter)})");
 			ParameterExpression resultValue;
 			ParameterExpression keyParam = Expression.Parameter(typeof(TParameter), "key");
 			MethodCallExpression methodCall = Expression.Call(null, method, resultValue = keyParam);
@@ -48,6 +51,8 @@ namespace NHibernate
 		private static Func<Assembly, string, object> GetGetLoggerByNameMethodCall()
 		{
 			var method = LogManagerType.GetMethod("GetLogger", new[] {typeof(Assembly), typeof(string)});
+			if (method == null)
+				throw new InvalidOperationException("Unable to find LogManager.GetLogger(Assembly, string)");
 			ParameterExpression nameParam = Expression.Parameter(typeof(string), "name");
 			ParameterExpression repositoryAssemblyParam = Expression.Parameter(typeof(Assembly), "repositoryAssembly");
 			MethodCallExpression methodCall = Expression.Call(null, method, repositoryAssemblyParam, nameParam);
@@ -62,7 +67,6 @@ namespace NHibernate
 	public class Log4NetLogger : IInternalLogger
 #pragma warning restore 618
 	{
-		private static readonly System.Type ILogType = System.Type.GetType("log4net.ILog, log4net");
 		private static readonly Func<object, bool> IsErrorEnabledDelegate;
 		private static readonly Func<object, bool> IsFatalEnabledDelegate;
 		private static readonly Func<object, bool> IsDebugEnabledDelegate;
@@ -92,29 +96,31 @@ namespace NHibernate
 
 		static Log4NetLogger()
 		{
-			IsErrorEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(ILogType, "IsErrorEnabled");
-			IsFatalEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(ILogType, "IsFatalEnabled");
-			IsDebugEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(ILogType, "IsDebugEnabled");
-			IsInfoEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(ILogType, "IsInfoEnabled");
-			IsWarnEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(ILogType, "IsWarnEnabled");
-			ErrorDelegate = DelegateHelper.BuildAction<object>(ILogType, "Error");
-			ErrorExceptionDelegate = DelegateHelper.BuildAction<object, Exception>(ILogType, "Error");
-			ErrorFormatDelegate = DelegateHelper.BuildAction<string, object[]>(ILogType, "ErrorFormat");
+			var iLogType = System.Type.GetType("log4net.ILog, log4net", true);
 
-			FatalDelegate = DelegateHelper.BuildAction<object>(ILogType, "Fatal");
-			FatalExceptionDelegate = DelegateHelper.BuildAction<object, Exception>(ILogType, "Fatal");
+			IsErrorEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(iLogType, "IsErrorEnabled");
+			IsFatalEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(iLogType, "IsFatalEnabled");
+			IsDebugEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(iLogType, "IsDebugEnabled");
+			IsInfoEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(iLogType, "IsInfoEnabled");
+			IsWarnEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(iLogType, "IsWarnEnabled");
+			ErrorDelegate = DelegateHelper.BuildAction<object>(iLogType, "Error");
+			ErrorExceptionDelegate = DelegateHelper.BuildAction<object, Exception>(iLogType, "Error");
+			ErrorFormatDelegate = DelegateHelper.BuildAction<string, object[]>(iLogType, "ErrorFormat");
 
-			DebugDelegate = DelegateHelper.BuildAction<object>(ILogType, "Debug");
-			DebugExceptionDelegate = DelegateHelper.BuildAction<object, Exception>(ILogType, "Debug");
-			DebugFormatDelegate = DelegateHelper.BuildAction<string, object[]>(ILogType, "DebugFormat");
+			FatalDelegate = DelegateHelper.BuildAction<object>(iLogType, "Fatal");
+			FatalExceptionDelegate = DelegateHelper.BuildAction<object, Exception>(iLogType, "Fatal");
 
-			InfoDelegate = DelegateHelper.BuildAction<object>(ILogType, "Info");
-			InfoExceptionDelegate = DelegateHelper.BuildAction<object, Exception>(ILogType, "Info");
-			InfoFormatDelegate = DelegateHelper.BuildAction<string, object[]>(ILogType, "InfoFormat");
+			DebugDelegate = DelegateHelper.BuildAction<object>(iLogType, "Debug");
+			DebugExceptionDelegate = DelegateHelper.BuildAction<object, Exception>(iLogType, "Debug");
+			DebugFormatDelegate = DelegateHelper.BuildAction<string, object[]>(iLogType, "DebugFormat");
 
-			WarnDelegate = DelegateHelper.BuildAction<object>(ILogType, "Warn");
-			WarnExceptionDelegate = DelegateHelper.BuildAction<object, Exception>(ILogType, "Warn");
-			WarnFormatDelegate = DelegateHelper.BuildAction<string, object[]>(ILogType, "WarnFormat");
+			InfoDelegate = DelegateHelper.BuildAction<object>(iLogType, "Info");
+			InfoExceptionDelegate = DelegateHelper.BuildAction<object, Exception>(iLogType, "Info");
+			InfoFormatDelegate = DelegateHelper.BuildAction<string, object[]>(iLogType, "InfoFormat");
+
+			WarnDelegate = DelegateHelper.BuildAction<object>(iLogType, "Warn");
+			WarnExceptionDelegate = DelegateHelper.BuildAction<object, Exception>(iLogType, "Warn");
+			WarnFormatDelegate = DelegateHelper.BuildAction<string, object[]>(iLogType, "WarnFormat");
 		}
 
 		/// <summary>
