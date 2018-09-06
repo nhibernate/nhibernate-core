@@ -14,7 +14,7 @@ namespace NHibernate
 #pragma warning restore 618
 	{
 		internal static readonly Assembly Log4NetAssembly;
-		private static readonly Exception LogManagerTypeLoadException;
+		internal static readonly Exception LogManagerTypeLoadException;
 		private static readonly System.Type LogManagerType;
 		private static readonly Func<Assembly, string, object> GetLoggerByNameDelegate;
 		private static readonly Func<System.Type, object> GetLoggerByTypeDelegate;
@@ -138,7 +138,12 @@ namespace NHibernate
 
 		static Log4NetLogger()
 		{
-			var iLogType = Log4NetLoggerFactory.Log4NetAssembly.GetType("log4net.ILog");
+			if (Log4NetLoggerFactory.Log4NetAssembly == null)
+				throw new TypeLoadException(
+					"Could not load ILog type, LogManager own loading has previously failed",
+					Log4NetLoggerFactory.LogManagerTypeLoadException);
+
+			var iLogType = Log4NetLoggerFactory.Log4NetAssembly.GetType("log4net.ILog", true);
 
 			IsErrorEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(iLogType, "IsErrorEnabled");
 			IsFatalEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(iLogType, "IsFatalEnabled");
