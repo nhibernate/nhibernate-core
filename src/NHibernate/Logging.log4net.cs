@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Util;
@@ -12,15 +13,56 @@ namespace NHibernate
 	public class Log4NetLoggerFactory: ILoggerFactory
 #pragma warning restore 618
 	{
+		internal static readonly Assembly Log4NetAssembly;
+		private static readonly Exception LogManagerTypeLoadException;
 		private static readonly System.Type LogManagerType;
 		private static readonly Func<Assembly, string, object> GetLoggerByNameDelegate;
 		private static readonly Func<System.Type, object> GetLoggerByTypeDelegate;
 
 		static Log4NetLoggerFactory()
 		{
-			LogManagerType = System.Type.GetType("log4net.LogManager, log4net", true);
-			GetLoggerByNameDelegate = GetGetLoggerByNameMethodCall();
-			GetLoggerByTypeDelegate = GetGetLoggerMethodCall<System.Type>();
+			try
+			{
+				LogManagerType = GetLogManagerType();
+				Log4NetAssembly = LogManagerType.Assembly;
+				GetLoggerByNameDelegate = GetGetLoggerByNameMethodCall();
+				GetLoggerByTypeDelegate = GetGetLoggerMethodCall<System.Type>();
+			}
+			catch (Exception ex)
+			{
+				LogManagerTypeLoadException = ex;
+			}
+		}
+
+		public Log4NetLoggerFactory()
+		{
+			if (LogManagerType == null)
+				throw new TypeLoadException("Could not load LogManager type", LogManagerTypeLoadException);
+		}
+
+		// Code mostly adapted from ReflectHelper.TypeFromAssembly, which cannot be called directly due
+		// to depending on the logger.
+		private static System.Type GetLogManagerType()
+		{
+			var typeName = new AssemblyQualifiedTypeName("log4net.LogManager", "log4net");
+			// Try to get the type from an already loaded assembly
+			var type = System.Type.GetType(typeName.ToString());
+			if (type != null)
+				return type;
+
+			// Load type from an already loaded assembly
+			type = System.Type.GetType(
+				typeName.ToString(),
+				an => AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName == an.FullName),
+				null);
+			if (type != null)
+				return type;
+
+			var assembly = Assembly.Load(typeName.Assembly);
+			if (assembly == null)
+				throw new TypeLoadException($"Could not load type '{typeName}', assembly not found");
+
+			return assembly.GetType(typeName.Type, true);
 		}
 
 #pragma warning disable 618
@@ -96,7 +138,7 @@ namespace NHibernate
 
 		static Log4NetLogger()
 		{
-			var iLogType = System.Type.GetType("log4net.ILog, log4net", true);
+			var iLogType = Log4NetLoggerFactory.Log4NetAssembly.GetType("log4net.ILog");
 
 			IsErrorEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(iLogType, "IsErrorEnabled");
 			IsFatalEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(iLogType, "IsFatalEnabled");

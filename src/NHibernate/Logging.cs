@@ -1,6 +1,5 @@
 using System;
 using System.Configuration;
-using System.IO;
 using System.Linq;
 
 namespace NHibernate
@@ -118,7 +117,7 @@ namespace NHibernate
 			if (string.IsNullOrEmpty(nhibernateLogger))
 			{
 				// look for log4net
-				if (System.Type.GetType("log4net.LogManager, log4net") != null)
+				if (Log4NetLoggerFactory.Log4NetAssembly != null)
 				{
 					nhibernateLoggerClass = typeof(Log4NetLoggerFactory).AssemblyQualifiedName;
 				}
