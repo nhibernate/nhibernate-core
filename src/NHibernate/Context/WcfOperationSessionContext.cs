@@ -69,7 +69,7 @@ namespace NHibernate.Context
 	/// .Net Framework distribution of NHibernate if you need it. See
 	/// https://github.com/nhibernate/nhibernate-core/issues/1842
 	/// </summary>
-	[Obsolete("Not supported in the .Net Core and .Net Standard distributions of NHibernate")]
+	[Obsolete("Not supported in the .Net Core and .Net Standard distributions of NHibernate", true)]
 	public class WcfOperationSessionContext : MapBasedSessionContext
 	{
 		public WcfOperationSessionContext(ISessionFactoryImplementor factory) : base(factory)
