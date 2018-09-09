@@ -9,6 +9,7 @@ using NHibernate.AdoNet;
 using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using NHibernate.Type;
 
 namespace NHibernate.Driver
 {
@@ -17,9 +18,9 @@ namespace NHibernate.Driver
 	/// </summary>
 	public class SqlClientDriver
 #if NETFX
-		: DriverBase, IEmbeddedBatcherFactoryProvider
+		: DriverBase, IEmbeddedBatcherFactoryProvider, IParameterAdjuster
 #else
-		: ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
+		: ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider, IParameterAdjuster
 #endif
 	{
 		// Since v5.1
@@ -301,5 +302,23 @@ namespace NHibernate.Driver
 
 		/// <inheritdoc />
 		public override DateTime MinDate => new DateTime(1753, 1, 1);
+
+		public void AdjustParameterForValue(DbParameter parameter, SqlType sqlType, object value)
+		{
+			if (value is string stringVal)
+			{
+				switch (parameter.DbType)
+				{
+					case DbType.AnsiString:
+					case DbType.AnsiStringFixedLength:
+						parameter.Size = IsAnsiText(parameter, sqlType) ? MsSql2000Dialect.MaxSizeForAnsiClob : Math.Max(stringVal.Length, sqlType.LengthDefined ? sqlType.Length : parameter.Size);
+						break;
+					case DbType.String:
+					case DbType.StringFixedLength:
+						parameter.Size = IsText(parameter, sqlType) ? MsSql2000Dialect.MaxSizeForClob : Math.Max(stringVal.Length, sqlType.LengthDefined ? sqlType.Length : parameter.Size);
+						break;
+				}
+			}
+		}
 	}
 }
