@@ -1,5 +1,6 @@
 using System;
 using System.Data.Common;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -16,6 +17,9 @@ namespace NHibernate.Type
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			var parameter = cmd.Parameters[index];
+
+			//Allow the driver to adjust the parameter for the value
+			session.Factory.ConnectionProvider.Driver.AdjustParameterForValue(parameter, SqlType, value);
 
 			// set the parameter value before the size check, since ODBC changes the size automatically
 			parameter.Value = value;
