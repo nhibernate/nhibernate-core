@@ -2,7 +2,7 @@
 // a WCF OperationContext for it. Since it adds additional heavy dependencies, it has been
 // considered not desirable to provide it for .Net Standard. (It could be useful in case some
 // WCF server becames available in another frameworks or if a .Net Framework application
-// consumes the .Net standard distribution of NHibernate instead of the .Net Framework one)
+// consumes the .Net Standard distribution of NHibernate instead of the .Net Framework one.)
 // See https://github.com/dotnet/wcf/issues/1200 and #1842
 #if NETFX
 using System.Collections;
@@ -65,17 +65,17 @@ using NHibernate.Engine;
 namespace NHibernate.Context
 {
 	/// <summary>
-	/// Obsolete class not usable in the .Net Core and .Net Standard distributions of NHibernate. Use the
+	/// Obsolete class not usable with the current framework. Use the
 	/// .Net Framework distribution of NHibernate if you need it. See
 	/// https://github.com/nhibernate/nhibernate-core/issues/1842
 	/// </summary>
-	[Obsolete("Not supported in the .Net Core and .Net Standard distributions of NHibernate", true)]
+	[Obsolete("Not supported in this platform", true)]
 	public class WcfOperationSessionContext : MapBasedSessionContext
 	{
 		public WcfOperationSessionContext(ISessionFactoryImplementor factory) : base(factory)
 		{
-			throw new NotSupportedException(
-				"WcfOperationSessionContext is currently supported only by the .Net Framework distribution of NHibernate");
+			throw new PlatformNotSupportedException(
+				"WcfOperationSessionContext is not supported for the current framework");
 		}
 
 		protected override IDictionary GetMap()
