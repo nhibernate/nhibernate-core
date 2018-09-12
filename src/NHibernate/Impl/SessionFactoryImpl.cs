@@ -1276,7 +1276,18 @@ namespace NHibernate.Impl
 				case "web":
 					return new WebSessionContext(this);
 				case "wcf_operation":
+#if NETFX
 					return new WcfOperationSessionContext(this);
+#else
+					// There is no support of WCF Server under .Net Core, so it makes little sense to provide
+					// a WCF OperationContext for it. Since it adds additional heavy dependencies, it has been
+					// considered not desirable to provide it for .Net Standard. (It could be useful in case some
+					// WCF server becames available in another frameworks or if a .Net Framework application
+					// consumes the .Net Standard distribution of NHibernate instead of the .Net Framework one.)
+					// See https://github.com/dotnet/wcf/issues/1200 and #1842
+					throw new PlatformNotSupportedException(
+						"WcfOperationSessionContext is not supported for the current framework");
+#endif
 			}
 
 			try
