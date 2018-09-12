@@ -304,7 +304,7 @@ namespace NHibernate.Driver
 		/// <inheritdoc />
 		public override DateTime MinDate => new DateTime(1753, 1, 1);
 
-		public void AdjustParameterForValue(DbParameter parameter, SqlType sqlType, object value)
+		public virtual void AdjustParameterForValue(DbParameter parameter, SqlType sqlType, object value)
 		{
 			if (value is string stringVal)
 			{
@@ -312,11 +312,11 @@ namespace NHibernate.Driver
 				{
 					case DbType.AnsiString:
 					case DbType.AnsiStringFixedLength:
-						parameter.Size = IsAnsiText(parameter, sqlType) || stringVal.Length > MsSql2000Dialect.MaxSizeForLengthLimitedAnsiString ? MsSql2000Dialect.MaxSizeForAnsiClob : Math.Max(stringVal.Length, sqlType.LengthDefined ? sqlType.Length : parameter.Size);
+						parameter.Size = IsAnsiText(parameter, sqlType) ? MsSql2000Dialect.MaxSizeForAnsiClob : Math.Max(stringVal.Length, sqlType.LengthDefined ? sqlType.Length : parameter.Size);
 						break;
 					case DbType.String:
 					case DbType.StringFixedLength:
-						parameter.Size = IsText(parameter, sqlType) || stringVal.Length > MsSql2000Dialect.MaxSizeForLengthLimitedString ? MsSql2000Dialect.MaxSizeForClob : Math.Max(stringVal.Length, sqlType.LengthDefined ? sqlType.Length : parameter.Size);
+						parameter.Size = IsText(parameter, sqlType) ? MsSql2000Dialect.MaxSizeForClob : Math.Max(stringVal.Length, sqlType.LengthDefined ? sqlType.Length : parameter.Size);
 						break;
 				}
 			}
