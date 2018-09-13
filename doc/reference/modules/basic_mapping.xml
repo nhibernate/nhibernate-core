@@ -57,8 +57,8 @@
              We will now discuss the content of the mapping document. We will mainly describe the
              document elements and attributes that are used by NHibernate at runtime. The mapping
              document also contains some extra optional attributes and elements that affect the
-             database schemas exported by the schema export tool. (By example the
-             <literal>column</literal> sub-element of a property.)
+             database schemas exported by the schema export tool, for example, the
+             <literal>column</literal> sub-element of a property.
         </para>
 
         <sect2 id="mapping-declaration-xmlns">
@@ -3887,7 +3887,7 @@
             <para>
                 String types use by default .Net default string equality, which is case sensitive and culture
                 insensitive. When a string type is used as an identifier, if the underlying database string
-                equality semantic differs, it may create issues. By example, loading a children collection by
+                equality semantic differs, it may cause issues. For example, loading a children collection by
                 a string parent key stored in a case insensitive column may cause matching children having
                 their parent key differing by the case to be ignored by NHibernate by default.
             </para>
@@ -3908,8 +3908,8 @@
                 </areaspec>
                 <programlisting><![CDATA[<id name="Id" generator="assigned">
     <type name="string">
-        <param name="IgnoreCase">true</param>
         <param name="ComparerCulture">en-US</param>
+        <param name="IgnoreCase">true</param>
     </type>
 </id>]]></programlisting>
                 <calloutlist>

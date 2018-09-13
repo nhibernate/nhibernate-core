@@ -29,8 +29,8 @@ namespace NHibernate.Type
 		public const string IgnoreCaseParameterName = "IgnoreCase";
 
 		/// <summary>
-		/// The default string comparer for string equality and hashcodes. <see langword="null" /> for
-		/// using .Net default equality and hashcode computation.
+		/// The default string comparer for determining string equality and calculating hash codes.
+		/// Default is <c>StringComparer.Ordinal</c>.
 		/// </summary>
 		public static StringComparer DefaultComparer
 		{
@@ -39,8 +39,8 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// The string comparer of this instance of string type, for string equality and hashcodes.
-		/// <see langword="null" /> for using <see cref="DefaultComparer"/>.
+		/// The string comparer of this instance of string type, for determining string equality and
+		/// calculating hash codes. Set <see langword="null" /> to use <see cref="DefaultComparer"/>.
 		/// </summary>
 		protected StringComparer Comparer
 		{
