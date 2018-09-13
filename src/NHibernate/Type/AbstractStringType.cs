@@ -11,6 +11,9 @@ namespace NHibernate.Type
 	[Serializable]
 	public abstract class AbstractStringType: ImmutableType, IDiscriminatorType, IParameterizedType
 	{
+		private static StringComparer _defaultComparer = StringComparer.Ordinal;
+		private StringComparer _comparer;
+
 		/// <summary>
 		/// The comparer culture parameter name. Value should be <c>Current</c>, <c>Invariant</c>,
 		/// <c>Ordinal</c> or any valid culture name.
@@ -29,13 +32,21 @@ namespace NHibernate.Type
 		/// The default string comparer for string equality and hashcodes. <see langword="null" /> for
 		/// using .Net default equality and hashcode computation.
 		/// </summary>
-		public static StringComparer DefaultComparer { get; set; }
+		public static StringComparer DefaultComparer
+		{
+			get => _defaultComparer;
+			set => _defaultComparer = value ?? throw new ArgumentNullException(nameof(value));
+		}
 
 		/// <summary>
 		/// The string comparer of this instance of string type, for string equality and hashcodes.
 		/// <see langword="null" /> for using <see cref="DefaultComparer"/>.
 		/// </summary>
-		protected StringComparer Comparer { get; set; }
+		protected StringComparer Comparer
+		{
+			get => _comparer ?? _defaultComparer;
+			set => _comparer = value;
+		}
 
 		public AbstractStringType(SqlType sqlType)
 			: base(sqlType)
@@ -65,12 +76,12 @@ namespace NHibernate.Type
 
 		public override bool IsEqual(object x, object y)
 		{
-			return (Comparer ?? DefaultComparer)?.Equals(x, y) ?? base.IsEqual(x, y);
+			return Comparer.Equals(x, y);
 		}
 
 		public override int GetHashCode(object x)
 		{
-			return (Comparer ?? DefaultComparer)?.GetHashCode(x) ?? base.GetHashCode(x);
+			return Comparer.GetHashCode(x);
 		}
 
 		/// <inheritdoc />
@@ -130,36 +141,42 @@ namespace NHibernate.Type
 			if (parameters == null)
 				return;
 
-			bool? caseSensitive = null;
-			if (parameters.TryGetValue(CaseSensitiveParameterName, out var value))
+			bool caseSensitive = true;
+			var hasCultureNameParameter = parameters.TryGetValue(ComparerCultureParameterName, out var cultureName);
+			var hasCaseSensitiveParameter =
+				parameters.TryGetValue(CaseSensitiveParameterName, out var caseSensitiveString) &&
+				bool.TryParse(caseSensitiveString, out caseSensitive);
+
+			if (hasCultureNameParameter || hasCaseSensitiveParameter)
 			{
-				caseSensitive = !StringComparer.OrdinalIgnoreCase.Equals("false", value);
+				Comparer = GetComparer(cultureName, !caseSensitive);
+			}
+		}
+
+		private static StringComparer GetComparer(string cultureName, bool ignoreCase)
+		{
+			if (cultureName == null ||
+			    string.Equals(cultureName, "ordinal", StringComparison.OrdinalIgnoreCase))
+			{
+				return ignoreCase ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
 			}
 
-			parameters.TryGetValue(ComparerCultureParameterName, out var cultureName);
-			switch (cultureName?.ToLowerInvariant())
+			return StringComparer.Create(GetCultureInfo(cultureName), ignoreCase);
+		}
+
+		private static CultureInfo GetCultureInfo(string cultureName)
+		{
+			if (string.Equals(cultureName, "invariant", StringComparison.OrdinalIgnoreCase))
 			{
-				case null:
-					if (caseSensitive.HasValue)
-					{
-						Comparer = caseSensitive.Value ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
-					}
-					// else use default comparer
-					break;
-				case "current":
-					Comparer = caseSensitive == false ? StringComparer.CurrentCultureIgnoreCase : StringComparer.CurrentCulture;
-					break;
-				case "invariant":
-					Comparer = caseSensitive == false ? StringComparer.InvariantCultureIgnoreCase : StringComparer.InvariantCulture;
-					break;
-				case "ordinal":
-					Comparer = caseSensitive == false ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
-					break;
-				default:
-					var culture = CultureInfo.GetCultureInfo(cultureName);
-					Comparer = StringComparer.Create(culture, caseSensitive == false);
-					break;
+				return CultureInfo.InvariantCulture;
 			}
+			
+			if (string.Equals(cultureName, "current", StringComparison.OrdinalIgnoreCase))
+			{
+				return CultureInfo.CurrentCulture;
+			}
+
+			return CultureInfo.GetCultureInfo(cultureName);
 		}
 
 		#endregion
@@ -190,8 +207,7 @@ namespace NHibernate.Type
 		/// code.</returns>
 		public override int GetHashCode()
 		{
-			var hashcode = base.GetHashCode();
-			return (hashcode * 37) ^ (Comparer?.GetHashCode() ?? 0);
+			return base.GetHashCode() * 37 ^ Comparer.GetHashCode();
 		}
 
 		#endregion
