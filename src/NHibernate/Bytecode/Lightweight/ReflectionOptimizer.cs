@@ -101,11 +101,20 @@ namespace NHibernate.Bytecode.Lightweight
 
 		protected DynamicMethod CreateDynamicMethod(System.Type returnType, System.Type[] argumentTypes)
 		{
-			System.Type owner = mappedType.IsInterface ? typeof (object) : mappedType;
-#pragma warning disable 612,618
-			bool canSkipChecks = SecurityManager.IsGranted(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
-#pragma warning restore 612,618
+			var owner = mappedType.IsInterface ? typeof (object) : mappedType;
+			var canSkipChecks = CanSkipVisibilityChecks();
 			return new DynamicMethod(string.Empty, returnType, argumentTypes, owner, canSkipChecks);
+		}
+
+		private static bool CanSkipVisibilityChecks()
+		{
+#if NETFX
+			var permissionSet = new PermissionSet(PermissionState.None);
+			permissionSet.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
+			return permissionSet.IsSubsetOf(AppDomain.CurrentDomain.PermissionSet);
+#else
+			return false;
+#endif
 		}
 
 		private static void EmitCastToReference(ILGenerator il, System.Type type)
