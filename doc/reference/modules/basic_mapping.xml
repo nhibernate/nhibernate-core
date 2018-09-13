@@ -3897,7 +3897,7 @@
                 default comparer for all string types, affect by code a <literal>StringComparer</literal> to
                 <literal>AbstractStringType.DefaultComparer</literal> static property. To set the comparer used
                 only for a specific <literal>&lt;property&gt;</literal> or <literal>&lt;id&gt;</literal>,
-                specify its type as a sub-element and supply <literal>CaseSensitive</literal> and/or
+                specify its type as a sub-element and supply <literal>IgnoreCase</literal> and/or
                 <literal>ComparerCulture</literal> parameters.
             </para>
 
@@ -3908,14 +3908,14 @@
                 </areaspec>
                 <programlisting><![CDATA[<id name="Id" generator="assigned">
     <type name="string">
-        <param name="CaseSensitive">false</param>
+        <param name="IgnoreCase">true</param>
         <param name="ComparerCulture">en-US</param>
     </type>
 </id>]]></programlisting>
                 <calloutlist>
                     <callout arearefs="stringcomp1">
                         <para>
-                            <literal>CaseSensitive</literal>: <literal>false</literal> for case insensitive comparisons.
+                            <literal>IgnoreCase</literal>: <literal>true</literal> for case insensitive comparisons.
                             Any other value will result in case sensitive comparisons.
                         </para>
                     </callout>
