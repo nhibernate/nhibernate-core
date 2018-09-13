@@ -5,7 +5,7 @@
   <class name="Entity">
     <id name="Id" generator="assigned">
       <type name="string">
-        <param name="CaseSensitive">false</param>
+        <param name="IgnoreCase">true</param>
       </type>
     </id>
     <property name="Name"/>
