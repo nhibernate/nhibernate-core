@@ -22,11 +22,11 @@ namespace NHibernate.Type
 		public const string ComparerCultureParameterName = "ComparerCulture";
 
 		/// <summary>
-		/// The case sensitivity parameter name. Value should be a boolean, <c>false</c> meaning
+		/// The case sensitivity parameter name. Value should be a boolean, <c>true</c> meaning
 		/// case insensitive.
 		/// </summary>
 		/// <remarks>Default comparison is case sensitive.</remarks>
-		public const string CaseSensitiveParameterName = "CaseSensitive";
+		public const string IgnoreCaseParameterName = "IgnoreCase";
 
 		/// <summary>
 		/// The default string comparer for string equality and hashcodes. <see langword="null" /> for
@@ -141,15 +141,15 @@ namespace NHibernate.Type
 			if (parameters == null)
 				return;
 
-			bool caseSensitive = true;
+			var ignoreCase = false;
 			var hasCultureNameParameter = parameters.TryGetValue(ComparerCultureParameterName, out var cultureName);
-			var hasCaseSensitiveParameter =
-				parameters.TryGetValue(CaseSensitiveParameterName, out var caseSensitiveString) &&
-				bool.TryParse(caseSensitiveString, out caseSensitive);
+			var hasIgnoreCaseParameter =
+				parameters.TryGetValue(IgnoreCaseParameterName, out var ignoreCaseString) &&
+				bool.TryParse(ignoreCaseString, out ignoreCase);
 
-			if (hasCultureNameParameter || hasCaseSensitiveParameter)
+			if (hasCultureNameParameter || hasIgnoreCaseParameter)
 			{
-				Comparer = GetComparer(cultureName, !caseSensitive);
+				Comparer = GetComparer(cultureName, ignoreCase);
 			}
 		}
 

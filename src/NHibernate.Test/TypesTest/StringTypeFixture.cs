@@ -95,7 +95,7 @@ namespace NHibernate.Test.TypesTest
 						new Dictionary<string, string>
 						{
 							{ AbstractStringType.ComparerCultureParameterName, "Current" },
-							{ AbstractStringType.CaseSensitiveParameterName, "false" }
+							{ AbstractStringType.IgnoreCaseParameterName, "true" }
 						});
 					Assert.That(type.IsEqual("ABC", "abc"), Is.True, "Current CI Equality");
 					Assert.That(type.GetHashCode("ABC"), Is.EqualTo(type.GetHashCode("abc")), "Current CI Hashcode");
@@ -115,7 +115,7 @@ namespace NHibernate.Test.TypesTest
 						new Dictionary<string, string>
 						{
 							{ AbstractStringType.ComparerCultureParameterName, "Ordinal" },
-							{ AbstractStringType.CaseSensitiveParameterName, "false" }
+							{ AbstractStringType.IgnoreCaseParameterName, "true" }
 						});
 					Assert.That(type.IsEqual("ABCI", "abci"), Is.True, "Ordinal CI Equality");
 					Assert.That(type.GetHashCode("ABCI"), Is.EqualTo(type.GetHashCode("abci")), "Ordinal CI Hashcode");
@@ -124,7 +124,7 @@ namespace NHibernate.Test.TypesTest
 						"string",
 						new Dictionary<string, string>
 						{
-							{ AbstractStringType.CaseSensitiveParameterName, "false" }
+							{ AbstractStringType.IgnoreCaseParameterName, "true" }
 						});
 					Assert.That(type.IsEqual("ABCI", "abci"), Is.True, "CI Equality");
 					Assert.That(type.GetHashCode("ABCI"), Is.EqualTo(type.GetHashCode("abci")), "CI Hashcode");
@@ -134,7 +134,7 @@ namespace NHibernate.Test.TypesTest
 						new Dictionary<string, string>
 						{
 							{ AbstractStringType.ComparerCultureParameterName, "tr" },
-							{ AbstractStringType.CaseSensitiveParameterName, "false" }
+							{ AbstractStringType.IgnoreCaseParameterName, "true" }
 						});
 					Assert.That(type.IsEqual("ABC", "abc"), Is.True, "Turkish CI ABC Equality");
 					Assert.That(type.GetHashCode("ABC"), Is.EqualTo(type.GetHashCode("abc")), "Turkish CI ABC Hashcode");
