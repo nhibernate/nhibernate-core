@@ -82,13 +82,17 @@ namespace NHibernate.Test.NHSpecificTest.GH1300
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity { Name = "Al", AnsiName = "Al" };
+				var e1 = new Entity { Name = "1", AnsiName = "2", FullText = "3", AnsiFullText = "4" };
 				await (session.SaveAsync(e1));
 				await (transaction.CommitAsync());
-				Assert.That(Driver.LastCommandParameters.First().SqlDbType, Is.EqualTo(SqlDbType.NVarChar));
-				Assert.That(Driver.LastCommandParameters.First().Size, Is.EqualTo(3));
-				Assert.That(Driver.LastCommandParameters.Last().SqlDbType, Is.EqualTo(SqlDbType.VarChar));
-				Assert.That(Driver.LastCommandParameters.Last().Size, Is.EqualTo(3));
+				Assert.That(Driver.LastCommandParameters.Single(x => (string) x.Value == "1").SqlDbType, Is.EqualTo(SqlDbType.NVarChar));
+				Assert.That(Driver.LastCommandParameters.Single(x => (string) x.Value == "1").Size, Is.EqualTo(3));
+				Assert.That(Driver.LastCommandParameters.Single(x => (string) x.Value == "2").SqlDbType, Is.EqualTo(SqlDbType.VarChar));
+				Assert.That(Driver.LastCommandParameters.Single(x => (string) x.Value == "2").Size, Is.EqualTo(3));
+				Assert.That(Driver.LastCommandParameters.Single(x => (string) x.Value == "3").SqlDbType, Is.EqualTo(SqlDbType.NVarChar));
+				Assert.That(Driver.LastCommandParameters.Single(x => (string) x.Value == "3").Size, Is.EqualTo(MsSql2000Dialect.MaxSizeForClob));
+				Assert.That(Driver.LastCommandParameters.Single(x => (string) x.Value == "4").SqlDbType, Is.EqualTo(SqlDbType.VarChar));
+				Assert.That(Driver.LastCommandParameters.Single(x => (string) x.Value == "4").Size, Is.EqualTo(MsSql2000Dialect.MaxSizeForAnsiClob));
 			}
 		}
 
@@ -151,27 +155,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1300
 				Assert.That(Driver.LastCommandParameters.First().SqlDbType, Is.EqualTo(SqlDbType.VarChar));
 			}
 		}
-
-		[Test]
-		public async Task LongStringCausesClobSizedParameterAsync()
-		{
-			Driver.ClearCommands();
-
-			using (var session = OpenSession())
-			using (var transaction = session.BeginTransaction())
-			{
-				await (session.Query<Entity>().Where(x => x.Name == new string('x', MsSql2000Dialect.MaxSizeForLengthLimitedString + 1)).ToListAsync());
-
-				Assert.That(Driver.LastCommandParameters.First().Size, Is.EqualTo(MsSql2000Dialect.MaxSizeForClob));
-				Assert.That(Driver.LastCommandParameters.First().SqlDbType, Is.EqualTo(SqlDbType.NVarChar));
-
-				await (session.Query<Entity>().Where(x => x.AnsiName == new string('x', MsSql2000Dialect.MaxSizeForLengthLimitedAnsiString + 1)).ToListAsync());
-
-				Assert.That(Driver.LastCommandParameters.First().Size, Is.EqualTo(MsSql2000Dialect.MaxSizeForAnsiClob));
-				Assert.That(Driver.LastCommandParameters.First().SqlDbType, Is.EqualTo(SqlDbType.VarChar));
-			}
-		}
-
+		
 		[TestCase("Name", SqlDbType.NVarChar)]
 		[TestCase("AnsiName", SqlDbType.VarChar)]
 		public async Task HqlLikeShouldUseLargerSizeAsync(string property, SqlDbType expectedDbType, CancellationToken cancellationToken = default(CancellationToken))
