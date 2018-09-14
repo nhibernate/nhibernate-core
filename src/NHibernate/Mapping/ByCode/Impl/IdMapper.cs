@@ -67,16 +67,6 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 		}
 
-		public void Type<TPersistentType>()
-		{
-			Type(typeof (TPersistentType), null);
-		}
-
-		public void Type<TPersistentType>(object parameters)
-		{
-			Type(typeof (TPersistentType), parameters);
-		}
-
 		public void Type(System.Type persistentType, object parameters)
 		{
 			if (persistentType == null)
