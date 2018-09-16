@@ -20,7 +20,12 @@ namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public abstract partial class EntityAction : IExecutable, IComparable<EntityAction>, IDeserializationCallback
+	public abstract partial class EntityAction : 
+		IAsyncExecutable,
+		IBeforeTransactionCompletionProcess,
+		IAfterTransactionCompletionProcess,
+		IComparable<EntityAction>, 
+		IDeserializationCallback
 	{
 
 		#region IExecutable Members
@@ -31,6 +36,23 @@ namespace NHibernate.Action
 		}
 
 		public abstract Task ExecuteAsync(CancellationToken cancellationToken);
+
+		protected virtual Task BeforeTransactionCompletionProcessImplAsync(CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				BeforeTransactionCompletionProcessImpl();
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
 		
 		protected virtual Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken)
 		{
@@ -50,5 +72,23 @@ namespace NHibernate.Action
 		}
 
 		#endregion
+
+		public Task ExecuteBeforeTransactionCompletionAsync(CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return BeforeTransactionCompletionProcessImplAsync(cancellationToken);
+		}
+
+		public Task ExecuteAfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return AfterTransactionCompletionProcessImplAsync(success, cancellationToken);
+		}
 	}
 }

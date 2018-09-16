@@ -1246,7 +1246,7 @@ namespace NHibernate.Impl
 				// Always allow flushing from explicit transactions, otherwise check if flushing from scope is enabled.
 				if (tx != null || context.CanFlushOnSystemTransactionCompleted)
 					await (FlushBeforeTransactionCompletionAsync(cancellationToken)).ConfigureAwait(false);
-				actionQueue.BeforeTransactionCompletion();
+				await (actionQueue.BeforeTransactionCompletionAsync(cancellationToken)).ConfigureAwait(false);
 				try
 				{
 					Interceptor.BeforeTransactionCompletion(tx);

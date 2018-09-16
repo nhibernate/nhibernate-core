@@ -114,6 +114,8 @@
       rule: EventListener
     - conversion: ToAsync
       rule: Cache
+    - conversion: ToAsync
+      rule: TransactionCompletion      
     typeConversion:
     - conversion: Ignore
       name: EnumerableImpl
@@ -141,6 +143,7 @@
       requiresCancellationToken:
       - rule: EventListener
       - rule: Cache
+      - rule: TransactionCompletion
     scanMethodBody: true
     scanForMissingAsyncMembers:
     - all: true
@@ -276,6 +279,12 @@ methodRules:
   - containingType: NHibernate.Cache.IBatchableReadOnlyCache
   - containingType: NHibernate.Cache.IBatchableCache
   name: Cache
+- filters:
+  - containingType: NHibernate.Action.IAfterTransactionCompletionProcess
+  - containingType: NHibernate.Action.IBeforeTransactionCompletionProcess
+  - containingType: NHibernate.Action.EntityAction
+    name: BeforeTransactionCompletionProcessImpl  
+  name: TransactionCompletion
 - filters:
   - containingNamespace: NHibernate
   - containingType: NHibernate.Tool.hbm2ddl.SchemaUpdate
