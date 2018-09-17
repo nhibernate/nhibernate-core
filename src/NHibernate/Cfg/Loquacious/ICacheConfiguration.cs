@@ -17,6 +17,6 @@ namespace NHibernate.Cfg.Loquacious
 		string RegionsPrefix { set; }
 		int DefaultExpiration { set; }
 		void Provider<TProvider>() where TProvider : ICacheProvider;
-		void QueryCache<TFactory>() where TFactory : IQueryCache;
+		void QueryCache<TFactory>() where TFactory : IQueryCacheFactory;
 	}
 }

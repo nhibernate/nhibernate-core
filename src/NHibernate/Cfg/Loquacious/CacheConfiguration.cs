@@ -39,7 +39,7 @@ namespace NHibernate.Cfg.Loquacious
 			cfg.SetProperty(Environment.CacheProvider, typeof(TProvider).AssemblyQualifiedName);
 		}
 
-		public void QueryCache<TFactory>() where TFactory : IQueryCache
+		public void QueryCache<TFactory>() where TFactory : IQueryCacheFactory
 		{
 			UseSecondLevelCache = true;
 			UseQueryCache = true;
@@ -111,7 +111,7 @@ namespace NHibernate.Cfg.Loquacious
 
 		#region Implementation of IQueryCacheConfiguration
 
-		public ICacheConfiguration Through<TFactory>() where TFactory : IQueryCache
+		public ICacheConfiguration Through<TFactory>() where TFactory : IQueryCacheFactory
 		{
 			cc.Configuration.SetProperty(Environment.UseSecondLevelCache, "true");
 			cc.Configuration.SetProperty(Environment.UseQueryCache, "true");

@@ -27,7 +27,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 													c.DefaultExpiration = 15;
 													c.RegionsPrefix = "xyz";
 													c.Provider<HashtableCacheProvider>();
-													c.QueryCache<StandardQueryCache>();
+													c.QueryCache<StandardQueryCacheFactory>();
 												});
 			configure.CollectionTypeFactory<DefaultCollectionTypeFactory>();
 			configure.HqlQueryTranslator<ASTQueryTranslatorFactory>();
@@ -69,7 +69,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 									Is.EqualTo(typeof(HashtableCacheProvider).AssemblyQualifiedName));
 			Assert.That(configure.Properties[Environment.CacheRegionPrefix], Is.EqualTo("xyz"));
 			Assert.That(configure.Properties[Environment.QueryCacheFactory],
-									Is.EqualTo(typeof(StandardQueryCache).AssemblyQualifiedName));
+									Is.EqualTo(typeof(StandardQueryCacheFactory).AssemblyQualifiedName));
 			Assert.That(configure.Properties[Environment.UseMinimalPuts], Is.EqualTo("true"));
 			Assert.That(configure.Properties[Environment.CacheDefaultExpiration], Is.EqualTo("15"));
 			Assert.That(configure.Properties[Environment.CollectionTypeFactoryClass],
