@@ -1,8 +1,10 @@
+using System;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode.Impl;
+using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
@@ -78,6 +80,11 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		private class Related
 		{
 			public int Id { get; set; }
+		}
+
+		private enum MyEnum
+		{
+			One
 		}
 
 		[Test]
@@ -209,6 +216,83 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new IdMapper(null, hbmId);
 			mapper.Column(x => x.SqlType("CHAR(10)"));
 			Assert.That(hbmId.column[0].sqltype, Is.EqualTo("CHAR(10)"));
+		}
+
+		[Test]
+		public void WhenSetTypeByITypeThenSetTypeName()
+		{
+			var hbmId = new HbmId();
+			var mapper = new IdMapper(null, hbmId);
+			mapper.Type(NHibernateUtil.String);
+
+			Assert.That(hbmId.Type.name, Is.EqualTo("String"));
+		}
+
+		[Test]
+		public void WhenSetTypeByIUserTypeThenSetTypeName()
+		{
+			var hbmId = new HbmId();
+			var mapper = new IdMapper(null, hbmId);
+			mapper.Type<MyType>();
+
+			Assert.That(hbmId.Type.name, Does.Contain("MyType"));
+			Assert.That(hbmId.type, Is.Null);
+		}
+
+		[Test]
+		public void WhenSetTypeByICompositeUserTypeThenSetTypeName()
+		{
+			var hbmId = new HbmId();
+			var mapper = new IdMapper(null, hbmId);
+			mapper.Type<MyCompoType>();
+
+			Assert.That(hbmId.Type.name, Does.Contain("MyCompoType"));
+			Assert.That(hbmId.type, Is.Null);
+		}
+
+		[Test]
+		public void WhenSetTypeByIUserTypeWithParamsThenSetType()
+		{
+			var hbmId = new HbmId();
+			var mapper = new IdMapper(null, hbmId);
+			mapper.Type<MyType>(new { Param1 = "a", Param2 = 12 });
+
+			Assert.That(hbmId.type1, Is.Null);
+			Assert.That(hbmId.Type.name, Does.Contain("MyType"));
+			Assert.That(hbmId.Type.param, Has.Length.EqualTo(2));
+			Assert.That(hbmId.Type.param.Select(p => p.name), Is.EquivalentTo(new [] {"Param1", "Param2"}));
+			Assert.That(hbmId.Type.param.Select(p => p.GetText()), Is.EquivalentTo(new [] {"a", "12"}));
+		}
+
+		[Test]
+		public void WhenSetTypeByIUserTypeWithNullParamsThenSetTypeName()
+		{
+			var hbmId = new HbmId();
+			var mapper = new IdMapper(null, hbmId);
+			mapper.Type<MyType>(null);
+
+			Assert.That(hbmId.Type.name, Does.Contain("MyType"));
+			Assert.That(hbmId.type, Is.Null);
+		}
+
+		[Test]
+		public void WhenSetTypeByITypeTypeThenSetType()
+		{
+			var hbmId = new HbmId();
+			var mapper = new IdMapper(null, hbmId);
+			mapper.Type<EnumStringType<MyEnum>>();
+
+			Assert.That(hbmId.Type.name, Does.Contain(typeof(EnumStringType<MyEnum>).FullName));
+			Assert.That(hbmId.type, Is.Null);
+		}
+
+		[Test]
+		public void WhenSetInvalidTypeThenThrow()
+		{
+			var hbmId = new HbmId();
+			var mapper = new IdMapper(null, hbmId);
+			Assert.That(() => mapper.Type(typeof(object), null), Throws.TypeOf<ArgumentOutOfRangeException>());
+			Assert.That(() => mapper.Type(null, null), Throws.TypeOf<ArgumentNullException>());
 		}
 	}
 }
