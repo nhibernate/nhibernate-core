@@ -74,11 +74,6 @@ namespace NHibernate.Hql.Ast
 			return new HqlSelectFrom(_factory, @from);
 		}
 
-		public HqlFrom From(HqlJoin join)
-		{
-			return new HqlFrom(_factory, join);
-		}
-
 		public HqlFrom From(HqlRange range)
 		{
 			return new HqlFrom(_factory, range);
