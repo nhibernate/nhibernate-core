@@ -3,6 +3,7 @@ using NHibernate.AdoNet;
 using NHibernate.Bytecode;
 using NHibernate.Cache;
 using NHibernate.Cfg;
+using NHibernate.Cfg.Loquacious;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Hql.Ast.ANTLR;
@@ -27,7 +28,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 													c.DefaultExpiration = 15;
 													c.RegionsPrefix = "xyz";
 													c.Provider<HashtableCacheProvider>();
-													c.QueryCache<StandardQueryCacheFactory>();
+													c.QueryCacheFactory<StandardQueryCacheFactory>();
 												});
 			configure.CollectionTypeFactory<DefaultCollectionTypeFactory>();
 			configure.HqlQueryTranslator<ASTQueryTranslatorFactory>();
@@ -106,6 +107,12 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(configure.Properties[Environment.QuerySubstitutions], Is.EqualTo("true 1, false 0, yes 'Y', no 'N'"));
 			Assert.That(configure.Properties[Environment.Hbm2ddlAuto], Is.EqualTo("validate"));
 			Assert.That(configure.Properties[Environment.LinqToHqlGeneratorsRegistry], Is.EqualTo(typeof(DefaultLinqToHqlGeneratorsRegistry).AssemblyQualifiedName));
+			
+			// Keywords import and auto-validation require a valid connection string, disable them before checking
+			// the session factory can be built.
+			configure.SetProperty(Environment.Hbm2ddlKeyWords, "none");
+			configure.SetProperty(Environment.Hbm2ddlAuto, null);
+			Assert.That(() => configure.BuildSessionFactory().Dispose(), Throws.Nothing);
 		}
 	}
 }

@@ -97,6 +97,12 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(cfg.Properties[Environment.MaxFetchDepth], Is.EqualTo("11"));
 			Assert.That(cfg.Properties[Environment.QuerySubstitutions], Is.EqualTo("true 1, false 0, yes 'Y', no 'N'"));
 			Assert.That(cfg.Properties[Environment.Hbm2ddlAuto], Is.EqualTo("validate"));
+
+			// Keywords import and auto-validation require a valid connection string, disable them before checking
+			// the session factory can be built.
+			cfg.SetProperty(Environment.Hbm2ddlKeyWords, "none");
+			cfg.SetProperty(Environment.Hbm2ddlAuto, null);
+			Assert.That(() => cfg.BuildSessionFactory().Dispose(), Throws.Nothing);
 		}
 
 		[Test]
