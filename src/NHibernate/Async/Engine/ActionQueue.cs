@@ -240,7 +240,6 @@ namespace NHibernate.Engine
 				processes.Clear();
 			}
 		}
-
 		private partial class BeforeTransactionCompletionDelegatedProcess : IBeforeTransactionCompletionProcess
 		{
 
@@ -261,7 +260,6 @@ namespace NHibernate.Engine
 				}
 			}
 		}
-
 		private partial class AfterTransactionCompletionDelegatedProcess : IAfterTransactionCompletionProcess
 		{
 

@@ -701,7 +701,12 @@ namespace NHibernate.Engine
 					var value = propertyValues[i];
 					var type = propertyTypes[i];
 
-					if (type.IsEntityType && value != null)
+					if (type.IsEntityType && value != null &&
+						// If the value is not initialized, it is a proxy with pending load from database,
+						// so it can only be an already persisted entity. It can not have its own pending
+						// insertion batch. So there is no need to seek for it, and it avoids initializing
+						// it by searching it in a dictionary. Fixes #1338.
+						NHibernateUtil.IsInitialized(value))
 					{
 						// find the batch number associated with the current association, if any.
 						int associationBatchNumber;
@@ -761,8 +766,16 @@ namespace NHibernate.Engine
 					
 					foreach(var child in children)
 					{
-						if (child == null)
+						if (child == null ||
+							// If the child is not initialized, it is a proxy with pending load from database,
+							// so it can only be an already persisted entity. It can not have its own pending
+							// insertion batch. So we do not need to keep track of the highest other batch on
+							// which it depends. And this avoids initializing the proxy by searching it into
+							// a dictionary.
+							!NHibernateUtil.IsInitialized(child))
+						{
 							continue;
+						}
 
 						int latestDependency;
 						if (_entityBatchDependency.TryGetValue(child, out latestDependency) && latestDependency > batchNumber)
