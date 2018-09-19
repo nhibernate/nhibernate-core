@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using NHibernate.Engine;
 
 namespace NHibernate.Action
