@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -26,6 +27,7 @@ namespace NHibernate.Proxy
 		private readonly MethodInfo _setIdentifierMethod;
 		private readonly IAbstractComponentType _componentIdType;
 		private readonly bool _overridesEquals;
+		private bool _overridesEqualsAndHasFields;
 
 		public NHibernateProxyBuilder(MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, IAbstractComponentType componentIdType, bool overridesEquals)
 		{
@@ -37,6 +39,22 @@ namespace NHibernate.Proxy
 
 		public TypeInfo CreateProxyType(System.Type baseType, IReadOnlyCollection<System.Type> baseInterfaces)
 		{
+			if (_overridesEquals)
+			{
+				var fieldSearchType = baseType;
+				while (fieldSearchType != typeof(object) && fieldSearchType != null)
+				{
+					if (fieldSearchType
+					    .GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+					    .Any(f => f.CustomAttributes.All(a => a.AttributeType != typeof(CompilerGeneratedAttribute))))
+					{
+						_overridesEqualsAndHasFields = true;
+						break;
+					}
+					fieldSearchType = baseType.BaseType;
+				}
+			}
+
 			System.Type interfaceType = null;
 			if (baseType == typeof(object))
 			{
@@ -125,11 +143,11 @@ namespace NHibernate.Proxy
 			{
 				ImplementSetIdentifier(typeBuilder, method, lazyInitializerField, parentType);
 			}
-			else if (!_overridesEquals && method.Name == "Equals" && method.GetBaseDefinition() == typeof(object).GetMethod("Equals", new[] {typeof(object)}))
+			else if (!_overridesEqualsAndHasFields && method.Name == "Equals" && method.GetBaseDefinition() == typeof(object).GetMethod("Equals", new[] {typeof(object)}))
 			{
 				//skip
 			}
-			else if (!_overridesEquals && method.Name == "GetHashCode" && method.GetBaseDefinition() == typeof(object).GetMethod("GetHashCode"))
+			else if (!_overridesEqualsAndHasFields && method.Name == "GetHashCode" && method.GetBaseDefinition() == typeof(object).GetMethod("GetHashCode"))
 			{
 				//skip
 			}
