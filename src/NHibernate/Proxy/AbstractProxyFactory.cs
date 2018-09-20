@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -41,9 +42,14 @@ namespace NHibernate.Proxy
 			GetIdentifierMethod = getIdentifierMethod;
 			SetIdentifierMethod = setIdentifierMethod;
 			ComponentIdType = componentIdType;
-			OverridesEquals = ReflectHelper.OverridesEquals(persistentClass);
+			OverridesEquals = ReflectHelper.OverridesEquals(persistentClass) &&
+			                  HasUserDeclaredFields(persistentClass);
 		}
 
+		private static bool HasUserDeclaredFields(System.Type persistentClass)
+		{
+			return persistentClass.GetFieldsOfHierarchy().Any();
+		}
 
 		public abstract INHibernateProxy GetProxy(object id, ISessionImplementor session);
 
