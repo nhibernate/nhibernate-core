@@ -5,34 +5,11 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
-	/// <summary>
-	/// SQL Dialect for SQL Anywhere 12 - for the NHibernate 3.2.0 distribution
-	/// Copyright (C) 2011 Glenn Paulley
-	/// Contact: http://iablog.sybase.com/paulley
-	///
-	/// This NHibernate dialect for SQL Anywhere 12 is a contribution to the NHibernate
-	/// open-source project. It is intended to be included in the NHibernate 
-	/// distribution and is licensed under LGPL.
-	///
-	/// This library is free software; you can redistribute it and/or
-	/// modify it under the terms of the GNU Lesser General Public
-	/// License as published by the Free Software Foundation; either
-	/// version 2.1 of the License, or (at your option) any later version.
-	///
-	/// This library is distributed in the hope that it will be useful,
-	/// but WITHOUT ANY WARRANTY; without even the implied warranty of
-	/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	/// Lesser General Public License for more details.
-	///
-	/// You should have received a copy of the GNU Lesser General Public
-	/// License along with this library; if not, write to the Free Software
-	/// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-	/// </summary>
 	/// <remarks>
-	/// The SybaseSQLAnywhere12Dialect uses the SybaseSQLAnywhere11Dialect as its 
-	/// base class. SybaseSQLAnywhere12Dialect includes support for ISO SQL standard
+	/// The SapSQLAnywhere17Dialect uses the SybaseSQLAnywhere12Dialect as its 
+	/// base class. SybaseSQLAnywhere17Dialect includes support for ISO SQL standard
 	/// sequences, which are defined in the catalog table <tt>SYSSEQUENCE</tt>. 
-	/// The dialect uses the SybaseSQLAnywhe11MetaData class for metadata API
+	/// The dialect uses the SybaseSQLAnywhe12MetaData class for metadata API
 	/// calls, which correctly supports reserved words defined by SQL Anywhere.
 	/// 
 	/// The dialect defaults the following configuration properties:
@@ -43,7 +20,7 @@ namespace NHibernate.Dialect
 	///	</listheader>
 	///	<item>
 	///		<term>connection.driver_class</term>
-	///		<description><see cref="NHibernate.Driver.SybaseSQLAnywhereDotNet4Driver" /></description>
+	///		<description><see cref="NHibernate.Driver.SapSQLAnywhere17Driver" /></description>
 	///	</item>
 	///	<item>
 	///		<term>prepare_sql</term>
@@ -51,38 +28,23 @@ namespace NHibernate.Dialect
 	///	</item>
 	/// </list>
 	/// </remarks>
-	public class SybaseSQLAnywhere12Dialect : SybaseSQLAnywhere11Dialect
+	public class SapSQLAnywhere17Dialect : SybaseSQLAnywhere12Dialect
 	{
-		public SybaseSQLAnywhere12Dialect()
+		public SapSQLAnywhere17Dialect()
 			: base()
 		{
-			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SybaseSQLAnywhereDotNet4Driver";
+			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SybaseSQLAnywhere17Driver";
 		}
-
+	
 		protected override void RegisterKeywords()
 		{
 			base.RegisterKeywords();
-			RegisterKeyword("near");
-			RegisterKeyword("limit");
-			RegisterKeyword("offset");
-			RegisterKeyword("datetimeoffset");
 		}
 
 		protected override void RegisterDateTimeTypeMappings()
 		{
 			base.RegisterDateTimeTypeMappings();
-			RegisterColumnType(DbType.DateTimeOffset, "DATETIMEOFFSET");
 		}
-
-		/// <inheritdoc />
-		public override string CurrentUtcTimestampSQLFunctionName => "cast(current UTC timestamp as timestamp)";
-
-		/// <inheritdoc />
-		public override string CurrentUtcTimestampSelectString =>
-			"SELECT " + CurrentUtcTimestampSQLFunctionName;
-
-		/// <inheritdoc />
-		public override bool SupportsCurrentUtcTimestampSelection => true;
 
 		/// <summary> 
 		/// SQL Anywhere supports <tt>SEQUENCES</tt> using a primarily SQL Standard 
