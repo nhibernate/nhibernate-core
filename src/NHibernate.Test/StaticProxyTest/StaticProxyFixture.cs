@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.IO;
+﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Proxy;
 using NUnit.Framework;
 #if !NETFX
-using System.Globalization;
-using System.Runtime.Serialization;
-using NHibernate.Test.Legacy;
 using NHibernate.Util;
 #endif
 
@@ -34,6 +29,7 @@ namespace NHibernate.Test.StaticProxyTest
 		private object _idLazyTextEntity4;
 		private object _idLazyTextEntity5;
 		private object _idOverridingEntity1;
+		private object _idOverridingEntityChildWithOtherThanIdAccess1;
 		private object _idOverridingEntityWithField1;
 		private object _idOverridingEntityWithFieldChild1;
 
@@ -146,6 +142,13 @@ namespace NHibernate.Test.StaticProxyTest
 					Text = "Text1"
 				};
 				_idOverridingEntity1 = s.Save(oe);
+
+				oe = new OverridingEntityChildWithOtherThanIdAccess
+				{
+					Name = "1",
+					Text = "Text1"
+				};
+				_idOverridingEntityChildWithOtherThanIdAccess1 = s.Save(oe);
 
 				var oef = new OverridingEntityWithField()
 				{
@@ -507,6 +510,48 @@ namespace NHibernate.Test.StaticProxyTest
 					NHibernateUtil.IsInitialized(oeProxy),
 					Is.False,
 					"oeProxy is initialized after equality test");
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void GetHashCodeAndEqualsDependingOnStateDoInitializeProxyOfEntityWithoutFields()
+		{
+			OverridingEntityChildWithOtherThanIdAccess oeProxy, oe;
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				oe = s.Get<OverridingEntityChildWithOtherThanIdAccess>(_idOverridingEntityChildWithOtherThanIdAccess1);
+				Assert.That(oe.IsProxy(), Is.False, "oe is unexpectedly a proxy");
+				t.Commit();
+			}
+			Sfi.Evict(typeof(OverridingEntityChildWithOtherThanIdAccess));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				oeProxy = s.Load<OverridingEntityChildWithOtherThanIdAccess>(_idOverridingEntityChildWithOtherThanIdAccess1);
+				Assert.That(NHibernateUtil.IsInitialized(oeProxy), Is.False, "oeProxy is unexpectedly initialized");
+
+				Assert.That(oeProxy.GetHashCode(), Is.EqualTo(oe.GetHashCode()), "Unexpected hashcode");
+				Assert.That(
+					NHibernateUtil.IsInitialized(oeProxy),
+					Is.True,
+					"oeProxy is not initialized after hashcode test");
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				oeProxy = s.Load<OverridingEntityChildWithOtherThanIdAccess>(_idOverridingEntityChildWithOtherThanIdAccess1);
+				Assert.That(NHibernateUtil.IsInitialized(oeProxy), Is.False, "oeProxy is unexpectedly initialized");
+
+				Assert.That(oeProxy.Equals(oe), Is.True, "Unexpected inequality");
+				Assert.That(
+					NHibernateUtil.IsInitialized(oeProxy),
+					Is.True,
+					"oeProxy is not initialized after equality test");
 				t.Commit();
 			}
 		}

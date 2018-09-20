@@ -45,13 +45,13 @@ namespace NHibernate.Proxy
 				while (fieldSearchType != typeof(object) && fieldSearchType != null)
 				{
 					if (fieldSearchType
-					    .GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+					    .GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
 					    .Any(f => f.CustomAttributes.All(a => a.AttributeType != typeof(CompilerGeneratedAttribute))))
 					{
 						_overridesEqualsAndHasFields = true;
 						break;
 					}
-					fieldSearchType = baseType.BaseType;
+					fieldSearchType = fieldSearchType.BaseType;
 				}
 			}
 

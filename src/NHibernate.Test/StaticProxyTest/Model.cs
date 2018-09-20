@@ -67,6 +67,22 @@ namespace NHibernate.Test.StaticProxyTest
 	}
 
 	[Serializable]
+	public class OverridingEntityChildWithOtherThanIdAccess : OverridingEntity
+	{
+		public override bool Equals(object obj)
+		{
+			if (!(obj is OverridingEntity other))
+				return false;
+			return other.Id == Id && other.Name == Name;
+		}
+
+		public override int GetHashCode()
+		{
+			return Id.GetHashCode() ^ (Name?.GetHashCode() ?? 0);
+		}
+	}
+
+	[Serializable]
 	public class OverridingEntityWithField
 	{
 		private Guid _id;

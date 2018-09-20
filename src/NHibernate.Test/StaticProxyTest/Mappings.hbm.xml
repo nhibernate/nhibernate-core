@@ -43,6 +43,14 @@
     <property name="Text" column="`Text`"/>
   </class>
 
+  <class name="OverridingEntityChildWithOtherThanIdAccess">
+    <id name="Id">
+      <generator class="guid.comb"/>
+    </id>
+    <property name="Name"/>
+    <property name="Text" column="`Text`"/>
+  </class>
+
   <class name="OverridingEntityWithField">
     <id name="Id">
       <generator class="guid.comb"/>
