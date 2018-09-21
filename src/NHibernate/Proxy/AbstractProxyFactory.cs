@@ -19,7 +19,7 @@ namespace NHibernate.Proxy
 		protected virtual MethodInfo GetIdentifierMethod { get; private set; }
 		protected virtual MethodInfo SetIdentifierMethod { get; private set; }
 		protected virtual IAbstractComponentType ComponentIdType { get; private set; }
-		protected virtual bool OverridesEquals { get; set; }
+		protected virtual bool InterceptsEquals { get; set; }
 
 		protected bool IsClassProxy
 		{
@@ -42,13 +42,22 @@ namespace NHibernate.Proxy
 			GetIdentifierMethod = getIdentifierMethod;
 			SetIdentifierMethod = setIdentifierMethod;
 			ComponentIdType = componentIdType;
-			OverridesEquals = ReflectHelper.OverridesEquals(persistentClass) &&
-			                  HasUserDeclaredFields(persistentClass);
+			InterceptsEquals =
+				ReflectHelper.OverridesEquals(persistentClass) &&
+				(HasUserDeclaredFields(persistentClass) || HasPrivateProperties(persistentClass));
 		}
 
 		private static bool HasUserDeclaredFields(System.Type persistentClass)
 		{
 			return persistentClass.GetFieldsOfHierarchy().Any();
+		}
+
+		private static bool HasPrivateProperties(System.Type persistentClass)
+		{
+			return
+				persistentClass
+					.GetPropertiesOfHierarchy()
+					.Any(p => p.GetMethod?.IsPrivate ?? p.SetMethod?.IsPrivate ?? false);
 		}
 
 		public abstract INHibernateProxy GetProxy(object id, ISessionImplementor session);

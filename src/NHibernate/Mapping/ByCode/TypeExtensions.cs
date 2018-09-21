@@ -513,22 +513,5 @@ namespace NHibernate.Mapping.ByCode
 				}
 			}
 		}
-
-		internal static IEnumerable<MemberInfo> GetPropertiesOfHierarchy(this System.Type type)
-		{
-			if(type.IsInterface)
-			{
-				yield break;
-			}
-			System.Type analizing = type;
-			while (analizing != null && analizing != typeof(object))
-			{
-				foreach (PropertyInfo propertyInfo in analizing.GetProperties(PropertiesOrFieldOfClass))
-				{
-					yield return propertyInfo;
-				}
-				analizing = analizing.BaseType;
-			}
-		}
 	}
 }

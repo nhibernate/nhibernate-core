@@ -42,7 +42,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		protected IEnumerable<FieldInfo> GetUserDeclaredFields(System.Type type)
 		{
-			return Util.TypeExtensions.GetUserDeclaredFields(type);
+			return type.GetUserDeclaredFields();
 		}
 
 		public IEnumerable<MemberInfo> GetComponentMembers(System.Type componentClass)

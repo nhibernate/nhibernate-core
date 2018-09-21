@@ -34,7 +34,7 @@ namespace NHibernate.Proxy
 
 		private Func<ILazyInitializer, NHibernateProxyFactoryInfo, INHibernateProxy> CreateProxyActivator(ProxyCacheEntry pke)
 		{
-			var proxyBuilder = new NHibernateProxyBuilder(GetIdentifierMethod, SetIdentifierMethod, ComponentIdType, OverridesEquals);
+			var proxyBuilder = new NHibernateProxyBuilder(GetIdentifierMethod, SetIdentifierMethod, ComponentIdType, InterceptsEquals);
 			var type = proxyBuilder.CreateProxyType(pke.BaseType, pke.Interfaces);
 			var ctor = type.GetConstructor(new[] {typeof(ILazyInitializer), typeof(NHibernateProxyFactoryInfo)});
 			var li = Expression.Parameter(typeof(ILazyInitializer));
