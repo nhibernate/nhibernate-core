@@ -53,7 +53,13 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3269
 			mapper.Class<Inherited1>(rc =>
 				{
 					rc.Id(x => x.Id, m => m.Generator(Generators.Guid));
-					rc.Property("Name", m => m.UniqueKey("Inherited1_UX_Name"));
+					rc.Property(
+						"Name",
+						m =>
+						{
+							m.UniqueKey("Inherited1_UX_Name");
+							m.NotNullable(true);
+						});
 				});
 	
 			mapper.Class<Inherited2>(rc =>

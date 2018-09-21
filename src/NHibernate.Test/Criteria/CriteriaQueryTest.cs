@@ -2734,6 +2734,9 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void OrderProjectionAliasedTest()
 		{
+			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
+				Assert.Ignore("Current dialect does not support this test");
+
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
