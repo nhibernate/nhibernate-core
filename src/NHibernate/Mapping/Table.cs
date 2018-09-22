@@ -406,7 +406,7 @@ namespace NHibernate.Mapping
 
 				if (col.IsUnique)
 				{
-					if (dialect.SupportsUnique)
+					if (dialect.SupportsUnique && (!col.IsNullable || dialect.SupportsNullInUnique))
 					{
 						buf.Append(" unique");
 					}
@@ -669,7 +669,7 @@ namespace NHibernate.Mapping
 				}
 
 				bool useUniqueConstraint = column.Unique && dialect.SupportsUnique
-										   && (!column.IsNullable || dialect.SupportsNotNullUnique);
+										   && (!column.IsNullable || dialect.SupportsNullInUnique);
 				if (useUniqueConstraint)
 				{
 					alter.Append(" unique");
