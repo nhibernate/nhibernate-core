@@ -123,6 +123,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("bnot", new Function.BitwiseNativeOperation("~", true));
 
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
+			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
 
 			// register hibernate types for default use in scalar sqlquery type auto detection
 			RegisterHibernateType(DbType.Int64, NHibernateUtil.Int64.Name);

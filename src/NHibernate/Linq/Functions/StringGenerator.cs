@@ -324,6 +324,11 @@ namespace NHibernate.Linq.Functions
 
 		public HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
+			if (targetObject.Type == typeof(Guid))
+			{
+				return treeBuilder.MethodCall("strguid", visitor.Visit(targetObject).AsExpression());
+			}
+
 			return treeBuilder.MethodCall("str", visitor.Visit(targetObject).AsExpression());
 		}
 	}

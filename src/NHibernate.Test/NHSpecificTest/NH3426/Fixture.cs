@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Dialect;
 using NHibernate.Mapping.ByCode;
@@ -29,13 +26,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
+		private static readonly string _id = "9FF2D288-56E6-F349-9CFC-48902132D65B";
+
 		protected override void OnSetUp()
 		{
 			using (var session = OpenSession())
 			{
-				session.Save(new Entity { Id = Guid.NewGuid(), Name = "Name 1" });
-				session.Save(new Entity { Id = Guid.NewGuid(), Name = "Name 2" });
-				session.Save(new Entity { Id = Guid.NewGuid(), Name = "Name 3" });
+				session.Save(new Entity { Id = Guid.Parse(_id), Name = "Name 1" });
 
 				session.Flush();
 			}
@@ -44,17 +41,19 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 		protected override void OnTearDown()
 		{
 			using (var session = OpenSession())
-			using (var transaction = session.BeginTransaction())
 			{
-				session.Delete("from System.Object");
+				using (var transaction = session.BeginTransaction())
+				{
+					session.Delete("from System.Object");
 
-				session.Flush();
-				transaction.Commit();
+					session.Flush();
+					transaction.Commit();
+				}
 			}
 		}
 
 		[Test]
-		public void SelectAll()
+		public void SelectGuidToString()
 		{
 			using (var session = OpenSession())
 			{
@@ -62,12 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 					.Select(x => new { Id = x.Id.ToString() })
 					.ToList();
 
-				Assert.Equals(3, list.Count);
-				foreach (var x in list)
-				{
-					Assert.AreEqual(36, x.Id.Length);
-				}
-
+				Assert.AreEqual(list[0].Id.ToUpper(), _id.ToUpper());
 			}
 		}
 	}
