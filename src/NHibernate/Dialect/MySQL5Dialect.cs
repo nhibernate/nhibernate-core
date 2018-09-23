@@ -1,4 +1,5 @@
 using System.Data;
+using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
@@ -22,6 +23,8 @@ namespace NHibernate.Dialect
 			RegisterCastType(DbType.Double, "DECIMAL(19,5)");
 			RegisterCastType(DbType.Single, "DECIMAL(19,5)");
 			RegisterCastType(DbType.Guid, "BINARY(16)");
+
+			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char(36))"));
 		}
 
 		//Reference 5.x

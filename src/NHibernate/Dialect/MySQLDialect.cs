@@ -107,6 +107,8 @@ namespace NHibernate.Dialect
 			//special:
 			RegisterColumnType(DbType.Guid, "VARCHAR(40)");
 
+			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "?1"));
+
 			RegisterKeywords();
 
 			RegisterCastTypes();
