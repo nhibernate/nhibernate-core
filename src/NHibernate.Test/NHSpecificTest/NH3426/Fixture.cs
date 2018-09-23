@@ -10,10 +10,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 	[TestFixture]
 	public class Fixture : TestCaseMappingByCode
 	{
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return dialect is SQLiteDialect;
-		}
 
 		protected override HbmMapping GetMappings()
 		{
