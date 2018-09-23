@@ -57,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 					.Select(x => new { Id = x.Id.ToString() })
 					.ToList();
 
-				Assert.AreEqual(list[0].Id.ToUpper(), _id.ToUpper());
+				Assert.AreEqual(_id.ToUpper(), list[0].Id.ToUpper());
 			}
 		}
 	}
