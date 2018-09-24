@@ -300,7 +300,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("next_day", new StandardSQLFunction("next_day", NHibernateUtil.Date));
 
 			RegisterFunction("str", new StandardSQLFunction("to_char", NHibernateUtil.String));
-			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "rawtohex(reverse(substr(?1, 1, 4))) || '-' || rawtohex(reverse(substring(?1, 5, 2))) || '-' || rawtohex(reverse(substr(?1, 7, 2))) || '-' || rawtohex(substr(?1, 9, 2)) || '-' || rawtohex(substr(?1, 11))"));
+			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "rawtohex(reverse(substr(?1, 1, 4))) || '-' || rawtohex(reverse(substr(?1, 5, 2))) || '-' || rawtohex(reverse(substr(?1, 7, 2))) || '-' || rawtohex(substr(?1, 9, 2)) || '-', rawtohex(substr(?1, 11))"));
 
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 
