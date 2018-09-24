@@ -15,6 +15,8 @@ namespace NHibernate.Test.DialectTest.SchemaTests
 	{
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
+		public virtual string Name1 { get; set; }
+		public virtual string Name2 { get; set; }
 	}
 
 	[TestFixture]
@@ -28,6 +30,14 @@ namespace NHibernate.Test.DialectTest.SchemaTests
 				{
 					rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 					rc.Property(x => x.Name, m => m.Unique(true));
+					rc.Property(
+						x => x.Name1,
+						m =>
+						{
+							m.NotNullable(true);
+							m.UniqueKey("Test");
+						});
+					rc.Property(x => x.Name2, m => m.UniqueKey("Test"));
 				});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
