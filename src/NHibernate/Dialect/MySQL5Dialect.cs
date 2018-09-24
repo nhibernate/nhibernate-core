@@ -24,7 +24,7 @@ namespace NHibernate.Dialect
 			RegisterCastType(DbType.Single, "DECIMAL(19,5)");
 			RegisterCastType(DbType.Guid, "BINARY(16)");
 
-			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char(36))"));
+			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "concat(substr(hex(?1), 1, 8), '-', substr(hex(?1), 9, 4), '-', substr(hex(?1), 13, 4), '-', substr(hex(?1), 17, 4), '-', substr(hex(?1), 21))"));
 		}
 
 		//Reference 5.x
