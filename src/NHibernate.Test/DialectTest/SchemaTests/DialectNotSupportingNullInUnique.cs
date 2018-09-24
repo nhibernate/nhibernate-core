@@ -1,5 +1,4 @@
-﻿using System;
-using NHibernate.Cfg.MappingSchema;
+﻿using NHibernate.Cfg.MappingSchema;
 using NHibernate.Dialect;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
@@ -9,14 +8,6 @@ namespace NHibernate.Test.DialectTest.SchemaTests
 	public class DialectNotSupportingNullInUnique : GenericDialect
 	{
 		public override bool SupportsNullInUnique => false;
-	}
-
-	public class Entity
-	{
-		public virtual Guid Id { get; set; }
-		public virtual string Name { get; set; }
-		public virtual string Name1 { get; set; }
-		public virtual string Name2 { get; set; }
 	}
 
 	[TestFixture]
