@@ -19,7 +19,17 @@ namespace NHibernate.Proxy
 		protected virtual MethodInfo GetIdentifierMethod { get; private set; }
 		protected virtual MethodInfo SetIdentifierMethod { get; private set; }
 		protected virtual IAbstractComponentType ComponentIdType { get; private set; }
-		protected virtual bool InterceptsEquals { get; set; }
+		// Since v5.2
+		[Obsolete("Use InterceptsEquals instead")]
+		protected virtual bool OverridesEquals { get; set; }
+
+		protected virtual bool InterceptsEquals
+		{
+#pragma warning disable 618
+			get => OverridesEquals;
+			set => OverridesEquals = value;
+#pragma warning restore 618
+		}
 
 		protected bool IsClassProxy
 		{
