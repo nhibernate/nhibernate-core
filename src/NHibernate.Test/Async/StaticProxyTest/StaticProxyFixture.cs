@@ -8,16 +8,11 @@
 //------------------------------------------------------------------------------
 
 
-using System;
-using System.Collections;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Proxy;
 using NUnit.Framework;
 #if !NETFX
-using System.Globalization;
-using System.Runtime.Serialization;
-using NHibernate.Test.Legacy;
 using NHibernate.Util;
 #endif
 
@@ -44,6 +39,10 @@ namespace NHibernate.Test.StaticProxyTest
 		private object _idLazyTextEntity3;
 		private object _idLazyTextEntity4;
 		private object _idLazyTextEntity5;
+		private object _idOverridingEntity1;
+		private object _idOverridingEntityChildWithOtherThanIdAccess1;
+		private object _idOverridingEntityWithField1;
+		private object _idOverridingEntityWithFieldChild1;
 
 		protected override void OnSetUp()
 		{
@@ -147,6 +146,34 @@ namespace NHibernate.Test.StaticProxyTest
 					Text = "Text5"
 				};
 				_idLazyTextEntity5 = s.Save(le);
+
+				var oe = new OverridingEntity
+				{
+					Name = "1",
+					Text = "Text1"
+				};
+				_idOverridingEntity1 = s.Save(oe);
+
+				oe = new OverridingEntityChildWithOtherThanIdAccess
+				{
+					Name = "1",
+					Text = "Text1"
+				};
+				_idOverridingEntityChildWithOtherThanIdAccess1 = s.Save(oe);
+
+				var oef = new OverridingEntityWithField()
+				{
+					Name = "1",
+					Text = "Text1"
+				};
+				_idOverridingEntityWithField1 = s.Save(oef);
+
+				oef = new OverridingEntityWithFieldChild()
+				{
+					Name = "1",
+					Text = "Text1"
+				};
+				_idOverridingEntityWithFieldChild1 = s.Save(oef);
 
 				t.Commit();
 			}
@@ -456,6 +483,171 @@ namespace NHibernate.Test.StaticProxyTest
 				{
 					ds.Dispose();
 				}
+			}
+		}
+
+		[Test]
+		public async Task OverridenGetHashCodeAndEqualsDoNotAlwaysInitializeProxyOfEntityWithoutFieldsAsync()
+		{
+			// A proxy does not need to force initialization when calling an overriden GetHashCode or Equals
+			// if the entity does not have fields: in such case their implementation can only rely either on
+			// things not needing the proxy initialization (like original object.GetHashCode) or on properties
+			// overriden by the proxy and which will yield the correct value, either initializing the proxy or
+			// being the id. In the later case, initializing the proxy can be avoided.
+			OverridingEntity oeProxy, oe;
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				oe = await (s.GetAsync<OverridingEntity>(_idOverridingEntity1));
+				Assert.That(oe.IsProxy(), Is.False, "oe is unexpectedly a proxy");
+				await (t.CommitAsync());
+			}
+			await (Sfi.EvictAsync(typeof(OverridingEntity)));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				oeProxy = await (s.LoadAsync<OverridingEntity>(_idOverridingEntity1));
+				Assert.That(NHibernateUtil.IsInitialized(oeProxy), Is.False, "oeProxy is unexpectedly initialized");
+
+				Assert.That(oeProxy.GetHashCode(), Is.EqualTo(oe.GetHashCode()), "Unexpected hashcode");
+				Assert.That(
+					NHibernateUtil.IsInitialized(oeProxy),
+					Is.False,
+					"oeProxy is initialized after hashcode test");
+
+				Assert.That(oeProxy.Equals(oe), Is.True, "Unexpected inequality");
+				Assert.That(
+					NHibernateUtil.IsInitialized(oeProxy),
+					Is.False,
+					"oeProxy is initialized after equality test");
+				await (t.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task GetHashCodeAndEqualsDependingOnStateDoInitializeProxyOfEntityWithoutFieldsAsync()
+		{
+			OverridingEntityChildWithOtherThanIdAccess oeProxy, oe;
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				oe = await (s.GetAsync<OverridingEntityChildWithOtherThanIdAccess>(_idOverridingEntityChildWithOtherThanIdAccess1));
+				Assert.That(oe.IsProxy(), Is.False, "oe is unexpectedly a proxy");
+				await (t.CommitAsync());
+			}
+			await (Sfi.EvictAsync(typeof(OverridingEntityChildWithOtherThanIdAccess)));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				oeProxy = await (s.LoadAsync<OverridingEntityChildWithOtherThanIdAccess>(_idOverridingEntityChildWithOtherThanIdAccess1));
+				Assert.That(NHibernateUtil.IsInitialized(oeProxy), Is.False, "oeProxy is unexpectedly initialized");
+
+				Assert.That(oeProxy.GetHashCode(), Is.EqualTo(oe.GetHashCode()), "Unexpected hashcode");
+				Assert.That(
+					NHibernateUtil.IsInitialized(oeProxy),
+					Is.True,
+					"oeProxy is not initialized after hashcode test");
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				oeProxy = await (s.LoadAsync<OverridingEntityChildWithOtherThanIdAccess>(_idOverridingEntityChildWithOtherThanIdAccess1));
+				Assert.That(NHibernateUtil.IsInitialized(oeProxy), Is.False, "oeProxy is unexpectedly initialized");
+
+				Assert.That(oeProxy.Equals(oe), Is.True, "Unexpected inequality");
+				Assert.That(
+					NHibernateUtil.IsInitialized(oeProxy),
+					Is.True,
+					"oeProxy is not initialized after equality test");
+				await (t.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task OverridenGetHashCodeAndEqualsDoInitializeProxyOfEntityWithFieldsAsync()
+		{
+			// A proxy of an entity having fields must initialize it on GetHashCode or Equals calls, because
+			// it cannot know if their base implementation will access those fields or not.
+			OverridingEntityWithField oeProxy, oe;
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				oe = await (s.GetAsync<OverridingEntityWithField>(_idOverridingEntityWithField1));
+				Assert.That(oe.IsProxy(), Is.False, "oe is unexpectedly a proxy");
+				await (t.CommitAsync());
+			}
+			await (Sfi.EvictAsync(typeof(OverridingEntityWithField)));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				oeProxy = await (s.LoadAsync<OverridingEntityWithField>(_idOverridingEntityWithField1));
+				Assert.That(NHibernateUtil.IsInitialized(oeProxy), Is.False, "oeProxy is unexpectedly initialized");
+
+				Assert.That(oeProxy.GetHashCode(), Is.EqualTo(oe.GetHashCode()), "Unexpected hashcode");
+				Assert.That(
+					NHibernateUtil.IsInitialized(oeProxy),
+					Is.True,
+					"oeProxy is not initialized after hashcode test");
+				await (t.CommitAsync());
+			}
+			await (Sfi.EvictAsync(typeof(OverridingEntityWithField)));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				oeProxy = await (s.LoadAsync<OverridingEntityWithField>(_idOverridingEntityWithField1));
+				Assert.That(NHibernateUtil.IsInitialized(oeProxy), Is.False, "oeProxy is unexpectedly initialized");
+
+				Assert.That(oeProxy.Equals(oe), Is.True, "Unexpected inequality");
+				Assert.That(
+					NHibernateUtil.IsInitialized(oeProxy),
+					Is.True,
+					"oeProxy is not initialized after equality test");
+				await (t.CommitAsync());
+			}
+
+			// Also check inheritance case
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				oe = await (s.GetAsync<OverridingEntityWithFieldChild>(_idOverridingEntityWithFieldChild1));
+				Assert.That(oe.IsProxy(), Is.False, "oe child is unexpectedly a proxy");
+				await (t.CommitAsync());
+			}
+			await (Sfi.EvictAsync(typeof(OverridingEntityWithFieldChild)));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				oeProxy = await (s.LoadAsync<OverridingEntityWithFieldChild>(_idOverridingEntityWithFieldChild1));
+				Assert.That(NHibernateUtil.IsInitialized(oeProxy), Is.False, "oeProxy child is unexpectedly initialized");
+
+				Assert.That(oeProxy.GetHashCode(), Is.EqualTo(oe.GetHashCode()), "Unexpected child hashcode");
+				Assert.That(
+					NHibernateUtil.IsInitialized(oeProxy),
+					Is.True,
+					"oeProxy child is not initialized after hashcode test");
+				await (t.CommitAsync());
+			}
+			await (Sfi.EvictAsync(typeof(OverridingEntityWithFieldChild)));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				oeProxy = await (s.LoadAsync<OverridingEntityWithFieldChild>(_idOverridingEntityWithFieldChild1));
+				Assert.That(NHibernateUtil.IsInitialized(oeProxy), Is.False, "oeProxy is unexpectedly initialized");
+
+				Assert.That(oeProxy.Equals(oe), Is.True, "Unexpected child inequality");
+				Assert.That(
+					NHibernateUtil.IsInitialized(oeProxy),
+					Is.True,
+					"oeProxy child is not initialized after equality test");
+				await (t.CommitAsync());
 			}
 		}
 

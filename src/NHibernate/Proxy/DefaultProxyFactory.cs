@@ -16,7 +16,7 @@ namespace NHibernate.Proxy
 		{
 			try
 			{
-				var initializer = new DefaultLazyInitializer(EntityName, PersistentClass, id, GetIdentifierMethod, SetIdentifierMethod, ComponentIdType, session, OverridesEquals);
+				var initializer = new DefaultLazyInitializer(EntityName, PersistentClass, id, GetIdentifierMethod, SetIdentifierMethod, ComponentIdType, session, InterceptsEquals);
 
 				object proxyInstance = IsClassProxy
 										? factory.CreateProxy(PersistentClass, initializer, Interfaces)

@@ -35,4 +35,37 @@
     <property name="Text" column="`Text`" lazy="true"/>
   </class>
 
+  <class name="OverridingEntity">
+    <id name="Id">
+      <generator class="guid.comb"/>
+    </id>
+    <property name="Name"/>
+    <property name="Text" column="`Text`"/>
+  </class>
+
+  <!-- Names must be shorter than 30 characters for Firebird -->
+  <class name="OverridingEntityChildWithOtherThanIdAccess" table="Oecwotia">
+    <id name="Id">
+      <generator class="guid.comb"/>
+    </id>
+    <property name="Name"/>
+    <property name="Text" column="`Text`"/>
+  </class>
+
+  <class name="OverridingEntityWithField">
+    <id name="Id">
+      <generator class="guid.comb"/>
+    </id>
+    <property name="Name"/>
+    <property name="Text" column="`Text`"/>
+  </class>
+
+  <class name="OverridingEntityWithFieldChild">
+    <id name="Id">
+      <generator class="guid.comb"/>
+    </id>
+    <property name="Name"/>
+    <property name="Text" column="`Text`"/>
+  </class>
+
 </hibernate-mapping>

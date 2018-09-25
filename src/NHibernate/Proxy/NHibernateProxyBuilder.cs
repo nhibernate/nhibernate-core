@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -25,14 +26,14 @@ namespace NHibernate.Proxy
 		private readonly MethodInfo _getIdentifierMethod;
 		private readonly MethodInfo _setIdentifierMethod;
 		private readonly IAbstractComponentType _componentIdType;
-		private readonly bool _overridesEquals;
+		private readonly bool _interceptsEquals;
 
-		public NHibernateProxyBuilder(MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, IAbstractComponentType componentIdType, bool overridesEquals)
+		public NHibernateProxyBuilder(MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, IAbstractComponentType componentIdType, bool interceptsEquals)
 		{
 			_getIdentifierMethod = getIdentifierMethod;
 			_setIdentifierMethod = setIdentifierMethod;
 			_componentIdType = componentIdType;
-			_overridesEquals = overridesEquals;
+			_interceptsEquals = interceptsEquals;
 		}
 
 		public TypeInfo CreateProxyType(System.Type baseType, IReadOnlyCollection<System.Type> baseInterfaces)
@@ -125,11 +126,11 @@ namespace NHibernate.Proxy
 			{
 				ImplementSetIdentifier(typeBuilder, method, lazyInitializerField, parentType);
 			}
-			else if (!_overridesEquals && method.Name == "Equals" && method.GetBaseDefinition() == typeof(object).GetMethod("Equals", new[] {typeof(object)}))
+			else if (!_interceptsEquals && method.Name == "Equals" && method.GetBaseDefinition() == typeof(object).GetMethod("Equals", new[] {typeof(object)}))
 			{
 				//skip
 			}
-			else if (!_overridesEquals && method.Name == "GetHashCode" && method.GetBaseDefinition() == typeof(object).GetMethod("GetHashCode"))
+			else if (!_interceptsEquals && method.Name == "GetHashCode" && method.GetBaseDefinition() == typeof(object).GetMethod("GetHashCode"))
 			{
 				//skip
 			}

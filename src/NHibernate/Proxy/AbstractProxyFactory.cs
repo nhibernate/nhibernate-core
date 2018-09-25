@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -18,7 +19,17 @@ namespace NHibernate.Proxy
 		protected virtual MethodInfo GetIdentifierMethod { get; private set; }
 		protected virtual MethodInfo SetIdentifierMethod { get; private set; }
 		protected virtual IAbstractComponentType ComponentIdType { get; private set; }
+		// Since v5.2
+		[Obsolete("Use InterceptsEquals instead")]
 		protected virtual bool OverridesEquals { get; set; }
+
+		protected virtual bool InterceptsEquals
+		{
+#pragma warning disable 618
+			get => OverridesEquals;
+			set => OverridesEquals = value;
+#pragma warning restore 618
+		}
 
 		protected bool IsClassProxy
 		{
@@ -41,9 +52,23 @@ namespace NHibernate.Proxy
 			GetIdentifierMethod = getIdentifierMethod;
 			SetIdentifierMethod = setIdentifierMethod;
 			ComponentIdType = componentIdType;
-			OverridesEquals = ReflectHelper.OverridesEquals(persistentClass);
+			InterceptsEquals =
+				ReflectHelper.OverridesEquals(persistentClass) &&
+				(HasUserDeclaredFields(persistentClass) || HasPrivateProperties(persistentClass));
 		}
 
+		private static bool HasUserDeclaredFields(System.Type persistentClass)
+		{
+			return persistentClass.GetFieldsOfHierarchy().Any();
+		}
+
+		private static bool HasPrivateProperties(System.Type persistentClass)
+		{
+			return
+				persistentClass
+					.GetPropertiesOfHierarchy()
+					.Any(p => p.GetMethod?.IsPrivate ?? p.SetMethod?.IsPrivate ?? false);
+		}
 
 		public abstract INHibernateProxy GetProxy(object id, ISessionImplementor session);
 
