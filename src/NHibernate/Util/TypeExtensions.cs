@@ -73,18 +73,15 @@ namespace NHibernate.Util
 
 		internal static IEnumerable<PropertyInfo> GetPropertiesOfHierarchy(this System.Type type)
 		{
-			if (!type.IsInterface)
+			var analyzing = type;
+			while (analyzing != null && analyzing != typeof(object))
 			{
-				var analyzing = type;
-				while (analyzing != null && analyzing != typeof(object))
+				foreach (var fieldInfo in analyzing.GetProperties(PropertiesOrFieldOfClass))
 				{
-					foreach (var fieldInfo in analyzing.GetProperties(PropertiesOrFieldOfClass))
-					{
-						yield return fieldInfo;
-					}
-
-					analyzing = analyzing.BaseType;
+					yield return fieldInfo;
 				}
+
+				analyzing = analyzing.BaseType;
 			}
 		}
 
