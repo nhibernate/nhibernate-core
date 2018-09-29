@@ -10,7 +10,7 @@ namespace NHibernate.Dialect
 		{
 			RegisterColumnType(DbType.Guid, "CHAR(36)");
 
-			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "?1"));
+			//RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "?1"));
 		}
 	}
 }

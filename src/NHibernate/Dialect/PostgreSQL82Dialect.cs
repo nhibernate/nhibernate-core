@@ -17,7 +17,7 @@ namespace NHibernate.Dialect
 		public PostgreSQL82Dialect()
 		{
 			RegisterColumnType(DbType.Guid, "uuid");
-			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as varchar(36))"));
+			//RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as varchar(36))"));
 		}
 
 		public override bool SupportsIfExistsBeforeTableName

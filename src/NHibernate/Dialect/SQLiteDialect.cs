@@ -74,7 +74,7 @@ namespace NHibernate.Dialect
 			// 'YYYY-MM-DD 00:00:00' format for the date function.
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "datetime(date(?1))"));
 
-			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "?1"));
+			//RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "?1"));
 
 			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
 			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,1,?2)"));

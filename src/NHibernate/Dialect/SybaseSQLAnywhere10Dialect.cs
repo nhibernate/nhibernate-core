@@ -273,7 +273,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("soundex", new StandardSQLFunction("soundex", NHibernateUtil.Int32));
 			RegisterFunction("space", new StandardSQLFunction("space", NHibernateUtil.String));
 			RegisterFunction("str", new VarArgsSQLFunction(NHibernateUtil.String, "str(", ",", ")"));
-			RegisterFunction("strguid", new VarArgsSQLFunction(NHibernateUtil.String, "str(", "," ,")"));
+			//RegisterFunction("strguid", new VarArgsSQLFunction(NHibernateUtil.String, "str(", "," ,")"));
 			RegisterFunction("string", new VarArgsSQLFunction(NHibernateUtil.String, "string(", ",", ")"));
 			RegisterFunction("strtouuid", new StandardSQLFunction("strtouuid"));
 			RegisterFunction("stuff", new StandardSQLFunction("stuff", NHibernateUtil.String));
