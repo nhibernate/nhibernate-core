@@ -62,7 +62,6 @@ namespace NHibernate.Dialect
 			// Override standard HQL function
 			RegisterFunction("current_timestamp", new NoArgSQLFunction("now", NHibernateUtil.DateTime, true));
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as varchar)"));
-			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar)"));
 			RegisterFunction("locate", new PositionSubstringFunction());
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 			RegisterFunction("replace", new StandardSQLFunction("replace", NHibernateUtil.String));
