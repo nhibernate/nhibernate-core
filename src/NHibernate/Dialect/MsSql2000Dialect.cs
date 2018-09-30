@@ -352,6 +352,7 @@ namespace NHibernate.Dialect
 			// Casting to CHAR (without specified length) truncates to 30 characters. 
 			// A longer version would be safer, but 50 is enough to prevent errors when casting uniqueidentifer to a string representation (NH-2858)
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar(50))"));
+			//RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar(50))"));
 
 			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
 

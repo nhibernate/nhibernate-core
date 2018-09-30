@@ -1,5 +1,6 @@
 
 using System.Data;
+using NHibernate.Dialect.Function;
 
 namespace NHibernate.Dialect
 {
@@ -8,6 +9,8 @@ namespace NHibernate.Dialect
 		public MySQL55Dialect()
 		{
 			RegisterColumnType(DbType.Guid, "CHAR(36)");
+
+			//RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "?1"));
 		}
 	}
 }
