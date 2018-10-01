@@ -71,30 +71,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				if (ShouldIsolateTemporaryTableDDL())
 				{
 					session.ConnectionManager.Transaction.RegisterSynchronization(
-						new AfterTransactionCompletion(
-							success =>
-							{
-								if (Factory.Settings.IsDataDefinitionInTransactionSupported)
-								{
-									Isolater.DoIsolatedWork(work, session);
-								}
-								else
-								{
-									Isolater.DoNonTransactedWork(work, session);
-								}
-							},
-							async (success, cancelToken) =>
-							{
-								cancelToken.ThrowIfCancellationRequested();
-								if (Factory.Settings.IsDataDefinitionInTransactionSupported)
-								{
-									await Isolater.DoIsolatedWorkAsync(work, session, cancelToken);
-								}
-								else
-								{
-									await Isolater.DoNonTransactedWorkAsync(work, session, cancelToken);
-								}
-							}));
+						new IsolatedWorkAfterTransaction(work, session));
 				}
 				else
 				{
