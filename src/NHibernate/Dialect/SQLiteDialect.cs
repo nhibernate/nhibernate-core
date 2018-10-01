@@ -142,6 +142,7 @@ namespace NHibernate.Dialect
 			"memo",
 			"money",
 			"note",
+			"nothing",
 			"notnull",
 			"ntext",
 			"nvarchar",
