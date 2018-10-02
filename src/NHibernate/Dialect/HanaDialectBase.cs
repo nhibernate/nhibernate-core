@@ -681,6 +681,9 @@ namespace NHibernate.Dialect
 		public override bool SupportsCurrentTimestampSelection => true;
 
 		/// <inheritdoc />
+		public override bool SupportsCurrentUtcTimestampSelection => true;
+
+		/// <inheritdoc />
 		public override long TimestampResolutionInTicks
 			// According to https://help.sap.com/viewer/4fe29514fd584807ac9f2a04f6754767/2.0.02/en-US/3f81ccc7e35d44cbbc595c7d552c202a.html,
 			// it is supposed to have a 7 digits fractional second precision, but tests show only a 6 digits one. This is maybe a
@@ -928,6 +931,14 @@ namespace NHibernate.Dialect
 		public override string CurrentTimestampSelectString
 			// SYS.DUMMY is a system table having normally one row. If someone has fiddled with it, this will cause failures...
 			=> "select current_timestamp from sys.dummy";
+
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSelectString
+			// SYS.DUMMY is a system table having normally one row. If someone has fiddled with it, this will cause failures...
+			=> $"select {CurrentUtcTimestampSQLFunctionName} from sys.dummy";
+
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSQLFunctionName => "current_utctimestamp";
 
 		/// <inheritdoc />
 		public override int MaxAliasLength => 128;

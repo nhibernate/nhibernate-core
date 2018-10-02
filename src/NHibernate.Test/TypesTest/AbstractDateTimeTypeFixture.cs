@@ -76,7 +76,10 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Next()
 		{
-			var current = Now.Subtract(TimeSpan.FromTicks(DateAccuracyInTicks));
+			// Take some margin, as DbTimestampType takes its next value from the database, which
+			// may have its clock a bit shifted even if running on the same server. (Seen with PostgreSQL,
+			// off by a few seconds, and with SAP HANA running in a vm, off by twenty seconds.)
+			var current = Now.Subtract(TimeSpan.FromMinutes(2));
 			var next = Type.Next(current, null);
 
 			Assert.That(next, Is.TypeOf<DateTime>(), "next should be DateTime");

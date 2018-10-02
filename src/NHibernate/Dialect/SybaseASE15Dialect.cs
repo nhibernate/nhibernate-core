@@ -162,7 +162,14 @@ namespace NHibernate.Dialect
 		{
 			get { return "select getdate()"; }
 		}
-		
+
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSelectString =>
+			"SELECT " + CurrentUtcTimestampSQLFunctionName;
+
+		/// <inheritdoc />
+		public override bool SupportsCurrentUtcTimestampSelection => true;
+
 		/// <summary>
 		/// Sybase ASE 15 temporary tables are not supported
 		/// </summary>
@@ -231,7 +238,10 @@ namespace NHibernate.Dialect
 		{
 			get { return "getdate()"; }
 		}
-		
+
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSQLFunctionName => "getutcdate()";
+
 		public override bool SupportsExpectedLobUsagePattern
 		{
 			get { return false; }
