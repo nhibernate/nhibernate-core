@@ -76,7 +76,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Next()
 		{
-			var current = DateTime.Parse("2004-01-01");
+			var current = Now.Subtract(TimeSpan.FromTicks(DateAccuracyInTicks));
 			var next = Type.Next(current, null);
 
 			Assert.That(next, Is.TypeOf<DateTime>(), "next should be DateTime");
@@ -87,6 +87,14 @@ namespace NHibernate.Test.TypesTest
 		public void Seed()
 		{
 			Assert.That(Type.Seed(null), Is.TypeOf<DateTime>(), "seed should be DateTime");
+		}
+
+		[Test]
+		public void Comparer()
+		{
+			var v1 = Type.Seed(null);
+			var v2 = Now.Subtract(TimeSpan.FromTicks(DateAccuracyInTicks));
+			Assert.That(() => Type.Comparator.Compare(v1, v2), Throws.Nothing);
 		}
 
 		[Test]
@@ -369,7 +377,7 @@ namespace NHibernate.Test.TypesTest
 		[TestCase("2011-01-27T14:50:59.6220000+01:00")]
 		[TestCase("2011-01-27T13:50:59.6220000Z")]
 		[Obsolete]
-		public void FromStringValue_ParseValidValues(string timestampValue)
+		public virtual void FromStringValue_ParseValidValues(string timestampValue)
 		{
 			var timestamp = DateTime.Parse(timestampValue);
 
@@ -453,6 +461,19 @@ namespace NHibernate.Test.TypesTest
 					"Unexpected SqlTypeFactory.Date usage count.");
 				Assert.That(driver.GetCount(DbType.DateTime), Is.EqualTo(0), "Found unexpected DbType.DateTime usages.");
 				Assert.That(driver.GetCount(DbType.Date), Is.EqualTo(expectedCount), "Unexpected DbType.Date usage count.");
+			}
+			else if (typeSqlTypes.Any(t => Equals(t, SqlTypeFactory.Int64)))
+			{
+				Assert.That(
+					driver.GetCount(SqlTypeFactory.DateTime),
+					Is.EqualTo(0),
+					"Found unexpected SqlTypeFactory.DateTime usages.");
+				Assert.That(
+					driver.GetCount(SqlTypeFactory.Int64),
+					Is.EqualTo(expectedCount),
+					"Unexpected SqlTypeFactory.Int64 usage count.");
+				Assert.That(driver.GetCount(DbType.DateTime), Is.EqualTo(0), "Found unexpected DbType.DateTime usages.");
+				Assert.That(driver.GetCount(DbType.Int64), Is.EqualTo(expectedCount), "Unexpected DbType.Int64 usage count.");
 			}
 			else
 			{

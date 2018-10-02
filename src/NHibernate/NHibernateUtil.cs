@@ -218,6 +218,11 @@ namespace NHibernate
 		public static readonly TicksType Ticks = new TicksType();
 
 		/// <summary>
+		/// NHibernate UTC Ticks type
+		/// </summary>
+		public static readonly UtcTicksType UtcTicks = new UtcTicksType();
+
+		/// <summary>
 		/// NHibernate TimeAsTimeSpan type
 		/// </summary>
 		public static readonly TimeAsTimeSpanType TimeAsTimeSpan = new TimeAsTimeSpanType();

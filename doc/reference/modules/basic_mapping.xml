@@ -3733,7 +3733,10 @@
                             <entry><literal>Ticks</literal></entry>
                             <entry><literal>System.DateTime</literal></entry>
                             <entry><literal>DbType.Int64</literal></entry>
-                            <entry><literal>type="Ticks"</literal> must be specified.</entry>
+                            <entry>
+                                <literal>type="Ticks"</literal> must be specified. This is the recommended way to "timestamp" a
+                                column, along with <literal>UtcTicks</literal>.
+                            </entry>
                         </row>
                         <row>
                             <entry><literal>Time</literal></entry>
@@ -3810,6 +3813,17 @@
                                 <literal>type="UtcDateTimeNoMs"</literal> must be specified. Similar to
                                 <literal>UtcDateTime</literal> but ignores fractional seconds.
                                 Available since NHibernate v5.0.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry><literal>UtcTicks</literal></entry>
+                            <entry><literal>System.DateTime</literal></entry>
+                            <entry><literal>DbType.Int64</literal></entry>
+                            <entry>
+                                <literal>type="UtcTicks"</literal> must be specified. This is the recommended way to "timestamp" a
+                                column, along with <literal>Ticks</literal>.
+                                Ensures the <literal>DateTimeKind</literal> is set to <literal>DateTimeKind.Utc</literal>.
+                                Throws if set with a date having another kind.
                             </entry>
                         </row>
                         <row>
