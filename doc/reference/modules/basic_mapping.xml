@@ -3643,9 +3643,10 @@
                                 <literal>DbType.DateTime</literal> / <literal>DbType.DateTime2</literal><coref linkend="basic_mapping.datetime-co" />
                             </entry>
                             <entry>
-                                <literal>type="DbTimestamp"</literal> must be specified.  When used as a
+                                <literal>type="DbTimestamp"</literal> must be specified. When used as a
                                 <literal>version</literal> field, uses the database's current time retrieved
-                                in dedicated queries, rather than the client's current time.
+                                in dedicated queries, rather than the client's current time. In case of lack of
+                                database support, it falls back on the client's current time.
                             </entry>
                         </row>
                         <row>
@@ -3813,6 +3814,19 @@
                                 <literal>type="UtcDateTimeNoMs"</literal> must be specified. Similar to
                                 <literal>UtcDateTime</literal> but ignores fractional seconds.
                                 Available since NHibernate v5.0.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry><literal>UtcDbTimestamp</literal></entry>
+                            <entry><literal>System.DateTime</literal></entry>
+                            <entry>
+                                <literal>DbType.DateTime</literal> / <literal>DbType.DateTime2</literal><coref linkend="basic_mapping.datetime-co" />
+                            </entry>
+                            <entry>
+                                <literal>type="UtcDbTimestamp"</literal> must be specified. When used as a
+                                <literal>version</literal> field, uses the database's current UTC time retrieved
+                                in dedicated queries, rather than the client's current time. In case of lack of
+                                database support, it falls back on the client's current time.
                             </entry>
                         </row>
                         <row>
