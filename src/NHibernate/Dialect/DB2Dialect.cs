@@ -87,6 +87,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
 			RegisterFunction("variance", new StandardSQLFunction("variance", NHibernateUtil.Double));
 
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.LocalDateTime, false));
+			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate, false));
 			RegisterFunction("julian_day", new StandardSQLFunction("julian_day", NHibernateUtil.Int32));
 			RegisterFunction("microsecond", new StandardSQLFunction("microsecond", NHibernateUtil.Int32));
 			RegisterFunction("midnight_seconds", new StandardSQLFunction("midnight_seconds", NHibernateUtil.Int32));
@@ -137,8 +139,6 @@ namespace NHibernate.Dialect
 			RegisterFunction("bor", new Function.BitwiseFunctionOperation("bitor"));
 			RegisterFunction("bxor", new Function.BitwiseFunctionOperation("bitxor"));
 			RegisterFunction("bnot", new Function.BitwiseFunctionOperation("bitnot"));
-
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.DateTime, false));
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.DB2Driver";
 		}

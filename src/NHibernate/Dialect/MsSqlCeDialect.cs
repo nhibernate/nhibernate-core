@@ -172,7 +172,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar)"));
 			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar)"));
 
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime, true));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.LocalDateTime, true));
+			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.LocalDate, "dateadd(dd, 0, datediff(dd, 0, getdate()))"));
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(dd, 0, datediff(dd, 0, ?1))"));
 			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(second, ?1)"));
 			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(minute, ?1)"));

@@ -60,7 +60,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 1073741823, "text");
 
 			// Override standard HQL function
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("now", NHibernateUtil.DateTime, true));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("now", NHibernateUtil.LocalDateTime, true));
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as varchar)"));
 			RegisterFunction("locate", new PositionSubstringFunction());
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
@@ -94,6 +94,7 @@ namespace NHibernate.Dialect
 
 			// Register the date function, since when used in LINQ select clauses, NH must know the data type.
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
+			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate, false));
 			
 			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "?1::TEXT"));
 

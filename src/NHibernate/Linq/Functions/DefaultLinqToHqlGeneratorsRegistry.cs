@@ -56,6 +56,7 @@ namespace NHibernate.Linq.Functions
 			this.Merge(new CollectionContainsGenerator());
 
 			this.Merge(new DateTimePropertiesHqlGenerator());
+			this.Merge(new DateTimeNowHqlGenerator());
 
 			this.Merge(new DecimalAddGenerator());
 			this.Merge(new DecimalDivideGenerator());

@@ -74,12 +74,17 @@ namespace NHibernate.Dialect
 			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%m', ?1) as int)"));
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%Y', ?1) as int)"));
 			// Uses local time like MSSQL and PostgreSQL.
-			RegisterFunction("current_timestamp", new SQLFunctionTemplate(NHibernateUtil.DateTime, "datetime(current_timestamp, 'localtime')"));
+			RegisterFunction("current_timestamp", new SQLFunctionTemplate(NHibernateUtil.LocalDateTime, "datetime(current_timestamp, 'localtime')"));
+			RegisterFunction("current_utctimestamp", new SQLFunctionTemplate(NHibernateUtil.UtcDateTime, "datetime(current_timestamp)"));
 			// The System.Data.SQLite driver stores both Date and DateTime as 'YYYY-MM-DD HH:MM:SS'
 			// The SQLite date() function returns YYYY-MM-DD, which unfortunately SQLite does not consider
 			// as equal to 'YYYY-MM-DD 00:00:00'.  Because of this, it is best to return the
 			// 'YYYY-MM-DD 00:00:00' format for the date function.
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "datetime(date(?1))"));
+			// SQLite has current_date, but as current_timestamp, it is in UTC. So converting the timestamp to
+			// localtime then to date then, like the above date function, go back to datetime format for comparisons
+			// sake.
+			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.LocalDate, "datetime(date(current_timestamp, 'localtime'))"));
 
 			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
 			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,1,?2)"));
