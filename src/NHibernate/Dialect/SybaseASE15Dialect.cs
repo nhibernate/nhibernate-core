@@ -68,9 +68,10 @@ namespace NHibernate.Dialect
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(","+",")"));
 			RegisterFunction("cos", new StandardSQLFunction("cos", NHibernateUtil.Double));
 			RegisterFunction("cot", new StandardSQLFunction("cot", NHibernateUtil.Double));
-			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.Date));
+			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate));
 			RegisterFunction("current_time", new NoArgSQLFunction("current_time", NHibernateUtil.Time));
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.LocalDateTime));
+			RegisterFunction("current_utctimestamp", new NoArgSQLFunction("getutcdate", NHibernateUtil.UtcDateTime));
 			RegisterFunction("datename", new StandardSQLFunction("datename", NHibernateUtil.String));
 			RegisterFunction("day", new StandardSQLFunction("day", NHibernateUtil.Int32));
 			RegisterFunction("degrees", new StandardSQLFunction("degrees", NHibernateUtil.Double));

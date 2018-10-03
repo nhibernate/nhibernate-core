@@ -460,24 +460,40 @@ namespace NHibernate.Test
 					}}
 			};
 
+		protected bool IsFunctionSupported(string functionName)
+		{
+			// We could test Sfi.SQLFunctionRegistry.HasFunction(functionName) which has the advantage of
+			// accounting for additional functions added in configuration. But Dialect is normally never
+			// null, while Sfi could be not yet initialized, depending from where this function is called.
+			// Furthermore there are currently no additional functions added in configuration for NHibernate
+			// tests.
+			var dialect = Dialect;
+			if (!dialect.Functions.ContainsKey(functionName))
+				return false;
+
+			return !DialectsNotSupportingStandardFunction.TryGetValue(functionName, out var dialects) ||
+				!dialects.Contains(dialect.GetType());
+		}
+
 		protected void AssumeFunctionSupported(string functionName)
 		{
 			// We could test Sfi.SQLFunctionRegistry.HasFunction(functionName) which has the advantage of
-			// accounting for additionnal functions added in configuration. But Dialect is normally never
+			// accounting for additional functions added in configuration. But Dialect is normally never
 			// null, while Sfi could be not yet initialized, depending from where this function is called.
-			// Furtermore there are currently no additionnal functions added in configuration for NHibernate
+			// Furthermore there are currently no additional functions added in configuration for NHibernate
 			// tests.
+			var dialect = Dialect;
 			Assume.That(
-				Dialect.Functions,
+				dialect.Functions,
 				Does.ContainKey(functionName),
-				$"{Dialect} doesn't support {functionName} function.");
+				$"{dialect} doesn't support {functionName} function.");
 
 			if (!DialectsNotSupportingStandardFunction.TryGetValue(functionName, out var dialects))
 				return;
 			Assume.That(
 				dialects,
-				Does.Not.Contain(Dialect.GetType()),
-				$"{Dialect} doesn't support {functionName} standard function.");
+				Does.Not.Contain(dialect.GetType()),
+				$"{dialect} doesn't support {functionName} standard function.");
 		}
 
 		protected void ClearQueryPlanCache()

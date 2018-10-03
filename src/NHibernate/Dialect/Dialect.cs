@@ -105,7 +105,7 @@ namespace NHibernate.Dialect
 			// the syntax of current_timestamp is extracted from H3.2 tests 
 			// - test\hql\ASTParserLoadingTest.java
 			// - test\org\hibernate\test\hql\HQLTest.java
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.DateTime, true));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.LocalDateTime, true));
 			RegisterFunction("sysdate", new NoArgSQLFunction("sysdate", NHibernateUtil.DateTime, false));
 
 			//map second/minute/hour/day/month/year to ANSI extract(), override on subclasses

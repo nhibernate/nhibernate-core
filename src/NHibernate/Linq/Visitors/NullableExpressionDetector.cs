@@ -128,6 +128,13 @@ namespace NHibernate.Linq.Visitors
 		{
 			if (_functionRegistry.TryGetGenerator(memberExpression.Member, out _))
 			{
+				// The expression can be null when the member is static (e.g. DateTime.Now).
+				// In such cases we suppose that the value cannot be null.
+				if (memberExpression.Expression == null)
+				{
+					return false;
+				}
+
 				// We have to skip the property as it will be converted to a function that can return null
 				// if the argument is null
 				return IsNullable(memberExpression.Expression, equalityExpression);
