@@ -7,12 +7,12 @@ namespace NHibernate.Linq.Functions
 	public interface IAllowPreEvaluationHqlGenerator
 	{
 		/// <summary>
-		/// Should pre-evaluation be allowed for this property?
+		/// Should pre-evaluation be allowed for this property or method?
 		/// </summary>
-		/// <param name="member">The property.</param>
+		/// <param name="member">The property or method.</param>
 		/// <param name="factory">The session factory.</param>
 		/// <returns>
-		/// <see langword="true" /> if the property should be evaluated before running the query whenever possible,
+		/// <see langword="true" /> if the property or method should be evaluated before running the query whenever possible,
 		/// <see langword="false" /> if it must always be translated to the equivalent HQL call.
 		/// </returns>
 		/// <remarks>Implementors should return <see langword="true" /> by default. Returning <see langword="false" />

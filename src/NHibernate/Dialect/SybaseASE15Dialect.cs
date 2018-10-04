@@ -56,6 +56,9 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "date");
 			RegisterColumnType(DbType.Binary, 8000, "varbinary($l)");
 			RegisterColumnType(DbType.Binary, "varbinary");
+			// newid default is to generate a 32 bytes character uuid (no-dashes), but it has an option for
+			// including dashes, then raising it to 36 bytes.
+			RegisterColumnType(DbType.Guid, "varchar(36)");
 
 			RegisterFunction("abs", new StandardSQLFunction("abs"));
 			RegisterFunction("acos", new StandardSQLFunction("acos", NHibernateUtil.Double));
@@ -113,6 +116,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("year", new StandardSQLFunction("year", NHibernateUtil.Int32));
 
 			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
+
+			RegisterFunction("new_uuid", new NoArgSQLFunction("newid", NHibernateUtil.Guid));
 		}
 		
 		public override string AddColumnString

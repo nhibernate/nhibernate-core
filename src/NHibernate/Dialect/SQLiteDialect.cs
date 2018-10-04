@@ -61,6 +61,8 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.DateTime, "DATETIME");
 			RegisterColumnType(DbType.Time, "TIME");
 			RegisterColumnType(DbType.Boolean, "BOOL");
+			// UNIQUEIDENTIFIER is not a SQLite type, but SQLite does not care much, see
+			// https://www.sqlite.org/datatype3.html
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 		}
 

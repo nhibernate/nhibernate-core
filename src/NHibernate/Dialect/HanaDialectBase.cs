@@ -395,6 +395,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 			RegisterFunction("sysdate", new NoArgSQLFunction("current_timestamp", NHibernateUtil.DateTime, false));
 			RegisterFunction("truncate", new SQLFunctionTemplateWithRequiredParameters(null, "floor(?1 * power(10, ?2)) / power(10, ?2)", new object[] { null, "0" }));
+			RegisterFunction("new_uuid", new NoArgSQLFunction("sysuuid", NHibernateUtil.Guid, false));
 		}
 
 		protected virtual void RegisterHANAFunctions()
