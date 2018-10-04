@@ -98,6 +98,10 @@ namespace NHibernate.Dialect
 			
 			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "?1::TEXT"));
 
+			// The uuid_generate_v4 is not native and must be installed, but SelectGUIDString property already uses it,
+			// and NHibernate.TestDatabaseSetup does install it.
+			RegisterFunction("new_uuid", new NoArgSQLFunction("uuid_generate_v4", NHibernateUtil.Guid));
+
 			RegisterKeywords();
 		}
 

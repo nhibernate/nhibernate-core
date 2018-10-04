@@ -251,6 +251,46 @@ namespace NHibernate.Test.Linq
 				Assert.Fail("The test should have thrown a QueryException, but has not thrown anything");
 		}
 
+		[Test]
+		public void CanQueryByNewGuid()
+		{
+			if (!TestDialect.SupportsSqlType(SqlTypeFactory.Guid))
+				Assert.Ignore("Guid are not supported by the target database");
+
+			var isSupported = IsFunctionSupported("new_uuid");
+			RunTest(
+				isSupported,
+				spy =>
+				{
+					var guid = Guid.NewGuid();
+					var x = db.Orders.Count(o => guid != Guid.NewGuid());
+
+					Assert.That(x, Is.GreaterThan(0));
+					AssertFunctionInSql("new_uuid", spy);
+				});
+		}
+
+		[Test]
+		public void CanSelectNewGuid()
+		{
+			if (!TestDialect.SupportsSqlType(SqlTypeFactory.Guid))
+				Assert.Ignore("Guid are not supported by the target database");
+
+			var isSupported = IsFunctionSupported("new_uuid");
+			RunTest(
+				isSupported,
+				spy =>
+				{
+					var x =
+						db
+							.Orders.Select(o => new { id = o.OrderId, g = Guid.NewGuid() })
+							.OrderBy(o => o.id).Take(1).ToList();
+
+					Assert.That(x, Has.Count.GreaterThan(0));
+					AssertFunctionInSql("new_uuid", spy);
+				});
+		}
+
 		private void AssertFunctionInSql(string functionName, SqlLogSpy spy)
 		{
 			if (!IsFunctionSupported(functionName))

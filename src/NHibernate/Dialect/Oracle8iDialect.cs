@@ -310,6 +310,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("bor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2)"));
 			RegisterFunction("bxor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2) * 2"));
 			RegisterFunction("bnot", new SQLFunctionTemplate(null, "(-1 - ?1)"));
+
+			RegisterFunction("new_uuid", new NoArgSQLFunction("sys_guid", NHibernateUtil.Guid));
 		}
 
 		protected internal virtual void RegisterDefaultProperties()

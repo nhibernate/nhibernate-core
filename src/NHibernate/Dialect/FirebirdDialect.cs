@@ -423,6 +423,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("strguid", new StandardSQLFunction("uuid_to_char", NHibernateUtil.String));
 			RegisterFunction("sysdate", new CastedFunction("today", NHibernateUtil.Date));
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
+			RegisterFunction("new_uuid", new NoArgSQLFunction("gen_uuid", NHibernateUtil.Guid));
 			// Bitwise operations
 			RegisterFunction("band", new Function.BitwiseFunctionOperation("bin_and"));
 			RegisterFunction("bor", new Function.BitwiseFunctionOperation("bin_or"));

@@ -88,8 +88,14 @@ namespace NHibernate.Linq.Visitors
 			var attributes = node.Method
 				.GetCustomAttributes(typeof(LinqExtensionMethodAttributeBase), false)
 				.ToArray(x => (LinqExtensionMethodAttributeBase) x);
-			return attributes.Length == 0 ||
-				attributes.Any(a => a.PreEvaluation == LinqExtensionPreEvaluation.AllowPreEvaluation);
+			if (attributes.Length > 0)
+				return attributes.Any(a => a.PreEvaluation == LinqExtensionPreEvaluation.AllowPreEvaluation);
+
+			if (_sessionFactory == null || _sessionFactory.Settings.LinqToHqlLegacyPreEvaluation ||
+				!_sessionFactory.Settings.LinqToHqlGeneratorsRegistry.TryGetGenerator(node.Method, out var generator))
+				return true;
+
+			return generator.AllowPreEvaluation(node.Method, _sessionFactory);
 		}
 	}
 }

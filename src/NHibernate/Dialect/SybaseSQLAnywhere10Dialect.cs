@@ -338,6 +338,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("isnull", new VarArgsSQLFunction("isnull(", ",", ")"));
 			RegisterFunction("lesser", new StandardSQLFunction("lesser"));
 			RegisterFunction("newid", new NoArgSQLFunction("newid", NHibernateUtil.String, true));
+			RegisterFunction("new_uuid", new NoArgSQLFunction("newid", NHibernateUtil.Guid));
 			RegisterFunction("nullif", new StandardSQLFunction("nullif"));
 			RegisterFunction("number", new NoArgSQLFunction("number", NHibernateUtil.Int32));
 			RegisterFunction("plan", new VarArgsSQLFunction(NHibernateUtil.String, "plan(", ",", ")"));
