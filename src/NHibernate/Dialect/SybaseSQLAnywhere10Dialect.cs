@@ -232,7 +232,7 @@ namespace NHibernate.Dialect
 			// compatibility functions
 			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime, true));
 			RegisterFunction("current_time", new NoArgSQLFunction("getdate", NHibernateUtil.Time, true));
-			RegisterFunction("current_date", new NoArgSQLFunction("getdate", NHibernateUtil.Date, true));
+			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.Date, "date(getdate())"));
 		}
 
 		protected virtual void RegisterStringFunctions()
