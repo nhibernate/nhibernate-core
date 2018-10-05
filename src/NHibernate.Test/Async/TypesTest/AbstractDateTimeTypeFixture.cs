@@ -88,7 +88,10 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public async Task NextAsync()
 		{
-			var current = DateTime.Parse("2004-01-01");
+			// Take some margin, as DbTimestampType takes its next value from the database, which
+			// may have its clock a bit shifted even if running on the same server. (Seen with PostgreSQL,
+			// off by a few seconds, and with SAP HANA running in a vm, off by twenty seconds.)
+			var current = Now.Subtract(TimeSpan.FromMinutes(2));
 			var next = await (Type.NextAsync(current, null, CancellationToken.None));
 
 			Assert.That(next, Is.TypeOf<DateTime>(), "next should be DateTime");
@@ -99,6 +102,14 @@ namespace NHibernate.Test.TypesTest
 		public async Task SeedAsync()
 		{
 			Assert.That(await (Type.SeedAsync(null, CancellationToken.None)), Is.TypeOf<DateTime>(), "seed should be DateTime");
+		}
+
+		[Test]
+		public async Task ComparerAsync()
+		{
+			var v1 = await (Type.SeedAsync(null, CancellationToken.None));
+			var v2 = Now.Subtract(TimeSpan.FromTicks(DateAccuracyInTicks));
+			Assert.That(() => Type.Comparator.Compare(v1, v2), Throws.Nothing);
 		}
 
 		[Test]
@@ -322,6 +333,37 @@ namespace NHibernate.Test.TypesTest
 			AssertSqlType(driver, 5, true);
 		}
 
+		/// <summary>
+		/// Tests if the type FromStringValue implementation behaves as expected.
+		/// </summary>
+		/// <param name="timestampValue"></param>
+		[Test]
+		[TestCase("2011-01-27T15:50:59.6220000+02:00")]
+		[TestCase("2011-01-27T14:50:59.6220000+01:00")]
+		[TestCase("2011-01-27T13:50:59.6220000Z")]
+		[Obsolete]
+		public virtual void FromStringValue_ParseValidValues(string timestampValue)
+		{
+			var timestamp = DateTime.Parse(timestampValue);
+
+			Assert.That(
+				timestamp.Kind,
+				Is.EqualTo(DateTimeKind.Local),
+				"Kind is NOT Local. dotnet framework parses datetime values with kind set to Local and " +
+				"time correct to local timezone.");
+
+			var typeKind = GetTypeKind();
+			if (typeKind == DateTimeKind.Utc)
+				timestamp = timestamp.ToUniversalTime();
+
+			var value = (DateTime) Type.FromStringValue(timestampValue);
+
+			Assert.That(value, Is.EqualTo(timestamp), timestampValue);
+
+			if (typeKind != DateTimeKind.Unspecified)
+				Assert.AreEqual(GetTypeKind(), value.Kind, "Unexpected FromStringValue kind");
+		}
+
 		private void AssertSqlType(ClientDriverWithParamsStats driver, int expectedCount, bool exactType)
 		{
 			var typeSqlTypes = Type.SqlTypes(Sfi);
@@ -368,6 +410,19 @@ namespace NHibernate.Test.TypesTest
 					"Unexpected SqlTypeFactory.Date usage count.");
 				Assert.That(driver.GetCount(DbType.DateTime), Is.EqualTo(0), "Found unexpected DbType.DateTime usages.");
 				Assert.That(driver.GetCount(DbType.Date), Is.EqualTo(expectedCount), "Unexpected DbType.Date usage count.");
+			}
+			else if (typeSqlTypes.Any(t => Equals(t, SqlTypeFactory.Int64)))
+			{
+				Assert.That(
+					driver.GetCount(SqlTypeFactory.DateTime),
+					Is.EqualTo(0),
+					"Found unexpected SqlTypeFactory.DateTime usages.");
+				Assert.That(
+					driver.GetCount(SqlTypeFactory.Int64),
+					Is.EqualTo(expectedCount),
+					"Unexpected SqlTypeFactory.Int64 usage count.");
+				Assert.That(driver.GetCount(DbType.DateTime), Is.EqualTo(0), "Found unexpected DbType.DateTime usages.");
+				Assert.That(driver.GetCount(DbType.Int64), Is.EqualTo(expectedCount), "Unexpected DbType.Int64 usage count.");
 			}
 			else
 			{

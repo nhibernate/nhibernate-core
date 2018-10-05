@@ -296,11 +296,13 @@ namespace NHibernate.Type
 			RegisterType(NHibernateUtil.Timestamp, new[] { "timestamp" });
 #pragma warning restore 618
 			RegisterType(NHibernateUtil.DbTimestamp, new[] { "dbtimestamp" });
+			RegisterType(NHibernateUtil.UtcDbTimestamp, new[] { "utcdbtimestamp" });
 			RegisterType(NHibernateUtil.Time, new[] { "time" },
 				s => GetType(NHibernateUtil.Time, s, scale => new TimeType(SqlTypeFactory.GetTime((byte)scale))));
 			RegisterType(NHibernateUtil.TrueFalse, new[] { "true_false" });
 			RegisterType(NHibernateUtil.YesNo, new[] { "yes_no" });
 			RegisterType(NHibernateUtil.Ticks, new[] { "ticks" });
+			RegisterType(NHibernateUtil.UtcTicks, new[] { "utcticks" });
 			RegisterType(NHibernateUtil.TimeAsTimeSpan, new[] { "timeastimespan" },
 				s => GetType(NHibernateUtil.TimeAsTimeSpan, s, scale => new TimeAsTimeSpanType(SqlTypeFactory.GetTime((byte)scale))));
 			RegisterType(NHibernateUtil.LocalDateTime, new[] { "localdatetime" },

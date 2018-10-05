@@ -5,6 +5,7 @@
     <TargetFrameworks>$(NhAppTargetFrameworks)</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
+    <ContentSQLiteInteropFiles>true</ContentSQLiteInteropFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
@@ -48,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.109.2" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.8" />
     <PackageReference Include="NSubstitute" Version="3.1.0" />
     <PackageReference Include="NUnit" Version="3.10.1" />
@@ -64,27 +66,19 @@
     <Reference Include="System.Data.OracleClient" />
     <PackageReference Include="Microsoft.SqlServer.Compact" Version="4.0.8876.1" />
     <PackageReference Include="Oracle.ManagedDataAccess" Version="12.1.2400" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.106" />
     <PackageReference Include="MySql.Data" Version="6.9.11" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
     <PackageReference Include="System.CodeDom" Version="4.4.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.4.2" />
     <PackageReference Include="System.Data.OracleClient" Version="1.0.8" />
-    <PackageReference Include="System.Data.Odbc" Version="4.5.0-preview1-25914-04" />
+    <PackageReference Include="System.Data.Odbc" Version="4.5.0" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="NUnitLite" Version="3.10.1" />
     <PackageReference Include="MySql.Data" Version="6.10.6" />
   </ItemGroup>
   <ItemGroup Condition=" '$(NuGetPackageRoot)' != '' ">
     <NativeBinaries Include="$(NuGetPackageRoot)microsoft.sqlserver.compact\4.0.8876.1\NativeBinaries\**\*.*" />
-    <Content Include="@(NativeBinaries)">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(NuGetPackageRoot)' != '' ">
-    <NativeBinaries Include="$(NuGetPackageRoot)system.data.sqlite.core\1.0.105.2\build\net46\**\*.*" />
     <Content Include="@(NativeBinaries)">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

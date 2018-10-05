@@ -4,8 +4,8 @@ using System.Data.Odbc;
 using System.Data.SqlClient;
 #if NETFX
 using System.Data.SqlServerCe;
-using System.Data.SQLite;
 #endif
+using System.Data.SQLite;
 using System.IO;
 using FirebirdSql.Data.FirebirdClient;
 using NHibernate.Test;
@@ -28,8 +28,8 @@ namespace NHibernate.TestDatabaseSetup
 				{"NHibernate.Driver.OracleClientDriver", SetupOracle},
 				{"NHibernate.Driver.OracleManagedDataClientDriver", SetupOracle},
 				{"NHibernate.Driver.OdbcDriver", SetupSqlServerOdbc},
-#if NETFX
 				{"NHibernate.Driver.SQLite20Driver", SetupSQLite},
+#if NETFX
 				{"NHibernate.Driver.SqlServerCeDriver", SetupSqlServerCe}
 #endif
 			};
@@ -190,7 +190,6 @@ namespace NHibernate.TestDatabaseSetup
 			}
 		}
 
-#if NETFX
 		private static void SetupSQLite(Cfg.Configuration cfg)
 		{
 			var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
@@ -207,7 +206,6 @@ namespace NHibernate.TestDatabaseSetup
 				Console.WriteLine(e);
 			}
 		}
-#endif
 
 		private static void SetupOracle(Cfg.Configuration cfg)
 		{

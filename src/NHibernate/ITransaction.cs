@@ -70,12 +70,45 @@ namespace NHibernate
 		/// It is okay for this to be a no op implementation.
 		/// </remarks>
 		void Enlist(DbCommand command);
-	 
 
+		// Obsolete since 5.2
 		/// <summary>
 		/// Register a user synchronization callback for this transaction.
 		/// </summary>
 		/// <param name="synchronization">The <see cref="ISynchronization"/> callback to register.</param>
+		[Obsolete("Use RegisterSynchronization(ITransactionCompletionSynchronization) extension method instead. " +
+			"If implementing ITransaction, implement a 'public void " +
+			"RegisterSynchronization(ITransactionCompletionSynchronization)': the TransactionExtensions extension " +
+			"method will call it.")]
 		void RegisterSynchronization(ISynchronization synchronization);
+	}
+
+	// 6.0 TODO: merge into ITransaction
+	public static class TransactionExtensions
+	{
+		/// <summary>
+		/// Register an user synchronization callback for this transaction.
+		/// </summary>
+		/// <param name="transaction">The transaction.</param>
+		/// <param name="synchronization">The <see cref="ISynchronization"/> callback to register.</param>
+		public static void RegisterSynchronization(
+			this ITransaction transaction,
+			ITransactionCompletionSynchronization synchronization)
+		{
+			if (transaction is AdoTransaction adoTransaction)
+			{
+				adoTransaction.RegisterSynchronization(synchronization);
+				return;
+			}
+
+			// Use reflection for supporting custom transaction factories and transaction implementations.
+			var registerMethod = transaction.GetType().GetMethod(
+				nameof(AdoTransaction.RegisterSynchronization),
+				new[] { typeof(ITransactionCompletionSynchronization) });
+			if (registerMethod == null)
+				throw new NotSupportedException(
+					$"{transaction.GetType()} does not support {nameof(ITransactionCompletionSynchronization)}");
+			registerMethod.Invoke(transaction, new object[] { synchronization });
+		}
 	}
 }

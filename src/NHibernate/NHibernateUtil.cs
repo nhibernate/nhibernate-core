@@ -218,6 +218,11 @@ namespace NHibernate
 		public static readonly TicksType Ticks = new TicksType();
 
 		/// <summary>
+		/// NHibernate UTC Ticks type
+		/// </summary>
+		public static readonly UtcTicksType UtcTicks = new UtcTicksType();
+
+		/// <summary>
 		/// NHibernate TimeAsTimeSpan type
 		/// </summary>
 		public static readonly TimeAsTimeSpanType TimeAsTimeSpan = new TimeAsTimeSpanType();
@@ -238,6 +243,11 @@ namespace NHibernate
 		/// NHibernate Timestamp type, seeded db side.
 		/// </summary>
 		public static readonly DbTimestampType DbTimestamp = new DbTimestampType();
+
+		/// <summary>
+		/// NHibernate Timestamp type, seeded db side, in UTC.
+		/// </summary>
+		public static readonly UtcDbTimestampType UtcDbTimestamp = new UtcDbTimestampType();
 
 		/// <summary>
 		/// NHibernate TrueFalse type
