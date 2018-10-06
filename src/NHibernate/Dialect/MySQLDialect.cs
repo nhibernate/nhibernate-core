@@ -265,7 +265,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("truncate", new StandardSQLFunctionWithRequiredParameters("truncate", new object[] {null, "0"}));
 
 			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
-			
+			RegisterFunction("random", new NoArgSQLFunction("rand", NHibernateUtil.Double));
+
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
 			
 			RegisterFunction("stddev", new StandardSQLFunction("stddev", NHibernateUtil.Double));

@@ -55,5 +55,22 @@ namespace NHibernate.Linq.Functions
 			// By default, everything should be pre-evaluated whenever possible.
 			return true;
 		}
+
+		/// <summary>
+		/// Should the instance holding the method be ignored?
+		/// </summary>
+		/// <param name="generator">The method's HQL generator.</param>
+		/// <param name="member">The method.</param>
+		/// <returns>
+		/// <see langword="true" /> if the method translation does not depend on the instance to which it
+		/// belongs, <see langword="false" /> otherwise.
+		/// </returns>
+		public static bool IgnoreInstance(this IHqlGeneratorForMethod generator, MemberInfo member)
+		{
+			if (generator is IAllowPreEvaluationHqlGenerator allowPreEvalGenerator)
+				return allowPreEvalGenerator.IgnoreInstance(member);
+
+			return false;
+		}
 	}
 }

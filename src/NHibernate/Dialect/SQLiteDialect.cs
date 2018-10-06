@@ -113,6 +113,16 @@ namespace NHibernate.Dialect
 				RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "substr(hex(?1), 7, 2) || substr(hex(?1), 5, 2) || substr(hex(?1), 3, 2) || substr(hex(?1), 1, 2) || '-' || substr(hex(?1), 11, 2) || substr(hex(?1), 9, 2) || '-' || substr(hex(?1), 15, 2) || substr(hex(?1), 13, 2) || '-' || substr(hex(?1), 17, 4) || '-' || substr(hex(?1), 21) "));
 			else
 				RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
+
+			// SQLite random function yields a long, ranging form MinValue to MaxValue. (-9223372036854775808 to
+			// 9223372036854775807). HQL random requires a float from 0 inclusive to 1 exclusive, so we divide by
+			// 9223372036854775808 then 2 for having a value between -0.5 included to 0.5 excluded, and finally
+			// add 0.5. The division is written as "/ 4611686018427387904 / 4" for avoiding overflowing long.
+			RegisterFunction(
+				"random",
+				new SQLFunctionTemplate(
+					NHibernateUtil.Double,
+					"(cast(random() as real) / 4611686018427387904 / 4 + 0.5)"));
 		}
 
 		public override void Configure(IDictionary<string, string> settings)

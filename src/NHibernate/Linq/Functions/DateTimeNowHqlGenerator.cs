@@ -70,5 +70,11 @@ namespace NHibernate.Linq.Functions
 				$"({Environment.LinqToHqlFallbackOnPreEvaluation}) or evaluate {member.Name} " +
 				"outside of the query.");
 		}
+
+		public bool IgnoreInstance(MemberInfo member)
+		{
+			// They are all static properties
+			return true;
+		}
 	}
 }
