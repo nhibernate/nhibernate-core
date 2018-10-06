@@ -44,5 +44,11 @@ namespace NHibernate.Linq.Functions
 				$"({Environment.LinqToHqlFallbackOnPreEvaluation}) or evaluate NewGuid " +
 				"outside of the query.");
 		}
+
+		public bool IgnoreInstance(MemberInfo member)
+		{
+			// There is only a static method
+			return true;
+		}
 	}
 }

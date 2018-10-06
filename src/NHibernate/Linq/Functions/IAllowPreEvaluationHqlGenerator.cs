@@ -20,5 +20,15 @@ namespace NHibernate.Linq.Functions
 		/// a function which value on server side can differ from the equivalent client value, like
 		/// <see cref="DateTime.Now"/>.</remarks>
 		bool AllowPreEvaluation(MemberInfo member, ISessionFactoryImplementor factory);
+
+		/// <summary>
+		/// Should the instance holding the property or method be ignored?
+		/// </summary>
+		/// <param name="member">The property or method.</param>
+		/// <returns>
+		/// <see langword="true" /> if the property or method translation does not depend on the instance to which it
+		/// belongs, <see langword="false" /> otherwise.
+		/// </returns>
+		bool IgnoreInstance(MemberInfo member);
 	}
 }

@@ -98,6 +98,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("pi", new NoArgSQLFunction("pi", NHibernateUtil.Double));
 			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
 			RegisterFunction("rand", new StandardSQLFunction("rand", NHibernateUtil.Double));
+			// rand returns the same value for each row, rand2 returns a new one for each row.
+			RegisterFunction("random", new StandardSQLFunction("rand2", NHibernateUtil.Double));
 			RegisterFunction("reverse", new StandardSQLFunction("reverse"));
 			RegisterFunction("round", new StandardSQLFunction("round"));
 			RegisterFunction("rtrim", new StandardSQLFunction("rtrim"));
