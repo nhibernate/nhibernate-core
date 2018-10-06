@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -9,6 +10,9 @@ namespace NHibernate.Linq.Functions
 		private readonly Dictionary<MethodInfo, IHqlGeneratorForMethod> registeredMethods = new Dictionary<MethodInfo, IHqlGeneratorForMethod>();
 		private readonly Dictionary<MemberInfo, IHqlGeneratorForProperty> registeredProperties = new Dictionary<MemberInfo, IHqlGeneratorForProperty>();
 		private readonly List<IRuntimeMethodHqlGenerator> runtimeMethodHqlGenerators = new List<IRuntimeMethodHqlGenerator>();
+
+		private readonly ConcurrentDictionary<MethodInfo, IHqlGeneratorForMethod> _cachedRuntimeMethodHqlGenerators =
+			new ConcurrentDictionary<MethodInfo, IHqlGeneratorForMethod>();
 
 		public DefaultLinqToHqlGeneratorsRegistry()
 		{
@@ -69,14 +73,15 @@ namespace NHibernate.Linq.Functions
 
 		protected bool GetRuntimeMethodGenerator(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)
 		{
-			methodGenerator = null;
+			methodGenerator = _cachedRuntimeMethodHqlGenerators.GetOrAdd(
+				method,
+				m =>
+					runtimeMethodHqlGenerators
+						.Where(g => g.SupportsMethod(m))
+						.Select(g => g.GetMethodGenerator(m))
+						.FirstOrDefault());
 
-			foreach (var typeGenerator in runtimeMethodHqlGenerators.Where(typeGenerator => typeGenerator.SupportsMethod(method)))
-			{
-				methodGenerator = typeGenerator.GetMethodGenerator(method);
-				return true;
-			}
-			return false;
+			return methodGenerator != null;
 		}
 
 		public virtual bool TryGetGenerator(MethodInfo method, out IHqlGeneratorForMethod generator)
@@ -112,6 +117,7 @@ namespace NHibernate.Linq.Functions
 		public void RegisterGenerator(IRuntimeMethodHqlGenerator generator)
 		{
 			runtimeMethodHqlGenerators.Add(generator);
+			_cachedRuntimeMethodHqlGenerators.Clear();
 		}
 	}
 }

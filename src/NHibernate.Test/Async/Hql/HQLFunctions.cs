@@ -1079,9 +1079,9 @@ namespace NHibernate.Test.Hql
 		public async Task Current_Date_IsLowestTimeOfDayAsync()
 		{
 			AssumeFunctionSupported("current_date");
-			var now = DateTime.Now;
 			if (!TestDialect.SupportsNonDataBoundCondition)
 				Assert.Ignore("Test is not supported by the target database");
+			var now = DateTime.Now;
 			if (now.TimeOfDay < TimeSpan.FromMinutes(5) || now.TimeOfDay > TimeSpan.Parse("23:55"))
 				Assert.Ignore("Test is unreliable around midnight");
 
