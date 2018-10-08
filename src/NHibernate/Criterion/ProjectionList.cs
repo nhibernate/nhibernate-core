@@ -13,29 +13,49 @@ namespace NHibernate.Criterion
 	{
 		private IList<IProjection> elements = new List<IProjection>();
 
-		private IType[] typesCache;
-		private readonly Dictionary<int, string[]> columnPositionAliasesCache = new Dictionary<int, string[]>();
-		private readonly Dictionary<string, string[]> columnAliasesCache = new Dictionary<string, string[]>();
-		private readonly Dictionary<string, IType[]> typesAliasCache = new Dictionary<string, IType[]>();
-		private readonly bool enableMappingCaching;
+		private IType[] _typesCache;
+		private readonly Dictionary<int, string[]> _columnPositionAliasesCache;
+		private readonly Dictionary<string, string[]> _columnAliasesCache;
+		private readonly Dictionary<string, IType[]> _typesAliasCache;
+		private readonly bool _enableMappingCaching;
 
-		protected internal ProjectionList(bool enableMappingCaching = true)
+		protected internal ProjectionList() : this(false)
 		{
-			this.enableMappingCaching = enableMappingCaching;
 		}
 
-		public ProjectionList Create(bool enableMappingCaching = true)
+		protected internal ProjectionList(bool enableMappingCaching)
+		{
+			_enableMappingCaching = enableMappingCaching;
+
+			if (!_enableMappingCaching)
+				return;
+
+			_columnPositionAliasesCache = new Dictionary<int, string[]>();
+			_columnAliasesCache = new Dictionary<string, string[]>();
+			_typesAliasCache = new Dictionary<string, IType[]>();
+		}
+
+		public ProjectionList Create()
+		{
+			return Create(false);
+		}
+
+		public ProjectionList Create(bool enableMappingCaching)
 		{
 			return new ProjectionList(enableMappingCaching);
 		}
 
 		public ProjectionList Add(IProjection proj)
 		{
-			typesCache = null;
-			columnPositionAliasesCache.Clear();
-			columnAliasesCache.Clear();
-			typesAliasCache.Clear();
 			elements.Add(proj);
+
+			if (!_enableMappingCaching)
+				return this;
+
+			_typesCache = null;
+			_columnPositionAliasesCache.Clear();
+			_columnAliasesCache.Clear();
+			_typesAliasCache.Clear();
 			return this;
 		}
 
@@ -52,9 +72,9 @@ namespace NHibernate.Criterion
 
 		public IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			if (!enableMappingCaching)
+			if (!_enableMappingCaching)
 				return GetTypesInternal(criteria, criteriaQuery);
-			return typesCache ?? (typesCache = GetTypesInternal(criteria, criteriaQuery));
+			return _typesCache ?? (_typesCache = GetTypesInternal(criteria, criteriaQuery));
 		}
 
 		private IType[] GetTypesInternal(ICriteria criteria, ICriteriaQuery criteriaQuery)
@@ -109,13 +129,13 @@ namespace NHibernate.Criterion
 
 		public string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			if (!enableMappingCaching)
+			if (!_enableMappingCaching)
 				return GetColumnAliasesInternal(position, criteria, criteriaQuery);
 
-			if (!columnPositionAliasesCache.TryGetValue(position, out var value))
+			if (!_columnPositionAliasesCache.TryGetValue(position, out var value))
 			{
 				value = GetColumnAliasesInternal(position, criteria, criteriaQuery);
-				columnPositionAliasesCache.Add(position, value);
+				_columnPositionAliasesCache.Add(position, value);
 			}
 			return value;
 		}
@@ -134,13 +154,13 @@ namespace NHibernate.Criterion
 
 		public string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			if (!enableMappingCaching)
+			if (!_enableMappingCaching)
 				return GetColumnAliasesInternal(alias, position, criteria, criteriaQuery);
 
-			if (!columnAliasesCache.TryGetValue(alias, out var value))
+			if (!_columnAliasesCache.TryGetValue(alias, out var value))
 			{
 				value = GetColumnAliasesInternal(alias, position, criteria, criteriaQuery);
-				columnAliasesCache.Add(alias, value);
+				_columnAliasesCache.Add(alias, value);
 			}
 			return value;
 		}
@@ -163,13 +183,13 @@ namespace NHibernate.Criterion
 
 		public IType[] GetTypes(string alias, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			if (!enableMappingCaching)
+			if (!_enableMappingCaching)
 				return GetTypesInternal(alias, criteria, criteriaQuery);
 
-			if (!typesAliasCache.TryGetValue(alias, out var value))
+			if (!_typesAliasCache.TryGetValue(alias, out var value))
 			{
 				value = GetTypesInternal(alias, criteria, criteriaQuery);
-				typesAliasCache.Add(alias, value);
+				_typesAliasCache.Add(alias, value);
 			}
 			return value;
 		}

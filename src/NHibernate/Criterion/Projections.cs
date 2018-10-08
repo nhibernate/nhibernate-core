@@ -71,8 +71,19 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Create a new projection list
 		/// </summary>
-		/// <returns></returns>
-		public static ProjectionList ProjectionList(bool enableMappingCaching = true)
+		/// <returns>A projection list, without caching of its properties.</returns>
+		public static ProjectionList ProjectionList()
+		{
+			return new ProjectionList();
+		}
+
+		/// <summary>
+		/// Create a new projection list
+		/// </summary>
+		/// <param name="enableMappingCaching"><see langword="true" /> for enabling caching of projection properties,
+		/// <see langword="false" /> otherwise.</param>
+		/// <returns>A projection list.</returns>
+		public static ProjectionList ProjectionList(bool enableMappingCaching)
 		{
 			return new ProjectionList(enableMappingCaching);
 		}
