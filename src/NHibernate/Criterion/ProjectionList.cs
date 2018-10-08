@@ -17,14 +17,16 @@ namespace NHibernate.Criterion
 		private readonly Dictionary<int, string[]> columnPositionAliasesCache = new Dictionary<int, string[]>();
 		private readonly Dictionary<string, string[]> columnAliasesCache = new Dictionary<string, string[]>();
 		private readonly Dictionary<string, IType[]> typesAliasCache = new Dictionary<string, IType[]>();
+		private readonly bool enableMappingCaching;
 
-		protected internal ProjectionList()
+		protected internal ProjectionList(bool enableMappingCaching = true)
 		{
+			this.enableMappingCaching = enableMappingCaching;
 		}
 
-		public ProjectionList Create()
+		public ProjectionList Create(bool enableMappingCaching = true)
 		{
-			return new ProjectionList();
+			return new ProjectionList(enableMappingCaching);
 		}
 
 		public ProjectionList Add(IProjection proj)
@@ -50,6 +52,8 @@ namespace NHibernate.Criterion
 
 		public IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
+			if (!enableMappingCaching)
+				return GetTypesInternal(criteria, criteriaQuery);
 			return typesCache ?? (typesCache = GetTypesInternal(criteria, criteriaQuery));
 		}
 
@@ -105,6 +109,9 @@ namespace NHibernate.Criterion
 
 		public string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
+			if (!enableMappingCaching)
+				return GetColumnAliasesInternal(position, criteria, criteriaQuery);
+
 			if (!columnPositionAliasesCache.TryGetValue(position, out var value))
 			{
 				value = GetColumnAliasesInternal(position, criteria, criteriaQuery);
@@ -127,6 +134,9 @@ namespace NHibernate.Criterion
 
 		public string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
+			if (!enableMappingCaching)
+				return GetColumnAliasesInternal(alias, position, criteria, criteriaQuery);
+
 			if (!columnAliasesCache.TryGetValue(alias, out var value))
 			{
 				value = GetColumnAliasesInternal(alias, position, criteria, criteriaQuery);
@@ -153,6 +163,9 @@ namespace NHibernate.Criterion
 
 		public IType[] GetTypes(string alias, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
+			if (!enableMappingCaching)
+				return GetTypesInternal(alias, criteria, criteriaQuery);
+
 			if (!typesAliasCache.TryGetValue(alias, out var value))
 			{
 				value = GetTypesInternal(alias, criteria, criteriaQuery);
