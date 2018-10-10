@@ -175,8 +175,9 @@ testSetupMenu() {
 }
 
 testRun(){
-	eval "dotnet test ./src/NHibernate.Test/NHibernate.Test.csproj"
-	eval "dotnet test ./src/NHibernate.Test.VisualBasic/NHibernate.Test.VisualBasic.csproj"
+	eval "dotnet test ./src/NHibernate.Test/NHibernate.Test.csproj" -f netcoreapp2.0
+	eval "dotnet test ./src/NHibernate.Test.VisualBasic/NHibernate.Test.VisualBasic.vbproj" -f netcoreapp2.0
+	mainMenu
 }
 
 mainMenu() {
