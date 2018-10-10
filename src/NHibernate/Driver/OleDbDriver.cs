@@ -1,6 +1,5 @@
 using System;
 using System.Data.Common;
-using System.Data.OleDb;
 
 namespace NHibernate.Driver
 {
@@ -26,12 +25,12 @@ namespace NHibernate.Driver
 #else
 		public override DbConnection CreateConnection()
 		{
-			return new OleDbConnection();
+			return new System.Data.OleDb.OleDbConnection();
 		}
 
 		public override DbCommand CreateCommand()
 		{
-			return new OleDbCommand();
+			return new System.Data.OleDb.OleDbCommand();
 		}
 #endif
 

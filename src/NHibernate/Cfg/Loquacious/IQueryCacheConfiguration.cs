@@ -1,9 +1,8 @@
-using NHibernate.Cache;
-
 namespace NHibernate.Cfg.Loquacious
 {
 	public interface IQueryCacheConfiguration
 	{
-		ICacheConfiguration Through<TFactory>() where TFactory : IQueryCache;
+		// 6.0 TODO: enable constraint
+		ICacheConfiguration Through<TFactory>(); // where TFactory : IQueryCacheFactory;
 	}
 }

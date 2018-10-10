@@ -9,10 +9,10 @@
 
 
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NSubstitute;
@@ -40,7 +40,7 @@ namespace NHibernate.Test.BulkManipulation
 		public async Task SimpleNativeSQLInsert_DoesNotEvictEntireCacheWhenQuerySpacesAreAddedAsync()
 		{
 			List<string> clearCalls = new List<string>();
-			(Sfi.Settings.CacheProvider as SubstituteCacheProvider).OnClear(x =>
+			((SubstituteCacheProvider) Sfi.Settings.CacheProvider).OnClear(x =>
 			{
 				clearCalls.Add(x);
 			});

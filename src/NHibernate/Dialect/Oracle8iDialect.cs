@@ -250,7 +250,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("to_char", new StandardSQLFunction("to_char", NHibernateUtil.String));
 			RegisterFunction("to_date", new StandardSQLFunction("to_date", NHibernateUtil.DateTime));
 
-			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.Date, false));
+			// In Oracle, date includes a time, just with fractional seconds dropped. For actually only having
+			// the date, it must be truncated. Otherwise comparisons may yield unexpected results.
+			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.Date, "trunc(current_date)"));
 			RegisterFunction("current_time", new NoArgSQLFunction("current_timestamp", NHibernateUtil.Time, false));
 			RegisterFunction("current_timestamp", new CurrentTimeStamp());
 

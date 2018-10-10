@@ -74,6 +74,16 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.DateTimeOffset, "DATETIMEOFFSET");
 		}
 
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSQLFunctionName => "cast(current UTC timestamp as timestamp)";
+
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSelectString =>
+			"SELECT " + CurrentUtcTimestampSQLFunctionName;
+
+		/// <inheritdoc />
+		public override bool SupportsCurrentUtcTimestampSelection => true;
+
 		/// <summary> 
 		/// SQL Anywhere supports <tt>SEQUENCES</tt> using a primarily SQL Standard 
 		/// syntax. Sequence values can be queried using the <tt>.CURRVAL</tt> identifier, and the next

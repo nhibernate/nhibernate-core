@@ -132,16 +132,30 @@ namespace NHibernate.Engine
 			}
 		}
 
-		public void RegisterProcess(AfterTransactionCompletionProcessDelegate process)
-		{
-			afterTransactionProcesses.Register(process);
-		}
-	
-		public void RegisterProcess(BeforeTransactionCompletionProcessDelegate process)
+		public void RegisterProcess(IBeforeTransactionCompletionProcess process)
 		{
 			beforeTransactionProcesses.Register(process);
 		}
-	
+
+		public void RegisterProcess(IAfterTransactionCompletionProcess process)
+		{
+			afterTransactionProcesses.Register(process);
+		}
+
+		//Since v5.2
+		[Obsolete("This method is not used and will be removed in a future version.")]
+		public void RegisterProcess(BeforeTransactionCompletionProcessDelegate process)
+		{
+			RegisterProcess(new BeforeTransactionCompletionDelegatedProcess(process));
+		}
+
+		//Since v5.2
+		[Obsolete("This method is not used and will be removed in a future version.")]
+		public void RegisterProcess(AfterTransactionCompletionProcessDelegate process)
+		{
+			RegisterProcess(new AfterTransactionCompletionDelegatedProcess(process));
+		}
+
 		private void ExecuteActions(IList list)
 		{
 			// Actions may raise events to which user code can react and cause changes to action list.
@@ -195,8 +209,18 @@ namespace NHibernate.Engine
 
 		private void RegisterCleanupActions(IExecutable executable)
 		{
-			beforeTransactionProcesses.Register(executable.BeforeTransactionCompletionProcess);
-			afterTransactionProcesses.Register(executable.AfterTransactionCompletionProcess);
+			if (executable is IAsyncExecutable asyncExecutable)
+			{
+				RegisterProcess(asyncExecutable.BeforeTransactionCompletionProcess);
+				RegisterProcess(asyncExecutable.AfterTransactionCompletionProcess);
+			}
+			else
+			{
+#pragma warning disable 618,619
+				RegisterProcess(executable.BeforeTransactionCompletionProcess);
+				RegisterProcess(executable.AfterTransactionCompletionProcess);
+#pragma warning restore 618,619
+			}
 		}
 
 		/// <summary> 
@@ -251,7 +275,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary>
-		/// Execute any registered <see cref="BeforeTransactionCompletionProcessDelegate" />
+		/// Execute any registered <see cref="IBeforeTransactionCompletionProcess" />
 		/// </summary>
 		public void BeforeTransactionCompletion() 
 		{
@@ -452,16 +476,16 @@ namespace NHibernate.Engine
 		}
 		
 		[Serializable]
-		private class BeforeTransactionCompletionProcessQueue 
+		private partial class BeforeTransactionCompletionProcessQueue 
 		{
-			private List<BeforeTransactionCompletionProcessDelegate> processes = new List<BeforeTransactionCompletionProcessDelegate>();
+			private List<IBeforeTransactionCompletionProcess> processes = new List<IBeforeTransactionCompletionProcess>();
 
 			public bool HasActions
 			{
 				get { return processes.Count > 0; }
 			}
 
-			public void Register(BeforeTransactionCompletionProcessDelegate process) 
+			public void Register(IBeforeTransactionCompletionProcess process) 
 			{
 				if (process == null) 
 				{
@@ -477,8 +501,8 @@ namespace NHibernate.Engine
 				{
 					try 
 					{
-						BeforeTransactionCompletionProcessDelegate process = processes[i];
-						process();
+						var process = processes[i];
+						process.ExecuteBeforeTransactionCompletion();
 					}
 					catch (HibernateException)
 					{
@@ -494,16 +518,16 @@ namespace NHibernate.Engine
 		}
 
 		[Serializable]
-		private class AfterTransactionCompletionProcessQueue 
+		private partial class AfterTransactionCompletionProcessQueue 
 		{
-			private List<AfterTransactionCompletionProcessDelegate> processes = new List<AfterTransactionCompletionProcessDelegate>(InitQueueListSize * 3);
+			private List<IAfterTransactionCompletionProcess> processes = new List<IAfterTransactionCompletionProcess>(InitQueueListSize * 3);
 
 			public bool HasActions
 			{
 				get { return processes.Count > 0; }
 			}
 
-			public void Register(AfterTransactionCompletionProcessDelegate process)
+			public void Register(IAfterTransactionCompletionProcess process)
 			{
 				if (process == null) 
 				{
@@ -520,8 +544,8 @@ namespace NHibernate.Engine
 				{
 					try
 					{
-						AfterTransactionCompletionProcessDelegate process = processes[i];
-						process(success);
+						var process = processes[i];
+						process.ExecuteAfterTransactionCompletion(success);
 					}
 					catch (CacheException e)
 					{
@@ -534,6 +558,40 @@ namespace NHibernate.Engine
 					}
 				}
 				processes.Clear();
+			}
+		}
+
+		//6.0 TODO: Remove
+		[Obsolete]
+		private partial class BeforeTransactionCompletionDelegatedProcess : IBeforeTransactionCompletionProcess
+		{
+			private readonly BeforeTransactionCompletionProcessDelegate _delegate;
+
+			public BeforeTransactionCompletionDelegatedProcess(BeforeTransactionCompletionProcessDelegate @delegate)
+			{
+				_delegate = @delegate;
+			}
+
+			public void ExecuteBeforeTransactionCompletion()
+			{
+				_delegate?.Invoke();
+			}
+		}
+
+		//6.0 TODO: Remove
+		[Obsolete]
+		private partial class AfterTransactionCompletionDelegatedProcess : IAfterTransactionCompletionProcess
+		{
+			private readonly AfterTransactionCompletionProcessDelegate _delegate;
+
+			public AfterTransactionCompletionDelegatedProcess(AfterTransactionCompletionProcessDelegate @delegate)
+			{
+				_delegate = @delegate;
+			}
+
+			public void ExecuteAfterTransactionCompletion(bool success)
+			{
+				_delegate?.Invoke(success);
 			}
 		}
 
@@ -643,7 +701,12 @@ namespace NHibernate.Engine
 					var value = propertyValues[i];
 					var type = propertyTypes[i];
 
-					if (type.IsEntityType && value != null)
+					if (type.IsEntityType && value != null &&
+						// If the value is not initialized, it is a proxy with pending load from database,
+						// so it can only be an already persisted entity. It can not have its own pending
+						// insertion batch. So there is no need to seek for it, and it avoids initializing
+						// it by searching it in a dictionary. Fixes #1338.
+						NHibernateUtil.IsInitialized(value))
 					{
 						// find the batch number associated with the current association, if any.
 						int associationBatchNumber;
@@ -703,8 +766,16 @@ namespace NHibernate.Engine
 					
 					foreach(var child in children)
 					{
-						if (child == null)
+						if (child == null ||
+							// If the child is not initialized, it is a proxy with pending load from database,
+							// so it can only be an already persisted entity. It can not have its own pending
+							// insertion batch. So we do not need to keep track of the highest other batch on
+							// which it depends. And this avoids initializing the proxy by searching it into
+							// a dictionary.
+							!NHibernateUtil.IsInitialized(child))
+						{
 							continue;
+						}
 
 						int latestDependency;
 						if (_entityBatchDependency.TryGetValue(child, out latestDependency) && latestDependency > batchNumber)
