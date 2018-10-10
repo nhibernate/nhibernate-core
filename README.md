@@ -33,12 +33,6 @@ There are two official NHibernate community forums:
 [B1]: http://groups.google.com/group/nhusers
 [B2]: http://groups.google.com/group/nhibernate-development
 
-Linux Debug
------------
-
-If you want to debug NHibernate on Linux, I need install [mono](https://www.mono-project.com/download/stable/)
-
-
 Bug Reports
 -----------
 
