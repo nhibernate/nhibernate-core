@@ -15,7 +15,7 @@ buildDebug(){
 	echo "."
 	echo "Assuming the build succeeded, your results will be in the build folder."
 	echo "."
-	testSetupMenu
+	mainMenu
 }
 
 buildRelease(){
@@ -23,14 +23,14 @@ buildRelease(){
 	echo "."
 	echo "Assuming the build succeeded, your results will be in the build folder."
 	echo "."
-	testSetupMenu
+	mainMenu
 }
 
 testActivate(){
 	FILE_TEMP="folder.tmp"
-	
+
 	$BUILD_TOOL pick-folder $AVAILABLE_CONFIGURATIONS $FILE_TEMP "Which test configuration should be activated?"
-	
+
 	if [ -d $CURRENT_CONFIGURATION ]
 	then
 		rm -r $CURRENT_CONFIGURATION/
@@ -42,18 +42,9 @@ testActivate(){
 
 	rm $FILE_TEMP
 
-	echo "Configuration activated."	
+	echo "Configuration activated."
 
 	mainMenu
-}
-
-testSetupGenericSkipCopy(){
-	cp "src/NHibernate.Config.Templates/$CONFIG_NAME.cfg.xml" "$AVAILABLE_CONFIGURATIONS/$CFGNAME/hibernate.cfg.xml"
-	echo "Done setting up files.  Starting notepad to edit connection string in file:"
-	echo "$AVAILABLE_CONFIGURATIONS/$CFGNAME/hibernate.cfg.xml"
-	echo "Edit $AVAILABLE_CONFIGURATIONS/$CFGNAME/hibernate.cfg.xml with your favorite text editor"
-	#start notepad "$AVAILABLE_CONFIGURATIONS/$CFGNAME/hibernate.cfg.xml"
-	echo "When you're done, don't forget to activate the configuration through the menu."
 }
 
 testSetupGeneric() {
@@ -64,27 +55,29 @@ testSetupGeneric() {
 		CFGNAME="$CONFIG_NAME-$TEST_PLATFORM"
 		echo $CFGNAME
 	fi
-	
+
 	mkdir -p $AVAILABLE_CONFIGURATIONS/$CFGNAME
 
-	if [ $LIB_FILES == ""]
+	if [ ! "$LIB_FILES" ]
 	then
-		testSetupGenericSkipCopy
-	else
 		cp $LIB_FILES $AVAILABLE_CONFIGURATIONS/$CFGNAME
+
+		if [ ! "$LIB_FILES2" ]
+		then
+			cp $LIB_FILES2 $AVAILABLE_CONFIGURATIONS/$CFGNAME
+		fi
 	fi
-	
-	if [ $LIB_FILES2 == ""]
-	then
-		testSetupGenericSkipCopy
-	else	
-		cp $LIB_FILES2 $AVAILABLE_CONFIGURATIONS/$CFGNAME
-	fi
+
+	cp "src/NHibernate.Config.Templates/$CONFIG_NAME.cfg.xml" "$AVAILABLE_CONFIGURATIONS/$CFGNAME/hibernate.cfg.xml"
+	echo "Done setting up files. Please edit the connection string in file:"
+	echo "$AVAILABLE_CONFIGURATIONS/$CFGNAME/hibernate.cfg.xml"
+	echo "When you're done, don't forget to activate the configuration through the menu."
+	mainMenu
 }
 
 testSetupSqlServer() {
 	CONFIG_NAME="MSSQL"
- 	TEST_PLATFORM="AnyCPU"
+	TEST_PLATFORM="AnyCPU"
 	LIB_FILES=""
 	LIB_FILES2=""
 	testSetupGeneric
@@ -92,7 +85,7 @@ testSetupSqlServer() {
 
 testSetupSqlServerCe(){
 	CONFIG_NAME="SqlServerCe"
- 	TEST_PLATFORM="AnyCPU"
+	TEST_PLATFORM="AnyCPU"
 	LIB_FILES=""
 	LIB_FILES2=""
 	testSetupGeneric
@@ -100,7 +93,7 @@ testSetupSqlServerCe(){
 
 testSetupFirebird() {
 	CONFIG_NAME="FireBird"
- 	TEST_PLATFORM="AnyCPU"
+	TEST_PLATFORM="AnyCPU"
 	LIB_FILES=""
 	LIB_FILES2=""
 	testSetupGeneric
@@ -108,7 +101,7 @@ testSetupFirebird() {
 
 testSetupSqlite() {
 	CONFIG_NAME="SQLite"
- 	TEST_PLATFORM="AnyCPU"
+	TEST_PLATFORM="AnyCPU"
 	LIB_FILES=""
 	LIB_FILES2=""e
 	testSetupGeneric
@@ -116,7 +109,7 @@ testSetupSqlite() {
 
 testSetupPostgresql() {
 	CONFIG_NAME="PostgreSQL"
- 	TEST_PLATFORM="AnyCPU"
+	TEST_PLATFORM="AnyCPU"
 	LIB_FILES=""
 	LIB_FILES2=""
 	testSetupGeneric
@@ -124,31 +117,7 @@ testSetupPostgresql() {
 
 testSetupMysql() {
 	CONFIG_NAME="MySql"
- 	TEST_PLATFORM="AnyCPU"
-	LIB_FILES=""
-	LIB_FILES2=""
-	testSetupGeneric
-}
-
-testSetupOracle(){
-	CONFIG_NAME="Oracle"
- 	TEST_PLATFORM="x86"
-	LIB_FILES="lib\teamcity\oracle\x86\*.dll"
-	LIB_FILES2=""
-	testSetupGeneric
-}
-
-testSetupOracleManaged() {
-	CONFIG_NAME="Oracle-Managed"
- 	TEST_PLATFORM="AnyCPU"
-	LIB_FILES=""
-	LIB_FILES2=""
-	testSetupGeneric
-}
-
-testSetupHana() {
-	CONFIG_NAME="HANA"
- 	TEST_PLATFORM="AnyCPU"
+	TEST_PLATFORM="AnyCPU"
 	LIB_FILES=""
 	LIB_FILES2=""
 	testSetupGeneric
@@ -159,46 +128,28 @@ testSetupMenu() {
 	echo "B. Add a test configuration for Firebird."
 	echo "C. Add a test configuration for SQLite."
 	echo "D. Add a test configuration for PostgreSQL."
-	echo "E. Add a test configuration for Oracle(NOT Support yet)."
-	echo "F. Add a test configuration for Oracle with managed driver (NOT Support yet)."
-	echo "G. Add a test configuration for SQL Server Compact."
-	echo "H. Add a test configuration for MySql."
-	echo "I. Add a test configuration for SAP HANA(NOT Support yet)."
+	echo "E. Add a test configuration for SQL Server Compact."
+	echo "F. Add a test configuration for MySql."
 	echo "."
 	echo "X.  Exit to main menu."
 	echo "."
-	
-	$BUILD_TOOL prompt ABCDEFGHIX
-	
+
+	$BUILD_TOOL prompt ABCDEFX
+
 	OPTION=$?
-	if	[ $OPTION -eq 9 ]
+	if	[ $OPTION -eq 6 ]
 	then
 		echo "Main menu"
 		mainMenu
-	elif [ $OPTION -eq 8 ]
-	then
-		echo "HANA"
-		testSetupHana
-		mainMenu
-	elif [ $OPTION -eq 7 ]
+	elif [ $OPTION -eq 5 ]
 	then
 		echo "MySQL"
 		testSetupMysql
 		mainMenu
-	elif [ $OPTION -eq 6 ]
+	elif [ $OPTION -eq 4 ]
 	then
 		echo "SQL Server CE"
 		testSetupSqlServerCe
-		mainMenu
-	elif [ $OPTION -eq 5 ]
-	then
-		echo "Oracle Ma"
-		testSetupOracleManaged
-		mainMenu
-	elif [ $OPTION -eq 4 ]
-	then
-		echo "Oracle"
-		testSetupOracle
 		mainMenu
 	elif [ $OPTION -eq 3 ]
 	then
@@ -236,27 +187,27 @@ mainMenu() {
 	echo  "C. (Step 3) Run tests."
 	echo  "."
 	echo  "--- BUILD ---"
-	echo  "D. Build NHibernate (Debug)"
-	echo  "E. Build NHibernate (Release)"
+	echo  "E. Build NHibernate (Debug)"
+	echo  "F. Build NHibernate (Release)"
 	echo  "."
 	echo  "--- Exit ---"
 	echo  "X. Make the beautiful build menu go away."
 	echo  "."
 
-	$BUILD_TOOL prompt ABCDEX
-	
+	$BUILD_TOOL prompt ABCEFX
+
 	OPTION=$?
-	
-	if [ $OPTION -eq 4 ]	
+
+	if [ $OPTION -eq 4 ]
 	then
 		buildRelease
-	elif [ $OPTION -eq 3 ]	
+	elif [ $OPTION -eq 3 ]
 	then
 		buildDebug
-	elif [ $OPTION -eq 2 ]	
+	elif [ $OPTION -eq 2 ]
 	then
 		testRun
-	elif [ $OPTION -eq 1 ]	
+	elif [ $OPTION -eq 1 ]
 	then
 		testActivate
 	elif [ $OPTION -eq 0 ]
@@ -267,5 +218,3 @@ mainMenu() {
 
 dotnet build ./Tools/BuildTool/BuildTool.sln -c Release
 mainMenu
-
-

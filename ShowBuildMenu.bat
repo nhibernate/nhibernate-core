@@ -34,8 +34,6 @@ echo --- Exit ---
 echo X. Make the beautiful build menu go away.
 echo.
 
-
-
 %BUILDTOOL% prompt ABCDEFGHIX
 if errorlevel 9 goto end
 if errorlevel 8 goto teamcity-menu
