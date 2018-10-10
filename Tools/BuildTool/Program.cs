@@ -1,58 +1,61 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using static System.Console;
 
 namespace BuildTool
 {
-	public class Program
+	public static class Program
 	{
 		public static int Main(string[] args)
 		{
-			string command = args[0];
+			var command = args[0];
+
 			switch (command)
 			{
 				case "pick-folder":
-					string[] folders = Directory.GetDirectories(args[1]);
-					for (int i = 0; i < folders.Length; i++)
+					var folders = Directory.GetDirectories(args[1]);
+					for (var i = 0; i < folders.Length; i++)
 					{
-						WriteLine((char) ('A' + i) + ": " + Path.GetFileName(folders[i]));
+						Console.WriteLine((char) ('A' + i) + ": " + Path.GetFileName(folders[i]));
 					}
 
 					var sb = new StringBuilder();
-					for (int i = 3; i < args.Length; i++)
+					for (var i = 3; i < args.Length; i++)
 						sb.Append(args[i]);
+					var remainingArgs = sb.ToString();
+
 					while (true)
 					{
-						WriteLine(sb.ToString());
-						ConsoleKeyInfo key = ReadKey();
-						WriteLine();
+						Console.WriteLine(remainingArgs);
+						var key = Console.ReadKey();
+						Console.WriteLine();
 
 						if (char.IsLetter(key.KeyChar))
 						{
-							int index = key.KeyChar.ToString().ToUpper()[0] - 'A';
+							var index = key.KeyChar.ToString().ToUpper()[0] - 'A';
 							File.WriteAllText(args[2], folders[index]);
 							break;
 						}
 					}
 
 					return 0;
+
 				case "prompt":
-					List<char> characters = args[1].ToUpper().ToCharArray().ToList();
+					var characters = args[1].ToUpper().ToList();
 					while (true)
 					{
-						WriteLine($"[{string.Join(", ", characters).ToUpper()}]?");
-						char key = char.ToUpper(ReadKey().KeyChar);
-						WriteLine();
+						Console.WriteLine($"[{string.Join(", ", characters)}]?");
+						var key = char.ToUpper(Console.ReadKey().KeyChar);
+						Console.WriteLine();
 						if (characters.Contains(key))
 						{
 							return characters.IndexOf(key);
 						}
 					}
+
 				default:
-					WriteLine($"Invalid command: {command}");
+					Console.WriteLine($"Invalid command: {command}");
 					return 255;
 			}
 		}
