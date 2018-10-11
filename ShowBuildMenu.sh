@@ -173,12 +173,11 @@ testRun(){
 }
 
 generateAsync(){
+	dotnet msbuild /t:Restore ./src/NHibernate.sln
+
 	getAsyncGeneratorPath
-
 	cd src
-
 	eval "mono ../$async_generator_path"
-
 	cd ..
 
 	mainMenu
