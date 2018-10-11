@@ -3,3 +3,4 @@ NUnit.*
 vswhere.*
 CSharpAsyncGenerator.CommandLine.*
 gitreleasemanager.*
+SQLitePCLRaw.core.*
