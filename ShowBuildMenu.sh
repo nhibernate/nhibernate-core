@@ -9,6 +9,7 @@ LIB_FILES=""
 LIB_FILES2=""
 CURRENT_CONFIGURATION="./current-test-configuration"
 OPTION=0
+async_generator_path=""
 
 if [ ! -f $BUILD_TOOL_PATH ]
 then
@@ -171,6 +172,40 @@ testRun(){
 	mainMenu
 }
 
+generateAsync(){
+	getAsyncGeneratorPath
+
+	cd src
+
+	eval "mono ../$async_generator_path"
+
+	cd ..
+
+	mainMenu
+}
+
+getAsyncGeneratorPath(){
+	if [ "$async_generator_path" ]
+	then
+		return
+	fi
+
+	cd Tools
+
+	if [ ! -f nuget.exe ]
+	then
+		wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+	fi
+
+	eval "mono nuget.exe install"
+
+	async_generator_path="Tools/CSharpAsyncGenerator.CommandLine.$(cat packages.config | grep id=\"CSharpAsyncGenerator.CommandLine. | cut -d\" -f4)/tools/AsyncGenerator.CommandLine.exe"
+
+	#async_generator_path="Tools/$async_generator_path/tools/AsyncGenerator.CommandLine.exe"
+
+	cd ..
+}
+
 mainMenu() {
 	echo  "========================= NHIBERNATE BUILD MENU =========================="
 	echo  "--- TESTING ---"
@@ -182,15 +217,21 @@ mainMenu() {
 	echo  "E. Build NHibernate (Debug)"
 	echo  "F. Build NHibernate (Release)"
 	echo  "."
+	echo  "--- Code generation ---"
+	echo  "H. Generate async code (Generates files in Async sub-folders)"
+	echo  "."
 	echo  "--- Exit ---"
 	echo  "X. Make the beautiful build menu go away."
 	echo  "."
 
-	$BUILD_TOOL prompt ABCEFX
+	$BUILD_TOOL prompt ABCEFHX
 
 	OPTION=$?
 
-	if [ $OPTION -eq 4 ]
+	if [ $OPTION -eq 5 ]
+	then
+		generateAsync
+	elif [ $OPTION -eq 4 ]
 	then
 		buildRelease
 	elif [ $OPTION -eq 3 ]
