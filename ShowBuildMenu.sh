@@ -83,14 +83,6 @@ testSetupSqlServer() {
 	testSetupGeneric
 }
 
-testSetupSqlServerCe(){
-	CONFIG_NAME="SqlServerCe"
-	TEST_PLATFORM="AnyCPU"
-	LIB_FILES=""
-	LIB_FILES2=""
-	testSetupGeneric
-}
-
 testSetupFirebird() {
 	CONFIG_NAME="FireBird"
 	TEST_PLATFORM="AnyCPU"
@@ -128,7 +120,6 @@ testSetupMenu() {
 	echo "B. Add a test configuration for Firebird."
 	echo "C. Add a test configuration for SQLite."
 	echo "D. Add a test configuration for PostgreSQL."
-	echo "E. Add a test configuration for SQL Server Compact."
 	echo "F. Add a test configuration for MySql."
 	echo "."
 	echo "X.  Exit to main menu."
@@ -145,11 +136,6 @@ testSetupMenu() {
 	then
 		echo "MySQL"
 		testSetupMysql
-		mainMenu
-	elif [ $OPTION -eq 4 ]
-	then
-		echo "SQL Server CE"
-		testSetupSqlServerCe
 		mainMenu
 	elif [ $OPTION -eq 3 ]
 	then
