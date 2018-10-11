@@ -198,7 +198,7 @@ getAsyncGeneratorPath(){
 
 	eval "mono nuget.exe install"
 
-	async_generator_path="Tools/CSharpAsyncGenerator.CommandLine.$(cat packages.config | grep id=\"CSharpAsyncGenerator.CommandLine. | cut -d\" -f4)/tools/AsyncGenerator.CommandLine.exe"
+	async_generator_path="Tools/CSharpAsyncGenerator.CommandLine.$(cat packages.config | grep id=\"CSharpAsyncGenerator.CommandLine | cut -d\" -f4)/tools/AsyncGenerator.CommandLine.exe"
 
 	#async_generator_path="Tools/$async_generator_path/tools/AsyncGenerator.CommandLine.exe"
 
