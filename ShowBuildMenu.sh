@@ -1,14 +1,19 @@
 #!/bin/sh
 
-BUILD_PROJECT="./Tools/BuildTool/BuildTool.csproj"
+BUILD_TOOL_PATH="./Tools/BuildTool/bin/BuildTool.dll"
+BUILD_TOOL="dotnet $BUILD_TOOL_PATH"
 AVAILABLE_CONFIGURATIONS="available-test-configurations"
 CONFIG_NAME=""
 TEST_PLATFORM=""
 LIB_FILES=""
 LIB_FILES2=""
 CURRENT_CONFIGURATION="./current-test-configuration"
-BUILD_TOOL="dotnet run -p $BUILD_PROJECT -c Release --no-build -v q"
 OPTION=0
+
+if [ ! -f $BUILD_TOOL_PATH ]
+then
+	eval "dotnet build ./Tools/BuildTool/BuildTool.sln -c Release -o bin"
+fi
 
 buildDebug(){
 	eval "dotnet build ./src/NHibernate.sln"
@@ -203,5 +208,4 @@ mainMenu() {
 	fi
 }
 
-dotnet build ./Tools/BuildTool/BuildTool.sln -c Release
 mainMenu
