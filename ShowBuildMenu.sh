@@ -120,19 +120,19 @@ testSetupMenu() {
 	echo "B. Add a test configuration for Firebird."
 	echo "C. Add a test configuration for SQLite."
 	echo "D. Add a test configuration for PostgreSQL."
-	echo "F. Add a test configuration for MySql."
+	echo "E. Add a test configuration for MySql."
 	echo "."
 	echo "X.  Exit to main menu."
 	echo "."
 
-	$BUILD_TOOL prompt ABCDEFX
+	$BUILD_TOOL prompt ABCDEX
 
 	OPTION=$?
-	if	[ $OPTION -eq 6 ]
+	if	[ $OPTION -eq 5 ]
 	then
 		echo "Main menu"
 		mainMenu
-	elif [ $OPTION -eq 5 ]
+	elif [ $OPTION -eq 4 ]
 	then
 		echo "MySQL"
 		testSetupMysql
