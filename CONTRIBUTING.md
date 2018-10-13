@@ -41,7 +41,7 @@ The main GitHub repository is at [https://github.com/nhibernate/nhibernate-core]
 4.  (Optional) Run all the tests with option C or D and hopefully you will see no failing tests. The build may fail on certain databases; please ask on the mailing list if you are having trouble.
 5.  Before using the database for unit tests from an IDE, you'll need to create an empty database that matches your connection string. The unit test in NHibernate.TestDatabaseSetup supports some databases. If the one you have configured is supported, it will drop the database if it does already exist, then recreate it.
 
-Compiling the solution under Linux requires installation of [Mono](https://www.mono-project.com/download/stable) and of the [.NET Core SDK](https://www.microsoft.com/net/download).
+Compiling the solution under Linux requires installation of the [Mono package mono-complete](https://www.mono-project.com/download/stable) and of the [.NET Core SDK](https://www.microsoft.com/net/download).
 
 ## Creating a Test Case to Verify the Issue
 
