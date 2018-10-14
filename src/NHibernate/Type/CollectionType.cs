@@ -471,16 +471,39 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Get the key value from the owning entity instance.
+		/// Get the key value from the owning entity instance. It is usually the identifier, but it might be some
+		/// other unique key, in the case of a property-ref.
 		/// </summary>
 		public object GetKeyOfOwner(object owner, ISessionImplementor session)
 		{
-			EntityEntry entityEntry = session.PersistenceContext.GetEntry(owner);
+			var entityEntry = session.PersistenceContext.GetEntry(owner);
 			if (entityEntry == null)
-				return null; // This just handles a particular case of component
-			// projection, perhaps get rid of it and throw an exception
+			{
+				// This just handles a particular case of component
+				// projection, perhaps get rid of it and throw an exception
+				return null;
+			}
 
-			return entityEntry.Id;
+			if (foreignKeyPropertyName == null)
+			{
+				return entityEntry.Id;
+			}
+
+			// TODO: at the point where we are resolving collection references, we don't
+			// know if the uk value has been resolved (depends if it was earlier or
+			// later in the mapping document) - now, we could try and use e.getStatus()
+			// to decide to semiResolve(), trouble is that initializeEntity() reuses
+			// the same array for resolved and hydrated values
+			var id = entityEntry.LoadedState != null
+				? entityEntry.GetLoadedValue(foreignKeyPropertyName)
+				: entityEntry.Persister.GetPropertyValue(owner, foreignKeyPropertyName);
+			// NOTE VERY HACKISH WORKAROUND!!
+			var keyType = GetPersister(session).KeyType;
+			if (!keyType.ReturnedClass.IsInstanceOfType(id))
+			{
+				id = keyType.SemiResolve(entityEntry.GetLoadedValue(foreignKeyPropertyName), session, owner);
+			}
+			return id;
 		}
 
 		/// <summary> 

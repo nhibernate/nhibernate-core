@@ -238,7 +238,7 @@ namespace NHibernate.Loader
 					}
 					else
 					{
-						key = collectionPersister.CollectionType.GetKeyOfOwner(owner, session);
+						key = await (collectionPersister.CollectionType.GetKeyOfOwnerAsync(owner, session, cancellationToken)).ConfigureAwait(false);
 						//TODO: old version did not require hashmap lookup:
 						//keys[collectionOwner].getIdentifier()
 					}

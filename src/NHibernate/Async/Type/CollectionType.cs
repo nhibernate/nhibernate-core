@@ -81,33 +81,23 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
+		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				//remember the uk value
+			cancellationToken.ThrowIfCancellationRequested();
+			//remember the uk value
 
-				//This solution would allow us to eliminate the owner arg to disassemble(), but
-				//what if the collection was null, and then later had elements added? seems unsafe
-				//session.getPersistenceContext().getCollectionEntry( (PersistentCollection) value ).getKey();
+			//This solution would allow us to eliminate the owner arg to disassemble(), but
+			//what if the collection was null, and then later had elements added? seems unsafe
+			//session.getPersistenceContext().getCollectionEntry( (PersistentCollection) value ).getKey();
 
-				object key = GetKeyOfOwner(owner, session);
-				if (key == null)
-				{
-					return Task.FromResult<object>(null);
-				}
-				else
-				{
-					return GetPersister(session).KeyType.DisassembleAsync(key, session, owner, cancellationToken);
-				}
-			}
-			catch (Exception ex)
+			object key = await (GetKeyOfOwnerAsync(owner, session, cancellationToken)).ConfigureAwait(false);
+			if (key == null)
 			{
-				return Task.FromException<object>(ex);
+				return null;
+			}
+			else
+			{
+				return await (GetPersister(session).KeyType.DisassembleAsync(key, session, owner, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -152,20 +142,10 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> ResolveIdentifierAsync(object key, ISessionImplementor session, object owner, CancellationToken cancellationToken)
+		public override async Task<object> ResolveIdentifierAsync(object key, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				return ResolveKeyAsync(GetKeyOfOwner(owner, session), session, owner, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			cancellationToken.ThrowIfCancellationRequested();
+			return await (ResolveKeyAsync(await (GetKeyOfOwnerAsync(owner, session, cancellationToken)).ConfigureAwait(false), session, owner, cancellationToken)).ConfigureAwait(false);
 		}
 
 		private Task<object> ResolveKeyAsync(object key, ISessionImplementor session, object owner, CancellationToken cancellationToken)
@@ -309,6 +289,43 @@ namespace NHibernate.Type
 			{
 				return Task.FromException<bool>(ex);
 			}
+		}
+
+		/// <summary>
+		/// Get the key value from the owning entity instance. It is usually the identifier, but it might be some
+		/// other unique key, in the case of a property-ref.
+		/// </summary>
+		public async Task<object> GetKeyOfOwnerAsync(object owner, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var entityEntry = session.PersistenceContext.GetEntry(owner);
+			if (entityEntry == null)
+			{
+				// This just handles a particular case of component
+				// projection, perhaps get rid of it and throw an exception
+				return null;
+			}
+
+			if (foreignKeyPropertyName == null)
+			{
+				return entityEntry.Id;
+			}
+
+			// TODO: at the point where we are resolving collection references, we don't
+			// know if the uk value has been resolved (depends if it was earlier or
+			// later in the mapping document) - now, we could try and use e.getStatus()
+			// to decide to semiResolve(), trouble is that initializeEntity() reuses
+			// the same array for resolved and hydrated values
+			var id = entityEntry.LoadedState != null
+				? entityEntry.GetLoadedValue(foreignKeyPropertyName)
+				: entityEntry.Persister.GetPropertyValue(owner, foreignKeyPropertyName);
+			// NOTE VERY HACKISH WORKAROUND!!
+			var keyType = GetPersister(session).KeyType;
+			if (!keyType.ReturnedClass.IsInstanceOfType(id))
+			{
+				id = await (keyType.SemiResolveAsync(entityEntry.GetLoadedValue(foreignKeyPropertyName), session, owner, cancellationToken)).ConfigureAwait(false);
+			}
+			return id;
 		}
 	}
 }
