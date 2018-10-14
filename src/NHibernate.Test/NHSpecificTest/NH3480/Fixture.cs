@@ -57,6 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3480
 					var entity = result.Single();
 
 					NHibernateUtil.Initialize(entity.Children);
+					Assert.That(entity.Children, Has.Count.GreaterThan(0));
 				}
 			}
 		}

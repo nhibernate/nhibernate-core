@@ -68,6 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3480
 					var entity = await (result.SingleAsync());
 
 					await (NHibernateUtil.InitializeAsync(entity.Children));
+					Assert.That(entity.Children, Has.Count.GreaterThan(0));
 				}
 			}
 		}
