@@ -221,7 +221,7 @@ namespace NHibernate.Cfg
 			public IType GetReferencedPropertyType(string className, string propertyName)
 			{
 				PersistentClass pc = GetPersistentClass(className);
-				Property prop = pc.GetProperty(propertyName);
+				Property prop = pc.GetReferencedProperty(propertyName);
 
 				if (prop == null)
 				{
