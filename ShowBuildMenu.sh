@@ -13,11 +13,11 @@ async_generator_path=""
 
 if [ ! -f $BUILD_TOOL_PATH ]
 then
-	eval "dotnet build ./Tools/BuildTool/BuildTool.sln -c Release -o bin"
+	dotnet build ./Tools/BuildTool/BuildTool.sln -c Release -o bin
 fi
 
 buildDebug(){
-	eval "dotnet build ./src/NHibernate.sln"
+	dotnet build ./src/NHibernate.sln
 	echo "."
 	echo "Assuming the build succeeded, your results will be in the build folder."
 	echo "."
@@ -25,7 +25,7 @@ buildDebug(){
 }
 
 buildRelease(){
-	eval "dotnet build ./src/NHibernate.sln -c Release"
+	dotnet build ./src/NHibernate.sln -c Release
 	echo "."
 	echo "Assuming the build succeeded, your results will be in the build folder."
 	echo "."
@@ -167,8 +167,8 @@ testSetupMenu() {
 }
 
 testRun(){
-	eval "dotnet test ./src/NHibernate.Test/NHibernate.Test.csproj" -f netcoreapp2.0
-	eval "dotnet test ./src/NHibernate.Test.VisualBasic/NHibernate.Test.VisualBasic.vbproj" -f netcoreapp2.0
+	dotnet test ./src/NHibernate.Test/NHibernate.Test.csproj -f netcoreapp2.0
+	dotnet test ./src/NHibernate.Test.VisualBasic/NHibernate.Test.VisualBasic.vbproj -f netcoreapp2.0
 	mainMenu
 }
 
@@ -177,7 +177,7 @@ generateAsync(){
 
 	getAsyncGeneratorPath
 	cd src
-	eval "mono ../$async_generator_path"
+	mono ../"$async_generator_path"
 	cd ..
 
 	mainMenu
@@ -206,7 +206,7 @@ getAsyncGeneratorPath(){
 	if [ ! -f $async_generator_path/SQLitePCLRaw.core.dll ]
 	then
 		# This "hidden" dependency causes a failure under some Mono setup, add it explicitly
-		eval "mono nuget.exe install SQLitePCLRaw.core -Version 1.0.0"
+		mono nuget.exe install SQLitePCLRaw.core -Version 1.0.0
 		cp SQLitePCLRaw.core.1.0.0/lib/net45/SQLitePCLRaw.core.dll $async_generator_path/
 	fi
 
