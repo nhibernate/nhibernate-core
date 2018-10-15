@@ -271,18 +271,36 @@ namespace NHibernate.Persister.Collection
 				IAssociationType elementType = (IAssociationType) ElementType;
 				if (rhs.Equals(elementType.GetAssociatedJoinable(Factory)))
 				{
-					return ManyToManySelectFragment(rhs, rhsAlias, lhsAlias, collectionSuffix);
+					return ManyToManySelectFragment(rhs, rhsAlias, lhsAlias, collectionSuffix, elementType);
 				}
 			}
 			return includeCollectionColumns ? SelectFragment(lhsAlias, collectionSuffix) : string.Empty;
 		}
 
-		private string ManyToManySelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string collectionSuffix)
+		private string ManyToManySelectFragment(
+			IJoinable rhs,
+			string rhsAlias,
+			string lhsAlias,
+			string collectionSuffix,
+			IAssociationType elementType)
 		{
 			SelectFragment frag = GenerateSelectFragment(lhsAlias, collectionSuffix);
 
-			string[] _elementColumnNames = rhs.KeyColumnNames;
-			frag.AddColumns(rhsAlias, _elementColumnNames, elementColumnAliases);
+			// We need to select in the associated entity table instead of taking the collection actual element,
+			// because filters can be applied to the entity table outer join. In such case, we need to return null
+			// for filtered-out elements. (It is tempting to switch to an inner join and just use
+			// SelectFragment(lhsAlias, collectionSuffix) for many-to-many too, but this would hinder the proper
+			// handling of the not-found feature.)
+			var elementColumnNames = string.IsNullOrEmpty(elementType.RHSUniqueKeyPropertyName)
+				? rhs.KeyColumnNames
+				// rhs is the entity persister, it does not handle being referenced through an unique key by a
+				// collection and always yield its identifier columns as KeyColumnNames. We need to resolve the
+				// key columns instead.
+				// 6.0 TODO: consider breaking again that IJoinable.SelectFragment interface for transmitting
+				// the OuterJoinableAssociation instead of its Joinable property. This would allow to get the
+				// adequate columns directly instead of re-computing them.
+				: ((IPropertyMapping) rhs).ToColumns(elementType.RHSUniqueKeyPropertyName);
+			frag.AddColumns(rhsAlias, elementColumnNames, elementColumnAliases);
 			AppendIndexColumns(frag, lhsAlias);
 			AppendIdentifierColumns(frag, lhsAlias);
 
