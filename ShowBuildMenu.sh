@@ -200,7 +200,7 @@ getAsyncGeneratorPath(){
 
 	if [ ! -d $async_generator_path ]
 	then
-		eval "mono nuget.exe install"
+		mono nuget.exe install
 	fi
 
 	if [ ! -f $async_generator_path/SQLitePCLRaw.core.dll ]

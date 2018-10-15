@@ -20,7 +20,7 @@ The main GitHub repository is at [https://github.com/nhibernate/nhibernate-core]
 
 ## The Build Menu
 
-**ShowBuildMenu.bat** will be your friend throughout this journey. A .sh version exists for Linux. He's easiest to work with if you make his box bigger by following these steps: 
+**ShowBuildMenu.bat** will be your friend throughout this journey. A .sh version exists for Linux. It's easiest to work with if you make his box bigger by following these steps: 
 
 1.  Run ShowBuildMenu.bat.
 2.  Right click on the title bar of the window.
