@@ -2456,6 +2456,10 @@ namespace NHibernate.Persister.Entity
 						PropertyTypes[i].NullSafeSet(statement, fields[i], index, includeColumns[i], session);
 						index += ArrayHelper.CountTrue(includeColumns[i]); //TODO:  this is kinda slow...
 					}
+					catch (ArgumentOutOfRangeException arex)
+					{
+						throw new PropertyValueException("Column count does not match property count (Duplicate column mapping?) for", EntityName, entityMetamodel.PropertyNames[i], ex);
+					}					
 					catch (Exception ex)
 					{
 						throw new PropertyValueException("Error dehydrating property value for", EntityName, entityMetamodel.PropertyNames[i], ex);
