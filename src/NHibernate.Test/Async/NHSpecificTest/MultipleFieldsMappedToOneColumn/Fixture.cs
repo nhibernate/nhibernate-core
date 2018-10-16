@@ -56,7 +56,7 @@ namespace NHibernate.Test.Async.NHSpecificTest.MultipleFieldsMappedToOneColumn
 		}
 
 		[Test]
-		protected void ShouldThrowAREXForBadlyMappedEntity()
+		public void ShouldThrowAREXForBadlyMappedEntity()
 		{
 			// arrange
 			ArgumentOutOfRangeException result = null;
@@ -88,7 +88,7 @@ namespace NHibernate.Test.Async.NHSpecificTest.MultipleFieldsMappedToOneColumn
 		}
 
 		[Test]
-		protected void ShouldNotThrow()
+		public void ShouldNotThrow()
 		{
 			// arrange
 			ArgumentOutOfRangeException result = null;
