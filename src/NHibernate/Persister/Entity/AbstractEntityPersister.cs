@@ -2099,6 +2099,24 @@ namespace NHibernate.Persister.Entity
 			return GetAppropriateUniqueKeyLoader(propertyName, session.EnabledFilters).LoadByUniqueKey(session, uniqueKey);
 		}
 
+		public void CacheByUniqueKeys(object entity, ISessionImplementor session)
+		{
+			for (var i = 0; i < PropertySpan; i++)
+			{
+				if (!propertyUniqueness[i])
+					continue;
+
+				// The caching is done by semi-resolved values.
+				var propertyValue = session.PersistenceContext.GetEntry(entity).LoadedState[i];
+				if (propertyValue == null)
+					continue;
+				var type = PropertyTypes[i].GetSemiResolvedType(session.Factory);
+				propertyValue = type.SemiResolve(propertyValue, session, entity);
+				var euk = new EntityUniqueKey(EntityName, PropertyNames[i], propertyValue, type, session.Factory);
+				session.PersistenceContext.AddEntity(euk, entity);
+			}
+		}
+
 		private EntityLoader GetAppropriateUniqueKeyLoader(string propertyName, IDictionary<string, IFilter> enabledFilters)
 		{
 			//ugly little workaround for fact that createUniqueKeyLoaders() does not handle component properties

@@ -821,12 +821,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			var restrictedLaziness = manyToManyMapping.lazySpecified ? manyToManyMapping.lazy : (HbmRestrictedLaziness?) null;
 			InitLaziness(restrictedLaziness, manyToMany, true);
 
-			if(!string.IsNullOrEmpty(manyToManyMapping.propertyref))
+			manyToMany.ReferencedEntityName = GetEntityName(manyToManyMapping, mappings);
+
+			if (!string.IsNullOrEmpty(manyToManyMapping.propertyref))
 			{
 				manyToMany.ReferencedPropertyName = manyToManyMapping.propertyref;
+				mappings.AddUniquePropertyReference(manyToMany.ReferencedEntityName, manyToMany.ReferencedPropertyName);
 			}
-
-			manyToMany.ReferencedEntityName = GetEntityName(manyToManyMapping, mappings);
 
 			manyToMany.IsIgnoreNotFound = manyToManyMapping.NotFoundMode == HbmNotFoundMode.Ignore;
 
@@ -904,6 +905,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			else
 			{
 				keyValue = (IKeyValue) model.Owner.GetProperty(propRef).Value;
+				mappings.AddUniquePropertyReference(model.OwnerEntityName, propRef);
 			}
 			var key = new DependantValue(model.CollectionTable, keyValue)
 						{IsCascadeDeleteEnabled = keyMapping.ondelete == HbmOndelete.Cascade};

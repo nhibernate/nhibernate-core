@@ -981,9 +981,18 @@ namespace NHibernate.Loader
 						obj =
 							InstanceNotYetLoaded(rs, i, persister, key, lockModes[i], optionalObjectKey,
 												 optionalObject, hydratedObjects, session);
+
+						// IUniqueKeyLoadable.CacheByUniqueKeys caches all unique keys of the entity, regardless of
+						// associations loaded by the query. So if the entity is already loaded, it has forcibly already
+						// been cached too for all its unique keys, provided its persister implement it. With this new
+						// way of caching unique keys, it is no more needed to handle caching for alreadyLoaded path
+						// too.
+						(persister as IUniqueKeyLoadable)?.CacheByUniqueKeys(obj, session);
 					}
-					// #1226: Even if it is already loaded, if it can be loaded from an association with a property ref, make
-					// sure it is also cached by its unique key.
+					// 6.0 TODO: this call is nor more needed for up-to-date persisters, remove once CacheByUniqueKeys
+					// is merged in IUniqueKeyLoadable interface instead of being an extension method
+					// #1226 old fix: Even if it is already loaded, if it can be loaded from an association with a property ref,
+					// make sure it is also cached by its unique key.
 					CacheByUniqueKey(i, persister, obj, session, alreadyLoaded);
 				}
 
