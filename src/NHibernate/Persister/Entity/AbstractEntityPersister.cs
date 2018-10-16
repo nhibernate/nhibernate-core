@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -20,7 +19,6 @@ using NHibernate.Mapping;
 using NHibernate.Metadata;
 using NHibernate.Properties;
 using NHibernate.SqlCommand;
-using NHibernate.Tuple;
 using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -2458,7 +2456,7 @@ namespace NHibernate.Persister.Entity
 					}
 					catch (ArgumentOutOfRangeException arex)
 					{
-						throw new PropertyValueException("Column count does not match property count (Duplicate column mapping?) for", EntityName, entityMetamodel.PropertyNames[i], ex);
+						throw new PropertyValueException("Column count does not match property count (Duplicate column mapping?) for", EntityName, entityMetamodel.PropertyNames[i], arex);
 					}					
 					catch (Exception ex)
 					{
