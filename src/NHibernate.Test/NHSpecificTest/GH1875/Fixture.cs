@@ -1,9 +1,10 @@
 ﻿using System;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
-namespace NHibernate.Test.Async.NHSpecificTest.MultipleFieldsMappedToOneColumn
+namespace NHibernate.Test.NHSpecificTest.GH1875
 {
 	public class BadlyMappedEntity
 	{
@@ -20,7 +21,7 @@ namespace NHibernate.Test.Async.NHSpecificTest.MultipleFieldsMappedToOneColumn
 	}
 
 	[TestFixture]
-	public class FixtureAsync : TestCaseMappingByCode
+	public class Fixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{
@@ -59,32 +60,30 @@ namespace NHibernate.Test.Async.NHSpecificTest.MultipleFieldsMappedToOneColumn
 		public void ShouldThrowAREXForBadlyMappedEntity()
 		{
 			// arrange
-			ArgumentOutOfRangeException result = null;
-			var e = new BadlyMappedEntity
+			var bad = new BadlyMappedEntity
 			{
 				FirstValue = 1,
 				SecondValue = 2
 			};
-
-			// act
-			try
-			{
-				using (var session = OpenSession())
-				using (var transaction = session.BeginTransaction())
-				{
-					
-					session.Save(e);
-					transaction.Commit();
-				}
-			}
-			catch (ArgumentOutOfRangeException arex)
-			{
-				result = arex;
-			}
+			// Bobbytables1337
 
 			// assert
-			Assert.That(result != null);
-			Assert.That(result.Message.Contains("(Duplicate column mapping?)"));
+			Assert.That( 
+				() => SaveEntity(bad),
+		        Throws.TypeOf<ArgumentOutOfRangeException>().And.Message.Contains("(Duplicate column mapping?)"));
+		}
+
+		private bool SaveEntity<T>(T entity)
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+
+				session.Save(entity);
+				transaction.Commit();
+			}
+
+			return true;
 		}
 
 		[Test]
