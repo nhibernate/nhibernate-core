@@ -129,6 +129,7 @@ namespace NHibernate.Test.Extralazy
 			{
 				gavin = s.Get<User>("gavin");
 				widget = s.Get<Widget>("widg1");
+				//Uncomment this to initialise the collection and make the test pass:
 				//Assert.IsTrue(gavin.Widgets.Any(w => w == widget));
 				gavin.RemoveWidget(widget);
 				Assert.IsFalse(gavin.Widgets.Any(w => w == widget));
