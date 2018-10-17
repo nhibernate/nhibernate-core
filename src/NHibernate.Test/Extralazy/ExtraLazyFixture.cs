@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Extralazy
@@ -28,11 +29,11 @@ namespace NHibernate.Test.Extralazy
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				s.CreateSQLQuery("insert into Users (Name,Password) values('gavin','secret')")
+				s.CreateSQLQuery("insert into users (Name,Password) values('gavin','secret')")
 					.UniqueResult();
-				s.CreateSQLQuery("insert into Photos (Title,Owner) values('PRVaaa','gavin')")
+				s.CreateSQLQuery("insert into photos (Title,Owner) values('PRVaaa','gavin')")
 					.UniqueResult();
-				s.CreateSQLQuery("insert into Photos (Title,Owner) values('PUBbbb','gavin')")
+				s.CreateSQLQuery("insert into photos (Title,Owner) values('PUBbbb','gavin')")
 					.UniqueResult();
 				t.Commit();
 			}
@@ -47,9 +48,9 @@ namespace NHibernate.Test.Extralazy
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				s.CreateSQLQuery("delete from Photos")
+				s.CreateSQLQuery("delete from photos")
 					.UniqueResult();
-				s.CreateSQLQuery("delete from Users")
+				s.CreateSQLQuery("delete from users")
 					.UniqueResult();
 
 				t.Commit();
@@ -72,7 +73,7 @@ namespace NHibernate.Test.Extralazy
 				hia = new Document("HiA", "blah blah blah", gavin);
 				hia2 = new Document("HiA2", "blah blah blah blah", gavin);
 				gavin.Documents.Add(hia); // NH: added ; I don't understand how can work in H3.2.5 without add
-				gavin.Documents.Add(hia2); // NH: added 
+				gavin.Documents.Add(hia2); // NH: added
 				s.Persist(gavin);
 				t.Commit();
 			}
@@ -101,6 +102,51 @@ namespace NHibernate.Test.Extralazy
 				Assert.That(s.Get<Document>("HiA2"), Is.Null);
 				gavin.Documents.Clear();
 				Assert.IsTrue(NHibernateUtil.IsInitialized(gavin.Documents));
+				s.Delete(gavin);
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void OrphanEnumerableDelete()
+		{
+			User gavin = null;
+			Widget widget = null;
+			Widget widget2 = null;
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = new User("gavin", "secret");
+				gavin.AddWidget("widg1", "blah blah blah");
+				gavin.AddWidget("widg2", "blah blah blah blah");
+				s.Persist(gavin);
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = s.Get<User>("gavin");
+				widget = s.Get<Widget>("widg1");
+				//Assert.IsTrue(gavin.Widgets.Any(w => w == widget));
+				gavin.RemoveWidget(widget);
+				Assert.IsFalse(gavin.Widgets.Any(w => w == widget));
+				Assert.IsTrue(gavin.Widgets.Any(w => w.Title == "widg2"));
+				Assert.AreEqual(1, gavin.Widgets.Count());
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = s.Get<User>("gavin");
+				Assert.AreEqual(1, gavin.Widgets.Count());
+				Assert.IsFalse(gavin.Widgets.Any(w => w.Title == "widg1"));
+				Assert.IsTrue(gavin.Widgets.Any(w => w.Title == "widg2"));
+				Assert.That(s.Get<Widget>("widg1"), Is.Null);
+				widget2 = s.Get<Widget>("widg2");
+				gavin.RemoveWidget(widget2);
 				s.Delete(gavin);
 				t.Commit();
 			}
