@@ -118,13 +118,13 @@ namespace NHibernate.Proxy.DynamicProxy
 			
 			// Provide a custom implementation of ISerializable
 			// instead of redirecting it back to the interceptor
-			foreach (MethodInfo method in ProxyBuilderHelper.GetProxiableMethods(baseType, interfaces).Where(method => method.DeclaringType != typeof(ISerializable)))
+			foreach (MethodInfo method in ProxyBuilderHelper.GetProxiableMethods(parentType, interfaces).Where(method => method.DeclaringType != typeof(ISerializable)))
 			{
 				ProxyMethodBuilder.CreateProxiedMethod(interceptorField, method, typeBuilder);
 			}
 
 			// Make the proxy serializable
-			AddSerializationSupport(baseType, baseInterfaces, typeBuilder, interceptorField, defaultConstructor);
+			AddSerializationSupport(parentType, baseInterfaces, typeBuilder, interceptorField, defaultConstructor);
 			TypeInfo proxyType = typeBuilder.CreateTypeInfo();
 
 			ProxyAssemblyBuilder.Save(assemblyBuilder);

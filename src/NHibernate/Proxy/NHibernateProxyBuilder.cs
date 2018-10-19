@@ -394,7 +394,7 @@ namespace NHibernate.Proxy
 			IL.Emit(OpCodes.Bne_Un, skipBaseCall);
 
 			IL.Emit(OpCodes.Ldarg_0);
-			EmitCallMethod(IL, OpCodes.Call, method);
+			EmitCallMethod(IL, method.DeclaringType.IsInterface ? OpCodes.Callvirt : OpCodes.Call, method);
 			IL.Emit(OpCodes.Ret);
 
 			IL.MarkLabel(skipBaseCall);

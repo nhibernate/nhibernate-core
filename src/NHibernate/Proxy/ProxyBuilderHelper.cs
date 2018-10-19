@@ -137,7 +137,24 @@ namespace NHibernate.Proxy
 		internal static MethodBuilder GenerateMethodSignature(string name, MethodInfo method, TypeBuilder typeBuilder)
 		{
 			//TODO: Should we use attributes of base method?
-			var methodAttributes = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.Virtual;
+			MethodAttributes methodAttributes;
+			if (method.DeclaringType.IsInterface)
+			{
+				// These are the attributes used for an explicit interface method implementation in .NET.
+				methodAttributes =
+					MethodAttributes.Private |
+					MethodAttributes.Final |
+					MethodAttributes.Virtual |
+					MethodAttributes.HideBySig |
+					MethodAttributes.NewSlot |
+					MethodAttributes.SpecialName;
+				// .NET uses an expanded name for explicit interface implementation methods.
+				name = typeBuilder.FullName + "." + method.DeclaringType.FullName + "." + name;
+			}
+			else
+			{
+				methodAttributes = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.Virtual;
+			}
 
 			if (method.IsSpecialName)
 				methodAttributes |= MethodAttributes.SpecialName;
