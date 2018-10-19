@@ -27,6 +27,9 @@ namespace NHibernate.Linq.Visitors
 		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, VisitorParameters parameters, bool root,
 			NhLinqExpressionReturnType? rootReturnType)
 		{
+			// Expand conditionals in subquery FROM clauses into multiple subqueries
+			SubQueryConditionalExpander.ReWrite(queryModel);
+
 			NestedSelectRewriter.ReWrite(queryModel, parameters.SessionFactory);
 
 			// Remove unnecessary body operators
@@ -63,6 +66,9 @@ namespace NHibernate.Linq.Visitors
 
 			// Add joins for references
 			AddJoinsReWriter.ReWrite(queryModel, parameters);
+
+			// Expand coalesced and conditional joins to their logical equivalents
+			ConditionalQueryReferenceExpander.ReWrite(queryModel);
 
 			// Move OrderBy clauses to end
 			MoveOrderByToEndRewriter.ReWrite(queryModel);
