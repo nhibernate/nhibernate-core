@@ -28,7 +28,11 @@ namespace NHibernate.Linq.Visitors
 			NhLinqExpressionReturnType? rootReturnType)
 		{
 			// Expand conditionals in subquery FROM clauses into multiple subqueries
-			SubQueryConditionalExpander.ReWrite(queryModel);
+			if (root)
+			{
+				// This expander works recursively
+				SubQueryConditionalExpander.ReWrite(queryModel);
+			}
 
 			NestedSelectRewriter.ReWrite(queryModel, parameters.SessionFactory);
 

@@ -21,6 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 		public virtual string Name { get; set; }
 
 		public virtual bool ReviewAsPrimary { get; set; }
+		public virtual ICollection<Project> Projects { get; set; } = new List<Project>();
 		public virtual ICollection<Issue> WorkIssues { get; set; } = new List<Issue>();
 		public virtual ICollection<Issue> ReviewIssues { get; set; } = new List<Issue>();
 	}
@@ -33,6 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 		public virtual Client Client { get; set; }
 		public virtual Client BillingClient { get; set; }
 		public virtual CorporateClient CorporateClient { get; set; }
+		public virtual ICollection<Issue> Issues { get; set; } = new List<Issue>();
 	}
 
 	public enum EmailPref
