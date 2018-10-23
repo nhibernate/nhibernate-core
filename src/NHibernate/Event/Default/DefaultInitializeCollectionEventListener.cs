@@ -148,6 +148,9 @@ namespace NHibernate.Event.Default
 				cacheEntry.Assemble(collection, persister, persistenceContext.GetCollectionOwner(id, persister));
 
 				persistenceContext.GetCollectionEntry(collection).PostInitialize(collection, persistenceContext);
+
+				if (collection.HasQueuedOperations)
+					collection.ApplyQueuedOperations();
 				return true;
 			}
 		}
