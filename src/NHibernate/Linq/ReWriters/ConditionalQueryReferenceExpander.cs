@@ -76,7 +76,7 @@ namespace NHibernate.Linq.ReWriters
 
 			protected override Expression VisitMember(MemberExpression node)
 			{
-				var result = (MemberExpression)base.VisitMember(node);
+				var result = (MemberExpression) base.VisitMember(node);
 				if (QueryReferenceCounter.CountReferences(result.Expression) > 1)
 				{
 					return ConditionalQueryReferenceMemberExpressionRewriter.Rewrite(result.Expression, node);
@@ -89,7 +89,7 @@ namespace NHibernate.Linq.ReWriters
 				var result = (MethodCallExpression)base.VisitMethodCall(node);
 				var isExtension = node.Method.GetCustomAttributes<ExtensionAttribute>().Any();
 				var methodObject = isExtension ? node.Arguments[0] : node.Object;
-				
+
 				if (methodObject != null && QueryReferenceCounter.CountReferences(methodObject) > 1)
 				{
 					return ConditionalQueryReferenceMethodCallExpressionRewriter.Rewrite(methodObject, node);
@@ -107,7 +107,7 @@ namespace NHibernate.Linq.ReWriters
 			{
 				_queryType = queryType;
 			}
-			
+
 			protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 			{
 				if (_queryType.IsAssignableFrom(expression.Type))

@@ -94,16 +94,16 @@ namespace NHibernate.Linq.ReWriters
 					_nominate[_depth] = false;
 				}
 
-				var newTest = this.Visit(node.Test);
+				var newTest = Visit(node.Test);
 				_nominate.Insert(++_depth, false);
-				var newTrue = this.Visit(node.IfTrue);
+				var newTrue = Visit(node.IfTrue);
 				if (_nominate[_depth])
 				{
 					newTrue = BuildNewSubQuery(newTrue);
 					Rewritten = true;
 				}
 				_nominate.Insert(_depth, false);
-				var newFalse = this.Visit(node.IfFalse);
+				var newFalse = Visit(node.IfFalse);
 				if (_nominate[_depth])
 				{
 					newFalse = BuildNewSubQuery(newFalse);
