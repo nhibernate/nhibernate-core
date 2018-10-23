@@ -161,6 +161,9 @@ namespace NHibernate.Event.Default
 				await (cacheEntry.AssembleAsync(collection, persister, persistenceContext.GetCollectionOwner(id, persister), cancellationToken)).ConfigureAwait(false);
 
 				persistenceContext.GetCollectionEntry(collection).PostInitialize(collection, persistenceContext);
+
+				if (collection.HasQueuedOperations)
+					collection.ApplyQueuedOperations();
 				return true;
 			}
 		}
