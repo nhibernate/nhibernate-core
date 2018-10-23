@@ -77,8 +77,7 @@ namespace NHibernate.Linq.ReWriters
 		private class SubQueryFromClauseExpander : RelinqExpressionVisitor
 		{
 			private readonly QueryModel _originalSubQueryModel;
-			private int _depth = -1;
-			private readonly IList<bool> _nominate = new List<bool>();
+			private readonly Stack<bool> _nominate = new Stack<bool>();
 
 			public bool Rewritten { get; private set; }
 
@@ -89,35 +88,36 @@ namespace NHibernate.Linq.ReWriters
 
 			protected override Expression VisitConditional(ConditionalExpression node)
 			{
-				if (_depth >= 0)
+				if (_nominate.Count > 0)
 				{
-					_nominate[_depth] = false;
+					_nominate.Pop();
+					_nominate.Push(false);
 				}
 
 				var newTest = Visit(node.Test);
-				_nominate.Insert(++_depth, false);
+				_nominate.Push(false);
 				var newTrue = Visit(node.IfTrue);
-				if (_nominate[_depth])
+				if (_nominate.Pop())
 				{
 					newTrue = BuildNewSubQuery(newTrue);
 					Rewritten = true;
 				}
-				_nominate.Insert(_depth, false);
+				_nominate.Push(false);
 				var newFalse = Visit(node.IfFalse);
-				if (_nominate[_depth])
+				if (_nominate.Pop())
 				{
 					newFalse = BuildNewSubQuery(newFalse);
 					Rewritten = true;
 				}
-				_nominate.RemoveAt(_depth--);
 				return Expression.Condition(newTest, newTrue, newFalse);
 			}
 
 			protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 			{
-				if (_depth >= 0)
+				if (_nominate.Count > 0)
 				{
-					_nominate[_depth] = true;
+					_nominate.Pop();
+					_nominate.Push(true);
 				}
 
 				return base.VisitQuerySourceReference(expression);
