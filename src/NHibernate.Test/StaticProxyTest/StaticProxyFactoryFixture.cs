@@ -33,13 +33,41 @@ namespace NHibernate.Test.StaticProxyTest
 
 		public interface IPublic
 		{
-			int Id { get; }
+			int Id { get; set; }
+			string Name { get; set; }
 		}
 
 		[Serializable]
 		public class PublicInterfaceTestClass : IPublic
 		{
 			public virtual int Id { get; set; }
+			public virtual string Name { get; set; }
+
+			public PublicInterfaceTestClass()
+			{
+				// Check access to properties from the default constructor do not fail once proxified
+				Assert.That(Id, Is.Zero);
+				Assert.That(Name, Is.Null);
+				Id = -1;
+				Name = string.Empty;
+			}
+		}
+
+		[Serializable]
+		public class PublicExplicitInterfaceTestClass : IPublic
+		{
+			int IPublic.Id { get; set; }
+			string IPublic.Name { get; set; }
+
+			public PublicExplicitInterfaceTestClass()
+			{
+				// Check access to properties from the default constructor do not fail once proxified
+				IPublic pub = this;
+				Assert.That(pub.Id, Is.Zero);
+				Assert.That(pub.Name, Is.Null);
+				pub.Id = -1;
+				pub.Name = string.Empty;
+			}
 		}
 
 		[Serializable]
@@ -172,7 +200,7 @@ namespace NHibernate.Test.StaticProxyTest
 				// By way of the "proxy" attribute on the "class" mapping, an interface to use for the
 				// lazy entity load proxy instead of the persistentClass can be specified. This is "translated" into
 				// having an additional interface in the interface list, instead of just having INHibernateProxy.
-				// (Quite a loosy semantic...)
+				// (Quite a loose semantic...)
 				new HashSet<System.Type> { typeof(INHibernateProxy), typeof(IPublic) },
 				null, null, null);
 
@@ -185,6 +213,85 @@ namespace NHibernate.Test.StaticProxyTest
 					Assert.That(proxy, Is.Not.Null);
 					Assert.That(proxy, Is.InstanceOf<IPublic>());
 					Assert.That(proxy, Is.Not.InstanceOf<PublicInterfaceTestClass>());
+#if NETFX
+				});
+#endif
+		}
+
+		[Test]
+		public void VerifyProxyForClassWithInterface()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(
+				typeof(PublicInterfaceTestClass).FullName,
+				typeof(PublicInterfaceTestClass),
+				new HashSet<System.Type> {typeof(INHibernateProxy)},
+				null, null, null);
+
+#if NETFX
+			VerifyGeneratedAssembly(
+				() =>
+				{
+#endif
+					var proxy = factory.GetProxy(1, null);
+					Assert.That(proxy, Is.Not.Null);
+					Assert.That(proxy, Is.InstanceOf<IPublic>());
+					Assert.That(proxy, Is.InstanceOf<PublicInterfaceTestClass>());
+
+					// Check interface and implicit implementations do both call the delegated state
+					var state = new PublicInterfaceTestClass { Id = 5, Name = "State" };
+					proxy.HibernateLazyInitializer.SetImplementation(state);
+					var pub = (IPublic) proxy;
+					var ent = (PublicInterfaceTestClass) proxy;
+					Assert.That(pub.Id, Is.EqualTo(5), "IPublic.Id");
+					Assert.That(ent.Id, Is.EqualTo(5), "entity.Id");
+					Assert.That(pub.Name, Is.EqualTo("State"), "IPublic.Name");
+					Assert.That(ent.Name, Is.EqualTo("State"), "entity.Name");
+					ent.Id = 10;
+					pub.Name = "Test";
+					Assert.That(pub.Id, Is.EqualTo(10), "IPublic.Id");
+					Assert.That(state.Id, Is.EqualTo(10), "state.Id");
+					Assert.That(ent.Name, Is.EqualTo("Test"), "entity.Name");
+					Assert.That(state.Name, Is.EqualTo("Test"), "state.Name");
+#if NETFX
+				});
+#endif
+		}
+
+		[Test]
+		public void VerifyProxyForClassWithExplicitInterface()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(
+				typeof(PublicExplicitInterfaceTestClass).FullName,
+				typeof(PublicExplicitInterfaceTestClass),
+				new HashSet<System.Type> {typeof(INHibernateProxy)},
+				null, null, null);
+#if NETFX
+			VerifyGeneratedAssembly(
+				() =>
+				{
+#endif
+					var proxy = factory.GetProxy(1, null);
+					Assert.That(proxy, Is.Not.Null);
+					Assert.That(proxy, Is.InstanceOf<IPublic>());
+					Assert.That(proxy, Is.InstanceOf<PublicExplicitInterfaceTestClass>());
+					
+					// Check interface and implicit implementations do both call the delegated state
+					IPublic state = new PublicExplicitInterfaceTestClass();
+					state.Id = 5;
+					state.Name = "State";
+					proxy.HibernateLazyInitializer.SetImplementation(state);
+					var entity = (IPublic) proxy;
+					Assert.That(entity.Id, Is.EqualTo(5), "Id");
+					Assert.That(entity.Name, Is.EqualTo("State"), "Name");
+					
+					entity.Id = 10;
+					entity.Name = "Test";
+					Assert.That(entity.Id, Is.EqualTo(10), "entity.Id");
+					Assert.That(state.Id, Is.EqualTo(10), "state.Id");
+					Assert.That(entity.Name, Is.EqualTo("Test"), "entity.Name");
+					Assert.That(state.Name, Is.EqualTo("Test"), "state.Name");
 #if NETFX
 				});
 #endif
@@ -409,10 +516,10 @@ namespace NHibernate.Test.StaticProxyTest
 				// By way of the "proxy" attribute on the "class" mapping, an interface to use for the
 				// lazy entity load proxy instead of the persistentClass can be specified. This is "translated" into
 				// having an additional interface in the interface list, instead of just having INHibernateProxy.
-				// (Quite a loosy semantic...)
+				// (Quite a loose semantic...)
 				// The field interceptor proxy ignores this setting, as it does not delegate its implementation
 				// to an instance of the persistentClass, and so cannot implement interface methods if it does not
-				// inherit the persitentClass.
+				// inherit the persistentClass.
 				new HashSet<System.Type> {typeof(INHibernateProxy), typeof(IPublic)},
 				null, null, null);
 #if NETFX
