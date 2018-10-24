@@ -43,6 +43,22 @@ namespace NHibernate.Test.StaticProxyTest
 		}
 
 		[Serializable]
+		public abstract class AbstractTestClass : IPublic
+		{
+			protected AbstractTestClass()
+			{
+				Assert.That(Id, Is.Zero);
+				Assert.That(Name, Is.Null);
+				Id = -1;
+				Name = "Unknown";
+			}
+
+			public abstract int Id { get; set; }
+			
+			public abstract string Name { get; set; } 
+		}
+
+		[Serializable]
 		public class SimpleTestClass
 		{
 			public virtual int Id { get; set; }
@@ -157,7 +173,7 @@ namespace NHibernate.Test.StaticProxyTest
 				// lazy entity load proxy instead of the persistentClass can be specified. This is "translated" into
 				// having an additional interface in the interface list, instead of just having INHibernateProxy.
 				// (Quite a loosy semantic...)
-				new HashSet<System.Type> {typeof(INHibernateProxy), typeof(IPublic)},
+				new HashSet<System.Type> { typeof(INHibernateProxy), typeof(IPublic) },
 				null, null, null);
 
 #if NETFX
@@ -214,6 +230,30 @@ namespace NHibernate.Test.StaticProxyTest
 					var param = dictionary;
 					entity.Method(ref param);
 					Assert.That(param, Is.Not.SameAs(dictionary));
+#if NETFX
+				});
+#endif
+		}
+
+		[Test]
+		public void VerifyProxyForAbstractClass()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(
+				typeof(AbstractTestClass).FullName,
+				typeof(AbstractTestClass),
+				new HashSet<System.Type> { typeof(INHibernateProxy) },
+				null, null, null);
+
+#if NETFX
+			VerifyGeneratedAssembly(
+				() =>
+				{
+#endif
+					var proxy = factory.GetProxy(1, null);
+					Assert.That(proxy, Is.Not.Null);
+					Assert.That(proxy, Is.InstanceOf<IPublic>());
+					Assert.That(proxy, Is.InstanceOf<AbstractTestClass>());
 #if NETFX
 				});
 #endif

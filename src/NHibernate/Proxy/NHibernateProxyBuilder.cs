@@ -369,16 +369,14 @@ namespace NHibernate.Proxy
 			ILGenerator IL, MethodInfo method, FieldInfo lazyInitializerField, System.Type parentType)
 		{
 			/*
-				<if (method.DeclaringType.IsAssignableFrom(parentType))
-				{>
 				if (this.__lazyInitializer == null)
-					return base.<method>(args..)
+				<if (method.IsAbstract)
+				{>
+				return default;
+				<} else {>
+				return base.<method>(args..);
 				<}>
 			 */
-			if (!method.DeclaringType.IsAssignableFrom(parentType))
-				// The proxy does not derive from a type implementing the method, do not attempt
-				// calling its base. In such case, the lazy initializer is never null.
-				return;
 
 			// When deriving from the entity class, the entity class constructor may trigger
 			// virtual calls accessing the proxy state before its own constructor has a chance
@@ -393,9 +391,28 @@ namespace NHibernate.Proxy
 			IL.Emit(OpCodes.Ldnull);
 			IL.Emit(OpCodes.Bne_Un, skipBaseCall);
 
-			IL.Emit(OpCodes.Ldarg_0);
-			EmitCallMethod(IL, OpCodes.Call, method);
-			IL.Emit(OpCodes.Ret);
+			if (method.IsAbstract)
+			{
+				if (!method.ReturnType.IsValueType)
+				{
+					IL.Emit(OpCodes.Ldnull);
+				}
+				else if (method.ReturnType != typeof(void))
+				{
+					var local = IL.DeclareLocal(method.ReturnType);
+					IL.Emit(OpCodes.Ldloca, local);
+					IL.Emit(OpCodes.Initobj, method.ReturnType);
+					IL.Emit(OpCodes.Ldloc, local);
+				}
+
+				IL.Emit(OpCodes.Ret);
+			}
+			else
+			{
+				IL.Emit(OpCodes.Ldarg_0);
+				EmitCallMethod(IL, OpCodes.Call, method);
+				IL.Emit(OpCodes.Ret);
+			}
 
 			IL.MarkLabel(skipBaseCall);
 		}
