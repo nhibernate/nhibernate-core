@@ -549,9 +549,7 @@ namespace NHibernate.Mapping.ByCode
 				throw new ArgumentNullException("types");
 			}
 
-			var typeToMap = types.Distinct()
-								 .OrderBy(x => x, new TypeHierarchyComparer())
-								 .ToList();
+			var typeToMap = OrderTypesByHierarchy(types);
 
 			string defaultAssemblyName = null;
 			string defaultNamespace = null;
@@ -583,9 +581,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				throw new ArgumentNullException("types");
 			}
-			var typeToMap = types.Distinct()
-								 .OrderBy(x => x, new TypeHierarchyComparer())
-								 .ToList();
+			var typeToMap = OrderTypesByHierarchy(types);
 
 			//NH-2831: always use the full name of the assembly because it may come from GAC
 			foreach (var type in RootClasses(typeToMap))
@@ -1809,15 +1805,17 @@ namespace NHibernate.Mapping.ByCode
 			return CompileMappingForEach(customizerHolder.GetAllCustomizedEntities());
 		}
 
-		private class TypeHierarchyComparer : IComparer<System.Type>
+		private static List<System.Type> OrderTypesByHierarchy(IEnumerable<System.Type> types)
 		{
-			public int Compare(System.Type x, System.Type y)
+			var typesCache = new HashSet<System.Type>(types);
+
+			var result = new List<System.Type>(typesCache.Count);
+			while (typesCache.Count > 0)
 			{
-				if (x == y) return 0;
-				if (x.IsAssignableFrom(y)) return -1;
-				if (y.IsAssignableFrom(x)) return 1;
-				return 0;
+				var type = typesCache.First();
+				result.AddRange(type.GetHierarchyFromBase().Where(baseType => typesCache.Remove(baseType)));
 			}
+			return result;
 		}
 	}
 }
