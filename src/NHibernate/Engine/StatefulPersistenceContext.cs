@@ -782,7 +782,15 @@ namespace NHibernate.Engine
 		/// <summary> Get the entity that owns this persistent collection</summary>
 		public object GetCollectionOwner(object key, ICollectionPersister collectionPersister)
 		{
-			return GetEntity(session.GenerateEntityKey(key, collectionPersister.OwnerEntityPersister));
+			if (collectionPersister.CollectionType.UseLHSPrimaryKey)
+				return GetEntity(session.GenerateEntityKey(key, collectionPersister.OwnerEntityPersister));
+
+			return GetEntity(
+				new EntityUniqueKey(
+					collectionPersister.OwnerEntityPersister.EntityName,
+					collectionPersister.CollectionType.LHSPropertyName,
+					key, collectionPersister.KeyType, session.Factory
+				));
 		}
 
 		/// <summary> Get the entity that owned this persistent collection when it was loaded </summary>
@@ -801,10 +809,9 @@ namespace NHibernate.Engine
 			object loadedOwner = null;
 			// TODO: an alternative is to check if the owner has changed; if it hasn't then
 			// return collection.getOwner()
-			object entityId = GetLoadedCollectionOwnerIdOrNull(ce);
-			if (entityId != null)
+			if (ce.LoadedKey != null)
 			{
-				loadedOwner = GetCollectionOwner(entityId, ce.LoadedPersister);
+				loadedOwner = GetCollectionOwner(ce.LoadedKey, ce.LoadedPersister);
 			}
 			return loadedOwner;
 		}

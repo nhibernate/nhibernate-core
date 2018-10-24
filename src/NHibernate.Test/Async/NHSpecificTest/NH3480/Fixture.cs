@@ -26,7 +26,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3480
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					var parent1 = new Entity { Id = new Entity.Key() { Id = Guid.NewGuid() }, Name = "Bob", OtherId = 20 };
+					var parent1 = new Entity
+					{
+						Id = new Entity.Key { Id = Guid.NewGuid() },
+						Name = "Bob",
+						OtherId = 20,
+						YetAnotherOtherId = 21
+					};
+					parent1.Elements.Add(1);
+					parent1.Elements.Add(2);
 					session.Save(parent1);
 
 					var child1 = new Child { Name = "Bob1", Parent = parent1 };
@@ -68,7 +76,24 @@ namespace NHibernate.Test.NHSpecificTest.NH3480
 					var entity = await (result.SingleAsync());
 
 					await (NHibernateUtil.InitializeAsync(entity.Children));
+					Assert.That(entity.Children, Has.Count.GreaterThan(0));
 				}
+			}
+		}
+
+		[Test]
+		public async Task TestOwnerAsync()
+		{
+			using (var session = OpenSession())
+			using (var t = session.BeginTransaction())
+			{
+				var entity = await (session.Query<Entity>().SingleAsync(e => e.Name == "Bob"));
+
+				// The Elements collection is mapped with a custom type which assert the owner
+				// is not null.
+				await (NHibernateUtil.InitializeAsync(entity.Elements));
+				Assert.That(entity.Elements, Has.Count.GreaterThan(0));
+				await (t.CommitAsync());
 			}
 		}
 	}

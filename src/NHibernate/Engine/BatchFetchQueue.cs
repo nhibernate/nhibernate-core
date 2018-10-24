@@ -220,16 +220,16 @@ namespace NHibernate.Engine
 		/// Get a batch of uninitialized collection keys for a given role
 		/// </summary>
 		/// <param name="collectionPersister">The persister for the collection role.</param>
-		/// <param name="id">A key that must be included in the batch fetch</param>
+		/// <param name="key">A key that must be included in the batch fetch</param>
 		/// <param name="batchSize">the maximum number of keys to return</param>
 		/// <param name="checkCache">Whether to check the cache for uninitialized collection keys.</param>
 		/// <param name="collectionEntries">An array that will be filled with collection entries if set.</param>
 		/// <returns>An array of collection keys, of length <paramref name="batchSize"/> (padded with nulls)</returns>
-		internal object[] GetCollectionBatch(ICollectionPersister collectionPersister, object id, int batchSize, bool checkCache,
+		internal object[] GetCollectionBatch(ICollectionPersister collectionPersister, object key, int batchSize, bool checkCache,
 		                                     CollectionEntry[] collectionEntries)
 		{
 			var keys = new object[batchSize];
-			keys[0] = id; // The first element of array is reserved for the actual instance we are loading
+			keys[0] = key; // The first element of array is reserved for the actual instance we are loading
 			var i = 1; // The current index of keys array
 			int? keyIndex = null; // The index of the demanding key in the linked hash set
 			var checkForEnd = false; // Stores whether we found the demanded collection and reached the batchSize
@@ -328,7 +328,7 @@ namespace NHibernate.Engine
 				{
 					return true;
 				}
-				if (collectionPersister.KeyType.IsEqual(id, ce.LoadedKey, collectionPersister.Factory))
+				if (collectionPersister.KeyType.IsEqual(key, ce.LoadedKey, collectionPersister.Factory))
 				{
 					if (collectionEntries != null)
 					{
