@@ -49,6 +49,39 @@ namespace NHibernate.Test.StaticProxyTest
 		}
 
 		[Serializable]
+		public class RefOutTestClass
+		{
+			public virtual int Id { get; set; }
+
+			public virtual void Method1(out int x)
+			{
+				x = 3;
+			}
+
+			public virtual void Method2(ref int x)
+			{
+				x++;
+			}
+		
+			public virtual void Method3(out int? y)
+			{
+				y = 4;
+			}
+
+			public virtual void Method4(ref int? y)
+			{
+				y++;
+			}
+
+			public virtual void Method(ref Dictionary<string, string> dictionary)
+			{
+				dictionary = dictionary == null
+					? new Dictionary<string, string>()
+					: new Dictionary<string, string>(dictionary);
+			}
+		}
+
+		[Serializable]
 		public class CustomSerializationClass : ISerializable
 		{
 			public virtual int Id { get; set; }
@@ -136,6 +169,51 @@ namespace NHibernate.Test.StaticProxyTest
 					Assert.That(proxy, Is.Not.Null);
 					Assert.That(proxy, Is.InstanceOf<IPublic>());
 					Assert.That(proxy, Is.Not.InstanceOf<PublicInterfaceTestClass>());
+#if NETFX
+				});
+#endif
+		}
+
+		[Test]
+		public void VerifyProxyForRefOutClass()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(
+				typeof(RefOutTestClass).FullName,
+				typeof(RefOutTestClass),
+				new HashSet<System.Type> { typeof(INHibernateProxy) },
+				null,
+				null,
+				null);
+
+#if NETFX
+			VerifyGeneratedAssembly(
+				() =>
+				{
+#endif
+					var proxy = factory.GetProxy(1, null);
+					Assert.That(proxy, Is.Not.Null);
+
+					var state = new RefOutTestClass();
+					proxy.HibernateLazyInitializer.SetImplementation(state);
+
+					var entity = (RefOutTestClass) proxy;
+					entity.Method1(out var x);
+					Assert.That(x, Is.EqualTo(3));
+
+					entity.Method2(ref x);
+					Assert.That(x, Is.EqualTo(4));
+
+					entity.Method3(out var y);
+					Assert.That(y, Is.EqualTo(4));
+
+					entity.Method4(ref y);
+					Assert.That(y, Is.EqualTo(5));
+
+					var dictionary = new Dictionary<string, string>();
+					var param = dictionary;
+					entity.Method(ref param);
+					Assert.That(param, Is.Not.SameAs(dictionary));
 #if NETFX
 				});
 #endif
