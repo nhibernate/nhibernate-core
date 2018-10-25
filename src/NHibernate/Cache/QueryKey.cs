@@ -127,7 +127,7 @@ namespace NHibernate.Cache
 				}
 			}
 
-			if (!CollectionHelper.SetEquals(_filters, that._filters))
+			if (!CollectionHelper.SequenceEquals(_filters, that._filters))
 			{
 				return false;
 			}
