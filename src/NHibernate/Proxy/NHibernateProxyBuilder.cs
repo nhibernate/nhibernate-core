@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.Serialization;
@@ -366,7 +367,10 @@ namespace NHibernate.Proxy
 		}
 
 		private static void EmitCallBaseIfLazyInitializerIsNull(
-			ILGenerator IL, MethodInfo method, FieldInfo lazyInitializerField, System.Type parentType)
+			ILGenerator IL,
+			MethodInfo method,
+			FieldInfo lazyInitializerField,
+			System.Type parentType)
 		{
 			/*
 				if (this.__lazyInitializer == null)
@@ -391,8 +395,20 @@ namespace NHibernate.Proxy
 			IL.Emit(OpCodes.Ldnull);
 			IL.Emit(OpCodes.Bne_Un, skipBaseCall);
 
+			if (method.DeclaringType.IsInterface &&
+			    method.DeclaringType.IsAssignableFrom(parentType))
+			{
+				var interfaceMap = parentType.GetInterfaceMap(method.DeclaringType);
+				var methodIndex = Array.IndexOf(interfaceMap.InterfaceMethods, method);
+				method = interfaceMap.TargetMethods[methodIndex];
+			}
+
 			if (method.IsAbstract)
 			{
+				/*
+				 * return default(<ReturnType>);
+				 */
+				
 				if (!method.ReturnType.IsValueType)
 				{
 					IL.Emit(OpCodes.Ldnull);
@@ -407,8 +423,44 @@ namespace NHibernate.Proxy
 
 				IL.Emit(OpCodes.Ret);
 			}
+			else if (method.IsPrivate)
+			{
+				/*
+				 * var mi = (MethodInfo)MethodBase.GetMethodFromHandle(<method>, <parentType>);
+				 * var delegate = (<delegateType>)mi.CreateDelegate(typeof(<delegateType>), this);
+				 * delegate.Invoke(...);
+				 */
+				
+				var parameters = method.GetParameters();
+
+				var delegateType = Expression.GetDelegateType(
+					parameters.Select(p => p.ParameterType).Concat(new[] {method.ReturnType}).ToArray());
+
+				var invokeDelegate = delegateType.GetMethod("Invoke");
+
+				IL.Emit(OpCodes.Ldtoken, method);
+				IL.Emit(OpCodes.Ldtoken, parentType);
+				IL.Emit(OpCodes.Call, ReflectionCache.MethodBaseMethods.GetMethodFromHandleWithDeclaringType);
+				IL.Emit(OpCodes.Castclass, typeof(MethodInfo));
+				IL.Emit(OpCodes.Ldtoken, delegateType);
+				IL.Emit(OpCodes.Call, ReflectionCache.TypeMethods.GetTypeFromHandle);
+				IL.Emit(OpCodes.Ldarg_0);
+				IL.Emit(
+					OpCodes.Callvirt,
+					typeof(MethodInfo).GetMethod(
+						nameof(MethodInfo.CreateDelegate),
+						new[] {typeof(System.Type), typeof(object)}));
+				IL.Emit(OpCodes.Castclass, delegateType);
+
+				EmitCallMethod(IL, OpCodes.Callvirt, invokeDelegate);
+				IL.Emit(OpCodes.Ret);
+			}
 			else
 			{
+				/*
+				 * base.<method>(...);
+				 */
+				
 				IL.Emit(OpCodes.Ldarg_0);
 				EmitCallMethod(IL, OpCodes.Call, method);
 				IL.Emit(OpCodes.Ret);

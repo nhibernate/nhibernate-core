@@ -46,10 +46,10 @@ namespace NHibernate.Test.StaticProxyTest
 			public PublicInterfaceTestClass()
 			{
 				// Check access to properties from the default constructor do not fail once proxified
-				Assert.That(Id, Is.Zero);
-				Assert.That(Name, Is.Null);
 				Id = -1;
-				Name = string.Empty;
+				Assert.That(Id, Is.EqualTo(-1));
+				Name = "Unknown";
+				Assert.That(Name, Is.EqualTo("Unknown"));
 			}
 		}
 
@@ -63,10 +63,10 @@ namespace NHibernate.Test.StaticProxyTest
 			{
 				// Check access to properties from the default constructor do not fail once proxified
 				IPublic pub = this;
-				Assert.That(pub.Id, Is.Zero);
-				Assert.That(pub.Name, Is.Null);
 				pub.Id = -1;
-				pub.Name = string.Empty;
+				Assert.That(pub.Id, Is.EqualTo(-1));
+				pub.Name = "Unknown";
+				Assert.That(pub.Name, Is.EqualTo("Unknown"));
 			}
 		}
 
@@ -75,10 +75,10 @@ namespace NHibernate.Test.StaticProxyTest
 		{
 			protected AbstractTestClass()
 			{
-				Assert.That(Id, Is.Zero);
-				Assert.That(Name, Is.Null);
 				Id = -1;
+				Assert.That(Id, Is.Zero);
 				Name = "Unknown";
+				Assert.That(Name, Is.Null);
 			}
 
 			public abstract int Id { get; set; }
