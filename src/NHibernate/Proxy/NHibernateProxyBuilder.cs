@@ -428,7 +428,7 @@ namespace NHibernate.Proxy
 				/*
 				 * var mi = (MethodInfo)MethodBase.GetMethodFromHandle(<method>, <parentType>);
 				 * var delegate = (<delegateType>)mi.CreateDelegate(typeof(<delegateType>), this);
-				 * delegate.Invoke(...);
+				 * delegate.Invoke(args...);
 				 */
 				
 				var parameters = method.GetParameters();
@@ -458,7 +458,7 @@ namespace NHibernate.Proxy
 			else
 			{
 				/*
-				 * base.<method>(...);
+				 * base.<method>(args...);
 				 */
 				
 				IL.Emit(OpCodes.Ldarg_0);
