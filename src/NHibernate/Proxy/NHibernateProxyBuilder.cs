@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.Serialization;
@@ -366,19 +367,20 @@ namespace NHibernate.Proxy
 		}
 
 		private static void EmitCallBaseIfLazyInitializerIsNull(
-			ILGenerator IL, MethodInfo method, FieldInfo lazyInitializerField, System.Type parentType)
+			ILGenerator IL,
+			MethodInfo method,
+			FieldInfo lazyInitializerField,
+			System.Type parentType)
 		{
 			/*
-				<if (method.DeclaringType.IsAssignableFrom(parentType))
-				{>
 				if (this.__lazyInitializer == null)
-					return base.<method>(args..)
+				<if (method.IsAbstract)
+				{>
+				return default;
+				<} else {>
+				return base.<method>(args..);
 				<}>
 			 */
-			if (!method.DeclaringType.IsAssignableFrom(parentType))
-				// The proxy does not derive from a type implementing the method, do not attempt
-				// calling its base. In such case, the lazy initializer is never null.
-				return;
 
 			// When deriving from the entity class, the entity class constructor may trigger
 			// virtual calls accessing the proxy state before its own constructor has a chance
@@ -393,9 +395,76 @@ namespace NHibernate.Proxy
 			IL.Emit(OpCodes.Ldnull);
 			IL.Emit(OpCodes.Bne_Un, skipBaseCall);
 
-			IL.Emit(OpCodes.Ldarg_0);
-			EmitCallMethod(IL, OpCodes.Call, method);
-			IL.Emit(OpCodes.Ret);
+			if (method.DeclaringType.IsInterface &&
+			    method.DeclaringType.IsAssignableFrom(parentType))
+			{
+				var interfaceMap = parentType.GetInterfaceMap(method.DeclaringType);
+				var methodIndex = Array.IndexOf(interfaceMap.InterfaceMethods, method);
+				method = interfaceMap.TargetMethods[methodIndex];
+			}
+
+			if (method.IsAbstract)
+			{
+				/*
+				 * return default(<ReturnType>);
+				 */
+				
+				if (!method.ReturnType.IsValueType)
+				{
+					IL.Emit(OpCodes.Ldnull);
+				}
+				else if (method.ReturnType != typeof(void))
+				{
+					var local = IL.DeclareLocal(method.ReturnType);
+					IL.Emit(OpCodes.Ldloca, local);
+					IL.Emit(OpCodes.Initobj, method.ReturnType);
+					IL.Emit(OpCodes.Ldloc, local);
+				}
+
+				IL.Emit(OpCodes.Ret);
+			}
+			else if (method.IsPrivate)
+			{
+				/*
+				 * var mi = (MethodInfo)MethodBase.GetMethodFromHandle(<method>, <parentType>);
+				 * var delegate = (<delegateType>)mi.CreateDelegate(typeof(<delegateType>), this);
+				 * delegate.Invoke(args...);
+				 */
+				
+				var parameters = method.GetParameters();
+
+				var delegateType = Expression.GetDelegateType(
+					parameters.Select(p => p.ParameterType).Concat(new[] {method.ReturnType}).ToArray());
+
+				var invokeDelegate = delegateType.GetMethod("Invoke");
+
+				IL.Emit(OpCodes.Ldtoken, method);
+				IL.Emit(OpCodes.Ldtoken, parentType);
+				IL.Emit(OpCodes.Call, ReflectionCache.MethodBaseMethods.GetMethodFromHandleWithDeclaringType);
+				IL.Emit(OpCodes.Castclass, typeof(MethodInfo));
+				IL.Emit(OpCodes.Ldtoken, delegateType);
+				IL.Emit(OpCodes.Call, ReflectionCache.TypeMethods.GetTypeFromHandle);
+				IL.Emit(OpCodes.Ldarg_0);
+				IL.Emit(
+					OpCodes.Callvirt,
+					typeof(MethodInfo).GetMethod(
+						nameof(MethodInfo.CreateDelegate),
+						new[] {typeof(System.Type), typeof(object)}));
+				IL.Emit(OpCodes.Castclass, delegateType);
+
+				EmitCallMethod(IL, OpCodes.Callvirt, invokeDelegate);
+				IL.Emit(OpCodes.Ret);
+			}
+			else
+			{
+				/*
+				 * base.<method>(args...);
+				 */
+				
+				IL.Emit(OpCodes.Ldarg_0);
+				EmitCallMethod(IL, OpCodes.Call, method);
+				IL.Emit(OpCodes.Ret);
+			}
 
 			IL.MarkLabel(skipBaseCall);
 		}
