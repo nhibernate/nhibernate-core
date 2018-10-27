@@ -7,6 +7,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Linq;
 
 namespace NHibernate.Cache
 {
@@ -127,7 +128,7 @@ namespace NHibernate.Cache
 				}
 			}
 
-			if (!CollectionHelper.SequenceEquals(_filters, that._filters))
+			if (!CollectionHelper.SequenceEquals(_filters?.OrderBy(x=>x.ToString()) , that._filters?.OrderBy(x=>x.ToString())))
 			{
 				return false;
 			}
