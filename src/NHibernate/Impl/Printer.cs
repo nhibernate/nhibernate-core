@@ -1,6 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Intercept;
 using NHibernate.Metadata;
@@ -72,11 +71,16 @@ namespace NHibernate.Impl
 
 		public string ToString(IDictionary<string, TypedValue> namedTypedValues)
 		{
-			IDictionary<string, string> result = new Dictionary<string, string>(namedTypedValues.Count);
+			return ToString(namedTypedValues.AsEnumerable());
+		}
 
-			foreach (KeyValuePair<string, TypedValue> me in namedTypedValues)
+		internal string ToString(IEnumerable<KeyValuePair<string, TypedValue>> namedTypedValues)
+		{
+			IDictionary<string, string> result = new Dictionary<string, string>(namedTypedValues.Count());
+
+			foreach (var me in namedTypedValues)
 			{
-				TypedValue tv = me.Value;
+				var tv = me.Value;
 				result[me.Key] = tv.Type.ToLoggableString(tv.Value, _factory);
 			}
 
