@@ -71,20 +71,24 @@ namespace NHibernate.Impl
 
 		public string ToString(IDictionary<string, TypedValue> namedTypedValues)
 		{
-			return ToString(namedTypedValues.AsEnumerable());
-		}
+			IDictionary<string, string> result = new Dictionary<string, string>(namedTypedValues.Count);
 
-		internal string ToString(IEnumerable<KeyValuePair<string, TypedValue>> namedTypedValues)
-		{
-			IDictionary<string, string> result = new Dictionary<string, string>(namedTypedValues.Count());
-
-			foreach (var me in namedTypedValues)
+			foreach (KeyValuePair<string, TypedValue> me in namedTypedValues)
 			{
-				var tv = me.Value;
+				TypedValue tv = me.Value;
 				result[me.Key] = tv.Type.ToLoggableString(tv.Value, _factory);
 			}
 
 			return CollectionPrinter.ToString(result);
+		}
+
+		internal string ToString(IEnumerable<KeyValuePair<string, TypedValue>> namedTypedValues)
+		{
+			return CollectionPrinter.ToString(
+				namedTypedValues.Select(
+					ntv => new KeyValuePair<string, string>(
+						ntv.Key,
+						ntv.Value.Type.ToLoggableString(ntv.Value.Value, _factory))));
 		}
 
 		public void ToString(object[] entities)
