@@ -3,6 +3,8 @@
 *.user
 *.suo
 .vs/
-bin/Debug/
+bin/
 obj/
 *.vshost.*
+.idea/
+.vs/

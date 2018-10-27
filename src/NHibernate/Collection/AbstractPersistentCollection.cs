@@ -379,16 +379,34 @@ namespace NHibernate.Collection
 			dirty = true; //needed so that we remove this collection from the second-level cache
 		}
 
-		/// <summary> 
+		// Obsolete since v5.2
+		/// <summary>
 		/// After reading all existing elements from the database,
 		/// add the queued elements to the underlying collection.
 		/// </summary>
+		[Obsolete("Use or override ApplyQueuedOperations instead")]
 		protected virtual void PerformQueuedOperations()
 		{
 			for (int i = 0; i < operationQueue.Count; i++)
 			{
 				operationQueue[i].Operate();
 			}
+		}
+
+		/// <summary>
+		/// After reading all existing elements from the database, do the queued operations
+		/// (adds or removes) on the underlying collection.
+		/// </summary>
+		public virtual void ApplyQueuedOperations()
+		{
+			if (operationQueue == null)
+				throw new InvalidOperationException("There are no operation queue.");
+
+#pragma warning disable 618
+			PerformQueuedOperations();
+#pragma warning restore 618
+
+			operationQueue = null;
 		}
 
 		public void SetSnapshot(object key, string role, object snapshot)
@@ -437,18 +455,8 @@ namespace NHibernate.Collection
 		public virtual bool AfterInitialize(ICollectionPersister persister)
 		{
 			SetInitialized();
-			//do this bit after setting initialized to true or it will recurse
-			if (operationQueue != null)
-			{
-				PerformQueuedOperations();
-				operationQueue = null;
-				cachedSize = -1;
-				return false;
-			}
-			else
-			{
-				return true;
-			}
+			cachedSize = -1;
+			return operationQueue == null;
 		}
 
 		/// <summary>

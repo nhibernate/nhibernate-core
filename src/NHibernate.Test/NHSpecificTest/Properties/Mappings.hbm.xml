@@ -27,6 +27,8 @@
       </key>
       <one-to-many class="Account"/>
     </set>
+    <!-- Having it mapped after the collection referencing it can cause trouble when resolving the collection, if
+         not accounted for. So keep it mapped after for checking this case is still supported. -->
     <properties name="UserIdAndDeleted" update="false" unique="true">
       <property name="UserId" length="8"/>
       <property name="Deleted"/>

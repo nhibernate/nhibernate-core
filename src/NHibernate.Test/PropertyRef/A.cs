@@ -28,10 +28,14 @@ namespace NHibernate.Test.PropertyRef
             set { _name = value; }
         }
 
-        public virtual ISet<B> Items
+        public ISet<B> Items
         {
             get { return _items; }
             set { _items = value; }
         }
+
+        public ISet<B> CItems { get; set; } = new HashSet<B>();
+
+        public C C { get; set; }
     }
 }

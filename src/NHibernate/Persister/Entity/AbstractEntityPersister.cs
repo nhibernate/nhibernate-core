@@ -875,6 +875,8 @@ namespace NHibernate.Persister.Entity
 			get { return IdentifierColumnNames; }
 		}
 
+		// Since v5.2
+		[Obsolete("Use KeyColumnNames instead")]
 		public string[] JoinColumnNames
 		{
 			get { return KeyColumnNames; }
@@ -2095,6 +2097,24 @@ namespace NHibernate.Persister.Entity
 		public object LoadByUniqueKey(string propertyName, object uniqueKey, ISessionImplementor session)
 		{
 			return GetAppropriateUniqueKeyLoader(propertyName, session.EnabledFilters).LoadByUniqueKey(session, uniqueKey);
+		}
+
+		public void CacheByUniqueKeys(object entity, ISessionImplementor session)
+		{
+			for (var i = 0; i < PropertySpan; i++)
+			{
+				if (!propertyUniqueness[i])
+					continue;
+
+				// The caching is done by semi-resolved values.
+				var propertyValue = session.PersistenceContext.GetEntry(entity).LoadedState[i];
+				if (propertyValue == null)
+					continue;
+				var type = PropertyTypes[i].GetSemiResolvedType(session.Factory);
+				propertyValue = type.SemiResolve(propertyValue, session, entity);
+				var euk = new EntityUniqueKey(EntityName, PropertyNames[i], propertyValue, type, session.Factory);
+				session.PersistenceContext.AddEntity(euk, entity);
+			}
 		}
 
 		private EntityLoader GetAppropriateUniqueKeyLoader(string propertyName, IDictionary<string, IFilter> enabledFilters)

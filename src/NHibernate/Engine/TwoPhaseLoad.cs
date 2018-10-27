@@ -10,6 +10,7 @@ using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Properties;
 using System;
+using System.Collections.Generic;
 
 namespace NHibernate.Engine
 {
@@ -84,13 +85,26 @@ namespace NHibernate.Engine
 				log.Debug("resolving associations for {0}", MessageHelper.InfoString(persister, id, session.Factory));
 
 			IType[] types = persister.PropertyTypes;
+			var collectionToResolveIndexes = new List<int>(hydratedState.Length);
 			for (int i = 0; i < hydratedState.Length; i++)
 			{
 				object value = hydratedState[i];
 				if (!Equals(LazyPropertyInitializer.UnfetchedProperty, value) && !(Equals(BackrefPropertyAccessor.Unknown, value)))
 				{
+					if (types[i].IsCollectionType)
+					{
+						// Resolve them last, because they may depend on other properties if they use a property-ref
+						collectionToResolveIndexes.Add(i);
+						continue;
+					}
+
 					hydratedState[i] = types[i].ResolveIdentifier(value, session, entity);
 				}
+			}
+
+			foreach (var i in collectionToResolveIndexes)
+			{
+				hydratedState[i] = types[i].ResolveIdentifier(hydratedState[i], session, entity);
 			}
 
 			//Must occur after resolving identifiers!

@@ -21,4 +21,38 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		Task<object> LoadByUniqueKeyAsync(string propertyName, object uniqueKey, ISessionImplementor session, CancellationToken cancellationToken);
 	}
+
+	public static partial class UniqueKeyLoadableExtensions
+	{
+
+		// 6.0 TODO: merge in IUniqueKeyLoadable
+		public static async Task CacheByUniqueKeysAsync(
+			this IUniqueKeyLoadable ukLoadable,
+			object entity,
+			ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (ukLoadable is AbstractEntityPersister persister)
+			{
+				await (persister.CacheByUniqueKeysAsync(entity, session, cancellationToken)).ConfigureAwait(false);
+				return;
+			}
+
+			// Use reflection for supporting custom persisters.
+			var ukLoadableType = ukLoadable.GetType();
+			var cacheByUniqueKeysMethod = ukLoadableType.GetMethod(
+				nameof(AbstractEntityPersister.CacheByUniqueKeysAsync),
+				new[] { typeof(object), typeof(ISessionImplementor) });
+			if (cacheByUniqueKeysMethod != null)
+			{
+				cacheByUniqueKeysMethod.Invoke(ukLoadable, new[] { entity, session });
+				return;
+			}
+
+			Logger.Warn(
+				"{0} does not implement 'void CacheByUniqueKeys(object, ISessionImplementor)', " +
+				"some caching may be lacking",
+				ukLoadableType);
+		}
+	}
 }
