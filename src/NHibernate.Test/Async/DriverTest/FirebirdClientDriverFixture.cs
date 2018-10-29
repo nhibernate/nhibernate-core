@@ -25,6 +25,7 @@ namespace NHibernate.Test.DriverTest
 	{
 		private string _connectionString;
 		private FirebirdClientDriver _driver;
+		private FirebirdClientDriver _driverWithoutCasting;
 
 		[OneTimeSetUp]
 		public void OneTimeSetup()
@@ -38,6 +39,10 @@ namespace NHibernate.Test.DriverTest
 			_driver = new FirebirdClientDriver();
 			_driver.Configure(cfg.Properties);
 			_connectionString = cfg.GetProperty("connection.connection_string");
+
+			_driverWithoutCasting = new FirebirdClientDriver();
+			cfg.SetProperty(Cfg.Environment.FirebirdDisableParameterCasting, "true");
+			_driverWithoutCasting.Configure(cfg.Properties);
 		}
 
 		[Test]
