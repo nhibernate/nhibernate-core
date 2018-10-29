@@ -177,25 +177,76 @@ namespace NHibernate.Test.DriverTest
 		private DbCommand BuildInsertWithParamsInSelectCommandWithSelectInColumnName(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
-				.Add("insert into table1 (col1_select_aaa) ")
+				.Add("insert into table1 (col1_select_aaa, select_aaa, col1_select) ")
 				.Add("values(")
+				.AddParameter()
+				.Add(", ")
+				.AddParameter()
+				.Add(", ")
 				.AddParameter()
 				.Add(") from table2")
 				.ToSqlString();
 
-			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType, paramType });
 		}
 
 		private DbCommand BuildInsertWithParamsInSelectCommandWithWhereInColumnName(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
-				.Add("insert into table1 (col1_where_aaa) ")
+				.Add("insert into table1 (col1_where_aaa, where_aaa, col1_where) ")
 				.Add("values(")
+				.AddParameter()
+				.Add(", ")
+				.AddParameter()
+				.Add(", ")
 				.AddParameter()
 				.Add(") from table2")
 				.ToSqlString();
 
-			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType, paramType });
+		}
+
+		private DbCommand BuildBetweenCommand(SqlType paramType)
+		{
+			var sqlString =
+				new SqlStringBuilder()
+					.Add("select col1 from table where col2 between ")
+					.AddParameter()
+					.Add(" and ")
+					.AddParameter()
+					.ToSqlString();
+
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType });
+		}
+
+		private DbCommand BuildPagingCommand(SqlType paramType)
+		{
+			var sqlString =
+				new SqlStringBuilder()
+					.Add("select first ")
+					.AddParameter()
+					.Add(" skip ")
+					.AddParameter()
+					.Add(" col1 from table")
+					.ToSqlString();
+
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType });
+		}
+
+		private DbCommand BuildInCommand(SqlType paramType)
+		{
+			var sqlString =
+				new SqlStringBuilder()
+					.Add("select col1 from table where col2 in (")
+					.AddParameter()
+					.Add(", ")
+					.AddParameter()
+					.Add(", ")
+					.AddParameter()
+					.Add(")")
+					.ToSqlString();
+
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType });
 		}
 	}
 }
