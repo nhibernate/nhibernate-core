@@ -13,6 +13,7 @@ namespace NHibernate.Test.DriverTest
 	{
 		private string _connectionString;
 		private FirebirdClientDriver _driver;
+		private FirebirdClientDriver _driverWithoutCasting;
 
 		[OneTimeSetUp]
 		public void OneTimeSetup()
@@ -26,6 +27,10 @@ namespace NHibernate.Test.DriverTest
 			_driver = new FirebirdClientDriver();
 			_driver.Configure(cfg.Properties);
 			_connectionString = cfg.GetProperty("connection.connection_string");
+
+			_driverWithoutCasting = new FirebirdClientDriver();
+			cfg.SetProperty(Cfg.Environment.FirebirdDisableParameterCasting, "true");
+			_driverWithoutCasting.Configure(cfg.Properties);
 		}
 
 		[Test]
@@ -198,6 +203,66 @@ namespace NHibernate.Test.DriverTest
 		public void AdjustCommand_ParameterWithinIn_ParameterIsNotCasted()
 		{
 			using (var cmd = BuildInCommand(SqlTypeFactory.GetString(255)))
+			{
+				var originalSql = cmd.CommandText;
+				_driver.AdjustCommand(cmd);
+
+				Assert.That(cmd.CommandText, Is.EqualTo(originalSql));
+			}
+		}
+
+		[Test]
+		public void AdjustCommand_StringParametersWithinConditionalSelect_NotCastedWhenDisabled()
+		{
+			using (var cmd = BuildSelectCaseCommand(SqlTypeFactory.GetString(255)))
+			{
+				var originalSql = cmd.CommandText;
+				_driver.AdjustCommand(cmd);
+
+				Assert.That(cmd.CommandText, Is.EqualTo(originalSql));
+			}
+		}
+
+		[Test]
+		public void AdjustCommand_IntParametersWithinConditionalSelect_NotCastedWhenDisabled()
+		{
+			using (var cmd = BuildSelectCaseCommand(SqlTypeFactory.Int32))
+			{
+				var originalSql = cmd.CommandText;
+				_driver.AdjustCommand(cmd);
+
+				Assert.That(cmd.CommandText, Is.EqualTo(originalSql));
+			}
+		}
+
+		[Test]
+		public void AdjustCommand_ParameterWithinSelectConcat_NotCastedWhenDisabled()
+		{
+			using (var cmd = BuildSelectConcatCommand(SqlTypeFactory.GetString(255)))
+			{
+				var originalSql = cmd.CommandText;
+				_driver.AdjustCommand(cmd);
+
+				Assert.That(cmd.CommandText, Is.EqualTo(originalSql));
+			}
+		}
+
+		[Test]
+		public void AdjustCommand_ParameterWithinSelectAddFunction_NotCastedWhenDisabled()
+		{
+			using (var cmd = BuildSelectAddCommand(SqlTypeFactory.GetString(255)))
+			{
+				var originalSql = cmd.CommandText;
+				_driver.AdjustCommand(cmd);
+
+				Assert.That(cmd.CommandText, Is.EqualTo(originalSql));
+			}
+		}
+
+		[Test]
+		public void AdjustCommand_InsertWithParamsInSelect_NotCastedWhenDisabled()
+		{
+			using (var cmd = BuildInsertWithParamsInSelectCommand(SqlTypeFactory.Int32))
 			{
 				var originalSql = cmd.CommandText;
 				_driver.AdjustCommand(cmd);

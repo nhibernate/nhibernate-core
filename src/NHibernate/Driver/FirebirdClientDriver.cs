@@ -9,6 +9,7 @@ using NHibernate.Dialect;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Driver
 {
@@ -40,6 +41,8 @@ namespace NHibernate.Driver
 		private static readonly Regex _castCandidateRegEx = new Regex(CAST_PARAMS_EXP, RegexOptions.IgnoreCase);
 		private readonly FirebirdDialect _fbDialect = new FirebirdDialect();
 
+		private bool _disableParameterCasting;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FirebirdClientDriver"/> class.
 		/// </summary>
@@ -59,6 +62,8 @@ namespace NHibernate.Driver
 		{
 			base.Configure(settings);
 			_fbDialect.Configure(settings);
+
+			_disableParameterCasting = PropertiesHelper.GetBoolean(Environment.FirebirdDisableParameterCasting, settings);
 		}
 
 		public override bool UseNamedPrefixInSql => true;
@@ -79,6 +84,9 @@ namespace NHibernate.Driver
 		public override DbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
 		{
 			var command = base.GenerateCommand(type, sqlString, parameterTypes);
+
+			if (_disableParameterCasting)
+				return command;
 
 			var expWithParams = GetStatementsWithCastCandidates(command.CommandText);
 			if (!string.IsNullOrWhiteSpace(expWithParams))
