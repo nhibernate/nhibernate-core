@@ -55,7 +55,7 @@ namespace NHibernate.SqlCommand
 			SqlType[] sqlTypes = propertyType.SqlTypes(factory);
 			if (sqlTypes.Length > 1)
 				throw new AssertionFailure("Adding one column for a composed IType.");
-			columns[columnName] = sqlTypes[0];
+			AddColumnWithValueOrType(columnName, sqlTypes[0]);
 			return this;
 		}
 
@@ -80,7 +80,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlInsertBuilder.</returns>
 		public SqlInsertBuilder AddColumn(string columnName, string val)
 		{
-			columns[columnName] = val;
+			AddColumnWithValueOrType(columnName, val);
 			return this;
 		}
 
@@ -94,11 +94,20 @@ namespace NHibernate.SqlCommand
 				{
 					if (i >= sqlTypes.Length)
 						throw new AssertionFailure("Different columns and it's IType.");
-					columns[columnNames[i]] = sqlTypes[i];
+					AddColumnWithValueOrType(columnNames[i], sqlTypes[i]);
 				}
 			}
 
 			return this;
+		}
+
+		private void AddColumnWithValueOrType(string columnName, object valueOrType)
+		{
+			// As the column may be associated with a parameter, we must be sure it has been newly added, and
+			// fail otherwise. So we use Add instead of the indexer access. Otherwise, a parameter count
+			// mismatch may occur and will cause various failures, depending on the used data provider.
+			// See #1875.
+			columns.Add(columnName, valueOrType);
 		}
 
 		public virtual SqlInsertBuilder AddIdentityColumn(string columnName)
