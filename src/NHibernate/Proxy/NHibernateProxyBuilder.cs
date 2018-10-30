@@ -398,7 +398,6 @@ namespace NHibernate.Proxy
 			if (method.DeclaringType.IsInterface &&
 			    method.DeclaringType.IsAssignableFrom(parentType))
 			{
-				Delegate
 				var interfaceMap = parentType.GetInterfaceMap(method.DeclaringType);
 				var methodIndex = Array.IndexOf(interfaceMap.InterfaceMethods, method);
 				method = interfaceMap.TargetMethods[methodIndex];

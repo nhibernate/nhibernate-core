@@ -124,7 +124,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			}
 
 			// Make the proxy serializable
-			AddSerializationSupport(parentType, baseInterfaces, typeBuilder, interceptorField, defaultConstructor);
+			AddSerializationSupport(baseType, baseInterfaces, typeBuilder, interceptorField, defaultConstructor);
 			TypeInfo proxyType = typeBuilder.CreateTypeInfo();
 
 			ProxyAssemblyBuilder.Save(assemblyBuilder);
