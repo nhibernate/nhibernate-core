@@ -2680,9 +2680,10 @@
             </para>
 
             <para>
-                The <literal>&lt;dynamic-component&gt;</literal> element allows an <literal>IDictionary</literal>
-                or <literal>IDictionary&lt;string, object&gt;</literal> to be mapped as a component, where the
-                property names refer to keys of the dictionary. See <xref linkend="components-dynamic" />.
+                The <literal>&lt;dynamic-component&gt;</literal> element allows an <literal>IDictionary</literal>,
+                <literal>IDictionary&lt;string, object&gt;</literal>, or a C# <literal>dynamic</literal> to be mapped
+                as a component. When using dictionaries, the property names refer to keys of the dictionary. See
+                <xref linkend="components-dynamic" />.
             </para>
             
         </sect2>

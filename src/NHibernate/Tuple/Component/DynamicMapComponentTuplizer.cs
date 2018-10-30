@@ -1,7 +1,6 @@
 using System;
 using NHibernate.Properties;
-using System.Collections;
-using System.Collections.Generic;
+using NHibernate.Util;
 
 namespace NHibernate.Tuple.Component
 {
@@ -19,7 +18,7 @@ namespace NHibernate.Tuple.Component
 		}
 
 		public override System.Type MappedClass =>
-			typeof(Dictionary<string, object>);
+			typeof(DynamicComponent);
 
 		protected internal override IInstantiator BuildInstantiator(Mapping.Component component) =>
 			new DynamicComponentInstantiator();
