@@ -61,6 +61,9 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <remarks>
 		/// <para>
+		/// <see cref="CacheBase"/> implementation always yield <c>false</c>, override it if required.
+		/// </para>
+		/// <para>
 		/// This property should yield <see langword="false" /> if <see cref="GetMany" /> delegates
 		/// its implementation to <see cref="Get"/>.
 		/// </para>
@@ -75,7 +78,7 @@ namespace NHibernate.Cache
 		/// gets to perform. Its <see cref="CacheBase" /> default implementation is adequate for this case.
 		/// </para>
 		/// </remarks>
-		public abstract bool PreferMultipleGet { get; }
+		public virtual bool PreferMultipleGet => false;
 
 		#region Basic abstract operations
 
@@ -141,6 +144,13 @@ namespace NHibernate.Cache
 		/// <param name="keys">The keys to be retrieved from the cache.</param>
 		/// <returns>The cached items, matching each key of <paramref name="keys"/> respectively. For each missed key,
 		/// it will contain a <see langword="null" />.</returns>
+		/// <remarks>
+		/// <para>As all other <c>Many</c> method, its default implementation just falls back on calling
+		/// the single operation method in a loop. Cache providers should override it with an actual multiple
+		/// implementation if they can support it.</para>
+		/// <para>Additionally, if overriding <c>GetMany</c>, consider overriding also
+		/// <see cref="PreferMultipleGet"/>.</para>
+		/// </remarks>
 		public virtual object[] GetMany(object[] keys)
 		{
 			if (keys == null)

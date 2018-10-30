@@ -33,6 +33,13 @@ namespace NHibernate.Cache
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The cached items, matching each key of <paramref name="keys"/> respectively. For each missed key,
 		/// it will contain a <see langword="null" />.</returns>
+		/// <remarks>
+		/// <para>As all other <c>Many</c> method, its default implementation just falls back on calling
+		/// the single operation method in a loop. Cache providers should override it with an actual multiple
+		/// implementation if they can support it.</para>
+		/// <para>Additionally, if overriding <c>GetMany</c>, consider overriding also
+		/// <see cref="PreferMultipleGet"/>.</para>
+		/// </remarks>
 		public virtual Task<object[]> GetManyAsync(object[] keys, CancellationToken cancellationToken)
 		{
 			if (keys == null)
