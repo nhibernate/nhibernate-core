@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using NHibernate.Proxy.DynamicProxy;
 
 namespace NHibernate.Test.DynamicEntity
@@ -55,12 +56,8 @@ namespace NHibernate.Test.DynamicEntity
 			}
 			else if ("Equals".Equals(methodName))
 			{
-				// Call the base object Equals. Taken from https://stackoverflow.com/a/14415506/1178314
-				var method = typeof(object).GetMethod("Equals", new[] { typeof(object) });
-				var ftn = method.MethodHandle.GetFunctionPointer();
-				var func = (Func<object, bool>)Activator.CreateInstance(typeof(Func<object, bool>), info.Target, ftn);
-
-				return func(info.Arguments[0]);
+				// Redo the base object Equals implementation.
+				return RuntimeHelpers.Equals(info.Target, info.Arguments[0]);
 			}
 			return null;
 		}
