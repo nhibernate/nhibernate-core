@@ -267,6 +267,20 @@ namespace NHibernate.Cfg
 		public const string OracleUseNPrefixedTypesForUnicode = "oracle.use_n_prefixed_types_for_unicode";
 
 		/// <summary>
+		/// <para>
+		/// Firebird with FirebirdSql.Data.FirebirdClient may be unable to determine the type
+		/// of parameters in many circumstances, unless they are explicitly casted in the SQL
+		/// query. To avoid this trouble, the NHibernate <c>FirebirdClientDriver</c> parses SQL
+		/// commands for detecting parameters in them and adding an explicit SQL cast around
+		/// parameters which may trigger the issue.
+		/// </para>
+		/// <para>
+		/// For disabling this behavior, set this setting to true.
+		/// </para>
+		/// </summary>
+		public const string FirebirdDisableParameterCasting = "firebird.disable_parameter_casting";
+
+		/// <summary>
 		/// <para>Set whether tracking the session id or not. When <see langword="true"/>, each session 
 		/// will have an unique <see cref="Guid"/> that can be retrieved by <see cref="ISessionImplementor.SessionId"/>,
 		/// otherwise <see cref="ISessionImplementor.SessionId"/> will always be <see cref="Guid.Empty"/>. Session id 
