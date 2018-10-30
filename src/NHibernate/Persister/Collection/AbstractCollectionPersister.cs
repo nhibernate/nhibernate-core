@@ -86,7 +86,6 @@ namespace NHibernate.Persister.Collection
 		private readonly string[] keyColumnAliases;
 		private readonly string identifierColumnName;
 		private readonly string identifierColumnAlias;
-		private readonly string[] joinColumnNames;
 
 		#endregion
 
@@ -226,45 +225,16 @@ namespace NHibernate.Persister.Collection
 
 			isVersioned = collection.IsOptimisticLocked;
 
-			if (collection.CollectionType.UseLHSPrimaryKey)
+			keyType = collection.Key.Type;
+			int keySpan = collection.Key.ColumnSpan;
+			keyColumnNames = new string[keySpan];
+			keyColumnAliases = new string[keySpan];
+			int k = 0;
+			foreach (Column col in collection.Key.ColumnIterator)
 			{
-				keyType = collection.Key.Type;
-				int keySpan = collection.Key.ColumnSpan;
-				keyColumnNames = new string[keySpan];
-				keyColumnAliases = new string[keySpan];
-				int k = 0;
-				foreach (Column col in collection.Key.ColumnIterator)
-				{
-					keyColumnNames[k] = col.GetQuotedName(dialect);
-					keyColumnAliases[k] = col.GetAlias(dialect, table);
-					k++;
-				}
-				joinColumnNames = keyColumnNames;
-			}
-			else
-			{
-				keyType = collection.Owner.Key.Type;
-				int keySpan = collection.Owner.Key.ColumnSpan;
-				keyColumnNames = new string[keySpan];
-				keyColumnAliases = new string[keySpan];
-				int k = 0;
-				foreach (Column col in collection.Owner.Key.ColumnIterator)
-				{
-					keyColumnNames[k] = col.GetQuotedName(dialect);
-					// Force the alias to be unique in case it conflicts with an alias in the entity
-					// As per Column.GetAlias, we have 3 characters left for SelectFragment suffix and one for here.
-					// Since suffixes are composed of digits and '_', and GetAlias is already suffixed, adding any other
-					// letter will avoid collision.
-					keyColumnAliases[k] = col.GetAlias(dialect) + "o";
-					k++;
-				}
-				joinColumnNames = new string[collection.Key.ColumnSpan];
-				k = 0;
-				foreach (Column col in collection.Key.ColumnIterator)
-				{
-					joinColumnNames[k] = col.GetQuotedName(dialect);
-					k++;
-				}
+				keyColumnNames[k] = col.GetQuotedName(dialect);
+				keyColumnAliases[k] = col.GetAlias(dialect, table);
+				k++;
 			}
 
 			HashSet<string> distinctColumns = new HashSet<string>();
@@ -1889,9 +1859,11 @@ namespace NHibernate.Persister.Collection
 			get { return keyColumnNames; }
 		}
 
+		// Since v5.2
+		[Obsolete("Use KeyColumnNames instead")]
 		public string[] JoinColumnNames
 		{
-			get { return joinColumnNames; }
+			get { return keyColumnNames; }
 		}
 
 		protected string[] KeyColumnAliases
@@ -2071,6 +2043,8 @@ namespace NHibernate.Persister.Collection
 		public abstract bool CascadeDeleteEnabled { get; }
 		public abstract bool IsOneToMany { get; }
 
+		// Since v5.2
+		[Obsolete("Use directly the alias parameter value instead")]
 		public virtual string GenerateTableAliasForKeyColumns(string alias)
 		{
 			return alias;

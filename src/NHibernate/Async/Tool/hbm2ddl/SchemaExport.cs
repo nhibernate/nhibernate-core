@@ -173,8 +173,7 @@ namespace NHibernate.Tool.hbm2ddl
 			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
-				log.Warn("Unsuccessful: {0}", sql);
-				log.Warn(e, e.Message);
+				log.Warn(e, "Unsuccessful: {0}", sql);
 				if (throwOnError)
 				{
 					throw;

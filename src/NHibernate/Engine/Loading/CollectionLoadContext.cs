@@ -252,7 +252,7 @@ namespace NHibernate.Engine.Loading
 				stopWath.Start();
 			}
 
-			bool hasNoQueuedAdds = lce.Collection.EndRead(persister); // warning: can cause a recursive calls! (proxy initialization)
+			bool hasNoQueuedOperations = lce.Collection.EndRead(persister); // warning: can cause a recursive calls! (proxy initialization)
 
 			if (persister.CollectionType.HasHolder())
 			{
@@ -269,13 +269,16 @@ namespace NHibernate.Engine.Loading
 				ce.PostInitialize(lce.Collection, persistenceContext);
 			}
 
-			bool addToCache = hasNoQueuedAdds && persister.HasCache && 
+			bool addToCache = hasNoQueuedOperations && persister.HasCache && 
 				session.CacheMode.HasFlag(CacheMode.Put) && !ce.IsDoremove; // and this is not a forced initialization during flush
 
 			if (addToCache)
 			{
 				AddCollectionToCache(lce, persister, cacheBatchingHandler);
 			}
+
+			if (!hasNoQueuedOperations)
+				lce.Collection.ApplyQueuedOperations();
 
 			if (log.IsDebugEnabled())
 			{

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Engine;
@@ -128,6 +129,8 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
+		// Since v5.2
+		[Obsolete("This method has no more usage.")]
 		public SqlUpdateBuilder SetJoin(string joinTableName, string[] keyColumnNames, IType identityType, string[] lhsColumnNames, string[] rhsColumnNames)
 		{
 			var sqlBuilder = new SqlStringBuilder()
