@@ -211,8 +211,7 @@ namespace NHibernate.Event.Default
 
 			object id = key == null ? null : key.Identifier;
 
-			bool inTxn = source.ConnectionManager.IsInActiveTransaction;
-			bool shouldDelayIdentityInserts = !inTxn && !requiresImmediateIdAccess;
+			bool shouldDelayIdentityInserts = !requiresImmediateIdAccess;
 
 			// Put a placeholder in entries, so we don't recurse back and try to save() the
 			// same object again. QUESTION: should this be done before onSave() is called?
