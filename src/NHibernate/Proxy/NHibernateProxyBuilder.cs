@@ -398,6 +398,7 @@ namespace NHibernate.Proxy
 			if (method.DeclaringType.IsInterface &&
 			    method.DeclaringType.IsAssignableFrom(parentType))
 			{
+				Delegate
 				var interfaceMap = parentType.GetInterfaceMap(method.DeclaringType);
 				var methodIndex = Array.IndexOf(interfaceMap.InterfaceMethods, method);
 				method = interfaceMap.TargetMethods[methodIndex];
@@ -462,7 +463,7 @@ namespace NHibernate.Proxy
 				 */
 				
 				IL.Emit(OpCodes.Ldarg_0);
-				EmitCallMethod(IL, method.DeclaringType.IsInterface ? OpCodes.Callvirt : OpCodes.Call, method);
+				EmitCallMethod(IL, OpCodes.Call, method);
 				IL.Emit(OpCodes.Ret);
 			}
 
