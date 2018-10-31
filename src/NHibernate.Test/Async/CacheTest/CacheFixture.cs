@@ -34,7 +34,7 @@ namespace NHibernate.Test.CacheTest
 
 		public async Task DoTestCacheAsync(ICacheProvider cacheProvider, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			ICache cache = cacheProvider.BuildCache(typeof(String).FullName, new Dictionary<string, string>());
+			var cache = cacheProvider.BuildCache(typeof(String).FullName, new Dictionary<string, string>());
 
 			long longBefore = Timestamper.Next();
 
@@ -141,7 +141,7 @@ namespace NHibernate.Test.CacheTest
 			Assert.AreEqual("baz", await (ccs.GetAsync(fooKey, longLongAfter, cancellationToken)));
 		}
 
-		private async Task DoTestMinValueTimestampOnStrategyAsync(ICache cache, ICacheConcurrencyStrategy strategy, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task DoTestMinValueTimestampOnStrategyAsync(CacheBase cache, ICacheConcurrencyStrategy strategy, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			CacheKey key = CreateCacheKey("key");
 			strategy.Cache = cache;
@@ -154,7 +154,7 @@ namespace NHibernate.Test.CacheTest
 		[Test]
 		public async Task MinValueTimestampAsync()
 		{
-			ICache cache = new HashtableCacheProvider().BuildCache("region", new Dictionary<string, string>());
+			var cache = new HashtableCacheProvider().BuildCache("region", new Dictionary<string, string>());
 			ICacheConcurrencyStrategy strategy = new ReadWriteCache();
 			strategy.Cache = cache;
 

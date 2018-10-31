@@ -232,7 +232,7 @@ namespace NHibernate.Engine.Loading
 			CollectionCacheEntry entry = await (CollectionCacheEntry.CreateAsync(lce.Collection, persister, cancellationToken)).ConfigureAwait(false);
 			CacheKey cacheKey = session.GenerateCacheKey(lce.Key, persister.KeyType, persister.Role);
 
-			if (persister.GetBatchSize() > 1 && persister.Cache.IsBatchingPutSupported())
+			if (persister.GetBatchSize() > 1)
 			{
 				cacheBatchingHandler(
 					new CachePutData(

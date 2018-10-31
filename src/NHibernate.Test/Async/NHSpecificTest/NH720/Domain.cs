@@ -20,35 +20,35 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 	using System.Threading.Tasks;
 	using System.Threading;
 
-	public partial class FooCache : ICache
+	public partial class FooCache : CacheBase
 	{
 
-		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
+		public override Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
 			return Task.FromResult<object>(null);
 		}
 
-		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
+		public override Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
 			return Task.CompletedTask;
 		}
 
-		public Task RemoveAsync(object key, CancellationToken cancellationToken)
+		public override Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
 			return Task.CompletedTask;
 		}
 
-		public Task ClearAsync(CancellationToken cancellationToken)
+		public override Task ClearAsync(CancellationToken cancellationToken)
 		{
 			return Task.CompletedTask;
 		}
 
-		public Task LockAsync(object key, CancellationToken cancellationToken)
+		public override Task<object> LockAsync(object key, CancellationToken cancellationToken)
 		{
-			return Task.CompletedTask;
+			return Task.FromResult<object>(null);
 		}
 
-		public Task UnlockAsync(object key, CancellationToken cancellationToken)
+		public override Task UnlockAsync(object key, object lockValue, CancellationToken cancellationToken)
 		{
 			return Task.CompletedTask;
 		}

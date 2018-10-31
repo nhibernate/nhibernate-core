@@ -8,119 +8,63 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
-
 namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class HashtableCache : CacheBase
+	internal partial class ObsoleteCacheWrapper : CacheBase
 	{
 
-		/// <inheritdoc />
 		public override Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				return Task.FromResult<object>(Get(key));
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return _cache.GetAsync(key, cancellationToken);
 		}
 
-		/// <inheritdoc />
 		public override Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				Put(key, value);
-				return Task.CompletedTask;
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return _cache.PutAsync(key, value, cancellationToken);
 		}
 
-		/// <inheritdoc />
 		public override Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				Remove(key);
-				return Task.CompletedTask;
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return _cache.RemoveAsync(key, cancellationToken);
 		}
 
-		/// <inheritdoc />
 		public override Task ClearAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				Clear();
-				return Task.CompletedTask;
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return _cache.ClearAsync(cancellationToken);
 		}
 
-		/// <inheritdoc />
-		public override Task<object> LockAsync(object key, CancellationToken cancellationToken)
+		public override async Task<object> LockAsync(object key, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<object>(Lock(key));
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			cancellationToken.ThrowIfCancellationRequested();
+			await (_cache.LockAsync(key, cancellationToken)).ConfigureAwait(false);
+			return null;
 		}
 
-		/// <inheritdoc />
 		public override Task UnlockAsync(object key, object lockValue, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				Unlock(key, lockValue);
-				return Task.CompletedTask;
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return _cache.UnlockAsync(key, cancellationToken);
 		}
 	}
 }
