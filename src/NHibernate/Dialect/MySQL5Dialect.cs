@@ -12,11 +12,10 @@ namespace NHibernate.Dialect
 			// My SQL supports precision up to 65, but .Net is limited to 28-29.
 			RegisterColumnType(DbType.Decimal, 29, "DECIMAL($p, $s)");
 			RegisterColumnType(DbType.Guid, "BINARY(16)");
-			
-			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "concat(hex(reverse(substr(?1, 1, 4))), '-', hex(reverse(substring(?1, 5, 2))), '-', hex(reverse(substr(?1, 7, 2))), '-', hex(substr(?1, 9, 2)), '-', hex(substr(?1, 11)))"));
 		}
 
-		protected override void RegisterCastTypes() {
+		protected override void RegisterCastTypes() 
+		{
 			base.RegisterCastTypes();
 			// MySql 5 also supports DECIMAL as a cast type target
 			// http://dev.mysql.com/doc/refman/5.0/en/cast-functions.html

@@ -21,13 +21,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
-		private static readonly string _id = "9FF2D288-56E6-F349-9CFC-48902132D65B";
+		private const string id = "9FF2D288-56E6-F349-9CFC-48902132D65B";
 
 		protected override void OnSetUp()
 		{
 			using (var session = OpenSession())
 			{
-				session.Save(new Entity { Id = Guid.Parse(_id), Name = "Name 1" });
+				session.Save(new Entity { Id = Guid.Parse(id), Name = "Name 1" });
 
 				session.Flush();
 			}
@@ -56,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 					.Select(x => new { Id = x.Id.ToString() })
 					.ToList();
 
-				Assert.AreEqual(_id.ToUpper(), list[0].Id.ToUpper());
+				Assert.AreEqual(id.ToUpper(), list[0].Id.ToUpper());
 			}
 		}
 	}

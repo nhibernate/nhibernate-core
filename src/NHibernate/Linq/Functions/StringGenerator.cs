@@ -318,6 +318,7 @@ namespace NHibernate.Linq.Functions
 	public class ToStringHqlGeneratorForMethod : IHqlGeneratorForMethod
 	{
 		private static readonly System.Type s_guidType = typeof(Guid);
+		
 		public IEnumerable<MethodInfo> SupportedMethods
 		{
 			get { throw new NotSupportedException(); }
