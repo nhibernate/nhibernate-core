@@ -2257,7 +2257,17 @@ namespace NHibernate.Persister.Entity
 				if (includeProperty[i] && IsPropertyOfTable(i, j))
 				{
 					// this is a property of the table, which we are updating
-					updateBuilder.AddColumns(GetPropertyColumnNames(i), propertyColumnUpdateable[i], PropertyTypes[i]);
+					try
+					{
+						updateBuilder.AddColumns(GetPropertyColumnNames(i), propertyColumnUpdateable[i], PropertyTypes[i]);
+					}
+					catch (ArgumentException arex)
+					{
+						throw new MappingException(
+							$"Unable to build the update statement for class {entityMetamodel.Name}: " +
+							$"a failure occured when adding the property {PropertyNames[i]}",
+							arex);
+					}
 					hasColumns = hasColumns || GetPropertyColumnSpan(i) > 0;
 				}
 			}
@@ -2346,24 +2356,54 @@ namespace NHibernate.Persister.Entity
 				if (includeProperty[i] && IsPropertyOfTable(i, j))
 				{
 					// this property belongs on the table and is to be inserted
-					builder.AddColumns(GetPropertyColumnNames(i), propertyColumnInsertable[i], PropertyTypes[i]);
+					try
+					{
+						builder.AddColumns(GetPropertyColumnNames(i), propertyColumnInsertable[i], PropertyTypes[i]);
+					}
+					catch (ArgumentException arex)
+					{
+						throw new MappingException(
+							$"Unable to build the insert statement for class {entityMetamodel.Name}: " +
+							$"a failure occured when adding the property {PropertyNames[i]}",
+							arex);
+					}
 				}
 			}
 
 			// add the discriminator
 			if (j == 0)
 			{
-				AddDiscriminatorToInsert(builder);
+				try
+				{
+					AddDiscriminatorToInsert(builder);
+				}
+				catch (ArgumentException arex)
+				{
+					throw new MappingException(
+						$"Unable to build the insert statement for class {entityMetamodel.Name}: " +
+						"a failure occured when adding the discriminator",
+						arex);
+				}
 			}
 
 			// add the primary key
-			if (j == 0 && identityInsert)
+			try
 			{
-				builder.AddIdentityColumn(GetKeyColumns(0)[0]);
+				if (j == 0 && identityInsert)
+				{
+					builder.AddIdentityColumn(GetKeyColumns(0)[0]);
+				}
+				else
+				{
+					builder.AddColumns(GetKeyColumns(j), null, GetIdentifierType(j));
+				}
 			}
-			else
+			catch (ArgumentException arex)
 			{
-				builder.AddColumns(GetKeyColumns(j), null, GetIdentifierType(j));
+				throw new MappingException(
+					$"Unable to build the insert statement for class {entityMetamodel.Name}: " +
+					"a failure occured when adding the Id of the class",
+					arex);
 			}
 
 			if (Factory.Settings.IsCommentsEnabled)

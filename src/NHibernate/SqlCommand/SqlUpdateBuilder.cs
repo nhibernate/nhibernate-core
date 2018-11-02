@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Engine;
@@ -123,10 +124,10 @@ namespace NHibernate.SqlCommand
 
 		private void AddColumnWithValueOrType(string columnName, object valueOrType)
 		{
-			// As the column may be associated with a parameter, we must be sure it has been newly added, and
-			// fail otherwise. So we use Add instead of the indexer access. Otherwise, a parameter count
-			// mismatch may occur and will cause various failures, depending on the used data provider.
-			// See #1875.
+			if (columns.ContainsKey(columnName))
+				throw new ArgumentException(
+					$"The column '{columnName}' has already been added in this SQL builder",
+					nameof(columnName));
 			columns.Add(columnName, valueOrType);
 		}
 

@@ -13,9 +13,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1875
 	}
 
 	[TestFixture]
-	public class Fixture : TestCaseMappingByCode
+	public class Fixture
 	{
-		protected override HbmMapping GetMappings()
+		protected HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
 			mapper.Class<BadlyMappedEntity>(
@@ -42,29 +42,21 @@ namespace NHibernate.Test.NHSpecificTest.GH1875
 		[Test]
 		public void ShouldThrowSoundErrorForBadlyMappedEntity()
 		{
-			var bad = new BadlyMappedEntity
-			{
-				FirstValue = 1,
-				SecondValue = 2
-			};
+			var mappings = GetMappings();
+			var cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			cfg.AddMapping(mappings);
 
-			using (var session = OpenSession())
-			using (var transaction = session.BeginTransaction())
+			ISessionFactory factory = null;
+			try
 			{
-				session.Save(bad);
 				Assert.That(
-					transaction.Commit,
-					Throws.TypeOf<PropertyValueException>().And.Message.Contains("(Duplicate column mapping?)"));
+					() => factory = cfg.BuildSessionFactory(),
+					Throws.TypeOf<MappingException>().And.Message.Contains("BadlyMappedEntity").And.InnerException
+					      .Message.Contains("SameColumn"));
 			}
-		}
-
-		protected override void OnTearDown()
-		{
-			using (var session = OpenSession())
-			using (var transaction = session.BeginTransaction())
+			finally
 			{
-				session.CreateQuery("delete from System.Object").ExecuteUpdate();
-				transaction.Commit();
+				factory?.Dispose();
 			}
 		}
 	}
