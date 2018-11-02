@@ -67,16 +67,14 @@ namespace NHibernate.Cache
 						"cache usage attribute should be read-write, read-only, nonstrict-read-write, or transactional");
 			}
 
-			ICache impl;
 			try
 			{
-				impl = settings.CacheProvider.BuildCache(name, properties);
+				ccs.Cache = settings.CacheProvider.BuildCache(name, properties);
 			}
 			catch (CacheException e)
 			{
 				throw new HibernateException("Could not instantiate cache implementation", e);
 			}
-			ccs.Cache = impl;
 
 			return ccs;
 		}

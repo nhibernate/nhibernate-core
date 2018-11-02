@@ -32,7 +32,7 @@ namespace NHibernate.Cache
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return _queryCache.ClearAsync(cancellationToken);
+			return Cache.ClearAsync(cancellationToken);
 		}
 
 		/// <inheritdoc />
@@ -65,7 +65,7 @@ namespace NHibernate.Cache
 
 			Log.Debug("caching query results in region: '{0}'; {1}", _regionName, key);
 
-			await (_queryCache.PutAsync(key, await (GetCacheableResultAsync(returnTypes, session, result, ts, cancellationToken)).ConfigureAwait(false), cancellationToken)).ConfigureAwait(false);
+			await (Cache.PutAsync(key, await (GetCacheableResultAsync(returnTypes, session, result, ts, cancellationToken)).ConfigureAwait(false), cancellationToken)).ConfigureAwait(false);
 
 			return true;
 		}
@@ -108,14 +108,14 @@ namespace NHibernate.Cache
 			if (Log.IsDebugEnabled())
 				Log.Debug("checking cached query results in region: '{0}'; {1}", _regionName, key);
 
-			var cacheable = (IList)await (_queryCache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
+			var cacheable = (IList) await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 			if (cacheable == null)
 			{
 				Log.Debug("query results were not found in cache: {0}", key);
 				return null;
 			}
 
-			var timestamp = (long)cacheable[0];
+			var timestamp = (long) cacheable[0];
 
 			if (Log.IsDebugEnabled())
 				Log.Debug("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString(spaces));
@@ -138,21 +138,11 @@ namespace NHibernate.Cache
 			ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var cached = new bool[keys.Length];
-			if (_batchableCache == null)
-			{
-				for (var i = 0; i < keys.Length; i++)
-				{
-					cached[i] = await (PutAsync(keys[i], queryParameters[i], returnTypes[i], results[i], session, cancellationToken)).ConfigureAwait(false);
-				}
-				return cached;
-			}
-
-			var ts = session.Factory.Settings.CacheProvider.NextTimestamp();
-
 			if (Log.IsDebugEnabled())
 				Log.Debug("caching query results in region: '{0}'; {1}", _regionName, StringHelper.CollectionToString(keys));
 
+			var cached = new bool[keys.Length];
+			var ts = session.Factory.Settings.CacheProvider.NextTimestamp();
 			var cachedKeys = new List<object>();
 			var cachedResults = new List<object>();
 			for (var i = 0; i < keys.Length; i++)
@@ -166,7 +156,7 @@ namespace NHibernate.Cache
 				cachedResults.Add(await (GetCacheableResultAsync(returnTypes[i], session, result, ts, cancellationToken)).ConfigureAwait(false));
 			}
 
-			await (_batchableCache.PutManyAsync(cachedKeys.ToArray(), cachedResults.ToArray(), cancellationToken)).ConfigureAwait(false);
+			await (_cache.PutManyAsync(cachedKeys.ToArray(), cachedResults.ToArray(), cancellationToken)).ConfigureAwait(false);
 
 			return cached;
 		}
@@ -180,20 +170,10 @@ namespace NHibernate.Cache
 			ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var results = new IList[keys.Length];
-			if (_batchableReadOnlyCache == null)
-			{
-				for (var i = 0; i < keys.Length; i++)
-				{
-					results[i] = await (GetAsync(keys[i], queryParameters[i], returnTypes[i], spaces[i], session, cancellationToken)).ConfigureAwait(false);
-				}
-				return results;
-			}
-
 			if (Log.IsDebugEnabled())
 				Log.Debug("checking cached query results in region: '{0}'; {1}", _regionName, StringHelper.CollectionToString(keys));
 
-			var cacheables = (await (_batchableReadOnlyCache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false)).Cast<IList>().ToArray();
+			var cacheables = (await (_cache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false)).Cast<IList>().ToArray();
 
 			var spacesToCheck = new List<ISet<string>>();
 			var checkedSpacesIndexes = new HashSet<int>();
@@ -226,6 +206,7 @@ namespace NHibernate.Cache
 			var upToDatesIndex = 0;
 			var persistenceContext = session.PersistenceContext;
 			var defaultReadOnlyOrig = persistenceContext.DefaultReadOnly;
+			var results = new IList[keys.Length];
 			for (var i = 0; i < keys.Length; i++)
 			{
 				var cacheable = cacheables[i];
@@ -364,7 +345,7 @@ namespace NHibernate.Cache
 					// Handling a RemoveMany here does not look worth it, as this case short-circuits
 					// the result-set. So a Many could only benefit batched queries, and only if many
 					// of them are natural key lookup with an unresolvable object case.
-					await (_queryCache.RemoveAsync(key, cancellationToken)).ConfigureAwait(false);
+					await (Cache.RemoveAsync(key, cancellationToken)).ConfigureAwait(false);
 					return null;
 				}
 

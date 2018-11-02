@@ -1,3 +1,5 @@
+using System;
+
 namespace NHibernate.Cache
 {
 	/// <summary>
@@ -13,6 +15,8 @@ namespace NHibernate.Cache
 	/// value is a <see cref="CachedItem"/>.
 	/// </para>
 	/// </remarks>
+	// Since 5.2
+	[Obsolete("Derive from CacheBase instead. NHibernate members using this type will switch to CacheBase in a future version.")]
 	public partial interface ICache
 	{
 		/// <summary>

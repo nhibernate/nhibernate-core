@@ -105,7 +105,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("square", new StandardSQLFunction("square"));
 			RegisterFunction("str", new StandardSQLFunction("str", NHibernateUtil.String));
 			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
-			// TODO RegisterFunction("trim", new SQLFunctionTemplate(NHibernateUtil.String, "ltrim(rtrim(?1))"));
+			RegisterFunction("trim", new AnsiTrimEmulationFunction("str_replace"));
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
 			RegisterFunction("user", new NoArgSQLFunction("user", NHibernateUtil.String));
 			RegisterFunction("year", new StandardSQLFunction("year", NHibernateUtil.Int32));

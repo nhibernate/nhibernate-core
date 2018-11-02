@@ -570,14 +570,10 @@ namespace NHibernate.Type
 
 		public override bool IsEqual(object x, object y)
 		{
-			if (x == y)
-			{
-				return true;
-			}
-			if (x == null || y == null)
-			{
-				return false;
-			}
+			var isEqualFast = IsEqualFast(x, y);
+			if (isEqualFast.HasValue)
+				return isEqualFast.Value;
+
 			object[] xvalues = GetPropertyValues(x);
 			object[] yvalues = GetPropertyValues(y);
 			for (int i = 0; i < propertySpan; i++)
@@ -592,14 +588,10 @@ namespace NHibernate.Type
 
 		public override bool IsEqual(object x, object y, ISessionFactoryImplementor factory)
 		{
-			if (x == y)
-			{
-				return true;
-			}
-			if (x == null || y == null)
-			{
-				return false;
-			}
+			var isEqualFast = IsEqualFast(x, y);
+			if (isEqualFast.HasValue)
+				return isEqualFast.Value;
+
 			object[] xvalues = GetPropertyValues(x);
 			object[] yvalues = GetPropertyValues(y);
 			for (int i = 0; i < propertySpan; i++)
@@ -610,6 +602,24 @@ namespace NHibernate.Type
 				}
 			}
 			return true;
+		}
+
+		private bool? IsEqualFast(object x, object y)
+		{
+			if (x == y)
+			{
+				return true;
+			}
+			if (x == null || y == null)
+			{
+				return false;
+			}
+
+			var componentType = EntityMode == EntityMode.Poco ? ComponentTuplizer.MappedClass : typeof(IDictionary);
+			if (!componentType.IsInstanceOfType(x) || !componentType.IsInstanceOfType(y))
+				return false;
+
+			return null;
 		}
 
 		public virtual bool IsMethodOf(MethodBase method)

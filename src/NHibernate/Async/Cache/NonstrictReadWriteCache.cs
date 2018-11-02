@@ -32,7 +32,7 @@ namespace NHibernate.Cache
 				log.Debug("Cache lookup: {0}", key);
 			}
 
-			object result = await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
+			object result = await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 			if (result != null)
 			{
 				log.Debug("Cache hit");
@@ -44,108 +44,87 @@ namespace NHibernate.Cache
 			return result;
 		}
 
-		public Task<object[]> GetManyAsync(CacheKey[] keys, long timestamp, CancellationToken cancellationToken)
+		public async Task<object[]> GetManyAsync(CacheKey[] keys, long timestamp, CancellationToken cancellationToken)
 		{
-			if (_batchableReadOnlyCache == null)
+			cancellationToken.ThrowIfCancellationRequested();
+			if (log.IsDebugEnabled())
 			{
-				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching get operation");
+				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
-			if (cancellationToken.IsCancellationRequested)
+			var results = await (_cache.GetManyAsync(keys.Select(o => (object) o).ToArray(), cancellationToken)).ConfigureAwait(false);
+			if (!log.IsDebugEnabled())
 			{
-				return Task.FromCanceled<object[]>(cancellationToken);
-			}
-			return InternalGetManyAsync();
-			async Task<object[]> InternalGetManyAsync()
-			{
-				if (log.IsDebugEnabled())
-				{
-					log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
-				}
-				var results = await (_batchableReadOnlyCache.GetManyAsync(keys.Select(o => (object) o).ToArray(), cancellationToken)).ConfigureAwait(false);
-				if (!log.IsDebugEnabled())
-				{
-					return results;
-				}
-				for (var i = 0; i < keys.Length; i++)
-				{
-					log.Debug(results[i] != null ? $"Cache hit: {keys[i]}" : $"Cache miss: {keys[i]}");
-				}
 				return results;
 			}
+			for (var i = 0; i < keys.Length; i++)
+			{
+				log.Debug(results[i] != null ? $"Cache hit: {keys[i]}" : $"Cache miss: {keys[i]}");
+			}
+			return results;
 		}
 
 		/// <summary>
 		/// Add multiple items to the cache
 		/// </summary>
-		public Task<bool[]> PutManyAsync(CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
-		                          bool[] minimalPuts, CancellationToken cancellationToken)
+		public async Task<bool[]> PutManyAsync(
+			CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
+			bool[] minimalPuts, CancellationToken cancellationToken)
 		{
-			if (_batchableCache == null)
+			cancellationToken.ThrowIfCancellationRequested();
+			var result = new bool[keys.Length];
+			if (timestamp == long.MinValue)
 			{
-				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching operations");
-			}
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool[]>(cancellationToken);
-			}
-			return InternalPutManyAsync();
-			async Task<bool[]> InternalPutManyAsync()
-			{
-				var result = new bool[keys.Length];
-				if (timestamp == long.MinValue)
-				{
-					// MinValue means cache is disabled
-					return result;
-				}
-
-				var checkKeys = new List<CacheKey>();
-				var checkKeyIndexes = new List<int>();
-				for (var i = 0; i < minimalPuts.Length; i++)
-				{
-					if (minimalPuts[i])
-					{
-						checkKeys.Add(keys[i]);
-						checkKeyIndexes.Add(i);
-					}
-				}
-				var skipKeyIndexes = new HashSet<int>();
-				if (checkKeys.Any())
-				{
-					var objects = await (_batchableCache.GetManyAsync(checkKeys.ToArray(), cancellationToken)).ConfigureAwait(false);
-					for (var i = 0; i < objects.Length; i++)
-					{
-						if (objects[i] != null)
-						{
-							if (log.IsDebugEnabled())
-							{
-								log.Debug("item already cached: {0}", checkKeys[i]);
-							}
-							skipKeyIndexes.Add(checkKeyIndexes[i]);
-						}
-					}
-				}
-
-				if (skipKeyIndexes.Count == keys.Length)
-				{
-					return result;
-				}
-
-				var putKeys = new object[keys.Length - skipKeyIndexes.Count];
-				var putValues = new object[putKeys.Length];
-				var j = 0;
-				for (var i = 0; i < keys.Length; i++)
-				{
-					if (skipKeyIndexes.Contains(i))
-					{
-						continue;
-					}
-					putKeys[j] = keys[i];
-					putValues[j++] = values[i];
-					result[i] = true;
-				}
-				await (_batchableCache.PutManyAsync(putKeys, putValues, cancellationToken)).ConfigureAwait(false);
+				// MinValue means cache is disabled
 				return result;
 			}
+
+			var checkKeys = new List<object>();
+			var checkKeyIndexes = new List<int>();
+			for (var i = 0; i < minimalPuts.Length; i++)
+			{
+				if (minimalPuts[i])
+				{
+					checkKeys.Add(keys[i]);
+					checkKeyIndexes.Add(i);
+				}
+			}
+			var skipKeyIndexes = new HashSet<int>();
+			if (checkKeys.Any())
+			{
+				var objects = await (_cache.GetManyAsync(checkKeys.ToArray(), cancellationToken)).ConfigureAwait(false);
+				for (var i = 0; i < objects.Length; i++)
+				{
+					if (objects[i] != null)
+					{
+						if (log.IsDebugEnabled())
+						{
+							log.Debug("item already cached: {0}", checkKeys[i]);
+						}
+						skipKeyIndexes.Add(checkKeyIndexes[i]);
+					}
+				}
+			}
+
+			if (skipKeyIndexes.Count == keys.Length)
+			{
+				return result;
+			}
+
+			var putKeys = new object[keys.Length - skipKeyIndexes.Count];
+			var putValues = new object[putKeys.Length];
+			var j = 0;
+			for (var i = 0; i < keys.Length; i++)
+			{
+				if (skipKeyIndexes.Contains(i))
+				{
+					continue;
+				}
+				putKeys[j] = keys[i];
+				putValues[j++] = values[i];
+				result[i] = true;
+			}
+			await (_cache.PutManyAsync(putKeys, putValues, cancellationToken)).ConfigureAwait(false);
+			return result;
 		}
 
 		/// <summary>
@@ -161,7 +140,7 @@ namespace NHibernate.Cache
 				return false;
 			}
 
-			if (minimalPut && await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false) != null)
+			if (minimalPut && await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false) != null)
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -173,7 +152,7 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Caching: {0}", key);
 			}
-			await (cache.PutAsync(key, value, cancellationToken)).ConfigureAwait(false);
+			await (Cache.PutAsync(key, value, cancellationToken)).ConfigureAwait(false);
 			return true;
 		}
 
@@ -208,7 +187,7 @@ namespace NHibernate.Cache
 				{
 					log.Debug("Removing: {0}", key);
 				}
-				return cache.RemoveAsync(key, cancellationToken);
+				return Cache.RemoveAsync(key, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -228,7 +207,7 @@ namespace NHibernate.Cache
 				{
 					log.Debug("Clearing");
 				}
-				return cache.ClearAsync(cancellationToken);
+				return Cache.ClearAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -251,7 +230,7 @@ namespace NHibernate.Cache
 				{
 					log.Debug("Invalidating: {0}", key);
 				}
-				return cache.RemoveAsync(key, cancellationToken);
+				return Cache.RemoveAsync(key, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -285,7 +264,7 @@ namespace NHibernate.Cache
 					log.Debug("Invalidating (again): {0}", key);
 				}
 
-				return cache.RemoveAsync(key, cancellationToken);
+				return Cache.RemoveAsync(key, cancellationToken);
 			}
 			catch (Exception ex)
 			{
