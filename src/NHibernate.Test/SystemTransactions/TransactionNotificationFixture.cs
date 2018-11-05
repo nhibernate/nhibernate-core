@@ -8,7 +8,7 @@ namespace NHibernate.Test.SystemTransactions
 {
 	public class TransactionNotificationFixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 			=> Array.Empty<string>();
 
 		protected virtual bool UseConnectionOnSystemTransactionPrepare => true;

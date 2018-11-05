@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Security;
 using NHibernate.Util;
@@ -21,6 +22,7 @@ namespace NHibernate.Proxy
 	{
 		private static readonly ConstructorInfo ObjectConstructor = typeof(object).GetConstructor(System.Type.EmptyTypes);
 		private static readonly ConstructorInfo SecurityCriticalAttributeConstructor = typeof(SecurityCriticalAttribute).GetConstructor(System.Type.EmptyTypes);
+		private static readonly ConstructorInfo IgnoresAccessChecksToAttributeConstructor = typeof(IgnoresAccessChecksToAttribute).GetConstructor(new[] {typeof(string)});
 
 		internal static readonly MethodInfo SerializableGetObjectDataMethod = typeof(ISerializable).GetMethod(nameof(ISerializable.GetObjectData));
 		internal static readonly MethodInfo SerializationInfoSetTypeMethod = ReflectHelper.GetMethod<SerializationInfo>(si => si.SetType(null));
@@ -89,15 +91,22 @@ namespace NHibernate.Proxy
 			il.Emit(OpCodes.Call, baseConstructor);
 		}
 
-		internal static IEnumerable<MethodInfo> GetProxiableMethods(System.Type type, IEnumerable<System.Type> interfaces)
+		internal static IEnumerable<MethodInfo> GetProxiableMethods(System.Type type)
 		{
 			const BindingFlags candidateMethodsBindingFlags =
 				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-			return
-				type.GetMethods(candidateMethodsBindingFlags)
-				    .Where(method => method.IsProxiable())
-				    .Concat(interfaces.SelectMany(interfaceType => interfaceType.GetMethods()))
-				    .Distinct();
+
+			return type.GetMethods(candidateMethodsBindingFlags).Where(m => m.IsProxiable());
+		}
+
+		internal static IEnumerable<MethodInfo> GetProxiableMethods(System.Type type, IEnumerable<System.Type> interfaces)
+		{
+			var proxiableMethods =
+				GetProxiableMethods(type)
+					.Concat(interfaces.SelectMany(i => i.GetMethods()))
+					.Distinct();
+			
+			return proxiableMethods;
 		}
 
 		internal static void MakeProxySerializable(TypeBuilder typeBuilder)
@@ -172,6 +181,18 @@ namespace NHibernate.Proxy
 			}
 
 			return methodBuilder;
+		}
+
+		internal static void GenerateInstanceOfIgnoresAccessChecksToAttribute(
+			AssemblyBuilder assemblyBuilder,
+			string assemblyName)
+		{
+			// [assembly: System.Runtime.CompilerServices.IgnoresAccessChecksToAttribute(assemblyName)]
+			var customAttributeBuilder = new CustomAttributeBuilder(
+				IgnoresAccessChecksToAttributeConstructor,
+				new object[] {assemblyName});
+
+			assemblyBuilder.SetCustomAttribute(customAttributeBuilder);
 		}
 
 		private static System.Type ResolveTypeConstraint(MethodInfo method, System.Type typeConstraint)

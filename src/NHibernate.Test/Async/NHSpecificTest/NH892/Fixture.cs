@@ -20,11 +20,6 @@ namespace NHibernate.Test.NHSpecificTest.NH892
 	{
 		ISession session;
 
-		public override string BugNumber
-		{
-			get { return "NH892"; }
-		}
-
 		[Test]
 		public async Task SelectWithWhereClauseAsync()
 		{

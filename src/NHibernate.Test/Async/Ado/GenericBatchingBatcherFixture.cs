@@ -28,7 +28,7 @@ namespace NHibernate.Test.Ado
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings => new[] {"Ado.VerySimple.hbm.xml"};
+		protected override string[] Mappings => new[] {"Ado.VerySimple.hbm.xml"};
 
 		protected override void Configure(Configuration configuration)
 		{

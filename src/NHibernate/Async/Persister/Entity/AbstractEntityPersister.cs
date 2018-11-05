@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -30,7 +29,6 @@ using NHibernate.Mapping;
 using NHibernate.Metadata;
 using NHibernate.Properties;
 using NHibernate.SqlCommand;
-using NHibernate.Tuple;
 using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -256,6 +254,25 @@ namespace NHibernate.Persister.Entity
 			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
+			}
+		}
+
+		public async Task CacheByUniqueKeysAsync(object entity, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			for (var i = 0; i < PropertySpan; i++)
+			{
+				if (!propertyUniqueness[i])
+					continue;
+
+				// The caching is done by semi-resolved values.
+				var propertyValue = session.PersistenceContext.GetEntry(entity).LoadedState[i];
+				if (propertyValue == null)
+					continue;
+				var type = PropertyTypes[i].GetSemiResolvedType(session.Factory);
+				propertyValue = await (type.SemiResolveAsync(propertyValue, session, entity, cancellationToken)).ConfigureAwait(false);
+				var euk = new EntityUniqueKey(EntityName, PropertyNames[i], propertyValue, type, session.Factory);
+				session.PersistenceContext.AddEntity(euk, entity);
 			}
 		}
 
@@ -1059,34 +1076,24 @@ namespace NHibernate.Persister.Entity
 				return true;
 			}
 
-            // check the id unsaved-value
-            // We do this first so we don't have to hydrate the version property if the id property already gives us the info we need (NH-3505).
-            bool? result2 = entityMetamodel.IdentifierProperty.UnsavedValue.IsUnsaved(id);
-            if (result2.HasValue)
-            {
-                if (IdentifierGenerator is Assigned)
-                {
-                    // if using assigned identifier, we can only make assumptions
-                    // if the value is a known unsaved-value
-                    if (result2.Value)
-                        return true;
-                }
-                else
-                {
-                    return result2;
-                }
-            }
-
-            // check the version unsaved-value, if appropriate
-            if (IsVersioned)
-            {
-                object version = GetVersion(entity);
-                bool? result = entityMetamodel.VersionProperty.UnsavedValue.IsUnsaved(version);
-                if (result.HasValue)
-                {
-                    return result;
-                }
-            }
+			// check the id unsaved-value
+			// We do this first so we don't have to hydrate the version property if the id property already gives us the info we need (NH-3505).
+			bool? result2 = entityMetamodel.IdentifierProperty.UnsavedValue.IsUnsaved(id);
+			if (result2.HasValue)
+			{
+				return result2;
+			}
+	
+			// check the version unsaved-value, if appropriate
+			if (IsVersioned)
+			{
+				object version = GetVersion(entity);
+				bool? result = entityMetamodel.VersionProperty.UnsavedValue.IsUnsaved(version);
+				if (result.HasValue)
+				{
+					return result;
+				}
+			}
 
 			// check to see if it is in the second-level cache
 			if (HasCache && session.CacheMode.HasFlag(CacheMode.Get))

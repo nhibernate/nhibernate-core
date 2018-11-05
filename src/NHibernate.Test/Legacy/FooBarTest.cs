@@ -30,7 +30,7 @@ namespace NHibernate.Test.Legacy
 			return Encoding.Unicode.GetBytes(str);
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

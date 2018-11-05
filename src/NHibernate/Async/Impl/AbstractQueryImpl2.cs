@@ -16,6 +16,7 @@ using NHibernate.Engine.Query;
 
 namespace NHibernate.Impl
 {
+	using System;
 	using System.Threading.Tasks;
 	using System.Threading;
 	public abstract partial class AbstractQueryImpl2 : AbstractQueryImpl
@@ -117,14 +118,22 @@ namespace NHibernate.Impl
 			}
 		}
 
-		protected internal override async Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters, CancellationToken cancellationToken)
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
+		protected internal override Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
-			var queryExpression = ExpandParameters(queryParameters.NamedParameters);
-
-			return (await (sessionImplementor.GetQueriesAsync(queryExpression, false, cancellationToken)).ConfigureAwait(false))
-									 .Select(queryTranslator => new HqlTranslatorWrapper(queryTranslator));
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IEnumerable<ITranslator>>(cancellationToken);
+			}
+			try
+			{
+				return Task.FromResult<IEnumerable<ITranslator>>(GetTranslators(sessionImplementor, queryParameters));
+			}
+			catch (System.Exception ex)
+			{
+				return Task.FromException<IEnumerable<ITranslator>>(ex);
+			}
 		}
 	}
 }

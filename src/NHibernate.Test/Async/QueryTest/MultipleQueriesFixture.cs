@@ -21,7 +21,7 @@ namespace NHibernate.Test.QueryTest
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	[TestFixture]
+	[TestFixture, Obsolete]
 	public class MultipleQueriesFixtureAsync : TestCase
 	{
 		protected override string MappingsAssembly
@@ -29,7 +29,7 @@ namespace NHibernate.Test.QueryTest
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "SecondLevelCacheTest.Item.hbm.xml" }; }
 		}

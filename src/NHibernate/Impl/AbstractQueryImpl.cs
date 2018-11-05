@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql;
+using NHibernate.Multi;
 using NHibernate.Proxy;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
@@ -903,14 +906,12 @@ namespace NHibernate.Impl
 
 		public IFutureEnumerable<T> Future<T>()
 		{
-			session.FutureQueryBatch.Add<T>(this);
-			return session.FutureQueryBatch.GetEnumerator<T>();
+			return session.GetFutureBatch().AddAsFuture<T>(this);
 		}
 
 		public IFutureValue<T> FutureValue<T>()
 		{
-			session.FutureQueryBatch.Add<T>(this);
-			return session.FutureQueryBatch.GetFutureValue<T>();
+			return session.GetFutureBatch().AddAsFutureValue<T>(this);
 		}
 
 		/// <summary> Override the current session cache mode, just for this query.
@@ -996,21 +997,24 @@ namespace NHibernate.Impl
 		public virtual QueryParameters GetQueryParameters(IDictionary<string, TypedValue> namedParams)
 		{
 			return new QueryParameters(
-					TypeArray(),
-					ValueArray(),
-					namedParams,
-					LockModes,
-					Selection,
-					true,
-					IsReadOnly,
-					cacheable,
-					cacheRegion,
-					comment,
-					collectionKey == null ? null : new[] { collectionKey },
-					optionalObject,
-					optionalEntityName,
-					optionalId,
-					resultTransformer);
+				TypeArray(),
+				ValueArray(),
+				namedParams,
+				LockModes,
+				Selection,
+				true,
+				IsReadOnly,
+				cacheable,
+				cacheRegion,
+				comment,
+				collectionKey == null ? null : new[] { collectionKey },
+				optionalObject,
+				optionalEntityName,
+				optionalId,
+				resultTransformer)
+			{
+				CacheMode = cacheMode
+			};
 		}
 
 		protected void Before()
@@ -1049,5 +1053,9 @@ namespace NHibernate.Impl
 		}
 
 		protected internal abstract IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters);
+
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
+		protected internal abstract Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters, CancellationToken cancellationToken);
 	}
 }

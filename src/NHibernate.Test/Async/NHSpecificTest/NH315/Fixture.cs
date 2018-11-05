@@ -20,11 +20,6 @@ namespace NHibernate.Test.NHSpecificTest.NH315
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH315"; }
-		}
-
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;

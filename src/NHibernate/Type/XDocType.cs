@@ -7,7 +7,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public class XDocType : MutableType
+	public partial class XDocType : MutableType
 	{
 		public XDocType()
 			: base(new XmlSqlType())
@@ -29,17 +29,22 @@ namespace NHibernate.Type
 			get { return typeof (XDocument); }
 		}
 
+		/// <inheritdoc />
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			cmd.Parameters[index].Value = ((XDocument) value).ToString(SaveOptions.DisableFormatting);
+			cmd.Parameters[index].Value = GetStringRepresentation(value);
 		}
 
+		/// <inheritdoc />
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			// according to documentation, GetValue should return a string, at list for MsSQL
+			// according to documentation, GetValue should return a string, at least for MsSQL
 			// hopefully all DataProvider has the same behaviour
 			string xmlString = Convert.ToString(rs.GetValue(index));
+			// 6.0 TODO: inline the call.
+#pragma warning disable 618
 			return FromStringValue(xmlString);
+#pragma warning restore 618
 		}
 
 		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
@@ -47,19 +52,28 @@ namespace NHibernate.Type
 			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
+		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object val)
 		{
 			return val == null ? null : val.ToString();
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
-			if (xml != null)
-			{
-				return XDocument.Parse(xml);
-			}
-
-			return null;
+			return ParseStringRepresentation(xml);
 		}
 
 		public override object DeepCopyNotNull(object value)
@@ -81,6 +95,28 @@ namespace NHibernate.Type
 			}
 
 			return XNode.DeepEquals((XDocument) x, (XDocument) y);
+		}
+
+		/// <inheritdoc />
+		public override object Assemble(object cached, ISessionImplementor session, object owner)
+		{
+			return ParseStringRepresentation(cached as string);
+		}
+
+		/// <inheritdoc />
+		public override object Disassemble(object value, ISessionImplementor session, object owner)
+		{
+			return GetStringRepresentation(value);
+		}
+
+		private static string GetStringRepresentation(object value)
+		{
+			return ((XDocument) value)?.ToString(SaveOptions.DisableFormatting);
+		}
+
+		private static object ParseStringRepresentation(string value)
+		{
+			return value != null ? XDocument.Parse(value) : null;
 		}
 	}
 }

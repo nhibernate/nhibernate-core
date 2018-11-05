@@ -41,7 +41,7 @@ namespace NHibernate.Test.SqlTest.Query
 			"    join EMPLOYMENT emp on org.ORGID = emp.EMPLOYER " +
 			"    join PERSON pers on pers.PERID = emp.EMPLOYEE ";
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"SqlTest.Query.NativeSQLQueries.hbm.xml"}; }
 		}

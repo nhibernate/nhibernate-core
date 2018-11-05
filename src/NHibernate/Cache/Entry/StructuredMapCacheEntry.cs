@@ -27,7 +27,7 @@ namespace NHibernate.Cache.Entry
 				state[i++] = me.Key;
 				state[i++] = me.Value;				
 			}
-			return new CollectionCacheEntry(state);
+			return new CollectionCacheEntry {State = state};
 		}
 	}
 }

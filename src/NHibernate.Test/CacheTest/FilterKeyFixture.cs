@@ -11,7 +11,7 @@ namespace NHibernate.Test.CacheTest
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings => new[] { "CacheTest.EntityWithFilters.hbm.xml" };
+		protected override string[] Mappings => new[] { "CacheTest.EntityWithFilters.hbm.xml" };
 
 		[Test]
 		public void ToStringIncludeAll()

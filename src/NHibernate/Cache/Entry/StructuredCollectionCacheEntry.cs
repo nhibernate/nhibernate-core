@@ -20,7 +20,7 @@ namespace NHibernate.Cache.Entry
 			var objects = collection != null
 							  ? collection.Cast<object>().ToArray()
 							  : Array.Empty<object>();
-			return new CollectionCacheEntry(objects);
+			return new CollectionCacheEntry {State = objects};
 		}
 	}
 }

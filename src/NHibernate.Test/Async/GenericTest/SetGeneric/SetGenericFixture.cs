@@ -21,7 +21,7 @@ namespace NHibernate.Test.GenericTest.SetGeneric
 	public class SetGenericFixtureAsync : TestCase
 	{
 
-		protected override System.Collections.IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "GenericTest.SetGeneric.SetGenericFixture.hbm.xml" }; }
 		}

@@ -10,19 +10,23 @@ namespace NHibernate.UserTypes
 	/// <remarks>
 	/// <para>
 	/// The interface abstracts user code from future changes to the <see cref="Type.IType"/> interface,
-	/// simplifies the implementation of custom types and hides certain "internal interfaces from
+	/// simplifies the implementation of custom types and hides certain "internal interfaces" from
 	/// user code.
 	/// </para>
 	/// <para>
-	/// Implementers must be immutable and must declare a public default constructor.
+	/// Implementers must declare a public default constructor.
 	/// </para>
 	/// <para>
-	/// The actual class mapped by a <c>IUserType</c> may be just about anything. However, if it is to
-	/// be cacheble by a persistent cache, it must be serializable.
+	/// The actual class mapped by a <c>IUserType</c> may be just about anything.
+	/// </para>
+	/// <para>
+	/// For ensuring cacheability, <see cref="Assemble" /> and
+	/// <see cref="Disassemble" /> must provide conversion to/from a cacheable
+	/// representation.
 	/// </para>
 	/// <para>
 	/// Alternatively, custom types could implement <see cref="Type.IType"/> directly or extend one of the
-	/// abstract classes in <c>NHibernate.Type</c>. This approach risks future incompatible changes
+	/// abstract classes in <c>NHibernate.Type</c>. This approach risks more future incompatible changes
 	/// to classes or interfaces in the package.
 	/// </para>
 	/// </remarks>
@@ -83,8 +87,8 @@ namespace NHibernate.UserTypes
 		/// <summary>
 		/// Return a deep copy of the persistent state, stopping at entities and at collections.
 		/// </summary>
-		/// <param name="value">generally a collection element or entity field</param>
-		/// <returns>a copy</returns>
+		/// <param name="value">Generally a collection element or entity field value mapped as this user type.</param>
+		/// <returns>A copy.</returns>
 		object DeepCopy(object value);
 
 		/// <summary>
@@ -108,21 +112,24 @@ namespace NHibernate.UserTypes
 
 		/// <summary>
 		/// Reconstruct an object from the cacheable representation. At the very least this
-		/// method should perform a deep copy if the type is mutable. (optional operation)
+		/// method should perform a deep copy if the type is mutable. See
+		/// <see cref="Disassemble"/>. (Optional operation if the second level cache is not used.)
 		/// </summary>
-		/// <param name="cached">the object to be cached</param>
-		/// <param name="owner">the owner of the cached object</param>
-		/// <returns>a reconstructed object from the cachable representation</returns>
+		/// <param name="cached">The cacheable representation.</param>
+		/// <param name="owner">The owner of the cached object.</param>
+		/// <returns>A reconstructed object from the cachable representation.</returns>
 		object Assemble(object cached, object owner);
 
 		/// <summary>
 		/// Transform the object into its cacheable representation. At the very least this
 		/// method should perform a deep copy if the type is mutable. That may not be enough
 		/// for some implementations, however; for example, associations must be cached as
-		/// identifier values. (optional operation)
+		/// identifier values. (Optional operation if the second level cache is not used.)
+		/// Second level cache implementations may have additional requirements, like the
+		/// cacheable representation being binary serializable.
 		/// </summary>
-		/// <param name="value">the object to be cached</param>
-		/// <returns>a cacheable representation of the object</returns>
+		/// <param name="value">The object to be cached.</param>
+		/// <returns>A cacheable representation of the object.</returns>
 		object Disassemble(object value);
 	}
 }

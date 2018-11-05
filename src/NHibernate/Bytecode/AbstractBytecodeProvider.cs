@@ -6,7 +6,6 @@ namespace NHibernate.Bytecode
 {
 	public abstract class AbstractBytecodeProvider : IBytecodeProvider, IInjectableProxyFactoryFactory, IInjectableCollectionTypeFactoryClass
 	{
-		private readonly IObjectsFactory objectsFactory = new ActivatorObjectsFactory();
 		protected System.Type proxyFactoryFactory;
 		private ICollectionTypeFactory collectionTypeFactory;
 		private System.Type collectionTypeFactoryClass = typeof(Type.DefaultCollectionTypeFactory);
@@ -21,7 +20,7 @@ namespace NHibernate.Bytecode
 				{
 					try
 					{
-						return (IProxyFactoryFactory) ObjectsFactory.CreateInstance(proxyFactoryFactory);
+						return (IProxyFactoryFactory) Cfg.Environment.ObjectsFactory.CreateInstance(proxyFactoryFactory);
 					}
 					catch (Exception e)
 					{
@@ -35,10 +34,9 @@ namespace NHibernate.Bytecode
 
 		public abstract IReflectionOptimizer GetReflectionOptimizer(System.Type clazz, IGetter[] getters, ISetter[] setters);
 
-		public virtual IObjectsFactory ObjectsFactory
-		{
-			get { return objectsFactory; }
-		}
+		// Since 5.2
+		[Obsolete("Please use NHibernate.Cfg.Environment.ObjectsFactory instead")]
+		public virtual IObjectsFactory ObjectsFactory => Cfg.Environment.ObjectsFactory;
 
 		public virtual ICollectionTypeFactory CollectionTypeFactory
 		{
@@ -49,7 +47,7 @@ namespace NHibernate.Bytecode
 					try
 					{
 						collectionTypeFactory =
-							(ICollectionTypeFactory) ObjectsFactory.CreateInstance(collectionTypeFactoryClass);
+							(ICollectionTypeFactory) Cfg.Environment.ObjectsFactory.CreateInstance(collectionTypeFactoryClass);
 					}
 					catch (Exception e)
 					{

@@ -24,7 +24,7 @@ namespace NHibernate.Test.CompositeId
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

@@ -12,6 +12,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -56,7 +57,14 @@ namespace NHibernate.Impl
 				try
 				{
 					Before();
-					return cacheable ? await (ListUsingQueryCacheAsync(cancellationToken)).ConfigureAwait(false) : await (ListIgnoreQueryCacheAsync(cancellationToken)).ConfigureAwait(false);
+
+					var querySpaces = new HashSet<string>(Translators.SelectMany(t => t.QuerySpaces));
+					if (resultSetsCommand.HasQueries)
+					{
+						await (session.AutoFlushIfRequiredAsync(querySpaces, cancellationToken)).ConfigureAwait(false);
+					}
+
+					return cacheable ? await (ListUsingQueryCacheAsync(querySpaces, cancellationToken)).ConfigureAwait(false) : await (ListIgnoreQueryCacheAsync(cancellationToken)).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -164,7 +172,7 @@ namespace NHibernate.Impl
 						ITranslator translator = translators[i];
 						QueryParameters parameter = parameters[i];
 
-						await (translator.Loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, false, cancellationToken)).ConfigureAwait(false);
+						await (translator.Loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, false, cancellationToken: cancellationToken)).ConfigureAwait(false);
 
 						if (createSubselects[i])
 						{
@@ -186,27 +194,6 @@ namespace NHibernate.Impl
 				session.Factory.StatisticsImplementor.QueryExecuted(string.Format("{0} queries (MultiQuery)", translators.Count), rowCount, stopWatch.Elapsed);
 			}
 			return results;
-		}
-
-		private async Task AggregateQueriesInformationAsync(CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			int queryIndex = 0;
-			foreach (AbstractQueryImpl query in queries)
-			{
-				query.VerifyParameters();
-				QueryParameters queryParameters = query.GetQueryParameters();
-				queryParameters.ValidateParameters();
-				foreach (var translator in await (query.GetTranslatorsAsync(session, queryParameters, cancellationToken)).ConfigureAwait(false))
-				{
-					translators.Add(translator);
-					translatorQueryMap.Add(queryIndex);
-					parameters.Add(queryParameters);
-					ISqlCommand singleCommand = translator.Loader.CreateSqlCommand(queryParameters, session);
-					resultSetsCommand.Append(singleCommand);
-				}
-				queryIndex++;
-			}
 		}
 
 		public async Task<object> GetResultAsync(string key, CancellationToken cancellationToken = default(CancellationToken))
@@ -232,19 +219,17 @@ namespace NHibernate.Impl
 			return GetResultList(await (DoListAsync(cancellationToken)).ConfigureAwait(false));
 		}
 
-		private async Task<IList> ListUsingQueryCacheAsync(CancellationToken cancellationToken)
+		private async Task<IList> ListUsingQueryCacheAsync(HashSet<string> querySpaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
 
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters);
 
-			ISet<string> querySpaces = new HashSet<string>();
 			List<IType[]> resultTypesList = new List<IType[]>(Translators.Count);
 			for (int i = 0; i < Translators.Count; i++)
 			{
 				ITranslator queryTranslator = Translators[i];
-				querySpaces.UnionWith(queryTranslator.QuerySpaces);
 				resultTypesList.Add(queryTranslator.ReturnTypes);
 			}
 			int[] firstRows = new int[Parameters.Count];
@@ -268,7 +253,7 @@ namespace NHibernate.Impl
 			{
 				log.Debug("Cache miss for multi query");
 				var list = await (DoListAsync(cancellationToken)).ConfigureAwait(false);
-				await (queryCache.PutAsync(key, new ICacheAssembler[] { assembler }, new object[] { list }, false, session, cancellationToken)).ConfigureAwait(false);
+				await (queryCache.PutAsync(key, combinedParameters, new ICacheAssembler[] { assembler }, new object[] { list }, session, cancellationToken)).ConfigureAwait(false);
 				result = list;
 			}
 

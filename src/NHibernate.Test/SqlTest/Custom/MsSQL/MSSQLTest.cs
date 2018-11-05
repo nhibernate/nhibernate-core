@@ -7,7 +7,7 @@ namespace NHibernate.Test.SqlTest.Custom.MsSQL
 	[TestFixture]
 	public class MSSQLTest : CustomStoredProcSupportTest
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "SqlTest.Custom.MsSQL.MSSQLEmployment.hbm.xml" }; }
 		}

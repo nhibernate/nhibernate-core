@@ -9,6 +9,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 using NHibernate.Cache;
@@ -72,10 +73,11 @@ namespace NHibernate.Event.Default
 		}
 
 		/// <summary> Try to initialize a collection from the cache</summary>
-		private async Task<bool> InitializeCollectionFromCacheAsync(object id, ICollectionPersister persister, IPersistentCollection collection, ISessionImplementor source, CancellationToken cancellationToken)
+		private async Task<bool> InitializeCollectionFromCacheAsync(
+			object collectionKey, ICollectionPersister persister, IPersistentCollection collection,
+			ISessionImplementor source, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-
 			if (!(source.EnabledFilters.Count == 0) && persister.IsAffectedByEnabledFilters(source))
 			{
 				log.Debug("disregarding cached version (if any) of collection due to enabled filters ");
@@ -88,48 +90,83 @@ namespace NHibernate.Event.Default
 			{
 				return false;
 			}
+
+			var batchSize = persister.GetBatchSize();
+			if (batchSize > 1 && persister.Cache.PreferMultipleGet())
+			{
+				var collectionEntries = new CollectionEntry[batchSize];
+				// The first item in the array is the item that we want to load
+				var collectionBatch = await (source.PersistenceContext.BatchFetchQueue
+				                            .GetCollectionBatchAsync(persister, collectionKey, batchSize, false, collectionEntries, cancellationToken)).ConfigureAwait(false);
+				// Ignore null values as the retrieved batch may contains them when there are not enough
+				// uninitialized collection in the queue
+				var keys = new List<CacheKey>(batchSize);
+				for (var i = 0; i < collectionBatch.Length; i++)
+				{
+					var key = collectionBatch[i];
+					if (key == null)
+					{
+						break;
+					}
+					keys.Add(source.GenerateCacheKey(key, persister.KeyType, persister.Role));
+				}
+				var cachedObjects = await (persister.Cache.GetManyAsync(keys.ToArray(), source.Timestamp, cancellationToken)).ConfigureAwait(false);
+				for (var i = 1; i < cachedObjects.Length; i++)
+				{
+					var coll = source.PersistenceContext.BatchFetchQueue.GetBatchLoadableCollection(persister, collectionEntries[i]);
+					await (AssembleAsync(keys[i], cachedObjects[i], persister, source, coll, collectionBatch[i], false, cancellationToken)).ConfigureAwait(false);
+				}
+				return await (AssembleAsync(keys[0], cachedObjects[0], persister, source, collection, collectionKey, true, cancellationToken)).ConfigureAwait(false);
+			}
+
+			var cacheKey = source.GenerateCacheKey(collectionKey, persister.KeyType, persister.Role);
+			var cachedObject = await (persister.Cache.GetAsync(cacheKey, source.Timestamp, cancellationToken)).ConfigureAwait(false);
+			return await (AssembleAsync(cacheKey, cachedObject, persister, source, collection, collectionKey, true, cancellationToken)).ConfigureAwait(false);
+		}
+
+		private async Task<bool> AssembleAsync(
+			CacheKey ck, object ce, ICollectionPersister persister, ISessionImplementor source,
+			IPersistentCollection collection, object collectionKey, bool alterStatistics, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			ISessionFactoryImplementor factory = source.Factory;
+			if (factory.Statistics.IsStatisticsEnabled && alterStatistics)
+			{
+				if (ce == null)
+				{
+					factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
+				}
+				else
+				{
+					factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
+				}
+			}
+
+			if (ce == null)
+			{
+				log.Debug("Collection cache miss: {0}", ck);
+			}
 			else
 			{
-				ISessionFactoryImplementor factory = source.Factory;
+				log.Debug("Collection cache hit: {0}", ck);
+			}
 
-				CacheKey ck = source.GenerateCacheKey(id, persister.KeyType, persister.Role);
-				object ce = await (persister.Cache.GetAsync(ck, source.Timestamp, cancellationToken)).ConfigureAwait(false);
+			if (ce == null)
+			{
+				return false;
+			}
+			else
+			{
+				IPersistenceContext persistenceContext = source.PersistenceContext;
 
-				if (factory.Statistics.IsStatisticsEnabled)
-				{
-					if (ce == null)
-					{
-						factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
-					}
-					else
-					{
-						factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
-					}
-				}
+				CollectionCacheEntry cacheEntry = (CollectionCacheEntry) persister.CacheEntryStructure.Destructure(ce, factory);
+				await (cacheEntry.AssembleAsync(collection, persister, persistenceContext.GetCollectionOwner(collectionKey, persister), cancellationToken)).ConfigureAwait(false);
 
-				if (ce == null)
-				{
-					log.Debug("Collection cache miss: {0}", ck);
-				}
-				else
-				{
-					log.Debug("Collection cache hit: {0}", ck);
-				}
+				persistenceContext.GetCollectionEntry(collection).PostInitialize(collection, persistenceContext);
 
-				if (ce == null)
-				{
-					return false;
-				}
-				else
-				{
-					IPersistenceContext persistenceContext = source.PersistenceContext;
-
-					CollectionCacheEntry cacheEntry = (CollectionCacheEntry)persister.CacheEntryStructure.Destructure(ce, factory);
-					await (cacheEntry.AssembleAsync(collection, persister, persistenceContext.GetCollectionOwner(id, persister), cancellationToken)).ConfigureAwait(false);
-
-					persistenceContext.GetCollectionEntry(collection).PostInitialize(collection, persistenceContext);
-					return true;
-				}
+				if (collection.HasQueuedOperations)
+					collection.ApplyQueuedOperations();
+				return true;
 			}
 		}
 	}

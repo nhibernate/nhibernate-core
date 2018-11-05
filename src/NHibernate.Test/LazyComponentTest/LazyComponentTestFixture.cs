@@ -6,7 +6,7 @@ namespace NHibernate.Test.LazyComponentTest
 	[TestFixture]
 	public class LazyComponentTestFixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"LazyComponentTest.Person.hbm.xml"}; }
 		}

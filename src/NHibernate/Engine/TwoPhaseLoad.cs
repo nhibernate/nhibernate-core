@@ -9,6 +9,8 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Properties;
+using System;
+using System.Collections.Generic;
 
 namespace NHibernate.Engine
 {
@@ -48,6 +50,18 @@ namespace NHibernate.Engine
 		/// </summary>
 		public static void InitializeEntity(object entity, bool readOnly, ISessionImplementor session, PreLoadEvent preLoadEvent, PostLoadEvent postLoadEvent)
 		{
+			InitializeEntity(entity, readOnly, session, preLoadEvent, postLoadEvent, null);
+		}
+		
+		/// <summary>
+		/// Perform the second step of 2-phase load. Fully initialize the entity instance.
+		/// After processing a JDBC result set, we "resolve" all the associations
+		/// between the entities which were instantiated and had their state
+		/// "hydrated" into an array
+		/// </summary>
+		internal static void InitializeEntity(object entity, bool readOnly, ISessionImplementor session, PreLoadEvent preLoadEvent, PostLoadEvent postLoadEvent,
+		                                      Action<IEntityPersister, CachePutData> cacheBatchingHandler)
+		{
 			//TODO: Should this be an InitializeEntityEventListener??? (watch out for performance!)
 
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
@@ -71,13 +85,26 @@ namespace NHibernate.Engine
 				log.Debug("resolving associations for {0}", MessageHelper.InfoString(persister, id, session.Factory));
 
 			IType[] types = persister.PropertyTypes;
+			var collectionToResolveIndexes = new List<int>(hydratedState.Length);
 			for (int i = 0; i < hydratedState.Length; i++)
 			{
 				object value = hydratedState[i];
 				if (!Equals(LazyPropertyInitializer.UnfetchedProperty, value) && !(Equals(BackrefPropertyAccessor.Unknown, value)))
 				{
+					if (types[i].IsCollectionType)
+					{
+						// Resolve them last, because they may depend on other properties if they use a property-ref
+						collectionToResolveIndexes.Add(i);
+						continue;
+					}
+
 					hydratedState[i] = types[i].ResolveIdentifier(value, session, entity);
 				}
+			}
+
+			foreach (var i in collectionToResolveIndexes)
+			{
+				hydratedState[i] = types[i].ResolveIdentifier(hydratedState[i], session, entity);
 			}
 
 			//Must occur after resolving identifiers!
@@ -105,16 +132,31 @@ namespace NHibernate.Engine
 
 				object version = Versioning.GetVersion(hydratedState, persister);
 				CacheEntry entry =
-					new CacheEntry(hydratedState, persister, entityEntry.LoadedWithLazyPropertiesUnfetched, version, session, entity);
+					CacheEntry.Create(hydratedState, persister, entityEntry.LoadedWithLazyPropertiesUnfetched, version, session, entity);
 				CacheKey cacheKey = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
-				bool put =
-					persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry), session.Timestamp, version,
-										persister.IsVersioned ? persister.VersionType.Comparator : null,
-										UseMinimalPuts(session, entityEntry));
 
-				if (put && factory.Statistics.IsStatisticsEnabled)
+				if (cacheBatchingHandler != null && persister.IsBatchLoadable)
 				{
-					factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+					cacheBatchingHandler(
+						persister,
+						new CachePutData(
+							cacheKey,
+							persister.CacheEntryStructure.Structure(entry),
+							version,
+							persister.IsVersioned ? persister.VersionType.Comparator : null,
+							UseMinimalPuts(session, entityEntry)));
+				}
+				else
+				{
+					bool put =
+						persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry), session.Timestamp, version,
+						                    persister.IsVersioned ? persister.VersionType.Comparator : null,
+						                    UseMinimalPuts(session, entityEntry));
+
+					if (put && factory.Statistics.IsStatisticsEnabled)
+					{
+						factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+					}
 				}
 			}
 			

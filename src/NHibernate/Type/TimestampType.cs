@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Engine;
 
 namespace NHibernate.Type
 {
@@ -33,12 +34,24 @@ namespace NHibernate.Type
 		/// <inheritdoc />
 		public override string Name => "Timestamp";
 
+		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
 		/// <summary>
 		/// Retrieve the string representation of the timestamp object. This is in the following format:
 		/// <code>
 		/// 2011-01-27T14:50:59.6220000Z
 		/// </code>
 		/// </summary>
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object val) =>
 			((DateTime) val).ToString("O");
 	}

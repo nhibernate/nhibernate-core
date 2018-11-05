@@ -142,6 +142,7 @@ namespace NHibernate.Dialect
 			"memo",
 			"money",
 			"note",
+			"nothing",
 			"notnull",
 			"ntext",
 			"nvarchar",
@@ -190,7 +191,7 @@ namespace NHibernate.Dialect
 
 		public override Schema.IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
-			return new Schema.SQLiteDataBaseMetaData(connection);
+			return new Schema.SQLiteDataBaseMetaData(connection, this);
 		}
 
 		public override string AddColumnString

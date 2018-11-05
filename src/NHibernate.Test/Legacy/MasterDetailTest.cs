@@ -20,7 +20,7 @@ namespace NHibernate.Test.Legacy
 	[TestFixture]
 	public class MasterDetailTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

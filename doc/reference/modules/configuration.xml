@@ -441,14 +441,6 @@ var session = sessions.OpenSession(conn);
             at runtime. All are optional and have reasonable default values.
         </para>
 
-        <para>
-            Some properties are system-level properties. They can only be set manually by setting static properties of
-            <literal>NHibernate.Cfg.Environment</literal> class or be defined in the
-            <literal>&lt;hibernate-configuration&gt;</literal> section of the application
-            configuration file. These properties cannot be set using <literal>Configuration.SetProperties</literal> or
-            the <literal>hibernate.cfg.xml</literal> configuration file.
-        </para>
-
         <table frame="topbot" id="configuration-optional-properties" revision="3">
             <title>NHibernate Configuration Properties</title>
             <tgroup cols="2">
@@ -511,53 +503,6 @@ var session = sessions.OpenSession(conn);
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 
                                 recommended values between <literal>0</literal> and <literal>3</literal>
-                            </para>
-                        </entry>
-                    </row>
-                    <row>
-                        <entry>
-                            <literal>use_reflection_optimizer</literal>
-                        </entry>
-                        <entry>
-                            Enables use of a runtime-generated class to set or get properties of an entity
-                            or component instead of using runtime reflection. This is a system-level property.
-                            The use of the reflection optimizer inflicts a certain startup cost on the
-                            application but should lead to better performance in the long run.
-                            Defaults to <literal>true</literal>.
-                            <para>
-                                You can not set this property in <literal>hibernate.cfg.xml</literal>, but only
-                                in <literal>&lt;hibernate-configuration&gt;</literal> section of the application
-                                configuration file or by code by setting
-                                <literal>NHibernate.Cfg.Environment.UseReflectionOptimizer</literal>
-                                before creating any <literal>NHibernate.Cfg.Configuration</literal> instance.
-                            </para>
-                            <para>
-                                <emphasis role="strong">eg.</emphasis> 
-                                <literal>true</literal> | <literal>false</literal>
-                            </para>
-                        </entry>
-                    </row>
-                    <row>
-                        <entry>
-                            <literal>bytecode.provider</literal>
-                        </entry>
-                        <entry>
-                            Specifies the bytecode provider to use to optimize the use of reflection in NHibernate.
-                            This is a system-level property.
-                            Use <literal>null</literal> to disable the optimization completely, <literal>lcg</literal>
-                            to use built-in lightweight code generation, or the class name of a custom
-                            <literal>IBytecodeProvider</literal> implementation. Defaults to <literal>lcg</literal>.
-                            <para>
-                                You can not set this property in <literal>hibernate.cfg.xml</literal>, but only
-                                in <literal>&lt;hibernate-configuration&gt;</literal> section of the application
-                                configuration file or by code by setting
-                                <literal>NHibernate.Cfg.Environment.BytecodeProvider</literal>
-                                before creating any <literal>NHibernate.Cfg.Configuration</literal> instance.
-                            </para>
-                            <para>
-                                <emphasis role="strong">eg.</emphasis>
-                                <literal>null</literal> | <literal>lcg</literal> |
-                                <literal>classname.of.BytecodeProvider, assembly</literal>
                             </para>
                         </entry>
                     </row>
@@ -881,7 +826,7 @@ var session = sessions.OpenSession(conn);
                         </entry>
                         <entry>
                             The class name of a custom <literal>IProxyFactoryFactory</literal> implementation.
-                            Defaults to the built-in <literal>DefaultProxyFactoryFactory</literal>.
+                            Defaults to the built-in <literal>StaticProxyFactoryFactory</literal>.
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
                                 <literal>classname.of.ProxyFactoryFactory, assembly</literal>
@@ -1058,6 +1003,28 @@ var session = sessions.OpenSession(conn);
                             is used instead of <literal>DbType.DateTime</literal>. This may be disabled by setting
                             <literal>sql_types.keep_datetime</literal> to <literal>true</literal>.
                             Defaults to <literal>false</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>firebird.disable_parameter_casting</literal>
+                        </entry>
+                        <entry>
+                            <para>
+                                Firebird with FirebirdSql.Data.FirebirdClient may be unable to determine the type
+                                of parameters in many circumstances, unless they are explicitly casted in the SQL
+                                query. To avoid this trouble, the NHibernate <literal>FirebirdClientDriver</literal> parses SQL
+                                commands for detecting parameters in them and adding an explicit SQL cast around
+                                parameters which may trigger the issue.
+                            </para>
+                            <para>
+                                Defaults to <literal>false</literal>.
+                                For disabling this behavior, set this setting to true.
+                            </para>
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
                                 <literal>true</literal> | <literal>false</literal>
@@ -1464,6 +1431,95 @@ in the parameter binding.</programlisting>
             <para>
                 would allow you to rename the SQL <literal>LOWER</literal> function.
             </para>
+
+        </sect2>
+
+        <sect2 id="configuration-optional-systemlevel">
+            <title>System level optional properties</title>
+
+            <para>
+                Some properties are system-level properties. They can only be set manually by setting static
+                properties of <literal>NHibernate.Cfg.Environment</literal> class or be defined in the
+                <literal>&lt;hibernate-configuration&gt;</literal> section of the application configuration
+                file, as direct sub-elements. These properties can neither be set using
+                <literal>Configuration.SetProperties</literal> or the <literal>hibernate.cfg.xml</literal>
+                configuration file, nor be set as <literal>&lt;session-factory&gt;</literal> properties.
+            </para>
+
+            <table frame="topbot" id="configuration-systemlevel-properties">
+                <title>NHibernate system level properties</title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colwidth="1*"/>
+                    <colspec colname="c2" colwidth="1*"/>
+                    <thead>
+                        <row>
+                            <entry>Property name</entry>
+                            <entry>Purpose</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <literal>bytecode-provider</literal>
+                            </entry>
+                            <entry>
+                                <para>
+                                    Specifies the bytecode provider to use to optimize the use of reflection in NHibernate.
+                                    Use <literal>null</literal> to disable the optimization completely, <literal>lcg</literal>
+                                    to use built-in lightweight code generation, or the assembly qualified class name of a custom
+                                    <literal>IBytecodeProvider</literal> implementation. Defaults to <literal>lcg</literal>.
+                                </para>
+                                <programlisting><![CDATA[<bytecode-provider
+    type="lcg|null|className" />]]></programlisting>
+                                <para>
+                                    You can also set this property by code by setting
+                                    <literal>NHibernate.Cfg.Environment.BytecodeProvider</literal>
+                                    before creating any <literal>NHibernate.Cfg.Configuration</literal> instance.
+                                </para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <literal>objects-factory</literal>
+                            </entry>
+                            <entry>
+                                <para>
+                                    Specifies a custom objects factory to use for instantiating NHibernate dependencies.
+                                    Use the assembly qualified class name of a custom <literal>IObjectsFactory</literal>
+                                    implementation.
+                                </para>
+                                <programlisting><![CDATA[<bytecode-provider
+    type="className" />]]></programlisting>
+                                <para>
+                                    You can also set this property by code by setting
+                                    <literal>NHibernate.Cfg.Environment.ObjectsFactory</literal>
+                                    before creating any <literal>NHibernate.Cfg.Configuration</literal> instance.
+                                </para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <literal>reflection-optimizer</literal>
+                            </entry>
+                            <entry>
+                                <para>
+                                    Enables use of a runtime-generated class to set or get properties of an entity
+                                    or component instead of using runtime reflection. The use of the reflection
+                                    optimizer inflicts a certain startup cost on the application but should lead to
+                                    better performance in the long run. Defaults to <literal>true</literal>.
+                                </para>
+                                <programlisting><![CDATA[<reflection-optimizer
+    use="true|false"/>]]></programlisting>
+                                <para>
+                                    You can also set this property by code by setting
+                                    <literal>NHibernate.Cfg.Environment.UseReflectionOptimizer</literal>
+                                    before creating any <literal>NHibernate.Cfg.Configuration</literal> instance.
+                                </para>
+                            </entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
 
         </sect2>
 

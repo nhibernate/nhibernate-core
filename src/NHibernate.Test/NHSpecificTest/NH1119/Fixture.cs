@@ -6,11 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1119
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1119"; }
-		}
-
 		[Test]
 		public void SelectMinFromEmptyTable()
 		{

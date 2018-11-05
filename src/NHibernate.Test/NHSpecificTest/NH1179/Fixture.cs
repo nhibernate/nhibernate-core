@@ -6,11 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1179
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1179"; }
-		}
-
 		[Test]
 		public void ApplyFilterExplicitJoin()
 		{

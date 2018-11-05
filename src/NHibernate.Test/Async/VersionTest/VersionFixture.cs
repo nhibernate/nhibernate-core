@@ -17,7 +17,7 @@ namespace NHibernate.Test.VersionTest
 	[TestFixture]
 	public class VersionFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"VersionTest.PersonThing.hbm.xml"}; }
 		}

@@ -14,7 +14,7 @@ namespace NHibernate.Test.GeneratedTest
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override System.Collections.IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "GeneratedTest.ComponentOwner.hbm.xml" }; }
 		}

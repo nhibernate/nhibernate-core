@@ -1,6 +1,8 @@
 using System;
+using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Expressions;
@@ -104,6 +106,8 @@ namespace NHibernate.Linq.Visitors
 					return VisitParameterExpression((ParameterExpression) expression);
 				case ExpressionType.TypeIs:
 					return VisitTypeBinaryExpression((TypeBinaryExpression) expression);
+				case ExpressionType.Dynamic:
+					return VisitDynamicExpression((DynamicExpression) expression);
 
 				case ExpressionType.Extension:
 					switch (expression)
@@ -141,6 +145,18 @@ namespace NHibernate.Linq.Visitors
 			}
 		}
 
+		private HqlTreeNode VisitDynamicExpression(DynamicExpression expression)
+		{
+			switch (expression.Binder)
+			{
+				case GetMemberBinder binder:
+					return _hqlTreeBuilder.Dot(
+						VisitExpression(expression.Arguments[0]).AsExpression(),
+						_hqlTreeBuilder.Ident(binder.Name));
+			}
+
+			throw new NotSupportedException($"Dynamic expression with a binder of {expression.Binder.GetType()} is not supported");
+		}
 
 		private HqlTreeNode VisitTypeBinaryExpression(TypeBinaryExpression expression)
 		{
@@ -206,6 +222,18 @@ possible solutions:
 
 		private HqlTreeNode VisitInvocationExpression(InvocationExpression expression)
 		{
+			//This is an ugly workaround for dynamic expressions.
+			//Unfortunately we can not tap into the expression tree earlier to intercept the dynamic expression
+			if (expression.Arguments.Count == 2 &&
+			    expression.Arguments[0] is ConstantExpression constant &&
+			    constant.Value is CallSite site &&
+			    site.Binder is GetMemberBinder binder)
+			{
+				return _hqlTreeBuilder.Dot(
+					VisitExpression(expression.Arguments[1]).AsExpression(),
+					_hqlTreeBuilder.Ident(binder.Name));
+			}
+
 			return VisitExpression(expression.Expression);
 		}
 

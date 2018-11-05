@@ -27,7 +27,7 @@ namespace NHibernate.Test.ProxyTest
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"ProxyTest.AProxy.hbm.xml"}; }
 		}

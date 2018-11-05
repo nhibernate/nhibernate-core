@@ -12,7 +12,7 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 			return dialect is MsSql2000Dialect;
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "VersionTest.Db.MsSQL.ProductWithVersionAndLazyProperty.hbm.xml" }; }
 		}

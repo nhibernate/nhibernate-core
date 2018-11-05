@@ -17,7 +17,7 @@ namespace NHibernate.Test.Generatedkeys.Seqidentity
 	[TestFixture]
 	public class SequenceIdentityFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Generatedkeys.Seqidentity.MyEntity.hbm.xml" }; }
 		}

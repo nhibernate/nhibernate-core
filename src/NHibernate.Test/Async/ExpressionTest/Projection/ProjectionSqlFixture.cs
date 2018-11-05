@@ -25,7 +25,7 @@ namespace NHibernate.Test.ExpressionTest.Projection
             get { return "NHibernate.Test"; }
         }
 
-        protected override IList Mappings
+        protected override string[] Mappings
         {
             get
             {

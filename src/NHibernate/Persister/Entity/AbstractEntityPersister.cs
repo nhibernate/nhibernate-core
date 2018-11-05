@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -20,7 +19,6 @@ using NHibernate.Mapping;
 using NHibernate.Metadata;
 using NHibernate.Properties;
 using NHibernate.SqlCommand;
-using NHibernate.Tuple;
 using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -637,6 +635,8 @@ namespace NHibernate.Persister.Entity
 			get { return batchSize > 1; }
 		}
 
+		public int BatchSize => batchSize;
+
 		public virtual string[] IdentifierColumnNames
 		{
 			get { return rootTableKeyColumnNames; }
@@ -873,6 +873,8 @@ namespace NHibernate.Persister.Entity
 			get { return IdentifierColumnNames; }
 		}
 
+		// Since v5.2
+		[Obsolete("Use KeyColumnNames instead")]
 		public string[] JoinColumnNames
 		{
 			get { return KeyColumnNames; }
@@ -2095,6 +2097,24 @@ namespace NHibernate.Persister.Entity
 			return GetAppropriateUniqueKeyLoader(propertyName, session.EnabledFilters).LoadByUniqueKey(session, uniqueKey);
 		}
 
+		public void CacheByUniqueKeys(object entity, ISessionImplementor session)
+		{
+			for (var i = 0; i < PropertySpan; i++)
+			{
+				if (!propertyUniqueness[i])
+					continue;
+
+				// The caching is done by semi-resolved values.
+				var propertyValue = session.PersistenceContext.GetEntry(entity).LoadedState[i];
+				if (propertyValue == null)
+					continue;
+				var type = PropertyTypes[i].GetSemiResolvedType(session.Factory);
+				propertyValue = type.SemiResolve(propertyValue, session, entity);
+				var euk = new EntityUniqueKey(EntityName, PropertyNames[i], propertyValue, type, session.Factory);
+				session.PersistenceContext.AddEntity(euk, entity);
+			}
+		}
+
 		private EntityLoader GetAppropriateUniqueKeyLoader(string propertyName, IDictionary<string, IFilter> enabledFilters)
 		{
 			//ugly little workaround for fact that createUniqueKeyLoaders() does not handle component properties
@@ -2257,7 +2277,17 @@ namespace NHibernate.Persister.Entity
 				if (includeProperty[i] && IsPropertyOfTable(i, j))
 				{
 					// this is a property of the table, which we are updating
-					updateBuilder.AddColumns(GetPropertyColumnNames(i), propertyColumnUpdateable[i], PropertyTypes[i]);
+					try
+					{
+						updateBuilder.AddColumns(GetPropertyColumnNames(i), propertyColumnUpdateable[i], PropertyTypes[i]);
+					}
+					catch (ArgumentException arex)
+					{
+						throw new MappingException(
+							$"Unable to build the update statement for class {entityMetamodel.Name}: " +
+							$"a failure occured when adding the property {PropertyNames[i]}",
+							arex);
+					}
 					hasColumns = hasColumns || GetPropertyColumnSpan(i) > 0;
 				}
 			}
@@ -2346,24 +2376,54 @@ namespace NHibernate.Persister.Entity
 				if (includeProperty[i] && IsPropertyOfTable(i, j))
 				{
 					// this property belongs on the table and is to be inserted
-					builder.AddColumns(GetPropertyColumnNames(i), propertyColumnInsertable[i], PropertyTypes[i]);
+					try
+					{
+						builder.AddColumns(GetPropertyColumnNames(i), propertyColumnInsertable[i], PropertyTypes[i]);
+					}
+					catch (ArgumentException arex)
+					{
+						throw new MappingException(
+							$"Unable to build the insert statement for class {entityMetamodel.Name}: " +
+							$"a failure occured when adding the property {PropertyNames[i]}",
+							arex);
+					}
 				}
 			}
 
 			// add the discriminator
 			if (j == 0)
 			{
-				AddDiscriminatorToInsert(builder);
+				try
+				{
+					AddDiscriminatorToInsert(builder);
+				}
+				catch (ArgumentException arex)
+				{
+					throw new MappingException(
+						$"Unable to build the insert statement for class {entityMetamodel.Name}: " +
+						"a failure occured when adding the discriminator",
+						arex);
+				}
 			}
 
 			// add the primary key
-			if (j == 0 && identityInsert)
+			try
 			{
-				builder.AddIdentityColumn(GetKeyColumns(0)[0]);
+				if (j == 0 && identityInsert)
+				{
+					builder.AddIdentityColumn(GetKeyColumns(0)[0]);
+				}
+				else
+				{
+					builder.AddColumns(GetKeyColumns(j), null, GetIdentifierType(j));
+				}
 			}
-			else
+			catch (ArgumentException arex)
 			{
-				builder.AddColumns(GetKeyColumns(j), null, GetIdentifierType(j));
+				throw new MappingException(
+					$"Unable to build the insert statement for class {entityMetamodel.Name}: " +
+					"a failure occured when adding the Id of the class",
+					arex);
 			}
 
 			if (Factory.Settings.IsCommentsEnabled)
@@ -3795,34 +3855,24 @@ namespace NHibernate.Persister.Entity
 				return true;
 			}
 
-            // check the id unsaved-value
-            // We do this first so we don't have to hydrate the version property if the id property already gives us the info we need (NH-3505).
-            bool? result2 = entityMetamodel.IdentifierProperty.UnsavedValue.IsUnsaved(id);
-            if (result2.HasValue)
-            {
-                if (IdentifierGenerator is Assigned)
-                {
-                    // if using assigned identifier, we can only make assumptions
-                    // if the value is a known unsaved-value
-                    if (result2.Value)
-                        return true;
-                }
-                else
-                {
-                    return result2;
-                }
-            }
-
-            // check the version unsaved-value, if appropriate
-            if (IsVersioned)
-            {
-                object version = GetVersion(entity);
-                bool? result = entityMetamodel.VersionProperty.UnsavedValue.IsUnsaved(version);
-                if (result.HasValue)
-                {
-                    return result;
-                }
-            }
+			// check the id unsaved-value
+			// We do this first so we don't have to hydrate the version property if the id property already gives us the info we need (NH-3505).
+			bool? result2 = entityMetamodel.IdentifierProperty.UnsavedValue.IsUnsaved(id);
+			if (result2.HasValue)
+			{
+				return result2;
+			}
+	
+			// check the version unsaved-value, if appropriate
+			if (IsVersioned)
+			{
+				object version = GetVersion(entity);
+				bool? result = entityMetamodel.VersionProperty.UnsavedValue.IsUnsaved(version);
+				if (result.HasValue)
+				{
+					return result;
+				}
+			}
 
 			// check to see if it is in the second-level cache
 			if (HasCache && session.CacheMode.HasFlag(CacheMode.Get))

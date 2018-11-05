@@ -184,7 +184,7 @@ namespace NHibernate.Dialect
 		{
 			try
 			{
-				var dialect = (Dialect)Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(dialectName));
+				var dialect = (Dialect)Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(dialectName));
 				dialect.Configure(props);
 				return dialect;
 			}
@@ -737,6 +737,9 @@ namespace NHibernate.Dialect
 		{
 			get { return false; }
 		}
+
+		/// <summary> Does this dialect support a way to retrieve the database's current UTC timestamp value? </summary>
+		public virtual bool SupportsCurrentUtcTimestampSelection => false;
 
 		/// <summary>
 		/// Gives the best resolution that the database can use for storing
@@ -2434,8 +2437,8 @@ namespace NHibernate.Dialect
 			get { throw new NotSupportedException("Database not known to define a current timestamp function"); }
 		}
 
-		/// <summary> 
-		/// Retrieve the command used to retrieve the current timestammp from the database. 
+		/// <summary>
+		/// Retrieve the command used to retrieve the current timestamp from the database.
 		/// </summary>
 		public virtual string CurrentTimestampSelectString
 		{
@@ -2450,6 +2453,20 @@ namespace NHibernate.Dialect
 		{
 			get { return "current_timestamp"; }
 		}
+
+		/// <summary>
+		/// Retrieve the command used to retrieve the current UTC timestamp from the database.
+		/// </summary>
+		public virtual string CurrentUtcTimestampSelectString =>
+			throw new NotSupportedException("Database not known to define a current UTC timestamp function");
+
+		/// <summary>
+		/// The name of the database-specific SQL function for retrieving the
+		/// current UTC timestamp.
+		/// </summary>
+		public virtual string CurrentUtcTimestampSQLFunctionName =>
+			// It seems there are no SQL ANSI function for UTC
+			throw new NotSupportedException("Database not known to define a current UTC timestamp function");
 
 		public virtual IViolatedConstraintNameExtracter ViolatedConstraintNameExtracter
 		{

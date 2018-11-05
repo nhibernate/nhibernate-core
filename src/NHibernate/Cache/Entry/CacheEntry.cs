@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Persister.Entity;
@@ -10,66 +11,86 @@ namespace NHibernate.Cache.Entry
 	/// A cached instance of a persistent class
 	/// </summary>
 	[Serializable]
+	[DataContract]
 	public sealed partial class CacheEntry
 	{
-		private readonly object[] disassembledState;
-		private readonly string subclass;
-		private readonly bool lazyPropertiesAreUnfetched;
-		private readonly object version;
+		private object[] disassembledState;
+		private string subclass;
+		private bool lazyPropertiesAreUnfetched;
+		private object version;
 
+		public CacheEntry()
+		{
+		}
 
+		// Since 5.2
+		[Obsolete("Please use CacheEntry.Create method instead.")]
 		public CacheEntry(object[] state, IEntityPersister persister, bool unfetched, object version, ISessionImplementor session, object owner)
 		{
 			//disassembled state gets put in a new array (we write to cache by value!)
-			disassembledState = TypeHelper.Disassemble(state, persister.PropertyTypes, null, session, owner);
-			subclass = persister.EntityName;
-			lazyPropertiesAreUnfetched = unfetched || !persister.IsLazyPropertiesCacheable;
-			this.version = version;
+			DisassembledState = TypeHelper.Disassemble(state, persister.PropertyTypes, null, session, owner);
+			Subclass = persister.EntityName;
+			AreLazyPropertiesUnfetched = unfetched || !persister.IsLazyPropertiesCacheable;
+			Version = version;
 		}
 
-		internal CacheEntry(object[] state, string subclass, bool unfetched, object version)
+		public static CacheEntry Create(object[] state, IEntityPersister persister, bool unfetched, object version,
+										ISessionImplementor session, object owner)
 		{
-			disassembledState = state;
-			this.subclass = subclass;
-			lazyPropertiesAreUnfetched = unfetched;
-			this.version = version;
+			return new CacheEntry
+			{
+				//disassembled state gets put in a new array (we write to cache by value!)
+				DisassembledState = TypeHelper.Disassemble(state, persister.PropertyTypes, null, session, owner),
+				AreLazyPropertiesUnfetched = unfetched || !persister.IsLazyPropertiesCacheable,
+				Subclass = persister.EntityName,
+				Version = version
+			};
 		}
 
+		// 6.0 TODO convert to auto-property
+		[DataMember]
 		public object Version
 		{
-			get{return version;}
+			get => version;
+			set => version = value;
 		}
 
+		// 6.0 TODO convert to auto-property
+		[DataMember]
 		public string Subclass
 		{
-			get { return subclass; }
+			get => subclass;
+			set => subclass = value;
 		}
 
+		// 6.0 TODO convert to auto-property
+		[DataMember]
 		public bool AreLazyPropertiesUnfetched
 		{
-			get { return lazyPropertiesAreUnfetched; }
+			get => lazyPropertiesAreUnfetched;
+			set => lazyPropertiesAreUnfetched = value;
 		}
 
+		// todo: this was added to support initializing an entity's EntityEntry snapshot during reattach;
+		// this should be refactored to instead expose a method to assemble a EntityEntry based on this
+		// state for return.
+		// 6.0 TODO convert to auto-property
+		[DataMember]
 		public object[] DisassembledState
 		{
-			get
-			{
-				// todo: this was added to support initializing an entity's EntityEntry snapshot during reattach;
-				// this should be refactored to instead expose a method to assemble a EntityEntry based on this
-				// state for return.
-				return disassembledState;
-			}
+			get => disassembledState;
+			set => disassembledState = value;
 		}
 
 		public object[] Assemble(object instance, object id, IEntityPersister persister, IInterceptor interceptor,
 		                         ISessionImplementor session)
 		{
-			if (!persister.EntityName.Equals(subclass))
+			if (!persister.EntityName.Equals(Subclass))
 			{
 				throw new AssertionFailure("Tried to assemble a different subclass instance");
 			}
 
-			return Assemble(disassembledState, instance, id, persister, interceptor, session);
+			return Assemble(DisassembledState, instance, id, persister, interceptor, session);
 		}
 
 		private static object[] Assemble(object[] values, object result, object id, IEntityPersister persister,

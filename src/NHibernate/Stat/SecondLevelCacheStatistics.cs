@@ -10,12 +10,18 @@ namespace NHibernate.Stat
 	public class SecondLevelCacheStatistics : CategorizedStatistics
 	{
 		[NonSerialized]
+		// 6.0 TODO: type as CacheBase instead
+#pragma warning disable 618
 		private readonly ICache cache;
+#pragma warning restore 618
 		internal long hitCount;
 		internal long missCount;
 		internal long putCount;
 
+		// 6.0 TODO: get as CacheBase instead
+#pragma warning disable 618
 		public SecondLevelCacheStatistics(ICache cache) : base(cache.RegionName)
+#pragma warning restore 618
 		{
 			this.cache = cache;
 		}

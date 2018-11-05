@@ -13,7 +13,7 @@ namespace NHibernate.Test.CacheTest
 	[TestFixture]
 	public class GetQueryCacheFixture : TestCase
 	{
-		protected override IList Mappings => new[] { "Simple.hbm.xml" };
+		protected override string[] Mappings => new[] { "Simple.hbm.xml" };
 
 		protected override void Configure(Configuration configuration)
 		{
@@ -104,7 +104,14 @@ namespace NHibernate.Test.CacheTest
 
 	public class LockedCacheProvider : ICacheProvider
 	{
-		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
+		// Since 5.2
+		[Obsolete]
+		ICache ICacheProvider.BuildCache(string regionName, IDictionary<string, string> properties)
+		{
+			return BuildCache(regionName, properties);
+		}
+
+		public CacheBase BuildCache(string regionName, IDictionary<string, string> properties)
 		{
 			return new LockedCache(regionName);
 		}

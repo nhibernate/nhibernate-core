@@ -98,6 +98,12 @@
     - conversion: Ignore
       name: QuoteTableAndColumns
       containingTypeName: SchemaMetadataUpdater
+    - conversion: Ignore
+      name: GetEnumerator
+      containingTypeName: DelayedEnumerator
+    - conversion: Ignore
+      name: GetEnumerator
+      containingTypeName: IFutureEnumerable
     - conversion: ToAsync
       name: ExecuteReader
       containingTypeName: IBatcher
@@ -107,7 +113,9 @@
     - conversion: ToAsync
       rule: EventListener
     - conversion: ToAsync
-      rule: ICache
+      rule: Cache
+    - conversion: ToAsync
+      rule: TransactionCompletion      
     typeConversion:
     - conversion: Ignore
       name: EnumerableImpl
@@ -134,7 +142,8 @@
       - parameter: Required
       requiresCancellationToken:
       - rule: EventListener
-      - rule: ICache
+      - rule: Cache
+      - rule: TransactionCompletion
     scanMethodBody: true
     scanForMissingAsyncMembers:
     - all: true
@@ -267,7 +276,13 @@ methodRules:
     name: Lock
   - containingType: NHibernate.Cache.ICache
     name: Unlock
-  name: ICache
+  name: Cache
+- filters:
+  - containingType: NHibernate.Action.IAfterTransactionCompletionProcess
+  - containingType: NHibernate.Action.IBeforeTransactionCompletionProcess
+  - containingType: NHibernate.Action.EntityAction
+    name: BeforeTransactionCompletionProcessImpl  
+  name: TransactionCompletion
 - filters:
   - containingNamespace: NHibernate
   - containingType: NHibernate.Tool.hbm2ddl.SchemaUpdate

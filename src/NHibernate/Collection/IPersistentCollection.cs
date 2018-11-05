@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Data.Common;
 using NHibernate.Collection.Generic;
@@ -336,5 +337,41 @@ namespace NHibernate.Collection
 		/// that have been orphaned.
 		/// </returns>
 		ICollection GetOrphans(object snapshot, string entityName);
+	}
+
+	// 6.0 TODO: merge into IPersistentCollection
+	public static class PersistentCollectionExtensions
+	{
+		private static readonly INHibernateLogger Logger = NHibernateLogger.For(typeof(PersistentCollectionExtensions));
+
+		/// <summary>
+		/// After reading all existing elements from the database, do the queued operations
+		/// (adds or removes) on the underlying collection.
+		/// </summary>
+		/// <param name="collection">The collection.</param>
+		public static void ApplyQueuedOperations(this IPersistentCollection collection)
+		{
+			if (collection is AbstractPersistentCollection baseImpl)
+			{
+				baseImpl.ApplyQueuedOperations();
+				return;
+			}
+
+			// Fallback on reflection for custom implementations
+			var collectionType = collection.GetType();
+			var applyQueuedOperationsMethod = collectionType.GetMethod(
+				nameof(AbstractPersistentCollection.ApplyQueuedOperations),
+				Array.Empty<System.Type>());
+			if (applyQueuedOperationsMethod != null)
+			{
+				applyQueuedOperationsMethod.Invoke(collection, Array.Empty<object>());
+				return;
+			}
+
+			Logger.Warn(
+				"{0} does not implement 'void ApplyQueuedOperations()'. It should move any queued operations" +
+				"processing out of 'AfterInitialize' and put it in a 'public void ApplyQueuedOperations()'.",
+				collectionType);
+		}
 	}
 }

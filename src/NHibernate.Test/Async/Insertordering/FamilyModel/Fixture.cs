@@ -19,7 +19,7 @@ namespace NHibernate.Test.Insertordering.FamilyModel
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Insertordering.FamilyModel.Mappings.hbm.xml" }; }
 		}

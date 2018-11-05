@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 
 namespace NHibernate.Impl
 {
+	//Since 5.2
+	[Obsolete("Replaced by QueryBatch")]
 	public partial class FutureCriteriaBatch : FutureBatch<ICriteria, IMultiCriteria>
 	{
 		public FutureCriteriaBatch(SessionImpl session) : base(session) {}

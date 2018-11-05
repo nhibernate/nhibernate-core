@@ -20,7 +20,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2825
 	[TestFixture]
 	public class FixtureByCodeAsync : FixtureAsync
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return Array.Empty<string>(); }
 		}

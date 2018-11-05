@@ -14,7 +14,7 @@ namespace NHibernate.Test.DynamicEntity.Interceptor
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"DynamicEntity.Interceptor.Customer.hbm.xml"}; }
 		}

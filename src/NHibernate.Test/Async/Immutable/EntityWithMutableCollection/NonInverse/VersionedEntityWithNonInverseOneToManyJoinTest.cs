@@ -18,7 +18,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection.NonInverse
 	[TestFixture]
 	public class VersionedEntityWithNonInverseOneToManyJoinTestAsync : AbstractEntityWithOneToManyTestAsync
 	{
-		protected override System.Collections.IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

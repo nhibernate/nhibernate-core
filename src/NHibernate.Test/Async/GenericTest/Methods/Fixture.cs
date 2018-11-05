@@ -20,7 +20,7 @@ namespace NHibernate.Test.GenericTest.Methods
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

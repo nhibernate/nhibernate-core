@@ -112,6 +112,19 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task GetCharsFunctionAsync()
+		{
+			var query = await ((
+				from e in db.Employees
+				where e.FirstName[2] == 'e'
+				select e
+			).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(1));
+			Assert.That(query[0].FirstName, Is.EqualTo("Steven"));
+		}
+
+		[Test]
 		public async Task LeftFunctionAsync()
 		{
 			var query = await ((from e in db.Employees

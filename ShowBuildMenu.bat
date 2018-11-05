@@ -2,10 +2,15 @@
 pushd %~dp0
 
 set NANT="%~dp0Tools\nant\bin\NAnt.exe" -t:net-4.0
-set BUILDTOOL="%~dp0Tools\BuildTool\bin\Release\BuildTool.exe"
+set BUILD_TOOL_PATH=%~dp0Tools\BuildTool\bin\BuildTool.dll
+set BUILDTOOL=dotnet %BUILD_TOOL_PATH%
 set AVAILABLE_CONFIGURATIONS=%~dp0available-test-configurations
 set CURRENT_CONFIGURATION=%~dp0current-test-configuration
 set NUNIT="%~dp0Tools\NUnit.ConsoleRunner.3.7.0\tools\nunit3-console.exe"
+
+if not exist %BUILD_TOOL_PATH% (
+    dotnet build %~dp0Tools\BuildTool\BuildTool.sln -c Release -o bin
+)
 
 :main-menu
 echo ========================= NHIBERNATE BUILD MENU ==========================

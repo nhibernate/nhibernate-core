@@ -10,10 +10,10 @@ using NHibernate.Impl;
 using NHibernate.Loader.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Collections.Generic;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Persister.Collection
 {
@@ -113,29 +113,40 @@ namespace NHibernate.Persister.Collection
 			return update.ToSqlCommandInfo();
 		}
 
-		/// <summary>
-		/// Generate the SQL DELETE that deletes a particular row
-		/// </summary>
-		/// <returns></returns>
-		protected override SqlCommandInfo GenerateDeleteRowString()
+		/// <inheritdoc />
+		protected override SqlCommandInfo GenerateDeleteRowString(bool[] columnNullness)
 		{
-			SqlDeleteBuilder delete = new SqlDeleteBuilder(Factory.Dialect, Factory);
+			var delete = new SqlDeleteBuilder(Factory.Dialect, Factory);
 			delete.SetTableName(qualifiedTableName);
+
 			if (hasIdentifier)
 			{
-				delete.AddWhereFragment(new string[] { IdentifierColumnName }, IdentifierType, " = ");
-			}
-			else if (HasIndex && !indexContainsFormula)
-			{
-				delete
-					.AddWhereFragment(KeyColumnNames, KeyType, " = ")
-					.AddWhereFragment(IndexColumnNames, IndexType, " = ");
+				delete.AddWhereFragment(new[] { IdentifierColumnName }, IdentifierType, " = ");
 			}
 			else
 			{
-				string[] cnames = ArrayHelper.Join(KeyColumnNames, ElementColumnNames, elementColumnIsInPrimaryKey);
-				SqlType[] ctypes = ArrayHelper.Join(KeyType.SqlTypes(Factory), ElementType.SqlTypes(Factory), elementColumnIsInPrimaryKey);
+				var useIndex = HasIndex && !indexContainsFormula;
+				var additionalFilterType = useIndex ? IndexType : ElementType;
+				var additionalFilterColumns = useIndex ? IndexColumnNames : ElementColumnNames;
+				var includes = useIndex ? null : Combine(elementColumnIsInPrimaryKey, columnNullness);
+
+				var cnames = includes == null
+					? ArrayHelper.Join(KeyColumnNames, additionalFilterColumns)
+					: ArrayHelper.Join(KeyColumnNames, additionalFilterColumns, includes);
+				var ctypes = includes == null
+					? ArrayHelper.Join(KeyType.SqlTypes(Factory), additionalFilterType.SqlTypes(Factory))
+					: ArrayHelper.Join(KeyType.SqlTypes(Factory), additionalFilterType.SqlTypes(Factory), includes);
 				delete.AddWhereFragment(cnames, ctypes, " = ");
+
+				if (columnNullness != null)
+				{
+					for (var i = 0; i < columnNullness.Length; i++)
+					{
+						if (columnNullness[i])
+							continue;
+						delete.AddWhereFragment($"{additionalFilterColumns[i]} is null");
+					}
+				}
 			}
 
 			if (Factory.Settings.IsCommentsEnabled)
@@ -206,7 +217,10 @@ namespace NHibernate.Persister.Collection
 								}
 								else
 								{
-									WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), loc, session);
+									// No nullness handled on update: updates does not occurs with sets or bags, and
+									// indexed collections allowing formula (maps) force their element columns to
+									// not-nullable.
+									WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), null, loc, session);
 								}
 							}
 
@@ -257,26 +271,36 @@ namespace NHibernate.Persister.Collection
 				IAssociationType elementType = (IAssociationType) ElementType;
 				if (rhs.Equals(elementType.GetAssociatedJoinable(Factory)))
 				{
-					return ManyToManySelectFragment(rhs, rhsAlias, lhsAlias, collectionSuffix);
+					return ManyToManySelectFragment(rhs, rhsAlias, lhsAlias, collectionSuffix, elementType);
 				}
 			}
 			return includeCollectionColumns ? SelectFragment(lhsAlias, collectionSuffix) : string.Empty;
 		}
 
-		// Since v5.2
-		[Obsolete("Use overload taking includeLazyProperties parameter")]
-		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias,
-			string entitySuffix, string collectionSuffix, bool includeCollectionColumns)
-		{
-			return SelectFragment(rhs, rhsAlias, lhsAlias, entitySuffix, collectionSuffix, includeCollectionColumns, false);
-		}
-
-		private string ManyToManySelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string collectionSuffix)
+		private string ManyToManySelectFragment(
+			IJoinable rhs,
+			string rhsAlias,
+			string lhsAlias,
+			string collectionSuffix,
+			IAssociationType elementType)
 		{
 			SelectFragment frag = GenerateSelectFragment(lhsAlias, collectionSuffix);
 
-			string[] _elementColumnNames = rhs.KeyColumnNames;
-			frag.AddColumns(rhsAlias, _elementColumnNames, elementColumnAliases);
+			// We need to select in the associated entity table instead of taking the collection actual element,
+			// because filters can be applied to the entity table outer join. In such case, we need to return null
+			// for filtered-out elements. (It is tempting to switch to an inner join and just use
+			// SelectFragment(lhsAlias, collectionSuffix) for many-to-many too, but this would hinder the proper
+			// handling of the not-found feature.)
+			var elementColumnNames = string.IsNullOrEmpty(elementType.RHSUniqueKeyPropertyName)
+				? rhs.KeyColumnNames
+				// rhs is the entity persister, it does not handle being referenced through an unique key by a
+				// collection and always yield its identifier columns as KeyColumnNames. We need to resolve the
+				// key columns instead.
+				// 6.0 TODO: consider breaking again that IJoinable.SelectFragment interface for transmitting
+				// the OuterJoinableAssociation instead of its Joinable property. This would allow to get the
+				// adequate columns directly instead of re-computing them.
+				: ((IPropertyMapping) rhs).ToColumns(elementType.RHSUniqueKeyPropertyName);
+			frag.AddColumns(rhsAlias, elementColumnNames, elementColumnAliases);
 			AppendIndexColumns(frag, lhsAlias);
 			AppendIdentifierColumns(frag, lhsAlias);
 

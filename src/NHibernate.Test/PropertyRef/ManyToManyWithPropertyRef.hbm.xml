@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.PropertyRef">
+  <class name="ManyA" table="ManyA" lazy="false">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="Number" column="`Number`"/>
+    <property name="Value" column="`Value`"/>
+    <bag name="ManyBs">
+      <key column="ManyANumber" property-ref="Number"/>
+      <many-to-many class="ManyB" column="ManyBNumber" property-ref="Number"/>
+    </bag>
+  </class>
+
+  <class name="ManyB" table="ManyB" lazy="false">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="Number" column="`Number`"/>
+    <property name="Value" column="`Value`"/>
+  </class>
+</hibernate-mapping>

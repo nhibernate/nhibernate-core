@@ -7,7 +7,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 	[TestFixture]
 	public class VersionedEntityWithInverseManyToManyTest : AbstractEntityWithManyToManyTest
 	{
-		protected override System.Collections.IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

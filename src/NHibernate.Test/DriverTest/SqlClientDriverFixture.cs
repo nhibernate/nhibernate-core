@@ -31,7 +31,7 @@ namespace NHibernate.Test.DriverTest
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings => new[] { "DriverTest.MultiTypeEntity.hbm.xml" };
+		protected override string[] Mappings => new[] { "DriverTest.MultiTypeEntity.hbm.xml" };
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{

@@ -29,8 +29,12 @@ namespace NHibernate.Util
 
 		internal static T CastOrThrow<T>(object obj, string supportMessage) where T : class
 		{
-			return obj as T
-				?? throw new ArgumentException($"{obj?.GetType().FullName} requires to implement {typeof(T).FullName} interface to support {supportMessage}.");
+			if (obj is T t)
+				return t;
+
+			var typeKind = typeof(T).IsInterface ? "interface" : "class";
+			var objType = obj?.GetType().FullName ?? "Object must not be null and";
+			throw new ArgumentException($@"{objType} requires to implement {typeof(T).FullName} {typeKind} to support {supportMessage}.");
 		}
 
 		/// <summary>
@@ -58,6 +62,21 @@ namespace NHibernate.Util
 				throw new ArgumentNullException(nameof(method));
 
 			return ((MethodCallExpression)method.Body).Method;
+		}
+
+		/// <summary>
+		/// Extract the <see cref="MethodInfo"/> from a given expression.
+		/// </summary>
+		/// <typeparam name="TSource">The declaring-type of the method.</typeparam>
+		/// <typeparam name="TResult">The return type of the method.</typeparam>
+		/// <param name="method">The method.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the method.</returns>
+		public static MethodInfo GetMethod<TSource, TResult>(Expression<Func<TSource, TResult>> method)
+		{
+			if (method == null)
+				throw new ArgumentNullException(nameof(method));
+
+			return ((MethodCallExpression) method.Body).Method;
 		}
 
 		/// <summary>

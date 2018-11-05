@@ -11,7 +11,7 @@ namespace NHibernate.Test.UserCollection.Parameterized
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "UserCollection.Parameterized.Mapping.hbm.xml" }; }
 		}

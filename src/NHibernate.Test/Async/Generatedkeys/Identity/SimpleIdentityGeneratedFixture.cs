@@ -20,7 +20,7 @@ namespace NHibernate.Test.Generatedkeys.Identity
 		// This test is to check the support of identity generator
 		// NH should choose one of the identity-style generation where the Dialect are supporting one of them
 		// as identity, sequence-identity (identity.sequence), generated (identity.sequence)
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Generatedkeys.Identity.MyEntityIdentity.hbm.xml" }; }
 		}

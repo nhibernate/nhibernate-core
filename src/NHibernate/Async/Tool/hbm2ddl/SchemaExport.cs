@@ -173,8 +173,7 @@ namespace NHibernate.Tool.hbm2ddl
 			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
-				log.Warn("Unsuccessful: {0}", sql);
-				log.Warn(e, e.Message);
+				log.Warn(e, "Unsuccessful: {0}", sql);
 				if (throwOnError)
 				{
 					throw;
@@ -187,10 +186,7 @@ namespace NHibernate.Tool.hbm2ddl
 			cancellationToken.ThrowIfCancellationRequested();
 			if (dialect.SupportsSqlBatches)
 			{
-				var objFactory = Environment.BytecodeProvider.ObjectsFactory;
-				ScriptSplitter splitter = (ScriptSplitter)objFactory.CreateInstance(typeof(ScriptSplitter), sql);
-
-				foreach (string stmt in splitter)
+				foreach (var stmt in new ScriptSplitter(sql))
 				{
 					log.Debug("SQL Batch: {0}", stmt);
 					cmd.CommandText = stmt;

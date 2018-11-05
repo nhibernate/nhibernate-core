@@ -118,5 +118,33 @@ namespace NHibernate.Action
 				}
 			}
 		}
+
+		public override async Task ExecuteAfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			// NH Different behavior: to support unlocking collections from the cache.(r3260)
+
+			CacheKey ck = Session.GenerateCacheKey(Key, Persister.KeyType, Persister.Role);
+
+			if (success)
+			{
+				// we can't disassemble a collection if it was uninitialized 
+				// or detached from the session
+				if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
+				{
+					CollectionCacheEntry entry = await (CollectionCacheEntry.CreateAsync(Collection, Persister, cancellationToken)).ConfigureAwait(false);
+					bool put = await (Persister.Cache.AfterUpdateAsync(ck, entry, null, Lock, cancellationToken)).ConfigureAwait(false);
+
+					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
+					{
+						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+					}
+				}
+			}
+			else
+			{
+				await (Persister.Cache.ReleaseAsync(ck, Lock, cancellationToken)).ConfigureAwait(false);
+			}
+		}
 	}
 }

@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 	[TestFixture]
 	public class SubclassFixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"NHSpecificTest.NH295.Subclass.hbm.xml"}; }
 		}

@@ -17,7 +17,7 @@ namespace NHibernate.Test.Generatedkeys.ByTrigger
 	[TestFixture]
 	public class GeneratedIdentityFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Generatedkeys.ByTrigger.MyEntity.hbm.xml" }; }
 		}

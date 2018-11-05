@@ -21,7 +21,7 @@ namespace NHibernate.Test.Legacy
 	[TestFixture]
 	public class CriteriaTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

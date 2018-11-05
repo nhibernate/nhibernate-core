@@ -17,7 +17,7 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 	[TestFixture]
 	public class ComplexDomainFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "VersionTest.Db.MsSQL.ComplexVersioned.hbm.xml" }; }
 		}

@@ -1,8 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NSubstitute;
@@ -16,7 +16,7 @@ namespace NHibernate.Test.BulkManipulation
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings => new[] { "BulkManipulation.Vehicle.hbm.xml" };
+		protected override string[] Mappings => new[] { "BulkManipulation.Vehicle.hbm.xml" };
 
 		protected override void Configure(Configuration configuration)
 		{
@@ -29,7 +29,7 @@ namespace NHibernate.Test.BulkManipulation
 		public void SimpleNativeSQLInsert_DoesNotEvictEntireCacheWhenQuerySpacesAreAdded()
 		{
 			List<string> clearCalls = new List<string>();
-			(Sfi.Settings.CacheProvider as SubstituteCacheProvider).OnClear(x =>
+			((SubstituteCacheProvider) Sfi.Settings.CacheProvider).OnClear(x =>
 			{
 				clearCalls.Add(x);
 			});
@@ -61,16 +61,24 @@ namespace NHibernate.Test.BulkManipulation
 
 	public class SubstituteCacheProvider : ICacheProvider
 	{
-		private readonly ConcurrentDictionary<string, Lazy<ICache>> _caches = new ConcurrentDictionary<string, Lazy<ICache>>();
+		private readonly ConcurrentDictionary<string, Lazy<CacheBase>> _caches = new ConcurrentDictionary<string, Lazy<CacheBase>>();
 		private Action<string> _onClear;
 
-		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
+		// Since 5.2
+		[Obsolete]
+		ICache ICacheProvider.BuildCache(string regionName, IDictionary<string, string> properties)
 		{
-			return _caches.GetOrAdd(regionName, x => new Lazy<ICache>(() =>
+			return BuildCache(regionName, properties);
+		}
+
+		public CacheBase BuildCache(string regionName, IDictionary<string, string> properties)
+		{
+			return _caches.GetOrAdd(regionName, x => new Lazy<CacheBase>(() =>
 			 {
-				 var cache = Substitute.For<ICache>();
+				 var cache = Substitute.For<CacheBase>();
 				 cache.RegionName.Returns(regionName);
 				 cache.When(c => c.Clear()).Do(c => _onClear?.Invoke(regionName));
+				 cache.When(c => c.ClearAsync(Arg.Any<CancellationToken>())).Do(c => _onClear?.Invoke(regionName));
 				 return cache;
 			 })).Value;
 		}
@@ -88,14 +96,13 @@ namespace NHibernate.Test.BulkManipulation
 		{
 		}
 
-		public ICache GetCache(string region)
+		public CacheBase GetCache(string region)
 		{
-			Lazy<ICache> cache;
-			_caches.TryGetValue(region, out cache);
+			_caches.TryGetValue(region, out var cache);
 			return cache?.Value;
 		}
 
-		public IEnumerable<ICache> GetAllCaches()
+		public IEnumerable<CacheBase> GetAllCaches()
 		{
 			return _caches.Values.Select(x => x.Value);
 		}

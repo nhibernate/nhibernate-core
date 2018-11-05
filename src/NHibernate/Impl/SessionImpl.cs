@@ -41,8 +41,12 @@ namespace NHibernate.Impl
 
 		private CacheMode cacheMode = CacheMode.Normal;
 
+		//Since 5.2
+		[Obsolete()]
 		[NonSerialized]
 		private FutureCriteriaBatch futureCriteriaBatch;
+		//Since 5.2
+		[Obsolete()]
 		[NonSerialized]
 		private FutureQueryBatch futureQueryBatch;
 
@@ -201,6 +205,8 @@ namespace NHibernate.Impl
 			}
 		}
 
+		//Since 5.2
+		[Obsolete("Replaced by QueryBatch")]
 		public override FutureCriteriaBatch FutureCriteriaBatch
 		{
 			get
@@ -215,6 +221,8 @@ namespace NHibernate.Impl
 			}
 		}
 
+		//Since 5.2
+		[Obsolete("Replaced by QueryBatch")]
 		public override FutureQueryBatch FutureQueryBatch
 		{
 			get
@@ -550,6 +558,8 @@ namespace NHibernate.Impl
 			}
 		}
 
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
 		public override IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar)
 		{
 			using (BeginProcess())
@@ -1026,8 +1036,8 @@ namespace NHibernate.Impl
 		/// named in the query and, if so, complete execution the flush
 		/// </summary>
 		/// <param name="querySpaces"></param>
-		/// <returns></returns>
-		private bool AutoFlushIfRequired(ISet<string> querySpaces)
+		/// <returns>Returns true if flush was executed</returns>
+		public override bool AutoFlushIfRequired(ISet<string> querySpaces)
 		{
 			using (BeginProcess())
 			{
@@ -1944,6 +1954,8 @@ namespace NHibernate.Impl
 			return new[] { filterName, parameterName };
 		}
 
+		// Since v5.2
+		[Obsolete("Use ISession.CreateQueryBatch instead.")]
 		public IMultiQuery CreateMultiQuery()
 		{
 			using (BeginProcess())
@@ -1952,6 +1964,8 @@ namespace NHibernate.Impl
 			}
 		}
 
+		// Since v5.2
+		[Obsolete("Use ISession.CreateQueryBatch instead.")]
 		public IMultiCriteria CreateMultiCriteria()
 		{
 			using (BeginProcess())

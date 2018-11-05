@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
     public class FixtureAsync : TestCase
     {
 
-        protected override IList Mappings
+        protected override string[] Mappings
         {
             get { return new string[] { "NHSpecificTest.LoadingNullEntityInSet.Mappings.hbm.xml" }; }
         }

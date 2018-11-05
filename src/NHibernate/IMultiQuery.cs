@@ -8,6 +8,8 @@ namespace NHibernate
 	/// <summary>
 	/// Combines several queries into a single database call
 	/// </summary>
+	// Since v5.2
+	[Obsolete("Use Multi.IQueryBatch instead, obtainable with ISession.CreateQueryBatch.")]
 	public partial interface IMultiQuery
 	{
 		/// <summary>

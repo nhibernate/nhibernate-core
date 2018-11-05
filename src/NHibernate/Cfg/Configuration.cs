@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -222,7 +221,7 @@ namespace NHibernate.Cfg
 			public IType GetReferencedPropertyType(string className, string propertyName)
 			{
 				PersistentClass pc = GetPersistentClass(className);
-				Property prop = pc.GetProperty(propertyName);
+				Property prop = pc.GetReferencedProperty(propertyName);
 
 				if (prop == null)
 				{
@@ -1191,6 +1190,13 @@ namespace NHibernate.Cfg
 						try
 						{
 							fk.AddReferencedTable(referencedClass);
+
+							if (string.IsNullOrEmpty(fk.Name))
+							{
+								fk.Name = Constraint.GenerateName(
+									fk.GeneratedConstraintNamePrefix, table, fk.ReferencedTable, fk.Columns);
+							}
+
 							fk.AlignColumns();
 						}
 						catch (MappingException me)
@@ -1902,7 +1908,7 @@ namespace NHibernate.Cfg
 				{
 					try
 					{
-						listeners[i] = Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(listenerClasses[i]));
+						listeners[i] = Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(listenerClasses[i]));
 					}
 					catch (Exception e)
 					{

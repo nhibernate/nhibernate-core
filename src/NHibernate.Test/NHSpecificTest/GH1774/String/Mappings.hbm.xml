@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.GH1774">
+
+	<class name="ToyBox">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Name" />
+		<any name="Shape" id-type="int" meta-type="string">
+			<meta-value value="CircleType" class="Circle"/>
+			<meta-value value="SquareType" class="Square"/>
+			<column name="s_object_id" />
+			<column name="object_id" />
+		</any>
+	</class>
+
+	<class name="Square">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+	</class>
+
+	<class name="Circle">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+	</class>
+
+</hibernate-mapping>

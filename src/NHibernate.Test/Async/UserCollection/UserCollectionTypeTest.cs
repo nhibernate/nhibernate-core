@@ -23,7 +23,7 @@ namespace NHibernate.Test.UserCollection
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"UserCollection.UserPermissions.hbm.xml"}; }
 		}

@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1264
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"NHSpecificTest.NH1264.Passenger.hbm.xml", "NHSpecificTest.NH1264.Reservation.hbm.xml",}; }
 		}

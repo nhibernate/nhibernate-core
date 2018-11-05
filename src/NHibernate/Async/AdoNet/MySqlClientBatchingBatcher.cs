@@ -78,7 +78,7 @@ namespace NHibernate.AdoNet
 					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
 				}
 
-				Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
+				Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected, ps);
 			}
 			finally
 			{

@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class BasicSerializableFixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"NHSpecific.BasicSerializable.hbm.xml"}; }
 		}

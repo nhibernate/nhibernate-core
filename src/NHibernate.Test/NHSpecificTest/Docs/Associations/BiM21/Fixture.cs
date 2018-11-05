@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"NHSpecificTest.Docs.Associations.BiM21.Mappings.hbm.xml"}; }
 		}

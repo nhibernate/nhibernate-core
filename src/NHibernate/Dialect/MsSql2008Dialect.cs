@@ -75,6 +75,10 @@ namespace NHibernate.Dialect
 		public override string CurrentTimestampSQLFunctionName =>
 			KeepDateTime ? base.CurrentTimestampSQLFunctionName : "SYSDATETIME()";
 
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSQLFunctionName =>
+			KeepDateTime ? base.CurrentUtcTimestampSQLFunctionName : "SYSUTCDATETIME()";
+
 		public override long TimestampResolutionInTicks =>
 			KeepDateTime
 				? base.TimestampResolutionInTicks

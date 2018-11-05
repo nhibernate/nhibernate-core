@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaFromHql
 	public class Fixture : TestCase
 	{
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "NHSpecificTest.CriteriaFromHql.Mappings.hbm.xml" }; }
 		}

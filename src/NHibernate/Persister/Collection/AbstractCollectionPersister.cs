@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -22,7 +23,7 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
-using Array=NHibernate.Mapping.Array;
+using Array = NHibernate.Mapping.Array;
 
 namespace NHibernate.Persister.Collection
 {
@@ -41,6 +42,8 @@ namespace NHibernate.Persister.Collection
 		private readonly SqlCommandInfo sqlInsertRowString;
 		private readonly SqlCommandInfo sqlUpdateRowString;
 		private readonly SqlCommandInfo sqlDeleteRowString;
+		private readonly ConcurrentDictionary<bool[], SqlCommandInfo> sqlDeleteRowStringByNullness =
+			new ConcurrentDictionary<bool[], SqlCommandInfo>(ArrayHelper.ArrayComparer<bool>.Default);
 		private readonly SqlString sqlSelectRowByIndexString;
 		private readonly SqlString sqlDetectRowByIndexString;
 		private readonly SqlString sqlDetectRowByElementString;
@@ -83,7 +86,6 @@ namespace NHibernate.Persister.Collection
 		private readonly string[] keyColumnAliases;
 		private readonly string identifierColumnName;
 		private readonly string identifierColumnAlias;
-		private readonly string[] joinColumnNames;
 
 		#endregion
 
@@ -223,45 +225,16 @@ namespace NHibernate.Persister.Collection
 
 			isVersioned = collection.IsOptimisticLocked;
 
-			if (collection.CollectionType.UseLHSPrimaryKey)
+			keyType = collection.Key.Type;
+			int keySpan = collection.Key.ColumnSpan;
+			keyColumnNames = new string[keySpan];
+			keyColumnAliases = new string[keySpan];
+			int k = 0;
+			foreach (Column col in collection.Key.ColumnIterator)
 			{
-				keyType = collection.Key.Type;
-				int keySpan = collection.Key.ColumnSpan;
-				keyColumnNames = new string[keySpan];
-				keyColumnAliases = new string[keySpan];
-				int k = 0;
-				foreach (Column col in collection.Key.ColumnIterator)
-				{
-					keyColumnNames[k] = col.GetQuotedName(dialect);
-					keyColumnAliases[k] = col.GetAlias(dialect, table);
-					k++;
-				}
-				joinColumnNames = keyColumnNames;
-			}
-			else
-			{
-				keyType = collection.Owner.Key.Type;
-				int keySpan = collection.Owner.Key.ColumnSpan;
-				keyColumnNames = new string[keySpan];
-				keyColumnAliases = new string[keySpan];
-				int k = 0;
-				foreach (Column col in collection.Owner.Key.ColumnIterator)
-				{
-					keyColumnNames[k] = col.GetQuotedName(dialect);
-					// Force the alias to be unique in case it conflicts with an alias in the entity
-					// As per Column.GetAlias, we have 3 characters left for SelectFragment suffix and one for here.
-					// Since suffixes are composed of digits and '_', and GetAlias is already suffixed, adding any other
-					// letter will avoid collision.
-					keyColumnAliases[k] = col.GetAlias(dialect) + "o";
-					k++;
-				}
-				joinColumnNames = new string[collection.Key.ColumnSpan];
-				k = 0;
-				foreach (Column col in collection.Key.ColumnIterator)
-				{
-					joinColumnNames[k] = col.GetQuotedName(dialect);
-					k++;
-				}
+				keyColumnNames[k] = col.GetQuotedName(dialect);
+				keyColumnAliases[k] = col.GetAlias(dialect, table);
+				k++;
 			}
 
 			HashSet<string> distinctColumns = new HashSet<string>();
@@ -468,7 +441,10 @@ namespace NHibernate.Persister.Collection
 								   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(collection.CustomSQLUpdate, updateCallable);
 			}
 
+			// 6.0 TODO: call GenerateDeleteRowString(null); instead.
+#pragma warning disable 618
 			sqlDeleteRowString = GenerateDeleteRowString();
+#pragma warning restore 618
 			if (collection.CustomSQLDelete == null)
 			{
 				deleteCallable = false;
@@ -777,17 +753,59 @@ namespace NHibernate.Persister.Collection
 			return index;
 		}
 
-		protected int WriteElementToWhere(DbCommand st, object elt, int i, ISessionImplementor session)
+		protected int WriteElementToWhere(DbCommand st, object elt, bool[] columnNullness, int i, ISessionImplementor session)
 		{
 			if (elementIsPureFormula)
 			{
 				throw new AssertionFailure("cannot use a formula-based element in the where condition");
 			}
 
-			ElementType.NullSafeSet(st, elt, i, elementColumnIsInPrimaryKey, session);
-			return i + elementColumnAliases.Length;
+			var settable = Combine(elementColumnIsInPrimaryKey, columnNullness);
+
+			ElementType.NullSafeSet(st, elt, i, settable, session);
+			return i + settable.Count(s => s);
 		}
 
+		// Since v5.2
+		[Obsolete("Use overload with columnNullness instead")]
+		protected int WriteElementToWhere(DbCommand st, object elt, int i, ISessionImplementor session)
+		{
+			return WriteElementToWhere(st, elt, null, i, session);
+		}
+
+		/// <summary>
+		/// Combine arrays indicating settability and nullness of columns into one, considering null columns as not
+		/// settable.
+		/// </summary>
+		/// <param name="settable">Settable columns. <see langword="null"/> will consider them as all settable.</param>
+		/// <param name="columnNullness">Nullness of columns.  <see langword="null"/> will consider them as all
+		/// non-null. <see langword="true" /> indicates a non-null column, <see langword="false" /> indicates a null
+		/// column.</param>
+		/// <returns>The resulting settability of columns, or <see langword="null"/> if both argument are
+		/// <see langword="null"/>.</returns>
+		/// <exception cref="InvalidOperationException">thrown if <paramref name="settable"/> and
+		/// <paramref name="columnNullness"/> have inconsistent lengthes.</exception>
+		protected static bool[] Combine(bool[] settable, bool[] columnNullness)
+		{
+			if (columnNullness == null)
+				return settable;
+			if (settable == null)
+				return columnNullness;
+
+			if (columnNullness.Length != settable.Length)
+				throw new InvalidOperationException("Inconsistent nullness and settable columns lengthes");
+
+			var result = new bool[settable.Length];
+			for (var idx = 0; idx < settable.Length; idx++)
+			{
+				result[idx] = columnNullness[idx] && settable[idx];
+			}
+
+			return result;
+		}
+
+		// No column nullness handling here: although a composite index could have null columns, the mapping
+		// current implementation forbirds this by forcing not-null to true on all columns.
 		protected int WriteIndexToWhere(DbCommand st, object index, int i, ISessionImplementor session)
 		{
 			if (indexContainsFormula)
@@ -1167,19 +1185,18 @@ namespace NHibernate.Persister.Collection
 						DbCommand st;
 						var expectation = Expectations.AppropriateExpectation(deleteCheckStyle);
 						//var callable = DeleteCallable;
+						var commandInfo = GetDeleteCommand(deleteByIndex, entry, out var columnNullness);
 
 						var useBatch = expectation.CanBeBatched;
 						if (useBatch)
 						{
-							st =
-								session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
-																	SqlDeleteRowString.ParameterTypes);
+							st = session.Batcher.PrepareBatchCommand(
+								commandInfo.CommandType, commandInfo.Text, commandInfo.ParameterTypes);
 						}
 						else
 						{
-							st =
-								session.Batcher.PrepareCommand(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
-																SqlDeleteRowString.ParameterTypes);
+							st = session.Batcher.PrepareCommand(
+								commandInfo.CommandType, commandInfo.Text, commandInfo.ParameterTypes);
 						}
 						try
 						{
@@ -1198,7 +1215,7 @@ namespace NHibernate.Persister.Collection
 								}
 								else
 								{
-									WriteElementToWhere(st, entry, loc, session);
+									WriteElementToWhere(st, entry, columnNullness, loc, session);
 								}
 							}
 							if (useBatch)
@@ -1242,6 +1259,26 @@ namespace NHibernate.Persister.Collection
 						"could not delete collection rows: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 			}
+		}
+
+		private SqlCommandInfo GetDeleteCommand(bool deleteByIndex, object entry, out bool[] columnNullness)
+		{
+			var commandInfo = SqlDeleteRowString;
+			columnNullness = null;
+			// No column nullness handling if deleteByIndex: although a composite index could have null columns, the
+			// mapping current implementation forbirds this by forcing not-null to true on all columns.
+			if (!hasIdentifier && !deleteByIndex)
+			{
+				columnNullness = ElementType.ToColumnNullness(entry, Factory);
+				if (columnNullness.Any(cn => !cn))
+					commandInfo = sqlDeleteRowStringByNullness.GetOrAdd(
+						columnNullness,
+						GenerateDeleteRowString);
+				else
+					columnNullness = null;
+			}
+
+			return commandInfo;
 		}
 
 		public void InsertRows(IPersistentCollection collection, object id, ISessionImplementor session)
@@ -1368,10 +1405,34 @@ namespace NHibernate.Persister.Collection
 		}
 
 		protected abstract SqlCommandInfo GenerateDeleteString();
-		protected abstract SqlCommandInfo GenerateDeleteRowString();
+		// No column nullness handling here: updates currently only occur on cases not allowing null.
 		protected abstract SqlCommandInfo GenerateUpdateRowString();
 		protected abstract SqlCommandInfo GenerateInsertRowString();
 		protected abstract SqlCommandInfo GenerateIdentityInsertRowString();
+
+		/// <summary>
+		/// Generate the SQL <c>delete</c> that deletes a particular row.
+		/// </summary>
+		/// <returns>A SQL <c>delete</c>.</returns>
+		// Since v5.2
+		[Obsolete("Use or override overload with columnNullness instead")]
+		protected virtual SqlCommandInfo GenerateDeleteRowString()
+		{
+			return GenerateDeleteRowString(null);
+		}
+
+		/// <summary>
+		/// Generate the SQL <c>delete</c> that deletes a particular row.
+		/// </summary>
+		/// <param name="columnNullness">If non-null, an array of boolean indicating which mapped columns of the index
+		/// or element would be null. <see langword="true" /> indicates a non-null column, <see langword="false" />
+		/// indicates a null column.</param>
+		/// <returns>A SQL <c>delete</c>.</returns>
+		// 6.0 TODO: make abstract
+		protected virtual SqlCommandInfo GenerateDeleteRowString(bool[] columnNullness)
+		{
+			throw new NotSupportedException($"{GetType().FullName} does not support queries handling nullness.");
+		}
 
 		public void UpdateRows(IPersistentCollection collection, object id, ISessionImplementor session)
 		{
@@ -1649,15 +1710,24 @@ namespace NHibernate.Persister.Collection
 		// 6.0 TODO: Remove (Replace with ISupportSelectModeJoinable.SelectFragment)
 		// Since v5.2
 		[Obsolete("Use overload taking includeLazyProperties parameter")]
-		public abstract string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string currentEntitySuffix,
-											  string currentCollectionSuffix, bool includeCollectionColumns);
-		
+		public virtual string SelectFragment(
+			IJoinable rhs,
+			string rhsAlias,
+			string lhsAlias,
+			string currentEntitySuffix,
+			string currentCollectionSuffix,
+			bool includeCollectionColumns)
+		{
+			return SelectFragment(
+				rhs, rhsAlias, lhsAlias, currentEntitySuffix, currentCollectionSuffix, includeCollectionColumns, false);
+		}
+
 		// 6.0 TODO: Make abstract
 		public virtual string SelectFragment(
 			IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix,
 			bool includeCollectionColumns, bool includeLazyProperties)
 		{
-			throw new NotImplementedException("Fetching lazy properties is not implemented by " + GetType().FullName);
+			throw new NotImplementedException("SelectFragment with fetching lazy properties option is not implemented by " + GetType().FullName);
 		}
 
 		/// <summary>
@@ -1789,9 +1859,11 @@ namespace NHibernate.Persister.Collection
 			get { return keyColumnNames; }
 		}
 
+		// Since v5.2
+		[Obsolete("Use KeyColumnNames instead")]
 		public string[] JoinColumnNames
 		{
-			get { return joinColumnNames; }
+			get { return keyColumnNames; }
 		}
 
 		protected string[] KeyColumnAliases
@@ -1971,6 +2043,8 @@ namespace NHibernate.Persister.Collection
 		public abstract bool CascadeDeleteEnabled { get; }
 		public abstract bool IsOneToMany { get; }
 
+		// Since v5.2
+		[Obsolete("Use directly the alias parameter value instead")]
 		public virtual string GenerateTableAliasForKeyColumns(string alias)
 		{
 			return alias;

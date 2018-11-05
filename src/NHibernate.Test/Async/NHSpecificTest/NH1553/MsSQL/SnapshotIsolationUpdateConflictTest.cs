@@ -30,11 +30,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 	{
 		private Person person;
 
-		public override string BugNumber
-		{
-			get { return "NH1553.MsSQL"; }
-		}
-
 		private ITransaction BeginTransaction(ISession session)
 		{
 			return session.BeginTransaction(IsolationLevel.Snapshot);

@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		protected Child ChildAliasField = null;
 		protected A AAliasField = null;
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"ParentChild.hbm.xml", "ABC.hbm.xml"}; }
 		}

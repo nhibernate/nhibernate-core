@@ -11,7 +11,7 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 	[TestFixture]
 	public class ProxyFixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "DynamicProxyTests.InterfaceProxySerializationTests.ProxyImpl.hbm.xml" }; }
 		}

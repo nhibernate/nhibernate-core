@@ -23,9 +23,9 @@ namespace NHibernate.Test.Insertordering
 		const int instancesPerEach = 12;
 		const int typesOfEntities = 3;
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
-			get { return new[] { "Insertordering.Mapping.hbm.xml" }; }
+			get { return new[] {"Insertordering.Mapping.hbm.xml"}; }
 		}
 
 		protected override string MappingsAssembly

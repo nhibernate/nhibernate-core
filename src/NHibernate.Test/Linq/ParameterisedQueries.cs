@@ -234,7 +234,7 @@ namespace NHibernate.Test.Linq
 
 		// TODO - different parameter names
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return Array.Empty<string>(); }
 		}

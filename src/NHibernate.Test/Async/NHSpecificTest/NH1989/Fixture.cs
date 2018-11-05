@@ -163,7 +163,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 						.SetCacheable(true)
 						.FutureValue<User>();
 
-				// non cacheable Future causes batch to be non-cacheable
 				int count =
 					await (s.CreateCriteria<User>()
 						.SetProjection(Projections.RowCount())
@@ -190,7 +189,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 						.FutureValue<int>()
 						.GetValueAsync());
 
-				Assert.That(await (userFuture.GetValueAsync()), Is.Null,
+				Assert.That(await (userFuture.GetValueAsync()), Is.Not.Null,
+					"query results should come from cache");
+				Assert.That(count, Is.EqualTo(0),
 					"query results should not come from cache");
 			}
 		}
@@ -216,7 +217,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 						.SetCacheRegion("region1")
 						.FutureValue<User>();
 
-				// different cache-region causes batch to be non-cacheable
 				int count =
 					await (s.CreateCriteria<User>()
 						.SetProjection(Projections.RowCount())
@@ -240,6 +240,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 						.SetCacheRegion("region1")
 						.FutureValue<User>();
 
+				IFutureValue<User> userFutureWrongRegion =
+					s.CreateCriteria<User>()
+						.Add(Restrictions.NaturalId().Set("Name", "test"))
+						.SetCacheable(true)
+						.SetCacheRegion("region2")
+						.FutureValue<User>();
+
 				int count =
 					await (s.CreateCriteria<User>()
 						.SetProjection(Projections.RowCount())
@@ -248,8 +255,23 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 						.FutureValue<int>()
 						.GetValueAsync());
 
-				Assert.That(await (userFuture.GetValueAsync()), Is.Null,
-					"query results should not come from cache");
+				int countWrongRegion =
+					await (s.CreateCriteria<User>()
+						.SetProjection(Projections.RowCount())
+						.SetCacheable(true)
+						.SetCacheRegion("region1")
+						.FutureValue<int>()
+						.GetValueAsync());
+
+				Assert.That(await (userFuture.GetValueAsync()), Is.Not.Null,
+					"query results should come from cache");
+				Assert.That(count, Is.EqualTo(1),
+					"query results should come from cache");
+
+				Assert.That(await (userFutureWrongRegion.GetValueAsync()), Is.Null,
+					"query results from wrong cache region");
+				Assert.That(countWrongRegion, Is.EqualTo(0),
+					"query results from wrong cache region");
 			}
 		}
 

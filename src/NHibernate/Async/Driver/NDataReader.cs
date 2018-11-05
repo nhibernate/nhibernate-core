@@ -87,9 +87,11 @@ namespace NHibernate.Driver
 			internal static async Task<NResult> CreateAsync(DbDataReader reader, bool isMidstream, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
+				var schemaTable = SafeGetSchemaTable(reader, out var exception);
 				var result = new NResult
 				{
-					schemaTable = reader.GetSchemaTable()
+					schemaTable = schemaTable,
+					schemaTableNotSupportedException = exception
 				};
 
 				List<object[]> recordsList = new List<object[]>();

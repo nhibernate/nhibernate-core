@@ -9,7 +9,7 @@ namespace NHibernate.Test.GenericTest.Overall
 	[TestFixture]
 	public class Fixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "GenericTest.Overall.Mappings.hbm.xml" }; }
 		}

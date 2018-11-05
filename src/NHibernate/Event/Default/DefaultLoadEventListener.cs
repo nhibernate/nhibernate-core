@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using NHibernate.Cache;
@@ -416,14 +417,47 @@ namespace NHibernate.Event.Default
 			bool useCache = persister.HasCache && source.CacheMode .HasFlag(CacheMode.Get)
 				&& @event.LockMode.LessThan(LockMode.Read);
 
-			if (useCache)
+			if (!useCache)
 			{
-				ISessionFactoryImplementor factory = source.Factory;
+				return null;
+			}
+			ISessionFactoryImplementor factory = source.Factory;
+			var batchSize = persister.GetBatchSize();
+			if (batchSize > 1 && persister.Cache.PreferMultipleGet())
+			{
+				// The first item in the array is the item that we want to load
+				var entityBatch =
+					source.PersistenceContext.BatchFetchQueue.GetEntityBatch(persister, @event.EntityId, batchSize, false);
+				// Ignore null values as the retrieved batch may contains them when there are not enough
+				// uninitialized entities in the queue
+				var keys = new List<CacheKey>(batchSize);
+				for (var i = 0; i < entityBatch.Length; i++)
+				{
+					var key = entityBatch[i];
+					if (key == null)
+					{
+						break;
+					}
+					keys.Add(source.GenerateCacheKey(key, persister.IdentifierType, persister.RootEntityName));
+				}
+				var cachedObjects = persister.Cache.GetMany(keys.ToArray(), source.Timestamp);
+				for (var i = 1; i < cachedObjects.Length; i++)
+				{
+					Assemble(
+						keys[i],
+						cachedObjects[i],
+						new LoadEvent(entityBatch[i], @event.EntityClassName, @event.LockMode, @event.Session),
+						false);
+				}
+				return Assemble(keys[0], cachedObjects[0], @event, true);
+			}
+			var cacheKey = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
+			var cachedObject = persister.Cache.Get(cacheKey, source.Timestamp);
+			return Assemble(cacheKey, cachedObject, @event, true);
 
-				CacheKey ck = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
-				object ce = persister.Cache.Get(ck, source.Timestamp);
-
-				if (factory.Statistics.IsStatisticsEnabled)
+			object Assemble(CacheKey ck, object ce, LoadEvent evt, bool alterStatistics)
+			{
+				if (factory.Statistics.IsStatisticsEnabled && alterStatistics)
 				{
 					if (ce == null)
 					{
@@ -445,12 +479,12 @@ namespace NHibernate.Event.Default
 					// NH: Different behavior (take a look to options.ExactPersister (NH-295))
 					if (!options.ExactPersister || persister.EntityMetamodel.SubclassEntityNames.Contains(entry.Subclass))
 					{
-						return AssembleCacheEntry(entry, @event.EntityId, persister, @event);
+						return AssembleCacheEntry(entry, evt.EntityId, persister, evt);
 					}
 				}
-			}
 
-			return null;
+				return null;
+			}
 		}
 
 		private object AssembleCacheEntry(CacheEntry entry, object id, IEntityPersister persister, LoadEvent @event)

@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using NHibernate.Type;
 using NUnit.Framework;
 using NHibernate.Engine;
@@ -16,7 +14,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Next()
 		{
-			Int64Type type = (Int64Type)NHibernateUtil.Int64;
+			Int64Type type = NHibernateUtil.Int64;
 			object current = (long)1;
 			object next = type.Next(current, null);
 
@@ -27,14 +25,14 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Seed()
 		{
-			Int64Type type = (Int64Type)NHibernateUtil.Int64;
+			Int64Type type = NHibernateUtil.Int64;
 			Assert.IsTrue(type.Seed(null) is Int64, "seed should be int64");
 		}
 
 		[Test]
 		public void NullableWrapperDirty()
 		{
-			Int64Type type = (Int64Type)NHibernateUtil.Int64;
+			Int64Type type = NHibernateUtil.Int64;
 
 			long? nullLong = null;
 			long? valueLong = 5;
@@ -46,9 +44,6 @@ namespace NHibernate.Test.TypesTest
 			}
 		}
 
-		protected override IList Mappings
-		{
-			get { return new List<string>(); }
-		}
+		protected override string[] Mappings => Array.Empty<string>();
 	}
 }

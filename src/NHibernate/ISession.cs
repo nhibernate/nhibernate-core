@@ -7,8 +7,10 @@ using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Event.Default;
 using NHibernate.Impl;
+using NHibernate.Multi;
 using NHibernate.Stat;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -25,6 +27,17 @@ namespace NHibernate
 		{
 			var impl = session as SessionImpl ?? throw new NotSupportedException("Only SessionImpl sessions are supported.");
 			return impl.StatelessSessionWithOptions();
+		}
+
+		/// <summary>
+		/// Creates a <see cref="IQueryBatch"/> for the session. Batch extension methods are available in the
+		/// <c>NHibernate.Multi</c> namespace.
+		/// </summary>
+		/// <param name="session">The session.</param>
+		/// <returns>A query batch.</returns>
+		public static IQueryBatch CreateQueryBatch(this ISession session)
+		{
+			return ReflectHelper.CastOrThrow<AbstractSessionImpl>(session, "query batch").CreateQueryBatch();
 		}
 	}
 
@@ -964,6 +977,8 @@ namespace NHibernate
 		/// a list of all the results of all the queries.
 		/// Note that each query result is itself usually a list.
 		/// </returns>
+		// Since v5.2
+		[Obsolete("Use ISession.CreateQueryBatch instead.")]
 		IMultiQuery CreateMultiQuery();
 
 		/// <summary>
@@ -990,6 +1005,8 @@ namespace NHibernate
 		/// of all the criterias.
 		/// </summary>
 		/// <returns></returns>
+		// Since v5.2
+		[Obsolete("Use ISession.CreateQueryBatch instead.")]
 		IMultiCriteria CreateMultiCriteria();
 
 		/// <summary> Get the statistics for this session.</summary>

@@ -242,39 +242,41 @@ namespace NHibernate.Event.Default
 
 		protected virtual void CascadeBeforeDelete(IEventSource session, IEntityPersister persister, object entity, EntityEntry entityEntry, ISet<object> transientEntities)
 		{
-			ISessionImplementor si = session;
-			CacheMode cacheMode = si.CacheMode;
-			si.CacheMode = CacheMode.Get;
-			session.PersistenceContext.IncrementCascadeLevel();
-			try
+			using (session.SwitchCacheMode(CacheMode.Get))
 			{
-				// cascade-delete to collections BEFORE the collection owner is deleted
-				new Cascade(CascadingAction.Delete, CascadePoint.AfterInsertBeforeDelete, session).CascadeOn(persister, entity,
-				                                                                                             transientEntities);
-			}
-			finally
-			{
-				session.PersistenceContext.DecrementCascadeLevel();
-				si.CacheMode = cacheMode;
+				session.PersistenceContext.IncrementCascadeLevel();
+				try
+				{
+					// cascade-delete to collections BEFORE the collection owner is deleted
+					new Cascade(CascadingAction.Delete, CascadePoint.AfterInsertBeforeDelete, session).CascadeOn(
+						persister,
+						entity,
+						transientEntities);
+				}
+				finally
+				{
+					session.PersistenceContext.DecrementCascadeLevel();
+				}
 			}
 		}
 
 		protected virtual void CascadeAfterDelete(IEventSource session, IEntityPersister persister, object entity, ISet<object> transientEntities)
 		{
-			ISessionImplementor si = session;
-			CacheMode cacheMode = si.CacheMode;
-			si.CacheMode = CacheMode.Get;
-			session.PersistenceContext.IncrementCascadeLevel();
-			try
+			using (session.SwitchCacheMode(CacheMode.Get))
 			{
-				// cascade-delete to many-to-one AFTER the parent was deleted
-				new Cascade(CascadingAction.Delete, CascadePoint.BeforeInsertAfterDelete, session).CascadeOn(persister, entity,
-				                                                                                             transientEntities);
-			}
-			finally
-			{
-				session.PersistenceContext.DecrementCascadeLevel();
-				si.CacheMode = cacheMode;
+				session.PersistenceContext.IncrementCascadeLevel();
+				try
+				{
+					// cascade-delete to many-to-one AFTER the parent was deleted
+					new Cascade(CascadingAction.Delete, CascadePoint.BeforeInsertAfterDelete, session).CascadeOn(
+						persister,
+						entity,
+						transientEntities);
+				}
+				finally
+				{
+					session.PersistenceContext.DecrementCascadeLevel();
+				}
 			}
 		}
 	}

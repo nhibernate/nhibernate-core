@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Runtime.Serialization;
 using NHibernate.Cache.Access;
 
 namespace NHibernate.Cache
@@ -12,20 +13,37 @@ namespace NHibernate.Cache
 	/// This class was named Lock in H2.1
 	/// </remarks>
 	[Serializable]
+	[DataContract]
 	public class CacheLock : ReadWriteCache.ILockable, ISoftLock
 	{
 		private long unlockTimestamp = -1;
 		private int multiplicity = 1;
 		private bool concurrentLock = false;
 		private long timeout;
-		private readonly int id;
-		private readonly object version;
+		private int id;
+		private object version;
 
+		public CacheLock()
+		{
+		}
+
+		// Since 5.2
+		[Obsolete("Use object initializer instead.")]
 		public CacheLock(long timeout, int id, object version)
 		{
-			this.timeout = timeout;
-			this.id = id;
-			this.version = version;
+			Timeout = timeout;
+			Id = id;
+			Version = version;
+		}
+
+		internal static CacheLock Create(long timeout, int id, object version)
+		{
+			return new CacheLock
+			{
+				Version = version,
+				Timeout = timeout,
+				Id = id
+			};
 		}
 
 		/// <summary>
@@ -34,9 +52,9 @@ namespace NHibernate.Cache
 		/// </summary>
 		public CacheLock Lock(long timeout, int id)
 		{
-			concurrentLock = true;
-			multiplicity++;
-			this.timeout = timeout;
+			WasLockedConcurrently = true;
+			Multiplicity++;
+			Timeout = timeout;
 			return this;
 		}
 
@@ -47,9 +65,9 @@ namespace NHibernate.Cache
 		/// <param name="currentTimestamp"></param>
 		public void Unlock(long currentTimestamp)
 		{
-			if (--multiplicity == 0)
+			if (--Multiplicity == 0)
 			{
-				unlockTimestamp = currentTimestamp;
+				UnlockTimestamp = currentTimestamp;
 			}
 		}
 
@@ -59,17 +77,17 @@ namespace NHibernate.Cache
 		/// </summary>
 		public bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator)
 		{
-			if (timeout < txTimestamp)
+			if (Timeout < txTimestamp)
 			{
 				return true;
 			}
-			if (multiplicity > 0)
+			if (Multiplicity > 0)
 			{
 				return false;
 			}
-			return version == null ?
-			       unlockTimestamp < txTimestamp :
-			       comparator.Compare(version, newVersion) < 0;
+			return Version == null ?
+			       UnlockTimestamp < txTimestamp :
+			       comparator.Compare(Version, newVersion) < 0;
 				//by requiring <, we rely on lock timeout in the case of an unsuccessful update!
 		}
 
@@ -77,18 +95,18 @@ namespace NHibernate.Cache
 		/// Was this lock held concurrently by multiple
 		/// transactions?
 		/// </summary>
+		// 6.0 TODO convert to auto-property
+		[DataMember]
 		public bool WasLockedConcurrently
 		{
-			get { return concurrentLock; }
+			get => concurrentLock;
+			set => concurrentLock = value;
 		}
 
 		/// <summary>
 		/// Yes, this is a lock
 		/// </summary>
-		public bool IsLock
-		{
-			get { return true; }
-		}
+		public bool IsLock => true;
 
 		/// <summary>
 		/// locks are not returned to the client!
@@ -98,17 +116,52 @@ namespace NHibernate.Cache
 			return false;
 		}
 
+		// 6.0 TODO convert to auto-property
+		[DataMember]
 		public int Id
 		{
-			get { return id; }
+			get => id;
+			set => id = value;
+		}
+
+		// 6.0 TODO convert to auto-property
+		[DataMember]
+		public object Version
+		{
+			get => version;
+			set => version = value;
+		}
+
+		// 6.0 TODO convert to auto-property
+		[DataMember]
+		public long UnlockTimestamp
+		{
+			get => unlockTimestamp;
+			set => unlockTimestamp = value;
+		}
+
+		// 6.0 TODO convert to auto-property
+		[DataMember]
+		public int Multiplicity
+		{
+			get => multiplicity;
+			set => multiplicity = value;
+		}
+
+		// 6.0 TODO convert to auto-property
+		[DataMember]
+		public long Timeout
+		{
+			get => timeout;
+			set => timeout = value;
 		}
 
 		public override string ToString()
 		{
-			return "CacheLock{id=" + id +
-			       ",version=" + version +
-			       ",multiplicity=" + multiplicity +
-			       ",unlockTimestamp=" + unlockTimestamp +
+			return "CacheLock{id=" + Id +
+			       ",version=" + Version +
+			       ",multiplicity=" + Multiplicity +
+			       ",unlockTimestamp=" + UnlockTimestamp +
 			       "}";
 		}
 	}

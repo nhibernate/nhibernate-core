@@ -33,7 +33,7 @@ namespace NHibernate.Test.ReadOnly
 			get { return "NHibernate.Test"; }
 		}
 		
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "ReadOnly.VersionedNode.hbm.xml" }; }
 		}

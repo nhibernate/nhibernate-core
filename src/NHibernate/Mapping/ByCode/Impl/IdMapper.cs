@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Type;
+using NHibernate.UserTypes;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -62,6 +63,38 @@ namespace NHibernate.Mapping.ByCode.Impl
 			if (persistentType != null)
 			{
 				hbmId.type1 = persistentType.Name;
+				hbmId.type = null;
+			}
+		}
+
+		public void Type(System.Type persistentType, object parameters)
+		{
+			if (persistentType == null)
+			{
+				throw new ArgumentNullException(nameof(persistentType));
+			}
+			if (!typeof (IUserType).IsAssignableFrom(persistentType) && !typeof (IType).IsAssignableFrom(persistentType) && !typeof (ICompositeUserType).IsAssignableFrom(persistentType))
+			{
+				throw new ArgumentOutOfRangeException(nameof(persistentType), "Expected type implementing IUserType, ICompositeUserType or IType.");
+			}
+			if (parameters != null)
+			{
+				hbmId.type1 = null;
+				var hbmType = new HbmType
+				{
+					name = persistentType.AssemblyQualifiedName,
+					param = (from pi in parameters.GetType().GetProperties()
+					         let pname = pi.Name
+					         let pvalue = pi.GetValue(parameters, null)
+					         select
+						         new HbmParam {name = pname, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}})
+						.ToArray()
+				};
+				hbmId.type = hbmType;
+			}
+			else
+			{
+				hbmId.type1 = persistentType.AssemblyQualifiedName;
 				hbmId.type = null;
 			}
 		}

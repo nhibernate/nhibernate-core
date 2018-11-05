@@ -18,7 +18,7 @@ namespace NHibernate.Test.Legacy
 		private static readonly ILog log =
 			LogManager.GetLogger(typeof(SQLFunctionsTest));
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "Simple.hbm.xml", "Blobber.hbm.xml", "Broken.hbm.xml" }; }
 		}
