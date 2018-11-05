@@ -14,7 +14,7 @@
     <tags>ORM, DataBase, DAL, ObjectRelationalMapping</tags>
     <dependencies>
 	  <!-- Bet that if there is ever an Iesi.Collections 5.0, it would be incompatible. -->
-      <dependency id="Iesi.Collections" version="[4,5)" />
+      <dependency id="Iesi.Collections" version="[4.0.0.4000,5)" />
     </dependencies>
 	<projectUrl>
 		http://nhibernate.info
