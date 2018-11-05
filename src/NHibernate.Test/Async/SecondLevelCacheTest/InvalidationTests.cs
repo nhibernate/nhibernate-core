@@ -28,7 +28,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings => new[] { "SecondLevelCacheTest.Item.hbm.xml" };
+		protected override string[] Mappings => new[] { "SecondLevelCacheTest.Item.hbm.xml" };
 
 		protected override void Configure(Configuration configuration)
 		{

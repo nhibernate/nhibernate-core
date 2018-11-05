@@ -12,6 +12,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Criterion;
 using NHibernate.Driver;
@@ -49,9 +50,14 @@ namespace NHibernate.Impl
 					}
 				}
 
+				var querySpaces = new HashSet<string>(loaders.SelectMany(l => l.QuerySpaces));
+				if (resultSetsCommand.HasQueries)
+				{
+					await (session.AutoFlushIfRequiredAsync(querySpaces, cancellationToken)).ConfigureAwait(false);
+				}
 				if (cacheable)
 				{
-					criteriaResults = await (ListUsingQueryCacheAsync(cancellationToken)).ConfigureAwait(false);
+					criteriaResults = await (ListUsingQueryCacheAsync(querySpaces, cancellationToken)).ConfigureAwait(false);
 				}
 				else
 				{
@@ -62,20 +68,18 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private async Task<IList> ListUsingQueryCacheAsync(CancellationToken cancellationToken)
+		private async Task<IList> ListUsingQueryCacheAsync(HashSet<string> querySpaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
 
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters);
 
-			ISet<string> querySpaces = new HashSet<string>();
 			List<IType[]> resultTypesList = new List<IType[]>();
 			int[] maxRows = new int[loaders.Count];
 			int[] firstRows = new int[loaders.Count];
 			for (int i = 0; i < loaders.Count; i++)
 			{
-				querySpaces.UnionWith(loaders[i].QuerySpaces);
 				resultTypesList.Add(loaders[i].ResultTypes);
 				firstRows[i] = parameters[i].RowSelection.FirstRow;
 				maxRows[i] = parameters[i].RowSelection.MaxRows;
@@ -113,7 +117,7 @@ namespace NHibernate.Impl
 				result = list;
 				if (session.CacheMode.HasFlag(CacheMode.Put))
 				{
-					bool put = await (queryCache.PutAsync(key, new ICacheAssembler[] { assembler }, new object[] { list }, combinedParameters.NaturalKeyLookup, session, cancellationToken)).ConfigureAwait(false);
+					bool put = await (queryCache.PutAsync(key, combinedParameters, new ICacheAssembler[] { assembler }, new object[] { list }, session, cancellationToken)).ConfigureAwait(false);
 					if (put && factory.Statistics.IsStatisticsEnabled)
 					{
 						factory.StatisticsImplementor.QueryCachePut(key.ToString(), queryCache.RegionName);
@@ -196,7 +200,7 @@ namespace NHibernate.Impl
 					for (int i = 0; i < loaders.Count; i++)
 					{
 						CriteriaLoader loader = loaders[i];
-						await (loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, session.DefaultReadOnly, cancellationToken)).ConfigureAwait(false);
+						await (loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, session.DefaultReadOnly, cancellationToken: cancellationToken)).ConfigureAwait(false);
 
 						if (createSubselects[i])
 						{
@@ -205,6 +209,7 @@ namespace NHibernate.Impl
 					}
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception sqle)
 			{
 				log.Error(sqle, "Failed to execute multi criteria: [{0}]", resultSetsCommand.Sql);

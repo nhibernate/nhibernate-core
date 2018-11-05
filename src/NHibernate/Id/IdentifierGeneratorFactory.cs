@@ -25,7 +25,7 @@ namespace NHibernate.Id
 	///			<description><see cref="Assigned"/></description>
 	///		</item>
 	///		<item>
-	///			<term>counter</term>
+	///			<term>counter (or vm)</term>
 	///			<description><see cref="CounterGenerator"/></description>
 	///		</item>
 	///		<item>
@@ -49,14 +49,18 @@ namespace NHibernate.Id
 	///			<description><see cref="TableHiLoGenerator"/></description>
 	///		</item>
 	///		<item>
+	///			<term>enhanced-table</term>
+	///			<description><see cref="Enhanced.TableGenerator"/></description>
+	///		</item>
+	///		<item>
 	///			<term>identity</term>
 	///			<description><see cref="IdentityGenerator"/></description>
 	///		</item>
 	///		<item>
 	///			<term>native</term>
 	///			<description>
-	///				Chooses between <see cref="IdentityGenerator"/>, <see cref="SequenceGenerator"/>
-	///				, and <see cref="TableHiLoGenerator"/> based on the 
+	///				Chooses between <see cref="IdentityGenerator"/>, <see cref="SequenceGenerator"/>,
+	///				and <see cref="TableHiLoGenerator"/> based on the
 	///				<see cref="Dialect.Dialect"/>'s capabilities.
 	///			</description>
 	///		</item>
@@ -73,12 +77,24 @@ namespace NHibernate.Id
 	///			<description><see cref="SequenceStyleGenerator"/></description>
 	///		</item>
 	///		<item>
+	///			<term>sequence-identity</term>
+	///			<description><see cref="SequenceIdentityGenerator"/></description>
+	///		</item>
+	///		<item>
+	///			<term>trigger-identity</term>
+	///			<description><see cref="TriggerIdentityGenerator"/></description>
+	///		</item>
+	///		<item>
 	///			<term>uuid.hex</term>
 	///			<description><see cref="UUIDHexGenerator"/></description>
 	///		</item>
 	///		<item>
 	///			<term>uuid.string</term>
 	///			<description><see cref="UUIDStringGenerator"/></description>
+	///		</item>
+	///		<item>
+	///			<term>select</term>
+	///			<description><see cref="SelectGenerator"/></description>
 	///		</item>
 	/// </list>
 	/// </remarks>
@@ -122,9 +138,9 @@ namespace NHibernate.Id
 		/// </exception>
 		public static object Get(DbDataReader rs, IType type, ISessionImplementor session)
 		{
-			// here is an interesting one: 
+			// here is an interesting one:
 			// - MsSql's @@identity returns a Decimal
-			// - MySql LAST_IDENITY() returns an Int64 			
+			// - MySql LAST_IDENTITY() returns an Int64
 			try
 			{
 				return type.NullSafeGet(rs, rs.GetName(0), session, null);
@@ -203,7 +219,7 @@ namespace NHibernate.Id
 			try
 			{
 				System.Type clazz = GetIdentifierGeneratorClass(strategy, dialect);
-				var idgen = (IIdentifierGenerator) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(clazz);
+				var idgen = (IIdentifierGenerator) Cfg.Environment.ObjectsFactory.CreateInstance(clazz);
 				var conf = idgen as IConfigurable;
 				if (conf != null)
 				{
@@ -309,9 +325,9 @@ namespace NHibernate.Id
 					clazz = ReflectHelper.ClassForName(strategy);
 				}
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				throw new IdentifierGenerationException("Could not interpret id generator strategy: " + strategy);
+				throw new IdentifierGenerationException("Could not interpret id generator strategy: " + strategy, ex);
 			}
 			return clazz;
 		}

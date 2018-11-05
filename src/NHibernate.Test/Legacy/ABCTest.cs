@@ -13,7 +13,7 @@ namespace NHibernate.Test.Legacy
 	[TestFixture]
 	public class ABCTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"ABC.hbm.xml"}; }
 		}

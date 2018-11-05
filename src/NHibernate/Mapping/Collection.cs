@@ -152,11 +152,11 @@ namespace NHibernate.Mapping
 				{
 					try
 					{
-						comparer = Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(ComparerClassName));
+						comparer = Cfg.Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(ComparerClassName));
 					}
-					catch
+					catch (Exception ex)
 					{
-						throw new MappingException("Could not instantiate comparator class [" + ComparerClassName + "] for collection " + Role);
+						throw new MappingException("Could not instantiate comparator class [" + ComparerClassName + "] for collection " + Role, ex);
 					}
 				}
 				return comparer;

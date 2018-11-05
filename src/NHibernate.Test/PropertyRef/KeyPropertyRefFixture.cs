@@ -7,7 +7,7 @@ namespace NHibernate.Test.PropertyRef
 	[TestFixture]
 	public class KeyPropertyRefFixture : TestCase
 	{
-		protected override System.Collections.IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "PropertyRef.KeyPropertyRef.hbm.xml" }; }
 		}

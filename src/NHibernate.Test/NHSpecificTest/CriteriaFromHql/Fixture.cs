@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaFromHql
 	public class Fixture : TestCase
 	{
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "NHSpecificTest.CriteriaFromHql.Mappings.hbm.xml" }; }
 		}
@@ -47,8 +47,8 @@ where p.Parent is null")
 			{
 				Person result = session.CreateCriteria(typeof(Person))
 					.Add(Restrictions.IsNull("Parent"))
-					.SetFetchMode("Children", FetchMode.Join)
-					.SetFetchMode("Children.Children", FetchMode.Join)
+					.Fetch("Children")
+					.Fetch("Children.Children")
 					.UniqueResult<Person>();
 				string criteriaQuery = spy.Appender.GetEvents()[0].RenderedMessage;
 				Debug.WriteLine("Criteria: " + criteriaQuery);

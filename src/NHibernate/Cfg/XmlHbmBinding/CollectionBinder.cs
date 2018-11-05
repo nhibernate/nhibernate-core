@@ -12,7 +12,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class CollectionBinder : ClassBinder
 	{
+		//Since v5.2
+		[Obsolete("Please use constructor without a dialect parameter.")]
 		public CollectionBinder(Mappings mappings, Dialect.Dialect dialect) : base(mappings, dialect)
+		{
+		}
+		
+		public CollectionBinder(Mappings mappings) : base(mappings)
 		{
 		}
 
@@ -221,7 +227,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			//ORPHAN DELETE (used for programmer error detection)
 			var cascadeAtt = collectionMapping.Cascade;
-			if (!string.IsNullOrEmpty(cascadeAtt) && cascadeAtt.IndexOf("delete-orphan") >= 0)
+			if (!string.IsNullOrEmpty(cascadeAtt) && cascadeAtt.IndexOf("delete-orphan", StringComparison.Ordinal) >= 0)
 				model.HasOrphanDelete = true;
 
 			// GENERIC
@@ -815,12 +821,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			var restrictedLaziness = manyToManyMapping.lazySpecified ? manyToManyMapping.lazy : (HbmRestrictedLaziness?) null;
 			InitLaziness(restrictedLaziness, manyToMany, true);
 
-			if(!string.IsNullOrEmpty(manyToManyMapping.propertyref))
+			manyToMany.ReferencedEntityName = GetEntityName(manyToManyMapping, mappings);
+
+			if (!string.IsNullOrEmpty(manyToManyMapping.propertyref))
 			{
 				manyToMany.ReferencedPropertyName = manyToManyMapping.propertyref;
+				mappings.AddUniquePropertyReference(manyToMany.ReferencedEntityName, manyToMany.ReferencedPropertyName);
 			}
-
-			manyToMany.ReferencedEntityName = GetEntityName(manyToManyMapping, mappings);
 
 			manyToMany.IsIgnoreNotFound = manyToManyMapping.NotFoundMode == HbmNotFoundMode.Ignore;
 
@@ -898,6 +905,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			else
 			{
 				keyValue = (IKeyValue) model.Owner.GetProperty(propRef).Value;
+				mappings.AddUniquePropertyReference(model.OwnerEntityName, propRef);
 			}
 			var key = new DependantValue(model.CollectionTable, keyValue)
 						{IsCascadeDeleteEnabled = keyMapping.ondelete == HbmOndelete.Cascade};

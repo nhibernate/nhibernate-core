@@ -16,15 +16,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2294
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync : BugTestCase
+	public class FixtureAsync : TestCase
 	{
-		protected override System.Collections.IList Mappings
-		{
-			get
-			{
-				return Enumerable.Empty<object>().ToList();
-			}
-		}
+		protected override string[] Mappings => System.Array.Empty<string>();
 
 		[Test, Ignore("External issue. The bug is inside RecognitionException of Antlr.")]
 		public void WhenQueryHasJustAWhereThenThrowQuerySyntaxExceptionAsync()

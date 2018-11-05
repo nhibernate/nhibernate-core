@@ -27,7 +27,7 @@ namespace NHibernate.Test.Linq
 		public async Task CanExecuteCountInSelectClauseAsync()
 		{
 			var results = await (db.Timesheets
-				.Select(t => t.Entries.Count).ToListAsync());
+				.Select(t => t.Entries.Count).OrderBy(s => s).ToListAsync());
 
 			Assert.AreEqual(3, results.Count);
 			Assert.AreEqual(0, results[0]);

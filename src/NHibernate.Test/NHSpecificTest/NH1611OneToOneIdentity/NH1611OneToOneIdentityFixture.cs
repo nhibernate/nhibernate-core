@@ -6,11 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 	[TestFixture]
 	public class NH1611OneToOneIdentityFixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1611OneToOneIdentity"; }
-		}
-
 		protected override void OnTearDown()
 		{
 			base.OnTearDown();

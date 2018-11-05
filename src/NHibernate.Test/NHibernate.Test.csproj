@@ -2,10 +2,17 @@
   <Import Project="../../build-common/NHibernate.props" />
   <PropertyGroup>
     <Description>The Unit Tests for NHibernate.</Description>
-
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>$(NhAppTargetFrameworks)</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
+    <ContentSQLiteInteropFiles>true</ContentSQLiteInteropFiles>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
+    <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+    <OutputType>Exe</OutputType>
+    <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="**\*.hbm.xml" />
@@ -30,19 +37,45 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
+    <Compile Remove="**\CfgTest\DefaultNsAssmFixture.cs" />
+    <Compile Remove="**\CfgTest\HbmOrderingFixture.cs" />
+    <Compile Remove="**\DynamicProxyTests\PeVerifyFixture.cs" />
+    <Compile Remove="**\Insertordering\**" />
+    <Compile Remove="**\NHSpecificTest\NH1850\**" />
+    <Compile Remove="**\NHSpecificTest\NH2484\**" />
+    <Compile Remove="**\NHSpecificTest\NH2188\**" />
+    <Compile Remove="**\NHSpecificTest\NH3121\**" />
+  </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="5.11.0" />
     <PackageReference Include="log4net" Version="2.0.8" />
-    <PackageReference Include="NSubstitute" Version="3.0.1" />
-    <PackageReference Include="Microsoft.SqlServer.Compact" Version="4.0.8876.1" />
-    <PackageReference Include="MySql.Data" Version="6.9.10" />
-    <PackageReference Include="Npgsql" Version="3.2.4.1" />
-    <PackageReference Include="Oracle.ManagedDataAccess" Version="12.1.2400" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.105.2" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.7.6" />
-    <PackageReference Include="NUnit" Version="3.9.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.109.2" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.8.11" />
+    <PackageReference Include="NSubstitute" Version="3.1.0" />
+    <PackageReference Include="NUnit" Version="3.10.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="5.12.1" />
+    <PackageReference Include="Npgsql" Version="3.2.4.1" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Threading.Tasks" />
+    <Reference Include="System.Data.OracleClient" />
+    <PackageReference Include="Microsoft.SqlServer.Compact" Version="4.0.8876.1" />
+    <PackageReference Include="Oracle.ManagedDataAccess" Version="12.1.2400" />
+    <PackageReference Include="MySql.Data" Version="6.9.11" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
+    <PackageReference Include="System.CodeDom" Version="4.4.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.2" />
+    <PackageReference Include="System.Data.OracleClient" Version="1.0.8" />
+    <PackageReference Include="System.Data.Odbc" Version="4.5.0" />
+    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
+    <PackageReference Include="NUnitLite" Version="3.10.1" />
+    <PackageReference Include="MySql.Data" Version="6.10.6" />
   </ItemGroup>
   <ItemGroup Condition=" '$(NuGetPackageRoot)' != '' ">
     <NativeBinaries Include="$(NuGetPackageRoot)microsoft.sqlserver.compact\4.0.8876.1\NativeBinaries\**\*.*" />
@@ -51,21 +84,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup Condition=" '$(NuGetPackageRoot)' != '' ">
-    <NativeBinaries Include="$(NuGetPackageRoot)system.data.sqlite.core\1.0.105.2\build\net46\**\*.*" />
-    <Content Include="@(NativeBinaries)">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel.csproj" />
     <ProjectReference Include="..\NHibernate\NHibernate.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data.OracleClient" />
-    <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />

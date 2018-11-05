@@ -7,11 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH548
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH548"; }
-		}
-
 		[Test]
 		public void ParentPropertyOnCacheHit()
 		{

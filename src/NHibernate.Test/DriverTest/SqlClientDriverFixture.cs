@@ -31,7 +31,7 @@ namespace NHibernate.Test.DriverTest
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings => new[] { "DriverTest.MultiTypeEntity.hbm.xml" };
+		protected override string[] Mappings => new[] { "DriverTest.MultiTypeEntity.hbm.xml" };
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
@@ -161,7 +161,7 @@ namespace NHibernate.Test.DriverTest
 		[Test]
 		public void DefaultPrecisionScale()
 		{
-			const byte defaultPrecision = 28;
+			const byte defaultPrecision = 29;
 			const byte defaultScale = 10;
 			var driver = Sfi.ConnectionProvider.Driver;
 			try

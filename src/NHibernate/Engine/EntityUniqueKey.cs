@@ -20,12 +20,14 @@ namespace NHibernate.Engine
 		private readonly IType keyType;
 		private readonly int hashCode;
 
+		// 6.0 TODO: rename keyType as semiResolvedKeyType. That is not the responsibility of this class to make any
+		// assumption on the key type being semi-resolved or not, that is the responsibility of its callers.
 		public EntityUniqueKey(string entityName, string uniqueKeyName, object semiResolvedKey, IType keyType, ISessionFactoryImplementor factory)
 		{
 			if (string.IsNullOrEmpty(entityName))
 				throw new ArgumentNullException("entityName");
 			if (string.IsNullOrEmpty(uniqueKeyName))
-				throw new ArgumentNullException("entityName");
+				throw new ArgumentNullException("uniqueKeyName");
 			if (semiResolvedKey == null)
 				throw new ArgumentNullException("semiResolvedKey");
 			if (keyType == null)
@@ -34,7 +36,7 @@ namespace NHibernate.Engine
 			this.entityName = entityName;
 			this.uniqueKeyName = uniqueKeyName;
 			key = semiResolvedKey;
-			this.keyType = keyType.GetSemiResolvedType(factory);
+			this.keyType = keyType;
 			hashCode = GenerateHashCode(factory);
 		}
 
@@ -78,8 +80,15 @@ namespace NHibernate.Engine
 
 		public bool Equals(EntityUniqueKey that)
 		{
-			return that == null ? false :
-				that.EntityName.Equals(entityName) && that.UniqueKeyName.Equals(uniqueKeyName) && keyType.IsEqual(that.key, key);
+			return that != null && that.EntityName.Equals(entityName) && that.UniqueKeyName.Equals(uniqueKeyName) &&
+				// Normally entities are cached by semi-resolved type only, but the initial fix of #1226 causes them to
+				// be cached by type too. This may then cause issues (including Stack Overflow Exception) when this
+				// happens with the that.keyType being an entity type while its value is an uninitialized proxy: if
+				// this.keyType is not an entity type too, its IsEqual will trigger the proxy loading.
+				// So we need to short-circuit on keyType inequality, at least till Loader.CacheByUniqueKey is removed.
+				// 6.0 TODO: consider removing the keyType.Equals(that.keyType) check, see above comment.
+				keyType.Equals(that.keyType) &&
+				keyType.IsEqual(that.key, key);
 		}
 
 		public override string ToString()

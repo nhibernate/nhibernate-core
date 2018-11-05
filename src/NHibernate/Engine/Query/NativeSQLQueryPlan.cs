@@ -48,8 +48,6 @@ namespace NHibernate.Engine.Query
 		{
 			BulkOperationCleanupAction action = new BulkOperationCleanupAction(session, CustomQuery.QuerySpaces);
 
-			action.Init();
-
 			if (session.IsEventSource)
 			{
 				((IEventSource)session).ActionQueue.AddAction(action);
@@ -120,7 +118,7 @@ namespace NHibernate.Engine.Query
 		private SqlString ExpandDynamicFilterParameters(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, ISessionImplementor session)
 		{
 			var enabledFilters = session.EnabledFilters;
-			if (enabledFilters.Count == 0 || sqlString.ToString().IndexOf(ParserHelper.HqlVariablePrefix) < 0)
+			if (enabledFilters.Count == 0 || !ParserHelper.HasHqlVariable(sqlString))
 			{
 				return sqlString;
 			}
@@ -143,7 +141,7 @@ namespace NHibernate.Engine.Query
 
 				foreach (string token in tokens)
 				{
-					if (token.StartsWith(ParserHelper.HqlVariablePrefix))
+					if (ParserHelper.IsHqlVariable(token))
 					{
 						string filterParameterName = token.Substring(1);
 						string[] parts = StringHelper.ParseFilterParameterName(filterParameterName);
@@ -151,19 +149,16 @@ namespace NHibernate.Engine.Query
 						string parameterName = parts[1];
 						var filter = (FilterImpl)enabledFilters[filterName];
 
-						object value = filter.GetParameter(parameterName);
+						var collectionSpan = filter.GetParameterSpan(parameterName);
 						IType type = filter.FilterDefinition.GetParameterType(parameterName);
 						int parameterColumnSpan = type.GetColumnSpan(session.Factory);
-						var collectionValue = value as ICollection;
-						int? collectionSpan = null;
 
 						// Add query chunk
-						string typeBindFragment = string.Join(", ", Enumerable.Repeat("?", parameterColumnSpan).ToArray());
+						string typeBindFragment = string.Join(", ", Enumerable.Repeat("?", parameterColumnSpan));
 						string bindFragment;
-						if (collectionValue != null && !type.ReturnedClass.IsArray)
+						if (collectionSpan.HasValue && !type.ReturnedClass.IsArray)
 						{
-							collectionSpan = collectionValue.Count;
-							bindFragment = string.Join(", ", Enumerable.Repeat(typeBindFragment, collectionValue.Count).ToArray());
+							bindFragment = string.Join(", ", Enumerable.Repeat(typeBindFragment, collectionSpan.Value));
 						}
 						else
 						{

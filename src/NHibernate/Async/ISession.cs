@@ -16,13 +16,17 @@ using System.Linq.Expressions;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Event.Default;
+using NHibernate.Impl;
+using NHibernate.Multi;
 using NHibernate.Stat;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate
 {
 	using System.Threading.Tasks;
 	using System.Threading;
+
 	public partial interface ISession : IDisposable
 	{
 

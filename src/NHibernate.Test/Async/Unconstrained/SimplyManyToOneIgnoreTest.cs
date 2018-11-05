@@ -24,7 +24,7 @@ namespace NHibernate.Test.Unconstrained
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Unconstrained.Simply.hbm.xml"}; }
 		}

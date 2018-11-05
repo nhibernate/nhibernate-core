@@ -123,9 +123,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			{
 				constant.Text = replacement;
 			}
-			else 
+			else
 			{
-				bool value = "true" == constant.Text.ToLowerInvariant();
+				bool value = string.Equals("true", constant.Text, StringComparison.OrdinalIgnoreCase);
 				Dialect.Dialect dialect = _walker.SessionFactoryHelper.Factory.Dialect;
 				constant.Text = dialect.ToBooleanValueString(value);
 			}

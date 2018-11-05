@@ -11,10 +11,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
 using System.Linq.Expressions;
-using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Criterion;
@@ -107,6 +104,7 @@ namespace NHibernate.Impl
 					await (plan.PerformListAsync(queryParameters, this, results, cancellationToken)).ConfigureAwait(false);
 					success = true;
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (HibernateException)
 				{
 					// Do not call Convert on HibernateExceptions
@@ -148,6 +146,7 @@ namespace NHibernate.Impl
 					}
 					success = true;
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (HibernateException)
 				{
 					// Do not call Convert on HibernateExceptions
@@ -278,6 +277,8 @@ namespace NHibernate.Impl
 			}
 		}
 
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
 		public override Task<IQueryTranslator[]> GetQueriesAsync(IQueryExpression query, bool scalar, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)

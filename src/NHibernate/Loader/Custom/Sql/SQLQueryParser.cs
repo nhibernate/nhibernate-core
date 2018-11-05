@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -153,7 +154,7 @@ namespace NHibernate.Loader.Custom.Sql
 				       	: selectFragment;
 			}
 
-			if (propertyName.StartsWith("element."))
+			if (propertyName.StartsWith("element.", StringComparison.Ordinal))
 			{
 				string elementPropertyName = propertyName.Substring("element.".Length);
 

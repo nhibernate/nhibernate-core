@@ -1,9 +1,10 @@
 using NHibernate.Linq.Clauses;
 using Remotion.Linq;
+using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.Visitors
 {
-	public class NhQueryModelVisitorBase : QueryModelVisitorBase, INhQueryModelVisitor
+	public class NhQueryModelVisitorBase : QueryModelVisitorBase, INhQueryModelVisitor, AsQueryableResultOperator.ISupportedByIQueryModelVistor
 	{
 		public virtual void VisitNhHavingClause(NhHavingClause havingClause, QueryModel queryModel, int index)
 		{

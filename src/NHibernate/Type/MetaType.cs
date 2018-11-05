@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
 	[Serializable]
-	public partial class MetaType : AbstractType
+	public partial class MetaType : AbstractType, IMetaType
 	{
 		private readonly IDictionary<object, string> values;
 		private readonly IDictionary<string, object> keys;
@@ -96,9 +97,15 @@ namespace NHibernate.Type
 			return baseType.ToColumnNullness(value, mapping);
 		}
 
-		internal object GetMetaValue(string className)
+		string IMetaType.GetMetaValue(string className, Dialect.Dialect dialect)
 		{
-			return keys[className];
+			var raw = keys[className];
+			if (baseType is ILiteralType literalType)
+			{
+				return literalType.ObjectToSQLString(raw, dialect);
+			}
+
+			return raw?.ToString();
 		}
 	}
 }

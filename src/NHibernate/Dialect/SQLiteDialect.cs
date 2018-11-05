@@ -78,6 +78,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,1,?2)"));
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
+			RegisterFunction("chr", new StandardSQLFunction("char", NHibernateUtil.Character));
 
 			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
 
@@ -86,6 +87,10 @@ namespace NHibernate.Dialect
 			RegisterFunction("cast", new SQLiteCastFunction());
 
 			RegisterFunction("round", new StandardSQLFunction("round"));
+
+			// SQLite has no built-in support of bitwise xor, but can emulate it.
+			// http://sqlite.1065341.n5.nabble.com/XOR-operator-td98004.html
+			RegisterFunction("bxor", new SQLFunctionTemplate(null, "((?1 | ?2) - (?1 & ?2))"));
 
 			// NH-3787: SQLite requires the cast in SQL too for not defaulting to string.
 			RegisterFunction("transparentcast", new CastFunction());
@@ -137,6 +142,7 @@ namespace NHibernate.Dialect
 			"memo",
 			"money",
 			"note",
+			"nothing",
 			"notnull",
 			"ntext",
 			"nvarchar",
@@ -185,7 +191,7 @@ namespace NHibernate.Dialect
 
 		public override Schema.IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
-			return new Schema.SQLiteDataBaseMetaData(connection);
+			return new Schema.SQLiteDataBaseMetaData(connection, this);
 		}
 
 		public override string AddColumnString
@@ -276,12 +282,12 @@ namespace NHibernate.Dialect
 			
 			if (!string.IsNullOrEmpty(catalog))
 			{
-				if (catalog.StartsWith(OpenQuote.ToString()))
+				if (catalog.StartsWith(OpenQuote))
 				{
 					catalog = catalog.Substring(1, catalog.Length - 1);
 					quoted = true;
 				} 
-				if (catalog.EndsWith(CloseQuote.ToString()))
+				if (catalog.EndsWith(CloseQuote))
 				{
 					catalog = catalog.Substring(0, catalog.Length - 1);
 					quoted = true;
@@ -290,12 +296,12 @@ namespace NHibernate.Dialect
 			}
 			if (!string.IsNullOrEmpty(schema))
 			{
-				if (schema.StartsWith(OpenQuote.ToString()))
+				if (schema.StartsWith(OpenQuote))
 				{
 					schema = schema.Substring(1, schema.Length - 1);
 					quoted = true;
 				}
-				if (schema.EndsWith(CloseQuote.ToString()))
+				if (schema.EndsWith(CloseQuote))
 				{
 					schema = schema.Substring(0, schema.Length - 1);
 					quoted = true;
@@ -303,12 +309,12 @@ namespace NHibernate.Dialect
 				qualifiedName.Append(schema).Append(StringHelper.Underscore);
 			}
 
-			if (table.StartsWith(OpenQuote.ToString()))
+			if (table.StartsWith(OpenQuote))
 			{
 				table = table.Substring(1, table.Length - 1);
 				quoted = true;
 			}
-			if (table.EndsWith(CloseQuote.ToString()))
+			if (table.EndsWith(CloseQuote))
 			{
 				table = table.Substring(0, table.Length - 1);
 				quoted = true;
@@ -419,7 +425,7 @@ namespace NHibernate.Dialect
 			protected override bool CastingIsRequired(string sqlType)
 			{
 				// SQLite doesn't support casting to datetime types.  It assumes you want an integer and destroys the date string.
-				if (sqlType.ToLowerInvariant().Contains("date") || sqlType.ToLowerInvariant().Contains("time"))
+				if (StringHelper.ContainsCaseInsensitive(sqlType, "date") || StringHelper.ContainsCaseInsensitive(sqlType, "time"))
 					return false;
 				return true;
 			}

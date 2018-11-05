@@ -1,13 +1,5 @@
 <?xml version="1.0" ?>
 <project xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
-
-	<!-- 
-		Use this to determine if the key file NHibernate.snk should be used to 
-		sign the assemblies. Defaults to true since private key is present
-		in CVS.
-	-->
-	<property name="sign" value="true" overwrite="false" />
-
 	<!--
 		if Visual Studio Help Integration Kit has been installed
 		then change this to true or include -D:vshik.installed=true in the command line.
@@ -16,108 +8,41 @@
 	<property name="vshik.installed" value="false" overwrite="false" />
 	<property name="vshik.path" value="${environment::get-folder-path('ProgramFiles')}/Microsoft Help 2.0 SDK" />
 
-	<!-- 
-		if nunit2report tasks from http://nunit2report.sourceforge.net/ has been installed
-		then change this to true.  It generates a nice looking html report for the test files
-	-->
-	<property name="nunit2report.installed" value="false" overwrite="false" />
-
-	<property name="nant-version.current" value="${assemblyname::get-version(assembly::get-name(nant::get-assembly()))}" />
-	<property name="nant-version.required" value="0.91.4312.0" /> <!-- Nant 0.91 release version -->
-	
 	<!-- Path to the folder that contain the external assemblies -->
 	<property name="lib.dir" value="lib" dynamic="true" />
 
 	<!-- This is used only for build folder -->
 	<!-- TODO: Either remove or refactor to use NHibernate.props -->
-	<property name="project.version" value="5.0.3" overwrite="false" />
-	<property name="project.version.numeric" value="5.0.3" overwrite="false" />
+	<property name="project.version" value="5.1.3" overwrite="false" />
+	<property name="project.version.numeric" value="5.1.3" overwrite="false" />
 
 	<!-- properties used to connect to database for testing -->
 	<include buildfile="nhibernate-properties.xml" />
 
-	<!-- named project configurations -->
-	<target name="set-debug-project-configuration" description="Perform a 'debug' build">
-		<property name="build.release" value="false" />
-		<property name="build.debug" value="true" />
-		<property name="build.name" value="NHibernate-${project.version}-${project.config}" />
-	</target>
-	
-	<target name="set-release-project-configuration" description="Perform a 'release' build">
-		<property name="build.release" value="true" />
-		<property name="build.debug" value="pdbonly" />
-		<property name="build.name" value="NHibernate-${project.version}" />
-	</target>
-
-	<target name="set-project-configuration">
+	<target name="common.init" description="Initializes build properties">
 		<property name="project.config" value="debug" overwrite="false" />
-		<if test="${not(target::exists('set-' + project.config + '-project-configuration'))}">
-			<fail message="Unknown configuration: '${project.config}'" />
-		</if>
-
-		<call target="set-${project.config}-project-configuration" />
-
+		<property name="build.name" value="NHibernate-${project.version}" if="${project.config == 'release'}"/>
+		<property name="build.name" value="NHibernate-${project.version}-${project.config}" unless="${project.config == 'release'}" />
+		<property name="build.config" value="Release" if="${project.config == 'release'}"/>
+		<property name="build.config" value="Debug" unless="${project.config == 'release'}" />
 		<property name="build.root.dir" value="${root.dir}/build/${build.name}" />
 		<property name="build.dir" value="${build.root.dir}" />
-		<property name="bin.dir" value="${build.dir}/bin" />
-		<property name="testresults.dir" 	value="${bin.dir}/test-results" />
+		<property name="testresults.dir" 	value="${build.dir}/bin/test-results" />
 		<property name="tools.dir" value="${root.dir}/Tools"/>
 	</target>
 
-	<target name="display-current-runtime">
-		<echo message="" />
-		<echo message="----------------------------------------------------------" />
-		<echo message=" ${framework::get-description(framework::get-target-framework())}" />
-		<echo message="----------------------------------------------------------" />
-		<echo message="" />
-		<echo message="framework : ${framework::get-target-framework()}" />
-		<echo message="description : ${framework::get-description(framework::get-target-framework())}" />
-		<echo message="sdk directory : ${framework::get-sdk-directory(framework::get-target-framework())}" />
-		<echo message="framework directory : ${framework::get-framework-directory(framework::get-target-framework())}" />
-		<echo message="assembly directory : ${framework::get-assembly-directory(framework::get-target-framework())}" />
-		<echo message="runtime engine : ${framework::get-runtime-engine(framework::get-target-framework())}" />
-		<echo message="" />
+	<target name="common.download-nuget" depends="common.init">
+		<get 
+			src="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" 
+			dest="${tools.dir}/nuget.exe" 
+			usetimestamp="true"
+		/>
 	</target>
 
-	<target name="common.init"
-		depends="set-project-configuration"
-		description="Initializes build properties">
-
-		<fileset id="project.sources" failonempty="true">
-			<include name="**/*.cs" />
-		</fileset>
-		<resourcefileset id="project.resources" />
+	<target name="common.nuget-restore" depends="common.init common.download-nuget">
+		<exec basedir="${tools.dir}" workingdir="${root.dir}/Tools" program="NuGet.exe">
+			<arg value="install" />
+		</exec>
 	</target>
-
-	<target name="common.get-nuget-package-path">
-		<xmlpeek 
-			file="${tools.dir}/packages.config" 
-			xpath="/packages/package[@id = '${nuget-package-id}']/@version"
-			property="nuget-package-version" />
-		<property name="nuget-package-path" value="${tools.dir}/${nuget-package-id}.${nuget-package-version}/" />
-	</target>
-
-	<target name="common.find-async-generator-console">
-		<property name="nuget-package-id" value="CSharpAsyncGenerator.CommandLine" />
-		<call target="common.get-nuget-package-path" />
-		<property name="async-generator-console"  value="${nuget-package-path}/tools/AsyncGenerator.CommandLine.exe" />
-	</target>
-
-	<target name="common.find-nunit">
-		<property name="nuget-package-id" value="NUnit.ConsoleRunner" />
-		<call target="common.get-nuget-package-path" />
-		<property name="nunit-console" value="${nuget-package-path}/tools/nunit3-console.exe" />
-	</target>
-
-	<target name="common.find-ndoc">
-		<property name="ndoc-console" value="${tools.dir}/ndoc/NDocConsole.exe" />
-	</target>
-  
-  <target name="nuget.set-properties">
-    <property name="nuget.nupackages.relative-dir" value="nuget_gallery" />
-
-    <property name="nuget.nupackages.dir" value="${build.dir}/${nuget.nupackages.relative-dir}" />
-    <property name="nuget.nupackages.pushbatfile" value="${nuget.nupackages.dir}/NuGetPush.bat" />
-  </target>
 
 </project>

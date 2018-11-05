@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
 using System.Linq.Expressions;
-using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Criterion;
@@ -29,9 +26,6 @@ namespace NHibernate.Impl
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(StatelessSessionImpl));
 
 		[NonSerialized]
-		private readonly ConnectionManager connectionManager;
-
-		[NonSerialized]
 		private readonly StatefulPersistenceContext temporaryPersistenceContext;
 
 		internal StatelessSessionImpl(SessionFactoryImpl factory, ISessionCreationOptions options)
@@ -40,8 +34,6 @@ namespace NHibernate.Impl
 			using (BeginContext())
 			{
 				temporaryPersistenceContext = new StatefulPersistenceContext(this);
-				connectionManager = new ConnectionManager(this, options.UserSuppliedConnection, ConnectionReleaseMode.AfterTransaction,
-					EmptyInterceptor.Instance, options.ShouldAutoJoinTransaction);
 
 				if (log.IsDebugEnabled())
 				{
@@ -93,15 +85,6 @@ namespace NHibernate.Impl
 		public override long Timestamp
 		{
 			get { throw new NotSupportedException(); }
-		}
-
-		public override IBatcher Batcher
-		{
-			get
-			{
-				CheckAndUpdateSessionStatus();
-				return connectionManager.Batcher;
-			}
 		}
 
 		public override void CloseSessionFromSystemTransaction()
@@ -245,7 +228,11 @@ namespace NHibernate.Impl
 
 		public override object GetContextEntityIdentifier(object obj)
 		{
-			return null;
+			using (BeginProcess())
+			{
+				EntityEntry entry = temporaryPersistenceContext.GetEntry(obj);
+				return (entry != null) ? entry.Id : null;
+			}
 		}
 
 		public override object Instantiate(string clazz, object id)
@@ -291,6 +278,8 @@ namespace NHibernate.Impl
 			get { return CollectionHelper.EmptyDictionary<string, IFilter>(); }
 		}
 
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
 		public override IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar)
 		{
 			using (BeginContext())
@@ -309,11 +298,6 @@ namespace NHibernate.Impl
 		public override EventListeners Listeners
 		{
 			get { throw new NotSupportedException(); }
-		}
-
-		public override ConnectionManager ConnectionManager
-		{
-			get { return connectionManager; }
 		}
 
 		public override bool IsEventSource
@@ -345,11 +329,6 @@ namespace NHibernate.Impl
 			get { return !IsClosed; }
 		}
 
-		public override bool IsConnected
-		{
-			get { return connectionManager.IsConnected; }
-		}
-
 		public override FlushMode FlushMode
 		{
 			get { return FlushMode.Commit; }
@@ -377,11 +356,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override DbConnection Connection
-		{
-			get { return connectionManager.GetConnection(); }
-		}
-
 		public IStatelessSession SetBatchSize(int batchSize)
 		{
 			Batcher.BatchSize = batchSize;
@@ -401,18 +375,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override bool TransactionInProgress
-		{
-			get { return Transaction.IsActive; }
-		}
-
 		#region IStatelessSession Members
-
-		/// <summary> Get the current Hibernate transaction.</summary>
-		public ITransaction Transaction
-		{
-			get { return connectionManager.Transaction; }
-		}
 
 		public override CacheMode CacheMode
 		{
@@ -455,7 +418,7 @@ namespace NHibernate.Impl
 				{
 					throw new SessionException("Session was already closed!");
 				}
-				ConnectionManager.Close();
+				CloseConnectionManager();
 				SetClosed();
 			}
 		}
@@ -780,28 +743,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary>
-		/// Begin a NHibernate transaction
-		/// </summary>
-		/// <returns>A NHibernate transaction</returns>
-		public ITransaction BeginTransaction()
-		{
-			return BeginTransaction(IsolationLevel.Unspecified);
-		}
-
-		/// <summary>
-		/// Begin a NHibernate transaction with the specified isolation level
-		/// </summary>
-		/// <param name="isolationLevel">The isolation level</param>
-		/// <returns>A NHibernate transaction</returns>
-		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
-		{
-			using (BeginProcess())
-			{
-				return connectionManager.BeginTransaction(isolationLevel);
-			}
-		}
-
 		#endregion
 
 		#region IDisposable Members
@@ -914,16 +855,20 @@ namespace NHibernate.Impl
 			}
 		}
 
+		//Since 5.2
+		[Obsolete("Replaced by QueryBatch")]
 		public override FutureCriteriaBatch FutureCriteriaBatch
 		{
-			get { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
-			protected internal set { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
+			get { throw new NotSupportedException("future queries are not supported for stateless session"); }
+			protected internal set { throw new NotSupportedException("future queries are not supported for stateless session"); }
 		}
 
+		//Since 5.2
+		[Obsolete("Replaced by QueryBatch")]
 		public override FutureQueryBatch FutureQueryBatch
 		{
-			get { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
-			protected internal set { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
+			get { throw new NotSupportedException("future queries are not supported for stateless session"); }
+			protected internal set { throw new NotSupportedException("future queries are not supported for stateless session"); }
 		}
 
 		public override IEntityPersister GetEntityPersister(string entityName, object obj)

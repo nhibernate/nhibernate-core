@@ -1,5 +1,4 @@
 using System.Data;
-using NHibernate.Driver;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -8,6 +7,9 @@ namespace NHibernate.Dialect
 {
 	public class MsSql2005Dialect : MsSql2000Dialect
 	{
+		///<remarks>http://stackoverflow.com/a/7264795/259946</remarks>
+		public const int MaxSizeForXml = 2147483647; // int.MaxValue
+
 		public MsSql2005Dialect()
 		{
 			RegisterColumnType(DbType.Xml, "XML");
@@ -16,16 +18,16 @@ namespace NHibernate.Dialect
 		protected override void RegisterCharacterTypeMappings()
 		{
 			base.RegisterCharacterTypeMappings();
-			RegisterColumnType(DbType.String, SqlClientDriver.MaxSizeForClob, "NVARCHAR(MAX)");
-			RegisterColumnType(DbType.AnsiString, SqlClientDriver.MaxSizeForAnsiClob, "VARCHAR(MAX)");
+			RegisterColumnType(DbType.String, MaxSizeForClob, "NVARCHAR(MAX)");
+			RegisterColumnType(DbType.AnsiString, MaxSizeForAnsiClob, "VARCHAR(MAX)");
 		}
 
 		protected override void RegisterLargeObjectTypeMappings()
 		{
 			base.RegisterLargeObjectTypeMappings();
 			RegisterColumnType(DbType.Binary, "VARBINARY(MAX)");
-			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForLengthLimitedBinary, "VARBINARY($l)");
-			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForBlob, "VARBINARY(MAX)");
+			RegisterColumnType(DbType.Binary, MaxSizeForLengthLimitedBinary, "VARBINARY($l)");
+			RegisterColumnType(DbType.Binary, MaxSizeForBlob, "VARBINARY(MAX)");
 		}
 
 		protected override void RegisterKeywords()

@@ -263,11 +263,11 @@ namespace NHibernate.Event.Default
 				
 				if (((EventCache)copyCache).IsOperatedOn(propertyFromEntity))
 				{
-					log.Info("property '{0}.{1}' from original entity is in copyCache and is in the process of being merged; {1} =[{2}]", copyEntry.EntityName, propertyName, propertyFromEntity);
+					log.Info(ex, "property '{0}.{1}' from original entity is in copyCache and is in the process of being merged; {1} =[{2}]", copyEntry.EntityName, propertyName, propertyFromEntity);
 				}
 				else
 				{
-					log.Info("property '{0}.{1}' from original entity is in copyCache and is not in the process of being merged; {1} =[{2}]", copyEntry.EntityName, propertyName, propertyFromEntity);
+					log.Info(ex, "property '{0}.{1}' from original entity is in copyCache and is not in the process of being merged; {1} =[{2}]", copyEntry.EntityName, propertyName, propertyFromEntity);
 				}
 				
 				// continue...; we'll find out if it ends up not getting saved later

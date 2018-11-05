@@ -15,7 +15,7 @@ namespace NHibernate.Test.Unconstrained
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Unconstrained.PersonNoLazy.hbm.xml"}; }
 		}
@@ -69,7 +69,7 @@ namespace NHibernate.Test.Unconstrained
 			session = OpenSession();
 			tx = session.BeginTransaction();
 			p = (Person) session.CreateCriteria(typeof(Person))
-			             	.SetFetchMode("Employee", FetchMode.Join)
+			             	.Fetch("Employee")
 			             	.Add(Expression.Eq("Name", "gavin"))
 			             	.UniqueResult();
 			Assert.IsNull(p.Employee);
@@ -82,7 +82,7 @@ namespace NHibernate.Test.Unconstrained
 			session = OpenSession();
 			tx = session.BeginTransaction();
 			p = (Person) session.CreateCriteria(typeof(Person))
-			             	.SetFetchMode("Employee", FetchMode.Join)
+			             	.Fetch("Employee")
 			             	.Add(Expression.Eq("Name", "gavin"))
 			             	.UniqueResult();
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Employee));

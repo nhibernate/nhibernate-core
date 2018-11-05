@@ -30,6 +30,7 @@ namespace NHibernate.Test
 				connections.TryAdd(connection, 0);
 				return connection;
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				throw new HibernateException("Could not open connection to: " + ConnectionString, e);

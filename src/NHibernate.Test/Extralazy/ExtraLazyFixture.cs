@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Extralazy
@@ -12,7 +13,7 @@ namespace NHibernate.Test.Extralazy
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"Extralazy.UserGroup.hbm.xml"}; }
 		}
@@ -20,6 +21,16 @@ namespace NHibernate.Test.Extralazy
 		protected override string CacheConcurrencyStrategy
 		{
 			get { return null; }
+		}
+
+		protected override void OnTearDown()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.Delete("from System.Object");
+				t.Commit();
+			}
 		}
 
 		[Test]
@@ -83,6 +94,10 @@ namespace NHibernate.Test.Extralazy
 				gavin = s.Get<User>("gavin");
 				Assert.AreEqual(2, gavin.Documents.Count);
 				gavin.Documents.Remove(hia2);
+				// Do not convert Documents.Contains to Does.Contain/Does.Not.Contain: NUnit constraints will trigger
+				// initialization of the collection. Moreover, with extra-lazy, collection.Contains works even if
+				// the entity does not properly overrides Equals and GetHashCode and a detached instance is used,
+				// provided the collection is not yet initialized, which is the case here.
 				Assert.IsFalse(gavin.Documents.Contains(hia2));
 				Assert.IsTrue(gavin.Documents.Contains(hia));
 				Assert.AreEqual(1, gavin.Documents.Count);
@@ -102,6 +117,47 @@ namespace NHibernate.Test.Extralazy
 				gavin.Documents.Clear();
 				Assert.IsTrue(NHibernateUtil.IsInitialized(gavin.Documents));
 				s.Delete(gavin);
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void OrphanDeleteWithEnumeration()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var gavin = new User("gavin", "secret");
+				gavin.Documents.Add(new Document("HiA", "blah blah blah", gavin));
+				gavin.Documents.Add(new Document("HiA2", "blah blah blah blah", gavin));
+				s.Persist(gavin);
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var hia2 = s.Get<Document>("HiA2");
+				var hia = s.Get<Document>("HiA");
+				var gavin = s.Get<User>("gavin");
+				Assert.That(gavin.Documents, Has.Count.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Expecting non initialized collection");
+				gavin.Documents.Remove(hia2);
+				// Force an enumeration
+				using (var e = gavin.Documents.GetEnumerator())
+					e.MoveNext();
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.True, "Expecting initialized collection");
+				Assert.That(gavin.Documents, Does.Not.Contain(hia2).And.Contain(hia).And.Count.EqualTo(1));
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var hia = s.Get<Document>("HiA");
+				var gavin = s.Get<User>("gavin");
+				Assert.That(gavin.Documents, Has.Count.EqualTo(1).And.Contain(hia));
+				Assert.That(s.Get<Document>("HiA2"), Is.Null);
 				t.Commit();
 			}
 		}
@@ -292,6 +348,39 @@ namespace NHibernate.Test.Extralazy
 			{
 				s.Delete("from SessionAttribute");
 				s.Delete("from User");
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void AddToUninitializedSetWithLaterLazyLoad()
+		{
+			User gavin;
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = new User("gavin", "secret");
+				var hia = new Document("HiA", "blah blah blah", gavin);
+				gavin.Documents.Add(hia);
+				s.Persist(gavin);
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = s.Get<User>("gavin");
+				var hia2 = new Document("HiA2", "blah blah blah blah", gavin);
+				gavin.Documents.Add(hia2);
+
+				foreach (var _ in gavin.Documents)
+				{
+					//Force Iteration
+				}
+
+				Assert.That(gavin.Documents.Contains(hia2));
+				s.Delete(gavin);
 				t.Commit();
 			}
 		}

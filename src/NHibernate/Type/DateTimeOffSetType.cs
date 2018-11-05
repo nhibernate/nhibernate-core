@@ -58,21 +58,18 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			var dateValue = (DateTimeOffset) value;
-			st.Parameters[index].Value =
-				new DateTimeOffset(dateValue.Ticks, dateValue.Offset);
+			st.Parameters[index].Value = value;
 		}
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
 			{
-				var dbValue = (DateTimeOffset) rs[index];
-				return new DateTimeOffset(dbValue.Ticks, dbValue.Offset);
+				return (DateTimeOffset) rs[index];
 			}
 			catch (Exception ex)
 			{
-				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[index]), ex);
+				throw new FormatException(string.Format("Input '{0}' was not in the correct format.", rs[index]), ex);
 			}
 		}
 
@@ -117,17 +114,42 @@ namespace NHibernate.Type
 			return date1.Equals(date2);
 		}
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior.
+		/// <inheritdoc />
 		public object StringToObject(string xml)
 		{
-			return string.IsNullOrEmpty(xml) ? null : FromStringValue(xml);
+			return string.IsNullOrEmpty(xml) ? null :
+				// 6.0 TODO: remove warning disable/restore
+#pragma warning disable 618
+				FromStringValue(xml);
+#pragma warning restore 618
 		}
 
+		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object val)
 		{
 			return ((DateTimeOffset) val).ToString();
 		}
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior. Replace override keyword by virtual after having
+		// removed the obsoleted base.
+		/// <inheritdoc cref="IVersionType.FromStringValue"/>
+#pragma warning disable 672
 		public override object FromStringValue(string xml)
+#pragma warning restore 672
 		{
 			return DateTimeOffset.Parse(xml);
 		}

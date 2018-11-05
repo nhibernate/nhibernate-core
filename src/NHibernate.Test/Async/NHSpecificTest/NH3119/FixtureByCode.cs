@@ -17,6 +17,7 @@ using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Properties;
+using NHibernate.Util;
 using NUnit.Framework;
 using NHibernate.Linq;
 
@@ -99,11 +100,21 @@ namespace NHibernate.Test.NHSpecificTest.NH3119
 		public async Task PocoComponentTuplizerOfDeserializedConfiguration_Instantiate_UsesReflectonOptimizerAsync()
 		{
 			MemoryStream configMemoryStream = new MemoryStream();
-			BinaryFormatter writer = new BinaryFormatter();
+			var writer = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			writer.Serialize(configMemoryStream, cfg);
 
 			configMemoryStream.Seek(0, SeekOrigin.Begin);
-			BinaryFormatter reader = new BinaryFormatter();
+			var reader = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			Configuration deserializedConfig = (Configuration)reader.Deserialize(configMemoryStream);
 			ISessionFactory factoryFromDeserializedConfig = deserializedConfig.BuildSessionFactory();
 

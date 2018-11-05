@@ -19,7 +19,7 @@ namespace NHibernate.Cfg
 		[Serializable]
 		public class ColumnNames
 		{
-			public readonly IDictionary<string, string> logicalToPhysical = new Dictionary<string, string>();
+			public readonly IDictionary<string, string> logicalToPhysical = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			public readonly IDictionary<string, string> physicalToLogical = new Dictionary<string, string>();
 		}
 
@@ -60,7 +60,6 @@ namespace NHibernate.Cfg
 		private string catalogName;
 		private string defaultCascade;
 		private string defaultNamespace;
-		private readonly Dialect.Dialect dialect;
 		private string defaultAssembly;
 		private string defaultAccess;
 		private bool autoImport;
@@ -89,6 +88,11 @@ namespace NHibernate.Cfg
 		/// </summary>
 		protected internal IDictionary<string, TableDescription> tableNameBinding;
 
+		//6.0 TODO: Remove
+		internal Lazy<Dialect.Dialect> LazyDialect;
+
+		//Since v5.2
+		[Obsolete("Please use constructor without a dialect parameter.")]
 		protected internal Mappings(
 			IDictionary<string, PersistentClass> classes,
 			IDictionary<string, Mapping.Collection> collections,
@@ -112,7 +116,57 @@ namespace NHibernate.Cfg
 			string defaultCatalog,
 			string defaultSchema,
 			string preferPooledValuesLo,
-			Dialect.Dialect dialect)
+			Dialect.Dialect dialect) :
+			this(
+				classes,
+				collections,
+				tables,
+				queries,
+				sqlqueries,
+				resultSetMappings,
+				imports,
+				secondPasses,
+				filtersSecondPasses,
+				propertyReferences,
+				namingStrategy,
+				typeDefs,
+				filterDefinitions,
+				extendsQueue,
+				auxiliaryDatabaseObjects,
+				tableNameBinding,
+				columnNameBindingPerTable,
+				defaultAssembly,
+				defaultNamespace,
+				defaultCatalog,
+				defaultSchema,
+				preferPooledValuesLo)
+		{
+			LazyDialect = new Lazy<Dialect.Dialect>(() => dialect);
+		}
+
+		protected internal Mappings(
+			IDictionary<string, PersistentClass> classes,
+			IDictionary<string, Mapping.Collection> collections,
+			IDictionary<string, Table> tables,
+			IDictionary<string, NamedQueryDefinition> queries,
+			IDictionary<string, NamedSQLQueryDefinition> sqlqueries,
+			IDictionary<string, ResultSetMappingDefinition> resultSetMappings,
+			IDictionary<string, string> imports,
+			IList<SecondPassCommand> secondPasses,
+			Queue<FilterSecondPassArgs> filtersSecondPasses,
+			IList<PropertyReference> propertyReferences,
+			INamingStrategy namingStrategy,
+			IDictionary<string, TypeDef> typeDefs,
+			IDictionary<string, FilterDefinition> filterDefinitions,
+			ISet<ExtendsQueueEntry> extendsQueue,
+			IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects,
+			IDictionary<string, TableDescription> tableNameBinding,
+			IDictionary<Table, ColumnNames> columnNameBindingPerTable,
+			string defaultAssembly,
+			string defaultNamespace,
+			string defaultCatalog,
+			string defaultSchema,
+			string preferPooledValuesLo)
 		{
 			this.classes = classes;
 			this.collections = collections;
@@ -135,7 +189,6 @@ namespace NHibernate.Cfg
 			DefaultCatalog = defaultCatalog;
 			DefaultSchema = defaultSchema;
 			PreferPooledValuesLo = preferPooledValuesLo;
-			this.dialect = dialect;
 			this.filtersSecondPasses = filtersSecondPasses;
 		}
 
@@ -183,10 +236,9 @@ namespace NHibernate.Cfg
 			return result;
 		}
 
-		public Dialect.Dialect Dialect
-		{
-			get { return dialect; }
-		}
+		//Since v5.2
+		[Obsolete("This property will be removed in a future version.")]
+		public Dialect.Dialect Dialect => LazyDialect.Value;
 
 		/// <summary>
 		/// 
@@ -260,7 +312,7 @@ namespace NHibernate.Cfg
 
 		public Table AddTable(string schema, string catalog, string name, string subselect, bool isAbstract, string schemaAction)
 		{
-			string key = subselect ?? dialect.Qualify(catalog, schema, name);
+			string key = subselect ?? BuildTableNameKey(catalog, schema, name);
 			Table table;
 			if (!tables.TryGetValue(key, out table))
 			{
@@ -327,7 +379,7 @@ namespace NHibernate.Cfg
 
 		public Table AddDenormalizedTable(string schema, string catalog, string name, bool isAbstract, string subselect, Table includedTable)
 		{
-			string key = subselect ?? dialect.Qualify(schema, catalog, name);
+			string key = subselect ?? BuildTableNameKey(schema, catalog, name);
 
 			Table table = new DenormalizedTable(includedTable)
 			              	{
@@ -370,7 +422,7 @@ namespace NHibernate.Cfg
 
 		public Table GetTable(string schema, string catalog, string name)
 		{
-			string key = dialect.Qualify(catalog, schema, name);
+			string key = BuildTableNameKey(catalog, schema, name);
 			return tables[key];
 		}
 
@@ -536,8 +588,8 @@ namespace NHibernate.Cfg
 			}
 
 			string oldFinalName;
-			binding.logicalToPhysical.TryGetValue(logicalName.ToLowerInvariant(), out oldFinalName);
-			binding.logicalToPhysical[logicalName.ToLowerInvariant()] = finalColumn.GetQuotedName();
+			binding.logicalToPhysical.TryGetValue(logicalName, out oldFinalName);
+			binding.logicalToPhysical[logicalName] = finalColumn.GetQuotedName();
 			if (oldFinalName != null &&
 					!(finalColumn.IsQuoted
 							? oldFinalName.Equals(finalColumn.GetQuotedName())
@@ -584,7 +636,6 @@ namespace NHibernate.Cfg
 
 		public string GetPhysicalColumnName(string logicalName, Table table)
 		{
-			logicalName = logicalName.ToLowerInvariant();
 			string finalName = null;
 			Table currentTable = table;
 			do

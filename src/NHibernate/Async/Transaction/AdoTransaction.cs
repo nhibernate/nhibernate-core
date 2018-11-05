@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-
 using NHibernate.Engine;
 using NHibernate.Impl;
 
@@ -28,7 +27,7 @@ namespace NHibernate.Transaction
 			cancellationToken.ThrowIfCancellationRequested();
 			session.ConnectionManager.AfterTransaction();
 			await (session.AfterTransactionCompletionAsync(successful, this, cancellationToken)).ConfigureAwait(false);
-			NotifyLocalSynchsAfterTransactionCompletion(successful);
+			await (NotifyLocalSynchsAfterTransactionCompletionAsync(successful, cancellationToken)).ConfigureAwait(false);
 			foreach (var dependentSession in session.ConnectionManager.DependentSessions)
 				await (dependentSession.AfterTransactionCompletionAsync(successful, this, cancellationToken)).ConfigureAwait(false);
 	
@@ -57,7 +56,7 @@ namespace NHibernate.Transaction
 				log.Debug("Start Commit");
 
 				await (session.BeforeTransactionCompletionAsync(this, cancellationToken)).ConfigureAwait(false);
-				NotifyLocalSynchsBeforeTransactionCompletion();
+				await (NotifyLocalSynchsBeforeTransactionCompletionAsync(cancellationToken)).ConfigureAwait(false);
 				foreach (var dependentSession in session.ConnectionManager.DependentSessions)
 					await (dependentSession.BeforeTransactionCompletionAsync(this, cancellationToken)).ConfigureAwait(false);
 
@@ -70,6 +69,7 @@ namespace NHibernate.Transaction
 					await (AfterTransactionCompletionAsync(true, cancellationToken)).ConfigureAwait(false);
 					Dispose();
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (HibernateException e)
 				{
 					log.Error(e, "Commit failed");
@@ -191,5 +191,74 @@ namespace NHibernate.Transaction
 		}
 
 		#endregion
+
+		private async Task NotifyLocalSynchsBeforeTransactionCompletionAsync(CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+#pragma warning disable 612
+			if (synchronizations != null)
+			{
+				foreach (var sync in synchronizations)
+#pragma warning restore 612
+				{
+					try
+					{
+						sync.BeforeCompletion();
+					}
+					catch (Exception e)
+					{
+						log.Error(e, "exception calling user Synchronization");
+						throw;
+					}
+				}
+			}
+
+			if (_completionSynchronizations == null)
+				return;
+
+			foreach (var sync in _completionSynchronizations)
+			{
+				await (sync.ExecuteBeforeTransactionCompletionAsync(cancellationToken)).ConfigureAwait(false);
+			}
+		}
+
+		private async Task NotifyLocalSynchsAfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			begun = false;
+
+#pragma warning disable 612
+			if (synchronizations != null)
+			{
+				foreach (var sync in synchronizations)
+#pragma warning restore 612
+				{
+					try
+					{
+						sync.AfterCompletion(success);
+					}
+					catch (Exception e)
+					{
+						log.Error(e, "exception calling user Synchronization");
+					}
+				}
+			}
+
+			if (_completionSynchronizations == null)
+				return;
+
+			foreach (var sync in _completionSynchronizations)
+			{
+				try
+				{
+					await (sync.ExecuteAfterTransactionCompletionAsync(success, cancellationToken)).ConfigureAwait(false);
+				}
+				catch (OperationCanceledException) { throw; }
+				catch (Exception e)
+				{
+					log.Error(e, "exception calling user Synchronization");
+				}
+			}
+		}
 	}
 }

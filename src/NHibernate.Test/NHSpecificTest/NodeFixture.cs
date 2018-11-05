@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class NodeFixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"NHSpecific.Node.hbm.xml"}; }
 		}

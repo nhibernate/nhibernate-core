@@ -15,7 +15,7 @@ namespace NHibernate.Test.Subselect
 			return !(Dialect is Oracle8iDialect);
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"Subselect.Beings.hbm.xml"}; }
 		}

@@ -57,14 +57,23 @@ namespace NHibernate.Type
 			get { return "Guid"; }
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
 			return new Guid(xml);
 		}
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior.
+		/// <inheritdoc />
 		public object StringToObject(string xml)
 		{
-			return string.IsNullOrEmpty(xml) ? null : FromStringValue(xml);
+			return string.IsNullOrEmpty(xml) ? null :
+				// 6.0 TODO: inline the call.
+#pragma warning disable 618
+				FromStringValue(xml);
+#pragma warning restore 618
 		}
 
 		public override System.Type PrimitiveClass

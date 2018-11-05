@@ -18,7 +18,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 	[TestFixture]
 	public class BasicForcedTableSequenceTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "IdGen.Enhanced.Forcedtable.Basic.hbm.xml" }; }
 		}

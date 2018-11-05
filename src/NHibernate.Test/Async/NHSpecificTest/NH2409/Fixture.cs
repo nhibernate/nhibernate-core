@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Linq;
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
@@ -20,6 +19,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2409
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
+
 		[Test]
 		public async Task BugAsync()
 		{

@@ -8,11 +8,6 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 	{
 		protected bool isDynamic;
 
-		public override string BugNumber
-		{
-			get { return "NH372"; }
-		}
-
 		private void ComponentFieldNotInserted_Generic(System.Type type)
 		{
 			int id;

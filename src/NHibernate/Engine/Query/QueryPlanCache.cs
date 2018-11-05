@@ -59,7 +59,11 @@ namespace NHibernate.Engine.Query
 					log.Debug("unable to locate HQL query plan in cache; generating ({0})", queryExpression.Key);
 				}
 				plan = new QueryExpressionPlan(queryExpression, shallow, enabledFilters, factory);
-				planCache.Put(key, plan);
+				// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
+				if (!(queryExpression is NhLinqExpression linqExpression) || linqExpression.CanCachePlan)
+					planCache.Put(key, plan);
+				else
+					log.Debug("Query plan not cacheable");
 			}
 			else
 			{
@@ -110,7 +114,11 @@ namespace NHibernate.Engine.Query
 			{
 				log.Debug("unable to locate collection-filter query plan in cache; generating ({0} : {1})", collectionRole, queryExpression.Key);
 				plan = new FilterQueryPlan(queryExpression, collectionRole, shallow, enabledFilters, factory);
-				planCache.Put(key, plan);
+				// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
+				if (!(queryExpression is NhLinqExpression linqExpression) || linqExpression.CanCachePlan)
+					planCache.Put(key, plan);
+				else
+					log.Debug("Query plan not cacheable");
 			}
 			else
 			{
@@ -206,9 +214,9 @@ namespace NHibernate.Engine.Query
 				unchecked
 				{
 					var hash = query.GetHashCode();
-					hash = 29*hash + (shallow ? 1 : 0);
-					hash = 29*hash + CollectionHelper.GetHashCode(filterNames);
-					hash = 29*hash + queryTypeDiscriminator.GetHashCode();
+					hash = 29 * hash + (shallow ? 1 : 0);
+					hash = 29 * hash + CollectionHelper.GetHashCode(filterNames, filterNames.Comparer);
+					hash = 29 * hash + queryTypeDiscriminator.GetHashCode();
 					hashCode = hash;
 				}
 			}
@@ -281,7 +289,7 @@ namespace NHibernate.Engine.Query
 				int hash = query.GetHashCode();
 				hash = 29 * hash + collectionRole.GetHashCode();
 				hash = 29 * hash + (shallow ? 1 : 0);
-				hash = 29 * hash + CollectionHelper.GetHashCode(filterNames);
+				hash = 29 * hash + CollectionHelper.GetHashCode(filterNames, filterNames.Comparer);
 				hashCode = hash;
 			}
 

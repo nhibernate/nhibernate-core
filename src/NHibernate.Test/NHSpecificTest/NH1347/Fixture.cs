@@ -8,19 +8,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1347
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(Fixture));
-
-		public override string BugNumber
+		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			get { return "NH1347"; }
+			return Dialect is SQLiteDialect;
 		}
 
 		[Test]
 		public void Bug()
 		{
-			if((Dialect is SQLiteDialect)==false)
-				Assert.Ignore("NH-1347 is sqlite specific");
-
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{

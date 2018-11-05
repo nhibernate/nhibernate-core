@@ -8,7 +8,7 @@ namespace NHibernate.Driver
 	public class DB2400Driver : ReflectionBasedDriver
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DB2Driver"/> class.
+		/// Initializes a new instance of the <see cref="DB2400Driver"/> class.
 		/// </summary>
 		/// <exception cref="HibernateException">
 		/// Thrown when the <c>IBM.Data.DB2.iSeries</c> assembly can not be loaded.

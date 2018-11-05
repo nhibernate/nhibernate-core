@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NHibernate.Util;
 
 namespace NHibernate.SqlCommand.Parser
 {
@@ -22,7 +23,7 @@ namespace NHibernate.SqlCommand.Parser
 							nestLevel--;
 							break;
 						case SqlTokenType.Text:
-							if (nestLevel == 0 && token.Equals(keyword, StringComparison.InvariantCultureIgnoreCase)) return true;
+							if (nestLevel == 0 && token.Equals(keyword, StringComparison.OrdinalIgnoreCase)) return true;
 							break;
 					}
 				}
@@ -33,9 +34,7 @@ namespace NHibernate.SqlCommand.Parser
 
 		public static bool TryParseUntilFirstMsSqlSelectColumn(this IEnumerator<SqlToken> tokenEnum)
 		{
-			SqlToken selectToken;
-			bool isDistinct;
-			return TryParseUntilFirstMsSqlSelectColumn(tokenEnum, out selectToken, out isDistinct);
+			return TryParseUntilFirstMsSqlSelectColumn(tokenEnum, out _, out _);
 		}
 
 		public static bool TryParseUntilFirstMsSqlSelectColumn(this IEnumerator<SqlToken> tokenEnum, out SqlToken selectToken, out bool isDistinct)
@@ -49,18 +48,18 @@ namespace NHibernate.SqlCommand.Parser
 				if (!tokenEnum.MoveNext()) return false;
 
 				// [ DISTINCT | ALL ]
-				if (tokenEnum.Current.Equals("distinct", StringComparison.InvariantCultureIgnoreCase))
+				if (tokenEnum.Current.Equals("distinct", StringComparison.OrdinalIgnoreCase))
 				{
 					isDistinct = true;
 					if (!tokenEnum.MoveNext()) return false;
 				}
-				else if	(tokenEnum.Current.Equals("all", StringComparison.InvariantCultureIgnoreCase))
+				else if	(tokenEnum.Current.Equals("all", StringComparison.OrdinalIgnoreCase))
 				{
 					if (!tokenEnum.MoveNext()) return false;
 				}
 
 				// [ TOP { integer | ( expression ) } [PERCENT] [ WITH TIES ] ] 
-				if (tokenEnum.Current.Equals("top", StringComparison.InvariantCultureIgnoreCase))
+				if (tokenEnum.Current.Equals("top", StringComparison.OrdinalIgnoreCase))
 				{
 					if (!tokenEnum.MoveNext()) return false;
 					if (tokenEnum.Current.TokenType == SqlTokenType.BracketOpen)
@@ -72,21 +71,21 @@ namespace NHibernate.SqlCommand.Parser
 					}
 					if (!tokenEnum.MoveNext()) return false;
 
-					if (tokenEnum.Current.Equals("percent", StringComparison.InvariantCultureIgnoreCase))
+					if (tokenEnum.Current.Equals("percent", StringComparison.OrdinalIgnoreCase))
 					{
 						if (!tokenEnum.MoveNext()) return false;
 					}
-					if (tokenEnum.Current.Equals("with", StringComparison.InvariantCultureIgnoreCase))
+					if (tokenEnum.Current.Equals("with", StringComparison.OrdinalIgnoreCase))
 					{
 						if (!tokenEnum.MoveNext()) return false;
-						if (tokenEnum.Current.Equals("ties", StringComparison.InvariantCultureIgnoreCase))
+						if (tokenEnum.Current.Equals("ties", StringComparison.OrdinalIgnoreCase))
 						{
 							if (!tokenEnum.MoveNext()) return false;
 						}
 					}
 				}
 
-				if (!tokenEnum.Current.Value.StartsWith("@")) return true;
+				if (!tokenEnum.Current.Value.StartsWith('@')) return true;
 			}
 
 			return false;
@@ -99,9 +98,7 @@ namespace NHibernate.SqlCommand.Parser
 				orderToken = tokenEnum.Current;
 				if (tokenEnum.MoveNext())
 				{
-					return tokenEnum.Current.Equals("by", StringComparison.InvariantCultureIgnoreCase)
-						? tokenEnum.MoveNext()
-						: false;
+					return tokenEnum.Current.Equals("by", StringComparison.OrdinalIgnoreCase) && tokenEnum.MoveNext();
 				}
 			}
 

@@ -74,11 +74,19 @@ namespace NHibernate.Type
 			return dialect.ToBooleanValueString((bool)value);
 		}
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior.
+		/// <inheritdoc />
 		public virtual object StringToObject(string xml)
 		{
+			// 6.0 TODO: inline the call
+#pragma warning disable 618
 			return FromStringValue(xml);
+#pragma warning restore 618
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
 			return bool.Parse(xml);

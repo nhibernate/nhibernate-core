@@ -8,7 +8,7 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 	[TestFixture]
 	public class MultipleBagFetchFixture : AbstractMultipleCollectionFetchFixture
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"MultipleCollectionFetchTest.PersonBag.hbm.xml"}; }
 		}

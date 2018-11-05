@@ -7,7 +7,7 @@ namespace NHibernate.Test.FilterTest
 	[TestFixture]
 	public class FilterBinaryParameterTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"FilterTest.BinaryFiltered.hbm.xml"}; }
 		}

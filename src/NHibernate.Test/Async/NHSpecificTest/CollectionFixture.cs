@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Collections;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
@@ -22,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class CollectionFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"NHSpecific.LazyLoadBug.hbm.xml"}; }
 		}
@@ -34,6 +33,11 @@ namespace NHibernate.Test.NHSpecificTest
 				session.Delete("from LLParent");
 				session.Flush();
 			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		[Test]

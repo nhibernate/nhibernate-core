@@ -82,30 +82,27 @@ namespace NHibernate.Type
 		/// </remarks>
 		public abstract object Get(DbDataReader rs, string name, ISessionImplementor session);
 
-
 		/// <summary>
 		/// A representation of the value to be embedded in an XML element 
 		/// </summary>
 		/// <param name="val">The object that contains the values.
 		/// </param>
 		/// <returns>An Xml formatted string.</returns>
-		public abstract string ToString(object val);
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
+		public virtual string ToString(object val)
+		{
+			return val.ToString();
+		}
 
 		/// <inheritdoc />
-		/// <remarks>
-		/// <para>
-		/// This implementation forwards the call to <see cref="ToString(object)"/> if the parameter 
-		/// value is not null.
-		/// </para>
-		/// <para>
-		/// It has been "sealed" because the Types inheriting from <see cref="NullableType"/>
-		/// do not need and should not override this method.  All of their implementation
-		/// should be in <see cref="ToString(object)"/>.
-		/// </para>
-		/// </remarks>
-		public override sealed string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{
-			return (value == null) ? null : ToString(value);
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
 		}
 
 		/// <summary>
@@ -113,7 +110,12 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="xml">XML string to parse, guaranteed to be non-empty</param>
 		/// <returns></returns>
-		public abstract object FromStringValue(string xml);
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
+		public virtual object FromStringValue(string xml)
+		{
+			throw new NotImplementedException();
+		}
 
 		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
@@ -154,7 +156,7 @@ namespace NHibernate.Type
 			{
 				if (IsDebugEnabled)
 				{
-					Log.Debug("binding '{0}' to parameter: {1}", ToString(value), index);
+					Log.Debug("binding '{0}' to parameter: {1}", ToLoggableString(value, session.Factory), index);
 				}
 
 				Set(st, value, index, session);
@@ -242,7 +244,7 @@ namespace NHibernate.Type
 
 				if (IsDebugEnabled)
 				{
-					Log.Debug("returning '{0}' as column: {1}", ToString(val), name);
+					Log.Debug("returning '{0}' as column: {1}", ToLoggableString(val, session.Factory), name);
 				}
 
 				return val;
@@ -328,11 +330,6 @@ namespace NHibernate.Type
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
 		{
 			return value == null ? ArrayHelper.False : ArrayHelper.True;
-		}
-
-		public override bool IsEqual(object x, object y)
-		{
-			return Equals(x, y);
 		}
 
 		#region override of System.Object Members

@@ -7,11 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1001"; }
-		}
-
 		protected override void Configure(Configuration configuration)
 		{
 			cfg.SetProperty(Environment.GenerateStatistics, "true");

@@ -32,7 +32,6 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 
 			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, configuration.Properties, "not-defined");
-			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
 			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
 			{
 				await (SchemaMetadataUpdater.UpdateAsync(configuration, dialect, cancellationToken)).ConfigureAwait(false);
@@ -56,30 +55,30 @@ namespace NHibernate.Tool.hbm2ddl
 
 				for (int i = 0; i < args.Length; i++)
 				{
-					if (args[i].StartsWith("--"))
+					if (args[i].StartsWith("--", StringComparison.Ordinal))
 					{
 						if (args[i].Equals("--quiet"))
 						{
 							script = false;
 						}
-						else if (args[i].StartsWith("--properties="))
+						else if (args[i].StartsWith("--properties=", StringComparison.Ordinal))
 						{
 							throw new NotSupportedException("No properties file for .NET, use app.config instead");
 							//propFile = args[i].Substring( 13 );
 						}
-						else if (args[i].StartsWith("--config="))
+						else if (args[i].StartsWith("--config=", StringComparison.Ordinal))
 						{
 							cfg.Configure(args[i].Substring(9));
 						}
-						else if (args[i].StartsWith("--text"))
+						else if (args[i].StartsWith("--text", StringComparison.Ordinal))
 						{
 							doUpdate = false;
 						}
-						else if (args[i].StartsWith("--naming="))
+						else if (args[i].StartsWith("--naming=", StringComparison.Ordinal))
 						{
 							cfg.SetNamingStrategy(
 								(INamingStrategy)
-								Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(args[i].Substring(9))));
+								Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(args[i].Substring(9))));
 						}
 					}
 					else
@@ -98,6 +97,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 				await (new SchemaUpdate(cfg).ExecuteAsync(script, doUpdate, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				log.Error(e, "Error running schema update");
@@ -160,6 +160,7 @@ namespace NHibernate.Tool.hbm2ddl
 					meta = new DatabaseMetadata(connection, dialect);
 					stmt = connection.CreateCommand();
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception sqle)
 				{
 					exceptions.Add(sqle);
@@ -188,6 +189,7 @@ namespace NHibernate.Tool.hbm2ddl
 							await (stmt.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 						}
 					}
+					catch (OperationCanceledException) { throw; }
 					catch (Exception e)
 					{
 						exceptions.Add(e);
@@ -197,6 +199,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 				log.Info("schema update complete");
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				exceptions.Add(e);

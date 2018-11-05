@@ -141,7 +141,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 				Policy policy2 =
 					await (s.CreateCriteria<Policy>()
 						.Add(Restrictions.Eq("Id", _policy2Id))
-						.SetFetchMode("Tasks", FetchMode.Eager)
+						.Fetch("Tasks")
 						.UniqueResultAsync<Policy>());
 
 				Assert.That(NHibernateUtil.IsInitialized(policy2.Tasks));
@@ -150,7 +150,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 
 				var tasks =
 					s.CreateCriteria<Task>()
-						.SetFetchMode("TeamMember", FetchMode.Eager)
+						.Fetch("TeamMember")
 						.AddOrder(Order.Asc("TaskName"))
 						.Future<Task>();
 

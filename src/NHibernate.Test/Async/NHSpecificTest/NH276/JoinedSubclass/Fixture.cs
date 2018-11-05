@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH276.JoinedSubclass
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"NHSpecificTest.NH276.JoinedSubclass.Mappings.hbm.xml"}; }
 		}

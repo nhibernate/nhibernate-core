@@ -11,7 +11,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
@@ -269,6 +268,7 @@ namespace NHibernate.Impl
 						await (plan.PerformListAsync(queryParameters, this, results, cancellationToken)).ConfigureAwait(false);
 						success = true;
 					}
+					catch (OperationCanceledException) { throw; }
 					catch (HibernateException)
 					{
 						// Do not call Convert on HibernateExceptions
@@ -286,6 +286,8 @@ namespace NHibernate.Impl
 			}
 		}
 
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
 		public override async Task<IQueryTranslator[]> GetQueriesAsync(IQueryExpression query, bool scalar, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -677,8 +679,8 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="querySpaces"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns></returns>
-		private async Task<bool> AutoFlushIfRequiredAsync(ISet<string> querySpaces, CancellationToken cancellationToken)
+		/// <returns>Returns true if flush was executed</returns>
+		public override async Task<bool> AutoFlushIfRequiredAsync(ISet<string> querySpaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (BeginProcess())
@@ -1066,6 +1068,7 @@ namespace NHibernate.Impl
 						await (plan.PerformListAsync(queryParameters, this, results, cancellationToken)).ConfigureAwait(false);
 						success = true;
 					}
+					catch (OperationCanceledException) { throw; }
 					catch (HibernateException)
 					{
 						// Do not call Convert on HibernateExceptions
@@ -1156,6 +1159,7 @@ namespace NHibernate.Impl
 						}
 						success = true;
 					}
+					catch (OperationCanceledException) { throw; }
 					catch (HibernateException)
 					{
 						// Do not call Convert on HibernateExceptions
@@ -1242,7 +1246,7 @@ namespace NHibernate.Impl
 				// Always allow flushing from explicit transactions, otherwise check if flushing from scope is enabled.
 				if (tx != null || context.CanFlushOnSystemTransactionCompleted)
 					await (FlushBeforeTransactionCompletionAsync(cancellationToken)).ConfigureAwait(false);
-				actionQueue.BeforeTransactionCompletion();
+				await (actionQueue.BeforeTransactionCompletionAsync(cancellationToken)).ConfigureAwait(false);
 				try
 				{
 					Interceptor.BeforeTransactionCompletion(tx);

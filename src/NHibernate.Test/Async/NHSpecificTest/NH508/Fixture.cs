@@ -17,11 +17,6 @@ namespace NHibernate.Test.NHSpecificTest.NH508
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH508"; }
-		}
-
 		[Test]
 		public async Task BugAsync()
 		{

@@ -325,6 +325,14 @@ namespace NHibernate.Linq.Visitors
 			return result;
 		}
 
+		protected override Expression VisitMethodCall(MethodCallExpression node)
+		{
+			_memberExpressionDepth++;
+			var result = base.VisitMethodCall(node);
+			_memberExpressionDepth--;
+			return result;
+		}
+
 		private void SetResultValues(ExpressionValues values)
 		{
 			_handled.Pop();

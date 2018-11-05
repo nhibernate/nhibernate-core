@@ -13,6 +13,7 @@ using System.Collections;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
@@ -21,7 +22,7 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 	[TestFixture]
 	public class ProxyFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "DynamicProxyTests.InterfaceProxySerializationTests.ProxyImpl.hbm.xml" }; }
 		}
@@ -36,7 +37,12 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 			// Serialize the session
 			using (Stream stream = new MemoryStream())
 			{
-				IFormatter formatter = new BinaryFormatter();
+				var formatter = new BinaryFormatter
+				{
+#if !NETFX
+					SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+				};
 				formatter.Serialize(stream, s);
 
 				// Close the original session

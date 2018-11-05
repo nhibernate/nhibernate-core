@@ -33,22 +33,22 @@ namespace NHibernate.Tool.hbm2ddl
 
 				for (int i = 0; i < args.Length; i++)
 				{
-					if (args[i].StartsWith("--"))
+					if (args[i].StartsWith("--", StringComparison.Ordinal))
 					{
 						//if (args[i].StartsWith("--properties="))
 						//{
 						//  propFile = args[i].Substring(13);
 						//}
 						//else 
-						if (args[i].StartsWith("--config="))
+						if (args[i].StartsWith("--config=", StringComparison.Ordinal))
 						{
 							cfg.Configure(args[i].Substring(9));
 						}
-						else if (args[i].StartsWith("--naming="))
+						else if (args[i].StartsWith("--naming=", StringComparison.Ordinal))
 						{
 							cfg.SetNamingStrategy(
 								(INamingStrategy)
-								Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(args[i].Substring(9))));
+								Cfg.Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(args[i].Substring(9))));
 						}
 					}
 					else
@@ -66,6 +66,7 @@ namespace NHibernate.Tool.hbm2ddl
 				*/
 				await (new SchemaValidator(cfg).ValidateAsync(cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				log.Error(e, "Error running schema update");
@@ -88,6 +89,7 @@ namespace NHibernate.Tool.hbm2ddl
 					var connection = connectionHelper.Connection;
 					meta = new DatabaseMetadata(connection, dialect, false);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception sqle)
 				{
 					log.Error(sqle, "could not get database metadata");
@@ -95,6 +97,7 @@ namespace NHibernate.Tool.hbm2ddl
 				}
 				configuration.ValidateSchema(dialect, meta);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				log.Error(e, "could not complete schema validation");

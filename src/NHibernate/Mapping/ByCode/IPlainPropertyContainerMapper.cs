@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Mapping.ByCode.Impl.CustomizersImpl;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode
 {
@@ -53,5 +56,20 @@ namespace NHibernate.Mapping.ByCode
 	{
 		void OneToOne<TProperty>(Expression<Func<TContainer, TProperty>> property, Action<IOneToOneMapper<TProperty>> mapping) where TProperty : class;
 		void OneToOne<TProperty>(string notVisiblePropertyOrFieldName, Action<IOneToOneMapper<TProperty>> mapping) where TProperty : class;
+	}
+	
+	public static class BasePlainPropertyContainerMapperExtensions
+	{
+		//6.0 TODO: Merge into IBasePlainPropertyContainerMapper<> interface
+		public static void Component<TContainer, TComponent>(
+			this IBasePlainPropertyContainerMapper<TContainer> mapper,
+			Expression<Func<TContainer, IDictionary<string, object>>> property,
+			TComponent dynamicComponentTemplate,
+			Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class
+		{
+			var customizer = ReflectHelper.CastOrThrow<PropertyContainerCustomizer<TContainer>>(
+				mapper, "mapping a generic <string, object> dictionary as a dynamic component");
+			customizer.Component(property, dynamicComponentTemplate, mapping);
+		}
 	}
 }

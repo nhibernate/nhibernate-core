@@ -10,18 +10,10 @@ namespace NHibernate.Test.NHSpecificTest.NH464
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH464"; }
-		}
-
 		/// <summary>
 		/// Mapping files used in the TestCase
 		/// </summary>
-		protected override IList Mappings
-		{
-			get { return new string[] {"NHSpecificTest.NH464.Promotion.hbm.xml"}; }
-		}
+		protected override string[] Mappings => new[] {"Promotion.hbm.xml"};
 
 		protected override void OnSetUp()
 		{

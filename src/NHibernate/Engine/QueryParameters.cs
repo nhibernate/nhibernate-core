@@ -7,7 +7,6 @@ using NHibernate.Param;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
@@ -124,6 +123,8 @@ namespace NHibernate.Engine
 
 		public string CacheRegion { get; set; }
 
+		public CacheMode? CacheMode { get; set; }
+
 		public string Comment { get; set; }
 
 		public bool ForceCacheRefresh { get; set; }
@@ -201,19 +202,31 @@ namespace NHibernate.Engine
 
 		public QueryParameters CreateCopyUsing(RowSelection selection)
 		{
-			var copy = new QueryParameters(PositionalParameterTypes, PositionalParameterValues, NamedParameters, LockModes,
-			                               selection, IsReadOnlyInitialized, readOnly, Cacheable, CacheRegion, Comment, CollectionKeys,
-			                               OptionalObject, OptionalEntityName, OptionalId, ResultTransformer)
-			           {
-			           	ProcessedSql = ProcessedSql,
-			            ProcessedSqlParameters = ProcessedSqlParameters != null ? ProcessedSqlParameters.ToList() : null
-			           };
+			var copy = new QueryParameters(
+				PositionalParameterTypes, PositionalParameterValues, NamedParameters, LockModes, selection,
+				IsReadOnlyInitialized, readOnly, Cacheable, CacheRegion, Comment, CollectionKeys, OptionalObject,
+				OptionalEntityName, OptionalId, ResultTransformer)
+			{
+				ProcessedSql = ProcessedSql,
+				ProcessedSqlParameters = ProcessedSqlParameters != null ? ProcessedSqlParameters.ToList() : null,
+				CacheMode = CacheMode
+			};
 			return copy;
 		}
 
 		public bool IsReadOnly(ISessionImplementor session)
 		{
 			return IsReadOnlyInitialized ? ReadOnly : session.PersistenceContext.DefaultReadOnly;
+		}
+
+		public bool CanGetFromCache(ISessionImplementor session)
+		{
+			return !ForceCacheRefresh && (CacheMode ?? session.CacheMode).HasFlag(NHibernate.CacheMode.Get);
+		}
+
+		public bool CanPutToCache(ISessionImplementor session)
+		{
+			return (CacheMode ?? session.CacheMode).HasFlag(NHibernate.CacheMode.Put);
 		}
 	}
 }

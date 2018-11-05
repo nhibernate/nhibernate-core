@@ -74,7 +74,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			if (hqlSqlWalker.IsFilter())
 			{
 				//if (whereFragment.IndexOfCaseInsensitive("?") >= 0)
-                if (whereFragment.ToString().IndexOf("?") >= 0)
+                if (whereFragment.IndexOfOrdinal("?") >= 0)
                 {
 					IType collectionFilterKeyType = hqlSqlWalker.SessionFactoryHelper
 							.RequireQueryableCollection(hqlSqlWalker.CollectionFilterRole)
@@ -152,7 +152,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			{
 				return;
 			}
-			if (whereFragment.StartsWith("and"))
+			if (whereFragment.StartsWith("and", StringComparison.Ordinal))
 			{
 				whereFragment = whereFragment.Substring(4);
 			}

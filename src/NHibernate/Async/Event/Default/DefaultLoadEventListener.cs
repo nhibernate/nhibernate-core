@@ -9,6 +9,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using NHibernate.Cache;
@@ -405,14 +406,50 @@ namespace NHibernate.Event.Default
 			bool useCache = persister.HasCache && source.CacheMode .HasFlag(CacheMode.Get)
 				&& @event.LockMode.LessThan(LockMode.Read);
 
-			if (useCache)
+			if (!useCache)
 			{
-				ISessionFactoryImplementor factory = source.Factory;
+				return null;
+			}
+			ISessionFactoryImplementor factory = source.Factory;
+			var batchSize = persister.GetBatchSize();
+			if (batchSize > 1 && persister.Cache.PreferMultipleGet())
+			{
+				// The first item in the array is the item that we want to load
+				var entityBatch =
+					await (source.PersistenceContext.BatchFetchQueue.GetEntityBatchAsync(persister, @event.EntityId, batchSize, false, cancellationToken)).ConfigureAwait(false);
+				// Ignore null values as the retrieved batch may contains them when there are not enough
+				// uninitialized entities in the queue
+				var keys = new List<CacheKey>(batchSize);
+				for (var i = 0; i < entityBatch.Length; i++)
+				{
+					var key = entityBatch[i];
+					if (key == null)
+					{
+						break;
+					}
+					keys.Add(source.GenerateCacheKey(key, persister.IdentifierType, persister.RootEntityName));
+				}
+				var cachedObjects = await (persister.Cache.GetManyAsync(keys.ToArray(), source.Timestamp, cancellationToken)).ConfigureAwait(false);
+				for (var i = 1; i < cachedObjects.Length; i++)
+				{
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AssembleAsync(
+						keys[i],
+						cachedObjects[i],
+						new LoadEvent(entityBatch[i], @event.EntityClassName, @event.LockMode, @event.Session),
+						false)).ConfigureAwait(false);
+				}
+				cancellationToken.ThrowIfCancellationRequested();
+				return await (AssembleAsync(keys[0], cachedObjects[0], @event, true)).ConfigureAwait(false);
+			}
+			var cacheKey = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
+			var cachedObject = await (persister.Cache.GetAsync(cacheKey, source.Timestamp, cancellationToken)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			return await (AssembleAsync(cacheKey, cachedObject, @event, true)).ConfigureAwait(false);
 
-				CacheKey ck = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
-				object ce = await (persister.Cache.GetAsync(ck, source.Timestamp, cancellationToken)).ConfigureAwait(false);
-
-				if (factory.Statistics.IsStatisticsEnabled)
+			Task<object> AssembleAsync(CacheKey ck, object ce, LoadEvent evt, bool alterStatistics)
+			{
+				if (factory.Statistics.IsStatisticsEnabled && alterStatistics)
 				{
 					if (ce == null)
 					{
@@ -434,12 +471,12 @@ namespace NHibernate.Event.Default
 					// NH: Different behavior (take a look to options.ExactPersister (NH-295))
 					if (!options.ExactPersister || persister.EntityMetamodel.SubclassEntityNames.Contains(entry.Subclass))
 					{
-						return await (AssembleCacheEntryAsync(entry, @event.EntityId, persister, @event, cancellationToken)).ConfigureAwait(false);
+						return AssembleCacheEntryAsync(entry, evt.EntityId, persister, evt, cancellationToken);
 					}
 				}
-			}
 
-			return null;
+				return Task.FromResult<object>(null);
+			}
 		}
 
 		private async Task<object> AssembleCacheEntryAsync(CacheEntry entry, object id, IEntityPersister persister, LoadEvent @event, CancellationToken cancellationToken)

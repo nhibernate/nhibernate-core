@@ -18,7 +18,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 	[TestFixture]
 	public class VersionedEntityWithInverseOneToManyJoinFailureExpectedTestAsync : AbstractEntityWithOneToManyTestAsync
 	{
-		protected override System.Collections.IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

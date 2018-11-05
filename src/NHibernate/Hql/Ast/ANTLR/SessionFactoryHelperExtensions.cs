@@ -42,7 +42,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <returns>The sql function, or null if not found.</returns>
 		public ISQLFunction FindSQLFunction(string functionName)
 		{
-			return _sfi.SQLFunctionRegistry.FindSQLFunction(functionName.ToLowerInvariant());
+			return _sfi.SQLFunctionRegistry.FindSQLFunction(functionName);
 		}
 
 		/// <summary>

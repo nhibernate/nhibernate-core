@@ -8,6 +8,7 @@ using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace NHibernate.Type
 {
@@ -95,15 +96,17 @@ namespace NHibernate.Type
 
 		public override object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			string entityName = (string)metaType.NullSafeGet(rs, names[0], session, owner);
-			object id = identifierType.NullSafeGet(rs, names[1], session, owner);
-			return new ObjectTypeCacheEntry(entityName, id);
+			return new ObjectTypeCacheEntry
+			{
+				Id = identifierType.NullSafeGet(rs, names[1], session, owner),
+				EntityName = (string) metaType.NullSafeGet(rs, names[0], session, owner)
+			};
 		}
 
 		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner)
 		{
 			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry) value;
-			return ResolveAny(holder.entityName, holder.id, session);
+			return ResolveAny(holder.EntityName, holder.Id, session);
 		}
 
 		public override object SemiResolve(object value, ISessionImplementor session, object owner)
@@ -165,28 +168,44 @@ namespace NHibernate.Type
 		}
 
 		[Serializable]
+		[DataContract]
 		public sealed class ObjectTypeCacheEntry
 		{
 			internal string entityName;
 			internal object id;
-			internal ObjectTypeCacheEntry(string entityName, object id)
+
+			// 6.0 TODO convert to auto-property
+			[DataMember]
+			public string EntityName
 			{
-				this.entityName = entityName;
-				this.id = id;
+				get => entityName;
+				set => entityName = value;
+			}
+
+			// 6.0 TODO convert to auto-property
+			[DataMember]
+			public object Id
+			{
+				get => id;
+				set => id = value;
 			}
 		}
 
 		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
 			ObjectTypeCacheEntry e = cached as ObjectTypeCacheEntry;
-			return (e == null) ? null : session.InternalLoad(e.entityName, e.id, false, false);
+			return (e == null) ? null : session.InternalLoad(e.EntityName, e.Id, false, false);
 		}
 
 		public override object Disassemble(object value, ISessionImplementor session, object owner)
 		{
-			return value == null ? null : 
-				new ObjectTypeCacheEntry(session.BestGuessEntityName(value), 
-				ForeignKeys.GetEntityIdentifierIfNotUnsaved(session.BestGuessEntityName(value), value, session));
+			return value == null
+				? null
+				: new ObjectTypeCacheEntry
+				{
+					EntityName = session.BestGuessEntityName(value),
+					Id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(session.BestGuessEntityName(value), value, session)
+				};
 		}
 
 		public override object Replace(object original, object current, ISessionImplementor session, object owner,
@@ -345,8 +364,8 @@ namespace NHibernate.Type
 			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry)old;
 			bool[] idcheckable = new bool[checkable.Length - 1];
 			Array.Copy(checkable, 1, idcheckable, 0, idcheckable.Length);
-			return (checkable[0] && !holder.entityName.Equals(session.BestGuessEntityName(current))) || 
-				identifierType.IsModified(holder.id, Id(current, session), idcheckable, session);
+			return (checkable[0] && !holder.EntityName.Equals(session.BestGuessEntityName(current))) || 
+				identifierType.IsModified(holder.Id, Id(current, session), idcheckable, session);
 		}
 
 		public bool[] PropertyNullability

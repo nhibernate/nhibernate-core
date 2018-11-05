@@ -21,7 +21,7 @@ namespace NHibernate.Test.DriverTest
 	[TestFixture]
 	public class NullReferenceFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Simple.hbm.xml"}; }
 		}

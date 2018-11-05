@@ -20,7 +20,7 @@ namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public sealed partial class EntityInsertAction : EntityAction
+	public sealed partial class EntityInsertAction : AbstractEntityInsertAction
 	{
 
 		public override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ namespace NHibernate.Action
 			if (!veto)
 			{
 
-				await (persister.InsertAsync(id, state, instance, Session, cancellationToken)).ConfigureAwait(false);
+				await (persister.InsertAsync(id, State, instance, Session, cancellationToken)).ConfigureAwait(false);
 
 				EntityEntry entry = Session.PersistenceContext.GetEntry(instance);
 				if (entry == null)
@@ -57,12 +57,12 @@ namespace NHibernate.Action
 
 				if (persister.HasInsertGeneratedProperties)
 				{
-					await (persister.ProcessInsertGeneratedPropertiesAsync(id, instance, state, Session, cancellationToken)).ConfigureAwait(false);
+					await (persister.ProcessInsertGeneratedPropertiesAsync(id, instance, State, Session, cancellationToken)).ConfigureAwait(false);
 					if (persister.IsVersionPropertyGenerated)
 					{
-						version = Versioning.GetVersion(state, persister);
+						version = Versioning.GetVersion(State, persister);
 					}
-					entry.PostUpdate(instance, state, version);
+					entry.PostUpdate(instance, State, version);
 				}
 			}
 
@@ -70,7 +70,7 @@ namespace NHibernate.Action
 
 			if (IsCachePutEnabled(persister))
 			{
-				CacheEntry ce = new CacheEntry(state, persister, persister.HasUninitializedLazyProperties(instance), version, session, instance);
+				CacheEntry ce = await (CacheEntry.CreateAsync(State, persister, persister.HasUninitializedLazyProperties(instance), version, session, instance, cancellationToken)).ConfigureAwait(false);
 				cacheEntry = persister.CacheEntryStructure.Structure(ce);
 
 				CacheKey ck = Session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
@@ -118,7 +118,7 @@ namespace NHibernate.Action
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostInsertEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostInsertEvent postEvent = new PostInsertEvent(Instance, Id, state, Persister, (IEventSource)Session);
+				PostInsertEvent postEvent = new PostInsertEvent(Instance, Id, State, Persister, (IEventSource)Session);
 				foreach (IPostInsertEventListener listener in postListeners)
 				{
 					await (listener.OnPostInsertAsync(postEvent, cancellationToken)).ConfigureAwait(false);
@@ -132,7 +132,7 @@ namespace NHibernate.Action
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostCommitInsertEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostInsertEvent postEvent = new PostInsertEvent(Instance, Id, state, Persister, (IEventSource)Session);
+				PostInsertEvent postEvent = new PostInsertEvent(Instance, Id, State, Persister, (IEventSource)Session);
 				foreach (IPostInsertEventListener listener in postListeners)
 				{
 					await (listener.OnPostInsertAsync(postEvent, cancellationToken)).ConfigureAwait(false);
@@ -147,7 +147,7 @@ namespace NHibernate.Action
 			bool veto = false;
 			if (preListeners.Length > 0)
 			{
-				var preEvent = new PreInsertEvent(Instance, Id, state, Persister, (IEventSource) Session);
+				var preEvent = new PreInsertEvent(Instance, Id, State, Persister, (IEventSource) Session);
 				foreach (IPreInsertEventListener listener in preListeners)
 				{
 					veto |= await (listener.OnPreInsertAsync(preEvent, cancellationToken)).ConfigureAwait(false);

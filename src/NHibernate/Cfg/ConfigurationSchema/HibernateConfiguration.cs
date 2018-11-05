@@ -55,10 +55,17 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			Parse(nav, fromAppSetting);
 		}
 
-		internal static HibernateConfiguration FromAppConfig(XmlNode node)
+		public static HibernateConfiguration FromAppConfig(XmlNode node)
 		{
-			XmlTextReader reader = new XmlTextReader(node.OuterXml, XmlNodeType.Document, null);
-			return new HibernateConfiguration(reader, true);
+			return FromAppConfig(node.OuterXml);
+		}
+
+		public static HibernateConfiguration FromAppConfig(string xml)
+		{
+			using (var reader = new XmlTextReader(xml, XmlNodeType.Document, null))
+			{
+				return new HibernateConfiguration(reader, true);
+			}
 		}
 
 		private XmlReaderSettings GetSettings()
@@ -70,6 +77,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		private void Parse(XPathNavigator navigator, bool fromAppConfig)
 		{
 			ParseByteCodeProvider(navigator, fromAppConfig);
+			ParseObjectsFactory(navigator, fromAppConfig);
 			ParseReflectionOptimizer(navigator, fromAppConfig);
 			XPathNavigator xpn = navigator.SelectSingleNode(CfgXmlHelper.SessionFactoryExpression);
 			if (xpn != null)
@@ -99,6 +107,23 @@ namespace NHibernate.Cfg.ConfigurationSchema
 				else
 				{
 					LogWarnIgnoredProperty("bytecode-provider");
+				}
+			}
+		}
+
+		private void ParseObjectsFactory(XPathNavigator navigator, bool fromAppConfig)
+		{
+			var xpn = navigator.SelectSingleNode(CfgXmlHelper.ObjectsFactoryExpression);
+			if (xpn != null)
+			{
+				if (fromAppConfig)
+				{
+					xpn.MoveToFirstAttribute();
+					ObjectsFactoryType = xpn.Value;
+				}
+				else
+				{
+					LogWarnIgnoredProperty("objects-factory");
 				}
 			}
 		}
@@ -135,6 +160,13 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		{
 			get { return byteCodeProviderType; }
 		}
+
+		/// <summary>
+		/// Value for objects-factory system property.
+		/// </summary>
+		/// <remarks>Default value <see langword="null" />.</remarks>
+		// 6.0 TODO add to IHibernateConfiguration
+		public string ObjectsFactoryType { get; private set; }
 
 		private bool useReflectionOptimizer = true;
 		/// <summary>

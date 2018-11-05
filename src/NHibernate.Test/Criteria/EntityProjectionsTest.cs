@@ -14,7 +14,9 @@ namespace NHibernate.Test.Criteria
 	[TestFixture]
 	public class EntityProjectionsTest : TestCaseMappingByCode
 	{
+		private const string customEntityName = "CustomEntityName";
 		private EntityWithCompositeId _entityWithCompositeId;
+		private EntityCustomEntityName _entityWithCustomEntityName;
 
 		protected override HbmMapping GetMappings()
 		{
@@ -65,6 +67,16 @@ namespace NHibernate.Test.Criteria
 
 					rc.Property(e => e.Name);
 				});
+
+			mapper.Class<EntityCustomEntityName>(
+				rc =>
+				{
+					rc.EntityName(customEntityName);
+
+					rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+					rc.Property(x => x.Name);
+				});
+
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
@@ -106,6 +118,11 @@ namespace NHibernate.Test.Criteria
 					}
 				};
 
+				_entityWithCustomEntityName = new EntityCustomEntityName()
+				{
+					Name = "EntityCustomEntityName"
+				};
+
 				_entityWithCompositeId = new EntityWithCompositeId
 				{
 					Key = new CompositeKey
@@ -121,6 +138,7 @@ namespace NHibernate.Test.Criteria
 				session.Save(parent.SameTypeChild);
 				session.Save(parent);
 				session.Save(_entityWithCompositeId);
+				session.Save(customEntityName, _entityWithCustomEntityName);
 
 				session.Flush();
 				transaction.Commit();
@@ -196,6 +214,26 @@ namespace NHibernate.Test.Criteria
 
 				Assert.That(child1, Is.Not.Null);
 				Assert.That(NHibernateUtil.IsInitialized(child1), Is.True, "Object must be initialized");
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+		
+		[Test]
+		public void EntityProjectionAsSelectExpressionForArgumentAlias()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntitySimpleChild child1 = null;
+				var complex = session
+					.QueryOver<EntityComplex>()
+					.JoinAlias(ep => ep.Child1, () => child1)
+					.Select(ec => ec.AsEntity())
+					.Take(1).SingleOrDefault();
+
+				Assert.That(complex, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(complex), Is.True, "Object must be initialized");
+				Assert.That(NHibernateUtil.IsInitialized(complex.Child1), Is.False, "Object must be lazy");
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
@@ -446,6 +484,23 @@ namespace NHibernate.Test.Criteria
 				Assert.That(composite, Is.Not.Null);
 				Assert.That(composite, Is.EqualTo(_entityWithCompositeId).Using((EntityWithCompositeId x, EntityWithCompositeId y) => (Equals(x.Key, y.Key)) ? 0 : 1));
 				Assert.That(NHibernateUtil.IsInitialized(composite), Is.False, "Object must be lazy loaded.");
+			}
+		}
+
+		[Test]
+		public void EntityProjectionForCustomEntityName()
+		{
+			using (var session = OpenSession())
+			{
+				var entity = session
+							.QueryOver<EntityCustomEntityName>(customEntityName)
+							.Select(Projections.RootEntity())
+							.Take(1).SingleOrDefault();
+
+				Assert.That(entity, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(entity), Is.True, "Object must be initialized.");
+				Assert.That(entity.Id, Is.EqualTo(_entityWithCustomEntityName.Id));
+				Assert.That(entity.Name, Is.EqualTo(_entityWithCustomEntityName.Name));
 			}
 		}
 	}

@@ -18,7 +18,7 @@ namespace NHibernate.Test.Events.Collections.Values
 	[TestFixture]
 	public class ValuesBagCollectionEventFixtureAsync : AbstractCollectionEventFixtureAsync
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "Events.Collections.Values.ValuesBagMapping.hbm.xml" }; }
 		}

@@ -23,7 +23,7 @@ namespace NHibernate.Test.TypedManyToOne
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "TypedManyToOne.Customer.hbm.xml" }; }
 		}

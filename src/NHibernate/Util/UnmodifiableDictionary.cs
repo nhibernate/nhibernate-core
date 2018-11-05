@@ -13,6 +13,8 @@ namespace NHibernate.Util
 	/// </summary>
 	/// <typeparam name="TKey">The type of keys in the dictionary.</typeparam>
 	/// <typeparam name="TValue">The type of values in the dictionary.</typeparam>
+	//Since v5.1
+	[Obsolete("Please use System.Collections.ObjectModel.ReadOnlyDictionary<K,V> instead.")]
 	[Serializable]
 	public class UnmodifiableDictionary<TKey, TValue> : IDictionary<TKey, TValue>
 	{

@@ -89,7 +89,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 					switch (classCacheElement.Name)
 					{
 						case "class":
-							if (classCacheElement.Value.Trim().Length == 0)
+							if (string.IsNullOrWhiteSpace(classCacheElement.Value))
 								throw new HibernateConfigException("Invalid class-cache element; the attribute <class> must be assigned with no empty value");
 							clazz = classCacheElement.Value;
 							break;

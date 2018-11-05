@@ -20,6 +20,17 @@ namespace NHibernate.Dialect
 			}
 		}
 
+		// Current_timestamp is a timestamp with time zone, so it can always be converted back to UTC.
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSQLFunctionName => "SYS_EXTRACT_UTC(current_timestamp)";
+
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSelectString =>
+			$"select {CurrentUtcTimestampSQLFunctionName} from dual";
+
+		/// <inheritdoc />
+		public override bool SupportsCurrentUtcTimestampSelection => true;
+
 		protected override void RegisterDateTimeTypeMappings()
 		{
 			RegisterColumnType(DbType.Date, "DATE");

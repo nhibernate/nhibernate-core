@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest
 	{
 		public static int newId = 0;
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"NHSpecific.UnsavedType.hbm.xml"}; }
 		}

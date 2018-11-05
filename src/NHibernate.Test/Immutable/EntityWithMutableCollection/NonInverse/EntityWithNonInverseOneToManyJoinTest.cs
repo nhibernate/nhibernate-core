@@ -7,7 +7,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection.NonInverse
 	[TestFixture]
 	public class EntityWithNonInverseOneToManyJoinTest : AbstractEntityWithOneToManyTest
 	{
-		protected override System.Collections.IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

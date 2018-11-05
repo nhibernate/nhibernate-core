@@ -91,11 +91,25 @@ namespace NHibernate.Type
 			return binaryType.GetHashCode(ToBytes(x));
 		}
 
+		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object value)
 		{
 			return binaryType.ToString(ToBytes(value));
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
 			return FromBytes((byte[])binaryType.FromStringValue(xml));
@@ -120,14 +134,16 @@ namespace NHibernate.Type
 			return FromBytes(ToBytes(value));
 		}
 
-		private byte[] ToBytes(object obj)
+		private static byte[] ToBytes(object obj)
 		{
 			try
 			{
-				BinaryFormatter bf = new BinaryFormatter();
-				MemoryStream stream = new MemoryStream();
-				bf.Serialize(stream, obj);
-				return stream.ToArray();
+				var formatter = new BinaryFormatter();
+				using (var ms = new MemoryStream())
+				{
+					formatter.Serialize(ms, obj);
+					return ms.ToArray();
+				}
 			}
 			catch (Exception e)
 			{
@@ -144,8 +160,11 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				BinaryFormatter bf = new BinaryFormatter();
-				return bf.Deserialize(new MemoryStream(bytes));
+				var formatter = new BinaryFormatter();
+				using (var ms = new MemoryStream(bytes))
+				{
+					return formatter.Deserialize(ms);
+				}
 			}
 			catch (Exception e)
 			{

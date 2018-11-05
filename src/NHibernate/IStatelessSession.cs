@@ -4,9 +4,26 @@ using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
+using NHibernate.Impl;
+using NHibernate.Multi;
+using NHibernate.Util;
 
 namespace NHibernate
 {
+	// 6.0 TODO: Convert to interface methods
+	public static class StatelessSessionExtensions
+	{
+		/// <summary>
+		/// Creates a <see cref="IQueryBatch"/> for the session.
+		/// </summary>
+		/// <param name="session">The session</param>
+		/// <returns>A query batch.</returns>
+		public static IQueryBatch CreateQueryBatch(this IStatelessSession session)
+		{
+			return ReflectHelper.CastOrThrow<AbstractSessionImpl>(session, "query batch").CreateQueryBatch();
+		}
+	}
+
 	/// <summary>
 	/// A command-oriented API for performing bulk operations against a database.
 	/// </summary>
@@ -45,8 +62,16 @@ namespace NHibernate
 		bool IsOpen { get; }
 
 		/// <summary>
-		/// Is the <c>IStatelessSession</c> currently connected?
+		/// Is the session connected?
 		/// </summary>
+		/// <value>
+		/// <see langword="true" /> if the session is connected.
+		/// </value>
+		/// <remarks>
+		/// A session is considered connected if there is a <see cref="DbConnection"/> (regardless
+		/// of its state) or if the field <c>connect</c> is true. Meaning that it will connect
+		/// at the next operation that requires a connection.
+		/// </remarks>
 		bool IsConnected { get; }
 
 		/// <summary>

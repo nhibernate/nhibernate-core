@@ -4,21 +4,23 @@ using System.Reflection.Emit;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
+	// Since v5.2
+	[Obsolete("DynamicProxy namespace has been obsoleted, use static proxies instead (see StaticProxyFactory)")]
 	public class DefaultProxyAssemblyBuilder : IProxyAssemblyBuilder
 	{
 		public AssemblyBuilder DefineDynamicAssembly(AppDomain appDomain, AssemblyName name)
 		{
-#if DEBUG
+#if DEBUG && NETFX
 			AssemblyBuilderAccess access = AssemblyBuilderAccess.RunAndSave;
 #else
 			AssemblyBuilderAccess access = AssemblyBuilderAccess.Run;
 #endif
-			return appDomain.DefineDynamicAssembly(name, access);
+			return AssemblyBuilder.DefineDynamicAssembly(name, access);
 		}
 
 		public ModuleBuilder DefineDynamicModule(AssemblyBuilder assemblyBuilder, string moduleName)
 		{
-#if DEBUG
+#if DEBUG && NETFX
 			ModuleBuilder moduleBuilder =
 				assemblyBuilder.DefineDynamicModule(moduleName, string.Format("{0}.mod", moduleName), true);
 #else

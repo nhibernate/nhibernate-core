@@ -2,6 +2,7 @@ using System;
 using Antlr.Runtime;
 
 using NHibernate.Hql.Ast.ANTLR.Tree;
+using NHibernate.Util;
 using IToken = Antlr.Runtime.IToken;
 using RecognitionException = Antlr.Runtime.RecognitionException;
 
@@ -418,6 +419,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 			
 			// Otherwise, handle the error normally.
+			ReflectHelper.PreserveStackTrace(ex);
 			throw ex;
 		}
 	}

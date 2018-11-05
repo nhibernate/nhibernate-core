@@ -168,12 +168,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 
 		private static bool HasDynamicFilterParam(SqlString sqlFragment)
 		{
-			return sqlFragment.IndexOfCaseInsensitive(ParserHelper.HqlVariablePrefix) < 0;
+			return !ParserHelper.HasHqlVariable(sqlFragment);
 		}
 
 		private static bool HasCollectionFilterParam(SqlString sqlFragment)
 		{
-			return sqlFragment.IndexOfCaseInsensitive("?") < 0;
+			return sqlFragment.IndexOfOrdinal("?") < 0;
 		}
 
 		private class JoinSequenceSelector : JoinSequence.ISelector

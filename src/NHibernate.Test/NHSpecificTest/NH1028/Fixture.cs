@@ -9,11 +9,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1028
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-            get { return "NH1028"; }
-		}
-
 		[Test]
 		public void CanLoadCollectionUsingLeftOuterJoin()
 		{

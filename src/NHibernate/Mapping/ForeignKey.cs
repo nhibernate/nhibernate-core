@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using NHibernate.Util;
@@ -233,5 +232,7 @@ namespace NHibernate.Mapping
 		{
 			get { return referencedColumns.Count == 0; }
 		}
+
+		public string GeneratedConstraintNamePrefix => "FK_";
 	}
 }

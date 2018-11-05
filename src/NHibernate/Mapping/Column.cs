@@ -155,7 +155,7 @@ namespace NHibernate.Mapping
 			//    But I will leave it like this for now to make it look similar. /Oskar 2016-08-20
 			bool useRawName = name.Length + suffix.Length <= usableLength &&
 			                  !_quoted &&
-			                  !StringHelper.EqualsCaseInsensitive(name, "rowid");
+			                  !"rowid".Equals(name, StringComparison.OrdinalIgnoreCase);
 			if (!useRawName)
 			{
 				if (suffix.Length >= usableLength)
@@ -280,7 +280,7 @@ namespace NHibernate.Mapping
 			if (ReferenceEquals(this, column))
 				return true;
 
-			return IsQuoted ? _name.Equals(column._name) : _name.ToLowerInvariant().Equals(column._name.ToLowerInvariant());
+			return IsQuoted ? _name.Equals(column._name) : _name.Equals(column._name, StringComparison.OrdinalIgnoreCase);
 		}
 
 		/// <summary>

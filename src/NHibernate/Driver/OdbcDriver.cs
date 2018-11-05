@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.Odbc;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
@@ -15,7 +14,12 @@ namespace NHibernate.Driver
 	/// <remarks>
 	/// Always look for a native .NET DataProvider before using the Odbc DataProvider.
 	/// </remarks>
-	public class OdbcDriver : DriverBase
+	public class OdbcDriver 
+#if NETFX
+		: DriverBase
+#else
+		: ReflectionBasedDriver
+#endif
 	{
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(OdbcDriver));
 
@@ -34,15 +38,22 @@ namespace NHibernate.Driver
 			}
 		}
 
+#if !NETFX
+		public OdbcDriver() 
+			: base("System.Data.Odbc", "System.Data.Odbc.OdbcConnection", "System.Data.Odbc.OdbcCommand")
+		{
+		}
+#else
 		public override DbConnection CreateConnection()
 		{
-			return new OdbcConnection();
+			return new System.Data.Odbc.OdbcConnection();
 		}
 
 		public override DbCommand CreateCommand()
 		{
-			return new OdbcCommand();
+			return new System.Data.Odbc.OdbcCommand();
 		}
+#endif
 
 		public override bool UseNamedPrefixInSql
 		{

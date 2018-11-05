@@ -8,6 +8,7 @@ using System.Text;
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
 using NHibernate.Impl;
+using NHibernate.Intercept;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -781,7 +782,15 @@ namespace NHibernate.Engine
 		/// <summary> Get the entity that owns this persistent collection</summary>
 		public object GetCollectionOwner(object key, ICollectionPersister collectionPersister)
 		{
-			return GetEntity(session.GenerateEntityKey(key, collectionPersister.OwnerEntityPersister));
+			if (collectionPersister.CollectionType.UseLHSPrimaryKey)
+				return GetEntity(session.GenerateEntityKey(key, collectionPersister.OwnerEntityPersister));
+
+			return GetEntity(
+				new EntityUniqueKey(
+					collectionPersister.OwnerEntityPersister.EntityName,
+					collectionPersister.CollectionType.LHSPropertyName,
+					key, collectionPersister.KeyType, session.Factory
+				));
 		}
 
 		/// <summary> Get the entity that owned this persistent collection when it was loaded </summary>
@@ -800,10 +809,9 @@ namespace NHibernate.Engine
 			object loadedOwner = null;
 			// TODO: an alternative is to check if the owner has changed; if it hasn't then
 			// return collection.getOwner()
-			object entityId = GetLoadedCollectionOwnerIdOrNull(ce);
-			if (entityId != null)
+			if (ce.LoadedKey != null)
 			{
-				loadedOwner = GetCollectionOwner(entityId, ce.LoadedPersister);
+				loadedOwner = GetCollectionOwner(ce.LoadedKey, ce.LoadedPersister);
 			}
 			return loadedOwner;
 		}
@@ -835,6 +843,10 @@ namespace NHibernate.Engine
 		{
 			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
 			AddCollection(collection, ce, id);
+			if (persister.GetBatchSize() > 1)
+			{
+				batchFetchQueue.AddBatchLoadableCollection(collection, ce);
+			}
 		}
 
 		/// <summary> add a detached uninitialized collection</summary>
@@ -913,7 +925,7 @@ namespace NHibernate.Engine
 																										object id)
 		{
 			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
-			ce.PostInitialize(collection);
+			ce.PostInitialize(collection, this);
 			AddCollection(collection, ce, id);
 			return ce;
 		}
@@ -1439,7 +1451,7 @@ namespace NHibernate.Engine
 				}
 				catch (HibernateException he)
 				{
-					throw new InvalidOperationException(he.Message);
+					throw new InvalidOperationException(he.Message, he);
 				}
 			}
 
@@ -1467,7 +1479,16 @@ namespace NHibernate.Engine
 				}
 				catch (MappingException me)
 				{
-					throw new InvalidOperationException(me.Message);
+					throw new InvalidOperationException(me.Message, me);
+				}
+			}
+
+			// Reconnect the lazy property proxies
+			foreach (var p in entitiesByKey)
+			{
+				if (p.Value is IFieldInterceptorAccessor lazyPropertyProxy && lazyPropertyProxy.FieldInterceptor != null)
+				{
+					lazyPropertyProxy.FieldInterceptor.Session = session;
 				}
 			}
 		}

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
@@ -42,8 +41,12 @@ namespace NHibernate.Impl
 
 		private CacheMode cacheMode = CacheMode.Normal;
 
+		//Since 5.2
+		[Obsolete()]
 		[NonSerialized]
 		private FutureCriteriaBatch futureCriteriaBatch;
+		//Since 5.2
+		[Obsolete()]
 		[NonSerialized]
 		private FutureQueryBatch futureQueryBatch;
 
@@ -55,8 +58,6 @@ namespace NHibernate.Impl
 
 		[NonSerialized]
 		private int _suspendAutoFlushCount;
-
-		private readonly ConnectionManager connectionManager;
 
 		[NonSerialized]
 		private readonly IDictionary<string, IFilter> enabledFilters = new Dictionary<string, IFilter>();
@@ -71,8 +72,6 @@ namespace NHibernate.Impl
 		private readonly bool autoCloseSessionEnabled;
 		[NonSerialized]
 		private readonly ConnectionReleaseMode connectionReleaseMode;
-		[NonSerialized]
-		private readonly bool _transactionCoordinatorShared;
 
 		#region System.Runtime.Serialization.ISerializable Members
 
@@ -104,7 +103,7 @@ namespace NHibernate.Impl
 			enabledFilters = (IDictionary<string, IFilter>)info.GetValue("enabledFilters", typeof(Dictionary<string, IFilter>));
 			enabledFilterNames = (List<string>)info.GetValue("enabledFilterNames", typeof(List<string>));
 
-			connectionManager = (ConnectionManager)info.GetValue("connectionManager", typeof(ConnectionManager));
+			ConnectionManager = (ConnectionManager)info.GetValue("connectionManager", typeof(ConnectionManager));
 		}
 
 		/// <summary>
@@ -122,11 +121,11 @@ namespace NHibernate.Impl
 		{
 			log.Debug("writting session to serializer");
 
-			if (!connectionManager.IsReadyForSerialization)
+			if (!ConnectionManager.IsReadyForSerialization)
 			{
 				throw new InvalidOperationException("Cannot serialize a Session while connected");
 			}
-			if (_transactionCoordinatorShared)
+			if (IsTransactionCoordinatorShared)
 			{
 				throw new InvalidOperationException("Cannot serialize a Session sharing its transaction coordinator");
 			}
@@ -143,7 +142,7 @@ namespace NHibernate.Impl
 			info.AddValue("enabledFilters", enabledFilters, typeof(IDictionary<string, IFilter>));
 			info.AddValue("enabledFilterNames", enabledFilterNames, typeof(List<string>));
 
-			info.AddValue("connectionManager", connectionManager, typeof(ConnectionManager));
+			info.AddValue("connectionManager", ConnectionManager, typeof(ConnectionManager));
 		}
 
 		#endregion
@@ -194,21 +193,6 @@ namespace NHibernate.Impl
 				listeners = factory.EventListeners;
 				connectionReleaseMode = options.SessionConnectionReleaseMode;
 
-				if (options is ISharedSessionCreationOptions sharedOptions && sharedOptions.IsTransactionCoordinatorShared)
-				{
-					// NH specific implementation: need to port Hibernate transaction management.
-					_transactionCoordinatorShared = true;
-					if (options.UserSuppliedConnection != null)
-						throw new SessionException("Cannot simultaneously share transaction context and specify connection");
-					connectionManager = sharedOptions.ConnectionManager;
-					connectionManager.AddDependentSession(this);
-				}
-				else
-				{
-					connectionManager = new ConnectionManager(
-						this, options.UserSuppliedConnection, connectionReleaseMode, Interceptor, options.ShouldAutoJoinTransaction);
-				}
-
 				if (factory.Statistics.IsStatisticsEnabled)
 				{
 					factory.StatisticsImplementor.OpenSession();
@@ -221,6 +205,8 @@ namespace NHibernate.Impl
 			}
 		}
 
+		//Since 5.2
+		[Obsolete("Replaced by QueryBatch")]
 		public override FutureCriteriaBatch FutureCriteriaBatch
 		{
 			get
@@ -235,6 +221,8 @@ namespace NHibernate.Impl
 			}
 		}
 
+		//Since 5.2
+		[Obsolete("Replaced by QueryBatch")]
 		public override FutureQueryBatch FutureQueryBatch
 		{
 			get
@@ -246,16 +234,6 @@ namespace NHibernate.Impl
 			protected internal set
 			{
 				futureQueryBatch = value;
-			}
-		}
-
-		/// <summary></summary>
-		public override IBatcher Batcher
-		{
-			get
-			{
-				CheckAndUpdateSessionStatus();
-				return connectionManager.Batcher;
 			}
 		}
 
@@ -298,10 +276,7 @@ namespace NHibernate.Impl
 
 				try
 				{
-					if (!_transactionCoordinatorShared)
-						return connectionManager.Close();
-					connectionManager.RemoveDependentSession(this);
-					return null;
+					return CloseConnectionManager();
 				}
 				finally
 				{
@@ -531,17 +506,6 @@ namespace NHibernate.Impl
 			Dispose(true);
 		}
 
-		public override IQuery CreateQuery(IQueryExpression queryExpression)
-		{
-			using (BeginProcess())
-			{
-				var plan = GetHQLQueryPlan(queryExpression, false);
-				var query = new ExpressionQueryImpl(plan.QueryExpression, this, plan.ParameterMetadata);
-				query.SetComment("[expression]");
-				return query;
-			}
-		}
-
 		public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
 		{
 			List(queryExpression, queryParameters, results, null);
@@ -594,6 +558,8 @@ namespace NHibernate.Impl
 			}
 		}
 
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
 		public override IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar)
 		{
 			using (BeginProcess())
@@ -1070,8 +1036,8 @@ namespace NHibernate.Impl
 		/// named in the query and, if so, complete execution the flush
 		/// </summary>
 		/// <param name="querySpaces"></param>
-		/// <returns></returns>
-		private bool AutoFlushIfRequired(ISet<string> querySpaces)
+		/// <returns>Returns true if flush was executed</returns>
+		public override bool AutoFlushIfRequired(ISet<string> querySpaces)
 		{
 			using (BeginProcess())
 			{
@@ -1330,41 +1296,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
-		{
-			using (BeginProcess())
-			{
-				if (_transactionCoordinatorShared)
-				{
-					// Todo : should seriously consider not allowing a txn to begin from a child session
-					//      can always route the request to the root session...
-					log.Warn("Transaction started on non-root session");
-				}
-
-				return connectionManager.BeginTransaction(isolationLevel);
-			}
-		}
-
-		public ITransaction BeginTransaction()
-		{
-			using (BeginProcess())
-			{
-				if (_transactionCoordinatorShared)
-				{
-					// Todo : should seriously consider not allowing a txn to begin from a child session
-					//      can always route the request to the root session...
-					log.Warn("Transaction started on non-root session");
-				}
-
-				return connectionManager.BeginTransaction();
-			}
-		}
-
-		public ITransaction Transaction
-		{
-			get { return connectionManager.Transaction; }
-		}
-
 		/// <summary>
 		///
 		/// </summary>
@@ -1403,11 +1334,6 @@ namespace NHibernate.Impl
 					}
 				}
 			}
-		}
-
-		public override bool TransactionInProgress
-		{
-			get { return ConnectionManager.IsInActiveTransaction; }
 		}
 
 		public bool IsDirty()
@@ -1516,34 +1442,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override DbConnection Connection
-		{
-			get { return connectionManager.GetConnection(); }
-		}
-
-		/// <summary>
-		/// Gets if the ISession is connected.
-		/// </summary>
-		/// <value>
-		/// <see langword="true" /> if the ISession is connected.
-		/// </value>
-		/// <remarks>
-		/// An ISession is considered connected if there is an <see cref="DbConnection"/> (regardless
-		/// of its state) or if it the field <c>connect</c> is true.  Meaning that it will connect
-		/// at the next operation that requires a connection.
-		/// </remarks>
-		public override bool IsConnected
-		{
-			get { return connectionManager.IsConnected; }
-		}
-
 		/// <summary></summary>
 		public DbConnection Disconnect()
 		{
 			using (BeginProcess())
 			{
 				log.Debug("disconnecting session");
-				return connectionManager.Disconnect();
+				return ConnectionManager.Disconnect();
 			}
 		}
 
@@ -1552,7 +1457,7 @@ namespace NHibernate.Impl
 			using (BeginProcess())
 			{
 				log.Debug("reconnecting session");
-				connectionManager.Reconnect();
+				ConnectionManager.Reconnect();
 			}
 		}
 
@@ -1561,7 +1466,7 @@ namespace NHibernate.Impl
 			using (BeginProcess())
 			{
 				log.Debug("reconnecting session");
-				connectionManager.Reconnect(conn);
+				ConnectionManager.Reconnect(conn);
 			}
 		}
 
@@ -1910,6 +1815,11 @@ namespace NHibernate.Impl
 			return new SharedSessionBuilderImpl(this);
 		}
 
+		public ISharedStatelessSessionBuilder StatelessSessionWithOptions()
+		{
+			return new SharedStatelessSessionBuilderImpl(this);
+		}
+
 		public void Clear()
 		{
 			using (BeginProcess())
@@ -2034,7 +1944,7 @@ namespace NHibernate.Impl
 
 		private string[] ParseFilterParameterName(string filterParameterName)
 		{
-			int dot = filterParameterName.IndexOf(".");
+			int dot = filterParameterName.IndexOf('.');
 			if (dot <= 0)
 			{
 				throw new ArgumentException("Invalid filter-parameter name format", "filterParameterName");
@@ -2044,11 +1954,8 @@ namespace NHibernate.Impl
 			return new[] { filterName, parameterName };
 		}
 
-		public override ConnectionManager ConnectionManager
-		{
-			get { return connectionManager; }
-		}
-
+		// Since v5.2
+		[Obsolete("Use ISession.CreateQueryBatch instead.")]
 		public IMultiQuery CreateMultiQuery()
 		{
 			using (BeginProcess())
@@ -2057,6 +1964,8 @@ namespace NHibernate.Impl
 			}
 		}
 
+		// Since v5.2
+		[Obsolete("Use ISession.CreateQueryBatch instead.")]
 		public IMultiCriteria CreateMultiCriteria()
 		{
 			using (BeginProcess())
@@ -2517,6 +2426,70 @@ namespace NHibernate.Impl
 
 			// NH different implementation, avoid an error case.
 			public override ISharedSessionBuilder Connection(DbConnection connection)
+			{
+				_shareTransactionContext = false;
+				return base.Connection(connection);
+			}
+
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// SharedSessionCreationOptions
+
+			public virtual bool IsTransactionCoordinatorShared => _shareTransactionContext;
+
+			// NH different implementation: need to port Hibernate transaction management.
+			public ConnectionManager ConnectionManager => _shareTransactionContext ? _session.ConnectionManager : null;
+		}
+
+		// NH specific: allow to build a stateless session from a normal session.
+		private class SharedStatelessSessionBuilderImpl : SessionFactoryImpl.StatelessSessionBuilderImpl<ISharedStatelessSessionBuilder>,
+			ISharedStatelessSessionBuilder, ISharedSessionCreationOptions
+		{
+			private readonly SessionImpl _session;
+			private bool _shareTransactionContext;
+
+			public SharedStatelessSessionBuilderImpl(SessionImpl session)
+				: base((SessionFactoryImpl)session.Factory)
+			{
+				_session = session;
+				SetSelf(this);
+			}
+
+			#region 6.0 TODO: implement covariance the way used for ISharedSessionBuilder
+
+			ISharedStatelessSessionBuilder ISharedStatelessSessionBuilder.AutoJoinTransaction(bool autoJoinTransaction)
+			{
+				AutoJoinTransaction(autoJoinTransaction);
+				return this;
+			}
+
+			ISharedStatelessSessionBuilder ISharedStatelessSessionBuilder.Connection(DbConnection connection)
+			{
+				Connection(connection);
+				return this;
+			}
+
+			#endregion
+
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// SharedSessionBuilder
+
+			public virtual ISharedStatelessSessionBuilder Connection()
+			{
+				// Ensure any previously user supplied connection is removed.
+				base.Connection(null);
+				// We share the connection manager
+				_shareTransactionContext = true; 
+				return this;
+			}
+
+			public virtual ISharedStatelessSessionBuilder AutoJoinTransaction()
+			{
+				AutoJoinTransaction(_session.ConnectionManager.ShouldAutoJoinTransaction);
+				return this;
+			}
+
+			// NH different implementation, avoid an error case.
+			public override IStatelessSessionBuilder Connection(DbConnection connection)
 			{
 				_shareTransactionContext = false;
 				return base.Connection(connection);

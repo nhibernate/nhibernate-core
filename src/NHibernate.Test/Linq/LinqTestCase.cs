@@ -12,7 +12,7 @@ namespace NHibernate.Test.Linq
 		private Northwind _northwind;
 		private ISession _session;
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

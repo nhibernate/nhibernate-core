@@ -6,11 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH467
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH467"; }
-		}
-
 		[Test]
 		public void WhereClauseInManyToOneNavigation()
 		{

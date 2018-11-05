@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 	[TestFixture]
 	public class LogsFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "NHSpecificTest.Logs.Mappings.hbm.xml" }; }
 		}
@@ -147,6 +147,11 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 		[Test]
 		public async Task WillGetSessionIdFromSessionLogsConcurrentAsync()
 		{
+			if (!TestDialect.SupportsConcurrencyTests)
+			{
+				Assert.Ignore($"Dialect {Dialect} does not supports concurrency tests");
+			}
+
 			GlobalContext.Properties["sessionId"] = new SessionIdCapturer();
 
 			// Do not use a ManualResetEventSlim, it does not support async and exhausts the task thread pool in the

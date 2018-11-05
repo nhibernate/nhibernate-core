@@ -1,3 +1,4 @@
+#if NETFX
 using System;
 using System.Data.Common;
 using NHibernate.Driver;
@@ -37,3 +38,4 @@ namespace NHibernate.Test.DriverTest
 		}
 	}
 }
+#endif

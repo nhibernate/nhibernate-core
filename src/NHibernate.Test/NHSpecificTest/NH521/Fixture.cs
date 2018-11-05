@@ -5,9 +5,9 @@ namespace NHibernate.Test.NHSpecificTest.NH521
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
+		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			get { return "NH521"; }
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		[Test]

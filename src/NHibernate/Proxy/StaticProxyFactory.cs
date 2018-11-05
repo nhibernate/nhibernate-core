@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using NHibernate.Engine;
 using NHibernate.Intercept;
-using NHibernate.Proxy.DynamicProxy;
 
 namespace NHibernate.Proxy
 {
@@ -11,6 +10,8 @@ namespace NHibernate.Proxy
 	{
 		private static readonly ConcurrentDictionary<ProxyCacheEntry, Func<ILazyInitializer, NHibernateProxyFactoryInfo, INHibernateProxy>>
 			Cache = new ConcurrentDictionary<ProxyCacheEntry, Func<ILazyInitializer, NHibernateProxyFactoryInfo, INHibernateProxy>>();
+		private static readonly ConcurrentDictionary<ProxyCacheEntry, Func<NHibernateProxyFactoryInfo, IFieldInterceptorAccessor>>
+			FieldInterceptorCache = new ConcurrentDictionary<ProxyCacheEntry, Func<NHibernateProxyFactoryInfo, IFieldInterceptorAccessor>>();
 
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(StaticProxyFactory));
 
@@ -43,9 +44,18 @@ namespace NHibernate.Proxy
 
 		public override object GetFieldInterceptionProxy(object instanceToWrap)
 		{
-			var factory = new ProxyFactory();
-			var interceptor = new DefaultDynamicLazyFieldInterceptor();
-			return factory.CreateProxy(PersistentClass, interceptor, typeof(IFieldInterceptorAccessor));
+			var cacheEntry = new ProxyCacheEntry(PersistentClass, System.Type.EmptyTypes);
+			var proxyActivator = FieldInterceptorCache.GetOrAdd(cacheEntry, CreateFieldInterceptionProxyActivator);
+			return proxyActivator(
+				new NHibernateProxyFactoryInfo(EntityName, PersistentClass, Interfaces, GetIdentifierMethod, SetIdentifierMethod, ComponentIdType));
+		}
+
+		private Func<NHibernateProxyFactoryInfo, IFieldInterceptorAccessor> CreateFieldInterceptionProxyActivator(ProxyCacheEntry pke)
+		{
+			var type = FieldInterceptorProxyBuilder.CreateProxyType(pke.BaseType);
+			var ctor = type.GetConstructor(new[] { typeof(NHibernateProxyFactoryInfo) });
+			var pf = Expression.Parameter(typeof(NHibernateProxyFactoryInfo));
+			return Expression.Lambda<Func<NHibernateProxyFactoryInfo, IFieldInterceptorAccessor>>(Expression.New(ctor, pf), pf).Compile();
 		}
 	}
 }

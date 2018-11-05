@@ -117,10 +117,10 @@ namespace NHibernate.Dialect
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(year from ?1)"));
 
 			// Bitwise operations
-			RegisterFunction("band", new BitwiseNativeOperation("&"));
-			RegisterFunction("bor", new BitwiseNativeOperation("|"));
-			RegisterFunction("bxor", new BitwiseNativeOperation("^"));
-			RegisterFunction("bnot", new BitwiseNativeOperation("~", true));
+			RegisterFunction("band", new Function.BitwiseNativeOperation("&"));
+			RegisterFunction("bor", new Function.BitwiseNativeOperation("|"));
+			RegisterFunction("bxor", new Function.BitwiseNativeOperation("^"));
+			RegisterFunction("bnot", new Function.BitwiseNativeOperation("~", true));
 
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
 
@@ -184,7 +184,7 @@ namespace NHibernate.Dialect
 		{
 			try
 			{
-				var dialect = (Dialect)Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(dialectName));
+				var dialect = (Dialect)Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(dialectName));
 				dialect.Configure(props);
 				return dialect;
 			}
@@ -201,7 +201,7 @@ namespace NHibernate.Dialect
 		public virtual void Configure(IDictionary<string, string> settings)
 		{
 			DefaultCastLength = PropertiesHelper.GetInt32(Environment.QueryDefaultCastLength, settings, 4000);
-			DefaultCastPrecision = PropertiesHelper.GetByte(Environment.QueryDefaultCastPrecision, settings, null) ?? 28;
+			DefaultCastPrecision = PropertiesHelper.GetByte(Environment.QueryDefaultCastPrecision, settings, null) ?? 29;
 			DefaultCastScale = PropertiesHelper.GetByte(Environment.QueryDefaultCastScale, settings, null) ?? 10;
 		}
 
@@ -501,15 +501,15 @@ namespace NHibernate.Dialect
 		/// <returns> The appropriate for update fragment. </returns>
 		public virtual string GetForUpdateString(LockMode lockMode)
 		{
-			if (lockMode == LockMode.Upgrade)
+			if (Equals(lockMode, LockMode.Upgrade))
 			{
 				return ForUpdateString;
 			}
-			if (lockMode == LockMode.UpgradeNoWait)
+			if (Equals(lockMode, LockMode.UpgradeNoWait))
 			{
 				return ForUpdateNowaitString;
 			}
-			if (lockMode == LockMode.Force)
+			if (Equals(lockMode, LockMode.Force))
 			{
 				return ForUpdateNowaitString;
 			}
@@ -526,13 +526,29 @@ namespace NHibernate.Dialect
 			get { return " for update"; }
 		}
 
-		/// <summary> Is <tt>FOR UPDATE OF</tt> syntax supported? </summary>
-		/// <value> True if the database supports <tt>FOR UPDATE OF</tt> syntax; false otherwise. </value>
+		/// <summary>Is <c>FOR UPDATE OF</c> syntax supported?</summary>
+		/// <value><see langword="true"/> if the database supports <c>FOR UPDATE OF</c> syntax; <see langword="false"/> otherwise. </value>
+		public virtual bool SupportsForUpdateOf
+			// By default, just check UsesColumnsWithForUpdateOf. ForUpdateOf needs to be overriden only for dialects supporting
+			// "For Update Of" on table aliases.
+			=> UsesColumnsWithForUpdateOf;
+
+		/// <summary>Is <c>FOR UPDATE OF</c> syntax expecting columns?</summary>
+		/// <value><see langword="true"/> if the database expects a column list with <c>FOR UPDATE OF</c> syntax,
+		/// <see langword="false"/> if it expects table alias instead or do not support <c>FOR UPDATE OF</c> syntax.</value>
+		// Since v5.1
+		[Obsolete("Use UsesColumnsWithForUpdateOf instead")]
 		public virtual bool ForUpdateOfColumns
 		{
 			// by default we report no support
 			get { return false; }
 		}
+
+		public virtual bool UsesColumnsWithForUpdateOf
+#pragma warning disable 618
+			// For avoiding a breaking change, we need to call the old name by default.
+			=> ForUpdateOfColumns;
+#pragma warning restore 618
 
 		/// <summary> 
 		/// Does this dialect support <tt>FOR UPDATE</tt> in conjunction with outer joined rows?
@@ -567,11 +583,11 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary> 
-		/// Get the <tt>FOR UPDATE OF column_list NOWAIT</tt> fragment appropriate
-		/// for this dialect given the aliases of the columns to be write locked.
+		/// Get the <c>FOR UPDATE OF column_list NOWAIT</c> fragment appropriate
+		/// for this dialect given the aliases of the columns or tables to be write locked.
 		/// </summary>
-		/// <param name="aliases">The columns to be write locked. </param>
-		/// <returns> The appropriate <tt>FOR UPDATE colunm_list NOWAIT</tt> clause string. </returns>
+		/// <param name="aliases">The columns or tables to be write locked.</param>
+		/// <returns>The appropriate <c>FOR UPDATE colunm_or_table_list NOWAIT</c> clause string.</returns>
 		public virtual string GetForUpdateNowaitString(string aliases)
 		{
 			return GetForUpdateString(aliases);
@@ -721,6 +737,9 @@ namespace NHibernate.Dialect
 		{
 			get { return false; }
 		}
+
+		/// <summary> Does this dialect support a way to retrieve the database's current UTC timestamp value? </summary>
+		public virtual bool SupportsCurrentUtcTimestampSelection => false;
 
 		/// <summary>
 		/// Gives the best resolution that the database can use for storing
@@ -960,7 +979,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary> 
-		/// Provided we <see cref="SupportsInsertSelectIdentity"/>, then attch the
+		/// Provided we <see cref="SupportsInsertSelectIdentity"/>, then attach the
 		/// "select identity" clause to the  insert statement.
 		/// </summary>
 		/// <param name="insertString">The insert command </param>
@@ -975,13 +994,29 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary> 
-		/// Get the select command to use to retrieve the last generated IDENTITY
-		/// value for a particular table 
+		/// Provided we <see cref="SupportsInsertSelectIdentity"/>, then attach the
+		/// "select identity" clause to the  insert statement.
 		/// </summary>
-		/// <param name="tableName">The table into which the insert was done </param>
-		/// <param name="identityColumn">The PK column. </param>
-		/// <param name="type">The <see cref="DbType"/> type code. </param>
-		/// <returns> The appropriate select command </returns>
+		/// <param name="insertString">The insert command </param>
+		/// <param name="identifierColumnName">The identifier name</param>
+		/// <returns> 
+		/// The insert command with any necessary identity select clause attached.
+		/// Note, if <see cref="SupportsInsertSelectIdentity"/> == false then
+		/// the insert-string should be returned without modification.
+		/// </returns>
+		public virtual SqlString AppendIdentitySelectToInsert(SqlString insertString, string identifierColumnName)
+		{
+			return AppendIdentitySelectToInsert(insertString);
+		}
+
+		/// <summary>
+		/// Get the select command to use to retrieve the last generated IDENTITY
+		/// value for a particular table.
+		/// </summary>
+		/// <param name="identityColumn">The PK column.</param>
+		/// <param name="tableName">The table into which the insert was done.</param>
+		/// <param name="type">The <see cref="DbType"/> type code.</param>
+		/// <returns>The appropriate select command.</returns>
 		public virtual string GetIdentitySelectString(string identityColumn, string tableName, DbType type)
 		{
 			return IdentitySelectString;
@@ -2402,8 +2437,8 @@ namespace NHibernate.Dialect
 			get { throw new NotSupportedException("Database not known to define a current timestamp function"); }
 		}
 
-		/// <summary> 
-		/// Retrieve the command used to retrieve the current timestammp from the database. 
+		/// <summary>
+		/// Retrieve the command used to retrieve the current timestamp from the database.
 		/// </summary>
 		public virtual string CurrentTimestampSelectString
 		{
@@ -2418,6 +2453,20 @@ namespace NHibernate.Dialect
 		{
 			get { return "current_timestamp"; }
 		}
+
+		/// <summary>
+		/// Retrieve the command used to retrieve the current UTC timestamp from the database.
+		/// </summary>
+		public virtual string CurrentUtcTimestampSelectString =>
+			throw new NotSupportedException("Database not known to define a current UTC timestamp function");
+
+		/// <summary>
+		/// The name of the database-specific SQL function for retrieving the
+		/// current UTC timestamp.
+		/// </summary>
+		public virtual string CurrentUtcTimestampSQLFunctionName =>
+			// It seems there are no SQL ANSI function for UTC
+			throw new NotSupportedException("Database not known to define a current UTC timestamp function");
 
 		public virtual IViolatedConstraintNameExtracter ViolatedConstraintNameExtracter
 		{
@@ -2447,11 +2496,29 @@ namespace NHibernate.Dialect
 		public virtual int MaxAliasLength => 18;
 
 		/// <summary>
-		/// The syntax used to add a column to a table. Note this is deprecated
+		/// The maximum number of parameters allowed in a query.
+		/// </summary>
+		public virtual int? MaxNumberOfParameters => null;
+
+		/// <summary>
+		/// The character used to terminate a SQL statement.
+		/// </summary>
+		public virtual char StatementTerminator => ';';
+
+		/// <summary>
+		/// The syntax used to add a column to a table.
 		/// </summary>
 		public virtual string AddColumnString
 		{
 			get { throw new NotSupportedException("No add column syntax supported by Dialect"); }
+		}
+
+		/// <summary>
+		/// The syntax for the suffix used to add a column to a table.
+		/// </summary>
+		public virtual string AddColumnSuffixString
+		{
+			get { return String.Empty; }
 		}
 
 		public virtual string DropForeignKeyString

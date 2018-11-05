@@ -52,7 +52,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			public virtual Intermediate Intermediate { get; set; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

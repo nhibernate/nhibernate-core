@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 using NHibernate.AdoNet;
@@ -15,6 +16,7 @@ using NHibernate.Hql;
 using NHibernate.Linq;
 using NHibernate.Loader.Custom;
 using NHibernate.Loader.Custom.Sql;
+using NHibernate.Multi;
 using NHibernate.Persister.Entity;
 using NHibernate.Transaction;
 using NHibernate.Type;
@@ -29,7 +31,15 @@ namespace NHibernate.Impl
 		private ISessionFactoryImplementor _factory;
 		private FlushMode _flushMode;
 
+		[NonSerialized]
+		private IQueryBatch _futureMultiBatch;
+
 		private bool closed;
+
+		/// <summary>Get the current NHibernate transaction.</summary>
+		public ITransaction Transaction => ConnectionManager.Transaction;
+
+		protected bool IsTransactionCoordinatorShared { get; }
 
 		public ITransactionContext TransactionContext
 		{
@@ -38,7 +48,7 @@ namespace NHibernate.Impl
 
 		private bool isAlreadyDisposed;
 
-		private static readonly INHibernateLogger logger = NHibernateLogger.For(typeof(AbstractSessionImpl));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(AbstractSessionImpl));
 
 		public Guid SessionId { get; }
 
@@ -46,11 +56,34 @@ namespace NHibernate.Impl
 
 		protected internal AbstractSessionImpl(ISessionFactoryImplementor factory, ISessionCreationOptions options)
 		{
-			_factory = factory;
-			Timestamp = factory.Settings.CacheProvider.NextTimestamp();
-			_flushMode = options.InitialSessionFlushMode;
-			Interceptor = options.SessionInterceptor ?? EmptyInterceptor.Instance;
 			SessionId = factory.Settings.TrackSessionId ? Guid.NewGuid() : Guid.Empty;
+			using (BeginContext())
+			{
+				_factory = factory;
+				Timestamp = factory.Settings.CacheProvider.NextTimestamp();
+				_flushMode = options.InitialSessionFlushMode;
+				Interceptor = options.SessionInterceptor ?? EmptyInterceptor.Instance;
+
+				if (options is ISharedSessionCreationOptions sharedOptions && sharedOptions.IsTransactionCoordinatorShared)
+				{
+					// NH specific implementation: need to port Hibernate transaction management.
+					IsTransactionCoordinatorShared = true;
+					if (options.UserSuppliedConnection != null)
+						throw new SessionException("Cannot simultaneously share transaction context and specify connection");
+					var connectionManager = sharedOptions.ConnectionManager;
+					connectionManager.AddDependentSession(this);
+					ConnectionManager = connectionManager;
+				}
+				else
+				{
+					ConnectionManager = new ConnectionManager(
+						this,
+						options.UserSuppliedConnection,
+						options.SessionConnectionReleaseMode,
+						Interceptor,
+						options.ShouldAutoJoinTransaction);
+				}
+			}
 		}
 
 		#region ISessionImplementor Members
@@ -82,7 +115,16 @@ namespace NHibernate.Impl
 			protected set => _factory = value;
 		}
 
-		public abstract IBatcher Batcher { get; }
+		// 6.0 TODO: remove virtual.
+		/// <inheritdoc />
+		public virtual IBatcher Batcher
+		{
+			get
+			{
+				CheckAndUpdateSessionStatus();
+				return ConnectionManager.Batcher;
+			}
+		}
 		public abstract void CloseSessionFromSystemTransaction();
 
 		public virtual IList List(IQueryExpression queryExpression, QueryParameters parameters)
@@ -218,22 +260,37 @@ namespace NHibernate.Impl
 			}
 		}
 
+		// 6.0 TODO: remove virtual from below properties.
+		/// <inheritdoc />
+		public virtual ConnectionManager ConnectionManager { get; protected set; }
+		/// <inheritdoc />
+		public virtual bool IsConnected => ConnectionManager.IsConnected;
+		/// <inheritdoc />
+		public virtual DbConnection Connection => ConnectionManager.GetConnection();
+
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
 		public abstract IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar);
 		public abstract EventListeners Listeners { get; }
-		public abstract ConnectionManager ConnectionManager { get; }
 		public abstract bool IsEventSource { get; }
 		public abstract object GetEntityUsingInterceptor(EntityKey key);
 		public abstract IPersistenceContext PersistenceContext { get; }
 		public abstract CacheMode CacheMode { get; set; }
 		public abstract bool IsOpen { get; }
-		public abstract bool IsConnected { get; }
 		public abstract string FetchProfile { get; set; }
 		public abstract string BestGuessEntityName(object entity);
 		public abstract string GuessEntityName(object entity);
-		public abstract DbConnection Connection { get; }
 		public abstract int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
+
+		//Since 5.2
+		[Obsolete("Replaced by FutureBatch")]
 		public abstract FutureCriteriaBatch FutureCriteriaBatch { get; protected internal set; }
+		//Since 5.2
+		[Obsolete("Replaced by FutureBatch")]
 		public abstract FutureQueryBatch FutureQueryBatch { get; protected internal set; }
+	
+		public virtual IQueryBatch FutureBatch
+			=>_futureMultiBatch ?? (_futureMultiBatch = new QueryBatch(this, true));
 
 		public virtual IInterceptor Interceptor { get; protected set; }
 
@@ -241,6 +298,18 @@ namespace NHibernate.Impl
 		{
 			get => _flushMode;
 			set => _flushMode = value;
+		}
+
+		//6.0 TODO: Make abstract
+		/// <summary>
+		/// detect in-memory changes, determine if the changes are to tables
+		/// named in the query and, if so, complete execution the flush
+		/// </summary>
+		/// <param name="querySpaces"></param>
+		/// <returns>Returns true if flush was executed</returns>
+		public virtual bool AutoFlushIfRequired(ISet<string> querySpaces)
+		{
+			return false;
 		}
 
 		public virtual IQuery GetNamedQuery(string queryName)
@@ -370,13 +439,23 @@ namespace NHibernate.Impl
 
 		public abstract void Flush();
 
-		public abstract bool TransactionInProgress { get; }
+		// 6.0 TODO: remove virtual.
+		/// <inheritdoc />
+		public virtual bool TransactionInProgress => ConnectionManager.IsInActiveTransaction;
 
 		#endregion
 
 		protected internal void SetClosed()
 		{
 			closed = true;
+		}
+
+		protected DbConnection CloseConnectionManager()
+		{
+			if (!IsTransactionCoordinatorShared)
+				return ConnectionManager.Close();
+			ConnectionManager.RemoveDependentSession(this);
+			return null;
 		}
 
 		private void InitQuery(IQuery query, NamedQueryDefinition nqd)
@@ -471,6 +550,45 @@ namespace NHibernate.Impl
 			}
 		}
 
+		/// <summary>
+		/// Begin a NHibernate transaction
+		/// </summary>
+		/// <returns>A NHibernate transaction</returns>
+		public ITransaction BeginTransaction()
+		{
+			using (BeginProcess())
+			{
+				if (IsTransactionCoordinatorShared)
+				{
+					// Todo : should seriously consider not allowing a txn to begin from a child session
+					//      can always route the request to the root session...
+					Log.Warn("Transaction started on non-root session");
+				}
+
+				return ConnectionManager.BeginTransaction();
+			}
+		}
+
+		/// <summary>
+		/// Begin a NHibernate transaction with the specified isolation level
+		/// </summary>
+		/// <param name="isolationLevel">The isolation level</param>
+		/// <returns>A NHibernate transaction</returns>
+		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
+		{
+			using (BeginProcess())
+			{
+				if (IsTransactionCoordinatorShared)
+				{
+					// Todo : should seriously consider not allowing a txn to begin from a child session
+					//      can always route the request to the root session...
+					Log.Warn("Transaction started on non-root session");
+				}
+
+				return ConnectionManager.BeginTransaction(isolationLevel);
+			}
+		}
+
 		protected void EnlistInAmbientTransactionIfNeeded()
 		{
 			_factory.TransactionFactory.EnlistInSystemTransactionIfNeeded(this);
@@ -522,6 +640,11 @@ namespace NHibernate.Impl
 		public IQueryable<T> Query<T>(string entityName)
 		{
 			return new NhQueryable<T>(this, entityName);
+		}
+
+		public virtual IQueryBatch CreateQueryBatch()
+		{
+			return new QueryBatch(this, false);
 		}
 	}
 }

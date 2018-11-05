@@ -6,7 +6,7 @@ namespace NHibernate.Test.Generatedkeys.Seqidentity
 	[TestFixture]
 	public class SequenceIdentityFixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Generatedkeys.Seqidentity.MyEntity.hbm.xml" }; }
 		}
@@ -18,7 +18,9 @@ namespace NHibernate.Test.Generatedkeys.Seqidentity
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect.SupportsSequences && !(dialect is Dialect.MsSql2012Dialect);
+			return dialect.SupportsSequences && 
+			       !(dialect is Dialect.MsSql2012Dialect) && 
+			       !(dialect is Dialect.HanaDialectBase); // SAP HANA does not support a syntax allowing to return the inserted id as an output parameter or a return value
 		}
 
 		[Test]

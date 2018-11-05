@@ -21,7 +21,7 @@ namespace NHibernate.Test.ProjectionFixtures
     [TestFixture]
     public class FixtureAsync : TestCase
     {
-        protected override System.Collections.IList Mappings
+        protected override string[] Mappings
         {
             get { return new string[] { "ProjectionFixtures.Mapping.hbm.xml" }; }
         }

@@ -7,7 +7,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 	[TestFixture]
 	public class HiLoForcedTableSequenceTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "IdGen.Enhanced.Forcedtable.HiLo.hbm.xml" }; }
 		}

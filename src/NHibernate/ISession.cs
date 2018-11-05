@@ -6,11 +6,41 @@ using System.Linq.Expressions;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Event.Default;
+using NHibernate.Impl;
+using NHibernate.Multi;
 using NHibernate.Stat;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate
 {
+	// 6.0 TODO: Convert to interface methods
+	public static class SessionExtensions
+	{
+		/// <summary>
+		/// Obtain a <see cref="IStatelessSession"/> builder with the ability to grab certain information from
+		/// this session. The built <c>IStatelessSession</c> will require its own disposal.
+		/// </summary>
+		/// <param name="session">The session from which to build a stateless session.</param>
+		/// <returns>The session builder.</returns>
+		public static ISharedStatelessSessionBuilder StatelessSessionWithOptions(this ISession session)
+		{
+			var impl = session as SessionImpl ?? throw new NotSupportedException("Only SessionImpl sessions are supported.");
+			return impl.StatelessSessionWithOptions();
+		}
+
+		/// <summary>
+		/// Creates a <see cref="IQueryBatch"/> for the session. Batch extension methods are available in the
+		/// <c>NHibernate.Multi</c> namespace.
+		/// </summary>
+		/// <param name="session">The session.</param>
+		/// <returns>A query batch.</returns>
+		public static IQueryBatch CreateQueryBatch(this ISession session)
+		{
+			return ReflectHelper.CastOrThrow<AbstractSessionImpl>(session, "query batch").CreateQueryBatch();
+		}
+	}
+
 	/// <summary>
 	/// The main runtime interface between a .NET application and NHibernate. This is the central
 	/// API class abstracting the notion of a persistence service.
@@ -174,8 +204,16 @@ namespace NHibernate
 		bool IsOpen { get; }
 
 		/// <summary>
-		/// Is the <c>ISession</c> currently connected?
+		/// Is the session connected?
 		/// </summary>
+		/// <value>
+		/// <see langword="true" /> if the session is connected.
+		/// </value>
+		/// <remarks>
+		/// A session is considered connected if there is a <see cref="DbConnection"/> (regardless
+		/// of its state) or if the field <c>connect</c> is true. Meaning that it will connect
+		/// at the next operation that requires a connection.
+		/// </remarks>
 		bool IsConnected { get; }
 
 		/// <summary>
@@ -939,6 +977,8 @@ namespace NHibernate
 		/// a list of all the results of all the queries.
 		/// Note that each query result is itself usually a list.
 		/// </returns>
+		// Since v5.2
+		[Obsolete("Use ISession.CreateQueryBatch instead.")]
 		IMultiQuery CreateMultiQuery();
 
 		/// <summary>
@@ -965,6 +1005,8 @@ namespace NHibernate
 		/// of all the criterias.
 		/// </summary>
 		/// <returns></returns>
+		// Since v5.2
+		[Obsolete("Use ISession.CreateQueryBatch instead.")]
 		IMultiCriteria CreateMultiCriteria();
 
 		/// <summary> Get the statistics for this session.</summary>

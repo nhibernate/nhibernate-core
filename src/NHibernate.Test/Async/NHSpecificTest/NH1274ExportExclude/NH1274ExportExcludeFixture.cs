@@ -69,8 +69,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 				Assert.IsTrue(s.Contains("drop table Home_All"));
 			}
 
-			Assert.IsTrue(s.Contains("create table Home_All"));
-			Assert.IsTrue(s.Contains("create table Home_Export"));
+			Assert.That(s, Does.Match("create ((column|row) )?table Home_All"));
+			Assert.That(s, Does.Match("create ((column|row) )?table Home_Export"));
 		}
 
 		[Test]
@@ -82,8 +82,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 			await (update.ExecuteAsync(tw.WriteLine, false));
 
 			string s = tw.ToString();
-			Assert.IsTrue(s.Contains("create table Home_Update"));
-			Assert.IsTrue(s.Contains("create table Home_All"));
+			Assert.That(s, Does.Match("create ((column|row) )?table Home_Update"));
+			Assert.That(s, Does.Match("create ((column|row) )?table Home_All"));
 		}
 
 		[Test]

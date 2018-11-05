@@ -45,22 +45,22 @@ namespace NHibernate.Tool.hbm2ddl
 
 				for (int i = 0; i < args.Length; i++)
 				{
-					if (args[i].StartsWith("--"))
+					if (args[i].StartsWith("--", StringComparison.Ordinal))
 					{
 						//if (args[i].StartsWith("--properties="))
 						//{
 						//  propFile = args[i].Substring(13);
 						//}
 						//else 
-						if (args[i].StartsWith("--config="))
+						if (args[i].StartsWith("--config=", StringComparison.Ordinal))
 						{
 							cfg.Configure(args[i].Substring(9));
 						}
-						else if (args[i].StartsWith("--naming="))
+						else if (args[i].StartsWith("--naming=", StringComparison.Ordinal))
 						{
 							cfg.SetNamingStrategy(
 								(INamingStrategy)
-								Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(args[i].Substring(9))));
+								Cfg.Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(args[i].Substring(9))));
 						}
 					}
 					else

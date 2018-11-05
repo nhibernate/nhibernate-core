@@ -3,14 +3,15 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Xml;
 using System.Xml.Linq;
 using NHibernate.Bytecode;
+using NHibernate.Cfg;
 using NHibernate.Classic;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 using NHibernate.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Type
 {
@@ -24,7 +25,7 @@ namespace NHibernate.Type
 	/// correct IType.  Instead use TypeFactory.GetString(300) and keep a local variable that holds
 	/// a reference to the IType.
 	/// </remarks>
-	public sealed class TypeFactory
+	public static class TypeFactory
 	{
 		private enum TypeClassification
 		{
@@ -33,11 +34,11 @@ namespace NHibernate.Type
 			PrecisionScale
 		}
 
+		public static readonly string[] EmptyAliases = System.Array.Empty<string>();
+
 		private static readonly INHibernateLogger _log = NHibernateLogger.For(typeof(TypeFactory));
-		private static readonly string[] EmptyAliases= System.Array.Empty<string>();
-		private static readonly char[] PrecisionScaleSplit = new[] { '(', ')', ',' };
-		private static readonly char[] LengthSplit = new[] { '(', ')' };
-		private static readonly TypeFactory Instance;
+		private static readonly char[] PrecisionScaleSplit = { '(', ')', ',' };
+		private static readonly char[] LengthSplit = { '(', ')' };
 
 		private static readonly MethodInfo BagDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
 			f => f.Bag<object>(null, null));
@@ -96,7 +97,15 @@ namespace NHibernate.Type
 
 		private delegate NullableType NullableTypeCreatorDelegate(SqlType sqlType);
 
-		private static void RegisterType(System.Type systemType, IType nhibernateType, IEnumerable<string> aliases)
+		/// <summary>
+		/// <para>Defines which NHibernate type should be chosen by default for handling a given .Net type.</para>
+		/// <para>This must be done before any operation on NHibernate, including building its
+		/// <see cref="Configuration" /> and building session factory. Otherwise the behavior will be undefined.</para>
+		/// </summary>
+		/// <param name="systemType">The .Net type.</param>
+		/// <param name="nhibernateType">The NHibernate type.</param>
+		/// <param name="aliases">The additional aliases to map to the type. Use <see cref="EmptyAliases"/> if none.</param>
+		public static void RegisterType(System.Type systemType, IType nhibernateType, IEnumerable<string> aliases)
 		{
 			var typeAliases = new List<string>(aliases);
 			typeAliases.AddRange(GetClrTypeAliases(systemType));
@@ -124,11 +133,12 @@ namespace NHibernate.Type
 
 		private static IEnumerable<string> GetClrTypeAliases(System.Type systemType)
 		{
-			var typeAliases = new List<string>
-								{
-									systemType.FullName,
-														systemType.AssemblyQualifiedName,
-								};
+			var typeAliases =
+				new List<string>
+				{
+					systemType.FullName,
+					systemType.AssemblyQualifiedName
+				};
 			if (systemType.IsValueType)
 			{
 				// Also register Nullable<systemType> for ValueTypes
@@ -194,8 +204,6 @@ namespace NHibernate.Type
 		/// <summary></summary>
 		static TypeFactory()
 		{
-			Instance = new TypeFactory();
-			
 			// set up the mappings of .NET Classes/Structs to their NHibernate types.
 			RegisterDefaultNetTypes();
 
@@ -211,7 +219,7 @@ namespace NHibernate.Type
 		/// </remarks>
 		private static void RegisterDefaultNetTypes()
 		{
-			// NOTE : each .NET type mut appear only one time
+			// NOTE: each .NET type should appear only one time
 			RegisterType(typeof (Byte[]), NHibernateUtil.Binary, new[] {"binary"},
 						 l => GetType(NHibernateUtil.Binary, l, len => new BinaryType(SqlTypeFactory.GetBinary(len))));
 
@@ -288,11 +296,13 @@ namespace NHibernate.Type
 			RegisterType(NHibernateUtil.Timestamp, new[] { "timestamp" });
 #pragma warning restore 618
 			RegisterType(NHibernateUtil.DbTimestamp, new[] { "dbtimestamp" });
+			RegisterType(NHibernateUtil.UtcDbTimestamp, new[] { "utcdbtimestamp" });
 			RegisterType(NHibernateUtil.Time, new[] { "time" },
 				s => GetType(NHibernateUtil.Time, s, scale => new TimeType(SqlTypeFactory.GetTime((byte)scale))));
 			RegisterType(NHibernateUtil.TrueFalse, new[] { "true_false" });
 			RegisterType(NHibernateUtil.YesNo, new[] { "yes_no" });
 			RegisterType(NHibernateUtil.Ticks, new[] { "ticks" });
+			RegisterType(NHibernateUtil.UtcTicks, new[] { "utcticks" });
 			RegisterType(NHibernateUtil.TimeAsTimeSpan, new[] { "timeastimespan" },
 				s => GetType(NHibernateUtil.TimeAsTimeSpan, s, scale => new TimeAsTimeSpanType(SqlTypeFactory.GetTime((byte)scale))));
 			RegisterType(NHibernateUtil.LocalDateTime, new[] { "localdatetime" },
@@ -315,14 +325,8 @@ namespace NHibernate.Type
 								 len => new SerializableType(typeof (object), SqlTypeFactory.GetBinary(len))));
 		}
 
-		public ICollectionTypeFactory CollectionTypeFactory
-		{
-			get { return Cfg.Environment.BytecodeProvider.CollectionTypeFactory; }
-		}
-
-		private TypeFactory()
-		{
-		}
+		private static ICollectionTypeFactory CollectionTypeFactory =>
+			Environment.BytecodeProvider.CollectionTypeFactory;
 
 		/// <summary>
 		/// Gets the classification of the Type based on the string.
@@ -349,11 +353,11 @@ namespace NHibernate.Type
 		/// </remarks>
 		private static TypeClassification GetTypeClassification(string typeName)
 		{
-			int indexOfOpenParen = typeName.IndexOf("(");
-			int indexOfComma = 0;
+			var indexOfOpenParen = typeName.IndexOf("(", StringComparison.Ordinal);
+			var indexOfComma = 0;
 			if (indexOfOpenParen >= 0)
 			{
-				indexOfComma = typeName.IndexOf(",", indexOfOpenParen);
+				indexOfComma = typeName.IndexOf(",", indexOfOpenParen, StringComparison.Ordinal);
 			}
 
 			if (indexOfOpenParen >= 0)
@@ -385,6 +389,22 @@ namespace NHibernate.Type
 		/// </remarks>
 		public static IType Basic(string name)
 		{
+			return Basic(name, null);
+		}
+
+		/// <summary>
+		/// Given the name of a Hibernate type such as Decimal, Decimal(19,0),
+		/// Int32, or even NHibernate.Type.DecimalType, NHibernate.Type.DecimalType(19,0),
+		/// NHibernate.Type.Int32Type, then return an instance of NHibernate.Type.IType
+		/// </summary>
+		/// <param name="name">The name of the type.</param>
+		/// <param name="parameters">The parameters for the type, if any.</param>
+		/// <returns>The instance of the IType that the string represents.</returns>
+		/// <remarks>
+		/// This method will return null if the name is not found in the basicNameMap.
+		/// </remarks>
+		public static IType Basic(string name, IDictionary<string, string> parameters)
+		{
 			string typeName;
 
 			// Use the basic name (such as String or String(255)) to get the
@@ -394,6 +414,15 @@ namespace NHibernate.Type
 			{
 				if (_obsoleteMessageByAlias.TryGetValue(name, out string obsoleteMessage))
 					_log.Warn("{0} is obsolete. {1}", name, obsoleteMessage);
+
+				if (parameters?.Count > 0 && returnType is IParameterizedType)
+				{
+					// The type is parameterized, must apply the parameters to a new instance of the type.
+					// Some built-in types have internal default constructor like StringType, so we need to
+					// allow non-public constructors.
+					returnType = (IType) Activator.CreateInstance(returnType.GetType(), true);
+					InjectParameters(returnType, parameters);
+				}
 				return returnType;
 			}
 
@@ -409,15 +438,15 @@ namespace NHibernate.Type
 				string[] parsedName = name.Split(PrecisionScaleSplit);
 				if (parsedName.Length < 4)
 				{
-					throw new ArgumentOutOfRangeException("TypeClassification.PrecisionScale", name,
-																								"It is not a valid Precision/Scale name");
+					throw new ArgumentOutOfRangeException(
+						"TypeClassification.PrecisionScale", name, "It is not a valid Precision/Scale name");
 				}
 
 				typeName = parsedName[0].Trim();
 				byte precision = Byte.Parse(parsedName[1].Trim());
 				byte scale = Byte.Parse(parsedName[2].Trim());
 
-				return BuiltInType(typeName, precision, scale);
+				returnType = BuiltInType(typeName, precision, scale);
 			}
 			else if (typeClassification == TypeClassification.LengthOrScale)
 			{
@@ -426,13 +455,14 @@ namespace NHibernate.Type
 				string[] parsedName = name.Split(LengthSplit);
 				if (parsedName.Length < 3)
 				{
-					throw new ArgumentOutOfRangeException("TypeClassification.LengthOrScale", name, "It is not a valid Length or Scale name");
+					throw new ArgumentOutOfRangeException(
+						"TypeClassification.LengthOrScale", name, "It is not a valid Length or Scale name");
 				}
 
 				typeName = parsedName[0].Trim();
 				int length = Int32.Parse(parsedName[1].Trim());
 
-				return BuiltInType(typeName, length);
+				returnType = BuiltInType(typeName, length);
 			}
 
 			else
@@ -443,6 +473,9 @@ namespace NHibernate.Type
 				// doesn't have built into it.
 				return null;
 			}
+
+			InjectParameters(returnType, parameters);
+			return returnType;
 		}
 
 		internal static IType BuiltInType(string typeName, int lengthOrScale)
@@ -458,34 +491,6 @@ namespace NHibernate.Type
 			return !getTypeDelegatesWithPrecision.TryGetValue(typeName, out precisionDelegate)
 					? null
 					: precisionDelegate(precision, scale);
-		}
-
-		private static void AddToTypeOfName(string key, IType type)
-		{
-			if (!typeByTypeOfName.TryAdd(key, type))
-			{
-				throw new HibernateException("An item with the same key has already been added to typeByTypeOfName.");
-			}
-			if (!typeByTypeOfName.TryAdd(type.Name, type))
-			{
-				throw new HibernateException("An item with the same key has already been added to typeByTypeOfName.");
-			}
-		}
-
-		private static void AddToTypeOfNameWithLength(string key, IType type)
-		{
-			if (!typeByTypeOfName.TryAdd(key, type))
-			{
-				throw new HibernateException("An item with the same key has already been added to typeByTypeOfName.");
-			}
-		}
-
-		private static void AddToTypeOfNameWithPrecision(string key, IType type)
-		{
-			if (!typeByTypeOfName.TryAdd(key, type))
-			{
-				throw new HibernateException("An item with the same key has already been added to typeByTypeOfName.");
-			}
 		}
 
 		private static string GetKeyForLengthOrScaleBased(string name, int lengthOrScale)
@@ -537,7 +542,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static IType HeuristicType(string typeName, IDictionary<string, string> parameters, int? length)
 		{
-			IType type = Basic(typeName);
+			IType type = Basic(typeName, parameters);
 
 			if (type != null)
 				return type;
@@ -567,7 +572,7 @@ namespace NHibernate.Type
 			{
 				try
 				{
-					type = (IType) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(typeClass);
+					type = (IType) Environment.ObjectsFactory.CreateInstance(typeClass);
 				}
 				catch (Exception e)
 				{
@@ -623,18 +628,10 @@ namespace NHibernate.Type
 			return typeByTypeOfName.TryGetValue(type.FullName, out var nhType) ? nhType : null;
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetAnsiStringType(int length)
 		{
-			string key = GetKeyForLengthOrScaleBased(NHibernateUtil.AnsiString.Name, length);
-
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
-			{
-				returnType = new AnsiStringType(SqlTypeFactory.GetAnsiString(length));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
-			return (NullableType)returnType;
+			var key = GetKeyForLengthOrScaleBased(NHibernateUtil.AnsiString.Name, length);
+			return (NullableType)typeByTypeOfName.GetOrAdd(key, k => new AnsiStringType(SqlTypeFactory.GetAnsiString(length)));
 		}
 
 		/// <summary>
@@ -647,7 +644,6 @@ namespace NHibernate.Type
 		/// been added to the basicNameMap with the keys <c>Byte[](length)</c> and
 		/// <c>NHibernate.Type.BinaryType(length)</c>.
 		/// </remarks>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetBinaryType(int length)
 		{
 			//HACK: don't understand why SerializableType calls this with length=0
@@ -656,43 +652,20 @@ namespace NHibernate.Type
 				return NHibernateUtil.Binary;
 			}
 
-			string key = GetKeyForLengthOrScaleBased(NHibernateUtil.Binary.Name, length);
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
-			{
-				returnType = new BinaryType(SqlTypeFactory.GetBinary(length));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
-
-			return (NullableType)returnType;
+			var key = GetKeyForLengthOrScaleBased(NHibernateUtil.Binary.Name, length);
+			return (NullableType)typeByTypeOfName.GetOrAdd(key, k => new BinaryType(SqlTypeFactory.GetBinary(length)));
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		private static NullableType GetType(NullableType defaultUnqualifiedType, int lengthOrScale, GetNullableTypeWithLengthOrScale ctorDelegate)
 		{
-			string key = GetKeyForLengthOrScaleBased(defaultUnqualifiedType.Name, lengthOrScale);
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
-			{
-				returnType = ctorDelegate(lengthOrScale);
-				AddToTypeOfNameWithLength(key, returnType);
-			}
-
-			return (NullableType)returnType;
+			var key = GetKeyForLengthOrScaleBased(defaultUnqualifiedType.Name, lengthOrScale);
+			return (NullableType)typeByTypeOfName.GetOrAdd(key, k => ctorDelegate(lengthOrScale));
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		private static NullableType GetType(NullableType defaultUnqualifiedType, byte precision, byte scale, NullableTypeCreatorDelegate ctor)
 		{
-			string key = GetKeyForPrecisionScaleBased(defaultUnqualifiedType.Name, precision, scale);
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
-			{
-				returnType = ctor(SqlTypeFactory.GetSqlType(defaultUnqualifiedType.SqlType.DbType, precision, scale));
-				AddToTypeOfNameWithPrecision(key, returnType);
-			}
-
-			return (NullableType)returnType;
+			var key = GetKeyForPrecisionScaleBased(defaultUnqualifiedType.Name, precision, scale);
+			return (NullableType)typeByTypeOfName.GetOrAdd(key, k => ctor(SqlTypeFactory.GetSqlType(defaultUnqualifiedType.SqlType.DbType, precision, scale)));
 		}
 
 		/// <summary>
@@ -708,85 +681,53 @@ namespace NHibernate.Type
 		/// from the other items put in the basicNameMap because it is uses the AQN and the
 		/// FQN as opposed to the short name used in the maps and the FQN.
 		/// </para>
-		/// <para>
-		/// Since this method calls the method
-		/// <see cref="GetSerializableType(System.Type, Int32)">GetSerializableType(System.Type, Int32)</see>
-		/// with the default length, those keys will also be added.
-		/// </para>
 		/// </remarks>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetSerializableType(System.Type serializableType)
 		{
-			string key = serializableType.AssemblyQualifiedName;
+			var key = serializableType.AssemblyQualifiedName;
 
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
+			// The value factory may be run concurrently, but only one resulting value will be yielded to all threads.
+			// So we should add the type with its other key in a later operation in order to ensure we cache the same
+			// instance for both keys.
+			var added = false;
+			var type = (NullableType)typeByTypeOfName.GetOrAdd(
+				key,
+				k =>
+				{
+					var returnType = new SerializableType(serializableType);
+					added = true;
+					return returnType;
+				});
+			if (added && typeByTypeOfName.GetOrAdd(type.Name, type) != type)
 			{
-				returnType = new SerializableType(serializableType);
-				AddToTypeOfName(key, returnType);
+				throw new HibernateException($"Another item with the key {type.Name} has already been added to typeByTypeOfName.");
 			}
 
-			return (NullableType)returnType;
+			return type;
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetSerializableType(System.Type serializableType, int length)
 		{
-			string key = GetKeyForLengthOrScaleBased(serializableType.AssemblyQualifiedName, length);
-
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
-			{
-				returnType = new SerializableType(serializableType, SqlTypeFactory.GetBinary(length));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
-
-			return (NullableType)returnType;
+			var key = GetKeyForLengthOrScaleBased(serializableType.AssemblyQualifiedName, length);
+			return (NullableType)typeByTypeOfName.GetOrAdd(key, k => new SerializableType(serializableType, SqlTypeFactory.GetBinary(length)));
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetSerializableType(int length)
 		{
-			string key = GetKeyForLengthOrScaleBased(NHibernateUtil.Serializable.Name, length);
-
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
-			{
-				returnType = new SerializableType(typeof(object), SqlTypeFactory.GetBinary(length));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
-
-			return (NullableType)returnType;
+			var key = GetKeyForLengthOrScaleBased(NHibernateUtil.Serializable.Name, length);
+			return (NullableType)typeByTypeOfName.GetOrAdd(key, k => new SerializableType(typeof(object), SqlTypeFactory.GetBinary(length)));
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetStringType(int length)
 		{
-			string key = GetKeyForLengthOrScaleBased(NHibernateUtil.String.Name, length);
-
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
-			{
-				returnType = new StringType(SqlTypeFactory.GetString(length));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
-
-			return (NullableType)returnType;
+			var key = GetKeyForLengthOrScaleBased(NHibernateUtil.String.Name, length);
+			return (NullableType)typeByTypeOfName.GetOrAdd(key, k => new StringType(SqlTypeFactory.GetString(length)));
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetTypeType(int length)
 		{
-			string key = GetKeyForLengthOrScaleBased(typeof(TypeType).FullName, length);
-
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
-			{
-				returnType = new TypeType(SqlTypeFactory.GetString(length));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
-
-			return (NullableType)returnType;
+			var key = GetKeyForLengthOrScaleBased(typeof(TypeType).FullName, length);
+			return (NullableType)typeByTypeOfName.GetOrAdd(key, k => new TypeType(SqlTypeFactory.GetString(length)));
 		}
 
 		/// <summary>
@@ -794,18 +735,10 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="fractionalSecondsPrecision">The fractional seconds precision.</param>
 		/// <returns>The NHibernate type.</returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetDateTimeType(byte fractionalSecondsPrecision)
 		{
 			var key = GetKeyForLengthOrScaleBased(NHibernateUtil.DateTime.Name, fractionalSecondsPrecision);
-
-			if (!typeByTypeOfName.TryGetValue(key, out var returnType))
-			{
-				returnType = new DateTimeType(SqlTypeFactory.GetDateTime(fractionalSecondsPrecision));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
-
-			return (NullableType)returnType;
+			return (NullableType)typeByTypeOfName.GetOrAdd(key, k => new DateTimeType(SqlTypeFactory.GetDateTime(fractionalSecondsPrecision)));
 		}
 
 		/// <summary>
@@ -813,19 +746,12 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="fractionalSecondsPrecision">The fractional seconds precision.</param>
 		/// <returns>The NHibernate type.</returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
+		// Since v5.0
 		[Obsolete("Use GetDateTimeType instead, it uses DateTime2 with dialects supporting it.")]
 		public static NullableType GetDateTime2Type(byte fractionalSecondsPrecision)
 		{
 			var key = GetKeyForLengthOrScaleBased(NHibernateUtil.DateTime2.Name, fractionalSecondsPrecision);
-
-			if (!typeByTypeOfName.TryGetValue(key, out var returnType))
-			{
-				returnType = new DateTime2Type(SqlTypeFactory.GetDateTime2(fractionalSecondsPrecision));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
-
-			return (NullableType)returnType;
+			return (NullableType)typeByTypeOfName.GetOrAdd(key, k => new DateTime2Type(SqlTypeFactory.GetDateTime2(fractionalSecondsPrecision)));
 		}
 
 		/// <summary>
@@ -833,18 +759,10 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="fractionalSecondsPrecision">The fractional seconds precision.</param>
 		/// <returns>The NHibernate type.</returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetLocalDateTimeType(byte fractionalSecondsPrecision)
 		{
 			var key = GetKeyForLengthOrScaleBased(NHibernateUtil.LocalDateTime.Name, fractionalSecondsPrecision);
-
-			if (!typeByTypeOfName.TryGetValue(key, out var returnType))
-			{
-				returnType = new LocalDateTimeType(SqlTypeFactory.GetDateTime(fractionalSecondsPrecision));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
-
-			return (NullableType)returnType;
+			return (NullableType)typeByTypeOfName.GetOrAdd(key, k => new LocalDateTimeType(SqlTypeFactory.GetDateTime(fractionalSecondsPrecision)));
 		}
 
 		/// <summary>
@@ -852,18 +770,10 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="fractionalSecondsPrecision">The fractional seconds precision.</param>
 		/// <returns>The NHibernate type.</returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetUtcDateTimeType(byte fractionalSecondsPrecision)
 		{
 			var key = GetKeyForLengthOrScaleBased(NHibernateUtil.UtcDateTime.Name, fractionalSecondsPrecision);
-
-			if (!typeByTypeOfName.TryGetValue(key, out var returnType))
-			{
-				returnType = new UtcDateTimeType(SqlTypeFactory.GetDateTime(fractionalSecondsPrecision));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
-
-			return (NullableType)returnType;
+			return (NullableType)typeByTypeOfName.GetOrAdd(key, k => new UtcDateTimeType(SqlTypeFactory.GetDateTime(fractionalSecondsPrecision)));
 		}
 
 		/// <summary>
@@ -871,18 +781,10 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="fractionalSecondsPrecision">The fractional seconds precision.</param>
 		/// <returns>The NHibernate type.</returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetDateTimeOffsetType(byte fractionalSecondsPrecision)
 		{
 			var key = GetKeyForLengthOrScaleBased(NHibernateUtil.DateTimeOffset.Name, fractionalSecondsPrecision);
-
-			if (!typeByTypeOfName.TryGetValue(key, out var returnType))
-			{
-				returnType = new DateTimeOffsetType(SqlTypeFactory.GetDateTimeOffset(fractionalSecondsPrecision));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
-
-			return (NullableType)returnType;
+			return (NullableType)typeByTypeOfName.GetOrAdd(key, k => new DateTimeOffsetType(SqlTypeFactory.GetDateTimeOffset(fractionalSecondsPrecision)));
 		}
 
 		/// <summary>
@@ -890,18 +792,10 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="fractionalSecondsPrecision">The fractional seconds precision.</param>
 		/// <returns>The NHibernate type.</returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetTimeAsTimeSpanType(byte fractionalSecondsPrecision)
 		{
 			var key = GetKeyForLengthOrScaleBased(NHibernateUtil.TimeAsTimeSpan.Name, fractionalSecondsPrecision);
-
-			if (!typeByTypeOfName.TryGetValue(key, out var returnType))
-			{
-				returnType = new TimeAsTimeSpanType(SqlTypeFactory.GetTime(fractionalSecondsPrecision));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
-
-			return (NullableType)returnType;
+			return (NullableType)typeByTypeOfName.GetOrAdd(key, k => new TimeAsTimeSpanType(SqlTypeFactory.GetTime(fractionalSecondsPrecision)));
 		}
 
 		/// <summary>
@@ -909,18 +803,10 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="fractionalSecondsPrecision">The fractional seconds precision.</param>
 		/// <returns>The NHibernate type.</returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetTimeType(byte fractionalSecondsPrecision)
 		{
 			var key = GetKeyForLengthOrScaleBased(NHibernateUtil.Time.Name, fractionalSecondsPrecision);
-
-			if (!typeByTypeOfName.TryGetValue(key, out var returnType))
-			{
-				returnType = new TimeType(SqlTypeFactory.GetTime(fractionalSecondsPrecision));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
-
-			return (NullableType)returnType;
+			return (NullableType)typeByTypeOfName.GetOrAdd(key, k => new TimeType(SqlTypeFactory.GetTime(fractionalSecondsPrecision)));
 		}
 
 		// Association Types
@@ -932,8 +818,8 @@ namespace NHibernate.Type
 			bool lazy, bool unwrapProxy, string entityName, string propertyName)
 		{
 			return
-				new OneToOneType(persistentClass, foreignKeyType, uniqueKeyPropertyName, lazy, unwrapProxy,
-												 entityName, propertyName);
+				new OneToOneType(
+					persistentClass, foreignKeyType, uniqueKeyPropertyName, lazy, unwrapProxy, entityName, propertyName);
 		}
 
 		/// <summary>
@@ -964,71 +850,71 @@ namespace NHibernate.Type
 
 		public static CollectionType Array(string role, string propertyRef, System.Type elementClass)
 		{
-			return Instance.CollectionTypeFactory.Array(role, propertyRef, elementClass);
+			return CollectionTypeFactory.Array(role, propertyRef, elementClass);
 		}
 
 
 		public static CollectionType GenericBag(string role, string propertyRef, System.Type elementClass)
 		{
-			MethodInfo mi = BagDefinition.MakeGenericMethod(new[] { elementClass });
+			MethodInfo mi = BagDefinition.MakeGenericMethod(elementClass);
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef });
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef });
 		}
 
 		public static CollectionType GenericIdBag(string role, string propertyRef, System.Type elementClass)
 		{
-			MethodInfo mi = IdBagDefinition.MakeGenericMethod(new[] { elementClass });
+			MethodInfo mi = IdBagDefinition.MakeGenericMethod(elementClass);
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef });
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef });
 		}
 
 		public static CollectionType GenericList(string role, string propertyRef, System.Type elementClass)
 		{
-			MethodInfo mi = ListDefinition.MakeGenericMethod(new[] { elementClass });
+			MethodInfo mi = ListDefinition.MakeGenericMethod(elementClass);
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef });
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef });
 		}
 
 		public static CollectionType GenericMap(string role, string propertyRef, System.Type indexClass, System.Type elementClass)
 		{
-			MethodInfo mi = MapDefinition.MakeGenericMethod(new[] { indexClass, elementClass });
+			MethodInfo mi = MapDefinition.MakeGenericMethod(indexClass, elementClass);
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef });
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef });
 		}
 
 		public static CollectionType GenericSortedList(string role, string propertyRef, object comparer, System.Type indexClass, System.Type elementClass)
 		{
-			MethodInfo mi = SortedListDefinition.MakeGenericMethod(new[] { indexClass, elementClass });
+			MethodInfo mi = SortedListDefinition.MakeGenericMethod(indexClass, elementClass);
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, comparer });
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new[] { role, propertyRef, comparer });
 		}
 
 		public static CollectionType GenericSortedDictionary(string role, string propertyRef, object comparer, System.Type indexClass, System.Type elementClass)
 		{
-			MethodInfo mi = SortedDictionaryDefinition.MakeGenericMethod(new[] { indexClass, elementClass });
+			MethodInfo mi = SortedDictionaryDefinition.MakeGenericMethod(indexClass, elementClass);
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, comparer });
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new[] { role, propertyRef, comparer });
 		}
 
 		public static CollectionType GenericSet(string role, string propertyRef, System.Type elementClass)
 		{
-			MethodInfo mi = SetDefinition.MakeGenericMethod(new[] { elementClass });
+			MethodInfo mi = SetDefinition.MakeGenericMethod(elementClass);
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef });
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef });
 		}
 
 		public static CollectionType GenericSortedSet(string role, string propertyRef, object comparer, System.Type elementClass)
 		{
-			MethodInfo mi = SortedSetDefinition.MakeGenericMethod(new[] { elementClass });
+			MethodInfo mi = SortedSetDefinition.MakeGenericMethod(elementClass);
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, comparer });
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new[] { role, propertyRef, comparer });
 		}
 
 		public static CollectionType GenericOrderedSet(string role, string propertyRef, System.Type elementClass)
 		{
-			MethodInfo mi = OrderedSetDefinition.MakeGenericMethod(new[] { elementClass });
+			MethodInfo mi = OrderedSetDefinition.MakeGenericMethod(elementClass);
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef });
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef });
 		}
 
 		public static CollectionType CustomCollection(string typeName, IDictionary<string, string> typeParameters, string role, string propertyRef)
@@ -1052,9 +938,9 @@ namespace NHibernate.Type
 
 		public static void InjectParameters(Object type, IDictionary<string, string> parameters)
 		{
-			if (type is IParameterizedType)
+			if (type is IParameterizedType parameterizedType)
 			{
-				((IParameterizedType) type).SetParameterValues(parameters);
+				parameterizedType.SetParameterValues(parameters);
 			}
 			else if (parameters != null && parameters.Count != 0)
 			{

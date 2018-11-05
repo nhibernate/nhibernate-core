@@ -30,7 +30,7 @@ namespace NHibernate.SqlCommand
 				if (LockMode.Read.LessThan(lockMode))
 				{
 					string tableAlias = me.Key;
-					if (dialect.ForUpdateOfColumns)
+					if (dialect.UsesColumnsWithForUpdateOf)
 					{
 						string[] keyColumns = keyColumnNames[tableAlias];
 						if (keyColumns == null)

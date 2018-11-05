@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH473
 {
 	[TestFixture]
 	public class Fixture:BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
+
 		protected override void OnSetUp()
 		{
 			using(var session=this.OpenSession())
@@ -33,6 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH473
 				tran.Commit();
 			}
 		}
+
 		[Test]
 		public void ChildItemsGetInOrderWhenUsingFetchJoin()
 		{
@@ -40,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH473
 			using(var tran=session.BeginTransaction())
 			{
 				var result = session.CreateCriteria(typeof (Parent))
-					.SetFetchMode("Children", FetchMode.Join)
+					.Fetch("Children")
 					.List<Parent>();
 				Assert.That(result[0].Children[0].Name,Is.EqualTo("Ayende"));
 				Assert.That(result[0].Children[1].Name, Is.EqualTo("Dario"));
@@ -55,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH473
 			using (var tran = session.BeginTransaction())
 			{
 				var result = session.CreateCriteria(typeof(Parent))
-					.SetFetchMode("Children", FetchMode.Join)
+					.Fetch("Children")
 					.UniqueResult<Parent>();
 				Assert.That(result.Children[0].Name, Is.EqualTo("Ayende"));
 				Assert.That(result.Children[1].Name, Is.EqualTo("Dario"));

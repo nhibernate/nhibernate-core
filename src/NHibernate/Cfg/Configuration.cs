@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -222,7 +221,7 @@ namespace NHibernate.Cfg
 			public IType GetReferencedPropertyType(string className, string propertyName)
 			{
 				PersistentClass pc = GetPersistentClass(className);
-				Property prop = pc.GetProperty(propertyName);
+				Property prop = pc.GetReferencedProperty(propertyName);
 
 				if (prop == null)
 				{
@@ -518,12 +517,12 @@ namespace NHibernate.Cfg
 			}
 			try
 			{
-				Dialect.Dialect dialect = Dialect.Dialect.GetDialect(properties);
-				OnBeforeBindMapping(new BindMappingEventArgs(dialect, mappingDocument, documentFileName));
-				Mappings mappings = CreateMappings(dialect);
-
-				new MappingRootBinder(mappings, dialect).Bind(mappingDocument);
-				OnAfterBindMapping(new BindMappingEventArgs(dialect, mappingDocument, documentFileName));
+				var dialect = new Lazy<Dialect.Dialect>(() => Dialect.Dialect.GetDialect(properties));
+				OnBeforeBindMapping(new BindMappingEventArgs(mappingDocument, documentFileName) {LazyDialect = dialect});
+				var mappings = CreateMappings();
+				mappings.LazyDialect = dialect;
+				new MappingRootBinder(mappings).Bind(mappingDocument);
+				OnAfterBindMapping(new BindMappingEventArgs(mappingDocument, documentFileName) {LazyDialect = dialect});
 			}
 			catch (Exception e)
 			{
@@ -561,7 +560,16 @@ namespace NHibernate.Cfg
 		/// Create a new <see cref="Mappings" /> to add classes and collection
 		/// mappings to.
 		/// </summary>
+		//Since v5.2
+		[Obsolete("Please use overload without a dialect parameter.")]
 		public Mappings CreateMappings(Dialect.Dialect dialect)
+		{
+			var mappings = CreateMappings();
+			mappings.LazyDialect = new Lazy<Dialect.Dialect>(() => dialect);
+			return mappings;
+		}
+
+		public Mappings CreateMappings()
 		{
 			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
 			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
@@ -571,7 +579,7 @@ namespace NHibernate.Cfg
 			return new Mappings(classes, collections, tables, NamedQueries, NamedSQLQueries, SqlResultSetMappings, Imports,
 								secondPasses, filtersSecondPasses, propertyReferences, namingStrategy, typeDefs, FilterDefinitions, extendsQueue,
 								auxiliaryDatabaseObjects, tableNameBinding, columnNameBindingPerTable, defaultAssembly,
-								defaultNamespace, defaultCatalog, defaultSchema, preferPooledValuesLo, dialect);
+								defaultNamespace, defaultCatalog, defaultSchema, preferPooledValuesLo);
 		}
 
 		private void ProcessPreMappingBuildProperties()
@@ -1182,6 +1190,13 @@ namespace NHibernate.Cfg
 						try
 						{
 							fk.AddReferencedTable(referencedClass);
+
+							if (string.IsNullOrEmpty(fk.Name))
+							{
+								fk.Name = Constraint.GenerateName(
+									fk.GeneratedConstraintNamePrefix, table, fk.ReferencedTable, fk.Columns);
+							}
+
 							fk.AlignColumns();
 						}
 						catch (MappingException me)
@@ -1429,10 +1444,10 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public Configuration Configure()
 		{
-			var hc = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName) as IHibernateConfiguration;
-			if (hc != null && hc.SessionFactory != null)
+			var sessionFactoryConfiguration = Environment.HibernateConfiguration?.SessionFactory;
+			if (sessionFactoryConfiguration != null)
 			{
-				return DoConfigure(hc.SessionFactory);
+				return DoConfigure(sessionFactoryConfiguration);
 			}
 			else
 			{
@@ -1450,29 +1465,9 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public Configuration Configure(string fileName)
 		{
-			return Configure(fileName, false);
-		}
-
-		private Configuration Configure(string fileName, bool ignoreSessionFactoryConfig)
-		{
-			if (ignoreSessionFactoryConfig)
+			using (var reader = new XmlTextReader(fileName))
 			{
-				Environment.ResetSessionFactoryProperties();
-				properties = Environment.Properties;
-			}
-
-			XmlTextReader reader = null;
-			try
-			{
-				reader = new XmlTextReader(fileName);
 				return Configure(reader);
-			}
-			finally
-			{
-				if (reader != null)
-				{
-					reader.Close();
-				}
 			}
 		}
 
@@ -1488,33 +1483,23 @@ namespace NHibernate.Cfg
 		public Configuration Configure(Assembly assembly, string resourceName)
 		{
 			if (assembly == null)
-			{
-				throw new HibernateException("Could not configure NHibernate.", new ArgumentNullException("assembly"));
-			}
+				throw new HibernateException("Could not configure NHibernate.", new ArgumentNullException(nameof(assembly)));
 
 			if (resourceName == null)
-			{
-				throw new HibernateException("Could not configure NHibernate.", new ArgumentNullException("resourceName"));
-			}
+				throw new HibernateException("Could not configure NHibernate.", new ArgumentNullException(nameof(resourceName)));
 
-			Stream stream = null;
-			try
+			using (var stream = assembly.GetManifestResourceStream(resourceName))
 			{
-				stream = assembly.GetManifestResourceStream(resourceName);
 				if (stream == null)
 				{
 					// resource does not exist - throw appropriate exception 
-					throw new HibernateException("A ManifestResourceStream could not be created for the resource " + resourceName
-												 + " in Assembly " + assembly.FullName);
+					throw new HibernateException(
+						"A ManifestResourceStream could not be created for the resource " + resourceName + " in Assembly " + assembly.FullName);
 				}
 
-				return Configure(new XmlTextReader(stream));
-			}
-			finally
-			{
-				if (stream != null)
+				using (var reader = new XmlTextReader(stream))
 				{
-					stream.Close();
+					return Configure(reader);
 				}
 			}
 		}
@@ -1923,7 +1908,7 @@ namespace NHibernate.Cfg
 				{
 					try
 					{
-						listeners[i] = Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(listenerClasses[i]));
+						listeners[i] = Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(listenerClasses[i]));
 					}
 					catch (Exception e)
 					{

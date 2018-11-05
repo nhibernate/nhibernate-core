@@ -14,7 +14,7 @@ namespace NHibernate.Test.Ondelete
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "Ondelete.EFGJoinedSubclass.hbm.xml" }; }
 		}

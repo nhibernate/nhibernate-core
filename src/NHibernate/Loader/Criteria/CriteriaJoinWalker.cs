@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -64,8 +64,6 @@ namespace NHibernate.Loader.Criteria
 			{
 				InitAll(translator.GetWhereCondition(), translator.GetOrderBy(), LockMode.None);
 
-				resultTypes = new IType[] { TypeFactory.ManyToOne(persister.EntityName) };
-
 				// root entity comes last
 				userAliasList.Add(criteria.Alias); //root entity comes *last*
 				resultTypeList.Add(translator.ResultType(criteria));
@@ -76,11 +74,51 @@ namespace NHibernate.Loader.Criteria
 			}
 		}
 
+		protected override void AddAssociations()
+		{
+			base.AddAssociations();
+			foreach (var entityJoinInfo in translator.GetEntityJoins().Values)
+			{
+				var tableAlias = translator.GetSQLAlias(entityJoinInfo.Criteria);
+				var criteriaPath = entityJoinInfo.Criteria.Alias; //path for entity join is equal to alias
+				var persister = entityJoinInfo.Persister as IOuterJoinLoadable;
+				AddExplicitEntityJoinAssociation(persister, tableAlias, translator.GetJoinType(criteriaPath), criteriaPath);
+				IncludeInResultIfNeeded(persister, entityJoinInfo.Criteria, tableAlias, criteriaPath);
+				//collect mapped associations for entity join
+				WalkEntityTree(persister, tableAlias, criteriaPath, 1);
+			}
+		}
+
 		protected override void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
 		{
 			// NH different behavior (NH-1476, NH-1760, NH-1785)
 			base.WalkEntityTree(persister, alias, path, currentDepth);
 			WalkCompositeComponentIdTree(persister, alias, path);
+		}
+
+		protected override OuterJoinableAssociation CreateRootAssociation()
+		{
+			var selectMode = GetSelectMode(string.Empty);
+			if (selectMode == SelectMode.JoinOnly || selectMode == SelectMode.Skip)
+			{
+				throw new NotSupportedException($"SelectMode {selectMode} for root entity is not supported. Use {nameof(SelectMode)}.{nameof(SelectMode.ChildFetch)} instead.");
+			}
+
+			return new OuterJoinableAssociation(
+				Persister.EntityType,
+				null,
+				null,
+				Alias,
+				JoinType.LeftOuterJoin,
+				null,
+				Factory,
+				CollectionHelper.EmptyDictionary<string, IFilter>(),
+				selectMode);
+		}
+
+		protected override SelectMode GetSelectMode(string path)
+		{
+			return translator.RootCriteria.GetSelectMode(path);
 		}
 
 		private void WalkCompositeComponentIdTree(IOuterJoinLoadable persister, string alias, string path)
@@ -90,7 +128,7 @@ namespace NHibernate.Loader.Criteria
 			if (type != null && type.IsComponentType)
 			{
 				ILhsAssociationTypeSqlInfo associationTypeSQLInfo = JoinHelper.GetIdLhsSqlInfo(alias, persister, Factory);
-				WalkComponentTree((IAbstractComponentType)type, 0, alias, SubPath(path, propertyName), 0, associationTypeSQLInfo);
+				WalkComponentTree((IAbstractComponentType) type, 0, alias, SubPath(path, propertyName), 0, associationTypeSQLInfo);
 			}
 		}
 
@@ -136,40 +174,31 @@ namespace NHibernate.Loader.Criteria
 			{
 				return translator.GetJoinType(path);
 			}
-			else
+
+			if (translator.HasProjection)
 			{
-				if (translator.HasProjection)
-				{
+				return JoinType.None;
+			}
+
+			var selectMode = translator.RootCriteria.GetSelectMode(path);
+			switch (selectMode)
+			{
+				case SelectMode.Undefined:
+					return base.GetJoinType(type, config, path, lhsTable, lhsColumns, nullable, currentDepth, cascadeStyle);
+
+				case SelectMode.Fetch:
+				case SelectMode.FetchLazyProperties:
+				case SelectMode.ChildFetch:
+				case SelectMode.JoinOnly:
+					IsDuplicateAssociation(lhsTable, lhsColumns, type); //deliberately ignore return value!
+					return GetJoinType(nullable, currentDepth);
+				
+				case SelectMode.Skip:
 					return JoinType.None;
-				}
-				else
-				{
-					FetchMode fetchMode = translator.RootCriteria.GetFetchMode(path);
-					if (IsDefaultFetchMode(fetchMode))
-					{
-						return base.GetJoinType(type, config, path, lhsTable, lhsColumns, nullable, currentDepth, cascadeStyle);
-					}
-					else
-					{
-						if (fetchMode == FetchMode.Join)
-						{
-							IsDuplicateAssociation(lhsTable, lhsColumns, type); //deliberately ignore return value!
-							return GetJoinType(nullable, currentDepth);
-						}
-						else
-						{
-							return JoinType.None;
-						}
-					}
-				}
+				default:
+					throw new ArgumentOutOfRangeException(nameof(selectMode), selectMode.ToString());
 			}
 		}
-
-		private static bool IsDefaultFetchMode(FetchMode fetchMode)
-		{
-			return fetchMode == FetchMode.Default;
-		}
-
 
 		protected override string GenerateTableAlias(int n, string path, IJoinable joinable)
 		{
@@ -199,19 +228,7 @@ namespace NHibernate.Loader.Criteria
 				ICriteria subcriteria = translator.GetCriteria(path);
 				sqlAlias = subcriteria == null ? null : translator.GetSQLAlias(subcriteria);
 
-				if (joinable.ConsumesEntityAlias() && !translator.HasProjection)
-				{
-					includeInResultRowList.Add(subcriteria != null && subcriteria.Alias != null);
-
-					if (sqlAlias != null)
-					{
-						if (subcriteria.Alias != null)
-						{
-							userAliasList.Add(subcriteria.Alias); //alias may be null
-							resultTypeList.Add(translator.ResultType(subcriteria));
-						}
-					}
-				}
+				IncludeInResultIfNeeded(joinable, subcriteria, sqlAlias, path);
 			}
 
 			if (sqlAlias == null)
@@ -220,6 +237,23 @@ namespace NHibernate.Loader.Criteria
 			return sqlAlias;
 		}
 
+		private void IncludeInResultIfNeeded(IJoinable joinable, ICriteria subcriteria, string sqlAlias, string path)
+		{
+			if (joinable.ConsumesEntityAlias() && !translator.HasProjection)
+			{
+				var includedInSelect = translator.RootCriteria.GetSelectMode(path) != SelectMode.JoinOnly;
+				includeInResultRowList.Add(subcriteria != null && subcriteria.Alias != null && includedInSelect);
+
+				if (sqlAlias != null && includedInSelect)
+				{
+					if (subcriteria.Alias != null)
+					{
+						userAliasList.Add(subcriteria.Alias); //alias may be null
+						resultTypeList.Add(translator.ResultType(subcriteria));
+					}
+				}
+			}
+		}
 
 		protected override string GenerateRootAlias(string tableName)
 		{

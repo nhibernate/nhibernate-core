@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 
 namespace NHibernate.Impl
@@ -16,6 +17,15 @@ namespace NHibernate.Impl
 	using System.Threading;
 	public partial class FutureCriteriaBatch : FutureBatch<ICriteria, IMultiCriteria>
 	{
+
+		protected override Task<IList> ListAsync(ICriteria query, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList>(cancellationToken);
+			}
+			return query.ListAsync(cancellationToken);
+		}
 
 		protected override Task<IList> GetResultsFromAsync(IMultiCriteria multiApproach, CancellationToken cancellationToken)
 		{

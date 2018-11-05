@@ -9,7 +9,7 @@ namespace NHibernate.Test.LazyOneToOne
 	[TestFixture]
 	public class LazyOneToOneTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"LazyOneToOne.Person.hbm.xml"}; }
 		}
@@ -61,6 +61,7 @@ namespace NHibernate.Test.LazyOneToOne
 
 			p2 = s.CreateQuery("from Person where name='Emmanuel'").UniqueResult<Person>();
 			Assert.That(p2.Employee, Is.Null);
+			Assert.That(p2.Employee, Is.Null);
 			t.Commit();
 			s.Close();
 
@@ -74,6 +75,7 @@ namespace NHibernate.Test.LazyOneToOne
 			Assert.That(p.Employee.Employments.Count, Is.EqualTo(1));
 
 			p2 = s.Get<Person>("Emmanuel");
+			Assert.That(p2.Employee, Is.Null);
 			Assert.That(p2.Employee, Is.Null);
 			s.Delete(p2);
 			s.Delete(old);

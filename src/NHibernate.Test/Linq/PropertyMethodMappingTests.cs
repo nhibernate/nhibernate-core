@@ -15,7 +15,7 @@ namespace NHibernate.Test.Linq
 		public void CanExecuteCountInSelectClause()
 		{
 			var results = db.Timesheets
-				.Select(t => t.Entries.Count).ToList();
+				.Select(t => t.Entries.Count).OrderBy(s => s).ToList();
 
 			Assert.AreEqual(3, results.Count);
 			Assert.AreEqual(0, results[0]);

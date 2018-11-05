@@ -127,6 +127,18 @@ namespace NHibernate.Type
 			return 0;
 		}
 
+		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object val)
 		{
 			// convert to HEX string
@@ -150,12 +162,18 @@ namespace NHibernate.Type
 			return ToExternalFormat(result);
 		}
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior. Replace override keyword by virtual after having
+		// removed the obsoleted base.
+		/// <inheritdoc cref="IVersionType.FromStringValue"/>
+#pragma warning disable 672
 		public override object FromStringValue(string xml)
+#pragma warning restore 672
 		{
 			if (xml == null)
 				return null;
 			if (xml.Length % 2 != 0)
-				throw new ArgumentException("The string is not a valid xml representation of a binary content.");
+				throw new ArgumentException("The string is not a valid representation of a binary content.");
 
 			byte[] bytes = new byte[xml.Length / 2];
 			for (int i = 0; i < bytes.Length; i++)

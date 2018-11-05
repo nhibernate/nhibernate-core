@@ -32,15 +32,16 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.AnsiString, "VARCHAR(254)");
 			RegisterColumnType(DbType.AnsiString, 8000, "VARCHAR($l)");
 			RegisterColumnType(DbType.AnsiString, 2147483647, "CLOB");
+			RegisterColumnType(DbType.Binary, "BLOB");
 			RegisterColumnType(DbType.Binary, 2147483647, "BLOB");
 			RegisterColumnType(DbType.Boolean, "SMALLINT");
 			RegisterColumnType(DbType.Byte, "SMALLINT");
-			RegisterColumnType(DbType.Currency, "DECIMAL(16,4)");
+			RegisterColumnType(DbType.Currency, "DECIMAL(18,4)");
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "TIMESTAMP");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
 			// DB2 max precision is 31, but .Net is 28-29 anyway.
-			RegisterColumnType(DbType.Decimal, 28, "DECIMAL($p, $s)");
+			RegisterColumnType(DbType.Decimal, 29, "DECIMAL($p, $s)");
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
 			RegisterColumnType(DbType.Int32, "INTEGER");
@@ -115,6 +116,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("smallint", new StandardSQLFunction("smallint", NHibernateUtil.Int16));
 
 			RegisterFunction("digits", new StandardSQLFunction("digits", NHibernateUtil.String));
+			RegisterFunction("ascii", new StandardSQLFunction("ascii", NHibernateUtil.Int32));
 			RegisterFunction("chr", new StandardSQLFunction("chr", NHibernateUtil.Character));
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
 			RegisterFunction("ucase", new StandardSQLFunction("ucase"));

@@ -161,7 +161,7 @@ namespace NHibernate.Cache
 				result = 37 * result + _firstRow.GetHashCode();
 				result = 37 * result + _maxRows.GetHashCode();
 
-				result = 37 * result + (_namedParameters == null ? 0 : CollectionHelper.GetHashCode(_namedParameters));
+				result = 37 * result + (_namedParameters == null ? 0 : CollectionHelper.GetHashCode(_namedParameters, NamedParameterComparer.Instance));
 
 				for (int i = 0; i < _types.Length; i++)
 				{

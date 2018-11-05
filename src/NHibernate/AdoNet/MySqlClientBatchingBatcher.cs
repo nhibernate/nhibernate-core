@@ -39,6 +39,10 @@ namespace NHibernate.AdoNet
 
 		public override void AddToBatch(IExpectation expectation)
 		{
+			// MySql batcher cannot be initiated if a data reader is still open: check them.
+			if (CountOfStatementsInCurrentBatch == 0)
+				CheckReaders();
+
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
 			var batchUpdate = CurrentCommand;
 			Prepare(batchUpdate);
@@ -88,7 +92,7 @@ namespace NHibernate.AdoNet
 					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
 				}
 
-				Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
+				Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected, ps);
 			}
 			finally
 			{

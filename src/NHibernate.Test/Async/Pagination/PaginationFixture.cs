@@ -27,7 +27,7 @@ namespace NHibernate.Test.Pagination
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"Pagination.DataPoint.hbm.xml"}; }
 		}

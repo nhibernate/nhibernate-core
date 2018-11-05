@@ -92,7 +92,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)"); // Precision ranges from 0-127
 			// Anywhere max precision is 127, but .Net is limited to 28-29.
-			RegisterColumnType(DbType.Decimal, 28, "NUMERIC($p, $s)"); // Precision ranges from 0-127
+			RegisterColumnType(DbType.Decimal, 29, "NUMERIC($p, $s)"); // Precision ranges from 0-127
 		}
 
 		protected virtual void RegisterDateTimeTypeMappings()
@@ -140,12 +140,13 @@ namespace NHibernate.Dialect
 			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
 			RegisterFunction("rand", new StandardSQLFunction("rand", NHibernateUtil.Double));
 			RegisterFunction("remainder", new StandardSQLFunction("remainder"));
-			RegisterFunction("round", new StandardSQLFunction("round"));
+			RegisterFunction("round", new StandardSQLFunctionWithRequiredParameters("round", new object[] {null, "0"}));
 			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
 			RegisterFunction("sin", new StandardSQLFunction("sin", NHibernateUtil.Double));
 			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
 			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
-			RegisterFunction("truncate", new StandardSQLFunction("truncate"));
+			RegisterFunction("truncnum", new StandardSQLFunctionWithRequiredParameters("truncnum", new object[] {null, "0"}));
+			RegisterFunction("truncate", new StandardSQLFunctionWithRequiredParameters("truncnum", new object[] {null, "0"}));
 		}
 
 		protected virtual void RegisterXmlFunctions()
@@ -231,7 +232,7 @@ namespace NHibernate.Dialect
 			// compatibility functions
 			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime, true));
 			RegisterFunction("current_time", new NoArgSQLFunction("getdate", NHibernateUtil.Time, true));
-			RegisterFunction("current_date", new NoArgSQLFunction("getdate", NHibernateUtil.Date, true));
+			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.Date, "date(getdate())"));
 		}
 
 		protected virtual void RegisterStringFunctions()
@@ -642,10 +643,28 @@ namespace NHibernate.Dialect
 		/// In this dialect, we avoid this issue by supporting only
 		/// <tt>FOR UPDATE BY LOCK</tt>.
 		/// </summary>
+		// Since v5.1
+		[Obsolete("Use UsesColumnsWithForUpdateOf instead")]
 		public override bool ForUpdateOfColumns
 		{
 			get { return false; }
 		}
+
+		/* 6.0 TODO: uncomment once ForUpdateOfColumns is removed.
+		/// <summary>
+		/// SQL Anywhere does support <c>FOR UPDATE OF</c> syntax. However,
+		/// in SQL Anywhere one cannot specify both <c>FOR UPDATE OF</c> syntax
+		/// and <c>FOR UPDATE BY LOCK</c> in the same statement. To achieve INTENT
+		/// locking when using <c>FOR UPDATE OF</c> syntax one must use a table hint
+		/// in the query's FROM clause, ie.
+		/// <code>
+		/// SELECT * FROM FOO WITH( UPDLOCK ) FOR UPDATE OF ( column-list ).
+		/// </code>
+		/// In this dialect, we avoid this issue by supporting only
+		/// <c>FOR UPDATE BY LOCK</c>.
+		/// </summary>
+		public override bool UsesColumnsWithForUpdateOf => false;
+		*/
 
 		/// <summary>
 		/// SQL Anywhere supports <tt>FOR UPDATE</tt> over cursors containing

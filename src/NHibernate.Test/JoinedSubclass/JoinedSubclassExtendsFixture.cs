@@ -15,7 +15,7 @@ namespace NHibernate.Test.JoinedSubclass
 	[TestFixture]
 	public class JoinedSubclassExtendsFixture : JoinedSubclassFixture
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

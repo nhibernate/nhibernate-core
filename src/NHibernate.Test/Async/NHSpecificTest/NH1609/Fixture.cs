@@ -8,9 +8,10 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using NHibernate.Criterion;
-using NHibernate.Driver;
+using NHibernate.Multi;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1609
@@ -25,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1609
 			return factory.ConnectionProvider.Driver.SupportsMultipleQueries;
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public async Task TestAsync()
 		{
 			using (var session = Sfi.OpenSession())
@@ -56,6 +57,38 @@ namespace NHibernate.Test.NHSpecificTest.NH1609
 				Assert.AreEqual(1, ((IList) results[0]).Count);
 				Assert.AreEqual(1, ((IList) results[1]).Count);
 				Assert.AreEqual(1, ((IList) results[2]).Count);
+			}
+		}
+
+		[Test]
+		public async Task TestWithQueryBatchAsync()
+		{
+			using (var session = Sfi.OpenSession())
+			using (session.BeginTransaction())
+			{
+				var a1 = await (CreateEntityAAsync(session));
+				var a2 = await (CreateEntityAAsync(session));
+				var c = await (CreateEntityCAsync(session));
+				var b = await (CreateEntityBAsync(session, a1, c));
+
+				// make sure the created entities are no longer in the session
+				session.Clear();
+
+				var multi = session.CreateQueryBatch();
+
+				// the first query is a simple select by id on EntityA
+				multi.Add<EntityA>(session.CreateCriteria(typeof (EntityA)).Add(Restrictions.Eq("Id", a1.Id)));
+				// the second query is also a simple select by id on EntityB
+				multi.Add<EntityA>(session.CreateCriteria(typeof (EntityA)).Add(Restrictions.Eq("Id", a2.Id)));
+				// the final query selects the first element (using SetFirstResult and SetMaxResults) for each EntityB where B.A.Id = a1.Id and B.C.Id = c.Id
+				// the problem is that the paged query uses parameters @p0 and @p1 instead of @p2 and @p3
+				multi.Add<EntityB>(
+					session.CreateCriteria(typeof (EntityB)).Add(Restrictions.Eq("A.Id", a1.Id)).Add(Restrictions.Eq("C.Id", c.Id)).
+					        SetFirstResult(0).SetMaxResults(1));
+
+				Assert.That(await (multi.GetResultAsync<EntityA>(0, CancellationToken.None)), Has.Count.EqualTo(1));
+				Assert.That(await (multi.GetResultAsync<EntityA>(1, CancellationToken.None)), Has.Count.EqualTo(1));
+				Assert.That(await (multi.GetResultAsync<EntityB>(2, CancellationToken.None)), Has.Count.EqualTo(1));
 			}
 		}
 

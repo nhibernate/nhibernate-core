@@ -14,7 +14,7 @@ namespace NHibernate.Action
 	/// Any action relating to insert/update/delete of a collection
 	/// </summary>
 	[Serializable]
-	public abstract partial class CollectionAction : IExecutable, IComparable<CollectionAction>, IDeserializationCallback
+	public abstract partial class CollectionAction : IAsyncExecutable, IComparable<CollectionAction>, IDeserializationCallback, IAfterTransactionCompletionProcess
 	{
 		private readonly object key;
 		private object finalKey;
@@ -104,32 +104,28 @@ namespace NHibernate.Action
 		/// <summary>Execute this action</summary>
 		public abstract void Execute();
 
-		public virtual BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess
+		IBeforeTransactionCompletionProcess IAsyncExecutable.BeforeTransactionCompletionProcess => 
+			null;
+
+		IAfterTransactionCompletionProcess IAsyncExecutable.AfterTransactionCompletionProcess =>
+			persister.HasCache ? this : null;
+
+		//Since v5.2
+		[Obsolete("This property is not used and will be removed in a future version.")]
+		public virtual BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess => 
+			null;
+
+		//Since v5.2
+		[Obsolete("This property is not used and will be removed in a future version.")]
+		public virtual AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess =>
+			persister.HasCache ? ExecuteAfterTransactionCompletion : default(AfterTransactionCompletionProcessDelegate);
+
+		public virtual void ExecuteAfterTransactionCompletion(bool success)
 		{
-			get 
-			{ 
-				return null; 
-			}
+			var ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
+			persister.Cache.Release(ck, softLock);
 		}
 
-		public virtual AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess
-		{
-
-			get
-			{
-				// Only make sense to add the delegate if there is a cache.
-				if (persister.HasCache)
-				{
-					return new AfterTransactionCompletionProcessDelegate((success) =>
-					{
-						CacheKey ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
-						persister.Cache.Release(ck, softLock);
-					});
-				}
-				return null; 
-			}
-		}
-		
 		#endregion
 
 		public ISoftLock Lock

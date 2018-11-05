@@ -20,7 +20,7 @@ namespace NHibernate.Test.GenericTest.BagGeneric
 	public class BagGenericFixtureAsync : TestCase
 	{
 
-		protected override System.Collections.IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "GenericTest.BagGeneric.BagGenericFixture.hbm.xml" }; }
 		}

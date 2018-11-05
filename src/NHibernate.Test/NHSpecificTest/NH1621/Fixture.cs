@@ -7,11 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1621
 	{
 		ISession session;
 
-		public override string BugNumber
-		{
-			get { return "NH1621"; }
-		}
-
 		[Test]
 		public void QueryUsingReadonlyProperty()
 		{

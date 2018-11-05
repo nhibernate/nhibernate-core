@@ -75,7 +75,7 @@ namespace NHibernate.Mapping
 
 		public virtual void CreateForeignKeyOfEntity(string entityName)
 		{
-			if (!HasFormula && ! "none".Equals(ForeignKeyName, StringComparison.InvariantCultureIgnoreCase))
+			if (!HasFormula && ! "none".Equals(ForeignKeyName, StringComparison.OrdinalIgnoreCase))
 			{
 				ForeignKey fk = table.CreateForeignKey(ForeignKeyName, ConstraintColumns, entityName);
 				fk.CascadeDeleteEnabled = cascadeDeleteEnabled;

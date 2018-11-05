@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Properties;
 
 namespace NHibernate.Bytecode
@@ -26,6 +27,8 @@ namespace NHibernate.Bytecode
 		/// <remarks>
 		/// For entities <see cref="IReflectionOptimizer"/> and its implementations.
 		/// </remarks>
+		// Since 5.2
+		[Obsolete("Please use NHibernate.Cfg.Environment.ObjectsFactory instead")]
 		IObjectsFactory ObjectsFactory { get; }
 
 		/// <summary>

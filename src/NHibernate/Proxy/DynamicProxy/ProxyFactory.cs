@@ -17,6 +17,8 @@ using NHibernate.Util;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
+	// Since v5.2
+	[Obsolete("DynamicProxy namespace has been obsoleted, use static proxies instead (see StaticProxyFactory)")]
 	public sealed class ProxyFactory
 	{
 		internal static readonly ConcurrentDictionary<ProxyCacheEntry, TypeInfo> _cache = new ConcurrentDictionary<ProxyCacheEntry, TypeInfo>();
@@ -98,8 +100,8 @@ namespace NHibernate.Proxy.DynamicProxy
 			{
 				parentType = typeof (ProxyDummy);
 				interfaces.Add(baseType);
+				interfaces.UnionWith(baseType.GetInterfaces());
 			}
-			interfaces.UnionWith(baseType.GetInterfaces());
 
 			// Add the ISerializable interface so that it can be implemented
 			interfaces.Add(typeof (ISerializable));
@@ -116,7 +118,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			
 			// Provide a custom implementation of ISerializable
 			// instead of redirecting it back to the interceptor
-			foreach (MethodInfo method in GetProxiableMethods(baseType, interfaces).Where(method => method.DeclaringType != typeof(ISerializable)))
+			foreach (MethodInfo method in ProxyBuilderHelper.GetProxiableMethods(baseType, interfaces).Where(method => method.DeclaringType != typeof(ISerializable)))
 			{
 				ProxyMethodBuilder.CreateProxiedMethod(interceptorField, method, typeBuilder);
 			}
@@ -127,16 +129,6 @@ namespace NHibernate.Proxy.DynamicProxy
 
 			ProxyAssemblyBuilder.Save(assemblyBuilder);
 			return proxyType;
-		}
-
-		internal static IEnumerable<MethodInfo> GetProxiableMethods(System.Type type, IEnumerable<System.Type> interfaces)
-		{
-			const BindingFlags candidateMethodsBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-			return
-				type.GetMethods(candidateMethodsBindingFlags)
-					.Where(method => method.IsProxiable())
-					.Concat(interfaces.SelectMany(interfaceType => interfaceType.GetMethods()))
-					.Distinct();
 		}
 
 		private static ConstructorBuilder DefineConstructor(TypeBuilder typeBuilder, System.Type parentType)

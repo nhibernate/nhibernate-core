@@ -17,7 +17,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Sequence
 			_expectedOptimizerType = expectedOptimizerType;
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "IdGen.Enhanced.Sequence.DefaultOptimized.hbm.xml" }; }
 		}

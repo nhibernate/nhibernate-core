@@ -20,11 +20,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1028
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-            get { return "NH1028"; }
-		}
-
 		[Test]
 		public async Task CanLoadCollectionUsingLeftOuterJoinAsync()
 		{

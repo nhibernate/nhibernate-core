@@ -14,6 +14,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 
 using NHibernate.Cfg;
+using NHibernate.Util;
 
 namespace NHibernate.Cache
 {
@@ -24,6 +25,7 @@ namespace NHibernate.Cache
 		private readonly NHibernate.Util.AsyncLock _preInvalidate = new NHibernate.Util.AsyncLock();
 		private readonly NHibernate.Util.AsyncLock _invalidate = new NHibernate.Util.AsyncLock();
 		private readonly NHibernate.Util.AsyncLock _isUpToDate = new NHibernate.Util.AsyncLock();
+		private readonly NHibernate.Util.AsyncLock _areUpToDate = new NHibernate.Util.AsyncLock();
 
 		public virtual Task ClearAsync(CancellationToken cancellationToken)
 		{
@@ -31,7 +33,7 @@ namespace NHibernate.Cache
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return updateTimestamps.ClearAsync(cancellationToken);
+			return _updateTimestamps.ClearAsync(cancellationToken);
 		}
 
 		//Since v5.1
@@ -60,11 +62,8 @@ namespace NHibernate.Cache
 			using (await _preInvalidate.LockAsync())
 			{
 				//TODO: to handle concurrent writes correctly, this should return a Lock to the client
-				long ts = updateTimestamps.NextTimestamp() + updateTimestamps.Timeout;
-				foreach (var space in spaces)
-				{
-					await (updateTimestamps.PutAsync(space, ts, cancellationToken)).ConfigureAwait(false);
-				}
+				var ts = _updateTimestamps.NextTimestamp() + _updateTimestamps.Timeout;
+				await (SetSpacesTimestampAsync(spaces, ts, cancellationToken)).ConfigureAwait(false);
 
 				//TODO: return new Lock(ts);
 			}
@@ -98,13 +97,36 @@ namespace NHibernate.Cache
 			using (await _invalidate.LockAsync())
 			{
 				//TODO: to handle concurrent writes correctly, the client should pass in a Lock
-				long ts = updateTimestamps.NextTimestamp();
+				long ts = _updateTimestamps.NextTimestamp();
 				//TODO: if lock.getTimestamp().equals(ts)
-				foreach (var space in spaces)
+				if (log.IsDebugEnabled())
+					log.Debug("Invalidating spaces [{0}]", StringHelper.CollectionToString(spaces));
+				await (SetSpacesTimestampAsync(spaces, ts, cancellationToken)).ConfigureAwait(false);
+			}
+		}
+
+		private Task SetSpacesTimestampAsync(IReadOnlyCollection<string> spaces, long ts, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				if (spaces.Count == 0)
+					return Task.CompletedTask;
+
+				var timestamps = new object[spaces.Count];
+				for (var i = 0; i < timestamps.Length; i++)
 				{
-					log.Debug("Invalidating space [{0}]", space);
-					await (updateTimestamps.PutAsync(space, ts, cancellationToken)).ConfigureAwait(false);
+					timestamps[i] = ts;
 				}
+
+				return _updateTimestamps.PutManyAsync(spaces.ToArray(), timestamps, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
 			}
 		}
 
@@ -114,37 +136,63 @@ namespace NHibernate.Cache
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _isUpToDate.LockAsync())
 			{
-				foreach (string space in spaces)
+				if (spaces.Count == 0)
+					return true;
+
+				var keys = new object[spaces.Count];
+				var index = 0;
+				foreach (var space in spaces)
 				{
-					object lastUpdate = await (updateTimestamps.GetAsync(space, cancellationToken)).ConfigureAwait(false);
-					if (lastUpdate == null)
-					{
-						//the last update timestamp was lost from the cache
-						//(or there were no updates since startup!)
-
-						//NOTE: commented out, since users found the "safe" behavior
-						//      counter-intuitive when testing, and we couldn't deal
-						//      with all the forum posts :-(
-						//updateTimestamps.put( space, new Long( updateTimestamps.nextTimestamp() ) );
-						//result = false; // safer
-
-						//OR: put a timestamp there, to avoid subsequent expensive
-						//    lookups to a distributed cache - this is no good, since
-						//    it is non-threadsafe (could hammer effect of an actual
-						//    invalidation), and because this is not the way our
-						//    preferred distributed caches work (they work by
-						//    replication)
-						//updateTimestamps.put( space, new Long(Long.MIN_VALUE) );
-					}
-					else
-					{
-						if ((long) lastUpdate >= timestamp)
-						{
-							return false;
-						}
-					}
+					keys[index++] = space;
 				}
-				return true;
+				var lastUpdates = await (_updateTimestamps.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
+				return lastUpdates.All(lastUpdate => !IsOutdated(lastUpdate as long?, timestamp));
+			}
+		}
+
+		[MethodImpl()]
+		public virtual async Task<bool[]> AreUpToDateAsync(ISet<string>[] spaces, long[] timestamps, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			using (await _areUpToDate.LockAsync())
+			{
+				var results = new bool[spaces.Length];
+				var allSpaces = new HashSet<string>();
+				foreach (var sp in spaces)
+				{
+					allSpaces.UnionWith(sp);
+				}
+
+				if (allSpaces.Count == 0)
+				{
+					for (var i = 0; i < spaces.Length; i++)
+					{
+						results[i] = true;
+					}
+
+					return results;
+				}
+
+				var keys = new object[allSpaces.Count];
+				var index = 0;
+				foreach (var space in allSpaces)
+				{
+					keys[index++] = space;
+				}
+
+				index = 0;
+				var lastUpdatesBySpace =
+				(await (_updateTimestamps
+					.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false))
+					.ToDictionary(u => keys[index++], u => u as long?);
+
+				for (var i = 0; i < spaces.Length; i++)
+				{
+					var timestamp = timestamps[i];
+					results[i] = spaces[i].All(space => !IsOutdated(lastUpdatesBySpace[space], timestamp));
+				}
+
+				return results;
 			}
 		}
 	}

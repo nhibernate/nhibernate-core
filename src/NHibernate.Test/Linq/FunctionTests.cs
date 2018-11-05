@@ -101,6 +101,19 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void GetCharsFunction()
+		{
+			var query = (
+				from e in db.Employees
+				where e.FirstName[2] == 'e'
+				select e
+			).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(1));
+			Assert.That(query[0].FirstName, Is.EqualTo("Steven"));
+		}
+
+		[Test]
 		public void LeftFunction()
 		{
 			var query = (from e in db.Employees
@@ -305,6 +318,12 @@ namespace NHibernate.Test.Linq
 				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimStart('h') == "eh"));
 				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimEnd('h') == "he"));
 
+				// Check when passed as array
+				// (the single character parameter is a new overload in .netcoreapp2.0, but not net461 or .netstandard2.0).
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.Trim(new [] { 'h' }) == "e"));
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimStart(new[] { 'h' }) == "eh"));
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimEnd(new[] { 'h' }) == "he"));
+
 				// Let it rollback to get rid of temporary changes.
 			}
 		}
@@ -481,6 +500,16 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.OrderLines
 						where item.Discount.Equals(-1)
 						select item;
+
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void WhereEquatableEqual()
+		{
+			var query = from item in db.Shippers
+			            where ((IEquatable<Guid>) item.Reference).Equals(Guid.Empty)
+			            select item;
 
 			ObjectDumper.Write(query);
 		}

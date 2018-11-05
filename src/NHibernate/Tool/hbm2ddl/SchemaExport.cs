@@ -59,7 +59,6 @@ namespace NHibernate.Tool.hbm2ddl
 			dialect = Dialect.Dialect.GetDialect(configProperties);
 
 			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, configProperties, "not-defined");
-			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
 			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
 			{
 				SchemaMetadataUpdater.Update(cfg, dialect);
@@ -191,8 +190,7 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 			catch (Exception e)
 			{
-				log.Warn("Unsuccessful: {0}", sql);
-				log.Warn(e, e.Message);
+				log.Warn(e, "Unsuccessful: {0}", sql);
 				if (throwOnError)
 				{
 					throw;
@@ -204,10 +202,7 @@ namespace NHibernate.Tool.hbm2ddl
 		{
 			if (dialect.SupportsSqlBatches)
 			{
-				var objFactory = Environment.BytecodeProvider.ObjectsFactory;
-				ScriptSplitter splitter = (ScriptSplitter)objFactory.CreateInstance(typeof(ScriptSplitter), sql);
-
-				foreach (string stmt in splitter)
+				foreach (var stmt in new ScriptSplitter(sql))
 				{
 					log.Debug("SQL Batch: {0}", stmt);
 					cmd.CommandText = stmt;

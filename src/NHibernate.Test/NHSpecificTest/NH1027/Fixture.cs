@@ -8,11 +8,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1027
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1027"; }
-		}
-
 		private void AssertDialect()
 		{
 			if (!(Dialect is MsSql2005Dialect))

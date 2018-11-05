@@ -21,15 +21,15 @@ namespace NHibernate.Test.Linq
 	public class EnumTestsAsync : LinqTestCase
 	{
 		[Test]
-		public Task CanQueryOnEnumStoredAsInt32_High_1Async()
+		public async Task CanQueryOnEnumStoredAsInt32_High_1Async()
 		{
-			return CanQueryOnEnumStoredAsInt32Async(EnumStoredAsInt32.High, 1);
+			await (CanQueryOnEnumStoredAsInt32Async(EnumStoredAsInt32.High, 1));
 		}
 
 		[Test]
-		public Task CanQueryOnEnumStoredAsInt32_Unspecified_2Async()
+		public async Task CanQueryOnEnumStoredAsInt32_Unspecified_2Async()
 		{
-			return CanQueryOnEnumStoredAsInt32Async(EnumStoredAsInt32.Unspecified, 2);
+			await (CanQueryOnEnumStoredAsInt32Async(EnumStoredAsInt32.Unspecified, 2));
 		}
 
 
@@ -43,16 +43,16 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public Task CanQueryOnEnumStoredAsString_Meduim_2Async()
+		public async Task CanQueryOnEnumStoredAsString_Meduim_2Async()
 		{
-			return CanQueryOnEnumStoredAsStringAsync(EnumStoredAsString.Medium, 2);
+			await (CanQueryOnEnumStoredAsStringAsync(EnumStoredAsString.Medium, 2));
 
 		}
 
 		[Test]
-		public Task CanQueryOnEnumStoredAsString_Small_1Async()
+		public async Task CanQueryOnEnumStoredAsString_Small_1Async()
 		{
-			return CanQueryOnEnumStoredAsStringAsync(EnumStoredAsString.Small, 1);
+			await (CanQueryOnEnumStoredAsStringAsync(EnumStoredAsString.Small, 1));
 
 		}
 

@@ -62,9 +62,9 @@ namespace NHibernate.Cfg
 			{
 				sqlExceptionConverter = SQLExceptionConverterFactory.BuildSQLExceptionConverter(dialect, properties);
 			}
-			catch (HibernateException)
+			catch (HibernateException he)
 			{
-				log.Warn("Error building SQLExceptionConverter; using minimal converter");
+				log.Warn(he, "Error building SQLExceptionConverter; using minimal converter");
 				sqlExceptionConverter = SQLExceptionConverterFactory.BuildMinimalSQLExceptionConverter();
 			}
 			settings.SqlExceptionConverter = sqlExceptionConverter;
@@ -167,7 +167,6 @@ namespace NHibernate.Cfg
 			}
 
 			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, properties, "not-defined");
-			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
 			if (autoKeyWordsImport == Hbm2DDLKeyWords.None)
 			{
 				settings.IsKeywordsImportEnabled = false;
@@ -218,7 +217,7 @@ namespace NHibernate.Cfg
 				{
 					settings.QueryCacheFactory =
 						(IQueryCacheFactory)
-						Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(queryCacheFactoryClassName));
+						Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(queryCacheFactoryClassName));
 				}
 				catch (Exception cnfe)
 				{
@@ -332,7 +331,7 @@ namespace NHibernate.Cfg
 			log.Info("Batcher factory: {0}", tBatcher.AssemblyQualifiedName);
 			try
 			{
-				return (IBatcherFactory) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(tBatcher);
+				return (IBatcherFactory) Environment.ObjectsFactory.CreateInstance(tBatcher);
 			}
 			catch (Exception cnfe)
 			{
@@ -353,7 +352,7 @@ namespace NHibernate.Cfg
 			{
 				return
 					(ICacheProvider)
-					Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(cacheClassName));
+					Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(cacheClassName));
 			}
 			catch (Exception e)
 			{
@@ -371,7 +370,7 @@ namespace NHibernate.Cfg
 			{
 				return
 					(IQueryTranslatorFactory)
-					Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
+					Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
 			}
 			catch (Exception cnfe)
 			{
@@ -404,7 +403,7 @@ namespace NHibernate.Cfg
 			{
 				var transactionFactory =
 					(ITransactionFactory)
-					Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
+					Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
 				transactionFactory.Configure(properties);
 				return transactionFactory;
 			}
@@ -427,7 +426,7 @@ namespace NHibernate.Cfg
 			{
 				return
 					(IQueryModelRewriterFactory)
-					Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
+					Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
 			}
 			catch (Exception cnfe)
 			{

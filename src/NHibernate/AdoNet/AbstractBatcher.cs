@@ -67,6 +67,18 @@ namespace NHibernate.AdoNet
 			get { return _batchCommand; }
 		}
 
+		/// <summary>
+		/// Gets the current <see cref="SqlString"/> that is contained for this Batch
+		/// </summary>
+		/// <value>The current <see cref="SqlString"/>.</value>
+		protected SqlString CurrentCommandSql => _batchCommandSql;
+
+		/// <summary>
+		/// Gets the current <see cref="SqlType"/> parameters that are contained for this Batch
+		/// </summary>
+		/// <value>The current <see cref="SqlString"/>.</value>
+		protected SqlType[] CurrentCommandParameterTypes => _batchCommandParameterTypes;
+
 		public DbCommand Generate(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
 		{
 			SqlString sql = GetSQL(sqlString);
@@ -304,6 +316,8 @@ namespace NHibernate.AdoNet
 
 		private void CloseCommand(DbCommand cmd)
 		{
+			if (cmd == null)
+				return;
 			try
 			{
 				// no equiv to the java code in here

@@ -27,6 +27,16 @@ namespace NHibernate.Util
 		private static readonly MethodInfo Exception_InternalPreserveStackTrace =
 			typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
 
+		internal static T CastOrThrow<T>(object obj, string supportMessage) where T : class
+		{
+			if (obj is T t)
+				return t;
+
+			var typeKind = typeof(T).IsInterface ? "interface" : "class";
+			var objType = obj?.GetType().FullName ?? "Object must not be null and";
+			throw new ArgumentException($@"{objType} requires to implement {typeof(T).FullName} {typeKind} to support {supportMessage}.");
+		}
+
 		/// <summary>
 		/// Extract the <see cref="MethodInfo"/> from a given expression.
 		/// </summary>
@@ -52,6 +62,21 @@ namespace NHibernate.Util
 				throw new ArgumentNullException(nameof(method));
 
 			return ((MethodCallExpression)method.Body).Method;
+		}
+
+		/// <summary>
+		/// Extract the <see cref="MethodInfo"/> from a given expression.
+		/// </summary>
+		/// <typeparam name="TSource">The declaring-type of the method.</typeparam>
+		/// <typeparam name="TResult">The return type of the method.</typeparam>
+		/// <param name="method">The method.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the method.</returns>
+		public static MethodInfo GetMethod<TSource, TResult>(Expression<Func<TSource, TResult>> method)
+		{
+			if (method == null)
+				throw new ArgumentNullException(nameof(method));
+
+			return ((MethodCallExpression) method.Body).Method;
 		}
 
 		/// <summary>
@@ -398,7 +423,6 @@ namespace NHibernate.Util
 			{
 				// Try to get the type from an already loaded assembly
 				System.Type type = System.Type.GetType(name.ToString());
-
 				if (type != null)
 				{
 					return type;
@@ -411,6 +435,16 @@ namespace NHibernate.Util
 					log.Warn(noAssembly, name);
 					if (throwOnError) throw new TypeLoadException(string.Format(noAssembly, name));
 					return null;
+				}
+
+				//Load type from already loaded assembly
+				type = System.Type.GetType(
+					name.ToString(),
+					an => AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName == an.FullName),
+					null);
+				if (type != null)
+				{
+					return type;
 				}
 
 				Assembly assembly = Assembly.Load(name.Assembly);
@@ -603,6 +637,18 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
+		/// Ensures an exception current stack-trace will be preserved if the exception is explicitly rethrown.
+		/// </summary>
+		/// <param name="ex">
+		/// The <see cref="Exception"/> which current stack-trace is to be preserved in case of explicit rethrow.
+		/// </param>
+		/// <returns>The unwrapped exception.</returns>
+		internal static void PreserveStackTrace(Exception ex)
+		{
+			Exception_InternalPreserveStackTrace.Invoke(ex, Array.Empty<object>());
+		}
+
+		/// <summary>
 		/// Try to find a method in a given type.
 		/// </summary>
 		/// <param name="type">The given type.</param>
@@ -645,33 +691,26 @@ namespace NHibernate.Util
 			List<System.Type> typesToSearch = new List<System.Type>();
 			MethodInfo foundMethod = null;
 			
-			try
-			{            
-				typesToSearch.Add(type);
-			
-				if (type.IsInterface)
-				{
-					// Methods on parent interfaces are not actually inherited
-					// by child interfaces, so we have to use GetInterfaces to
-					// identify any parent interfaces that may contain the
-					// method implementation
-					System.Type[] inheritedInterfaces = type.GetInterfaces();
-					typesToSearch.AddRange(inheritedInterfaces);
-				}
-
-				foreach (System.Type typeToSearch in typesToSearch)
-				{
-					MethodInfo result = typeToSearch.GetMethod(method.Name, bindingFlags, null, tps, null);
-					if (result != null)
-					{
-						foundMethod = result;
-						break;
-					}
-				}
-			}
-			catch (Exception)
+			typesToSearch.Add(type);
+		
+			if (type.IsInterface)
 			{
-			   throw;
+				// Methods on parent interfaces are not actually inherited
+				// by child interfaces, so we have to use GetInterfaces to
+				// identify any parent interfaces that may contain the
+				// method implementation
+				System.Type[] inheritedInterfaces = type.GetInterfaces();
+				typesToSearch.AddRange(inheritedInterfaces);
+			}
+
+			foreach (System.Type typeToSearch in typesToSearch)
+			{
+				MethodInfo result = typeToSearch.GetMethod(method.Name, bindingFlags, null, tps, null);
+				if (result != null)
+				{
+					foundMethod = result;
+					break;
+				}
 			}
 			
 			return foundMethod;
@@ -762,12 +801,12 @@ namespace NHibernate.Util
 
 		public static bool IsPropertyGet(MethodInfo method)
 		{
-			return method.IsSpecialName && method.Name.StartsWith("get_");
+			return method.IsSpecialName && method.Name.StartsWith("get_", StringComparison.Ordinal);
 		}
 
 		public static bool IsPropertySet(MethodInfo method)
 		{
-			return method.IsSpecialName && method.Name.StartsWith("set_");
+			return method.IsSpecialName && method.Name.StartsWith("set_", StringComparison.Ordinal);
 		}
 
 		public static string GetPropertyName(MethodInfo method)

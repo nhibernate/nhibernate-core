@@ -11,6 +11,7 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2773 {
@@ -50,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2773 {
       [Test]
       public async Task DeserializedSession_ProxyType_ShouldBeEqualToOriginalProxyTypeAsync()
       {
-         System.Type originalProxyType = null;
+	      System.Type originalProxyType = null;
          System.Type deserializedProxyType = null;
          ISession deserializedSession = null;
 
@@ -62,8 +63,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2773 {
             }
 
 
-            using (MemoryStream sessionMemoryStream = new MemoryStream()) {
-               BinaryFormatter formatter = new BinaryFormatter();
+            using (MemoryStream sessionMemoryStream = new MemoryStream())
+            {
+               var formatter = new BinaryFormatter
+               {
+#if !NETFX
+	               SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+               };
                formatter.Serialize(sessionMemoryStream, session);
 
                sessionMemoryStream.Seek(0, SeekOrigin.Begin);
