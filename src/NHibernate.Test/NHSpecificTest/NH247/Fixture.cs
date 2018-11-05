@@ -7,11 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH247
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH247"; }
-		}
-
 		private void AssertDialect()
 		{
 			if (!(Dialect is FirebirdDialect))

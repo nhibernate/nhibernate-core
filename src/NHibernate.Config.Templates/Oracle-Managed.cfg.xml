@@ -9,10 +9,17 @@ for your own use before compile tests in VisualStudio.
 	<session-factory name="NHibernate.Test">
 		<property name="connection.driver_class">NHibernate.Driver.OracleManagedDataClientDriver</property>
 		<property name="connection.connection_string">
-			User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))
+			User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = ORCL)))
 		</property>
 		<property name="show_sql">false</property>
 		<property name="dialect">NHibernate.Dialect.Oracle10gDialect</property>
 		<property name="query.substitutions">true 1, false 0, yes 'Y', no 'N'</property>
+		<!-- If your database setup use an ASCII charset, switch following property to true. -->
+		<property name="oracle.use_n_prefixed_types_for_unicode">false</property>
+		<!-- Depending on your database setup, the default cast length of 4000 may be too big.
+		     By example, if previous setting is true, NHibernate may try to use nvarchar2(4000),
+		     which will be rejected if its underlying charset is UTF16 and the database
+		     MAX_STRING_SIZE is not extended. In such case, reduce it to 2000. -->
+		<property name="query.default_cast_length"></property>
 	</session-factory>
 </hibernate-configuration>

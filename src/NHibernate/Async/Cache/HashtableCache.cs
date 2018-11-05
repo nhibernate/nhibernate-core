@@ -14,13 +14,11 @@ namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class HashtableCache : ICache
+	public partial class HashtableCache : CacheBase
 	{
 
-		#region ICache Members
-
-		/// <summary></summary>
-		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
+		/// <inheritdoc />
+		public override Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -36,8 +34,8 @@ namespace NHibernate.Cache
 			}
 		}
 
-		/// <summary></summary>
-		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
+		/// <inheritdoc />
+		public override Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -54,8 +52,8 @@ namespace NHibernate.Cache
 			}
 		}
 
-		/// <summary></summary>
-		public Task RemoveAsync(object key, CancellationToken cancellationToken)
+		/// <inheritdoc />
+		public override Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -72,9 +70,8 @@ namespace NHibernate.Cache
 			}
 		}
 
-		/// <summary></summary>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public Task ClearAsync(CancellationToken cancellationToken)
+		/// <inheritdoc />
+		public override Task ClearAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -91,8 +88,8 @@ namespace NHibernate.Cache
 			}
 		}
 
-		/// <summary></summary>
-		public Task LockAsync(object key, CancellationToken cancellationToken)
+		/// <inheritdoc />
+		public override Task<object> LockAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -100,18 +97,16 @@ namespace NHibernate.Cache
 			}
 			try
 			{
-				Lock(key);
-				return Task.CompletedTask;
+				return Task.FromResult<object>(Lock(key));
 			}
 			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
-			// local cache, so we use synchronization
 		}
 
-		/// <summary></summary>
-		public Task UnlockAsync(object key, CancellationToken cancellationToken)
+		/// <inheritdoc />
+		public override Task UnlockAsync(object key, object lockValue, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -119,16 +114,13 @@ namespace NHibernate.Cache
 			}
 			try
 			{
-				Unlock(key);
+				Unlock(key, lockValue);
 				return Task.CompletedTask;
 			}
 			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
-			// local cache, so we use synchronization
 		}
-
-		#endregion
 	}
 }

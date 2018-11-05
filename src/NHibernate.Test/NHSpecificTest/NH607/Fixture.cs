@@ -1,4 +1,3 @@
-using System;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH607
@@ -6,9 +5,9 @@ namespace NHibernate.Test.NHSpecificTest.NH607
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
+		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			get { return "NH607"; }
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		[Test]

@@ -8,12 +8,11 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Collections;
 using NHibernate.Cfg;
 using NHibernate.DomainModel;
 using NUnit.Framework;
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.CacheTest
 {
@@ -21,31 +20,39 @@ namespace NHibernate.Test.CacheTest
 	[TestFixture]
 	public class QueryCacheFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings => new[] { "Simple.hbm.xml" };
+
+		protected override void Configure(Configuration configuration)
 		{
-			get { return new string[] {"Simple.hbm.xml"}; }
+			configuration.SetProperty(Environment.UseQueryCache, "true");
 		}
 
-		protected override void Configure(Configuration cfg)
+		protected override void OnSetUp()
 		{
-			cfg.SetProperty(Environment.UseQueryCache, "true");
+			using (var s = OpenSession())
+			{
+				s.Save(new Simple(), 1L);
+				s.Flush();
+			}
+		}
+
+		protected override void OnTearDown()
+		{
+			using (var s = OpenSession())
+			{
+				s.Delete("from Simple");
+				s.Flush();
+			}
 		}
 
 		[Test]
 		public async Task QueryCacheWithNullParametersAsync()
 		{
-			Simple simple = new Simple();
-
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
-				await (s.SaveAsync(simple, 1L));
-				await (s.FlushAsync());
-			}
-
-			using (ISession s = OpenSession())
-			{
+				const string query = "from Simple s where s = :s or s.Name = :name or s.Address = :address";
 				await (s
-					.CreateQuery("from Simple s where s = :s or s.Name = :name or s.Address = :address")
+					.CreateQuery(query)
 					.SetEntity("s", await (s.LoadAsync(typeof(Simple), 1L)))
 					.SetString("name", null)
 					.SetString("address", null)
@@ -53,22 +60,45 @@ namespace NHibernate.Test.CacheTest
 					.UniqueResultAsync());
 
 				// Run a second time, just to test the query cache
-				object result = await (s
-					.CreateQuery("from Simple s where s = :s or s.Name = :name or s.Address = :address")
+				var result = await (s
+					.CreateQuery(query)
 					.SetEntity("s", await (s.LoadAsync(typeof(Simple), 1L)))
 					.SetString("name", null)
 					.SetString("address", null)
 					.SetCacheable(true)
 					.UniqueResultAsync());
 
-				Assert.IsNotNull(result);
-				Assert.AreEqual(1L, (long) s.GetIdentifier(result));
+				Assert.That(result, Is.Not.Null);
+				Assert.That(s.GetIdentifier(result), Is.EqualTo(1));
 			}
+		}
 
-			using (ISession s = OpenSession())
+		[Test]
+		public async Task QueryCacheWithScalarReturnAsync()
+		{
+			// Using decimal because:
+			//  - int is yielded back as decimal by Oracle, wrecking the cast back to int.
+			//  - Oracle requires a cast to binary_double for yielding a double instead of decimal.
+			//  - double is not castable in MySql.
+			// So long for SQLite which does not have a true decimal type.
+			if (TestDialect.HasBrokenDecimalType)
+				Assert.Ignore("Database does not support properly decimals.");
+
+			using (var s = OpenSession())
 			{
-				await (s.DeleteAsync("from Simple"));
-				await (s.FlushAsync());
+				var result = await (s
+					.CreateSQLQuery("select cast(200012 as decimal) from Simple where id_ = 1")
+					.SetCacheable(true)
+					.UniqueResultAsync<decimal>());
+
+				Assert.That(result, Is.EqualTo(200012), "Unexpected non-cached result");
+
+				result = await (s
+					.CreateSQLQuery("select cast(200012 as decimal) from Simple where id_ = 1")
+					.SetCacheable(true)
+					.UniqueResultAsync<decimal>());
+
+				Assert.That(result, Is.EqualTo(200012), "Unexpected cached result");
 			}
 		}
 	}

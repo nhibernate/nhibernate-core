@@ -292,7 +292,9 @@ namespace NHibernate.Test
 
 		SQLFunctionRegistry ISessionFactoryImplementor.SQLFunctionRegistry => ActualFactory.SQLFunctionRegistry;
 
+#pragma warning disable 618
 		IDictionary<string, ICache> ISessionFactoryImplementor.GetAllSecondLevelCacheRegions()
+#pragma warning restore 618
 		{
 			return ActualFactory.GetAllSecondLevelCacheRegions();
 		}
@@ -354,7 +356,9 @@ namespace NHibernate.Test
 			return ActualFactory.GetIdentifierGenerator(rootEntityName);
 		}
 
+#pragma warning disable 618
 		ICache ISessionFactoryImplementor.GetSecondLevelCacheRegion(string regionName)
+#pragma warning restore 618
 		{
 			return ActualFactory.GetSecondLevelCacheRegion(regionName);
 		}
@@ -386,7 +390,8 @@ namespace NHibernate.Test
 
 		public static ISessionCreationOptions GetCreationOptions(IStatelessSessionBuilder sessionBuilder)
 		{
-			return ((StatelessSessionBuilder)sessionBuilder).CreationOptions;
+			return (sessionBuilder as StatelessSessionBuilder)?.CreationOptions ??
+				(ISessionCreationOptions)sessionBuilder;
 		}
 
 		internal class SessionBuilder : ISessionBuilder

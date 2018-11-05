@@ -7,10 +7,10 @@ namespace NHibernate.Test.TestDialects
 {
 	public class SQLiteTestDialect : TestDialect
 	{
-        public SQLiteTestDialect(Dialect.Dialect dialect)
-            : base(dialect)
-        {
-        }
+		public SQLiteTestDialect(Dialect.Dialect dialect)
+			: base(dialect)
+		{
+		}
 
 		public override bool SupportsOperatorAll
 		{
@@ -32,14 +32,19 @@ namespace NHibernate.Test.TestDialects
 			get { return false; }
 		}
 
-        public override bool HasBrokenDecimalType
-        {
-            get { return true; }
-        }
+		/// <summary>
+		/// SqlLite stores them as float instead.
+		/// </summary>
+		public override bool HasBrokenDecimalType
+		{
+			get { return true; }
+		}
 
-        public override bool SupportsHavingWithoutGroupBy
-        {
-            get { return false; }
-        }
+		public override bool SupportsHavingWithoutGroupBy
+		{
+			get { return false; }
+		}
+
+		public override bool SupportsModuloOnDecimal => false;
 	}
 }

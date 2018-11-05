@@ -25,7 +25,7 @@ namespace NHibernate.Test.Unionsubclass
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "Unionsubclass.Beings.hbm.xml" }; }
 		}
@@ -98,8 +98,7 @@ namespace NHibernate.Test.Unionsubclass
 			s.Clear();
 
 			IList list =
-				await (s.CreateCriteria(typeof(Human)).SetFetchMode("location", FetchMode.Join).SetFetchMode("location.beings",
-																																															 FetchMode.Join).ListAsync());
+				await (s.CreateCriteria(typeof(Human)).Fetch("location").Fetch("location.beings").ListAsync());
 
 			for (int i = 0; i < list.Count; i++)
 			{

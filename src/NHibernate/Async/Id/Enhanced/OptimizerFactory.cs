@@ -118,7 +118,7 @@ namespace NHibernate.Id.Enhanced
 							// to 1 as an initial value like we do the others
 							// because we would not be able to control this if
 							// we are using a sequence...
-							Log.Info("pooled optimizer source reported [" + _value + "] as the initial value; use of 1 or greater highly recommended");
+							Log.Info("pooled optimizer source reported [{0}] as the initial value; use of 1 or greater highly recommended", _value);
 						}
 
 						if ((_initialValue == -1 && _value < IncrementSize) || _value == _initialValue)

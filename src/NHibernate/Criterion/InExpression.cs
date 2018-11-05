@@ -135,7 +135,7 @@ namespace NHibernate.Criterion
 						object subval = _values[j] == null
 											? null
 											: actype.GetPropertyValues(_values[j])[i];
-						list.Add(new TypedValue(types[i], subval));
+						list.Add(new TypedValue(types[i], subval, false));
 					}
 				}
 
@@ -143,7 +143,7 @@ namespace NHibernate.Criterion
 			}
 			else
 			{
-				return _values.Select(v => new TypedValue(type, v)).ToList();
+				return _values.Select(v => new TypedValue(type, v, false)).ToList();
 			}
 		}
 

@@ -141,24 +141,47 @@ var cats = sess.CreateCriteria<Cat>()
     .List<IDictionary>();
 foreach ( IDictionary map in cats )
 {
-    Cat cat = (Cat) map[CriteriaUtil.RootAlias];
+    Cat cat = (Cat) map[CriteriaSpecification.RootAlias];
     Cat kitten = (Cat) map["kt"];
 }]]></programlisting>
+      <para>
+        Note that for retrieving just kittens you can also use an entity projection.
+        See <xref linkend="querycriteria-projection"/> for more information.
+      </para>
 
     </sect1>
-    
+
+    <sect1 id="querycriteria_entityjoin">
+      <title>Join entities without association (Entity joins or ad hoc joins)</title>
+      <para>
+        In criteria you have the ability to define a join to any entity, not just through a mapped association.
+        To achieve it, use <literal>CreateEntityAlias</literal> and <literal>CreateEntityCriteria</literal>. By example:
+      </para>
+
+      <programlisting><![CDATA[IList<Cat> uniquelyNamedCats = sess.CreateCriteria<Cat>("c")
+    .CreateEntityAlias(
+        "joinedCat",
+        Restrictions.And(
+            Restrictions.EqProperty("c.Name", "joinedCat.Name"),
+            Restrictions.NotEqProperty("c.Id", "joinedCat.Id")),
+        JoinType.LeftOuterJoin,
+        typeof(Cat).FullName)
+    .Add(Restrictions.IsNull("joinedCat.Id"))
+    .List();]]></programlisting>
+    </sect1>
+
     <sect1 id="querycriteria-dynamicfetching">
         <title>Dynamic association fetching</title>
 
         <para>
             You may specify association fetching semantics at runtime using
-            <literal>SetFetchMode()</literal>.
+            <literal>Fetch()</literal>.
         </para>
 
         <programlisting><![CDATA[var cats = sess.CreateCriteria<Cat>()
     .Add( Expression.Like("Name", "Fritz%") )
-    .SetFetchMode("Mate", FetchMode.Eager)
-    .SetFetchMode("Kittens", FetchMode.Eager)
+    .Fetch(SelectMode.Fetch, "Mate")
+    .Fetch(SelectMode.Fetch, "Kittens")
     .List<Cat>();]]></programlisting>
 
         <para>
@@ -286,6 +309,33 @@ var results = session.CreateCriteria<Cat>()
     .AddOrder( Order.Asc("kitName") )
     .List<object[]>();]]></programlisting>
 
+      <para>
+        You can also add an entity projection to a criteria query:
+      </para>
+
+      <programlisting><![CDATA[var kittens = sess.CreateCriteria<Cat>()
+    .CreateCriteria("Kittens", "kt")
+    .Add(Expression.Eq("Name", "F%"))
+    .SetProjection(Projections.Entity(typeof(Cat), "kt"))
+    .List();]]></programlisting>
+
+      <programlisting><![CDATA[var cats = sess.CreateCriteria<Cat>()
+    .CreateCriteria("Kittens", "kt")
+    .Add(Expression.Eq("Name", "F%"))
+    .SetProjection(
+        Projections.RootEntity(),
+        Projections.Entity(typeof(Cat), "kt"))
+    .List<object[]>();
+
+foreach (var objs in cats)
+{
+    Cat cat = (Cat) objs[0];
+    Cat kitten = (Cat) objs[1];
+}]]></programlisting>
+
+      <para>
+        See <xref linkend="queryqueryover-projectionentities"/> for more information.
+      </para>
     </sect1>
 
     <sect1 id="querycriteria-detachedqueries">

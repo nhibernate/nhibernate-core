@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using NHibernate.Param;
 using Remotion.Linq.Parsing;
@@ -81,7 +82,9 @@ namespace NHibernate.Linq.Visitors
 		{
 			NamedParameter param;
 
-			if (_constantToParameterMap.TryGetValue(expression, out param) && insideSelectClause == false)
+			if (_constantToParameterMap == null)
+				throw new InvalidOperationException("Cannot visit a constant without a constant to parameter map.");
+			if (_constantToParameterMap.TryGetValue(expression, out param))
 			{
 				// Nulls generate different query plans.  X = variable generates a different query depending on if variable is null or not.
 				if (param.Value == null)
@@ -156,26 +159,8 @@ namespace NHibernate.Linq.Visitors
 			return expression;
 		}
 
-		private bool insideSelectClause;
 		protected override Expression VisitMethodCall(MethodCallExpression expression)
 		{
-			var old = insideSelectClause;
-
-			switch (expression.Method.Name)
-			{
-				case "First":
-				case "FirstOrDefault":
-				case "Single":
-				case "SingleOrDefault":
-				case "Select":
-				case "GroupBy":
-					insideSelectClause = true;
-					break;
-				default:
-					insideSelectClause = false;
-					break;
-			}
-
 			Visit(expression.Object);
 			_string.Append('.');
 			VisitMethod(expression.Method);
@@ -183,14 +168,13 @@ namespace NHibernate.Linq.Visitors
 			ExpressionVisitor.Visit(expression.Arguments, AppendCommas);
 			_string.Append(')');
 
-			insideSelectClause = old;
 			return expression;
 		}
 
 		protected override Expression VisitNew(NewExpression expression)
 		{
 			_string.Append("new ");
-			_string.Append(expression.Constructor.DeclaringType.Name);
+			_string.Append(expression.Constructor.DeclaringType.AssemblyQualifiedName);
 			_string.Append('(');
 			Visit(expression.Arguments, AppendCommas);
 			_string.Append(')');
@@ -210,7 +194,7 @@ namespace NHibernate.Linq.Visitors
 			_string.Append("IsType(");
 			Visit(expression.Expression);
 			_string.Append(", ");
-			_string.Append(expression.TypeOperand.FullName);
+			_string.Append(expression.TypeOperand.AssemblyQualifiedName);
 			_string.Append(")");
 
 			return expression;
@@ -232,14 +216,67 @@ namespace NHibernate.Linq.Visitors
 			return expression;
 		}
 
+		protected override Expression VisitDynamic(DynamicExpression expression)
+		{
+			FormatBinder(expression.Binder);
+			Visit(expression.Arguments, AppendCommas);
+			return expression;
+		}
+
 		private void VisitMethod(MethodInfo methodInfo)
 		{
 			_string.Append(methodInfo.Name);
 			if (methodInfo.IsGenericMethod)
 			{
 				_string.Append('[');
-				_string.Append(string.Join(",", methodInfo.GetGenericArguments().Select(a => a.FullName).ToArray()));
+				_string.Append(string.Join(",", methodInfo.GetGenericArguments().Select(a => a.AssemblyQualifiedName).ToArray()));
 				_string.Append(']');
+			}
+		}
+
+		private void FormatBinder(CallSiteBinder binder)
+		{
+			switch (binder)
+			{
+				case ConvertBinder b:
+					_string.Append("Convert ").Append(b.Type);
+					break;
+				case CreateInstanceBinder _:
+					_string.Append("Create");
+					break;
+				case DeleteIndexBinder _:
+					_string.Append("DeleteIndex");
+					break;
+				case DeleteMemberBinder b:
+					_string.Append("DeleteMember ").Append(b.Name);
+					break;
+				case BinaryOperationBinder b:
+					_string.Append(b.Operation);
+					break;
+				case GetIndexBinder _:
+					_string.Append("GetIndex");
+					break;
+				case GetMemberBinder b:
+					_string.Append("GetMember ").Append(b.Name);
+					break;
+				case InvokeBinder _:
+					_string.Append("Invoke");
+					break;
+				case InvokeMemberBinder b:
+					_string.Append("InvokeMember ").Append(b.Name);
+					break;
+				case SetIndexBinder _:
+					_string.Append("SetIndex");
+					break;
+				case SetMemberBinder b:
+					_string.Append("SetMember ").Append(b.Name);
+					break;
+				case UnaryOperationBinder b:
+					_string.Append(b.Operation);
+					break;
+				case DynamicMetaObjectBinder _:
+					_string.Append("DynamicMetaObject");
+					break;
 			}
 		}
 	}

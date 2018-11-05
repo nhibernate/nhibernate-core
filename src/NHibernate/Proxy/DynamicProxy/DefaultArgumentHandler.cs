@@ -12,13 +12,15 @@ using System.Reflection.Emit;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
+	// Since v5.2
+	[Obsolete("DynamicProxy namespace has been obsoleted, use static proxies instead (see StaticProxyFactory)")]
 	internal class DefaultArgumentHandler : IArgumentHandler
 	{
 		#region IArgumentHandler Members
 
 		public void PushArguments(ParameterInfo[] methodParameters, ILGenerator IL, bool isStatic)
 		{
-			ParameterInfo[] parameters = methodParameters ?? new ParameterInfo[0];
+			ParameterInfo[] parameters = methodParameters ?? Array.Empty<ParameterInfo>();
 			int parameterCount = parameters.Length;
 
 			// object[] args = new object[size];

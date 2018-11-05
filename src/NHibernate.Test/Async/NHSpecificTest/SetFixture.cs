@@ -124,9 +124,6 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		protected override IList Mappings
-		{
-			get { return new List<string>(); }
-		}
+		protected override string[] Mappings => Array.Empty<string>();
 	}
 }

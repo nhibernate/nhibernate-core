@@ -35,7 +35,7 @@ namespace NHibernate.Event
 
 		/// <summary> Cascade refresh an entity instance</summary>
 		Task RefreshAsync(object obj, IDictionary refreshedAlready, CancellationToken cancellationToken);
-        
+
 		/// <summary> Cascade delete an entity instance</summary>
 		Task DeleteAsync(string entityName, object child, bool isCascadeDeleteEnabled, ISet<object> transientEntities, CancellationToken cancellationToken);
 	}

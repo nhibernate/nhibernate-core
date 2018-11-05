@@ -16,7 +16,7 @@ namespace NHibernate.Test.GhostProperty
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "GhostProperty.Mappings.hbm.xml" }; }
 		}

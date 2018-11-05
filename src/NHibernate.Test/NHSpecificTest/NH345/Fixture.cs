@@ -8,11 +8,6 @@ namespace NHibernate.Test.NHSpecificTest.NH345
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH345"; }
-		}
-
 		[Test]
 		public void OrderByCompositeProperty()
 		{

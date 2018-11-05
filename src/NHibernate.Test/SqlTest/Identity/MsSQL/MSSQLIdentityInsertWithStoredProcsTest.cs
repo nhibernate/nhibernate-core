@@ -25,7 +25,7 @@ namespace NHibernate.Test.SqlTest.Identity.MsSQL
 			return string.Format("exec nh_organization_native_id_insert @p0;@p0 = '{0}' [Type: String (4000:0:0)]", orgName);
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "SqlTest.Identity.MsSQL.MSSQLIdentityInsertWithStoredProcs.hbm.xml" }; }
 		}

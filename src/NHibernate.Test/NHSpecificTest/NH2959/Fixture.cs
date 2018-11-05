@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NHibernate.Multi;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2959
 {
@@ -37,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2959
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public void CanUsePolymorphicCriteriaInMultiCriteria()
 		{
 			using (ISession session = OpenSession())
@@ -52,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2959
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public void CanUsePolymorphicQueryInMultiQuery()
 		{
 			using (ISession session = OpenSession())
@@ -64,6 +66,34 @@ namespace NHibernate.Test.NHSpecificTest.NH2959
 
 				Assert.That(results, Has.Count.EqualTo(1));
 				Assert.That(results[0], Has.Count.EqualTo(2));
+			}
+		}
+
+		[Test]
+		public void CanUsePolymorphicCriteriaInQueryBatch()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var results = session.CreateQueryBatch()
+				                     .Add<BaseEntity>(session.CreateCriteria(typeof(BaseEntity)))
+				                     .GetResult<BaseEntity>(0);
+
+				Assert.That(results, Has.Count.EqualTo(2));
+			}
+		}
+
+		[Test]
+		public void CanUsePolymorphicQueryInQueryBatch()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var results = session.CreateQueryBatch()
+				                     .Add<BaseEntity>(session.CreateQuery("from " + typeof(BaseEntity).FullName))
+				                     .GetResult<BaseEntity>(0);
+
+				Assert.That(results, Has.Count.EqualTo(2));
 			}
 		}
 	}

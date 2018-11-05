@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 
@@ -13,7 +14,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public class DateType : AbstractDateTimeType, IParameterizedType
 	{
-		private static readonly IInternalLogger _log = LoggerProvider.LoggerFor(typeof(DateType));
+		private static readonly INHibernateLogger _log = NHibernateLogger.For(typeof(DateType));
 		// Since v5.0
 		[Obsolete("Explicitly affect your values to your entities properties instead.")]
 		public const string BaseValueParameterName = "BaseValue";
@@ -73,6 +74,18 @@ namespace NHibernate.Type
 		}
 
 		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
+		/// <inheritdoc />
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object val) =>
 			((DateTime) val).ToShortDateString();
 
@@ -94,7 +107,7 @@ namespace NHibernate.Type
 			string value;
 			if (parameters.TryGetValue(BaseValueParameterName, out value))
 			{
-				_log.WarnFormat(
+				_log.Warn(
 					"Parameter {0} is obsolete and will be remove in a future version. Explicitly affect your values to your entities properties instead.",
 					BaseValueParameterName);
 				customBaseDate = DateTime.Parse(value);

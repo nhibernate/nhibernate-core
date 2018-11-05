@@ -7,7 +7,7 @@ namespace NHibernate.Test.SqlTest.Query
 	[TestFixture]
 	public class SelfReferencingCollectionLoadTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"SqlTest.Query.Item.hbm.xml"}; }
 		}

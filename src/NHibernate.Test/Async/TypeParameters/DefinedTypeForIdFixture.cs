@@ -18,7 +18,7 @@ namespace NHibernate.Test.TypeParameters
 	[TestFixture]
 	public class DefinedTypeForIdFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "TypeParameters.EntityCustomId.hbm.xml" }; }
 		}

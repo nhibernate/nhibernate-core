@@ -7,7 +7,7 @@ namespace NHibernate.Test.QueryTest
 	[TestFixture]
 	public class AggregateReturnTypesFixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"QueryTest.Aggregated.hbm.xml"}; }
 		}

@@ -9,8 +9,11 @@
 
 
 using System.Collections;
+using System.Linq;
+using NHibernate.Intercept;
 using NHibernate.Tuple.Entity;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.LazyProperty
 {
@@ -25,7 +28,7 @@ namespace NHibernate.Test.LazyProperty
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "LazyProperty.Mappings.hbm.xml" }; }
 		}
@@ -42,6 +45,11 @@ namespace NHibernate.Test.LazyProperty
 
 		protected override void OnSetUp()
 		{
+			Assert.That(
+				nameof(Book.FieldInterceptor),
+				Is.EqualTo(nameof(IFieldInterceptorAccessor.FieldInterceptor)),
+				$"Test pre-condition not met: entity property {nameof(Book.FieldInterceptor)} should have the same " +
+				$"name than {nameof(IFieldInterceptorAccessor)}.{nameof(IFieldInterceptorAccessor.FieldInterceptor)}");
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
@@ -49,7 +57,8 @@ namespace NHibernate.Test.LazyProperty
 				{
 					Name = "some name",
 					Id = 1,
-					ALotOfText = "a lot of text ..."
+					ALotOfText = "a lot of text ...",
+					FieldInterceptor = "Why not that name?"
 				});
 				tx.Commit();
 			}
@@ -61,7 +70,7 @@ namespace NHibernate.Test.LazyProperty
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				Assert.That(s.CreateSQLQuery("delete from Book").ExecuteUpdate(), Is.EqualTo(1));
+				s.CreateQuery("delete from Book").ExecuteUpdate();
 				tx.Commit();
 			}
 		}
@@ -76,12 +85,14 @@ namespace NHibernate.Test.LazyProperty
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Id"), Is.False);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Name"), Is.False);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, nameof(Book.FieldInterceptor)), Is.False);
 
 				await (NHibernateUtil.InitializeAsync(book));
 
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Id"), Is.True);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Name"), Is.True);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, nameof(Book.FieldInterceptor)), Is.True);
 			}
 		}
 
@@ -95,6 +106,7 @@ namespace NHibernate.Test.LazyProperty
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Id"), Is.True);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Name"), Is.True);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, nameof(Book.FieldInterceptor)), Is.True);
 			}
 		}
 
@@ -118,6 +130,7 @@ namespace NHibernate.Test.LazyProperty
 				var book = await (s.GetAsync<Book>(1));
 
 				Assert.That(book.Name, Is.EqualTo("some name"));
+				Assert.That(book.FieldInterceptor, Is.EqualTo("Why not that name?"));
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
 			}
 		}
@@ -126,17 +139,27 @@ namespace NHibernate.Test.LazyProperty
 		public async Task CanLoadAndSaveObjectInDifferentSessionsAsync()
 		{
 			Book book;
+			int bookCount;
 			using (ISession s = OpenSession())
 			{
+				bookCount = await (s.Query<Book>().CountAsync());
 				book = await (s.GetAsync<Book>(1));
 			}
+
+			book.Name += " updated";
 
 			using (ISession s = OpenSession())
 			{
 				await (s.MergeAsync(book));
+				await (s.FlushAsync());
+			}
+
+			using (ISession s = OpenSession())
+			{
+				Assert.That(await (s.Query<Book>().CountAsync()), Is.EqualTo(bookCount));
+				Assert.That((await (s.GetAsync<Book>(1))).Name, Is.EqualTo(book.Name));
 			}
 		}
-
 
 		[Test]
 		public async Task CanUpdateNonLazyWithoutLoadingLazyPropertyAsync()
@@ -147,16 +170,50 @@ namespace NHibernate.Test.LazyProperty
 			{
 				book = await (s.GetAsync<Book>(1));
 				book.Name += "updated";
+				book.FieldInterceptor += "updated";
 
-				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False, "Before flush and commit");
 				await (trans.CommitAsync());
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False, "After flush and commit");
 			}
-
 
 			using (ISession s = OpenSession())
 			{
 				book = await (s.GetAsync<Book>(1));
 				Assert.That(book.Name, Is.EqualTo("some nameupdated"));
+				Assert.That(book.FieldInterceptor, Is.EqualTo("Why not that name?updated"));
+			}
+		}
+
+		[Test]
+		public async Task CanMergeTransientWithLazyPropertyAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				var book = await (s.GetAsync<Book>(2));
+				Assert.That(book, Is.Null);
+			}
+
+			using (ISession s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var book = new Book
+				{
+					Name = "some name two",
+					Id = 2,
+					ALotOfText = "a lot of text two..."
+				};
+				// This should insert a new entity.
+				await (s.MergeAsync(book));
+				await (tx.CommitAsync());
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var book = await (s.GetAsync<Book>(2));
+				Assert.That(book, Is.Not.Null);
+				Assert.That(book.Name, Is.EqualTo("some name two"));
+				Assert.That(book.ALotOfText, Is.EqualTo("a lot of text two..."));
 			}
 		}
 	}

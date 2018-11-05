@@ -21,7 +21,7 @@ namespace NHibernate.Test.QueryTest
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	[TestFixture]
+	[TestFixture, Obsolete]
 	public class MultiCriteriaFixtureAsync : TestCase
 	{
 		protected override string MappingsAssembly
@@ -29,7 +29,7 @@ namespace NHibernate.Test.QueryTest
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "SecondLevelCacheTest.Item.hbm.xml" }; }
 		}
@@ -472,6 +472,33 @@ namespace NHibernate.Test.QueryTest
 				{
 					Assert.That(result.Count, Is.EqualTo(1));
 				}
+			}
+		}
+
+		//NH-2428 - Session.MultiCriteria and FlushMode.Auto inside transaction (GH865)
+		[Test]
+		public async Task MultiCriteriaAutoFlushAsync()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.FlushMode = FlushMode.Auto;
+				var p1 = new Item
+				{
+					Name = "Person name",
+					Id = 15
+				};
+				await (s.SaveAsync(p1));
+				await (s.FlushAsync());
+
+				await (s.DeleteAsync(p1));
+				var multi = s.CreateMultiCriteria();
+				multi.Add<int>(s.QueryOver<Item>().ToRowCountQuery());
+				var count = (int) ((IList) (await (multi.ListAsync()))[0])[0];
+				await (tx.CommitAsync());
+
+				Assert.That(count, Is.EqualTo(0), "Session wasn't auto flushed.");
+
 			}
 		}
 	}

@@ -27,6 +27,13 @@ namespace NHibernate.Linq.Visitors
 		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, VisitorParameters parameters, bool root,
 			NhLinqExpressionReturnType? rootReturnType)
 		{
+			// Expand conditionals in subquery FROM clauses into multiple subqueries
+			if (root)
+			{
+				// This expander works recursively
+				SubQueryConditionalExpander.ReWrite(queryModel);
+			}
+
 			NestedSelectRewriter.ReWrite(queryModel, parameters.SessionFactory);
 
 			// Remove unnecessary body operators
@@ -63,6 +70,9 @@ namespace NHibernate.Linq.Visitors
 
 			// Add joins for references
 			AddJoinsReWriter.ReWrite(queryModel, parameters);
+
+			// Expand coalesced and conditional joins to their logical equivalents
+			ConditionalQueryReferenceExpander.ReWrite(queryModel);
 
 			// Move OrderBy clauses to end
 			MoveOrderByToEndRewriter.ReWrite(queryModel);
@@ -130,6 +140,7 @@ namespace NHibernate.Linq.Visitors
 			ResultOperatorMap.Add<FetchManyRequest, ProcessFetchMany>();
 			ResultOperatorMap.Add<OfTypeResultOperator, ProcessOfType>();
 			ResultOperatorMap.Add<CastResultOperator, ProcessCast>();
+			ResultOperatorMap.Add<AsQueryableResultOperator, ProcessAsQueryable>();
 		}
 
 		private QueryModelVisitor(VisitorParameters visitorParameters, bool root, QueryModel queryModel,
@@ -473,10 +484,12 @@ namespace NHibernate.Linq.Visitors
 		{
 			foreach (var clause in orderByClause.Orderings)
 			{
-				_hqlTree.AddOrderByClause(HqlGeneratorExpressionVisitor.Visit(clause.Expression, VisitorParameters).AsExpression(),
-								clause.OrderingDirection == OrderingDirection.Asc
-									? _hqlTree.TreeBuilder.Ascending()
-									: (HqlDirectionStatement)_hqlTree.TreeBuilder.Descending());
+				var orderBy = HqlGeneratorExpressionVisitor.Visit(clause.Expression, VisitorParameters).ToArithmeticExpression();
+				var direction = clause.OrderingDirection == OrderingDirection.Asc
+					? _hqlTree.TreeBuilder.Ascending()
+					: (HqlDirectionStatement)_hqlTree.TreeBuilder.Descending();
+
+				_hqlTree.AddOrderByClause(orderBy, direction);
 			}
 		}
 

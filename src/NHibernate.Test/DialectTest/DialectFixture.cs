@@ -161,7 +161,7 @@ namespace NHibernate.Test.DialectTest
 
 			using (var connection = sessions.ConnectionProvider.GetConnection())
 			{
-				var statement = driver.GenerateCommand(CommandType.Text, new SqlString(dialect.CurrentTimestampSelectString), new SqlType[0]);
+				var statement = driver.GenerateCommand(CommandType.Text, new SqlString(dialect.CurrentTimestampSelectString), Array.Empty<SqlType>());
 				statement.Connection = connection;
 				using (var reader = statement.ExecuteReader())
 				{

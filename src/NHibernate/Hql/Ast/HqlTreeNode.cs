@@ -701,6 +701,19 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
+	/// <summary>
+	/// Cast node intended solely to hint HQL at the resulting type, without issuing an actual SQL cast.
+	/// </summary>
+	public class HqlTransparentCast : HqlExpression
+	{
+		public HqlTransparentCast(IASTFactory factory, HqlExpression expression, System.Type type)
+			: base(HqlSqlWalker.METHOD_CALL, "method", factory)
+		{
+			AddChild(new HqlIdent(factory, "transparentcast"));
+			AddChild(new HqlExpressionList(factory, expression, new HqlIdent(factory, type)));
+		}
+	}
+
 	public class HqlCoalesce : HqlExpression
 	{
 		public HqlCoalesce(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
@@ -711,10 +724,20 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlDictionaryIndex : HqlExpression
+	public class HqlIndex : HqlExpression
+	{
+		public HqlIndex(IASTFactory factory, HqlExpression collection, HqlExpression index)
+			: base(HqlSqlWalker.INDEX_OP, "[", factory, collection, index)
+		{
+		}
+	}
+
+	//Since v5.2
+	[Obsolete("Please use HqlIndex instead")]
+	public class HqlDictionaryIndex : HqlIndex
 	{
 		public HqlDictionaryIndex(IASTFactory factory, HqlExpression dictionary, HqlExpression index)
-			: base(HqlSqlWalker.INDEX_OP, "[", factory, dictionary, index)
+			: base(factory, dictionary, index)
 		{
 		}
 	}

@@ -1,11 +1,10 @@
 ﻿projects:
 - filePath: NHibernate/NHibernate.csproj
+  targetFramework: net461
   concurrentRun: true
   applyChanges: true
   analyzation:
     methodConversion:
-    - conversion: Ignore
-      hasAttributeName: ObsoleteAttribute
     - conversion: Ignore
       name: PostProcessInsert
       containingTypeName: HqlSqlWalker
@@ -96,6 +95,15 @@
     - conversion: Ignore
       name: Exists
       containingTypeName: AbstractCollectionPersister
+    - conversion: Ignore
+      name: QuoteTableAndColumns
+      containingTypeName: SchemaMetadataUpdater
+    - conversion: Ignore
+      name: GetEnumerator
+      containingTypeName: DelayedEnumerator
+    - conversion: Ignore
+      name: GetEnumerator
+      containingTypeName: IFutureEnumerable
     - conversion: ToAsync
       name: ExecuteReader
       containingTypeName: IBatcher
@@ -105,7 +113,9 @@
     - conversion: ToAsync
       rule: EventListener
     - conversion: ToAsync
-      rule: ICache
+      rule: Cache
+    - conversion: ToAsync
+      rule: TransactionCompletion      
     typeConversion:
     - conversion: Ignore
       name: EnumerableImpl
@@ -119,6 +129,8 @@
     - name: GetFieldValue
     - name: IsDBNull
     - name: WriteLine
+    ignoreAsyncCounterparts:
+    - rule: Obsolete
     callForwarding: true
     cancellationTokens:
       guards: true
@@ -130,7 +142,8 @@
       - parameter: Required
       requiresCancellationToken:
       - rule: EventListener
-      - rule: ICache
+      - rule: Cache
+      - rule: TransactionCompletion
     scanMethodBody: true
     scanForMissingAsyncMembers:
     - all: true
@@ -153,6 +166,7 @@
   - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
     assemblyName: AsyncGenerator.Core
 - filePath: NHibernate.DomainModel/NHibernate.DomainModel.csproj
+  targetFramework: net461
   concurrentRun: true
   applyChanges: true
   analyzation:
@@ -160,10 +174,13 @@
     scanForMissingAsyncMembers:
     - all: true
 - filePath: NHibernate.Test/NHibernate.Test.csproj
+  targetFramework: net461
   concurrentRun: true
   applyChanges: true
   analyzation:
     methodConversion:
+    - conversion: Copy
+      name: AfterTransactionCompletionProcess_EvictsFromCache
     - conversion: Copy
       hasAttributeName: OneTimeSetUpAttribute
     - conversion: Copy
@@ -183,6 +200,11 @@
     preserveReturnType:
     - hasAttributeName: TestAttribute
     - hasAttributeName: TheoryAttribute
+    alwaysAwait:
+    - hasAttributeName: TestAttribute
+    - hasAttributeName: TheoryAttribute
+    - hasAttributeName: SetUpAttribute
+    - hasAttributeName: TearDownAttribute
     typeConversion:
     - conversion: Ignore
       name: ObjectAssert
@@ -190,6 +212,8 @@
       name: LinqReadonlyTestsContext
     - conversion: Ignore
       name: MultiThreadRunner
+    - conversion: Ignore
+      name: PeVerifier
     - conversion: Ignore
       hasAttributeName: IgnoreAttribute
     - conversion: NewType
@@ -252,13 +276,22 @@ methodRules:
     name: Lock
   - containingType: NHibernate.Cache.ICache
     name: Unlock
-  name: ICache
+  name: Cache
+- filters:
+  - containingType: NHibernate.Action.IAfterTransactionCompletionProcess
+  - containingType: NHibernate.Action.IBeforeTransactionCompletionProcess
+  - containingType: NHibernate.Action.EntityAction
+    name: BeforeTransactionCompletionProcessImpl  
+  name: TransactionCompletion
 - filters:
   - containingNamespace: NHibernate
   - containingType: NHibernate.Tool.hbm2ddl.SchemaUpdate
   - containingType: NHibernate.Tool.hbm2ddl.SchemaValidator
   - containingType: NHibernate.Tool.hbm2ddl.SchemaExport
   name: PubliclyExposedType
+- filters:
+  - hasAttributeName: ObsoleteAttribute
+  name: Obsolete
 typeRules:
 - filters:
   - containingAssemblyName: NHibernate

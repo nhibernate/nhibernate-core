@@ -11,23 +11,19 @@
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using NHibernate.Bytecode;
+using NHibernate.Bytecode.Lightweight;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
+using NHibernate.Properties;
+using NHibernate.Util;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH3119
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Fixture using 'by code' mappings
-	/// </summary>
-	/// <remarks>
-	/// This fixture is identical to <see cref="Fixture" /> except the <see cref="Entity" /> mapping is performed 
-	/// by code in the GetMappings method, and does not require the <c>Mappings.hbm.xml</c> file. Use this approach
-	/// if you prefer.
-	/// </remarks>
 	[TestFixture]
 	public class ByCodeFixtureAsync : TestCaseMappingByCode
 	{
@@ -47,9 +43,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3119
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
+		private static IBytecodeProvider _backupByteCodeProvider;
+
 		protected override void OnSetUp()
 		{
-			if (!Cfg.Environment.UseReflectionOptimizer)
+			_backupByteCodeProvider = Environment.BytecodeProvider;
+
+			if (!Environment.UseReflectionOptimizer)
 			{
 				Assert.Ignore("Test only works with reflection optimization enabled");
 			}
@@ -63,10 +63,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3119
 				session.Flush();
 				transaction.Commit();
 			}
+
+			// Change refelection optimizer and recreate the configuration and factory
+			Environment.BytecodeProvider = new TestBytecodeProviderImpl();
+			Configure();
+			RebuildSessionFactory();
 		}
 
 		protected override void OnTearDown()
 		{
+			Environment.BytecodeProvider = _backupByteCodeProvider;
+
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
@@ -83,11 +90,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3119
 			using (ISession freshSession = OpenSession())
 			using (freshSession.BeginTransaction())
 			{
-				Entity entity = await (freshSession.Query<Entity>().SingleAsync());
-
-				string stackTrace = entity.Component.LastCtorStackTrace;
-
-				StringAssert.Contains("NHibernate.Bytecode.Lightweight.ReflectionOptimizer.CreateInstance", stackTrace);
+				ComponentTestReflectionOptimizer.IsCalledForComponent = false;
+				await (freshSession.Query<Entity>().SingleAsync());
+				Assert.That(ComponentTestReflectionOptimizer.IsCalledForComponent, Is.True);
 			}
 		}
 
@@ -95,22 +100,30 @@ namespace NHibernate.Test.NHSpecificTest.NH3119
 		public async Task PocoComponentTuplizerOfDeserializedConfiguration_Instantiate_UsesReflectonOptimizerAsync()
 		{
 			MemoryStream configMemoryStream = new MemoryStream();
-			BinaryFormatter writer = new BinaryFormatter();
+			var writer = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			writer.Serialize(configMemoryStream, cfg);
 
 			configMemoryStream.Seek(0, SeekOrigin.Begin);
-			BinaryFormatter reader = new BinaryFormatter();
+			var reader = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			Configuration deserializedConfig = (Configuration)reader.Deserialize(configMemoryStream);
 			ISessionFactory factoryFromDeserializedConfig = deserializedConfig.BuildSessionFactory();
 
 			using (ISession deserializedSession = factoryFromDeserializedConfig.OpenSession())
 			using (deserializedSession.BeginTransaction())
 			{
-				Entity entity = await (deserializedSession.Query<Entity>().SingleAsync());
-
-				string stackTrace = entity.Component.LastCtorStackTrace;
-
-				StringAssert.Contains("NHibernate.Bytecode.Lightweight.ReflectionOptimizer.CreateInstance", stackTrace);
+				ComponentTestReflectionOptimizer.IsCalledForComponent = false;
+				await (deserializedSession.Query<Entity>().SingleAsync());
+				Assert.That(ComponentTestReflectionOptimizer.IsCalledForComponent, Is.True);
 			}
 		}
 	}

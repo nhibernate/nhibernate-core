@@ -10,12 +10,13 @@
 		<property name="StringProp"/>
 		<property name="AnsiStringProp" type="AnsiString"/>
 		<property name="Decimal" type="decimal"/>
+		<property name="DecimalHighScale" type="decimal(20,10)"/>
 		<property name="Currency" type="Currency"/>
 		<property name="Double" column="`Double`" type="Double"/>
 		<property name="Float" type="Single"/>
 		<property name="BinaryBlob" type="BinaryBlob"/>
 		<property name="Binary" type="Byte[]"/>
 		<property name="StringClob" type="StringClob"/>
-    <property name="DateTimeProp" type="DateTime"/>
-  </class>
+		<property name="DateTimeProp" type="DateTime"/>
+	</class>
 </hibernate-mapping>

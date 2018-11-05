@@ -15,7 +15,7 @@ namespace NHibernate.Connection
 	/// </summary>
 	public abstract partial class ConnectionProvider : IConnectionProvider
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ConnectionProvider));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ConnectionProvider));
 		private string connString;
 		private IDriver driver;
 
@@ -105,7 +105,7 @@ namespace NHibernate.Connection
 				try
 				{
 					driver =
-						(IDriver) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(driverClass));
+						(IDriver) Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(driverClass));
 					driver.Configure(settings);
 				}
 				catch (Exception e)

@@ -7,7 +7,7 @@ namespace NHibernate.Test.Events.Collections.Association.Bidirectional.OneToMany
 	[TestFixture]
 	public class BidirectionalOneToManyBagCollectionEventFixture : AbstractAssociationCollectionEventFixture
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

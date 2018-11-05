@@ -13,7 +13,7 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public abstract class PropertyExpression : AbstractCriterion
 	{
-		private static readonly TypedValue[] NoTypedValues = new TypedValue[0];
+		private static readonly TypedValue[] NoTypedValues = Array.Empty<TypedValue>();
 		private readonly string _lhsPropertyName;
 		private readonly string _rhsPropertyName;
 		private readonly IProjection _lhsProjection;

@@ -10,7 +10,7 @@ namespace NHibernate.Test.GeneratedTest
 	[TestFixture]
 	public class TriggerGeneratedValuesWithoutCachingTest : AbstractGeneratedPropertyTest
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "GeneratedTest.GeneratedPropertyEntity.hbm.xml" }; }
 		}

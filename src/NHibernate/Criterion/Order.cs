@@ -130,7 +130,7 @@ namespace NHibernate.Criterion
 			if (projection != null)
 				return projection.GetTypedValues(criteria, criteriaQuery);
 
-			return new TypedValue[0]; // not using parameters for ORDER BY columns
+			return Array.Empty<TypedValue>(); // not using parameters for ORDER BY columns
 		}
 
 		public Order IgnoreCase()

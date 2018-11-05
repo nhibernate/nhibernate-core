@@ -14,13 +14,15 @@ namespace NHibernate.Driver
 {
 	public partial class BasicResultSetsCommand: IResultSetsCommand
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(BasicResultSetsCommand));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(BasicResultSetsCommand));
 		private SqlString sqlString = SqlString.Empty;
+		private readonly string _statementTerminator;
 
 		public BasicResultSetsCommand(ISessionImplementor session)
 		{
 			Commands = new List<ISqlCommand>();
 			Session = session;
+			_statementTerminator = session.Factory.Dialect.StatementTerminator.ToString();
 		}
 
 		protected List<ISqlCommand> Commands { get; private set; }
@@ -30,7 +32,7 @@ namespace NHibernate.Driver
 		public virtual void Append(ISqlCommand command)
 		{
 			Commands.Add(command);
-			sqlString = sqlString.Append(command.Query).Append(";").Append(Environment.NewLine);
+			sqlString = sqlString.Append(command.Query).Append(_statementTerminator).Append(Environment.NewLine);
 		}
 
 		public bool HasQueries

@@ -10,7 +10,7 @@ namespace NHibernate.Tool.hbm2ddl
 {
 	public partial class SchemaUpdate
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (SchemaUpdate));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (SchemaUpdate));
 		private bool wasInitialized;
 		private readonly Configuration configuration;
 		private readonly IConnectionHelper connectionHelper;
@@ -51,7 +51,6 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 
 			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, configuration.Properties, "not-defined");
-			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
 			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
 			{
 				SchemaMetadataUpdater.Update(configuration, dialect);
@@ -83,30 +82,30 @@ namespace NHibernate.Tool.hbm2ddl
 
 				for (int i = 0; i < args.Length; i++)
 				{
-					if (args[i].StartsWith("--"))
+					if (args[i].StartsWith("--", StringComparison.Ordinal))
 					{
 						if (args[i].Equals("--quiet"))
 						{
 							script = false;
 						}
-						else if (args[i].StartsWith("--properties="))
+						else if (args[i].StartsWith("--properties=", StringComparison.Ordinal))
 						{
 							throw new NotSupportedException("No properties file for .NET, use app.config instead");
 							//propFile = args[i].Substring( 13 );
 						}
-						else if (args[i].StartsWith("--config="))
+						else if (args[i].StartsWith("--config=", StringComparison.Ordinal))
 						{
 							cfg.Configure(args[i].Substring(9));
 						}
-						else if (args[i].StartsWith("--text"))
+						else if (args[i].StartsWith("--text", StringComparison.Ordinal))
 						{
 							doUpdate = false;
 						}
-						else if (args[i].StartsWith("--naming="))
+						else if (args[i].StartsWith("--naming=", StringComparison.Ordinal))
 						{
 							cfg.SetNamingStrategy(
 								(INamingStrategy)
-								Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(args[i].Substring(9))));
+								Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(args[i].Substring(9))));
 						}
 					}
 					else
@@ -127,7 +126,7 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 			catch (Exception e)
 			{
-				log.Error("Error running schema update", e);
+				log.Error(e, "Error running schema update");
 				Console.WriteLine(e);
 			}
 		}
@@ -177,7 +176,7 @@ namespace NHibernate.Tool.hbm2ddl
 				catch (Exception sqle)
 				{
 					exceptions.Add(sqle);
-					log.Error("could not get database metadata", sqle);
+					log.Error(sqle, "could not get database metadata");
 					throw;
 				}
 
@@ -205,7 +204,7 @@ namespace NHibernate.Tool.hbm2ddl
 					catch (Exception e)
 					{
 						exceptions.Add(e);
-						log.Error("Unsuccessful: " + sql, e);
+						log.Error(e, "Unsuccessful: {0}", sql);
 					}
 				}
 
@@ -214,7 +213,7 @@ namespace NHibernate.Tool.hbm2ddl
 			catch (Exception e)
 			{
 				exceptions.Add(e);
-				log.Error("could not complete schema update", e);
+				log.Error(e, "could not complete schema update");
 			}
 			finally
 			{
@@ -229,7 +228,7 @@ namespace NHibernate.Tool.hbm2ddl
 				catch (Exception e)
 				{
 					exceptions.Add(e);
-					log.Error("Error closing connection", e);
+					log.Error(e, "Error closing connection");
 				}
 			}
 		}

@@ -18,8 +18,22 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private readonly bool componetDefaultNullable;
 		private readonly string propertyBasePath;
 
+		//Since v5.2
+		[Obsolete("Please use constructor without a dialect parameter.")]
 		public PropertiesBinder(Mappings mappings, PersistentClass persistentClass, Dialect.Dialect dialect)
-			: base(mappings, dialect)
+			: this(mappings, persistentClass)
+		{
+		}
+		
+		//Since v5.2
+		[Obsolete("Please use constructor without dialect parameter")]
+		public PropertiesBinder(Mappings mappings, Component component, string className, string path, bool isNullable, Dialect.Dialect dialect)
+			: this(mappings, component, className, path, isNullable)
+		{
+		}
+
+		public PropertiesBinder(Mappings mappings, PersistentClass persistentClass)
+			: base(mappings)
 		{
 			this.persistentClass = persistentClass;
 			entityName = persistentClass.EntityName;
@@ -30,8 +44,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			component = null;
 		}
 
-		public PropertiesBinder(Mappings mappings, Component component, string className, string path, bool isNullable, Dialect.Dialect dialect)
-			: base(mappings, dialect)
+		public PropertiesBinder(Mappings mappings, Component component, string className, string path, bool isNullable)
+			: base(mappings)
 		{
 			persistentClass = component.Owner;
 			this.component = component;
@@ -94,7 +108,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 				else if ((collectionMapping = entityPropertyMapping as ICollectionPropertiesMapping) != null)
 				{
-					var collectionBinder = new CollectionBinder(Mappings, dialect);
+					var collectionBinder = new CollectionBinder(Mappings);
 					string propertyPath = propertyName == null ? null : StringHelper.Qualify(propertyBasePath, propertyName);
 
 					Mapping.Collection collection = collectionBinder.Create(collectionMapping, entityName, propertyPath, persistentClass,
@@ -289,23 +303,19 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					throw new MappingException("cannot specify both insert=\"true\" and generated=\"" + generation
 					                           + "\" for property: " + propertyMapping.Name);
 				}
-				else
-				{
-					property.IsInsertable = false;
-				}
-
+				property.IsInsertable = false;
+			}
+			if (generation == PropertyGeneration.Always)
+			{
 				// properties generated on update can never be updateable...
-				if (propertyMapping.updateSpecified && property.IsUpdateable && generation == PropertyGeneration.Always)
+				if (propertyMapping.updateSpecified && property.IsUpdateable)
 				{
 					// the user specifically supplied update="true",
 					// which constitutes an illegal combo
 					throw new MappingException("cannot specify both update=\"true\" and generated=\"" + generation
 					                           + "\" for property: " + propertyMapping.Name);
 				}
-				else
-				{
-					property.IsUpdateable = false;
-				}
+				property.IsUpdateable = false;
 			}
 		}
 

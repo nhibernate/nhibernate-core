@@ -15,8 +15,9 @@ namespace NHibernate.Collection
 	/// <summary>
 	/// Base class for implementing <see cref="IPersistentCollection"/>.
 	/// </summary>
+	// 6.0 TODO: remove ILazyInitializedCollection once IPersistentCollection derives from it
 	[Serializable]
-	public abstract partial class AbstractPersistentCollection : IPersistentCollection
+	public abstract partial class AbstractPersistentCollection : IPersistentCollection, ILazyInitializedCollection
 	{
 		protected internal static readonly object Unknown = new object(); //place holder
 		protected internal static readonly object NotFound = new object(); //place holder
@@ -60,9 +61,11 @@ namespace NHibernate.Collection
 						{
 							return enclosingInstance.operationQueue[position].AddedInstance;
 						}
-						catch (IndexOutOfRangeException)
+						catch (IndexOutOfRangeException ex)
 						{
-							throw new InvalidOperationException();
+							throw new InvalidOperationException(
+								"MoveNext as not been called or its last call has yielded false (meaning the enumerator is beyond the end of the enumeration).",
+								ex);
 						}
 					}
 				}
@@ -376,16 +379,34 @@ namespace NHibernate.Collection
 			dirty = true; //needed so that we remove this collection from the second-level cache
 		}
 
-		/// <summary> 
+		// Obsolete since v5.2
+		/// <summary>
 		/// After reading all existing elements from the database,
 		/// add the queued elements to the underlying collection.
 		/// </summary>
+		[Obsolete("Use or override ApplyQueuedOperations instead")]
 		protected virtual void PerformQueuedOperations()
 		{
 			for (int i = 0; i < operationQueue.Count; i++)
 			{
 				operationQueue[i].Operate();
 			}
+		}
+
+		/// <summary>
+		/// After reading all existing elements from the database, do the queued operations
+		/// (adds or removes) on the underlying collection.
+		/// </summary>
+		public virtual void ApplyQueuedOperations()
+		{
+			if (operationQueue == null)
+				throw new InvalidOperationException("There are no operation queue.");
+
+#pragma warning disable 618
+			PerformQueuedOperations();
+#pragma warning restore 618
+
+			operationQueue = null;
 		}
 
 		public void SetSnapshot(object key, string role, object snapshot)
@@ -434,18 +455,8 @@ namespace NHibernate.Collection
 		public virtual bool AfterInitialize(ICollectionPersister persister)
 		{
 			SetInitialized();
-			//do this bit after setting initialized to true or it will recurse
-			if (operationQueue != null)
-			{
-				PerformQueuedOperations();
-				operationQueue = null;
-				cachedSize = -1;
-				return false;
-			}
-			else
-			{
-				return true;
-			}
+			cachedSize = -1;
+			return operationQueue == null;
 		}
 
 		/// <summary>
@@ -717,7 +728,7 @@ namespace NHibernate.Collection
 				if (current != null && ForeignKeys.IsNotTransientSlow(entityName, current, session))
 				{
 					object currentId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session);
-					currentIds.Add(new TypedValue(idType, currentId));
+					currentIds.Add(new TypedValue(idType, currentId, false));
 				}
 			}
 
@@ -725,7 +736,7 @@ namespace NHibernate.Collection
 			foreach (object old in oldElements)
 			{
 				object oldId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, old, session);
-				if (!currentIds.Contains(new TypedValue(idType, oldId)))
+				if (!currentIds.Contains(new TypedValue(idType, oldId, false)))
 				{
 					res.Add(old);
 				}

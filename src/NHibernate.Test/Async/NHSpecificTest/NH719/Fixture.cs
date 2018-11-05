@@ -16,11 +16,6 @@ namespace NHibernate.Test.NHSpecificTest.NH719
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH719"; }
-		}
-
 		[Test]
 		public async Task CacheLoadTestAsync()
 		{

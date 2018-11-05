@@ -22,6 +22,7 @@ for your own use before compile tests in VisualStudio.
 			Database=nhibernate;
 			User ID=SYSDBA;Password=masterkey;
 			MaxPoolSize=200;
+			charset=utf8;
 		</property>
 		<property name="show_sql">false</property>
 		<property name="dialect">NHibernate.Dialect.FirebirdDialect</property>

@@ -24,7 +24,7 @@ namespace NHibernate.Collection
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public abstract partial class AbstractPersistentCollection : IPersistentCollection
+	public abstract partial class AbstractPersistentCollection : IPersistentCollection, ILazyInitializedCollection
 	{
 
 		/// <summary>
@@ -193,7 +193,7 @@ namespace NHibernate.Collection
 				if (current != null && await (ForeignKeys.IsNotTransientSlowAsync(entityName, current, session, cancellationToken)).ConfigureAwait(false))
 				{
 					object currentId = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, current, session, cancellationToken)).ConfigureAwait(false);
-					currentIds.Add(new TypedValue(idType, currentId));
+					currentIds.Add(new TypedValue(idType, currentId, false));
 				}
 			}
 
@@ -201,7 +201,7 @@ namespace NHibernate.Collection
 			foreach (object old in oldElements)
 			{
 				object oldId = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, old, session, cancellationToken)).ConfigureAwait(false);
-				if (!currentIds.Contains(new TypedValue(idType, oldId)))
+				if (!currentIds.Contains(new TypedValue(idType, oldId, false)))
 				{
 					res.Add(old);
 				}

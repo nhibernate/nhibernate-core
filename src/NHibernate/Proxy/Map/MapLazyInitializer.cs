@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 
 namespace NHibernate.Proxy.Map
@@ -15,6 +16,8 @@ namespace NHibernate.Proxy.Map
 		{
 			get { return (IDictionary) GetImplementation(); }
 		}
+
+		public IDictionary<string, object> GenericMap => (IDictionary<string, object>) GetImplementation();
 
 		public override System.Type PersistentClass
 		{

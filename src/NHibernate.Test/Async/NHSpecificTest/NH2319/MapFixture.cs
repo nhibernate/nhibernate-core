@@ -33,9 +33,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 		private Guid _child3Id;
 
 		[Test]
-		public Task ShouldBeAbleToFindChildrenByNameAsync()
+		public async Task ShouldBeAbleToFindChildrenByNameAsync()
 		{
-			return FindChildrenByNameAsync(_parent1Id, _child1Id);
+			await (FindChildrenByNameAsync(_parent1Id, _child1Id));
 		}
 
 		private async Task FindChildrenByNameAsync(Guid parentId, Guid childId, CancellationToken cancellationToken = default(CancellationToken))

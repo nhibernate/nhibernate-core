@@ -13,9 +13,15 @@ namespace NHibernate.Util
 	/// </summary>
 	public static class ArrayHelper
 	{
-		public static readonly object[] EmptyObjectArray = new object[0];
-		public static readonly int[] EmptyIntArray = new int[0];
-		public static readonly bool[] EmptyBoolArray = new bool[0];
+		//Since v5.1
+		[Obsolete("Please use System.Array.Empty<object>() instead")]
+		public static object[] EmptyObjectArray => Array.Empty<object>();
+		//Since v5.1
+		[Obsolete("Please use System.Array.Empty<int>() instead")]
+		public static int[] EmptyIntArray => Array.Empty<int>();
+		//Since v5.1
+		[Obsolete("Please use System.Array.Empty<bool>() instead")]
+		public static bool[] EmptyBoolArray => Array.Empty<bool>();
 
 		public static readonly bool[] True = new bool[] { true };
 		public static readonly bool[] False = new bool[] { false };
@@ -173,45 +179,12 @@ namespace NHibernate.Util
 
 		public static bool ArrayEquals<T>(T[] a, T[] b)
 		{
-			if (a == b)
-				return true;
-
-			if (a == null || b == null)
-				return false;
-
-			if (a.Length != b.Length)
-				return false;
-
-			for (int i = 0; i < a.Length; i++)
-			{
-				if (!Equals(a[i], b[i]))
-					return false;
-			}
-
-			return true;
+			return ArrayComparer<T>.Default.Equals(a, b);
 		}
 
 		public static bool ArrayEquals(byte[] a, byte[] b)
 		{
-			if (a == b)
-				return true;
-
-			if (a == null || b == null)
-				return false;
-
-			if (a.Length != b.Length)
-				return false;
-
-			int i = 0;
-			int len = a.Length;
-			while (i < len)
-			{
-				if (a[i] != b[i])
-					return false;
-
-				i++;
-			}
-			return true;
+			return ArrayComparer<byte>.Default.Equals(a, b);
 		}
 
 		/// <summary>
@@ -224,12 +197,54 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		public static int ArrayGetHashCode<T>(T[] array)
 		{
-			int hc = array.Length;
+			return ArrayComparer<T>.Default.GetHashCode(array);
+		}
 
-			foreach (var e in array)
-				hc = unchecked(hc*31 + e.GetHashCode());
+		internal class ArrayComparer<T> : IEqualityComparer<T[]>
+		{
+			private readonly IEqualityComparer<T> _elementComparer;
 
-			return hc;
+			internal static ArrayComparer<T> Default { get; } = new ArrayComparer<T>();
+
+			internal ArrayComparer() : this(EqualityComparer<T>.Default) { }
+
+			internal ArrayComparer(IEqualityComparer<T> elementComparer)
+			{
+				_elementComparer = elementComparer ?? throw new ArgumentNullException(nameof(elementComparer));
+			}
+
+			public bool Equals(T[] a, T[] b)
+			{
+				if (a == b)
+					return true;
+
+				if (a == null || b == null)
+					return false;
+
+				if (a.Length != b.Length)
+					return false;
+
+				for (var i = 0; i < a.Length; i++)
+				{
+					if (!_elementComparer.Equals(a[i], b[i]))
+						return false;
+				}
+
+				return true;
+			}
+
+			public int GetHashCode(T[] array)
+			{
+				if (array == null)
+					return 0;
+
+				var hc = array.Length;
+
+				foreach (var e in array)
+					hc = unchecked(hc * 31 + _elementComparer.GetHashCode(e));
+
+				return hc;
+			}
 		}
 	}
 }

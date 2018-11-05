@@ -25,7 +25,7 @@ namespace NHibernate.Mapping.ByCode
 					rename = this.rename
 				};
 
-			var existingImports = hbmMapping.import ?? new HbmImport[0];
+			var existingImports = hbmMapping.import ?? System.Array.Empty<HbmImport>();
 
 			hbmMapping.import = existingImports.Concat(new [] { hbmImport }).ToArray();
 		}

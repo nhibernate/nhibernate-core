@@ -12,7 +12,7 @@ namespace NHibernate.Test.SessionBuilder
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings => new[] { "SessionBuilder.Mappings.hbm.xml" };
+		protected override string[] Mappings => new[] { "SessionBuilder.Mappings.hbm.xml" };
 
 		protected override void Configure(Configuration configuration)
 		{
@@ -47,9 +47,11 @@ namespace NHibernate.Test.SessionBuilder
 		{
 			var sb = Sfi.WithOptions();
 			CanSetAutoJoinTransaction(sb);
+			CanSetAutoJoinTransactionOnStateless(Sfi.WithStatelessOptions());
 			using (var s = sb.OpenSession())
 			{
 				CanSetAutoJoinTransaction(s.SessionWithOptions());
+				CanSetAutoJoinTransactionOnStateless(s.StatelessSessionWithOptions());
 			}
 		}
 
@@ -64,21 +66,16 @@ namespace NHibernate.Test.SessionBuilder
 				false, true);
 		}
 
-		[Test]
-		public void CanSetAutoJoinTransactionOnStateless()
+		private void CanSetAutoJoinTransactionOnStateless<T>(T sb) where T : IStatelessSessionBuilder
 		{
-			var sb = Sfi.WithStatelessOptions();
-
-			var sbType = sb.GetType().Name;
 			var options = DebugSessionFactory.GetCreationOptions(sb);
-			Assert.That(options.ShouldAutoJoinTransaction, Is.True, $"{sbType}: Initial value");
-			var fsb = sb.AutoJoinTransaction(false);
-			Assert.That(options.ShouldAutoJoinTransaction, Is.False, $"{sbType}: After call with false");
-			Assert.That(fsb, Is.SameAs(sb), $"{sbType}: Unexpected fluent return after call with false");
-
-			fsb = sb.AutoJoinTransaction(true);
-			Assert.That(options.ShouldAutoJoinTransaction, Is.True, $"{sbType}: After call with true");
-			Assert.That(fsb, Is.SameAs(sb), $"{sbType}: Unexpected fluent return after call with true");
+			CanSetOnStateless(
+				sb, sb.AutoJoinTransaction, () => options.ShouldAutoJoinTransaction,
+				sb is ISharedStatelessSessionBuilder ssb ? ssb.AutoJoinTransaction : default(Func<ISharedStatelessSessionBuilder>),
+				// initial value
+				true,
+				// values
+				false, true);
 		}
 
 		[Test]
@@ -86,9 +83,11 @@ namespace NHibernate.Test.SessionBuilder
 		{
 			var sb = Sfi.WithOptions();
 			CanSetConnection(sb);
+			CanSetConnectionOnStateless(Sfi.WithStatelessOptions());
 			using (var s = sb.OpenSession())
 			{
 				CanSetConnection(s.SessionWithOptions());
+				CanSetConnectionOnStateless(s.StatelessSessionWithOptions());
 			}
 		}
 
@@ -136,10 +135,8 @@ namespace NHibernate.Test.SessionBuilder
 			}
 		}
 
-		[Test]
-		public void CanSetConnectionOnStateless()
+		private void CanSetConnectionOnStateless<T>(T sb) where T : IStatelessSessionBuilder
 		{
-			var sb = Sfi.WithStatelessOptions();
 			var sbType = sb.GetType().Name;
 			var conn = Sfi.ConnectionProvider.GetConnection();
 			try
@@ -150,9 +147,31 @@ namespace NHibernate.Test.SessionBuilder
 				Assert.AreEqual(conn, options.UserSuppliedConnection, $"{sbType}: After call with a connection");
 				Assert.AreEqual(sb, fsb, $"{sbType}: Unexpected fluent return after call with a connection");
 
-				fsb = sb.Connection(null);
-				Assert.IsNull(options.UserSuppliedConnection, $"{sbType}: After call with null");
-				Assert.AreEqual(sb, fsb, $"{sbType}: Unexpected fluent return after call with null");
+				if (sb is ISharedStatelessSessionBuilder ssb)
+				{
+					var sharedOptions = (ISharedSessionCreationOptions)options;
+					Assert.IsFalse(sharedOptions.IsTransactionCoordinatorShared, $"{sbType}: Transaction coordinator shared before sharing");
+					Assert.IsNull(sharedOptions.ConnectionManager, $"{sbType}: Connection manager shared before sharing");
+
+					var fssb = ssb.Connection();
+					// Sharing connection shares the connection manager, not the connection.
+					Assert.IsNull(options.UserSuppliedConnection, $"{sbType}: After call with previous session connection");
+					Assert.IsTrue(sharedOptions.IsTransactionCoordinatorShared, $"{sbType}: Transaction coordinator not shared after sharing");
+					Assert.IsNotNull(sharedOptions.ConnectionManager, $"{sbType}: Connection manager not shared after sharing");
+					Assert.AreEqual(sb, fssb, $"{sbType}: Unexpected fluent return on shared");
+
+					fsb = sb.Connection(null);
+					Assert.IsNull(options.UserSuppliedConnection, $"{sbType}: After call with null");
+					Assert.IsFalse(sharedOptions.IsTransactionCoordinatorShared, $"{sbType}: Transaction coordinator shared after un-sharing");
+					Assert.IsNull(sharedOptions.ConnectionManager, $"{sbType}: Connection manager shared after un-sharing");
+					Assert.AreEqual(sb, fsb, $"{sbType}: Unexpected fluent return after un-sharing");
+				}
+				else
+				{
+					fsb = sb.Connection(null);
+					Assert.IsNull(options.UserSuppliedConnection, $"{sbType}: After call with null");
+					Assert.AreEqual(sb, fsb, $"{sbType}: Unexpected fluent return after call with null");
+				}
 			}
 			finally
 			{
@@ -243,6 +262,26 @@ namespace NHibernate.Test.SessionBuilder
 
 		private void CanSet<T, V>(T sb, Func<V, T> setter, Func<V> getter, Func<ISharedSessionBuilder> shared, V initialValue,
 			params V[] values) where T : ISessionBuilder<T>
+		{
+			var sbType = sb.GetType().Name;
+			Assert.AreEqual(initialValue, getter(), $"{sbType}: Initial value");
+			if (shared != null)
+			{
+				var fssb = shared();
+				Assert.AreEqual(values.Last(), getter(), $"{sbType}: After call with shared setting");
+				Assert.AreEqual(sb, fssb, $"{sbType}: Unexpected fluent return on shared");
+			}
+			foreach (var value in values)
+			{
+				var fsb = setter(value);
+				Assert.AreEqual(value, getter(), $"{sbType}: After call with {value}");
+				Assert.AreEqual(sb, fsb, $"{sbType}: Unexpected fluent return after call with {value}");
+			}
+		}
+
+		private void CanSetOnStateless<T, V>(
+			T sb, Func<V, T> setter, Func<V> getter, Func<ISharedStatelessSessionBuilder> shared, V initialValue,
+			params V[] values) where T : IStatelessSessionBuilder
 		{
 			var sbType = sb.GetType().Name;
 			Assert.AreEqual(initialValue, getter(), $"{sbType}: Initial value");

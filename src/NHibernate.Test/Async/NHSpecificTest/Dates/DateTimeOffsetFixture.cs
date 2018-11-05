@@ -16,6 +16,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
 using NHibernate.Driver;
 using NHibernate.Type;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.Dates
@@ -25,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 	[TestFixture]
 	public class DateTimeOffsetFixtureAsync : FixtureBaseAsync
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "NHSpecificTest.Dates.Mappings.DateTimeOffset.hbm.xml" }; }
 		}

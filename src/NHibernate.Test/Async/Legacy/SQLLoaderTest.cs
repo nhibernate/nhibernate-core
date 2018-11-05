@@ -26,7 +26,7 @@ namespace NHibernate.Test.Legacy
 	[TestFixture]
 	public class SQLLoaderTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
@@ -439,16 +439,16 @@ namespace NHibernate.Test.Legacy
 		}
 
 		[Test]
-		public Task ComponentStarAsync()
+		public async Task ComponentStarAsync()
 		{
-			return ComponentTestAsync("select {comp.*} from Componentizable comp");
+			await (ComponentTestAsync("select {comp.*} from Componentizable comp"));
 		}
 
 		[Test]
-		public Task ComponentNoStarAsync()
+		public async Task ComponentNoStarAsync()
 		{
-			return ComponentTestAsync(
-				"select comp.Id as {comp.id}, comp.nickName as {comp.NickName}, comp.Name as {comp.Component.Name}, comp.SubName as {comp.Component.SubComponent.SubName}, comp.SubName1 as {comp.Component.SubComponent.SubName1} from Componentizable comp");
+			await (ComponentTestAsync(
+				"select comp.Id as {comp.id}, comp.nickName as {comp.NickName}, comp.Name as {comp.Component.Name}, comp.SubName as {comp.Component.SubComponent.SubName}, comp.SubName1 as {comp.Component.SubComponent.SubName1} from Componentizable comp"));
 		}
 
 		private async Task ComponentTestAsync(string sql, CancellationToken cancellationToken = default(CancellationToken))

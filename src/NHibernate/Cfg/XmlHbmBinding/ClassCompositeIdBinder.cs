@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
@@ -8,7 +9,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 	public class ClassCompositeIdBinder : ClassBinder
 	{
 		private Component compositeId;
+		//Since v5.2
+		[Obsolete("Please use constructor that accepts mappings parameter instead.")]
 		public ClassCompositeIdBinder(ClassBinder parent) : base(parent) {}
+		public ClassCompositeIdBinder(Mappings mappings) : base(mappings) {}
 
 		public void BindCompositeId(HbmCompositeId idSchema, PersistentClass rootClass)
 		{
@@ -90,7 +94,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 			}
 
-			foreach (object item in idSchema.Items ?? new object[0])
+			foreach (object item in idSchema.Items ?? System.Array.Empty<object>())
 			{
 				var keyManyToOneSchema = item as HbmKeyManyToOne;
 				var keyPropertySchema = item as HbmKeyProperty;

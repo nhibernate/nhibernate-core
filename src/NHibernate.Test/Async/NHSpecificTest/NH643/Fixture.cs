@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH643
@@ -18,9 +17,9 @@ namespace NHibernate.Test.NHSpecificTest.NH643
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
+		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			get { return "NH643"; }
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		private object parentId;

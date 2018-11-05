@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+#if NETFX
 using System;
 using System.Data.Common;
 using System.Text;
@@ -35,7 +36,7 @@ namespace NHibernate.AdoNet
 				Driver.AdjustCommand(batchUpdate);
 				string lineWithParameters = null;
 				var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
-				if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled)
+				if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled())
 				{
 					lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
 					var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
@@ -45,9 +46,9 @@ namespace NHibernate.AdoNet
 					.Append(":")
 					.AppendLine(lineWithParameters);
 				}
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
-					Log.Debug("Adding to batch:" + lineWithParameters);
+					Log.Debug("Adding to batch:{0}", lineWithParameters);
 				}
 				_currentBatch.Append((System.Data.SqlClient.SqlCommand)batchUpdate);
 
@@ -68,7 +69,7 @@ namespace NHibernate.AdoNet
 			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
-				Log.DebugFormat("Executing batch");
+				Log.Debug("Executing batch");
 				await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
 				await (PrepareAsync(_currentBatch.BatchCommand, cancellationToken)).ConfigureAwait(false);
 				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
@@ -85,7 +86,7 @@ namespace NHibernate.AdoNet
 					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
 				}
 
-				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected);
+				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected, ps);
 			}
 			finally
 			{
@@ -94,3 +95,4 @@ namespace NHibernate.AdoNet
 		}
 	}
 }
+#endif

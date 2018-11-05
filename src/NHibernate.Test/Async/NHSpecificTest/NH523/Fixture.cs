@@ -17,11 +17,6 @@ namespace NHibernate.Test.NHSpecificTest.NH523
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH523"; }
-		}
-
 		[Test]
 		public async Task MergeLazyAsync()
 		{

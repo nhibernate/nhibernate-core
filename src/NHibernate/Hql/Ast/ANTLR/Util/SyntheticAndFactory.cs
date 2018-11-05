@@ -18,7 +18,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	[CLSCompliant(false)]
 	public class SyntheticAndFactory
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SyntheticAndFactory));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SyntheticAndFactory));
 		private readonly HqlSqlWalker _hqlSqlWalker;
 		private IASTNode _filters;
 		private IASTNode _thetaJoins;
@@ -58,7 +58,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				whereFragment = whereFragment.Substring(4);
 			}
 
-			log.Debug("Using unprocessed WHERE-fragment [" + whereFragment +"]");
+			log.Debug("Using unprocessed WHERE-fragment [{0}]", whereFragment);
 
 			SqlFragment fragment = (SqlFragment) Create(HqlSqlWalker.SQL_TOKEN, whereFragment.ToString());
 
@@ -74,7 +74,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			if (hqlSqlWalker.IsFilter())
 			{
 				//if (whereFragment.IndexOfCaseInsensitive("?") >= 0)
-                if (whereFragment.ToString().IndexOf("?") >= 0)
+                if (whereFragment.IndexOfOrdinal("?") >= 0)
                 {
 					IType collectionFilterKeyType = hqlSqlWalker.SessionFactoryHelper
 							.RequireQueryableCollection(hqlSqlWalker.CollectionFilterRole)
@@ -94,7 +94,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 					hqlSqlWalker
 			);
 
-			log.Debug("Using processed WHERE-fragment [" + fragment.Text + "]");
+			log.Debug("Using processed WHERE-fragment [{0}]", fragment.Text);
 
 			// Filter conditions need to be inserted before the HQL where condition and the
 			// theta join node.  This is because org.hibernate.loader.Loader binds the filter parameters first,
@@ -152,7 +152,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			{
 				return;
 			}
-			if (whereFragment.StartsWith("and"))
+			if (whereFragment.StartsWith("and", StringComparison.Ordinal))
 			{
 				whereFragment = whereFragment.Substring(4);
 			}

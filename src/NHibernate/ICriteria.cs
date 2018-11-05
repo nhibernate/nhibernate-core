@@ -125,6 +125,8 @@ namespace NHibernate
 		/// <param name="associationPath">A dot separated property path.</param>
 		/// <param name="mode">The Fetch mode.</param>
 		/// <returns></returns>
+		//Since 5.2
+		[Obsolete("Use Fetch instead")]
 		ICriteria SetFetchMode(string associationPath, FetchMode mode);
 
 		/// <summary>
@@ -246,10 +248,10 @@ namespace NHibernate
 		ICriteria SetFetchSize(int fetchSize);
 
 		/// <summary>
-		/// Set a timeout for the underlying ADO.NET query
+		/// Set a timeout for the underlying ADO.NET query.
 		/// </summary>
-		/// <param name="timeout"></param>
-		/// <returns></returns>
+		/// <param name="timeout">The timeout in seconds.</param>
+		/// <returns><see langword="this" /> (for method chaining).</returns>
 		ICriteria SetTimeout(int timeout);
 
 		/// <summary>

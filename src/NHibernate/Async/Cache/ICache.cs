@@ -8,6 +8,8 @@
 //------------------------------------------------------------------------------
 
 
+using System;
+
 namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;

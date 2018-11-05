@@ -599,4 +599,25 @@ namespace NHibernate.Persister.Entity
 
 		IEntityTuplizer EntityTuplizer { get; }
 	}
+
+	internal static class EntityPersisterExtensions
+	{
+		/// <summary>
+		/// Get the batch size of a entity persister.
+		/// </summary>
+		//6.0 TODO: Merge into IEntityPersister.
+		public static int GetBatchSize(this IEntityPersister persister)
+		{
+			if (persister is AbstractEntityPersister acp)
+			{
+				return acp.BatchSize;
+			}
+
+			NHibernateLogger
+				.For(typeof(EntityPersisterExtensions))
+				.Warn("Entity persister of {0} type is not supported, returning 1 as a batch size.", persister?.GetType());
+
+			return 1;
+		}
+	}
 }

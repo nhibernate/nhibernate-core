@@ -11,7 +11,7 @@ namespace NHibernate.Tuple.Entity
 {
 	public class DynamicMapEntityTuplizer : AbstractEntityTuplizer
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(PocoEntityTuplizer));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(PocoEntityTuplizer));
 
 		internal DynamicMapEntityTuplizer(EntityMetamodel entityMetamodel, PersistentClass mappingInfo)
 			: base(entityMetamodel, mappingInfo)
@@ -57,7 +57,7 @@ namespace NHibernate.Tuple.Entity
 
 		protected override IInstantiator BuildInstantiator(PersistentClass mappingInfo)
 		{
-			return new DynamicMapInstantiator(mappingInfo);
+			return new DynamicEntityInstantiator(mappingInfo);
 		}
 
 		protected override IProxyFactory BuildProxyFactory(PersistentClass mappingInfo, IGetter idGetter,
@@ -71,7 +71,7 @@ namespace NHibernate.Tuple.Entity
 			}
 			catch (HibernateException he)
 			{
-				log.Warn("could not create proxy factory for:" + EntityName, he);
+				log.Warn(he, "could not create proxy factory for:{0}", EntityName);
 				pf = null;
 			}
 			return pf;

@@ -15,7 +15,7 @@ namespace NHibernate.Stat
 	{
 		private object _syncRoot;
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(StatisticsImpl));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(StatisticsImpl));
 		private readonly ISessionFactoryImplementor sessionFactory;
 		private long entityDeleteCount;
 		private long entityInsertCount;
@@ -396,7 +396,7 @@ namespace NHibernate.Stat
 				{
 					if (sessionFactory == null)
 						return null;
-					ICache cache = sessionFactory.GetSecondLevelCacheRegion(regionName);
+					var cache = sessionFactory.GetSecondLevelCacheRegion(regionName);
 					if (cache == null)
 						return null;
 					slcs = new SecondLevelCacheStatistics(cache);
@@ -424,34 +424,34 @@ namespace NHibernate.Stat
 		public void LogSummary()
 		{
 			log.Info("Logging statistics....");
-			log.Info(string.Format("start time: {0}", startTime.ToString("o")));
-			log.Info("sessions opened: " + sessionOpenCount);
-			log.Info("sessions closed: " + sessionCloseCount);
-			log.Info("transactions: " + transactionCount);
-			log.Info("successful transactions: " + commitedTransactionCount);
-			log.Info("optimistic lock failures: " + optimisticFailureCount);
-			log.Info("flushes: " + flushCount);
-			log.Info("connections obtained: " + connectCount);
-			log.Info("statements prepared: " + prepareStatementCount);
-			log.Info("statements closed: " + closeStatementCount);
-			log.Info("second level cache puts: " + secondLevelCachePutCount);
-			log.Info("second level cache hits: " + secondLevelCacheHitCount);
-			log.Info("second level cache misses: " + secondLevelCacheMissCount);
-			log.Info("entities loaded: " + entityLoadCount);
-			log.Info("entities updated: " + entityUpdateCount);
-			log.Info("entities inserted: " + entityInsertCount);
-			log.Info("entities deleted: " + entityDeleteCount);
-			log.Info("entities fetched (minimize this): " + entityFetchCount);
-			log.Info("collections loaded: " + collectionLoadCount);
-			log.Info("collections updated: " + collectionUpdateCount);
-			log.Info("collections removed: " + collectionRemoveCount);
-			log.Info("collections recreated: " + collectionRecreateCount);
-			log.Info("collections fetched (minimize this): " + collectionFetchCount);
-			log.Info("queries executed to database: " + queryExecutionCount);
-			log.Info("query cache puts: " + queryCachePutCount);
-			log.Info("query cache hits: " + queryCacheHitCount);
-			log.Info("query cache misses: " + queryCacheMissCount);
-			log.Info("max query time: " + queryExecutionMaxTime.TotalMilliseconds.ToString("0") + " ms");
+			log.Info("start time: {0:o}", startTime);
+			log.Info("sessions opened: {0}", sessionOpenCount);
+			log.Info("sessions closed: {0}", sessionCloseCount);
+			log.Info("transactions: {0}", transactionCount);
+			log.Info("successful transactions: {0}", commitedTransactionCount);
+			log.Info("optimistic lock failures: {0}", optimisticFailureCount);
+			log.Info("flushes: {0}", flushCount);
+			log.Info("connections obtained: {0}", connectCount);
+			log.Info("statements prepared: {0}", prepareStatementCount);
+			log.Info("statements closed: {0}", closeStatementCount);
+			log.Info("second level cache puts: {0}", secondLevelCachePutCount);
+			log.Info("second level cache hits: {0}", secondLevelCacheHitCount);
+			log.Info("second level cache misses: {0}", secondLevelCacheMissCount);
+			log.Info("entities loaded: {0}", entityLoadCount);
+			log.Info("entities updated: {0}", entityUpdateCount);
+			log.Info("entities inserted: {0}", entityInsertCount);
+			log.Info("entities deleted: {0}", entityDeleteCount);
+			log.Info("entities fetched (minimize this): {0}", entityFetchCount);
+			log.Info("collections loaded: {0}", collectionLoadCount);
+			log.Info("collections updated: {0}", collectionUpdateCount);
+			log.Info("collections removed: {0}", collectionRemoveCount);
+			log.Info("collections recreated: {0}", collectionRecreateCount);
+			log.Info("collections fetched (minimize this): {0}", collectionFetchCount);
+			log.Info("queries executed to database: {0}", queryExecutionCount);
+			log.Info("query cache puts: {0}", queryCachePutCount);
+			log.Info("query cache hits: {0}", queryCacheHitCount);
+			log.Info("query cache misses: {0}", queryCacheMissCount);
+			log.Info("max query time: {0:0} ms", queryExecutionMaxTime.TotalMilliseconds);
 		}
 
 		public TimeSpan OperationThreshold
@@ -800,7 +800,7 @@ namespace NHibernate.Stat
 		private static void LogOperation(string operation, string entityName, TimeSpan time)
 		{
 			if (entityName != null)
-				log.Info(operation + entityName + " " + time.Milliseconds + "ms");
+				log.Info("{0}{1} {2}ms", operation, entityName, time.Milliseconds);
 			else
 				log.Info(operation); // just log that the event occurred
 		}

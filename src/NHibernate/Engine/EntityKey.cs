@@ -62,6 +62,11 @@ namespace NHibernate.Engine
 			get { return entityName; }
 		}
 
+		internal string RootEntityName
+		{
+			get { return rootEntityName; }
+		}
+
 		public override bool Equals(object other)
 		{
 			var otherKey = other as EntityKey;

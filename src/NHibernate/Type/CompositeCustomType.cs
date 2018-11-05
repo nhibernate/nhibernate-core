@@ -28,7 +28,7 @@ namespace NHibernate.Type
 
 			try
 			{
-				userType = (ICompositeUserType) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(userTypeClass);
+				userType = (ICompositeUserType) Cfg.Environment.ObjectsFactory.CreateInstance(userTypeClass);
 			}
 			catch (MethodAccessException mae)
 			{
@@ -49,7 +49,7 @@ namespace NHibernate.Type
 			TypeFactory.InjectParameters(userType, parameters);
 			if (!userType.ReturnedClass.IsSerializable)
 			{
-				LoggerProvider.LoggerFor(typeof(CustomType)).WarnFormat("the custom composite class '{0}' handled by '{1}' is not Serializable: ", userType.ReturnedClass, userTypeClass);
+				NHibernateLogger.For(typeof(CustomType)).Warn("the custom composite class '{0}' handled by '{1}' is not Serializable: ", userType.ReturnedClass, userTypeClass);
 			}
 
 			// This is to be nice to an application developer.

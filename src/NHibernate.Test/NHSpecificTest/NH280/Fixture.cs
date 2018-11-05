@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH280
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "NHSpecificTest.NH280.Foo.hbm.xml" }; }
 		}
@@ -26,16 +26,21 @@ namespace NHibernate.Test.NHSpecificTest.NH280
 				s.Save(f);
 				s.Flush();
 
-				IList l = s.CreateQuery("select 'TextConst', 123, 123.5, .5 from Foo").List();
-				IList result = l[0] as IList;
-				Assert.AreEqual(typeof(string), result[0].GetType());
-				Assert.AreEqual(typeof(Int32), result[1].GetType());
-				Assert.AreEqual(typeof(Double), result[2].GetType());
-				Assert.AreEqual(typeof(Double), result[3].GetType());
-				Assert.AreEqual("TextConst", result[0]);
-				Assert.AreEqual(123, result[1]);
-				Assert.AreEqual(123.5D, result[2]);
-				Assert.AreEqual(0.5D, result[3]);
+				IList l;
+				IList result;
+				if (TestDialect.SupportsSelectingDoubleLiteral)
+				{
+					l = s.CreateQuery("select 'TextConst', 123, 123.5, .5 from Foo").List();
+					result = l[0] as IList;
+					Assert.AreEqual(typeof(string), result[0].GetType());
+					Assert.AreEqual(typeof(Int32), result[1].GetType());
+					Assert.AreEqual(typeof(Double), result[2].GetType());
+					Assert.AreEqual(typeof(Double), result[3].GetType());
+					Assert.AreEqual("TextConst", result[0]);
+					Assert.AreEqual(123, result[1]);
+					Assert.AreEqual(123.5D, result[2]);
+					Assert.AreEqual(0.5D, result[3]);
+				}
 
 				l = s.CreateQuery("select 123, f from Foo f").List();
 				result = l[0] as IList;

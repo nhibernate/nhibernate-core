@@ -52,13 +52,13 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			public virtual Intermediate Intermediate { get; set; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
 				// We can perform these tests without
 				// creating a data schema
-				return new string[0];
+				return Array.Empty<string>();
 			}
 		}
 

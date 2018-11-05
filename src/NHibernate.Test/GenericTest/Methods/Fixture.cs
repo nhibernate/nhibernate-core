@@ -9,7 +9,7 @@ namespace NHibernate.Test.GenericTest.Methods
 	[TestFixture]
 	public class Fixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

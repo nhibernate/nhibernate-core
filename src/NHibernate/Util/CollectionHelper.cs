@@ -214,6 +214,12 @@ namespace NHibernate.Util
 
 		public static readonly IEnumerable EmptyEnumerable = new EmptyEnumerableClass();
 		public static readonly IDictionary EmptyMap = new EmptyMapClass();
+
+		public static IDictionary<TKey, TValue> EmptyDictionary<TKey, TValue>()
+		{
+			return EmptyMapClass<TKey, TValue>.Instance;
+		}
+
 		public static readonly ICollection EmptyCollection = EmptyMap;
 		// Since v5
 		[Obsolete("It has no more usages in NHibernate and will be removed in a future version.")]
@@ -299,27 +305,26 @@ namespace NHibernate.Util
 		/// <summary>
 		/// Computes a hash code for <paramref name="coll"/>.
 		/// </summary>
-		/// <remarks>The hash code is computed as the sum of hash codes of
-		/// individual elements, so that the value is independent of the
+		/// <remarks>The hash code is computed as the sum of hash codes of individual elements
+		/// plus a length of the collection, so that the value is independent of the
 		/// collection iteration order.
 		/// </remarks>
 		[Obsolete("It has no more usages in NHibernate and will be removed in a future version.")]
 		public static int GetHashCode(IEnumerable coll)
 		{
-			unchecked
-			{
-				int result = 0;
+			var result = 0;
 
-				foreach (object obj in coll)
+			foreach (var obj in coll)
+			{
+				unchecked
 				{
 					if (obj != null)
-					{
 						result += obj.GetHashCode();
-					}
+					result++;
 				}
-
-				return result;
 			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -463,7 +468,17 @@ namespace NHibernate.Util
 		[Serializable]
 		public class EmptyMapClass<TKey, TValue> : IDictionary<TKey, TValue>
 		{
+#pragma warning disable 618 // Constructor is obsolete, to be switched to non-obsolete but private.
+			internal static readonly IDictionary<TKey, TValue> Instance = new EmptyMapClass<TKey, TValue>();
+#pragma warning restore 618
+
 			private static readonly EmptyEnumerator<TKey, TValue> emptyEnumerator = new EmptyEnumerator<TKey, TValue>();
+
+			// Since v5.1. To be switched to private.
+			[Obsolete("Please use CollectionHelper.EmptyDictionary<TKey, TValue>() instead.")]
+			public EmptyMapClass()
+			{
+			}
 
 			#region IDictionary<TKey,TValue> Members
 
@@ -496,12 +511,12 @@ namespace NHibernate.Util
 
 			public ICollection<TKey> Keys
 			{
-				get { return new List<TKey>(); }
+				get { return Array.Empty<TKey>(); }
 			}
 
 			public ICollection<TValue> Values
 			{
-				get { return new List<TValue>(); }
+				get { return Array.Empty<TValue>(); }
 			}
 
 			#endregion
@@ -566,24 +581,49 @@ namespace NHibernate.Util
 		/// <summary>
 		/// Computes a hash code for <paramref name="coll"/>.
 		/// </summary>
-		/// <remarks>The hash code is computed as the sum of hash codes of
-		/// individual elements, so that the value is independent of the
+		/// <remarks>The hash code is computed as the sum of hash codes of individual elements
+		/// plus a length of the collection, so that the value is independent of the
 		/// collection iteration order.
 		/// </remarks>
 		public static int GetHashCode<T>(IEnumerable<T> coll)
 		{
-			unchecked
+			var result = 0;
+
+			foreach (var obj in coll)
 			{
-				int result = 0;
-
-				foreach (T obj in coll)
+				unchecked
 				{
-					if (!obj.Equals(default(T)))
+					if (!ReferenceEquals(obj, null))
 						result += obj.GetHashCode();
+					result++;
 				}
-
-				return result;
 			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Computes a hash code for <paramref name="coll"/>.
+		/// </summary>
+		/// <remarks>The hash code is computed as the sum of hash codes of individual elements
+		/// plus a length of the collection, so that the value is independent of the
+		/// collection iteration order.
+		/// </remarks>
+		public static int GetHashCode<T>(IEnumerable<T> coll, IEqualityComparer<T> comparer)
+		{
+			var result = 0;
+
+			foreach (var obj in coll)
+			{
+				unchecked
+				{
+					if (!ReferenceEquals(obj, null))
+						result += comparer.GetHashCode(obj);
+					result++;
+				}
+			}
+
+			return result;
 		}
 
 		/// <summary>

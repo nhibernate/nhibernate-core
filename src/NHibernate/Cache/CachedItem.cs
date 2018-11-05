@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Runtime.Serialization;
 
 namespace NHibernate.Cache
 {
@@ -8,33 +9,67 @@ namespace NHibernate.Cache
 	/// when it was unlocked
 	/// </summary>
 	[Serializable]
+	[DataContract]
 	public class CachedItem : ReadWriteCache.ILockable
 	{
-		private readonly long freshTimestamp;
-		private readonly object value;
-		private readonly object version;
+		private long freshTimestamp;
+		private object value;
+		private object version;
 
+		public CachedItem()
+		{
+		}
+
+		// Since 5.2
+		[Obsolete("Use object initializer instead.")]
 		public CachedItem(object value, long currentTimestamp, object version)
 		{
-			this.value = value;
-			freshTimestamp = currentTimestamp;
-			this.version = version;
+			Value = value;
+			FreshTimestamp = currentTimestamp;
+			Version = version;
+		}
+
+		internal static CachedItem Create(object value, long currentTimestamp, object version)
+		{
+			return new CachedItem
+			{
+				Version = version,
+				FreshTimestamp = currentTimestamp,
+				Value = value
+			};
 		}
 
 		/// <summary>
 		/// The timestamp on the cached data
 		/// </summary>
+		// 6.0 TODO convert to auto-property
+		[DataMember]
 		public long FreshTimestamp
 		{
-			get { return freshTimestamp; }
+			get => freshTimestamp;
+			set => freshTimestamp = value;
 		}
 
 		/// <summary>
 		/// The actual cached data
 		/// </summary>
+		// 6.0 TODO convert to auto-property
+		[DataMember]
 		public object Value
 		{
-			get { return value; }
+			get => value;
+			set => this.value = value;
+		}
+
+		/// <summary>
+		/// The version of the cached data
+		/// </summary>
+		// 6.0 TODO convert to auto-property
+		[DataMember]
+		public object Version
+		{
+			get => version;
+			set => version = value;
 		}
 
 		/// <summary>
@@ -42,7 +77,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public CacheLock Lock(long timeout, int id)
 		{
-			return new CacheLock(timeout, id, version);
+			return CacheLock.Create(timeout, id, Version);
 		}
 
 		/// <summary>
@@ -60,7 +95,7 @@ namespace NHibernate.Cache
 		/// <returns></returns>
 		public bool IsGettable(long txTimestamp)
 		{
-			return freshTimestamp < txTimestamp;
+			return FreshTimestamp < txTimestamp;
 		}
 
 		/// <summary>
@@ -75,13 +110,13 @@ namespace NHibernate.Cache
 			// we really could refresh the item if it  
 			// is not a lock, but it might be slower
 			//return freshTimestamp < txTimestamp
-			return version != null && comparator.Compare(version, newVersion) < 0;
+			return Version != null && comparator.Compare(Version, newVersion) < 0;
 		}
 
 		public override string ToString()
 		{
-			return "Item{version=" + version +
-			       ",freshTimestamp=" + freshTimestamp +
+			return "Item{version=" + Version +
+			       ",freshTimestamp=" + FreshTimestamp +
 			       "}";
 		}
 	}

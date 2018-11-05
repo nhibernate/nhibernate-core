@@ -7,6 +7,11 @@ namespace NHibernate.Test.NHSpecificTest.NH830
 	[TestFixture]
 	public class AutoFlushTestFixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
+
 		[Test]
 		public void AutoFlushTest()
 		{

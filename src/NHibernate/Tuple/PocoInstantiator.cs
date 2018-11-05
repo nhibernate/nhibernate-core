@@ -13,7 +13,7 @@ namespace NHibernate.Tuple
 	[Serializable]
 	public class PocoInstantiator : IInstantiator, IDeserializationCallback
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(PocoInstantiator));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(PocoInstantiator));
 
 		private readonly System.Type mappedClass;
 
@@ -49,7 +49,7 @@ namespace NHibernate.Tuple
 			}
 			catch (PropertyNotFoundException)
 			{
-				log.Info(string.Format("no default (no-argument) constructor for class: {0} (class must be instantiated by Interceptor)", mappedClass.FullName));
+				log.Info("no default (no-argument) constructor for class: {0} (class must be instantiated by Interceptor)", mappedClass.FullName);
 				constructor = null;
 			}
 		}
@@ -69,7 +69,7 @@ namespace NHibernate.Tuple
 			}
 			catch (PropertyNotFoundException)
 			{
-				log.Info(string.Format("no default (no-argument) constructor for class: {0} (class must be instantiated by Interceptor)", mappedClass.FullName));
+				log.Info("no default (no-argument) constructor for class: {0} (class must be instantiated by Interceptor)", mappedClass.FullName);
 				constructor = null;
 			}
 		}
@@ -103,7 +103,7 @@ namespace NHibernate.Tuple
 			}
 			if (mappedClass.IsValueType)
 			{
-				return Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(mappedClass, true);
+				return Activator.CreateInstance(mappedClass, true);
 			}
 			if (constructor == null)
 			{

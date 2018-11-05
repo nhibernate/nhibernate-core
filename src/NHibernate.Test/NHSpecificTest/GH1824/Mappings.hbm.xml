@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH1824">
+
+  <class name="Foo">
+    <id type="int" name="Id">
+      <column name="Id"/>
+      <generator class="native"/>
+    </id>
+
+    <dynamic-component name="MyProps">
+      <many-to-one name="DynPointer" class="Bar" property-ref="MyProps.DynValString2"/>
+    </dynamic-component>
+
+    <component name="StaticProps">
+      <many-to-one name="StaticPointer" class="Bar" property-ref="StaticProps.StaticValString2"/>
+    </component>
+  </class>
+
+  <class name="Bar">
+    <id type="int" name="Id">
+      <column name="Id"/>
+      <generator class="native"/>
+    </id>
+    <dynamic-component name="MyProps">
+      <property name="DynValString2" type="string" unique="1"/>
+      <property name="AnotherProperty" type="string" />
+    </dynamic-component>
+    <component name="StaticProps">
+      <property name="StaticValString2" type="string" unique="1"/>
+      <property name="YetAnotherProperty" type="string" />
+    </component>
+  </class>
+</hibernate-mapping>

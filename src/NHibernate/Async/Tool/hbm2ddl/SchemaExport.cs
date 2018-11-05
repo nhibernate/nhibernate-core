@@ -37,7 +37,6 @@ namespace NHibernate.Tool.hbm2ddl
 			dialect = Dialect.Dialect.GetDialect(configProperties);
 
 			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, configProperties, "not-defined");
-			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
 			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
 			{
 				await (SchemaMetadataUpdater.UpdateAsync(cfg, dialect, cancellationToken)).ConfigureAwait(false);
@@ -145,11 +144,10 @@ namespace NHibernate.Tool.hbm2ddl
 			return ExecuteAsync(null, execute, true, exportOutput, cancellationToken);
 		}
 
-		private async Task ExecuteAsync(Action<string> scriptAction, bool execute, bool throwOnError, TextWriter exportOutput,
+		private async Task ExecuteInitializedAsync(Action<string> scriptAction, bool execute, bool throwOnError, TextWriter exportOutput,
 							 DbCommand statement, string sql, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			await (InitializeAsync(cancellationToken)).ConfigureAwait(false);
 			try
 			{
 				string formatted = formatter.Format(sql);
@@ -172,10 +170,10 @@ namespace NHibernate.Tool.hbm2ddl
 					await (ExecuteSqlAsync(statement, sql, cancellationToken)).ConfigureAwait(false);
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
-				log.Warn("Unsuccessful: " + sql);
-				log.Warn(e.Message);
+				log.Warn(e, "Unsuccessful: {0}", sql);
 				if (throwOnError)
 				{
 					throw;
@@ -188,12 +186,9 @@ namespace NHibernate.Tool.hbm2ddl
 			cancellationToken.ThrowIfCancellationRequested();
 			if (dialect.SupportsSqlBatches)
 			{
-				var objFactory = Environment.BytecodeProvider.ObjectsFactory;
-				ScriptSplitter splitter = (ScriptSplitter)objFactory.CreateInstance(typeof(ScriptSplitter), sql);
-
-				foreach (string stmt in splitter)
+				foreach (var stmt in new ScriptSplitter(sql))
 				{
-					log.DebugFormat("SQL Batch: {0}", stmt);
+					log.Debug("SQL Batch: {0}", stmt);
 					cmd.CommandText = stmt;
 					cmd.CommandType = CommandType.Text;
 					await (cmd.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
@@ -268,14 +263,14 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				for (int i = 0; i < dropSQL.Length; i++)
 				{
-					await (ExecuteAsync(scriptAction, execute, false, exportOutput, statement, dropSQL[i], cancellationToken)).ConfigureAwait(false);
+					await (ExecuteInitializedAsync(scriptAction, execute, false, exportOutput, statement, dropSQL[i], cancellationToken)).ConfigureAwait(false);
 				}
 
 				if (!justDrop)
 				{
 					for (int j = 0; j < createSQL.Length; j++)
 					{
-						await (ExecuteAsync(scriptAction, execute, true, exportOutput, statement, createSQL[j], cancellationToken)).ConfigureAwait(false);
+						await (ExecuteInitializedAsync(scriptAction, execute, true, exportOutput, statement, createSQL[j], cancellationToken)).ConfigureAwait(false);
 					}
 				}
 			}
@@ -290,7 +285,7 @@ namespace NHibernate.Tool.hbm2ddl
 				}
 				catch (Exception e)
 				{
-					log.Error("Could not close connection: " + e.Message, e);
+					log.Error(e, "Could not close connection: {0}", e.Message);
 				}
 				if (exportOutput != null)
 				{
@@ -300,7 +295,7 @@ namespace NHibernate.Tool.hbm2ddl
 					}
 					catch (Exception ioe)
 					{
-						log.Error("Error closing output file " + outputFile + ": " + ioe.Message, ioe);
+						log.Error(ioe, "Error closing output file {0}: {1}", outputFile, ioe.Message);
 					}
 				}
 			}
@@ -387,6 +382,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 				await (ExecuteAsync(scriptAction, execute, justDrop, connection, fileOutput, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				// So that we don't wrap HibernateExceptions in HibernateExceptions
@@ -394,7 +390,7 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 			catch (Exception e)
 			{
-				log.Error(e.Message, e);
+				log.Error(e, e.Message);
 				throw new HibernateException(e.Message, e);
 			}
 			finally

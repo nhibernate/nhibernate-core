@@ -7,6 +7,11 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 	[TestFixture]
 	public class DynamicEntityTest : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsFKOnCompositeKeyWithBoolean;
+		}
+
 		protected override void OnSetUp()
 		{
 			using (var s = OpenSession())

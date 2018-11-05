@@ -19,7 +19,7 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 	[TestFixture]
 	public class MultipleListFetchFixtureAsync : AbstractMultipleCollectionFetchFixtureAsync
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "MultipleCollectionFetchTest.PersonList.hbm.xml" }; }
 		}

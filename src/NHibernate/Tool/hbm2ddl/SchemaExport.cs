@@ -21,7 +21,7 @@ namespace NHibernate.Tool.hbm2ddl
 	/// </remarks>
 	public partial class SchemaExport
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (SchemaExport));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (SchemaExport));
 		private bool wasInitialized;
 		private readonly Configuration cfg;
 		private readonly IDictionary<string, string> configProperties;
@@ -59,7 +59,6 @@ namespace NHibernate.Tool.hbm2ddl
 			dialect = Dialect.Dialect.GetDialect(configProperties);
 
 			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, configProperties, "not-defined");
-			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
 			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
 			{
 				SchemaMetadataUpdater.Update(cfg, dialect);
@@ -164,10 +163,9 @@ namespace NHibernate.Tool.hbm2ddl
 			Execute(null, execute, true, exportOutput);
 		}
 
-		private void Execute(Action<string> scriptAction, bool execute, bool throwOnError, TextWriter exportOutput,
+		private void ExecuteInitialized(Action<string> scriptAction, bool execute, bool throwOnError, TextWriter exportOutput,
 							 DbCommand statement, string sql)
 		{
-			Initialize();
 			try
 			{
 				string formatted = formatter.Format(sql);
@@ -192,8 +190,7 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 			catch (Exception e)
 			{
-				log.Warn("Unsuccessful: " + sql);
-				log.Warn(e.Message);
+				log.Warn(e, "Unsuccessful: {0}", sql);
 				if (throwOnError)
 				{
 					throw;
@@ -205,12 +202,9 @@ namespace NHibernate.Tool.hbm2ddl
 		{
 			if (dialect.SupportsSqlBatches)
 			{
-				var objFactory = Environment.BytecodeProvider.ObjectsFactory;
-				ScriptSplitter splitter = (ScriptSplitter)objFactory.CreateInstance(typeof(ScriptSplitter), sql);
-
-				foreach (string stmt in splitter)
+				foreach (var stmt in new ScriptSplitter(sql))
 				{
-					log.DebugFormat("SQL Batch: {0}", stmt);
+					log.Debug("SQL Batch: {0}", stmt);
 					cmd.CommandText = stmt;
 					cmd.CommandType = CommandType.Text;
 					cmd.ExecuteNonQuery();
@@ -272,14 +266,14 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				for (int i = 0; i < dropSQL.Length; i++)
 				{
-					Execute(scriptAction, execute, false, exportOutput, statement, dropSQL[i]);
+					ExecuteInitialized(scriptAction, execute, false, exportOutput, statement, dropSQL[i]);
 				}
 
 				if (!justDrop)
 				{
 					for (int j = 0; j < createSQL.Length; j++)
 					{
-						Execute(scriptAction, execute, true, exportOutput, statement, createSQL[j]);
+						ExecuteInitialized(scriptAction, execute, true, exportOutput, statement, createSQL[j]);
 					}
 				}
 			}
@@ -294,7 +288,7 @@ namespace NHibernate.Tool.hbm2ddl
 				}
 				catch (Exception e)
 				{
-					log.Error("Could not close connection: " + e.Message, e);
+					log.Error(e, "Could not close connection: {0}", e.Message);
 				}
 				if (exportOutput != null)
 				{
@@ -304,7 +298,7 @@ namespace NHibernate.Tool.hbm2ddl
 					}
 					catch (Exception ioe)
 					{
-						log.Error("Error closing output file " + outputFile + ": " + ioe.Message, ioe);
+						log.Error(ioe, "Error closing output file {0}: {1}", outputFile, ioe.Message);
 					}
 				}
 			}
@@ -381,7 +375,7 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 			catch (Exception e)
 			{
-				log.Error(e.Message, e);
+				log.Error(e, e.Message);
 				throw new HibernateException(e.Message, e);
 			}
 			finally

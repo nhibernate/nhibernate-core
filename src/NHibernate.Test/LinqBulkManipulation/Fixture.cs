@@ -14,7 +14,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 	[TestFixture]
 	public class Fixture : TestCase
 	{
-		protected override IList Mappings => new string[0];
+		protected override string[] Mappings => Array.Empty<string>();
 
 		protected override void Configure(Cfg.Configuration configuration)
 		{
@@ -998,7 +998,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var t = s.BeginTransaction())
 			{
 				// Get rid of FK which may fail the test
-				_doll.Friends = new Human[0];
+				_doll.Friends = Array.Empty<Human>();
 				s.Update(_doll);
 				t.Commit();
 			}
@@ -1057,7 +1057,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var t = s.BeginTransaction())
 			{
 				// Get rid of FK which may fail the test
-				_doll.Friends = new Human[0];
+				_doll.Friends = Array.Empty<Human>();
 				s.Update(_doll);
 				t.Commit();
 			}

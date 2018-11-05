@@ -63,7 +63,7 @@ namespace NHibernate.Id.Enhanced
 	/// </remarks>
 	public partial class SequenceStyleGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(SequenceStyleGenerator));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(SequenceStyleGenerator));
 
 		public const string DefaultSequenceName = "hibernate_sequence";
 		public const int DefaultInitialValue = 1;
@@ -194,7 +194,8 @@ namespace NHibernate.Id.Enhanced
 		{
 			if (OptimizerFactory.None.Equals(optimizationStrategy) && incrementSize > 1)
 			{
-				Log.Warn("config specified explicit optimizer of [" + OptimizerFactory.None + "], but [" + IncrementParam + "=" + incrementSize + "; honoring optimizer setting");
+				Log.Warn("config specified explicit optimizer of [{0}], but [{1}={2}; honoring optimizer setting", 
+					OptimizerFactory.None, IncrementParam, incrementSize);
 				incrementSize = 1;
 			}
 			return incrementSize;

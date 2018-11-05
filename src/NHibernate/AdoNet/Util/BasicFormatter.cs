@@ -430,7 +430,7 @@ namespace NHibernate.AdoNet.Util
 
 			private static bool IsWhitespace(string token)
 			{
-				return StringHelper.WhiteSpace.IndexOf(token) >= 0;
+				return StringHelper.WhiteSpace.IndexOf(token, StringComparison.Ordinal) >= 0;
 			}
 
 			private void Newline()

@@ -46,9 +46,9 @@ namespace NHibernate.Id.Enhanced
 						{
 							await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false);
 							long result = Convert.ToInt64(rs.GetValue(0));
-							if (Log.IsDebugEnabled)
+							if (Log.IsDebugEnabled())
 							{
-								Log.Debug("Sequence value obtained: " + result);
+								Log.Debug("Sequence value obtained: {0}", result);
 							}
 							return result;
 						}

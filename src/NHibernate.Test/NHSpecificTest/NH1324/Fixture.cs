@@ -6,12 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1324
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1324"; }
-		}
-
-
 		[Test]
 		public void CanUseUniqueResultWithNullableType_ReturnNull_Criteria()
 		{

@@ -17,7 +17,7 @@ namespace NHibernate.Transaction
 	/// </summary>
 	public partial class AdoNetWithSystemTransactionFactory : AdoNetTransactionFactory
 	{
-		private static readonly IInternalLogger _logger = LoggerProvider.LoggerFor(typeof(ITransactionFactory));
+		private static readonly INHibernateLogger _logger = NHibernateLogger.For(typeof(ITransactionFactory));
 
 		/// <summary>
 		/// See <see cref="Cfg.Environment.SystemTransactionCompletionLockTimeout"/>.
@@ -100,7 +100,7 @@ namespace NHibernate.Transaction
 			var transactionContext = CreateAndEnlistMainContext(originatingSession, transaction);
 			originatingSession.TransactionContext = transactionContext;
 
-			_logger.DebugFormat(
+			_logger.Debug(
 				"Enlisted into system transaction: {0}",
 				transaction.IsolationLevel);
 
@@ -187,7 +187,7 @@ namespace NHibernate.Transaction
 			private readonly ManualResetEventSlim _lock = new ManualResetEventSlim(true);
 			private volatile bool _needCompletionLocking = true;
 			// Required for not locking the completion phase itself when locking session usages from concurrent threads.
-			private readonly AsyncLocal<bool> _bypassLock = new AsyncLocal<bool>();
+			private static readonly AsyncLocal<bool> _bypassLock = new AsyncLocal<bool>();
 			private readonly int _systemTransactionCompletionLockTimeout;
 
 			/// <summary>
@@ -245,8 +245,8 @@ namespace NHibernate.Transaction
 				catch (Exception ex)
 				{
 					_logger.Warn(
-						"Synchronization failure, assuming it has been concurrently disposed and does not need sync anymore.",
-						ex);
+						ex,
+						"Synchronization failure, assuming it has been concurrently disposed and does not need sync anymore.");
 				}
 			}
 
@@ -269,6 +269,7 @@ namespace NHibernate.Transaction
 			protected virtual void Unlock()
 			{
 				_lock.Set();
+				_bypassLock.Value = false;
 			}
 
 			/// <summary>
@@ -293,7 +294,7 @@ namespace NHibernate.Transaction
 				}
 				catch (ObjectDisposedException ode)
 				{
-					_logger.Warn("Enlisted transaction status was wrongly active, original transaction being already disposed. Will assume neither active nor committed.", ode);
+					_logger.Warn(ode, "Enlisted transaction status was wrongly active, original transaction being already disposed. Will assume neither active nor committed.");
 					return null;
 				}
 			}
@@ -309,7 +310,7 @@ namespace NHibernate.Transaction
 			/// <param name="preparingEnlistment">The object for notifying the prepare phase outcome.</param>
 			public virtual void Prepare(PreparingEnlistment preparingEnlistment)
 			{
-				using (new SessionIdLoggingContext(_session.SessionId))
+				using (_session.BeginContext())
 				{
 					try
 					{
@@ -346,7 +347,7 @@ namespace NHibernate.Transaction
 					}
 					catch (Exception exception)
 					{
-						_logger.Error("System transaction prepare phase failed", exception);
+						_logger.Error(exception, "System transaction prepare phase failed");
 						try
 						{
 							CompleteTransaction(false);
@@ -378,7 +379,7 @@ namespace NHibernate.Transaction
 			/// callback, <see langword="null"/> if this is an in-doubt callback.</param>
 			protected virtual void ProcessSecondPhase(Enlistment enlistment, bool? success)
 			{
-				using (new SessionIdLoggingContext(_session.SessionId))
+				using (_session.BeginContext())
 				{
 					_logger.Debug(
 						success.HasValue
@@ -410,11 +411,15 @@ namespace NHibernate.Transaction
 			/// otherwise.</param>
 			protected virtual void CompleteTransaction(bool isCommitted)
 			{
+				// Some implementations (Mono) may "re-complete" the transaction on the cloned transaction disposal:
+				// do an early exit here in such case.
+				if (!IsInActiveTransaction)
+					return;
 				try
 				{
 					// Allow transaction completed actions to run while others stay blocked.
 					_bypassLock.Value = true;
-					using (new SessionIdLoggingContext(_session.SessionId))
+					using (_session.BeginContext())
 					{
 						// Flag active as false before running actions, otherwise the session may not cleanup as much
 						// as possible.
@@ -445,7 +450,7 @@ namespace NHibernate.Transaction
 				catch (Exception ex)
 				{
 					// May be run in a dedicated thread. Log any error, otherwise they could stay unlogged.
-					_logger.Error("Failure at transaction completion", ex);
+					_logger.Error(ex, "Failure at transaction completion");
 					throw;
 				}
 				finally

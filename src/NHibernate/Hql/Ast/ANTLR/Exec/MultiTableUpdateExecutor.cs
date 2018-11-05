@@ -18,7 +18,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 	[CLSCompliant(false)]
 	public partial class MultiTableUpdateExecutor : AbstractStatementExecutor
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (MultiTableDeleteExecutor));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (MultiTableDeleteExecutor));
 		private readonly IQueryable persister;
 		private readonly SqlString idInsertSelect;
 		private readonly SqlString[] updates;
@@ -37,7 +37,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			persister = fromElement.Queryable;
 
 			idInsertSelect = GenerateIdInsertSelect(persister, bulkTargetAlias, updateStatement.WhereClause);
-			log.Debug("Generated ID-INSERT-SELECT SQL (multi-table update) : " + idInsertSelect);
+			log.Debug("Generated ID-INSERT-SELECT SQL (multi-table update) : {0}", idInsertSelect);
 
 			string[] tableNames = persister.ConstraintOrderedTableNameClosure;
 			string[][] columnNames = persister.ConstraintOrderedTableKeyColumnClosure;

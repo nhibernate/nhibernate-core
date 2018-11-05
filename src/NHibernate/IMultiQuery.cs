@@ -8,6 +8,8 @@ namespace NHibernate
 	/// <summary>
 	/// Combines several queries into a single database call
 	/// </summary>
+	// Since v5.2
+	[Obsolete("Use Multi.IQueryBatch instead, obtainable with ISession.CreateQueryBatch.")]
 	public partial interface IMultiQuery
 	{
 		/// <summary>
@@ -144,9 +146,9 @@ namespace NHibernate
 		IMultiQuery SetForceCacheRefresh(bool forceCacheRefresh);
 
 		/// <summary>
-		/// The timeout for the underlying ADO query
+		/// Set a timeout for the underlying ADO.NET query.
 		/// </summary>
-		/// <param name="timeout"></param>
+		/// <param name="timeout">The timeout in seconds.</param>
 		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetTimeout(int timeout);
 

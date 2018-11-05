@@ -6,6 +6,7 @@ using System.Linq;
 using NUnit.Framework;
 
 using NHibernate.Criterion;
+using NHibernate.Multi;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
@@ -14,7 +15,7 @@ namespace NHibernate.Test.Criteria.Lambda
 	{
 		protected override string MappingsAssembly { get { return "NHibernate.Test"; } }
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Criteria.Lambda.Mappings.hbm.xml" }; }
 		}
@@ -252,6 +253,9 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public void OverrideEagerJoin()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -275,7 +279,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				var persons =
 					s.QueryOver<Parent>()
-						.Fetch(p => p.Children).Lazy
+						.Fetch(SelectMode.Skip, p => p.Children)
 						.List();
 
 				Assert.That(persons.Count, Is.EqualTo(1));
@@ -337,7 +341,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public void MultiCriteria()
 		{
 			var driver = Sfi.ConnectionProvider.Driver;
@@ -385,6 +389,58 @@ namespace NHibernate.Test.Criteria.Lambda
 
 				var pageResults = (IList<Person>) multiCriteria.GetResult("page");
 				var countResults = (IList<int>) multiCriteria.GetResult("count");
+
+				Assert.That(pageResults.Count, Is.EqualTo(1));
+				Assert.That(pageResults[0].Name, Is.EqualTo("Name 3"));
+				Assert.That(countResults.Count, Is.EqualTo(1));
+				Assert.That(countResults[0], Is.EqualTo(4));
+			}
+		}
+
+		[Test]
+		public void MultiQuery()
+		{
+			SetupPagingData();
+
+			using (var s = OpenSession())
+			{
+				var query =
+					s.QueryOver<Person>()
+					 .JoinQueryOver(p => p.Children)
+					 .OrderBy(c => c.Age).Desc
+					 .Skip(2)
+					 .Take(1);
+
+				var multiQuery =
+					s.CreateQueryBatch()
+					 .Add("page", query)
+					 .Add<int>("count", query.ToRowCountQuery());
+
+				var pageResults = multiQuery.GetResult<Person>("page");
+				var countResults = multiQuery.GetResult<int>("count");
+
+				Assert.That(pageResults.Count, Is.EqualTo(1));
+				Assert.That(pageResults[0].Name, Is.EqualTo("Name 3"));
+				Assert.That(countResults.Count, Is.EqualTo(1));
+				Assert.That(countResults[0], Is.EqualTo(4));
+			}
+
+			using (var s = OpenSession())
+			{
+				var query =
+					QueryOver.Of<Person>()
+					         .JoinQueryOver(p => p.Children)
+					         .OrderBy(c => c.Age).Desc
+					         .Skip(2)
+					         .Take(1);
+
+				var multiCriteria =
+					s.CreateQueryBatch()
+					 .Add("page", query)
+					 .Add<int>("count", query.ToRowCountQuery());
+
+				var pageResults = multiCriteria.GetResult<Person>("page");
+				var countResults = multiCriteria.GetResult<int>("count");
 
 				Assert.That(pageResults.Count, Is.EqualTo(1));
 				Assert.That(pageResults[0].Name, Is.EqualTo("Name 3"));

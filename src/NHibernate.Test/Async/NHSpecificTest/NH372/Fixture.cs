@@ -20,11 +20,6 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 	{
 		protected bool isDynamic;
 
-		public override string BugNumber
-		{
-			get { return "NH372"; }
-		}
-
 		private async Task ComponentFieldNotInserted_GenericAsync(System.Type type, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			int id;
@@ -54,31 +49,17 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		}
 
 		[Test]
-		public Task ComponentFieldNotInsertedAsync()
+		public async Task ComponentFieldNotInsertedAsync()
 		{
-			try
-			{
-				isDynamic = false;
-				return ComponentFieldNotInserted_GenericAsync(typeof(Parent));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			isDynamic = false;
+			await (ComponentFieldNotInserted_GenericAsync(typeof(Parent)));
 		}
 
 		[Test]
-		public Task ComponentFieldNotInserted_DynamicAsync()
+		public async Task ComponentFieldNotInserted_DynamicAsync()
 		{
-			try
-			{
-				isDynamic = true;
-				return ComponentFieldNotInserted_GenericAsync(typeof(DynamicParent));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			isDynamic = true;
+			await (ComponentFieldNotInserted_GenericAsync(typeof(DynamicParent)));
 		}
 
 		private async Task ComponentFieldNotUpdated_GenericAsync(System.Type type, CancellationToken cancellationToken = default(CancellationToken))
@@ -126,31 +107,17 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		}
 
 		[Test]
-		public Task ComponentFieldNotUpdatedAsync()
+		public async Task ComponentFieldNotUpdatedAsync()
 		{
-			try
-			{
-				isDynamic = false;
-				return ComponentFieldNotUpdated_GenericAsync(typeof(Parent));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			isDynamic = false;
+			await (ComponentFieldNotUpdated_GenericAsync(typeof(Parent)));
 		}
 
 		[Test]
-		public Task ComponentFieldNotUpdated_DynamicAsync()
+		public async Task ComponentFieldNotUpdated_DynamicAsync()
 		{
-			try
-			{
-				isDynamic = true;
-				return ComponentFieldNotUpdated_GenericAsync(typeof(DynamicParent));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			isDynamic = true;
+			await (ComponentFieldNotUpdated_GenericAsync(typeof(DynamicParent)));
 		}
 
 		private async Task SubComponentFieldNotInserted_GenericAsync(System.Type type, CancellationToken cancellationToken = default(CancellationToken))
@@ -182,31 +149,17 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		}
 
 		[Test]
-		public Task SubComponentFieldNotInsertedAsync()
+		public async Task SubComponentFieldNotInsertedAsync()
 		{
-			try
-			{
-				isDynamic = false;
-				return SubComponentFieldNotInserted_GenericAsync(typeof(Parent));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			isDynamic = false;
+			await (SubComponentFieldNotInserted_GenericAsync(typeof(Parent)));
 		}
 
 		[Test]
-		public Task SubComponentFieldNotInserted_DynamicAsync()
+		public async Task SubComponentFieldNotInserted_DynamicAsync()
 		{
-			try
-			{
-				isDynamic = false;
-				return SubComponentFieldNotInserted_GenericAsync(typeof(DynamicParent));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			isDynamic = false;
+			await (SubComponentFieldNotInserted_GenericAsync(typeof(DynamicParent)));
 		}
 
 		private async Task SubComponentFieldNotUpdated_GenericAsync(System.Type type, CancellationToken cancellationToken = default(CancellationToken))
@@ -254,31 +207,17 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		}
 
 		[Test]
-		public Task SubComponentFieldNotUpdatedAsync()
+		public async Task SubComponentFieldNotUpdatedAsync()
 		{
-			try
-			{
-				isDynamic = false;
-				return SubComponentFieldNotUpdated_GenericAsync(typeof(Parent));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			isDynamic = false;
+			await (SubComponentFieldNotUpdated_GenericAsync(typeof(Parent)));
 		}
 
 		[Test]
-		public Task SubComponentFieldNotUpdated_DynamicAsync()
+		public async Task SubComponentFieldNotUpdated_DynamicAsync()
 		{
-			try
-			{
-				isDynamic = false;
-				return SubComponentFieldNotUpdated_GenericAsync(typeof(DynamicParent));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			isDynamic = false;
+			await (SubComponentFieldNotUpdated_GenericAsync(typeof(DynamicParent)));
 		}
 
 		protected override void OnTearDown()

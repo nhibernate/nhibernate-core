@@ -6,22 +6,23 @@ using NHibernate.Util;
 namespace NHibernate.Intercept
 {
 	[Serializable]
+	// Since v5.2
+	[Obsolete("Dynamic proxy has been obsoleted, use static proxies instead (see StaticProxyFactory)")]
 	public class DefaultDynamicLazyFieldInterceptor : IFieldInterceptorAccessor, Proxy.DynamicProxy.IInterceptor
 	{
 		public IFieldInterceptor FieldInterceptor { get; set; }
 
 		public object Intercept(InvocationInfo info)
 		{
-			var methodName = info.TargetMethod.Name;
-			if (FieldInterceptor != null)
+			if (ReflectHelper.IsPropertyGet(info.TargetMethod))
 			{
-				if (ReflectHelper.IsPropertyGet(info.TargetMethod))
+				if (IsGetFieldInterceptorCall(info.TargetMethod))
 				{
-					if("get_FieldInterceptor".Equals(methodName))
-					{
-						return FieldInterceptor;
-					}
+					return FieldInterceptor;
+				}
 
+				if (FieldInterceptor != null)
+				{
 					object propValue = info.InvokeMethodOnTarget();
 
 					var result = FieldInterceptor.Intercept(info.Target, ReflectHelper.GetPropertyName(info.TargetMethod), propValue);
@@ -31,36 +32,33 @@ namespace NHibernate.Intercept
 						return result;
 					}
 				}
-				else if (ReflectHelper.IsPropertySet(info.TargetMethod))
+			}
+			else if (ReflectHelper.IsPropertySet(info.TargetMethod))
+			{
+				if (IsSetFieldInterceptorCall(info.TargetMethod))
 				{
-					if ("set_FieldInterceptor".Equals(methodName))
-					{
-						FieldInterceptor = (IFieldInterceptor)info.Arguments[0];
-						return null;
-					}
+					FieldInterceptor = (IFieldInterceptor) info.Arguments[0];
+					return null;
+				}
+
+				if (FieldInterceptor != null)
+				{
 					FieldInterceptor.MarkDirty();
 					FieldInterceptor.Intercept(info.Target, ReflectHelper.GetPropertyName(info.TargetMethod), info.Arguments[0]);
 				}
 			}
-			else
-			{
-				if ("set_FieldInterceptor".Equals(methodName))
-				{
-					FieldInterceptor = (IFieldInterceptor)info.Arguments[0];
-					return null;
-				}
-			}
 
-			object returnValue;
-			try
-			{
-				returnValue = info.InvokeMethodOnTarget();
-			}
-			catch (TargetInvocationException ex)
-			{
-				throw ReflectHelper.UnwrapTargetInvocationException(ex);
-			}
-			return returnValue;
+			return info.InvokeMethodOnTarget();
+		}
+
+		private static bool IsGetFieldInterceptorCall(MethodInfo targetMethod)
+		{
+			return string.Equals("get_FieldInterceptor", targetMethod.Name, StringComparison.Ordinal) && targetMethod.DeclaringType == typeof(IFieldInterceptorAccessor);
+		}
+
+		private static bool IsSetFieldInterceptorCall(MethodInfo targetMethod)
+		{
+			return string.Equals("set_FieldInterceptor", targetMethod.Name, StringComparison.Ordinal) && targetMethod.DeclaringType == typeof(IFieldInterceptorAccessor);
 		}
 	}
 }

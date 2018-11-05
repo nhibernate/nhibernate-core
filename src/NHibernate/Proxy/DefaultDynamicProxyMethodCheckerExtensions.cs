@@ -11,7 +11,7 @@ namespace NHibernate.Proxy
 		{
 			return !method.IsFinal
 				&& (method.DeclaringType != typeof(MarshalByRefObject))
-				&& (method.DeclaringType != typeof(object) || !"finalize".Equals(method.Name.ToLowerInvariant()))
+				&& (method.DeclaringType != typeof(object) || !"finalize".Equals(method.Name, StringComparison.OrdinalIgnoreCase))
 				&&
 				(
 				((method.IsPublic || method.IsFamily) && (method.IsVirtual || method.IsAbstract)) // public or protected (virtual)
@@ -24,7 +24,7 @@ namespace NHibernate.Proxy
 		{
 			// to use only for real methods (no getter/setter)
 			return (method.DeclaringType != typeof (MarshalByRefObject)) &&
-			       (method.DeclaringType != typeof (object) || !"finalize".Equals(method.Name.ToLowerInvariant())) &&
+			       (method.DeclaringType != typeof (object) || !"finalize".Equals(method.Name, StringComparison.OrdinalIgnoreCase)) &&
 			       (!(method.DeclaringType == typeof (object) && "GetType".Equals(method.Name))) &&
 			       (!(method.DeclaringType == typeof (object) && "obj_address".Equals(method.Name))) && // Mono-specific method
 			       !IsDisposeMethod(method) &&

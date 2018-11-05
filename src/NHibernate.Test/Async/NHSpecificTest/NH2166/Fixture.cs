@@ -19,9 +19,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2166
 	[TestFixture]
 	public class FixtureAsync: TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
-			get { return new string[0]; }
+			get { return Array.Empty<string>(); }
 		}
 
 		[Test]

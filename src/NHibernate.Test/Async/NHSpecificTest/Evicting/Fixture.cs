@@ -18,11 +18,6 @@ namespace NHibernate.Test.NHSpecificTest.Evicting
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "Evicting"; }
-		}
-
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();

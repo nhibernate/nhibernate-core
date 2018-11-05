@@ -12,12 +12,12 @@ namespace NHibernate.Loader.Entity
 
 		public CascadeEntityJoinWalker(IOuterJoinLoadable persister, CascadingAction action,
 		                               ISessionFactoryImplementor factory)
-			: base(persister, factory, new CollectionHelper.EmptyMapClass<string, IFilter>())
+			: base(persister, factory, CollectionHelper.EmptyDictionary<string, IFilter>())
 		{
 			cascadeAction = action;
 			SqlStringBuilder whereCondition = WhereString(Alias, persister.IdentifierColumnNames, 1)
 				//include the discriminator and class-level where, but not filters
-				.Add(persister.FilterFragment(Alias, new CollectionHelper.EmptyMapClass<string, IFilter>()));
+				.Add(persister.FilterFragment(Alias, CollectionHelper.EmptyDictionary<string, IFilter>()));
 
 			InitAll(whereCondition.ToSqlString(), SqlString.Empty, LockMode.Read);
 		}

@@ -40,9 +40,9 @@ namespace NHibernate.Id
 			}
 			object id = await (GetAsync(rs, type, session, cancellationToken)).ConfigureAwait(false);
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Natively generated identity: " + id);
+				log.Debug("Natively generated identity: {0}", id);
 			}
 			return id;
 		}
@@ -65,13 +65,14 @@ namespace NHibernate.Id
 		public static async Task<object> GetAsync(DbDataReader rs, IType type, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			// here is an interesting one: 
+			// here is an interesting one:
 			// - MsSql's @@identity returns a Decimal
-			// - MySql LAST_IDENITY() returns an Int64 			
+			// - MySql LAST_IDENTITY() returns an Int64
 			try
 			{
 				return await (type.NullSafeGetAsync(rs, rs.GetName(0), session, null, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				throw new IdentifierGenerationException("could not retrieve identifier value", e);

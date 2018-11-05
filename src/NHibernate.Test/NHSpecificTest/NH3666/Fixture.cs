@@ -47,10 +47,20 @@ namespace NHibernate.Test.NHSpecificTest.NH3666
 				                    .SetCacheable(true)
 				                    .List<Entity>();
 
-				CollectionAssert.IsNotEmpty(result);
+				Assert.That(result, Is.Not.Empty, "Non cached result is empty");
 
-				Assert.AreEqual(1, result.Count);
-				Assert.AreEqual(2, result[0].Id);
+				Assert.That(result.Count, Is.EqualTo(1), "Unexpected non cached result count");
+				Assert.That(result[0].Id, Is.EqualTo(2), "Unexpected non cached result id");
+
+				result = session.CreateSQLQuery("SELECT * FROM Entity WHERE Property = 'Test2'")
+				                .AddEntity(typeof(Entity))
+				                .SetCacheable(true)
+				                .List<Entity>();
+
+				Assert.That(result, Is.Not.Empty, "Cached result is empty");
+
+				Assert.That(result.Count, Is.EqualTo(1), "Unexpected cached result count");
+				Assert.That(result[0].Id, Is.EqualTo(2), "Unexpected cached result id");
 			}
 		}
 
@@ -65,10 +75,20 @@ namespace NHibernate.Test.NHSpecificTest.NH3666
 				                    .SetString("prop", "Test2")
 				                    .List<Entity>();
 
-				CollectionAssert.IsNotEmpty(result);
+				Assert.That(result, Is.Not.Empty, "Non cached result is empty");
 
-				Assert.AreEqual(1, result.Count);
-				Assert.AreEqual(2, result[0].Id);
+				Assert.That(result.Count, Is.EqualTo(1), "Unexpected non cached result count");
+				Assert.That(result[0].Id, Is.EqualTo(2), "Unexpected non cached result id");
+
+				result = session.GetNamedQuery("QueryName")
+				                .SetCacheable(true)
+				                .SetString("prop", "Test2")
+				                .List<Entity>();
+
+				Assert.That(result, Is.Not.Empty, "Cached result is empty");
+
+				Assert.That(result.Count, Is.EqualTo(1), "Unexpected cached result count");
+				Assert.That(result[0].Id, Is.EqualTo(2), "Unexpected cached result id");
 			}
 		}
 	}

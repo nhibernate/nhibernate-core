@@ -12,11 +12,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1144
 	{
 		private Configuration configuration;
 
-		public override string BugNumber
-		{
-			get { return "NH1144"; }
-		}
-
 		protected override void Configure(Configuration configuration)
 		{
 			this.configuration = configuration;
@@ -53,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1144
 						tx.Commit();
 						foreach (LoggingEvent loggingEvent in spy.Appender.GetEvents())
 						{
-							if ("Executing batch".Equals(loggingEvent.MessageObject))
+							if ("Executing batch".Equals(loggingEvent.RenderedMessage))
 							{
 								executedBatch = true;
 								break;

@@ -12,7 +12,7 @@ namespace NHibernate.Test.IdTest
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "IdTest.Car.hbm.xml", "IdTest.Plane.hbm.xml", "IdTest.Radio.hbm.xml" }; }
 		}

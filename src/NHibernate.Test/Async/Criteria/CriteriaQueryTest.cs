@@ -30,7 +30,7 @@ namespace NHibernate.Test.Criteria
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
@@ -1089,7 +1089,7 @@ namespace NHibernate.Test.Criteria
 
 			object g = await (s.CreateCriteria(typeof(Student))
 				.Add(Expression.IdEq(667L))
-				.SetFetchMode("enrolments", FetchMode.Join)
+				.Fetch("enrolments")
 				//.setFetchMode("enrolments.course", FetchMode.JOIN) //TODO: would love to make that work...
 				.UniqueResultAsync());
 			Assert.AreSame(gavin, g);
@@ -1279,7 +1279,7 @@ namespace NHibernate.Test.Criteria
 
 			ICriteria criteriaToClone6 = s.CreateCriteria(typeof(Student))
 				.Add(Expression.IdEq(667L))
-				.SetFetchMode("enrolments", FetchMode.Join);
+				.Fetch("enrolments");
 			object g = await (CriteriaTransformer.Clone(criteriaToClone6)
 				.UniqueResultAsync());
 			Assert.AreSame(gavin, g);
@@ -2426,7 +2426,7 @@ namespace NHibernate.Test.Criteria
 			}
 
 			result = await (session.CreateCriteria(typeof(Student))
-				.SetFetchMode("PreferredCourse", FetchMode.Join)
+				.Fetch("PreferredCourse")
 				.CreateCriteria("PreferredCourse", JoinType.LeftOuterJoin)
 				.AddOrder(Order.Asc("CourseCode"))
 				.ListAsync());
@@ -2436,7 +2436,7 @@ namespace NHibernate.Test.Criteria
 			Assert.IsNotNull(result[2]);
 
 			result = await (session.CreateCriteria(typeof(Student))
-				.SetFetchMode("PreferredCourse", FetchMode.Join)
+				.Fetch("PreferredCourse")
 				.CreateAlias("PreferredCourse", "pc", JoinType.LeftOuterJoin)
 				.AddOrder(Order.Asc("pc.CourseCode"))
 				.ListAsync());

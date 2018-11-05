@@ -71,11 +71,7 @@
             A full example, using temporal data with an effective record date pattern:
         </para>
 
-        <programlisting><![CDATA[<filter-def name="effectiveDate">
-    <filter-param name="asOfDate" type="date"/>
-</filter-def>
-
-<class name="Employee" ...>
+        <programlisting><![CDATA[<class name="Employee" ...>
 ...
     <many-to-one name="Department" column="dept_id" class="Department"/>
     <property name="EffectiveStartDate" type="date" column="eff_start_dt"/>
@@ -97,7 +93,11 @@
         <filter name="effectiveDate"
                 condition=":asOfDate BETWEEN eff_start_dt and eff_end_dt"/>
     </set>
-</class>]]></programlisting>
+</class>
+
+<filter-def name="effectiveDate">
+    <filter-param name="asOfDate" type="date"/>
+</filter-def>]]></programlisting>
 
         <para>
             Then, in order to ensure that you always get back currently effective records, simply

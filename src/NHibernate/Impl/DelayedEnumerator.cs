@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
+	//Since 5.2
+	[Obsolete]
 	internal class DelayedEnumerator<T> : IFutureEnumerable<T>, IDelayedValue
 	{
 		public delegate IEnumerable<T> GetResult();
@@ -25,11 +27,7 @@ namespace NHibernate.Impl
 
 		public IEnumerable<T> GetEnumerable()
 		{
-			var value = _result();
-			foreach (T item in value)
-			{
-				yield return item;
-			}
+			return _result();
 		}
 
 		// Remove in 6.0
@@ -77,6 +75,8 @@ namespace NHibernate.Impl
 		}
 	}
 
+	//Since 5.2
+	[Obsolete]
 	internal interface IDelayedValue
 	{
 		Delegate ExecuteOnEval { get; set; }

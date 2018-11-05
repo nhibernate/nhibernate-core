@@ -12,7 +12,7 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH3564
 {
-	public partial class MyDummyCache : ICache
+	public partial class MyDummyCache : CacheBase
 	{
 		private IDictionary hashtable = new Hashtable();
 		private readonly string regionName;
@@ -22,51 +22,54 @@ namespace NHibernate.Test.NHSpecificTest.NH3564
 			this.regionName = regionName;
 		}
 
-		public object Get(object key)
+		public override bool PreferMultipleGet => false;
+
+		public override object Get(object key)
 		{
 			return hashtable[KeyAsString(key)];
 		}
 
-		public void Put(object key, object value)
+		public override void Put(object key, object value)
 		{
 			hashtable[KeyAsString(key)] = value;
 		}
 
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 			hashtable.Remove(KeyAsString(key));
 		}
 
-		public void Clear()
+		public override void Clear()
 		{
 			hashtable.Clear();
 		}
 
-		public void Destroy()
+		public override void Destroy()
 		{
 		}
 
-		public void Lock(object key)
+		public override object Lock(object key)
+		{
+			// local cache, so we use synchronization
+			return null;
+		}
+
+		public override void Unlock(object key, object lockValue)
 		{
 			// local cache, so we use synchronization
 		}
 
-		public void Unlock(object key)
-		{
-			// local cache, so we use synchronization
-		}
-
-		public long NextTimestamp()
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
-		public int Timeout
+		public override int Timeout
 		{
 			get { return Timestamper.OneMs*60000; }
 		}
 
-		public string RegionName
+		public override string RegionName
 		{
 			get { return regionName; }
 		}
@@ -80,7 +83,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3564
 
 	public class MyDummyCacheProvider : ICacheProvider
 	{
-		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
+		// Since 5.2
+		[Obsolete]
+		ICache ICacheProvider.BuildCache(string regionName, IDictionary<string, string> properties)
+		{
+			return BuildCache(regionName, properties);
+		}
+
+		public CacheBase BuildCache(string regionName, IDictionary<string, string> properties)
 		{
 			return new MyDummyCache(regionName);
 		}

@@ -20,7 +20,7 @@ namespace NHibernate.Test.GenericTest.IdBagGeneric
 	[TestFixture]
 	public class IdBagGenericFixtureAsync : TestCase
 	{
-		protected override System.Collections.IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "GenericTest.IdBagGeneric.IdBagGenericFixture.hbm.xml" }; }
 		}

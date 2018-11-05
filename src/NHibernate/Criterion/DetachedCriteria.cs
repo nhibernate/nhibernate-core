@@ -175,6 +175,8 @@ namespace NHibernate.Criterion
 			return impl;
 		}
 
+		//Since 5.2
+		[Obsolete("Use Fetch instead")]
 		public DetachedCriteria SetFetchMode(string associationPath, FetchMode mode)
 		{
 			criteria.SetFetchMode(associationPath, mode);

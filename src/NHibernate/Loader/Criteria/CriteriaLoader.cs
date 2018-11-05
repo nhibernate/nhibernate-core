@@ -24,7 +24,6 @@ namespace NHibernate.Loader.Criteria
 	{
 		private readonly CriteriaQueryTranslator translator;
 		private readonly ISet<string> querySpaces;
-		private readonly IType[] resultTypes;
 		//the user visible aliases, which are unknown to the superclass,
 		//these are not the actual "physical" SQL aliases
 		private readonly string[] userAliases;
@@ -32,6 +31,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly int resultRowLength;
 		// caching NH-3486
 		private readonly string[] cachedProjectedColumnAliases;
+		private bool[] childFetchEntities;
 
 		public CriteriaLoader(IOuterJoinLoadable persister, ISessionFactoryImplementor factory, CriteriaImpl rootCriteria,
 							  string rootEntityName, IDictionary<string, IFilter> enabledFilters)
@@ -47,9 +47,10 @@ namespace NHibernate.Loader.Criteria
 			InitFromWalker(walker);
 
 			userAliases = walker.UserAliases;
-			resultTypes = walker.ResultTypes;
+			ResultTypes = walker.ResultTypes;
 			includeInResultRow = walker.IncludeInResultRow;
 			resultRowLength = ArrayHelper.CountTrue(IncludeInResultRow);
+			childFetchEntities = walker.ChildFetchEntities;
 			// fill caching objects only if there is a projection
 			if (translator.HasProjection)
 			{
@@ -76,11 +77,6 @@ namespace NHibernate.Loader.Criteria
 			get { return translator; }
 		}
 
-		public IType[] ResultTypes
-		{
-			get { return resultTypes; }
-		}
-
 		protected override string[] ResultRowAliases
 		{
 			get { return userAliases; }
@@ -91,9 +87,14 @@ namespace NHibernate.Loader.Criteria
 			get { return includeInResultRow; }
 		}
 
+		protected override bool IsChildFetchEntity(int i)
+		{
+			return childFetchEntities?[i] == true;
+		}
+
 		public IList List(ISessionImplementor session)
 		{
-			return List(session, translator.GetQueryParameters(), querySpaces, resultTypes);
+			return List(session, translator.GetQueryParameters(), querySpaces);
 		}
 
 		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
@@ -171,7 +172,7 @@ namespace NHibernate.Loader.Criteria
 			}
 
 			Dictionary<string, LockMode> aliasedLockModes = new Dictionary<string, LockMode>();
-			Dictionary<string, string[]> keyColumnNames = dialect.ForUpdateOfColumns ? new Dictionary<string, string[]>() : null;
+			Dictionary<string, string[]> keyColumnNames = dialect.UsesColumnsWithForUpdateOf ? new Dictionary<string, string[]>() : null;
 			string[] drivingSqlAliases = Aliases;
 
 			//NH-3710: if we are issuing an aggregation function, Aliases will be null

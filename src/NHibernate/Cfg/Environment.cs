@@ -193,10 +193,18 @@ namespace NHibernate.Cfg
 
 		// NHibernate-specific properties
 		public const string PrepareSql = "prepare_sql";
+		/// <summary>
+		/// Set the default timeout in seconds for ADO.NET queries.
+		/// </summary>
 		public const string CommandTimeout = "command_timeout";
 
 		public const string PropertyBytecodeProvider = "bytecode.provider";
 		public const string PropertyUseReflectionOptimizer = "use_reflection_optimizer";
+
+		/// <summary>
+		/// Set the <see cref="IObjectsFactory"/> used to instantiate NHibernate's objects.
+		/// </summary>
+		public const string PropertyObjectsFactory = "objects_factory";
 
 		public const string UseProxyValidator = "use_proxy_validator";
 		public const string ProxyFactoryFactoryClass = "proxyfactory.factory_class";
@@ -223,7 +231,7 @@ namespace NHibernate.Cfg
 
 		/// <summary>
 		/// Set the default precision used in casting when the target type is decimal and
-		/// does not specify it. <c>28</c> by default, automatically trimmed down according to dialect type registration.
+		/// does not specify it. <c>29</c> by default, automatically trimmed down according to dialect type registration.
 		/// </summary>
 		public const string QueryDefaultCastPrecision = "query.default_cast_precision";
 
@@ -259,6 +267,20 @@ namespace NHibernate.Cfg
 		public const string OracleUseNPrefixedTypesForUnicode = "oracle.use_n_prefixed_types_for_unicode";
 
 		/// <summary>
+		/// <para>
+		/// Firebird with FirebirdSql.Data.FirebirdClient may be unable to determine the type
+		/// of parameters in many circumstances, unless they are explicitly casted in the SQL
+		/// query. To avoid this trouble, the NHibernate <c>FirebirdClientDriver</c> parses SQL
+		/// commands for detecting parameters in them and adding an explicit SQL cast around
+		/// parameters which may trigger the issue.
+		/// </para>
+		/// <para>
+		/// For disabling this behavior, set this setting to true.
+		/// </para>
+		/// </summary>
+		public const string FirebirdDisableParameterCasting = "firebird.disable_parameter_casting";
+
+		/// <summary>
 		/// <para>Set whether tracking the session id or not. When <see langword="true"/>, each session 
 		/// will have an unique <see cref="Guid"/> that can be retrieved by <see cref="ISessionImplementor.SessionId"/>,
 		/// otherwise <see cref="ISessionImplementor.SessionId"/> will always be <see cref="Guid.Empty"/>. Session id 
@@ -270,12 +292,12 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public const string TrackSessionId = "track_session_id";
 
-		private static readonly Dictionary<string, string> GlobalProperties;
+		private static readonly Dictionary<string, string> GlobalProperties = new Dictionary<string, string>();
 
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Environment));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(Environment));
 
 		/// <summary>
 		/// Issue warnings to user when any obsolete property names are used.
@@ -287,17 +309,43 @@ namespace NHibernate.Cfg
 		static Environment()
 		{
 			// Computing the version string is a bit expensive, so do it only if logging is enabled.
-			if (log.IsInfoEnabled)
+			if (log.IsInfoEnabled())
 			{
-				log.Info("NHibernate " + Version);
+				log.Info("NHibernate {0}", Version);
 			}
 
-			GlobalProperties = new Dictionary<string, string>();
-			GlobalProperties[PropertyUseReflectionOptimizer] = bool.TrueString;
-			LoadGlobalPropertiesFromAppConfig();
+			InitializeGlobalProperties(GetHibernateConfiguration());
+		}
+
+		public static void InitializeGlobalProperties(IHibernateConfiguration config)
+		{
+			GlobalProperties.Clear();
+			if (config != null)
+			{
+				HibernateConfiguration = config;
+				GlobalProperties[PropertyBytecodeProvider] = config.ByteCodeProviderType;
+				GlobalProperties[PropertyUseReflectionOptimizer] = config.UseReflectionOptimizer.ToString();
+				if (config is HibernateConfiguration nhConfig)
+				{
+					GlobalProperties[PropertyObjectsFactory] = nhConfig.ObjectsFactoryType;
+				}
+				if (config.SessionFactory != null)
+				{
+					foreach (var kvp in config.SessionFactory.Properties)
+					{
+						GlobalProperties[kvp.Key] = kvp.Value;
+					}
+				}
+			}
+			else
+			{
+				GlobalProperties[PropertyUseReflectionOptimizer] = bool.TrueString;
+			}
+
 			VerifyProperties(GlobalProperties);
 
 			BytecodeProviderInstance = BuildBytecodeProvider(GlobalProperties);
+			ObjectsFactory = BuildObjectsFactory(GlobalProperties);
 			EnableReflectionOptimizer = PropertiesHelper.GetBoolean(PropertyUseReflectionOptimizer, GlobalProperties);
 
 			if (EnableReflectionOptimizer)
@@ -306,58 +354,26 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private static void LoadGlobalPropertiesFromAppConfig()
+		internal static IHibernateConfiguration HibernateConfiguration { get; private set; }
+
+		private static IHibernateConfiguration GetHibernateConfiguration()
 		{
 			object config = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName);
-
 			if (config == null)
 			{
-				log.Info(string.Format("{0} section not found in application configuration file", CfgXmlHelper.CfgSectionName));
-				return;
+				log.Info("{0} section not found in application configuration file", CfgXmlHelper.CfgSectionName);
+				return null;
 			}
 
 			var nhConfig = config as IHibernateConfiguration;
 			if (nhConfig == null)
 			{
 				log.Info(
-					string.Format(
-						"{0} section handler, in application configuration file, is not IHibernateConfiguration, section ignored",
-						CfgXmlHelper.CfgSectionName));
-				return;
+					"{0} section handler, in application configuration file, is not IHibernateConfiguration, section ignored",
+					CfgXmlHelper.CfgSectionName);
 			}
 
-			GlobalProperties[PropertyBytecodeProvider] = nhConfig.ByteCodeProviderType;
-			GlobalProperties[PropertyUseReflectionOptimizer] = nhConfig.UseReflectionOptimizer.ToString();
-			if (nhConfig.SessionFactory != null)
-			{
-				foreach (var kvp in nhConfig.SessionFactory.Properties)
-				{
-					GlobalProperties[kvp.Key] = kvp.Value;
-				}
-			}
-		}
-
-		internal static void ResetSessionFactoryProperties()
-		{
-			string savedBytecodeProvider;
-			GlobalProperties.TryGetValue(PropertyBytecodeProvider, out savedBytecodeProvider);
-			// Save values loaded and used in static constructor
-
-			string savedUseReflectionOptimizer;
-			GlobalProperties.TryGetValue(PropertyUseReflectionOptimizer, out savedUseReflectionOptimizer);
-			// Clean all property loaded from app.config
-			GlobalProperties.Clear();
-
-			// Restore values loaded and used in static constructor
-			if (savedBytecodeProvider != null)
-			{
-				GlobalProperties[PropertyBytecodeProvider] = savedBytecodeProvider;
-			}
-
-			if (savedUseReflectionOptimizer != null)
-			{
-				GlobalProperties[PropertyUseReflectionOptimizer] = savedUseReflectionOptimizer;
-			}
+			return nhConfig;
 		}
 
 		/// <summary>
@@ -376,7 +392,7 @@ namespace NHibernate.Cfg
 		/// The bytecode provider to use.
 		/// </summary>
 		/// <remarks>
-		/// This property is read from the <c>&lt;nhibernate&gt;</c> section
+		/// This property is read from the <c>&lt;hibernate-configuration&gt;</c> section
 		/// of the application configuration file by default. Since it is not
 		/// always convenient to configure NHibernate through the application
 		/// configuration file, it is also possible to set the property value
@@ -386,14 +402,38 @@ namespace NHibernate.Cfg
 		public static IBytecodeProvider BytecodeProvider
 		{
 			get { return BytecodeProviderInstance; }
-			set { BytecodeProviderInstance = value; }
+			set
+			{
+				BytecodeProviderInstance = value;
+				// 6.0 TODO: remove following code.
+#pragma warning disable 618
+				var objectsFactory = BytecodeProviderInstance.ObjectsFactory;
+#pragma warning restore 618
+				if (objectsFactory != null)
+					ObjectsFactory = objectsFactory;
+			}
 		}
+
+		/// <summary>
+		/// NHibernate's object instantiator.
+		/// </summary>
+		/// <remarks>
+		/// This property is read from the <c>&lt;hibernate-configuration&gt;</c> section
+		/// of the application configuration file by default. Since it is not
+		/// always convenient to configure NHibernate through the application
+		/// configuration file, it is also possible to set the property value
+		/// manually.
+		/// This should only be set before a configuration object
+		/// is created, otherwise the change may not take effect.
+		/// For entities see <see cref="IReflectionOptimizer"/> and its implementations.
+		/// </remarks>
+		public static IObjectsFactory ObjectsFactory { get; set; } = new ActivatorObjectsFactory();
 
 		/// <summary>
 		/// Whether to enable the use of reflection optimizer
 		/// </summary>
 		/// <remarks>
-		/// This property is read from the <c>&lt;nhibernate&gt;</c> section
+		/// This property is read from the <c>&lt;hibernate-configuration&gt;</c> section
 		/// of the application configuration file by default. Since it is not
 		/// always convenient to configure NHibernate through the application
 		/// configuration file, it is also possible to set the property value
@@ -410,7 +450,7 @@ namespace NHibernate.Cfg
 		{
 			const string defaultBytecodeProvider = "lcg";
 			string provider = PropertiesHelper.GetString(PropertyBytecodeProvider, properties, defaultBytecodeProvider);
-			log.Info("Bytecode provider name : " + provider);
+			log.Info("Bytecode provider name : {0}", provider);
 			return BuildBytecodeProvider(provider);
 		}
 
@@ -423,9 +463,25 @@ namespace NHibernate.Cfg
 				case "null":
 					return new NullBytecodeProvider();
 				default:
-					log.Info("custom bytecode provider [" + providerName + "]");
+					log.Info("custom bytecode provider [{0}]", providerName);
 					return CreateCustomBytecodeProvider(providerName);
 			}
+		}
+
+		public static IObjectsFactory BuildObjectsFactory(IDictionary<string, string> properties)
+		{
+			var typeAssemblyQualifiedName = PropertiesHelper.GetString(PropertyObjectsFactory, properties, null);
+			if (typeAssemblyQualifiedName == null)
+			{
+				// 6.0 TODO: use default value of ObjectsFactory property
+#pragma warning disable 618
+				var objectsFactory = BytecodeProvider.ObjectsFactory ?? ObjectsFactory;
+#pragma warning restore 618
+				log.Info("Objects factory class : {0}", objectsFactory.GetType());
+				return objectsFactory;
+			}
+			log.Info("Custom objects factory class : {0}", typeAssemblyQualifiedName);
+			return CreateCustomObjectsFactory(typeAssemblyQualifiedName);
 		}
 
 		private static IBytecodeProvider CreateCustomBytecodeProvider(string assemblyQualifiedName)
@@ -455,5 +511,34 @@ namespace NHibernate.Cfg
 				throw new HibernateByteCodeException("Unable to create the instance of Bytecode provider; check inner exception for detail", e);
 			}
 		}
+
+		private static IObjectsFactory CreateCustomObjectsFactory(string assemblyQualifiedName)
+		{
+			try
+			{
+				var type = ReflectHelper.ClassForName(assemblyQualifiedName);
+				try
+				{
+					return (IObjectsFactory) Activator.CreateInstance(type);
+				}
+				catch (MissingMethodException ex)
+				{
+					throw new HibernateObjectsFactoryException("Public constructor was not found for " + type, ex);
+				}
+				catch (InvalidCastException ex)
+				{
+					throw new HibernateObjectsFactoryException(type + "Type does not implement " + typeof(IObjectsFactory), ex);
+				}
+				catch (Exception ex)
+				{
+					throw new HibernateObjectsFactoryException("Unable to instantiate: " + type, ex);
+				}
+			}
+			catch (Exception e)
+			{
+				throw new HibernateObjectsFactoryException("Unable to create the instance of objects factory; check inner exception for detail", e);
+			}
+		}
+
 	}
 }

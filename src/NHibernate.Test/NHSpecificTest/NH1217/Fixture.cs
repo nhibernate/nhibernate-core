@@ -5,11 +5,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 	[TestFixture,Ignore("Not fixed yet")]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1217"; }
-		}
-
 		protected override void OnTearDown()
 		{
 			using (ISession s = OpenSession())

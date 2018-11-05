@@ -26,7 +26,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "SecondLevelCacheTest.Item.hbm.xml" }; }
 		}

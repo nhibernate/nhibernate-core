@@ -65,7 +65,7 @@ namespace NHibernate.Id
 			do
 			{
 				//the loop ensure atomicitiy of the 
-				//select + uspdate even for no transaction
+				//select + update even for no transaction
 				//or read committed isolation level (needed for .net?)
 
 				var qps = conn.CreateCommand();
@@ -79,23 +79,18 @@ namespace NHibernate.Id
 					rs = await (qps.ExecuteReaderAsync(cancellationToken)).ConfigureAwait(false);
 					if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
 					{
-						string err;
-						if (string.IsNullOrEmpty(whereClause))
-						{
-							err = "could not read a hi value - you need to populate the table: " + tableName;
-						}
-						else
-						{
-							err = string.Format("could not read a hi value from table '{0}' using the where clause ({1})- you need to populate the table.", tableName, whereClause);
-						}
-						log.Error(err);
-						throw new IdentifierGenerationException(err);
+						var errFormat = string.IsNullOrEmpty(whereClause) 
+							? "could not read a hi value - you need to populate the table: {0}" 
+							: "could not read a hi value from table '{0}' using the where clause ({1})- you need to populate the table.";
+						log.Error(errFormat, tableName, whereClause);
+						throw new IdentifierGenerationException(string.Format(errFormat, tableName, whereClause));
 					}
 					result = Convert.ToInt64(columnType.Get(rs, 0, session));
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{
-					log.Error("could not read a hi value", e);
+					log.Error(e, "could not read a hi value");
 					throw;
 				}
 				finally
@@ -120,9 +115,10 @@ namespace NHibernate.Id
 
 					rows = await (ups.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{
-					log.Error("could not update hi value in: " + tableName, e);
+					log.Error(e, "could not update hi value in: {0}", tableName);
 					throw;
 				}
 				finally

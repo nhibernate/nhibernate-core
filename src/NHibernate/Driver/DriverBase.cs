@@ -16,7 +16,7 @@ namespace NHibernate.Driver
 	/// </summary>
 	public abstract class DriverBase : IDriver, ISqlParameterFormatter
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DriverBase));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DriverBase));
 
 		private int commandTimeout;
 		private bool prepareSql;
@@ -25,7 +25,7 @@ namespace NHibernate.Driver
 		{
 			// Command timeout
 			commandTimeout = PropertiesHelper.GetInt32(Environment.CommandTimeout, settings, -1);
-			if (commandTimeout > -1 && log.IsInfoEnabled)
+			if (commandTimeout > -1 && log.IsInfoEnabled())
 			{
 				log.Info(string.Format("setting ADO.NET command timeout to {0} seconds", commandTimeout));
 			}
@@ -148,9 +148,9 @@ namespace NHibernate.Driver
 				}
 				catch (Exception e)
 				{
-					if (log.IsWarnEnabled)
+					if (log.IsWarnEnabled())
 					{
-						log.Warn(e.ToString());
+						log.Warn(e, e.ToString());
 					}
 				}
 			}
@@ -313,9 +313,15 @@ namespace NHibernate.Driver
 
 		public virtual bool RequiresTimeSpanForTime => false;
 
+#if NETCOREAPP2_0
+		public virtual bool SupportsSystemTransactions => false;
+
+		public virtual bool SupportsNullEnlistment => false;
+#else
 		public virtual bool SupportsSystemTransactions => true;
 
 		public virtual bool SupportsNullEnlistment => true;
+#endif
 
 		/// <inheritdoc />
 		public virtual bool SupportsEnlistmentWhenAutoEnlistmentIsDisabled => true;

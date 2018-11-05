@@ -18,24 +18,17 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 	[TestFixture]
 	public class DateFixtureAsync : FixtureBaseAsync
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"NHSpecificTest.Dates.Mappings.Date.hbm.xml"}; }
 		}
 
 		[Test]
-		public Task SavingAndRetrievingTestAsync()
+		public async Task SavingAndRetrievingTestAsync()
 		{
-			try
-			{
-				DateTime Now = DateTime.Now;
-				return SavingAndRetrievingActionAsync(new AllDates {Sql_date = Now},
-			                          entity => DateTimeAssert.AreEqual(entity.Sql_date, Now, true));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			DateTime Now = DateTime.Now;
+			await (SavingAndRetrievingActionAsync(new AllDates {Sql_date = Now},
+			                          entity => DateTimeAssert.AreEqual(entity.Sql_date, Now, true)));
 		}
 	}
 }

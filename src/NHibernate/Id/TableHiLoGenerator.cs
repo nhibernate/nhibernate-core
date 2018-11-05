@@ -22,12 +22,14 @@ namespace NHibernate.Id
 	///		&lt;param name="column"&gt;id_column&lt;/param&gt;
 	///		&lt;param name="max_lo"&gt;max_lo_value&lt;/param&gt;
 	///		&lt;param name="schema"&gt;db_schema&lt;/param&gt;
+	///		&lt;param name="catalog"&gt;db_catalog&lt;/param&gt;
+	///		&lt;param name="where"&gt;arbitrary additional where clause&lt;/param&gt;
 	///	&lt;/generator&gt;
 	///	</code>
 	/// </p>
 	/// <p>
-	/// The <c>table</c> and <c>column</c> parameters are required, the <c>max_lo</c> and 
-	/// <c>schema</c> are optional.
+	/// The <c>table</c> and <c>column</c> parameters are required, the <c>max_lo</c>,
+	/// <c>schema</c>, <c>catalog</c> and <c>where</c> are optional.
 	/// </p>
 	/// <p>
 	/// The hi value MUST be fecthed in a separate transaction to the <c>ISession</c>
@@ -39,7 +41,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public partial class TableHiLoGenerator : TableGenerator
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(TableHiLoGenerator));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(TableHiLoGenerator));
 
 		/// <summary>
 		/// The name of the max lo parameter.
@@ -94,7 +96,7 @@ namespace NHibernate.Id
 				long hival = Convert.ToInt64(base.Generate(session, obj));
 				lo = (hival == 0) ? 1 : 0;
 				hi = hival * (maxLo + 1);
-				log.Debug("New high value: " + hival);
+				log.Debug("New high value: {0}", hival);
 			}
 
 			return IdentifierGeneratorFactory.CreateNumber(hi + lo++, returnClass);

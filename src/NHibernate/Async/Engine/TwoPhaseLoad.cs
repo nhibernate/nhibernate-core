@@ -19,6 +19,8 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Properties;
+using System;
+using System.Collections.Generic;
 
 namespace NHibernate.Engine
 {
@@ -33,7 +35,23 @@ namespace NHibernate.Engine
 		/// between the entities which were instantiated and had their state
 		/// "hydrated" into an array
 		/// </summary>
-		public static async Task InitializeEntityAsync(object entity, bool readOnly, ISessionImplementor session, PreLoadEvent preLoadEvent, PostLoadEvent postLoadEvent, CancellationToken cancellationToken)
+		public static Task InitializeEntityAsync(object entity, bool readOnly, ISessionImplementor session, PreLoadEvent preLoadEvent, PostLoadEvent postLoadEvent, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return InitializeEntityAsync(entity, readOnly, session, preLoadEvent, postLoadEvent, null, cancellationToken);
+		}
+		
+		/// <summary>
+		/// Perform the second step of 2-phase load. Fully initialize the entity instance.
+		/// After processing a JDBC result set, we "resolve" all the associations
+		/// between the entities which were instantiated and had their state
+		/// "hydrated" into an array
+		/// </summary>
+		internal static async Task InitializeEntityAsync(object entity, bool readOnly, ISessionImplementor session, PreLoadEvent preLoadEvent, PostLoadEvent postLoadEvent,
+		                                      Action<IEntityPersister, CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			//TODO: Should this be an InitializeEntityEventListener??? (watch out for performance!)
@@ -55,17 +73,30 @@ namespace NHibernate.Engine
 			object id = entityEntry.Id;
 			object[] hydratedState = entityEntry.LoadedState;
 
-			if (log.IsDebugEnabled)
-				log.Debug("resolving associations for " + MessageHelper.InfoString(persister, id, session.Factory));
+			if (log.IsDebugEnabled())
+				log.Debug("resolving associations for {0}", MessageHelper.InfoString(persister, id, session.Factory));
 
 			IType[] types = persister.PropertyTypes;
+			var collectionToResolveIndexes = new List<int>(hydratedState.Length);
 			for (int i = 0; i < hydratedState.Length; i++)
 			{
 				object value = hydratedState[i];
 				if (!Equals(LazyPropertyInitializer.UnfetchedProperty, value) && !(Equals(BackrefPropertyAccessor.Unknown, value)))
 				{
+					if (types[i].IsCollectionType)
+					{
+						// Resolve them last, because they may depend on other properties if they use a property-ref
+						collectionToResolveIndexes.Add(i);
+						continue;
+					}
+
 					hydratedState[i] = await (types[i].ResolveIdentifierAsync(value, session, entity, cancellationToken)).ConfigureAwait(false);
 				}
+			}
+
+			foreach (var i in collectionToResolveIndexes)
+			{
+				hydratedState[i] = await (types[i].ResolveIdentifierAsync(hydratedState[i], session, entity, cancellationToken)).ConfigureAwait(false);
 			}
 
 			//Must occur after resolving identifiers!
@@ -88,21 +119,36 @@ namespace NHibernate.Engine
 
 			if (persister.HasCache && session.CacheMode.HasFlag(CacheMode.Put))
 			{
-				if (log.IsDebugEnabled)
-					log.Debug("adding entity to second-level cache: " + MessageHelper.InfoString(persister, id, session.Factory));
+				if (log.IsDebugEnabled())
+					log.Debug("adding entity to second-level cache: {0}", MessageHelper.InfoString(persister, id, session.Factory));
 
 				object version = Versioning.GetVersion(hydratedState, persister);
 				CacheEntry entry =
-					new CacheEntry(hydratedState, persister, entityEntry.LoadedWithLazyPropertiesUnfetched, version, session, entity);
+					await (CacheEntry.CreateAsync(hydratedState, persister, entityEntry.LoadedWithLazyPropertiesUnfetched, version, session, entity, cancellationToken)).ConfigureAwait(false);
 				CacheKey cacheKey = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
-				bool put =
-					await (persister.Cache.PutAsync(cacheKey, persister.CacheEntryStructure.Structure(entry), session.Timestamp, version,
-										persister.IsVersioned ? persister.VersionType.Comparator : null,
-										UseMinimalPuts(session, entityEntry), cancellationToken)).ConfigureAwait(false);
 
-				if (put && factory.Statistics.IsStatisticsEnabled)
+				if (cacheBatchingHandler != null && persister.IsBatchLoadable)
 				{
-					factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+					cacheBatchingHandler(
+						persister,
+						new CachePutData(
+							cacheKey,
+							persister.CacheEntryStructure.Structure(entry),
+							version,
+							persister.IsVersioned ? persister.VersionType.Comparator : null,
+							UseMinimalPuts(session, entityEntry)));
+				}
+				else
+				{
+					bool put =
+						await (persister.Cache.PutAsync(cacheKey, persister.CacheEntryStructure.Structure(entry), session.Timestamp, version,
+						                    persister.IsVersioned ? persister.VersionType.Comparator : null,
+						                    UseMinimalPuts(session, entityEntry), cancellationToken)).ConfigureAwait(false);
+
+					if (put && factory.Statistics.IsStatisticsEnabled)
+					{
+						factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+					}
 				}
 			}
 			
@@ -152,8 +198,8 @@ namespace NHibernate.Engine
 				}
 			}
 
-			if (log.IsDebugEnabled)
-				log.Debug("done materializing entity " + MessageHelper.InfoString(persister, id, session.Factory));
+			if (log.IsDebugEnabled())
+				log.Debug("done materializing entity {0}", MessageHelper.InfoString(persister, id, session.Factory));
 
 			if (statsEnabled)
 			{

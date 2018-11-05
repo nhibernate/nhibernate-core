@@ -1,10 +1,18 @@
+using System;
 using System.Collections;
 
 namespace NHibernate.Impl
 {
+	//Since 5.2
+	[Obsolete("Replaced by QueryBatch")]
 	public partial class FutureCriteriaBatch : FutureBatch<ICriteria, IMultiCriteria>
 	{
 		public FutureCriteriaBatch(SessionImpl session) : base(session) {}
+
+		protected override IList List(ICriteria query)
+		{
+			return query.List();
+		}
 
 		protected override IMultiCriteria CreateMultiApproach(bool isCacheable, string cacheRegion)
 		{

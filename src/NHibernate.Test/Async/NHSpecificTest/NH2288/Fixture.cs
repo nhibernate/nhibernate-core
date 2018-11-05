@@ -35,79 +35,51 @@ namespace NHibernate.Test.NHSpecificTest.NH2288
 			var sb = new StringBuilder(500);
 			await (su.ExecuteAsync(x => sb.AppendLine(x), false, false, cancellationToken));
 			string script = sb.ToString();
-			Assert.That(script, Does.Contain("if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'dbo.[Aclasses_Id_FK]') AND parent_object_id = OBJECT_ID('dbo.Aclass'))"));
+			Assert.That(script, Does.Contain("if exists (select 1 from nhibernate.sys.objects where object_id = OBJECT_ID(N'nhibernate.dbo.[Aclasses_Id_FK]') and parent_object_id = OBJECT_ID(N'nhibernate.dbo.Aclass'))"));
 		}
 
 		[Test]
-		public Task TestForClassWithDefaultSchemaAsync()
+		public async Task TestForClassWithDefaultSchemaAsync()
 		{
-			try
-			{
-				Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
-				CheckDialect(cfg);
-				cfg.SetProperty(Environment.DefaultCatalog, "nhibernate");
-				cfg.SetProperty(Environment.DefaultSchema, "dbo");
-				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2288.AclassWithNothing.hbm.xml", GetType().Assembly);
-				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg);
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			CheckDialect(cfg);
+			cfg.SetProperty(Environment.DefaultCatalog, "nhibernate");
+			cfg.SetProperty(Environment.DefaultSchema, "dbo");
+			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2288.AclassWithNothing.hbm.xml", GetType().Assembly);
+			await (AssertThatCheckOnTableExistenceIsCorrectAsync(cfg));
 		}
 
 		[Test]
-		public Task WithDefaultValuesInMappingAsync()
+		public async Task WithDefaultValuesInMappingAsync()
 		{
-			try
-			{
-				Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
-				CheckDialect(cfg);
-				cfg.SetProperty(Environment.DefaultCatalog, "nhibernate");
-				cfg.SetProperty(Environment.DefaultSchema, "somethingDifferent");
-				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2288.AclassWithDefault.hbm.xml", GetType().Assembly);
-				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg);
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			CheckDialect(cfg);
+			cfg.SetProperty(Environment.DefaultCatalog, "nhibernate");
+			cfg.SetProperty(Environment.DefaultSchema, "somethingDifferent");
+			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2288.AclassWithDefault.hbm.xml", GetType().Assembly);
+			await (AssertThatCheckOnTableExistenceIsCorrectAsync(cfg));
 		}
 
 		[Test]
-		public Task WithSpecificValuesInMappingAsync()
+		public async Task WithSpecificValuesInMappingAsync()
 		{
-			try
-			{
-				Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
-				CheckDialect(cfg);
-				cfg.SetProperty(Environment.DefaultCatalog, "nhibernate");
-				cfg.SetProperty(Environment.DefaultSchema, "somethingDifferent");
-				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2288.AclassWithSpecific.hbm.xml", GetType().Assembly);
-				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg);
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			CheckDialect(cfg);
+			cfg.SetProperty(Environment.DefaultCatalog, "nhibernate");
+			cfg.SetProperty(Environment.DefaultSchema, "somethingDifferent");
+			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2288.AclassWithSpecific.hbm.xml", GetType().Assembly);
+			await (AssertThatCheckOnTableExistenceIsCorrectAsync(cfg));
 		}
 
 		[Test]
-		public Task WithDefaultValuesInConfigurationPriorityToMappingAsync()
+		public async Task WithDefaultValuesInConfigurationPriorityToMappingAsync()
 		{
-			try
-			{
-				Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
-				CheckDialect(cfg);
-				cfg.SetProperty(Environment.DefaultCatalog, "nhibernate");
-				cfg.SetProperty(Environment.DefaultSchema, "somethingDifferent");
-				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2288.AclassWithDefault.hbm.xml", GetType().Assembly);
-				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg);
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			CheckDialect(cfg);
+			cfg.SetProperty(Environment.DefaultCatalog, "nhibernate");
+			cfg.SetProperty(Environment.DefaultSchema, "somethingDifferent");
+			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2288.AclassWithDefault.hbm.xml", GetType().Assembly);
+			await (AssertThatCheckOnTableExistenceIsCorrectAsync(cfg));
 		}
 	}
 }

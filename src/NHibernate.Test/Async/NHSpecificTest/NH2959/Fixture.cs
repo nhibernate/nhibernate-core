@@ -8,11 +8,14 @@
 //------------------------------------------------------------------------------
 
 
+using System;
+using NHibernate.Multi;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2959
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -48,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2959
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public async Task CanUsePolymorphicCriteriaInMultiCriteriaAsync()
 		{
 			using (ISession session = OpenSession())
@@ -63,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2959
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public async Task CanUsePolymorphicQueryInMultiQueryAsync()
 		{
 			using (ISession session = OpenSession())
@@ -75,6 +78,34 @@ namespace NHibernate.Test.NHSpecificTest.NH2959
 
 				Assert.That(results, Has.Count.EqualTo(1));
 				Assert.That(results[0], Has.Count.EqualTo(2));
+			}
+		}
+
+		[Test]
+		public async Task CanUsePolymorphicCriteriaInQueryBatchAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var results = await (session.CreateQueryBatch()
+				                     .Add<BaseEntity>(session.CreateCriteria(typeof(BaseEntity)))
+				                     .GetResultAsync<BaseEntity>(0, CancellationToken.None));
+
+				Assert.That(results, Has.Count.EqualTo(2));
+			}
+		}
+
+		[Test]
+		public async Task CanUsePolymorphicQueryInQueryBatchAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var results = await (session.CreateQueryBatch()
+				                     .Add<BaseEntity>(session.CreateQuery("from " + typeof(BaseEntity).FullName))
+				                     .GetResultAsync<BaseEntity>(0, CancellationToken.None));
+
+				Assert.That(results, Has.Count.EqualTo(2));
 			}
 		}
 	}

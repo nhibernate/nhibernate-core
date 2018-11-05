@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using NHibernate.Persister.Entity;
@@ -7,11 +8,20 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class JoinedSubclassBinder : ClassBinder
 	{
+		public JoinedSubclassBinder(Mappings mappings)
+			: base(mappings)
+		{
+		}
+		
+		//Since v5.2
+		[Obsolete("Please use constructor without a dialect parameter.")]
 		public JoinedSubclassBinder(Mappings mappings, Dialect.Dialect dialect)
 			: base(mappings, dialect)
 		{
 		}
 
+		//Since v5.2
+		[Obsolete("Please use constructor that accepts mappings parameter instead.")]
 		public JoinedSubclassBinder(ClassBinder parent)
 			: base(parent)
 		{
@@ -41,12 +51,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			Table mytable = mappings.AddTable(schema, catalog, GetClassTableName(subclass, joinedSubclassMapping.table), joinedSubclassMapping.Subselect, false, joinedSubclassMapping.schemaaction);
 			((ITableOwner)subclass).Table = mytable;
 
-			log.InfoFormat("Mapping joined-subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
+			log.Info("Mapping joined-subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
 
 			// KEY
 			BindKey(subclass, joinedSubclassMapping.key, mytable);
 
-			subclass.CreatePrimaryKey(dialect);
+			subclass.CreatePrimaryKey();
 
 			if (!subclass.IsJoinedSubclass)
 				throw new MappingException(
@@ -58,7 +68,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			mytable.AddCheckConstraint(joinedSubclassMapping.check);
 
 			// properties
-			new PropertiesBinder(mappings, subclass, dialect).Bind(joinedSubclassMapping.Properties, inheritedMetas);
+			new PropertiesBinder(mappings, subclass).Bind(joinedSubclassMapping.Properties, inheritedMetas);
 
 			BindJoinedSubclasses(joinedSubclassMapping.JoinedSubclasses, subclass, inheritedMetas);
 

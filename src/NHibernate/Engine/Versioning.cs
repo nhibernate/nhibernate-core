@@ -17,7 +17,7 @@ namespace NHibernate.Engine
 			All = 2
 		}
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Versioning));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(Versioning));
 
 		/// <summary>
 		/// Increment the given version number
@@ -29,11 +29,11 @@ namespace NHibernate.Engine
 		public static object Increment(object version, IVersionType versionType, ISessionImplementor session)
 		{
 			object next = versionType.Next(version, session);
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug(
-					string.Format("Incrementing: {0} to {1}", versionType.ToLoggableString(version, session.Factory),
-												versionType.ToLoggableString(next, session.Factory)));
+				log.Debug("Incrementing: {0} to {1}",
+					versionType.ToLoggableString(version, session.Factory),
+					versionType.ToLoggableString(next, session.Factory));
 			}
 			return next;
 		}
@@ -47,9 +47,9 @@ namespace NHibernate.Engine
 		public static object Seed(IVersionType versionType, ISessionImplementor session)
 		{
 			object seed = versionType.Seed(session);
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Seeding: " + seed);
+				log.Debug("Seeding: {0}", seed);
 			}
 			return seed;
 		}
@@ -74,9 +74,9 @@ namespace NHibernate.Engine
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("using initial version: " + initialVersion);
+					log.Debug("using initial version: {0}", initialVersion);
 				}
 				return false;
 			}

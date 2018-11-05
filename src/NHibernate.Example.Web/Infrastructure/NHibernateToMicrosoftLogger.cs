@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Internal;
 
 namespace NHibernate.Example.Web.Infrastructure
 {
-	public class NHibernateToMicrosoftLogger : IInternalLogger
+	public class NHibernateToMicrosoftLogger : INHibernateLogger
 	{
 		private readonly ILogger _msLogger;
 
@@ -12,122 +14,30 @@ namespace NHibernate.Example.Web.Infrastructure
 			_msLogger = msLogger ?? throw new ArgumentNullException(nameof(msLogger));
 		}
 
-		public void Error(object message)
+		private static readonly Dictionary<NHibernateLogLevel, LogLevel> MapLevels = new Dictionary<NHibernateLogLevel, LogLevel>
 		{
-			if (IsErrorEnabled)
-			{
-				_msLogger.LogError(message.ToString());
-			}
+			{ NHibernateLogLevel.Trace, LogLevel.Trace },
+			{ NHibernateLogLevel.Debug, LogLevel.Debug },
+			{ NHibernateLogLevel.Info, LogLevel.Information },
+			{ NHibernateLogLevel.Warn, LogLevel.Warning },
+			{ NHibernateLogLevel.Error, LogLevel.Error },
+			{ NHibernateLogLevel.Fatal, LogLevel.Critical },
+			{ NHibernateLogLevel.None, LogLevel.None },
+		};
+
+		public void Log(NHibernateLogLevel logLevel, NHibernateLogValues state, Exception exception)
+		{
+			_msLogger.Log(MapLevels[logLevel], 0, new FormattedLogValues(state.Format, state.Args), exception, MessageFormatter);
 		}
 
-		public void Error(object message, Exception exception)
+		public bool IsEnabled(NHibernateLogLevel logLevel)
 		{
-			if (IsErrorEnabled)
-			{
-				_msLogger.LogError(exception, message.ToString());
-			}
+			return _msLogger.IsEnabled(MapLevels[logLevel]);
 		}
 
-		public void ErrorFormat(string format, params object[] args)
+		private static string MessageFormatter(object state, Exception error)
 		{
-			if (IsErrorEnabled)
-			{
-				_msLogger.LogError(format, args);
-			}
+			return state.ToString();
 		}
-
-		public void Fatal(object message)
-		{
-			if (IsFatalEnabled)
-			{
-				_msLogger.LogCritical(message.ToString());
-			}
-		}
-
-		public void Fatal(object message, Exception exception)
-		{
-			if (IsFatalEnabled)
-			{
-				_msLogger.LogCritical(exception, message.ToString());
-			}
-		}
-
-		public void Debug(object message)
-		{
-			if (IsDebugEnabled)
-			{
-				_msLogger.LogDebug(message.ToString());
-			}
-		}
-
-		public void Debug(object message, Exception exception)
-		{
-			if (IsDebugEnabled)
-			{
-				_msLogger.LogDebug(exception, message.ToString());
-			}
-		}
-
-		public void DebugFormat(string format, params object[] args)
-		{
-			if (IsDebugEnabled)
-			{
-				_msLogger.LogDebug(format, args);
-			}
-		}
-
-		public void Info(object message)
-		{
-			if (IsInfoEnabled)
-			{
-				_msLogger.LogInformation(message.ToString());
-			}
-		}
-
-		public void Info(object message, Exception exception)
-		{
-			if (IsInfoEnabled)
-			{
-				_msLogger.LogInformation(exception, message.ToString());
-			}
-		}
-
-		public void InfoFormat(string format, params object[] args)
-		{
-			if (IsInfoEnabled)
-			{
-				_msLogger.LogInformation(format, args);
-			}
-		}
-
-		public void Warn(object message)
-		{
-			if (IsWarnEnabled)
-			{
-				_msLogger.LogWarning(message.ToString());
-			}
-		}
-
-		public void Warn(object message, Exception exception)
-		{
-			if (IsWarnEnabled)
-			{
-				_msLogger.LogWarning(exception, message.ToString());
-			}
-		}
-
-		public void WarnFormat(string format, params object[] args)
-		{
-			if (IsWarnEnabled)
-			{
-				_msLogger.LogWarning(format, args);
-			}
-		}
-
-		public bool IsErrorEnabled => _msLogger.IsEnabled(LogLevel.Error);
-		public bool IsFatalEnabled => _msLogger.IsEnabled(LogLevel.Critical);
-		public bool IsDebugEnabled => _msLogger.IsEnabled(LogLevel.Debug);
-		public bool IsInfoEnabled => _msLogger.IsEnabled(LogLevel.Information);
-		public bool IsWarnEnabled => _msLogger.IsEnabled(LogLevel.Warning);
 	}
 }

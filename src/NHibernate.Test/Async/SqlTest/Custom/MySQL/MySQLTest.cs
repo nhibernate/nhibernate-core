@@ -18,7 +18,7 @@ namespace NHibernate.Test.SqlTest.Custom.MySQL
 	[TestFixture]
 	public class MySQLTestAsync : CustomStoredProcSupportTestAsync
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "SqlTest.Custom.MySQL.MySQLEmployment.hbm.xml" }; }
 		}

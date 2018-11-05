@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.Common;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -86,9 +87,9 @@ namespace NHibernate.Impl
 			{
 				queryCache.Destroy();
 
-				foreach (IQueryCache cache in queryCaches.Values)
+				foreach (var cache in queryCaches.Values)
 				{
-					cache.Destroy();
+					cache.Value.Destroy();
 				}
 
 				updateTimestampsCache.Destroy();
@@ -124,9 +125,9 @@ namespace NHibernate.Impl
 				IEntityPersister p = GetEntityPersister(persistentClass.FullName);
 				if (p.HasCache)
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id));
+						log.Debug("evicting second-level cache: {0}", MessageHelper.InfoString(p, id));
 					}
 					CacheKey ck = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
 					return p.Cache.RemoveAsync(ck, cancellationToken);
@@ -150,13 +151,31 @@ namespace NHibernate.Impl
 				IEntityPersister p = GetEntityPersister(persistentClass.FullName);
 				if (p.HasCache)
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug("evicting second-level cache: " + p.EntityName);
+						log.Debug("evicting second-level cache: {0}", p.EntityName);
 					}
 					return p.Cache.ClearAsync(cancellationToken);
 				}
 				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public Task EvictAsync(IEnumerable<System.Type> persistentClasses, CancellationToken cancellationToken)
+		{
+			if (persistentClasses == null)
+				throw new ArgumentNullException(nameof(persistentClasses));
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				return EvictEntityAsync(persistentClasses.Select(x => x.FullName), cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -175,9 +194,9 @@ namespace NHibernate.Impl
 				IEntityPersister p = GetEntityPersister(entityName);
 				if (p.HasCache)
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug("evicting second-level cache: " + p.EntityName);
+						log.Debug("evicting second-level cache: {0}", p.EntityName);
 					}
 					return p.Cache.ClearAsync(cancellationToken);
 				}
@@ -186,6 +205,30 @@ namespace NHibernate.Impl
 			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
+			}
+		}
+
+		public Task EvictEntityAsync(IEnumerable<string> entityNames, CancellationToken cancellationToken)
+		{
+			if (entityNames == null)
+				throw new ArgumentNullException(nameof(entityNames));
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return InternalEvictEntityAsync();
+			async Task InternalEvictEntityAsync()
+			{
+
+				foreach (var cacheGroup in entityNames.Select(GetEntityPersister).Where(x => x.HasCache).GroupBy(x => x.Cache))
+				{
+					if (log.IsDebugEnabled())
+					{
+						log.Debug("evicting second-level cache for: {0}",
+					          string.Join(", ", cacheGroup.Select(p => p.EntityName)));
+					}
+					await (cacheGroup.Key.ClearAsync(cancellationToken)).ConfigureAwait(false);
+				}
 			}
 		}
 
@@ -200,9 +243,9 @@ namespace NHibernate.Impl
 				IEntityPersister p = GetEntityPersister(entityName);
 				if (p.HasCache)
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id, this));
+						log.Debug("evicting second-level cache: {0}", MessageHelper.InfoString(p, id, this));
 					}
 					CacheKey cacheKey = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
 					return p.Cache.RemoveAsync(cacheKey, cancellationToken);
@@ -226,9 +269,9 @@ namespace NHibernate.Impl
 				ICollectionPersister p = GetCollectionPersister(roleName);
 				if (p.HasCache)
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug("evicting second-level cache: " + MessageHelper.CollectionInfoString(p, id));
+						log.Debug("evicting second-level cache: {0}", MessageHelper.CollectionInfoString(p, id));
 					}
 					CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role);
 					return p.Cache.RemoveAsync(ck, cancellationToken);
@@ -252,9 +295,9 @@ namespace NHibernate.Impl
 				ICollectionPersister p = GetCollectionPersister(roleName);
 				if (p.HasCache)
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug("evicting second-level cache: " + p.Role);
+						log.Debug("evicting second-level cache: {0}", p.Role);
 					}
 					return p.Cache.ClearAsync(cancellationToken);
 				}
@@ -263,6 +306,30 @@ namespace NHibernate.Impl
 			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
+			}
+		}
+
+		public Task EvictCollectionAsync(IEnumerable<string> roleNames, CancellationToken cancellationToken)
+		{
+			if (roleNames == null)
+				throw new ArgumentNullException(nameof(roleNames));
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return InternalEvictCollectionAsync();
+			async Task InternalEvictCollectionAsync()
+			{
+
+				foreach (var cacheGroup in roleNames.Select(GetCollectionPersister).Where(x => x.HasCache).GroupBy(x => x.Cache))
+				{
+					if (log.IsDebugEnabled())
+					{
+						log.Debug("evicting second-level cache for: {0}",
+					          string.Join(", ", cacheGroup.Select(p => p.Role)));
+					}
+					await (cacheGroup.Key.ClearAsync(cancellationToken)).ConfigureAwait(false);
+				}
 			}
 		}
 
@@ -296,10 +363,9 @@ namespace NHibernate.Impl
 				{
 					if (settings.IsQueryCacheEnabled)
 					{
-						IQueryCache currentQueryCache;
-						if (queryCaches.TryGetValue(cacheRegion, out currentQueryCache))
+						if (queryCaches.TryGetValue(cacheRegion, out var currentQueryCache))
 						{
-							return currentQueryCache.ClearAsync(cancellationToken);
+							return currentQueryCache.Value.ClearAsync(cancellationToken);
 						}
 					}
 				}

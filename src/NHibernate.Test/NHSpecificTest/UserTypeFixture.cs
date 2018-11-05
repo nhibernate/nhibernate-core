@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class UserTypeFixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 			=> new [] {"NHSpecific.ClassWithNullColumns.hbm.xml"};
 
 		protected override void OnTearDown()

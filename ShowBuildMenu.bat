@@ -2,10 +2,15 @@
 pushd %~dp0
 
 set NANT="%~dp0Tools\nant\bin\NAnt.exe" -t:net-4.0
-set BUILDTOOL="%~dp0Tools\BuildTool\bin\Release\BuildTool.exe"
+set BUILD_TOOL_PATH=%~dp0Tools\BuildTool\bin\BuildTool.dll
+set BUILDTOOL=dotnet %BUILD_TOOL_PATH%
 set AVAILABLE_CONFIGURATIONS=%~dp0available-test-configurations
 set CURRENT_CONFIGURATION=%~dp0current-test-configuration
 set NUNIT="%~dp0Tools\NUnit.ConsoleRunner.3.7.0\tools\nunit3-console.exe"
+
+if not exist %BUILD_TOOL_PATH% (
+    dotnet build %~dp0Tools\BuildTool\BuildTool.sln -c Release -o bin
+)
 
 :main-menu
 echo ========================= NHIBERNATE BUILD MENU ==========================
@@ -51,12 +56,14 @@ echo E. Add a test configuration for Oracle.
 echo F. Add a test configuration for Oracle with managed driver.
 echo G. Add a test configuration for SQL Server Compact.
 echo H. Add a test configuration for MySql.
+echo I. Add a test configuration for SAP HANA.
 echo.
 echo X.  Exit to main menu.
 echo.
 
-%BUILDTOOL% prompt ABCDEFGHX
-if errorlevel 8 goto main-menu
+%BUILDTOOL% prompt ABCDEFGHIX
+if errorlevel 9 goto main-menu
+if errorlevel 8 goto test-setup-hana
 if errorlevel 7 goto test-setup-mysql
 if errorlevel 6 goto test-setup-sqlserverce
 if errorlevel 5 goto test-setup-oracle-managed
@@ -117,6 +124,13 @@ goto test-setup-generic
 
 :test-setup-oracle-managed
 set CONFIG_NAME=Oracle-Managed
+set TEST_PLATFORM=AnyCPU
+set LIB_FILES=
+set LIB_FILES2=
+goto test-setup-generic
+
+:test-setup-hana
+set CONFIG_NAME=HANA
 set TEST_PLATFORM=AnyCPU
 set LIB_FILES=
 set LIB_FILES2=

@@ -18,11 +18,6 @@ namespace NHibernate.Test.NHSpecificTest.NH548
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH548"; }
-		}
-
 		[Test]
 		public async Task ParentPropertyOnCacheHitAsync()
 		{

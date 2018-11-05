@@ -17,7 +17,7 @@ namespace NHibernate.Test.TypeParameters
 	[TestFixture]
 	public class TypeParameterTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

@@ -48,6 +48,7 @@ namespace NHibernate.Collection.Generic
 		 * <one-to-many> <bag>!
 		 */
 		private IList<T> _gbag;
+		private bool _isOneToMany;
 
 		public PersistentGenericBag()
 		{
@@ -92,11 +93,17 @@ namespace NHibernate.Collection.Generic
 			get { return false; }
 		}
 
-		void ICollection.CopyTo(Array array, int index)
+		void ICollection.CopyTo(Array array, int arrayIndex)
 		{
-			for (var i = index; i < Count; i++)
+			Read();
+			if (_gbag is ICollection collection)
 			{
-				array.SetValue(this[i], i);
+				collection.CopyTo(array, arrayIndex);
+			}
+			else
+			{
+				foreach (var item in _gbag)
+					array.SetValue(item, arrayIndex++);
 			}
 		}
 
@@ -197,16 +204,13 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(T item)
 		{
-			var exists = ReadElementExistence(item);
-			return !exists.HasValue ? _gbag.Contains(item) : exists.Value;
+			return ReadElementExistence(item) ?? _gbag.Contains(item);
 		}
 
 		public void CopyTo(T[] array, int arrayIndex)
 		{
-			for (var i = arrayIndex; i < Count; i++)
-			{
-				array.SetValue(this[i], i);
-			}
+			Read();
+			_gbag.CopyTo(array, arrayIndex);
 		}
 
 		public bool Remove(T item)
@@ -252,59 +256,10 @@ namespace NHibernate.Collection.Generic
 			_gbag.RemoveAt(index);
 		}
 
-		public override bool AfterInitialize(ICollectionPersister persister)
-		{
-			// NH Different behavior : NH-739
-			// would be nice to prevent this overhead but the operation is managed where the ICollectionPersister is not available
-			bool result;
-			if (persister.IsOneToMany && HasQueuedOperations)
-			{
-				var additionStartFrom = _gbag.Count;
-				IList additionQueue = new List<object>(additionStartFrom);
-				foreach (var o in QueuedAdditionIterator)
-				{
-					if (o != null)
-					{
-						for (var i = 0; i < _gbag.Count; i++)
-						{
-							// we are using ReferenceEquals to be sure that is exactly the same queued instance 
-							if (ReferenceEquals(o, _gbag[i]))
-							{
-								additionQueue.Add(o);
-								break;
-							}
-						}
-					}
-				}
-
-				result = base.AfterInitialize(persister);
-
-				if (!result)
-				{
-					// removing duplicated additions
-					foreach (var o in additionQueue)
-					{
-						for (var i = additionStartFrom; i < _gbag.Count; i++)
-						{
-							if (ReferenceEquals(o, _gbag[i]))
-							{
-								_gbag.RemoveAt(i);
-								break;
-							}
-						}
-					}
-				}
-			}
-			else
-			{
-				result = base.AfterInitialize(persister);
-			}
-			return result;
-		}
-
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
 			_gbag = (IList<T>) persister.CollectionType.Instantiate(anticipatedSize);
+			_isOneToMany = persister.IsOneToMany;
 		}
 
 		public override object Disassemble(ICollectionPersister persister)
@@ -594,6 +549,27 @@ namespace NHibernate.Collection.Generic
 
 			public void Operate()
 			{
+				// NH Different behavior for NH-739. A "bag" mapped as a bidirectional one-to-many of an entity with an
+				// id generator causing it to be inserted on flush must not replay the addition after initialization,
+				// if the entity was previously saved. In that case, the entity save has inserted it in database with
+				// its association to the bag, without causing a full flush. So for the bag, the operation is still
+				// pending, but in database it is already done. On initialization, the bag thus already receives the
+				// entity in its loaded list, and it should not be added again.
+				// Since a one-to-many bag is actually a set, we can simply check if the entity is already in the loaded
+				// state, and discard it if yes. (It also relies on the bag not having pending removes, which is the
+				// case, since it only handles delayed additions and clears.)
+				// Since this condition happens with transient instances added in the bag then saved, ReferenceEquals
+				// is enough to match them.
+				// This solution is a workaround, the root cause is not fixed. The root cause is the insertion on save
+				// done without caring for pending operations of one-to-many collections. This root cause could be fixed
+				// by triggering a full flush there before the insert (currently it just flushes pending inserts), or
+				// maybe by flushing just the dirty one-to-many non-initialized collections (but this can be tricky).
+				// (It is also likely one-to-many lists have a similar issue, but nothing is done yet for them. And
+				// their case is more complex due to having to care for the indexes and to handle many more delayed
+				// operation kinds.)
+				if (_enclosingInstance._isOneToMany && _enclosingInstance._gbag.Any(l => ReferenceEquals(l, _value)))
+					return;
+
 				_enclosingInstance._gbag.Add(_value);
 			}
 		}

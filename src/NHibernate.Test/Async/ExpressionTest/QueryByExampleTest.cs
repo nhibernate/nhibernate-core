@@ -17,11 +17,10 @@ using NUnit.Framework;
 namespace NHibernate.Test.ExpressionTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class QueryByExampleTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Componentizable.hbm.xml"}; }
 		}
@@ -150,30 +149,6 @@ namespace NHibernate.Test.ExpressionTest
 			}
 		}
 
-		private async Task InitDataAsync(CancellationToken cancellationToken = default(CancellationToken))
-		{
-			using (ISession s = OpenSession())
-			{
-				Componentizable master = GetMaster("hibernate", "ORM tool", "ORM tool1");
-				await (s.SaveAsync(master, cancellationToken));
-				await (s.FlushAsync(cancellationToken));
-			}
-
-			using (ISession s = OpenSession())
-			{
-				Componentizable master = GetMaster("hibernate", "open source", "open source1");
-				await (s.SaveAsync(master, cancellationToken));
-				await (s.FlushAsync(cancellationToken));
-			}
-
-			using (ISession s = OpenSession())
-			{
-				Componentizable master = GetMaster("hibernate", null, null);
-				await (s.SaveAsync(master, cancellationToken));
-				await (s.FlushAsync(cancellationToken));
-			}
-		}
-
 		private void InitData()
 		{
 			using (ISession s = OpenSession())
@@ -195,16 +170,6 @@ namespace NHibernate.Test.ExpressionTest
 				Componentizable master = GetMaster("hibernate", null, null);
 				s.Save(master);
 				s.Flush();
-			}
-		}
-
-		private async Task DeleteDataAsync(CancellationToken cancellationToken = default(CancellationToken))
-		{
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
-			{
-				await (s.DeleteAsync("from Componentizable", cancellationToken));
-				await (t.CommitAsync(cancellationToken));
 			}
 		}
 

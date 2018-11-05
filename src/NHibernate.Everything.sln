@@ -28,7 +28,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects", "Projects", "{28
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NAnt Build", "NAnt Build", "{4CE16C2F-EFF6-48A4-99BC-8984DCC143FA}"
 	ProjectSection(SolutionItems) = preProject
-		..\build-common\common-project.xml = ..\build-common\common-project.xml
 		..\build-common\common.xml = ..\build-common\common.xml
 		..\default.build = ..\default.build
 	EndProjectSection

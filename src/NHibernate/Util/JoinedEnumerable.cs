@@ -10,7 +10,7 @@ namespace NHibernate.Util
 	/// </summary>
 	public class JoinedEnumerable : IEnumerable
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(JoinedEnumerable));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(JoinedEnumerable));
 
 		private readonly IEnumerable[] _enumerables;
 

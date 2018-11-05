@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Engine;
 
 namespace NHibernate.UserTypes
@@ -6,6 +7,8 @@ namespace NHibernate.UserTypes
 	/// Marker interface for user types which want to perform custom
 	/// logging of their corresponding values 
 	/// </summary>
+	// Since 5.2
+	[Obsolete("This interface has no usage and will be removed in a future version")]
 	public interface ILoggableUserType
 	{
 		/// <summary> Generate a loggable string representation of the collection (value). </summary>

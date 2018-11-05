@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using NHibernate.Util;
@@ -6,13 +7,13 @@ namespace NHibernate.Dialect.Schema
 {
 	public abstract class AbstractTableMetadata : ITableMetadata
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ITableMetadata));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ITableMetadata));
 		private string catalog;
 		private string schema;
 		private string name;
-		private readonly Dictionary<string, IColumnMetadata> columns = new Dictionary<string, IColumnMetadata>();
-		private readonly Dictionary<string, IForeignKeyMetadata> foreignKeys = new Dictionary<string, IForeignKeyMetadata>();
-		private readonly Dictionary<string, IIndexMetadata> indexes = new Dictionary<string, IIndexMetadata>();
+		private readonly Dictionary<string, IColumnMetadata> columns = new Dictionary<string, IColumnMetadata>(StringComparer.OrdinalIgnoreCase);
+		private readonly Dictionary<string, IForeignKeyMetadata> foreignKeys = new Dictionary<string, IForeignKeyMetadata>(StringComparer.OrdinalIgnoreCase);
+		private readonly Dictionary<string, IIndexMetadata> indexes = new Dictionary<string, IIndexMetadata>(StringComparer.OrdinalIgnoreCase);
 
 		public AbstractTableMetadata(DataRow rs, IDataBaseSchema meta, bool extras)
 		{
@@ -25,12 +26,15 @@ namespace NHibernate.Dialect.Schema
 			}
 			string cat = catalog == null ? "" : catalog + '.';
 			string schem = schema == null ? "" : schema + '.';
-			log.Info("table found: " + cat + schem + name);
-			log.Info("columns: " + StringHelper.CollectionToString(columns.Keys));
-			if (extras)
+			if (log.IsInfoEnabled())
 			{
-				log.Info("foreign keys: " + StringHelper.CollectionToString(foreignKeys.Keys));
-				log.Info("indexes: " + StringHelper.CollectionToString(indexes.Keys));
+				log.Info("table found: {0}{1}{2}", cat, schem, name);
+				log.Info("columns: {0}", StringHelper.CollectionToString(columns.Keys));
+				if (extras)
+				{
+					log.Info("foreign keys: {0}", StringHelper.CollectionToString(foreignKeys.Keys));
+					log.Info("indexes: {0}", StringHelper.CollectionToString(indexes.Keys));
+				}
 			}
 		}
 
@@ -68,21 +72,21 @@ namespace NHibernate.Dialect.Schema
 		public IColumnMetadata GetColumnMetadata(string columnName)
 		{
 			IColumnMetadata result;
-			columns.TryGetValue(columnName.ToLowerInvariant(), out result);
+			columns.TryGetValue(columnName, out result);
 			return result;
 		}
 
 		public IForeignKeyMetadata GetForeignKeyMetadata(string keyName)
 		{
 			IForeignKeyMetadata result;
-			foreignKeys.TryGetValue(keyName.ToLowerInvariant(), out result);
+			foreignKeys.TryGetValue(keyName, out result);
 			return result;
 		}
 
 		public IIndexMetadata GetIndexMetadata(string indexName)
 		{
 			IIndexMetadata result;
-			indexes.TryGetValue(indexName.ToLowerInvariant(), out result);
+			indexes.TryGetValue(indexName, out result);
 			return result;
 		}
 
@@ -102,7 +106,7 @@ namespace NHibernate.Dialect.Schema
 			if (info == null)
 			{
 				info = GetForeignKeyMetadata(rs);
-				foreignKeys[info.Name.ToLowerInvariant()] = info;
+				foreignKeys[info.Name] = info;
 			}
 
 			foreach (DataRow row in meta.GetIndexColumns(catalog, schema, name, fk).Rows)
@@ -121,7 +125,7 @@ namespace NHibernate.Dialect.Schema
 			if (info == null)
 			{
 				info = GetIndexMetadata(rs);
-				indexes[info.Name.ToLowerInvariant()] = info;
+				indexes[info.Name] = info;
 			}
 
 			foreach (DataRow row in meta.GetIndexColumns(catalog, schema, name, index).Rows)
@@ -139,7 +143,7 @@ namespace NHibernate.Dialect.Schema
 			if (GetColumnMetadata(column) == null)
 			{
 				IColumnMetadata info = GetColumnMetadata(rs);
-				columns[info.Name.ToLowerInvariant()] = info;
+				columns[info.Name] = info;
 			}
 		}
 

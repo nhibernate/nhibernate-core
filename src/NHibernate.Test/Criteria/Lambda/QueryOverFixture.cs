@@ -47,7 +47,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public static int CompareString(string left, string right, bool textCompare)
 		{
 			// could consider calling Microsoft.VisualBasic.CompilerServices.Operators.CompareString
-			throw new Exception("This is just here to allow us to simulate the VB.Net LINQ expression tree");
+			throw new InvalidOperationException("This is just here to allow us to simulate the VB.Net LINQ expression tree");
 		}
 
 		[Test]
@@ -790,13 +790,13 @@ namespace NHibernate.Test.Criteria.Lambda
 			ICriteria expected = CreateTestCriteria(typeof(Person));
 			expected.Add(Restrictions.IsNotEmpty("Children"));
 			expected.AddOrder(Order.Asc("Name"));
-			expected.SetFetchMode("PersonList", FetchMode.Eager);
+			expected.Fetch("PersonList");
 			expected.SetLockMode(LockMode.UpgradeNoWait);
 
 			IQueryOver<Person,Person> actual = CreateTestQueryOver<Person>();
 			actual.WhereRestrictionOn(p => p.Children).IsNotEmpty();
 			actual.OrderBy(p => p.Name).Asc();
-			actual.Fetch(p => p.PersonList).Eager();
+			actual.Fetch(SelectMode.Fetch, p => p.PersonList);
 			actual.Lock().UpgradeNoWait();
 
 			AssertCriteriaAreEqual(expected, actual);
@@ -863,13 +863,13 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
-					.SetFetchMode("PersonList", FetchMode.Eager)
-					.SetFetchMode("PersonList.PersonList", FetchMode.Lazy);
+					.Fetch("PersonList")
+					.Fetch(SelectMode.Skip, "PersonList.PersonList");
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
-					.Fetch(p => p.PersonList).Eager
-					.Fetch(p => p.PersonList[0].PersonList).Lazy;
+					.Fetch(SelectMode.Fetch, p => p.PersonList)
+					.Fetch(SelectMode.Skip, p => p.PersonList[0].PersonList);
 
 			AssertCriteriaAreEqual(expected, actual);
 		}

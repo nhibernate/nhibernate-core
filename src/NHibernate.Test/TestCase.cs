@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using log4net;
@@ -13,6 +14,7 @@ using NHibernate.Type;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using System.Text;
+using NHibernate.Dialect;
 using NHibernate.Driver;
 
 namespace NHibernate.Test
@@ -22,6 +24,7 @@ namespace NHibernate.Test
 		private const bool OutputDdl = false;
 		protected Configuration cfg;
 		private DebugSessionFactory _sessionFactory;
+		private SchemaExport _schemaExport;
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
 
@@ -38,7 +41,7 @@ namespace NHibernate.Test
 		/// <summary>
 		/// Mapping files used in the TestCase
 		/// </summary>
-		protected abstract IList Mappings { get; }
+		protected abstract string[] Mappings { get; }
 
 		/// <summary>
 		/// Assembly to load mapping files from (default is NHibernate.DomainModel).
@@ -47,6 +50,8 @@ namespace NHibernate.Test
 		{
 			get { return "NHibernate.DomainModel"; }
 		}
+
+		protected SchemaExport SchemaExport => _schemaExport ?? (_schemaExport = new SchemaExport(cfg));
 
 		static TestCase()
 		{
@@ -85,6 +90,7 @@ namespace NHibernate.Test
 
 		protected void RebuildSessionFactory()
 		{
+			Sfi?.Close();
 			_sessionFactory = BuildSessionFactory();
 		}
 
@@ -280,12 +286,12 @@ namespace NHibernate.Test
 
 		protected virtual void CreateSchema()
 		{
-			new SchemaExport(cfg).Create(OutputDdl, true);
+			SchemaExport.Create(OutputDdl, true);
 		}
 
 		protected virtual void DropSchema()
 		{
-			DropSchema(OutputDdl, new SchemaExport(cfg), Sfi);
+			DropSchema(OutputDdl, SchemaExport, Sfi);
 		}
 
 		public static void DropSchema(bool useStdOut, SchemaExport export, ISessionFactoryImplementor sfi)
@@ -314,6 +320,7 @@ namespace NHibernate.Test
 			Sfi?.Close();
 			_sessionFactory = null;
 			cfg = null;
+			_schemaExport = null;
 		}
 
 		public int ExecuteStatement(string sql)
@@ -433,7 +440,43 @@ namespace NHibernate.Test
 		{
 			return AbstractDateTimeType.Round(value, Dialect.TimestampResolutionInTicks);
 		}
-		
+
+		private static readonly Dictionary<string, HashSet<System.Type>> DialectsNotSupportingStandardFunction =
+			new Dictionary<string, HashSet<System.Type>>
+			{
+				{"locate", new HashSet<System.Type> {typeof (SQLiteDialect)}},
+				{"bit_length", new HashSet<System.Type> {typeof (SQLiteDialect)}},
+				{"extract", new HashSet<System.Type> {typeof (SQLiteDialect)}},
+				{
+					"nullif",
+					new HashSet<System.Type>
+					{
+						// Actually not supported by the db engine. (Well, could likely still be done with a case when override.)
+						typeof (MsSqlCeDialect),
+						typeof (MsSqlCe40Dialect)
+					}}
+			};
+
+		protected void AssumeFunctionSupported(string functionName)
+		{
+			// We could test Sfi.SQLFunctionRegistry.HasFunction(functionName) which has the advantage of
+			// accounting for additionnal functions added in configuration. But Dialect is normally never
+			// null, while Sfi could be not yet initialized, depending from where this function is called.
+			// Furtermore there are currently no additionnal functions added in configuration for NHibernate
+			// tests.
+			Assume.That(
+				Dialect.Functions,
+				Does.ContainKey(functionName),
+				$"{Dialect} doesn't support {functionName} function.");
+
+			if (!DialectsNotSupportingStandardFunction.TryGetValue(functionName, out var dialects))
+				return;
+			Assume.That(
+				dialects,
+				Does.Not.Contain(Dialect.GetType()),
+				$"{Dialect} doesn't support {functionName} standard function.");
+		}
+
 		#endregion
 	}
 }

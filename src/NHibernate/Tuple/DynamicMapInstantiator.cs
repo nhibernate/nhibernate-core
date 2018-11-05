@@ -5,6 +5,8 @@ using NHibernate.Mapping;
 
 namespace NHibernate.Tuple
 {
+	//Since v5.2
+	[Obsolete("This class is not used and will be removed in a future version.")]
 	[Serializable]
 	public class DynamicMapInstantiator : IInstantiator
 	{

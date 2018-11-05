@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using NHibernate.Cfg;
-using NHibernate.Engine;
+using Antlr.Runtime.Misc;
 using NUnit.Framework;
 using NHibernate.Criterion;
 
@@ -15,9 +14,9 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
-			get { return new string[] {"EntityModeTest.Map.Basic.ProductLine.hbm.xml"}; }
+			get { return new[] {"EntityModeTest.Map.Basic.ProductLine.hbm.xml"}; }
 		}
 
 		public delegate IDictionary SingleCarQueryDelegate(ISession session);
@@ -95,6 +94,85 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 				t = s.BeginTransaction();
 				cars = singleCarQueryHandler(s);
 				s.Delete(cars);
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void ShouldWorkWithHQLAndGenerics()
+		{
+			TestLazyDynamicClass(
+				s => s.CreateQuery("from ProductLine pl order by pl.Description").UniqueResult<IDictionary<string, object>>(),
+				s => s.CreateQuery("from Model m").List<IDictionary<string, object>>());
+		}
+
+		[Test]
+		public void ShouldWorkWithCriteriaAndGenerics()
+		{
+			TestLazyDynamicClass(
+				s => s.CreateCriteria("ProductLine").AddOrder(Order.Asc("Description")).UniqueResult<IDictionary<string, object>>(),
+				s => s.CreateCriteria("Model").List<IDictionary<string, object>>());
+		}
+
+		public void TestLazyDynamicClass(
+			Func<ISession, IDictionary<string, object>> singleCarQueryHandler,
+			Func<ISession, IList<IDictionary<string, object>>> allModelQueryHandler)
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var cars = new Dictionary<string, object> { ["Description"] = "Cars" };
+
+				var monaro = new Dictionary<string, object>
+				{
+					["ProductLine"] = cars,
+					["Name"] = "Monaro",
+					["Description"] = "Holden Monaro"
+				};
+
+				var hsv = new Dictionary<string, object>
+				{
+					["ProductLine"] = cars,
+					["Name"] = "hsv",
+					["Description"] = "Holden hsv"
+				};
+
+				var models = new List<IDictionary<string, object>> {monaro, hsv};
+
+				cars["Models"] = models;
+
+				s.Save("ProductLine", cars);
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var cars = singleCarQueryHandler(s);
+				var models = (IList<object>) cars["Models"];
+				Assert.That(NHibernateUtil.IsInitialized(models), Is.False);
+				Assert.That(models.Count, Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(models), Is.True);
+				s.Clear();
+				var list = allModelQueryHandler(s);
+				foreach (var dic in list)
+				{
+					Assert.That(NHibernateUtil.IsInitialized(dic["ProductLine"]), Is.False);
+				}
+				var model = list[0];
+				Assert.That(((IList<object>) ((IDictionary<string, object>) model["ProductLine"])["Models"]).Contains(model), Is.True);
+				s.Clear();
+
+				t.Commit();
+			}
+		}
+
+		protected override void OnTearDown()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.Delete("from ProductLine");
 				t.Commit();
 			}
 		}

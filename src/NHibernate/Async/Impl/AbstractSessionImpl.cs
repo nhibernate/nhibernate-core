@@ -11,6 +11,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 using NHibernate.AdoNet;
@@ -25,6 +26,7 @@ using NHibernate.Hql;
 using NHibernate.Linq;
 using NHibernate.Loader.Custom;
 using NHibernate.Loader.Custom.Sql;
+using NHibernate.Multi;
 using NHibernate.Persister.Entity;
 using NHibernate.Transaction;
 using NHibernate.Type;
@@ -58,7 +60,7 @@ namespace NHibernate.Impl
 		public virtual async Task<IList<T>> ListAsync<T>(IQueryExpression query, QueryParameters parameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(SessionId))
+			using (BeginProcess())
 			{
 				var results = new List<T>();
 				await (ListAsync(query, parameters, results, cancellationToken)).ConfigureAwait(false);
@@ -69,7 +71,7 @@ namespace NHibernate.Impl
 		public virtual async Task<IList<T>> ListAsync<T>(CriteriaImpl criteria, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(SessionId))
+			using (BeginProcess())
 			{
 				var results = new List<T>();
 				await (ListAsync(criteria, results, cancellationToken)).ConfigureAwait(false);
@@ -82,7 +84,7 @@ namespace NHibernate.Impl
 		public virtual async Task<IList> ListAsync(CriteriaImpl criteria, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(SessionId))
+			using (BeginProcess())
 			{
 				var results = new List<object>();
 				await (ListAsync(criteria, results, cancellationToken)).ConfigureAwait(false);
@@ -113,7 +115,7 @@ namespace NHibernate.Impl
 		public virtual async Task<IList> ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(SessionId))
+			using (BeginProcess())
 			{
 				var results = new List<object>();
 				await (ListAsync(spec, queryParameters, results, cancellationToken)).ConfigureAwait(false);
@@ -124,7 +126,7 @@ namespace NHibernate.Impl
 		public virtual async Task ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(SessionId))
+			using (BeginProcess())
 			{
 				var query = new SQLCustomQuery(
 					spec.SqlQueryReturns,
@@ -138,7 +140,7 @@ namespace NHibernate.Impl
 		public virtual async Task<IList<T>> ListAsync<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(SessionId))
+			using (BeginProcess())
 			{
 				var results = new List<T>();
 				await (ListAsync(spec, queryParameters, results, cancellationToken)).ConfigureAwait(false);
@@ -151,7 +153,7 @@ namespace NHibernate.Impl
 		public virtual async Task<IList<T>> ListCustomQueryAsync<T>(ICustomQuery customQuery, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(SessionId))
+			using (BeginProcess())
 			{
 				var results = new List<T>();
 				await (ListCustomQueryAsync(customQuery, queryParameters, results, cancellationToken)).ConfigureAwait(false);
@@ -159,9 +161,35 @@ namespace NHibernate.Impl
 			}
 		}
 
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
 		public abstract Task<IQueryTranslator[]> GetQueriesAsync(IQueryExpression query, bool scalar, CancellationToken cancellationToken);
 		public abstract Task<object> GetEntityUsingInterceptorAsync(EntityKey key, CancellationToken cancellationToken);
 		public abstract Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification specification, QueryParameters queryParameters, CancellationToken cancellationToken);
+
+		//6.0 TODO: Make abstract
+		/// <summary>
+		/// detect in-memory changes, determine if the changes are to tables
+		/// named in the query and, if so, complete execution the flush
+		/// </summary>
+		/// <param name="querySpaces"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>Returns true if flush was executed</returns>
+		public virtual Task<bool> AutoFlushIfRequiredAsync(ISet<string> querySpaces, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
+			try
+			{
+				return Task.FromResult<bool>(AutoFlushIfRequired(querySpaces));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<bool>(ex);
+			}
+		}
 
 		public abstract Task FlushAsync(CancellationToken cancellationToken);
 
@@ -170,7 +198,7 @@ namespace NHibernate.Impl
 		protected async Task AfterOperationAsync(bool success, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(SessionId))
+			using (BeginContext())
 			{
 				if (!ConnectionManager.IsInActiveTransaction)
 				{

@@ -9,11 +9,12 @@
 
 
 using System.Collections;
-
+using System.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Event;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
+using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -55,7 +56,7 @@ namespace NHibernate.Engine
 			cancellationToken.ThrowIfCancellationRequested();
 			if (persister.HasCascades || action.RequiresNoCascadeChecking)
 			{
-				log.Info("processing cascade " + action + " for: " + persister.EntityName);
+				log.Info("processing cascade {0} for: {1}", action, persister.EntityName);
 
 				IType[] types = persister.PropertyTypes;
 				CascadeStyle[] cascadeStyles = persister.PropertyCascadeStyles;
@@ -80,86 +81,81 @@ namespace NHibernate.Engine
 					}
 				}
 
-				log.Info("done processing cascade " + action + " for: " + persister.EntityName);
+				log.Info("done processing cascade {0} for: {1}", action, persister.EntityName);
 			}
 		}
 
 		/// <summary> Cascade an action to the child or children</summary>
-		private Task CascadePropertyAsync(object parent, object child, IType type, CascadeStyle style, string propertyName, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken)
+		private async Task CascadePropertyAsync(object parent, object child, IType type, CascadeStyle style, string propertyName, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			if (child != null)
 			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				if (child != null)
+				if (type.IsAssociationType)
 				{
-					if (type.IsAssociationType)
+					IAssociationType associationType = (IAssociationType)type;
+					if (CascadeAssociationNow(associationType))
 					{
-						IAssociationType associationType = (IAssociationType)type;
-						if (CascadeAssociationNow(associationType))
-						{
-							return CascadeAssociationAsync(parent, child, type, style, anything, isCascadeDeleteEnabled, cancellationToken);
-						}
-					}
-					else if (type.IsComponentType)
-					{
-						return CascadeComponentAsync(parent, child, (IAbstractComponentType)type, propertyName, anything, cancellationToken);
+						await (CascadeAssociationAsync(parent, child, type, style, anything, isCascadeDeleteEnabled, cancellationToken)).ConfigureAwait(false);
 					}
 				}
-				else
+				else if (type.IsComponentType)
 				{
-					// potentially we need to handle orphan deletes for one-to-ones here...
-					if (type.IsEntityType && ((EntityType)type).IsLogicalOneToOne())
+					await (CascadeComponentAsync(parent, child, (IAbstractComponentType)type, propertyName, anything, cancellationToken)).ConfigureAwait(false);
+				}
+			}
+			else
+			{
+				// potentially we need to handle orphan deletes for one-to-ones here...
+				if (type.IsEntityType && ((EntityType)type).IsLogicalOneToOne())
+				{
+					// We have a physical or logical one-to-one and from previous checks we know we
+					// have a null value.  See if the attribute cascade settings and action-type require
+					// orphan checking
+					if (style.HasOrphanDelete && action.DeleteOrphans)
 					{
-						// We have a physical or logical one-to-one and from previous checks we know we
-						// have a null value.  See if the attribute cascade settings and action-type require
-						// orphan checking
-						if (style.HasOrphanDelete && action.DeleteOrphans)
+						// value is orphaned if loaded state for this property shows not null
+						// because it is currently null.
+						EntityEntry entry = eventSource.PersistenceContext.GetEntry(parent);
+						if (entry != null && entry.Status != Status.Saving)
 						{
-							// value is orphaned if loaded state for this property shows not null
-							// because it is currently null.
-							EntityEntry entry = eventSource.PersistenceContext.GetEntry(parent);
-							if (entry != null && entry.Status != Status.Saving)
+							object loadedValue;
+							if (componentPathStack.Count == 0)
 							{
-								EntityType entityType = (EntityType)type;
-								object loadedValue;
-								if (!componentPathStack.Any())
-								{
-									// association defined on entity
-									loadedValue = entry.GetLoadedValue(propertyName);
-								}
-								else
-								{
-									// association defined on component
-									// todo : this is currently unsupported because of the fact that
-									// we do not know the loaded state of this value properly
-									// and doing so would be very difficult given how components and
-									// entities are loaded (and how 'loaded state' is put into the
-									// EntityEntry).  Solutions here are to either:
-									//	1) properly account for components as a 2-phase load construct
-									//  2) just assume the association was just now orphaned and
-									//     issue the orphan delete.  This would require a special
-									//     set of SQL statements though since we do not know the
-									//     orphaned value, something a delete with a subquery to
-									//     match the owner.
-									loadedValue = null;
-								}
+								// association defined on entity
+								loadedValue = entry.GetLoadedValue(propertyName);
 
-								if (loadedValue != null)
-								{
-									return eventSource.DeleteAsync(entry.Persister.EntityName, loadedValue, false, null, cancellationToken);
-								}
+								// Check this is not a null carrying proxy. The no-proxy load is currently handled by
+								// putting a proxy (!) flagged for unwrapping (even for non-constrained one-to-one,
+								// which association may be null) in the loadedState of the parent. The unwrap flag
+								// causes it to support having a null implementation, instead of throwing an entity
+								// not found error.
+								loadedValue = await (eventSource.PersistenceContext.UnproxyAndReassociateAsync(loadedValue, cancellationToken)).ConfigureAwait(false);
+							}
+							else
+							{
+								// association defined on component
+								// todo : this is currently unsupported because of the fact that
+								// we do not know the loaded state of this value properly
+								// and doing so would be very difficult given how components and
+								// entities are loaded (and how 'loaded state' is put into the
+								// EntityEntry).  Solutions here are to either:
+								//	1) properly account for components as a 2-phase load construct
+								//  2) just assume the association was just now orphaned and
+								//     issue the orphan delete.  This would require a special
+								//     set of SQL statements though since we do not know the
+								//     orphaned value, something a delete with a subquery to
+								//     match the owner.
+								loadedValue = null;
+							}
+
+							if (loadedValue != null)
+							{
+								await (eventSource.DeleteAsync(entry.Persister.EntityName, loadedValue, false, null, cancellationToken)).ConfigureAwait(false);
 							}
 						}
 					}
 				}
-				return Task.CompletedTask;
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
 			}
 		}
 
@@ -252,12 +248,12 @@ namespace NHibernate.Engine
 
 			if (reallyDoCascade)
 			{
-				log.Info("cascade " + action + " for collection: " + collectionType.Role);
+				log.Info("cascade {0} for collection: {1}", action, collectionType.Role);
 
 				foreach (object o in action.GetCascadableChildrenIterator(eventSource, collectionType, child))
 					await (CascadePropertyAsync(parent, o, elemType, style, null, anything, isCascadeDeleteEnabled, cancellationToken)).ConfigureAwait(false);
 
-				log.Info("done cascade " + action + " for collection: " + collectionType.Role);
+				log.Info("done cascade {0} for collection: {1}", action, collectionType.Role);
 			}
 
 			var childAsPersColl = child as IPersistentCollection;
@@ -267,7 +263,7 @@ namespace NHibernate.Engine
 			if (deleteOrphans)
 			{
 				// handle orphaned entities!!
-				log.Info("deleting orphans for collection: " + collectionType.Role);
+				log.Info("deleting orphans for collection: {0}", collectionType.Role);
 
 				// we can do the cast since orphan-delete does not apply to:
 				// 1. newly instantiated collections
@@ -275,7 +271,7 @@ namespace NHibernate.Engine
 				string entityName = collectionType.GetAssociatedEntityName(eventSource.Factory);
 				await (DeleteOrphansAsync(entityName, childAsPersColl, cancellationToken)).ConfigureAwait(false);
 
-				log.Info("done deleting orphans for collection: " + collectionType.Role);
+				log.Info("done deleting orphans for collection: {0}", collectionType.Role);
 			}
 		}
 
@@ -299,7 +295,7 @@ namespace NHibernate.Engine
 			{
 				if (orphan != null)
 				{
-					log.Info("deleting orphaned entity instance: " + entityName);
+					log.Info("deleting orphaned entity instance: {0}", entityName);
 
 					await (eventSource.DeleteAsync(entityName, orphan, false, null, cancellationToken)).ConfigureAwait(false);
 				}

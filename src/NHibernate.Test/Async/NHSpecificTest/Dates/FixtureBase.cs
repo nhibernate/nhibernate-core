@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 	[TestFixture]
 	public abstract class FixtureBaseAsync : TestCase
 	{
-		protected abstract override IList Mappings { get; }
+		protected abstract override string[] Mappings { get; }
 
 		protected override string MappingsAssembly
 		{

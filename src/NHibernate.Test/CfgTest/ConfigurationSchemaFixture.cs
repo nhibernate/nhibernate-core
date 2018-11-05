@@ -1,4 +1,3 @@
-using System;
 using System.Configuration;
 using NHibernate.Event;
 using NUnit.Framework;
@@ -12,7 +11,7 @@ namespace NHibernate.Test.CfgTest
 	public class ConfigurationSchemaFixture
 	{
 		[Test]
-		public void InvalidConfig()
+		public void SessionFactoryIsRequiredWhenConfigurationIsNotLoadedFromAppConfig()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='utf-8' ?>
@@ -21,21 +20,42 @@ namespace NHibernate.Test.CfgTest
 </hibernate-configuration>";
 
 			XmlTextReader xtr = new XmlTextReader(xml, XmlNodeType.Document, null);
-			Assert.Throws<HibernateConfigException>(()=>new HibernateConfiguration(xtr));
+			Assert.Throws<HibernateConfigException>(() => new HibernateConfiguration(xtr));
 		}
 
 		[Test]
 		public void FromAppConfigTest()
 		{
+			Assume.That(TestsContext.ExecutingWithVsTest, Is.False);
+
 			IHibernateConfiguration hc = ConfigurationManager.GetSection("hibernate-configuration") as IHibernateConfiguration;
 			Assert.That(hc.ByteCodeProviderType, Is.EqualTo("lcg"));
 			Assert.IsTrue(hc.UseReflectionOptimizer);
 			Assert.AreEqual("NHibernate.Test", hc.SessionFactory.Name);
 		}
+ 
+		[Test]
+		public void ByteCodeProvider()
+		{
+			Assume.That(TestsContext.ExecutingWithVsTest, Is.False);
+
+			var xml =
+				@"<?xml version='1.0' encoding='utf-8' ?>
+<hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
+	<bytecode-provider type='test'/>
+	<session-factory>
+	</session-factory>
+</hibernate-configuration>";
+
+			var hc = HibernateConfiguration.FromAppConfig(xml);
+			Assert.That(hc.ByteCodeProviderType, Is.EqualTo("test"));
+		}
 
 		[Test]
 		public void IgnoreSystemOutOfAppConfig()
 		{
+			Assume.That(TestsContext.ExecutingWithVsTest, Is.False);
+
 			IHibernateConfiguration hc = ConfigurationManager.GetSection("hibernate-configuration") as IHibernateConfiguration;
 			string xml =
 			@"<?xml version='1.0' encoding='utf-8' ?>
@@ -50,6 +70,30 @@ namespace NHibernate.Test.CfgTest
 			HibernateConfiguration newhc = new HibernateConfiguration(xtr);
 			Assert.AreEqual(hc.ByteCodeProviderType, newhc.ByteCodeProviderType);
 			Assert.AreEqual(hc.UseReflectionOptimizer, newhc.UseReflectionOptimizer);
+		}
+
+		[Test]
+		public void ObjectsFactory()
+		{
+			Assume.That(TestsContext.ExecutingWithVsTest, Is.False);
+
+			var xml =
+				@"<?xml version='1.0' encoding='utf-8' ?>
+<hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
+		<objects-factory type='test'/>
+		<session-factory>
+		</session-factory>
+</hibernate-configuration>";
+
+			HibernateConfiguration hc;
+			using (var xtr = new XmlTextReader(xml, XmlNodeType.Document, null))
+			{
+				hc = new HibernateConfiguration(xtr);
+				Assert.That(hc.ObjectsFactoryType, Is.Null);
+			}
+
+			hc = HibernateConfiguration.FromAppConfig(xml);
+			Assert.That(hc.ObjectsFactoryType, Is.EqualTo("test"));
 		}
 
 		[Test]
@@ -90,16 +134,18 @@ namespace NHibernate.Test.CfgTest
 	<session-factory>
 		<property name='connection.provider'>Value of connection.provider</property>
 		<property name='default_schema'>Value of default_schema</property>
+		<property name='cache.some_category.setting_name'>Some cache configuration</property>
 	</session-factory>
 </hibernate-configuration>";
 
 			XmlTextReader xtr = new XmlTextReader(xml, XmlNodeType.Document, null);
 			HibernateConfiguration hc = new HibernateConfiguration(xtr);
-			Assert.AreEqual(2, hc.SessionFactory.Properties.Count);
+			Assert.AreEqual(3, hc.SessionFactory.Properties.Count);
 			Assert.IsTrue(hc.SessionFactory.Properties.ContainsKey("connection.provider"));
 			Assert.IsTrue(hc.SessionFactory.Properties.ContainsKey("default_schema"));
 			Assert.AreEqual("Value of connection.provider", hc.SessionFactory.Properties["connection.provider"]);
 			Assert.AreEqual("Value of default_schema", hc.SessionFactory.Properties["default_schema"]);
+			Assert.AreEqual("Some cache configuration", hc.SessionFactory.Properties["cache.some_category.setting_name"]);
 		}
 
 		[Test]

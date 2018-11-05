@@ -128,7 +128,7 @@ namespace NHibernate.Engine
 
 		public JoinFragment ToJoinFragment()
 		{
-			return ToJoinFragment(new CollectionHelper.EmptyMapClass<string, IFilter>(), true);
+			return ToJoinFragment(CollectionHelper.EmptyDictionary<string, IFilter>(), true);
 		}
 
 		public JoinFragment ToJoinFragment(IDictionary<string, IFilter> enabledFilters, bool includeExtraJoins)
@@ -248,7 +248,7 @@ namespace NHibernate.Engine
 
 		public JoinSequence AddCondition(SqlString condition)
 		{
-			if (condition.Trim().Length != 0)
+			if (!condition.IsEmptyOrWhitespace())
 			{
 				if (!condition.StartsWithCaseInsensitive(" and "))
 					conditions.Add(" and ");

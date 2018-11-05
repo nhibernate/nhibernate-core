@@ -49,7 +49,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 					switch (collectionCacheElement.Name)
 					{
 						case "collection":
-							if (collectionCacheElement.Value.Trim().Length == 0)
+							if (string.IsNullOrWhiteSpace(collectionCacheElement.Value))
 								throw new HibernateConfigException("Invalid collection-cache element; the attribute <collection> must be assigned with no empty value");
 							collection = collectionCacheElement.Value;
 							break;

@@ -16,7 +16,7 @@ namespace NHibernate.Test.JoinedSubclass
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"JoinedSubclass.JoinedSubclass.hbm.xml"}; }
 		}

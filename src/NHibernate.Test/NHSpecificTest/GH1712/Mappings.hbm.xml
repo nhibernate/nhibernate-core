@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+					namespace="NHibernate.Test.NHSpecificTest.GH1712"
+					assembly="NHibernate.Test">
+	<class name="GenericEntity`1[[System.Guid]]" entity-name="GenericEntityWithGuid" table="GenericEntityWithGuid">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+	</class>
+	<class name="GenericEntity`1[[System.Int64]]" entity-name="GenericEntityWithLong" table="GenericEntityWithLong">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+	</class>
+	<class name="GenericEntity`1[[System.String]]" entity-name="GenericEntityWithString" table="GenericEntityWithString">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+	</class>
+	<class name="GenericEntity`1[[System.TimeSpan]]" entity-name="GenericEntityWithTimeSpan" table="GenericEntityWithTimeSpan">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+	</class>
+</hibernate-mapping>

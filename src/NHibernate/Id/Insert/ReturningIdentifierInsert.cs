@@ -15,8 +15,8 @@ namespace NHibernate.Id.Insert
 		private readonly string identifierColumnName;
 		private readonly string returnParameterName;
 
-		public ReturningIdentifierInsert(ISessionFactoryImplementor factory, string identifierColumnName,
-		                                 string returnParameterName) : base(factory)
+		public ReturningIdentifierInsert(ISessionFactoryImplementor factory, string identifierColumnName, string returnParameterName)
+			: base(factory)
 		{
 			this.returnParameterName = returnParameterName;
 			this.identifierColumnName = identifierColumnName;

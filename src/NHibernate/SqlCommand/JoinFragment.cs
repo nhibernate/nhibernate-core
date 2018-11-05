@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -45,7 +46,7 @@ namespace NHibernate.SqlCommand
 		{
 			if (StringHelper.IsNotEmpty(on))
 			{
-				if (!on.StartsWith(" and"))
+				if (!on.StartsWith(" and", StringComparison.Ordinal))
 				{
 					buffer.Add(" and ");
 				}
@@ -56,6 +57,20 @@ namespace NHibernate.SqlCommand
 			{
 				return false;
 			}
+		}
+
+		/// <summary>
+		/// Adds condition to buffer without adding " and " prefix. Existing " and" prefix is removed
+		/// </summary>
+		protected void AddBareCondition(SqlStringBuilder buffer, SqlString condition)
+		{
+			if (SqlStringHelper.IsEmpty(condition))
+				return;
+			
+			buffer.Add(
+				condition.StartsWithCaseInsensitive(" and ")
+					? condition.Substring(4)
+					: condition);
 		}
 
 		protected bool AddCondition(SqlStringBuilder buffer, SqlString on)

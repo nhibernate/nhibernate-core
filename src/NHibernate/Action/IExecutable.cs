@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Engine;
 
 namespace NHibernate.Action
@@ -10,6 +11,8 @@ namespace NHibernate.Action
 	/// place of the Hibernate interface (see Action/BeforeTransactionCompletionProcess). The
 	/// delegate omits the <see cref="ISessionImplementor" /> parameter as it is not used.
 	/// </remarks>
+	//Since v5.2
+	[Obsolete("This delegate is not used and will be removed in a future version.")]
 	public delegate void BeforeTransactionCompletionProcessDelegate();
 	
 	/// <summary>
@@ -21,6 +24,8 @@ namespace NHibernate.Action
 	/// place of the Hibernate interface (see Action/AfterTransactionCompletionProcess). The
 	/// delegate omits the <see cref="ISessionImplementor" /> parameter as it is not used.
 	/// </remarks>
+	//Since v5.2
+	[Obsolete("This delegate is not used and will be removed in a future version.")]
 	public delegate void AfterTransactionCompletionProcessDelegate(bool success);
 	
 	/// <summary>
@@ -28,6 +33,7 @@ namespace NHibernate.Action
 	/// Usually, the operation is a database insert/update/delete,
 	/// together with required second-level cache management.
 	/// </summary>
+	//6.0 TODO: Consider refactoring towards using an abstract class
 	public partial interface IExecutable
 	{
 		/// <summary>
@@ -44,11 +50,15 @@ namespace NHibernate.Action
 		/// <summary>
 		/// Get the before-transaction-completion process, if any, for this action.
 		/// </summary>
+		//Since v5.2
+		[Obsolete("This property is not used and will be removed in a future version. Please implement IAsyncExecutable.")]
 		BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess { get; }
-		
+
 		/// <summary>
 		/// Get the after-transaction-completion process, if any, for this action.
 		/// </summary>
+		//Since v5.2
+		[Obsolete("This property is not used and will be removed in a future version. Please implement IAsyncExecutable.")]
 		AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess { get; }
 	}
 }

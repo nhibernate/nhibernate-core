@@ -19,11 +19,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1275
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1275"; }
-		}
-
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			return !string.IsNullOrEmpty(dialect.ForUpdateString);

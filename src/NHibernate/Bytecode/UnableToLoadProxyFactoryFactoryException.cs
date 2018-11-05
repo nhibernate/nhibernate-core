@@ -1,20 +1,39 @@
 using System;
 using System.Runtime.Serialization;
+using System.Security;
 
 namespace NHibernate.Bytecode
 {
 	[Serializable]
 	public class UnableToLoadProxyFactoryFactoryException : HibernateByteCodeException
 	{
-		private readonly string typeName;
+
 		public UnableToLoadProxyFactoryFactoryException(string typeName, Exception inner)
 			: base("", inner)
 		{
-			this.typeName = typeName;
+			TypeName = typeName;
 		}
 
-		protected UnableToLoadProxyFactoryFactoryException(SerializationInfo info,
-		                      StreamingContext context) : base(info, context) {}
+		protected UnableToLoadProxyFactoryFactoryException(SerializationInfo info, StreamingContext context)
+			: base(info, context)
+		{
+			foreach (var entry in info)
+			{
+				if (entry.Name == "TypeName")
+				{
+					TypeName = entry.Value?.ToString();
+				}
+			}
+		}
+
+		[SecurityCritical]
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+			info.AddValue("TypeName", TypeName);
+		}
+
+		public string TypeName { get; }
 		public override string Message
 		{
 			get
@@ -28,7 +47,7 @@ Solution:
 Confirm that your deployment folder contains one of the following assemblies:
 NHibernate.ByteCode.LinFu.dll
 NHibernate.ByteCode.Castle.dll";
-				string msg = "Unable to load type '" + typeName + "' during configuration of proxy factory class." + causes;
+				string msg = "Unable to load type '" + TypeName + "' during configuration of proxy factory class." + causes;
 
 				return msg;
 			}

@@ -508,12 +508,14 @@ namespace NHibernate.Type
 
 			//TODO: implement caching?! proxies?!
 
+			var keyType = GetIdentifierOrUniqueKeyType(factory)
+				.GetSemiResolvedType(factory);
 			EntityUniqueKey euk =
 				new EntityUniqueKey(
 					entityName,
 					uniqueKeyPropertyName,
 					key,
-					GetIdentifierOrUniqueKeyType(factory),
+					keyType,
 					session.Factory);
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;

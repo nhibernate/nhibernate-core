@@ -49,7 +49,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				mappings.ExpectedFilterDefinition(filterable, name, condition);
 
-				log.Debug(string.Format("Applying filter [{0}] as [{1}]", name, condition));
+				log.Debug("Applying filter [{0}] as [{1}]", name, condition);
 				addFilterDelegate(name, condition);
 			}
 		}

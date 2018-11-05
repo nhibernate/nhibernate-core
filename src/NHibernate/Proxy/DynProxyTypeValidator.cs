@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using NHibernate.Util;
@@ -87,7 +88,7 @@ namespace NHibernate.Proxy
 
 		private bool IsPropertyMethod(MethodInfo methodInfo)
 		{
-			return methodInfo.IsSpecialName && (methodInfo.Name.StartsWith("get_") || methodInfo.Name.StartsWith("set_"));
+			return methodInfo.IsSpecialName && (methodInfo.Name.StartsWith("get_", StringComparison.Ordinal) || methodInfo.Name.StartsWith("set_", StringComparison.Ordinal));
 		}
 
 		protected virtual void CheckMethodIsVirtual(System.Type type, MethodInfo method)

@@ -17,7 +17,7 @@ namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class ClassMetaType : AbstractType
+	public partial class ClassMetaType : AbstractType, IMetaType
 	{
 
 		public override Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)

@@ -14,7 +14,7 @@ namespace NHibernate.Test.Legacy
 	[TestFixture]
 	public class SQLLoaderTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

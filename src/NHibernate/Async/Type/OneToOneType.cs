@@ -37,7 +37,6 @@ namespace NHibernate.Type
 			{
 				return Task.FromException<object>(ex);
 			}
-			//nothing to do
 		}
 
 		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
@@ -55,7 +54,6 @@ namespace NHibernate.Type
 			{
 				return Task.FromException<object>(ex);
 			}
-			//nothing to do
 		}
 
 		public override Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken)

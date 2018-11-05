@@ -8,9 +8,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public static class MappingLogExtensions
 	{
-		public static void LogMapped(this Property property, IInternalLogger log)
+		public static void LogMapped(this Property property, INHibernateLogger log)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				var msg = "Mapped property: " + property.Name;
 				var columns = string.Join(",", property.Value.ColumnIterator.Select(c => c.Text).ToArray());

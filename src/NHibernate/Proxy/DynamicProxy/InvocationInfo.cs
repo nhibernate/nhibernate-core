@@ -10,9 +10,12 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text;
+using NHibernate.Util;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
+	// Since v5.2
+	[Obsolete("DynamicProxy namespace has been obsoleted, use static proxies instead (see StaticProxyFactory)")]
 	public class InvocationInfo
 	{
 		private readonly object[] args;
@@ -105,7 +108,16 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		public virtual object InvokeMethodOnTarget()
 		{
-			return _callbackMethod.Invoke(Target, Arguments);
+			object returnValue;
+			try
+			{
+				returnValue = _callbackMethod.Invoke(Target, Arguments);
+			}
+			catch (TargetInvocationException ex)
+			{
+				throw ReflectHelper.UnwrapTargetInvocationException(ex);
+			}
+			return returnValue;
 		}
 	}
 }

@@ -5,7 +5,6 @@ using System.Data.Common;
 using System.Diagnostics;
 using NHibernate.Engine;
 using NHibernate.Event;
-using NHibernate.Hql;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Impl;
@@ -27,7 +26,6 @@ namespace NHibernate.Loader.Hql
 
 		private bool _hasScalars;
 		private string[][] _scalarColumnNames;
-		private IType[] _queryReturnTypes;
 		private IResultTransformer _selectNewTransformer;
 		private string[] _queryReturnAliases;
 		private IQueryableCollection[] _collectionPersisters;
@@ -71,7 +69,7 @@ namespace NHibernate.Loader.Hql
 			// we are given a map of user-alias -> lock mode
 			// create a new map of sql-alias -> lock mode
 			var aliasedLockModes = new Dictionary<string, LockMode>();
-			Dictionary<string, string[]> keyColumnNames = dialect.ForUpdateOfColumns ? new Dictionary<string, string[]>() : null;
+			Dictionary<string, string[]> keyColumnNames = dialect.UsesColumnsWithForUpdateOf ? new Dictionary<string, string[]>() : null;
 
 			foreach (var entry in lockModes)
 			{
@@ -203,9 +201,9 @@ namespace NHibernate.Loader.Hql
 			_hasScalars = selectClause.IsScalarSelect;
 			_scalarColumnNames = selectClause.ColumnNames;
 			//sqlResultTypes = selectClause.getSqlResultTypes();
-			_queryReturnTypes = selectClause.QueryReturnTypes;
+			ResultTypes = selectClause.QueryReturnTypes;
 
-			_selectNewTransformer = HolderInstantiator.CreateSelectNewTransformer(selectClause.Constructor, selectClause.IsMap, selectClause.IsList);
+			_selectNewTransformer = GetSelectNewTransformer(selectClause);
 			_queryReturnAliases = selectClause.QueryReturnAliases;
 
 			IList<FromElement> collectionFromElements = selectClause.CollectionFromElements;
@@ -286,21 +284,19 @@ namespace NHibernate.Loader.Hql
 		public IList List(ISessionImplementor session, QueryParameters queryParameters)
 		{
 			CheckQuery(queryParameters);
-			return List(session, queryParameters, _queryTranslator.QuerySpaces, _queryReturnTypes);
+			return List(session, queryParameters, _queryTranslator.QuerySpaces);
 		}
 
 		public override IList GetResultList(IList results, IResultTransformer resultTransformer)
 		{
 			// meant to handle dynamic instantiation queries...
-			HolderInstantiator holderInstantiator = HolderInstantiator.GetHolderInstantiator(_selectNewTransformer,
-																							 resultTransformer,
-																							 _queryReturnAliases);
-			if (holderInstantiator.IsRequired)
+			var transformer = _selectNewTransformer ?? resultTransformer;
+			if (transformer != null)
 			{
 				for (int i = 0; i < results.Count; i++)
 				{
-					var row = (Object[]) results[i];
-					Object result = holderInstantiator.Instantiate(row);
+					var row = (object[]) results[i];
+					object result = transformer.TransformTuple(row, _queryReturnAliases);
 					results[i] = result;
 				}
 
@@ -321,7 +317,7 @@ namespace NHibernate.Loader.Hql
 
 		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
 		{
-			return HolderInstantiator.ResolveResultTransformer(_selectNewTransformer, resultTransformer);
+			return _selectNewTransformer ?? resultTransformer;
 		}
 
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, DbDataReader rs,
@@ -342,11 +338,11 @@ namespace NHibernate.Loader.Hql
 			if (_hasScalars)
 			{
 				string[][] scalarColumns = _scalarColumnNames;
-				int queryCols = _queryReturnTypes.Length;
+				int queryCols = ResultTypes.Length;
 				resultRow = new object[queryCols];
 				for (int i = 0; i < queryCols; i++)
 				{
-					resultRow[i] = _queryReturnTypes[i].NullSafeGet(rs, scalarColumns[i], session, null);
+					resultRow[i] = ResultTypes[i].NullSafeGet(rs, scalarColumns[i], session, null);
 				}
 			}
 			else
@@ -401,17 +397,15 @@ namespace NHibernate.Loader.Hql
 				bool[] includeInResultTuple = _includeInSelect;
 				if (_hasScalars)
 				{
-					includeInResultTuple = new bool[_queryReturnTypes.Length];
+					includeInResultTuple = new bool[ResultTypes.Length];
 					ArrayHelper.Fill(includeInResultTuple, true);
 				}
 				return includeInResultTuple;
 			}
 		}
 
-		public IType[] ReturnTypes
-		{
-			get { return _queryReturnTypes; }
-		}
+		[Obsolete("Please use ResultTypes instead")]
+		public IType[] ReturnTypes => ResultTypes;
 
 		internal IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session)
 		{
@@ -427,13 +421,11 @@ namespace NHibernate.Loader.Hql
 			var cmd = PrepareQueryCommand(queryParameters, false, session);
 
 			// This DbDataReader is disposed of in EnumerableImpl.Dispose
-			var rs = GetResultSet(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session);
+			var rs = GetResultSet(cmd, queryParameters, session, null);
 
-			HolderInstantiator hi = 
-				HolderInstantiator.GetHolderInstantiator(_selectNewTransformer, queryParameters.ResultTransformer, _queryReturnAliases);
-
+			var resultTransformer = _selectNewTransformer ?? queryParameters.ResultTransformer;
 			IEnumerable result = 
-				new EnumerableImpl(rs, cmd, session, queryParameters.IsReadOnly(session), _queryTranslator.ReturnTypes, _queryTranslator.GetColumnNames(), queryParameters.RowSelection, hi);
+				new EnumerableImpl(rs, cmd, session, queryParameters.IsReadOnly(session), _queryTranslator.ReturnTypes, _queryTranslator.GetColumnNames(), queryParameters.RowSelection, resultTransformer, _queryReturnAliases);
 
 			if (statsEnabled)
 			{
@@ -454,6 +446,27 @@ namespace NHibernate.Loader.Hql
 		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()
 		{
 			return _queryTranslator.CollectedParameterSpecifications;
+		}
+
+		private static IResultTransformer GetSelectNewTransformer(SelectClause selectClause)
+		{
+			var constructor = selectClause.Constructor;
+			if (constructor != null)
+			{
+				return new AliasToBeanConstructorResultTransformer(constructor);
+			}
+
+			if (selectClause.IsMap)
+			{
+				return Transformers.AliasToEntityMap;
+			}
+
+			if (selectClause.IsList)
+			{
+				return Transformers.ToList;
+			}
+
+			return null;
 		}
 	}
 }

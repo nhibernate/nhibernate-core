@@ -46,19 +46,13 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 		}
 
 		[Test]
-		public Task ShouldVerifySameTableAsync()
+		public async Task ShouldVerifySameTableAsync()
 		{
-			try
-			{
-				var validator = new Tool.hbm2ddl.SchemaValidator((_configuration1));
-				return validator.ValidateAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			var validator = new Tool.hbm2ddl.SchemaValidator((_configuration1));
+			await (validator.ValidateAsync());
 		}
 
+#if NETFX
 		[Test, SetCulture("tr-TR"), SetUICulture("tr-TR")]
 		public async Task ShouldVerifySameTableTurkishAsync()
 		{
@@ -87,6 +81,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 				await (export.DropAsync(true, true));
 			}
 		}
+#endif
 
 		[Test]
 		public void ShouldNotVerifyModifiedTableAsync()

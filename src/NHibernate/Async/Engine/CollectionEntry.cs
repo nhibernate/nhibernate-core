@@ -57,9 +57,9 @@ namespace NHibernate.Engine
 			}
 			await (DirtyAsync(collection, cancellationToken)).ConfigureAwait(false);
 
-			if (log.IsDebugEnabled && collection.IsDirty && loadedPersister != null)
+			if (log.IsDebugEnabled() && collection.IsDirty && loadedPersister != null)
 			{
-				log.Debug("Collection dirty: " + MessageHelper.CollectionInfoString(loadedPersister, loadedKey));
+				log.Debug("Collection dirty: {0}", MessageHelper.CollectionInfoString(loadedPersister, loadedKey));
 			}
 
 			// reset all of these values so any previous flush status 

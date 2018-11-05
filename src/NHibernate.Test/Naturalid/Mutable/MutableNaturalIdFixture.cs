@@ -16,7 +16,7 @@ namespace NHibernate.Test.Naturalid.Mutable
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Naturalid.Mutable.User.hbm.xml"}; }
 		}

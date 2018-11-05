@@ -7,7 +7,7 @@ namespace NHibernate.Test.SqlTest.Custom.Firebird
 	[TestFixture]
 	public class FireBirdTest : CustomStoredProcSupportTest
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"SqlTest.Custom.Firebird.FireBirdEmployment.hbm.xml"}; }
 		}

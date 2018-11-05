@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -17,9 +18,11 @@ using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
+	// Since v5.2
+	[Obsolete("Use Multi.QueryBatch instead, obtainable with ISession.CreateQueryBatch.")]
 	public partial class MultiQueryImpl : IMultiQuery
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(MultiQueryImpl));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(MultiQueryImpl));
 
 		private readonly List<IQuery> queries = new List<IQuery>();
 		private readonly List<ITranslator> translators = new List<ITranslator>();
@@ -29,7 +32,7 @@ namespace NHibernate.Impl
 		private IList queryResults;
 		private readonly Dictionary<string, int> queryResultPositions = new Dictionary<string, int>();
 		private string cacheRegion;
-		private int commandTimeout = RowSelection.NoValue;
+		private int? _timeout;
 		private bool isCacheable;
 		private readonly ISessionImplementor session;
 		private IResultTransformer resultTransformer;
@@ -64,7 +67,7 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetTimeout(int timeout)
 		{
-			commandTimeout = timeout;
+			_timeout = timeout == RowSelection.NoValue ? (int?) null : timeout;
 			return this;
 		}
 
@@ -406,24 +409,31 @@ namespace NHibernate.Impl
 		/// </summary>
 		public IList List()
 		{
-			using (new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			{
 				bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
 				combinedParameters = CreateCombinedQueryParameters();
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.DebugFormat("Multi query with {0} queries.", queries.Count);
+					log.Debug("Multi query with {0} queries.", queries.Count);
 					for (int i = 0; i < queries.Count; i++)
 					{
-						log.DebugFormat("Query #{0}: {1}", i, queries[i]);
+						log.Debug("Query #{0}: {1}", i, queries[i]);
 					}
 				}
 
 				try
 				{
 					Before();
-					return cacheable ? ListUsingQueryCache() : ListIgnoreQueryCache();
+
+					var querySpaces = new HashSet<string>(Translators.SelectMany(t => t.QuerySpaces));
+					if (resultSetsCommand.HasQueries)
+					{
+						session.AutoFlushIfRequired(querySpaces);
+					}
+
+					return cacheable ? ListUsingQueryCache(querySpaces) : ListIgnoreQueryCache();
 				}
 				finally
 				{
@@ -526,11 +536,11 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = resultSetsCommand.GetReader(commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null))
+				using (var reader = resultSetsCommand.GetReader(_timeout))
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.DebugFormat("Executing {0} queries", translators.Count);
+						log.Debug("Executing {0} queries", translators.Count);
 					}
 					for (int i = 0; i < translators.Count; i++)
 					{
@@ -548,7 +558,7 @@ namespace NHibernate.Impl
 
 						if (parameter.HasAutoDiscoverScalarTypes)
 						{
-							translator.Loader.AutoDiscoverTypes(reader);
+							translator.Loader.AutoDiscoverTypes(reader, parameter, null);
 						}
 
 						LockMode[] lockModeArray = translator.Loader.GetLockModes(parameter.LockModes);
@@ -560,7 +570,7 @@ namespace NHibernate.Impl
 						translator.Loader.HandleEmptyCollections(parameter.CollectionKeys, reader, session);
 						EntityKey[] keys = new EntityKey[entitySpan]; // we can reuse it each time
 
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
 							log.Debug("processing result set");
 						}
@@ -569,9 +579,9 @@ namespace NHibernate.Impl
 						int count;
 						for (count = 0; count < maxRows && reader.Read(); count++)
 						{
-							if (log.IsDebugEnabled)
+							if (log.IsDebugEnabled())
 							{
-								log.Debug("result set row: " + count);
+								log.Debug("result set row: {0}", count);
 							}
 
 							rowCount++;
@@ -586,16 +596,16 @@ namespace NHibernate.Impl
 							}
 						}
 
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
-							log.Debug(string.Format("done processing result set ({0} rows)", count));
+							log.Debug("done processing result set ({0} rows)", count);
 						}
 
 						results.Add(tempResults);
 
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
-							log.DebugFormat("Query {0} returned {1} results", i, tempResults.Count);
+							log.Debug("Query {0} returned {1} results", i, tempResults.Count);
 						}
 
 						reader.NextResult();
@@ -617,8 +627,7 @@ namespace NHibernate.Impl
 			}
 			catch (Exception sqle)
 			{
-				var message = string.Format("Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
-				log.Error(message, sqle);
+				log.Error(sqle, "Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi query", resultSetsCommand.Sql);
 			}
 
@@ -686,18 +695,16 @@ namespace NHibernate.Impl
 			return GetResultList(DoList());
 		}
 
-		private IList ListUsingQueryCache()
+		private IList ListUsingQueryCache(HashSet<string> querySpaces)
 		{
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
 
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters);
 
-			ISet<string> querySpaces = new HashSet<string>();
 			List<IType[]> resultTypesList = new List<IType[]>(Translators.Count);
 			for (int i = 0; i < Translators.Count; i++)
 			{
 				ITranslator queryTranslator = Translators[i];
-				querySpaces.UnionWith(queryTranslator.QuerySpaces);
 				resultTypesList.Add(queryTranslator.ReturnTypes);
 			}
 			int[] firstRows = new int[Parameters.Count];
@@ -721,7 +728,7 @@ namespace NHibernate.Impl
 			{
 				log.Debug("Cache miss for multi query");
 				var list = DoList();
-				queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, false, session);
+				queryCache.Put(key, combinedParameters, new ICacheAssembler[] { assembler }, new object[] { list }, session);
 				result = list;
 			}
 

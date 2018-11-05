@@ -11,20 +11,31 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public abstract class ClassBinder : Binder
 	{
+		//Since v5.2
+		[Obsolete("This field will be removed in a future version.")]
 		protected readonly Dialect.Dialect dialect;
 
+		//Since v5.2
+		[Obsolete("Please use constructor without a dialect parameter.")]
 		protected ClassBinder(Mappings mappings, Dialect.Dialect dialect)
-			: base(mappings)
+			: this(mappings)
 		{
 			this.dialect = dialect;
 		}
 
+		//Since v5.2
+		[Obsolete("Please use constructor that accepts mappings parameter instead.")]
 		protected ClassBinder(ClassBinder parent)
-			: base(parent.Mappings)
+			: this(parent.Mappings)
 		{
 			dialect = parent.dialect;
 		}
 
+		protected ClassBinder(Mappings mappings)
+			: base(mappings)
+		{
+		}
+		
 		protected void BindClass(IEntityMapping classMapping, PersistentClass model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			// handle the lazy attribute
@@ -48,7 +59,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			foreach (var unionSubclass in unionSubclasses)
 			{
-				new UnionSubclassBinder(this).HandleUnionSubclass(persistentClass, unionSubclass, inheritedMetas);
+				new UnionSubclassBinder(Mappings).HandleUnionSubclass(persistentClass, unionSubclass, inheritedMetas);
 			}
 		}
 
@@ -56,7 +67,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			foreach (var joinedSubclass in joinedSubclasses)
 			{
-				new JoinedSubclassBinder(this).HandleJoinedSubclass(persistentClass, joinedSubclass, inheritedMetas);
+				new JoinedSubclassBinder(Mappings).HandleJoinedSubclass(persistentClass, joinedSubclass, inheritedMetas);
 			}
 		}
 
@@ -64,7 +75,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			foreach (var subclass in subclasses)
 			{
-				new SubclassBinder(this).HandleSubclass(persistentClass, subclass, inheritedMetas);
+				new SubclassBinder(Mappings).HandleSubclass(persistentClass, subclass, inheritedMetas);
 			}
 		}
 
@@ -179,7 +190,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			join.IsInverse = joinMapping.inverse;
 			join.IsOptional = joinMapping.optional;
 
-			log.InfoFormat("Mapping class join: {0} -> {1}", persistentClass.EntityName, join.Table.Name);
+			log.Info("Mapping class join: {0} -> {1}", persistentClass.EntityName, @join.Table.Name);
 
 			// KEY
 			SimpleValue key;
@@ -214,11 +225,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			key.IsCascadeDeleteEnabled = joinMapping.key.ondelete == HbmOndelete.Cascade;
 			new ValuePropertyBinder(key, Mappings).BindSimpleValue(joinMapping.key, persistentClass.EntityName, false);
 
-			join.CreatePrimaryKey(dialect);
+			join.CreatePrimaryKey();
 			join.CreateForeignKey();
 
 			// PROPERTIES
-			new PropertiesBinder(Mappings, persistentClass, dialect).Bind(joinMapping.Properties, join.Table,
+			new PropertiesBinder(Mappings, persistentClass).Bind(joinMapping.Properties, join.Table,
 																							inheritedMetas, p => { },
 																							join.AddProperty);
 
@@ -325,7 +336,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 										}; 
 			}
 
-			new PropertiesBinder(Mappings, model, className, path, isNullable, Mappings.Dialect).Bind(
+			new PropertiesBinder(Mappings, model, className, path, isNullable).Bind(
 				componentMapping.Properties, model.Table, inheritedMetas, p =>
 					{ }, model.AddProperty);
 		}
@@ -371,9 +382,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					string entityName = GetClassName(metaValue.@class, mappings);
 					values[value] = entityName;
 				}
-				catch (InvalidCastException)
+				catch (InvalidCastException ice)
 				{
-					throw new MappingException("meta-type was not an IDiscriminatorType: " + metaType.Name);
+					throw new MappingException("meta-type was not an IDiscriminatorType: " + metaType.Name, ice);
 				}
 				catch (HibernateException he)
 				{

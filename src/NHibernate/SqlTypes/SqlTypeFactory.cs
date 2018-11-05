@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Data;
-using System.Runtime.CompilerServices;
 
 namespace NHibernate.SqlTypes
 {
@@ -36,7 +35,7 @@ namespace NHibernate.SqlTypes
 		public static readonly SqlType UInt32 = new SqlType(DbType.UInt32);
 		public static readonly SqlType UInt64 = new SqlType(DbType.UInt64);
 
-		public static readonly SqlType[] NoTypes = new SqlType[0];
+		public static readonly SqlType[] NoTypes = Array.Empty<SqlType>();
 
 		private delegate T TypeWithLenOrScaleCreateDelegate<out T, in TDim>(TDim lengthOrScale); // Func<int, T>
 
@@ -99,7 +98,6 @@ namespace NHibernate.SqlTypes
 			return GetTypeWithLenOrScale(fractionalSecondsPrecision, l => new TimeSqlType(l));
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static SqlType GetSqlType(DbType dbType, byte precision, byte scale)
 		{
 			return GetTypeWithPrecision(dbType, precision, scale);

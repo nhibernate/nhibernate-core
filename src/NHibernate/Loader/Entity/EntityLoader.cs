@@ -36,7 +36,7 @@ namespace NHibernate.Loader.Entity
 
 			batchLoader = batchSize > 1;
 
-			log.Debug("Static select for entity " + entityName + ": " + SqlString);
+			log.Debug("Static select for entity {0}: {1}", entityName, SqlString);
 		}
 
 		public object LoadByUniqueKey(ISessionImplementor session, object key)

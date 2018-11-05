@@ -15,7 +15,6 @@ using System.Data.Common;
 using System.Diagnostics;
 using NHibernate.Engine;
 using NHibernate.Event;
-using NHibernate.Hql;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Impl;
@@ -44,7 +43,7 @@ namespace NHibernate.Loader.Hql
 			try
 			{
 				CheckQuery(queryParameters);
-				return ListAsync(session, queryParameters, _queryTranslator.QuerySpaces, _queryReturnTypes, cancellationToken);
+				return ListAsync(session, queryParameters, _queryTranslator.QuerySpaces, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -72,11 +71,11 @@ namespace NHibernate.Loader.Hql
 			if (_hasScalars)
 			{
 				string[][] scalarColumns = _scalarColumnNames;
-				int queryCols = _queryReturnTypes.Length;
+				int queryCols = ResultTypes.Length;
 				resultRow = new object[queryCols];
 				for (int i = 0; i < queryCols; i++)
 				{
-					resultRow[i] = await (_queryReturnTypes[i].NullSafeGetAsync(rs, scalarColumns[i], session, null, cancellationToken)).ConfigureAwait(false);
+					resultRow[i] = await (ResultTypes[i].NullSafeGetAsync(rs, scalarColumns[i], session, null, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			else
@@ -102,13 +101,11 @@ namespace NHibernate.Loader.Hql
 			var cmd = await (PrepareQueryCommandAsync(queryParameters, false, session, cancellationToken)).ConfigureAwait(false);
 
 			// This DbDataReader is disposed of in EnumerableImpl.Dispose
-			var rs = await (GetResultSetAsync(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session, cancellationToken)).ConfigureAwait(false);
+			var rs = await (GetResultSetAsync(cmd, queryParameters, session, null, cancellationToken)).ConfigureAwait(false);
 
-			HolderInstantiator hi = 
-				HolderInstantiator.GetHolderInstantiator(_selectNewTransformer, queryParameters.ResultTransformer, _queryReturnAliases);
-
+			var resultTransformer = _selectNewTransformer ?? queryParameters.ResultTransformer;
 			IEnumerable result = 
-				new EnumerableImpl(rs, cmd, session, queryParameters.IsReadOnly(session), _queryTranslator.ReturnTypes, _queryTranslator.GetColumnNames(), queryParameters.RowSelection, hi);
+				new EnumerableImpl(rs, cmd, session, queryParameters.IsReadOnly(session), _queryTranslator.ReturnTypes, _queryTranslator.GetColumnNames(), queryParameters.RowSelection, resultTransformer, _queryReturnAliases);
 
 			if (statsEnabled)
 			{

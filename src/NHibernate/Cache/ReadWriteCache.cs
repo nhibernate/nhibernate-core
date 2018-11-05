@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Cache.Access;
 
 namespace NHibernate.Cache
@@ -20,7 +22,7 @@ namespace NHibernate.Cache
 	/// <seealso cref="NonstrictReadWriteCache"/> for a faster algorithm
 	/// <seealso cref="ICacheConcurrencyStrategy"/>
 	/// </remarks>
-	public partial class ReadWriteCache : ICacheConcurrencyStrategy
+	public partial class ReadWriteCache : IBatchableCacheConcurrencyStrategy
 	{
 		public interface ILockable
 		{
@@ -30,28 +32,38 @@ namespace NHibernate.Cache
 			bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator);
 		}
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ReadWriteCache));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ReadWriteCache));
 
 		private readonly object _lockObject = new object();
-		private ICache cache;
+		// 6.0 TODO: remove
+		private CacheBase _cache;
 		private int _nextLockId;
-
-		public ReadWriteCache()
-		{
-		}
 
 		/// <summary>
 		/// Gets the cache region name.
 		/// </summary>
 		public string RegionName
 		{
-			get { return cache.RegionName; }
+			get { return Cache.RegionName; }
 		}
 
+		// 6.0 TODO: remove
+#pragma warning disable 618
 		public ICache Cache
+#pragma warning restore 618
 		{
-			get { return cache; }
-			set { cache = value; }
+			get { return _cache; }
+			set
+			{
+				_cache = value as CacheBase ?? new ObsoleteCacheWrapper(value);
+			}
+		}
+
+		// 6.0 TODO: make implicit and switch to auto-property
+		CacheBase IBatchableCacheConcurrencyStrategy.Cache
+		{
+			get => _cache;
+			set => _cache = value;
 		}
 
 		/// <summary>
@@ -90,9 +102,9 @@ namespace NHibernate.Cache
 		{
 			lock (_lockObject)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Cache lookup: " + key);
+					log.Debug("Cache lookup: {0}", key);
 				}
 
 				// commented out in H3.1
@@ -100,30 +112,30 @@ namespace NHibernate.Cache
 				{
 					cache.Lock( key );*/
 
-				ILockable lockable = (ILockable) cache.Get(key);
+				ILockable lockable = (ILockable) Cache.Get(key);
 
 				bool gettable = lockable != null && lockable.IsGettable(txTimestamp);
 
 				if (gettable)
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug("Cache hit: " + key);
+						log.Debug("Cache hit: {0}", key);
 					}
 
 					return ((CachedItem) lockable).Value;
 				}
 				else
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						if (lockable == null)
 						{
-							log.Debug("Cache miss: " + key);
+							log.Debug("Cache miss: {0}", key);
 						}
 						else
 						{
-							log.Debug("Cached item was locked: " + key);
+							log.Debug("Cached item was locked: {0}", key);
 						}
 					}
 					return null;
@@ -134,6 +146,41 @@ namespace NHibernate.Cache
 					cache.Unlock( key );
 				}*/
 			}
+		}
+
+		public object[] GetMany(CacheKey[] keys, long timestamp)
+		{
+			if (log.IsDebugEnabled())
+			{
+				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
+			}
+			var result = new object[keys.Length];
+			lock (_lockObject)
+			{
+				var lockables = _cache.GetMany(keys.Select(o => (object) o).ToArray());
+				for (var i = 0; i < lockables.Length; i++)
+				{
+					var lockable = (ILockable) lockables[i];
+					var gettable = lockable != null && lockable.IsGettable(timestamp);
+
+					if (gettable)
+					{
+						if (log.IsDebugEnabled())
+						{
+							log.Debug("Cache hit: {0}", keys[i]);
+						}
+						result[i] = ((CachedItem) lockable).Value;
+					}
+
+					if (log.IsDebugEnabled())
+					{
+						log.Debug(lockable == null ? "Cache miss: {0}" : "Cached item was locked: {0}", keys[i]);
+					}
+
+					result[i] = null;
+				}
+			}
+			return result;
 		}
 
 		/// <summary>
@@ -147,28 +194,103 @@ namespace NHibernate.Cache
 		{
 			lock (_lockObject)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Invalidating: " + key);
+					log.Debug("Invalidating: {0}", key);
 				}
 
+				var lockValue = _cache.Lock(key);
 				try
 				{
-					cache.Lock(key);
-
-					ILockable lockable = (ILockable) cache.Get(key);
-					long timeout = cache.NextTimestamp() + cache.Timeout;
+					ILockable lockable = (ILockable) Cache.Get(key);
+					long timeout = Cache.NextTimestamp() + Cache.Timeout;
 					CacheLock @lock = lockable == null ?
-					                  new CacheLock(timeout, NextLockId(), version) :
+					                  CacheLock.Create(timeout, NextLockId(), version) :
 					                  lockable.Lock(timeout, NextLockId());
-					cache.Put(key, @lock);
+					Cache.Put(key, @lock);
 					return @lock;
 				}
 				finally
 				{
-					cache.Unlock(key);
+					_cache.Unlock(key, lockValue);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Do not add an item to the cache unless the current transaction
+		/// timestamp is later than the timestamp at which the item was
+		/// invalidated. (Otherwise, a stale item might be re-added if the
+		/// database is operating in repeatable read isolation mode.)
+		/// </summary>
+		/// <returns>Whether the items were actually put into the cache</returns>
+		public bool[] PutMany(
+			CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
+			bool[] minimalPuts)
+		{
+			var result = new bool[keys.Length];
+			if (timestamp == long.MinValue)
+			{
+				// MinValue means cache is disabled
+				return result;
+			}
+
+			lock (_lockObject)
+			{
+				if (log.IsDebugEnabled())
+				{
+					log.Debug("Caching: {0}", string.Join(",", keys.AsEnumerable()));
+				}
+				var keysArr = keys.Cast<object>().ToArray();
+				var lockValue = _cache.LockMany(keysArr);
+				try
+				{
+					var putBatch = new Dictionary<object, object>();
+					var lockables = _cache.GetMany(keysArr);
+					for (var i = 0; i < keys.Length; i++)
+					{
+						var key = keys[i];
+						var version = versions[i];
+						var lockable = (ILockable) lockables[i];
+						bool puttable = lockable == null ||
+						                lockable.IsPuttable(timestamp, version, versionComparers[i]);
+						if (puttable)
+						{
+							putBatch.Add(key, CachedItem.Create(values[i], Cache.NextTimestamp(), version));
+							if (log.IsDebugEnabled())
+							{
+								log.Debug("Cached: {0}", key);
+							}
+							result[i] = true;
+						}
+						else
+						{
+							if (log.IsDebugEnabled())
+							{
+								if (lockable.IsLock)
+								{
+									log.Debug("Item was locked: {0}", key);
+								}
+								else
+								{
+									log.Debug("Item was already cached: {0}", key);
+								}
+							}
+							result[i] = false;
+						}
+					}
+
+					if (putBatch.Count > 0)
+					{
+						_cache.PutMany(putBatch.Keys.ToArray(), putBatch.Values.ToArray());
+					}
+				}
+				finally
+				{
+					_cache.UnlockMany(keysArr, lockValue);
+				}
+			}
+			return result;
 		}
 
 		/// <summary>
@@ -189,40 +311,39 @@ namespace NHibernate.Cache
 
 			lock (_lockObject)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Caching: " + key);
+					log.Debug("Caching: {0}", key);
 				}
 
+				var lockValue = _cache.Lock(key);
 				try
 				{
-					cache.Lock(key);
-
-					ILockable lockable = (ILockable) cache.Get(key);
+					ILockable lockable = (ILockable) Cache.Get(key);
 
 					bool puttable = lockable == null ||
 					                lockable.IsPuttable(txTimestamp, version, versionComparator);
 
 					if (puttable)
 					{
-						cache.Put(key, new CachedItem(value, cache.NextTimestamp(), version));
-						if (log.IsDebugEnabled)
+						Cache.Put(key, CachedItem.Create(value, Cache.NextTimestamp(), version));
+						if (log.IsDebugEnabled())
 						{
-							log.Debug("Cached: " + key);
+							log.Debug("Cached: {0}", key);
 						}
 						return true;
 					}
 					else
 					{
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
 							if (lockable.IsLock)
 							{
-								log.Debug("Item was locked: " + key);
+								log.Debug("Item was locked: {0}", key);
 							}
 							else
 							{
-								log.Debug("Item was already cached: " + key);
+								log.Debug("Item was already cached: {0}", key);
 							}
 						}
 						return false;
@@ -230,7 +351,7 @@ namespace NHibernate.Cache
 				}
 				finally
 				{
-					cache.Unlock(key);
+					_cache.Unlock(key, lockValue);
 				}
 			}
 		}
@@ -241,24 +362,23 @@ namespace NHibernate.Cache
 		private void DecrementLock(object key, CacheLock @lock)
 		{
 			//decrement the lock
-			@lock.Unlock(cache.NextTimestamp());
-			cache.Put(key, @lock);
+			@lock.Unlock(Cache.NextTimestamp());
+			Cache.Put(key, @lock);
 		}
 
 		public void Release(CacheKey key, ISoftLock clientLock)
 		{
 			lock (_lockObject)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Releasing: " + key);
+					log.Debug("Releasing: {0}", key);
 				}
 
+				var lockValue = _cache.Lock(key);
 				try
 				{
-					cache.Lock(key);
-
-					ILockable lockable = (ILockable) cache.Get(key);
+					ILockable lockable = (ILockable) Cache.Get(key);
 					if (IsUnlockable(clientLock, lockable))
 					{
 						DecrementLock(key, (CacheLock) lockable);
@@ -270,40 +390,40 @@ namespace NHibernate.Cache
 				}
 				finally
 				{
-					cache.Unlock(key);
+					_cache.Unlock(key, lockValue);
 				}
 			}
 		}
 
 		internal void HandleLockExpiry(object key)
 		{
-			log.Warn("An item was expired by the cache while it was locked (increase your cache timeout): " + key);
-			long ts = cache.NextTimestamp() + cache.Timeout;
+			log.Warn("An item was expired by the cache while it was locked (increase your cache timeout): {0}", key);
+			long ts = Cache.NextTimestamp() + Cache.Timeout;
 			// create new lock that times out immediately
-			CacheLock @lock = new CacheLock(ts, NextLockId(), null);
+			CacheLock @lock = CacheLock.Create(ts, NextLockId(), null);
 			@lock.Unlock(ts);
-			cache.Put(key, @lock);
+			Cache.Put(key, @lock);
 		}
 
 		public void Clear()
 		{
-			cache.Clear();
+			Cache.Clear();
 		}
 
 		public void Remove(CacheKey key)
 		{
-			cache.Remove(key);
+			Cache.Remove(key);
 		}
 
 		public void Destroy()
 		{
 			try
 			{
-				cache.Destroy();
+				Cache.Destroy();
 			}
 			catch (Exception e)
 			{
-				log.Warn("Could not destroy cache", e);
+				log.Warn(e, "Could not destroy cache");
 			}
 		}
 
@@ -315,16 +435,15 @@ namespace NHibernate.Cache
 		{
 			lock (_lockObject)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Updating: " + key);
+					log.Debug("Updating: {0}", key);
 				}
 
+				var lockValue = _cache.Lock(key);
 				try
 				{
-					cache.Lock(key);
-
-					ILockable lockable = (ILockable) cache.Get(key);
+					ILockable lockable = (ILockable) Cache.Get(key);
 					if (IsUnlockable(clientLock, lockable))
 					{
 						CacheLock @lock = (CacheLock) lockable;
@@ -337,10 +456,10 @@ namespace NHibernate.Cache
 						else
 						{
 							//recache the updated state
-							cache.Put(key, new CachedItem(value, cache.NextTimestamp(), version));
-							if (log.IsDebugEnabled)
+							Cache.Put(key, CachedItem.Create(value, Cache.NextTimestamp(), version));
+							if (log.IsDebugEnabled())
 							{
-								log.Debug("Updated: " + key);
+								log.Debug("Updated: {0}", key);
 							}
 						}
 						return true;
@@ -353,7 +472,7 @@ namespace NHibernate.Cache
 				}
 				finally
 				{
-					cache.Unlock(key);
+					_cache.Unlock(key, lockValue);
 				}
 			}
 		}
@@ -362,22 +481,22 @@ namespace NHibernate.Cache
 		{
 			lock (_lockObject)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Inserting: " + key);
+					log.Debug("Inserting: {0}", key);
 				}
 
+				var lockValue = _cache.Lock(key);
 				try
 				{
-					cache.Lock(key);
-
-					ILockable lockable = (ILockable) cache.Get(key);
+					
+					ILockable lockable = (ILockable) Cache.Get(key);
 					if (lockable == null)
 					{
-						cache.Put(key, new CachedItem(value, cache.NextTimestamp(), version));
-						if (log.IsDebugEnabled)
+						Cache.Put(key, CachedItem.Create(value, Cache.NextTimestamp(), version));
+						if (log.IsDebugEnabled())
 						{
-							log.Debug("Inserted: " + key);
+							log.Debug("Inserted: {0}", key);
 						}
 						return true;
 					}
@@ -388,7 +507,7 @@ namespace NHibernate.Cache
 				}
 				finally
 				{
-					cache.Unlock(key);
+					_cache.Unlock(key, lockValue);
 				}
 			}
 		}

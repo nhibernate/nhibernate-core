@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Transactions;
 using NHibernate.Cfg;
@@ -7,15 +8,15 @@ namespace NHibernate.Test.SystemTransactions
 {
 	public class TransactionNotificationFixture : TestCase
 	{
-		protected override IList Mappings
-			=> new string[] { };
+		protected override string[] Mappings
+			=> Array.Empty<string>();
 
 		protected virtual bool UseConnectionOnSystemTransactionPrepare => true;
 
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(
-				Environment.UseConnectionOnSystemTransactionPrepare,
+				Cfg.Environment.UseConnectionOnSystemTransactionPrepare,
 				UseConnectionOnSystemTransactionPrepare.ToString());
 		}
 
@@ -163,11 +164,13 @@ namespace NHibernate.Test.SystemTransactions
 			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(2));
 		}
 
-
 		[Description("NH2128")]
 		[Theory]
 		public void ShouldNotifyAfterDistributedTransactionWithOwnConnection(bool doCommit)
 		{
+			if (!Sfi.ConnectionProvider.Driver.SupportsSystemTransactions)
+				Assert.Ignore("Driver does not support System.Transactions. Ignoring test.");
+			
 			// Note: For system transaction, calling Close() on the session isn't
 			// supported, so we don't need to test that scenario.
 
@@ -179,7 +182,6 @@ namespace NHibernate.Test.SystemTransactions
 			{
 				using (var tx = new TransactionScope())
 				{
-					ownConnection1.EnlistTransaction(System.Transactions.Transaction.Current);
 					using (s1 = Sfi.WithOptions().Connection(ownConnection1).Interceptor(interceptor).OpenSession())
 					{
 						s1.CreateCriteria<object>().List();

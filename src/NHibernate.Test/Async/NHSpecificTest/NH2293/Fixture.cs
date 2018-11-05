@@ -10,26 +10,21 @@
 
 using System.Linq;
 using NHibernate.Hql.Ast.ANTLR;
+using NHibernate.Mapping;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2293
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync : BugTestCase
+	public class FixtureAsync : TestCase
 	{
-		protected override System.Collections.IList Mappings
-		{
-			get
-			{
-				return Enumerable.Empty<object>().ToList();
-			}
-		}
+		protected override string[] Mappings => System.Array.Empty<string>();
 
 		[Test]
 		public void WhenQueryHasJustAfromThenThrowQuerySyntaxExceptionAsync()
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
 				Assert.That(() => session.CreateQuery("from").ListAsync(), Throws.TypeOf<QuerySyntaxException>());
 			}

@@ -4,38 +4,23 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
-	/// <summary>
-	/// Summary description for TicksTypeFixture.
-	/// </summary>
 	[TestFixture]
-	public class TicksTypeFixture
+	public class TicksTypeFixture : AbstractDateTimeTypeFixture
 	{
-		[Test]
-		public void Next()
-		{
-			TicksType type = (TicksType) NHibernateUtil.Ticks;
-			object current = new DateTime(2004, 1, 1, 1, 1, 1, 1);
-			object next = type.Next(current, null);
+		protected override string TypeName => "Ticks";
+		protected override AbstractDateTimeType Type => NHibernateUtil.Ticks;
 
-			Assert.IsTrue(next is DateTime, "Next should be DateTime");
-			Assert.IsTrue((DateTime) next > (DateTime) current,
-			              "next should be greater than current (could be equal depending on how quickly this occurs)");
+		[Test]
+		[TestCase("0")]
+		[Obsolete]
+		[Ignore("Ticks parse integer representations to date instead of date representations")]
+		public override void FromStringValue_ParseValidValues(string timestampValue)
+		{
 		}
 
-		[Test]
-		public void Seed()
+		[Ignore("Test relevant for datetime, not for ticks.")]
+		public override void QueryUseExpectedSqlType()
 		{
-			TicksType type = (TicksType) NHibernateUtil.Ticks;
-			Assert.IsTrue(type.Seed(null) is DateTime, "seed should be DateTime");
-		}
-
-		[Test]
-		public void Comparer()
-		{
-			var type = (IVersionType)NHibernateUtil.Ticks;
-			object v1 = type.Seed(null);
-			var v2 = v1;
-			Assert.DoesNotThrow(() => type.Comparator.Compare(v1, v2));
 		}
 	}
 }

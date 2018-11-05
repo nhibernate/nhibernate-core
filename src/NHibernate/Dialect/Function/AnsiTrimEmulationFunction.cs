@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
-using NHibernate.Util;
 using System.Text.RegularExpressions;
 
 namespace NHibernate.Dialect.Function
@@ -40,6 +39,40 @@ namespace NHibernate.Dialect.Function
 		private static readonly ISQLFunction BothTrim =
 			new SQLFunctionTemplate(NHibernateUtil.String,
 			                        "replace( replace( ltrim( rtrim( replace( replace( ?1, ' ', '${space}$' ), ?2, ' ' ) ) ), ' ', ?2 ), '${space}$', ' ' )");
+
+		private readonly ISQLFunction _leadingTrim = LeadingTrim;
+		private readonly ISQLFunction _trailingTrim = TrailingTrim;
+		private readonly ISQLFunction _bothTrim = BothTrim;
+
+		/// <summary>
+		/// Default constructor. The target database has to support the <c>replace</c> function.
+		/// </summary>
+		public AnsiTrimEmulationFunction()
+		{
+		}
+
+		/// <summary>
+		/// Constructor for supplying the name of the replace function to use.
+		/// </summary>
+		/// <param name="replaceFunction">The replace function.</param>
+		public AnsiTrimEmulationFunction(string replaceFunction)
+		{
+			_leadingTrim =
+				new SQLFunctionTemplate(
+					NHibernateUtil.String,
+					$"{replaceFunction}( {replaceFunction}( ltrim( {replaceFunction}( {replaceFunction}( ?1, ' ', " +
+					"'${space}$' ), ?2, ' ' ) ), ' ', ?2 ), '${space}$', ' ' )");
+			_trailingTrim =
+				new SQLFunctionTemplate(
+					NHibernateUtil.String,
+					$"{replaceFunction}( {replaceFunction}( rtrim( {replaceFunction}( {replaceFunction}( ?1, ' ', " +
+					"'${space}$' ), ?2, ' ' ) ), ' ', ?2 ), '${space}$', ' ' )");
+			_bothTrim =
+				new SQLFunctionTemplate(
+					NHibernateUtil.String,
+					$"{replaceFunction}( {replaceFunction}( ltrim( rtrim( {replaceFunction}( {replaceFunction}( ?1, ' ', " +
+					"'${space}$' ), ?2, ' ' ) ) ), ' ', ?2 ), '${space}$', ' ' )");
+		}
 
 		#region ISQLFunction Members
 
@@ -98,8 +131,8 @@ namespace NHibernate.Dialect.Function
 				//      so we trim leading and trailing spaces
 				return BothSpaceTrim.Render(args, factory);
 			}
-			
-			if (StringHelper.EqualsCaseInsensitive("from", firstArg))
+
+			if ("from".Equals(firstArg, StringComparison.OrdinalIgnoreCase))
 			{
 				// we have the form: trim(from trimSource).
 				//      This is functionally equivalent to trim(trimSource)
@@ -118,15 +151,15 @@ namespace NHibernate.Dialect.Function
 			// trim-specification has been specified.  we handle the
 			// exception to that explicitly
 			int potentialTrimCharacterArgIndex = 1;
-			if (StringHelper.EqualsCaseInsensitive("leading", firstArg))
+			if ("leading".Equals(firstArg, StringComparison.OrdinalIgnoreCase))
 			{
 				trailing = false;
 			}
-			else if (StringHelper.EqualsCaseInsensitive("trailing", firstArg))
+			else if ("trailing".Equals(firstArg, StringComparison.OrdinalIgnoreCase))
 			{
 				leading = false;
 			}
-			else if (StringHelper.EqualsCaseInsensitive("both", firstArg))
+			else if ("both".Equals(firstArg, StringComparison.OrdinalIgnoreCase))
 			{
 			}
 			else
@@ -135,7 +168,7 @@ namespace NHibernate.Dialect.Function
 			}
 
 			object potentialTrimCharacter = args[potentialTrimCharacterArgIndex];
-			if (StringHelper.EqualsCaseInsensitive("from", potentialTrimCharacter.ToString()))
+			if ("from".Equals(potentialTrimCharacter.ToString(), StringComparison.OrdinalIgnoreCase))
 			{
 				trimCharacter = "' '";
 				trimSource = args[potentialTrimCharacterArgIndex + 1];
@@ -148,7 +181,7 @@ namespace NHibernate.Dialect.Function
 			else
 			{
 				trimCharacter = potentialTrimCharacter;
-				if (StringHelper.EqualsCaseInsensitive("from", args[potentialTrimCharacterArgIndex + 1].ToString()))
+				if ("from".Equals(args[potentialTrimCharacterArgIndex + 1].ToString(), StringComparison.OrdinalIgnoreCase))
 				{
 					trimSource = args[potentialTrimCharacterArgIndex + 2];
 				}
@@ -174,18 +207,18 @@ namespace NHibernate.Dialect.Function
 				
 				return TrailingSpaceTrim.Render(argsToUse, factory);
 			}
-			
+
 			if (leading && trailing)
 			{
-				return BothTrim.Render(argsToUse, factory);
+				return _bothTrim.Render(argsToUse, factory);
 			}
-			
+
 			if (leading)
 			{
-				return LeadingTrim.Render(argsToUse, factory);
+				return _leadingTrim.Render(argsToUse, factory);
 			}
-			
-			return TrailingTrim.Render(argsToUse, factory);
+
+			return _trailingTrim.Render(argsToUse, factory);
 		}
 
 		#endregion

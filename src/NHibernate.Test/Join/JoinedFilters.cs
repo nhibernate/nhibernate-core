@@ -10,7 +10,7 @@ namespace NHibernate.Test.Join
 	[TestFixture]
 	public class JoinedFilters : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get 
 			{ 
