@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Collections.Generic;
 
@@ -25,6 +24,11 @@ namespace NHibernate.Util
 
 		public static readonly bool[] True = new bool[] { true };
 		public static readonly bool[] False = new bool[] { false };
+
+		internal static bool IsNullOrEmpty(Array array)
+		{
+			return array == null || array.Length == 0;
+		}
 
 		public static bool IsAllNegative(int[] array)
 		{
