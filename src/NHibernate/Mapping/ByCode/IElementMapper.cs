@@ -14,7 +14,7 @@ namespace NHibernate.Mapping.ByCode
 		void Scale(short scale);
 		void NotNullable(bool notnull);
 		void Unique(bool unique);
-		// 6.0 TODO: remove once inhertied from IColumnsAndFormulasMapper
+		// 6.0 TODO: remove once inherited from IColumnsAndFormulasMapper
 		void Formula(string formula);
 	}
 }

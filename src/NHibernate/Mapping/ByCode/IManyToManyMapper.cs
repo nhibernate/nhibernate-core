@@ -6,7 +6,7 @@ namespace NHibernate.Mapping.ByCode
 		void Class(System.Type entityType);
 		void EntityName(string entityName);
 		void NotFound(NotFoundMode mode);
-		// 6.0 TODO: remove once inhertied from IColumnsAndFormulasMapper
+		// 6.0 TODO: remove once inherited from IColumnsAndFormulasMapper
 		void Formula(string formula);
 		void Lazy(LazyRelation lazyRelation);
 		void ForeignKey(string foreignKeyName);

@@ -9,7 +9,7 @@ namespace NHibernate.Mapping.ByCode
 		void Type<TPersistentType>();
 		void Type(System.Type persistentType);
 		void Length(int length);
-		// 6.0 TODO: remove once inhertied from IColumnsAndFormulasMapper
+		// 6.0 TODO: remove once inherited from IColumnsAndFormulasMapper
 		void Formula(string formula);
 	}
 }

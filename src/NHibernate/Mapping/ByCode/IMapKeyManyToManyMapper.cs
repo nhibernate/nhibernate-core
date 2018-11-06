@@ -4,7 +4,7 @@ namespace NHibernate.Mapping.ByCode
 	public interface IMapKeyManyToManyMapper : IColumnsMapper
 	{
 		void ForeignKey(string foreignKeyName);
-		// 6.0 TODO: remove once inhertied from IColumnsAndFormulasMapper
+		// 6.0 TODO: remove once inherited from IColumnsAndFormulasMapper
 		void Formula(string formula);
 	}
 }

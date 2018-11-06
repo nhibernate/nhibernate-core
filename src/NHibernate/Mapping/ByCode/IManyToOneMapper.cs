@@ -20,7 +20,7 @@ namespace NHibernate.Mapping.ByCode
 		void UniqueKey(string uniquekeyName);
 		void Index(string indexName);
 		void Fetch(FetchKind fetchMode);
-		// 6.0 TODO: remove once inhertied from IColumnsAndFormulasMapper
+		// 6.0 TODO: remove once inherited from IColumnsAndFormulasMapper
 		void Formula(string formula);
 		void Lazy(LazyRelation lazyRelation);
 		void Update(bool consideredInUpdateQuery);

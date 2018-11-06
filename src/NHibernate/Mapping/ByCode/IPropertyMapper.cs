@@ -16,7 +16,7 @@ namespace NHibernate.Mapping.ByCode
 		void Unique(bool unique);
 		void UniqueKey(string uniquekeyName);
 		void Index(string indexName);
-		// 6.0 TODO: remove once inhertied from IColumnsAndFormulasMapper
+		// 6.0 TODO: remove once inherited from IColumnsAndFormulasMapper
 		void Formula(string formula);
 		void Update(bool consideredInUpdateQuery);
 		void Insert(bool consideredInInsertQuery);
