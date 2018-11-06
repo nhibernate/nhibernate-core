@@ -6,18 +6,15 @@
 		<property name="Name" />
 	</class>
 
-	<!-- 
-		Mapping to demonstrate that the 'column' attribute takes precedence over a 'column' element - and, for consistency,
-		the same behaviour applies to the generator attribute/element
+	<!--
+		Mapping to demonstrate that the 'generator' attribute takes precedence over a 'generator' element
 	-->
 	<class name="Employer2">
 		<id name="Id" generator="guid">
 			<generator class="invalid_generator_class" />
 		</id>
-		
-		<property name="Name" column="Name">
-			<column name="InvalidColumnName" />
-		</property>
+
+		<property name="Name" />
 	</class>
 
 </hibernate-mapping>
