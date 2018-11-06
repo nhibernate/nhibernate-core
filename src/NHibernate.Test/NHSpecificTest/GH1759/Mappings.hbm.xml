@@ -64,8 +64,7 @@
       </element>
     </set>
 
-    <!-- This forbids hiring two persons on the same day, but well, that is just for testing. 
-         Disabled for now, needs an unrelated simple fix in OneToManyPersister
+    <!-- This forbids hiring two persons on the same day, but well, that is just for testing. -->
     <map name="UsersByHiring" inverse="true">
       <key>
         <column name="MainGroupName"/>
@@ -77,7 +76,6 @@
       </map-key>
       <one-to-many class="User"/>
     </map>
-    -->
 
     <!-- This is functionaly quite broken as the primary key does not include the map-key, which forbids
          to add the same comment for two distinct users. A fix would be to map the element as a composite

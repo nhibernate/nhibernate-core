@@ -170,7 +170,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1759
 			}
 		}
 
-		[Test, Ignore("Needs an unrelated additional simple fix in OneToManyPersister")]
+		[Test]
 		public void CheckMapKey()
 		{
 			using (var session = OpenSession())

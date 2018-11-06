@@ -182,7 +182,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1759
 			}
 		}
 
-		[Test, Ignore("Needs an unrelated additional simple fix in OneToManyPersister")]
+		[Test]
 		public async Task CheckMapKeyAsync()
 		{
 			using (var session = OpenSession())
