@@ -2,7 +2,6 @@
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Intercept;
 using NHibernate.Mapping.ByCode;
-using NHibernate.Proxy;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1439
@@ -65,6 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1439
 		}
 
 		[Test]
+		[KnownBug("#1439")]
 		public void LazyPropertyShouldBeUninitializedAndLoadable()
 		{
 			using (var session = OpenSession())
