@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   namespace="NHibernate.Test.CollectionTest"
+                   assembly="NHibernate.Test">
+
+  <class name="Env">
+    <id name="Id">
+      <generator class="assigned"/>
+    </id>
+    <bag name="RequestsFailed" inverse="true" lazy="extra"
+         where="RequestCompletionStatus != 1">
+      <key column="EnvId"/>
+      <one-to-many class="MachineRequest"/>
+      <filter name="CurrentOnly"/>
+    </bag>
+    <map name="FailedRequestsById" inverse="true"
+         where="RequestCompletionStatus != 1">
+      <key column="EnvId"/>
+      <map-key type="Int64" column="Id"/>
+      <one-to-many class="MachineRequest"/>
+      <filter name="CurrentOnly"/>
+    </map>
+  </class>
+
+  <class name="MachineRequest">
+    <id name="Id">
+      <generator class="assigned"/>
+    </id>
+    <property name="EnvId"/>
+    <property name="RequestCompletionStatus"/>
+  </class>
+
+  <filter-def name="CurrentOnly" condition="1 = 0"/>
+</hibernate-mapping>
