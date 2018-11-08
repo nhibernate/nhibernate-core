@@ -453,7 +453,7 @@ namespace NHibernate.Mapping
 			{
 				foreach (ForeignKey foreignKey in ForeignKeyIterator)
 				{
-					if (foreignKey.HasPhysicalConstraint)
+					if (foreignKey.IsGenerated(dialect))
 					{
 						buf.Append(",").Append(foreignKey.SqlConstraintString(dialect, foreignKey.Name, defaultCatalog, defaultSchema));
 					}

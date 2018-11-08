@@ -851,7 +851,7 @@ namespace NHibernate.Cfg
 					{
 						foreach (var fk in table.ForeignKeyIterator)
 						{
-							if (fk.HasPhysicalConstraint && IncludeAction(fk.ReferencedTable.SchemaActions, SchemaAction.Drop))
+							if (fk.IsGenerated(dialect) && IncludeAction(fk.ReferencedTable.SchemaActions, SchemaAction.Drop))
 							{
 								script.Add(fk.SqlDropString(dialect, defaultCatalog, defaultSchema));
 							}
@@ -939,7 +939,7 @@ namespace NHibernate.Cfg
 					{
 						foreach (var fk in table.ForeignKeyIterator)
 						{
-							if (fk.HasPhysicalConstraint && IncludeAction(fk.ReferencedTable.SchemaActions, SchemaAction.Export))
+							if (fk.IsGenerated(dialect) && IncludeAction(fk.ReferencedTable.SchemaActions, SchemaAction.Export))
 							{
 								script.Add(fk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 							}
@@ -2344,7 +2344,7 @@ namespace NHibernate.Cfg
 					{
 						foreach (var fk in table.ForeignKeyIterator)
 						{
-							if (fk.HasPhysicalConstraint && IncludeAction(fk.ReferencedTable.SchemaActions, SchemaAction.Update))
+							if (fk.IsGenerated(dialect) && IncludeAction(fk.ReferencedTable.SchemaActions, SchemaAction.Update))
 							{
 								bool create = tableInfo == null
 											  ||
