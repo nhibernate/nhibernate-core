@@ -29,6 +29,7 @@ namespace NHibernate.Test.DialectTest.SchemaTests
 							m.UniqueKey("Test");
 						});
 					rc.Property(x => x.Name2, m => m.UniqueKey("Test"));
+					rc.ManyToOne(e => e.Parent, m => { m.PropertyRef("Name"); });
 				});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
@@ -42,7 +43,8 @@ namespace NHibernate.Test.DialectTest.SchemaTests
 
 			var script = configuration.GenerateSchemaCreationScript(new DialectNotSupportingNullInUnique());
 
-			Assert.That(script, Has.None.Contains("unique"));
+			Assert.That(script, Has.None.Match(@".*\bunique\b.*").IgnoreCase);
+			Assert.That(script, Has.None.Match(@".*\bforeign key\b.*").IgnoreCase);
 		}
 	}
 }
