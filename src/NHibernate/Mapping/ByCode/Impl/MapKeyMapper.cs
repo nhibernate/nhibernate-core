@@ -8,9 +8,11 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class MapKeyMapper : IMapKeyMapper
+	// 6.0 TODO: remove IColumnsAndFormulasMapper once IMapKeyMapper inherits it.
+	public class MapKeyMapper : IMapKeyMapper, IColumnsAndFormulasMapper
 	{
 		private readonly HbmMapKey hbmMapKey;
+		private const string DefaultColumnName = "mapKey";
 
 		public MapKeyMapper(HbmMapKey hbmMapKey)
 		{
@@ -39,8 +41,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			      	name = hbmMapKey.column,
 			      	length = hbmMapKey.length,
 			      };
-			string defaultColumnName = "mapKey";
-			columnMapper(new ColumnMapper(hbm, defaultColumnName));
+			columnMapper(new ColumnMapper(hbm, DefaultColumnName));
 			if (ColumnTagIsRequired(hbm))
 			{
 				hbmMapKey.Items = new[] {hbm};
@@ -48,7 +49,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 			else
 			{
-				hbmMapKey.column = !defaultColumnName.Equals(hbm.name) ? hbm.name : null;
+				hbmMapKey.column = !DefaultColumnName.Equals(hbm.name) ? hbm.name : null;
 				hbmMapKey.length = hbm.length;
 			}
 		}
@@ -61,7 +62,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			foreach (var action in columnMapper)
 			{
 				var hbm = new HbmColumn();
-				string defaultColumnName = "mapKey" + i++;
+				string defaultColumnName = DefaultColumnName + i++;
 				action(new ColumnMapper(hbm, defaultColumnName));
 				columns.Add(hbm);
 			}
@@ -110,6 +111,19 @@ namespace NHibernate.Mapping.ByCode.Impl
 			Column(x => x.Length(length));
 		}
 
+		#endregion
+
+		#region Implementation of IColumnsAndFormulasMapper
+
+		/// <inheritdoc />
+		public void ColumnsAndFormulas(params Action<IColumnOrFormulaMapper>[] columnOrFormulaMapper)
+		{
+			ResetColumnPlainValues();
+
+			hbmMapKey.Items = ColumnOrFormulaMapper.GetItemsFor(columnOrFormulaMapper, DefaultColumnName);
+		}
+
+		/// <inheritdoc cref="IColumnsAndFormulasMapper.Formula" />
 		public void Formula(string formula)
 		{
 			if (formula == null)
@@ -122,12 +136,26 @@ namespace NHibernate.Mapping.ByCode.Impl
 			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
 			if (formulaLines.Length > 1)
 			{
-				hbmMapKey.Items = new[] {new HbmFormula {Text = formulaLines}};
+				hbmMapKey.Items = new object[] {new HbmFormula {Text = formulaLines}};
 			}
 			else
 			{
 				hbmMapKey.formula = formula;
 			}
+		}
+
+		/// <inheritdoc />
+		public void Formulas(params string[] formulas)
+		{
+			if (formulas == null)
+				throw new ArgumentNullException(nameof(formulas));
+
+			ResetColumnPlainValues();
+			hbmMapKey.Items =
+				formulas
+					.Select(
+						f => (object) new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) })
+					.ToArray();
 		}
 
 		#endregion
