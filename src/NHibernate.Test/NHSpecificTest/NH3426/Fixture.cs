@@ -59,5 +59,18 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 				Assert.AreEqual(id.ToUpper(), list[0].Id.ToUpper());
 			}
 		}
+		
+		[Test]
+		public void WhereGuidToString()
+		{
+			using (var session = OpenSession())
+			{
+				var list = session.Query<Entity>()
+				                  .Where(x => x.Id.ToString().ToUpper() == id)
+				                  .ToList();
+
+				Assert.That(list, Has.Count.EqualTo(1));
+			}
+		}
 	}
 }
