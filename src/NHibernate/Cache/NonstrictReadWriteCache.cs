@@ -16,30 +16,36 @@ namespace NHibernate.Cache
 	/// </summary>
 	public partial class NonstrictReadWriteCache : IBatchableCacheConcurrencyStrategy
 	{
-		private ICache cache;
-		private IBatchableReadOnlyCache _batchableReadOnlyCache;
-		private IBatchableCache _batchableCache;
-
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(NonstrictReadWriteCache));
+
+		// 6.0 TODO: remove
+		private CacheBase _cache;
 
 		/// <summary>
 		/// Gets the cache region name.
 		/// </summary>
 		public string RegionName
 		{
-			get { return cache.RegionName; }
+			get { return Cache.RegionName; }
 		}
 
+		// 6.0 TODO: remove
+#pragma warning disable 618
 		public ICache Cache
+#pragma warning restore 618
 		{
-			get { return cache; }
+			get { return _cache; }
 			set
 			{
-				cache = value;
-				// ReSharper disable once SuspiciousTypeConversion.Global
-				_batchableReadOnlyCache = value as IBatchableReadOnlyCache;
-				_batchableCache = value as IBatchableCache;
+				_cache = value as CacheBase ?? new ObsoleteCacheWrapper(value);
 			}
+		}
+
+		// 6.0 TODO: make implicit and switch to auto-property
+		CacheBase IBatchableCacheConcurrencyStrategy.Cache
+		{
+			get => _cache;
+			set => _cache = value;
 		}
 
 		/// <summary>
@@ -52,7 +58,7 @@ namespace NHibernate.Cache
 				log.Debug("Cache lookup: {0}", key);
 			}
 
-			object result = cache.Get(key);
+			object result = Cache.Get(key);
 			if (result != null)
 			{
 				log.Debug("Cache hit");
@@ -66,15 +72,11 @@ namespace NHibernate.Cache
 
 		public object[] GetMany(CacheKey[] keys, long timestamp)
 		{
-			if (_batchableReadOnlyCache == null)
-			{
-				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching get operation");
-			}
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
-			var results = _batchableReadOnlyCache.GetMany(keys.Select(o => (object) o).ToArray());
+			var results = _cache.GetMany(keys.Select(o => (object) o).ToArray());
 			if (!log.IsDebugEnabled())
 			{
 				return results;
@@ -89,13 +91,10 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Add multiple items to the cache
 		/// </summary>
-		public bool[] PutMany(CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
-		                          bool[] minimalPuts)
+		public bool[] PutMany(
+			CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
+			bool[] minimalPuts)
 		{
-			if (_batchableCache == null)
-			{
-				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching operations");
-			}
 			var result = new bool[keys.Length];
 			if (timestamp == long.MinValue)
 			{
@@ -103,7 +102,7 @@ namespace NHibernate.Cache
 				return result;
 			}
 
-			var checkKeys = new List<CacheKey>();
+			var checkKeys = new List<object>();
 			var checkKeyIndexes = new List<int>();
 			for (var i = 0; i < minimalPuts.Length; i++)
 			{
@@ -116,7 +115,7 @@ namespace NHibernate.Cache
 			var skipKeyIndexes = new HashSet<int>();
 			if (checkKeys.Any())
 			{
-				var objects = _batchableCache.GetMany(checkKeys.ToArray());
+				var objects = _cache.GetMany(checkKeys.ToArray());
 				for (var i = 0; i < objects.Length; i++)
 				{
 					if (objects[i] != null)
@@ -148,7 +147,7 @@ namespace NHibernate.Cache
 				putValues[j++] = values[i];
 				result[i] = true;
 			}
-			_batchableCache.PutMany(putKeys, putValues);
+			_cache.PutMany(putKeys, putValues);
 			return result;
 		}
 
@@ -164,7 +163,7 @@ namespace NHibernate.Cache
 				return false;
 			}
 
-			if (minimalPut && cache.Get(key) != null)
+			if (minimalPut && Cache.Get(key) != null)
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -176,7 +175,7 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Caching: {0}", key);
 			}
-			cache.Put(key, value);
+			Cache.Put(key, value);
 			return true;
 		}
 
@@ -194,7 +193,7 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Removing: {0}", key);
 			}
-			cache.Remove(key);
+			Cache.Remove(key);
 		}
 
 		public void Clear()
@@ -203,14 +202,14 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Clearing");
 			}
-			cache.Clear();
+			Cache.Clear();
 		}
 
 		public void Destroy()
 		{
 			try
 			{
-				cache.Destroy();
+				Cache.Destroy();
 			}
 			catch (Exception e)
 			{
@@ -227,7 +226,7 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Invalidating: {0}", key);
 			}
-			cache.Remove(key);
+			Cache.Remove(key);
 		}
 
 		/// <summary>
@@ -257,7 +256,7 @@ namespace NHibernate.Cache
 				log.Debug("Invalidating (again): {0}", key);
 			}
 
-			cache.Remove(key);
+			Cache.Remove(key);
 		}
 
 		/// <summary>

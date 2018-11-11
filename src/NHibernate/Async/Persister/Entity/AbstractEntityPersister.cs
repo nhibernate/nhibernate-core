@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -30,7 +29,6 @@ using NHibernate.Mapping;
 using NHibernate.Metadata;
 using NHibernate.Properties;
 using NHibernate.SqlCommand;
-using NHibernate.Tuple;
 using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using NHibernate.Util;

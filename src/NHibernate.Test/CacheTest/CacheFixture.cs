@@ -23,7 +23,7 @@ namespace NHibernate.Test.CacheTest
 
 		public void DoTestCache(ICacheProvider cacheProvider)
 		{
-			ICache cache = cacheProvider.BuildCache(typeof(String).FullName, new Dictionary<string, string>());
+			var cache = cacheProvider.BuildCache(typeof(String).FullName, new Dictionary<string, string>());
 
 			long longBefore = Timestamper.Next();
 
@@ -130,7 +130,7 @@ namespace NHibernate.Test.CacheTest
 			Assert.AreEqual("baz", ccs.Get(fooKey, longLongAfter));
 		}
 
-		private void DoTestMinValueTimestampOnStrategy(ICache cache, ICacheConcurrencyStrategy strategy)
+		private void DoTestMinValueTimestampOnStrategy(CacheBase cache, ICacheConcurrencyStrategy strategy)
 		{
 			CacheKey key = CreateCacheKey("key");
 			strategy.Cache = cache;
@@ -143,7 +143,7 @@ namespace NHibernate.Test.CacheTest
 		[Test]
 		public void MinValueTimestamp()
 		{
-			ICache cache = new HashtableCacheProvider().BuildCache("region", new Dictionary<string, string>());
+			var cache = new HashtableCacheProvider().BuildCache("region", new Dictionary<string, string>());
 			ICacheConcurrencyStrategy strategy = new ReadWriteCache();
 			strategy.Cache = cache;
 

@@ -188,6 +188,18 @@
 												</xs:documentation>
 											</xs:annotation>
 										</xs:enumeration>
+										<xs:enumeration value="firebird.disable_parameter_casting">
+											<xs:annotation>
+												<xs:documentation>
+													Firebird with FirebirdSql.Data.FirebirdClient may be unable to determine the type
+													of parameters in many circumstances, unless they are explicitly casted in the SQL
+													query. To avoid this trouble, the NHibernate FirebirdClientDriver parses SQL
+													commands for detecting parameters in them and adding an explicit SQL cast around
+													parameters which may trigger the issue.
+													For disabling this behavior, set this setting to true.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="sql_types.keep_datetime">
 											<xs:annotation>
 												<xs:documentation>

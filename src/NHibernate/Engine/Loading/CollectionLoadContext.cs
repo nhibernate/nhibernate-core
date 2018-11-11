@@ -338,7 +338,7 @@ namespace NHibernate.Engine.Loading
 			CollectionCacheEntry entry = CollectionCacheEntry.Create(lce.Collection, persister);
 			CacheKey cacheKey = session.GenerateCacheKey(lce.Key, persister.KeyType, persister.Role);
 
-			if (persister.GetBatchSize() > 1 && persister.Cache.IsBatchingPutSupported())
+			if (persister.GetBatchSize() > 1)
 			{
 				cacheBatchingHandler(
 					new CachePutData(

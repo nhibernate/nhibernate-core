@@ -92,7 +92,7 @@ namespace NHibernate.Event.Default
 			}
 
 			var batchSize = persister.GetBatchSize();
-			if (batchSize > 1 && persister.Cache.IsBatchingGetSupported())
+			if (batchSize > 1 && persister.Cache.PreferMultipleGet())
 			{
 				var collectionEntries = new CollectionEntry[batchSize];
 				// The first item in the array is the item that we want to load

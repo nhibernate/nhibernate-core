@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
+using NHibernate.Util;
 
 namespace NHibernate.Cfg.MappingSchema
 {
@@ -45,7 +46,7 @@ namespace NHibernate.Cfg.MappingSchema
 		[XmlIgnore]
 		public IEnumerable<HbmColumn> Columns
 		{
-			get { return Items != null ? Items.OfType<HbmColumn>() : AsColumns(); }
+			get { return !ArrayHelper.IsNullOrEmpty(Items) ? Items.OfType<HbmColumn>() : AsColumns(); }
 		}
 
 		#endregion
@@ -76,7 +77,7 @@ namespace NHibernate.Cfg.MappingSchema
 		[XmlIgnore]
 		public IEnumerable<HbmFormula> Formulas
 		{
-			get { return Items != null ? Items.OfType<HbmFormula>() : AsFormulas(); }
+			get { return !ArrayHelper.IsNullOrEmpty(Items) ? Items.OfType<HbmFormula>() : AsFormulas(); }
 		}
 
 		private IEnumerable<HbmFormula> AsFormulas()
@@ -118,11 +119,18 @@ namespace NHibernate.Cfg.MappingSchema
 		[XmlIgnore]
 		public IEnumerable<object> ColumnsAndFormulas
 		{
-			// when Items is empty the column attribute AND formula attribute will be used
-			// and it may cause an issue (breaking change)
-			// On the other hand it work properly when a mixing between <formula> and <column> tags are used
-			// respecting the order used in the mapping to map multi-columns id.
-			get { return Items ?? Columns.Cast<object>().Concat(Formulas.Cast<object>()); }
+			get
+			{
+				if (!ArrayHelper.IsNullOrEmpty(Items) && (!string.IsNullOrEmpty(column) || !string.IsNullOrEmpty(formula)))
+					throw new MappingException(
+						$"On {Name} many-to-one: specifying columns or formulas with both attributes and " +
+						"sub-elements is invalid. Please use only sub-elements, or only one of them as attribute");
+				if (!string.IsNullOrEmpty(column) && !string.IsNullOrEmpty(formula))
+					throw new MappingException(
+						$"On {Name} many-to-one: specifying both column and formula attributes is invalid. Please " +
+						"specify only one of them, or use sub-elements");
+				return !ArrayHelper.IsNullOrEmpty(Items) ? Items : AsColumns().Cast<object>().Concat(AsFormulas());
+			}
 		}
 		
 		public HbmLaziness? Lazy

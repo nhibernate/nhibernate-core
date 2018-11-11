@@ -9,7 +9,8 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class PropertyMapper : IPropertyMapper
+	// 6.0 TODO: remove IColumnsAndFormulasMapper once IPropertyMapper inherits it.
+	public class PropertyMapper : IPropertyMapper, IColumnsAndFormulasMapper
 	{
 		private readonly IAccessorPropertyMapper entityPropertyMapper;
 		private readonly MemberInfo member;
@@ -223,26 +224,6 @@ namespace NHibernate.Mapping.ByCode.Impl
 			Column(x => x.Index(indexName));
 		}
 
-		public void Formula(string formula)
-		{
-			if (formula == null)
-			{
-				return;
-			}
-
-			ResetColumnPlainValues();
-			propertyMapping.Items = null;
-			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
-			if (formulaLines.Length > 1)
-			{
-				propertyMapping.Items = new[] {new HbmFormula {Text = formulaLines}};
-			}
-			else
-			{
-				propertyMapping.formula = formula;
-			}
-		}
-
 		public void Update(bool consideredInUpdateQuery)
 		{
 			propertyMapping.update = consideredInUpdateQuery;
@@ -280,6 +261,55 @@ namespace NHibernate.Mapping.ByCode.Impl
 			propertyMapping.uniquekey = null;
 			propertyMapping.index = null;
 			propertyMapping.formula = null;
+		}
+
+		#endregion
+
+		#region Implementation of IColumnsAndFormulasMapper
+
+		/// <inheritdoc />
+		public void ColumnsAndFormulas(params Action<IColumnOrFormulaMapper>[] columnOrFormulaMapper)
+		{
+			ResetColumnPlainValues();
+
+			propertyMapping.Items = ColumnOrFormulaMapper.GetItemsFor(
+				columnOrFormulaMapper,
+				member != null ? member.Name : "unnamedcolumn");
+		}
+
+		/// <inheritdoc cref="IColumnsAndFormulasMapper.Formula" />
+		public void Formula(string formula)
+		{
+			if (formula == null)
+			{
+				return;
+			}
+
+			ResetColumnPlainValues();
+			propertyMapping.Items = null;
+			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
+			if (formulaLines.Length > 1)
+			{
+				propertyMapping.Items = new object[] {new HbmFormula {Text = formulaLines}};
+			}
+			else
+			{
+				propertyMapping.formula = formula;
+			}
+		}
+
+		/// <inheritdoc />
+		public void Formulas(params string[] formulas)
+		{
+			if (formulas == null)
+				throw new ArgumentNullException(nameof(formulas));
+
+			ResetColumnPlainValues();
+			propertyMapping.Items =
+				formulas
+					.Select(
+						f => (object) new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) })
+					.ToArray();
 		}
 
 		#endregion

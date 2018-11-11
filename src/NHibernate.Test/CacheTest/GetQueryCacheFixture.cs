@@ -104,7 +104,14 @@ namespace NHibernate.Test.CacheTest
 
 	public class LockedCacheProvider : ICacheProvider
 	{
-		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
+		// Since 5.2
+		[Obsolete]
+		ICache ICacheProvider.BuildCache(string regionName, IDictionary<string, string> properties)
+		{
+			return BuildCache(regionName, properties);
+		}
+
+		public CacheBase BuildCache(string regionName, IDictionary<string, string> properties)
 		{
 			return new LockedCache(regionName);
 		}

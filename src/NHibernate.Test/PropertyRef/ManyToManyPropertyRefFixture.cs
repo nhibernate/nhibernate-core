@@ -87,7 +87,7 @@ namespace NHibernate.Test.PropertyRef
 			Assert.That(loadedManyA.ManyBs.Count, Is.EqualTo(3));
 		}
 
-		[Test, Ignore("Not fixed yet")]
+		[Test]
 		public void Getting_a_ManyA_object_with_fetchmode_join_will_work()
 		{
 			ManyA loadedManyA;
@@ -131,7 +131,7 @@ System.Collections.Generic.KeyNotFoundException: Der angegebene Schlüssel war n
    bei NHibernate.Type.EntityType.LoadByUniqueKey(String entityName, String uniqueKeyPropertyName, Object key, ISessionImplementor session) in C:\Users\Armin\Projects\NHibernate\branches\2.1.x\nhibernate\src\NHibernate\Type\EntityType.cs:Zeile 552.
 			 */
 
-			Assert.That(loadedManyA.ManyBs.Count, Is.EqualTo(3));
+			Assert.That(loadedManyA.ManyBs, Has.Count.EqualTo(3).And.None.Null);
 		}
 	}
 }
