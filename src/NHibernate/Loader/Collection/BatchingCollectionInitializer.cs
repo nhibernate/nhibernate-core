@@ -13,11 +13,16 @@ namespace NHibernate.Loader.Collection
 	/// <seealso cref="OneToManyLoader"/>
 	public partial class BatchingCollectionInitializer : ICollectionInitializer
 	{
-		private readonly Loader[] loaders;
+		private readonly Lazy<Loader>[] loaders;
 		private readonly int[] batchSizes;
 		private readonly ICollectionPersister collectionPersister;
 
 		public BatchingCollectionInitializer(ICollectionPersister collectionPersister, int[] batchSizes, Loader[] loaders)
+			: this(collectionPersister, batchSizes, Array.ConvertAll(loaders, loader => new Lazy<Loader>(() => loader)))
+		{
+		}
+
+		public BatchingCollectionInitializer(ICollectionPersister collectionPersister, int[] batchSizes, Lazy<Loader>[] loaders)
 		{
 			this.loaders = loaders;
 			this.batchSizes = batchSizes;
@@ -26,8 +31,7 @@ namespace NHibernate.Loader.Collection
 
 		public void Initialize(object id, ISessionImplementor session)
 		{
-			object[] batch =
-				session.PersistenceContext.BatchFetchQueue.GetCollectionBatch(collectionPersister, id, batchSizes[0]);
+			object[] batch = session.PersistenceContext.BatchFetchQueue.GetCollectionBatch(collectionPersister, id, batchSizes[0]);
 
 			for (int i = 0; i < batchSizes.Length; i++)
 			{
@@ -36,54 +40,58 @@ namespace NHibernate.Loader.Collection
 				{
 					object[] smallBatch = new object[smallBatchSize];
 					Array.Copy(batch, 0, smallBatch, 0, smallBatchSize);
-					loaders[i].LoadCollectionBatch(session, smallBatch, collectionPersister.KeyType);
+					loaders[i].Value.LoadCollectionBatch(session, smallBatch, collectionPersister.KeyType);
 					return; //EARLY EXIT!
 				}
 			}
 
-			loaders[batchSizes.Length - 1].LoadCollection(session, id, collectionPersister.KeyType);
+			loaders[batchSizes.Length - 1].Value.LoadCollection(session, id, collectionPersister.KeyType);
 		}
 
-		public static ICollectionInitializer CreateBatchingOneToManyInitializer(OneToManyPersister persister, int maxBatchSize,
-																				ISessionFactoryImplementor factory,
-																				IDictionary<string, IFilter> enabledFilters)
+		public static ICollectionInitializer CreateBatchingOneToManyInitializer(
+			OneToManyPersister persister,
+			int maxBatchSize,
+			ISessionFactoryImplementor factory,
+			IDictionary<string, IFilter> enabledFilters)
 		{
 			if (maxBatchSize > 1)
 			{
-				int[] batchSizesToCreate = ArrayHelper.GetBatchSizes(maxBatchSize);
-				Loader[] loadersToCreate = new Loader[batchSizesToCreate.Length];
+				var batchSizesToCreate = ArrayHelper.GetBatchSizes(maxBatchSize);
+				var loadersToCreate = new Lazy<Loader>[batchSizesToCreate.Length];
 				for (int i = 0; i < batchSizesToCreate.Length; i++)
 				{
-					loadersToCreate[i] = new OneToManyLoader(persister, batchSizesToCreate[i], factory, enabledFilters);
+					var batchSize = batchSizesToCreate[i];
+					loadersToCreate[i] = new Lazy<Loader>(
+						() => new OneToManyLoader(persister, batchSize, factory, enabledFilters));
 				}
 
 				return new BatchingCollectionInitializer(persister, batchSizesToCreate, loadersToCreate);
 			}
-			else
-			{
-				return new OneToManyLoader(persister, factory, enabledFilters);
-			}
+
+			return new OneToManyLoader(persister, factory, enabledFilters);
 		}
 
-		public static ICollectionInitializer CreateBatchingCollectionInitializer(IQueryableCollection persister,
-																				 int maxBatchSize,
-																				 ISessionFactoryImplementor factory,
-																				 IDictionary<string, IFilter> enabledFilters)
+		public static ICollectionInitializer CreateBatchingCollectionInitializer(
+			IQueryableCollection persister,
+			int maxBatchSize,
+			ISessionFactoryImplementor factory,
+			IDictionary<string, IFilter> enabledFilters)
 		{
 			if (maxBatchSize > 1)
 			{
-				int[] batchSizesToCreate = ArrayHelper.GetBatchSizes(maxBatchSize);
-				Loader[] loadersToCreate = new Loader[batchSizesToCreate.Length];
+				var batchSizesToCreate = ArrayHelper.GetBatchSizes(maxBatchSize);
+				var loadersToCreate = new Lazy<Loader>[batchSizesToCreate.Length];
 				for (int i = 0; i < batchSizesToCreate.Length; i++)
 				{
-					loadersToCreate[i] = new BasicCollectionLoader(persister, batchSizesToCreate[i], factory, enabledFilters);
+					var batchSize = batchSizesToCreate[i];
+					loadersToCreate[i] = new Lazy<Loader>(
+						() => new BasicCollectionLoader(persister, batchSize, factory, enabledFilters));
 				}
+
 				return new BatchingCollectionInitializer(persister, batchSizesToCreate, loadersToCreate);
 			}
-			else
-			{
-				return new BasicCollectionLoader(persister, factory, enabledFilters);
-			}
+
+			return new BasicCollectionLoader(persister, factory, enabledFilters);
 		}
 	}
 }

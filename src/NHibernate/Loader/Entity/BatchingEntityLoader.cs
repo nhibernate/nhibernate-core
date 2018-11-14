@@ -15,12 +15,17 @@ namespace NHibernate.Loader.Entity
 	/// <seealso cref="EntityLoader"/>
 	public partial class BatchingEntityLoader : IUniqueEntityLoader
 	{
-		private readonly Loader[] loaders;
+		private readonly Lazy<Loader>[] loaders;
 		private readonly int[] batchSizes;
 		private readonly IEntityPersister persister;
 		private readonly IType idType;
 
 		public BatchingEntityLoader(IEntityPersister persister, int[] batchSizes, Loader[] loaders)
+			: this(persister, batchSizes, Array.ConvertAll(loaders, loader => new Lazy<Loader>(() => loader)))
+		{
+		}
+
+		public BatchingEntityLoader(IEntityPersister persister, int[] batchSizes, Lazy<Loader>[] loaders)
 		{
 			this.batchSizes = batchSizes;
 			this.loaders = loaders;
@@ -58,33 +63,37 @@ namespace NHibernate.Loader.Entity
 					Array.Copy(batch, 0, smallBatch, 0, smallBatchSize);
 
 					IList results =
-						loaders[i].LoadEntityBatch(session, smallBatch, idType, optionalObject, persister.EntityName, id, persister);
+						loaders[i].Value.LoadEntityBatch(session, smallBatch, idType, optionalObject, persister.EntityName, id, persister);
 
 					return GetObjectFromList(results, id, session); //EARLY EXIT
 				}
 			}
 
-			return ((IUniqueEntityLoader) loaders[batchSizes.Length - 1]).Load(id, optionalObject, session);
+			return ((IUniqueEntityLoader) loaders[batchSizes.Length - 1].Value).Load(id, optionalObject, session);
 		}
 
-		public static IUniqueEntityLoader CreateBatchingEntityLoader(IOuterJoinLoadable persister, int maxBatchSize,
-																	 LockMode lockMode, ISessionFactoryImplementor factory,
-																	 IDictionary<string, IFilter> enabledFilters)
+		public static IUniqueEntityLoader CreateBatchingEntityLoader(
+			IOuterJoinLoadable persister,
+			int maxBatchSize,
+			LockMode lockMode,
+			ISessionFactoryImplementor factory,
+			IDictionary<string, IFilter> enabledFilters)
 		{
 			if (maxBatchSize > 1)
 			{
-				int[] batchSizesToCreate = ArrayHelper.GetBatchSizes(maxBatchSize);
-				Loader[] loadersToCreate = new Loader[batchSizesToCreate.Length];
-				for (int i = 0; i < batchSizesToCreate.Length; i++)
+				var batchSizesToCreate = ArrayHelper.GetBatchSizes(maxBatchSize);
+				var loadersToCreate = new Lazy<Loader>[batchSizesToCreate.Length];
+				for (var i = 0; i < batchSizesToCreate.Length; i++)
 				{
-					loadersToCreate[i] = new EntityLoader(persister, batchSizesToCreate[i], lockMode, factory, enabledFilters);
+					var batchSize = batchSizesToCreate[i];
+					loadersToCreate[i] = new Lazy<Loader>(
+						() => new EntityLoader(persister, batchSize, lockMode, factory, enabledFilters));
 				}
+
 				return new BatchingEntityLoader(persister, batchSizesToCreate, loadersToCreate);
 			}
-			else
-			{
-				return new EntityLoader(persister, lockMode, factory, enabledFilters);
-			}
+
+			return new EntityLoader(persister, lockMode, factory, enabledFilters);
 		}
 	}
 }

@@ -38,13 +38,13 @@ namespace NHibernate.Loader.Entity
 					Array.Copy(batch, 0, smallBatch, 0, smallBatchSize);
 
 					IList results =
-						await (loaders[i].LoadEntityBatchAsync(session, smallBatch, idType, optionalObject, persister.EntityName, id, persister, cancellationToken)).ConfigureAwait(false);
+						await (loaders[i].Value.LoadEntityBatchAsync(session, smallBatch, idType, optionalObject, persister.EntityName, id, persister, cancellationToken)).ConfigureAwait(false);
 
 					return GetObjectFromList(results, id, session); //EARLY EXIT
 				}
 			}
 
-			return await (((IUniqueEntityLoader) loaders[batchSizes.Length - 1]).LoadAsync(id, optionalObject, session, cancellationToken)).ConfigureAwait(false);
+			return await (((IUniqueEntityLoader) loaders[batchSizes.Length - 1].Value).LoadAsync(id, optionalObject, session, cancellationToken)).ConfigureAwait(false);
 		}
 	}
 }
