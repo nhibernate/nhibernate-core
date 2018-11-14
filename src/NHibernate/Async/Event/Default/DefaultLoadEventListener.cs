@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using NHibernate.Action;
 using NHibernate.Cache;
 using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
@@ -64,7 +65,8 @@ namespace NHibernate.Event.Default
 			else
 			{
 				System.Type idClass = persister.IdentifierType.ReturnedClass;
-				if (idClass != null && !idClass.IsInstanceOfType(@event.EntityId))
+				if (idClass != null && !idClass.IsInstanceOfType(@event.EntityId) &&
+					!(@event.EntityId is DelayedPostInsertIdentifier))
 				{
 					throw new TypeMismatchException("Provided id of the wrong type. Expected: " + idClass + ", got " + @event.EntityId.GetType());
 				}

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.GH1754
 {
@@ -6,5 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }
+		public virtual ISet<Entity> Children { get; set; } = new HashSet<Entity>();
 	}
 }

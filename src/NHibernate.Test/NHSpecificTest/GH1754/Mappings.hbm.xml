@@ -5,6 +5,10 @@
   <class name="Entity">
     <id name="Id" generator="identity"/>
     <property name="Name"/>
+    <set name="Children" cascade="persist,merge,save-update,delete-orphan">
+      <key column="Parent" />
+      <one-to-many class="Entity"/>
+    </set>
   </class>
 
 </hibernate-mapping>
