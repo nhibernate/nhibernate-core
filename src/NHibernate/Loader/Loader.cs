@@ -315,7 +315,7 @@ namespace NHibernate.Loader
 												 queryParameters.NamedParameters);
 			}
 
-            InitializeEntitiesAndCollections(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session), null, queryParameters.CanAddCollectionsToCache);
+            InitializeEntitiesAndCollections(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session), null, queryParameters.UncacheableCollections);
 			session.PersistenceContext.InitializeNonLazyCollections();
 			return result;
 		}
@@ -517,7 +517,7 @@ namespace NHibernate.Loader
 					session.Batcher.CloseCommand(st, rs);
 				}
 
-                InitializeEntitiesAndCollections(hydratedObjects, rs, session, queryParameters.IsReadOnly(session), null, queryParameters.CanAddCollectionsToCache);
+                InitializeEntitiesAndCollections(hydratedObjects, rs, session, queryParameters.IsReadOnly(session), null, queryParameters.UncacheableCollections);
 
 				if (createSubselects)
 				{
@@ -601,7 +601,7 @@ namespace NHibernate.Loader
 
 		internal void InitializeEntitiesAndCollections(
 			IList hydratedObjects, object resultSetId, ISessionImplementor session, bool readOnly,
-			CacheBatcher cacheBatcher = null, bool canAddCollectionsToCache = true)
+			CacheBatcher cacheBatcher = null, HashSet<string> uncacheableCollections = null)
 		{
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
 			if (collectionPersisters != null)
@@ -615,7 +615,7 @@ namespace NHibernate.Loader
 						//during loading
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-                        EndCollectionLoad(resultSetId, session, collectionPersisters[i], canAddCollectionsToCache);
+                        EndCollectionLoad(resultSetId, session, collectionPersisters[i], uncacheableCollections);
 					}
 				}
 			}
@@ -666,17 +666,17 @@ namespace NHibernate.Loader
 						//the entities, since we might call hashCode() on the elements
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-                        EndCollectionLoad(resultSetId, session, collectionPersisters[i], canAddCollectionsToCache);
+                        EndCollectionLoad(resultSetId, session, collectionPersisters[i], uncacheableCollections);
 					}
 				}
 			}
 		}
 
-        private static void EndCollectionLoad(object resultSetId, ISessionImplementor session, ICollectionPersister collectionPersister, bool canAddCollectionsToCache)
+        private static void EndCollectionLoad(object resultSetId, ISessionImplementor session, ICollectionPersister collectionPersister, HashSet<string> uncacheableCollections)
 		{
 			//this is a query and we are loading multiple instances of the same collection role
 			session.PersistenceContext.LoadContexts.GetCollectionLoadContext((DbDataReader)resultSetId).EndLoadingCollections(
-				collectionPersister, canAddCollectionsToCache);
+				collectionPersister, uncacheableCollections);
 		}
 
 		

@@ -33,8 +33,9 @@ namespace NHibernate.Engine.Loading
 		/// complete. 
 		/// </summary>
 		/// <param name="persister">The persister for which to complete loading. </param>
+		/// <param name="uncacheableCollections">List of collections that won't be added to the cache. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public async Task EndLoadingCollectionsAsync(ICollectionPersister persister, CancellationToken cancellationToken)
+		public async Task EndLoadingCollectionsAsync(ICollectionPersister persister, HashSet<string> uncacheableCollections, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!loadContexts.HasLoadingCollectionEntries && (localLoadingCollectionKeys.Count == 0))
@@ -80,7 +81,7 @@ namespace NHibernate.Engine.Loading
 			}
 			localLoadingCollectionKeys.ExceptWith(toRemove);
 
-			await (EndLoadingCollectionsAsync(persister, matches, cancellationToken)).ConfigureAwait(false);
+			await (EndLoadingCollectionsAsync(persister, matches, uncacheableCollections, cancellationToken)).ConfigureAwait(false);
 			if ((localLoadingCollectionKeys.Count == 0))
 			{
 				// todo : hack!!!
@@ -93,7 +94,8 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		private async Task EndLoadingCollectionsAsync(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, CancellationToken cancellationToken)
+		private async Task EndLoadingCollectionsAsync(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, 
+										HashSet<string> uncacheableCollections, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (matchedCollectionEntries == null || matchedCollectionEntries.Count == 0)
@@ -115,7 +117,7 @@ namespace NHibernate.Engine.Loading
 			for (int i = 0; i < count; i++)
 			{
 				await (EndLoadingCollectionAsync(matchedCollectionEntries[i], persister,
-				                     data => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
+				                     data => cacheBatcher.AddToBatch(persister, data), uncacheableCollections, cancellationToken)).ConfigureAwait(false);
 			}
 			await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 
@@ -126,7 +128,7 @@ namespace NHibernate.Engine.Loading
 		}
 
 		private async Task EndLoadingCollectionAsync(LoadingCollectionEntry lce, ICollectionPersister persister,
-		                                  Action<CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
+		                                  Action<CachePutData> cacheBatchingHandler, HashSet<string> uncacheableCollections, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled())
@@ -161,7 +163,8 @@ namespace NHibernate.Engine.Loading
 				ce.PostInitialize(lce.Collection, persistenceContext);
 			}
 
-			bool addToCache = hasNoQueuedOperations && persister.HasCache && 
+			bool addToCache = hasNoQueuedOperations && persister.HasCache &&
+				(uncacheableCollections == null || !uncacheableCollections.Contains(lce.Persister.Role)) &&
 				session.CacheMode.HasFlag(CacheMode.Put) && !ce.IsDoremove; // and this is not a forced initialization during flush
 
 			if (addToCache)

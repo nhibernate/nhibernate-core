@@ -129,7 +129,7 @@ namespace NHibernate.Loader
 												 queryParameters.NamedParameters);
 			}
 
-			await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session), cancellationToken: cancellationToken)).ConfigureAwait(false);
+			await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session), null, queryParameters.UncacheableCollections,cancellationToken: cancellationToken)).ConfigureAwait(false);
 			await (session.PersistenceContext.InitializeNonLazyCollectionsAsync(cancellationToken)).ConfigureAwait(false);
 			return result;
 		}
@@ -321,7 +321,7 @@ namespace NHibernate.Loader
 					session.Batcher.CloseCommand(st, rs);
 				}
 
-				await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, rs, session, queryParameters.IsReadOnly(session), cancellationToken: cancellationToken)).ConfigureAwait(false);
+				await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, rs, session, queryParameters.IsReadOnly(session), null, queryParameters.UncacheableCollections, cancellationToken: cancellationToken)).ConfigureAwait(false);
 
 				if (createSubselects)
 				{
@@ -334,7 +334,7 @@ namespace NHibernate.Loader
 
 		internal async Task InitializeEntitiesAndCollectionsAsync(
 			IList hydratedObjects, object resultSetId, ISessionImplementor session, bool readOnly,
-			CacheBatcher cacheBatcher = null, CancellationToken cancellationToken = default(CancellationToken))
+			CacheBatcher cacheBatcher = null, HashSet<string> uncacheableCollections = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
@@ -349,7 +349,7 @@ namespace NHibernate.Loader
 						//during loading
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i], cancellationToken)).ConfigureAwait(false);
+						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i], uncacheableCollections, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 			}
@@ -400,13 +400,14 @@ namespace NHibernate.Loader
 						//the entities, since we might call hashCode() on the elements
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i], cancellationToken)).ConfigureAwait(false);
+						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i], uncacheableCollections, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 			}
 		}
 
-		private static Task EndCollectionLoadAsync(object resultSetId, ISessionImplementor session, ICollectionPersister collectionPersister, CancellationToken cancellationToken)
+		private static Task EndCollectionLoadAsync(object resultSetId, ISessionImplementor session, ICollectionPersister collectionPersister, 
+			HashSet<string> uncacheableCollections, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -416,7 +417,7 @@ namespace NHibernate.Loader
 			{
 				//this is a query and we are loading multiple instances of the same collection role
 				return session.PersistenceContext.LoadContexts.GetCollectionLoadContext((DbDataReader)resultSetId).EndLoadingCollectionsAsync(
-				collectionPersister, cancellationToken);
+				collectionPersister, uncacheableCollections, cancellationToken);
 			}
 			catch (Exception ex)
 			{

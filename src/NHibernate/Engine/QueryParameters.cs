@@ -37,20 +37,20 @@ namespace NHibernate.Engine
 			: this(positionalParameterTypes, postionalParameterValues, null, collectionKeys) {}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, IDictionary<string, TypedValue> namedParameters, object[] collectionKeys)
-			: this(positionalParameterTypes, postionalParameterValues, namedParameters, null, null, false, false, false, null, null, collectionKeys, null, true) {}
+			: this(positionalParameterTypes, postionalParameterValues, namedParameters, null, null, false, false, false, null, null, collectionKeys, null, null) {}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, LockMode> lockModes, RowSelection rowSelection,
 		                       bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
-			: this(positionalParameterTypes, positionalParameterValues, null, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null, transformer, true)
+			: this(positionalParameterTypes, positionalParameterValues, null, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null, transformer, null)
 		{
 			NaturalKeyLookup = isLookupByNaturalKey;
 		}
 
 		public QueryParameters(IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized,
-		                       bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer, bool canAddCollectionsToCache)
+		                       bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer, HashSet<string> uncacheableCollections)
 			: this(
 				TypeHelper.EmptyTypeArray, Array.Empty<object>(), namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null,
-                transformer, canAddCollectionsToCache)
+                transformer, uncacheableCollections)
 		{
 			// used by CriteriaTranslator
 			NaturalKeyLookup = isLookupByNaturalKey;
@@ -58,7 +58,7 @@ namespace NHibernate.Engine
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, TypedValue> namedParameters,
 		                       IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion,
-                               string comment, object[] collectionKeys, IResultTransformer transformer, bool canAddCollectionsToCache)
+                               string comment, object[] collectionKeys, IResultTransformer transformer, HashSet<string> uncacheableCollections)
 		{
 			PositionalParameterTypes = positionalParameterTypes ?? Array.Empty<IType>();
 			PositionalParameterValues = positionalParameterValues ?? Array.Empty<object>();
@@ -72,7 +72,7 @@ namespace NHibernate.Engine
 			IsReadOnlyInitialized = isReadOnlyInitialized;
 			this.readOnly = readOnly;
 			ResultTransformer = transformer;
-		    CanAddCollectionsToCache = canAddCollectionsToCache;
+			UncacheableCollections = uncacheableCollections;
 		}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, TypedValue> namedParameters,
@@ -80,7 +80,7 @@ namespace NHibernate.Engine
 		                       string comment, object[] collectionKeys, object optionalObject, string optionalEntityName, object optionalId, IResultTransformer transformer)
 			: this(
 				positionalParameterTypes, positionalParameterValues, namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, collectionKeys,
-				transformer, true)
+				transformer, null)
 		{
 			OptionalEntityName = optionalEntityName;
 			OptionalId = optionalId;
@@ -143,7 +143,7 @@ namespace NHibernate.Engine
         /// <summary>
         /// Indicates if we can add loaded child collections to second lvl cache.
         /// </summary>
-        public bool CanAddCollectionsToCache { get; set; }
+        public HashSet<string> UncacheableCollections { get; set; }
 
 		public bool ReadOnly
 		{
