@@ -1,4 +1,4 @@
-using NHibernate.Action;
+
 using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
@@ -151,7 +151,6 @@ namespace NHibernate.Engine
 			{
 				// it is or was referenced _somewhere_
 				bool ownerChanged = loadedPersister != currentPersister ||
-					!(entry.LoadedKey is DelayedPostInsertIdentifier) &&
 					!currentPersister.KeyType.IsEqual(entry.LoadedKey, entry.CurrentKey, factory);
 
 				if (ownerChanged)

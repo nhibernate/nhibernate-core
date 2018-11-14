@@ -43,7 +43,7 @@ namespace NHibernate.Action
 
 			await (Persister.RecreateAsync(collection, Key, Session, cancellationToken)).ConfigureAwait(false);
 
-			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
+			await (Session.PersistenceContext.GetCollectionEntry(collection).AfterActionAsync(collection, Session, cancellationToken)).ConfigureAwait(false);
 
 			await (EvictAsync(cancellationToken)).ConfigureAwait(false);
 

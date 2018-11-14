@@ -32,7 +32,7 @@ namespace NHibernate.Action
 
 			Persister.Recreate(collection, Key, Session);
 
-			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
+			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection, Session);
 
 			Evict();
 

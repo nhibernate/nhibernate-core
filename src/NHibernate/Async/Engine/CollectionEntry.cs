@@ -10,7 +10,7 @@
 
 using System;
 using System.Collections;
-
+using NHibernate.Action;
 using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
@@ -69,6 +69,27 @@ namespace NHibernate.Engine
 			dorecreate = false;
 			reached = false;
 			processed = false;
+		}
+
+		public async Task AfterActionAsync(IPersistentCollection collection, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			loadedKey = CurrentKey;
+			if (loadedKey is DelayedPostInsertIdentifier && CurrentPersister != null)
+			{
+				// Resolve the actual key
+				loadedKey = await (CurrentPersister.CollectionType.GetKeyOfOwnerAsync(collection.Owner, session, cancellationToken)).ConfigureAwait(false);
+			}
+
+			SetLoadedPersister(CurrentPersister);
+
+			if (collection.WasInitialized && (IsDoremove || IsDorecreate || IsDoupdate))
+			{
+				//re-snapshot
+				snapshot = loadedPersister == null || !loadedPersister.IsMutable ? null : collection.GetSnapshot(loadedPersister);
+			}
+
+			collection.PostAction();
 		}
 
 		public Task<ICollection> GetOrphansAsync(string entityName, IPersistentCollection collection, CancellationToken cancellationToken)

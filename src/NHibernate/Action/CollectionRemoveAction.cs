@@ -74,7 +74,7 @@ namespace NHibernate.Action
 			IPersistentCollection collection = Collection;
 			if (collection != null)
 			{
-				Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
+				Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection, Session);
 			}
 
 			Evict();

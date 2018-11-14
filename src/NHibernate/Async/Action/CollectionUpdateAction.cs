@@ -78,7 +78,7 @@ namespace NHibernate.Action
 				await (persister.InsertRowsAsync(collection, id, session, cancellationToken)).ConfigureAwait(false);
 			}
 
-			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
+			await (Session.PersistenceContext.GetCollectionEntry(collection).AfterActionAsync(collection, session, cancellationToken)).ConfigureAwait(false);
 
 			await (EvictAsync(cancellationToken)).ConfigureAwait(false);
 

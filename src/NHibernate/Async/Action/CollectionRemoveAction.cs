@@ -42,7 +42,7 @@ namespace NHibernate.Action
 			IPersistentCollection collection = Collection;
 			if (collection != null)
 			{
-				Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
+				await (Session.PersistenceContext.GetCollectionEntry(collection).AfterActionAsync(collection, Session, cancellationToken)).ConfigureAwait(false);
 			}
 
 			await (EvictAsync(cancellationToken)).ConfigureAwait(false);
