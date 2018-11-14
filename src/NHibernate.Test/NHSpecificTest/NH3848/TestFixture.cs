@@ -443,7 +443,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			using (var session = OpenSession())
 			using (IDbCommand cmd = session.Connection.CreateCommand())
 			{
-				cmd.CommandText = "DELETE FROM Orders; DELETE FROM Companies;";
+				cmd.CommandText = "DELETE FROM Companies;";
+				cmd.ExecuteNonQuery();
+				cmd.Connection.Close();
+			}
+
+			using (var session = OpenSession())
+			using (IDbCommand cmd = session.Connection.CreateCommand())
+			{
+				cmd.CommandText = "DELETE FROM Orders;";
 				cmd.ExecuteNonQuery();
 				cmd.Connection.Close();
 			}
