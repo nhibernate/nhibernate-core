@@ -1,6 +1,5 @@
 using System;
 using System.Data;
-using NHibernate.Dialect.Function;
 
 namespace NHibernate.Dialect
 {
