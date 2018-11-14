@@ -29,6 +29,13 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
+				// Firebird does not like deleting tables with auto-fk.
+				foreach (var e in session.Query<Entity>())
+				{
+					e.Children.Clear();
+				}
+				session.Flush();
+
 				session.CreateQuery("delete from System.Object").ExecuteUpdate();
 
 				transaction.Commit();
