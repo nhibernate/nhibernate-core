@@ -17,7 +17,6 @@ namespace NHibernate.Action
 	public abstract partial class CollectionAction : IAsyncExecutable, IComparable<CollectionAction>, IDeserializationCallback, IAfterTransactionCompletionProcess
 	{
 		private readonly object key;
-		private object finalKey;
 		[NonSerialized] private ICollectionPersister persister;
 		private readonly ISessionImplementor session;
 		private readonly string collectionRole;
@@ -55,7 +54,7 @@ namespace NHibernate.Action
 		{
 			get
 			{
-				finalKey = key;
+				var finalKey = key;
 				if (key is DelayedPostInsertIdentifier)
 				{
 					// need to look it up
