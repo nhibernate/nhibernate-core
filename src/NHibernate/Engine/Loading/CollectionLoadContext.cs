@@ -317,7 +317,7 @@ namespace NHibernate.Engine.Loading
 		/// <param name="persister">The persister </param>
 		/// <param name="cacheBatchingHandler">The action for handling cache batching</param>
 		private void AddCollectionToCache(LoadingCollectionEntry lce, ICollectionPersister persister,
-										  Action<CachePutData> cacheBatchingHandler)
+		                                  Action<CachePutData> cacheBatchingHandler)
 		{
 			ISessionImplementor session = LoadContext.PersistenceContext.Session;
 			ISessionFactoryImplementor factory = session.Factory;
@@ -371,8 +371,8 @@ namespace NHibernate.Engine.Loading
 			else
 			{
 				bool put = persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry),
-											   session.Timestamp, version, versionComparator,
-											   factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh);
+				                               session.Timestamp, version, versionComparator,
+				                               factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh);
 
 				if (put && factory.Statistics.IsStatisticsEnabled)
 				{
