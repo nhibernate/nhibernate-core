@@ -1195,6 +1195,7 @@ namespace NHibernate.Test.Hql
 
 				hql = "from Animal a where str(123) = '123'";
 				Animal result = (Animal) await (s.CreateQuery(hql).UniqueResultAsync());
+				Assert.That(result, Is.Not.Null);
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
@@ -1375,7 +1376,8 @@ group by mr.Description";
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				// ! takes not precedence over & at least with some dialects (maybe all).
+				// The bitwise "not" should take precedence over the bitwise "and", but when it is implemented as a
+				// function, its argument is the whole following statement, unless parenthesis are used to prevent this.
 				var query = s.CreateQuery("from MaterialResource m where ((!m.State) & 3) = 3");
 				var result = await (query.ListAsync());
 				Assert.That(result, Has.Count.EqualTo(1), "((!m.State) & 3) = 3");
@@ -1415,6 +1417,10 @@ group by mr.Description";
 				new Tuple<string, int> ("select count(*) from MaterialResource m where ((!m.State) & 3) = 2", 1),
 				new Tuple<string, int> ("select count(*) from MaterialResource m where ((!m.State) & 3) = 1", 1)
 			};
+
+			if (TestDialect.MaxNumberOfConnections < queries.Count)
+				Assert.Ignore("Current database has a too low connection count limit.");
+
 			// Do not use a ManualResetEventSlim, it does not support async and exhausts the task thread pool in the
 			// async counterparts of this test. SemaphoreSlim has the async support and release the thread when waiting.
 			var semaphore = new SemaphoreSlim(0);

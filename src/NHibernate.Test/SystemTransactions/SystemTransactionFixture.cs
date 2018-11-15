@@ -181,12 +181,12 @@ namespace NHibernate.Test.SystemTransactions
 			// being concurrently disposed of. See https://github.com/nhibernate/nhibernate-core/pull/1505 for more details.
 			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("ODBC sometimes fails on second scope by checking the previous transaction status, which may yield an object disposed exception");
-			// SAP HANA .Net provider always causes system transactions to be distributed, causing them to complete
-			// on concurrent threads. This creates race conditions when chaining scopes, the subsequent scope usage
+			// SAP HANA & SQL Anywhere .Net providers always cause system transactions to be distributed, causing them to
+			// complete on concurrent threads. This creates race conditions when chaining scopes, the subsequent scope usage
 			// finding the connection still enlisted in the previous transaction, its complete being still not finished
 			// on its own thread.
-			if (Sfi.ConnectionProvider.Driver is HanaDriverBase)
-				Assert.Ignore("SAP HANA scope handling causes concurrency issues preventing chaining scope usages.");
+			if (Sfi.ConnectionProvider.Driver is HanaDriverBase || Sfi.ConnectionProvider.Driver is SapSQLAnywhere17Driver)
+				Assert.Ignore("SAP HANA and SQL Anywhere scope handling causes concurrency issues preventing chaining scope usages.");
 
 			using (var s = WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
 			{
@@ -254,6 +254,13 @@ namespace NHibernate.Test.SystemTransactions
 		public void CanUseSessionOutsideOfScopeAfterScope(bool explicitFlush)
 		{
 			IgnoreIfUnsupported(explicitFlush);
+			// SAP SQL Anywhere .Net provider always causes system transactions to be distributed, causing them to
+			// complete on concurrent threads. This creates race conditions when chaining session usage after a scope,
+			// the subsequent usage finding the connection still enlisted in the previous transaction, its complete
+			// being still not finished on its own thread.
+			if (Sfi.ConnectionProvider.Driver is SapSQLAnywhere17Driver)
+				Assert.Ignore("SAP SQL Anywhere scope handling causes concurrency issues preventing chaining session usages.");
+
 			using (var s = WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
 			{
 				using (var tx = new TransactionScope())

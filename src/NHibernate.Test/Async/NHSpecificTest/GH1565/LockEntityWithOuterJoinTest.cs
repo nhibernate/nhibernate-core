@@ -19,6 +19,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1565
 		[Test]
 		public async Task LockWithOuterJoin_ShouldBePossibleAsync()
 		{
+			// For this test to succeed with SQL Anywhere, ansi_update_constraints must be off.
+			// In I-SQL: set option ansi_update_constraints = 'Off'
 			using (var session = OpenSession())
 			{
 				using (var transaction = session.BeginTransaction())
