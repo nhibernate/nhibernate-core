@@ -315,7 +315,7 @@ namespace NHibernate.Loader
 												 queryParameters.NamedParameters);
 			}
 
-            InitializeEntitiesAndCollections(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session), null, queryParameters.UncacheableCollections);
+			InitializeEntitiesAndCollections(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session), null, queryParameters.UncacheableCollections);
 			session.PersistenceContext.InitializeNonLazyCollections();
 			return result;
 		}
@@ -517,7 +517,7 @@ namespace NHibernate.Loader
 					session.Batcher.CloseCommand(st, rs);
 				}
 
-                InitializeEntitiesAndCollections(hydratedObjects, rs, session, queryParameters.IsReadOnly(session), null, queryParameters.UncacheableCollections);
+				InitializeEntitiesAndCollections(hydratedObjects, rs, session, queryParameters.IsReadOnly(session), null, queryParameters.UncacheableCollections);
 
 				if (createSubselects)
 				{
@@ -615,7 +615,7 @@ namespace NHibernate.Loader
 						//during loading
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-                        EndCollectionLoad(resultSetId, session, collectionPersisters[i], uncacheableCollections);
+						EndCollectionLoad(resultSetId, session, collectionPersisters[i], uncacheableCollections);
 					}
 				}
 			}
@@ -666,13 +666,13 @@ namespace NHibernate.Loader
 						//the entities, since we might call hashCode() on the elements
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-                        EndCollectionLoad(resultSetId, session, collectionPersisters[i], uncacheableCollections);
+						EndCollectionLoad(resultSetId, session, collectionPersisters[i], uncacheableCollections);
 					}
 				}
 			}
 		}
 
-        private static void EndCollectionLoad(object resultSetId, ISessionImplementor session, ICollectionPersister collectionPersister, HashSet<string> uncacheableCollections)
+		private static void EndCollectionLoad(object resultSetId, ISessionImplementor session, ICollectionPersister collectionPersister, HashSet<string> uncacheableCollections)
 		{
 			//this is a query and we are loading multiple instances of the same collection role
 			session.PersistenceContext.LoadContexts.GetCollectionLoadContext((DbDataReader)resultSetId).EndLoadingCollections(
@@ -849,7 +849,7 @@ namespace NHibernate.Loader
 						if (Log.IsDebugEnabled())
 						{
 							Log.Debug("result set contains (possibly empty) collection: {0}",
-							          MessageHelper.CollectionInfoString(collectionPersisters[j], keys[i]));
+									  MessageHelper.CollectionInfoString(collectionPersisters[j], keys[i]));
 						}
 						session.PersistenceContext.LoadContexts.GetCollectionLoadContext((DbDataReader)resultSetId).GetLoadingCollection(
 							collectionPersisters[j], keys[i]);

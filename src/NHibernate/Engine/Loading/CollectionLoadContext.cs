@@ -145,8 +145,8 @@ namespace NHibernate.Engine.Loading
 		/// complete. 
 		/// </summary>
 		/// <param name="persister">The persister for which to complete loading. </param>
-        /// <param name="uncacheableCollections">Indicates if collcetions can be put in cache</param>
-        public void EndLoadingCollections(ICollectionPersister persister, HashSet<string> uncacheableCollections)
+		/// <param name="uncacheableCollections">Indicates if collcetions can be put in cache</param>
+		public void EndLoadingCollections(ICollectionPersister persister, HashSet<string> uncacheableCollections)
 		{
 			if (!loadContexts.HasLoadingCollectionEntries && (localLoadingCollectionKeys.Count == 0))
 			{
@@ -191,7 +191,7 @@ namespace NHibernate.Engine.Loading
 			}
 			localLoadingCollectionKeys.ExceptWith(toRemove);
 
-            EndLoadingCollections(persister, matches, uncacheableCollections);
+			EndLoadingCollections(persister, matches, uncacheableCollections);
 			if ((localLoadingCollectionKeys.Count == 0))
 			{
 				// todo : hack!!!
@@ -204,7 +204,7 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-        private void EndLoadingCollections(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, HashSet<string> uncacheableCollections)
+		private void EndLoadingCollections(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, HashSet<string> uncacheableCollections)
 		{
 			if (matchedCollectionEntries == null || matchedCollectionEntries.Count == 0)
 			{
@@ -225,7 +225,7 @@ namespace NHibernate.Engine.Loading
 			for (int i = 0; i < count; i++)
 			{
 				EndLoadingCollection(matchedCollectionEntries[i], persister,
-				                     data => cacheBatcher.AddToBatch(persister, data), uncacheableCollections);
+									 data => cacheBatcher.AddToBatch(persister, data), uncacheableCollections);
 			}
 			cacheBatcher.ExecuteBatch();
 
@@ -236,7 +236,7 @@ namespace NHibernate.Engine.Loading
 		}
 
 		private void EndLoadingCollection(LoadingCollectionEntry lce, ICollectionPersister persister,
-		                                  Action<CachePutData> cacheBatchingHandler, HashSet<string> uncacheableCollections)
+										  Action<CachePutData> cacheBatchingHandler, HashSet<string> uncacheableCollections)
 		{
 			if (log.IsDebugEnabled())
 			{
@@ -299,7 +299,7 @@ namespace NHibernate.Engine.Loading
 		/// <param name="persister">The persister </param>
 		/// <param name="cacheBatchingHandler">The action for handling cache batching</param>
 		private void AddCollectionToCache(LoadingCollectionEntry lce, ICollectionPersister persister,
-		                                  Action<CachePutData> cacheBatchingHandler)
+										  Action<CachePutData> cacheBatchingHandler)
 		{
 			ISessionImplementor session = LoadContext.PersistenceContext.Session;
 			ISessionFactoryImplementor factory = session.Factory;
@@ -353,8 +353,8 @@ namespace NHibernate.Engine.Loading
 			else
 			{
 				bool put = persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry),
-				                               session.Timestamp, version, versionComparator,
-				                               factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh);
+											   session.Timestamp, version, versionComparator,
+											   factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh);
 
 				if (put && factory.Statistics.IsStatisticsEnabled)
 				{

@@ -33,7 +33,7 @@ namespace NHibernate.Engine.Loading
 		/// complete. 
 		/// </summary>
 		/// <param name="persister">The persister for which to complete loading. </param>
-		/// <param name="uncacheableCollections">List of collections that won't be added to the cache. </param>
+		/// <param name="uncacheableCollections">Indicates if collcetions can be put in cache</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		public async Task EndLoadingCollectionsAsync(ICollectionPersister persister, HashSet<string> uncacheableCollections, CancellationToken cancellationToken)
 		{
@@ -94,8 +94,7 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		private async Task EndLoadingCollectionsAsync(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, 
-										HashSet<string> uncacheableCollections, CancellationToken cancellationToken)
+		private async Task EndLoadingCollectionsAsync(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, HashSet<string> uncacheableCollections, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (matchedCollectionEntries == null || matchedCollectionEntries.Count == 0)
@@ -117,7 +116,7 @@ namespace NHibernate.Engine.Loading
 			for (int i = 0; i < count; i++)
 			{
 				await (EndLoadingCollectionAsync(matchedCollectionEntries[i], persister,
-				                     data => cacheBatcher.AddToBatch(persister, data), uncacheableCollections, cancellationToken)).ConfigureAwait(false);
+									 data => cacheBatcher.AddToBatch(persister, data), uncacheableCollections, cancellationToken)).ConfigureAwait(false);
 			}
 			await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 
@@ -128,7 +127,7 @@ namespace NHibernate.Engine.Loading
 		}
 
 		private async Task EndLoadingCollectionAsync(LoadingCollectionEntry lce, ICollectionPersister persister,
-		                                  Action<CachePutData> cacheBatchingHandler, HashSet<string> uncacheableCollections, CancellationToken cancellationToken)
+										  Action<CachePutData> cacheBatchingHandler, HashSet<string> uncacheableCollections, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled())
@@ -163,9 +162,9 @@ namespace NHibernate.Engine.Loading
 				ce.PostInitialize(lce.Collection, persistenceContext);
 			}
 
-			bool addToCache = hasNoQueuedOperations && persister.HasCache &&
-				(uncacheableCollections == null || !uncacheableCollections.Contains(lce.Persister.Role)) &&
-				session.CacheMode.HasFlag(CacheMode.Put) && !ce.IsDoremove; // and this is not a forced initialization during flush
+			bool addToCache = hasNoQueuedOperations && persister.HasCache && 
+				session.CacheMode.HasFlag(CacheMode.Put) && 
+				(uncacheableCollections == null || !uncacheableCollections.Contains(lce.Persister.Role)) && !ce.IsDoremove; // and this is not a forced initialization during flush
 
 			if (addToCache)
 			{
@@ -193,7 +192,7 @@ namespace NHibernate.Engine.Loading
 		/// <param name="cacheBatchingHandler">The action for handling cache batching</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		private async Task AddCollectionToCacheAsync(LoadingCollectionEntry lce, ICollectionPersister persister,
-		                                  Action<CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
+										  Action<CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor session = LoadContext.PersistenceContext.Session;
@@ -248,8 +247,8 @@ namespace NHibernate.Engine.Loading
 			else
 			{
 				bool put = await (persister.Cache.PutAsync(cacheKey, persister.CacheEntryStructure.Structure(entry),
-				                               session.Timestamp, version, versionComparator,
-				                               factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh, cancellationToken)).ConfigureAwait(false);
+											   session.Timestamp, version, versionComparator,
+											   factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh, cancellationToken)).ConfigureAwait(false);
 
 				if (put && factory.Statistics.IsStatisticsEnabled)
 				{

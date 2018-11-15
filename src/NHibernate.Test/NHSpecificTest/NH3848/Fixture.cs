@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
@@ -13,7 +12,8 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3848
 {
-	public abstract class TestFixture : TestCaseMappingByCode
+	[TestFixture]
+	public abstract class Fixture : TestCaseMappingByCode
 	{
 		protected Customer Customer1;
 		protected Customer Customer2;
@@ -168,27 +168,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 		}
 
 		[Test]
-		public virtual async Task ChildCollectionsFromLeftOuterJoinWithOnClauseRestrictionOnCollectionShouldNotBeInSecondLevelCacheAsync()
-		{
-			var firstSession = OpenSession();
-			var customersWithOrderNumberEqualsTo2 = await GetCustomersByOrderNumberUsingOnClauseAsync(firstSession, OrderNumber).ConfigureAwait(false);
-
-			var secondSession = OpenSession();
-			var customers = await GetAllCustomersAsync(secondSession).ConfigureAwait(false);
-
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count(n => n.Number == OrderNumber)));
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count(n => n.Number == OrderNumber)));
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(Customer3.Orders.Count(n => n.Number == OrderNumber)));
-
-			Assert.That(customers.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
-			Assert.That(customers.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count));
-			Assert.That(customers.Single(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(Customer3.Orders.Count));
-
-			firstSession.Dispose();
-			secondSession.Dispose();
-		}
-
-		[Test]
 		public void ChildCollectionsFromLeftOuterJoinWithWhereClauseRestrictionOnCollectionShouldNotBeInSecondLevelCache()
 		{
 			var firstSession = OpenSession();
@@ -196,26 +175,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 
 			var secondSession = OpenSession();
 			var customers = GetAllCustomers(secondSession);
-
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count(n => n.Number == OrderNumber)));
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count(n => n.Number == OrderNumber)));
-
-			Assert.That(customers.Single(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(Customer3.Orders.Count));
-			Assert.That(customers.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
-			Assert.That(customers.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count));
-
-			firstSession.Dispose();
-			secondSession.Dispose();
-		}
-
-		[Test]
-		public async Task ChildCollectionsFromLeftOuterJoinWithWhereClauseRestrictionOnCollectionShouldNotBeInSecondLevelCacheAsync()
-		{
-			var firstSession = OpenSession();
-			var customersWithOrderNumberEqualsTo2 = await GetCustomersByOrderNumberUsingWhereClauseAsync(firstSession, OrderNumber).ConfigureAwait(false);
-
-			var secondSession = OpenSession();
-			var customers = await GetAllCustomersAsync(secondSession).ConfigureAwait(false);
 
 			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count(n => n.Number == OrderNumber)));
 			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count(n => n.Number == OrderNumber)));
@@ -244,36 +203,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 
 			var secondSession = OpenSession();
 			var customers = GetAllCustomers(secondSession);
-
-
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count));
-
-			Assert.That(customers.Single(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(Customer3.Orders.Count));
-			Assert.That(customers.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
-			Assert.That(customers.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count));
-
-			firstSession.Dispose();
-			secondSession.Dispose();
-		}
-
-		[Test]
-		public async Task ChildCollectionsEagerFetchedShouldBeInSecondLevelCacheAsync()
-		{
-			var firstSession = OpenSession();
-			var customersWithOrderNumberEqualsTo2 = await GetCustomersWithOrdersEagerLoadedAsync(firstSession).ConfigureAwait(false);
-
-			using (var session = OpenSession())
-			using (IDbCommand cmd = session.Connection.CreateCommand())
-			{
-				cmd.CommandText = "DELETE FROM Orders;";
-				cmd.ExecuteNonQuery();
-				cmd.Connection.Close();
-			}
-
-			var secondSession = OpenSession();
-			var customers = await GetAllCustomersAsync(secondSession).ConfigureAwait(false);
-
 
 			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
 			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count));
@@ -311,30 +240,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 		}
 
 		[Test]
-		public async Task ChildCollectionsFromLeftOuterJoinWithWhereClauseRestrictionOnRootShouldBeInSecondLevelCacheAsync()
-		{
-			var firstSession = OpenSession();
-			var customersWithOrderNumberEqualsTo2 = await GetCustomersByNameUsingWhereClauseAsync(firstSession, "First Customer").ConfigureAwait(false);
-
-			using (var session = OpenSession())
-			using (IDbCommand cmd = session.Connection.CreateCommand())
-			{
-				cmd.CommandText = "DELETE FROM Orders;";
-				cmd.ExecuteNonQuery();
-				cmd.Connection.Close();
-			}
-
-			var secondSession = OpenSession();
-			var customers = await secondSession.GetAsync<Customer>(Customer1.Id).ConfigureAwait(false);
-
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
-			Assert.That(customers.Orders, Has.Count.EqualTo(Customer1.Orders.Count));
-
-			firstSession.Dispose();
-			secondSession.Dispose();
-		}
-
-		[Test]
 		public void ChildCollectionsFromLeftOuterJoinShouldBeInSecondLevelCacheIfQueryContainsSubqueryWithRestrictionOnLeftOuterJoin()
 		{
 			var firstSession = OpenSession();
@@ -342,34 +247,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 
 			var secondSession = OpenSession();
 			var customers = GetAllCustomers(secondSession);
-
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
-
-			using (var thirdSession = OpenSession())
-			using (IDbCommand cmd = thirdSession.Connection.CreateCommand())
-			{
-				cmd.CommandText = "DELETE FROM Orders;";
-				cmd.ExecuteNonQuery();
-				cmd.Connection.Close();
-			}
-
-			Assert.That(customers.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
-			Assert.That(customers.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(0));
-			Assert.That(customers.Single(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(0));
-
-			firstSession.Dispose();
-			secondSession.Dispose();
-		}
-
-		[Test]
-		public async Task ChildCollectionsFromLeftOuterJoinShouldBeInSecondLevelCacheIfQueryContainsSubqueryWithRestrictionOnLeftOuterJoinAsync()
-		{
-			var firstSession = OpenSession();
-			var customersWithOrderNumberEqualsTo2 = await GetCustomersByOrderNumberUsingSubqueriesAndByNameUsingWhereClauseAsync(firstSession, OrderNumber, Customer1.Name)
-				.ConfigureAwait(false);
-
-			var secondSession = OpenSession();
-			var customers = await GetAllCustomersAsync(secondSession).ConfigureAwait(false);
 
 			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
 
@@ -434,51 +311,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			secondSession.Dispose();
 		}
 
-		[Test]
-		public virtual async Task ChildCollectionsFromLeftOuterJoinOnlyWithRestrictionShouldNotBeIn2LvlCacheAsync()
-		{
-			var firstSession = OpenSession();
-			var customersWithOrderNumberEqualsTo2AndCompanies = await GetCustomersWithCompaniesByOrderNumberUsingOnClauseAsync(firstSession, OrderNumber).ConfigureAwait(false);
-
-			using (var session = OpenSession())
-			using (IDbCommand cmd = session.Connection.CreateCommand())
-			{
-				cmd.CommandText = "DELETE FROM Companies;";
-				cmd.ExecuteNonQuery();
-				cmd.Connection.Close();
-			}
-
-			using (var session = OpenSession())
-			using (IDbCommand cmd = session.Connection.CreateCommand())
-			{
-				cmd.CommandText = "DELETE FROM Orders;";
-				cmd.ExecuteNonQuery();
-				cmd.Connection.Close();
-			}
-
-			var secondSession = OpenSession();
-			var customers = await GetAllCustomersAsync(secondSession).ConfigureAwait(false);
-
-			Assert.That(customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count(n => n.Number == OrderNumber)));
-			Assert.That(customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count(n => n.Number == OrderNumber)));
-			Assert.That(customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(Customer3.Orders.Count(n => n.Number == OrderNumber)));
-
-			Assert.That(customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer1.Id).Companies, Has.Count.EqualTo(Customer1.Companies.Count()));
-			Assert.That(customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer2.Id).Companies, Has.Count.EqualTo(Customer2.Companies.Count()));
-			Assert.That(customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer3.Id).Companies, Has.Count.EqualTo(Customer3.Companies.Count()));
-
-			Assert.That(customers.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(0));
-			Assert.That(customers.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(0));
-			Assert.That(customers.Single(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(0));
-
-			Assert.That(customers.Single(n => n.Id == Customer1.Id).Companies, Has.Count.EqualTo(Customer1.Companies.Count));
-			Assert.That(customers.Single(n => n.Id == Customer2.Id).Companies, Has.Count.EqualTo(Customer2.Companies.Count));
-			Assert.That(customers.Single(n => n.Id == Customer3.Id).Companies, Has.Count.EqualTo(Customer3.Companies.Count));
-
-			firstSession.Dispose();
-			secondSession.Dispose();
-		}
-
 		protected void ClearSecondLevelCacheFor(System.Type entity)
 		{
 			var entityName = entity.FullName;
@@ -504,18 +336,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 
 		protected abstract IList<Customer> GetCustomersWithFetchedOrdersWithoutRestrictions(ISession session);
 		protected abstract IList<Customer> GetCustomersWithOrdersEagerLoaded(ISession session);
-		protected abstract Task<IList<Customer>> GetCustomersWithOrdersEagerLoadedAsync(ISession session);
 		protected abstract IList<Customer> GetCustomersByOrderNumberUsingOnClause(ISession session, int orderNumber);
-		protected abstract Task<IList<Customer>> GetCustomersByOrderNumberUsingOnClauseAsync(ISession session, int orderNumber);
 		protected abstract IList<Customer> GetCustomersByOrderNumberUsingWhereClause(ISession session, int orderNumber);
-		protected abstract Task<IList<Customer>> GetCustomersByOrderNumberUsingWhereClauseAsync(ISession session, int orderNumber);
 		protected abstract IList<Customer> GetCustomersByNameUsingWhereClause(ISession session, string customerName);
-		protected abstract Task<IList<Customer>> GetCustomersByNameUsingWhereClauseAsync(ISession session, string customerName);
 		protected abstract IList<Customer> GetCustomersByOrderNumberUsingSubqueriesAndByNameUsingWhereClause(ISession session, int orderNumber, string customerName);
-		protected abstract Task<IList<Customer>> GetCustomersByOrderNumberUsingSubqueriesAndByNameUsingWhereClauseAsync(ISession session, int orderNumber, string customerName);
 		protected abstract IList<Customer> GetCustomersWithCompaniesByOrderNumberUsingOnClause(ISession session, int orderNumber);
-		protected abstract Task<IList<Customer>> GetCustomersWithCompaniesByOrderNumberUsingOnClauseAsync(ISession session, int orderNumber);
 		protected abstract IList<Customer> GetAllCustomers(ISession session);
-		protected abstract Task<IList<Customer>> GetAllCustomersAsync(ISession session);
 	}
 }

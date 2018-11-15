@@ -134,7 +134,7 @@ namespace NHibernate.Multi
 					continue;
 				await (queryInfo.Loader.InitializeEntitiesAndCollectionsAsync(
 					hydratedObjects[i], reader, Session, queryInfo.Parameters.IsReadOnly(Session),
-					queryInfo.CacheBatcher, queryInfo.Parameters.UncacheableCollections, cancellationToken)).ConfigureAwait(false);
+					queryInfo.CacheBatcher, cancellationToken: cancellationToken)).ConfigureAwait(false);
 			}
 		}
 	}

@@ -616,7 +616,7 @@ namespace NHibernate.Impl
 						ITranslator translator = translators[i];
 						QueryParameters parameter = parameters[i];
 
-                        translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false, null, parameters[i].UncacheableCollections);
+						translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false, null, parameters[i].UncacheableCollections);
 
 						if (createSubselects[i])
 						{
