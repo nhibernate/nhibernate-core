@@ -33,7 +33,24 @@ namespace NHibernate.Engine.Loading
 		/// complete. 
 		/// </summary>
 		/// <param name="persister">The persister for which to complete loading. </param>
-		/// <param name="uncacheableCollections">Indicates if collcetions can be put in cache</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		[Obsolete("Please use EndLoadingCollections(ICollectionPersister, HashSet<string>) instead.")]
+		public Task EndLoadingCollectionsAsync(ICollectionPersister persister, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return EndLoadingCollectionsAsync(persister, null, cancellationToken);
+		}
+
+		/// <summary> 
+		/// Finish the process of collection-loading for this bound result set.  Mainly this
+		/// involves cleaning up resources and notifying the collections that loading is
+		/// complete. 
+		/// </summary>
+		/// <param name="persister">The persister for which to complete loading. </param>
+		/// <param name="uncacheableCollections">Indicates if collections can be put in cache</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		public async Task EndLoadingCollectionsAsync(ICollectionPersister persister, HashSet<string> uncacheableCollections, CancellationToken cancellationToken)
 		{
@@ -115,8 +132,11 @@ namespace NHibernate.Engine.Loading
 			var cacheBatcher = new CacheBatcher(LoadContext.PersistenceContext.Session);
 			for (int i = 0; i < count; i++)
 			{
-				await (EndLoadingCollectionAsync(matchedCollectionEntries[i], persister,
-									 data => cacheBatcher.AddToBatch(persister, data), uncacheableCollections, cancellationToken)).ConfigureAwait(false);
+				await (EndLoadingCollectionAsync(
+					matchedCollectionEntries[i], 
+					persister,
+					data => cacheBatcher.AddToBatch(persister, data),
+					uncacheableCollections, cancellationToken)).ConfigureAwait(false);
 			}
 			await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 
@@ -126,8 +146,11 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		private async Task EndLoadingCollectionAsync(LoadingCollectionEntry lce, ICollectionPersister persister,
-										  Action<CachePutData> cacheBatchingHandler, HashSet<string> uncacheableCollections, CancellationToken cancellationToken)
+		private async Task EndLoadingCollectionAsync(
+			LoadingCollectionEntry lce, 
+			ICollectionPersister persister,
+			Action<CachePutData> cacheBatchingHandler, 
+			HashSet<string> uncacheableCollections, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled())

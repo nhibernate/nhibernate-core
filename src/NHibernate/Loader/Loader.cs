@@ -849,7 +849,7 @@ namespace NHibernate.Loader
 						if (Log.IsDebugEnabled())
 						{
 							Log.Debug("result set contains (possibly empty) collection: {0}",
-									  MessageHelper.CollectionInfoString(collectionPersisters[j], keys[i]));
+							          MessageHelper.CollectionInfoString(collectionPersisters[j], keys[i]));
 						}
 						session.PersistenceContext.LoadContexts.GetCollectionLoadContext((DbDataReader)resultSetId).GetLoadingCollection(
 							collectionPersisters[j], keys[i]);

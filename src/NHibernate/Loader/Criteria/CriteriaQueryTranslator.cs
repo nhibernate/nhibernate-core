@@ -922,10 +922,10 @@ namespace NHibernate.Loader.Criteria
 
 			var subQueries =
 				rootCriteria.IterateExpressionEntries()
-							.Select(x => x.Criterion)
-							.OfType<SubqueryExpression>()
-							.Select(x => x.Criteria)
-							.OfType<CriteriaImpl>();
+				            .Select(x => x.Criterion)
+				            .OfType<SubqueryExpression>()
+				            .Select(x => x.Criteria)
+				            .OfType<CriteriaImpl>();
 
 			foreach (var criteriaImpl in subQueries)
 			{

@@ -36,7 +36,7 @@ namespace NHibernate.Loader.Criteria
 			}
 			try
 			{
-            	return ListAsync(session, translator.GetQueryParameters(), querySpaces, cancellationToken);
+				return ListAsync(session, translator.GetQueryParameters(), querySpaces, cancellationToken);
 			}
 			catch (Exception ex)
 			{

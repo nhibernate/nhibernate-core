@@ -699,7 +699,7 @@ namespace NHibernate.Impl
 				this.joinType = joinType;
 				this.withClause = withClause;
 				JoinEntityName = joinEntityName;
-			    hasRestrictions = withClause != null;
+				hasRestrictions = withClause != null;
 
 				root.subcriteriaList.Add(this);
 
@@ -733,10 +733,10 @@ namespace NHibernate.Impl
 				get { return path; }
 			}
 
-		    public bool HasRestrictions
-		    {
-		        get { return hasRestrictions; }
-		    }
+			public bool HasRestrictions
+			{
+				get { return hasRestrictions; }
+			}
 
 			public ICriteria Parent
 			{
@@ -777,7 +777,7 @@ namespace NHibernate.Impl
 
 			public ICriteria Add(ICriterion expression)
 			{
-			    hasRestrictions = true;
+				hasRestrictions = true;
 				root.Add(this, expression);
 				return this;
 			}

@@ -145,7 +145,19 @@ namespace NHibernate.Engine.Loading
 		/// complete. 
 		/// </summary>
 		/// <param name="persister">The persister for which to complete loading. </param>
-		/// <param name="uncacheableCollections">Indicates if collcetions can be put in cache</param>
+		[Obsolete("Please use EndLoadingCollections(ICollectionPersister, HashSet<string>) instead.")]
+		public void EndLoadingCollections(ICollectionPersister persister)
+		{
+			EndLoadingCollections(persister, null);
+		}
+
+		/// <summary> 
+		/// Finish the process of collection-loading for this bound result set.  Mainly this
+		/// involves cleaning up resources and notifying the collections that loading is
+		/// complete. 
+		/// </summary>
+		/// <param name="persister">The persister for which to complete loading. </param>
+		/// <param name="uncacheableCollections">Indicates if collections can be put in cache</param>
 		public void EndLoadingCollections(ICollectionPersister persister, HashSet<string> uncacheableCollections)
 		{
 			if (!loadContexts.HasLoadingCollectionEntries && (localLoadingCollectionKeys.Count == 0))
@@ -224,8 +236,11 @@ namespace NHibernate.Engine.Loading
 			var cacheBatcher = new CacheBatcher(LoadContext.PersistenceContext.Session);
 			for (int i = 0; i < count; i++)
 			{
-				EndLoadingCollection(matchedCollectionEntries[i], persister,
-									 data => cacheBatcher.AddToBatch(persister, data), uncacheableCollections);
+				EndLoadingCollection(
+					matchedCollectionEntries[i], 
+					persister,
+					data => cacheBatcher.AddToBatch(persister, data),
+					uncacheableCollections);
 			}
 			cacheBatcher.ExecuteBatch();
 
@@ -235,8 +250,11 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		private void EndLoadingCollection(LoadingCollectionEntry lce, ICollectionPersister persister,
-										  Action<CachePutData> cacheBatchingHandler, HashSet<string> uncacheableCollections)
+		private void EndLoadingCollection(
+			LoadingCollectionEntry lce, 
+			ICollectionPersister persister,
+			Action<CachePutData> cacheBatchingHandler, 
+			HashSet<string> uncacheableCollections)
 		{
 			if (log.IsDebugEnabled())
 			{
