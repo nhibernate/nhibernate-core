@@ -208,7 +208,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			using (var session = OpenSession())
 			using (IDbCommand cmd = session.Connection.CreateCommand())
 			{
-				cmd.CommandText = "DELETE FROM Orders;";
+				cmd.CommandText = "DELETE FROM Orders";
 				cmd.ExecuteNonQuery();
 				cmd.Connection.Close();
 			}
@@ -236,7 +236,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			using (var session = OpenSession())
 			using (IDbCommand cmd = session.Connection.CreateCommand())
 			{
-				cmd.CommandText = "DELETE FROM Orders;";
+				cmd.CommandText = "DELETE FROM Orders";
 				cmd.ExecuteNonQuery();
 				cmd.Connection.Close();
 			}
@@ -265,7 +265,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			using (var thirdSession = OpenSession())
 			using (IDbCommand cmd = thirdSession.Connection.CreateCommand())
 			{
-				cmd.CommandText = "DELETE FROM Orders;";
+				cmd.CommandText = "DELETE FROM Orders";
 				cmd.ExecuteNonQuery();
 				cmd.Connection.Close();
 			}
@@ -287,7 +287,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			using (var session = OpenSession())
 			using (IDbCommand cmd = session.Connection.CreateCommand())
 			{
-				cmd.CommandText = "DELETE FROM Orders;";
+				cmd.CommandText = "DELETE FROM Orders";
 				cmd.ExecuteNonQuery();
 				cmd.Connection.Close();
 			}
@@ -295,7 +295,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			using (var session = OpenSession())
 			using (IDbCommand cmd = session.Connection.CreateCommand())
 			{
-				cmd.CommandText = "DELETE FROM Companies;";
+				cmd.CommandText = "DELETE FROM Companies";
 				cmd.ExecuteNonQuery();
 				cmd.Connection.Close();
 			}
