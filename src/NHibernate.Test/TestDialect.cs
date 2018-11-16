@@ -128,5 +128,10 @@ namespace NHibernate.Test
 		/// in the batch.
 		/// </summary>
 		public virtual bool SupportsBatchingDependentDML => true;
+
+		/// <summary>
+		/// Supports using a connection during the 2PC of system transactions.
+		/// </summary>
+		public virtual bool SupportsConnectionUseOnSystemTransactionPrepare => true;
 	}
 }
