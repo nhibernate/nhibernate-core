@@ -139,25 +139,26 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		/// <summary> 
-		/// Finish the process of collection-loading for this bound result set.  Mainly this
+		/// <summary>
+		/// Finish the process of collection-loading for this bound result set. Mainly this
 		/// involves cleaning up resources and notifying the collections that loading is
-		/// complete. 
+		/// complete.
 		/// </summary>
-		/// <param name="persister">The persister for which to complete loading. </param>
-		[Obsolete("Please use EndLoadingCollections(ICollectionPersister, HashSet<string>) instead.")]
+		/// <param name="persister">The persister for which to complete loading.</param>
+		// Since v5.2
+		[Obsolete("Please use overload with uncacheableCollections parameter instead.")]
 		public void EndLoadingCollections(ICollectionPersister persister)
 		{
 			EndLoadingCollections(persister, null);
 		}
 
-		/// <summary> 
-		/// Finish the process of collection-loading for this bound result set.  Mainly this
+		/// <summary>
+		/// Finish the process of collection-loading for this bound result set. Mainly this
 		/// involves cleaning up resources and notifying the collections that loading is
-		/// complete. 
+		/// complete.
 		/// </summary>
-		/// <param name="persister">The persister for which to complete loading. </param>
-		/// <param name="uncacheableCollections">Indicates if collections can be put in cache</param>
+		/// <param name="persister">The persister for which to complete loading.</param>
+		/// <param name="uncacheableCollections">Indicates which collections must not be put in cache.</param>
 		public void EndLoadingCollections(ICollectionPersister persister, HashSet<string> uncacheableCollections)
 		{
 			if (!loadContexts.HasLoadingCollectionEntries && (localLoadingCollectionKeys.Count == 0))
@@ -288,9 +289,11 @@ namespace NHibernate.Engine.Loading
 				ce.PostInitialize(lce.Collection, persistenceContext);
 			}
 
-			bool addToCache = hasNoQueuedOperations && persister.HasCache && 
-				session.CacheMode.HasFlag(CacheMode.Put) && 
-				(uncacheableCollections == null || !uncacheableCollections.Contains(lce.Persister.Role)) && !ce.IsDoremove; // and this is not a forced initialization during flush
+			bool addToCache = hasNoQueuedOperations && persister.HasCache &&
+				session.CacheMode.HasFlag(CacheMode.Put) &&
+				(uncacheableCollections == null || !uncacheableCollections.Contains(lce.Persister.Role)) &&
+				// and this is not a forced initialization during flush
+				!ce.IsDoremove;
 
 			if (addToCache)
 			{

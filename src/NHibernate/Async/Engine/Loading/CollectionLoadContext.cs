@@ -27,14 +27,15 @@ namespace NHibernate.Engine.Loading
 	public partial class CollectionLoadContext
 	{
 
-		/// <summary> 
-		/// Finish the process of collection-loading for this bound result set.  Mainly this
+		/// <summary>
+		/// Finish the process of collection-loading for this bound result set. Mainly this
 		/// involves cleaning up resources and notifying the collections that loading is
-		/// complete. 
+		/// complete.
 		/// </summary>
-		/// <param name="persister">The persister for which to complete loading. </param>
+		/// <param name="persister">The persister for which to complete loading.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		[Obsolete("Please use EndLoadingCollections(ICollectionPersister, HashSet<string>) instead.")]
+		// Since v5.2
+		[Obsolete("Please use overload with uncacheableCollections parameter instead.")]
 		public Task EndLoadingCollectionsAsync(ICollectionPersister persister, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -44,13 +45,13 @@ namespace NHibernate.Engine.Loading
 			return EndLoadingCollectionsAsync(persister, null, cancellationToken);
 		}
 
-		/// <summary> 
-		/// Finish the process of collection-loading for this bound result set.  Mainly this
+		/// <summary>
+		/// Finish the process of collection-loading for this bound result set. Mainly this
 		/// involves cleaning up resources and notifying the collections that loading is
-		/// complete. 
+		/// complete.
 		/// </summary>
-		/// <param name="persister">The persister for which to complete loading. </param>
-		/// <param name="uncacheableCollections">Indicates if collections can be put in cache</param>
+		/// <param name="persister">The persister for which to complete loading.</param>
+		/// <param name="uncacheableCollections">Indicates which collections must not be put in cache.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		public async Task EndLoadingCollectionsAsync(ICollectionPersister persister, HashSet<string> uncacheableCollections, CancellationToken cancellationToken)
 		{
@@ -185,9 +186,11 @@ namespace NHibernate.Engine.Loading
 				ce.PostInitialize(lce.Collection, persistenceContext);
 			}
 
-			bool addToCache = hasNoQueuedOperations && persister.HasCache && 
-				session.CacheMode.HasFlag(CacheMode.Put) && 
-				(uncacheableCollections == null || !uncacheableCollections.Contains(lce.Persister.Role)) && !ce.IsDoremove; // and this is not a forced initialization during flush
+			bool addToCache = hasNoQueuedOperations && persister.HasCache &&
+				session.CacheMode.HasFlag(CacheMode.Put) &&
+				(uncacheableCollections == null || !uncacheableCollections.Contains(lce.Persister.Role)) &&
+				// and this is not a forced initialization during flush
+				!ce.IsDoremove;
 
 			if (addToCache)
 			{

@@ -46,16 +46,17 @@ namespace NHibernate.Engine
 			NaturalKeyLookup = isLookupByNaturalKey;
 		}
 
+		// Since v5.2
 		[Obsolete("Please use QueryParameters(IDictionary<string, TypedValue>, IDictionary<string, LockMode>, " +
 			"RowSelection, bool, bool, bool, string, string, bool, IResultTransformer, HashSet<string>) instead.")]
 		public QueryParameters(IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized,
-							   bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
+		                       bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
 			: this(
 				namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, isLookupByNaturalKey,
 				transformer, null) {}
 
 		public QueryParameters(IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized,
-							   bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer, HashSet<string> uncacheableCollections)
+		                       bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer, HashSet<string> uncacheableCollections)
 			: this(
 				TypeHelper.EmptyTypeArray, Array.Empty<object>(), namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null,
 				transformer, uncacheableCollections)
@@ -64,6 +65,7 @@ namespace NHibernate.Engine
 			NaturalKeyLookup = isLookupByNaturalKey;
 		}
 
+		// Since v5.2
 		[Obsolete("Please use QueryParameters(IType[], object[], IDictionary<string, TypedValue>, " +
 			"IDictionary<string, LockMode>, RowSelection, bool, bool, bool, string, string, object[], IResultTransformer, HashSet<string>) instead.")]
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, TypedValue> namedParameters,
@@ -74,8 +76,8 @@ namespace NHibernate.Engine
 				transformer, null) {}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, TypedValue> namedParameters,
-								IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion,
-								string comment, object[] collectionKeys, IResultTransformer transformer, HashSet<string> uncacheableCollections)
+		                       IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion,
+		                       string comment, object[] collectionKeys, IResultTransformer transformer, HashSet<string> uncacheableCollections)
 		{
 			PositionalParameterTypes = positionalParameterTypes ?? Array.Empty<IType>();
 			PositionalParameterValues = positionalParameterValues ?? Array.Empty<object>();
@@ -160,7 +162,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Indicates if we can add loaded child collections to second level cache.
 		/// </summary>
-		public HashSet<string> UncacheableCollections { get; set; }
+		public HashSet<string> UncacheableCollections { get; }
 
 		public bool ReadOnly
 		{
