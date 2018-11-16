@@ -15,6 +15,6 @@
 		/// Npgsql since its 3.2.5 version fails some tests requiring this feature. The trouble was not occuring with
 		/// Npgsql 3.2.4.1.
 		/// </summary>
-		public override bool SupportsConnectionUseOnSystemTransactionPrepare => false;
+		public override bool SupportsUsingConnectionOnSystemTransactionPrepare => false;
 	}
 }
