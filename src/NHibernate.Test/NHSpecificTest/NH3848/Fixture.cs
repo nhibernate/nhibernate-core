@@ -57,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			{
 				rc.Table("Orders");
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
-				rc.Property(x => x.Number);
+				rc.Property(x => x.Number, m => m.Column("`Number`"));
 				rc.ManyToOne(x => x.Customer, m => m.Column("CustomerId"));
 				rc.Cache(c => c.Usage(CacheUsage.ReadWrite));
 			});

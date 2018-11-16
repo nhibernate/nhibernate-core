@@ -215,7 +215,7 @@ namespace NHibernate.Engine.Loading
 		/// <param name="cacheBatchingHandler">The action for handling cache batching</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		private async Task AddCollectionToCacheAsync(LoadingCollectionEntry lce, ICollectionPersister persister,
-										  Action<CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
+		                                  Action<CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor session = LoadContext.PersistenceContext.Session;
@@ -270,8 +270,8 @@ namespace NHibernate.Engine.Loading
 			else
 			{
 				bool put = await (persister.Cache.PutAsync(cacheKey, persister.CacheEntryStructure.Structure(entry),
-											   session.Timestamp, version, versionComparator,
-											   factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh, cancellationToken)).ConfigureAwait(false);
+				                               session.Timestamp, version, versionComparator,
+				                               factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh, cancellationToken)).ConfigureAwait(false);
 
 				if (put && factory.Statistics.IsStatisticsEnabled)
 				{
