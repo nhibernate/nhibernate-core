@@ -19,27 +19,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 	using System.Threading;
 	public class QueryOverTestFixtureAsync : FixtureAsync
 	{
-		protected override Task<IList<Customer>> GetCustomersWithFetchedOrdersWithoutRestrictionsAsync(ISession session, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			try
-			{
-				Order ordersAlias = null;
-				return
-				session
-					.QueryOver<Customer>()
-					.JoinAlias(
-						n => n.Orders,
-						() => ordersAlias,
-						JoinType.LeftOuterJoin)
-					.TransformUsing(new DistinctRootEntityResultTransformer())
-					.ListAsync(cancellationToken);
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<IList<Customer>>(ex);
-			}
-		}
-
 		protected override Task<IList<Customer>> GetCustomersWithOrdersEagerLoadedAsync(ISession session, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			try

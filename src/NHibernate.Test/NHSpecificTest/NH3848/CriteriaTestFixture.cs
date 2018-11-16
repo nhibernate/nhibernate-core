@@ -7,16 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 {
 	public class CriteriaTestFixture : Fixture
 	{
-		protected override IList<Customer> GetCustomersWithFetchedOrdersWithoutRestrictions(ISession session)
-		{
-			return
-				session
-					.CreateCriteria<Customer>()
-					.CreateAlias("Orders", "order", JoinType.LeftOuterJoin)
-					.SetResultTransformer(new DistinctRootEntityResultTransformer())
-					.List<Customer>();
-		}
-
 		protected override IList<Customer> GetCustomersWithOrdersEagerLoaded(ISession session)
 		{
 			return

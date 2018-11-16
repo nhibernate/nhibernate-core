@@ -326,13 +326,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 
 			Assert.That(
 				customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer1.Id).Companies,
-				Has.Count.EqualTo(Customer1.Companies.Count()));
+				Has.Count.EqualTo(Customer1.Companies.Count));
 			Assert.That(
 				customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer2.Id).Companies,
-				Has.Count.EqualTo(Customer2.Companies.Count()));
+				Has.Count.EqualTo(Customer2.Companies.Count));
 			Assert.That(
 				customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer3.Id).Companies,
-				Has.Count.EqualTo(Customer3.Companies.Count()));
+				Has.Count.EqualTo(Customer3.Companies.Count));
 
 			Assert.That(customers.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(0));
 			Assert.That(customers.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(0));
@@ -360,7 +360,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			if (!entityPersister.HasCache)
 				return;
 
-			var querySpaces = entityPersister.QuerySpaces.Cast<string>().ToList().AsReadOnly();
+			var querySpaces = entityPersister.QuerySpaces.ToList().AsReadOnly();
 			Sfi.UpdateTimestampsCache.PreInvalidate(querySpaces);
 		}
 
@@ -375,7 +375,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			Sfi.EvictCollection(role);
 		}
 
-		protected abstract IList<Customer> GetCustomersWithFetchedOrdersWithoutRestrictions(ISession session);
 		protected abstract IList<Customer> GetCustomersWithOrdersEagerLoaded(ISession session);
 		protected abstract IList<Customer> GetCustomersByOrderNumberUsingOnClause(ISession session, int orderNumber);
 		protected abstract IList<Customer> GetCustomersByOrderNumberUsingWhereClause(ISession session, int orderNumber);

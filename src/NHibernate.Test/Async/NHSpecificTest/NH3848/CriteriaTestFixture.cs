@@ -19,23 +19,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 	using System.Threading;
 	public class CriteriaTestFixtureAsync : FixtureAsync
 	{
-		protected override Task<IList<Customer>> GetCustomersWithFetchedOrdersWithoutRestrictionsAsync(ISession session, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			try
-			{
-				return
-				session
-					.CreateCriteria<Customer>()
-					.CreateAlias("Orders", "order", JoinType.LeftOuterJoin)
-					.SetResultTransformer(new DistinctRootEntityResultTransformer())
-					.ListAsync<Customer>(cancellationToken);
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<IList<Customer>>(ex);
-			}
-		}
-
 		protected override Task<IList<Customer>> GetCustomersWithOrdersEagerLoadedAsync(ISession session, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			try

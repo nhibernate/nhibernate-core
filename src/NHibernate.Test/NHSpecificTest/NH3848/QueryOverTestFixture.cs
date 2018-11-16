@@ -7,20 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 {
 	public class QueryOverTestFixture : Fixture
 	{
-		protected override IList<Customer> GetCustomersWithFetchedOrdersWithoutRestrictions(ISession session)
-		{
-			Order ordersAlias = null;
-			return
-				session
-					.QueryOver<Customer>()
-					.JoinAlias(
-						n => n.Orders,
-						() => ordersAlias,
-						JoinType.LeftOuterJoin)
-					.TransformUsing(new DistinctRootEntityResultTransformer())
-					.List();
-		}
-
 		protected override IList<Customer> GetCustomersWithOrdersEagerLoaded(ISession session)
 		{
 			return
