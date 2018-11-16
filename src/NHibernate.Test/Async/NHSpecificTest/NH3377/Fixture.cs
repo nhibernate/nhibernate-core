@@ -101,7 +101,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3377
 		[Test]
 		public async Task ShouldBeAbleToCallConvertToBooleanFromStringParameterAsync()
 		{
-			if (Dialect is SQLiteDialect || Dialect is FirebirdDialect || Dialect is MySQLDialect || Dialect is Oracle8iDialect)
+			if (Dialect is SQLiteDialect || Dialect is FirebirdDialect || Dialect is MySQLDialect ||
+				Dialect is Oracle8iDialect || Dialect is SapSQLAnywhere17Dialect)
 				Assert.Ignore(Dialect.GetType() + " is not supported");
 
 			//NH-3720

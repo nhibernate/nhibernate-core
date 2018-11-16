@@ -112,6 +112,9 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void HighScaleParameterSelect()
 		{
+			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
+				Assert.Ignore("Current dialect does not support this test");
+
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{

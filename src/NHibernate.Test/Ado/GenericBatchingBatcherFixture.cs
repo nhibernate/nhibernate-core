@@ -29,7 +29,11 @@ namespace NHibernate.Test.Ado
 			return !(dialect is FirebirdDialect) &&
 			       !(dialect is Oracle8iDialect) &&
 			       !(dialect is MsSqlCeDialect) &&
-			       !(dialect is HanaDialectBase);
+			       !(dialect is HanaDialectBase) &&
+			       // A workaround exists for SQL Anywhere, see https://stackoverflow.com/a/32860293/1178314
+			       // It would imply some tweaking in the generic batcher. The same workaround could
+			       // be used for enabling future support.
+			       !(dialect is SybaseSQLAnywhere10Dialect);
 		}
 
 		[Test]

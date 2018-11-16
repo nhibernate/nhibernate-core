@@ -33,10 +33,12 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 			return DbType.DateTimeOffset;
 		}
 
+		protected virtual long DateAccuracyInTicks => Dialect.TimestampResolutionInTicks;
+
 		[Test]
 		public void SavingAndRetrievingTest()
 		{
-			DateTimeOffset NowOS = DateTimeOffset.Now;
+			var NowOS = DateTimeOffsetType.Round(DateTimeOffset.Now, DateAccuracyInTicks);
 
 			AllDates dates = new AllDates { Sql_datetimeoffset = NowOS };
 

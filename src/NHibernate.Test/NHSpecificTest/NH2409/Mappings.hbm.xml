@@ -7,7 +7,7 @@
 		</id>
 	</class>
 
-	<class name="Message" lazy="true">
+	<class name="Message" table="`Message`" lazy="true">
 		<id name="Id">
 			<generator class="native" />
 		</id>

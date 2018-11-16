@@ -57,7 +57,11 @@ namespace NHibernate.Test.SystemTransactions
 		protected void IgnoreIfUnsupported(bool explicitFlush)
 		{
 			Assume.That(
-				new[] { explicitFlush, UseConnectionOnSystemTransactionPrepare },
+				new[]
+				{
+					explicitFlush,
+					UseConnectionOnSystemTransactionPrepare && TestDialect.SupportsUsingConnectionOnSystemTransactionPrepare
+				},
 				Has.Some.EqualTo(true),
 				"Implicit flush cannot work without using connection from system transaction prepare phase");
 		}

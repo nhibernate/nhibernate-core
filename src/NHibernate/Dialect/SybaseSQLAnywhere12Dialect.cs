@@ -1,6 +1,5 @@
 ﻿using System.Data;
-using System.Data.Common;
-using NHibernate.Dialect.Schema;
+using NHibernate.Dialect.Function;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
@@ -31,7 +30,7 @@ namespace NHibernate.Dialect
 	/// <remarks>
 	/// The SybaseSQLAnywhere12Dialect uses the SybaseSQLAnywhere11Dialect as its 
 	/// base class. SybaseSQLAnywhere12Dialect includes support for ISO SQL standard
-	/// sequences, which are defined in the catalog table <tt>SYSSEQUENCE</tt>. 
+	/// sequences, which are defined in the catalog table <c>SYSSEQUENCE</c>.
 	/// The dialect uses the SybaseSQLAnywhe11MetaData class for metadata API
 	/// calls, which correctly supports reserved words defined by SQL Anywhere.
 	/// 
@@ -54,25 +53,39 @@ namespace NHibernate.Dialect
 	public class SybaseSQLAnywhere12Dialect : SybaseSQLAnywhere11Dialect
 	{
 		public SybaseSQLAnywhere12Dialect()
-			: base()
 		{
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SybaseSQLAnywhereDotNet4Driver";
-			RegisterDateTimeTypeMappings();
-			RegisterKeywords();
 		}
 
-		new protected void RegisterKeywords()
+		protected override void RegisterKeywords()
 		{
+			base.RegisterKeywords();
 			RegisterKeyword("near");
 			RegisterKeyword("limit");
 			RegisterKeyword("offset");
 			RegisterKeyword("datetimeoffset");
 		}
 
-		new void RegisterDateTimeTypeMappings()
+		protected override void RegisterDateTimeTypeMappings()
 		{
-			RegisterColumnType(DbType.DateTimeOffset, "DATETIMEOFFSET");
+			base.RegisterDateTimeTypeMappings();
+			// Do not use the alias DATETIMEOFFSET here, as the database will translate it to its actual type name,
+			// causing schema validator failures.
+			RegisterColumnType(DbType.DateTimeOffset, "TIMESTAMP WITH TIME ZONE");
 		}
+
+		protected override void RegisterDateFunctions()
+		{
+			base.RegisterDateFunctions();
+			RegisterFunction(
+				"current_timestamp_offset",
+				new NoArgSQLFunction("sysdatetimeoffset", NHibernateUtil.DateTimeOffset, true));
+		}
+
+		/// <summary>
+		/// SQL Anywhere the ANSI standard "DEFAULT VALUES" since 11.0.1 release (not 11.0.0).
+		/// </summary>
+		public override string NoColumnsInsertString => " default values ";
 
 		/// <inheritdoc />
 		public override string CurrentUtcTimestampSQLFunctionName => "cast(current UTC timestamp as timestamp)";
@@ -130,11 +143,6 @@ namespace NHibernate.Dialect
 		public override string GetDropSequenceString(string sequenceName)
 		{
 			return "DROP SEQUENCE " + sequenceName;
-		}
-
-		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
-		{
-			return new SybaseAnywhereDataBaseMetaData(connection);
 		}
 	}
 }

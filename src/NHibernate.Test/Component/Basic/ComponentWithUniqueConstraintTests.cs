@@ -21,8 +21,8 @@ namespace NHibernate.Test.Component.Basic
 
 			mapper.Component<Person>(comp =>
 			{
-				comp.Property(p => p.Name);
-				comp.Property(p => p.Dob);
+				comp.Property(p => p.Name, m => m.NotNullable(true));
+				comp.Property(p => p.Dob, m => m.NotNullable(true));
 				comp.Unique(true); // hbm2ddl: Generate a unique constraint in the database
 			});
 
@@ -83,9 +83,9 @@ namespace NHibernate.Test.Component.Basic
 						session.Save(e2);
 						session.Flush();
 					});
-				Assert.That(exception.InnerException, Is.AssignableTo<DbException>());
+				Assert.That(exception.InnerException, Is.InstanceOf<DbException>());
 				Assert.That(exception.InnerException.Message,
-					Does.Contain("unique").IgnoreCase.And.Contains("constraint").IgnoreCase
+					Does.Contain("unique").IgnoreCase
 					.Or.Contains("duplicate entry").IgnoreCase);
 			}
 		}
