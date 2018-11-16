@@ -6,15 +6,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 	public class Customer
 	{
 		public virtual Guid Id { get; set; }
-		public virtual ISet<Order> Orders { get; set; }
-		public virtual ISet<Company> Companies { get; set; }
+		public virtual ISet<Order> Orders { get; set; } = new HashSet<Order>();
+		public virtual ISet<Company> Companies { get; set; } = new HashSet<Company>();
 		public virtual string Name { get; set; }
-
-		public Customer()
-		{
-			Orders = new HashSet<Order>();
-			Companies = new HashSet<Company>();
-		}
 
 		public virtual void AddOrder(Order order)
 		{

@@ -24,12 +24,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				Order ordersAlias = null;
-				return session.QueryOver<Customer>()
-								.JoinAlias(n => n.Orders,
-											() => ordersAlias,
-											JoinType.LeftOuterJoin)
-								.TransformUsing(new DistinctRootEntityResultTransformer())
-								.ListAsync(cancellationToken);
+				return
+				session
+					.QueryOver<Customer>()
+					.JoinAlias(
+						n => n.Orders,
+						() => ordersAlias,
+						JoinType.LeftOuterJoin)
+					.TransformUsing(new DistinctRootEntityResultTransformer())
+					.ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -41,10 +44,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 		{
 			try
 			{
-				return session.QueryOver<Customer>()
-								.Fetch(SelectMode.Fetch, n => n.Orders)
-								.TransformUsing(new DistinctRootEntityResultTransformer())
-								.ListAsync(cancellationToken);
+				return
+				session
+					.QueryOver<Customer>()
+					.Fetch(SelectMode.Fetch, n => n.Orders)
+					.TransformUsing(new DistinctRootEntityResultTransformer())
+					.ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -57,12 +62,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				Order ordersAlias = null;
-				return session.QueryOver<Customer>()
-								.JoinAlias(n => n.Orders,
-											() => ordersAlias,
-											JoinType.LeftOuterJoin,
-											Restrictions.Eq("Number", orderNumber))
-								.ListAsync(cancellationToken);
+				return
+				session
+					.QueryOver<Customer>()
+					.JoinAlias(
+						n => n.Orders,
+						() => ordersAlias,
+						JoinType.LeftOuterJoin,
+						Restrictions.Eq("Number", orderNumber))
+					.ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -70,22 +78,28 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			}
 		}
 
-		protected override Task<IList<Customer>> GetCustomersWithCompaniesByOrderNumberUsingOnClauseAsync(ISession session, int orderNumber, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task<IList<Customer>> GetCustomersWithCompaniesByOrderNumberUsingOnClauseAsync(
+			ISession session,
+			int orderNumber, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			try
 			{
 				Order ordersAlias = null;
 				Company companiesAlias = null;
 
-				return session.QueryOver<Customer>()
-								.JoinAlias(n => n.Orders,
-											() => ordersAlias,
-											JoinType.LeftOuterJoin,
-											Restrictions.Eq("Number", orderNumber))
-								.JoinAlias(n => n.Companies,
-											() => companiesAlias,
-											JoinType.LeftOuterJoin)
-								.ListAsync(cancellationToken);
+				return
+				session
+					.QueryOver<Customer>()
+					.JoinAlias(
+						n => n.Orders,
+						() => ordersAlias,
+						JoinType.LeftOuterJoin,
+						Restrictions.Eq("Number", orderNumber))
+					.JoinAlias(
+						n => n.Companies,
+						() => companiesAlias,
+						JoinType.LeftOuterJoin)
+					.ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -98,10 +112,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				Order ordersAlias = null;
-				return session.QueryOver<Customer>()
-								.JoinQueryOver(n => n.Orders, () => ordersAlias, JoinType.LeftOuterJoin)
-								.Where(Restrictions.Eq("Number", orderNumber))
-								.ListAsync(cancellationToken);
+				return
+				session
+					.QueryOver<Customer>()
+					.JoinQueryOver(n => n.Orders, () => ordersAlias, JoinType.LeftOuterJoin)
+					.Where(Restrictions.Eq("Number", orderNumber))
+					.ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -114,14 +130,16 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				Order ordersAlias = null;
-				return session.QueryOver<Customer>()
-						.JoinAlias(n => n.Orders,
-									() => ordersAlias,
-									JoinType.LeftOuterJoin
-								)
-						.Where(Restrictions.Eq("Name", customerName))
-						.TransformUsing(new DistinctRootEntityResultTransformer())
-						.ListAsync(cancellationToken);
+				return
+				session
+					.QueryOver<Customer>()
+					.JoinAlias(
+						n => n.Orders,
+						() => ordersAlias,
+						JoinType.LeftOuterJoin)
+					.Where(Restrictions.Eq("Name", customerName))
+					.TransformUsing(new DistinctRootEntityResultTransformer())
+					.ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -129,22 +147,33 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			}
 		}
 
-		protected override Task<IList<Customer>> GetCustomersByOrderNumberUsingSubqueriesAndByNameUsingWhereClauseAsync(ISession session, int orderNumber, string customerName, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task<IList<Customer>> GetCustomersByOrderNumberUsingSubqueriesAndByNameUsingWhereClauseAsync(
+			ISession session,
+			int orderNumber,
+			string customerName, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			try
 			{
 				Order ordersAlias = null;
 				Order ordersAlias2 = null;
-				var subquery = QueryOver.Of<Customer>()
-									.JoinAlias(n => n.Orders, () => ordersAlias, JoinType.LeftOuterJoin, Restrictions.Eq("Number", orderNumber))
-									.Select(n => n.Id);
+				var subquery =
+				QueryOver
+					.Of<Customer>()
+					.JoinAlias(
+						n => n.Orders,
+						() => ordersAlias,
+						JoinType.LeftOuterJoin,
+						Restrictions.Eq("Number", orderNumber))
+					.Select(n => n.Id);
 
-				return session.QueryOver<Customer>()
-																.JoinAlias(n => n.Orders, () => ordersAlias2, JoinType.LeftOuterJoin)
-																.WithSubquery.WhereProperty(n => n.Id).In(subquery)
-																.Where(Restrictions.Eq("Name", customerName))
-																.TransformUsing(new DistinctRootEntityResultTransformer())
-																.ListAsync(cancellationToken);
+				return
+				session
+					.QueryOver<Customer>()
+					.JoinAlias(n => n.Orders, () => ordersAlias2, JoinType.LeftOuterJoin)
+					.WithSubquery.WhereProperty(n => n.Id).In(subquery)
+					.Where(Restrictions.Eq("Name", customerName))
+					.TransformUsing(new DistinctRootEntityResultTransformer())
+					.ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{

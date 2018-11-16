@@ -23,10 +23,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 		{
 			try
 			{
-				return session.CreateCriteria<Customer>()
-						.CreateAlias("Orders", "order", JoinType.LeftOuterJoin)
-						.SetResultTransformer(new DistinctRootEntityResultTransformer())
-						.ListAsync<Customer>(cancellationToken);
+				return
+				session
+					.CreateCriteria<Customer>()
+					.CreateAlias("Orders", "order", JoinType.LeftOuterJoin)
+					.SetResultTransformer(new DistinctRootEntityResultTransformer())
+					.ListAsync<Customer>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -38,10 +40,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 		{
 			try
 			{
-				return session.CreateCriteria<Customer>()
-						.Fetch("Orders")
-						.SetResultTransformer(new DistinctRootEntityResultTransformer())
-						.ListAsync<Customer>(cancellationToken);
+				return
+				session
+					.CreateCriteria<Customer>()
+					.Fetch("Orders")
+					.SetResultTransformer(new DistinctRootEntityResultTransformer())
+					.ListAsync<Customer>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -53,9 +57,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 		{
 			try
 			{
-				return session.CreateCriteria<Customer>()
-							.CreateAlias("Orders", "order", JoinType.LeftOuterJoin, Restrictions.Eq("Number", orderNumber))
-							.ListAsync<Customer>(cancellationToken);
+				return
+				session
+					.CreateCriteria<Customer>()
+					.CreateAlias("Orders", "order", JoinType.LeftOuterJoin, Restrictions.Eq("Number", orderNumber))
+					.ListAsync<Customer>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -63,14 +69,18 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			}
 		}
 
-		protected override Task<IList<Customer>> GetCustomersWithCompaniesByOrderNumberUsingOnClauseAsync(ISession session, int orderNumber, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task<IList<Customer>> GetCustomersWithCompaniesByOrderNumberUsingOnClauseAsync(
+			ISession session,
+			int orderNumber, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			try
 			{
-				return session.CreateCriteria<Customer>()
-							.CreateAlias("Orders", "order", JoinType.LeftOuterJoin, Restrictions.Eq("Number", orderNumber))
-							.CreateAlias("Companies", "company", JoinType.LeftOuterJoin)
-							.ListAsync<Customer>(cancellationToken);
+				return
+				session
+					.CreateCriteria<Customer>()
+					.CreateAlias("Orders", "order", JoinType.LeftOuterJoin, Restrictions.Eq("Number", orderNumber))
+					.CreateAlias("Companies", "company", JoinType.LeftOuterJoin)
+					.ListAsync<Customer>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -82,11 +92,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 		{
 			try
 			{
-				return session.CreateCriteria<Customer>()
-							.CreateCriteria("Orders", "Order", JoinType.LeftOuterJoin)
-									.Add(Restrictions.Eq("Number", orderNumber))
-								.SetResultTransformer(new DistinctRootEntityResultTransformer())
-							.ListAsync<Customer>(cancellationToken);
+				return
+				session
+					.CreateCriteria<Customer>()
+					.CreateCriteria("Orders", "Order", JoinType.LeftOuterJoin)
+					.Add(Restrictions.Eq("Number", orderNumber))
+					.SetResultTransformer(new DistinctRootEntityResultTransformer())
+					.ListAsync<Customer>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -98,11 +110,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 		{
 			try
 			{
-				return session.CreateCriteria<Customer>()
-							.CreateAlias("Orders", "order", JoinType.LeftOuterJoin)
-								.Add(Restrictions.Eq("Name", "First Customer"))
-							.SetResultTransformer(new DistinctRootEntityResultTransformer())
-							.ListAsync<Customer>(cancellationToken);
+				return
+				session
+					.CreateCriteria<Customer>()
+					.CreateAlias("Orders", "order", JoinType.LeftOuterJoin)
+					.Add(Restrictions.Eq("Name", "First Customer"))
+					.SetResultTransformer(new DistinctRootEntityResultTransformer())
+					.ListAsync<Customer>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -110,20 +124,27 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			}
 		}
 
-		protected override Task<IList<Customer>> GetCustomersByOrderNumberUsingSubqueriesAndByNameUsingWhereClauseAsync(ISession session, int orderNumber, string customerName, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task<IList<Customer>> GetCustomersByOrderNumberUsingSubqueriesAndByNameUsingWhereClauseAsync(
+			ISession session,
+			int orderNumber,
+			string customerName, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			try
 			{
-				var detachedCriteria = DetachedCriteria.For<Customer>()
-														 .CreateAlias("Orders", "order", JoinType.LeftOuterJoin, Restrictions.Eq("Number", orderNumber))
-														 .SetProjection(Projections.Id());
+				var detachedCriteria =
+				DetachedCriteria
+					.For<Customer>()
+					.CreateAlias("Orders", "order", JoinType.LeftOuterJoin, Restrictions.Eq("Number", orderNumber))
+					.SetProjection(Projections.Id());
 
-				return session.CreateCriteria<Customer>()
-								.CreateAlias("Orders", "order1", JoinType.LeftOuterJoin)
-								.Add(Subqueries.PropertyIn("Id", detachedCriteria))
-								.Add(Restrictions.Eq("Name", customerName))
-								.SetResultTransformer(new DistinctRootEntityResultTransformer())
-								.ListAsync<Customer>(cancellationToken);
+				return
+				session
+					.CreateCriteria<Customer>()
+					.CreateAlias("Orders", "order1", JoinType.LeftOuterJoin)
+					.Add(Subqueries.PropertyIn("Id", detachedCriteria))
+					.Add(Restrictions.Eq("Name", customerName))
+					.SetResultTransformer(new DistinctRootEntityResultTransformer())
+					.ListAsync<Customer>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{

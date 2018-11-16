@@ -167,9 +167,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			var secondSession = OpenSession();
 			var customers = await (GetAllCustomersAsync(secondSession));
 
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count(n => n.Number == OrderNumber)));
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count(n => n.Number == OrderNumber)));
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(Customer3.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders,
+				Has.Count.EqualTo(Customer1.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer2.Id).Orders,
+				Has.Count.EqualTo(Customer2.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer3.Id).Orders,
+				Has.Count.EqualTo(Customer3.Orders.Count(n => n.Number == OrderNumber)));
 
 			Assert.That(customers.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
 			Assert.That(customers.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count));
@@ -188,8 +194,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			var secondSession = OpenSession();
 			var customers = await (GetAllCustomersAsync(secondSession));
 
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count(n => n.Number == OrderNumber)));
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders,
+				Has.Count.EqualTo(Customer1.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer2.Id).Orders,
+				Has.Count.EqualTo(Customer2.Orders.Count(n => n.Number == OrderNumber)));
 
 			Assert.That(customers.Single(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(Customer3.Orders.Count));
 			Assert.That(customers.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
@@ -216,8 +226,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			var secondSession = OpenSession();
 			var customers = await (GetAllCustomersAsync(secondSession));
 
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders,
+				Has.Count.EqualTo(Customer1.Orders.Count));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer2.Id).Orders,
+				Has.Count.EqualTo(Customer2.Orders.Count));
 
 			Assert.That(customers.Single(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(Customer3.Orders.Count));
 			Assert.That(customers.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
@@ -244,7 +258,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			var secondSession = OpenSession();
 			var customers = await (secondSession.GetAsync<Customer>(Customer1.Id));
 
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders,
+				Has.Count.EqualTo(Customer1.Orders.Count));
 			Assert.That(customers.Orders, Has.Count.EqualTo(Customer1.Orders.Count));
 
 			firstSession.Dispose();
@@ -255,12 +271,18 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 		public async Task ChildCollectionsFromLeftOuterJoinShouldBeInSecondLevelCacheIfQueryContainsSubqueryWithRestrictionOnLeftOuterJoinAsync()
 		{
 			var firstSession = OpenSession();
-			var customersWithOrderNumberEqualsTo2 = await (GetCustomersByOrderNumberUsingSubqueriesAndByNameUsingWhereClauseAsync(firstSession, OrderNumber, Customer1.Name));
+			var customersWithOrderNumberEqualsTo2 =
+				await (GetCustomersByOrderNumberUsingSubqueriesAndByNameUsingWhereClauseAsync(
+					firstSession,
+					OrderNumber,
+					Customer1.Name));
 
 			var secondSession = OpenSession();
 			var customers = await (GetAllCustomersAsync(secondSession));
 
-			Assert.That(customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders,
+				Has.Count.EqualTo(Customer1.Orders.Count));
 
 			using (var thirdSession = OpenSession())
 			using (IDbCommand cmd = thirdSession.Connection.CreateCommand())
@@ -282,7 +304,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 		public virtual async Task ChildCollectionsFromLeftOuterJoinOnlyWithRestrictionShouldNotBeIn2LvlCacheAsync()
 		{
 			var firstSession = OpenSession();
-			var customersWithOrderNumberEqualsTo2AndCompanies = await (GetCustomersWithCompaniesByOrderNumberUsingOnClauseAsync(firstSession, OrderNumber));
+			var customersWithOrderNumberEqualsTo2AndCompanies =
+				await (GetCustomersWithCompaniesByOrderNumberUsingOnClauseAsync(firstSession, OrderNumber));
 
 			using (var session = OpenSession())
 			using (IDbCommand cmd = session.Connection.CreateCommand())
@@ -303,21 +326,39 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			var secondSession = OpenSession();
 			var customers = await (GetAllCustomersAsync(secondSession));
 
-			Assert.That(customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count(n => n.Number == OrderNumber)));
-			Assert.That(customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count(n => n.Number == OrderNumber)));
-			Assert.That(customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(Customer3.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer1.Id).Orders,
+				Has.Count.EqualTo(Customer1.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer2.Id).Orders,
+				Has.Count.EqualTo(Customer2.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer3.Id).Orders,
+				Has.Count.EqualTo(Customer3.Orders.Count(n => n.Number == OrderNumber)));
 
-			Assert.That(customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer1.Id).Companies, Has.Count.EqualTo(Customer1.Companies.Count()));
-			Assert.That(customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer2.Id).Companies, Has.Count.EqualTo(Customer2.Companies.Count()));
-			Assert.That(customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer3.Id).Companies, Has.Count.EqualTo(Customer3.Companies.Count()));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer1.Id).Companies,
+				Has.Count.EqualTo(Customer1.Companies.Count()));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer2.Id).Companies,
+				Has.Count.EqualTo(Customer2.Companies.Count()));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2AndCompanies.First(n => n.Id == Customer3.Id).Companies,
+				Has.Count.EqualTo(Customer3.Companies.Count()));
 
 			Assert.That(customers.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(0));
 			Assert.That(customers.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(0));
 			Assert.That(customers.Single(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(0));
 
-			Assert.That(customers.Single(n => n.Id == Customer1.Id).Companies, Has.Count.EqualTo(Customer1.Companies.Count));
-			Assert.That(customers.Single(n => n.Id == Customer2.Id).Companies, Has.Count.EqualTo(Customer2.Companies.Count));
-			Assert.That(customers.Single(n => n.Id == Customer3.Id).Companies, Has.Count.EqualTo(Customer3.Companies.Count));
+			Assert.That(
+				customers.Single(n => n.Id == Customer1.Id).Companies,
+				Has.Count.EqualTo(Customer1.Companies.Count));
+			Assert.That(
+				customers.Single(n => n.Id == Customer2.Id).Companies,
+				Has.Count.EqualTo(Customer2.Companies.Count));
+			Assert.That(
+				customers.Single(n => n.Id == Customer3.Id).Companies,
+				Has.Count.EqualTo(Customer3.Companies.Count));
 
 			firstSession.Dispose();
 			secondSession.Dispose();
@@ -356,7 +397,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 				if (memberExpression == null)
 					return Task.FromException<object>(new ArgumentException("pathToCollection should be member expression"));
 
-				var role = string.Format("{0}.{1}", rootEntityTypeFullPath, memberExpression.Member.Name);
+				var role = $"{rootEntityTypeFullPath}.{memberExpression.Member.Name}";
 				return Sfi.EvictCollectionAsync(role, cancellationToken);
 			}
 			catch (Exception ex)
@@ -372,7 +413,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			if (memberExpression == null)
 				throw new ArgumentException("pathToCollection should be member expression");
 
-			var role = string.Format("{0}.{1}", rootEntityTypeFullPath, memberExpression.Member.Name);
+			var role = $"{rootEntityTypeFullPath}.{memberExpression.Member.Name}";
 			Sfi.EvictCollection(role);
 		}
 
@@ -381,8 +422,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 		protected abstract Task<IList<Customer>> GetCustomersByOrderNumberUsingOnClauseAsync(ISession session, int orderNumber, CancellationToken cancellationToken = default(CancellationToken));
 		protected abstract Task<IList<Customer>> GetCustomersByOrderNumberUsingWhereClauseAsync(ISession session, int orderNumber, CancellationToken cancellationToken = default(CancellationToken));
 		protected abstract Task<IList<Customer>> GetCustomersByNameUsingWhereClauseAsync(ISession session, string customerName, CancellationToken cancellationToken = default(CancellationToken));
-		protected abstract Task<IList<Customer>> GetCustomersByOrderNumberUsingSubqueriesAndByNameUsingWhereClauseAsync(ISession session, int orderNumber, string customerName, CancellationToken cancellationToken = default(CancellationToken));
-		protected abstract Task<IList<Customer>> GetCustomersWithCompaniesByOrderNumberUsingOnClauseAsync(ISession session, int orderNumber, CancellationToken cancellationToken = default(CancellationToken));
+		protected abstract Task<IList<Customer>> GetCustomersByOrderNumberUsingSubqueriesAndByNameUsingWhereClauseAsync(
+			ISession session,
+			int orderNumber,
+			string customerName, CancellationToken cancellationToken = default(CancellationToken));
+		protected abstract Task<IList<Customer>> GetCustomersWithCompaniesByOrderNumberUsingOnClauseAsync(
+			ISession session,
+			int orderNumber, CancellationToken cancellationToken = default(CancellationToken));
 		protected abstract Task<IList<Customer>> GetAllCustomersAsync(ISession session, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }
