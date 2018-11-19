@@ -39,15 +39,15 @@ namespace NHibernate
 		// to depending on the logger.
 		private static System.Type GetLogManagerType()
 		{
-			var typeName = new AssemblyQualifiedTypeName("log4net.LogManager", "log4net");
+			var typeName = "log4net.LogManager, log4net";
 			// Try to get the type from an already loaded assembly
-			var type = System.Type.GetType(typeName.ToString());
+			var type = System.Type.GetType(typeName);
 			if (type != null)
 				return type;
 
 			// Load type from an already loaded assembly, or yield null
 			return System.Type.GetType(
-				typeName.ToString(),
+				typeName,
 				// An alternate could be "a.GetName().Name == an.Name", but GetName() is not lightweight.
 				// "a.FullName == an.FullName" can never match because an.FullName will lack the version, culture
 				// and public key token.
