@@ -40,7 +40,7 @@ namespace NHibernate
 				throw new TypeLoadException("Could not load LogManager type", LogManagerTypeLoadException);
 		}
 
-		// Code mostly adapted from ReflectHelper.TypeFromAssembly, which cannot be called directly due
+		// Code adapted from ReflectHelper.TypeFromAssembly, which cannot be called directly due
 		// to depending on the logger.
 		private static System.Type GetLogManagerType()
 		{
@@ -53,15 +53,16 @@ namespace NHibernate
 			// Load type from an already loaded assembly
 			type = System.Type.GetType(
 				typeName.ToString(),
-				an => AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName == an.FullName),
+				// An alternate could be "a.GetName().Name == an.Name", but GetName() is not lightweight.
+				// "a.FullName == an.FullName" can never match because an.FullName will lack the version, culture
+				// and public key token.
+				an => AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName.StartsWith("log4net,")),
 				null);
 			if (type != null)
 				return type;
 
+			// Assembly.Load fails if it does not find the assembly. It does not yield null.
 			var assembly = Assembly.Load(typeName.Assembly);
-			if (assembly == null)
-				throw new TypeLoadException($"Could not load type '{typeName}', assembly not found");
-
 			return assembly.GetType(typeName.Type, true);
 		}
 
