@@ -24,7 +24,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1908ThreadSafety
 		{
 			var errors = new List<Exception>();
 			var threads = new List<Thread>();
-			for (int i = 0; i < 50; i++)
+			var threadCount = 50;
+			if (TestDialect.MaxNumberOfConnections < threadCount)
+				threadCount = TestDialect.MaxNumberOfConnections.Value;
+
+			for (var i = 0; i < threadCount; i++)
 			{
 				var thread = new Thread(() =>
 				{

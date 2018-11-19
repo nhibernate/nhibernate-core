@@ -12,6 +12,7 @@ using System.Data;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Mapping;
+using NHibernate.SqlTypes;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2302
@@ -51,6 +52,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
         {
 			if (Sfi.ConnectionProvider.Driver is OdbcDriver || Dialect is MsSqlCeDialect)
 				Assert.Ignore("NH-4065, not fixed for Odbc and MsSqlCe");
+
+			if (Dialect.GetTypeName(SqlTypeFactory.GetString(10000)) != Dialect.GetLongestTypeName(DbType.String))
+				Assert.Ignore("Current dialect does support limited strings of 10 000 characters");
 
             int id;
             // buildup a string the exceed the mapping

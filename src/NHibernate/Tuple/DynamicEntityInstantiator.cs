@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NHibernate.Mapping;
+using NHibernate.Util;
 
 namespace NHibernate.Tuple
 {
@@ -23,11 +24,6 @@ namespace NHibernate.Tuple
 			}
 		}
 
-		protected virtual IDictionary<string, object> GenerateMap()
-		{
-			return new Dictionary<string, object>();
-		}
-
 		#region IInstantiator Members
 
 		public object Instantiate(object id)
@@ -37,7 +33,7 @@ namespace NHibernate.Tuple
 
 		public object Instantiate()
 		{
-			var map = GenerateMap();
+			IDictionary<string, object> map = new DynamicComponent();
 			map[Key] = _entityName;
 
 			return map;

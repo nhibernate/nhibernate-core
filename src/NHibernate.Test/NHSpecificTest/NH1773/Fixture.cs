@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1773
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			// Fails with MS SQL Ce due to the query generating a duplicated column alias name, which this database does not support.
+			// Fails with MS SQL Ce & SQL Anywhere due to the query generating a duplicated column alias name, which these databases do not support.
 			return TestDialect.SupportsDuplicatedColumnAliases;
 		}
 

@@ -58,6 +58,9 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UsingSqlFunctions_Concat()
 		{
+			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
+				Assert.Ignore("Current dialect does not support this test");
+
 			using (ISession session = Sfi.OpenSession())
 			{
 				string result = session.CreateCriteria(typeof(Student))
@@ -79,6 +82,9 @@ namespace NHibernate.Test.Criteria
 			{
 				Assert.Ignore("Not supported by the active dialect:{0}.", Dialect);
 			}
+			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
+				Assert.Ignore("Current dialect does not support this test");
+
 			using (ISession session = Sfi.OpenSession())
 			{
 				string result = session.CreateCriteria(typeof(Student))
@@ -165,6 +171,9 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UsingConditionals()
 		{
+			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
+				Assert.Ignore("Current dialect does not support this test");
+
 			using (ISession session = Sfi.OpenSession())
 			{
 				string result = session.CreateCriteria(typeof(Student))

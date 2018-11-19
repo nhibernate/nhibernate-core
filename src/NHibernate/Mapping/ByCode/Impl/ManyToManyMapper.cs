@@ -6,7 +6,8 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class ManyToManyMapper : IManyToManyMapper
+	// 6.0 TODO: remove IColumnsAndFormulasMapper once IManyToManyMapper inherits it.
+	public class ManyToManyMapper : IManyToManyMapper, IColumnsAndFormulasMapper
 	{
 		private readonly System.Type elementType;
 		private readonly HbmManyToMany manyToMany;
@@ -93,6 +94,53 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		#endregion
 
+		#region Implementation of IColumnsAndFormulasMapper
+
+		/// <inheritdoc />
+		public void ColumnsAndFormulas(params Action<IColumnOrFormulaMapper>[] columnOrFormulaMapper)
+		{
+			ResetColumnPlainValues();
+
+			manyToMany.Items = ColumnOrFormulaMapper.GetItemsFor(columnOrFormulaMapper, elementType.Name);
+		}
+
+		/// <inheritdoc cref="IColumnsAndFormulasMapper.Formula" />
+		public void Formula(string formula)
+		{
+			if (formula == null)
+			{
+				return;
+			}
+
+			ResetColumnPlainValues();
+			manyToMany.Items = null;
+			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
+			if (formulaLines.Length > 1)
+			{
+				manyToMany.Items = new object[] {new HbmFormula {Text = formulaLines}};
+			}
+			else
+			{
+				manyToMany.formula = formula;
+			}
+		}
+
+		/// <inheritdoc />
+		public void Formulas(params string[] formulas)
+		{
+			if (formulas == null)
+				throw new ArgumentNullException(nameof(formulas));
+
+			ResetColumnPlainValues();
+			manyToMany.Items =
+				formulas
+					.Select(
+						f => (object) new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) })
+					.ToArray();
+		}
+
+		#endregion
+
 		#region IManyToManyMapper Members
 
 		public void Class(System.Type entityType)
@@ -118,26 +166,6 @@ namespace NHibernate.Mapping.ByCode.Impl
 				return;
 			}
 			manyToMany.notfound = mode.ToHbm();
-		}
-
-		public void Formula(string formula)
-		{
-			if (formula == null)
-			{
-				return;
-			}
-
-			ResetColumnPlainValues();
-			manyToMany.Items = null;
-			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
-			if (formulaLines.Length > 1)
-			{
-				manyToMany.Items = new[] {new HbmFormula {Text = formulaLines}};
-			}
-			else
-			{
-				manyToMany.formula = formula;
-			}
 		}
 
 		public void Lazy(LazyRelation lazyRelation)

@@ -52,6 +52,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 		[Test]
 		public async Task HavingUsingSqlFunctions_ConcatAsync()
 		{
+			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
+				Assert.Ignore("Current dialect does not support this test");
+
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{

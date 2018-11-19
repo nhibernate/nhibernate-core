@@ -128,5 +128,31 @@ namespace NHibernate.Test
 		/// in the batch.
 		/// </summary>
 		public virtual bool SupportsBatchingDependentDML => true;
+
+		/// <summary>
+		/// Some test editions of databases may have a simultaneous connections limits.
+		/// </summary>
+		public virtual int? MaxNumberOfConnections => null;
+
+		/// <summary>
+		/// Even quoted, some databases do not support square bracket in identifiers.
+		/// </summary>
+		public virtual bool SupportsSquareBracketInIdentifiers => true;
+
+		/// <summary>
+		/// Some databases fail when a connection is enlisted during the first phase of a two phase commit.
+		/// </summary>
+		public virtual bool SupportsUsingConnectionOnSystemTransactionPrepare => true;
+
+		/// <summary>
+		/// Some databases (provider?) fails to compute adequate column types for queries which columns
+		/// computing include a parameter value.
+		/// </summary>
+		/// <remarks>
+		/// This property is not set to true for Firebird although it seems to be affected too. But its driver
+		/// currently has a hack for casting all parameters in select and where clauses in order to explicit
+		/// their type in the query.
+		/// </remarks>
+		public virtual bool HasBrokenTypeInferenceOnSelectedParameters => false;
 	}
 }
