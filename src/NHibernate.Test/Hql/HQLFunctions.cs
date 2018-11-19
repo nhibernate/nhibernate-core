@@ -1048,6 +1048,53 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test]
+		public void Current_Date()
+		{
+			AssumeFunctionSupported("current_date");
+			using (var s = OpenSession())
+			{
+				var a1 = new Animal("abcdef", 1.3f);
+				s.Save(a1);
+				s.Flush();
+			}
+			using (var s = OpenSession())
+			{
+				var hql = "select current_date() from Animal";
+				s.CreateQuery(hql).List();
+			}
+		}
+
+		[Test]
+		public void Current_Date_IsLowestTimeOfDay()
+		{
+			AssumeFunctionSupported("current_date");
+			if (!TestDialect.SupportsNonDataBoundCondition)
+				Assert.Ignore("Test is not supported by the target database");
+			var now = DateTime.Now;
+			if (now.TimeOfDay < TimeSpan.FromMinutes(5) || now.TimeOfDay > TimeSpan.Parse("23:55"))
+				Assert.Ignore("Test is unreliable around midnight");
+
+			var lowTimeDate = now.Date.AddSeconds(1);
+
+			using (var s = OpenSession())
+			{
+				var a1 = new Animal("abcdef", 1.3f);
+				s.Save(a1);
+				s.Flush();
+			}
+			using (var s = OpenSession())
+			{
+				var hql = "from Animal where current_date() < :lowTimeDate";
+				var result =
+					s
+						.CreateQuery(hql)
+						.SetDateTime("lowTimeDate", lowTimeDate)
+						.List();
+				Assert.That(result, Has.Count.GreaterThan(0));
+			}
+		}
+
+		[Test]
 		public void Extract()
 		{
 			AssumeFunctionSupported("extract");
@@ -1137,6 +1184,7 @@ namespace NHibernate.Test.Hql
 
 				hql = "from Animal a where str(123) = '123'";
 				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
+				Assert.That(result, Is.Not.Null);
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
@@ -1317,7 +1365,8 @@ group by mr.Description";
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				// ! takes not precedence over & at least with some dialects (maybe all).
+				// The bitwise "not" should take precedence over the bitwise "and", but when it is implemented as a
+				// function, its argument is the whole following statement, unless parenthesis are used to prevent this.
 				var query = s.CreateQuery("from MaterialResource m where ((!m.State) & 3) = 3");
 				var result = query.List();
 				Assert.That(result, Has.Count.EqualTo(1), "((!m.State) & 3) = 3");
@@ -1357,6 +1406,10 @@ group by mr.Description";
 				new Tuple<string, int> ("select count(*) from MaterialResource m where ((!m.State) & 3) = 2", 1),
 				new Tuple<string, int> ("select count(*) from MaterialResource m where ((!m.State) & 3) = 1", 1)
 			};
+
+			if (TestDialect.MaxNumberOfConnections < queries.Count)
+				Assert.Ignore("Current database has a too low connection count limit.");
+
 			// Do not use a ManualResetEventSlim, it does not support async and exhausts the task thread pool in the
 			// async counterparts of this test. SemaphoreSlim has the async support and release the thread when waiting.
 			var semaphore = new SemaphoreSlim(0);

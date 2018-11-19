@@ -102,5 +102,66 @@ namespace NHibernate.Test.Insertordering.AnimalModel
 				Assert.DoesNotThrowAsync(() => { return tran.CommitAsync(); });
 			}
 		}
+
+		// #1338
+		[Test]
+		public async System.Threading.Tasks.Task InsertShouldNotInitializeManyToOneProxyAsync()
+		{
+			var person = new Person {  Name = "AnimalOwner" };
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(person));
+				await (t.CommitAsync());
+			}
+			await (Sfi.EvictAsync(typeof(Person)));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var personProxy = await (s.LoadAsync<Person>(person.Id));
+				Assert.That(NHibernateUtil.IsInitialized(personProxy), Is.False, "Person proxy already initialized after load");
+
+				await (s.SaveAsync(new Cat { Name = "Felix", Owner = personProxy }));
+				await (s.SaveAsync(new Cat { Name = "Loustic", Owner = personProxy }));
+				Assert.That(NHibernateUtil.IsInitialized(personProxy), Is.False, "Person proxy initialized after saves");
+				await (t.CommitAsync());
+				Assert.That(NHibernateUtil.IsInitialized(personProxy), Is.False, "Person proxy initialized after commit");
+			}
+		}
+
+		[Test]
+		public async System.Threading.Tasks.Task InsertShouldNotInitializeOneToManyProxyAsync()
+		{
+			var cat = new Cat {  Name = "Felix" };
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(cat));
+				await (t.CommitAsync());
+			}
+			await (Sfi.EvictAsync(typeof(Cat)));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var catProxy = await (s.LoadAsync<Cat>(cat.Id));
+				Assert.That(NHibernateUtil.IsInitialized(catProxy), Is.False, "Cat proxy already initialized after load");
+
+				var owner = new Person { Name = "AnimalOwner" };
+				owner.AnimalsGeneric.Add(catProxy);
+				// Following assert would fail if the collection was changed for a set.
+				Assert.That(NHibernateUtil.IsInitialized(catProxy), Is.False, "Cat proxy initialized after collection add");
+				await (s.SaveAsync(owner));
+				Assert.That(NHibernateUtil.IsInitialized(catProxy), Is.False, "Cat proxy initialized after save");
+				await (t.CommitAsync());
+				Assert.That(NHibernateUtil.IsInitialized(catProxy), Is.False, "Cat proxy initialized after commit");
+				// The collection being inverse, the cat owner is not actually set in this test, but that is enough
+				// to check the trouble. The ordering logic does not short-circuit on inverse collections. (It could
+				// be an optimization, but it may cause regressions for some edge case mappings, like one having an
+				// inverse one-to-many with no matching many-to-one but a basic type property for the foreign key
+				// instead.)
+			}
+		}
 	}
 }

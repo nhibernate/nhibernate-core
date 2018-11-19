@@ -46,20 +46,22 @@ namespace NHibernate.Type
 		private readonly IType identifierType;
 		private readonly IType metaType;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="metaType"></param>
-		/// <param name="identifierType"></param>
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(AnyType));
+
 		internal AnyType(IType metaType, IType identifierType)
 		{
-			this.identifierType = identifierType;
-			this.metaType = metaType;
+			this.identifierType = identifierType ?? throw new ArgumentNullException(nameof(identifierType));
+			this.metaType = metaType ?? throw new ArgumentNullException(nameof(metaType));
+
+			if (!(metaType is MetaType))
+			{
+				Log.Warn("Using AnyType with a meta type which is not a MetaType is obsolete and may cause" +
+				         "querying issues.");
+			}
 		}
 
-		/// <summary></summary>
 		internal AnyType()
-			: this(NHibernateUtil.String, NHibernateUtil.Serializable)
+			: this(NHibernateUtil.MetaType, NHibernateUtil.Serializable)
 		{
 		}
 

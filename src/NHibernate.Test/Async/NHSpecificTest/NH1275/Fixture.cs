@@ -8,7 +8,10 @@
 //------------------------------------------------------------------------------
 
 
+using System;
+using NHibernate.Cfg;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH1275
 {
@@ -22,6 +25,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1275
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			return !string.IsNullOrEmpty(dialect.ForUpdateString);
+		}
+
+		protected override void Configure(Configuration configuration)
+		{
+			configuration.SetProperty(Environment.FormatSql, "false");
 		}
 
 		[Test]
@@ -43,14 +51,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1275
 				{
 					await (s.GetAsync<A>(savedId, LockMode.Upgrade));
 					string sql = sqlLogSpy.Appender.GetEvents()[0].RenderedMessage;
-					Assert.Less(0, sql.IndexOf(Dialect.ForUpdateString));
+					Assert.That(sql.IndexOf(Dialect.ForUpdateString, StringComparison.Ordinal), Is.GreaterThan(0));
 				}
 				using (SqlLogSpy sqlLogSpy = new SqlLogSpy())
 				{
 					await (s.CreateQuery("from A a where a.Id= :pid").SetLockMode("a", LockMode.Upgrade).SetParameter("pid", savedId).
 							UniqueResultAsync<A>());
 					string sql = sqlLogSpy.Appender.GetEvents()[0].RenderedMessage;
-					Assert.Less(0, sql.IndexOf(Dialect.ForUpdateString));
+					Assert.That(sql.IndexOf(Dialect.ForUpdateString, StringComparison.Ordinal), Is.GreaterThan(0));
 				}
 				await (t.CommitAsync());
 			}
@@ -83,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1275
 				{
 					await (s.LockAsync(a, LockMode.Upgrade));
 					string sql = sqlLogSpy.Appender.GetEvents()[0].RenderedMessage;
-					Assert.Less(0, sql.IndexOf(Dialect.ForUpdateString));
+					Assert.That(sql.IndexOf(Dialect.ForUpdateString, StringComparison.Ordinal), Is.GreaterThan(0));
 				}
 				await (t.CommitAsync());
 			}

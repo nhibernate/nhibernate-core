@@ -8,10 +8,10 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Collections;
 using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
+using NHibernate.Util;
 
 namespace NHibernate.Cache
 {
@@ -121,6 +121,7 @@ namespace NHibernate.Cache
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <exception cref="CacheException"></exception>
 		Task ClearAsync(CancellationToken cancellationToken);
+#pragma warning restore 618
 	}
 
 	internal static partial class CacheConcurrencyStrategyExtensions
@@ -136,15 +137,22 @@ namespace NHibernate.Cache
 		/// <exception cref="CacheException"></exception>
 		public static Task<object[]> GetManyAsync(this ICacheConcurrencyStrategy cache, CacheKey[] keys, long timestamp, CancellationToken cancellationToken)
 		{
-			if (!(cache is IBatchableCacheConcurrencyStrategy batchableCache))
-			{
-				throw new InvalidOperationException($"Cache concurrency strategy {cache.GetType()} does not support batching");
-			}
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object[]>(cancellationToken);
 			}
-			return batchableCache.GetManyAsync(keys, timestamp, cancellationToken);
+			try
+			{
+				// PreferMultipleGet yields false if !IBatchableCacheConcurrencyStrategy, no GetMany call should be done
+				// in such case.
+				return ReflectHelper
+				.CastOrThrow<IBatchableCacheConcurrencyStrategy>(cache, "batching")
+				.GetManyAsync(keys, timestamp, cancellationToken);
+			}
+			catch (System.Exception ex)
+			{
+				return Task.FromException<object[]>(ex);
+			}
 		}
 
 		/// <summary>
@@ -160,18 +168,22 @@ namespace NHibernate.Cache
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns><see langword="true" /> if the objects were successfully cached.</returns>
 		/// <exception cref="CacheException"></exception>
-		public static Task<bool[]> PutManyAsync(this ICacheConcurrencyStrategy cache, CacheKey[] keys, object[] values, long timestamp,
+		public static async Task<bool[]> PutManyAsync(this ICacheConcurrencyStrategy cache, CacheKey[] keys, object[] values, long timestamp,
 		                          object[] versions, IComparer[] versionComparers, bool[] minimalPuts, CancellationToken cancellationToken)
 		{
-			if (!(cache is IBatchableCacheConcurrencyStrategy batchableCache))
+			cancellationToken.ThrowIfCancellationRequested();
+			if (cache is IBatchableCacheConcurrencyStrategy batchableCache)
 			{
-				throw new InvalidOperationException($"Cache concurrency strategy {cache.GetType()} does not support batching");
+				return await (batchableCache.PutManyAsync(keys, values, timestamp, versions, versionComparers, minimalPuts, cancellationToken)).ConfigureAwait(false);
 			}
-			if (cancellationToken.IsCancellationRequested)
+
+			var result = new bool[keys.Length];
+			for (var i = 0; i < keys.Length; i++)
 			{
-				return Task.FromCanceled<bool[]>(cancellationToken);
+				result[i] = await (cache.PutAsync(keys[i], values[i], timestamp, versions[i], versionComparers[i], minimalPuts[i], cancellationToken)).ConfigureAwait(false);
 			}
-			return batchableCache.PutManyAsync(keys, values, timestamp, versions, versionComparers, minimalPuts, cancellationToken);
+
+			return result;
 		}
 	}
 }

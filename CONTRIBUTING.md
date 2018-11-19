@@ -20,7 +20,7 @@ The main GitHub repository is at [https://github.com/nhibernate/nhibernate-core]
 
 ## The Build Menu
 
-**ShowBuildMenu.bat** will be your friend throughout this journey. He's easiest to work with if you make his box bigger by following these steps: 
+**ShowBuildMenu.bat** will be your friend throughout this journey. A .sh version exists for Linux. It's easiest to work with if you make his box bigger by following these steps: 
 
 1.  Run ShowBuildMenu.bat.
 2.  Right click on the title bar of the window.
@@ -36,10 +36,12 @@ The main GitHub repository is at [https://github.com/nhibernate/nhibernate-core]
 ## Setting up For Development
 
 1.  Install your favorite database and optionally set up a user capable of creating and dropping a database called **nhibernate**. There are some per-database instructions in the lib/teamcity/* folders, which you may find helpful. For SQL Server, you might be able to use the **localhost\sqlexpress** instance installed with Visual Studio. Often people already have databases set up, so you might not even need to do anything in this step.
-2.  Run the build menu and select option B to create a new test configuration. Notepad will pop up and you should edit the connection string information, saving it when you're done. These configurations will appear in the "available-test-configurations" folder.
-3.  Run the build menu and select option C to activate the test configuration you created. The appropriate configuration will be copied to the "current-test-configuration" folder.
-4.  (Optional) Run all the tests with option D and hopefully you will see no failing tests. The build may fail on certain databases; please ask on the mailing list if you are having trouble.
-5.  Before using the database for unit tests from Visual Studio, you'll need to create an empty database that matches your connection string.
+2.  Run the build menu and select option A to create a new test configuration. Notepad will pop up and you should edit the connection string information, saving it when you're done. These configurations will appear in the "available-test-configurations" folder.
+3.  Run the build menu and select option B to activate the test configuration you created. The appropriate configuration will be copied to the "current-test-configuration" folder.
+4.  (Optional) Run all the tests with option C or D and hopefully you will see no failing tests. The build may fail on certain databases; please ask on the mailing list if you are having trouble.
+5.  Before using the database for unit tests from an IDE, you'll need to create an empty database that matches your connection string. The unit test in NHibernate.TestDatabaseSetup supports some databases. If the one you have configured is supported, it will drop the database if it does already exist, then recreate it.
+
+Compiling the solution under Linux requires installation of the [Mono package mono-complete](https://www.mono-project.com/download/stable) and of the [.NET Core SDK](https://www.microsoft.com/net/download).
 
 ## Creating a Test Case to Verify the Issue
 
@@ -90,7 +92,7 @@ Since you now have a failing test case, it should be straight-forward to step in
 
 ### Ensure All Tests Pass
 
-Once you've made changes to the NHibernate code base, you'll want to ensure that you haven't caused any previously passing tests to fail. The easiest way to check this is to select option D from the build menu, ensure the root tree node is selected, then press run to have all the tests run. 
+Once you've made changes to the NHibernate code base, you'll want to ensure that you haven't caused any previously passing tests to fail. The easiest way to check this is to select option C or D from the build menu, ensure the root tree node is selected, then press run to have all the tests run. 
 
 Please note that some tests assume a case insensitive accent sensitive database when performing string comparison. Some tests assume SQL user locales to be en-US. They will fail otherwise. With SQL Server, collation with supplementary characters (\_SC suffix on collation name) are no supported by legacy tests on "text" types.
 

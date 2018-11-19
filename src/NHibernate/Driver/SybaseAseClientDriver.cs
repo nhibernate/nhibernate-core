@@ -1,9 +1,7 @@
-﻿using System;
-
-namespace NHibernate.Driver
+﻿namespace NHibernate.Driver
 {
 	/// <summary>
-	/// This provides a driver for Sybase ASE 15 using the ADO.NET driver.
+	/// This provides a driver for Sybase ASE 15 using the ADO.NET 2 driver.
 	/// </summary>
 	/// <remarks>
 	/// You will need the following libraries available to your application:
@@ -12,25 +10,13 @@ namespace NHibernate.Driver
 	/// <li>sybdrvado20.dll</li>
 	/// </ul>
 	/// </remarks>
-	public class SybaseAseClientDriver : ReflectionBasedDriver
+	public class SybaseAseClientDriver : SybaseAseClientDriverBase
 	{
-		public SybaseAseClientDriver() : base("Sybase.AdoNet2.AseClient", "Sybase.Data.AseClient.AseConnection", "Sybase.Data.AseClient.AseCommand")
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public SybaseAseClientDriver() : base("Sybase.AdoNet2.AseClient")
 		{
-		}
-		
-		public override string NamedPrefix
-		{
-			get { return "@"; }
-		}
-		
-		public override bool UseNamedPrefixInParameter
-		{
-			get { return true; }
-		}
-		
-		public override bool UseNamedPrefixInSql
-		{
-			get { return true; }
 		}
 	}
 }

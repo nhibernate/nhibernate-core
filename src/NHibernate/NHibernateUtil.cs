@@ -218,6 +218,11 @@ namespace NHibernate
 		public static readonly TicksType Ticks = new TicksType();
 
 		/// <summary>
+		/// NHibernate UTC Ticks type
+		/// </summary>
+		public static readonly UtcTicksType UtcTicks = new UtcTicksType();
+
+		/// <summary>
 		/// NHibernate TimeAsTimeSpan type
 		/// </summary>
 		public static readonly TimeAsTimeSpanType TimeAsTimeSpan = new TimeAsTimeSpanType();
@@ -240,6 +245,11 @@ namespace NHibernate
 		public static readonly DbTimestampType DbTimestamp = new DbTimestampType();
 
 		/// <summary>
+		/// NHibernate Timestamp type, seeded db side, in UTC.
+		/// </summary>
+		public static readonly UtcDbTimestampType UtcDbTimestamp = new UtcDbTimestampType();
+
+		/// <summary>
 		/// NHibernate TrueFalse type
 		/// </summary>
 		public static readonly TrueFalseType TrueFalse = new TrueFalseType();
@@ -258,7 +268,14 @@ namespace NHibernate
 		/// NHibernate class meta type for association of kind <code>any</code>.
 		/// </summary>
 		/// <seealso cref="AnyType"/>
+		[Obsolete("Use MetaType without meta-values instead.")]
 		public static readonly ClassMetaType ClassMetaType = new ClassMetaType();
+
+		/// <summary>
+		/// NHibernate meta type for association of kind <code>any</code> without meta-values.
+		/// </summary>
+		/// <seealso cref="AnyType"/>
+		public static readonly MetaType MetaType = new MetaType(null, String);
 
 		/// <summary>
 		/// NHibernate serializable type

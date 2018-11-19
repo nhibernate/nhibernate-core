@@ -55,7 +55,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 			else
 			{
-				action.AfterTransactionCompletionProcess(true);
+				action.ExecuteAfterTransactionCompletion(true);
 			}
 		}
 
@@ -190,17 +190,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 				if (ShouldIsolateTemporaryTableDDL())
 				{
-					session.ConnectionManager.Transaction.RegisterSynchronization(new AfterTransactionCompletes((success) =>
-					{
-						if (Factory.Settings.IsDataDefinitionInTransactionSupported)
-						{
-							Isolater.DoIsolatedWork(work, session);
-						}
-						else
-						{
-							Isolater.DoNonTransactedWork(work, session);
-						}
-					}));
+					session.ConnectionManager.Transaction.RegisterSynchronization(
+						new IsolatedWorkAfterTransaction(work, session));
 				}
 				else
 				{

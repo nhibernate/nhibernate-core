@@ -234,5 +234,20 @@ namespace NHibernate.Mapping
 		}
 
 		public string GeneratedConstraintNamePrefix => "FK_";
+
+		public override bool IsGenerated(Dialect.Dialect dialect)
+		{
+			if (!HasPhysicalConstraint)
+				return false;
+			if (dialect.SupportsNullInUnique || IsReferenceToPrimaryKey)
+				return true;
+
+			foreach (var column in ReferencedColumns)
+			{
+				if (column.IsNullable)
+					return false;
+			}
+			return true;
+		}
 	}
 }

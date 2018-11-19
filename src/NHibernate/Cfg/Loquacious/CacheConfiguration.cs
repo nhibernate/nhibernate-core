@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Cache;
 
 namespace NHibernate.Cfg.Loquacious
@@ -39,7 +40,13 @@ namespace NHibernate.Cfg.Loquacious
 			cfg.SetProperty(Environment.CacheProvider, typeof(TProvider).AssemblyQualifiedName);
 		}
 
+		[Obsolete("This method is invalid and should not be used. Use QueryCacheFactory method instead.", true)]
 		public void QueryCache<TFactory>() where TFactory : IQueryCache
+		{
+			throw new InvalidOperationException("This method is invalid and should not be used. Use QueryCacheFactory method instead.");
+		}
+
+		public void QueryCacheFactory<TFactory>() where TFactory : IQueryCacheFactory
 		{
 			UseSecondLevelCache = true;
 			UseQueryCache = true;
@@ -111,8 +118,12 @@ namespace NHibernate.Cfg.Loquacious
 
 		#region Implementation of IQueryCacheConfiguration
 
-		public ICacheConfiguration Through<TFactory>() where TFactory : IQueryCache
+		// 6.0 TODO: enable constraint and remove runtime type check
+		public ICacheConfiguration Through<TFactory>() // where TFactory : IQueryCacheFactory
 		{
+			if (!typeof(IQueryCacheFactory).IsAssignableFrom(typeof(TFactory)))
+				throw new ArgumentException($"{nameof(TFactory)} must be an {nameof(IQueryCacheFactory)}", nameof(TFactory));
+
 			cc.Configuration.SetProperty(Environment.UseSecondLevelCache, "true");
 			cc.Configuration.SetProperty(Environment.UseQueryCache, "true");
 			cc.Configuration.SetProperty(Environment.QueryCacheFactory, typeof(TFactory).AssemblyQualifiedName);

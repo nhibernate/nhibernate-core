@@ -496,7 +496,6 @@ alter table line_items
 
         </sect2>
 
-<!-- This example is not supported by NHibernate, because HbmManyToMany lacks a ColumnsAndFormulas handling
         <sect2 id="example-mappings-miscellaneous-m2mcomposite">
             <title>Many-to-many with shared composite key attribute</title>
 
@@ -535,8 +534,12 @@ alter table line_items
     </set>
 </class>]]></programlisting>
 
+            <para>
+                This case requires mixing column and formula under the <literal>&lt;many-to-many&gt;</literal>
+                element, which is supported only since NHibernate 5.2.
+            </para>
+
         </sect2>
--->
 
         <sect2 id="example-mappings-miscellaneous-contentdiscriminator">
             <title>Content based discrimination</title>

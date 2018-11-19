@@ -12,16 +12,18 @@ using System.Collections;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Cache;
+#if !NETFX
 using NHibernate.Util;
+#endif
 
 namespace NHibernate.Test.NHSpecificTest.NH2898
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class BinaryFormatterCache : ICache
+	public partial class BinaryFormatterCache : CacheBase
 	{
 
-		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
+		public override Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -46,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 			}
 		}
 
-		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
+		public override Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -69,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 			}
 		}
 
-		public Task RemoveAsync(object key, CancellationToken cancellationToken)
+		public override Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -82,7 +84,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 			}
 		}
 
-		public Task ClearAsync(CancellationToken cancellationToken)
+		public override Task ClearAsync(CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -95,13 +97,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 			}
 		}
 
-		public Task LockAsync(object key, CancellationToken cancellationToken)
+		public override Task<object> LockAsync(object key, CancellationToken cancellationToken)
 		{
-			return Task.CompletedTask;
 			// local cache, so we use synchronization
+			return Task.FromResult<object>(null);
 		}
 
-		public Task UnlockAsync(object key, CancellationToken cancellationToken)
+		public override Task UnlockAsync(object key, object lockValue, CancellationToken cancellationToken)
 		{
 			return Task.CompletedTask;
 			// local cache, so we use synchronization

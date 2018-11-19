@@ -94,6 +94,8 @@ namespace NHibernate.Dialect
 
 			// Register the date function, since when used in LINQ select clauses, NH must know the data type.
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
+			
+			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "?1::TEXT"));
 
 			RegisterKeywords();
 		}

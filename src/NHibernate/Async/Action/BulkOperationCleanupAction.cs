@@ -20,7 +20,7 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Action
 {
-	public partial class BulkOperationCleanupAction : IExecutable
+	public partial class BulkOperationCleanupAction : IAsyncExecutable, IAfterTransactionCompletionProcess
 	{
 
 		#region IExecutable Members
@@ -57,6 +57,13 @@ namespace NHibernate.Action
 			{
 				return Task.FromException<object>(ex);
 			}
+		}
+
+		public async Task ExecuteAfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			await (EvictEntityRegionsAsync(cancellationToken)).ConfigureAwait(false);
+			await (EvictCollectionRegionsAsync(cancellationToken)).ConfigureAwait(false);
 		}
 
 		private Task EvictCollectionRegionsAsync(CancellationToken cancellationToken)

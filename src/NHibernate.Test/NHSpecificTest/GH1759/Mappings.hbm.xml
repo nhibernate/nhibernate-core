@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH1759">
+
+  <class name="User" table="`User`">
+    <composite-id>
+      <key-property name="Name"/>
+      <key-property name="Org"/>
+    </composite-id>
+
+    <set name="Groups" table="UserGroup">
+      <key>
+        <column name="UserName"/>
+        <column name="Org"/>
+      </key>
+      <many-to-many class="Group">
+        <column name="GroupName"/>
+        <formula>Org</formula>
+      </many-to-many>
+    </set>
+
+    <property name="DepartureDate"/>
+    <property name="Hiring" type="DateSpanType">
+      <column name="HireDate"/>
+      <formula>DepartureDate</formula>
+    </property>
+
+    <property name="MainGroupName"/>
+  </class>
+
+  <class name="Group" table="`Group`">
+    <composite-id>
+      <key-property name="Name"/>
+      <key-property name="Org"/>
+    </composite-id>
+
+    <property name="Description"/>
+
+    <set name="Users" table="UserGroup" inverse="true">
+      <key>
+        <column name="GroupName"/>
+        <column name="Org"/>
+      </key>
+      <many-to-many class="User">
+        <column name="UserName"/>
+        <formula>Org</formula>
+      </many-to-many>
+    </set>
+
+    <!-- I have no idea for any functional usage of this, so no functional naming but a technical one instead.
+         It is there just for tests. -->
+    <set name="DateSpans" table="GroupDateSpans">
+      <key>
+        <column name="GroupName"/>
+        <column name="Org"/>
+      </key>
+      <element type="DateSpanType">
+        <column name="StartDate"/>
+        <!--
+          Quite a brittle formula. "year" does not get prefixed as a column name because it is a "known word"
+          (registered as a function). Attempting instead with its shortname "yy" fails...
+        -->
+        <formula>dateadd(year, 2, StartDate)</formula>
+      </element>
+    </set>
+
+    <!-- This forbids hiring two persons on the same day, but well, that is just for testing. -->
+    <map name="UsersByHiring" inverse="true">
+      <key>
+        <column name="MainGroupName"/>
+        <column name="Org"/>
+      </key>
+      <map-key type="DateSpanType">
+        <column name="HireDate"/>
+        <formula>DepartureDate</formula>
+      </map-key>
+      <one-to-many class="User"/>
+    </map>
+
+    <!-- This is functionaly quite broken as the primary key does not include the map-key, which forbids
+         to add the same comment for two distinct users. A fix would be to map the element as a composite
+         element including the user name too. But as this is not what we test here, keeping it simple. -->
+    <map name="CommentsByUser" table="GroupUserComment">
+      <key>
+        <column name="GroupName"/>
+        <column name="Org"/>
+      </key>
+      <map-key-many-to-many class="User">
+        <column name="UserName"/>
+        <formula>Org</formula>
+      </map-key-many-to-many>
+      <element column="Comment" not-null="true"/>
+    </map>
+  </class>
+
+</hibernate-mapping>

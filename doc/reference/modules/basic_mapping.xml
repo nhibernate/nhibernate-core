@@ -57,8 +57,8 @@
              We will now discuss the content of the mapping document. We will mainly describe the
              document elements and attributes that are used by NHibernate at runtime. The mapping
              document also contains some extra optional attributes and elements that affect the
-             database schemas exported by the schema export tool. (By example the
-             <literal>column</literal> sub-element of a property.)
+             database schemas exported by the schema export tool, for example, the
+             <literal>column</literal> sub-element of a property.
         </para>
 
         <sect2 id="mapping-declaration-xmlns">
@@ -2680,9 +2680,10 @@
             </para>
 
             <para>
-                The <literal>&lt;dynamic-component&gt;</literal> element allows an <literal>IDictionary</literal>
-                or <literal>IDictionary&lt;string, object&gt;</literal> to be mapped as a component, where the
-                property names refer to keys of the dictionary. See <xref linkend="components-dynamic" />.
+                The <literal>&lt;dynamic-component&gt;</literal> element allows an <literal>IDictionary</literal>,
+                <literal>IDictionary&lt;string, object&gt;</literal>, or a C# <literal>dynamic</literal> to be mapped
+                as a component. When using dictionaries, the property names refer to keys of the dictionary. See
+                <xref linkend="components-dynamic" />.
             </para>
             
         </sect2>
@@ -3363,8 +3364,8 @@
                 database column values to persistent classes that have identifier properties of the type specified by
                 <literal>id-type</literal>. If the meta-type is <literal>class</literal>, nothing else is required.
                 The class full name will be persisted in the database as the type of the associated entity.
-                On the other hand, if it is a basic type like <literal>string</literal> or
-                <literal>char</literal>, you must specify the mapping from values to classes.
+                On the other hand, if it is a basic type like <literal>int</literal> or <literal>char</literal>, you
+                must specify the mapping from values to classes. Here is an example with <literal>string</literal>.
             </para>
 
             <programlisting><![CDATA[<any name="being" id-type="long" meta-type="string">
@@ -3374,6 +3375,11 @@
     <column name="type"/>
     <column name="id"/>
 </any>]]></programlisting>
+
+            <para>
+                String types are a special case: they can be used without meta-values, in which case they will behave
+                much like the <literal>class</literal> meta-type.
+            </para>
 
             <programlistingco>
                 <areaspec>
@@ -3643,9 +3649,10 @@
                                 <literal>DbType.DateTime</literal> / <literal>DbType.DateTime2</literal><coref linkend="basic_mapping.datetime-co" />
                             </entry>
                             <entry>
-                                <literal>type="DbTimestamp"</literal> must be specified.  When used as a
+                                <literal>type="DbTimestamp"</literal> must be specified. When used as a
                                 <literal>version</literal> field, uses the database's current time retrieved
-                                in dedicated queries, rather than the client's current time.
+                                in dedicated queries, rather than the client's current time. In case of lack of
+                                database support, it falls back on the client's current time.
                             </entry>
                         </row>
                         <row>
@@ -3733,7 +3740,10 @@
                             <entry><literal>Ticks</literal></entry>
                             <entry><literal>System.DateTime</literal></entry>
                             <entry><literal>DbType.Int64</literal></entry>
-                            <entry><literal>type="Ticks"</literal> must be specified.</entry>
+                            <entry>
+                                <literal>type="Ticks"</literal> must be specified. This is the recommended way to "timestamp" a
+                                column, along with <literal>UtcTicks</literal>.
+                            </entry>
                         </row>
                         <row>
                             <entry><literal>Time</literal></entry>
@@ -3813,6 +3823,30 @@
                             </entry>
                         </row>
                         <row>
+                            <entry><literal>UtcDbTimestamp</literal></entry>
+                            <entry><literal>System.DateTime</literal></entry>
+                            <entry>
+                                <literal>DbType.DateTime</literal> / <literal>DbType.DateTime2</literal><coref linkend="basic_mapping.datetime-co" />
+                            </entry>
+                            <entry>
+                                <literal>type="UtcDbTimestamp"</literal> must be specified. When used as a
+                                <literal>version</literal> field, uses the database's current UTC time retrieved
+                                in dedicated queries, rather than the client's current time. In case of lack of
+                                database support, it falls back on the client's current time.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry><literal>UtcTicks</literal></entry>
+                            <entry><literal>System.DateTime</literal></entry>
+                            <entry><literal>DbType.Int64</literal></entry>
+                            <entry>
+                                <literal>type="UtcTicks"</literal> must be specified. This is the recommended way to "timestamp" a
+                                column, along with <literal>Ticks</literal>.
+                                Ensures the <literal>DateTimeKind</literal> is set to <literal>DateTimeKind.Utc</literal>.
+                                Throws if set with a date having another kind.
+                            </entry>
+                        </row>
+                        <row>
                             <entry><literal>YesNo</literal></entry>
                             <entry><literal>System.Boolean</literal></entry>
                             <entry><literal>DbType.AnsiStringFixedLength</literal> - 1 char either 'Y' or 'N'</entry>
@@ -3883,6 +3917,63 @@
                     </tbody>
                 </tgroup>
             </table>
+
+            <para>
+                String types use by default .Net default string equality, which is case sensitive and culture
+                insensitive. When a string type is used as an identifier, if the underlying database string
+                equality semantic differs, it may cause issues. For example, loading a children collection by
+                a string parent key stored in a case insensitive column may cause matching children having
+                their parent key differing by the case to be ignored by NHibernate by default.
+            </para>
+
+            <para>
+                String types comparer can be set for matching the database or column behavior. To set the
+                default comparer for all string types, affect by code a <literal>StringComparer</literal> to
+                <literal>AbstractStringType.DefaultComparer</literal> static property. To set the comparer used
+                only for a specific <literal>&lt;property&gt;</literal> or <literal>&lt;id&gt;</literal>,
+                specify its type as a sub-element and supply <literal>IgnoreCase</literal> and/or
+                <literal>ComparerCulture</literal> parameters.
+            </para>
+
+            <programlistingco>
+                <areaspec>
+                    <area id="stringcomp1" coords="3 55"/>
+                    <area id="stringcomp2" coords="4 55"/>
+                </areaspec>
+                <programlisting><![CDATA[<id name="Id" generator="assigned">
+    <type name="string">
+        <param name="ComparerCulture">en-US</param>
+        <param name="IgnoreCase">true</param>
+    </type>
+</id>]]></programlisting>
+                <calloutlist>
+                    <callout arearefs="stringcomp1">
+                        <para>
+                            <literal>IgnoreCase</literal>: <literal>true</literal> for case insensitive comparisons.
+                            Any other value will result in case sensitive comparisons.
+                        </para>
+                    </callout>
+                    <callout arearefs="stringcomp2">
+                        <para>
+                            <literal>ComparerCulture</literal>: <literal>Current</literal> for using the application
+                            current culture, <literal>Invariant</literal> for using the invariant culture,
+                            <literal>Ordinal</literal> for using ordinal comparison, or any valid culture name for
+                            using another culture. By default, ordinal comparisons are used.
+                        </para>
+                    </callout>
+                </calloutlist>
+            </programlistingco>
+
+            <para>
+                If you have many properties to map with these parameters, consider using <literal>&lt;typedef&gt;</literal>.
+                See <xref linkend="mapping-types-custom"/> for more information.
+            </para>
+
+            <para>
+                These settings should be used in order to match the database or column behavior. They are not taken into
+                account by the hbm2ddl tool for generating the database schema. (In other words, it will not generate
+                matching <literal>collate</literal> statements for SQL-Server.)
+            </para>
 
             <table>
                 <title>Large Object Mapping Types</title>

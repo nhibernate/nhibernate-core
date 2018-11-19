@@ -13,6 +13,7 @@ namespace NHibernate.Test.DriverTest
 	{
 		private string _connectionString;
 		private FirebirdClientDriver _driver;
+		private FirebirdClientDriver _driverWithoutCasting;
 
 		[OneTimeSetUp]
 		public void OneTimeSetup()
@@ -26,6 +27,10 @@ namespace NHibernate.Test.DriverTest
 			_driver = new FirebirdClientDriver();
 			_driver.Configure(cfg.Properties);
 			_connectionString = cfg.GetProperty("connection.connection_string");
+
+			_driverWithoutCasting = new FirebirdClientDriver();
+			cfg.SetProperty(Cfg.Environment.FirebirdDisableParameterCasting, "true");
+			_driverWithoutCasting.Configure(cfg.Properties);
 		}
 
 		[Test]
@@ -153,7 +158,7 @@ namespace NHibernate.Test.DriverTest
 			{
 				_driver.AdjustCommand(cmd);
 
-				var expected = "insert into table1 (col1_select_aaa) values(@p0) from table2";
+				var expected = "insert into table1 (col1_select_aaa, select_aaa, col1_select) values(@p0, @p1, @p2) from table2";
 				Assert.That(cmd.CommandText, Is.EqualTo(expected));
 			}
 		}
@@ -165,8 +170,104 @@ namespace NHibernate.Test.DriverTest
 			{
 				_driver.AdjustCommand(cmd);
 
-				var expected = "insert into table1 (col1_where_aaa) values(@p0) from table2";
+				var expected = "insert into table1 (col1_where_aaa, where_aaa, col1_where) values(@p0, @p1, @p2) from table2";
 				Assert.That(cmd.CommandText, Is.EqualTo(expected));
+			}
+		}
+
+		[Test]
+		public void AdjustCommand_ParameterWithinBetween_ParameterIsNotCasted()
+		{
+			using (var cmd = BuildBetweenCommand(SqlTypeFactory.GetString(255)))
+			{
+				var originalSql = cmd.CommandText;
+				_driver.AdjustCommand(cmd);
+
+				Assert.That(cmd.CommandText, Is.EqualTo(originalSql));
+			}
+		}
+
+		[Test]
+		public void AdjustCommand_ParameterWithinPaging_ParameterIsNotCasted()
+		{
+			using (var cmd = BuildPagingCommand(SqlTypeFactory.Int32))
+			{
+				var originalSql = cmd.CommandText;
+				_driver.AdjustCommand(cmd);
+
+				Assert.That(cmd.CommandText, Is.EqualTo(originalSql));
+			}
+		}
+
+		[Test]
+		public void AdjustCommand_ParameterWithinIn_ParameterIsNotCasted()
+		{
+			using (var cmd = BuildInCommand(SqlTypeFactory.GetString(255)))
+			{
+				var originalSql = cmd.CommandText;
+				_driver.AdjustCommand(cmd);
+
+				Assert.That(cmd.CommandText, Is.EqualTo(originalSql));
+			}
+		}
+
+		[Test]
+		public void AdjustCommand_StringParametersWithinConditionalSelect_NotCastedWhenDisabled()
+		{
+			using (var cmd = BuildSelectCaseCommand(SqlTypeFactory.GetString(255)))
+			{
+				var originalSql = cmd.CommandText;
+				_driver.AdjustCommand(cmd);
+
+				Assert.That(cmd.CommandText, Is.EqualTo(originalSql));
+			}
+		}
+
+		[Test]
+		public void AdjustCommand_IntParametersWithinConditionalSelect_NotCastedWhenDisabled()
+		{
+			using (var cmd = BuildSelectCaseCommand(SqlTypeFactory.Int32))
+			{
+				var originalSql = cmd.CommandText;
+				_driver.AdjustCommand(cmd);
+
+				Assert.That(cmd.CommandText, Is.EqualTo(originalSql));
+			}
+		}
+
+		[Test]
+		public void AdjustCommand_ParameterWithinSelectConcat_NotCastedWhenDisabled()
+		{
+			using (var cmd = BuildSelectConcatCommand(SqlTypeFactory.GetString(255)))
+			{
+				var originalSql = cmd.CommandText;
+				_driver.AdjustCommand(cmd);
+
+				Assert.That(cmd.CommandText, Is.EqualTo(originalSql));
+			}
+		}
+
+		[Test]
+		public void AdjustCommand_ParameterWithinSelectAddFunction_NotCastedWhenDisabled()
+		{
+			using (var cmd = BuildSelectAddCommand(SqlTypeFactory.GetString(255)))
+			{
+				var originalSql = cmd.CommandText;
+				_driver.AdjustCommand(cmd);
+
+				Assert.That(cmd.CommandText, Is.EqualTo(originalSql));
+			}
+		}
+
+		[Test]
+		public void AdjustCommand_InsertWithParamsInSelect_NotCastedWhenDisabled()
+		{
+			using (var cmd = BuildInsertWithParamsInSelectCommand(SqlTypeFactory.Int32))
+			{
+				var originalSql = cmd.CommandText;
+				_driver.AdjustCommand(cmd);
+
+				Assert.That(cmd.CommandText, Is.EqualTo(originalSql));
 			}
 		}
 
@@ -251,25 +352,76 @@ namespace NHibernate.Test.DriverTest
 		private DbCommand BuildInsertWithParamsInSelectCommandWithSelectInColumnName(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
-				.Add("insert into table1 (col1_select_aaa) ")
+				.Add("insert into table1 (col1_select_aaa, select_aaa, col1_select) ")
 				.Add("values(")
+				.AddParameter()
+				.Add(", ")
+				.AddParameter()
+				.Add(", ")
 				.AddParameter()
 				.Add(") from table2")
 				.ToSqlString();
 
-			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType, paramType });
 		}
 
 		private DbCommand BuildInsertWithParamsInSelectCommandWithWhereInColumnName(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
-				.Add("insert into table1 (col1_where_aaa) ")
+				.Add("insert into table1 (col1_where_aaa, where_aaa, col1_where) ")
 				.Add("values(")
+				.AddParameter()
+				.Add(", ")
+				.AddParameter()
+				.Add(", ")
 				.AddParameter()
 				.Add(") from table2")
 				.ToSqlString();
 
-			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType, paramType });
+		}
+
+		private DbCommand BuildBetweenCommand(SqlType paramType)
+		{
+			var sqlString =
+				new SqlStringBuilder()
+					.Add("select col1 from table where col2 between ")
+					.AddParameter()
+					.Add(" and ")
+					.AddParameter()
+					.ToSqlString();
+
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType });
+		}
+
+		private DbCommand BuildPagingCommand(SqlType paramType)
+		{
+			var sqlString =
+				new SqlStringBuilder()
+					.Add("select first ")
+					.AddParameter()
+					.Add(" skip ")
+					.AddParameter()
+					.Add(" col1 from table")
+					.ToSqlString();
+
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType });
+		}
+
+		private DbCommand BuildInCommand(SqlType paramType)
+		{
+			var sqlString =
+				new SqlStringBuilder()
+					.Add("select col1 from table where col2 in (")
+					.AddParameter()
+					.Add(", ")
+					.AddParameter()
+					.Add(", ")
+					.AddParameter()
+					.Add(")")
+					.ToSqlString();
+
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType });
 		}
 	}
 }

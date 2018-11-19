@@ -2,10 +2,15 @@
 pushd %~dp0
 
 set NANT="%~dp0Tools\nant\bin\NAnt.exe" -t:net-4.0
-set BUILDTOOL="%~dp0Tools\BuildTool\bin\Release\BuildTool.exe"
+set BUILD_TOOL_PATH=%~dp0Tools\BuildTool\bin\BuildTool.dll
+set BUILDTOOL=dotnet %BUILD_TOOL_PATH%
 set AVAILABLE_CONFIGURATIONS=%~dp0available-test-configurations
 set CURRENT_CONFIGURATION=%~dp0current-test-configuration
 set NUNIT="%~dp0Tools\NUnit.ConsoleRunner.3.7.0\tools\nunit3-console.exe"
+
+if not exist %BUILD_TOOL_PATH% (
+    dotnet build %~dp0Tools\BuildTool\BuildTool.sln -c Release -o bin
+)
 
 :main-menu
 echo ========================= NHIBERNATE BUILD MENU ==========================
@@ -52,12 +57,14 @@ echo F. Add a test configuration for Oracle with managed driver.
 echo G. Add a test configuration for SQL Server Compact.
 echo H. Add a test configuration for MySql.
 echo I. Add a test configuration for SAP HANA.
+echo J. Add a test configuration for SAP SQL Anywhere.
 echo.
 echo X.  Exit to main menu.
 echo.
 
-%BUILDTOOL% prompt ABCDEFGHIX
-if errorlevel 9 goto main-menu
+%BUILDTOOL% prompt ABCDEFGHIJX
+if errorlevel 10 goto main-menu
+if errorlevel 9 goto test-setup-anywhere
 if errorlevel 8 goto test-setup-hana
 if errorlevel 7 goto test-setup-mysql
 if errorlevel 6 goto test-setup-sqlserverce
@@ -126,6 +133,13 @@ goto test-setup-generic
 
 :test-setup-hana
 set CONFIG_NAME=HANA
+set TEST_PLATFORM=AnyCPU
+set LIB_FILES=
+set LIB_FILES2=
+goto test-setup-generic
+
+:test-setup-anywhere
+set CONFIG_NAME=SapSQLAnywhere
 set TEST_PLATFORM=AnyCPU
 set LIB_FILES=
 set LIB_FILES2=
@@ -216,12 +230,14 @@ echo I. NHibernate Trunk - Oracle Managed (64-bit)
 echo J. NHibernate Trunk - SQL Server Compact (32-bit)
 echo K. NHibernate Trunk - SQL Server Compact (64-bit)
 echo L. NHibernate Trunk - SQL Server ODBC (32-bit)
+echo M. NHibernate Trunk - SAP SQL Anywhere
 echo.
 echo X.  Exit to main menu.
 echo.
 
-%BUILDTOOL% prompt ABCDEFGHIJKLX
-if errorlevel 12 goto main-menu
+%BUILDTOOL% prompt ABCDEFGHIJKLMX
+if errorlevel 13 goto main-menu
+if errorlevel 12 goto teamcity-anywhere
 if errorlevel 11 goto teamcity-sqlServerOdbc
 if errorlevel 10 goto teamcity-sqlServerCe64
 if errorlevel 9 goto teamcity-sqlServerCe32
@@ -304,6 +320,12 @@ goto main-menu
 :teamcity-sqlServerCe64
 move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=sqlServerCe64
+move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
+goto main-menu
+
+:teamcity-anywhere
+move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
+%NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=sqlanywhere
 move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
 goto main-menu
 

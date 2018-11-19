@@ -396,7 +396,7 @@ namespace NHibernate.Stat
 				{
 					if (sessionFactory == null)
 						return null;
-					ICache cache = sessionFactory.GetSecondLevelCacheRegion(regionName);
+					var cache = sessionFactory.GetSecondLevelCacheRegion(regionName);
 					if (cache == null)
 						return null;
 					slcs = new SecondLevelCacheStatistics(cache);

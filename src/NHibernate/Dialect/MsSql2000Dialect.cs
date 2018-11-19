@@ -435,6 +435,16 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSQLFunctionName => "GETUTCDATE()";
+
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSelectString =>
+			"SELECT " + CurrentUtcTimestampSQLFunctionName;
+
+		/// <inheritdoc />
+		public override bool SupportsCurrentUtcTimestampSelection => true;
+
 		public override bool QualifyIndexName
 		{
 			get { return false; }

@@ -17,4 +17,38 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		int GetPropertyIndex(string propertyName);
 	}
+
+	public static partial class UniqueKeyLoadableExtensions
+	{
+		private static readonly INHibernateLogger Logger = NHibernateLogger.For(typeof(UniqueKeyLoadableExtensions));
+
+		// 6.0 TODO: merge in IUniqueKeyLoadable
+		public static void CacheByUniqueKeys(
+			this IUniqueKeyLoadable ukLoadable,
+			object entity,
+			ISessionImplementor session)
+		{
+			if (ukLoadable is AbstractEntityPersister persister)
+			{
+				persister.CacheByUniqueKeys(entity, session);
+				return;
+			}
+
+			// Use reflection for supporting custom persisters.
+			var ukLoadableType = ukLoadable.GetType();
+			var cacheByUniqueKeysMethod = ukLoadableType.GetMethod(
+				nameof(AbstractEntityPersister.CacheByUniqueKeys),
+				new[] { typeof(object), typeof(ISessionImplementor) });
+			if (cacheByUniqueKeysMethod != null)
+			{
+				cacheByUniqueKeysMethod.Invoke(ukLoadable, new[] { entity, session });
+				return;
+			}
+
+			Logger.Warn(
+				"{0} does not implement 'void CacheByUniqueKeys(object, ISessionImplementor)', " +
+				"some caching may be lacking",
+				ukLoadableType);
+		}
+	}
 }

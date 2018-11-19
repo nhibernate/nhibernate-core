@@ -31,7 +31,7 @@ namespace NHibernate.Persister.Collection
 	/// Summary description for AbstractCollectionPersister.
 	/// </summary>
 	public abstract partial class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
-		IPostInsertIdentityPersister, ISupportSelectModeJoinable
+		IPostInsertIdentityPersister, ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister
 	{
 		protected static readonly object NotFoundPlaceHolder = new object();
 		private readonly string role;
@@ -86,7 +86,6 @@ namespace NHibernate.Persister.Collection
 		private readonly string[] keyColumnAliases;
 		private readonly string identifierColumnName;
 		private readonly string identifierColumnAlias;
-		private readonly string[] joinColumnNames;
 
 		#endregion
 
@@ -226,45 +225,16 @@ namespace NHibernate.Persister.Collection
 
 			isVersioned = collection.IsOptimisticLocked;
 
-			if (collection.CollectionType.UseLHSPrimaryKey)
+			keyType = collection.Key.Type;
+			int keySpan = collection.Key.ColumnSpan;
+			keyColumnNames = new string[keySpan];
+			keyColumnAliases = new string[keySpan];
+			int k = 0;
+			foreach (Column col in collection.Key.ColumnIterator)
 			{
-				keyType = collection.Key.Type;
-				int keySpan = collection.Key.ColumnSpan;
-				keyColumnNames = new string[keySpan];
-				keyColumnAliases = new string[keySpan];
-				int k = 0;
-				foreach (Column col in collection.Key.ColumnIterator)
-				{
-					keyColumnNames[k] = col.GetQuotedName(dialect);
-					keyColumnAliases[k] = col.GetAlias(dialect, table);
-					k++;
-				}
-				joinColumnNames = keyColumnNames;
-			}
-			else
-			{
-				keyType = collection.Owner.Key.Type;
-				int keySpan = collection.Owner.Key.ColumnSpan;
-				keyColumnNames = new string[keySpan];
-				keyColumnAliases = new string[keySpan];
-				int k = 0;
-				foreach (Column col in collection.Owner.Key.ColumnIterator)
-				{
-					keyColumnNames[k] = col.GetQuotedName(dialect);
-					// Force the alias to be unique in case it conflicts with an alias in the entity
-					// As per Column.GetAlias, we have 3 characters left for SelectFragment suffix and one for here.
-					// Since suffixes are composed of digits and '_', and GetAlias is already suffixed, adding any other
-					// letter will avoid collision.
-					keyColumnAliases[k] = col.GetAlias(dialect) + "o";
-					k++;
-				}
-				joinColumnNames = new string[collection.Key.ColumnSpan];
-				k = 0;
-				foreach (Column col in collection.Key.ColumnIterator)
-				{
-					joinColumnNames[k] = col.GetQuotedName(dialect);
-					k++;
-				}
+				keyColumnNames[k] = col.GetQuotedName(dialect);
+				keyColumnAliases[k] = col.GetAlias(dialect, table);
+				k++;
 			}
 
 			HashSet<string> distinctColumns = new HashSet<string>();
@@ -896,23 +866,25 @@ namespace NHibernate.Persister.Collection
 
 			return frag.ToSqlStringFragment(false);
 		}
-		private SqlString AddWhereFragment(SqlString sql)
+
+		private void AddWhereFragment(SqlSimpleSelectBuilder sql)
 		{
 			if (!hasWhere)
-				return sql;
-			return sql.Append(" and ").Append(sqlWhereString);
+				return;
+			sql.AddWhereFragment(sqlWhereString);
 		}
 
 		private SqlString GenerateSelectSizeString(ISessionImplementor sessionImplementor)
 		{
-			string selectValue = GetCountSqlSelectClause();
+			var selectValue = GetCountSqlSelectClause();
 
-			return new SqlSimpleSelectBuilder(dialect, factory)
-				.SetTableName(TableName)
-				.AddWhereFragment(KeyColumnNames, KeyType, "=")
-				.AddColumn(selectValue)
-				.ToSqlString()
-				.Append(FilterFragment(TableName, sessionImplementor.EnabledFilters));
+			return
+				new SqlSimpleSelectBuilder(dialect, factory)
+					.SetTableName(TableName)
+					.AddWhereFragment(KeyColumnNames, KeyType, "=")
+					.AddWhereFragment(FilterFragment(TableName, sessionImplementor.EnabledFilters))
+					.AddColumn(selectValue)
+					.ToSqlString();
 		}
 
 		protected virtual string GetCountSqlSelectClause()
@@ -936,14 +908,15 @@ namespace NHibernate.Persister.Collection
 			}
 
 			// TODO NH: may be we need something else when Index is mixed with Formula
-			var sqlString=
+			var builder =
 				new SqlSimpleSelectBuilder(dialect, factory)
 					.SetTableName(TableName)
 					.AddWhereFragment(KeyColumnNames, KeyType, "=")
 					.AddWhereFragment(IndexColumnNames, IndexType, "=")
 					.AddWhereFragment(indexFormulas, IndexType, "=")
-					.AddColumn("1").ToSqlString();
-			return AddWhereFragment(sqlString);
+					.AddColumn("1");
+			AddWhereFragment(builder);
+			return builder.ToSqlString();
 		}
 
 		private SqlString GenerateSelectRowByIndexString()
@@ -953,26 +926,29 @@ namespace NHibernate.Persister.Collection
 				return null;
 			}
 
-			var sqlString=new SqlSimpleSelectBuilder(dialect, factory)
-				.SetTableName(TableName)
-				.AddWhereFragment(KeyColumnNames, KeyType, "=")
-				.AddWhereFragment(IndexColumnNames, IndexType, "=")
-				.AddWhereFragment(indexFormulas, IndexType, "=")
-				.AddColumns(ElementColumnNames, elementColumnAliases)
-				.AddColumns(indexFormulas, indexColumnAliases).ToSqlString();
-			return AddWhereFragment(sqlString);
+			var builder =
+				new SqlSimpleSelectBuilder(dialect, factory)
+					.SetTableName(TableName)
+					.AddWhereFragment(KeyColumnNames, KeyType, "=")
+					.AddWhereFragment(IndexColumnNames, IndexType, "=")
+					.AddWhereFragment(indexFormulas, IndexType, "=")
+					.AddColumns(ElementColumnNames, elementColumnAliases)
+					.AddColumns(indexFormulas, indexColumnAliases);
+			AddWhereFragment(builder);
+			return builder.ToSqlString();
 		}
 
 		private SqlString GenerateDetectRowByElementString()
 		{
-			var sqlString=
+			var builder =
 				new SqlSimpleSelectBuilder(dialect, factory)
-				.SetTableName(TableName)
-				.AddWhereFragment(KeyColumnNames, KeyType, "=")
-				.AddWhereFragment(ElementColumnNames, ElementType, "=")
-				.AddWhereFragment(elementFormulas, ElementType, "=")
-				.AddColumn("1").ToSqlString();
-			return AddWhereFragment(sqlString);
+					.SetTableName(TableName)
+					.AddWhereFragment(KeyColumnNames, KeyType, "=")
+					.AddWhereFragment(ElementColumnNames, ElementType, "=")
+					.AddWhereFragment(elementFormulas, ElementType, "=")
+					.AddColumn("1");
+			AddWhereFragment(builder);
+			return builder.ToSqlString();
 		}
 
 		protected virtual SelectFragment GenerateSelectFragment(string alias, string columnSuffix)
@@ -1889,9 +1865,11 @@ namespace NHibernate.Persister.Collection
 			get { return keyColumnNames; }
 		}
 
+		// Since v5.2
+		[Obsolete("Use KeyColumnNames instead")]
 		public string[] JoinColumnNames
 		{
-			get { return joinColumnNames; }
+			get { return keyColumnNames; }
 		}
 
 		protected string[] KeyColumnAliases
@@ -2071,6 +2049,8 @@ namespace NHibernate.Persister.Collection
 		public abstract bool CascadeDeleteEnabled { get; }
 		public abstract bool IsOneToMany { get; }
 
+		// Since v5.2
+		[Obsolete("Use directly the alias parameter value instead")]
 		public virtual string GenerateTableAliasForKeyColumns(string alias)
 		{
 			return alias;
@@ -2174,11 +2154,40 @@ namespace NHibernate.Persister.Collection
 			return batchSize;
 		}
 
+		// Since 5.2
+		[Obsolete("Use GetSelectByUniqueKeyString(string[] suppliedPropertyNames, out IType[] parameterTypes) instead.")]
 		public SqlString GetSelectByUniqueKeyString(string propertyName)
 		{
-			return
-				new SqlSimpleSelectBuilder(Factory.Dialect, Factory).SetTableName(qualifiedTableName).AddColumns(KeyColumnNames).
-					AddWhereFragment(KeyColumnNames, KeyType, " = ").ToSqlString();
+			return GetSelectByUniqueKeyString(null, out _);
+		}
+
+		public virtual SqlString GetSelectByUniqueKeyString(string[] suppliedPropertyNames, out IType[] parameterTypes)
+		{
+			if (suppliedPropertyNames != null)
+				throw new NotSupportedException("Collections does not support custom property names for selecting by unique key");
+
+			parameterTypes = HasIndex ?  new[] { KeyType, IndexType, ElementType } : new[] { KeyType, ElementType };
+			var builder =
+				new SqlSimpleSelectBuilder(Factory.Dialect, Factory)
+					.SetTableName(qualifiedTableName)
+					.AddColumns(new[] {identifierColumnName})
+					.AddWhereFragment(KeyColumnNames, KeyType, " = ");
+
+			if (HasIndex)
+				builder.AddWhereFragment(IndexColumnNames, IndexType, " = ");
+
+			return builder
+				.AddWhereFragment(ElementColumnNames, ElementType, " = ")
+				.ToSqlString();
+		}
+
+		public void BindSelectByUniqueKey(
+			ISessionImplementor session,
+			DbCommand selectCommand,
+			IBinder binder,
+			string[] suppliedPropertyNames)
+		{
+			binder.BindValues(selectCommand);
 		}
 
 		public string GetInfoString()

@@ -336,7 +336,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 					}
 					else if (IsDatabaseGeneratedTimestamp(versionType))
 					{
-						string functionName = SessionFactoryHelper.Factory.Dialect.CurrentTimestampSQLFunctionName;
+						var functionName = IsUtcDatabaseGeneratedTimestamp(versionType)
+							? SessionFactoryHelper.Factory.Dialect.CurrentUtcTimestampSQLFunctionName
+							: SessionFactoryHelper.Factory.Dialect.CurrentTimestampSQLFunctionName;
 						versionValueNode = ASTFactory.CreateNode(SQL_TOKEN, functionName);
 					}
 					else
@@ -363,6 +365,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 			// TODO NH: we should check the "generated" property
 			// currently only the Hibernate-supplied DbTimestampType is supported here
 			return type is DbTimestampType;
+		}
+
+		private static bool IsUtcDatabaseGeneratedTimestamp(IType type)
+		{
+			return type is UtcDbTimestampType;
 		}
 
 		private static bool IsIntegral(IType type)

@@ -1,4 +1,5 @@
-﻿using NHibernate.Cfg.MappingSchema;
+﻿using NHibernate.Cfg;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.Mapping.ByCode;
@@ -17,6 +18,11 @@ namespace NHibernate.Test.Criteria
 		private const string customEntityName = "CustomEntityName";
 		private EntityWithCompositeId _entityWithCompositeId;
 		private EntityCustomEntityName _entityWithCustomEntityName;
+
+		protected override void Configure(Configuration configuration)
+		{
+			configuration.SetProperty(Environment.FormatSql, "false");
+		}
 
 		protected override HbmMapping GetMappings()
 		{
@@ -241,12 +247,14 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void EntityProjectionLockMode()
 		{
+			// For this test to succeed with SQL Anywhere, ansi_update_constraints must be off.
+			// In I-SQL: set option ansi_update_constraints = 'Off'
 			if (Dialect is Oracle8iDialect)
 				Assert.Ignore("Oracle is not supported due to #1352 bug (NH-3902)");
 
 			var upgradeHint = Dialect.ForUpdateString;
 			if(string.IsNullOrEmpty(upgradeHint))
-				upgradeHint = this.Dialect.AppendLockHint(LockMode.Upgrade, string.Empty);
+				upgradeHint = Dialect.AppendLockHint(LockMode.Upgrade, string.Empty);
 			if (string.IsNullOrEmpty(upgradeHint))
 			{
 				Assert.Ignore($"Upgrade hint is not supported by dialect {Dialect.GetType().Name}");

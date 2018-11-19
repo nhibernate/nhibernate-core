@@ -9,6 +9,7 @@ environment:
   - DB: Firebird
   - DB: MySQL
     CONNECTION_STRING: Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;
+  - DB: SQLite
 init:
     # Required for having windows endlines in sources zip
     - git config --global core.autocrlf true
@@ -54,6 +55,7 @@ before_test:
       }
       'SqlServer2008' { Start-Service 'MSSQL$SQL2017' }
       'SqlServer2012' { Start-Service 'MSSQL$SQL2017' }
+      'SQLite' { }
     }
 test_script:
 - cmd: powershell -noprofile -command "& ./build.ps1 -TaskList Set-Configuration,Test -properties @{\"Database\" = \"%DB%\";\"ConnectionString\"=\"%CONNECTION_STRING%\"}"

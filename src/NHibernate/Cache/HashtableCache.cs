@@ -5,77 +5,78 @@ namespace NHibernate.Cache
 	/// <summary>
 	/// A simple <see cref="Hashtable" />-based cache
 	/// </summary>
-	public partial class HashtableCache : ICache
+	public partial class HashtableCache : CacheBase
 	{
 		private IDictionary hashtable = new Hashtable();
 		private readonly string regionName;
-
-		#region ICache Members
 
 		public HashtableCache(string regionName)
 		{
 			this.regionName = regionName;
 		}
 
-		/// <summary></summary>
-		public object Get(object key)
+		/// <inheritdoc />
+		public override object Get(object key)
 		{
 			return hashtable[key];
 		}
 
-		/// <summary></summary>
-		public void Put(object key, object value)
+		/// <inheritdoc />
+		public override void Put(object key, object value)
 		{
 			hashtable[key] = value;
 		}
 
-		/// <summary></summary>
-		public void Remove(object key)
+		/// <inheritdoc />
+		public override void Remove(object key)
 		{
 			hashtable.Remove(key);
 		}
 
-		/// <summary></summary>
-		public void Clear()
+		/// <inheritdoc />
+		public override void Clear()
 		{
 			hashtable.Clear();
 		}
 
-		/// <summary></summary>
-		public void Destroy()
+		/// <inheritdoc />
+		public override void Destroy()
 		{
 		}
 
-		/// <summary></summary>
-		public void Lock(object key)
+		/// <inheritdoc />
+		public override object Lock(object key)
+		{
+			// local cache, so we use synchronization
+			return null;
+		}
+
+		/// <inheritdoc />
+		public override void Unlock(object key, object lockValue)
 		{
 			// local cache, so we use synchronization
 		}
 
-		/// <summary></summary>
-		public void Unlock(object key)
-		{
-			// local cache, so we use synchronization
-		}
-
-		/// <summary></summary>
-		public long NextTimestamp()
+		/// <inheritdoc />
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
-		/// <summary></summary>
-		public int Timeout
+		/// <inheritdoc />
+		public override int Timeout
 		{
 			get { return Timestamper.OneMs * 60000; // ie. 60 seconds
 			}
 		}
 
-		public string RegionName
+		/// <inheritdoc />
+		public override string RegionName
 		{
 			get { return regionName; }
 		}
 
-		#endregion
+		/// <inheritdoc />
+		public override bool PreferMultipleGet => false;
 	}
 }

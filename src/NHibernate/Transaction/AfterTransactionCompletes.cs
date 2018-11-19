@@ -2,6 +2,8 @@
 
 namespace NHibernate.Transaction
 {
+	// Since v5.2
+	[Obsolete("This class has no more usages and will be removed in a future version")]
 	public class AfterTransactionCompletes : ISynchronization
 	{
 		#region Fields
