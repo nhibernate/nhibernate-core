@@ -14,30 +14,25 @@ namespace NHibernate
 #pragma warning restore 618
 	{
 		internal static readonly Assembly Log4NetAssembly;
-		internal static readonly Exception LogManagerTypeLoadException;
 		private static readonly System.Type LogManagerType;
 		private static readonly Func<Assembly, string, object> GetLoggerByNameDelegate;
 		private static readonly Func<System.Type, object> GetLoggerByTypeDelegate;
 
 		static Log4NetLoggerFactory()
 		{
-			try
-			{
-				LogManagerType = GetLogManagerType();
-				Log4NetAssembly = LogManagerType.Assembly;
-				GetLoggerByNameDelegate = GetGetLoggerByNameMethodCall();
-				GetLoggerByTypeDelegate = GetGetLoggerMethodCall<System.Type>();
-			}
-			catch (Exception ex)
-			{
-				LogManagerTypeLoadException = ex;
-			}
+			LogManagerType = GetLogManagerType();
+			if (LogManagerType == null)
+				return;
+
+			Log4NetAssembly = LogManagerType.Assembly;
+			GetLoggerByNameDelegate = GetGetLoggerByNameMethodCall();
+			GetLoggerByTypeDelegate = GetGetLoggerMethodCall<System.Type>();
 		}
 
 		public Log4NetLoggerFactory()
 		{
 			if (LogManagerType == null)
-				throw new TypeLoadException("Could not load LogManager type", LogManagerTypeLoadException);
+				throw new TypeLoadException("Cannot find log4net.LogManager type");
 		}
 
 		// Code adapted from ReflectHelper.TypeFromAssembly, which cannot be called directly due
@@ -50,20 +45,14 @@ namespace NHibernate
 			if (type != null)
 				return type;
 
-			// Load type from an already loaded assembly
-			type = System.Type.GetType(
+			// Load type from an already loaded assembly, or yield null
+			return System.Type.GetType(
 				typeName.ToString(),
 				// An alternate could be "a.GetName().Name == an.Name", but GetName() is not lightweight.
 				// "a.FullName == an.FullName" can never match because an.FullName will lack the version, culture
 				// and public key token.
 				an => AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName.StartsWith("log4net,")),
 				null);
-			if (type != null)
-				return type;
-
-			// Assembly.Load fails if it does not find the assembly. It does not yield null.
-			var assembly = Assembly.Load(typeName.Assembly);
-			return assembly.GetType(typeName.Type, true);
 		}
 
 #pragma warning disable 618
@@ -141,8 +130,7 @@ namespace NHibernate
 		{
 			if (Log4NetLoggerFactory.Log4NetAssembly == null)
 				throw new TypeLoadException(
-					"Could not load ILog type, LogManager own loading has previously failed",
-					Log4NetLoggerFactory.LogManagerTypeLoadException);
+					"Cannot load ILog type, log4net is not found");
 
 			var iLogType = Log4NetLoggerFactory.Log4NetAssembly.GetType("log4net.ILog", true);
 
