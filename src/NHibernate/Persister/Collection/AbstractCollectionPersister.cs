@@ -31,7 +31,7 @@ namespace NHibernate.Persister.Collection
 	/// Summary description for AbstractCollectionPersister.
 	/// </summary>
 	public abstract partial class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
-		IPostInsertIdentityPersister, ISupportSelectModeJoinable
+		IPostInsertIdentityPersister, ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister
 	{
 		protected static readonly object NotFoundPlaceHolder = new object();
 		private readonly string role;
@@ -2154,11 +2154,40 @@ namespace NHibernate.Persister.Collection
 			return batchSize;
 		}
 
+		// Since 5.2
+		[Obsolete("Use GetSelectByUniqueKeyString(string[] suppliedPropertyNames, out IType[] parameterTypes) instead.")]
 		public SqlString GetSelectByUniqueKeyString(string propertyName)
 		{
-			return
-				new SqlSimpleSelectBuilder(Factory.Dialect, Factory).SetTableName(qualifiedTableName).AddColumns(KeyColumnNames).
-					AddWhereFragment(KeyColumnNames, KeyType, " = ").ToSqlString();
+			return GetSelectByUniqueKeyString(null, out _);
+		}
+
+		public virtual SqlString GetSelectByUniqueKeyString(string[] suppliedPropertyNames, out IType[] parameterTypes)
+		{
+			if (suppliedPropertyNames != null)
+				throw new NotSupportedException("Collections does not support custom property names for selecting by unique key");
+
+			parameterTypes = HasIndex ?  new[] { KeyType, IndexType, ElementType } : new[] { KeyType, ElementType };
+			var builder =
+				new SqlSimpleSelectBuilder(Factory.Dialect, Factory)
+					.SetTableName(qualifiedTableName)
+					.AddColumns(new[] {identifierColumnName})
+					.AddWhereFragment(KeyColumnNames, KeyType, " = ");
+
+			if (HasIndex)
+				builder.AddWhereFragment(IndexColumnNames, IndexType, " = ");
+
+			return builder
+				.AddWhereFragment(ElementColumnNames, ElementType, " = ")
+				.ToSqlString();
+		}
+
+		public void BindSelectByUniqueKey(
+			ISessionImplementor session,
+			DbCommand selectCommand,
+			IBinder binder,
+			string[] suppliedPropertyNames)
+		{
+			binder.BindValues(selectCommand);
 		}
 
 		public string GetInfoString()
