@@ -91,7 +91,7 @@ namespace NHibernate.Loader
 			get { return null; }
 		}
 
-		protected virtual bool[] UncacheableCollectionPersisters => null;
+		protected virtual ISet<ICollectionPersister> UncacheableCollectionPersisters => null;
 
 		/// <summary>
 		/// An array of indexes of the entity that owns a one-to-one association
@@ -617,7 +617,7 @@ namespace NHibernate.Loader
 						//during loading
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						EndCollectionLoad(resultSetId, session, collectionPersisters[i], UncacheableCollectionPersisters?[i] == true);
+						EndCollectionLoad(resultSetId, session, collectionPersisters[i], UncacheableCollectionPersisters?.Contains(collectionPersisters[i]) == true);
 					}
 				}
 			}
@@ -668,7 +668,7 @@ namespace NHibernate.Loader
 						//the entities, since we might call hashCode() on the elements
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						EndCollectionLoad(resultSetId, session, collectionPersisters[i], UncacheableCollectionPersisters?[i] == true);
+						EndCollectionLoad(resultSetId, session, collectionPersisters[i], UncacheableCollectionPersisters?.Contains(collectionPersisters[i]) == true);
 					}
 				}
 			}

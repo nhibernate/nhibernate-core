@@ -31,7 +31,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly bool[] includeInResultRow;
 		private readonly int resultRowLength;
 
-		private readonly bool[] _uncacheableCollectionPersisters;
+		private readonly ISet<ICollectionPersister> _uncacheableCollectionPersisters;
 
 		// caching NH-3486
 		private readonly string[] cachedProjectedColumnAliases;
@@ -45,10 +45,10 @@ namespace NHibernate.Loader.Criteria
 
 			querySpaces = translator.GetQuerySpaces();
 
+			_uncacheableCollectionPersisters = translator.UncacheableCriteriaCollectionPersisters;
+
 			CriteriaJoinWalker walker =
 				new CriteriaJoinWalker(persister, translator, factory, rootCriteria, rootEntityName, enabledFilters);
-
-			_uncacheableCollectionPersisters = walker.UncacheableCollectionPersisters;
 
 			InitFromWalker(walker);
 
@@ -152,7 +152,7 @@ namespace NHibernate.Loader.Criteria
 			return result;
 		}
 
-		protected override bool[] UncacheableCollectionPersisters => _uncacheableCollectionPersisters;
+		protected override ISet<ICollectionPersister> UncacheableCollectionPersisters => _uncacheableCollectionPersisters;
 
 		private object[] ToResultRow(object[] row)
 		{

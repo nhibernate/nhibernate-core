@@ -77,7 +77,6 @@ namespace NHibernate.Loader.Criteria
 		protected override void AddAssociations()
 		{
 			base.AddAssociations();
-
 			foreach (var entityJoinInfo in translator.GetEntityJoins().Values)
 			{
 				var tableAlias = translator.GetSQLAlias(entityJoinInfo.Criteria);
@@ -120,15 +119,6 @@ namespace NHibernate.Loader.Criteria
 		protected override SelectMode GetSelectMode(string path)
 		{
 			return translator.RootCriteria.GetSelectMode(path);
-		}
-
-		protected override bool HasRestrictions(string associationFullPath)
-		{
-			return translator
-				.RootCriteria
-				.IterateSubcriteria()
-				.Any(c => c.HasRestrictions
-						&& associationFullPath == $"{translator.RootCriteria.EntityOrClassName}.{c.Path}"); ;
 		}
 
 		private void WalkCompositeComponentIdTree(IOuterJoinLoadable persister, string alias, string path)

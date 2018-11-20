@@ -41,6 +41,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly IDictionary<String, ICriteriaInfoProvider> nameCriteriaInfoMap =
 			new Dictionary<string, ICriteriaInfoProvider>();
 
+		private readonly ISet<ICollectionPersister> _uncacheableCriteriaCollectionPersisters = new HashSet<ICollectionPersister>();
 		private readonly ISet<ICollectionPersister> criteriaCollectionPersisters = new HashSet<ICollectionPersister>();
 		private readonly IDictionary<ICriteria, string> criteriaSQLAliasMap = new Dictionary<ICriteria, string>();
 		private readonly IDictionary<string, ICriteria> aliasCriteriaMap = new Dictionary<string, ICriteria>();
@@ -212,6 +213,8 @@ namespace NHibernate.Loader.Criteria
 		{
 			get { return rootCriteria.Projection.Aliases; }
 		}
+
+		public ISet<ICollectionPersister> UncacheableCriteriaCollectionPersisters => _uncacheableCriteriaCollectionPersisters;
 
 		public IList<EntityProjection> GetEntityProjections()
 		{
@@ -436,9 +439,27 @@ namespace NHibernate.Loader.Criteria
 				NHibernate_Persister_Entity.IJoinable joinable = GetPathJoinable(me.Key);
 				if (joinable != null && joinable.IsCollection)
 				{
-					criteriaCollectionPersisters.Add((ICollectionPersister)joinable);
+					criteriaCollectionPersisters.Add((ICollectionPersister) joinable);
+
+					if (!CanPersisterBeCached(me.Value))
+					{
+						if (!_uncacheableCriteriaCollectionPersisters.Contains((ICollectionPersister) joinable))
+							_uncacheableCriteriaCollectionPersisters.Add((ICollectionPersister) joinable);
+					}
 				}
 			}
+		}
+
+		private bool CanPersisterBeCached(ICriteria criteria)
+		{
+			if (criteria is CriteriaImpl.Subcriteria subcriteria)
+			{
+				return !(subcriteria.HasRestrictions
+					&& (subcriteria.JoinType == JoinType.LeftOuterJoin
+						|| (subcriteria.JoinType == JoinType.InnerJoin && rootCriteria.GetSelectMode(subcriteria.Path) == SelectMode.Fetch)));
+			}
+
+			return true;
 		}
 
 		private Persister.Entity.IJoinable GetPathJoinable(string path)
