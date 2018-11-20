@@ -18,10 +18,18 @@ namespace NHibernate.Loader.Criteria
 {
 	public class CriteriaQueryTranslator : ICriteriaQuery, ISupportEntityProjectionCriteriaQuery
 	{
+		// Since v5.2
+		[Obsolete("This class has no usage and will be removed")]
 		public class EntityJoinInfo
 		{
 			public ICriteria Criteria;
 			public IQueryable Persister;
+		}
+
+		internal class EntityJoinInformation
+		{
+			internal CriteriaImpl.Subcriteria Criteria;
+			internal IQueryable Persister;
 		}
 
 		public static readonly string RootSqlAlias = CriteriaSpecification.RootAlias + '_';
@@ -57,7 +65,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly ICollection<NamedParameter> namedParameters;
 		private readonly ISet<string> subQuerySpaces = new HashSet<string>();
 
-		private Dictionary<string, EntityJoinInfo> entityJoins = new Dictionary<string, EntityJoinInfo>();
+		private Dictionary<string, EntityJoinInformation> entityJoins = new Dictionary<string, EntityJoinInformation>();
 		private readonly IQueryable rootPersister;
 
 		//Key for the dictionary sub-criteria
@@ -169,7 +177,7 @@ namespace NHibernate.Loader.Criteria
 
 		ICriteria ISupportEntityProjectionCriteriaQuery.RootCriteria => rootCriteria;
 
-		internal IReadOnlyDictionary<string, EntityJoinInfo> GetEntityJoins()
+		internal IReadOnlyDictionary<string, EntityJoinInformation> GetEntityJoins()
 		{
 			return entityJoins;
 		}
@@ -501,7 +509,7 @@ namespace NHibernate.Loader.Criteria
 				if (criteria.IsEntityJoin)
 				{
 					var entityJoinPersister = GetQueryablePersister(criteria.JoinEntityName);
-					entityJoins[criteria.Alias] = new EntityJoinInfo
+					entityJoins[criteria.Alias] = new EntityJoinInformation
 					{
 						Persister = entityJoinPersister,
 						Criteria = criteria,

@@ -142,7 +142,7 @@ namespace NHibernate.Loader
 			}
 		}
 
-		protected virtual SqlString GetWithClause(string path, string sqlAlias)
+		protected virtual SqlString GetWithClause(string path, string pathAlias)
 		{
 			return SqlString.Empty;
 		}
@@ -308,7 +308,8 @@ namespace NHibernate.Loader
 			IOuterJoinLoadable persister,
 			string tableAlias,
 			JoinType joinType,
-			string path)
+			string path,
+			string alias)
 		{
 			OuterJoinableAssociation assoc =
 				new OuterJoinableAssociation(
@@ -317,7 +318,7 @@ namespace NHibernate.Loader
 					Array.Empty<string>(),
 					tableAlias,
 					joinType,
-					GetWithClause(path),
+					GetWithClause(path, alias),
 					Factory,
 					enabledFilters,
 					GetSelectMode(path));
