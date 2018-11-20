@@ -1,9 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.CacheTest
@@ -88,7 +88,7 @@ namespace NHibernate.Test.CacheTest
 		public void NotEqualHashCodeWithFilters()
 		{
 			// GetHashCode semantic does not guarantee no collision may ever occur, but the algorithm should
-			// generates different hashcodes for similar but inequal cases. These tests check that cache keys
+			// generates different hashcodes for similar but unequal cases. These tests check that cache keys
 			// for a query generated for different parameters values are no more equal.
 			QueryKeyFilterDescLikeToCompare(out var qk, out var qk1, false);
 			Assert.That(qk.GetHashCode(), Is.Not.EqualTo(qk1.GetHashCode()), "qk & qk1");
@@ -98,6 +98,20 @@ namespace NHibernate.Test.CacheTest
 
 			Assert.That(qk.GetHashCode(), Is.Not.EqualTo(qvk.GetHashCode()), "qk & qvk");
 			Assert.That(qk1.GetHashCode(), Is.Not.EqualTo(qvk1.GetHashCode()), "qk1 & qvk1");
+		}
+
+		[Test]
+		public void HashCodeWithFiltersAndSerialization()
+		{
+			QueryKeyFilterDescLikeToCompare(out var qk, out var qk1, true);
+			var bytes = SerializationHelper.Serialize(qk);
+			qk = (QueryKey) SerializationHelper.Deserialize(bytes);
+			Assert.That(qk.GetHashCode(), Is.EqualTo(qk1.GetHashCode()), "Like");
+
+			QueryKeyFilterDescValueToCompare(out qk, out qk1, true);
+			bytes = SerializationHelper.Serialize(qk);
+			qk = (QueryKey) SerializationHelper.Deserialize(bytes);
+			Assert.That(qk.GetHashCode(), Is.EqualTo(qk1.GetHashCode()), "Value");
 		}
 
 		[Test]
