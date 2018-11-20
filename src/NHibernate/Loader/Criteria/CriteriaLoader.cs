@@ -5,6 +5,7 @@ using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Param;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -29,6 +30,9 @@ namespace NHibernate.Loader.Criteria
 		private readonly string[] userAliases;
 		private readonly bool[] includeInResultRow;
 		private readonly int resultRowLength;
+
+		private readonly bool[] _uncacheableCollectionPersisters;
+
 		// caching NH-3486
 		private readonly string[] cachedProjectedColumnAliases;
 		private bool[] childFetchEntities;
@@ -43,6 +47,8 @@ namespace NHibernate.Loader.Criteria
 
 			CriteriaJoinWalker walker =
 				new CriteriaJoinWalker(persister, translator, factory, rootCriteria, rootEntityName, enabledFilters);
+
+			_uncacheableCollectionPersisters = walker.UncacheableCollectionPersisters;
 
 			InitFromWalker(walker);
 
@@ -146,6 +152,7 @@ namespace NHibernate.Loader.Criteria
 			return result;
 		}
 
+		protected override bool[] UncacheableCollectionPersisters => _uncacheableCollectionPersisters;
 
 		private object[] ToResultRow(object[] row)
 		{

@@ -26,6 +26,7 @@ namespace NHibernate.Loader
 		private int[] owners;
 		private EntityType[] ownerAssociationTypes;
 		private ICollectionPersister[] collectionPersisters;
+		private bool[] uncacheableCollectionPersisters;
 		private int[] collectionOwners;
 		private string[] aliases;
 		private LockMode[] lockModeArray;
@@ -94,6 +95,8 @@ namespace NHibernate.Loader
 			set { sql = value; }
 		}
 
+		public bool[] UncacheableCollectionPersisters => uncacheableCollectionPersisters;
+
 		protected ISessionFactoryImplementor Factory
 		{
 			get { return factory; }
@@ -159,7 +162,7 @@ namespace NHibernate.Loader
 			string subalias = GenerateTableAlias(associations.Count + 1, path, joinable);
 
 			OuterJoinableAssociation assoc =
-				new OuterJoinableAssociation(type, alias, aliasedLhsColumns, subalias, joinType, GetWithClause(path), Factory, enabledFilters, GetSelectMode(path));
+				new OuterJoinableAssociation(type, alias, aliasedLhsColumns, subalias, joinType, GetWithClause(path), Factory, enabledFilters, GetSelectMode(path), HasRestrictions(joinable.Name));
 			assoc.ValidateJoin(path);
 			AddAssociation(subalias, assoc);
 
@@ -182,6 +185,11 @@ namespace NHibernate.Loader
 		protected  virtual SelectMode GetSelectMode(string path)
 		{
 			return SelectMode.Undefined;
+		}
+
+		protected virtual bool HasRestrictions(string associationFullPath)
+		{
+			return false;
 		}
 
 		private static int[] GetTopologicalSortOrder(List<DependentAlias> fields)
@@ -840,6 +848,7 @@ namespace NHibernate.Loader
 			collectionOwners = collections == 0 ? null : new int[collections];
 			collectionPersisters = collections == 0 ? null : new ICollectionPersister[collections];
 			collectionSuffixes = BasicLoader.GenerateSuffixes(joins + 1, collections);
+			uncacheableCollectionPersisters = collections == 0 ? null : new bool[collections];
 
 			persisters = new ILoadable[joins];
 			EagerPropertyFetches = new bool[joins];
@@ -873,6 +882,8 @@ namespace NHibernate.Loader
 						//it must be a collection fetch
 						collectionPersisters[j] = collPersister;
 						collectionOwners[j] = oj.GetOwner(associations);
+						uncacheableCollectionPersisters[j] = oj.HasRestrictions;
+
 						j++;
 					}
 

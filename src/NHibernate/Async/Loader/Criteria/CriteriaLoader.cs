@@ -15,6 +15,7 @@ using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Param;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;

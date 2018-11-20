@@ -57,6 +57,103 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			}
 		}
 
+		protected override Task<IList<Customer>> GetCustomersByOrderNumberUsingFetchAsync(ISession session, int orderNumber, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			try
+			{
+				Order ordersAlias = null;
+
+				return
+				session
+					.QueryOver<Customer>()
+					.JoinQueryOver(ec => ec.Orders, () => ordersAlias, JoinType.InnerJoin, Restrictions.Eq("Number", orderNumber))
+					.Fetch(SelectMode.Fetch, () => ordersAlias)
+					.TransformUsing(Transformers.DistinctRootEntity)
+					.ListAsync(cancellationToken);
+			}
+			catch (System.Exception ex)
+			{
+				return Task.FromException<IList<Customer>>(ex);
+			}
+		}
+
+		protected override Task<IList<Customer>> GetCustomersByOrderNumberUsingFetchAndWhereClauseAsync(ISession session, int orderNumber, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			try
+			{
+				Order ordersAlias = null;
+
+				return
+				session
+					.QueryOver<Customer>()
+					.JoinQueryOver(ec => ec.Orders, () => ordersAlias, JoinType.InnerJoin)
+					.Where(Restrictions.Eq("Number", orderNumber))
+					.Fetch(SelectMode.Fetch, () => ordersAlias)
+					.TransformUsing(Transformers.DistinctRootEntity)
+					.ListAsync(cancellationToken);
+			}
+			catch (System.Exception ex)
+			{
+				return Task.FromException<IList<Customer>>(ex);
+			}
+		}
+
+		protected override Task<IList<Customer>> GetCustomersAndCompaniesByOrderNumberUsingFetchAndWhereClauseAsync(ISession session, int orderNumber, string name, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			try
+			{
+				Order ordersAlias = null;
+				Company companiesAlias = null;
+
+				return
+				session
+					.QueryOver<Customer>()
+					.JoinAlias(
+						n => n.Orders,
+						() => ordersAlias,
+						JoinType.InnerJoin,
+						Restrictions.Eq("Number", orderNumber))
+					.Fetch(SelectMode.Fetch, () => ordersAlias)
+					.JoinAlias(
+						n => n.Companies,
+						() => companiesAlias,
+						JoinType.LeftOuterJoin,
+						Restrictions.Eq("Name", name))
+					.ListAsync(cancellationToken);
+			}
+			catch (System.Exception ex)
+			{
+				return Task.FromException<IList<Customer>>(ex);
+			}
+		}
+
+		protected override Task<IList<Customer>> GetCustomersAndCompaniesByOrderNumberUsingFetchWithoutRestrictionsAsync(ISession session, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			try
+			{
+				Order ordersAlias = null;
+				Company companiesAlias = null;
+
+				return
+				session
+					.QueryOver<Customer>()
+					.JoinAlias(
+						n => n.Orders,
+						() => ordersAlias,
+						JoinType.InnerJoin)
+					.Fetch(SelectMode.Fetch, () => ordersAlias)
+					.JoinAlias(
+						n => n.Companies,
+						() => companiesAlias,
+						JoinType.LeftOuterJoin)
+					.ListAsync(cancellationToken);
+			}
+			catch (System.Exception ex)
+			{
+				return Task.FromException<IList<Customer>>(ex);
+			}
+		}
+
 		protected override Task<IList<Customer>> GetCustomersWithCompaniesByOrderNumberUsingOnClauseAsync(
 			ISession session,
 			int orderNumber, CancellationToken cancellationToken = default(CancellationToken))

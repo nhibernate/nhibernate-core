@@ -52,6 +52,77 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			}
 		}
 
+		protected override Task<IList<Customer>> GetCustomersByOrderNumberUsingFetchAsync(ISession session, int orderNumber, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			try
+			{
+				return
+				session
+					.CreateCriteria<Customer>()
+					.CreateAlias("Orders", "order", JoinType.InnerJoin, Restrictions.Eq("Number", orderNumber))
+					.Fetch(SelectMode.Fetch, "Orders")
+					.ListAsync<Customer>(cancellationToken);
+			}
+			catch (System.Exception ex)
+			{
+				return Task.FromException<IList<Customer>>(ex);
+			}
+		}
+
+		protected override Task<IList<Customer>> GetCustomersByOrderNumberUsingFetchAndWhereClauseAsync(ISession session, int orderNumber, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			try
+			{
+				return
+				session
+					.CreateCriteria<Customer>()
+					.Fetch(SelectMode.Fetch, "Orders")
+					.CreateCriteria("Orders", JoinType.InnerJoin)
+					.Add(Restrictions.Eq("Number", orderNumber))
+					.ListAsync<Customer>(cancellationToken);
+			}
+			catch (System.Exception ex)
+			{
+				return Task.FromException<IList<Customer>>(ex);
+			}
+		}
+
+		protected override Task<IList<Customer>> GetCustomersAndCompaniesByOrderNumberUsingFetchAndWhereClauseAsync(ISession session, int orderNumber, string name, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			try
+			{
+				return
+				session
+					.CreateCriteria<Customer>()
+					.CreateAlias("Orders", "order", JoinType.InnerJoin, Restrictions.Eq("Number", orderNumber))
+					.Fetch(SelectMode.Fetch, "Orders")
+					.CreateAlias("Companies", "company", JoinType.LeftOuterJoin, Restrictions.Eq("Name", name))
+					.ListAsync<Customer>(cancellationToken);
+			}
+			catch (System.Exception ex)
+			{
+				return Task.FromException<IList<Customer>>(ex);
+			}
+		}
+
+		protected override Task<IList<Customer>> GetCustomersAndCompaniesByOrderNumberUsingFetchWithoutRestrictionsAsync(ISession session, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			try
+			{
+				return
+				session
+					.CreateCriteria<Customer>()
+					.Fetch(SelectMode.Fetch, "Orders")
+					.CreateAlias("Orders", "order", JoinType.InnerJoin)
+					.CreateAlias("Companies", "company", JoinType.LeftOuterJoin)
+					.ListAsync<Customer>(cancellationToken);
+			}
+			catch (System.Exception ex)
+			{
+				return Task.FromException<IList<Customer>>(ex);
+			}
+		}
+
 		protected override Task<IList<Customer>> GetCustomersWithCompaniesByOrderNumberUsingOnClauseAsync(
 			ISession session,
 			int orderNumber, CancellationToken cancellationToken = default(CancellationToken))

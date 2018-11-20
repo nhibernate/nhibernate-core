@@ -26,6 +26,49 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 					.List<Customer>();
 		}
 
+		protected override IList<Customer> GetCustomersByOrderNumberUsingFetch(ISession session, int orderNumber)
+		{
+			return
+				session
+					.CreateCriteria<Customer>()
+					.CreateAlias("Orders", "order", JoinType.InnerJoin, Restrictions.Eq("Number", orderNumber))
+					.Fetch(SelectMode.Fetch, "Orders")
+					.List<Customer>();
+		}
+
+		protected override IList<Customer> GetCustomersByOrderNumberUsingFetchAndWhereClause(ISession session, int orderNumber)
+		{
+			return
+				session
+					.CreateCriteria<Customer>()
+					.Fetch(SelectMode.Fetch, "Orders")
+					.CreateCriteria("Orders", JoinType.InnerJoin)
+					.Add(Restrictions.Eq("Number", orderNumber))
+					.List<Customer>();
+		}
+
+		protected override IList<Customer> GetCustomersAndCompaniesByOrderNumberUsingFetchAndWhereClause(ISession session, int orderNumber, string name)
+		{
+			return
+				session
+					.CreateCriteria<Customer>()
+					.CreateAlias("Orders", "order", JoinType.InnerJoin, Restrictions.Eq("Number", orderNumber))
+					.Fetch(SelectMode.Fetch, "Orders")
+					.CreateAlias("Companies", "company", JoinType.LeftOuterJoin, Restrictions.Eq("Name", name))
+					.List<Customer>();
+		}
+
+		protected override IList<Customer> GetCustomersAndCompaniesByOrderNumberUsingFetchWithoutRestrictions(ISession session)
+		{
+			return
+				session
+					.CreateCriteria<Customer>()
+					.Fetch(SelectMode.Fetch, "Orders")
+					.CreateAlias("Orders", "order", JoinType.InnerJoin)
+					.CreateAlias("Companies", "company", JoinType.LeftOuterJoin)
+					.List<Customer>();
+		}
+
 		protected override IList<Customer> GetCustomersWithCompaniesByOrderNumberUsingOnClause(
 			ISession session,
 			int orderNumber)

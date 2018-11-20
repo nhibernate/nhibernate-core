@@ -174,6 +174,61 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 		}
 
 		[Test]
+		public virtual void ChildCollectionsWithSelectModeFetchOnCollectionShouldNotBeInSecondLevelCache()
+		{
+			var firstSession = OpenSession();
+			var customersWithOrderNumberEqualsTo2 = GetCustomersByOrderNumberUsingFetch(firstSession, OrderNumber);
+
+			var secondSession = OpenSession();
+			var customers = GetAllCustomers(secondSession);
+
+			Assert.That(
+				customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders,
+				Has.Count.EqualTo(Customer1.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer2.Id).Orders,
+				Has.Count.EqualTo(Customer2.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2,
+				Has.Count.EqualTo(2));
+
+			Assert.That(customers.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
+			Assert.That(customers.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count));
+			Assert.That(customers.Single(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(Customer3.Orders.Count));
+
+			firstSession.Dispose();
+			secondSession.Dispose();
+		}
+
+		[Test]
+		public virtual void ChildCollectionsWithSelectModeFetchAndWhereClauseShouldNotBeInSecondLevelCache()
+		{
+			var firstSession = OpenSession();
+			var customersWithOrderNumberEqualsTo2 = GetCustomersByOrderNumberUsingFetchAndWhereClause(firstSession, OrderNumber);
+
+			var secondSession = OpenSession();
+			var customers = GetAllCustomers(secondSession);
+
+			Assert.That(
+				customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders,
+				Has.Count.EqualTo(Customer1.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer2.Id).Orders,
+				Has.Count.EqualTo(Customer2.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2,
+				Has.Count.EqualTo(2));
+
+			Assert.That(customers.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
+			Assert.That(customers.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count));
+			Assert.That(customers.Single(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(Customer3.Orders.Count));
+
+			firstSession.Dispose();
+			secondSession.Dispose();
+		}
+
+
+		[Test]
 		public void ChildCollectionsFromLeftOuterJoinWithWhereClauseRestrictionOnCollectionShouldNotBeInSecondLevelCache()
 		{
 			var firstSession = OpenSession();
@@ -352,6 +407,134 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			secondSession.Dispose();
 		}
 
+		[Test]
+		public virtual void ChildCollectionsWithoutRestrictionShouldBeIn2LvlCache()
+		{
+			var firstSession = OpenSession();
+			var customersWithOrdersAndCompaniesWithoutRestrictions =
+				GetCustomersAndCompaniesByOrderNumberUsingFetchWithoutRestrictions(firstSession);
+
+			using (var session = OpenSession())
+			using (IDbCommand cmd = session.Connection.CreateCommand())
+			{
+				cmd.CommandText = "DELETE FROM Orders";
+				cmd.ExecuteNonQuery();
+				cmd.Connection.Close();
+			}
+
+			using (var session = OpenSession())
+			using (IDbCommand cmd = session.Connection.CreateCommand())
+			{
+				cmd.CommandText = "DELETE FROM Companies";
+				cmd.ExecuteNonQuery();
+				cmd.Connection.Close();
+			}
+
+			var secondSession = OpenSession();
+			var customers = GetAllCustomers(secondSession);
+
+			Assert.That(
+				customersWithOrdersAndCompaniesWithoutRestrictions.First(n => n.Id == Customer1.Id).Orders,
+				Has.Count.EqualTo(Customer1.Orders.Count()));
+			Assert.That(
+				customersWithOrdersAndCompaniesWithoutRestrictions.First(n => n.Id == Customer2.Id).Orders,
+				Has.Count.EqualTo(Customer2.Orders.Count()));
+			Assert.That(
+				customersWithOrdersAndCompaniesWithoutRestrictions.First(n => n.Id == Customer3.Id).Orders,
+				Has.Count.EqualTo(Customer3.Orders.Count()));
+
+			Assert.That(
+				customersWithOrdersAndCompaniesWithoutRestrictions.First(n => n.Id == Customer1.Id).Companies,
+				Has.Count.EqualTo(Customer1.Companies.Count));
+			Assert.That(
+				customersWithOrdersAndCompaniesWithoutRestrictions.First(n => n.Id == Customer2.Id).Companies,
+				Has.Count.EqualTo(Customer2.Companies.Count));
+			Assert.That(
+				customersWithOrdersAndCompaniesWithoutRestrictions.First(n => n.Id == Customer3.Id).Companies,
+				Has.Count.EqualTo(Customer3.Companies.Count));
+
+			Assert.That(
+				customers.First(n => n.Id == Customer1.Id).Orders,
+				Has.Count.EqualTo(Customer1.Orders.Count()));
+			Assert.That(
+				customers.First(n => n.Id == Customer2.Id).Orders,
+				Has.Count.EqualTo(Customer2.Orders.Count()));
+			Assert.That(
+				customers.First(n => n.Id == Customer3.Id).Orders,
+				Has.Count.EqualTo(Customer3.Orders.Count()));
+
+			Assert.That(
+				customers.First(n => n.Id == Customer1.Id).Companies,
+				Has.Count.EqualTo(Customer1.Companies.Count()));
+			Assert.That(
+				customers.First(n => n.Id == Customer2.Id).Companies,
+				Has.Count.EqualTo(Customer2.Companies.Count()));
+			Assert.That(
+				customers.First(n => n.Id == Customer3.Id).Companies,
+				Has.Count.EqualTo(Customer3.Companies.Count()));
+
+			firstSession.Dispose();
+			secondSession.Dispose();
+		}
+
+		[Test]
+		public virtual void ChildCollectionsWithRestrictionShouldNotBeIn2LvlCache()
+		{
+			var firstSession = OpenSession();
+			var customersWithOrdersAndCompaniesWithRestrictions =
+				GetCustomersAndCompaniesByOrderNumberUsingFetchAndWhereClause(firstSession, OrderNumber, "Second");
+
+			using (var session = OpenSession())
+			using (IDbCommand cmd = session.Connection.CreateCommand())
+			{
+				cmd.CommandText = "DELETE FROM Orders";
+				cmd.ExecuteNonQuery();
+				cmd.Connection.Close();
+			}
+
+			using (var session = OpenSession())
+			using (IDbCommand cmd = session.Connection.CreateCommand())
+			{
+				cmd.CommandText = "DELETE FROM Companies";
+				cmd.ExecuteNonQuery();
+				cmd.Connection.Close();
+			}
+
+			var secondSession = OpenSession();
+			var customers = GetAllCustomers(secondSession);
+
+			Assert.That(
+				customersWithOrdersAndCompaniesWithRestrictions.First(n => n.Id == Customer1.Id).Orders,
+				Has.Count.EqualTo(Customer1.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrdersAndCompaniesWithRestrictions.First(n => n.Id == Customer2.Id).Orders,
+				Has.Count.EqualTo(Customer2.Orders.Count(n => n.Number == OrderNumber)));
+
+			Assert.That(
+				customersWithOrdersAndCompaniesWithRestrictions.First(n => n.Id == Customer1.Id).Companies,
+				Has.Count.EqualTo(Customer1.Companies.Count(n => n.Name == "Second")));
+			Assert.That(
+				customersWithOrdersAndCompaniesWithRestrictions.First(n => n.Id == Customer2.Id).Companies,
+				Has.Count.EqualTo(Customer2.Companies.Count(n => n.Name == "Second")));
+
+			Assert.That(customers.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(0));
+			Assert.That(customers.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(0));
+			Assert.That(customers.Single(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(0));
+
+			Assert.That(
+				customers.Single(n => n.Id == Customer1.Id).Companies,
+				Has.Count.EqualTo(0));
+			Assert.That(
+				customers.Single(n => n.Id == Customer2.Id).Companies,
+				Has.Count.EqualTo(0));
+			Assert.That(
+				customers.Single(n => n.Id == Customer3.Id).Companies,
+				Has.Count.EqualTo(0));
+
+			firstSession.Dispose();
+			secondSession.Dispose();
+		}
+
 		protected void ClearSecondLevelCacheFor(System.Type entity)
 		{
 			var entityName = entity.FullName;
@@ -379,6 +562,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 		protected abstract IList<Customer> GetCustomersByOrderNumberUsingOnClause(ISession session, int orderNumber);
 		protected abstract IList<Customer> GetCustomersByOrderNumberUsingWhereClause(ISession session, int orderNumber);
 		protected abstract IList<Customer> GetCustomersByNameUsingWhereClause(ISession session, string customerName);
+		protected abstract IList<Customer> GetCustomersByOrderNumberUsingFetch(ISession session, int orderNumber);
+		protected abstract IList<Customer> GetCustomersByOrderNumberUsingFetchAndWhereClause(ISession session, int orderNumber);
+		protected abstract IList<Customer> GetCustomersAndCompaniesByOrderNumberUsingFetchAndWhereClause(ISession session, int orderNumber, string name);
+		protected abstract IList<Customer> GetCustomersAndCompaniesByOrderNumberUsingFetchWithoutRestrictions(ISession session);
 		protected abstract IList<Customer> GetCustomersByOrderNumberUsingSubqueriesAndByNameUsingWhereClause(
 			ISession session,
 			int orderNumber,

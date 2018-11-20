@@ -21,6 +21,22 @@ namespace NHibernate.Loader
 		private readonly SqlString on;
 		private readonly IDictionary<string, IFilter> enabledFilters;
 		private readonly SelectMode _selectMode;
+		private readonly bool _hasRestrictions;
+
+		public OuterJoinableAssociation(
+			IAssociationType joinableType,
+			String lhsAlias,
+			String[] lhsColumns,
+			String rhsAlias,
+			JoinType joinType,
+			SqlString withClause,
+			ISessionFactoryImplementor factory,
+			IDictionary<string, IFilter> enabledFilters,
+			SelectMode selectMode,
+			bool hasRestrictions) : this(joinableType, lhsAlias, lhsColumns, rhsAlias, joinType, withClause, factory, enabledFilters, selectMode)
+		{
+			_hasRestrictions = hasRestrictions;
+		}
 
 		public OuterJoinableAssociation(
 			IAssociationType joinableType,
@@ -67,6 +83,8 @@ namespace NHibernate.Loader
 		{
 			get { return on; }
 		}
+
+		public bool HasRestrictions => _hasRestrictions;
 
 		private bool IsOneToOne
 		{

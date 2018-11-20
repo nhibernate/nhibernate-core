@@ -186,6 +186,61 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 		}
 
 		[Test]
+		public virtual async Task ChildCollectionsWithSelectModeFetchOnCollectionShouldNotBeInSecondLevelCacheAsync()
+		{
+			var firstSession = OpenSession();
+			var customersWithOrderNumberEqualsTo2 = await (GetCustomersByOrderNumberUsingFetchAsync(firstSession, OrderNumber));
+
+			var secondSession = OpenSession();
+			var customers = await (GetAllCustomersAsync(secondSession));
+
+			Assert.That(
+				customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders,
+				Has.Count.EqualTo(Customer1.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer2.Id).Orders,
+				Has.Count.EqualTo(Customer2.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2,
+				Has.Count.EqualTo(2));
+
+			Assert.That(customers.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
+			Assert.That(customers.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count));
+			Assert.That(customers.Single(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(Customer3.Orders.Count));
+
+			firstSession.Dispose();
+			secondSession.Dispose();
+		}
+
+		[Test]
+		public virtual async Task ChildCollectionsWithSelectModeFetchAndWhereClauseShouldNotBeInSecondLevelCacheAsync()
+		{
+			var firstSession = OpenSession();
+			var customersWithOrderNumberEqualsTo2 = await (GetCustomersByOrderNumberUsingFetchAndWhereClauseAsync(firstSession, OrderNumber));
+
+			var secondSession = OpenSession();
+			var customers = await (GetAllCustomersAsync(secondSession));
+
+			Assert.That(
+				customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer1.Id).Orders,
+				Has.Count.EqualTo(Customer1.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2.Single(n => n.Id == Customer2.Id).Orders,
+				Has.Count.EqualTo(Customer2.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrderNumberEqualsTo2,
+				Has.Count.EqualTo(2));
+
+			Assert.That(customers.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(Customer1.Orders.Count));
+			Assert.That(customers.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(Customer2.Orders.Count));
+			Assert.That(customers.Single(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(Customer3.Orders.Count));
+
+			firstSession.Dispose();
+			secondSession.Dispose();
+		}
+
+
+		[Test]
 		public async Task ChildCollectionsFromLeftOuterJoinWithWhereClauseRestrictionOnCollectionShouldNotBeInSecondLevelCacheAsync()
 		{
 			var firstSession = OpenSession();
@@ -364,6 +419,134 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			secondSession.Dispose();
 		}
 
+		[Test]
+		public virtual async Task ChildCollectionsWithoutRestrictionShouldBeIn2LvlCacheAsync()
+		{
+			var firstSession = OpenSession();
+			var customersWithOrdersAndCompaniesWithoutRestrictions =
+				await (GetCustomersAndCompaniesByOrderNumberUsingFetchWithoutRestrictionsAsync(firstSession));
+
+			using (var session = OpenSession())
+			using (IDbCommand cmd = session.Connection.CreateCommand())
+			{
+				cmd.CommandText = "DELETE FROM Orders";
+				cmd.ExecuteNonQuery();
+				cmd.Connection.Close();
+			}
+
+			using (var session = OpenSession())
+			using (IDbCommand cmd = session.Connection.CreateCommand())
+			{
+				cmd.CommandText = "DELETE FROM Companies";
+				cmd.ExecuteNonQuery();
+				cmd.Connection.Close();
+			}
+
+			var secondSession = OpenSession();
+			var customers = await (GetAllCustomersAsync(secondSession));
+
+			Assert.That(
+				customersWithOrdersAndCompaniesWithoutRestrictions.First(n => n.Id == Customer1.Id).Orders,
+				Has.Count.EqualTo(Customer1.Orders.Count()));
+			Assert.That(
+				customersWithOrdersAndCompaniesWithoutRestrictions.First(n => n.Id == Customer2.Id).Orders,
+				Has.Count.EqualTo(Customer2.Orders.Count()));
+			Assert.That(
+				customersWithOrdersAndCompaniesWithoutRestrictions.First(n => n.Id == Customer3.Id).Orders,
+				Has.Count.EqualTo(Customer3.Orders.Count()));
+
+			Assert.That(
+				customersWithOrdersAndCompaniesWithoutRestrictions.First(n => n.Id == Customer1.Id).Companies,
+				Has.Count.EqualTo(Customer1.Companies.Count));
+			Assert.That(
+				customersWithOrdersAndCompaniesWithoutRestrictions.First(n => n.Id == Customer2.Id).Companies,
+				Has.Count.EqualTo(Customer2.Companies.Count));
+			Assert.That(
+				customersWithOrdersAndCompaniesWithoutRestrictions.First(n => n.Id == Customer3.Id).Companies,
+				Has.Count.EqualTo(Customer3.Companies.Count));
+
+			Assert.That(
+				customers.First(n => n.Id == Customer1.Id).Orders,
+				Has.Count.EqualTo(Customer1.Orders.Count()));
+			Assert.That(
+				customers.First(n => n.Id == Customer2.Id).Orders,
+				Has.Count.EqualTo(Customer2.Orders.Count()));
+			Assert.That(
+				customers.First(n => n.Id == Customer3.Id).Orders,
+				Has.Count.EqualTo(Customer3.Orders.Count()));
+
+			Assert.That(
+				customers.First(n => n.Id == Customer1.Id).Companies,
+				Has.Count.EqualTo(Customer1.Companies.Count()));
+			Assert.That(
+				customers.First(n => n.Id == Customer2.Id).Companies,
+				Has.Count.EqualTo(Customer2.Companies.Count()));
+			Assert.That(
+				customers.First(n => n.Id == Customer3.Id).Companies,
+				Has.Count.EqualTo(Customer3.Companies.Count()));
+
+			firstSession.Dispose();
+			secondSession.Dispose();
+		}
+
+		[Test]
+		public virtual async Task ChildCollectionsWithRestrictionShouldNotBeIn2LvlCacheAsync()
+		{
+			var firstSession = OpenSession();
+			var customersWithOrdersAndCompaniesWithRestrictions =
+				await (GetCustomersAndCompaniesByOrderNumberUsingFetchAndWhereClauseAsync(firstSession, OrderNumber, "Second"));
+
+			using (var session = OpenSession())
+			using (IDbCommand cmd = session.Connection.CreateCommand())
+			{
+				cmd.CommandText = "DELETE FROM Orders";
+				cmd.ExecuteNonQuery();
+				cmd.Connection.Close();
+			}
+
+			using (var session = OpenSession())
+			using (IDbCommand cmd = session.Connection.CreateCommand())
+			{
+				cmd.CommandText = "DELETE FROM Companies";
+				cmd.ExecuteNonQuery();
+				cmd.Connection.Close();
+			}
+
+			var secondSession = OpenSession();
+			var customers = await (GetAllCustomersAsync(secondSession));
+
+			Assert.That(
+				customersWithOrdersAndCompaniesWithRestrictions.First(n => n.Id == Customer1.Id).Orders,
+				Has.Count.EqualTo(Customer1.Orders.Count(n => n.Number == OrderNumber)));
+			Assert.That(
+				customersWithOrdersAndCompaniesWithRestrictions.First(n => n.Id == Customer2.Id).Orders,
+				Has.Count.EqualTo(Customer2.Orders.Count(n => n.Number == OrderNumber)));
+
+			Assert.That(
+				customersWithOrdersAndCompaniesWithRestrictions.First(n => n.Id == Customer1.Id).Companies,
+				Has.Count.EqualTo(Customer1.Companies.Count(n => n.Name == "Second")));
+			Assert.That(
+				customersWithOrdersAndCompaniesWithRestrictions.First(n => n.Id == Customer2.Id).Companies,
+				Has.Count.EqualTo(Customer2.Companies.Count(n => n.Name == "Second")));
+
+			Assert.That(customers.Single(n => n.Id == Customer1.Id).Orders, Has.Count.EqualTo(0));
+			Assert.That(customers.Single(n => n.Id == Customer2.Id).Orders, Has.Count.EqualTo(0));
+			Assert.That(customers.Single(n => n.Id == Customer3.Id).Orders, Has.Count.EqualTo(0));
+
+			Assert.That(
+				customers.Single(n => n.Id == Customer1.Id).Companies,
+				Has.Count.EqualTo(0));
+			Assert.That(
+				customers.Single(n => n.Id == Customer2.Id).Companies,
+				Has.Count.EqualTo(0));
+			Assert.That(
+				customers.Single(n => n.Id == Customer3.Id).Companies,
+				Has.Count.EqualTo(0));
+
+			firstSession.Dispose();
+			secondSession.Dispose();
+		}
+
 		protected async Task ClearSecondLevelCacheForAsync(System.Type entity, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var entityName = entity.FullName;
@@ -421,6 +604,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 		protected abstract Task<IList<Customer>> GetCustomersByOrderNumberUsingOnClauseAsync(ISession session, int orderNumber, CancellationToken cancellationToken = default(CancellationToken));
 		protected abstract Task<IList<Customer>> GetCustomersByOrderNumberUsingWhereClauseAsync(ISession session, int orderNumber, CancellationToken cancellationToken = default(CancellationToken));
 		protected abstract Task<IList<Customer>> GetCustomersByNameUsingWhereClauseAsync(ISession session, string customerName, CancellationToken cancellationToken = default(CancellationToken));
+		protected abstract Task<IList<Customer>> GetCustomersByOrderNumberUsingFetchAsync(ISession session, int orderNumber, CancellationToken cancellationToken = default(CancellationToken));
+		protected abstract Task<IList<Customer>> GetCustomersByOrderNumberUsingFetchAndWhereClauseAsync(ISession session, int orderNumber, CancellationToken cancellationToken = default(CancellationToken));
+		protected abstract Task<IList<Customer>> GetCustomersAndCompaniesByOrderNumberUsingFetchAndWhereClauseAsync(ISession session, int orderNumber, string name, CancellationToken cancellationToken = default(CancellationToken));
+		protected abstract Task<IList<Customer>> GetCustomersAndCompaniesByOrderNumberUsingFetchWithoutRestrictionsAsync(ISession session, CancellationToken cancellationToken = default(CancellationToken));
 		protected abstract Task<IList<Customer>> GetCustomersByOrderNumberUsingSubqueriesAndByNameUsingWhereClauseAsync(
 			ISession session,
 			int orderNumber,

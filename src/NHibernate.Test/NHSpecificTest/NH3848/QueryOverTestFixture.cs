@@ -31,6 +31,75 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 					.List();
 		}
 
+		protected override IList<Customer> GetCustomersByOrderNumberUsingFetch(ISession session, int orderNumber)
+		{
+			Order ordersAlias = null;
+
+			return
+				session
+					.QueryOver<Customer>()
+					.JoinQueryOver(ec => ec.Orders, () => ordersAlias, JoinType.InnerJoin, Restrictions.Eq("Number", orderNumber))
+					.Fetch(SelectMode.Fetch, () => ordersAlias)
+					.TransformUsing(Transformers.DistinctRootEntity)
+					.List();
+		}
+
+		protected override IList<Customer> GetCustomersByOrderNumberUsingFetchAndWhereClause(ISession session, int orderNumber)
+		{
+			Order ordersAlias = null;
+
+			return
+				session
+					.QueryOver<Customer>()
+					.JoinQueryOver(ec => ec.Orders, () => ordersAlias, JoinType.InnerJoin)
+					.Where(Restrictions.Eq("Number", orderNumber))
+					.Fetch(SelectMode.Fetch, () => ordersAlias)
+					.TransformUsing(Transformers.DistinctRootEntity)
+					.List();
+		}
+
+		protected override IList<Customer> GetCustomersAndCompaniesByOrderNumberUsingFetchAndWhereClause(ISession session, int orderNumber, string name)
+		{
+			Order ordersAlias = null;
+			Company companiesAlias = null;
+
+			return
+				session
+					.QueryOver<Customer>()
+					.JoinAlias(
+						n => n.Orders,
+						() => ordersAlias,
+						JoinType.InnerJoin,
+						Restrictions.Eq("Number", orderNumber))
+					.Fetch(SelectMode.Fetch, () => ordersAlias)
+					.JoinAlias(
+						n => n.Companies,
+						() => companiesAlias,
+						JoinType.LeftOuterJoin,
+						Restrictions.Eq("Name", name))
+					.List();
+		}
+
+		protected override IList<Customer> GetCustomersAndCompaniesByOrderNumberUsingFetchWithoutRestrictions(ISession session)
+		{
+			Order ordersAlias = null;
+			Company companiesAlias = null;
+
+			return
+				session
+					.QueryOver<Customer>()
+					.JoinAlias(
+						n => n.Orders,
+						() => ordersAlias,
+						JoinType.InnerJoin)
+					.Fetch(SelectMode.Fetch, () => ordersAlias)
+					.JoinAlias(
+						n => n.Companies,
+						() => companiesAlias,
+						JoinType.LeftOuterJoin)
+					.List();
+		}
+
 		protected override IList<Customer> GetCustomersWithCompaniesByOrderNumberUsingOnClause(
 			ISession session,
 			int orderNumber)

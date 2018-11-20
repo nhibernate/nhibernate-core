@@ -146,10 +146,10 @@ namespace NHibernate.Engine.Loading
 		/// </summary>
 		/// <param name="persister">The persister for which to complete loading.</param>
 		// Since v5.2
-		[Obsolete("Please use overload with uncacheableCollections parameter instead.")]
+		[Obsolete("Please use overload with skipCache parameter instead.")]
 		public void EndLoadingCollections(ICollectionPersister persister)
 		{
-			EndLoadingCollections(persister, null);
+			EndLoadingCollections(persister, false);
 		}
 
 		/// <summary>
@@ -158,8 +158,8 @@ namespace NHibernate.Engine.Loading
 		/// complete.
 		/// </summary>
 		/// <param name="persister">The persister for which to complete loading.</param>
-		/// <param name="uncacheableCollections">Indicates which collections must not be put in cache.</param>
-		public void EndLoadingCollections(ICollectionPersister persister, HashSet<string> uncacheableCollections)
+		/// <param name="skipCache">Indicates if collection must not be put in cache.</param>
+		public void EndLoadingCollections(ICollectionPersister persister, bool skipCache)
 		{
 			if (!loadContexts.HasLoadingCollectionEntries && (localLoadingCollectionKeys.Count == 0))
 			{
@@ -204,7 +204,7 @@ namespace NHibernate.Engine.Loading
 			}
 			localLoadingCollectionKeys.ExceptWith(toRemove);
 
-			EndLoadingCollections(persister, matches, uncacheableCollections);
+			EndLoadingCollections(persister, matches, skipCache);
 			if ((localLoadingCollectionKeys.Count == 0))
 			{
 				// todo : hack!!!
@@ -217,7 +217,7 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		private void EndLoadingCollections(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, HashSet<string> uncacheableCollections)
+		private void EndLoadingCollections(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, bool skipCache)
 		{
 			if (matchedCollectionEntries == null || matchedCollectionEntries.Count == 0)
 			{
@@ -241,7 +241,7 @@ namespace NHibernate.Engine.Loading
 					matchedCollectionEntries[i], 
 					persister,
 					data => cacheBatcher.AddToBatch(persister, data),
-					uncacheableCollections);
+					skipCache);
 			}
 			cacheBatcher.ExecuteBatch();
 
@@ -254,8 +254,8 @@ namespace NHibernate.Engine.Loading
 		private void EndLoadingCollection(
 			LoadingCollectionEntry lce, 
 			ICollectionPersister persister,
-			Action<CachePutData> cacheBatchingHandler, 
-			HashSet<string> uncacheableCollections)
+			Action<CachePutData> cacheBatchingHandler,
+			bool skipCache)
 		{
 			if (log.IsDebugEnabled())
 			{
@@ -291,7 +291,7 @@ namespace NHibernate.Engine.Loading
 
 			bool addToCache = hasNoQueuedOperations && persister.HasCache &&
 				session.CacheMode.HasFlag(CacheMode.Put) &&
-				(uncacheableCollections == null || !uncacheableCollections.Contains(lce.Persister.Role)) &&
+				!skipCache &&
 				// and this is not a forced initialization during flush
 				!ce.IsDoremove;
 

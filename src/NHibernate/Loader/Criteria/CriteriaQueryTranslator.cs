@@ -139,7 +139,6 @@ namespace NHibernate.Loader.Criteria
 			selection.FetchSize = rootCriteria.FetchSize;
 
 			var lockModes = new Dictionary<string, LockMode>();
-			var uncacheableCollections = new HashSet<string>();
 
 			foreach (KeyValuePair<string, LockMode> me in rootCriteria.LockModes)
 			{
@@ -153,14 +152,6 @@ namespace NHibernate.Loader.Criteria
 				if (lm != null)
 				{
 					lockModes[GetSQLAlias(subcriteria)] = lm;
-				}
-
-				if (subcriteria.HasRestrictions && subcriteria.JoinType == JoinType.LeftOuterJoin)
-				{
-					var collectionName = $"{rootCriteria.EntityOrClassName}.{subcriteria.Path}";
-
-					if (!uncacheableCollections.Contains(collectionName))
-						uncacheableCollections.Add(collectionName);
 				}
 			}
 			
@@ -177,8 +168,7 @@ namespace NHibernate.Loader.Criteria
 					rootCriteria.CacheRegion,
 					rootCriteria.Comment,
 					rootCriteria.LookupByNaturalKey,
-					rootCriteria.ResultTransformer,
-					uncacheableCollections)
+					rootCriteria.ResultTransformer)
 				{
 					CacheMode = rootCriteria.CacheMode
 				};
