@@ -605,22 +605,22 @@ namespace NHibernate.Loader
 		}
 
 		internal void InitializeEntitiesAndCollections(
-			IList hydratedObjects, object resultSetId, ISessionImplementor session, bool readOnly,
+			IList hydratedObjects, DbDataReader reader, ISessionImplementor session, bool readOnly,
 			CacheBatcher cacheBatcher = null)
 		{
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
 			if (collectionPersisters != null)
 			{
-				for (int i = 0; i < collectionPersisters.Length; i++)
+				foreach (var collectionPersister in collectionPersisters)
 				{
-					if (collectionPersisters[i].IsArray)
+					if (collectionPersister.IsArray)
 					{
 						//for arrays, we should end the collection load before resolving
 						//the entities, since the actual array instances are not instantiated
 						//during loading
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						EndCollectionLoad(resultSetId, session, collectionPersisters[i], UncacheableCollectionPersisters?[i] == true);
+						EndCollectionLoad(reader, session, collectionPersister);
 					}
 				}
 			}
@@ -663,28 +663,32 @@ namespace NHibernate.Loader
 
 			if (collectionPersisters != null)
 			{
-				for (int i = 0; i < collectionPersisters.Length; i++)
+				foreach (var collectionPersister in collectionPersisters)
 				{
-					if (!collectionPersisters[i].IsArray)
+					if (!collectionPersister.IsArray)
 					{
 						//for sets, we should end the collection load after resolving
 						//the entities, since we might call hashCode() on the elements
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						EndCollectionLoad(resultSetId, session, collectionPersisters[i], UncacheableCollectionPersisters?[i] == true);
+						EndCollectionLoad(reader, session, collectionPersister);
 					}
 				}
 			}
 		}
 
-		private static void EndCollectionLoad(object resultSetId, ISessionImplementor session, ICollectionPersister collectionPersister, bool skipCache)
+		private void EndCollectionLoad(DbDataReader reader, ISessionImplementor session, ICollectionPersister collectionPersister)
 		{
 			//this is a query and we are loading multiple instances of the same collection role
-			session.PersistenceContext.LoadContexts.GetCollectionLoadContext((DbDataReader)resultSetId).EndLoadingCollections(
-				collectionPersister, skipCache);
+			session.PersistenceContext.LoadContexts.GetCollectionLoadContext(reader).EndLoadingCollections(
+				collectionPersister, !IsCollectionPersisterCacheable(collectionPersister));
 		}
 
-		
+		protected virtual bool IsCollectionPersisterCacheable(ICollectionPersister collectionPersister)
+		{
+			return true;
+		}
+
 		/// <summary>
 		/// Determine the actual ResultTransformer that will be used to transform query results.
 		/// </summary>

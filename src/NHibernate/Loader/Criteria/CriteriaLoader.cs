@@ -1,15 +1,13 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Param;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Loader.Criteria
@@ -31,7 +29,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly bool[] includeInResultRow;
 		private readonly int resultRowLength;
 
-		private readonly bool[] _uncacheableCollectionPersisters;
+		private readonly ISet<ICollectionPersister> _uncacheableCollectionPersisters;
 
 		// caching NH-3486
 		private readonly string[] cachedProjectedColumnAliases;
@@ -50,10 +48,7 @@ namespace NHibernate.Loader.Criteria
 
 			InitFromWalker(walker);
 
-			if (translator.UncacheableCriteriaCollectionPersisters.Any())
-			{
-				_uncacheableCollectionPersisters = CollectionPersisters?.Select(cp => translator.UncacheableCriteriaCollectionPersisters.Contains(cp)).ToArray();
-			}
+			_uncacheableCollectionPersisters = translator.UncacheableCriteriaCollectionPersisters;
 			userAliases = walker.UserAliases;
 			ResultTypes = walker.ResultTypes;
 			includeInResultRow = walker.IncludeInResultRow;
@@ -154,8 +149,6 @@ namespace NHibernate.Loader.Criteria
 			return result;
 		}
 
-		protected override bool[] UncacheableCollectionPersisters => _uncacheableCollectionPersisters;
-
 		private object[] ToResultRow(object[] row)
 		{
 			if (resultRowLength == row.Length)
@@ -235,6 +228,11 @@ namespace NHibernate.Loader.Criteria
 		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()
 		{
 			return translator.CollectedParameterSpecifications;
+		}
+
+		protected override bool IsCollectionPersisterCacheable(ICollectionPersister collectionPersister)
+		{
+			return !_uncacheableCollectionPersisters.Contains(collectionPersister);
 		}
 	}
 }
