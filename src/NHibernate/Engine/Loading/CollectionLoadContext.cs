@@ -289,9 +289,8 @@ namespace NHibernate.Engine.Loading
 				ce.PostInitialize(lce.Collection, persistenceContext);
 			}
 
-			bool addToCache = hasNoQueuedOperations && persister.HasCache &&
+			bool addToCache = hasNoQueuedOperations && !skipCache && persister.HasCache &&
 				session.CacheMode.HasFlag(CacheMode.Put) &&
-				!skipCache &&
 				// and this is not a forced initialization during flush
 				!ce.IsDoremove;
 

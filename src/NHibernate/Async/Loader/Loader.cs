@@ -129,7 +129,7 @@ namespace NHibernate.Loader
 												 queryParameters.NamedParameters);
 			}
 
-			await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session), null, cancellationToken)).ConfigureAwait(false);
+			await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session), cancellationToken: cancellationToken)).ConfigureAwait(false);
 			await (session.PersistenceContext.InitializeNonLazyCollectionsAsync(cancellationToken)).ConfigureAwait(false);
 			return result;
 		}
@@ -321,7 +321,7 @@ namespace NHibernate.Loader
 					session.Batcher.CloseCommand(st, rs);
 				}
 
-				await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, rs, session, queryParameters.IsReadOnly(session), null, cancellationToken)).ConfigureAwait(false);
+				await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, rs, session, queryParameters.IsReadOnly(session), cancellationToken: cancellationToken)).ConfigureAwait(false);
 
 				if (createSubselects)
 				{
@@ -349,7 +349,7 @@ namespace NHibernate.Loader
 						//during loading
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i], UncacheableCollectionPersisters?.Contains(collectionPersisters[i]) == true, cancellationToken)).ConfigureAwait(false);
+						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i], UncacheableCollectionPersisters?[i] == true, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 			}
@@ -400,7 +400,7 @@ namespace NHibernate.Loader
 						//the entities, since we might call hashCode() on the elements
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i], UncacheableCollectionPersisters?.Contains(collectionPersisters[i]) == true, cancellationToken)).ConfigureAwait(false);
+						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i], UncacheableCollectionPersisters?[i] == true, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 			}

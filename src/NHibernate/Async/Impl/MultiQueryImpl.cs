@@ -172,7 +172,7 @@ namespace NHibernate.Impl
 						ITranslator translator = translators[i];
 						QueryParameters parameter = parameters[i];
 
-						await (translator.Loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, false, null, cancellationToken)).ConfigureAwait(false);
+						await (translator.Loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, false, cancellationToken: cancellationToken)).ConfigureAwait(false);
 
 						if (createSubselects[i])
 						{

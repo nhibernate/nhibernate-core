@@ -873,7 +873,6 @@ namespace NHibernate.Loader
 						//it must be a collection fetch
 						collectionPersisters[j] = collPersister;
 						collectionOwners[j] = oj.GetOwner(associations);
-
 						j++;
 					}
 

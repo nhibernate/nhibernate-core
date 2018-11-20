@@ -91,8 +91,6 @@ namespace NHibernate.Loader
 			get { return null; }
 		}
 
-		protected virtual ISet<ICollectionPersister> UncacheableCollectionPersisters => null;
-
 		/// <summary>
 		/// An array of indexes of the entity that owns a one-to-one association
 		/// to the entity at the given index (-1 if there is no "owner")
@@ -177,6 +175,11 @@ namespace NHibernate.Loader
 		{
 			get { return null; }
 		}
+
+		/// <summary> 
+		/// An array indicating whether cache should be skipped for given collection <see cref="CollectionPersisters"/>
+		/// </summary>
+		protected virtual bool[] UncacheableCollectionPersisters => null;
 
 		/// <summary>
 		/// What lock mode does this load entities with?
@@ -317,7 +320,7 @@ namespace NHibernate.Loader
 												 queryParameters.NamedParameters);
 			}
 
-			InitializeEntitiesAndCollections(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session), null);
+			InitializeEntitiesAndCollections(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session));
 			session.PersistenceContext.InitializeNonLazyCollections();
 			return result;
 		}
@@ -519,7 +522,7 @@ namespace NHibernate.Loader
 					session.Batcher.CloseCommand(st, rs);
 				}
 
-				InitializeEntitiesAndCollections(hydratedObjects, rs, session, queryParameters.IsReadOnly(session), null);
+				InitializeEntitiesAndCollections(hydratedObjects, rs, session, queryParameters.IsReadOnly(session));
 
 				if (createSubselects)
 				{
@@ -617,7 +620,7 @@ namespace NHibernate.Loader
 						//during loading
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						EndCollectionLoad(resultSetId, session, collectionPersisters[i], UncacheableCollectionPersisters?.Contains(collectionPersisters[i]) == true);
+						EndCollectionLoad(resultSetId, session, collectionPersisters[i], UncacheableCollectionPersisters?[i] == true);
 					}
 				}
 			}
@@ -668,7 +671,7 @@ namespace NHibernate.Loader
 						//the entities, since we might call hashCode() on the elements
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						EndCollectionLoad(resultSetId, session, collectionPersisters[i], UncacheableCollectionPersisters?.Contains(collectionPersisters[i]) == true);
+						EndCollectionLoad(resultSetId, session, collectionPersisters[i], UncacheableCollectionPersisters?[i] == true);
 					}
 				}
 			}

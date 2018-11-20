@@ -41,11 +41,11 @@ namespace NHibernate.Loader.Criteria
 		private readonly IDictionary<String, ICriteriaInfoProvider> nameCriteriaInfoMap =
 			new Dictionary<string, ICriteriaInfoProvider>();
 
-		private readonly ISet<ICollectionPersister> _uncacheableCriteriaCollectionPersisters = new HashSet<ICollectionPersister>();
+		private readonly HashSet<ICollectionPersister> uncacheableCollectionPersisters = new HashSet<ICollectionPersister>();
 		private readonly ISet<ICollectionPersister> criteriaCollectionPersisters = new HashSet<ICollectionPersister>();
 		private readonly IDictionary<ICriteria, string> criteriaSQLAliasMap = new Dictionary<ICriteria, string>();
 		private readonly IDictionary<string, ICriteria> aliasCriteriaMap = new Dictionary<string, ICriteria>();
-		private readonly IDictionary<string, ICriteria> associationPathCriteriaMap = new LinkedHashMap<string, ICriteria>();
+		private readonly Dictionary<string, CriteriaImpl.Subcriteria> associationPathCriteriaMap = new Dictionary<string, CriteriaImpl.Subcriteria>();
 		private readonly IDictionary<string, JoinType> associationPathJoinTypesMap = new LinkedHashMap<string, JoinType>();
 		private readonly IDictionary<string, ICriterion> withClauseMap = new Dictionary<string, ICriterion>();
 		private readonly ISessionFactoryImplementor sessionFactory;
@@ -214,7 +214,7 @@ namespace NHibernate.Loader.Criteria
 			get { return rootCriteria.Projection.Aliases; }
 		}
 
-		public ISet<ICollectionPersister> UncacheableCriteriaCollectionPersisters => _uncacheableCriteriaCollectionPersisters;
+		public ISet<ICollectionPersister> UncacheableCriteriaCollectionPersisters => uncacheableCollectionPersisters;
 
 		public IList<EntityProjection> GetEntityProjections()
 		{
@@ -296,8 +296,7 @@ namespace NHibernate.Loader.Criteria
 
 		public ICriteria GetCriteria(string path)
 		{
-			ICriteria result;
-			associationPathCriteriaMap.TryGetValue(path, out result);
+			associationPathCriteriaMap.TryGetValue(path, out var result);
 			logger.Debug("getCriteria for path={0} crit={1}", path, result);
 			return result;
 		}
@@ -407,7 +406,7 @@ namespace NHibernate.Loader.Criteria
 			nameCriteriaInfoMap.Add(rootProvider.Name, rootProvider);
 
 
-			foreach (KeyValuePair<string, ICriteria> me in associationPathCriteriaMap)
+			foreach (KeyValuePair<string, CriteriaImpl.Subcriteria> me in associationPathCriteriaMap)
 			{
 				ICriteriaInfoProvider info = GetPathInfo(me.Key, rootProvider);
 				criteriaInfoMap.Add(me.Value, info);
@@ -434,32 +433,18 @@ namespace NHibernate.Loader.Criteria
 
 		private void CreateCriteriaCollectionPersisters()
 		{
-			foreach (KeyValuePair<string, ICriteria> me in associationPathCriteriaMap)
+			foreach (KeyValuePair<string, CriteriaImpl.Subcriteria> me in associationPathCriteriaMap)
 			{
-				NHibernate_Persister_Entity.IJoinable joinable = GetPathJoinable(me.Key);
-				if (joinable != null && joinable.IsCollection)
+				if (GetPathJoinable(me.Key) is ICollectionPersister collectionPersister)
 				{
-					criteriaCollectionPersisters.Add((ICollectionPersister) joinable);
+					criteriaCollectionPersisters.Add(collectionPersister);
 
-					if (!CanPersisterBeCached(me.Value))
+					if (collectionPersister.HasCache && me.Value.HasRestrictions)
 					{
-						if (!_uncacheableCriteriaCollectionPersisters.Contains((ICollectionPersister) joinable))
-							_uncacheableCriteriaCollectionPersisters.Add((ICollectionPersister) joinable);
+						uncacheableCollectionPersisters.Add(collectionPersister);
 					}
 				}
 			}
-		}
-
-		private bool CanPersisterBeCached(ICriteria criteria)
-		{
-			if (criteria is CriteriaImpl.Subcriteria subcriteria)
-			{
-				return !(subcriteria.HasRestrictions
-					&& (subcriteria.JoinType == JoinType.LeftOuterJoin
-						|| (subcriteria.JoinType == JoinType.InnerJoin && rootCriteria.GetSelectMode(subcriteria.Path) == SelectMode.Fetch)));
-			}
-
-			return true;
 		}
 
 		private Persister.Entity.IJoinable GetPathJoinable(string path)

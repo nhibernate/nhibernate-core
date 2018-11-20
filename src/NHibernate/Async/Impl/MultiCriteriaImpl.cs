@@ -200,7 +200,7 @@ namespace NHibernate.Impl
 					for (int i = 0; i < loaders.Count; i++)
 					{
 						CriteriaLoader loader = loaders[i];
-						await (loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, session.DefaultReadOnly, null, cancellationToken)).ConfigureAwait(false);
+						await (loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, session.DefaultReadOnly, cancellationToken: cancellationToken)).ConfigureAwait(false);
 
 						if (createSubselects[i])
 						{
