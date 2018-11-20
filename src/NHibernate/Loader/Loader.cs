@@ -176,11 +176,6 @@ namespace NHibernate.Loader
 			get { return null; }
 		}
 
-		/// <summary> 
-		/// An array indicating whether cache should be skipped for given collection <see cref="CollectionPersisters"/>
-		/// </summary>
-		protected virtual bool[] UncacheableCollectionPersisters => null;
-
 		/// <summary>
 		/// What lock mode does this load entities with?
 		/// </summary>
