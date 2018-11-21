@@ -30,25 +30,31 @@ namespace NHibernate.Test
 	/// it is used when testing to check that tests clean up after themselves.
 	/// </summary>
 	/// <remarks>Sessions opened from other sessions are not tracked.</remarks>
+	[Serializable]
 	public partial class DebugSessionFactory : ISessionFactoryImplementor
 	{
+		[NonSerialized]
+		private DebugConnectionProvider _debugConnectionProvider;
+
 		/// <summary>
 		/// The debug connection provider if configured for using it, <see langword="null"/> otherwise.
 		/// Use <c>ActualFactory.ConnectionProvider</c> if needing unconditionally the connection provider, be
 		/// it debug or not.
 		/// </summary>
-		public DebugConnectionProvider DebugConnectionProvider { get; }
+		public DebugConnectionProvider DebugConnectionProvider
+			=> _debugConnectionProvider ??
+				(_debugConnectionProvider = ActualFactory.ConnectionProvider as DebugConnectionProvider);
 		public ISessionFactoryImplementor ActualFactory { get; }
 
 		public EventListeners EventListeners => ((SessionFactoryImpl)ActualFactory).EventListeners;
 
+		[NonSerialized]
 		private readonly ConcurrentBag<ISessionImplementor> _openedSessions = new ConcurrentBag<ISessionImplementor>();
 		private static readonly ILog _log = LogManager.GetLogger(typeof(DebugSessionFactory).Assembly, typeof(TestCase));
 
 		public DebugSessionFactory(ISessionFactory actualFactory)
 		{
 			ActualFactory = (ISessionFactoryImplementor)actualFactory;
-			DebugConnectionProvider = ActualFactory.ConnectionProvider as DebugConnectionProvider;
 		}
 
 		#region Session tracking

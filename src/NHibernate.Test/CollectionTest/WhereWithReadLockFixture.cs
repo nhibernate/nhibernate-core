@@ -122,7 +122,7 @@ namespace NHibernate.Test.CollectionTest
 		[Test]
 		public void GenerateLockHintAtEndForSelectByUniqueKey()
 		{
-			var sql = ((IPostInsertIdentityPersister) _bagPersister).GetSelectByUniqueKeyString("blah");
+			var sql = ((ICompositeKeyPostInsertIdentityPersister) _bagPersister).GetSelectByUniqueKeyString(null, out _);
 			Assert.That(sql.ToString(), Does.EndWith(DialectWithReadLockHint.ReadOnlyLock));
 		}
 	}

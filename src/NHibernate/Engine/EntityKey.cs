@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
@@ -10,7 +11,7 @@ namespace NHibernate.Engine
 	/// and the identifier space (eg. tablename)
 	/// </summary>
 	[Serializable]
-	public sealed class EntityKey
+	public sealed class EntityKey : IDeserializationCallback
 	{
 		private readonly object identifier;
 		private readonly string rootEntityName;
@@ -18,9 +19,10 @@ namespace NHibernate.Engine
 		private readonly IType identifierType;
 		private readonly bool isBatchLoadable;
 
-		[NonSerialized]
 		private ISessionFactoryImplementor factory;
-		private int hashCode;
+		// hashcode may vary among processes, they cannot be stored and have to be re-computed after deserialization
+		[NonSerialized]
+		private int? _hashCode;
 
 		/// <summary> Construct a unique identifier for an entity class instance</summary>
 		public EntityKey(object id, IEntityPersister persister)
@@ -44,7 +46,8 @@ namespace NHibernate.Engine
 			this.identifierType = identifierType;
 			isBatchLoadable = batchLoadable;
 			this.factory = factory;
-			hashCode = GenerateHashCode();
+
+			_hashCode = GenerateHashCode();
 		}
 
 		public bool IsBatchLoadable
@@ -77,6 +80,21 @@ namespace NHibernate.Engine
 				&& identifierType.IsEqual(otherKey.Identifier, Identifier, factory);
 		}
 
+		public override int GetHashCode()
+		{
+			// If the object is put in a set or dictionary during deserialization, the hashcode will not yet be
+			// computed. Compute the hashcode on the fly. So long as this happens only during deserialization, there
+			// will be no thread safety issues. For the hashcode to be always defined after deserialization, the
+			// deserialization callback is used.
+			return _hashCode ?? GenerateHashCode();
+		}
+
+		/// <inheritdoc />
+		public void OnDeserialization(object sender)
+		{
+			_hashCode = GenerateHashCode();
+		}
+
 		private int GenerateHashCode()
 		{
 			int result = 17;
@@ -88,24 +106,9 @@ namespace NHibernate.Engine
 			return result;
 		}
 
-		public override int GetHashCode()
-		{
-			return hashCode;
-		}
-
 		public override string ToString()
 		{
 			return "EntityKey" + MessageHelper.InfoString(factory.GetEntityPersister(EntityName), Identifier, factory);
-		}
-
-		/// <summary>
-		/// To use in deserialization callback
-		/// </summary>
-		/// <param name="sessionFactory"></param>
-		internal void SetSessionFactory(ISessionFactoryImplementor sessionFactory)
-		{
-			factory = sessionFactory;
-			hashCode = GetHashCode();
 		}
 	}
 }

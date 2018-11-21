@@ -43,7 +43,7 @@ namespace NHibernate.Persister.Entity
 	using System.Threading;
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
 		IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable,
-		ISupportSelectModeJoinable
+		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister
 	{
 
 		private partial class GeneratedIdentifierBinder : IBinder
@@ -469,6 +469,23 @@ namespace NHibernate.Persister.Entity
 			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
+			}
+		}
+
+		public async Task BindSelectByUniqueKeyAsync(
+			ISessionImplementor session,
+			DbCommand selectCommand,
+			IBinder binder,
+			string[] suppliedPropertyNames, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var propertyNames = GetUniqueKeyPropertyNames(suppliedPropertyNames);
+			var parameterTypes = propertyNames.Select(GetPropertyType).ToArray();
+			var entity = binder.Entity;
+			for (var i = 0; i < propertyNames.Length; i++)
+			{
+				var uniqueKeyValue = GetPropertyValue(entity, propertyNames[i]);
+				await (parameterTypes[i].NullSafeSetAsync(selectCommand, uniqueKeyValue, i, session, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 

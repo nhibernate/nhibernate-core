@@ -1,6 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Intercept;
 using NHibernate.Metadata;
@@ -81,6 +80,15 @@ namespace NHibernate.Impl
 			}
 
 			return CollectionPrinter.ToString(result);
+		}
+
+		internal string ToString(IEnumerable<KeyValuePair<string, TypedValue>> namedTypedValues)
+		{
+			return CollectionPrinter.ToString(
+				namedTypedValues.Select(
+					ntv => new KeyValuePair<string, string>(
+						ntv.Key,
+						ntv.Value.Type.ToLoggableString(ntv.Value.Value, _factory))));
 		}
 
 		public void ToString(object[] entities)

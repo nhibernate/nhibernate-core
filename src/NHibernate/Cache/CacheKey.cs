@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 using NHibernate.Engine;
 using NHibernate.Type;
 
@@ -10,12 +11,15 @@ namespace NHibernate.Cache
 	/// keys which do not properly implement equals()/hashCode().
 	/// </summary>
 	[Serializable]
-	public class CacheKey
+	public class CacheKey : IDeserializationCallback
 	{
 		private readonly object key;
 		private readonly IType type;
 		private readonly string entityOrRoleName;
-		private readonly int hashCode;
+		// hashcode may vary among processes, they cannot be stored and have to be re-computed after deserialization
+		[NonSerialized]
+		private int? _hashCode;
+		private readonly ISessionFactoryImplementor _factory;
 
 		/// <summary> 
 		/// Construct a new key for a collection or entity instance.
@@ -31,7 +35,9 @@ namespace NHibernate.Cache
 			key = id;
 			this.type = type;
 			this.entityOrRoleName = entityOrRoleName;
-			hashCode = type.GetHashCode(key, factory);
+			_factory = factory;
+
+			_hashCode = GenerateHashCode();
 		}
 
 		//Mainly for SysCache and Memcache
@@ -50,7 +56,22 @@ namespace NHibernate.Cache
 
 		public override int GetHashCode()
 		{
-			return hashCode;
+			// If the object is put in a set or dictionary during deserialization, the hashcode will not yet be
+			// computed. Compute the hashcode on the fly. So long as this happens only during deserialization, there
+			// will be no thread safety issues. For the hashcode to be always defined after deserialization, the
+			// deserialization callback is used.
+			return _hashCode ?? GenerateHashCode();
+		}
+
+		/// <inheritdoc />
+		public void OnDeserialization(object sender)
+		{
+			_hashCode = GenerateHashCode();
+		}
+
+		private int GenerateHashCode()
+		{
+			return type.GetHashCode(key, _factory);
 		}
 
 		public object Key
