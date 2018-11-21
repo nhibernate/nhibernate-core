@@ -140,7 +140,6 @@ namespace NHibernate.Loader.Criteria
 			selection.FetchSize = rootCriteria.FetchSize;
 
 			var lockModes = new Dictionary<string, LockMode>();
-
 			foreach (KeyValuePair<string, LockMode> me in rootCriteria.LockModes)
 			{
 				ICriteria subcriteria = GetAliasedCriteria(me.Key);
