@@ -172,11 +172,12 @@ namespace NHibernate.Loader.Criteria
 			get { return "criteria query"; }
 		}
 
-		protected override IList<string> AliasByPath(string path, string sqlAlias)
+		/// <inheritdoc />
+		protected override IReadOnlyCollection<string> GetChildAliases(string parentSqlAlias, string childPath)
 		{
-			var alias = translator.AliasByPath(path, sqlAlias);
+			var alias = translator.GetChildAliases(parentSqlAlias, childPath);
 			if (alias.Count == 0)
-				return base.AliasByPath(path, sqlAlias);
+				return base.GetChildAliases(parentSqlAlias, childPath);
 			return alias;
 		}
 
@@ -238,7 +239,7 @@ namespace NHibernate.Loader.Criteria
 
 			if (shouldCreateUserAlias)
 			{
-				ICriteria subcriteria = translator.GetCriteria(path, pathAlias);
+				var subcriteria = translator.GetCriteria(path, pathAlias);
 				sqlAlias = subcriteria == null ? null : translator.GetSQLAlias(subcriteria);
 
 				IncludeInResultIfNeeded(joinable, subcriteria, sqlAlias, path);

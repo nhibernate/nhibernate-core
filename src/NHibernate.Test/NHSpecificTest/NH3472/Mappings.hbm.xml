@@ -1,23 +1,18 @@
-<?xml version="1.0" encoding="utf-8" ?> 
+<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
-	assembly="NHibernate.Test"
-	namespace="NHibernate.Test.NHSpecificTest.NH3472"
-	default-lazy="false">
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3472">
 
   <class name="Cat">
-    <id name="Id" type="Int32"  unsaved-value="0" >
-      <generator class="native" />
-    </id>
+    <id name="Id" generator="native"/>
 
-    <property name="Color" type="string"/>
-    <property name="Age" type="int"/>
+    <property name="Color"/>
+    <property name="Age"/>
 
-    <bag name="Children" cascade="all" lazy="true">
-      <key column="parentId" />
-      <one-to-many class="Cat"  />
+    <bag name="Children" cascade="all">
+      <key column="parentId"/>
+      <one-to-many class="Cat"/>
     </bag>
   </class>
-
-  
 
 </hibernate-mapping>

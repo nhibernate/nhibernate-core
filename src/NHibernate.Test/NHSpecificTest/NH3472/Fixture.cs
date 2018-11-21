@@ -8,50 +8,61 @@ namespace NHibernate.Test.NHSpecificTest.NH3472
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override void OnSetUp()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var c = new Cat
+				{
+					Age = 4,
+					Children = new List<Cat>
+					{
+						new Cat { Color = "Ginger", Age = 1 },
+						new Cat { Color = "Black", Age = 3 }
+					}
+				};
+				s.Save(c);
+				t.Commit();
+			}
+		}
+
+		protected override void OnTearDown()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.Delete("from Cat");
+				t.Commit();
+			}
+		}
+
 		[Test]
 		public void CriteriaQueryWithMultipleJoinsToSameAssociation()
 		{
-			using (ISession sess = OpenSession())
+			using (var s = OpenSession())
 			{
-				Cat c = new Cat();
-				c.Age = 0;
-				c.Children = new List<Cat>
-				{
-					new Cat {Color = "Ginger", Age = 1},
-					new Cat {Color = "Black", Age = 3}
-				};
-				sess.Save(c);
-				sess.Flush();
-			}
-
-			using (ISession sess = OpenSession())
-			{
-				try
-				{
-					var list = sess.CreateCriteria<Cat>("cat")
-						.CreateAlias("cat.Children", "gingerCat", JoinType.LeftOuterJoin, Restrictions.Eq("Color", "Ginger"))
-
-						.CreateAlias("cat.Children", "blackCat", JoinType.LeftOuterJoin,
+				var list =
+					s
+						.CreateCriteria<Cat>("cat")
+						.CreateAlias(
+							"cat.Children",
+							"gingerCat",
+							JoinType.LeftOuterJoin,
+							Restrictions.Eq("Color", "Ginger"))
+						.CreateAlias(
+							"cat.Children",
+							"blackCat",
+							JoinType.LeftOuterJoin,
 							Restrictions.Eq("Color", "Black"))
 						.SetProjection(
 							Projections.Alias(Projections.Property("gingerCat.Age"), "gingerCatAge"),
 							Projections.Alias(Projections.Property("blackCat.Age"), "blackCatAge")
 						).AddOrder(new Order(Projections.Property("Age"), true)).List<object[]>();
-					Assert.AreEqual(list.Count, 3);
-					Assert.AreEqual(list[0][0], 1);
-					Assert.AreEqual(list[0][1], 3);
-
-					Assert.IsNull(list[1][0]);
-					Assert.IsNull(list[1][1]);
-
-					Assert.IsNull(list[2][0]);
-					Assert.IsNull(list[2][1]);
-				}
-				finally
-				{
-					sess.Delete("from Cat");
-					sess.Flush();
-				}
+				Assert.That(list, Has.Count.EqualTo(3));
+				Assert.That(list[0], Is.EqualTo(new object[] { null, null }));
+				Assert.That(list[1], Is.EqualTo(new object[] { null, null }));
+				Assert.That(list[2], Is.EqualTo(new object[] { 1, 3 }));
 			}
 		}
 	}
