@@ -48,7 +48,7 @@ namespace NHibernate.Loader.Criteria
 
 			InitFromWalker(walker);
 
-			_uncacheableCollectionPersisters = translator.UncacheableCriteriaCollectionPersisters;
+			_uncacheableCollectionPersisters = translator.UncacheableCollectionPersisters;
 			userAliases = walker.UserAliases;
 			ResultTypes = walker.ResultTypes;
 			includeInResultRow = walker.IncludeInResultRow;

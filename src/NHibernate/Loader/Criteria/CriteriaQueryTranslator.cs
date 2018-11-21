@@ -214,7 +214,7 @@ namespace NHibernate.Loader.Criteria
 			get { return rootCriteria.Projection.Aliases; }
 		}
 
-		public ISet<ICollectionPersister> UncacheableCriteriaCollectionPersisters => uncacheableCollectionPersisters;
+		public ISet<ICollectionPersister> UncacheableCollectionPersisters => uncacheableCollectionPersisters;
 
 		public IList<EntityProjection> GetEntityProjections()
 		{
