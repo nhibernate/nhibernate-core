@@ -328,6 +328,13 @@ namespace NHibernate.Loader.Criteria
 			return result;
 		}
 
+		// Since v5.2
+		[Obsolete("Use overload with a critAlias additional parameter", true)]
+		public bool IsJoin(string path)
+		{
+			return associationPathCriteriaMap.Keys.Any(k => k.Path == path);
+		}
+
 		public bool IsJoin(string path, string critAlias)
 		{
 			return associationPathCriteriaMap.ContainsKey(new AliasKey(critAlias, path));
@@ -355,11 +362,35 @@ namespace NHibernate.Loader.Criteria
 			return alias;
 		}
 
+		// Since v5.2
+		[Obsolete("Use overload with a critAlias additional parameter", true)]
+		public JoinType GetJoinType(string path)
+		{
+			return
+				associationPathJoinTypesMap
+					.Where(kv => kv.Key.Path == path)
+					.Select(kv => (JoinType?) kv.Value)
+					.SingleOrDefault() ?? JoinType.InnerJoin;
+		}
+
 		public JoinType GetJoinType(string path, string critAlias)
 		{
 			if (associationPathJoinTypesMap.TryGetValue(new AliasKey(critAlias, path), out var result))
 				return result;
 			return JoinType.InnerJoin;
+		}
+
+		// Since v5.2
+		[Obsolete("Use overload with a critAlias additional parameter", true)]
+		public ICriteria GetCriteria(string path)
+		{
+			var result =
+				associationPathCriteriaMap
+					.Where(kv => kv.Key.Path == path)
+					.Select(kv => kv.Value)
+					.SingleOrDefault();
+			logger.Debug("getCriteria for path {0}: crit={1}", path, result);
+			return result;
 		}
 
 		public ICriteria GetCriteria(string path, string critAlias)
@@ -848,6 +879,19 @@ namespace NHibernate.Loader.Criteria
 				}
 			}
 			return propertyName;
+		}
+
+		// Since v5.2
+		[Obsolete("Use overload with a critAlias additional parameter", true)]
+		public SqlString GetWithClause(string path)
+		{
+			var crit =
+				withClauseMap
+					.Where(kv => kv.Key.Path == path)
+					.Select(kv => kv.Value)
+					.SingleOrDefault();
+
+			return crit?.ToSqlString(GetCriteria(path), this);
 		}
 
 		public SqlString GetWithClause(string path, string pathAlias)

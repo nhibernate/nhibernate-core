@@ -142,9 +142,19 @@ namespace NHibernate.Loader
 			}
 		}
 
-		protected virtual SqlString GetWithClause(string path, string pathAlias)
+		// Since v5.2
+		[Obsolete("Use or override the overload taking a pathAlias additional parameter")]
+		protected virtual SqlString GetWithClause(string path)
 		{
 			return SqlString.Empty;
+		}
+
+		protected virtual SqlString GetWithClause(string path, string pathAlias)
+		{
+			// 6.0 TODO: inline the call
+#pragma warning disable 618
+			return GetWithClause(path);
+#pragma warning restore 618
 		}
 
 		/// <summary>
@@ -544,8 +554,10 @@ namespace NHibernate.Loader
 		/// association should not be joined. Override on
 		/// subclasses.
 		/// </summary>
-		protected virtual JoinType GetJoinType(IAssociationType type, FetchMode config, string path, string pathAlias,
-			string lhsTable, string[] lhsColumns, bool nullable, int currentDepth, CascadeStyle cascadeStyle)
+		// Since v5.2
+		[Obsolete("Use or override the overload taking a pathAlias additional parameter")]
+		protected virtual JoinType GetJoinType(IAssociationType type, FetchMode config, string path, string lhsTable,
+			string[] lhsColumns, bool nullable, int currentDepth, CascadeStyle cascadeStyle)
 		{
 			if (!IsJoinedFetchEnabled(type, config, cascadeStyle))
 				return JoinType.None;
@@ -558,6 +570,20 @@ namespace NHibernate.Loader
 				return JoinType.None;
 
 			return GetJoinType(nullable, currentDepth);
+		}
+
+		/// <summary>
+		/// Get the join type (inner, outer, etc) or -1 if the
+		/// association should not be joined. Override on
+		/// subclasses.
+		/// </summary>
+		protected virtual JoinType GetJoinType(IAssociationType type, FetchMode config, string path, string pathAlias,
+			string lhsTable, string[] lhsColumns, bool nullable, int currentDepth, CascadeStyle cascadeStyle)
+		{
+			// 6.0 TODO: inline the call
+#pragma warning disable 618
+			return GetJoinType(type, config, path, lhsTable, lhsColumns, nullable, currentDepth, cascadeStyle);
+#pragma warning restore 618
 		}
 
 		// By default, multiple aliases for a child are not supported. There is only one and its value
@@ -639,9 +665,19 @@ namespace NHibernate.Loader
 			return type.IsEntityType && IsJoinedFetchEnabledInMapping(config, type);
 		}
 
-		protected virtual string GenerateTableAlias(int n, string path, string pathAlias, IJoinable joinable)
+		// Since v5.2
+		[Obsolete("Use or override the overload taking a pathAlias additional parameter")]
+		protected virtual string GenerateTableAlias(int n, string path, IJoinable joinable)
 		{
 			return StringHelper.GenerateAlias(joinable.Name, n);
+		}
+
+		protected virtual string GenerateTableAlias(int n, string path, string pathAlias, IJoinable joinable)
+		{
+			// 6.0 TODO: inline the call
+#pragma warning disable 618
+			return GenerateTableAlias(n, path, joinable);
+#pragma warning restore 618
 		}
 
 		protected virtual string GenerateRootAlias(string description)
