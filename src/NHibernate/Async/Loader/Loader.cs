@@ -333,23 +333,23 @@ namespace NHibernate.Loader
 		}
 
 		internal async Task InitializeEntitiesAndCollectionsAsync(
-			IList hydratedObjects, object resultSetId, ISessionImplementor session, bool readOnly,
+			IList hydratedObjects, DbDataReader reader, ISessionImplementor session, bool readOnly,
 			CacheBatcher cacheBatcher = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
 			if (collectionPersisters != null)
 			{
-				for (int i = 0; i < collectionPersisters.Length; i++)
+				foreach (var collectionPersister in collectionPersisters)
 				{
-					if (collectionPersisters[i].IsArray)
+					if (collectionPersister.IsArray)
 					{
 						//for arrays, we should end the collection load before resolving
 						//the entities, since the actual array instances are not instantiated
 						//during loading
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i], cancellationToken)).ConfigureAwait(false);
+						await (EndCollectionLoadAsync(reader, session, collectionPersister, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 			}
@@ -392,21 +392,21 @@ namespace NHibernate.Loader
 
 			if (collectionPersisters != null)
 			{
-				for (int i = 0; i < collectionPersisters.Length; i++)
+				foreach (var collectionPersister in collectionPersisters)
 				{
-					if (!collectionPersisters[i].IsArray)
+					if (!collectionPersister.IsArray)
 					{
 						//for sets, we should end the collection load after resolving
 						//the entities, since we might call hashCode() on the elements
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i], cancellationToken)).ConfigureAwait(false);
+						await (EndCollectionLoadAsync(reader, session, collectionPersister, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 			}
 		}
 
-		private static Task EndCollectionLoadAsync(object resultSetId, ISessionImplementor session, ICollectionPersister collectionPersister, CancellationToken cancellationToken)
+		private Task EndCollectionLoadAsync(DbDataReader reader, ISessionImplementor session, ICollectionPersister collectionPersister, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -415,8 +415,8 @@ namespace NHibernate.Loader
 			try
 			{
 				//this is a query and we are loading multiple instances of the same collection role
-				return session.PersistenceContext.LoadContexts.GetCollectionLoadContext((DbDataReader)resultSetId).EndLoadingCollectionsAsync(
-				collectionPersister, cancellationToken);
+				return session.PersistenceContext.LoadContexts.GetCollectionLoadContext(reader).EndLoadingCollectionsAsync(
+				collectionPersister, !IsCollectionPersisterCacheable(collectionPersister), cancellationToken);
 			}
 			catch (Exception ex)
 			{

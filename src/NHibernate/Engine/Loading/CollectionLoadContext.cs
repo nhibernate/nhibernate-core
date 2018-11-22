@@ -139,13 +139,27 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		/// <summary> 
-		/// Finish the process of collection-loading for this bound result set.  Mainly this
+		/// <summary>
+		/// Finish the process of collection-loading for this bound result set. Mainly this
 		/// involves cleaning up resources and notifying the collections that loading is
-		/// complete. 
+		/// complete.
 		/// </summary>
-		/// <param name="persister">The persister for which to complete loading. </param>
+		/// <param name="persister">The persister for which to complete loading.</param>
+		// Since v5.2
+		[Obsolete("Please use overload with skipCache parameter instead.")]
 		public void EndLoadingCollections(ICollectionPersister persister)
+		{
+			EndLoadingCollections(persister, false);
+		}
+
+		/// <summary>
+		/// Finish the process of collection-loading for this bound result set. Mainly this
+		/// involves cleaning up resources and notifying the collections that loading is
+		/// complete.
+		/// </summary>
+		/// <param name="persister">The persister for which to complete loading.</param>
+		/// <param name="skipCache">Indicates if collection must not be put in cache.</param>
+		public void EndLoadingCollections(ICollectionPersister persister, bool skipCache)
 		{
 			if (!loadContexts.HasLoadingCollectionEntries && (localLoadingCollectionKeys.Count == 0))
 			{
@@ -190,7 +204,7 @@ namespace NHibernate.Engine.Loading
 			}
 			localLoadingCollectionKeys.ExceptWith(toRemove);
 
-			EndLoadingCollections(persister, matches);
+			EndLoadingCollections(persister, matches, skipCache);
 			if ((localLoadingCollectionKeys.Count == 0))
 			{
 				// todo : hack!!!
@@ -203,7 +217,7 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		private void EndLoadingCollections(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries)
+		private void EndLoadingCollections(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, bool skipCache)
 		{
 			if (matchedCollectionEntries == null || matchedCollectionEntries.Count == 0)
 			{
@@ -223,8 +237,11 @@ namespace NHibernate.Engine.Loading
 			var cacheBatcher = new CacheBatcher(LoadContext.PersistenceContext.Session);
 			for (int i = 0; i < count; i++)
 			{
-				EndLoadingCollection(matchedCollectionEntries[i], persister,
-				                     data => cacheBatcher.AddToBatch(persister, data));
+				EndLoadingCollection(
+					matchedCollectionEntries[i], 
+					persister,
+					data => cacheBatcher.AddToBatch(persister, data),
+					skipCache);
 			}
 			cacheBatcher.ExecuteBatch();
 
@@ -234,8 +251,11 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		private void EndLoadingCollection(LoadingCollectionEntry lce, ICollectionPersister persister,
-		                                  Action<CachePutData> cacheBatchingHandler)
+		private void EndLoadingCollection(
+			LoadingCollectionEntry lce, 
+			ICollectionPersister persister,
+			Action<CachePutData> cacheBatchingHandler,
+			bool skipCache)
 		{
 			if (log.IsDebugEnabled())
 			{
@@ -269,8 +289,10 @@ namespace NHibernate.Engine.Loading
 				ce.PostInitialize(lce.Collection, persistenceContext);
 			}
 
-			bool addToCache = hasNoQueuedOperations && persister.HasCache && 
-				session.CacheMode.HasFlag(CacheMode.Put) && !ce.IsDoremove; // and this is not a forced initialization during flush
+			bool addToCache = hasNoQueuedOperations && !skipCache && persister.HasCache &&
+				session.CacheMode.HasFlag(CacheMode.Put) &&
+				// and this is not a forced initialization during flush
+				!ce.IsDoremove;
 
 			if (addToCache)
 			{

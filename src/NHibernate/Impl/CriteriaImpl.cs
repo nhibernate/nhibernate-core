@@ -688,6 +688,7 @@ namespace NHibernate.Impl
 			private LockMode lockMode;
 			private readonly JoinType joinType;
 			private ICriterion withClause;
+			private bool hasRestrictions;
 
 			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, string alias, JoinType joinType, ICriterion withClause, string joinEntityName = null)
 			{
@@ -698,6 +699,7 @@ namespace NHibernate.Impl
 				this.joinType = joinType;
 				this.withClause = withClause;
 				JoinEntityName = joinEntityName;
+				hasRestrictions = withClause != null;
 
 				root.subcriteriaList.Add(this);
 
@@ -729,6 +731,11 @@ namespace NHibernate.Impl
 			public string Path
 			{
 				get { return path; }
+			}
+
+			public bool HasRestrictions
+			{
+				get { return hasRestrictions; }
 			}
 
 			public ICriteria Parent
@@ -770,6 +777,7 @@ namespace NHibernate.Impl
 
 			public ICriteria Add(ICriterion expression)
 			{
+				hasRestrictions = true;
 				root.Add(this, expression);
 				return this;
 			}
