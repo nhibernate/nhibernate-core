@@ -433,18 +433,15 @@ namespace NHibernate.Impl
 			Dictionary<Tuple<string, string>, ICacheConcurrencyStrategy> caches)
 		{
 			var cacheKey = new Tuple<string, string>(cacheRegion, strategy);
-			if (!caches.TryGetValue(cacheKey, out var cache))
-			{
-				cache = CacheFactory.CreateCache(
-					strategy,
-					cacheRegion,
-					settings,
-					BuildCache);
-				if (cache != null)
-					caches.Add(cacheKey, cache);
-			}
+			if (strategy == null || !settings.IsSecondLevelCacheEnabled)
+				return null;
+
+			if (caches.TryGetValue(cacheKey, out var cache)) 
+				return cache;
 			
-			if (cache != null && isMutable && strategy == CacheFactory.ReadOnly)
+			cache = CacheFactory.CreateCache(strategy, BuildCache(cacheRegion));
+			caches.Add(cacheKey, cache);
+			if (isMutable && strategy == CacheFactory.ReadOnly)
 				log.Warn("read-only cache configured for mutable: {0}", name);
 
 			return cache;
@@ -1093,11 +1090,11 @@ namespace NHibernate.Impl
 			// concurrent creation call for the same region, so this will not happen.
 			// Otherwise the dictionary will have to be changed for using a lazy, see
 			// https://stackoverflow.com/a/31637510/1178314
-			var prefix = settings.CacheRegionPrefix;
-			if (!string.IsNullOrEmpty(prefix))
-				cacheRegion = prefix + '.' + cacheRegion;
+			cacheRegion = settings.GetFullCacheRegionName(cacheRegion);
 
-			return _allCacheRegions.GetOrAdd(cacheRegion, cr => settings.CacheProvider.BuildCache(cr, properties).AsCacheBase());
+			return _allCacheRegions.GetOrAdd(
+				cacheRegion,
+				cr => CacheFactory.BuildCacheBase(cr, settings, properties));
 		}
 
 		/// <summary> Statistics SPI</summary>

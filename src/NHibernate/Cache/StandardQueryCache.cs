@@ -31,17 +31,10 @@ namespace NHibernate.Cache
 			string regionName)
 			: this(
 				updateTimestampsCache,
-				settings.CacheProvider.BuildCache(
-					(!string.IsNullOrEmpty(settings.CacheRegionPrefix) ? settings.CacheRegionPrefix + '.' : "") +
-					(regionName ?? typeof (StandardQueryCache).FullName),
+				CacheFactory.BuildCacheBase(
+					settings.GetFullCacheRegionName(regionName ?? typeof(StandardQueryCache).FullName),
+					settings,
 					props))
-		{
-		}
-
-		// Since v5.2
-		[Obsolete]
-		private StandardQueryCache(UpdateTimestampsCache updateTimestampsCache, ICache cache)
-			: this(updateTimestampsCache, cache.AsCacheBase())
 		{
 		}
 
@@ -60,7 +53,6 @@ namespace NHibernate.Cache
 			_regionName = regionCache.RegionName;
 			Log.Info("starting query cache at region: {0}", _regionName);
 
-			Cache = regionCache;
 			_cache = regionCache;
 			_updateTimestampsCache = updateTimestampsCache;
 		}
@@ -69,7 +61,7 @@ namespace NHibernate.Cache
 
 		// 6.0 TODO: type as CacheBase instead
 #pragma warning disable 618
-		public ICache Cache { get; }
+		public ICache Cache => _cache;
 #pragma warning restore 618
 
 		public string RegionName

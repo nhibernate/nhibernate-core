@@ -29,15 +29,10 @@ namespace NHibernate.Cache
 		[Obsolete("Please use overload with an CacheBase parameter.")]
 		public UpdateTimestampsCache(Settings settings, IDictionary<string, string> props)
 			: this(
-				settings.CacheProvider.BuildCache(
-					(settings.CacheRegionPrefix == null ? "" : settings.CacheRegionPrefix + '.') +
-					typeof(UpdateTimestampsCache).Name,
-					props)) {}
-
-		// Since v5.2
-		[Obsolete]
-		private UpdateTimestampsCache(ICache cache)
-			: this(cache.AsCacheBase())
+				CacheFactory.BuildCacheBase(
+					settings.GetFullCacheRegionName(nameof(UpdateTimestampsCache)),
+					settings,
+					props))
 		{
 		}
 
