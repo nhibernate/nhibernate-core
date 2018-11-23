@@ -41,7 +41,7 @@ namespace NHibernate.Cache
 		{
 			var cache = CreateCache(
 				usage, name, settings,
-				(r, u) => settings.CacheProvider.BuildCache(r, properties).AsCacheBase());
+				r => settings.CacheProvider.BuildCache(r, properties).AsCacheBase());
 
 			if (cache != null && mutable && usage == ReadOnly)
 				log.Warn("read-only cache configured for mutable: {0}", name);
@@ -61,7 +61,7 @@ namespace NHibernate.Cache
 			string usage,
 			string name,
 			Settings settings,
-			Func<string, string, CacheBase> regionAndUsageCacheGetter)
+			Func<string, CacheBase> regionAndUsageCacheGetter)
 		{
 			if (usage == null || !settings.IsSecondLevelCacheEnabled) return null; //no cache
 
@@ -92,7 +92,7 @@ namespace NHibernate.Cache
 
 			try
 			{
-				ccs.Cache = regionAndUsageCacheGetter(name, usage);
+				ccs.Cache = regionAndUsageCacheGetter(name);
 			}
 			catch (CacheException e)
 			{

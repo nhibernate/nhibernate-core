@@ -95,8 +95,8 @@ namespace NHibernate.Impl
 		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
 		[NonSerialized]
-		private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, CacheBase>> allCachePerRegionThenType =
-			new ConcurrentDictionary<string, ConcurrentDictionary<string, CacheBase>>();
+		private readonly ConcurrentDictionary<string, CacheBase> _allCacheRegions =
+			new ConcurrentDictionary<string, CacheBase>();
 
 		[NonSerialized]
 		private readonly IDictionary<string, IClassMetadata> classMetadata;
@@ -147,8 +147,6 @@ namespace NHibernate.Impl
 
 		[NonSerialized]
 		private readonly IQueryCache queryCache;
-
-		private const string QueryCacheType = "QueryCache";
 
 		[NonSerialized]
 		private readonly ConcurrentDictionary<string, Lazy<IQueryCache>> queryCaches;
@@ -370,7 +368,7 @@ namespace NHibernate.Impl
 			if (settings.IsQueryCacheEnabled)
 			{
 				var updateTimestampsCacheName = typeof(UpdateTimestampsCache).Name;
-				updateTimestampsCache = new UpdateTimestampsCache(BuildCache(updateTimestampsCacheName, updateTimestampsCacheName));
+				updateTimestampsCache = new UpdateTimestampsCache(BuildCache(updateTimestampsCacheName));
 				var queryCacheName = typeof(StandardQueryCache).FullName;
 				queryCache = BuildQueryCache(queryCacheName);
 				queryCaches = new ConcurrentDictionary<string, Lazy<IQueryCache>>();
@@ -417,7 +415,7 @@ namespace NHibernate.Impl
 				settings.QueryCacheFactory.GetQueryCache(
 					updateTimestampsCache,
 					properties,
-					BuildCache(queryCacheName, QueryCacheType))
+					BuildCache(queryCacheName))
 				// 6.0 TODO: remove the coalesce once IQueryCacheFactory todos are done
 #pragma warning disable 618
 				?? settings.QueryCacheFactory.GetQueryCache(
@@ -1071,12 +1069,11 @@ namespace NHibernate.Impl
 #pragma warning restore 618
 		{
 			return
-				allCachePerRegionThenType
+				_allCacheRegions
 					// ToArray creates a moment in time snapshot
 					.ToArray()
-					// Caches are not unique per region, take the first one.
 #pragma warning disable 618
-					.ToDictionary(kv => kv.Key, kv => (ICache)kv.Value.Values.First());
+					.ToDictionary(kv => kv.Key, kv => (ICache) kv.Value);
 #pragma warning restore 618
 		}
 
@@ -1085,13 +1082,11 @@ namespace NHibernate.Impl
 		public ICache GetSecondLevelCacheRegion(string regionName)
 #pragma warning restore 618
 		{
-			if (!allCachePerRegionThenType.TryGetValue(regionName, out var result))
-				return null;
-			// Caches are not unique per region, take the first one.
-			return result.Values.First();
+			_allCacheRegions.TryGetValue(regionName, out var result);
+			return result;
 		}
 
-		private CacheBase BuildCache(string cacheRegion, string type)
+		private CacheBase BuildCache(string cacheRegion)
 		{
 			// If run concurrently for the same region and type, this may built many caches for the same region and type.
 			// Currently only GetQueryCache may be run concurrently, and its implementation prevents
@@ -1101,15 +1096,8 @@ namespace NHibernate.Impl
 			var prefix = settings.CacheRegionPrefix;
 			if (!string.IsNullOrEmpty(prefix))
 				cacheRegion = prefix + '.' + cacheRegion;
-			var cachesPerType = allCachePerRegionThenType.GetOrAdd(cacheRegion, cr => new ConcurrentDictionary<string, CacheBase>());
-			var cache = settings.CacheProvider.BuildCache(cacheRegion, properties).AsCacheBase();
-			if (!cachesPerType.TryAdd(type, cache))
-			{
-				cache.Destroy();
-				throw new InvalidOperationException($"A cache has already been built for region {cacheRegion} and type {type}.");
-			}
 
-			return cache;
+			return _allCacheRegions.GetOrAdd(cacheRegion, cr => settings.CacheProvider.BuildCache(cr, properties).AsCacheBase());
 		}
 
 		/// <summary> Statistics SPI</summary>
