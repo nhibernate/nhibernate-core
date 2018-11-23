@@ -17,8 +17,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3506
 
 		protected override void OnSetUp()
 		{
-			using (ISession session = OpenSession())
-			using (ITransaction tx = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
 			{
 				_department = new Department();
 
@@ -39,8 +39,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3506
 
 		protected override void OnTearDown()
 		{
-			using (ISession session = OpenSession())
-			using (ITransaction tx = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
 			{
 				session.Delete(_department);
 				session.Delete(_employee1);
@@ -50,57 +50,57 @@ namespace NHibernate.Test.NHSpecificTest.NH3506
 			}
 		}
 
-		[Test]
-		public void Querying_Employees_LeftJoining_On_Departments_Should_Return_All_Employees_HQL()
+		[Theory]
+		public void Querying_Employees_LeftJoining_On_Departments_Should_Return_All_Employees_HQL(bool enableFilter)
 		{
-			using (ISession session = OpenSession())
-			using (ITransaction tx = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
 			{
-				session.EnableFilter("ValidAtFilter")
-					.SetParameter("CurrentDate", DateTime.UtcNow);
+				if (enableFilter)
+					session.EnableFilter("ValidAtFilter").SetParameter("CurrentDate", DateTime.UtcNow);
 
-				IEnumerable<Employee> employees = session.CreateQuery("select e from Employee e left join e.Department d")
+				var employees = session.CreateQuery("select e from Employee e left join e.Department d")
 					.List<Employee>();
 
-				Assert.That(employees.Count(), Is.EqualTo(2));
+				Assert.That(employees.Count, Is.EqualTo(2));
 
 				tx.Commit();
 			}
 		}
 
-		[Test]
-		public void Querying_Employees_LeftJoining_On_Departments_Should_Return_All_Employees_ICriteria()
+		[Theory]
+		public void Querying_Employees_LeftJoining_On_Departments_Should_Return_All_Employees_ICriteria(bool enableFilter)
 		{
-			using (ISession session = OpenSession())
-			using (ITransaction tx = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
 			{
-				session.EnableFilter("ValidAtFilter")
-					.SetParameter("CurrentDate", DateTime.UtcNow);
+				if (enableFilter)
+					session.EnableFilter("ValidAtFilter").SetParameter("CurrentDate", DateTime.UtcNow);
 
-				IEnumerable<Employee> employees = session.CreateCriteria<Employee>()
+				var employees = session.CreateCriteria<Employee>()
 					.CreateCriteria("Department", JoinType.LeftOuterJoin)
 					.List<Employee>();
 
-				Assert.That(employees.Count(), Is.EqualTo(2));
+				Assert.That(employees.Count, Is.EqualTo(2));
 
 				tx.Commit();
 			}
 		}
 
-		[Test]
-		public void Querying_Employees_LeftJoining_On_Departments_Should_Return_All_Employees_QueryOver()
+		[Theory]
+		public void Querying_Employees_LeftJoining_On_Departments_Should_Return_All_Employees_QueryOver(bool enableFilter)
 		{
-			using (ISession session = OpenSession())
-			using (ITransaction tx = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
 			{
-				session.EnableFilter("ValidAtFilter")
-					.SetParameter("CurrentDate", DateTime.UtcNow);
+				if (enableFilter)
+					session.EnableFilter("ValidAtFilter").SetParameter("CurrentDate", DateTime.UtcNow);
 
-				IEnumerable<Employee> employees = session.QueryOver<Employee>()
+				var employees = session.QueryOver<Employee>()
 					.JoinQueryOver(x => x.Department, JoinType.LeftOuterJoin)
 					.List();
 
-				Assert.That(employees.Count(), Is.EqualTo(2));
+				Assert.That(employees.Count, Is.EqualTo(2));
 
 				tx.Commit();
 			}
