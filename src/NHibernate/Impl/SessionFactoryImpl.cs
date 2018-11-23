@@ -95,11 +95,8 @@ namespace NHibernate.Impl
 		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
 		[NonSerialized]
-		// 6.0 TODO: type as CacheBase instead
-#pragma warning disable 618
-		private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, ICache>> allCachePerRegionThenType =
-			new ConcurrentDictionary<string, ConcurrentDictionary<string, ICache>>();
-#pragma warning restore 618
+		private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, CacheBase>> allCachePerRegionThenType =
+			new ConcurrentDictionary<string, ConcurrentDictionary<string, CacheBase>>();
 
 		[NonSerialized]
 		private readonly IDictionary<string, IClassMetadata> classMetadata;
@@ -1078,7 +1075,9 @@ namespace NHibernate.Impl
 					// ToArray creates a moment in time snapshot
 					.ToArray()
 					// Caches are not unique per region, take the first one.
-					.ToDictionary(kv => kv.Key, kv => kv.Value.Values.First());
+#pragma warning disable 618
+					.ToDictionary(kv => kv.Key, kv => (ICache)kv.Value.Values.First());
+#pragma warning restore 618
 		}
 
 		// 6.0 TODO: return CacheBase instead
@@ -1102,17 +1101,15 @@ namespace NHibernate.Impl
 			var prefix = settings.CacheRegionPrefix;
 			if (!string.IsNullOrEmpty(prefix))
 				cacheRegion = prefix + '.' + cacheRegion;
-#pragma warning disable 618
-			var cachesPerType = allCachePerRegionThenType.GetOrAdd(cacheRegion, cr => new ConcurrentDictionary<string, ICache>());
-#pragma warning restore 618
-			var cache = settings.CacheProvider.BuildCache(cacheRegion, properties);
+			var cachesPerType = allCachePerRegionThenType.GetOrAdd(cacheRegion, cr => new ConcurrentDictionary<string, CacheBase>());
+			var cache = settings.CacheProvider.BuildCache(cacheRegion, properties).AsCacheBase();
 			if (!cachesPerType.TryAdd(type, cache))
 			{
 				cache.Destroy();
 				throw new InvalidOperationException($"A cache has already been built for region {cacheRegion} and type {type}.");
 			}
 
-			return cache.AsCacheBase();
+			return cache;
 		}
 
 		/// <summary> Statistics SPI</summary>
