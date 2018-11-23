@@ -8,7 +8,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3472
 
 		public virtual string Color { get; set; }
 		public virtual int Age { get; set; }
+		public virtual Cat Parent { get; set; }
 
-		public virtual IList<Cat> Children { get; set; } = new List<Cat>();
+		public virtual ISet<Cat> Children { get; set; } = new HashSet<Cat>();
 	}
 }

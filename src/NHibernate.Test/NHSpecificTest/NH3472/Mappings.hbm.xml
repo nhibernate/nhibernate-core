@@ -8,11 +8,12 @@
 
     <property name="Color"/>
     <property name="Age"/>
+    <many-to-one name="Parent" column="parentId" insert="false" update="false"/>
 
-    <bag name="Children" cascade="all">
+    <set name="Children" cascade="all">
       <key column="parentId"/>
       <one-to-many class="Cat"/>
-    </bag>
+    </set>
   </class>
 
 </hibernate-mapping>
