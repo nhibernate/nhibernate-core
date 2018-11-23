@@ -235,13 +235,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 		protected void ClearSecondLevelCacheFor(System.Type entity)
 		{
 			var entityName = entity.FullName;
-			sessions.EvictEntity(entityName);
-			var entityPersister = sessions.GetEntityPersister(entityName);
+			Sfi.EvictEntity(entityName);
+			var entityPersister = Sfi.GetEntityPersister(entityName);
 			if (!entityPersister.HasCache)
 				return;
 
-			var querySpaces = entityPersister.QuerySpaces.Cast<object>().ToArray();
-			sessions.UpdateTimestampsCache.Invalidate(querySpaces);
+			IReadOnlyCollection<string> querySpaces = entityPersister.QuerySpaces;
+			Sfi.UpdateTimestampsCache.Invalidate(querySpaces);
 		}
 
 		protected void ClearCollectionCache<T>(Expression<Func<T, IEnumerable>> pathToCollection)
@@ -252,7 +252,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 				throw new ArgumentException("pathToCollection should be member expression");
 
 			var role = string.Format("{0}.{1}", rootEntityTypeFullPath, memberExpression.Member.Name);
-			sessions.EvictCollection(role);
+			Sfi.EvictCollection(role);
 		}
 
 		protected abstract IList<Customer> GetCustomersWithFetchedOrdersWithoutRestrictions(ISession session);

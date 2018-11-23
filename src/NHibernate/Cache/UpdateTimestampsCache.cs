@@ -55,7 +55,7 @@ namespace NHibernate.Cache
 		}
 
 		//Since v5.1
-		[Obsolete("Please use PreInvalidate(IReadOnlyCollection<string>) instead.")]
+		[Obsolete("Please use Invalidate(IReadOnlyCollection<string>) instead.")]
 		public void Invalidate(object[] spaces)
 		{
 			//Only for backwards compatibility.
