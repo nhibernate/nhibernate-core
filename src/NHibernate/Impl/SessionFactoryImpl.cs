@@ -368,7 +368,7 @@ namespace NHibernate.Impl
 			if (settings.IsQueryCacheEnabled)
 			{
 				var updateTimestampsCacheName = typeof(UpdateTimestampsCache).Name;
-				updateTimestampsCache = new UpdateTimestampsCache(BuildCache(updateTimestampsCacheName));
+				updateTimestampsCache = new UpdateTimestampsCache(GetCache(updateTimestampsCacheName));
 				var queryCacheName = typeof(StandardQueryCache).FullName;
 				queryCache = BuildQueryCache(queryCacheName);
 				queryCaches = new ConcurrentDictionary<string, Lazy<IQueryCache>>();
@@ -415,7 +415,7 @@ namespace NHibernate.Impl
 				settings.QueryCacheFactory.GetQueryCache(
 					updateTimestampsCache,
 					properties,
-					BuildCache(queryCacheName))
+					GetCache(queryCacheName))
 				// 6.0 TODO: remove the coalesce once IQueryCacheFactory todos are done
 #pragma warning disable 618
 				?? settings.QueryCacheFactory.GetQueryCache(
@@ -432,14 +432,14 @@ namespace NHibernate.Impl
 			bool isMutable,
 			Dictionary<Tuple<string, string>, ICacheConcurrencyStrategy> caches)
 		{
-			var cacheKey = new Tuple<string, string>(cacheRegion, strategy);
 			if (strategy == null || !settings.IsSecondLevelCacheEnabled)
 				return null;
 
+			var cacheKey = new Tuple<string, string>(cacheRegion, strategy);
 			if (caches.TryGetValue(cacheKey, out var cache)) 
 				return cache;
-			
-			cache = CacheFactory.CreateCache(strategy, BuildCache(cacheRegion));
+
+			cache = CacheFactory.CreateCache(strategy, GetCache(cacheRegion));
 			caches.Add(cacheKey, cache);
 			if (isMutable && strategy == CacheFactory.ReadOnly)
 				log.Warn("read-only cache configured for mutable: {0}", name);
@@ -878,8 +878,11 @@ namespace NHibernate.Impl
 				{
 					cache.Value.Destroy();
 				}
+			}
 
-				updateTimestampsCache.Destroy();
+			foreach (var cache in _allCacheRegions.Values)
+			{
+				cache.Destroy();
 			}
 
 			settings.CacheProvider.Stop();
@@ -1083,7 +1086,7 @@ namespace NHibernate.Impl
 			return result;
 		}
 
-		private CacheBase BuildCache(string cacheRegion)
+		private CacheBase GetCache(string cacheRegion)
 		{
 			// If run concurrently for the same region and type, this may built many caches for the same region and type.
 			// Currently only GetQueryCache may be run concurrently, and its implementation prevents

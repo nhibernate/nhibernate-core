@@ -281,14 +281,8 @@ namespace NHibernate.Cache
 
 		public void Destroy()
 		{
-			try
-			{
-				Cache.Destroy();
-			}
-			catch (Exception e)
-			{
-				Log.Warn(e, "could not destroy query cache: {0}", _regionName);
-			}
+			// The cache is externally provided and may be shared. Destroying the cache is
+			// not the responsibility of this class.
 		}
 
 		#endregion

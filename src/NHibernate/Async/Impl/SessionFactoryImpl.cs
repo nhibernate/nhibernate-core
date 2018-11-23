@@ -89,8 +89,11 @@ namespace NHibernate.Impl
 				{
 					cache.Value.Destroy();
 				}
+			}
 
-				updateTimestampsCache.Destroy();
+			foreach (var cache in _allCacheRegions.Values)
+			{
+				cache.Destroy();
 			}
 
 			settings.CacheProvider.Stop();

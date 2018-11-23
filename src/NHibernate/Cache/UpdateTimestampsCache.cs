@@ -155,16 +155,12 @@ namespace NHibernate.Cache
 			return results;
 		}
 
+		// Since v5.2
+		[Obsolete("This method has no usages anymore")]
 		public virtual void Destroy()
 		{
-			try
-			{
-				_updateTimestamps.Destroy();
-			}
-			catch (Exception e)
-			{
-				log.Warn(e, "could not destroy UpdateTimestamps cache");
-			}
+			// The cache is externally provided and may be shared. Destroying the cache is
+			// not the responsibility of this class.
 		}
 
 		private bool IsOutdated(long? lastUpdate, long timestamp)

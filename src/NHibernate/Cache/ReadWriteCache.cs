@@ -413,14 +413,9 @@ namespace NHibernate.Cache
 
 		public void Destroy()
 		{
-			try
-			{
-				Cache.Destroy();
-			}
-			catch (Exception e)
-			{
-				log.Warn(e, "Could not destroy cache");
-			}
+			// The cache is externally provided and may be shared. Destroying the cache is
+			// not the responsibility of this class.
+			Cache = null;
 		}
 
 		/// <summary>
