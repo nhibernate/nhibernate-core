@@ -315,6 +315,11 @@ namespace NHibernate.Loader.Hql
 			}
 		}
 
+		protected override bool IsCollectionPersisterCacheable(ICollectionPersister collectionPersister)
+		{
+			return _queryTranslator.CanAddFetchedCollectionToCache;
+		}
+
 		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
 		{
 			return _selectNewTransformer ?? resultTransformer;

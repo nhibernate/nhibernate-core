@@ -168,8 +168,7 @@ namespace NHibernate.Loader.Criteria
 					rootCriteria.CacheRegion,
 					rootCriteria.Comment,
 					rootCriteria.LookupByNaturalKey,
-					rootCriteria.ResultTransformer,
-                    true)
+					rootCriteria.ResultTransformer)
 				{
 					CacheMode = rootCriteria.CacheMode
 				};

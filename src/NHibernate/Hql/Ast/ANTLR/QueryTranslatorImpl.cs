@@ -108,9 +108,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 				queryParametersToUse = queryParameters;
 			}
 
-			if (session.CacheMode.HasFlag(CacheMode.Put) && !CanAddFetchedCollectionToCache)
-				queryParametersToUse.CanAddCollectionsToCache = false;
-
 			IList results = _queryLoader.List(session, queryParametersToUse);
 
 			if ( needsDistincting ) 

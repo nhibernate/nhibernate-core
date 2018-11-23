@@ -325,7 +325,6 @@ namespace NHibernate.Multi
 					continue;
 				queryInfo.Loader.InitializeEntitiesAndCollections(
 					hydratedObjects[i], reader, Session, queryInfo.Parameters.IsReadOnly(Session),
-					queryInfo.Parameters.CanAddCollectionsToCache,
 					queryInfo.CacheBatcher);
 			}
 		}
