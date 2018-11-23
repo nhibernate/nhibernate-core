@@ -1,6 +1,6 @@
 using System;
-using NHibernate.Cfg;
 using System.Collections.Generic;
+using NHibernate.Cfg;
 
 namespace NHibernate.Cache
 {
@@ -47,7 +47,7 @@ namespace NHibernate.Cache
 
 			if (mutable && usage == ReadOnly)
 				log.Warn("read-only cache configured for mutable: {0}", name);
-			
+
 			return ccs;
 		}
 
