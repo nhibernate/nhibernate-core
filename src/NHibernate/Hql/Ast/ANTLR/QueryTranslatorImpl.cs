@@ -108,7 +108,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				queryParametersToUse = queryParameters;
 			}
 
-			if (session.CacheMode.HasFlag(CacheMode.Put) && CanAddFetchedCollectionToCache)
+			if (session.CacheMode.HasFlag(CacheMode.Put) && !CanAddFetchedCollectionToCache)
 				queryParametersToUse.CanAddCollectionsToCache = false;
 
 			IList results = _queryLoader.List(session, queryParametersToUse);
@@ -306,10 +306,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 						continue;
 
 					if (ContainsRestrictionOnTable(fromElement.TableAlias))
-						return true;
+						return false;
 				}
 
-				return false;
+				return true;
 			}
 		}
 
