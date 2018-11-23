@@ -315,7 +315,7 @@ namespace NHibernate.Loader
 												 queryParameters.NamedParameters);
 			}
 
-            InitializeEntitiesAndCollections(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session));
+			InitializeEntitiesAndCollections(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session));
 			session.PersistenceContext.InitializeNonLazyCollections();
 			return result;
 		}
@@ -517,7 +517,7 @@ namespace NHibernate.Loader
 					session.Batcher.CloseCommand(st, rs);
 				}
 
-                InitializeEntitiesAndCollections(hydratedObjects, rs, session, queryParameters.IsReadOnly(session));
+				InitializeEntitiesAndCollections(hydratedObjects, rs, session, queryParameters.IsReadOnly(session));
 
 				if (createSubselects)
 				{
@@ -672,7 +672,7 @@ namespace NHibernate.Loader
 			}
 		}
 
-        private void EndCollectionLoad(DbDataReader reader, ISessionImplementor session, ICollectionPersister collectionPersister)
+		private void EndCollectionLoad(DbDataReader reader, ISessionImplementor session, ICollectionPersister collectionPersister)
 		{
 			//this is a query and we are loading multiple instances of the same collection role
 			session.PersistenceContext.LoadContexts.GetCollectionLoadContext(reader).EndLoadingCollections(

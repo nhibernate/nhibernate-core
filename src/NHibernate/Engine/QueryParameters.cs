@@ -40,14 +40,14 @@ namespace NHibernate.Engine
 			: this(positionalParameterTypes, postionalParameterValues, namedParameters, null, null, false, false, false, null, null, collectionKeys, null) {}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, LockMode> lockModes, RowSelection rowSelection,
-							   bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
+		                       bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
 			: this(positionalParameterTypes, positionalParameterValues, null, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null, transformer)
 		{
 			NaturalKeyLookup = isLookupByNaturalKey;
 		}
 
 		public QueryParameters(IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized,
-							   bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
+		                       bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
 			: this(
 				TypeHelper.EmptyTypeArray, Array.Empty<object>(), namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null,
 				transformer)
@@ -57,8 +57,8 @@ namespace NHibernate.Engine
 		}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, TypedValue> namedParameters,
-							   IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion,
-							   string comment, object[] collectionKeys, IResultTransformer transformer)
+		                       IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion,
+		                       string comment, object[] collectionKeys, IResultTransformer transformer)
 		{
 			PositionalParameterTypes = positionalParameterTypes ?? Array.Empty<IType>();
 			PositionalParameterValues = positionalParameterValues ?? Array.Empty<object>();
@@ -75,8 +75,8 @@ namespace NHibernate.Engine
 		}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, TypedValue> namedParameters,
-							   IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion,
-							   string comment, object[] collectionKeys, object optionalObject, string optionalEntityName, object optionalId, IResultTransformer transformer)
+		                       IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion,
+		                       string comment, object[] collectionKeys, object optionalObject, string optionalEntityName, object optionalId, IResultTransformer transformer)
 			: this(
 				positionalParameterTypes, positionalParameterValues, namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, collectionKeys,
 				transformer)
@@ -196,7 +196,7 @@ namespace NHibernate.Engine
 			if (typesLength != valuesLength)
 			{
 				throw new QueryException("Number of positional parameter types (" + typesLength
-										 + ") does not match number of positional parameter values (" + valuesLength + ")");
+				                         + ") does not match number of positional parameter values (" + valuesLength + ")");
 			}
 		}
 
