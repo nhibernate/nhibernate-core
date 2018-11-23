@@ -20,11 +20,10 @@ namespace NHibernate.Cache
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof (StandardQueryCache));
 		private readonly string _regionName;
 		private readonly UpdateTimestampsCache _updateTimestampsCache;
-		// 6.0 TODO: remove
 		private readonly CacheBase _cache;
 
 		// Since v5.2
-		[Obsolete("Please use overload with an ICache parameter.")]
+		[Obsolete("Please use overload with an CacheBase parameter.")]
 		public StandardQueryCache(
 			Settings settings,
 			IDictionary<string, string> props,
@@ -41,10 +40,8 @@ namespace NHibernate.Cache
 
 		// Since v5.2
 		[Obsolete]
-		private StandardQueryCache(
-			UpdateTimestampsCache updateTimestampsCache,
-			ICache cache)
-			: this(updateTimestampsCache, cache as CacheBase ?? new ObsoleteCacheWrapper(cache))
+		private StandardQueryCache(UpdateTimestampsCache updateTimestampsCache, ICache cache)
+			: this(updateTimestampsCache, cache.AsCacheBase())
 		{
 		}
 

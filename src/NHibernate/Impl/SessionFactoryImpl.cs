@@ -1112,7 +1112,7 @@ namespace NHibernate.Impl
 				throw new InvalidOperationException($"A cache has already been built for region {cacheRegion} and type {type}.");
 			}
 
-			return cache as CacheBase ?? new ObsoleteCacheWrapper(cache);
+			return cache.AsCacheBase();
 		}
 
 		/// <summary> Statistics SPI</summary>

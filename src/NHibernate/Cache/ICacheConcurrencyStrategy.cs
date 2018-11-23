@@ -206,10 +206,7 @@ namespace NHibernate.Cache
 		{
 			if (cache is IBatchableCacheConcurrencyStrategy batchableCache)
 				return batchableCache.Cache;
-			var concreteCache = cache.Cache;
-			if (concreteCache == null)
-				return null;
-			return concreteCache as CacheBase ?? new ObsoleteCacheWrapper(concreteCache);
+			return cache.Cache?.AsCacheBase();
 		}
 	}
 }

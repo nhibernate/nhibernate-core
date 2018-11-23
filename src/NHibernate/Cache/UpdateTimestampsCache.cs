@@ -26,7 +26,7 @@ namespace NHibernate.Cache
 		}
 
 		// Since v5.2
-		[Obsolete("Please use overload with an ICache parameter.")]
+		[Obsolete("Please use overload with an CacheBase parameter.")]
 		public UpdateTimestampsCache(Settings settings, IDictionary<string, string> props)
 			: this(
 				settings.CacheProvider.BuildCache(
@@ -37,7 +37,7 @@ namespace NHibernate.Cache
 		// Since v5.2
 		[Obsolete]
 		private UpdateTimestampsCache(ICache cache)
-			: this(cache as CacheBase ?? new ObsoleteCacheWrapper(cache))
+			: this(cache.AsCacheBase())
 		{
 		}
 

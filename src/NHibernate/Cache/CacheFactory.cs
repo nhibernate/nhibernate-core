@@ -41,11 +41,7 @@ namespace NHibernate.Cache
 		{
 			var cache = CreateCache(
 				usage, name, settings,
-				(r, u) =>
-				{
-					var c = settings.CacheProvider.BuildCache(r, properties);
-					return c as CacheBase ?? new ObsoleteCacheWrapper(c);
-				});
+				(r, u) => settings.CacheProvider.BuildCache(r, properties).AsCacheBase());
 
 			if (cache != null && mutable && usage == ReadOnly)
 				log.Warn("read-only cache configured for mutable: {0}", name);
