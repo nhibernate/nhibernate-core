@@ -681,7 +681,7 @@ namespace NHibernate.Loader.Criteria
 				}
 				var sqlAlias = StringHelper.GenerateAlias(alias, i++);
 				criteriaSQLAliasMap[crit] = sqlAlias;
-				logger.Debug("put criteria={0} alias={1}", crit, criteriaSQLAliasMap[crit]);
+				logger.Debug("put criteria={0} alias={1}", crit, sqlAlias);
 				if (!string.IsNullOrEmpty(crit.Alias))
 					sqlAliasToCriteriaAliasMap[sqlAlias] = alias;
 			}
