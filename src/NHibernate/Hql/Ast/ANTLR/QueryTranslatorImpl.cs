@@ -292,17 +292,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			get
 			{
-				foreach (var collectionFetch in CollectionFetches)
+				foreach (FromElement fromElement in CollectionFetches)
 				{
-					var fromElement = collectionFetch as FromElement;
-					var hasCache =
-						fromElement?.QueryableCollection != null &&
-						fromElement.QueryableCollection.HasCache;
+					var hasCache = fromElement.QueryableCollection.HasCache;
 
 					if (!hasCache)
 						continue;
 
-					if (ContainsRestrictionOnTable(fromElement.TableAlias))
+					if (ContainsRestrictionOnTable(fromElement))
 						return false;
 				}
 
@@ -452,34 +449,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
-		private bool ContainsRestrictionOnTable(string tableAlias)
+		private bool ContainsRestrictionOnTable(FromElement fromElement)
 		{
 			var whereClause = ((QueryNode) _sqlAst).WhereClause;
-			if (whereClause == null)
-				return false;
-
-			var tableAliasWithDot = tableAlias + ".";
-			var stack = new Stack<IASTNode>();
-			for (var i = 0; i < whereClause.ChildCount; i++)
-			{
-				stack.Push(whereClause.GetChild(i));
-				while (stack.Count != 0)
-				{
-					var child = stack.Pop();
-					if (child.ChildCount > 0)
-					{
-						//We're iterating from count to 0 because it is more common to put restricting column as a left operand.
-						//e.g WHERE fetchedCollectionAlias.Column = 1. Now we put on stack first '1' and then 'fetchedCollectionAlias.Column'
-						//so 'fetchedCollectionAlias.Column' will be on top.
-						for (var j = child.ChildCount - 1; j >= 0; j--)
-							stack.Push(child.GetChild(j));
-					}
-					else if (child.Text.StartsWith(tableAliasWithDot, StringComparison.Ordinal))
-						return true;
-				}
-			}
-
-			return false;
+			//Iterate over all nodes of type FromReferenceNode (but don't go inside FromReferenceNode with defined FromElement)
+			return ASTUtil.IterateChildrenOfType<FromReferenceNode>(whereClause, skipSearchInChildrenWhen: node => node.FromElement != null)
+				.Any(rn => rn.FromElement == fromElement);
 		}
 
 		private IList<IASTNode> CollectionFetches
