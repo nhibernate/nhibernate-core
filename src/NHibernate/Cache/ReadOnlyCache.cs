@@ -29,7 +29,7 @@ namespace NHibernate.Cache
 #pragma warning restore 618
 		{
 			get { return _cache; }
-			set { _cache = value.AsCacheBase(); }
+			set { _cache = value?.AsCacheBase(); }
 		}
 
 		// 6.0 TODO: make implicit and switch to auto-property
