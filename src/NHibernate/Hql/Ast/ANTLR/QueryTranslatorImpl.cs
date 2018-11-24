@@ -294,10 +294,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				foreach (var collectionFetch in CollectionFetches)
 				{
-					var fromElement = (collectionFetch as FromElement);
-					var hasCache = fromElement != null &&
-								   fromElement.QueryableCollection != null &&
-								   fromElement.QueryableCollection.HasCache;
+					var fromElement = collectionFetch as FromElement;
+					var hasCache =
+						fromElement?.QueryableCollection != null &&
+						fromElement.QueryableCollection.HasCache;
 
 					if (!hasCache)
 						continue;
@@ -454,7 +454,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private bool ContainsRestrictionOnTable(string tableAlias)
 		{
-			var whereClause = ((QueryNode)_sqlAst).WhereClause;
+			var whereClause = ((QueryNode) _sqlAst).WhereClause;
 			if (whereClause == null)
 				return false;
 
@@ -489,7 +489,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				if (collectionFetches == null)
 				{
 					ErrorIfDML();
-					collectionFetches = ((QueryNode)_sqlAst).FromClause.GetCollectionFetches() ?? new List<IASTNode>();
+					collectionFetches = ((QueryNode) _sqlAst).FromClause.GetCollectionFetches() ?? new List<IASTNode>();
 				}
 
 				return collectionFetches;
