@@ -37,7 +37,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private IStatement _sqlAst;
 		private IDictionary<string, string> _tokenReplacements;
 		private HqlSqlGenerator _generator;
-		private IList<IASTNode> collectionFetches;
+		private List<FromElement> collectionFetches;
 
 		/// <summary>
 		/// Creates a new AST-based query translator.
@@ -292,7 +292,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			get
 			{
-				foreach (FromElement fromElement in CollectionFetches)
+				foreach (var fromElement in CollectionFetches)
 				{
 					var hasCache = fromElement.QueryableCollection.HasCache;
 
@@ -457,14 +457,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 				.Any(rn => rn.FromElement == fromElement);
 		}
 
-		private IList<IASTNode> CollectionFetches
+		private IList<FromElement> CollectionFetches
 		{
 			get
 			{
 				if (collectionFetches == null)
 				{
 					ErrorIfDML();
-					collectionFetches = ((QueryNode) _sqlAst).FromClause.GetCollectionFetches() ?? new List<IASTNode>();
+					collectionFetches = ((QueryNode) _sqlAst).FromClause.GetCollectionFetches().Cast<FromElement>().ToList();
 				}
 
 				return collectionFetches;

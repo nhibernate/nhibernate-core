@@ -109,15 +109,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 		/// </summary>
 		internal static IEnumerable<TRequiredType> IterateChildrenOfType<TRequiredType>(IASTNode root, Func<TRequiredType, bool> skipSearchInChildrenWhen)
 		{
-			foreach(var child in root)
+			foreach (var child in root)
 			{
-				bool searchInChildren = true;
+				var searchInChildren = true;
 				if (child is TRequiredType typedChild)
 				{
 					searchInChildren = !skipSearchInChildrenWhen(typedChild);
 					yield return typedChild;
 				}
-				if(searchInChildren)
+				if (searchInChildren)
 				{
 					foreach (var subChild in IterateChildrenOfType(child, skipSearchInChildrenWhen))
 					{
