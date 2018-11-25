@@ -7,10 +7,6 @@ namespace NHibernate.Driver
 {
 	public static class DriverExtensions
 	{
-		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(DriverExtensions));
-		// No threading protection on this member: we do not care, at worst it will cause some duplicated warning.
-		private static bool _hasWarnedForMissingBeginTransaction;
-
 		internal static void AdjustParameterForValue(this IDriver driver, DbParameter parameter, SqlType sqlType, object value)
 		{
 			var adjustingDriver = driver as IParameterAdjuster;
@@ -32,27 +28,8 @@ namespace NHibernate.Driver
 				return driverBase.BeginTransaction(isolationLevel, connection);
 			}
 
-			// Use reflection for supporting custom drivers.
-			var beginMethod = driver.GetType().GetMethod(
-				nameof(DriverBase.BeginTransaction),
-				new[] { typeof(IsolationLevel), typeof(DbConnection) });
-			if (beginMethod != null && beginMethod.ReturnType == typeof(DbTransaction) && !beginMethod.IsStatic)
-			{
-				return (DbTransaction) beginMethod.Invoke(driver, new object[] { isolationLevel, connection });
-			}
-
-			if (!_hasWarnedForMissingBeginTransaction)
-			{
-				// Ideally it should be a dictionary per driver class, but keep it simple. Drivers not deriving from
-				// DriverBase are already not common, so applications which would use two distinct such drivers are
-				// even less common.
-				_hasWarnedForMissingBeginTransaction = true;
-				Log.Warn(
-					"Driver {0} is obsolete. It should implement a 'public DbTransaction BeginTransaction(" +
-					"IsolationLevel, DbConnection) method.",
-					driver);
-			}
-
+			// So long for custom drivers not deriving from DriverBase, they will have to wait for 6.0 if they
+			// need the feature.
 			if (isolationLevel == IsolationLevel.Unspecified)
 			{
 				return connection.BeginTransaction();
