@@ -36,7 +36,7 @@ namespace NHibernate.Driver
 			var beginMethod = driver.GetType().GetMethod(
 				nameof(DriverBase.BeginTransaction),
 				new[] { typeof(IsolationLevel), typeof(DbConnection) });
-			if (beginMethod != null)
+			if (beginMethod != null && beginMethod.ReturnType == typeof(DbTransaction) && !beginMethod.IsStatic)
 			{
 				return (DbTransaction) beginMethod.Invoke(driver, new object[] { isolationLevel, connection });
 			}
