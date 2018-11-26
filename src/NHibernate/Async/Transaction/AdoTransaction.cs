@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Impl;
 

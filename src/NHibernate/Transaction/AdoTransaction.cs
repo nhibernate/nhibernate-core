@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Impl;
 
@@ -146,14 +147,7 @@ namespace NHibernate.Transaction
 
 				try
 				{
-					if (isolationLevel == IsolationLevel.Unspecified)
-					{
-						trans = session.Connection.BeginTransaction();
-					}
-					else
-					{
-						trans = session.Connection.BeginTransaction(isolationLevel);
-					}
+					trans = session.Factory.ConnectionProvider.Driver.BeginTransaction(isolationLevel, session.Connection);
 				}
 				catch (HibernateException)
 				{
