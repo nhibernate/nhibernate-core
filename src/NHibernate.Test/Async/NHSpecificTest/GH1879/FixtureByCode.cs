@@ -62,6 +62,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.InvoiceNumber);
+				rc.Property(x => x.Amount);
+				rc.Property(x => x.SpecialAmount);
+				rc.Property(x => x.Paid);
 				rc.ManyToOne(x => x.Project, m => m.Column("ProjectId"));
 				rc.ManyToOne(x => x.Issue, m => m.Column("IssueId"));
 			});
@@ -122,9 +125,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 					expectedResult = await (expectedQuery(session.Query<T>()).ToListAsync(cancellationToken));
 				}
 				catch (OperationCanceledException) { throw; }
-				catch
+				catch (Exception e)
 				{
-					Assert.Ignore("Not currently supported query");
+					Assert.Ignore($"Not currently supported query: {e}");
 				}
 				
 				var testResult = await (actualQuery(session.Query<T>()).ToListAsync(cancellationToken));
