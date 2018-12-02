@@ -46,7 +46,20 @@ namespace NHibernate.Test
 
 		public virtual bool SupportsNullCharactersInUtfStrings => true;
 
-		public virtual bool SupportsSelectForUpdateOnOuterJoin => true;
+		/// <summary>
+		/// Some databases do not support SELECT FOR UPDATE 
+		/// </summary>
+		public virtual bool SupportsSelectForUpdate => true;
+		
+		/// <summary>
+		/// Some databases do not support SELECT FOR UPDATE with paging
+		/// </summary>
+		public virtual bool SupportsSelectForUpdateWithPaging => SupportsSelectForUpdate;
+
+		/// <summary>
+		///  Some databases do not support SELECT FOR UPDATE in conjunction with outer joins 
+		/// </summary>
+		public virtual bool SupportsSelectForUpdateOnOuterJoin => SupportsSelectForUpdate;
 
 		public virtual bool SupportsHavingWithoutGroupBy => true;
 
