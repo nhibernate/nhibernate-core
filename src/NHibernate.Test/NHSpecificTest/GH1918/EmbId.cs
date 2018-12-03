@@ -1,4 +1,4 @@
-namespace NHibernate.Test.NHSpecificTest.EmbIdBidirectional
+namespace NHibernate.Test.NHSpecificTest.GH1918
 {
 	public class EmbId
 	{
@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.EmbIdBidirectional
 			var casted = obj as EmbId;
 			if (casted == null)
 				return false;
-			return (X == casted.X && Y == casted.Y);
+			return X == casted.X && Y == casted.Y;
 		}
 
 		public override int GetHashCode()

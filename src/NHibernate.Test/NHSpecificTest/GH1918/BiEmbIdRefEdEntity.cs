@@ -1,4 +1,4 @@
-﻿namespace NHibernate.Test.NHSpecificTest.EmbIdBidirectional
+﻿namespace NHibernate.Test.NHSpecificTest.GH1918
 {
 	public class BiEmbIdRefEdEntity
 	{
