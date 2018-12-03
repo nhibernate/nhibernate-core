@@ -15,6 +15,7 @@ namespace NHibernate.Linq.ReWriters
 
 		internal static readonly System.Type[] FlattenableResultOperators =
 		{
+			typeof(LockResultOperator),
 			typeof(FetchOneRequest),
 			typeof(FetchManyRequest)
 		};

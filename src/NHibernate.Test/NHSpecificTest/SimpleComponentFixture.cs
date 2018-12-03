@@ -11,6 +11,11 @@ namespace NHibernate.Test.NHSpecificTest
 		private DateTime testDateTime = new DateTime(2003, 8, 16);
 		private DateTime updateDateTime = new DateTime(2003, 8, 17);
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsSquareBracketInIdentifiers;
+		}
+
 		protected override string[] Mappings
 		{
 			get { return new string[] {"NHSpecific.SimpleComponent.hbm.xml"}; }

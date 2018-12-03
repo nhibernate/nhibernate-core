@@ -238,7 +238,7 @@ namespace NHibernate.Loader
 					}
 					else
 					{
-						key = collectionPersister.CollectionType.GetKeyOfOwner(owner, session);
+						key = await (collectionPersister.CollectionType.GetKeyOfOwnerAsync(owner, session, cancellationToken)).ConfigureAwait(false);
 						//TODO: old version did not require hashmap lookup:
 						//keys[collectionOwner].getIdentifier()
 					}
@@ -333,23 +333,23 @@ namespace NHibernate.Loader
 		}
 
 		internal async Task InitializeEntitiesAndCollectionsAsync(
-			IList hydratedObjects, object resultSetId, ISessionImplementor session, bool readOnly,
+			IList hydratedObjects, DbDataReader reader, ISessionImplementor session, bool readOnly,
 			CacheBatcher cacheBatcher = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
 			if (collectionPersisters != null)
 			{
-				for (int i = 0; i < collectionPersisters.Length; i++)
+				foreach (var collectionPersister in collectionPersisters)
 				{
-					if (collectionPersisters[i].IsArray)
+					if (collectionPersister.IsArray)
 					{
 						//for arrays, we should end the collection load before resolving
 						//the entities, since the actual array instances are not instantiated
 						//during loading
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i], cancellationToken)).ConfigureAwait(false);
+						await (EndCollectionLoadAsync(reader, session, collectionPersister, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 			}
@@ -392,21 +392,21 @@ namespace NHibernate.Loader
 
 			if (collectionPersisters != null)
 			{
-				for (int i = 0; i < collectionPersisters.Length; i++)
+				foreach (var collectionPersister in collectionPersisters)
 				{
-					if (!collectionPersisters[i].IsArray)
+					if (!collectionPersister.IsArray)
 					{
 						//for sets, we should end the collection load after resolving
 						//the entities, since we might call hashCode() on the elements
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i], cancellationToken)).ConfigureAwait(false);
+						await (EndCollectionLoadAsync(reader, session, collectionPersister, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 			}
 		}
 
-		private static Task EndCollectionLoadAsync(object resultSetId, ISessionImplementor session, ICollectionPersister collectionPersister, CancellationToken cancellationToken)
+		private Task EndCollectionLoadAsync(DbDataReader reader, ISessionImplementor session, ICollectionPersister collectionPersister, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -415,8 +415,8 @@ namespace NHibernate.Loader
 			try
 			{
 				//this is a query and we are loading multiple instances of the same collection role
-				return session.PersistenceContext.LoadContexts.GetCollectionLoadContext((DbDataReader)resultSetId).EndLoadingCollectionsAsync(
-				collectionPersister, cancellationToken);
+				return session.PersistenceContext.LoadContexts.GetCollectionLoadContext(reader).EndLoadingCollectionsAsync(
+				collectionPersister, !IsCollectionPersisterCacheable(collectionPersister), cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -646,9 +646,46 @@ namespace NHibernate.Loader
 						obj =
 							await (InstanceNotYetLoadedAsync(rs, i, persister, key, lockModes[i], optionalObjectKey,
 												 optionalObject, hydratedObjects, session, cancellationToken)).ConfigureAwait(false);
+
+						// IUniqueKeyLoadable.CacheByUniqueKeys caches all unique keys of the entity, regardless of
+						// associations loaded by the query. So if the entity is already loaded, it has forcibly already
+						// been cached too for all its unique keys, provided its persister implement it. With this new
+						// way of caching unique keys, it is no more needed to handle caching for alreadyLoaded path
+						// too.
+						var cacheByUniqueKeysTask = (persister as IUniqueKeyLoadable)?.CacheByUniqueKeysAsync(obj, session, cancellationToken);
+
+						// IUniqueKeyLoadable.CacheByUniqueKeys caches all unique keys of the entity, regardless of
+						// associations loaded by the query. So if the entity is already loaded, it has forcibly already
+						// been cached too for all its unique keys, provided its persister implement it. With this new
+						// way of caching unique keys, it is no more needed to handle caching for alreadyLoaded path
+						// too.
+						if (cacheByUniqueKeysTask != null)
+
+						// IUniqueKeyLoadable.CacheByUniqueKeys caches all unique keys of the entity, regardless of
+						// associations loaded by the query. So if the entity is already loaded, it has forcibly already
+						// been cached too for all its unique keys, provided its persister implement it. With this new
+						// way of caching unique keys, it is no more needed to handle caching for alreadyLoaded path
+						// too.
+						{
+
+							// IUniqueKeyLoadable.CacheByUniqueKeys caches all unique keys of the entity, regardless of
+							// associations loaded by the query. So if the entity is already loaded, it has forcibly already
+							// been cached too for all its unique keys, provided its persister implement it. With this new
+							// way of caching unique keys, it is no more needed to handle caching for alreadyLoaded path
+							// too.
+							await (cacheByUniqueKeysTask).ConfigureAwait(false);
+
+						// IUniqueKeyLoadable.CacheByUniqueKeys caches all unique keys of the entity, regardless of
+						// associations loaded by the query. So if the entity is already loaded, it has forcibly already
+						// been cached too for all its unique keys, provided its persister implement it. With this new
+						// way of caching unique keys, it is no more needed to handle caching for alreadyLoaded path
+						// too.
+						}
 					}
-					// #1226: Even if it is already loaded, if it can be loaded from an association with a property ref, make
-					// sure it is also cached by its unique key.
+					// 6.0 TODO: this call is nor more needed for up-to-date persisters, remove once CacheByUniqueKeys
+					// is merged in IUniqueKeyLoadable interface instead of being an extension method
+					// #1226 old fix: Even if it is already loaded, if it can be loaded from an association with a property ref,
+					// make sure it is also cached by its unique key.
 					CacheByUniqueKey(i, persister, obj, session, alreadyLoaded);
 				}
 

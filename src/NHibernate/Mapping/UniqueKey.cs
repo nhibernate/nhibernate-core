@@ -32,7 +32,7 @@ namespace NHibernate.Mapping
 				buf.Append(column.GetQuotedName(dialect));
 			}
 			//do not add unique constraint on DB not supporting unique and nullable columns
-			return !nullable || dialect.SupportsNotNullUnique ? buf.Append(StringHelper.ClosedParen).ToString() : null;
+			return !nullable || dialect.SupportsNullInUnique ? buf.Append(StringHelper.ClosedParen).ToString() : null;
 		}
 
 		/// <summary>
@@ -63,7 +63,7 @@ namespace NHibernate.Mapping
 			}
 
 			return
-				!nullable || dialect.SupportsNotNullUnique
+				!nullable || dialect.SupportsNullInUnique
 					? StringHelper.Replace(buf.Append(StringHelper.ClosedParen).ToString(), "primary key", "unique")
 					: null;
 		}
@@ -103,7 +103,7 @@ namespace NHibernate.Mapping
 
 		public override bool IsGenerated(Dialect.Dialect dialect)
 		{
-			if (dialect.SupportsNotNullUnique)
+			if (dialect.SupportsNullInUnique)
 				return true;
 			foreach (Column column in ColumnIterator)
 			{

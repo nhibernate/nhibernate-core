@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NHibernate.Dialect
+﻿namespace NHibernate.Dialect
 {
 	/// <summary>
 	/// SQL Dialect for SQL Anywhere 11 - for the NHibernate 3.0.0 distribution
@@ -42,8 +40,5 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class SybaseSQLAnywhere11Dialect : SybaseSQLAnywhere10Dialect
 	{
-		public SybaseSQLAnywhere11Dialect() : base()
-		{
-		}
 	}
 }

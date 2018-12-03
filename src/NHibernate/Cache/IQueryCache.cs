@@ -18,9 +18,12 @@ namespace NHibernate.Cache
 	public partial interface IQueryCache
 	{
 		/// <summary>
-		/// The underlying <see cref="ICache"/>.
+		/// The underlying <see cref="CacheBase"/>.
 		/// </summary>
+		// 6.0 TODO: type as CacheBase instead
+#pragma warning disable 618
 		ICache Cache { get; }
+#pragma warning restore 618
 
 		/// <summary>
 		/// The cache region.

@@ -10,8 +10,8 @@
 		</id>
 		<discriminator column="clazz_discriminata" type="Int32" force="true" not-null="false" />
 		<property name="Name" />
-		<many-to-one name="Forward" class="E" cascade="save-update" />
-		
+		<many-to-one name="Forward" column="`Forward`" class="E" cascade="save-update" />
+
 		<subclass name="B" lazy="true" discriminator-value="null">
 			<property name="Count" column="count_" type="Int32" />
 			<map name="Map">

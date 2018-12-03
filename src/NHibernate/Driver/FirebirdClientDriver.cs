@@ -9,6 +9,7 @@ using NHibernate.Dialect;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Driver
 {
@@ -18,11 +19,29 @@ namespace NHibernate.Driver
 	/// </summary>
 	public class FirebirdClientDriver : ReflectionBasedDriver
 	{
-		private const string SELECT_CLAUSE_EXP = @"(?<=\bselect|\bwhere).*";
-		private const string CAST_PARAMS_EXP = @"(?<![=<>]\s?|first\s?|skip\s?|between\s|between\s@\bp\w+\b\sand\s)@\bp\w+\b(?!\s?[=<>])";
+		private const string SELECT_CLAUSE_EXP = @"(?<=\bselect\b|\bwhere\b).*";
+		private const string CAST_PARAMS_EXP =
+			// Zero-width negative look-behind: the match must not be preceded by
+			@"(?<!" +
+			// a comparison,
+			@"[=<>]\s*" +
+			// or a paging instruction,
+			@"|\bfirst\s+|\bskip\s+" +
+			// or a "between" condition,
+			@"|\bbetween\s+|\bbetween\s+@p\w+\s+and\s+" +
+			// or a "in" condition.
+			@"|\bin\s*\([@\w\s,]*)" +
+			// Match a parameter
+			@"@p\w+\b" +
+			// Zero-width negative look-ahead: the match must not be followed by
+			@"(?!" +
+			// a comparison.
+			@"\s*[=<>])";
 		private static readonly Regex _statementRegEx = new Regex(SELECT_CLAUSE_EXP, RegexOptions.IgnoreCase);
 		private static readonly Regex _castCandidateRegEx = new Regex(CAST_PARAMS_EXP, RegexOptions.IgnoreCase);
 		private readonly FirebirdDialect _fbDialect = new FirebirdDialect();
+
+		private bool _disableParameterCasting;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FirebirdClientDriver"/> class.
@@ -43,6 +62,8 @@ namespace NHibernate.Driver
 		{
 			base.Configure(settings);
 			_fbDialect.Configure(settings);
+
+			_disableParameterCasting = PropertiesHelper.GetBoolean(Environment.FirebirdDisableParameterCasting, settings);
 		}
 
 		public override bool UseNamedPrefixInSql => true;
@@ -63,6 +84,9 @@ namespace NHibernate.Driver
 		public override DbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
 		{
 			var command = base.GenerateCommand(type, sqlString, parameterTypes);
+
+			if (_disableParameterCasting)
+				return command;
 
 			var expWithParams = GetStatementsWithCastCandidates(command.CommandText);
 			if (!string.IsNullOrWhiteSpace(expWithParams))

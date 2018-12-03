@@ -123,6 +123,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("bnot", new Function.BitwiseNativeOperation("~", true));
 
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
+			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "?1"));
 
 			// register hibernate types for default use in scalar sqlquery type auto detection
 			RegisterHibernateType(DbType.Int64, NHibernateUtil.Int64.Name);
@@ -468,10 +469,24 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		// Since v5.2
+		[Obsolete("Use or override SupportsNullInUnique instead")]
 		public virtual bool SupportsNotNullUnique
 		{
 			get { return true; }
 		}
+
+		/// <summary>
+		/// Does this dialect supports <c>null</c> values in columns belonging to an unique constraint/index?
+		/// </summary>
+		/// <remarks>Some databases do not accept <c>null</c> in unique constraints at all. In such case,
+		/// this property should be overriden for yielding <c>false</c>. This property is not meant for distinguishing
+		/// databases ignoring <c>null</c> when checking uniqueness (ANSI behavior) from those considering <c>null</c>
+		/// as a value and checking for its uniqueness.</remarks>
+		public virtual bool SupportsNullInUnique
+#pragma warning disable 618
+			=> SupportsNotNullUnique;
+#pragma warning restore 618
 
 		public virtual IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{

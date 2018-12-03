@@ -276,19 +276,19 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				return;
 			}
 
-			if (rhsNode is IdentNode && lhsNode.DataType is IMetaType lhsNodeMetaType)
+			if (rhsNode is IdentNode && lhsNode.DataType is MetaType lhsNodeMetaType)
 			{
 				EvaluateType(rhsNode, lhsNodeMetaType);
 				return;
 			}
 
-			if (lhsNode is IdentNode && rhsNode.DataType is IMetaType rhsNodeMetaType)
+			if (lhsNode is IdentNode && rhsNode.DataType is MetaType rhsNodeMetaType)
 			{
 				EvaluateType(lhsNode, rhsNodeMetaType);
 			}
 		}
 
-		private void EvaluateType(SqlNode node, IMetaType metaType)
+		private void EvaluateType(SqlNode node, MetaType metaType)
 		{
 			var sessionFactory = SessionFactoryHelper.Factory;
 

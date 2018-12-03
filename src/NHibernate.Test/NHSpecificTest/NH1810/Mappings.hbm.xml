@@ -23,7 +23,7 @@
 			</generator>
 		</id>
 		<property name="Reference" access="property" type="String">
-			<column name="Reference"/>
+			<column name="`Reference`"/>
 		</property>
 		<set name="Diseases" access="nosetter.camelcase" table="Disease" lazy="true" inverse="true" cascade="all-delete-orphan">
 			<key column="MedicalRecordId" />

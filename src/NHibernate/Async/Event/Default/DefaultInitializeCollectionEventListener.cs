@@ -73,10 +73,11 @@ namespace NHibernate.Event.Default
 		}
 
 		/// <summary> Try to initialize a collection from the cache</summary>
-		private async Task<bool> InitializeCollectionFromCacheAsync(object id, ICollectionPersister persister, IPersistentCollection collection, ISessionImplementor source, CancellationToken cancellationToken)
+		private async Task<bool> InitializeCollectionFromCacheAsync(
+			object collectionKey, ICollectionPersister persister, IPersistentCollection collection,
+			ISessionImplementor source, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-
 			if (!(source.EnabledFilters.Count == 0) && persister.IsAffectedByEnabledFilters(source))
 			{
 				log.Debug("disregarding cached version (if any) of collection due to enabled filters ");
@@ -91,12 +92,12 @@ namespace NHibernate.Event.Default
 			}
 
 			var batchSize = persister.GetBatchSize();
-			if (batchSize > 1 && persister.Cache.IsBatchingGetSupported())
+			if (batchSize > 1 && persister.Cache.PreferMultipleGet())
 			{
 				var collectionEntries = new CollectionEntry[batchSize];
 				// The first item in the array is the item that we want to load
 				var collectionBatch = await (source.PersistenceContext.BatchFetchQueue
-				                            .GetCollectionBatchAsync(persister, id, batchSize, false, collectionEntries, cancellationToken)).ConfigureAwait(false);
+				                            .GetCollectionBatchAsync(persister, collectionKey, batchSize, false, collectionEntries, cancellationToken)).ConfigureAwait(false);
 				// Ignore null values as the retrieved batch may contains them when there are not enough
 				// uninitialized collection in the queue
 				var keys = new List<CacheKey>(batchSize);
@@ -115,16 +116,17 @@ namespace NHibernate.Event.Default
 					var coll = source.PersistenceContext.BatchFetchQueue.GetBatchLoadableCollection(persister, collectionEntries[i]);
 					await (AssembleAsync(keys[i], cachedObjects[i], persister, source, coll, collectionBatch[i], false, cancellationToken)).ConfigureAwait(false);
 				}
-				return await (AssembleAsync(keys[0], cachedObjects[0], persister, source, collection, id, true, cancellationToken)).ConfigureAwait(false);
+				return await (AssembleAsync(keys[0], cachedObjects[0], persister, source, collection, collectionKey, true, cancellationToken)).ConfigureAwait(false);
 			}
 
-			var cacheKey = source.GenerateCacheKey(id, persister.KeyType, persister.Role);
+			var cacheKey = source.GenerateCacheKey(collectionKey, persister.KeyType, persister.Role);
 			var cachedObject = await (persister.Cache.GetAsync(cacheKey, source.Timestamp, cancellationToken)).ConfigureAwait(false);
-			return await (AssembleAsync(cacheKey, cachedObject, persister, source, collection, id, true, cancellationToken)).ConfigureAwait(false);
+			return await (AssembleAsync(cacheKey, cachedObject, persister, source, collection, collectionKey, true, cancellationToken)).ConfigureAwait(false);
 		}
 
-		private async Task<bool> AssembleAsync(CacheKey ck, object ce, ICollectionPersister persister,  ISessionImplementor source,
-							  IPersistentCollection collection,  object id, bool alterStatistics, CancellationToken cancellationToken)
+		private async Task<bool> AssembleAsync(
+			CacheKey ck, object ce, ICollectionPersister persister, ISessionImplementor source,
+			IPersistentCollection collection, object collectionKey, bool alterStatistics, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISessionFactoryImplementor factory = source.Factory;
@@ -158,9 +160,12 @@ namespace NHibernate.Event.Default
 				IPersistenceContext persistenceContext = source.PersistenceContext;
 
 				CollectionCacheEntry cacheEntry = (CollectionCacheEntry) persister.CacheEntryStructure.Destructure(ce, factory);
-				await (cacheEntry.AssembleAsync(collection, persister, persistenceContext.GetCollectionOwner(id, persister), cancellationToken)).ConfigureAwait(false);
+				await (cacheEntry.AssembleAsync(collection, persister, persistenceContext.GetCollectionOwner(collectionKey, persister), cancellationToken)).ConfigureAwait(false);
 
 				persistenceContext.GetCollectionEntry(collection).PostInitialize(collection, persistenceContext);
+
+				if (collection.HasQueuedOperations)
+					collection.ApplyQueuedOperations();
 				return true;
 			}
 		}

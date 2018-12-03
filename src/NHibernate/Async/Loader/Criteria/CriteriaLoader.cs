@@ -8,17 +8,16 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Param;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Loader.Criteria
@@ -38,7 +37,7 @@ namespace NHibernate.Loader.Criteria
 			{
 				return ListAsync(session, translator.GetQueryParameters(), querySpaces, cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<IList>(ex);
 			}

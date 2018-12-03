@@ -549,31 +549,32 @@ namespace NHibernate.Mapping.ByCode
 				throw new ArgumentNullException("types");
 			}
 
-			var typeToMap = types.Distinct()
-								 .OrderBy(x => x, new TypeHierarchyComparer())
-								 .ToList();
+			var entitiesToMap = GetEntitiesToMapOrderedByHierarchy(types);
 
 			string defaultAssemblyName = null;
 			string defaultNamespace = null;
-			System.Type firstType = typeToMap.FirstOrDefault();
-			if (firstType != null && typeToMap.All(t => t.Assembly.Equals(firstType.Assembly)))
+			System.Type firstType = entitiesToMap.FirstOrDefault();
+			if (firstType != null && entitiesToMap.All(t => t.Assembly.Equals(firstType.Assembly)))
 			{
 				//NH-2831: always use the full name of the assembly because it may come from GAC
 				defaultAssemblyName = firstType.Assembly.GetName().FullName;
 			}
-			if (firstType != null && typeToMap.All(t => t.Namespace == firstType.Namespace))
+			if (firstType != null && entitiesToMap.All(t => t.Namespace == firstType.Namespace))
 			{
 				defaultNamespace = firstType.Namespace;
 			}
 			var mapping = NewHbmMapping(defaultAssemblyName, defaultNamespace);
-			foreach (var type in RootClasses(typeToMap))
+			foreach (var type in RootClasses(entitiesToMap))
 			{
 				MapRootClass(type, mapping);
 			}
-			foreach (var type in Subclasses(typeToMap))
+
+			var entitiesSet = new HashSet<System.Type>(entitiesToMap);
+			foreach (var type in Subclasses(entitiesToMap))
 			{
-				AddSubclassMapping(mapping, type);
+				AddSubclassMapping(mapping, type, entitiesSet);
 			}
+
 			return mapping;
 		}
 
@@ -583,23 +584,27 @@ namespace NHibernate.Mapping.ByCode
 			{
 				throw new ArgumentNullException("types");
 			}
-			var typeToMap = types.Distinct()
-								 .OrderBy(x => x, new TypeHierarchyComparer())
-								 .ToList();
+
+			var entitiesToMap = GetEntitiesToMapOrderedByHierarchy(types);
 
 			//NH-2831: always use the full name of the assembly because it may come from GAC
-			foreach (var type in RootClasses(typeToMap))
+			var mappings = new List<HbmMapping>();
+			foreach (var type in RootClasses(entitiesToMap))
 			{
 				var mapping = NewHbmMapping(type.Assembly.GetName().FullName, type.Namespace);
 				MapRootClass(type, mapping);
-				yield return mapping;
+				mappings.Add(mapping);
 			}
-			foreach (var type in Subclasses(typeToMap))
+
+			var entitiesSet = new HashSet<System.Type>(entitiesToMap);
+			foreach (var type in Subclasses(entitiesToMap))
 			{
 				var mapping = NewHbmMapping(type.Assembly.GetName().FullName, type.Namespace);
-				AddSubclassMapping(mapping, type);
-				yield return mapping;
+				AddSubclassMapping(mapping, type, entitiesSet);
+				mappings.Add(mapping);
 			}
+
+			return mappings;
 		}
 
 		private HbmMapping NewHbmMapping(string defaultAssemblyName, string defaultNamespace)
@@ -612,40 +617,40 @@ namespace NHibernate.Mapping.ByCode
 			return hbmMapping;
 		}
 
-		private IEnumerable<System.Type> Subclasses(IEnumerable<System.Type> types)
+		private IEnumerable<System.Type> Subclasses(IEnumerable<System.Type> entities)
 		{
-			return types.Where(type => modelInspector.IsEntity(type) && !modelInspector.IsRootEntity(type));
+			return entities.Where(type => !modelInspector.IsRootEntity(type));
 		}
 
-		private IEnumerable<System.Type> RootClasses(IEnumerable<System.Type> types)
+		private IEnumerable<System.Type> RootClasses(IEnumerable<System.Type> entities)
 		{
-			return types.Where(type => modelInspector.IsEntity(type) && modelInspector.IsRootEntity(type));
+			return entities.Where(type => modelInspector.IsRootEntity(type));
 		}
 
-		private void AddSubclassMapping(HbmMapping mapping, System.Type type)
+		private void AddSubclassMapping(HbmMapping mapping, System.Type type, ICollection<System.Type> mappedEntities)
 		{
 			if (modelInspector.IsTablePerClassHierarchy(type))
 			{
-				MapSubclass(type, mapping);
+				MapSubclass(type, mapping, mappedEntities);
 			}
 			else if (modelInspector.IsTablePerClass(type))
 			{
-				MapJoinedSubclass(type, mapping);
+				MapJoinedSubclass(type, mapping, mappedEntities);
 			}
 			else if (modelInspector.IsTablePerConcreteClass(type))
 			{
-				MapUnionSubclass(type, mapping);
+				MapUnionSubclass(type, mapping, mappedEntities);
 			}
 		}
 
-		private void MapUnionSubclass(System.Type type, HbmMapping mapping)
+		private void MapUnionSubclass(System.Type type, HbmMapping mapping, ICollection<System.Type> mappedEntities)
 		{
 			var classMapper = new UnionSubclassMapper(type, mapping);
 
 			IEnumerable<MemberInfo> candidateProperties = null;
-			if (!modelInspector.IsEntity(type.BaseType))
+			if (!mappedEntities.Contains(type.BaseType))
 			{
-				System.Type baseType = GetEntityBaseType(type);
+				var baseType = GetEntityBaseType(type, mappedEntities);
 				if (baseType != null)
 				{
 					classMapper.Extends(baseType);
@@ -663,13 +668,13 @@ namespace NHibernate.Mapping.ByCode
 			MapProperties(type, propertiesToMap, classMapper);
 		}
 
-		private void MapSubclass(System.Type type, HbmMapping mapping)
+		private void MapSubclass(System.Type type, HbmMapping mapping, ICollection<System.Type> mappedEntities)
 		{
 			var classMapper = new SubclassMapper(type, mapping);
 			IEnumerable<MemberInfo> candidateProperties = null;
-			if (!modelInspector.IsEntity(type.BaseType))
+			if (!mappedEntities.Contains(type.BaseType))
 			{
-				System.Type baseType = GetEntityBaseType(type);
+				var baseType = GetEntityBaseType(type, mappedEntities);
 				if (baseType != null)
 				{
 					classMapper.Extends(baseType);
@@ -705,13 +710,13 @@ namespace NHibernate.Mapping.ByCode
 			InvokeAfterMapSubclass(type, classMapper);
 		}
 
-		private void MapJoinedSubclass(System.Type type, HbmMapping mapping)
+		private void MapJoinedSubclass(System.Type type, HbmMapping mapping, ICollection<System.Type> mappedEntities)
 		{
 			var classMapper = new JoinedSubclassMapper(type, mapping);
 			IEnumerable<MemberInfo> candidateProperties = null;
-			if (!modelInspector.IsEntity(type.BaseType))
+			if (!mappedEntities.Contains(type.BaseType))
 			{
-				System.Type baseType = GetEntityBaseType(type);
+				var baseType = GetEntityBaseType(type, mappedEntities);
 				if (baseType != null)
 				{
 					classMapper.Extends(baseType);
@@ -719,6 +724,7 @@ namespace NHibernate.Mapping.ByCode
 					candidateProperties = membersProvider.GetSubEntityMembers(type, baseType);
 				}
 			}
+
 			candidateProperties = candidateProperties ?? membersProvider.GetSubEntityMembers(type, type.BaseType);
 			IEnumerable<MemberInfo> propertiesToMap =
 				candidateProperties.Where(p => modelInspector.IsPersistentProperty(p) && !modelInspector.IsPersistentId(p));
@@ -730,18 +736,19 @@ namespace NHibernate.Mapping.ByCode
 			MapProperties(type, propertiesToMap, classMapper);
 		}
 
-		private System.Type GetEntityBaseType(System.Type type)
+		private static System.Type GetEntityBaseType(System.Type type, ICollection<System.Type> mappedEntities)
 		{
 			System.Type analyzingType = type;
 			while (analyzingType != null && analyzingType != typeof (object))
 			{
 				analyzingType = analyzingType.BaseType;
-				if (modelInspector.IsEntity(analyzingType))
+				if (mappedEntities.Contains(analyzingType))
 				{
 					return analyzingType;
 				}
 			}
-			return type.GetInterfaces().FirstOrDefault(i => modelInspector.IsEntity(i));
+
+			return type.GetInterfaces().FirstOrDefault(i => mappedEntities.Contains(i));
 		}
 
 		private void MapRootClass(System.Type type, HbmMapping mapping)
@@ -1809,15 +1816,20 @@ namespace NHibernate.Mapping.ByCode
 			return CompileMappingForEach(customizerHolder.GetAllCustomizedEntities());
 		}
 
-		private class TypeHierarchyComparer : IComparer<System.Type>
+		private List<System.Type> GetEntitiesToMapOrderedByHierarchy(IEnumerable<System.Type> types)
 		{
-			public int Compare(System.Type x, System.Type y)
+			var typesCache = new HashSet<System.Type>(types);
+
+			var result = new List<System.Type>(typesCache.Count);
+			while (typesCache.Count > 0)
 			{
-				if (x == y) return 0;
-				if (x.IsAssignableFrom(y)) return -1;
-				if (y.IsAssignableFrom(x)) return 1;
-				return 0;
+				var type = typesCache.First();
+				result.AddRange(type.GetHierarchyFromBase().Where(baseType => typesCache.Remove(baseType)));
 			}
+
+			result.RemoveAll(type => !modelInspector.IsEntity(type));
+
+			return result;
 		}
 	}
 }

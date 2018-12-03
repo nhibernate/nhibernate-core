@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
@@ -113,6 +114,19 @@ namespace NHibernate.Mapping.ByCode.Impl
 				_oneToOne.formula1 = formula;
 				_oneToOne.formula = null;
 			}
+		}
+
+		public void Formulas(params string[] formulas)
+		{
+			if (formulas == null)
+				throw new ArgumentNullException(nameof(formulas));
+
+			_oneToOne.formula1 = null;
+			_oneToOne.formula =
+				formulas
+					.Select(
+						f => new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) })
+					.ToArray();
 		}
 
 		public void ForeignKey(string foreignKeyName)

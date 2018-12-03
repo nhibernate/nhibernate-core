@@ -61,14 +61,21 @@ namespace NHibernate.Test.BulkManipulation
 
 	public class SubstituteCacheProvider : ICacheProvider
 	{
-		private readonly ConcurrentDictionary<string, Lazy<ICache>> _caches = new ConcurrentDictionary<string, Lazy<ICache>>();
+		private readonly ConcurrentDictionary<string, Lazy<CacheBase>> _caches = new ConcurrentDictionary<string, Lazy<CacheBase>>();
 		private Action<string> _onClear;
 
-		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
+		// Since 5.2
+		[Obsolete]
+		ICache ICacheProvider.BuildCache(string regionName, IDictionary<string, string> properties)
 		{
-			return _caches.GetOrAdd(regionName, x => new Lazy<ICache>(() =>
+			return BuildCache(regionName, properties);
+		}
+
+		public CacheBase BuildCache(string regionName, IDictionary<string, string> properties)
+		{
+			return _caches.GetOrAdd(regionName, x => new Lazy<CacheBase>(() =>
 			 {
-				 var cache = Substitute.For<ICache>();
+				 var cache = Substitute.For<CacheBase>();
 				 cache.RegionName.Returns(regionName);
 				 cache.When(c => c.Clear()).Do(c => _onClear?.Invoke(regionName));
 				 cache.When(c => c.ClearAsync(Arg.Any<CancellationToken>())).Do(c => _onClear?.Invoke(regionName));
@@ -89,14 +96,13 @@ namespace NHibernate.Test.BulkManipulation
 		{
 		}
 
-		public ICache GetCache(string region)
+		public CacheBase GetCache(string region)
 		{
-			Lazy<ICache> cache;
-			_caches.TryGetValue(region, out cache);
+			_caches.TryGetValue(region, out var cache);
 			return cache?.Value;
 		}
 
-		public IEnumerable<ICache> GetAllCaches()
+		public IEnumerable<CacheBase> GetAllCaches()
 		{
 			return _caches.Values.Select(x => x.Value);
 		}

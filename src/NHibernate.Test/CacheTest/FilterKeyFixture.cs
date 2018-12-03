@@ -20,13 +20,13 @@ namespace NHibernate.Test.CacheTest
 			var f = new FilterImpl(Sfi.GetFilterDefinition(filterName));
 			f.SetParameter("pLike", "so%");
 			var fk = new FilterKey(f);
-			Assert.That(fk.ToString(), Is.EqualTo("FilterKey[DescriptionLike{'pLike'='so%'}]"), "Like");
+			Assert.That(fk.ToString(), Is.EqualTo("FilterKey[DescriptionLike['[pLike, so%]']]"), "Like");
 
 			filterName = "DescriptionEqualAndValueGT";
 			f = new FilterImpl(Sfi.GetFilterDefinition(filterName));
 			f.SetParameter("pDesc", "something").SetParameter("pValue", 10);
 			fk = new FilterKey(f);
-			Assert.That(fk.ToString(), Is.EqualTo("FilterKey[DescriptionEqualAndValueGT{'pDesc'='something', 'pValue'='10'}]"), "Value");
+			Assert.That(fk.ToString(), Is.EqualTo("FilterKey[DescriptionEqualAndValueGT['[pDesc, something]', '[pValue, 10]']]"), "Value");
 		}
 
 		[Test]
