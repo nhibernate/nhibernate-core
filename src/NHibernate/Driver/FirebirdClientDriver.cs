@@ -103,7 +103,7 @@ namespace NHibernate.Driver
 
 						command.CommandText = Regex.Replace(
 							command.CommandText,
-							$@"{p.ParameterName}\b",
+							Regex.Escape(p.ParameterName) + @"\b",
 							$"cast({p.ParameterName} as {castType})");
 					}
 

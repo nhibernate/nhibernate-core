@@ -268,7 +268,7 @@ namespace NHibernate.Impl
 
 			return Regex.Replace(
 				query,
-				$@"{paramPrefix}{name}\b",
+				Regex.Escape(paramPrefix + name) + @"\b",
 				string.Join(StringHelper.CommaSpace, aliases));
 		}
 
