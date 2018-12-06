@@ -94,10 +94,19 @@ namespace NHibernate.Driver
 				var candidates = GetCastCandidates(expWithParams);
 
 				var index = 0;
+				
 				foreach (DbParameter p in command.Parameters)
 				{
 					if (candidates.Contains(p.ParameterName))
-						TypeCastParam(p, command, parameterTypes[index]);
+					{
+						var castType = GetFbTypeForParam(parameterTypes[index]);
+
+						command.CommandText = Regex.Replace(
+							command.CommandText,
+							$@"{p.ParameterName}\b",
+							$"cast({p.ParameterName} as {castType})");
+					}
+
 					index++;
 				}
 			}
@@ -118,14 +127,6 @@ namespace NHibernate.Driver
 					.Cast<Match>()
 					.Select(match => match.Value);
 			return new HashSet<string>(candidates);
-		}
-
-		private void TypeCastParam(DbParameter param, DbCommand command, SqlType sqlType)
-		{
-			var castType = GetFbTypeForParam(sqlType);
-			command.CommandText = command.CommandText.ReplaceWholeWord(
-				param.ParameterName,
-				$"cast({param.ParameterName} as {castType})");
 		}
 
 		private string GetFbTypeForParam(SqlType sqlType)
