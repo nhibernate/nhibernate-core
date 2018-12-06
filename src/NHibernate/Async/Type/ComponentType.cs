@@ -324,18 +324,9 @@ namespace NHibernate.Type
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				//note that this implementation is kinda broken
-				//for components with many-to-one associations
-				if (ReturnedClass.IsInstanceOfType(value))
-					return Task.FromResult<object>(value);
-				return ResolveIdentifierAsync(value, session, owner, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			//note that this implementation is kinda broken
+			//for components with many-to-one associations
+			return ResolveIdentifierAsync(value, session, owner, cancellationToken);
 		}
 
 		public override async Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)

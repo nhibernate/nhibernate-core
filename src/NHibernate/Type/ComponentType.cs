@@ -520,8 +520,6 @@ namespace NHibernate.Type
 		{
 			//note that this implementation is kinda broken
 			//for components with many-to-one associations
-			if (ReturnedClass.IsInstanceOfType(value))
-				return value;
 			return ResolveIdentifier(value, session, owner);
 		}
 
