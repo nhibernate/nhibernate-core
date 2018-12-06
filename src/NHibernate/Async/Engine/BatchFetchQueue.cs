@@ -295,7 +295,10 @@ namespace NHibernate.Engine
 					? entityKeys.Count - Math.Min(batchSize, entityKeys.Count)
 					: 0;
 				var toIndex = entityKeys.Count - 1;
-				var indexes = GetSortedKeyIndexes(entityKeys, idIndex.Value, fromIndex, toIndex);
+				// In case of an ISession.Get on an entity not already loaded as an uninitialized proxy,
+				// it will not be found in entities awaiting a load, and idIndex will be null. Providing
+				// -1 then allows to take the entities most recently loaded as uninitialized proxies.
+				var indexes = GetSortedKeyIndexes(entityKeys, idIndex ?? -1, fromIndex, toIndex);
 				if (batchableCache == null)
 				{
 					for (var j = 0; j < entityKeys.Count; j++)

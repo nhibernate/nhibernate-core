@@ -455,7 +455,10 @@ namespace NHibernate.Engine
 					? entityKeys.Count - Math.Min(batchSize, entityKeys.Count)
 					: 0;
 				var toIndex = entityKeys.Count - 1;
-				var indexes = GetSortedKeyIndexes(entityKeys, idIndex.Value, fromIndex, toIndex);
+				// In case of an ISession.Get on an entity not already loaded as an uninitialized proxy,
+				// it will not be found in entities awaiting a load, and idIndex will be null. Providing
+				// -1 then allows to take the entities most recently loaded as uninitialized proxies.
+				var indexes = GetSortedKeyIndexes(entityKeys, idIndex ?? -1, fromIndex, toIndex);
 				if (batchableCache == null)
 				{
 					for (var j = 0; j < entityKeys.Count; j++)
@@ -612,11 +615,11 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary>
-		/// Sorts the given keys by thier indexes, where the keys that are after the demanded key will be located
+		/// Sorts the given keys by their indexes, where the keys that are after the demanded key will be located
 		/// at the start and the remaining indexes at the end of the returned array.
 		/// </summary>
 		/// <typeparam name="T">The type of the key</typeparam>
-		/// <param name="keys">The list of pairs of keys and thier indexes.</param>
+		/// <param name="keys">The list of pairs of keys and their indexes.</param>
 		/// <param name="keyIndex">The index of the demanded key</param>
 		/// <param name="fromIndex">The index where the sorting will begin.</param>
 		/// <param name="toIndex">The index where the sorting will end.</param>
