@@ -248,6 +248,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return versionPropertyNode;
 		}
 
+		partial void EnterRule_insertStatement()
+		{
+			// Filters are not supported by DML, and they wreck the select part of an insert.
+			// Unfortunately I do not see any better place to handle this. This hack requires
+			// EnabledFilters to not be the same instance than the one held by the session.
+			_qti.EnabledFilters.Clear();
+		}
+
 		void PostProcessUpdate(IASTNode update)
 		{
 			var updateStatement = (UpdateStatement)update;

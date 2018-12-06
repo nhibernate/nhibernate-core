@@ -55,7 +55,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_stageOneAst = parsedQuery;
 			_compiled = false;
 			_shallowQuery = false;
-			_enabledFilters = enabledFilters;
+			// Copy the filters, because a hack into EnterRule_insertStatement may clear them. It
+			// should be done only for the current query translator, not for the whole session.
+			_enabledFilters = new Dictionary<string, IFilter>(enabledFilters);
 			_factory = factory;
 		}
 
