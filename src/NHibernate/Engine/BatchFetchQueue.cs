@@ -271,7 +271,9 @@ namespace NHibernate.Engine
 					? collectionKeys.Count - Math.Min(batchSize, collectionKeys.Count)
 					: 0;
 				var toIndex = collectionKeys.Count - 1;
-				var indexes = GetSortedKeyIndexes(collectionKeys, keyIndex.Value, fromIndex, toIndex);
+				// In case the collection having triggered the load was not registered for batching, load
+				// most recently registered collections.
+				var indexes = GetSortedKeyIndexes(collectionKeys, keyIndex ?? -1, fromIndex, toIndex);
 				if (batchableCache == null)
 				{
 					for (var j = 0; j < collectionKeys.Count; j++)
