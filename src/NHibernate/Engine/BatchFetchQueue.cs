@@ -628,7 +628,7 @@ namespace NHibernate.Engine
 			{
 				// If the index was not found (null), this test will be falsy and it will take the most recently
 				// registered entities or collections.
-				if (keys[j].Value < keyIndex)
+				if (!keyIndex.HasValue || keys[j].Value < keyIndex)
 				{
 					lowerIndexes.Add(j);
 				}
