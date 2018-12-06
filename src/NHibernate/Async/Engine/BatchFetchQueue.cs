@@ -116,7 +116,6 @@ namespace NHibernate.Engine
 				else
 				{
 					var results = await (AreCachedAsync(collectionKeys, indexes, collectionPersister, batchableCache, checkCache, cancellationToken)).ConfigureAwait(false);
-					var k = toIndex;
 					for (var j = 0; j < results.Length; j++)
 					{
 						if (!results[j] && await (ProcessKeyAsync(collectionKeys[indexes[j]].Key, true)).ConfigureAwait(false))
@@ -153,7 +152,7 @@ namespace NHibernate.Engine
 					return Task.FromResult<bool>(false);
 				}
 
-				if (checkForEnd && (index >= keyIndex.Value + batchSize || index == map.Count))
+				if (checkForEnd && (index == map.Count || index >= keyIndex.Value + batchSize))
 				{
 					return Task.FromResult<bool>(true);
 				}
@@ -167,7 +166,7 @@ namespace NHibernate.Engine
 				}
 				else if (!checkCache || batchableCache == null)
 				{
-					if (!keyIndex.HasValue || index < keyIndex.Value)
+					if (index < map.Count && (!keyIndex.HasValue || index < keyIndex.Value))
 					{
 						collectionKeys.Add(new KeyValuePair<KeyValuePair<CollectionEntry, IPersistentCollection>, int>(me, index));
 						return Task.FromResult<bool>(false);
@@ -204,10 +203,10 @@ namespace NHibernate.Engine
 				if (i == batchSize)
 				{
 					i = 1; // End of array, start filling again from start
-					if (keyIndex.HasValue)
+					if (index == map.Count || keyIndex.HasValue)
 					{
 						checkForEnd = true;
-						return Task.FromResult<bool>(index >= keyIndex.Value + batchSize || index == map.Count);
+						return Task.FromResult<bool>(index == map.Count || index >= keyIndex.Value + batchSize);
 					}
 				}
 				return Task.FromResult<bool>(false);
@@ -309,7 +308,6 @@ namespace NHibernate.Engine
 				else
 				{
 					var results = await (AreCachedAsync(entityKeys, indexes, persister, batchableCache, checkCache, cancellationToken)).ConfigureAwait(false);
-					var k = toIndex;
 					for (var j = 0; j < results.Length; j++)
 					{
 						if (!results[j] && await (ProcessKeyAsync(entityKeys[indexes[j]].Key, true)).ConfigureAwait(false))
@@ -329,7 +327,7 @@ namespace NHibernate.Engine
 			Task<bool> ProcessKeyAsync(EntityKey key, bool ignoreCache = false)
 			{
 				//TODO: this needn't exclude subclasses...
-				if (checkForEnd && (index >= idIndex.Value + batchSize || index == set.Count))
+				if (checkForEnd && (index == set.Count || index >= idIndex.Value + batchSize))
 				{
 					return Task.FromResult<bool>(true);
 				}
@@ -339,7 +337,7 @@ namespace NHibernate.Engine
 				}
 				else if (!checkCache || batchableCache == null)
 				{
-					if (!idIndex.HasValue || index < idIndex.Value)
+					if (index < set.Count && (!idIndex.HasValue || index < idIndex.Value))
 					{
 						entityKeys.Add(new KeyValuePair<EntityKey, int>(key, index));
 						return Task.FromResult<bool>(false);
@@ -368,10 +366,10 @@ namespace NHibernate.Engine
 				if (i == batchSize)
 				{
 					i = 1; // End of array, start filling again from start
-					if (idIndex.HasValue)
+					if (index == set.Count || idIndex.HasValue)
 					{
 						checkForEnd = true;
-						return Task.FromResult<bool>(index >= idIndex.Value + batchSize || index == set.Count);
+						return Task.FromResult<bool>(index == set.Count || index >= idIndex.Value + batchSize);
 					}
 				}
 				return Task.FromResult<bool>(false);
@@ -381,7 +379,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Checks whether the given entity key indexes are cached.
 		/// </summary>
-		/// <param name="entityKeys">The list of pairs of entity keys and thier indexes.</param>
+		/// <param name="entityKeys">The list of pairs of entity keys and their indexes.</param>
 		/// <param name="keyIndexes">The array of indexes of <paramref name="entityKeys"/> that have to be checked.</param>
 		/// <param name="persister">The entity persister.</param>
 		/// <param name="batchableCache">The batchable cache.</param>
@@ -419,7 +417,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Checks whether the given collection key indexes are cached.
 		/// </summary>
-		/// <param name="collectionKeys">The list of pairs of collection entries and thier indexes.</param>
+		/// <param name="collectionKeys">The list of pairs of collection entries and their indexes.</param>
 		/// <param name="keyIndexes">The array of indexes of <paramref name="collectionKeys"/> that have to be checked.</param>
 		/// <param name="persister">The collection persister.</param>
 		/// <param name="batchableCache">The batchable cache.</param>
