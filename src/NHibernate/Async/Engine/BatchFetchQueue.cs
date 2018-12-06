@@ -102,9 +102,7 @@ namespace NHibernate.Engine
 					? collectionKeys.Count - Math.Min(batchSize, collectionKeys.Count)
 					: 0;
 				var toIndex = collectionKeys.Count - 1;
-				// In case the collection having triggered the load was not registered for batching, load
-				// most recently registered collections.
-				var indexes = GetSortedKeyIndexes(collectionKeys, keyIndex ?? -1, fromIndex, toIndex);
+				var indexes = GetSortedKeyIndexes(collectionKeys, keyIndex, fromIndex, toIndex);
 				if (batchableCache == null)
 				{
 					for (var j = 0; j < collectionKeys.Count; j++)
@@ -297,10 +295,7 @@ namespace NHibernate.Engine
 					? entityKeys.Count - Math.Min(batchSize, entityKeys.Count)
 					: 0;
 				var toIndex = entityKeys.Count - 1;
-				// In case of an ISession.Get on an entity not already loaded as an uninitialized proxy,
-				// it will not be found in entities awaiting a load, and idIndex will be null. Providing
-				// -1 then allows to take the entities most recently loaded as uninitialized proxies.
-				var indexes = GetSortedKeyIndexes(entityKeys, idIndex ?? -1, fromIndex, toIndex);
+				var indexes = GetSortedKeyIndexes(entityKeys, idIndex, fromIndex, toIndex);
 				if (batchableCache == null)
 				{
 					for (var j = 0; j < entityKeys.Count; j++)

@@ -271,9 +271,7 @@ namespace NHibernate.Engine
 					? collectionKeys.Count - Math.Min(batchSize, collectionKeys.Count)
 					: 0;
 				var toIndex = collectionKeys.Count - 1;
-				// In case the collection having triggered the load was not registered for batching, load
-				// most recently registered collections.
-				var indexes = GetSortedKeyIndexes(collectionKeys, keyIndex ?? -1, fromIndex, toIndex);
+				var indexes = GetSortedKeyIndexes(collectionKeys, keyIndex, fromIndex, toIndex);
 				if (batchableCache == null)
 				{
 					for (var j = 0; j < collectionKeys.Count; j++)
@@ -457,10 +455,7 @@ namespace NHibernate.Engine
 					? entityKeys.Count - Math.Min(batchSize, entityKeys.Count)
 					: 0;
 				var toIndex = entityKeys.Count - 1;
-				// In case of an ISession.Get on an entity not already loaded as an uninitialized proxy,
-				// it will not be found in entities awaiting a load, and idIndex will be null. Providing
-				// -1 then allows to take the entities most recently loaded as uninitialized proxies.
-				var indexes = GetSortedKeyIndexes(entityKeys, idIndex ?? -1, fromIndex, toIndex);
+				var indexes = GetSortedKeyIndexes(entityKeys, idIndex, fromIndex, toIndex);
 				if (batchableCache == null)
 				{
 					for (var j = 0; j < entityKeys.Count; j++)
@@ -626,13 +621,15 @@ namespace NHibernate.Engine
 		/// <param name="fromIndex">The index where the sorting will begin.</param>
 		/// <param name="toIndex">The index where the sorting will end.</param>
 		/// <returns>An array of sorted key indexes.</returns>
-		private static int[] GetSortedKeyIndexes<T>(List<KeyValuePair<T, int>> keys, int keyIndex, int fromIndex, int toIndex)
+		private static int[] GetSortedKeyIndexes<T>(List<KeyValuePair<T, int>> keys, int? keyIndex, int fromIndex, int toIndex)
 		{
 			var result = new int[Math.Abs(toIndex - fromIndex) + 1];
 			var lowerIndexes = new List<int>();
 			var i = 0;
 			for (var j = fromIndex; j <= toIndex; j++)
 			{
+				// If the index was not found (null), this test will be falsy and it will take the most recently
+				// registered entities or collections.
 				if (keys[j].Value < keyIndex)
 				{
 					lowerIndexes.Add(j);
