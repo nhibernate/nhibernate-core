@@ -484,7 +484,51 @@ namespace NHibernate.Test.CacheTest
 					},
 					new[] {0, 2, 4},
 					(i) => i % 2 != 0
-				)
+				),
+				// Tests by loading different ids
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 0).ToArray(),
+					0,
+					new[]
+					{
+						new[] {0, 5, 4, 3}, // triggered by LoadFromSecondLevelCache method of DefaultLoadEventListener type
+						new[] {5, 4, 3, 2}, // triggered by Load method of BatchingEntityLoader type
+					},
+					new[] {0, 5, 4, 3},
+					null
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 5).ToArray(),
+					5,
+					new[]
+					{
+						new[] {5, 4, 3, 2},
+						new[] {4, 3, 2, 1},
+					},
+					new[] {2, 3, 4, 5},
+					null
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 0).ToArray(),
+					0,
+					new[]
+					{
+						new[] {0, 5, 4, 3} // 0 get assembled and no further processing is done
+					},
+					null,
+					(i) => i % 2 == 0 // Cache all even indexes before loading
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 1).ToArray(),
+					1,
+					new[]
+					{
+						new[] {1, 5, 4, 3}, // 4 get assembled inside LoadFromSecondLevelCache
+						new[] {5, 3, 2, 0}
+					},
+					new[] {1, 3, 5},
+					(i) => i % 2 == 0
+				),
 			};
 
 			foreach (var tuple in parentTestCases)
