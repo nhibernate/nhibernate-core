@@ -418,15 +418,16 @@ namespace NHibernate.Loader.Criteria
 			foreach (var crit in rootCriteria.IterateSubcriteria())
 			{
 				var wholeAssociationPath = GetWholeAssociationPath(crit, out var parentAlias);
-				if (parentAlias != null)
+				if (parentAlias == null)
+					parentAlias = rootCriteria.Alias;
+
+				if (!associationAliasToChildrenAliasesMap.TryGetValue(parentAlias, out var children))
 				{
-					if (!associationAliasToChildrenAliasesMap.TryGetValue(parentAlias, out var children))
-					{
-						children = new HashSet<string>();
-						associationAliasToChildrenAliasesMap.Add(parentAlias, children);
-					}
-					children.Add(crit.Alias);
+					children = new HashSet<string>();
+					associationAliasToChildrenAliasesMap.Add(parentAlias, children);
 				}
+				children.Add(crit.Alias);
+
 				var key = new AliasKey(crit.Alias, wholeAssociationPath);
 				try
 				{
