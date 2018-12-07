@@ -3416,10 +3416,17 @@ namespace NHibernate.Persister.Entity
 			IDictionary<string, string> dict = new Dictionary<string, string>();
 			for (int i = 0; i < SubclassColumnTableNumberClosure.Length; i++ )
 			{
+				string fullColumn;
 				string col = SubclassColumnClosure[i];
-				string alias = GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[i]);
-
-				string fullColumn = string.Format("{0}.{1}", alias, col);
+				if (!string.IsNullOrEmpty(rootAlias))
+				{
+					string alias = GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[i]);
+					fullColumn = string.Format("{0}.{1}", alias, col);
+				}
+				else
+				{
+					fullColumn = col;
+				}
 
 				PropertyKey key = new PropertyKey(col, SubclassColumnTableNumberClosure[i]);
 				if (propDictionary.ContainsKey(key))

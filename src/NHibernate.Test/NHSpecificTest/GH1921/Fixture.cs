@@ -47,9 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 				var rowCount = session.CreateQuery("insert into Entity (Name) select e.Name from Entity e").ExecuteUpdate();
 				transaction.Commit();
 
-				// If the DML has to take the filter into account, then below Assert should be
-				// Assert.That(rowCount, Is.EqualTo(filtered ? 1 : 2));
-				Assert.That(rowCount, Is.EqualTo(2));
+				Assert.That(rowCount, Is.EqualTo(filtered ? 1 : 2));
 			}
 		}
 
@@ -64,9 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 				var rowCount = session.CreateQuery("update Entity e set Name = 'newName'").ExecuteUpdate();
 				transaction.Commit();
 
-				// If the DML has to take the filter into account, then below Assert should be
-				// Assert.That(rowCount, Is.EqualTo(filtered ? 1 : 2));
-				Assert.That(rowCount, Is.EqualTo(2));
+				Assert.That(rowCount, Is.EqualTo(filtered ? 1 : 2));
 			}
 		}
 
@@ -81,9 +77,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 				var rowCount = session.CreateQuery("delete Entity").ExecuteUpdate();
 				transaction.Commit();
 
-				// If the DML has to take the filter into account, then below Assert should be
-				// Assert.That(rowCount, Is.EqualTo(filtered ? 1 : 2));
-				Assert.That(rowCount, Is.EqualTo(2));
+				Assert.That(rowCount, Is.EqualTo(filtered ? 1 : 2));
 			}
 		}
 	}

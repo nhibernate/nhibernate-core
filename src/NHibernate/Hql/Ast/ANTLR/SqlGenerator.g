@@ -83,7 +83,8 @@ public whereClause
 
 whereClauseExpr
 	: (SQL_TOKEN) => conditionList
-	| booleanExpr[ false ]
+    | filters ( { Out(" and "); } booleanExpr [ true ] )?
+    | booleanExpr[ false ]
 	;
 
 orderExprs

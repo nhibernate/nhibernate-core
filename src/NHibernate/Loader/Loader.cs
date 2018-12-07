@@ -1879,75 +1879,7 @@ namespace NHibernate.Loader
 
 		protected SqlString ExpandDynamicFilterParameters(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, ISessionImplementor session)
 		{
-			var enabledFilters = session.EnabledFilters;
-			if (enabledFilters.Count == 0 || !ParserHelper.HasHqlVariable(sqlString))
-			{
-				return sqlString;
-			}
-
-			Dialect.Dialect dialect = session.Factory.Dialect;
-			string symbols = ParserHelper.HqlSeparators + dialect.OpenQuote + dialect.CloseQuote;
-
-			var result = new SqlStringBuilder();
-			foreach (var sqlPart in sqlString)
-			{
-				var parameter = sqlPart as Parameter;
-				if (parameter != null)
-				{
-					result.Add(parameter);
-					continue;
-				}
-
-				var sqlFragment = sqlPart.ToString();
-				var tokens = new StringTokenizer(sqlFragment, symbols, true);
-
-				foreach (string token in tokens)
-				{
-					if (ParserHelper.IsHqlVariable(token))
-					{
-						string filterParameterName = token.Substring(1);
-						string[] parts = StringHelper.ParseFilterParameterName(filterParameterName);
-						string filterName = parts[0];
-						string parameterName = parts[1];
-						var filter = (FilterImpl)enabledFilters[filterName];
-
-						int? collectionSpan = filter.GetParameterSpan(parameterName);
-						IType type = filter.FilterDefinition.GetParameterType(parameterName);
-						int parameterColumnSpan = type.GetColumnSpan(session.Factory);
-
-						// Add query chunk
-						string typeBindFragment = string.Join(", ", Enumerable.Repeat("?", parameterColumnSpan));
-						string bindFragment;
-						if (collectionSpan.HasValue && !type.ReturnedClass.IsArray)
-						{
-							bindFragment = string.Join(", ", Enumerable.Repeat(typeBindFragment, collectionSpan.Value));
-						}
-						else
-						{
-							bindFragment = typeBindFragment;
-						}
-
-						// dynamic-filter parameter tracking
-						var filterParameterFragment = SqlString.Parse(bindFragment);
-						var dynamicFilterParameterSpecification = new DynamicFilterParameterSpecification(filterName, parameterName, type, collectionSpan);
-						var parameters = filterParameterFragment.GetParameters().ToArray();
-						var sqlParameterPos = 0;
-						var paramTrackers = dynamicFilterParameterSpecification.GetIdsForBackTrack(session.Factory);
-						foreach (var paramTracker in paramTrackers)
-						{
-							parameters[sqlParameterPos++].BackTrack = paramTracker;
-						}
-
-						parameterSpecs.Add(dynamicFilterParameterSpecification);
-						result.Add(filterParameterFragment);
-					}
-					else
-					{
-						result.Add(token);
-					}
-				}
-			}
-			return result.ToSqlString();
+			return FilterHelper.ExpandDynamicFilterParameters(sqlString, parameterSpecs, session);
 		}
 
 		protected SqlString AddLimitsParametersIfNeeded(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, QueryParameters queryParameters, ISessionImplementor session)

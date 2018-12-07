@@ -35,7 +35,10 @@ namespace NHibernate.SqlCommand
 
 		public InFragment SetColumn(string alias, string colName)
 		{
-			columnName = alias + StringHelper.Dot + colName;
+			columnName = !string.IsNullOrEmpty(alias)
+				? alias + StringHelper.Dot + colName
+				: colName;
+
 			return SetColumn(columnName);
 		}
 

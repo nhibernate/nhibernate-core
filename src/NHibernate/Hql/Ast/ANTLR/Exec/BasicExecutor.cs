@@ -9,9 +9,12 @@ using Antlr.Runtime.Tree;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Ast.ANTLR.Tree;
+using NHibernate.Impl;
 using NHibernate.Param;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using NHibernate.Type;
+using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
@@ -61,10 +64,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				{
 					CheckParametersExpectedType(parameters); // NH Different behavior (NH-1898)
 
-					var sqlQueryParametersList = sql.GetParameters().ToList();
+					var sqlString = sql.Copy();
+					sqlString = FilterHelper.ExpandDynamicFilterParameters(sqlString, Parameters, session);
+					var sqlQueryParametersList = sqlString.GetParameters().ToList();
 					SqlType[] parameterTypes = Parameters.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
 
-					st = session.Batcher.PrepareCommand(CommandType.Text, sql, parameterTypes);
+					st = session.Batcher.PrepareCommand(CommandType.Text, sqlString, parameterTypes);
 					foreach (var parameterSpecification in Parameters)
 					{
 						parameterSpecification.Bind(st, sqlQueryParametersList, parameters, session);

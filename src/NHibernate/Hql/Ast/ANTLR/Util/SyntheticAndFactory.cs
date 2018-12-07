@@ -28,10 +28,21 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			_hqlSqlWalker = hqlSqlWalker;
 		}
 
+		// TODO 5.3 Deprecate this method
 		public void AddWhereFragment(
 				JoinFragment joinFragment,
 				SqlString whereFragment,
 				QueryNode query,
+				FromElement fromElement,
+				HqlSqlWalker hqlSqlWalker)
+		{
+			AddWhereFragment(joinFragment, whereFragment, (IRestrictableStatement) query, fromElement, hqlSqlWalker);
+		}
+
+		internal void AddWhereFragment(
+				JoinFragment joinFragment,
+				SqlString whereFragment,
+				IRestrictableStatement query,
 				FromElement fromElement,
 				HqlSqlWalker hqlSqlWalker)
 		{
@@ -145,6 +156,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			return _hqlSqlWalker.ASTFactory.CreateNode(tokenType, text);
 		}
 
+		// TODO 5.3 Deprecate this method
 		public virtual void AddDiscriminatorWhereFragment(IRestrictableStatement statement, IQueryable persister, IDictionary<string, IFilter> enabledFilters, string alias)
 		{
 			string whereFragment = persister.FilterFragment(alias, enabledFilters).Trim();
