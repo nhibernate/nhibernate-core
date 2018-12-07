@@ -127,6 +127,23 @@ namespace NHibernate.Test.NHSpecificTest.NH3472
 			}
 		}
 
+		//GH1928
+		[Test]
+		public void QueryWithJoinAliasForJoinQueryOverAsync()
+		{
+			using (var s = OpenSession())
+			{
+				Cat grandParent = null;
+				var query = s.QueryOver<Cat>()
+				  .Inner.JoinQueryOver(c => c.Parent)
+				  .Inner.JoinAlias(p => p.Parent, () => grandParent)
+				  .Select(Projections.Entity(() => grandParent))
+				  .Take(1);
+
+				Assert.DoesNotThrowAsync(() => query.SingleOrDefaultAsync());
+			}
+		}
+
 		[Test, Explicit("Debatable use case")]
 		public async Task QueryWithFetchesAndMultipleJoinsToSameAssociationAsync()
 		{
