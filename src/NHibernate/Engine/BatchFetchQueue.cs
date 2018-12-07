@@ -626,8 +626,6 @@ namespace NHibernate.Engine
 			var i = 0;
 			for (var j = fromIndex; j <= toIndex; j++)
 			{
-				// If the index was not found (null), this test will be falsy and it will take the most recently
-				// registered entities or collections.
 				if (!keyIndex.HasValue || keys[j].Value < keyIndex)
 				{
 					lowerIndexes.Add(j);
