@@ -5,6 +5,11 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.NativeGeneratorSupportsBulkInsertion;
+		}
+
 		protected override void OnSetUp()
 		{
 			using (var session = OpenSession())
