@@ -1,7 +1,21 @@
+
 Build 5.2.1
 =============================
 
 Release notes - NHibernate - Version 5.2.1
+
+5 issues were resolved in this release.
+
+** Bug
+
+   * #1928 JoinAlias on JoinQueryOver fails
+   * #1920 ISession.Get may fail with a null exception
+   * #1918 Property-ref on many-to-one with composite id fails
+
+** Task
+
+   * #1932 Release 5.2.1
+   * #1927 Add missing possible breaking change
 
 As part of releasing 5.2.1, a missing 5.2.0 possible breaking change has been added about duplicated columns
 in mapping. See 5.2.0 possible breaking changes.
