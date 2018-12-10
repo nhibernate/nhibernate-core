@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3069
 		    using (var session = OpenSession())
 		    using (var tx = session.BeginTransaction())
 		    {
-			    session.CreateQuery("delete from System.Object").ExecuteUpdate();
+			    session.Delete("from VersionableAbstract");
 			    tx.Commit();
 		    }
 	    }
