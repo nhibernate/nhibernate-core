@@ -1722,13 +1722,13 @@ namespace NHibernate.Persister.Entity
 		private SqlCommandInfo GenerateVersionIncrementUpdateString()
 		{
 			SqlUpdateBuilder update = new SqlUpdateBuilder(Factory.Dialect, Factory);
-			update.SetTableName(GetTableName(0));
+			update.SetTableName(RootTableName);
 			if (Factory.Settings.IsCommentsEnabled)
 			{
 				update.SetComment("forced version increment");
 			}
 			update.AddColumn(VersionColumnName, VersionType);
-			update.SetIdentityColumn(IdentifierColumnNames, IdentifierType);
+			update.SetIdentityColumn(RootTableIdentifierColumnNames, IdentifierType);
 			update.SetVersionColumn(new string[] { VersionColumnName }, VersionType);
 			return update.ToSqlCommandInfo();
 		}

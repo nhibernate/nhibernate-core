@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.NH3069"
+									 default-lazy="false">
+	<class name="VersionableAbstract">
+		<id type="System.Int64" column="_id" name="Id">
+			<generator class="identity" />
+		</id>
+		<version name="Version" type="System.Int32">
+			<column name="_version" />
+		</version>
+	
+		<joined-subclass name="VersionableConcreate">
+			<key>
+				<column name="VersionableAbstract_id" />
+			</key>
+			<property name="Name" type="System.String">
+				<column name="_name" />
+			</property>
+		</joined-subclass>
+	</class>
+</hibernate-mapping>
