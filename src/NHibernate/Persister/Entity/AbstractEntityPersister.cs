@@ -2140,7 +2140,9 @@ namespace NHibernate.Persister.Entity
 				if (propertyValue == null)
 					continue;
 				var type = PropertyTypes[i].GetSemiResolvedType(session.Factory);
-				propertyValue = type.SemiResolve(propertyValue, session, entity);
+
+				if (!type.ReturnedClass.IsInstanceOfType(propertyValue))
+					propertyValue = type.SemiResolve(propertyValue, session, entity);
 				var euk = new EntityUniqueKey(EntityName, PropertyNames[i], propertyValue, type, session.Factory);
 				session.PersistenceContext.AddEntity(euk, entity);
 			}

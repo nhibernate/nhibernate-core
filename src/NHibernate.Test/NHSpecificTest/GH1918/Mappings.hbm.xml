@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH1918">
+
+  <class name="BiEmbIdRefEdEntity">
+    <composite-id name="Id">
+      <key-property name="X"/>
+      <key-property name="Y"/>
+    </composite-id>
+    <property name="Data" />
+    <one-to-one name="Referencing"
+                class="BiEmbIdRefIngEntity"
+                property-ref="Reference"/>
+  </class>
+
+  <class name="BiEmbIdRefIngEntity">
+    <composite-id name="Id">
+      <key-property name="X"/>
+      <key-property name="Y"/>
+    </composite-id>
+    <property name="Data" />
+    <many-to-one name="Reference">
+      <column name="RefX" />
+      <column name="RefY" />
+    </many-to-one>
+  </class>
+</hibernate-mapping>
