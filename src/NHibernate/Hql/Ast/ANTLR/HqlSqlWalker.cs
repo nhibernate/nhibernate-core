@@ -486,7 +486,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 				// After that, process the JOINs.
 				// Invoke a delegate to do the work, as this is farily complex.
 				JoinProcessor joinProcessor = new JoinProcessor( this );
-				joinProcessor.ProcessJoins( qn );
+				IRestrictableStatement rs = qn;
+				joinProcessor.ProcessJoins(rs);
 
 				// Attach any mapping-defined "ORDER BY" fragments
 				foreach (FromElement fromElement in qn.FromClause.GetProjectionList())

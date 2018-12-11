@@ -28,7 +28,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			_hqlSqlWalker = hqlSqlWalker;
 		}
 
-		// TODO 5.3 Deprecate this method
+		// Since v5.3
+		[Obsolete("Use AddWhereFragment taking an IRestrictableStatement instead")]
 		public void AddWhereFragment(
 				JoinFragment joinFragment,
 				SqlString whereFragment,
@@ -36,10 +37,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				FromElement fromElement,
 				HqlSqlWalker hqlSqlWalker)
 		{
-			AddWhereFragment(joinFragment, whereFragment, (IRestrictableStatement) query, fromElement, hqlSqlWalker);
+			IRestrictableStatement rs = query;
+			AddWhereFragment(joinFragment, whereFragment, rs, fromElement, hqlSqlWalker);
 		}
 
-		internal void AddWhereFragment(
+		public void AddWhereFragment(
 				JoinFragment joinFragment,
 				SqlString whereFragment,
 				IRestrictableStatement query,
@@ -156,7 +158,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			return _hqlSqlWalker.ASTFactory.CreateNode(tokenType, text);
 		}
 
-		// TODO 5.3 Deprecate this method
+		// Since v5.3
+		[Obsolete("This method has no more usages")]
 		public virtual void AddDiscriminatorWhereFragment(IRestrictableStatement statement, IQueryable persister, IDictionary<string, IFilter> enabledFilters, string alias)
 		{
 			string whereFragment = persister.FilterFragment(alias, enabledFilters).Trim();

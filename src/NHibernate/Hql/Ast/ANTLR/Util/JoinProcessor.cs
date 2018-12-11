@@ -61,12 +61,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			}
 		}
 
-		public void ProcessJoins(QueryNode query) 
+		// Since v5.3
+		[Obsolete("Use ProcessJoins taking an IRestrictableStatement instead")]
+		public void ProcessJoins(QueryNode query)
 		{
-			ProcessJoins((IRestrictableStatement) query);
+			IRestrictableStatement rs = query;
+			ProcessJoins(rs);
 		}
 
-		internal void ProcessJoins(IRestrictableStatement query) 
+		public void ProcessJoins(IRestrictableStatement query) 
 		{
 			FromClause fromClause = query.FromClause;
 			var supportRootAlias = !(query is DeleteStatement || query is UpdateStatement);
