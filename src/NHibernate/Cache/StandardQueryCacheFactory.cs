@@ -10,7 +10,7 @@ namespace NHibernate.Cache
 	/// </summary>
 	public class StandardQueryCacheFactory : IQueryCacheFactory
 	{
-		// Since v5.2
+		// Since v5.3
 		[Obsolete("Please use overload with a CacheBase parameter.")]
 		public IQueryCache GetQueryCache(string regionName,
 																		 UpdateTimestampsCache updateTimestampsCache,

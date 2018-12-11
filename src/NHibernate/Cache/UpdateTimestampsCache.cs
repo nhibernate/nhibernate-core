@@ -25,7 +25,7 @@ namespace NHibernate.Cache
 			_updateTimestamps.Clear();
 		}
 
-		// Since v5.2
+		// Since v5.3
 		[Obsolete("Please use overload with a CacheBase parameter.")]
 		public UpdateTimestampsCache(Settings settings, IDictionary<string, string> props)
 			: this(
@@ -155,7 +155,7 @@ namespace NHibernate.Cache
 			return results;
 		}
 
-		// Since v5.2
+		// Since v5.3
 		[Obsolete("This method has no usages anymore")]
 		public virtual void Destroy()
 		{

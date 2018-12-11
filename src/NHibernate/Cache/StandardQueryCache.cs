@@ -22,7 +22,7 @@ namespace NHibernate.Cache
 		private readonly UpdateTimestampsCache _updateTimestampsCache;
 		private readonly CacheBase _cache;
 
-		// Since v5.2
+		// Since v5.3
 		[Obsolete("Please use overload with a CacheBase parameter.")]
 		public StandardQueryCache(
 			Settings settings,

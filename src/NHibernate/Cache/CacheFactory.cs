@@ -30,8 +30,8 @@ namespace NHibernate.Cache
 		/// <param name="settings">Used to retrieve the global cache region prefix.</param>
 		/// <param name="properties">Properties the cache provider can use to configure the cache.</param>
 		/// <returns>An <see cref="ICacheConcurrencyStrategy"/> to use for this object in the <see cref="ICache"/>.</returns>
-		// Since v5.2
-		[Obsolete("Please use overload with a CacheBase builder parameter.")]
+		// Since v5.3
+		[Obsolete("Please use overload with a CacheBase parameter.")]
 		public static ICacheConcurrencyStrategy CreateCache(
 			string usage,
 			string name,
