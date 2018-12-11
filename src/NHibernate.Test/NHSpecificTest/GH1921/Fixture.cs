@@ -90,7 +90,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 
 		[TestCase(null)]
 		[TestCase("NameFilter")]
-		[TestCase("OtherNameFilter")]
+		[TestCase("OtherNameFilter", IgnoreReason = "Not supported")]
 		public void MultiTableDmlInsert(string filter)
 		{
 			using (var session = OpenSession())

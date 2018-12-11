@@ -102,7 +102,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 
 		[TestCase(null)]
 		[TestCase("NameFilter")]
-		[TestCase("OtherNameFilter")]
+		[TestCase("OtherNameFilter", IgnoreReason = "Not supported")]
 		public async Task MultiTableDmlInsertAsync(string filter, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (var session = OpenSession())

@@ -110,10 +110,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						List<IParameterSpecification> whereParams = (new List<IParameterSpecification>(allParams)).GetRange(
 							parameterStart, allParams.Count - parameterStart);
 
-						var sqlQueryParametersList = idInsertSelect.GetParameters().ToList();
+						var sqlString = FilterHelper.ExpandDynamicFilterParameters(idInsertSelect, whereParams, session);
+						var sqlQueryParametersList = sqlString.GetParameters().ToList();
 						SqlType[] parameterTypes = whereParams.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
 
-						ps = session.Batcher.PrepareCommand(CommandType.Text, idInsertSelect, parameterTypes);
+						ps = session.Batcher.PrepareCommand(CommandType.Text, sqlString, parameterTypes);
 						foreach (var parameterSpecification in whereParams)
 						{
 							parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
