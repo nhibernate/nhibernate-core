@@ -14,42 +14,44 @@ using NHibernate.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH3069
 {
-    using System.Threading.Tasks;
-    [TestFixture]
-    public class FixtureAsync : BugTestCase
-    {
-	    protected override void OnSetUp()
-	    {
-		    using (var session = OpenSession())
-		    using (var tx = session.BeginTransaction())
-		    {
-			    var entity = new VersionableConcreate {Name = "Some Name"};
-			    session.Save(entity);
-			 
-			    tx.Commit();
-		    }
-	    }
+	using System.Threading.Tasks;
+	[TestFixture]
+	public class FixtureAsync : BugTestCase
+	{
+		protected override void OnSetUp()
+		{
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+				var entity = new VersionableConcreate { Name = "Some Name" };
+				session.Save(entity);
 
-	    protected override void OnTearDown()
-	    {
-		    using (var session = OpenSession())
-		    using (var tx = session.BeginTransaction())
-		    {
-			    session.Delete("from VersionableAbstract");
-			    tx.Commit();
-		    }
-	    }
+				tx.Commit();
+			}
+		}
 
-	    [Test]
-        public async Task ShouldLockEntityAsync()
-     {
-         using (var session = OpenSession())
-         using (var tx = session.BeginTransaction())
-         {
-             var entity = await (session.Query<VersionableConcreate>().SingleAsync());
-             await (session.LockAsync(entity, LockMode.Force)); //exception is thrown here when incorrect update statement is generated
-	         await (tx.CommitAsync());
-         }
-     }
-    }
+		protected override void OnTearDown()
+		{
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+				session.Delete("from VersionableAbstract");
+				tx.Commit();
+			}
+		}
+
+		[Test]
+		public async Task ShouldLockEntityAsync()
+		{
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+				var entity = await (session.Query<VersionableConcreate>().SingleAsync());
+				await (session.LockAsync(
+					entity,
+					LockMode.Force)); //exception is thrown here when incorrect update statement is generated
+				await (tx.CommitAsync());
+			}
+		}
+	}
 }

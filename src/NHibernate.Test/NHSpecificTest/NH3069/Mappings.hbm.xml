@@ -1,15 +1,15 @@
 <?xml version="1.0" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
-									 assembly="NHibernate.Test"
-									 namespace="NHibernate.Test.NHSpecificTest.NH3069"
-									 default-lazy="false">
-	<class name="VersionableAbstract">
-		<id name="Id" column="`id`" generator="identity" />
-		<version name="Version" column="`version`" />
-	
-		<joined-subclass name="VersionableConcreate">
-			<key column="`VersionableAbstract_id`" />
-			<property name="Name" column="`name`" />
-		</joined-subclass>
-	</class>
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3069"
+                   default-lazy="false">
+  <class name="VersionableAbstract">
+    <id name="Id" column="`id`" generator="identity"/>
+    <version name="Version" column="`version`"/>
+
+    <joined-subclass name="VersionableConcreate">
+      <key column="`VersionableAbstract_id`"/>
+      <property name="Name" column="`name`"/>
+    </joined-subclass>
+  </class>
 </hibernate-mapping>
