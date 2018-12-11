@@ -83,7 +83,6 @@ namespace NHibernate.Util
 			return buf.ToString();
 		}
 
-		//TODO: Inline
 		public static string Replace(string template, string placeholder, string replacement)
 		{
 			// sometimes a null value will get passed in here -> SqlWhereStrings are a good example
