@@ -55,15 +55,8 @@ namespace NHibernate.Action
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				var ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
-				return persister.Cache.ReleaseAsync(ck, softLock, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			var ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
+			return persister.Cache.ReleaseAsync(ck, softLock, cancellationToken);
 		}
 
 		#endregion
