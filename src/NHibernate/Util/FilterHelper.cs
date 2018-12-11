@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
 using NHibernate.Hql;
