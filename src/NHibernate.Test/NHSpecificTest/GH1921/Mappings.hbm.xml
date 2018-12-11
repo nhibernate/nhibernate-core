@@ -9,7 +9,24 @@
     <filter name="NameFilter"/>
   </class>
 
+  <class name="MultiTableEntity">
+    <id name="Id" generator="native"/>
+    <property name="Name"/>
+
+    <join table="SecondTable">
+      <key column="Id"/>
+      <property name="OtherName"/>
+    </join>
+
+    <filter name="NameFilter"/>
+    <filter name="OtherNameFilter"/>
+  </class>
+
   <filter-def name="NameFilter" condition="Name = :name">
+    <filter-param name="name" type="System.String"/>
+  </filter-def>
+
+  <filter-def name="OtherNameFilter" condition="OtherName = :name">
     <filter-param name="name" type="System.String"/>
   </filter-def>
 </hibernate-mapping>

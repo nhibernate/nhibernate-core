@@ -15,11 +15,17 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity {Name = "Bob"};
+				var e1 = new Entity { Name = "Bob" };
 				session.Save(e1);
 
-				var e2 = new Entity {Name = "Sally"};
+				var e2 = new Entity { Name = "Sally" };
 				session.Save(e2);
+
+				var me1 = new MultiTableEntity { Name = "Bob", OtherName = "Bob" };
+				session.Save(me1);
+
+				var me2 = new MultiTableEntity { Name = "Sally", OtherName = "Sally" };
+				session.Save(me2);
 
 				transaction.Commit();
 			}
@@ -44,7 +50,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 			{
 				if (filtered)
 					session.EnableFilter("NameFilter").SetParameter("name", "Bob");
-				var rowCount = session.CreateQuery("insert into Entity (Name) select e.Name from Entity e").ExecuteUpdate();
+				var rowCount = session.CreateQuery("insert into Entity (Name) select e.Name from Entity e")
+				                      .ExecuteUpdate();
 				transaction.Commit();
 
 				Assert.That(rowCount, Is.EqualTo(filtered ? 1 : 2));
@@ -78,6 +85,75 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 				transaction.Commit();
 
 				Assert.That(rowCount, Is.EqualTo(filtered ? 1 : 2));
+			}
+		}
+
+		[TestCase(null)]
+		[TestCase("NameFilter")]
+		[TestCase("OtherNameFilter")]
+		public void MultiTableDmlInsert(string filter)
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				if (!string.IsNullOrEmpty(filter))
+					session.EnableFilter(filter).SetParameter("name", "Bob");
+				var rowCount =
+					session
+						.CreateQuery(
+							// No insert of OtherName: not supported (INSERT statements cannot refer to superclass/joined properties)
+							"insert into MultiTableEntity (Name) select e.Name from Entity e")
+						.ExecuteUpdate();
+				transaction.Commit();
+
+				Assert.That(rowCount, Is.EqualTo(string.IsNullOrEmpty(filter) ? 2 : 1));
+			}
+		}
+
+		[TestCase(null)]
+		[TestCase("NameFilter")]
+		[TestCase("OtherNameFilter")]
+		public void MultiTableDmlUpdate(string filter)
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				if (!string.IsNullOrEmpty(filter))
+					session.EnableFilter(filter).SetParameter("name", "Bob");
+				var rowCount =
+					session
+						.CreateQuery(
+							"update MultiTableEntity e" +
+							" set Name = 'newName', OtherName = 'newOtherName'" +
+							// Check referencing columns is supported
+							" where e.Name is not null and e.OtherName is not null")
+						.ExecuteUpdate();
+				transaction.Commit();
+
+				Assert.That(rowCount, Is.EqualTo(string.IsNullOrEmpty(filter) ? 2 : 1));
+			}
+		}
+
+		[TestCase(null)]
+		[TestCase("NameFilter")]
+		[TestCase("OtherNameFilter")]
+		public void MultiTableDmlDelete(string filter)
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				if (!string.IsNullOrEmpty(filter))
+					session.EnableFilter(filter).SetParameter("name", "Bob");
+				var rowCount =
+					session
+						.CreateQuery(
+							"delete MultiTableEntity e" +
+							// Check referencing columns is supported
+							" where e.Name is not null and e.OtherName is not null")
+						.ExecuteUpdate();
+				transaction.Commit();
+
+				Assert.That(rowCount, Is.EqualTo(string.IsNullOrEmpty(filter) ? 2 : 1));
 			}
 		}
 	}
