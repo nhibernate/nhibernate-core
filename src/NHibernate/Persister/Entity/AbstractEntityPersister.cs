@@ -683,6 +683,7 @@ namespace NHibernate.Persister.Entity
 			get { return versionColumnName; }
 		}
 
+		[Obsolete("Please use RootTableName instead.")]
 		protected internal string VersionedTableName
 		{
 			get { return GetTableName(0); }
@@ -1540,20 +1541,20 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		protected SqlString GenerateSelectVersionString()
 		{
-			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(Factory.Dialect, factory)
-				.SetTableName(VersionedTableName);
+			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(Factory.Dialect, Factory)
+				.SetTableName(RootTableName);
 
 			if (IsVersioned)
-				builder.AddColumn(versionColumnName);
+				builder.AddColumn(VersionColumnName);
 			else
-				builder.AddColumns(rootTableKeyColumnNames);
+				builder.AddColumns(RootTableKeyColumnNames);
 
 			if (Factory.Settings.IsCommentsEnabled)
 			{
 				builder.SetComment("get version " + EntityName);
 			}
 
-			return builder.AddWhereFragment(rootTableKeyColumnNames, IdentifierType, " = ").ToSqlString();
+			return builder.AddWhereFragment(RootTableKeyColumnNames, IdentifierType, " = ").ToSqlString();
 		}
 
 		protected SqlString GenerateInsertGeneratedValuesSelectString()
