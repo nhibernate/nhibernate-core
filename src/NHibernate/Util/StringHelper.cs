@@ -83,6 +83,8 @@ namespace NHibernate.Util
 			return buf.ToString();
 		}
 
+		//Since v5.3
+		[Obsolete("Please use string.Replace or Regex.Replace instead.")]
 		public static string Replace(string template, string placeholder, string replacement)
 		{
 			// sometimes a null value will get passed in here -> SqlWhereStrings are a good example

@@ -36,13 +36,13 @@ namespace NHibernate.SqlCommand
 		public InFragment SetColumn(string alias, string colName)
 		{
 			columnName = alias + StringHelper.Dot + colName;
-			return SetColumn(columnName);
+			return this;
 		}
 
 		public InFragment SetFormula(string alias, string formulaTemplate)
 		{
-			columnName = StringHelper.Replace(formulaTemplate, Template.Placeholder, alias);
-			return SetColumn(columnName);
+			columnName = formulaTemplate?.Replace(Template.Placeholder, alias);
+			return this;
 		}
 
 		public SqlString ToFragmentString()

@@ -20,13 +20,12 @@ namespace NHibernate.Util
 			filterNames = new string[filterCount];
 			filterConditions = new string[filterCount];
 			filterCount = 0;
-			foreach (KeyValuePair<string, string> entry in filters)
+			foreach (var entry in filters)
 			{
 				filterNames[filterCount] = entry.Key;
 				filterConditions[filterCount] =
-					Template.RenderWhereStringTemplate(entry.Value, FilterImpl.MARKER, dialect, sqlFunctionRegistry);
-				filterConditions[filterCount] =
-					StringHelper.Replace(filterConditions[filterCount], ":", ":" + filterNames[filterCount] + ".");
+					Template.RenderWhereStringTemplate(entry.Value, FilterImpl.MARKER, dialect, sqlFunctionRegistry)?
+						.Replace(":", ":" + entry.Key + ".");
 				filterCount++;
 			}
 		}

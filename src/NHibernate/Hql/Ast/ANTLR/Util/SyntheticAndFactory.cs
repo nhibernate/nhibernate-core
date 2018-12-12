@@ -159,7 +159,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 
 			// Need to parse off the column qualifiers; this is assuming (which is true as of now)
 			// that this is only used from update and delete HQL statement parsing
-			whereFragment = StringHelper.Replace(whereFragment, persister.GenerateFilterConditionAlias(alias) + ".", "");
+			whereFragment = whereFragment.Replace(persister.GenerateFilterConditionAlias(alias) + ".", "");
 
 			// Note: this simply constructs a "raw" SQL_TOKEN representing the
 			// where fragment and injects this into the tree.  This "works";

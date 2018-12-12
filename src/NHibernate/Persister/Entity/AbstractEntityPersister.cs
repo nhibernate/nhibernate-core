@@ -1933,7 +1933,7 @@ namespace NHibernate.Persister.Entity
 			{
 				if (cols[j] == null)
 				{
-					result[j] = StringHelper.Replace(templates[j], Template.Placeholder, alias);
+					result[j] = templates[j]?.Replace(Template.Placeholder, alias);
 				}
 				else
 				{
@@ -2194,7 +2194,7 @@ namespace NHibernate.Persister.Entity
 
 		protected string GetSQLWhereString(string alias)
 		{
-			return StringHelper.Replace(sqlWhereStringTemplate, Template.Placeholder, alias);
+			return sqlWhereStringTemplate?.Replace(Template.Placeholder, alias);
 		}
 
 		protected bool HasWhere
