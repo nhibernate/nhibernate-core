@@ -1547,14 +1547,14 @@ namespace NHibernate.Persister.Entity
 			if (IsVersioned)
 				builder.AddColumn(VersionColumnName);
 			else
-				builder.AddColumns(RootTableKeyColumnNames);
+				builder.AddColumns(RootTableIdentifierColumnNames);
 
 			if (Factory.Settings.IsCommentsEnabled)
 			{
 				builder.SetComment("get version " + EntityName);
 			}
 
-			return builder.AddWhereFragment(RootTableKeyColumnNames, IdentifierType, " = ").ToSqlString();
+			return builder.AddWhereFragment(RootTableIdentifierColumnNames, IdentifierType, " = ").ToSqlString();
 		}
 
 		protected SqlString GenerateInsertGeneratedValuesSelectString()
