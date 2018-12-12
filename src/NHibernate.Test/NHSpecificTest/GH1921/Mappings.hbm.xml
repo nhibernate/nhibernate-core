@@ -13,7 +13,7 @@
     <id name="Id" generator="native"/>
     <property name="Name"/>
 
-    <join table="SecondTable">
+    <join table="SecondTable" optional="true">
       <key column="Id"/>
       <property name="OtherName"/>
     </join>

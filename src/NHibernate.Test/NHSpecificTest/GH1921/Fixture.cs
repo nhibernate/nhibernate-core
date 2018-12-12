@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1921
 {
@@ -90,23 +91,37 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 
 		[TestCase(null)]
 		[TestCase("NameFilter")]
-		[TestCase("OtherNameFilter", IgnoreReason = "Not supported")]
+		[TestCase("OtherNameFilter")]
 		public void MultiTableDmlInsert(string filter)
 		{
+			var isFiltered = !string.IsNullOrEmpty(filter);
+
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				if (!string.IsNullOrEmpty(filter))
+				if (isFiltered)
 					session.EnableFilter(filter).SetParameter("name", "Bob");
 				var rowCount =
 					session
 						.CreateQuery(
 							// No insert of OtherName: not supported (INSERT statements cannot refer to superclass/joined properties)
-							"insert into MultiTableEntity (Name) select e.Name from Entity e")
+							"insert into MultiTableEntity (Name) select e.Name from MultiTableEntity e")
 						.ExecuteUpdate();
 				transaction.Commit();
 
-				Assert.That(rowCount, Is.EqualTo(string.IsNullOrEmpty(filter) ? 2 : 1));
+				Assert.That(rowCount, Is.EqualTo(isFiltered ? 1 : 2), "ResultCount");
+			}
+
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				Assert.That(
+					session.Query<MultiTableEntity>().Count(e => e.Name != "Bob"),
+					Is.EqualTo(isFiltered ? 1 : 2), "Name != \"Bob\"");
+				Assert.That(
+					session.Query<MultiTableEntity>().Count(e => e.OtherName == null),
+					Is.EqualTo(isFiltered ? 1 : 2), "OtherName is null");
+				transaction.Commit();
 			}
 		}
 
@@ -115,10 +130,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 		[TestCase("OtherNameFilter")]
 		public void MultiTableDmlUpdate(string filter)
 		{
+			var isFiltered = !string.IsNullOrEmpty(filter);
+
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				if (!string.IsNullOrEmpty(filter))
+				if (isFiltered)
 					session.EnableFilter(filter).SetParameter("name", "Bob");
 				var rowCount =
 					session
@@ -130,7 +147,19 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 						.ExecuteUpdate();
 				transaction.Commit();
 
-				Assert.That(rowCount, Is.EqualTo(string.IsNullOrEmpty(filter) ? 2 : 1));
+				Assert.That(rowCount, Is.EqualTo(isFiltered ? 1 : 2), "ResultCount");
+			}
+
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				Assert.That(
+					session.Query<MultiTableEntity>().Count(e => e.Name == "newName"),
+					Is.EqualTo(isFiltered ? 1 : 2), "Name == \"newName\"");
+				Assert.That(
+					session.Query<MultiTableEntity>().Count(e => e.OtherName == "newOtherName"),
+					Is.EqualTo(isFiltered ? 1 : 2), "Name == \"newOtherName\"");
+				transaction.Commit();
 			}
 		}
 
@@ -139,10 +168,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 		[TestCase("OtherNameFilter")]
 		public void MultiTableDmlDelete(string filter)
 		{
+			var isFiltered = !string.IsNullOrEmpty(filter);
+
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				if (!string.IsNullOrEmpty(filter))
+				if (isFiltered)
 					session.EnableFilter(filter).SetParameter("name", "Bob");
 				var rowCount =
 					session
@@ -153,7 +184,19 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 						.ExecuteUpdate();
 				transaction.Commit();
 
-				Assert.That(rowCount, Is.EqualTo(string.IsNullOrEmpty(filter) ? 2 : 1));
+				Assert.That(rowCount, Is.EqualTo(isFiltered ? 1 : 2), "ResultCount");
+			}
+
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				Assert.That(
+					session.Query<MultiTableEntity>().Count(e => e.Name != "Bob"),
+					Is.EqualTo(isFiltered ? 1 : 0), "Name != \"Bob\"");
+				Assert.That(
+					session.Query<MultiTableEntity>().Count(e => e.OtherName != "Bob"),
+					Is.EqualTo(isFiltered ? 1 : 0), "OtherName != \"Bob\"");
+				transaction.Commit();
 			}
 		}
 	}
