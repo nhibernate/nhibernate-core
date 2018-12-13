@@ -1,14 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
-                   namespace="NHibernate.Test.NHSpecificTest.NH3079" default-access="field.camelcase"
-                   default-lazy="true" default-cascade="none">
-  <class name="Person" table="T_PERSON" mutable="true">
+                   namespace="NHibernate.Test.NHSpecificTest.NH3079">
+  <class name="Person" table="T_PERSON">
     <composite-id name="CpId" class="PersonCpId">
       <key-property name="IdA" column="C_P_ID_A"/>
       <key-property name="IdB" column="C_P_ID_B"/>
     </composite-id>
     <property name="Name" column="C_P_NAME"/>
-    <set name="EmploymentList" inverse="true" cascade="all-delete-orphan" fetch="select">
+    <set name="EmploymentList" inverse="true" cascade="all-delete-orphan">
       <key>
         <column name="C_ET_P_ID_A"/>
         <column name="C_ET_P_ID_B"/>
@@ -20,13 +19,13 @@
     <loader query-ref="person"/>
   </class>
 
-  <class name="Employer" table="T_EMPLOYER" mutable="true">
+  <class name="Employer" table="T_EMPLOYER">
     <composite-id name="CpId" class="EmployerCpId">
       <key-property name="IdA" column="C_E_ID_A"/>
       <key-property name="IdB" column="C_E_ID_B"/>
     </composite-id>
     <property name="Name" column="C_E_NAME"/>
-    <set name="EmploymentList" inverse="true" cascade="all-delete-orphan" fetch="select">
+    <set name="EmploymentList" inverse="true" cascade="all-delete-orphan">
       <key>
         <column name="C_ET_E_ID_A"/>
         <column name="C_ET_E_ID_B"/>
@@ -38,16 +37,16 @@
     <loader query-ref="employer"/>
   </class>
 
-  <class name="Employment" table="T_EMPLOYMENT" mutable="true">
+  <class name="Employment" table="T_EMPLOYMENT">
     <composite-id name="CpId" class="EmploymentCpId">
       <key-property name="Id" column="C_ET_ID"/>
-      <key-many-to-one name="PersonObj" lazy="proxy">
+      <key-many-to-one name="PersonObj">
         <column name="C_ET_P_ID_A"/>
         <column name="C_ET_P_ID_B"/>
       </key-many-to-one>
-      <key-many-to-one name="EmployerObj" lazy="proxy">
+      <key-many-to-one name="EmployerObj">
         <column name="C_ET_E_ID_A"/>
-        <column name="C_ET_E_ID_B"/>        
+        <column name="C_ET_E_ID_B"/>
       </key-many-to-one>
     </composite-id>
     <property name="Name" column="C_ET_NAME"/>
@@ -55,7 +54,7 @@
     <loader query-ref="employment"/>
   </class>
 
-  <class name="PersonNoComponent" table="T_PERSON_NO_COMP" mutable="true">
+  <class name="PersonNoComponent" table="T_PERSON_NO_COMP">
     <composite-id>
       <key-property name="IdA" column="C_PNC_ID_A"/>
       <key-property name="IdB" column="C_PNC_ID_B"/>
@@ -63,7 +62,7 @@
     <property name="Name" column="C_PNC_NAME"/>
     <loader query-ref="personNoComponent"/>
   </class>
-  
+
   <sql-query name="personNoComponent">
     <return alias="persNoComp" class="PersonNoComponent"/>
     <![CDATA[
@@ -73,7 +72,7 @@
       AND C_PNC_ID_B=?
     ]]>
   </sql-query>
-  
+
   <sql-query name="person">
     <return alias="pers" class="Person"/>
     <![CDATA[
@@ -114,7 +113,7 @@
     order by C_ET_NAME
     ]]>
   </sql-query>
-  
+
   <sql-query name="employment">
     <return alias="empts" class="Employment"/>
     <![CDATA[
@@ -132,7 +131,7 @@
   <query name="personPositional">
     <![CDATA[
     from Person as per
-    where per.CpId = ? 
+    where per.CpId = ?
       or per.CpId = ?
     ]]>
   </query>
