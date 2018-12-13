@@ -10,6 +10,7 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -265,7 +266,10 @@ namespace NHibernate.Impl
 
 			var paramPrefix = isJpaPositionalParam ? StringHelper.SqlParameter : ParserHelper.HqlVariablePrefix;
 
-			return StringHelper.Replace(query, paramPrefix + name, string.Join(StringHelper.CommaSpace, aliases), true);
+			return Regex.Replace(
+				query,
+				Regex.Escape(paramPrefix + name) + @"\b",
+				string.Join(StringHelper.CommaSpace, aliases));
 		}
 
 		#region Parameters
