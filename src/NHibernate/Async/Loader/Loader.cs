@@ -24,7 +24,6 @@ using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Exceptions;
-using NHibernate.Hql;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Param;
