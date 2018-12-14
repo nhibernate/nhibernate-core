@@ -75,39 +75,17 @@ namespace NHibernate.Impl
 
 		protected internal virtual void VerifyParameters()
 		{
-			VerifyParameters(reserveFirstParameter: false, componentsParametersWillBeFlattened: false);
+			VerifyParameters(false);
 		}
 
 		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="componentsParametersWillBeFlattened">
-		/// FIX TO NH3079: Must be <c>true</c> when using positional parameters and
-		/// value one or more parameter values can be component with no change of
-		/// parameter placemarkers count. This is because on native sql queries
-		/// 'components parameter' must always be positioned with as much 
-		/// parameter placemarks as ordinal values on components.
-		/// </param>
-		protected internal virtual void VerifyParameters(bool componentsParametersWillBeFlattened)
-		{
-			VerifyParameters(reserveFirstParameter: false, componentsParametersWillBeFlattened: componentsParametersWillBeFlattened);
-		}
-
-		/// <summary>
-		/// Perform parameter validation.  Used prior to executing the encapsulated query.
+		/// Perform parameters validation. Flatten them if needed. Used prior to executing the encapsulated query.
 		/// </summary>
 		/// <param name="reserveFirstParameter">
-		/// if true, the first ? will not be verified since
-		/// its needed for e.g. callable statements returning a out parameter
+		/// If true, the first positional parameter will not be verified since
+		/// its needed for e.g. callable statements returning an out parameter.
 		/// </param>
-		/// <param name="componentsParametersWillBeFlattened">
-		/// FIX TO NH3079: Must be <c>true</c> when using positional parameters and
-		/// value one or more parameter values can be component with no change of
-		/// parameter placemarkers count. This is because on native sql queries
-		/// 'components parameter' must always be positioned with as much 
-		/// parameter placemarks as ordinal values on components.
-		/// </param>
-		protected internal virtual void VerifyParameters(bool reserveFirstParameter, bool componentsParametersWillBeFlattened)
+		protected internal virtual void VerifyParameters(bool reserveFirstParameter)
 		{
 			if (parameterMetadata.NamedParameterNames.Count != namedParameters.Count + namedParameterLists.Count)
 			{
@@ -117,11 +95,15 @@ namespace NHibernate.Impl
 				throw new QueryException("Not all named parameters have been set: " + CollectionPrinter.ToString(missingParams), QueryString);
 			}
 
-			int positionalValueSpan = 0;
-			for (int i = 0; i < values.Count; i++)
+			var positionalValueSpan = 0;
+			// Values and Types may be overriden to yield refined parameters, check them
+			// instead of the fields.
+			var values = Values;
+			var types = Types;
+			for (var i = 0; i < values.Count; i++)
 			{
-				object obj = types[i];
-				if (values[i] == UNSET_PARAMETER || obj == UNSET_TYPE)
+				var type = types[i];
+				if (values[i] == UNSET_PARAMETER || type == UNSET_TYPE)
 				{
 					if (reserveFirstParameter && i == 0)
 					{
@@ -132,15 +114,7 @@ namespace NHibernate.Impl
 						throw new QueryException("Unset positional parameter at position: " + i, QueryString);
 					}
 				}
-				//FIX TO NH3079
-				if (componentsParametersWillBeFlattened)
-				{
-					positionalValueSpan += ((IType)obj).GetColumnSpan(session.Factory);
-				}
-				else
-				{
-					positionalValueSpan++;
-				}
+				positionalValueSpan++;
 			}
 
 			if (parameterMetadata.OrdinalParameterCount != positionalValueSpan)
@@ -793,12 +767,12 @@ namespace NHibernate.Impl
 			get { return namedParameterLists; }
 		}
 
-		protected IList Values
+		protected virtual IList Values
 		{
 			get { return values; }
 		}
 
-		protected IList<IType> Types
+		protected virtual IList<IType> Types
 		{
 			get { return types; }
 		}

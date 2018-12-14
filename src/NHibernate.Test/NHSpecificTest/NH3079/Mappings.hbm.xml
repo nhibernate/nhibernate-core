@@ -133,6 +133,7 @@
     from Person as per
     where per.CpId = ?
       or per.CpId = ?
+    order by per.Name
     ]]>
   </query>
 
@@ -143,6 +144,20 @@
     from Person as per
     where per.CpId = :id1
       or per.CpId = :id2
+    order by per.Name
     ]]>
   </query>
+
+  <sql-query name="personNoComponentSql">
+    <return alias="per" class="PersonNoComponent"/>
+    <![CDATA[
+    select {per.*}
+    from T_PERSON_NO_COMP per
+    where C_PNC_ID_A = ?
+      and C_PNC_ID_B = ?
+      or C_PNC_ID_A = ?
+      and C_PNC_ID_B = ?
+    order by C_PNC_NAME
+    ]]>
+  </sql-query>
 </hibernate-mapping>

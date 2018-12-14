@@ -214,5 +214,22 @@ namespace NHibernate.Test.NHSpecificTest.NH3079
 				Assert.That(person17_18.Name, Is.EqualTo("PERSON_NO_COMPONENT_17_18"));
 			}
 		}
+
+		[Test]
+		public void SqlPersonNoComponent()
+		{
+			using (var session = OpenSession())
+			{
+				var personList =
+					session
+						.GetNamedQuery("personNoComponentSql")
+						.SetParameter(0, new PersonNoComponent { IdA = 17, IdB = 18 })
+						.SetParameter(1, new PersonNoComponent { IdA = 19, IdB = 20 })
+						.List<PersonNoComponent>();
+				Assert.That(
+					personList.Select(e => e.Name),
+					Is.EquivalentTo(new[] { "PERSON_NO_COMPONENT_17_18", "PERSON_NO_COMPONENT_19_20" }));
+			}
+		}
 	}
 }
