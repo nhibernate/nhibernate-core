@@ -1125,7 +1125,6 @@ namespace NHibernate.Impl
 		public override async Task<IList<T>> ListAsync<T>(CriteriaImpl criteria, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var results = new List<T>();
 			using (BeginProcess())
 			{
 				string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
@@ -1136,7 +1135,7 @@ namespace NHibernate.Impl
 
 				for (int i = 0; i < size; i++)
 				{
-					loaders[i] = new CriteriaLoader(
+					var loader = new CriteriaLoader(
 						GetOuterJoinLoadable(implementors[i]),
 						Factory,
 						criteria,
@@ -1144,7 +1143,8 @@ namespace NHibernate.Impl
 						enabledFilters
 						);
 
-					spaces.UnionWith(loaders[i].QuerySpaces);
+					spaces.UnionWith(loader.QuerySpaces);
+					loaders[size - 1 - i] = loader;
 				}
 
 				await (AutoFlushIfRequiredAsync(spaces, cancellationToken)).ConfigureAwait(false);
@@ -1154,11 +1154,9 @@ namespace NHibernate.Impl
 				{
 					try
 					{
-						for (int i = size - 1; i >= 0; i--)
-						{
-							ArrayHelper.AddAll(results, await (loaders[i].ListAsync(this, cancellationToken)).ConfigureAwait(false));
-						}
+						var results = await (loaders.LoadAllToListAsync<T>(this, cancellationToken)).ConfigureAwait(false); 
 						success = true;
+						return results;
 					}
 					catch (OperationCanceledException) { throw; }
 					catch (HibernateException)
@@ -1176,7 +1174,6 @@ namespace NHibernate.Impl
 					}
 				}
 			}
-			return results;
 		}
 
 		//TODO 6.0: Remove (use base class implementation)

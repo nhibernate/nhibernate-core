@@ -138,7 +138,6 @@ namespace NHibernate.Impl
 
 		public override IList<T> List<T>(CriteriaImpl criteria)
 		{
-			var results = new List<T>();
 			using (BeginProcess())
 			{
 				string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
@@ -147,18 +146,16 @@ namespace NHibernate.Impl
 				CriteriaLoader[] loaders = new CriteriaLoader[size];
 				for (int i = 0; i < size; i++)
 				{
-					loaders[i] = new CriteriaLoader(GetOuterJoinLoadable(implementors[i]), Factory,
+					loaders[size - 1 - i] = new CriteriaLoader(GetOuterJoinLoadable(implementors[i]), Factory,
 													criteria, implementors[i], EnabledFilters);
 				}
 
 				bool success = false;
 				try
 				{
-					for (int i = size - 1; i >= 0; i--)
-					{
-						ArrayHelper.AddAll(results, loaders[i].List(this));
-					}
+					var results = loaders.LoadAllToList<T>(this);
 					success = true;
+					return results;
 				}
 				catch (HibernateException)
 				{
@@ -172,10 +169,9 @@ namespace NHibernate.Impl
 				finally
 				{
 					AfterOperation(success);
+					temporaryPersistenceContext.Clear();
 				}
-				temporaryPersistenceContext.Clear();
 			}
-			return results;
 		}
 
 		//TODO 6.0: Remove (use base class implementation)
