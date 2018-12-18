@@ -13,6 +13,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Loader.Hql;
 using NHibernate.Param;
+using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -280,30 +281,25 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
-		public bool ContainsCollectionFetches
-		{
-			get
-			{
-				return CollectionFetches.Count > 0;
-			}
-		}
+		public bool ContainsCollectionFetches => CollectionFetches.Count > 0;
 
-		public bool CanAddFetchedCollectionToCache
+		public ISet<ICollectionPersister> UncacheableCollectionPersisters
 		{
 			get
 			{
+				var result = new HashSet<ICollectionPersister>();
 				foreach (var fromElement in CollectionFetches)
 				{
-					var hasCache = fromElement.QueryableCollection.HasCache;
-
-					if (!hasCache)
-						continue;
-
-					if (ContainsRestrictionOnTable(fromElement))
-						return false;
+					if (fromElement.QueryableCollection.HasCache)
+					{
+						if (ContainsRestrictionOnTable(fromElement))
+						{
+							result.Add(fromElement.QueryableCollection);
+						}
+					}
 				}
 
-				return true;
+				return result;
 			}
 		}
 
