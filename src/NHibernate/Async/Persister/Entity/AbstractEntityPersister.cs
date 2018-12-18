@@ -270,7 +270,9 @@ namespace NHibernate.Persister.Entity
 				if (propertyValue == null)
 					continue;
 				var type = PropertyTypes[i].GetSemiResolvedType(session.Factory);
-				propertyValue = await (type.SemiResolveAsync(propertyValue, session, entity, cancellationToken)).ConfigureAwait(false);
+
+				if (!type.ReturnedClass.IsInstanceOfType(propertyValue))
+					propertyValue = await (type.SemiResolveAsync(propertyValue, session, entity, cancellationToken)).ConfigureAwait(false);
 				var euk = new EntityUniqueKey(EntityName, PropertyNames[i], propertyValue, type, session.Factory);
 				session.PersistenceContext.AddEntity(euk, entity);
 			}

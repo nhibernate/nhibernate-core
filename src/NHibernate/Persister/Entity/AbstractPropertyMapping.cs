@@ -55,7 +55,7 @@ namespace NHibernate.Persister.Entity
 			for (int i = 0; i < columns.Length; i++)
 			{
 				if (columns[i] == null)
-					result[i] = StringHelper.Replace(templates[i], Template.Placeholder, alias);
+					result[i] = templates[i]?.Replace(Template.Placeholder, alias);
 				else
 					result[i] = StringHelper.Qualify(alias, columns[i]);
 			}
@@ -81,7 +81,7 @@ namespace NHibernate.Persister.Entity
 			for (int i = 0; i < columns.Length; i++)
 			{
 				if (columns[i] == null)
-					result[i] = StringHelper.Replace(templates[i], Template.Placeholder, string.Empty);
+					result[i] = templates[i]?.Replace(Template.Placeholder, string.Empty);
 				else
 					result[i] = columns[i];
 			}

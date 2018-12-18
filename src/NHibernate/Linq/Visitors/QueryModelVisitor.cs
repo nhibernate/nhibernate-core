@@ -141,6 +141,7 @@ namespace NHibernate.Linq.Visitors
 			ResultOperatorMap.Add<OfTypeResultOperator, ProcessOfType>();
 			ResultOperatorMap.Add<CastResultOperator, ProcessCast>();
 			ResultOperatorMap.Add<AsQueryableResultOperator, ProcessAsQueryable>();
+			ResultOperatorMap.Add<LockResultOperator, ProcessLock>();
 		}
 
 		private QueryModelVisitor(VisitorParameters visitorParameters, bool root, QueryModel queryModel,

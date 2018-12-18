@@ -271,7 +271,7 @@ namespace NHibernate.Engine
 					? collectionKeys.Count - Math.Min(batchSize, collectionKeys.Count)
 					: 0;
 				var toIndex = collectionKeys.Count - 1;
-				var indexes = GetSortedKeyIndexes(collectionKeys, keyIndex.Value, fromIndex, toIndex);
+				var indexes = GetSortedKeyIndexes(collectionKeys, keyIndex, fromIndex, toIndex);
 				if (batchableCache == null)
 				{
 					for (var j = 0; j < collectionKeys.Count; j++)
@@ -285,7 +285,6 @@ namespace NHibernate.Engine
 				else
 				{
 					var results = AreCached(collectionKeys, indexes, collectionPersister, batchableCache, checkCache);
-					var k = toIndex;
 					for (var j = 0; j < results.Length; j++)
 					{
 						if (!results[j] && ProcessKey(collectionKeys[indexes[j]].Key, true))
@@ -322,7 +321,7 @@ namespace NHibernate.Engine
 					return false;
 				}
 
-				if (checkForEnd && (index >= keyIndex.Value + batchSize || index == map.Count))
+				if (checkForEnd && (index == map.Count || index >= keyIndex.Value + batchSize))
 				{
 					return true;
 				}
@@ -336,7 +335,7 @@ namespace NHibernate.Engine
 				}
 				else if (!checkCache || batchableCache == null)
 				{
-					if (!keyIndex.HasValue || index < keyIndex.Value)
+					if (index < map.Count && (!keyIndex.HasValue || index < keyIndex.Value))
 					{
 						collectionKeys.Add(new KeyValuePair<KeyValuePair<CollectionEntry, IPersistentCollection>, int>(me, index));
 						return false;
@@ -373,10 +372,10 @@ namespace NHibernate.Engine
 				if (i == batchSize)
 				{
 					i = 1; // End of array, start filling again from start
-					if (keyIndex.HasValue)
+					if (index == map.Count || keyIndex.HasValue)
 					{
 						checkForEnd = true;
-						return index >= keyIndex.Value + batchSize || index == map.Count;
+						return index == map.Count || index >= keyIndex.Value + batchSize;
 					}
 				}
 				return false;
@@ -455,7 +454,7 @@ namespace NHibernate.Engine
 					? entityKeys.Count - Math.Min(batchSize, entityKeys.Count)
 					: 0;
 				var toIndex = entityKeys.Count - 1;
-				var indexes = GetSortedKeyIndexes(entityKeys, idIndex.Value, fromIndex, toIndex);
+				var indexes = GetSortedKeyIndexes(entityKeys, idIndex, fromIndex, toIndex);
 				if (batchableCache == null)
 				{
 					for (var j = 0; j < entityKeys.Count; j++)
@@ -469,7 +468,6 @@ namespace NHibernate.Engine
 				else
 				{
 					var results = AreCached(entityKeys, indexes, persister, batchableCache, checkCache);
-					var k = toIndex;
 					for (var j = 0; j < results.Length; j++)
 					{
 						if (!results[j] && ProcessKey(entityKeys[indexes[j]].Key, true))
@@ -489,7 +487,7 @@ namespace NHibernate.Engine
 			bool ProcessKey(EntityKey key, bool ignoreCache = false)
 			{
 				//TODO: this needn't exclude subclasses...
-				if (checkForEnd && (index >= idIndex.Value + batchSize || index == set.Count))
+				if (checkForEnd && (index == set.Count || index >= idIndex.Value + batchSize))
 				{
 					return true;
 				}
@@ -499,7 +497,7 @@ namespace NHibernate.Engine
 				}
 				else if (!checkCache || batchableCache == null)
 				{
-					if (!idIndex.HasValue || index < idIndex.Value)
+					if (index < set.Count && (!idIndex.HasValue || index < idIndex.Value))
 					{
 						entityKeys.Add(new KeyValuePair<EntityKey, int>(key, index));
 						return false;
@@ -528,10 +526,10 @@ namespace NHibernate.Engine
 				if (i == batchSize)
 				{
 					i = 1; // End of array, start filling again from start
-					if (idIndex.HasValue)
+					if (index == set.Count || idIndex.HasValue)
 					{
 						checkForEnd = true;
-						return index >= idIndex.Value + batchSize || index == set.Count;
+						return index == set.Count || index >= idIndex.Value + batchSize;
 					}
 				}
 				return false;
@@ -541,7 +539,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Checks whether the given entity key indexes are cached.
 		/// </summary>
-		/// <param name="entityKeys">The list of pairs of entity keys and thier indexes.</param>
+		/// <param name="entityKeys">The list of pairs of entity keys and their indexes.</param>
 		/// <param name="keyIndexes">The array of indexes of <paramref name="entityKeys"/> that have to be checked.</param>
 		/// <param name="persister">The entity persister.</param>
 		/// <param name="batchableCache">The batchable cache.</param>
@@ -577,7 +575,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Checks whether the given collection key indexes are cached.
 		/// </summary>
-		/// <param name="collectionKeys">The list of pairs of collection entries and thier indexes.</param>
+		/// <param name="collectionKeys">The list of pairs of collection entries and their indexes.</param>
 		/// <param name="keyIndexes">The array of indexes of <paramref name="collectionKeys"/> that have to be checked.</param>
 		/// <param name="persister">The collection persister.</param>
 		/// <param name="batchableCache">The batchable cache.</param>
@@ -612,23 +610,23 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary>
-		/// Sorts the given keys by thier indexes, where the keys that are after the demanded key will be located
+		/// Sorts the given keys by their indexes, where the keys that are after the demanded key will be located
 		/// at the start and the remaining indexes at the end of the returned array.
 		/// </summary>
 		/// <typeparam name="T">The type of the key</typeparam>
-		/// <param name="keys">The list of pairs of keys and thier indexes.</param>
+		/// <param name="keys">The list of pairs of keys and their indexes.</param>
 		/// <param name="keyIndex">The index of the demanded key</param>
 		/// <param name="fromIndex">The index where the sorting will begin.</param>
 		/// <param name="toIndex">The index where the sorting will end.</param>
 		/// <returns>An array of sorted key indexes.</returns>
-		private static int[] GetSortedKeyIndexes<T>(List<KeyValuePair<T, int>> keys, int keyIndex, int fromIndex, int toIndex)
+		private static int[] GetSortedKeyIndexes<T>(List<KeyValuePair<T, int>> keys, int? keyIndex, int fromIndex, int toIndex)
 		{
 			var result = new int[Math.Abs(toIndex - fromIndex) + 1];
 			var lowerIndexes = new List<int>();
 			var i = 0;
 			for (var j = fromIndex; j <= toIndex; j++)
 			{
-				if (keys[j].Value < keyIndex)
+				if (!keyIndex.HasValue || keys[j].Value < keyIndex)
 				{
 					lowerIndexes.Add(j);
 				}

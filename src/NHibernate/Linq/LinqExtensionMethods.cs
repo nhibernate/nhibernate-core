@@ -2514,6 +2514,21 @@ namespace NHibernate.Linq
 		public static IQueryable<T> Timeout<T>(this IQueryable<T> query, int timeout)
 			=> query.WithOptions(o => o.SetTimeout(timeout));
 
+		public static IQueryable<T> WithLock<T>(this IQueryable<T> query, LockMode lockMode)
+		{
+			var method = ReflectHelper.GetMethod(() => WithLock(query, lockMode));
+
+			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(lockMode));
+
+			return new NhQueryable<T>(query.Provider, callExpression);
+		}
+
+		public static IEnumerable<T> WithLock<T>(this IEnumerable<T> query, LockMode lockMode)
+		{
+			throw new InvalidOperationException(
+				"The NHibernate.Linq.LinqExtensionMethods.WithLock(IEnumerable<T>, LockMode) method can only be used in a Linq expression.");
+		}
+
 		/// <summary>
 		/// Allows to specify the parameter NHibernate type to use for a literal in a queryable expression.
 		/// </summary>

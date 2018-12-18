@@ -2,8 +2,8 @@
   <Import Project="DotNetSdkMono.props" />
   <PropertyGroup>
     <VersionMajor Condition="'$(VersionMajor)' == ''">5</VersionMajor>
-    <VersionMinor Condition="'$(VersionMinor)' == ''">1</VersionMinor>
-    <VersionPatch Condition="'$(VersionPatch)' == ''">3</VersionPatch>
+    <VersionMinor Condition="'$(VersionMinor)' == ''">2</VersionMinor>
+    <VersionPatch Condition="'$(VersionPatch)' == ''">1</VersionPatch>
     <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
 
     <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>

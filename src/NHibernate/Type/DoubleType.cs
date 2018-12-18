@@ -38,7 +38,7 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			st.Parameters[index].Value = value;
+			st.Parameters[index].Value = Convert.ToDouble(value);
 		}
 
 		/// <summary></summary>
