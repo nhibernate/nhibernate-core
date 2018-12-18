@@ -110,6 +110,10 @@
     - conversion: Ignore
       name: GetEnumerator
       containingTypeName: IFutureEnumerable
+# TODO 6.0: Consider if ComputeFlattenedParameters should remain ignored or not
+    - conversion: Ignore
+      name: ComputeFlattenedParameters
+      containingTypeName: SqlQueryImpl
     - conversion: ToAsync
       name: ExecuteReader
       containingTypeName: IBatcher
