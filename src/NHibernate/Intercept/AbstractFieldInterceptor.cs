@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Proxy;
+using NHibernate.Util;
 
 namespace NHibernate.Intercept
 {
@@ -13,6 +15,7 @@ namespace NHibernate.Intercept
 		[NonSerialized]
 		private ISessionImplementor session;
 		private ISet<string> uninitializedFields;
+		private ISet<string> uninitializedFieldsReadOnly;
 		private readonly ISet<string> unwrapProxyFieldNames;
 		private readonly HashSet<string> loadedUnwrapProxyFieldNames = new HashSet<string>();
 		private readonly string entityName;
@@ -29,6 +32,7 @@ namespace NHibernate.Intercept
 			this.unwrapProxyFieldNames = unwrapProxyFieldNames ?? new HashSet<string>();
 			this.entityName = entityName;
 			this.mappedClass = mappedClass;
+			this.uninitializedFieldsReadOnly = uninitializedFields != null ? new ReadOnlySet<string>(uninitializedFields) : null;
 		}
 
 		#region IFieldInterceptor Members
@@ -76,6 +80,8 @@ namespace NHibernate.Intercept
 
 		#endregion
 
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public ISet<string> UninitializedFields
 		{
 			get { return uninitializedFields; }
@@ -88,11 +94,29 @@ namespace NHibernate.Intercept
 
 		public object Intercept(object target, string fieldName, object value)
 		{
+			return Intercept(target, fieldName, value, false);
+		}
+
+		public object Intercept(object target, string fieldName, object value, bool setter)
+		{
 			// NH Specific: Hibernate only deals with lazy properties here, we deal with 
 			// both lazy properties and with no-proxy. 
 			if (initializing)
 			{
 				return InvokeImplementation;
+			}
+
+			if (setter)
+			{
+				if (IsUninitializedProperty(fieldName))
+				{
+					uninitializedFields.Remove(fieldName);
+				}
+
+				if (IsUninitializedAssociation(fieldName))
+				{
+					loadedUnwrapProxyFieldNames.Add(fieldName);
+				}
 			}
 
 			if (IsInitializedField(fieldName))
@@ -165,7 +189,13 @@ namespace NHibernate.Intercept
 				initializing = false;
 			}
 			uninitializedFields = null; //let's assume that there is only one lazy fetch group, for now!
+			uninitializedFieldsReadOnly = null;
 			return result;
+		}
+
+		public ISet<string> GetUninitializedLazyProperties()
+		{
+			return uninitializedFieldsReadOnly ?? CollectionHelper.EmptySet<string>();
 		}
 	}
 }

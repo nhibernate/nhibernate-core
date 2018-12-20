@@ -162,6 +162,21 @@ namespace NHibernate.Test.GhostProperty
 				}
 				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "ALazyProperty"), Is.True);
 			}
-		} 
+		}
+
+		[Test]
+		public void AcceptPropertySetWithTransientObject()
+		{
+			Order order;
+			using (var s = OpenSession())
+			{
+				order = s.Get<Order>(1);
+			}
+
+			var newPayment = new WireTransfer();
+			order.Payment = newPayment;
+
+			Assert.That(order.Payment, Is.EqualTo(newPayment));
+		}
 	}
 }

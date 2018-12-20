@@ -113,12 +113,12 @@ namespace NHibernate.Engine
 
 				IType[] types = persister.PropertyTypes;
 				CascadeStyle[] cascadeStyles = persister.PropertyCascadeStyles;
-				bool hasUninitializedLazyProperties = persister.HasUninitializedLazyProperties(parent);
+				ISet<string> uninitializedLazyProperties = persister.GetUninitializedLazyProperties(parent);
 				for (int i = 0; i < types.Length; i++)
 				{
 					CascadeStyle style = cascadeStyles[i];
 					string propertyName = persister.PropertyNames[i];
-					if (hasUninitializedLazyProperties && persister.PropertyLaziness[i] && !action.PerformOnLazyProperty)
+					if (uninitializedLazyProperties.Contains(persister.PropertyNames[i]) && persister.PropertyLaziness[i] && !action.PerformOnLazyProperty)
 					{
 						//do nothing to avoid a lazy property initialization
 						continue;

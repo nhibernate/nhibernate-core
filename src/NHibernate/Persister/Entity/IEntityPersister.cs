@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Engine;
@@ -6,6 +7,7 @@ using NHibernate.Metadata;
 using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Persister.Entity
 {
@@ -618,6 +620,31 @@ namespace NHibernate.Persister.Entity
 				.Warn("Entity persister of {0} type is not supported, returning 1 as a batch size.", persister?.GetType());
 
 			return 1;
+		}
+
+		//6.0 TODO: Merge into IEntityPersister
+		internal static ISet<string> GetUninitializedLazyProperties(this IEntityPersister persister, object entity)
+		{
+			if (persister is AbstractEntityPersister abstractEntityPersister)
+			{
+				return abstractEntityPersister.GetUninitializedLazyProperties(entity);
+			}
+
+			throw new InvalidOperationException($"{persister?.GetType()} does not support GetUninitializedLazyProperties method.");
+		}
+
+		/// <summary>
+		/// Get uninitialized lazy properties from one row of a result set
+		/// </summary>
+		//6.0 TODO: Merge into IEntityPersister
+		public static ISet<string> GetUninitializedLazyProperties(this IEntityPersister persister, object[] state)
+		{
+			if (persister is AbstractEntityPersister abstractEntityPersister)
+			{
+				return abstractEntityPersister.GetUninitializedLazyProperties(state);
+			}
+
+			throw new InvalidOperationException($"{persister?.GetType()} does not support GetUninitializedProperties method.");
 		}
 	}
 }

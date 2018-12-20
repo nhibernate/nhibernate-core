@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 
 namespace NHibernate.Tuple.Entity
@@ -115,5 +117,19 @@ namespace NHibernate.Tuple.Entity
 		/// <param name="entity">The entity to be check for uninitialized lazy properties. </param>
 		/// <returns> True if uninitialized lazy properties were found; false otherwise. </returns>
 		bool HasUninitializedLazyProperties(object entity);
+	}
+
+	internal static class EntityPersisterExtensions
+	{
+		//6.0 TODO: Merge into IEntityTuplizer
+		internal static ISet<string> GetUninitializedLazyProperties(this IEntityTuplizer entityTuplizer, object entity)
+		{
+			if (entityTuplizer is AbstractEntityTuplizer abstractEntityTuplizer)
+			{
+				return abstractEntityTuplizer.GetUninitializedLazyProperties(entity);
+			}
+			throw new NotSupportedException("GetUninitializedLazyProperties method is not supported.");
+
+		}
 	}
 }
