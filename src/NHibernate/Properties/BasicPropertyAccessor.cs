@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using NHibernate.Engine;
@@ -183,7 +184,7 @@ namespace NHibernate.Properties
 					return;
 				}
 
-				_getDelegate = new Lazy<Func<object, object>>(() => PropertyAccessorFactory.CreateGetDelegate(this, clazz));
+				_getDelegate = new Lazy<Func<object, object>>(CreateDelegate);
 			}
 
 			public PropertyInfo Property
@@ -259,6 +260,17 @@ namespace NHibernate.Properties
 				}
 				il.EmitCall(OpCodes.Callvirt, method, null);
 			}
+
+			private Func<object, object> CreateDelegate()
+			{
+				var targetParameter = Expression.Parameter(typeof(object), "t");
+				return Expression.Lambda<Func<object, object>>(
+									Expression.Convert(
+										Expression.Call(Expression.Convert(targetParameter, clazz), Method),
+										typeof(object)),
+									targetParameter)
+								.Compile();
+			}
 		}
 
 		/// <summary>
@@ -289,7 +301,7 @@ namespace NHibernate.Properties
 					return;
 				}
 
-				_setDelegate = new Lazy<Action<object, object>>(() => PropertyAccessorFactory.CreateSetDelegate(this, clazz));
+				_setDelegate = new Lazy<Action<object, object>>(CreateDelegate);
 			}
 
 			public PropertyInfo Property
@@ -390,6 +402,20 @@ namespace NHibernate.Properties
 				}
 
 				throw new PropertyAccessException(e, "could not set a property value by reflection", true, clazz, propertyName);
+			}
+
+			private Action<object, object> CreateDelegate()
+			{
+				var targetParameter = Expression.Parameter(typeof(object), "t");
+				var valueParameter = Expression.Parameter(typeof(object), "p");
+				return Expression.Lambda<Action<object, object>>(
+									Expression.Call(
+										Expression.Convert(targetParameter, clazz),
+										Method,
+										Expression.Convert(valueParameter, property.PropertyType)),
+									targetParameter,
+									valueParameter)
+								.Compile();
 			}
 		}
 	}

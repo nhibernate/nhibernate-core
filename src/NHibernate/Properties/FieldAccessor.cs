@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using NHibernate.Engine;
@@ -182,7 +183,7 @@ namespace NHibernate.Properties
 					return;
 				}
 
-				_getDelegate = new Lazy<Func<object, object>>(() => PropertyAccessorFactory.CreateGetDelegate(this, clazz));
+				_getDelegate = new Lazy<Func<object, object>>(CreateDelegate);
 			}
 
 			#region IGetter Members
@@ -246,6 +247,17 @@ namespace NHibernate.Properties
 			{
 				il.Emit(OpCodes.Ldfld, field);
 			}
+
+			private Func<object, object> CreateDelegate()
+			{
+				var targetParameter = Expression.Parameter(typeof(object), "t");
+				return Expression.Lambda<Func<object, object>>(
+									Expression.Convert(
+										Expression.Field(Expression.Convert(targetParameter, clazz), field),
+										typeof(object)),
+									targetParameter)
+								.Compile();
+			}
 		}
 
 		/// <summary>
@@ -271,13 +283,13 @@ namespace NHibernate.Properties
 				this.clazz = clazz;
 				this.name = name;
 
-				// IL is not able to set a readonly field
+				// IL/Lambda are not able to set a readonly field
 				if (!Cfg.Environment.UseReflectionOptimizer || field.IsInitOnly)
 				{
 					return;
 				}
 
-				_setDelegate = new Lazy<Action<object, object>>(() => PropertyAccessorFactory.CreateSetDelegate(this, clazz));
+				_setDelegate = new Lazy<Action<object, object>>(CreateDelegate);
 			}
 
 			#region ISetter Members
@@ -368,6 +380,19 @@ namespace NHibernate.Properties
 				}
 
 				throw new PropertyAccessException(e, "could not set a field value by reflection", true, clazz, name);
+			}
+
+			private Action<object, object> CreateDelegate()
+			{
+				var targetParameter = Expression.Parameter(typeof(object), "t");
+				var valueParameter = Expression.Parameter(typeof(object), "p");
+				return Expression.Lambda<Action<object, object>>(
+									Expression.Assign(
+										Expression.Field(Expression.Convert(targetParameter, clazz), field),
+										Expression.Convert(valueParameter, Type)),
+									targetParameter,
+									valueParameter)
+								.Compile();
 			}
 		}
 	}

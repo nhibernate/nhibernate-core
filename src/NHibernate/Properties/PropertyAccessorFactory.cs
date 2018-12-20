@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection.Emit;
-using NHibernate.Bytecode;
 using NHibernate.Util;
 
 namespace NHibernate.Properties
@@ -278,43 +276,5 @@ namespace NHibernate.Properties
 			get { return MapAccessor; }
 		}
 
-		internal static Func<object, object> CreateGetDelegate(IGetter getter, System.Type type)
-		{
-			if (!(getter is IOptimizableGetter optimizableGetter))
-			{
-				throw new InvalidOperationException(
-					$"{getter.GetType()} does not implement {typeof(IOptimizableGetter)} interface.");
-			}
-
-			var method = new DynamicMethod(string.Empty, typeof(object), new[] { typeof(object) }, EmitUtil.CanSkipVisibilityChecks());
-			var il = method.GetILGenerator();
-			il.Emit(OpCodes.Ldarg_0);
-			EmitUtil.EmitCastToReference(il, type);
-			optimizableGetter.Emit(il);
-			EmitUtil.EmitBoxIfNeeded(il, getter.ReturnType);
-			il.Emit(OpCodes.Ret);
-
-			return (Func<object, object>) method.CreateDelegate(typeof(Func<object, object>));
-		}
-
-		internal static Action<object, object> CreateSetDelegate(ISetter setter, System.Type type)
-		{
-			if (!(setter is IOptimizableSetter optimizableSetter))
-			{
-				throw new InvalidOperationException(
-					$"{setter.GetType()} does not implement {typeof(IOptimizableSetter)} interface.");
-			}
-
-			var method = new DynamicMethod(string.Empty, null, new[] { typeof(object), typeof(object) }, EmitUtil.CanSkipVisibilityChecks());
-			var il = method.GetILGenerator();
-			il.Emit(OpCodes.Ldarg_0);
-			EmitUtil.EmitCastToReference(il, type);
-			il.Emit(OpCodes.Ldarg_1);
-			il.Emit(OpCodes.Unbox_Any, optimizableSetter.Type);
-			optimizableSetter.Emit(il);
-			il.Emit(OpCodes.Ret);
-
-			return (Action<object, object>) method.CreateDelegate(typeof(Action<object, object>));
-		}
 	}
 }

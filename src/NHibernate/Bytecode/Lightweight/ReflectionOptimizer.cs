@@ -102,8 +102,31 @@ namespace NHibernate.Bytecode.Lightweight
 		protected DynamicMethod CreateDynamicMethod(System.Type returnType, System.Type[] argumentTypes)
 		{
 			var owner = mappedType.IsInterface ? typeof (object) : mappedType;
-			var canSkipChecks = EmitUtil.CanSkipVisibilityChecks();
+			var canSkipChecks = CanSkipVisibilityChecks();
 			return new DynamicMethod(string.Empty, returnType, argumentTypes, owner, canSkipChecks);
+		}
+
+		private static bool CanSkipVisibilityChecks()
+		{
+#if NETFX
+			var permissionSet = new PermissionSet(PermissionState.None);
+			permissionSet.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
+			return permissionSet.IsSubsetOf(AppDomain.CurrentDomain.PermissionSet);
+#else
+			return false;
+#endif
+		}
+
+		private static void EmitCastToReference(ILGenerator il, System.Type type)
+		{
+			if (type.IsValueType)
+			{
+				il.Emit(OpCodes.Unbox, type);
+			}
+			else
+			{
+				il.Emit(OpCodes.Castclass, type);
+			}
 		}
 
 		private static readonly MethodInfo GetterCallbackInvoke = ReflectHelper.GetMethod<GetterCallback>(
@@ -124,7 +147,7 @@ namespace NHibernate.Bytecode.Lightweight
 
 			// Cast the 'this' pointer to the appropriate type and store it in a local variable
 			il.Emit(OpCodes.Ldarg_0);
-			EmitUtil.EmitCastToReference(il, mappedType);
+			EmitCastToReference(il, mappedType);
 			il.Emit(OpCodes.Stloc, thisLocal);
 
 			// Allocate the values array and store it in a local variable
@@ -189,7 +212,7 @@ namespace NHibernate.Bytecode.Lightweight
 			// Declare a local variable used to store the object reference (typed)
 			LocalBuilder thisLocal = il.DeclareLocal(typeOfThis);
 			il.Emit(OpCodes.Ldarg_0);
-			EmitUtil.EmitCastToReference(il, mappedType);
+			EmitCastToReference(il, mappedType);
 			il.Emit(OpCodes.Stloc, thisLocal.LocalIndex);
 
 			for (int i = 0; i < setters.Length; i++)
