@@ -163,6 +163,7 @@ namespace NHibernate.Properties
 			private readonly FieldInfo field;
 			private readonly System.Type clazz;
 			private readonly string name;
+			private readonly Lazy<Func<object, object>> _getDelegate;
 
 			/// <summary>
 			/// Initializes a new instance of <see cref="FieldGetter"/>.
@@ -175,6 +176,13 @@ namespace NHibernate.Properties
 				this.field = field;
 				this.clazz = clazz;
 				this.name = name;
+
+				if (!Cfg.Environment.UseReflectionOptimizer)
+				{
+					return;
+				}
+
+				_getDelegate = new Lazy<Func<object, object>>(() => PropertyAccessorFactory.CreateGetDelegate(this, clazz));
 			}
 
 			#region IGetter Members
@@ -190,7 +198,9 @@ namespace NHibernate.Properties
 			{
 				try
 				{
-					return field.GetValue(target);
+					return _getDelegate == null
+						? field.GetValue(target)
+						: _getDelegate.Value(target);
 				}
 				catch (Exception e)
 				{
@@ -247,6 +257,7 @@ namespace NHibernate.Properties
 			private readonly FieldInfo field;
 			private readonly System.Type clazz;
 			private readonly string name;
+			private readonly Lazy<Action<object, object>> _setDelegate;
 
 			/// <summary>
 			/// Initializes a new instance of <see cref="FieldSetter"/>.
@@ -259,6 +270,14 @@ namespace NHibernate.Properties
 				this.field = field;
 				this.clazz = clazz;
 				this.name = name;
+
+				// IL is not able to set a readonly field
+				if (!Cfg.Environment.UseReflectionOptimizer || field.IsInitOnly)
+				{
+					return;
+				}
+
+				_setDelegate = new Lazy<Action<object, object>>(() => PropertyAccessorFactory.CreateSetDelegate(this, clazz));
 			}
 
 			#region ISetter Members
@@ -275,26 +294,22 @@ namespace NHibernate.Properties
 			{
 				try
 				{
-					field.SetValue(target, value);
-				}
-				catch (ArgumentException ae)
-				{
-					// if I'm reading the msdn docs correctly this is the only reason the ArgumentException
-					// would be thrown, but it doesn't hurt to make sure.
-					if (field.FieldType.IsInstanceOfType(value) == false)
+					if (_setDelegate == null)
 					{
-						// add some details to the error message - there have been a few forum posts an they are 
-						// all related to an ISet and IDictionary mixups.
-						string msg =
-							String.Format("The type {0} can not be assigned to a field of type {1}", value.GetType().ToString(),
-														field.FieldType.ToString());
-						throw new PropertyAccessException(ae, msg, true, clazz, name);
+						field.SetValue(target, value);
 					}
 					else
 					{
-						throw new PropertyAccessException(ae, "ArgumentException while setting the field value by reflection", true, clazz,
-																							name);
+						_setDelegate.Value(target, value);
 					}
+				}
+				catch (InvalidCastException ce)
+				{
+					HandleException(ce, value);
+				}
+				catch (ArgumentException ae)
+				{
+					HandleException(ae, value);
 				}
 				catch (Exception e)
 				{
@@ -330,6 +345,29 @@ namespace NHibernate.Properties
 			public void Emit(ILGenerator il)
 			{
 				il.Emit(OpCodes.Stfld, field);
+			}
+
+			private void HandleException(Exception e, object value)
+			{
+				// if I'm reading the msdn docs correctly this is the only reason the ArgumentException
+				// would be thrown, but it doesn't hurt to make sure.
+				if (field.FieldType.IsInstanceOfType(value) == false)
+				{
+					// add some details to the error message - there have been a few forum posts an they are 
+					// all related to an ISet and IDictionary mixups.
+					string msg =
+						String.Format("The type {0} can not be assigned to a field of type {1}", value.GetType().ToString(),
+									field.FieldType.ToString());
+					throw new PropertyAccessException(e, msg, true, clazz, name);
+				}
+
+				if (_setDelegate == null)
+				{
+					throw new PropertyAccessException(e, "ArgumentException while setting the field value by reflection", true, clazz,
+													name);
+				}
+
+				throw new PropertyAccessException(e, "could not set a field value by reflection", true, clazz, name);
 			}
 		}
 	}

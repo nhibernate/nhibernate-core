@@ -1,5 +1,8 @@
+using System;
 using System.Reflection.Emit;
 using System.Collections.Generic;
+using System.Security;
+using System.Security.Permissions;
 
 namespace NHibernate.Bytecode
 {
@@ -84,6 +87,27 @@ namespace NHibernate.Bytecode
 					il.Emit(OpCodes.Castclass, propertyType);
 				}
 			}
+		}
+
+		internal static void EmitCastToReference(ILGenerator il, System.Type type)
+		{
+			if (type == typeof(object))
+			{
+				return;
+			}
+
+			il.Emit(type.IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass, type);
+		}
+
+		internal static bool CanSkipVisibilityChecks()
+		{
+#if NETFX
+			var permissionSet = new PermissionSet(PermissionState.None);
+			permissionSet.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
+			return permissionSet.IsSubsetOf(AppDomain.CurrentDomain.PermissionSet);
+#else
+			return false;
+#endif
 		}
 	}
 }

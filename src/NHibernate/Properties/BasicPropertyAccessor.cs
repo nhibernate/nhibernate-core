@@ -164,6 +164,7 @@ namespace NHibernate.Properties
 			private readonly System.Type clazz;
 			private readonly PropertyInfo property;
 			private readonly string propertyName;
+			private readonly Lazy<Func<object, object>> _getDelegate;
 
 			/// <summary>
 			/// Initializes a new instance of <see cref="BasicGetter"/>.
@@ -176,6 +177,13 @@ namespace NHibernate.Properties
 				this.clazz = clazz;
 				this.property = property;
 				this.propertyName = propertyName;
+				
+				if (!Cfg.Environment.UseReflectionOptimizer)
+				{
+					return;
+				}
+
+				_getDelegate = new Lazy<Func<object, object>>(() => PropertyAccessorFactory.CreateGetDelegate(this, clazz));
 			}
 
 			public PropertyInfo Property
@@ -196,7 +204,9 @@ namespace NHibernate.Properties
 			{
 				try
 				{
-					return property.GetValue(target, Array.Empty<object>());
+					return _getDelegate == null 
+						? property.GetValue(target, Array.Empty<object>()) 
+						: _getDelegate.Value(target);
 				}
 				catch (Exception e)
 				{
@@ -260,6 +270,7 @@ namespace NHibernate.Properties
 			private readonly System.Type clazz;
 			private readonly PropertyInfo property;
 			private readonly string propertyName;
+			private readonly Lazy<Action<object, object>> _setDelegate;
 
 			/// <summary>
 			/// Initializes a new instance of <see cref="BasicSetter"/>.
@@ -272,6 +283,13 @@ namespace NHibernate.Properties
 				this.clazz = clazz;
 				this.property = property;
 				this.propertyName = propertyName;
+
+				if (!Cfg.Environment.UseReflectionOptimizer)
+				{
+					return;
+				}
+
+				_setDelegate = new Lazy<Action<object, object>>(() => PropertyAccessorFactory.CreateSetDelegate(this, clazz));
 			}
 
 			public PropertyInfo Property
@@ -293,26 +311,22 @@ namespace NHibernate.Properties
 			{
 				try
 				{
-					property.SetValue(target, value, Array.Empty<object>());
-				}
-				catch (ArgumentException ae)
-				{
-					// if I'm reading the msdn docs correctly this is the only reason the ArgumentException
-					// would be thrown, but it doesn't hurt to make sure.
-					if (property.PropertyType.IsInstanceOfType(value) == false)
+					if (_setDelegate == null)
 					{
-						// add some details to the error message - there have been a few forum posts an they are 
-						// all related to an ISet and IDictionary mixups.
-						string msg =
-							String.Format("The type {0} can not be assigned to a property of type {1}", value.GetType(),
-														property.PropertyType);
-						throw new PropertyAccessException(ae, msg, true, clazz, propertyName);
+						property.SetValue(target, value, Array.Empty<object>());
 					}
 					else
 					{
-						throw new PropertyAccessException(ae, "ArgumentException while setting the property value by reflection", true,
-																							clazz, propertyName);
+						_setDelegate.Value(target, value);
 					}
+				}
+				catch (InvalidCastException ce)
+				{
+					HandleException(ce, value);
+				}
+				catch (ArgumentException ae)
+				{
+					HandleException(ae, value);
 				}
 				catch (Exception e)
 				{
@@ -353,6 +367,29 @@ namespace NHibernate.Properties
 					throw new PropertyNotFoundException(clazz, property.Name, "setter");
 				}
 				il.EmitCall(OpCodes.Callvirt, method, null);
+			}
+
+			private void HandleException(Exception e, object value)
+			{
+				// if I'm reading the msdn docs correctly this is the only reason the ArgumentException
+				// would be thrown, but it doesn't hurt to make sure.
+				if (property.PropertyType.IsInstanceOfType(value) == false)
+				{
+					// add some details to the error message - there have been a few forum posts an they are 
+					// all related to an ISet and IDictionary mixups.
+					string msg =
+						String.Format("The type {0} can not be assigned to a property of type {1}", value.GetType(),
+									property.PropertyType);
+					throw new PropertyAccessException(e, msg, true, clazz, propertyName);
+				}
+
+				if (_setDelegate == null)
+				{
+					throw new PropertyAccessException(e, "ArgumentException while setting the property value by reflection", true,
+													clazz, propertyName);
+				}
+
+				throw new PropertyAccessException(e, "could not set a property value by reflection", true, clazz, propertyName);
 			}
 		}
 	}
