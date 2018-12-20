@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.Serialization;
 using NHibernate.Engine;
 
 namespace NHibernate.Properties
@@ -160,12 +161,13 @@ namespace NHibernate.Properties
 		/// An <see cref="IGetter"/> for a Property <c>get</c>.
 		/// </summary>
 		[Serializable]
-		public sealed class BasicGetter : IGetter, IOptimizableGetter
+		public sealed class BasicGetter : IGetter, IOptimizableGetter, IDeserializationCallback
 		{
 			private readonly System.Type clazz;
 			private readonly PropertyInfo property;
 			private readonly string propertyName;
-			private readonly Lazy<Func<object, object>> _getDelegate;
+			[NonSerialized]
+			private Lazy<Func<object, object>> _getDelegate;
 
 			/// <summary>
 			/// Initializes a new instance of <see cref="BasicGetter"/>.
@@ -178,13 +180,8 @@ namespace NHibernate.Properties
 				this.clazz = clazz;
 				this.property = property;
 				this.propertyName = propertyName;
-				
-				if (!Cfg.Environment.UseReflectionOptimizer)
-				{
-					return;
-				}
 
-				_getDelegate = new Lazy<Func<object, object>>(CreateDelegate);
+				SetupDelegate();
 			}
 
 			public PropertyInfo Property
@@ -261,6 +258,21 @@ namespace NHibernate.Properties
 				il.EmitCall(OpCodes.Callvirt, method, null);
 			}
 
+			public void OnDeserialization(object sender)
+			{
+				SetupDelegate();
+			}
+
+			private void SetupDelegate()
+			{
+				if (!Cfg.Environment.UseReflectionOptimizer)
+				{
+					return;
+				}
+
+				_getDelegate = new Lazy<Func<object, object>>(CreateDelegate);
+			}
+
 			private Func<object, object> CreateDelegate()
 			{
 				var targetParameter = Expression.Parameter(typeof(object), "t");
@@ -277,12 +289,13 @@ namespace NHibernate.Properties
 		/// An <see cref="ISetter"/> for a Property <c>set</c>.
 		/// </summary>
 		[Serializable]
-		public sealed class BasicSetter : ISetter, IOptimizableSetter
+		public sealed class BasicSetter : ISetter, IOptimizableSetter, IDeserializationCallback
 		{
 			private readonly System.Type clazz;
 			private readonly PropertyInfo property;
 			private readonly string propertyName;
-			private readonly Lazy<Action<object, object>> _setDelegate;
+			[NonSerialized]
+			private Lazy<Action<object, object>> _setDelegate;
 
 			/// <summary>
 			/// Initializes a new instance of <see cref="BasicSetter"/>.
@@ -296,12 +309,7 @@ namespace NHibernate.Properties
 				this.property = property;
 				this.propertyName = propertyName;
 
-				if (!Cfg.Environment.UseReflectionOptimizer)
-				{
-					return;
-				}
-
-				_setDelegate = new Lazy<Action<object, object>>(CreateDelegate);
+				SetupDelegate();
 			}
 
 			public PropertyInfo Property
@@ -379,6 +387,21 @@ namespace NHibernate.Properties
 					throw new PropertyNotFoundException(clazz, property.Name, "setter");
 				}
 				il.EmitCall(OpCodes.Callvirt, method, null);
+			}
+
+			public void OnDeserialization(object sender)
+			{
+				SetupDelegate();
+			}
+
+			private void SetupDelegate()
+			{
+				if (!Cfg.Environment.UseReflectionOptimizer)
+				{
+					return;
+				}
+
+				_setDelegate = new Lazy<Action<object, object>>(CreateDelegate);
 			}
 
 			private void HandleException(Exception e, object value)

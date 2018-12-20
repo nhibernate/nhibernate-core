@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.Serialization;
 using NHibernate.Engine;
 using NHibernate.Util;
 
@@ -159,12 +160,13 @@ namespace NHibernate.Properties
 		/// An <see cref="IGetter"/> that uses a Field instead of the Property <c>get</c>.
 		/// </summary>
 		[Serializable]
-		public sealed class FieldGetter : IGetter, IOptimizableGetter
+		public sealed class FieldGetter : IGetter, IOptimizableGetter, IDeserializationCallback
 		{
 			private readonly FieldInfo field;
 			private readonly System.Type clazz;
 			private readonly string name;
-			private readonly Lazy<Func<object, object>> _getDelegate;
+			[NonSerialized]
+			private Lazy<Func<object, object>> _getDelegate;
 
 			/// <summary>
 			/// Initializes a new instance of <see cref="FieldGetter"/>.
@@ -178,12 +180,7 @@ namespace NHibernate.Properties
 				this.clazz = clazz;
 				this.name = name;
 
-				if (!Cfg.Environment.UseReflectionOptimizer)
-				{
-					return;
-				}
-
-				_getDelegate = new Lazy<Func<object, object>>(CreateDelegate);
+				SetupDelegate();
 			}
 
 			#region IGetter Members
@@ -248,6 +245,21 @@ namespace NHibernate.Properties
 				il.Emit(OpCodes.Ldfld, field);
 			}
 
+			public void OnDeserialization(object sender)
+			{
+				SetupDelegate();
+			}
+
+			private void SetupDelegate()
+			{
+				if (!Cfg.Environment.UseReflectionOptimizer)
+				{
+					return;
+				}
+
+				_getDelegate = new Lazy<Func<object, object>>(CreateDelegate);
+			}
+
 			private Func<object, object> CreateDelegate()
 			{
 				var targetParameter = Expression.Parameter(typeof(object), "t");
@@ -264,12 +276,13 @@ namespace NHibernate.Properties
 		/// An <see cref="IGetter"/> that uses a Field instead of the Property <c>set</c>.
 		/// </summary>
 		[Serializable]
-		public sealed class FieldSetter : ISetter, IOptimizableSetter
+		public sealed class FieldSetter : ISetter, IOptimizableSetter, IDeserializationCallback
 		{
 			private readonly FieldInfo field;
 			private readonly System.Type clazz;
 			private readonly string name;
-			private readonly Lazy<Action<object, object>> _setDelegate;
+			[NonSerialized]
+			private Lazy<Action<object, object>> _setDelegate;
 
 			/// <summary>
 			/// Initializes a new instance of <see cref="FieldSetter"/>.
@@ -283,13 +296,7 @@ namespace NHibernate.Properties
 				this.clazz = clazz;
 				this.name = name;
 
-				// IL/Lambda are not able to set a readonly field
-				if (!Cfg.Environment.UseReflectionOptimizer || field.IsInitOnly)
-				{
-					return;
-				}
-
-				_setDelegate = new Lazy<Action<object, object>>(CreateDelegate);
+				SetupDelegate();
 			}
 
 			#region ISetter Members
@@ -357,6 +364,22 @@ namespace NHibernate.Properties
 			public void Emit(ILGenerator il)
 			{
 				il.Emit(OpCodes.Stfld, field);
+			}
+
+			public void OnDeserialization(object sender)
+			{
+				SetupDelegate();
+			}
+
+			private void SetupDelegate()
+			{
+				// IL/Lambda are not able to set a readonly field
+				if (!Cfg.Environment.UseReflectionOptimizer || field.IsInitOnly)
+				{
+					return;
+				}
+
+				_setDelegate = new Lazy<Action<object, object>>(CreateDelegate);
 			}
 
 			private void HandleException(Exception e, object value)
