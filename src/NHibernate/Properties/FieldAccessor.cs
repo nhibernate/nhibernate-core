@@ -331,6 +331,11 @@ namespace NHibernate.Properties
 			{
 				il.Emit(OpCodes.Stfld, field);
 			}
+
+			internal bool CanEmit()
+			{
+				return !field.IsInitOnly;
+			}
 		}
 	}
 }

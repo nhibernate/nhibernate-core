@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using System.Security;
 using NHibernate.Properties;
 
 namespace NHibernate.Bytecode.Lightweight
@@ -6,20 +9,42 @@ namespace NHibernate.Bytecode.Lightweight
 	{
 		private readonly GetPropertyValuesInvoker getDelegate;
 		private readonly SetPropertyValuesInvoker setDelegate;
-		private readonly IGetter[] getters;
-		private readonly ISetter[] setters;
 		private readonly GetterCallback getterCallback;
 		private readonly SetterCallback setterCallback;
+		private readonly Getter[] _getters;
+		private readonly Setter[] _setters;
+		private readonly Getter _specializedGetter;
+		private readonly Setter _specializedSetter;
 
+		// Since 5.3
+		[Obsolete("This constructor has no usages and will be removed in a future version")]
 		public AccessOptimizer(GetPropertyValuesInvoker getDelegate, SetPropertyValuesInvoker setDelegate,
 		                       IGetter[] getters, ISetter[] setters)
+			: this(
+				getDelegate,
+				setDelegate, 
+				getters.Select(o => new Getter(o)).ToArray(),
+				setters.Select(o => new Setter(o)).ToArray(),
+				null,
+				null)
+		{
+		}
+
+		public AccessOptimizer(GetPropertyValuesInvoker getDelegate,
+								SetPropertyValuesInvoker setDelegate,
+								Getter[] getters,
+								Setter[] setters,
+								Getter specializedGetter,
+								Setter specializedSetter)
 		{
 			this.getDelegate = getDelegate;
 			this.setDelegate = setDelegate;
-			this.getters = getters;
-			this.setters = setters;
-			getterCallback = OnGetterCallback;
-			setterCallback = OnSetterCallback;
+			_getters = getters;
+			_setters = setters;
+			_specializedGetter = specializedGetter;
+			_specializedSetter = specializedSetter;
+			getterCallback = GetPropertyValue;
+			setterCallback = SetPropertyValue;
 		}
 
 		public object[] GetPropertyValues(object target)
@@ -32,14 +57,54 @@ namespace NHibernate.Bytecode.Lightweight
 			setDelegate(target, values, setterCallback);
 		}
 
-		private object OnGetterCallback(object target, int i)
+		public void SetPropertyValue(object target, int i, object value)
 		{
-			return getters[i].Get(target);
+			SetPropertyValue(target, value, _setters[i]);
 		}
 
-		private void OnSetterCallback(object target, int i, object value)
+		public object GetPropertyValue(object target, int i)
 		{
-			setters[i].Set(target, value);
+			return GetPropertyValue(target, _getters[i]);
+		}
+
+		internal void SetSpecializedPropertyValue(object target, object value)
+		{
+			SetPropertyValue(target, value, _specializedSetter);
+		}
+
+		internal object GetSpecializedPropertyValue(object target)
+		{
+			return GetPropertyValue(target, _specializedGetter);
+		}
+
+		private static object GetPropertyValue(object target, Getter getter)
+		{
+			if (getter.Optimized == null)
+			{
+				return getter.Default.Get(target);
+			}
+
+			return getter.Optimized(target);
+		}
+
+		private static void SetPropertyValue(object target, object value, Setter setter)
+		{
+			if (setter.Optimized == null)
+			{
+				setter.Default.Set(target, value);
+			}
+			else
+			{
+				// 6.0 TODO: remove the try/catch block once CanEmit will be part of the IOptimizableSetter
+				try
+				{
+					setter.Optimized(target, value);
+				}
+				catch (VerificationException) // Will occur for readonly fields and will heavily impact on performance when occurred.
+				{
+					setter.Default.Set(target, value);
+				}
+			}
 		}
 	}
 }

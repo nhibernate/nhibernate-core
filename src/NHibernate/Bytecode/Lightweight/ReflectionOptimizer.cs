@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Security;
@@ -34,7 +35,17 @@ namespace NHibernate.Bytecode.Lightweight
 		/// <summary>
 		/// Class constructor.
 		/// </summary>
+		[Obsolete("This constructor has no usages and will be removed in a future version")]
 		public ReflectionOptimizer(System.Type mappedType, IGetter[] getters, ISetter[] setters)
+			: this(mappedType, getters, setters, null, null)
+		{
+		}
+		
+		/// <summary>
+		/// Class constructor.
+		/// </summary>
+		public ReflectionOptimizer(System.Type mappedType, IGetter[] getters, ISetter[] setters,
+									IGetter specializedGetter, ISetter specializedSetter)
 		{
 			// save off references
 			this.mappedType = mappedType;
@@ -45,7 +56,29 @@ namespace NHibernate.Bytecode.Lightweight
 			GetPropertyValuesInvoker getInvoker = GenerateGetPropertyValuesMethod(getters);
 			SetPropertyValuesInvoker setInvoker = GenerateSetPropertyValuesMethod(setters);
 
-			accessOptimizer = new AccessOptimizer(getInvoker, setInvoker, getters, setters);
+			var getMethods = new Getter[getters.Length];
+			for (var i = 0; i < getters.Length; i++)
+			{
+				getMethods[i] = new Getter(getters[i], GenerateGetPropertyValueMethod(getters[i]));
+			}
+
+			var setMethods = new Setter[setters.Length];
+			for (var i = 0; i < setters.Length; i++)
+			{
+				setMethods[i] = new Setter(setters[i], GenerateSetPropertyValueMethod(setters[i]));
+			}
+
+			accessOptimizer = new AccessOptimizer(
+				getInvoker,
+				setInvoker,
+				getMethods,
+				setMethods,
+				new Getter(
+					specializedGetter,
+					specializedGetter != null ? GenerateGetPropertyValueMethod(specializedGetter) : null),
+				new Setter(
+					specializedSetter,
+					specializedSetter != null ? GenerateSetPropertyValueMethod(specializedSetter) : null));
 
 			createInstanceMethod = CreateCreateInstanceMethod(mappedType);
 		}
@@ -131,6 +164,46 @@ namespace NHibernate.Bytecode.Lightweight
 
 		private static readonly MethodInfo GetterCallbackInvoke = ReflectHelper.GetMethod<GetterCallback>(
 			g => g.Invoke(null, 0));
+
+		private Func<object, object> GenerateGetPropertyValueMethod(IGetter getter)
+		{
+			if (!(getter is IOptimizableGetter optimizableGetter))
+			{
+				return null;
+			}
+
+			var method = new DynamicMethod(string.Empty, typeof(object), new[] { typeof(object) }, CanSkipVisibilityChecks());
+			var il = method.GetILGenerator();
+
+			// object (target) { (object) ((ClassType) target).GetMethod(); }
+			il.Emit(OpCodes.Ldarg_0);
+			EmitCastToReference(il, mappedType);
+			optimizableGetter.Emit(il);
+			EmitUtil.EmitBoxIfNeeded(il, getter.ReturnType);
+			il.Emit(OpCodes.Ret);
+
+			return (Func<object, object>) method.CreateDelegate(typeof(Func<object, object>));
+		}
+
+		private Action<object, object> GenerateSetPropertyValueMethod(ISetter setter)
+		{
+			if (!(setter is IOptimizableSetter optimizableSetter) || !optimizableSetter.CanEmit())
+			{
+				return null;
+			}
+
+			// void (target, value) { ((ClassType) target).SetMethod((FieldType) value); }
+			var method = new DynamicMethod(string.Empty, null, new[] { typeof(object), typeof(object) }, CanSkipVisibilityChecks());
+			var il = method.GetILGenerator();
+			il.Emit(OpCodes.Ldarg_0);
+			EmitCastToReference(il, mappedType);
+			il.Emit(OpCodes.Ldarg_1);
+			il.Emit(optimizableSetter.Type.IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass, optimizableSetter.Type);
+			optimizableSetter.Emit(il);
+			il.Emit(OpCodes.Ret);
+
+			return (Action<object, object>) method.CreateDelegate(typeof(Action<object, object>));
+		}
 
 		/// <summary>
 		/// Generates a dynamic method on the given type.
