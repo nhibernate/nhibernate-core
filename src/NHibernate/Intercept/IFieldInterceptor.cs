@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
+using NHibernate.Util;
 
 namespace NHibernate.Intercept
 {
@@ -30,7 +31,7 @@ namespace NHibernate.Intercept
 
 		/// <summary> Intercept field set/get </summary>
 		// Since v5.3
-		[Obsolete("This method has no more usages and will be removed in a future version")]
+		[Obsolete("Please use 'Intercept(object target, string fieldName, object value, bool setter)' extension method instead")]
 		object Intercept(object target, string fieldName, object value);
 
 		/// <summary> Get the entity-name of the field DeclaringType.</summary>
@@ -42,6 +43,7 @@ namespace NHibernate.Intercept
 
 	public static class FieldInterceptorExtensions
 	{
+		// 6.0 TODO: merge into IFieldInterceptor
 		internal static ISet<string> GetUninitializedLazyProperties(this IFieldInterceptor interceptor)
 		{
 			if (interceptor is AbstractFieldInterceptor fieldInterceptor)
@@ -49,9 +51,15 @@ namespace NHibernate.Intercept
 				return fieldInterceptor.GetUninitializedLazyProperties();
 			}
 
-			throw new NotSupportedException("GetUninitializedLazyProperties method is not supported.");
+			if (interceptor.IsInitialized)
+			{
+				return CollectionHelper.EmptySet<string>();
+			}
+
+			return null; // The called should use all lazy properties as the result
 		}
 
+		// 6.0 TODO: merge into IFieldInterceptor
 		public static object Intercept(this IFieldInterceptor interceptor, object target, string fieldName, object value, bool setter)
 		{
 			if (interceptor is AbstractFieldInterceptor fieldInterceptor)

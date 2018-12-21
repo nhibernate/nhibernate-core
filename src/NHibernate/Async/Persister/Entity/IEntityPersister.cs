@@ -18,6 +18,8 @@ using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using System.Collections;
 using System.Collections.Generic;
+using NHibernate.Intercept;
+using NHibernate.Util;
 
 namespace NHibernate.Persister.Entity
 {

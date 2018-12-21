@@ -8,6 +8,8 @@ using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using System.Collections;
 using System.Collections.Generic;
+using NHibernate.Intercept;
+using NHibernate.Util;
 
 namespace NHibernate.Persister.Entity
 {
@@ -630,11 +632,26 @@ namespace NHibernate.Persister.Entity
 				return abstractEntityPersister.GetUninitializedLazyProperties(entity);
 			}
 
-			throw new InvalidOperationException($"{persister?.GetType()} does not support GetUninitializedLazyProperties method.");
+			if (!persister.HasUninitializedLazyProperties(entity))
+			{
+				return CollectionHelper.EmptySet<string>();
+			}
+
+			// Assume they are all uninitialized.
+			var result = new HashSet<string>();
+			for (var i = 0; i < persister.PropertyLaziness.Length; i++)
+			{
+				if (persister.PropertyLaziness[i])
+				{
+					result.Add(persister.PropertyNames[i]);
+				}
+			}
+
+			return result;
 		}
 
 		/// <summary>
-		/// Get uninitialized lazy properties from one row of a result set
+		/// Get uninitialized lazy properties from entity state
 		/// </summary>
 		//6.0 TODO: Merge into IEntityPersister
 		public static ISet<string> GetUninitializedLazyProperties(this IEntityPersister persister, object[] state)
@@ -644,7 +661,21 @@ namespace NHibernate.Persister.Entity
 				return abstractEntityPersister.GetUninitializedLazyProperties(state);
 			}
 
-			throw new InvalidOperationException($"{persister?.GetType()} does not support GetUninitializedProperties method.");
+			if (!persister.HasLazyProperties)
+			{
+				return CollectionHelper.EmptySet<string>();
+			}
+
+			var result = new HashSet<string>();
+			for (var i = 0; i < persister.PropertyLaziness.Length; i++)
+			{
+				if (persister.PropertyLaziness[i] && state[i] == LazyPropertyInitializer.UnfetchedProperty)
+				{
+					result.Add(persister.PropertyNames[i]);
+				}
+			}
+
+			return result;
 		}
 	}
 }

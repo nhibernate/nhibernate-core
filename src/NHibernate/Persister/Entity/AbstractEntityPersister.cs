@@ -4105,7 +4105,7 @@ namespace NHibernate.Persister.Entity
 
 		internal ISet<string> GetUninitializedLazyProperties(object entity)
 		{
-			return EntityTuplizer.GetUninitializedLazyProperties(entity);
+			return EntityTuplizer.GetUninitializedLazyProperties(entity) ?? new HashSet<string>(lazyPropertyNames);
 		}
 
 		internal ISet<string> GetUninitializedLazyProperties(object[] state)

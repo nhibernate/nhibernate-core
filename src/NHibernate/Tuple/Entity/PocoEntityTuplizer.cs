@@ -286,7 +286,12 @@ namespace NHibernate.Tuple.Entity
 			}
 
 			var interceptor = FieldInterceptionHelper.ExtractFieldInterceptor(entity);
-			return interceptor?.GetUninitializedLazyProperties() ?? CollectionHelper.EmptySet<string>();
+			if (interceptor == null)
+			{
+				return CollectionHelper.EmptySet<string>();
+			}
+
+			return interceptor.GetUninitializedLazyProperties() ?? lazyPropertyNames;
 		}
 
 		public override bool IsLifecycleImplementor

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
+using NHibernate.Util;
 
 namespace NHibernate.Tuple.Entity
 {
@@ -119,7 +120,7 @@ namespace NHibernate.Tuple.Entity
 		bool HasUninitializedLazyProperties(object entity);
 	}
 
-	internal static class EntityPersisterExtensions
+	internal static class EntityTuplizerExtensions
 	{
 		//6.0 TODO: Merge into IEntityTuplizer
 		internal static ISet<string> GetUninitializedLazyProperties(this IEntityTuplizer entityTuplizer, object entity)
@@ -128,8 +129,13 @@ namespace NHibernate.Tuple.Entity
 			{
 				return abstractEntityTuplizer.GetUninitializedLazyProperties(entity);
 			}
-			throw new NotSupportedException("GetUninitializedLazyProperties method is not supported.");
 
+			if (!entityTuplizer.HasUninitializedLazyProperties(entity))
+			{
+				return CollectionHelper.EmptySet<string>();
+			}
+
+			return null; // The called should use all lazy properties as the result
 		}
 	}
 }
