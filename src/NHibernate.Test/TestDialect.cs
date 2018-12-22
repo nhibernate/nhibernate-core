@@ -1,4 +1,5 @@
 ﻿using System;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Id;
 using NHibernate.SqlTypes;
 
@@ -32,6 +33,14 @@ namespace NHibernate.Test
 		/// </summary>
 		public bool HasIdentityNativeGenerator
 			=> _dialect.NativeIdentifierGeneratorClass == typeof(IdentityGenerator);
+
+		/// <summary>
+		/// Has a native generator strategy supporting id generation on DML insert.
+		/// </summary>
+		public bool NativeGeneratorSupportsBulkInsertion
+			=> HqlSqlWalker.SupportsIdGenWithBulkInsertion(
+				(IIdentifierGenerator) Cfg.Environment.ObjectsFactory.CreateInstance(
+					_dialect.NativeIdentifierGeneratorClass));
 
 		public virtual bool SupportsOperatorAll => true;
 		public virtual bool SupportsOperatorSome => true;

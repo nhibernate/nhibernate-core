@@ -1,3 +1,25 @@
+
+Build 5.2.1
+=============================
+
+Release notes - NHibernate - Version 5.2.1
+
+5 issues were resolved in this release.
+
+** Bug
+
+   * #1928 JoinAlias on JoinQueryOver fails
+   * #1920 ISession.Get may fail with a null exception
+   * #1918 Property-ref on many-to-one with composite id fails
+
+** Task
+
+   * #1932 Release 5.2.1
+   * #1927 Add missing possible breaking change
+
+As part of releasing 5.2.1, a missing 5.2.0 possible breaking change has been added about duplicated columns
+in mapping. See 5.2.0 possible breaking changes.
+
 Build 5.2.0
 =============================
 
@@ -6,6 +28,11 @@ Release notes - NHibernate - Version 5.2.0
 157 issues were resolved in this release.
 
     ##### Possible Breaking Changes #####
+        * Entities having many non-readonly properties (including many-to-one) mapped to
+          the same column will no more silently ignore the trouble till an insert or update
+          is attempted. They will now cause the session factory built to fail. When
+          mapping many properties to the same column, all of them excepted at most one
+          should be mapped with `insert="false" update="false"`.
         * Mappings mixing column elements and formula elements were taking into account
           only the formula elements. They will now take into account all elements.
         * Mappings mixing column elements and/or formula elements with a column attribute

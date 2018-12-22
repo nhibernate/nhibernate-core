@@ -683,6 +683,7 @@ namespace NHibernate.Persister.Entity
 			get { return versionColumnName; }
 		}
 
+		[Obsolete("Please use RootTableName instead.")]
 		protected internal string VersionedTableName
 		{
 			get { return GetTableName(0); }
@@ -1540,20 +1541,20 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		protected SqlString GenerateSelectVersionString()
 		{
-			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(Factory.Dialect, factory)
-				.SetTableName(VersionedTableName);
+			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(Factory.Dialect, Factory)
+				.SetTableName(RootTableName);
 
 			if (IsVersioned)
-				builder.AddColumn(versionColumnName);
+				builder.AddColumn(VersionColumnName);
 			else
-				builder.AddColumns(rootTableKeyColumnNames);
+				builder.AddColumns(RootTableIdentifierColumnNames);
 
 			if (Factory.Settings.IsCommentsEnabled)
 			{
 				builder.SetComment("get version " + EntityName);
 			}
 
-			return builder.AddWhereFragment(rootTableKeyColumnNames, IdentifierType, " = ").ToSqlString();
+			return builder.AddWhereFragment(RootTableIdentifierColumnNames, IdentifierType, " = ").ToSqlString();
 		}
 
 		protected SqlString GenerateInsertGeneratedValuesSelectString()
@@ -1722,13 +1723,13 @@ namespace NHibernate.Persister.Entity
 		private SqlCommandInfo GenerateVersionIncrementUpdateString()
 		{
 			SqlUpdateBuilder update = new SqlUpdateBuilder(Factory.Dialect, Factory);
-			update.SetTableName(GetTableName(0));
+			update.SetTableName(RootTableName);
 			if (Factory.Settings.IsCommentsEnabled)
 			{
 				update.SetComment("forced version increment");
 			}
 			update.AddColumn(VersionColumnName, VersionType);
-			update.SetIdentityColumn(IdentifierColumnNames, IdentifierType);
+			update.SetIdentityColumn(RootTableIdentifierColumnNames, IdentifierType);
 			update.SetVersionColumn(new string[] { VersionColumnName }, VersionType);
 			return update.ToSqlCommandInfo();
 		}
@@ -1933,7 +1934,7 @@ namespace NHibernate.Persister.Entity
 			{
 				if (cols[j] == null)
 				{
-					result[j] = StringHelper.Replace(templates[j], Template.Placeholder, alias);
+					result[j] = templates[j]?.Replace(Template.Placeholder, alias);
 				}
 				else
 				{
@@ -2196,7 +2197,7 @@ namespace NHibernate.Persister.Entity
 
 		protected string GetSQLWhereString(string alias)
 		{
-			return StringHelper.Replace(sqlWhereStringTemplate, Template.Placeholder, alias);
+			return sqlWhereStringTemplate?.Replace(Template.Placeholder, alias);
 		}
 
 		protected bool HasWhere
@@ -3418,10 +3419,17 @@ namespace NHibernate.Persister.Entity
 			IDictionary<string, string> dict = new Dictionary<string, string>();
 			for (int i = 0; i < SubclassColumnTableNumberClosure.Length; i++ )
 			{
+				string fullColumn;
 				string col = SubclassColumnClosure[i];
-				string alias = GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[i]);
-
-				string fullColumn = string.Format("{0}.{1}", alias, col);
+				if (!string.IsNullOrEmpty(rootAlias))
+				{
+					string alias = GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[i]);
+					fullColumn = string.Format("{0}.{1}", alias, col);
+				}
+				else
+				{
+					fullColumn = col;
+				}
 
 				PropertyKey key = new PropertyKey(col, SubclassColumnTableNumberClosure[i]);
 				if (propDictionary.ContainsKey(key))

@@ -51,7 +51,7 @@ namespace NHibernate.Engine.Query
 			try
 			{
 				var parametersSpecifications = customQuery.CollectedParametersSpecifications.ToList();
-				SqlString sql = ExpandDynamicFilterParameters(customQuery.SQL, parametersSpecifications, session);
+				SqlString sql = FilterHelper.ExpandDynamicFilterParameters(customQuery.SQL, parametersSpecifications, session);
 				// After the last modification to the SqlString we can collect all parameters types.
 				parametersSpecifications.ResetEffectiveExpectedType(queryParameters);
 
