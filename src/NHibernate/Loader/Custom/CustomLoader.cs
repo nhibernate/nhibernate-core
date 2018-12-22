@@ -113,7 +113,7 @@ namespace NHibernate.Loader.Custom
 
 					continue;
 				}
-					
+
 				throw new HibernateException("unexpected custom query return type : " + rtn.GetType().FullName);
 			}
 

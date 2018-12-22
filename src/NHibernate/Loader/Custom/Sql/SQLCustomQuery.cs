@@ -20,15 +20,15 @@ namespace NHibernate.Loader.Custom.Sql
 		private readonly List<IParameterSpecification> parametersSpecifications;
 
 		public SQLCustomQuery(INativeSQLQueryReturn[] queryReturns, string sqlQuery, ICollection<string> additionalQuerySpaces,
-							  ISessionFactoryImplementor factory)
+		                      ISessionFactoryImplementor factory)
 		{
 			log.Debug("starting processing of sql query [{0}]", sqlQuery);
 			var processor = new SQLQueryContext(queryReturns, factory);
 
 			var parser = new SQLQueryParser(factory, sqlQuery, processor);
-			this.sql = parser.Process();
-			this.customQueryReturns = GenerateCustomReturns(queryReturns, parser.QueryHasAliases, processor).ToList();
-			this.parametersSpecifications = parser.CollectedParametersSpecifications.ToList();
+			sql = parser.Process();
+			customQueryReturns = GenerateCustomReturns(queryReturns, parser.QueryHasAliases, processor).ToList();
+			parametersSpecifications = parser.CollectedParametersSpecifications.ToList();
 
 			if (additionalQuerySpaces != null)
 			{

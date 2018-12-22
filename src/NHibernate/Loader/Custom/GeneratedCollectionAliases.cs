@@ -53,7 +53,8 @@ namespace NHibernate.Loader.Custom
 					}
 				}
 
-				if (aliases.Count > 0) return aliases.ToArray();
+				if (aliases.Count > 0)
+					return aliases.ToArray();
 			}
 
 			return defaultAliases;
@@ -110,7 +111,12 @@ namespace NHibernate.Loader.Custom
 
 		private static string Join(IEnumerable<string> aliases)
 		{
-			return aliases == null ? null : StringHelper.Join(", ", aliases);
+			if (aliases == null)
+			{
+				return null;
+			}
+
+			return StringHelper.Join(", ", aliases);
 		}
 
 		private string[] GetUserProvidedAliases(string propertyPath, string[] defaultAliases)

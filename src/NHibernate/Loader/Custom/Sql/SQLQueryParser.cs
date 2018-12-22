@@ -42,7 +42,7 @@ namespace NHibernate.Loader.Custom.Sql
 			get { return parametersSpecifications; }
 		}
 
-		// TODO: should "record" how many properties we have refered to - and if we 
+		// TODO: should "record" how many properties we have referred to - and if we 
 		//       don't get'em'all we throw an exception! Way better than trial and error ;)
 		private string SubstituteBrackets()
 		{
@@ -206,8 +206,9 @@ namespace NHibernate.Loader.Custom.Sql
 
 			if (columnAliases == null || columnAliases.Length == 0)
 			{
-				throw new QueryException("No column name found for property [" + propertyName + "] for alias [" + aliasName + "]",
-					                        originalQueryString);
+				throw new QueryException(
+					"No column name found for property [" + propertyName + "] for alias [" + aliasName + "]",
+					originalQueryString);
 			}
 			if (columnAliases.Length != 1)
 			{

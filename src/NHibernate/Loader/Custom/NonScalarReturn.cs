@@ -11,11 +11,7 @@ namespace NHibernate.Loader.Custom
 	{
 		private readonly string alias;
 		private readonly LockMode lockMode;
-		private readonly NonScalarReturn owner;
-		private readonly ISqlLoadable entityPersister;
-		private readonly IEntityAliases entityAliases;
-		private readonly ISqlLoadableCollection collectionPersister;
-		private readonly ICollectionAliases collectionAliases;
+		private readonly ISqlLoadableCollection _collectionPersister;
 
 		public NonScalarReturn(SQLQueryContext context, bool queryHasAliases, string alias, LockMode lockMode)
 			: this(context, queryHasAliases, alias, lockMode, null)
@@ -25,7 +21,7 @@ namespace NHibernate.Loader.Custom
 		{
 			if (context == null)
 			{
-				throw new ArgumentNullException("context");
+				throw new ArgumentNullException(nameof(context));
 			}
 			if (string.IsNullOrEmpty(alias))
 			{
@@ -34,72 +30,57 @@ namespace NHibernate.Loader.Custom
 
 			this.alias = alias;
 			this.lockMode = lockMode;
-			this.owner = owner;
+			Owner = owner;
 
-			this.collectionPersister = context.GetCollectionPersister(alias);
-			if (this.collectionPersister != null)
+			_collectionPersister = context.GetCollectionPersister(alias);
+			if (_collectionPersister != null)
 			{
 				var collectionPropertyResultMap = context.GetCollectionPropertyResultsMap(alias);
-				this.collectionAliases = queryHasAliases
-					? new GeneratedCollectionAliases(collectionPropertyResultMap, this.collectionPersister, context.GetCollectionSuffix(alias))
-					: (ICollectionAliases)new ColumnCollectionAliases(collectionPropertyResultMap, this.collectionPersister);
+				CollectionAliases = queryHasAliases
+					? new GeneratedCollectionAliases(collectionPropertyResultMap, _collectionPersister, context.GetCollectionSuffix(alias))
+					: (ICollectionAliases)new ColumnCollectionAliases(collectionPropertyResultMap, _collectionPersister);
 			}
 
-			if (this.collectionPersister == null || this.CollectionPersister.ElementType.IsEntityType)
+			if (_collectionPersister == null || CollectionPersister.ElementType.IsEntityType)
 			{
-				this.entityPersister = context.GetEntityPersister(alias);
-				if (this.entityPersister != null)
+				EntityPersister = context.GetEntityPersister(alias);
+				if (EntityPersister != null)
 				{
 					var entityPropertyResultMap = context.GetEntityPropertyResultsMap(alias);
-					this.entityAliases = queryHasAliases
-						? new DefaultEntityAliases(entityPropertyResultMap, this.entityPersister, context.GetEntitySuffix(alias))
-						: new ColumnEntityAliases(entityPropertyResultMap, this.entityPersister);
+					EntityAliases = queryHasAliases
+						? new DefaultEntityAliases(entityPropertyResultMap, EntityPersister, context.GetEntitySuffix(alias))
+						: new ColumnEntityAliases(entityPropertyResultMap, EntityPersister);
 				}
 			}
 		}
 
 		public string Alias
 		{
-			get { return this.alias; }
+			get { return alias; }
 		}
 
 		public LockMode LockMode
 		{
-			get { return this.lockMode; }
+			get { return lockMode; }
 		}
 
-		public NonScalarReturn Owner
-		{
-			get { return this.owner; }
-		}
+		public NonScalarReturn Owner { get; }
 
-		public ICollectionPersister CollectionPersister
-		{
-			get { return this.collectionPersister; }
-		}
+		public ICollectionPersister CollectionPersister => _collectionPersister;
 
-		public ICollectionAliases CollectionAliases
-		{
-			get { return this.collectionAliases; }
-		}
+		public ICollectionAliases CollectionAliases { get; }
 
-		public ISqlLoadable EntityPersister
-		{
-			get { return this.entityPersister; }
-		}
+		public ISqlLoadable EntityPersister { get; }
 
-		public IEntityAliases EntityAliases
-		{
-			get { return this.entityAliases; }
-		}
+		public IEntityAliases EntityAliases { get; }
 
 		public IType Type
 		{
 			get
 			{
-				if (this.collectionPersister != null) return this.collectionPersister.CollectionType;
-				if (this.entityPersister != null) return this.entityPersister.EntityMetamodel.EntityType;
-				return null;
+				if (_collectionPersister != null)
+					return _collectionPersister.CollectionType;
+				return EntityPersister?.EntityMetamodel.EntityType;
 			}
 		}
 	}
