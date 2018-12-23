@@ -19,7 +19,7 @@ namespace NHibernate.Tuple.Component
 		private readonly IGetter parentGetter;
 		[NonSerialized]
 		private IReflectionOptimizer optimizer;
-		private readonly bool isBytecodeProviderImpl; // 6.0 TODO: remove
+		private bool isBytecodeProviderImpl; // 6.0 TODO: remove
 
 
 		[OnDeserialized]
@@ -54,7 +54,6 @@ namespace NHibernate.Tuple.Component
 				parentGetter = parentProperty.GetGetter(componentClass);
 			}
 
-			isBytecodeProviderImpl = Cfg.Environment.BytecodeProvider is BytecodeProviderImpl;
 			SetReflectionOptimizer();
 
 			// Fix for NH-3119
@@ -169,6 +168,7 @@ namespace NHibernate.Tuple.Component
 			if (Cfg.Environment.UseReflectionOptimizer)
 			{
 				optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(componentClass, getters, setters, parentGetter, parentSetter);
+				isBytecodeProviderImpl = Cfg.Environment.BytecodeProvider is BytecodeProviderImpl;
 			}
 		}
 

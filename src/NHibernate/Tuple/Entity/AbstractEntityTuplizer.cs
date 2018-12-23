@@ -183,17 +183,7 @@ namespace NHibernate.Tuple.Entity
 			return GetPropertyValue(entity, entityMetamodel.VersionPropertyIndex);
 		}
 
-		// 6.0 TODO: make it virtual
-		public void SetPropertyValue(object entity, int i, object value)
-		{
-#pragma warning disable 618
-			SetValue(entity, i, value);
-#pragma warning restore 618
-		}
-
-		// Since 5.3
-		[Obsolete("Use SetPropertyValue instead.")]
-		protected virtual void SetValue(object entity, int i, object value)
+		public virtual void SetPropertyValue(object entity, int i, object value)
 		{
 			setters[i].Set(entity, value);
 		}

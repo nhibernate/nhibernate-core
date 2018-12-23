@@ -73,12 +73,9 @@ namespace NHibernate.Bytecode.Lightweight
 				setInvoker,
 				getMethods,
 				setMethods,
-				new Getter(
-					specializedGetter,
-					specializedGetter != null ? GenerateGetPropertyValueMethod(specializedGetter) : null),
-				new Setter(
-					specializedSetter,
-					specializedSetter != null ? GenerateSetPropertyValueMethod(specializedSetter) : null));
+				new Getter(specializedGetter, GenerateGetPropertyValueMethod(specializedGetter)),
+				new Setter(specializedSetter, GenerateSetPropertyValueMethod(specializedSetter))
+			);
 
 			createInstanceMethod = CreateCreateInstanceMethod(mappedType);
 		}
@@ -172,7 +169,7 @@ namespace NHibernate.Bytecode.Lightweight
 				return null;
 			}
 
-			var method = new DynamicMethod(string.Empty, typeof(object), new[] { typeof(object) }, CanSkipVisibilityChecks());
+			var method = CreateDynamicMethod(typeof(object), new[] { typeof(object) });
 			var il = method.GetILGenerator();
 
 			// object (target) { (object) ((ClassType) target).GetMethod(); }
@@ -187,18 +184,18 @@ namespace NHibernate.Bytecode.Lightweight
 
 		private Action<object, object> GenerateSetPropertyValueMethod(ISetter setter)
 		{
-			if (!(setter is IOptimizableSetter optimizableSetter) || !optimizableSetter.CanEmit())
+			if (!(setter is IOptimizableSetter optimizableSetter))
 			{
 				return null;
 			}
 
 			// void (target, value) { ((ClassType) target).SetMethod((FieldType) value); }
-			var method = new DynamicMethod(string.Empty, null, new[] { typeof(object), typeof(object) }, CanSkipVisibilityChecks());
+			var method = CreateDynamicMethod(null, new[] { typeof(object), typeof(object) });
 			var il = method.GetILGenerator();
 			il.Emit(OpCodes.Ldarg_0);
 			EmitCastToReference(il, mappedType);
 			il.Emit(OpCodes.Ldarg_1);
-			il.Emit(optimizableSetter.Type.IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass, optimizableSetter.Type);
+			EmitUtil.PreparePropertyForSet(il, optimizableSetter.Type);
 			optimizableSetter.Emit(il);
 			il.Emit(OpCodes.Ret);
 

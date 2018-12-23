@@ -30,7 +30,7 @@ namespace NHibernate.Tuple.Entity
 		[NonSerialized]
 		private IReflectionOptimizer optimizer;
 		private readonly IProxyValidator proxyValidator;
-		private readonly bool isBytecodeProviderImpl; // 6.0 TODO: remove
+		private bool isBytecodeProviderImpl; // 6.0 TODO: remove
 
 		[OnDeserialized]
 		internal void OnDeserialized(StreamingContext context)
@@ -51,6 +51,7 @@ namespace NHibernate.Tuple.Entity
 			{
 				// NH different behavior fo NH-1587
 				optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(mappedClass, getters, setters, idGetter, idSetter);
+				isBytecodeProviderImpl = Cfg.Environment.BytecodeProvider is BytecodeProviderImpl;
 			}
 		}
 		public PocoEntityTuplizer(EntityMetamodel entityMetamodel, PersistentClass mappedEntity)
@@ -68,8 +69,6 @@ namespace NHibernate.Tuple.Entity
 				if (property.UnwrapProxy)
 					unwrapProxyPropertyNames.Add(property.Name);
 			}
-
-			isBytecodeProviderImpl = Cfg.Environment.BytecodeProvider is BytecodeProviderImpl;
 			SetReflectionOptimizer();
 
 			Instantiator = BuildInstantiator(mappedEntity);
@@ -299,9 +298,7 @@ namespace NHibernate.Tuple.Entity
 			get { return islifecycleImplementor; }
 		}
 
-#pragma warning disable 672
-		protected override void SetValue(object entity, int i, object value)
-#pragma warning restore 672
+		public override void SetPropertyValue(object entity, int i, object value)
 		{
 			if (isBytecodeProviderImpl && optimizer?.AccessOptimizer != null)
 			{
@@ -309,9 +306,7 @@ namespace NHibernate.Tuple.Entity
 				return;
 			}
 
-#pragma warning disable 618
-			base.SetValue(entity, i, value);
-#pragma warning restore 618
+			base.SetPropertyValue(entity, i, value);
 		}
 
 		public override void SetPropertyValues(object entity, object[] values)

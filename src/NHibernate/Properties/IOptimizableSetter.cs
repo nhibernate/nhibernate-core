@@ -21,22 +21,4 @@ namespace NHibernate.Properties
 		/// </summary>
 		void Emit(ILGenerator il);
 	}
-
-	internal static class OptimizableSetterExtensions
-	{
-		/// <summary>
-		/// Determine if the optimizable setter can actually be optimized.
-		/// </summary>
-		/// <returns><see langword="true" /> if can be optimized, <see langword="false" /> otherwise.</returns>
-		//6.0 TODO: Merge into IOptimizableSetter.
-		public static bool CanEmit(this IOptimizableSetter setter)
-		{
-			if (setter is FieldAccessor.FieldSetter fieldSetter)
-			{
-				return fieldSetter.CanEmit();
-			}
-
-			return true;
-		}
-	} 
 }

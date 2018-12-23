@@ -66,8 +66,9 @@ namespace NHibernate.Bytecode
 		/// <param name="specializedSetter">The specialized setter for the given type.</param>
 		/// <returns>The reflection optimization delegate.</returns>
 		//6.0 TODO: Merge into IBytecodeProvider.
-		public static IReflectionOptimizer GetReflectionOptimizer(this IBytecodeProvider bytecodeProvider, System.Type clazz, IGetter[] getters,
-																ISetter[] setters, IGetter specializedGetter, ISetter specializedSetter)
+		public static IReflectionOptimizer GetReflectionOptimizer(
+			this IBytecodeProvider bytecodeProvider, System.Type clazz, IGetter[] getters, ISetter[] setters,
+			IGetter specializedGetter, ISetter specializedSetter)
 		{
 			if (bytecodeProvider is BytecodeProviderImpl bytecodeProviderImpl)
 			{

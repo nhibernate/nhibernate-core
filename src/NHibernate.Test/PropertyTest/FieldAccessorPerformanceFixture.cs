@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.PropertyTest
@@ -11,30 +12,30 @@ namespace NHibernate.Test.PropertyTest
 		protected override List<string> PropertyNames => new List<string>
 		{
 			"_id",
-			"_name"
+			"_name",
+			"_date",
+			"_decimal",
 		};
 
-		protected override object GetValue(int i)
+		protected override object[] GetValues()
 		{
-			switch (i)
-			{
-				case 0:
-					return 5;
-				case 1:
-					return "name";
-			}
-
-			return null;
+			return new object[] {5, "name", DateTime.MaxValue, 1.5m};
 		}
 
 		public class A
 		{
 			private int _id = 5;
 			private string _name =string.Empty;
+			private DateTime _date = DateTime.MinValue;
+			private decimal? _decimal = decimal.Zero;
 
 			public int Id => _id;
 
 			public string Name => _name;
+
+			public DateTime Date => _date;
+
+			public decimal? Decimal => _decimal;
 		}
 	}
 }

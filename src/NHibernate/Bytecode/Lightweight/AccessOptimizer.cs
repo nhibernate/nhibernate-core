@@ -95,15 +95,7 @@ namespace NHibernate.Bytecode.Lightweight
 			}
 			else
 			{
-				// 6.0 TODO: remove the try/catch block once CanEmit will be part of the IOptimizableSetter
-				try
-				{
-					setter.Optimized(target, value);
-				}
-				catch (VerificationException) // Will occur for readonly fields and will heavily impact on performance when occurred.
-				{
-					setter.Default.Set(target, value);
-				}
+				setter.Optimized(target, value);
 			}
 		}
 	}

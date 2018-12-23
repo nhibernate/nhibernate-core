@@ -20,7 +20,7 @@ namespace NHibernate.Test.PropertyTest
 
 		protected abstract List<string> PropertyNames { get; }
 
-		protected abstract object GetValue(int i);
+		protected abstract object[] GetValues();
 
 		[SetUp]
 		public void SetUp()
@@ -44,7 +44,7 @@ namespace NHibernate.Test.PropertyTest
 		[TestCase(100000)]
 		[TestCase(200000)]
 		[TestCase(500000)]
-		public void TestGetPropertyValue(int iter)
+		public void TestGetter(int iter)
 		{
 			var target = new T();
 			var stopwatch = new Stopwatch();
@@ -52,23 +52,29 @@ namespace NHibernate.Test.PropertyTest
 			// Warm up
 			TestGetter(target, 100);
 			TestOptimizedGetter(target, 100);
+			TestOptimizedMultiGetter(target, 100);
 
 			stopwatch.Restart();
 			TestGetter(target, iter);
 			stopwatch.Stop();
-			Console.WriteLine($"Reflection getter total time for {iter} iterations: {stopwatch.ElapsedMilliseconds}ms");
+			Console.WriteLine($"IGetter.Get total time for {iter} iterations: {stopwatch.ElapsedMilliseconds}ms");
 
 			stopwatch.Restart();
 			TestOptimizedGetter(target, iter);
 			stopwatch.Stop();
-			Console.WriteLine($"IL getter total time for {iter} iterations: {stopwatch.ElapsedMilliseconds}ms");
+			Console.WriteLine($"IAccessOptimizer.GetPropertyValue total time for {iter} iterations: {stopwatch.ElapsedMilliseconds}ms");
+
+			stopwatch.Restart();
+			TestOptimizedMultiGetter(target, iter);
+			stopwatch.Stop();
+			Console.WriteLine($"IAccessOptimizer.GetPropertyValues total time for {iter} iterations: {stopwatch.ElapsedMilliseconds}ms");
 		}
 
 		[TestCase(50000)]
 		[TestCase(100000)]
 		[TestCase(200000)]
 		[TestCase(500000)]
-		public void TestSetPropertyValue(int iter)
+		public void TestSetter(int iter)
 		{
 			var target = new T();
 			var stopwatch = new Stopwatch();
@@ -76,16 +82,22 @@ namespace NHibernate.Test.PropertyTest
 			// Warm up
 			TestSetter(target, 100);
 			TestOptimizedSetter(target, 100);
+			TestOptimizedMultiSetter(target, 100);
 
 			stopwatch.Restart();
 			TestSetter(target, iter);
 			stopwatch.Stop();
-			Console.WriteLine($"Reflection setter total time for {iter} iterations: {stopwatch.ElapsedMilliseconds}ms");
+			Console.WriteLine($"ISetter.Set total time for {iter} iterations: {stopwatch.ElapsedMilliseconds}ms");
 
 			stopwatch.Restart();
 			TestOptimizedSetter(target, iter);
 			stopwatch.Stop();
-			Console.WriteLine($"IL setter total time for {iter} iterations: {stopwatch.ElapsedMilliseconds}ms");
+			Console.WriteLine($"IAccessOptimizer.SetPropertyValue total time for {iter} iterations: {stopwatch.ElapsedMilliseconds}ms");
+
+			stopwatch.Restart();
+			TestOptimizedMultiSetter(target, iter);
+			stopwatch.Stop();
+			Console.WriteLine($"IAccessOptimizer.SetPropertyValues total time for {iter} iterations: {stopwatch.ElapsedMilliseconds}ms");
 		}
 
 		private void TestGetter(object target, int iter)
@@ -110,13 +122,22 @@ namespace NHibernate.Test.PropertyTest
 			}
 		}
 
+		private void TestOptimizedMultiGetter(object target, int iter)
+		{
+			for (var i = 0; i < iter; i++)
+			{
+				var val = _optimizer.GetPropertyValues(target);
+			}
+		}
+
 		private void TestSetter(object target, int iter)
 		{
 			for (var i = 0; i < iter; i++)
 			{
+				var values = GetValues();
 				for (var j = 0; j < _setters.Length; j++)
 				{
-					_setters[j].Set(target, GetValue(j));
+					_setters[j].Set(target, values[j]);
 				}
 			}
 		}
@@ -125,10 +146,19 @@ namespace NHibernate.Test.PropertyTest
 		{
 			for (var i = 0; i < iter; i++)
 			{
+				var values = GetValues();
 				for (var j = 0; j < _setters.Length; j++)
 				{
-					_optimizer.SetPropertyValue(target, j, GetValue(j));
+					_optimizer.SetPropertyValue(target, j, values[j]);
 				}
+			}
+		}
+
+		private void TestOptimizedMultiSetter(object target, int iter)
+		{
+			for (var i = 0; i < iter; i++)
+			{
+				_optimizer.SetPropertyValues(target, GetValues());
 			}
 		}
 	}
