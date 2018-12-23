@@ -291,7 +291,7 @@ namespace NHibernate.Tuple.Entity
 				return CollectionHelper.EmptySet<string>();
 			}
 
-			return interceptor.GetUninitializedLazyProperties() ?? lazyPropertyNames;
+			return interceptor.GetUninitializedFields() ?? lazyPropertyNames;
 		}
 
 		public override bool IsLifecycleImplementor

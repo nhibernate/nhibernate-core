@@ -81,7 +81,7 @@ namespace NHibernate.Intercept
 		#endregion
 
 		// Since v5.3
-		[Obsolete("This method has no more usages and will be removed in a future version")]
+		[Obsolete("Please use GetUninitializedFields extension method instead")]
 		public ISet<string> UninitializedFields
 		{
 			get { return uninitializedFields; }
@@ -193,7 +193,7 @@ namespace NHibernate.Intercept
 			return result;
 		}
 
-		public ISet<string> GetUninitializedLazyProperties()
+		public ISet<string> GetUninitializedFields()
 		{
 			return uninitializedFieldsReadOnly ?? CollectionHelper.EmptySet<string>();
 		}

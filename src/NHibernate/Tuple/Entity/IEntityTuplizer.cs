@@ -135,7 +135,7 @@ namespace NHibernate.Tuple.Entity
 				return CollectionHelper.EmptySet<string>();
 			}
 
-			return null; // The called should use all lazy properties as the result
+			return null; // The caller should use all lazy properties as the result
 		}
 	}
 }

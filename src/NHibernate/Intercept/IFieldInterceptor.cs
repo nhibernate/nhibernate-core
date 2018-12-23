@@ -44,11 +44,11 @@ namespace NHibernate.Intercept
 	public static class FieldInterceptorExtensions
 	{
 		// 6.0 TODO: merge into IFieldInterceptor
-		internal static ISet<string> GetUninitializedLazyProperties(this IFieldInterceptor interceptor)
+		internal static ISet<string> GetUninitializedFields(this IFieldInterceptor interceptor)
 		{
 			if (interceptor is AbstractFieldInterceptor fieldInterceptor)
 			{
-				return fieldInterceptor.GetUninitializedLazyProperties();
+				return fieldInterceptor.GetUninitializedFields();
 			}
 
 			if (interceptor.IsInitialized)
@@ -56,7 +56,7 @@ namespace NHibernate.Intercept
 				return CollectionHelper.EmptySet<string>();
 			}
 
-			return null; // The called should use all lazy properties as the result
+			return null; // The caller should use all lazy properties as the result
 		}
 
 		// 6.0 TODO: merge into IFieldInterceptor
