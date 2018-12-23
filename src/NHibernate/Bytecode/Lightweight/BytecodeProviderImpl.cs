@@ -39,8 +39,8 @@ namespace NHibernate.Bytecode.Lightweight
 		/// <param name="specializedGetter">The specialized getter for the given type.</param>
 		/// <param name="specializedSetter">The specialized setter for the given type.</param>
 		/// <returns>The reflection optimization delegate.</returns>
-		internal IReflectionOptimizer GetReflectionOptimizer(System.Type mappedClass, IGetter[] getters, ISetter[] setters,
-																	IGetter specializedGetter, ISetter specializedSetter)
+		internal IReflectionOptimizer GetReflectionOptimizer(
+			System.Type mappedClass, IGetter[] getters, ISetter[] setters, IGetter specializedGetter, ISetter specializedSetter)
 		{
 			return new ReflectionOptimizer(mappedClass, getters, setters, specializedGetter, specializedSetter);
 		}
