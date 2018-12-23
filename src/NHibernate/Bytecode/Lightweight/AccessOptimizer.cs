@@ -11,20 +11,23 @@ namespace NHibernate.Bytecode.Lightweight
 		private readonly SetPropertyValuesInvoker setDelegate;
 		private readonly GetterCallback getterCallback;
 		private readonly SetterCallback setterCallback;
-		private readonly Getter[] _getters;
-		private readonly Setter[] _setters;
-		private readonly Getter _specializedGetter;
-		private readonly Setter _specializedSetter;
+		private readonly GetPropertyValueInvoker[] _getters;
+		private readonly SetPropertyValueInvoker[] _setters;
+		private readonly GetPropertyValueInvoker _specializedGetter;
+		private readonly SetPropertyValueInvoker _specializedSetter;
 
 		// Since 5.3
 		[Obsolete("This constructor has no usages and will be removed in a future version")]
-		public AccessOptimizer(GetPropertyValuesInvoker getDelegate, SetPropertyValuesInvoker setDelegate,
-		                       IGetter[] getters, ISetter[] setters)
+		public AccessOptimizer(
+			GetPropertyValuesInvoker getDelegate,
+			SetPropertyValuesInvoker setDelegate,
+			IGetter[] getters,
+			ISetter[] setters)
 			: this(
 				getDelegate,
-				setDelegate, 
-				getters.Select(o => new Getter(o)).ToArray(),
-				setters.Select(o => new Setter(o)).ToArray(),
+				setDelegate,
+				getters.Select(o => (GetPropertyValueInvoker) o.Get).ToArray(),
+				setters.Select(o => (SetPropertyValueInvoker) o.Set).ToArray(),
 				null,
 				null)
 		{
@@ -32,10 +35,10 @@ namespace NHibernate.Bytecode.Lightweight
 
 		public AccessOptimizer(GetPropertyValuesInvoker getDelegate,
 								SetPropertyValuesInvoker setDelegate,
-								Getter[] getters,
-								Setter[] setters,
-								Getter specializedGetter,
-								Setter specializedSetter)
+								GetPropertyValueInvoker[] getters,
+								SetPropertyValueInvoker[] setters,
+								GetPropertyValueInvoker specializedGetter,
+								SetPropertyValueInvoker specializedSetter)
 		{
 			this.getDelegate = getDelegate;
 			this.setDelegate = setDelegate;
@@ -77,26 +80,14 @@ namespace NHibernate.Bytecode.Lightweight
 			return GetPropertyValue(target, _specializedGetter);
 		}
 
-		private static object GetPropertyValue(object target, Getter getter)
+		private static object GetPropertyValue(object target, GetPropertyValueInvoker getter)
 		{
-			if (getter.Optimized == null)
-			{
-				return getter.Default.Get(target);
-			}
-
-			return getter.Optimized(target);
+			return getter(target);
 		}
 
-		private static void SetPropertyValue(object target, object value, Setter setter)
+		private static void SetPropertyValue(object target, object value, SetPropertyValueInvoker setter)
 		{
-			if (setter.Optimized == null)
-			{
-				setter.Default.Set(target, value);
-			}
-			else
-			{
-				setter.Optimized(target, value);
-			}
+			setter(target, value);
 		}
 	}
 }

@@ -56,16 +56,16 @@ namespace NHibernate.Bytecode.Lightweight
 			GetPropertyValuesInvoker getInvoker = GenerateGetPropertyValuesMethod(getters);
 			SetPropertyValuesInvoker setInvoker = GenerateSetPropertyValuesMethod(setters);
 
-			var getMethods = new Getter[getters.Length];
+			var getMethods = new GetPropertyValueInvoker[getters.Length];
 			for (var i = 0; i < getters.Length; i++)
 			{
-				getMethods[i] = new Getter(getters[i], GenerateGetPropertyValueMethod(getters[i]));
+				getMethods[i] = GenerateGetPropertyValueMethod(getters[i]) ?? getters[i].Get;
 			}
 
-			var setMethods = new Setter[setters.Length];
+			var setMethods = new SetPropertyValueInvoker[setters.Length];
 			for (var i = 0; i < setters.Length; i++)
 			{
-				setMethods[i] = new Setter(setters[i], GenerateSetPropertyValueMethod(setters[i]));
+				setMethods[i] = GenerateSetPropertyValueMethod(setters[i]) ?? setters[i].Set;
 			}
 
 			accessOptimizer = new AccessOptimizer(
@@ -73,8 +73,8 @@ namespace NHibernate.Bytecode.Lightweight
 				setInvoker,
 				getMethods,
 				setMethods,
-				new Getter(specializedGetter, GenerateGetPropertyValueMethod(specializedGetter)),
-				new Setter(specializedSetter, GenerateSetPropertyValueMethod(specializedSetter))
+				GenerateGetPropertyValueMethod(specializedGetter),
+				GenerateSetPropertyValueMethod(specializedSetter)
 			);
 
 			createInstanceMethod = CreateCreateInstanceMethod(mappedType);
@@ -162,7 +162,7 @@ namespace NHibernate.Bytecode.Lightweight
 		private static readonly MethodInfo GetterCallbackInvoke = ReflectHelper.GetMethod<GetterCallback>(
 			g => g.Invoke(null, 0));
 
-		private Func<object, object> GenerateGetPropertyValueMethod(IGetter getter)
+		private GetPropertyValueInvoker GenerateGetPropertyValueMethod(IGetter getter)
 		{
 			if (!(getter is IOptimizableGetter optimizableGetter))
 			{
@@ -179,10 +179,10 @@ namespace NHibernate.Bytecode.Lightweight
 			EmitUtil.EmitBoxIfNeeded(il, getter.ReturnType);
 			il.Emit(OpCodes.Ret);
 
-			return (Func<object, object>) method.CreateDelegate(typeof(Func<object, object>));
+			return (GetPropertyValueInvoker) method.CreateDelegate(typeof(GetPropertyValueInvoker));
 		}
 
-		private Action<object, object> GenerateSetPropertyValueMethod(ISetter setter)
+		private SetPropertyValueInvoker GenerateSetPropertyValueMethod(ISetter setter)
 		{
 			if (!(setter is IOptimizableSetter optimizableSetter))
 			{
@@ -199,7 +199,7 @@ namespace NHibernate.Bytecode.Lightweight
 			optimizableSetter.Emit(il);
 			il.Emit(OpCodes.Ret);
 
-			return (Action<object, object>) method.CreateDelegate(typeof(Action<object, object>));
+			return (SetPropertyValueInvoker) method.CreateDelegate(typeof(SetPropertyValueInvoker));
 		}
 
 		/// <summary>
