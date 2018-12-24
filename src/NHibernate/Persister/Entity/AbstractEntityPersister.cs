@@ -3167,10 +3167,7 @@ namespace NHibernate.Persister.Entity
 			if (entry == null && !IsMutable)
 				throw new InvalidOperationException("Updating immutable entity that is not in session yet!");
 
-			if ((entityMetamodel.IsDynamicUpdate && dirtyFields != null) ||
-				// When having a dirty lazy property and the entity is not yet initialized we have to use a dynamic update for it even if
-				// it is disabled in order to have it updated.
-				(GetUninitializedLazyProperties(obj).Count > 0 && dirtyFields?.Count(o => PropertyLaziness[o]) > 0))
+			if (dirtyFields != null && (entityMetamodel.IsDynamicUpdate || HasDirtyLazyProperties(dirtyFields, obj)))
 			{
 				// For the case of dynamic-update="true", we need to generate the UPDATE SQL
 				propsToUpdate = GetPropertiesToUpdate(dirtyFields, hasDirtyCollection);
@@ -3217,6 +3214,13 @@ namespace NHibernate.Persister.Entity
 					UpdateOrInsert(id, fields, oldFields, j == 0 ? rowId : null, propsToUpdate, j, oldVersion, obj, updateStrings[j], session);
 				}
 			}
+		}
+
+		private bool HasDirtyLazyProperties(int[] dirtyFields, object obj)
+		{
+			// When having a dirty lazy property and the entity is not yet initialized we have to use a dynamic update for
+			// it even if it is disabled in order to have it updated.
+			return GetUninitializedLazyProperties(obj).Count > 0 && dirtyFields.Any(i => PropertyLaziness[i]);
 		}
 
 		public object Insert(object[] fields, object obj, ISessionImplementor session)
