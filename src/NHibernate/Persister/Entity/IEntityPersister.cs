@@ -624,12 +624,12 @@ namespace NHibernate.Persister.Entity
 			return 1;
 		}
 
-		//6.0 TODO: Merge into IEntityPersister
+		//6.0 TODO: Remove and replace usages with InstrumentationMetadata.GetUninitializedLazyProperties instead
 		internal static ISet<string> GetUninitializedLazyProperties(this IEntityPersister persister, object entity)
 		{
 			if (persister is AbstractEntityPersister abstractEntityPersister)
 			{
-				return abstractEntityPersister.GetUninitializedLazyProperties(entity);
+				return abstractEntityPersister.InstrumentationMetadata.GetUninitializedLazyProperties(entity);
 			}
 
 			if (!persister.HasUninitializedLazyProperties(entity))
@@ -653,12 +653,12 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Get uninitialized lazy properties from entity state
 		/// </summary>
-		//6.0 TODO: Merge into IEntityPersister
-		public static ISet<string> GetUninitializedLazyProperties(this IEntityPersister persister, object[] state)
+		//6.0 TODO: Remove and replace usages with InstrumentationMetadata.GetUninitializedLazyProperties instead
+		internal static ISet<string> GetUninitializedLazyProperties(this IEntityPersister persister, object[] state)
 		{
 			if (persister is AbstractEntityPersister abstractEntityPersister)
 			{
-				return abstractEntityPersister.GetUninitializedLazyProperties(state);
+				return abstractEntityPersister.InstrumentationMetadata.GetUninitializedLazyProperties(state);
 			}
 
 			if (!persister.HasLazyProperties)
@@ -676,6 +676,43 @@ namespace NHibernate.Persister.Entity
 			}
 
 			return result;
+		}
+
+		//6.0 TODO: Remove and replace usages with InstrumentationMetadata.InjectInterceptor instead
+		internal static IFieldInterceptor InjectFieldInterceptor(
+			this IEntityPersister persister,
+			object entity,
+			ISet<string> uninitializedFieldNames,
+			ISet<string> unwrapProxyFieldNames,
+			ISessionImplementor session)
+		{
+			if (persister is AbstractEntityPersister abstractEntityPersister)
+			{
+				return abstractEntityPersister.InstrumentationMetadata.InjectInterceptor(entity, uninitializedFieldNames?.Count > 0, session);
+			}
+
+#pragma warning disable CS0618
+			return FieldInterceptionHelper.InjectFieldInterceptor(
+				entity,
+				persister.EntityName,
+				persister.MappedClass,
+				uninitializedFieldNames,
+				unwrapProxyFieldNames,
+				session);
+#pragma warning restore CS0618
+		}
+
+		//6.0 TODO: Remove and replace usages with InstrumentationMetadata.ExtractInterceptor instead
+		internal static IFieldInterceptor ExtractFieldInterceptor(this IEntityPersister persister, object entity)
+		{
+			if (persister is AbstractEntityPersister abstractEntityPersister)
+			{
+				return abstractEntityPersister.InstrumentationMetadata.ExtractInterceptor(entity);
+			}
+
+#pragma warning disable CS0618
+			return FieldInterceptionHelper.ExtractFieldInterceptor(entity);
+#pragma warning restore CS0618
 		}
 	}
 }

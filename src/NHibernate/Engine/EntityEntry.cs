@@ -233,7 +233,11 @@ namespace NHibernate.Engine
 				version = nextVersion;
 				Persister.SetPropertyValue(entity, Persister.VersionProperty, nextVersion);
 			}
-			FieldInterceptionHelper.ClearDirty(entity);
+
+			if (Persister.IsInstrumented)
+			{
+				persister.ExtractFieldInterceptor(entity)?.ClearDirty();
+			}
 		}
 
 		/// <summary>
@@ -265,7 +269,7 @@ namespace NHibernate.Engine
 			return
 				IsModifiableEntity()
 				&& (Persister.HasMutableProperties || !FieldInterceptionHelper.IsInstrumented(entity)
-				|| FieldInterceptionHelper.ExtractFieldInterceptor(entity).IsDirty);
+				|| Persister.ExtractFieldInterceptor(entity).IsDirty);
 		}
 		
 		/// <summary>
