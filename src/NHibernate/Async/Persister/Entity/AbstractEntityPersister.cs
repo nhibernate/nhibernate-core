@@ -876,8 +876,8 @@ namespace NHibernate.Persister.Entity
 			// in the process of being deleted.
 			if (entry == null && !IsMutable)
 				throw new InvalidOperationException("Updating immutable entity that is not in session yet!");
-			
-			if (entityMetamodel.IsDynamicUpdate && dirtyFields != null)
+
+			if (dirtyFields != null && (entityMetamodel.IsDynamicUpdate || HasDirtyLazyProperties(dirtyFields, obj)))
 			{
 				// For the case of dynamic-update="true", we need to generate the UPDATE SQL
 				propsToUpdate = GetPropertiesToUpdate(dirtyFields, hasDirtyCollection);

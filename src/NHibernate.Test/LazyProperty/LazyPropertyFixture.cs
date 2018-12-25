@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Linq;
+using NHibernate.Cfg;
 using NHibernate.Intercept;
 using NHibernate.Tuple.Entity;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 namespace NHibernate.Test.LazyProperty
 {
@@ -31,6 +33,11 @@ namespace NHibernate.Test.LazyProperty
 			}
 		}
 
+		protected override void Configure(Configuration configuration)
+		{
+			configuration.SetProperty(Environment.GenerateStatistics, "true");
+		}
+
 		protected override void OnSetUp()
 		{
 			Assert.That(
@@ -46,6 +53,7 @@ namespace NHibernate.Test.LazyProperty
 					Name = "some name",
 					Id = 1,
 					ALotOfText = "a lot of text ...",
+					Image = new byte[10],
 					FieldInterceptor = "Why not that name?"
 				});
 				tx.Commit();
@@ -114,6 +122,94 @@ namespace NHibernate.Test.LazyProperty
 				Assert.That(book.ALotOfText, Is.EqualTo("a lot of text ..."));
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.True);
 			}
+		}
+
+		[Test]
+		public void CanSetValueForLazyProperty()
+		{
+			Book book;
+			using (ISession s = OpenSession())
+			{
+				book = s.Get<Book>(1);
+			}
+
+			book.ALotOfText = "text";
+
+			Assert.That(book.ALotOfText, Is.EqualTo("text"));
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.True);
+		}
+
+		[TestCase(false)]
+		[TestCase(true)]
+		public void CanUpdateValueForLazyProperty(bool initializeAfterSet)
+		{
+			Book book;
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				book = s.Get<Book>(1);
+				book.ALotOfText = "update-text";
+				if (initializeAfterSet)
+				{
+					var image = book.Image;
+				}
+
+				tx.Commit();
+			}
+
+			using (var s = OpenSession())
+			{
+				book = s.Get<Book>(1);
+				var text = book.ALotOfText;
+			}
+
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.True);
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Image"), Is.True);
+			Assert.That(book.ALotOfText, Is.EqualTo("update-text"));
+			Assert.That(book.Image, Has.Length.EqualTo(10));
+		}
+
+		[TestCase(false)]
+		[TestCase(true)]
+		public void UpdateValueForLazyPropertyToSameValue(bool initializeAfterSet)
+		{
+			Book book;
+			string text;
+
+			using (var s = OpenSession())
+			{
+				book = s.Get<Book>(1);
+				text = book.ALotOfText;
+			}
+
+			Sfi.Statistics.Clear();
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				book = s.Get<Book>(1);
+				book.ALotOfText = text;
+				if (initializeAfterSet)
+				{
+					var image = book.Image;
+				}
+
+				tx.Commit();
+			}
+
+			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(initializeAfterSet ? 0 : 1));
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.True);
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Image"), initializeAfterSet ? (Constraint) Is.True : Is.False);
+			Assert.That(book.ALotOfText, Is.EqualTo(text));
+
+			using (var s = OpenSession())
+			{
+				book = s.Get<Book>(1);
+				text = book.ALotOfText;
+			}
+
+			Assert.That(book.Image, Has.Length.EqualTo(10));
+			Assert.That(book.ALotOfText, Is.EqualTo(text));
 		}
 
 		[Test]
