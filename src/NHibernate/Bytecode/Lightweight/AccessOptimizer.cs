@@ -62,32 +62,22 @@ namespace NHibernate.Bytecode.Lightweight
 
 		public void SetPropertyValue(object target, int i, object value)
 		{
-			SetPropertyValue(target, value, _setters[i]);
+			_setters[i](target, value);
 		}
 
 		public object GetPropertyValue(object target, int i)
 		{
-			return GetPropertyValue(target, _getters[i]);
+			return _getters[i](target);
 		}
 
 		internal void SetSpecializedPropertyValue(object target, object value)
 		{
-			SetPropertyValue(target, value, _specializedSetter);
+			_specializedSetter(target, value);
 		}
 
 		internal object GetSpecializedPropertyValue(object target)
 		{
-			return GetPropertyValue(target, _specializedGetter);
-		}
-
-		private static object GetPropertyValue(object target, GetPropertyValueInvoker getter)
-		{
-			return getter(target);
-		}
-
-		private static void SetPropertyValue(object target, object value, SetPropertyValueInvoker setter)
-		{
-			setter(target, value);
+			return _specializedGetter(target);
 		}
 	}
 }

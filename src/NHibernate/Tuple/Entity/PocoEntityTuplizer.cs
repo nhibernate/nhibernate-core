@@ -30,6 +30,7 @@ namespace NHibernate.Tuple.Entity
 		[NonSerialized]
 		private IReflectionOptimizer optimizer;
 		private readonly IProxyValidator proxyValidator;
+		[NonSerialized]
 		private bool isBytecodeProviderImpl; // 6.0 TODO: remove
 
 		[OnDeserialized]

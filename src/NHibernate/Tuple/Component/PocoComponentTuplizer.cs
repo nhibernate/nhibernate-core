@@ -19,6 +19,7 @@ namespace NHibernate.Tuple.Component
 		private readonly IGetter parentGetter;
 		[NonSerialized]
 		private IReflectionOptimizer optimizer;
+		[NonSerialized]
 		private bool isBytecodeProviderImpl; // 6.0 TODO: remove
 
 
