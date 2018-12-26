@@ -366,11 +366,11 @@ namespace NHibernate.Engine
 		public void AfterAction(IPersistentCollection collection, ISessionImplementor session)
 		{
 			loadedKey = CurrentKey;
-			if (loadedKey is DelayedPostInsertIdentifier && CurrentPersister != null)
-			{
-				// Resolve the actual key
-				loadedKey = CurrentPersister.CollectionType.GetKeyOfOwner(collection.Owner, session);
-			}
+//			if (loadedKey is DelayedPostInsertIdentifier && CurrentPersister != null)
+//			{
+//				// Resolve the actual key
+//				loadedKey = CurrentPersister.CollectionType.GetKeyOfOwner(collection.Owner, session);
+//			}
 
 			SetLoadedPersister(CurrentPersister);
 

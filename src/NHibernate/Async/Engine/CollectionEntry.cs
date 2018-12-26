@@ -75,11 +75,11 @@ namespace NHibernate.Engine
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			loadedKey = CurrentKey;
-			if (loadedKey is DelayedPostInsertIdentifier && CurrentPersister != null)
-			{
-				// Resolve the actual key
-				loadedKey = await (CurrentPersister.CollectionType.GetKeyOfOwnerAsync(collection.Owner, session, cancellationToken)).ConfigureAwait(false);
-			}
+//			if (loadedKey is DelayedPostInsertIdentifier && CurrentPersister != null)
+//			{
+//				// Resolve the actual key
+//				loadedKey = await (CurrentPersister.CollectionType.GetKeyOfOwnerAsync(collection.Owner, session, cancellationToken)).ConfigureAwait(false);
+//			}
 
 			SetLoadedPersister(CurrentPersister);
 
