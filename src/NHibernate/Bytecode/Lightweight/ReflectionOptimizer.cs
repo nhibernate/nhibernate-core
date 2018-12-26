@@ -73,8 +73,13 @@ namespace NHibernate.Bytecode.Lightweight
 				setInvoker,
 				getMethods,
 				setMethods,
-				GenerateGetPropertyValueMethod(specializedGetter),
-				GenerateSetPropertyValueMethod(specializedSetter)
+				// 6.0 TODO: Remove ternary ifs once the obsolete constructor is removed
+				specializedGetter != null
+					? GenerateGetPropertyValueMethod(specializedGetter) ?? specializedGetter.Get
+					: null,
+				specializedSetter != null
+					? GenerateSetPropertyValueMethod(specializedSetter) ?? specializedSetter.Set
+					: null
 			);
 
 			createInstanceMethod = CreateCreateInstanceMethod(mappedType);
