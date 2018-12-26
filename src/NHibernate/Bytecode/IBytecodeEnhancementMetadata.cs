@@ -32,7 +32,7 @@ namespace NHibernate.Bytecode
 		LazyPropertiesMetadata LazyPropertiesMetadata { get; }
 
 		/// <summary>
-		/// Has the information about all properties mapped as proxy="no-proxy"
+		/// Has the information about all properties mapped as lazy="no-proxy"
 		/// </summary>
 		UnwrapProxyPropertiesMetadata UnwrapProxyPropertiesMetadata { get; }
 

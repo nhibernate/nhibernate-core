@@ -7,7 +7,7 @@ using NHibernate.Util;
 namespace NHibernate.Bytecode
 {
 	/// <summary>
-	/// Information about all properties mapped as proxy="no-proxy" for an entity
+	/// Information about all properties mapped as lazy="no-proxy" for an entity
 	/// </summary>
 	public class UnwrapProxyPropertiesMetadata
 	{
@@ -53,7 +53,7 @@ namespace NHibernate.Bytecode
 			if (!_unwrapProxyPropertyDescriptors.TryGetValue(propertyName, out var descriptor))
 			{
 				throw new InvalidOperationException(
-					$"Property {propertyName} is not mapped as proxy=\"no-proxy\" on entity {EntityName}");
+					$"Property {propertyName} is not mapped as lazy=\"no-proxy\" on entity {EntityName}");
 			}
 
 			return descriptor.PropertyIndex;

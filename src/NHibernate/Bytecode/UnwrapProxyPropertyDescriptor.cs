@@ -8,7 +8,7 @@ using NHibernate.Type;
 namespace NHibernate.Bytecode
 {
 	/// <summary>
-	/// Descriptor for a property which is mapped as proxy="no-proxy"
+	/// Descriptor for a property which is mapped as lazy="no-proxy"
 	/// </summary>
 	public class UnwrapProxyPropertyDescriptor
 	{
