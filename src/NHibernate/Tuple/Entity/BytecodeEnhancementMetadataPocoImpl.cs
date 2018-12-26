@@ -18,10 +18,10 @@ namespace NHibernate.Tuple.Entity
 		public static IBytecodeEnhancementMetadata From(
 			PersistentClass persistentClass,
 			ICollection<LazyPropertyDescriptor> lazyPropertyDescriptors,
-			ISet<string> unwrapProxyPropertyNames)
+			ICollection<UnwrapProxyPropertyDescriptor> unwrapProxyPropertyDescriptors)
 		{
 			var mappedClass = persistentClass.MappedClass;
-			var enhancedForLazyLoading = lazyPropertyDescriptors?.Count > 0 || unwrapProxyPropertyNames?.Count > 0;
+			var enhancedForLazyLoading = lazyPropertyDescriptors?.Count > 0 || unwrapProxyPropertyDescriptors?.Count > 0;
 
 			// We have to check all subclasses if any of them is enhanced for lazy loading as the
 			// root class will be enhanced when any of the subclasses is enhanced, even if it
@@ -40,15 +40,20 @@ namespace NHibernate.Tuple.Entity
 				}
 			}
 
-			var lazyAttributesMetadata = enhancedForLazyLoading
-				? LazyPropertiesMetadata.From(persistentClass.EntityName, lazyPropertyDescriptors, unwrapProxyPropertyNames)
+			var lazyPropertiesMetadata = enhancedForLazyLoading
+				? LazyPropertiesMetadata.From(persistentClass.EntityName, lazyPropertyDescriptors)
 				: LazyPropertiesMetadata.NonEnhanced(persistentClass.EntityName);
+
+			var unwrapProxyPropertiesMetadata = enhancedForLazyLoading
+				? UnwrapProxyPropertiesMetadata.From(persistentClass.EntityName, unwrapProxyPropertyDescriptors)
+				: UnwrapProxyPropertiesMetadata.NonEnhanced(persistentClass.EntityName);
 
 			return new BytecodeEnhancementMetadataPocoImpl(
 				persistentClass.EntityName,
 				mappedClass,
 				enhancedForLazyLoading,
-				lazyAttributesMetadata
+				lazyPropertiesMetadata,
+				unwrapProxyPropertiesMetadata
 			);
 		}
 
@@ -92,12 +97,14 @@ namespace NHibernate.Tuple.Entity
 			string entityName,
 			System.Type entityType,
 			bool enhancedForLazyLoading,
-			LazyPropertiesMetadata lazyPropertiesMetadata)
+			LazyPropertiesMetadata lazyPropertiesMetadata,
+			UnwrapProxyPropertiesMetadata unwrapProxyPropertiesMetadata)
 		{
 			EntityName = entityName;
 			_entityType = entityType;
 			EnhancedForLazyLoading = enhancedForLazyLoading;
 			LazyPropertiesMetadata = lazyPropertiesMetadata;
+			UnwrapProxyPropertiesMetadata = unwrapProxyPropertiesMetadata;
 		}
 
 		/// <inheritdoc />
@@ -108,6 +115,9 @@ namespace NHibernate.Tuple.Entity
 
 		/// <inheritdoc />
 		public LazyPropertiesMetadata LazyPropertiesMetadata { get; }
+
+		/// <inheritdoc />
+		public UnwrapProxyPropertiesMetadata UnwrapProxyPropertiesMetadata { get; }
 
 		/// <inheritdoc />
 		public IFieldInterceptor InjectInterceptor(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
@@ -133,7 +143,7 @@ namespace NHibernate.Tuple.Entity
 				LazyPropertiesMetadata.HasLazyProperties && lazyPropertiesAreUnfetched
 					? new HashSet<string>(LazyPropertiesMetadata.LazyPropertyNames)
 					: null,
-				LazyPropertiesMetadata.UnwrapProxyPropertyNames,
+				UnwrapProxyPropertiesMetadata.UnwrapProxyPropertyNames,
 				EntityName,
 				_entityType);
 			fieldInterceptorAccessor.FieldInterceptor = fieldInterceptorImpl;

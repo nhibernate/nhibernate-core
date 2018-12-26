@@ -104,7 +104,7 @@ namespace NHibernate.Tuple.Entity
 			properties = new StandardProperty[propertySpan];
 			List<int> naturalIdNumbers = new List<int>();
 			var lazyPropertyDescriptors = new List<LazyPropertyDescriptor>();
-			var unwrapProxyPropertyNames = new HashSet<string>();
+			var unwrapProxyPropertyDescriptors = new List<UnwrapProxyPropertyDescriptor>();
 
 			propertyNames = new string[propertySpan];
 			propertyTypes = new IType[propertySpan];
@@ -189,7 +189,7 @@ namespace NHibernate.Tuple.Entity
 				if (isUnwrapProxy)
 				{
 					hasUnwrapProxyForProperties = true;
-					unwrapProxyPropertyNames.Add(prop.Name);
+					unwrapProxyPropertyDescriptors.Add(UnwrapProxyPropertyDescriptor.From(prop, i));
 				}
 
 				propertyLaziness[i] = islazyProperty;
@@ -323,7 +323,7 @@ namespace NHibernate.Tuple.Entity
 			if (persistentClass.HasPocoRepresentation)
 			{
 				BytecodeEnhancementMetadata = BytecodeEnhancementMetadataPocoImpl
-					.From(persistentClass, lazyPropertyDescriptors, unwrapProxyPropertyNames);
+					.From(persistentClass, lazyPropertyDescriptors, unwrapProxyPropertyDescriptors);
 			}
 			else
 			{

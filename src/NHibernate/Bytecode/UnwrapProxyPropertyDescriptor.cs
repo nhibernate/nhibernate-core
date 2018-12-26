@@ -8,40 +8,27 @@ using NHibernate.Type;
 namespace NHibernate.Bytecode
 {
 	/// <summary>
-	/// Descriptor for a property which is enabled for bytecode lazy fetching
-	///
-	/// Author: Steve Ebersole
+	/// Descriptor for a property which is mapped as proxy="no-proxy"
 	/// </summary>
-	public class LazyPropertyDescriptor
+	public class UnwrapProxyPropertyDescriptor
 	{
-		public static LazyPropertyDescriptor From(
+		public static UnwrapProxyPropertyDescriptor From(
 			Mapping.Property property,
-			int propertyIndex,
-			int lazyIndex)
+			int propertyIndex)
 		{
-			// TODO: port lazy fetch groups
-
-			return new LazyPropertyDescriptor(
+			return new UnwrapProxyPropertyDescriptor(
 				propertyIndex,
-				lazyIndex,
 				property.Name,
 				property.Type
 			);
 		}
 
-		private LazyPropertyDescriptor(
+		private UnwrapProxyPropertyDescriptor(
 			int propertyIndex,
-			int lazyIndex,
 			string name,
 			IType type)
 		{
-			if (propertyIndex < lazyIndex)
-			{
-				throw new InvalidOperationException("Property index is lower than the lazy index.");
-			}
-
 			PropertyIndex = propertyIndex;
-			LazyIndex = lazyIndex;
 			Name = name;
 			Type = type;
 		}
@@ -50,11 +37,6 @@ namespace NHibernate.Bytecode
 		/// Access to the index of the property in terms of its position in the entity persister
 		/// </summary>
 		public int PropertyIndex { get; }
-
-		/// <summary>
-		/// Access to the index of the property in terms of its position within the lazy properties of the persister
-		/// </summary>
-		public int LazyIndex { get; }
 
 		/// <summary>
 		/// Access to the name of the property

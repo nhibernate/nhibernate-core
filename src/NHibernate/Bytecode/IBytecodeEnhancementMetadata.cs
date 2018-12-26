@@ -26,7 +26,15 @@ namespace NHibernate.Bytecode
 		/// </summary>
 		bool EnhancedForLazyLoading { get; }
 
+		/// <summary>
+		/// Has the information about all lazy properties
+		/// </summary>
 		LazyPropertiesMetadata LazyPropertiesMetadata { get; }
+
+		/// <summary>
+		/// Has the information about all properties mapped as proxy="no-proxy"
+		/// </summary>
+		UnwrapProxyPropertiesMetadata UnwrapProxyPropertiesMetadata { get; }
 
 		/// <summary>
 		/// Build and inject an interceptor instance into the enhanced entity.

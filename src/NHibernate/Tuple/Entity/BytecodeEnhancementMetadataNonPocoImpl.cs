@@ -21,7 +21,8 @@ namespace NHibernate.Tuple.Entity
 		{
 			EntityName = entityName;
 			LazyPropertiesMetadata = LazyPropertiesMetadata.NonEnhanced(entityName);
-			_errorMessage= $"Entity [{entityName}] is non-poco, and therefore not instrumented";
+			UnwrapProxyPropertiesMetadata = UnwrapProxyPropertiesMetadata.NonEnhanced(entityName);
+			_errorMessage = $"Entity [{entityName}] is non-poco, and therefore not instrumented";
 		}
 
 		/// <inheritdoc />
@@ -32,6 +33,9 @@ namespace NHibernate.Tuple.Entity
 
 		/// <inheritdoc />
 		public LazyPropertiesMetadata LazyPropertiesMetadata { get; }
+
+		/// <inheritdoc />
+		public UnwrapProxyPropertiesMetadata UnwrapProxyPropertiesMetadata { get; }
 
 		/// <inheritdoc />
 		public IFieldInterceptor InjectInterceptor(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
