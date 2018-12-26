@@ -74,6 +74,7 @@ namespace NHibernate.Engine
 		public async Task AfterActionAsync(IPersistentCollection collection, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			await Task.Yield();
 			loadedKey = CurrentKey;
 //			if (loadedKey is DelayedPostInsertIdentifier && CurrentPersister != null)
 //			{
