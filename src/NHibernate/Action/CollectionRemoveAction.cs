@@ -75,7 +75,7 @@ namespace NHibernate.Action
 			if (collection != null)
 			{
 				var entry = Session.PersistenceContext.GetCollectionEntry(collection);
-				entry.CurrentKey = GetKey();
+				//entry.CurrentKey = GetKey();
 				entry.AfterAction(collection);
 			}
 
