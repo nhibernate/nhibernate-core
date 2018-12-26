@@ -231,9 +231,7 @@ namespace NHibernate.Tuple.Entity
 		{
 			if (IsInstrumented && (EntityMetamodel.HasLazyProperties || EntityMetamodel.HasUnwrapProxyForProperties))
 			{
-				HashSet<string> lazyProps = lazyPropertiesAreUnfetched && EntityMetamodel.HasLazyProperties ? lazyPropertyNames : null;
-				//TODO: if we support multiple fetch groups, we would need
-				//      to clone the set of lazy properties!
+				HashSet<string> lazyProps = lazyPropertiesAreUnfetched && EntityMetamodel.HasLazyProperties ? new HashSet<string>(lazyPropertyNames) : null;
 				FieldInterceptionHelper.InjectFieldInterceptor(entity, EntityName, this.MappedClass ,lazyProps, unwrapProxyPropertyNames, session);
 			}
 		}
@@ -278,6 +276,22 @@ namespace NHibernate.Tuple.Entity
 			{
 				return false;
 			}
+		}
+
+		internal override ISet<string> GetUninitializedLazyProperties(object entity)
+		{
+			if (!EntityMetamodel.HasLazyProperties)
+			{
+				return CollectionHelper.EmptySet<string>();
+			}
+
+			var interceptor = FieldInterceptionHelper.ExtractFieldInterceptor(entity);
+			if (interceptor == null)
+			{
+				return CollectionHelper.EmptySet<string>();
+			}
+
+			return interceptor.GetUninitializedFields() ?? lazyPropertyNames;
 		}
 
 		public override bool IsLifecycleImplementor

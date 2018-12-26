@@ -8,6 +8,7 @@ using NHibernate.Mapping;
 using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Tuple.Entity
 {
@@ -242,6 +243,11 @@ namespace NHibernate.Tuple.Entity
 			return false;
 		}
 
+		internal virtual ISet<string> GetUninitializedLazyProperties(object entity)
+		{
+			return CollectionHelper.EmptySet<string>();
+		}
+
 		#endregion
 
 		#region ITuplizer Members
@@ -250,14 +256,14 @@ namespace NHibernate.Tuple.Entity
 
 		public virtual object[] GetPropertyValues(object entity)
 		{
-			bool getAll = ShouldGetAllProperties(entity);
+			var uninitializedPropNames = GetUninitializedLazyProperties(entity);
 			int span = entityMetamodel.PropertySpan;
 			object[] result = new object[span];
 
 			for (int j = 0; j < span; j++)
 			{
 				StandardProperty property = entityMetamodel.Properties[j];
-				if (getAll || !property.IsLazy)
+				if (!uninitializedPropNames.Contains(property.Name) || !property.IsLazy)
 				{
 					result[j] = getters[j].Get(entity);
 				}
