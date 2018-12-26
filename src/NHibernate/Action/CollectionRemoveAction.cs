@@ -68,13 +68,15 @@ namespace NHibernate.Action
 
 			if (!emptySnapshot)
 			{
-				Persister.Remove(Key, Session);
+				Persister.Remove(GetKey(), Session);
 			}
 
 			IPersistentCollection collection = Collection;
 			if (collection != null)
 			{
-				Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection, Session);
+				var entry = Session.PersistenceContext.GetCollectionEntry(collection);
+				entry.CurrentKey = GetKey();
+				entry.AfterAction(collection);
 			}
 
 			Evict();

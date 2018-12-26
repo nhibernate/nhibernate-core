@@ -50,23 +50,26 @@ namespace NHibernate.Action
 			get { return persister; }
 		}
 
-		protected internal object Key
+		//Since v5.3
+		[Obsolete("Please use GetKey() instead.")]
+		protected internal object Key => GetKey();
+
+		protected object GetKey()
 		{
-			get
+			if (key is DelayedPostInsertIdentifier)
 			{
-				var finalKey = key;
-				if (key is DelayedPostInsertIdentifier)
+				// need to look it up
+				var finalKey = persister.CollectionType.GetKeyOfOwner(collection.Owner, session);
+				if (finalKey == key)
 				{
-					// need to look it up
-					finalKey = persister.CollectionType.GetKeyOfOwner(collection.Owner, session);
-					if (finalKey == key)
-					{
-						// we may be screwed here since the collection action is about to execute
-						// and we do not know the final owner key value
-					}
+					// we may be screwed here since the collection action is about to execute
+					// and we do not know the final owner key value
 				}
+
 				return finalKey;
 			}
+
+			return key;
 		}
 
 		protected internal ISessionImplementor Session

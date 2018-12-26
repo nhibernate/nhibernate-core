@@ -30,9 +30,12 @@ namespace NHibernate.Action
 
 			PreRecreate();
 
-			Persister.Recreate(collection, Key, Session);
+			var key = GetKey();
+			Persister.Recreate(collection, key, Session);
 
-			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection, Session);
+			var entry = Session.PersistenceContext.GetCollectionEntry(collection);
+			entry.CurrentKey = key;
+			entry.AfterAction(collection);
 
 			Evict();
 

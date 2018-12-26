@@ -41,9 +41,12 @@ namespace NHibernate.Action
 
 			await (PreRecreateAsync(cancellationToken)).ConfigureAwait(false);
 
-			await (Persister.RecreateAsync(collection, Key, Session, cancellationToken)).ConfigureAwait(false);
+			var key = await (GetKeyAsync(cancellationToken)).ConfigureAwait(false);
+			await (Persister.RecreateAsync(collection, key, Session, cancellationToken)).ConfigureAwait(false);
 
-			await (Session.PersistenceContext.GetCollectionEntry(collection).AfterActionAsync(collection, Session, cancellationToken)).ConfigureAwait(false);
+			var entry = Session.PersistenceContext.GetCollectionEntry(collection);
+			entry.CurrentKey = key;
+			entry.AfterAction(collection);
 
 			await (EvictAsync(cancellationToken)).ConfigureAwait(false);
 

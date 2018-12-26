@@ -346,8 +346,6 @@ namespace NHibernate.Engine
 			collection.SetSnapshot(loadedKey, role, snapshot);
 		}
 
-		// Since v5.2
-		[Obsolete("Please use AfterAction overload taking a session instead")]
 		public void AfterAction(IPersistentCollection collection)
 		{
 			loadedKey = CurrentKey;
@@ -355,26 +353,6 @@ namespace NHibernate.Engine
 
 			bool resnapshot = collection.WasInitialized && (IsDoremove || IsDorecreate || IsDoupdate);
 			if (resnapshot)
-			{
-				//re-snapshot
-				snapshot = loadedPersister == null || !loadedPersister.IsMutable ? null : collection.GetSnapshot(loadedPersister);
-			}
-
-			collection.PostAction();
-		}
-
-		public void AfterAction(IPersistentCollection collection, ISessionImplementor session)
-		{
-			loadedKey = CurrentKey;
-//			if (loadedKey is DelayedPostInsertIdentifier && CurrentPersister != null)
-//			{
-//				// Resolve the actual key
-//				loadedKey = CurrentPersister.CollectionType.GetKeyOfOwner(collection.Owner, session);
-//			}
-
-			SetLoadedPersister(CurrentPersister);
-
-			if (collection.WasInitialized && (IsDoremove || IsDorecreate || IsDoupdate))
 			{
 				//re-snapshot
 				snapshot = loadedPersister == null || !loadedPersister.IsMutable ? null : collection.GetSnapshot(loadedPersister);
