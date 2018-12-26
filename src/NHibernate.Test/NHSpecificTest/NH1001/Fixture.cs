@@ -12,53 +12,63 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			cfg.SetProperty(Environment.GenerateStatistics, "true");
 		}
 
+		private int employeeId;
 
-		[Test]
-		[Ignore("To be fixed")]
-		public void Test()
+		protected override void OnSetUp()
 		{
-			int employeeId;
-			using (ISession sess = OpenSession())
-			using (ITransaction tx = sess.BeginTransaction())
+			using (ISession session = OpenSession())
+			using (ITransaction transaction = session.BeginTransaction())
 			{
-				Department dept = new Department();
-				dept.Id = 11;
-				dept.Name = "Animal Testing";
+				var dept = new Department
+				{
+					Id = 11,
+					Name = "Animal Testing"
+				};
 
-				sess.Save(dept);
+				session.Save(dept);
 
-				Employee emp = new Employee();
-				emp.Id = 1;
-				emp.FirstName = "John";
-				emp.LastName = "Doe";
-				emp.Department = dept;
+				var emp = new Employee
+				{
+					Id = 1,
+					FirstName = "John",
+					LastName = "Doe",
+					Department = dept
+				};
 
-				sess.Save(emp);
+				session.Save(emp);
 
-				tx.Commit();
+				transaction.Commit();
 
 				employeeId = emp.Id;
 			}
+		}
 
-			ExecuteStatement(string.Format("UPDATE EMPLOYEES SET DEPARTMENT_ID = 99999 WHERE EMPLOYEE_ID = {0}", employeeId));
-
-			IStatistics stat = Sfi.Statistics;
-			stat.Clear();
-			using (ISession sess = OpenSession())
-			using (ITransaction tx = sess.BeginTransaction())
-			{
-				sess.Get<Employee>(employeeId);
-
-				Assert.AreEqual(1, stat.PrepareStatementCount);
-				tx.Commit();
-			}
-
+		protected override void OnTearDown()
+		{
 			using (ISession sess = OpenSession())
 			using (ITransaction tx = sess.BeginTransaction())
 			{
 				sess.Delete("from Employee");
 				sess.Delete("from Department");
 				tx.Commit();
+			}
+		}
+
+		[Test]
+		public void Test()
+		{
+			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID = 99999 WHERE EMPLOYEE_ID = {employeeId}");
+
+			IStatistics statistics = Sfi.Statistics;
+			statistics.Clear();
+
+			using (ISession session = OpenSession())
+			using (ITransaction transaction = session.BeginTransaction())
+			{
+				session.Get<Employee>(employeeId);
+
+				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(1));
+				transaction.Commit();
 			}
 		}
 	}

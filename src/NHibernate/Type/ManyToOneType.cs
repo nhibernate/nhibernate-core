@@ -91,6 +91,12 @@ namespace NHibernate.Type
 			object id = GetIdentifierOrUniqueKeyType(session.Factory)
 				.NullSafeGet(rs, names, session, owner);
 			ScheduleBatchLoadIfNeeded(id, session);
+
+			if (!id.GetType().IsClass && IsAlwaysDirtyChecked)
+			{
+				return null;
+			}
+			
 			return id;
 		}
 
