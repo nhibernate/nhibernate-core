@@ -38,7 +38,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private IStatement _sqlAst;
 		private IDictionary<string, string> _tokenReplacements;
 		private HqlSqlGenerator _generator;
-		private List<FromElement> collectionFetches;
 
 		/// <summary>
 		/// Creates a new AST-based query translator.
@@ -281,25 +280,30 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
-		public bool ContainsCollectionFetches => CollectionFetches.Count > 0;
+		public bool ContainsCollectionFetches
+		{
+			get
+			{
+				ErrorIfDML();
+				IList<IASTNode> collectionFetches = ((QueryNode)_sqlAst).FromClause.GetCollectionFetches();
+				return collectionFetches != null && collectionFetches.Count > 0;
+			}
+		}
 
 		public ISet<ICollectionPersister> UncacheableCollectionPersisters
 		{
 			get
 			{
-				var result = new HashSet<ICollectionPersister>();
-				foreach (var fromElement in CollectionFetches)
-				{
-					if (fromElement.QueryableCollection.HasCache)
-					{
-						if (ContainsRestrictionOnTable(fromElement))
-						{
-							result.Add(fromElement.QueryableCollection);
-						}
-					}
-				}
+				ErrorIfDML();
+				var persisters =
+					ASTUtil.IterateChildrenOfType<FromReferenceNode>(
+						       ((QueryNode) _sqlAst).WhereClause,
+						       skipSearchInChildrenWhen: node => node.FromElement != null)
+					       .Select(rn => rn.FromElement)
+					       .Where(fr => fr?.IsFetch == true && fr.QueryableCollection?.HasCache == true)
+					       .Select(fr => fr.QueryableCollection);
 
-				return result;
+				return new HashSet<ICollectionPersister>(persisters);
 			}
 		}
 
@@ -442,28 +446,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if (_sqlAst.NeedsExecutor)
 			{
 				throw new QueryExecutionRequestException("Not supported for DML operations", _queryIdentifier);
-			}
-		}
-
-		private bool ContainsRestrictionOnTable(FromElement fromElement)
-		{
-			var whereClause = ((QueryNode) _sqlAst).WhereClause;
-			//Iterate over all nodes of type FromReferenceNode (but don't go inside FromReferenceNode with defined FromElement)
-			return ASTUtil.IterateChildrenOfType<FromReferenceNode>(whereClause, skipSearchInChildrenWhen: node => node.FromElement != null)
-				.Any(rn => rn.FromElement == fromElement);
-		}
-
-		private IList<FromElement> CollectionFetches
-		{
-			get
-			{
-				if (collectionFetches == null)
-				{
-					ErrorIfDML();
-					collectionFetches = ((QueryNode) _sqlAst).FromClause.GetCollectionFetches().Cast<FromElement>().ToList();
-				}
-
-				return collectionFetches;
 			}
 		}
 	}
