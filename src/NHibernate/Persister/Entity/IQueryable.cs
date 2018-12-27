@@ -1,3 +1,5 @@
+using System;
+
 namespace NHibernate.Persister.Entity
 {
 	public enum Declarer
@@ -5,6 +7,23 @@ namespace NHibernate.Persister.Entity
 		Class,
 		SubClass,
 		SuperClass
+	}
+
+	internal static class AbstractEntityPersisterExtensions
+	{
+		/// <summary>
+		/// Given a query alias and an identifying suffix, render the property select fragment.
+		/// </summary>
+		//6.0 TODO: Merge into IQueryable
+		public static string PropertySelectFragment(this IQueryable query, string alias, string suffix, string[] fetchProperties)
+		{
+			if (query is AbstractEntityPersister abstractEntityPersister)
+			{
+				return abstractEntityPersister.PropertySelectFragment(alias, suffix, fetchProperties);
+			}
+
+			throw new InvalidOperationException($"Unable to cast {query.GetType()} to {typeof(AbstractEntityPersister)}.");
+		}
 	}
 
 	/// <summary>

@@ -1304,8 +1304,62 @@ namespace NHibernate.Persister.Entity
 			return InitializeLazyPropertiesFromDatastore(fieldName, entity, session, id, entry, uninitializedLazyProperties);
 		}
 
-		private object InitializeLazyPropertiesFromDatastore(string fieldName, object entity, ISessionImplementor session, object id, EntityEntry entry,
-															ISet<string> uninitializedLazyProperties)
+		public void InitializeLazyProperties(
+			DbDataReader rs, object id, object entity, ILoadable rootPersister, string[][] suffixedPropertyColumns,
+			string[] uninitializedLazyProperties, bool allLazyProperties, ISessionImplementor session)
+		{
+			if (!HasLazyProperties)
+			{
+				throw new AssertionFailure("No lazy properties");
+			}
+
+			var entry = session.PersistenceContext.GetEntry(entity);
+			if (entry == null)
+			{
+				throw new HibernateException($"Entity is not associated with the session: {id}");
+			}
+
+			int[] indexes;
+			int[] lazyIndexes;
+			if (allLazyProperties)
+			{
+				lazyIndexes = indexes = lazyPropertyNumbers;
+			}
+			else
+			{
+				var metadata = InstrumentationMetadata.LazyPropertiesMetadata;
+				indexes = new int[uninitializedLazyProperties.Length];
+				lazyIndexes = new int[uninitializedLazyProperties.Length];
+				for (var i = 0; i < uninitializedLazyProperties.Length; i++)
+				{
+					var descriptor = metadata.GetLazyPropertyDescriptor(uninitializedLazyProperties[i]);
+					indexes[i] = descriptor.PropertyIndex;
+					lazyIndexes[i] = descriptor.LazyIndex;
+				}
+			}
+
+			var values = Hydrate(rs, id, entity, rootPersister, suffixedPropertyColumns, null, true, indexes, session);
+			for (var i = 0; i < lazyIndexes.Length; i++)
+			{
+				var value = values[i];
+				if (entry.Status == Status.Loading)
+				{
+					// Here loaded state contains hydrated values and is always not null even in ReadOnly mode.
+					// We don't need to set the property value here as it will be set in TwoPhaseLoad.InitializeEntity
+					entry.LoadedState[indexes[i]] = value;
+				}
+				else
+				{
+					var lazyIndex = lazyIndexes[i];
+					var propValue = lazyPropertyTypes[lazyIndex].Assemble(value, session, entity);
+					InitializeLazyProperty(entity, entry.LoadedState, lazyIndex, propValue, null);
+				}
+			}
+		}
+
+		private object InitializeLazyPropertiesFromDatastore(
+			string fieldName, object entity, ISessionImplementor session, object id, EntityEntry entry,
+			ISet<string> uninitializedLazyProperties)
 		{
 			if (!HasLazyProperties)
 				throw new AssertionFailure("no lazy properties");
@@ -1335,7 +1389,7 @@ namespace NHibernate.Persister.Entity
 					for (int j = 0; j < lazyPropertyNames.Length; j++)
 					{
 						object propValue = lazyPropertyTypes[j].NullSafeGet(rs, lazyPropertyColumnAliases[j], session, entity);
-						if (InitializeLazyProperty(fieldName, entity, session, snapshot, j, propValue, uninitializedLazyProperties))
+						if (InitializeLazyProperty(fieldName, entity, snapshot, j, propValue, uninitializedLazyProperties))
 						{
 							result = propValue;
 						}
@@ -1365,8 +1419,9 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		private object InitializeLazyPropertiesFromCache(string fieldName, object entity, ISessionImplementor session, EntityEntry entry, CacheEntry cacheEntry,
-														ISet<string> uninitializedLazyProperties)
+		private object InitializeLazyPropertiesFromCache(
+			string fieldName, object entity, ISessionImplementor session, EntityEntry entry, CacheEntry cacheEntry,
+			ISet<string> uninitializedLazyProperties)
 		{
 			log.Debug("initializing lazy properties from second-level cache");
 
@@ -1376,7 +1431,7 @@ namespace NHibernate.Persister.Entity
 			for (int j = 0; j < lazyPropertyNames.Length; j++)
 			{
 				object propValue = lazyPropertyTypes[j].Assemble(disassembledValues[lazyPropertyNumbers[j]], session, entity);
-				if (InitializeLazyProperty(fieldName, entity, session, snapshot, j, propValue, uninitializedLazyProperties))
+				if (InitializeLazyProperty(fieldName, entity, snapshot, j, propValue, uninitializedLazyProperties))
 				{
 					result = propValue;
 				}
@@ -1387,20 +1442,27 @@ namespace NHibernate.Persister.Entity
 			return result;
 		}
 
-		private bool InitializeLazyProperty(string fieldName, object entity, ISessionImplementor session, object[] snapshot, int j, object propValue,
-											ISet<string> uninitializedLazyProperties)
+		private bool InitializeLazyProperty(
+			string fieldName, object entity, object[] snapshot, int lazyIndex, object propValue,
+			ISet<string> uninitializedLazyProperties)
 		{
-			if (uninitializedLazyProperties.Contains(lazyPropertyNames[j]))
+			InitializeLazyProperty(entity, snapshot, lazyIndex, propValue, uninitializedLazyProperties);
+			return fieldName.Equals(lazyPropertyNames[lazyIndex]);
+		}
+
+		private void InitializeLazyProperty(
+			object entity, object[] snapshot, int lazyIndex, object propValue, ISet<string> uninitializedLazyProperties)
+		{
+			if (uninitializedLazyProperties == null || uninitializedLazyProperties.Contains(lazyPropertyNames[lazyIndex]))
 			{
-				SetPropertyValue(entity, lazyPropertyNumbers[j], propValue);
+				SetPropertyValue(entity, lazyPropertyNumbers[lazyIndex], propValue);
 			}
 
 			if (snapshot != null)
 			{
 				// object have been loaded with setReadOnly(true); HHH-2236
-				snapshot[lazyPropertyNumbers[j]] = lazyPropertyTypes[j].DeepCopy(propValue, factory);
+				snapshot[lazyPropertyNumbers[lazyIndex]] = lazyPropertyTypes[lazyIndex].DeepCopy(propValue, factory);
 			}
-			return fieldName.Equals(lazyPropertyNames[j]);
 		}
 
 		public string[] IdentifierAliases
@@ -1450,6 +1512,16 @@ namespace NHibernate.Persister.Entity
 
 		public string PropertySelectFragment(string name, string suffix, bool allProperties)
 		{
+			return PropertySelectFragment(name, suffix, null, allProperties);
+		}
+
+		public string PropertySelectFragment(string name, string suffix, string[] fetchProperties)
+		{
+			return PropertySelectFragment(name, suffix, fetchProperties, false);
+		}
+
+		private string PropertySelectFragment(string name, string suffix, string[] fetchProperties, bool allProperties)
+		{
 			SelectFragment select = new SelectFragment(Factory.Dialect)
 				.SetSuffix(suffix)
 				.SetUsedAliases(IdentifierAliases);
@@ -1457,10 +1529,35 @@ namespace NHibernate.Persister.Entity
 			int[] columnTableNumbers = SubclassColumnTableNumberClosure;
 			string[] columnAliases = SubclassColumnAliasClosure;
 			string[] columns = SubclassColumnClosure;
+			HashSet<string> fetchColumnsAndFormulas = null;
+			if (fetchProperties != null)
+			{
+				fetchColumnsAndFormulas = new HashSet<string>();
+				foreach (var fetchProperty in fetchProperties)
+				{
+					var index = GetSubclassPropertyIndex(fetchProperty);
+					if (index < 0)
+					{
+						throw new InvalidOperationException($"Property {fetchProperty} does not exist on entity {EntityName}");
+					}
+					
+					var columnNames = SubclassPropertyColumnNameClosure[index];
+					// Formulas will have all null values
+					if (columnNames.All(o => o == null))
+					{
+						columnNames = SubclassPropertyFormulaTemplateClosure[index];
+					}
+
+					foreach (var columnName in columnNames)
+					{
+						fetchColumnsAndFormulas.Add(columnName);
+					}
+				}
+			}
 
 			for (int i = 0; i < columns.Length; i++)
 			{
-				bool selectable = (allProperties || !subclassColumnLazyClosure[i]) &&
+				bool selectable = (allProperties || !subclassColumnLazyClosure[i] || fetchColumnsAndFormulas?.Contains(columns[i]) == true) &&
 					!IsSubclassTableSequentialSelect(columnTableNumbers[i]) &&
 					subclassColumnSelectableClosure[i];
 				if (selectable)
@@ -1475,7 +1572,7 @@ namespace NHibernate.Persister.Entity
 			string[] formulaAliases = SubclassFormulaAliasClosure;
 			for (int i = 0; i < formulaTemplates.Length; i++)
 			{
-				bool selectable = (allProperties || !subclassFormulaLazyClosure[i]) &&
+				bool selectable = (allProperties || !subclassFormulaLazyClosure[i] || fetchColumnsAndFormulas?.Contains(formulaTemplates[i]) == true) &&
 					!IsSubclassTableSequentialSelect(formulaTableNumbers[i]);
 				if (selectable)
 				{
@@ -2589,7 +2686,27 @@ namespace NHibernate.Persister.Entity
 		/// without resolving associations or collections
 		/// </summary>
 		public object[] Hydrate(DbDataReader rs, object id, object obj, ILoadable rootLoadable,
-			string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session)
+			string[][] suffixedPropertyColumns, ISet<string> fetchedLazyProperties, bool allProperties, ISessionImplementor session)
+		{
+			return Hydrate(rs, id, obj, rootLoadable, suffixedPropertyColumns, fetchedLazyProperties, allProperties, null, session);
+		}
+
+		/// <summary>
+		/// Unmarshall the fields of a persistent instance from a result set,
+		/// without resolving associations or collections
+		/// </summary>
+		public object[] Hydrate(DbDataReader rs, object id, object obj, ILoadable rootLoadable,
+		                        string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session)
+		{
+			return Hydrate(rs, id, obj, rootLoadable, suffixedPropertyColumns, null, allProperties, null, session);
+		}
+
+		/// <summary>
+		/// Unmarshall the fields of a persistent instance from a result set,
+		/// without resolving associations or collections
+		/// </summary>
+		private object[] Hydrate(DbDataReader rs, object id, object obj, ILoadable rootLoadable, string[][] suffixedPropertyColumns,
+								ISet<string> fetchedLazyProperties, bool allProperties, int[] indexes, ISessionImplementor session)
 		{
 			if (log.IsDebugEnabled())
 			{
@@ -2642,37 +2759,40 @@ namespace NHibernate.Persister.Entity
 					}
 				}
 
+				int i;
+				int length = indexes?.Length ?? PropertyTypes.Length;
 				string[] propNames = PropertyNames;
 				IType[] types = PropertyTypes;
-				object[] values = new object[types.Length];
+				object[] values = new object[length];
 				bool[] laziness = PropertyLaziness;
 				string[] propSubclassNames = SubclassPropertySubclassNameClosure;
 
-				for (int i = 0; i < types.Length; i++)
+				for (int j = 0; j < length; j++)
 				{
+					i = indexes?[j] ?? j;
 					if (!propertySelectable[i])
 					{
-						values[i] = BackrefPropertyAccessor.Unknown;
+						values[j] = BackrefPropertyAccessor.Unknown;
 					}
-					else if (allProperties || !laziness[i])
+					else if (allProperties || !laziness[i] || fetchedLazyProperties?.Contains(propNames[i]) == true)
 					{
 						//decide which ResultSet to get the property value from:
 						bool propertyIsDeferred = hasDeferred
 																			&& rootPersister.IsSubclassPropertyDeferred(propNames[i], propSubclassNames[i]);
 						if (propertyIsDeferred && sequentialSelectEmpty)
 						{
-							values[i] = null;
+							values[j] = null;
 						}
 						else
 						{
 							var propertyResultSet = propertyIsDeferred ? sequentialResultSet : rs;
 							string[] cols = propertyIsDeferred ? propertyColumnAliases[i] : suffixedPropertyColumns[i];
-							values[i] = types[i].Hydrate(propertyResultSet, cols, session, obj);
+							values[j] = types[i].Hydrate(propertyResultSet, cols, session, obj);
 						}
 					}
 					else
 					{
-						values[i] = LazyPropertyInitializer.UnfetchedProperty;
+						values[j] = LazyPropertyInitializer.UnfetchedProperty;
 					}
 				}
 

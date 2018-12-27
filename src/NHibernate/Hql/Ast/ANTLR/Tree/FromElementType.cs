@@ -199,13 +199,27 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <returns>the property select SQL fragment.</returns>
 		public string RenderPropertySelect(int size, int k, bool allProperties)
 		{
+			return RenderPropertySelect(size, k, null, allProperties);
+		}
+
+		public string RenderPropertySelect(int size, int k, string[] fetchLazyProperties)
+		{
+			return RenderPropertySelect(size, k, fetchLazyProperties, false);
+		}
+
+		private string RenderPropertySelect(int size, int k, string[] fetchLazyProperties, bool allProperties)
+		{
 			CheckInitialized();
 
 			var queryable = Queryable;
 			if (queryable == null)
 				return "";
 
-			string fragment = queryable.PropertySelectFragment(TableAlias, GetSuffix(size, k), allProperties);
+			// Use the old method when fetchProperties is null to prevert any breaking changes
+			// 6.0 TODO: simplify condition by removing the fetchProperties part
+			string fragment = fetchLazyProperties == null || allProperties
+				? queryable.PropertySelectFragment(TableAlias, GetSuffix(size, k), allProperties)
+				: queryable.PropertySelectFragment(TableAlias, GetSuffix(size, k), fetchLazyProperties);
 
 			return TrimLeadingCommaAndSpaces(fragment);
 		}

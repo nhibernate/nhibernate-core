@@ -493,6 +493,11 @@ namespace NHibernate.Hql.Ast
 			return new HqlLeftFetchJoin(_factory, expression, @alias);
 		}
 
+		public HqlFetch Fetch()
+		{
+			return new HqlFetch(_factory);
+		}
+
 		public HqlClass Class()
 		{
 			return new HqlClass(_factory);

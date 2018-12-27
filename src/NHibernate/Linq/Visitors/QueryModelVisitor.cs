@@ -142,6 +142,7 @@ namespace NHibernate.Linq.Visitors
 			ResultOperatorMap.Add<CastResultOperator, ProcessCast>();
 			ResultOperatorMap.Add<AsQueryableResultOperator, ProcessAsQueryable>();
 			ResultOperatorMap.Add<LockResultOperator, ProcessLock>();
+			ResultOperatorMap.Add<FetchLazyPropertiesResultOperator, ProcessFetchLazyProperties>();
 		}
 
 		private QueryModelVisitor(VisitorParameters visitorParameters, bool root, QueryModel queryModel,
