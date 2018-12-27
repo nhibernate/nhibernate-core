@@ -189,7 +189,7 @@ namespace NHibernate.Tuple.Entity
 		/// <inheritdoc />
 		public ISet<string> GetUninitializedLazyProperties(object[] entityState)
 		{
-			if (LazyPropertiesMetadata.HasLazyProperties)
+			if (!LazyPropertiesMetadata.HasLazyProperties)
 			{
 				return CollectionHelper.EmptySet<string>();
 			}
