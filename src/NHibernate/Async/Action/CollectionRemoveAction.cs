@@ -43,7 +43,6 @@ namespace NHibernate.Action
 			if (collection != null)
 			{
 				var entry = Session.PersistenceContext.GetCollectionEntry(collection);
-				//entry.CurrentKey = await (GetKeyAsync(cancellationToken)).ConfigureAwait(false);
 				entry.AfterAction(collection);
 			}
 

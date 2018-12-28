@@ -79,7 +79,6 @@ namespace NHibernate.Action
 			}
 
 			var entry = Session.PersistenceContext.GetCollectionEntry(collection);
-			//entry.CurrentKey = id;
 			entry.AfterAction(collection);
 
 			await (EvictAsync(cancellationToken)).ConfigureAwait(false);

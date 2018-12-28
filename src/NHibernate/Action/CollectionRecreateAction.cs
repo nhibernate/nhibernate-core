@@ -34,6 +34,9 @@ namespace NHibernate.Action
 			Persister.Recreate(collection, key, Session);
 
 			var entry = Session.PersistenceContext.GetCollectionEntry(collection);
+			// On collection create, the current key may refer a delayed post insert instance instead
+			// of the actual identifier, that GetKey above should have resolved at that point. Update
+			// it.
 			entry.CurrentKey = key;
 			entry.AfterAction(collection);
 
