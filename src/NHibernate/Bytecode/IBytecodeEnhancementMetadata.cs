@@ -57,14 +57,14 @@ namespace NHibernate.Bytecode
 		/// Retrieve the uninitialized lazy properties from the enhanced entity.
 		/// </summary>
 		/// <param name="entity">The entity from which to retrieve the uninitialized lazy properties.</param>
-		/// <returns></returns>
+		/// <returns>The uninitialized property names.</returns>
 		ISet<string> GetUninitializedLazyProperties(object entity);
 
 		/// <summary>
 		/// Retrieve the uninitialized lazy properties from the entity state.
 		/// </summary>
 		/// <param name="entityState">The entity state from which to retrieve the uninitialized lazy properties.</param>
-		/// <returns></returns>
+		/// <returns>The uninitialized property names.</returns>
 		ISet<string> GetUninitializedLazyProperties(object[] entityState);
 	}
 }

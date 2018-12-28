@@ -46,6 +46,6 @@ namespace NHibernate.Bytecode
 		/// <summary>
 		/// Access to the property's type
 		/// </summary>
-		public IType Type { get; set; }
+		public IType Type { get; }
 	}
 }
