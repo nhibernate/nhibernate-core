@@ -92,10 +92,10 @@ namespace NHibernate.Type
 				.NullSafeGet(rs, names, session, owner);
 			ScheduleBatchLoadIfNeeded(id, session);
 
-			if (id != null && !id.GetType().IsClass && IsAlwaysDirtyChecked)
-			{
-				return null;
-			}
+//			if (id != null && !id.GetType().IsClass && IsNullable)
+//			{
+//				return null;
+//			}
 			
 			return id;
 		}
