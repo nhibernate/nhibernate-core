@@ -7,8 +7,24 @@
     <property name="Name"/>
     <set name="Children" cascade="persist,merge,save-update,delete-orphan">
       <key column="Parent" />
-      <one-to-many class="Entity"/>
+      <one-to-many class="ChildEntity"/>
     </set>
+  </class>
+
+  <class name="EntityWithoutDeleteOrphan">
+    <id name="Id" generator="identity"/>
+    <property name="Name"/>
+    <set name="Children" cascade="persist,merge,save-update">
+      <key column="ParentWdo" />
+      <one-to-many class="ChildEntity"/>
+    </set>
+  </class>
+
+  <class name="ChildEntity">
+    <!-- Do not use a persisted on save generator for children. Otherwise flush cascade may
+         trigger parent insertion as a side effect, which tends to hide troubles. -->
+    <id name="Id" generator="guid.comb"/>
+    <property name="Name"/>
   </class>
 
 </hibernate-mapping>

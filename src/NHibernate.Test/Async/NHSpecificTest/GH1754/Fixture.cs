@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using NHibernate.Linq;
@@ -18,6 +19,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
+		// Disable second level cache
+		protected override string CacheConcurrencyStrategy => null;
+
 		protected override void OnSetUp()
 		{
 			Sfi.Statistics.IsStatisticsEnabled = true;
@@ -29,13 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				// Firebird does not like deleting tables with auto-fk.
-				foreach (var e in session.Query<Entity>())
-				{
-					e.Children.Clear();
-				}
-				session.Flush();
-
+				session.CreateQuery("delete from ChildEntity").ExecuteUpdate();
 				session.CreateQuery("delete from System.Object").ExecuteUpdate();
 
 				transaction.Commit();
@@ -80,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 			using (var session = OpenSession())
 			{
 				var parent = new Entity { Name = "Parent" };
-				var child = new Entity { Name = "Child" };
+				var child = new ChildEntity { Name = "Child" };
 				using (var t = session.BeginTransaction())
 				{
 					await (session.PersistAsync(parent));
@@ -101,7 +99,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 			using (var session = OpenSession())
 			{
 				var parent = new Entity { Name = "Parent" };
-				var child = new Entity { Name = "Child" };
+				var child = new ChildEntity { Name = "Child" };
 				await (session.PersistAsync(parent));
 				await (session.FlushAsync());
 				parent.Children.Add(child);
@@ -126,7 +124,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 					await (t.CommitAsync());
 				}
 
-				var child = new Entity { Name = "Child" };
+				var child = new ChildEntity { Name = "Child" };
 				using (var t = session.BeginTransaction())
 				{
 					parent.Children.Add(child);
@@ -150,7 +148,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				await (session.PersistAsync(parent));
 				await (session.FlushAsync());
 
-				var child = new Entity { Name = "Child" };
+				var child = new ChildEntity { Name = "Child" };
 				parent.Children.Add(child);
 				await (session.MergeAsync(parent));
 				await (session.FlushAsync());
@@ -159,6 +157,306 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				// Merge should duplicate child and leave original instance un-associated with the session.
 				Assert.That(parent.Children, Does.Not.Contain(child));
 				Assert.That(parent.Children.Single().Id, Is.Not.EqualTo(0));
+			}
+		}
+
+		[Test]
+		public async Task CanChangeOwnershipOnFlushedParentsAsync()
+		{
+			var parent = new EntityWithoutDeleteOrphan { Name = "Parent" };
+			var nextParent = new EntityWithoutDeleteOrphan { Name = "NextParent" };
+			var child = new ChildEntity { Name = "Child" };
+			using (var session = OpenSession())
+			{
+				using (var t = session.BeginTransaction())
+				{
+					await (session.PersistAsync(parent));
+					await (session.PersistAsync(nextParent));
+					parent.Children.Add(child);
+					await (session.FlushAsync());
+					nextParent.Children = parent.Children;
+					parent.Children = new HashSet<ChildEntity>();
+					await (t.CommitAsync());
+				}
+
+				Assert.That(parent.Children, Has.Count.EqualTo(0));
+				Assert.That(nextParent.Children, Has.Count.EqualTo(1));
+				Assert.That(nextParent.Children, Does.Contain(child));
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0));
+			}
+
+			using (var session = OpenSession())
+			{
+				// Check after a reload
+				parent = await (session.LoadAsync<EntityWithoutDeleteOrphan>(parent.Id));
+				nextParent = await (session.LoadAsync<EntityWithoutDeleteOrphan>(nextParent.Id));
+				child = await (session.LoadAsync<ChildEntity>(child.Id));
+
+				Assert.That(parent.Children, Has.Count.EqualTo(0), "Reloaded data");
+				Assert.That(nextParent.Children, Has.Count.EqualTo(1), "Reloaded data");
+				Assert.That(nextParent.Children, Does.Contain(child), "Reloaded data");
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0), "Reloaded data");
+			}
+		}
+
+		[Test]
+		public async Task CanChangeOwnershipOnFlushedParentsWithoutTransactionAsync()
+		{
+			var parent = new EntityWithoutDeleteOrphan { Name = "Parent" };
+			var nextParent = new EntityWithoutDeleteOrphan { Name = "NextParent" };
+			var child = new ChildEntity { Name = "Child" };
+			using (var session = OpenSession())
+			{
+				await (session.PersistAsync(parent));
+				await (session.PersistAsync(nextParent));
+				parent.Children.Add(child);
+				await (session.FlushAsync());
+				nextParent.Children = parent.Children;
+				parent.Children = new HashSet<ChildEntity>();
+				await (session.FlushAsync());
+
+				Assert.That(parent.Children, Has.Count.EqualTo(0));
+				Assert.That(nextParent.Children, Has.Count.EqualTo(1));
+				Assert.That(nextParent.Children, Does.Contain(child));
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0));
+			}
+
+			using (var session = OpenSession())
+			{
+				// Check after a reload
+				parent = await (session.LoadAsync<EntityWithoutDeleteOrphan>(parent.Id));
+				nextParent = await (session.LoadAsync<EntityWithoutDeleteOrphan>(nextParent.Id));
+				child = await (session.LoadAsync<ChildEntity>(child.Id));
+
+				Assert.That(parent.Children, Has.Count.EqualTo(0), "Reloaded data");
+				Assert.That(nextParent.Children, Has.Count.EqualTo(1), "Reloaded data");
+				Assert.That(nextParent.Children, Does.Contain(child), "Reloaded data");
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0), "Reloaded data");
+			}
+		}
+
+		[Test]
+		public async Task CanChangeOwnershipFromFlushedParentToNonFlushedAsync()
+		{
+			var parent = new EntityWithoutDeleteOrphan { Name = "Parent" };
+			var nextParent = new EntityWithoutDeleteOrphan { Name = "NextParent" };
+			var child = new ChildEntity { Name = "Child" };
+			using (var session = OpenSession())
+			{
+				using (var t = session.BeginTransaction())
+				{
+					await (session.PersistAsync(parent));
+					parent.Children.Add(child);
+					await (session.FlushAsync());
+					await (session.PersistAsync(nextParent));
+					nextParent.Children = parent.Children;
+					parent.Children = new HashSet<ChildEntity>();
+					await (t.CommitAsync());
+				}
+
+				Assert.That(parent.Children, Has.Count.EqualTo(0));
+				Assert.That(nextParent.Children, Has.Count.EqualTo(1));
+				Assert.That(nextParent.Children, Does.Contain(child));
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0));
+			}
+
+			using (var session = OpenSession())
+			{
+				// Check after a reload
+				parent = await (session.LoadAsync<EntityWithoutDeleteOrphan>(parent.Id));
+				nextParent = await (session.LoadAsync<EntityWithoutDeleteOrphan>(nextParent.Id));
+				child = await (session.LoadAsync<ChildEntity>(child.Id));
+
+				Assert.That(parent.Children, Has.Count.EqualTo(0), "Reloaded data");
+				Assert.That(nextParent.Children, Has.Count.EqualTo(1), "Reloaded data");
+				Assert.That(nextParent.Children, Does.Contain(child), "Reloaded data");
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0), "Reloaded data");
+			}
+		}
+
+		[Test]
+		public async Task CanChangeOwnershipFromFlushedParentToNonFlushedWithoutTransactionAsync()
+		{
+			var parent = new EntityWithoutDeleteOrphan { Name = "Parent" };
+			var nextParent = new EntityWithoutDeleteOrphan { Name = "NextParent" };
+			var child = new ChildEntity { Name = "Child" };
+			using (var session = OpenSession())
+			{
+				await (session.PersistAsync(parent));
+				parent.Children.Add(child);
+				await (session.FlushAsync());
+				await (session.PersistAsync(nextParent));
+				nextParent.Children = parent.Children;
+				parent.Children = new HashSet<ChildEntity>();
+				await (session.FlushAsync());
+
+				Assert.That(parent.Children, Has.Count.EqualTo(0));
+				Assert.That(nextParent.Children, Has.Count.EqualTo(1));
+				Assert.That(nextParent.Children, Does.Contain(child));
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0));
+			}
+
+			using (var session = OpenSession())
+			{
+				// Check after a reload
+				parent = await (session.LoadAsync<EntityWithoutDeleteOrphan>(parent.Id));
+				nextParent = await (session.LoadAsync<EntityWithoutDeleteOrphan>(nextParent.Id));
+				child = await (session.LoadAsync<ChildEntity>(child.Id));
+
+				Assert.That(parent.Children, Has.Count.EqualTo(0), "Reloaded data");
+				Assert.That(nextParent.Children, Has.Count.EqualTo(1), "Reloaded data");
+				Assert.That(nextParent.Children, Does.Contain(child), "Reloaded data");
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0), "Reloaded data");
+			}
+		}
+
+		[Test]
+		public async Task CanChangeOwnershipFromNonFlushedParentToFlushedAsync()
+		{
+			var parent = new EntityWithoutDeleteOrphan { Name = "Parent" };
+			var nextParent = new EntityWithoutDeleteOrphan { Name = "NextParent" };
+			var child = new ChildEntity { Name = "Child" };
+			using (var session = OpenSession())
+			{
+				using (var t = session.BeginTransaction())
+				{
+					await (session.PersistAsync(nextParent));
+					await (session.FlushAsync());
+					await (session.PersistAsync(parent));
+					parent.Children.Add(child);
+					nextParent.Children = parent.Children;
+					parent.Children = new HashSet<ChildEntity>();
+					await (t.CommitAsync());
+				}
+
+				Assert.That(parent.Children, Has.Count.EqualTo(0));
+				Assert.That(nextParent.Children, Has.Count.EqualTo(1));
+				Assert.That(nextParent.Children, Does.Contain(child));
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0));
+			}
+
+			using (var session = OpenSession())
+			{
+				// Check after a reload
+				parent = await (session.LoadAsync<EntityWithoutDeleteOrphan>(parent.Id));
+				nextParent = await (session.LoadAsync<EntityWithoutDeleteOrphan>(nextParent.Id));
+				child = await (session.LoadAsync<ChildEntity>(child.Id));
+
+				Assert.That(parent.Children, Has.Count.EqualTo(0), "Reloaded data");
+				Assert.That(nextParent.Children, Has.Count.EqualTo(1), "Reloaded data");
+				Assert.That(nextParent.Children, Does.Contain(child), "Reloaded data");
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0), "Reloaded data");
+			}
+		}
+
+		[Test]
+		public async Task CanChangeOwnershipFromNonFlushedParentToFlushedWithoutTransactionAsync()
+		{
+			var parent = new EntityWithoutDeleteOrphan { Name = "Parent" };
+			var nextParent = new EntityWithoutDeleteOrphan { Name = "NextParent" };
+			var child = new ChildEntity { Name = "Child" };
+			using (var session = OpenSession())
+			{
+				await (session.PersistAsync(nextParent));
+				await (session.FlushAsync());
+				await (session.PersistAsync(parent));
+				parent.Children.Add(child);
+				nextParent.Children = parent.Children;
+				parent.Children = new HashSet<ChildEntity>();
+				await (session.FlushAsync());
+
+				Assert.That(parent.Children, Has.Count.EqualTo(0));
+				Assert.That(nextParent.Children, Has.Count.EqualTo(1));
+				Assert.That(nextParent.Children, Does.Contain(child));
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0));
+			}
+
+			using (var session = OpenSession())
+			{
+				// Check after a reload
+				parent = await (session.LoadAsync<EntityWithoutDeleteOrphan>(parent.Id));
+				nextParent = await (session.LoadAsync<EntityWithoutDeleteOrphan>(nextParent.Id));
+				child = await (session.LoadAsync<ChildEntity>(child.Id));
+
+				Assert.That(parent.Children, Has.Count.EqualTo(0), "Reloaded data");
+				Assert.That(nextParent.Children, Has.Count.EqualTo(1), "Reloaded data");
+				Assert.That(nextParent.Children, Does.Contain(child), "Reloaded data");
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0), "Reloaded data");
+			}
+		}
+
+		[Test]
+		public async Task CanChangeOwnershipOnNonFlushedParentsAsync()
+		{
+			// Seems moot but why not still checking this?
+			var parent = new EntityWithoutDeleteOrphan { Name = "Parent" };
+			var nextParent = new EntityWithoutDeleteOrphan { Name = "NextParent" };
+			var child = new ChildEntity { Name = "Child" };
+			using (var session = OpenSession())
+			{
+				using (var t = session.BeginTransaction())
+				{
+					await (session.PersistAsync(parent));
+					parent.Children.Add(child);
+					await (session.PersistAsync(nextParent));
+					nextParent.Children = parent.Children;
+					parent.Children = new HashSet<ChildEntity>();
+					await (t.CommitAsync());
+				}
+
+				Assert.That(parent.Children, Has.Count.EqualTo(0));
+				Assert.That(nextParent.Children, Has.Count.EqualTo(1));
+				Assert.That(nextParent.Children, Does.Contain(child));
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0));
+			}
+
+			using (var session = OpenSession())
+			{
+				// Check after a reload
+				parent = await (session.LoadAsync<EntityWithoutDeleteOrphan>(parent.Id));
+				nextParent = await (session.LoadAsync<EntityWithoutDeleteOrphan>(nextParent.Id));
+				child = await (session.LoadAsync<ChildEntity>(child.Id));
+
+				Assert.That(parent.Children, Has.Count.EqualTo(0), "Reloaded data");
+				Assert.That(nextParent.Children, Has.Count.EqualTo(1), "Reloaded data");
+				Assert.That(nextParent.Children, Does.Contain(child), "Reloaded data");
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0), "Reloaded data");
+			}
+		}
+
+		[Test]
+		public async Task CanChangeOwnershipOnNonFlushedParentsWithoutTransactionAsync()
+		{
+			// Seems moot but why not still checking this?
+			var parent = new EntityWithoutDeleteOrphan { Name = "Parent" };
+			var nextParent = new EntityWithoutDeleteOrphan { Name = "NextParent" };
+			var child = new ChildEntity { Name = "Child" };
+			using (var session = OpenSession())
+			{
+				await (session.PersistAsync(parent));
+				parent.Children.Add(child);
+				await (session.PersistAsync(nextParent));
+				nextParent.Children = parent.Children;
+				parent.Children = new HashSet<ChildEntity>();
+				await (session.FlushAsync());
+
+				Assert.That(parent.Children, Has.Count.EqualTo(0));
+				Assert.That(nextParent.Children, Has.Count.EqualTo(1));
+				Assert.That(nextParent.Children, Does.Contain(child));
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0));
+			}
+
+			using (var session = OpenSession())
+			{
+				// Check after a reload
+				parent = await (session.LoadAsync<EntityWithoutDeleteOrphan>(parent.Id));
+				nextParent = await (session.LoadAsync<EntityWithoutDeleteOrphan>(nextParent.Id));
+				child = await (session.LoadAsync<ChildEntity>(child.Id));
+
+				Assert.That(parent.Children, Has.Count.EqualTo(0), "Reloaded data");
+				Assert.That(nextParent.Children, Has.Count.EqualTo(1), "Reloaded data");
+				Assert.That(nextParent.Children, Does.Contain(child), "Reloaded data");
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0), "Reloaded data");
 			}
 		}
 	}
