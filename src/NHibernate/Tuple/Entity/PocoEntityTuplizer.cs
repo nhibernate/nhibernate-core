@@ -28,6 +28,7 @@ namespace NHibernate.Tuple.Entity
 		[NonSerialized]
 		private IReflectionOptimizer optimizer;
 		private readonly IProxyValidator proxyValidator;
+		private readonly IBytecodeEnhancementMetadata _enhancementMetadata;
 		[NonSerialized]
 		private bool isBytecodeProviderImpl; // 6.0 TODO: remove
 
@@ -60,6 +61,7 @@ namespace NHibernate.Tuple.Entity
 			proxyInterface = mappedEntity.ProxyInterface;
 			islifecycleImplementor = typeof(ILifecycle).IsAssignableFrom(mappedClass);
 			isValidatableImplementor = typeof(IValidatable).IsAssignableFrom(mappedClass);
+			_enhancementMetadata = EntityMetamodel.BytecodeEnhancementMetadata;
 
 			SetReflectionOptimizer();
 
@@ -75,7 +77,7 @@ namespace NHibernate.Tuple.Entity
 			get { return proxyInterface; }
 		}
 
-		public override bool IsInstrumented => EntityMetamodel.BytecodeEnhancementMetadata.EnhancedForLazyLoading;
+		public override bool IsInstrumented => _enhancementMetadata.EnhancedForLazyLoading;
 
 		public override System.Type MappedClass
 		{
@@ -215,12 +217,17 @@ namespace NHibernate.Tuple.Entity
 
 		public override void AfterInitialize(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
 		{
+			AfterInitialize(entity, session);
+		}
+
+		public override void AfterInitialize(object entity, ISessionImplementor session)
+		{
 			if (IsInstrumented)
 			{
-				var interceptor = EntityMetamodel.BytecodeEnhancementMetadata.ExtractInterceptor(entity);
+				var interceptor = _enhancementMetadata.ExtractInterceptor(entity);
 				if (interceptor == null)
 				{
-					interceptor = EntityMetamodel.BytecodeEnhancementMetadata.InjectInterceptor(entity, lazyPropertiesAreUnfetched, session);
+					interceptor = _enhancementMetadata.InjectInterceptor(entity, session);
 				}
 				else
 				{
@@ -274,8 +281,7 @@ namespace NHibernate.Tuple.Entity
 		{
 			if (EntityMetamodel.HasLazyProperties)
 			{
-				var callback = EntityMetamodel.BytecodeEnhancementMetadata.ExtractInterceptor(entity);
-				return callback != null && !callback.IsInitialized;
+				return _enhancementMetadata.HasAnyUninitializedLazyProperties(entity);
 			}
 			else
 			{
@@ -290,7 +296,7 @@ namespace NHibernate.Tuple.Entity
 				return CollectionHelper.EmptySet<string>();
 			}
 
-			return EntityMetamodel.BytecodeEnhancementMetadata.GetUninitializedLazyProperties(entity);
+			return _enhancementMetadata.GetUninitializedLazyProperties(entity);
 		}
 
 		public override bool IsLifecycleImplementor

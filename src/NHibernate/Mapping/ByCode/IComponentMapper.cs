@@ -1,6 +1,8 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Mapping.ByCode.Impl;
+using NHibernate.Mapping.ByCode.Impl.CustomizersImpl;
 
 namespace NHibernate.Mapping.ByCode
 {
@@ -31,4 +33,29 @@ namespace NHibernate.Mapping.ByCode
 
 	public interface IComponentMapper<TComponent> : IComponentAttributesMapper<TComponent>, IPropertyContainerMapper<TComponent>
 	{}
+
+	public static class ComponentAttributesMapper
+	{
+		// 6.0 TODO: Move to IComponentAttributesMapper
+		public static void LazyGroup(this IComponentAttributesMapper mapper, string name)
+		{
+			if (mapper is ComponentMapper component)
+			{
+				component.LazyGroup(name);
+			}
+		}
+
+		// 6.0 TODO: Move to IComponentAttributesMapper<TComponent>
+		public static void LazyGroup<TComponent>(this IComponentAttributesMapper<TComponent> mapper, string name)
+		{
+			if (mapper is ComponentCustomizer<TComponent> component)
+			{
+				component.LazyGroup(name);
+			}
+			else if (mapper is ComponentElementCustomizer<TComponent> componentElement)
+			{
+				componentElement.LazyGroup(name);
+			}
+		}
+	}
 }

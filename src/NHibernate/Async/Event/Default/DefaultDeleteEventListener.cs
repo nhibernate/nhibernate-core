@@ -93,7 +93,6 @@ namespace NHibernate.Event.Default
 					LockMode.None, 
 					true, 
 					persister, 
-					false, 
 					false);
 			}
 			else

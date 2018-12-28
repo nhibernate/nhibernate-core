@@ -265,11 +265,33 @@ namespace NHibernate.Type
 		/// <param name="anyUninitializedProperties">Does the entity currently hold any uninitialized property values?</param>
 		/// <param name="session">The session from which the dirty check request originated.</param>
 		/// <returns>Array containing indices of the dirty properties, or null if no properties considered dirty.</returns>
+		// Since 5.3
+		[Obsolete("Use overload without anyUninitializedProperties parameter instead")]
 		public static int[] FindDirty(StandardProperty[] properties,
 										object[] currentState,
 										object[] previousState,
 										bool[][] includeColumns,
 										bool anyUninitializedProperties,
+										ISessionImplementor session)
+		{
+			return FindDirty(properties, currentState, previousState, includeColumns, session);
+		}
+
+		/// <summary>
+		/// <para>Determine if any of the given field values are dirty, returning an array containing
+		/// indices of the dirty fields.</para>
+		/// <para>If it is determined that no fields are dirty, null is returned.</para>
+		/// </summary>
+		/// <param name="properties">The property definitions</param>
+		/// <param name="currentState">The current state of the entity</param>
+		/// <param name="previousState">The baseline state of the entity</param>
+		/// <param name="includeColumns">Columns to be included in the dirty checking, per property</param>
+		/// <param name="session">The session from which the dirty check request originated.</param>
+		/// <returns>Array containing indices of the dirty properties, or null if no properties considered dirty.</returns>
+		public static int[] FindDirty(StandardProperty[] properties,
+										object[] currentState,
+										object[] previousState,
+										bool[][] includeColumns,
 										ISessionImplementor session)
 		{
 			int[] results = null;
@@ -278,7 +300,7 @@ namespace NHibernate.Type
 
 			for (int i = 0; i < span; i++)
 			{
-				var dirty = Dirty(properties, currentState, previousState, includeColumns, anyUninitializedProperties, session, i);
+				var dirty = Dirty(properties, currentState, previousState, includeColumns, session, i);
 				if (dirty)
 				{
 					if (results == null)
@@ -300,13 +322,13 @@ namespace NHibernate.Type
 			}
 		}
 
-		private static bool Dirty(StandardProperty[] properties, object[] currentState, object[] previousState, bool[][] includeColumns, bool anyUninitializedProperties, ISessionImplementor session, int i)
+		private static bool Dirty(StandardProperty[] properties, object[] currentState, object[] previousState, bool[][] includeColumns, ISessionImplementor session, int i)
 		{
 			if (Equals(LazyPropertyInitializer.UnfetchedProperty, currentState[i]))
 				return false;
 			if (Equals(LazyPropertyInitializer.UnfetchedProperty, previousState[i]))
 				return true;
-			return properties[i].IsDirtyCheckable(anyUninitializedProperties) &&
+			return properties[i].IsDirtyCheckable() &&
 				   properties[i].Type.IsDirty(previousState[i], currentState[i], includeColumns[i], session);
 		}
 
@@ -322,11 +344,33 @@ namespace NHibernate.Type
 		/// <param name="anyUninitializedProperties">Does the entity currently hold any uninitialized property values?</param>
 		/// <param name="session">The session from which the dirty check request originated.</param>
 		/// <returns>Array containing indices of the modified properties, or null if no properties considered modified.</returns>
+		// Since 5.3
+		[Obsolete("Use the overload without anyUninitializedProperties parameter.")]
 		public static int[] FindModified(StandardProperty[] properties,
 											object[] currentState,
 											object[] previousState,
 											bool[][] includeColumns,
 											bool anyUninitializedProperties,
+											ISessionImplementor session)
+		{
+			return FindModified(properties, currentState, previousState, includeColumns, session);
+		}
+
+		/// <summary>
+		/// <para>Determine if any of the given field values are modified, returning an array containing
+		/// indices of the modified fields.</para>
+		/// <para>If it is determined that no fields are dirty, null is returned.</para>
+		/// </summary>
+		/// <param name="properties">The property definitions</param>
+		/// <param name="currentState">The current state of the entity</param>
+		/// <param name="previousState">The baseline state of the entity</param>
+		/// <param name="includeColumns">Columns to be included in the mod checking, per property</param>
+		/// <param name="session">The session from which the dirty check request originated.</param>
+		/// <returns>Array containing indices of the modified properties, or null if no properties considered modified.</returns>
+		public static int[] FindModified(StandardProperty[] properties,
+											object[] currentState,
+											object[] previousState,
+											bool[][] includeColumns,
 											ISessionImplementor session)
 		{
 			int[] results = null;
@@ -337,7 +381,7 @@ namespace NHibernate.Type
 			{
 				bool dirty =
 					!Equals(LazyPropertyInitializer.UnfetchedProperty, currentState[i]) &&
-					properties[i].IsDirtyCheckable(anyUninitializedProperties)
+					properties[i].IsDirtyCheckable()
 					&& properties[i].Type.IsModified(previousState[i], currentState[i], includeColumns[i], session);
 
 				if (dirty)

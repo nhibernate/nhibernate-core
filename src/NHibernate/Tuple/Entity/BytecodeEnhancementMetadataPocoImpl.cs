@@ -120,7 +120,7 @@ namespace NHibernate.Tuple.Entity
 		public UnwrapProxyPropertiesMetadata UnwrapProxyPropertiesMetadata { get; }
 
 		/// <inheritdoc />
-		public IFieldInterceptor InjectInterceptor(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
+		public IFieldInterceptor InjectInterceptor(object entity, ISessionImplementor session)
 		{
 			if (!EnhancedForLazyLoading)
 			{
@@ -140,7 +140,7 @@ namespace NHibernate.Tuple.Entity
 
 			var fieldInterceptorImpl = new DefaultFieldInterceptor(
 				session,
-				LazyPropertiesMetadata.HasLazyProperties && lazyPropertiesAreUnfetched
+				LazyPropertiesMetadata.HasLazyProperties
 					? new HashSet<string>(LazyPropertiesMetadata.LazyPropertyNames)
 					: null,
 				UnwrapProxyPropertiesMetadata.UnwrapProxyPropertyNames,
@@ -209,6 +209,13 @@ namespace NHibernate.Tuple.Entity
 			}
 
 			return uninitializedProperties;
+		}
+
+		/// <inheritdoc />
+		public bool HasAnyUninitializedLazyProperties(object entity)
+		{
+			var interceptor = LazyPropertiesMetadata.HasLazyProperties ? ExtractInterceptor(entity) : null;
+			return interceptor?.GetUninitializedFields().Count > 0;
 		}
 	}
 }

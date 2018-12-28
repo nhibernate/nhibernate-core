@@ -228,6 +228,10 @@ namespace NHibernate.Tuple.Entity
 		{
 		}
 
+		public virtual void AfterInitialize(object entity, ISessionImplementor session)
+		{
+		}
+
 		public bool HasProxy
 		{
 			get { return entityMetamodel.IsLazy; }
@@ -401,7 +405,12 @@ namespace NHibernate.Tuple.Entity
 
 		protected virtual bool ShouldGetAllProperties(object entity)
 		{
-			return !HasUninitializedLazyProperties(entity);
+			if (!EntityMetamodel.BytecodeEnhancementMetadata.EnhancedForLazyLoading)
+			{
+				return true;
+			}
+
+			return !EntityMetamodel.BytecodeEnhancementMetadata.HasAnyUninitializedLazyProperties(entity);
 		}
 
 		protected EntityMetamodel EntityMetamodel

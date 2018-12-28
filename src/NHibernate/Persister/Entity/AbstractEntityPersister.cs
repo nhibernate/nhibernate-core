@@ -211,7 +211,8 @@ namespace NHibernate.Persister.Entity
 
 		private SqlString sqlVersionSelectString;
 		private SqlString sqlSnapshotSelectString;
-		private SqlString sqlLazySelectString;
+		private SqlString sqlLazySelectString; // 6.0 TODO: Remove
+		private IDictionary<string, SqlString> _sqlLazySelectStringsByFetchGroup;
 
 		private SqlCommandInfo sqlIdentityInsertString;
 		private SqlCommandInfo sqlUpdateByRowIdString;
@@ -604,9 +605,15 @@ namespace NHibernate.Persister.Entity
 			get { return sqlSnapshotSelectString; }
 		}
 
+		[Obsolete("Use GetSQLLazySelectString method instead")]
 		protected SqlString SQLLazySelectString
 		{
 			get { return sqlLazySelectString; }
+		}
+
+		protected SqlString GetSQLLazySelectString(string fetchGroup)
+		{
+			return _sqlLazySelectStringsByFetchGroup.TryGetValue(fetchGroup, out var value) ? value : null;
 		}
 
 		/// <summary>
@@ -1246,6 +1253,8 @@ namespace NHibernate.Persister.Entity
 			get { return rowIdName != null; }
 		}
 
+		// Since 5.3
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		protected internal virtual SqlString GenerateLazySelectString()
 		{
 			if (!entityMetamodel.HasLazyProperties)
@@ -1292,6 +1301,60 @@ namespace NHibernate.Persister.Entity
 			return RenderSelect(tableNumbers.ToArray(), columnNumbers.ToArray(), formulaNumbers.ToArray());
 		}
 
+		protected virtual IDictionary<string, SqlString> GenerateLazySelectStringsByFetchGroup()
+		{
+			var enhancementMetadata = entityMetamodel.BytecodeEnhancementMetadata;
+			if (!enhancementMetadata.EnhancedForLazyLoading || !enhancementMetadata.LazyPropertiesMetadata.HasLazyProperties)
+			{
+				return CollectionHelper.EmptyDictionary<string, SqlString>();
+			}
+
+			var result = new Dictionary<string, SqlString>();
+			var lazyPropertiesMetadata = enhancementMetadata.LazyPropertiesMetadata;
+
+			foreach (var groupName in lazyPropertiesMetadata.FetchGroupNames)
+			{
+				var tableNumbers = new HashSet<int>();
+				var columnNumbers = new List<int>();
+				var formulaNumbers = new List<int>();
+
+				foreach (var lazyPropertyDescriptor in lazyPropertiesMetadata.GetFetchGroupPropertyDescriptors(groupName))
+				{
+					// all this only really needs to consider properties
+					// of this class, not its subclasses, but since we
+					// are reusing code used for sequential selects, we
+					// use the subclass closure
+					var propertyNumber = GetSubclassPropertyIndex(lazyPropertyDescriptor.Name);
+
+					var tableNumber = GetSubclassPropertyTableNumber(propertyNumber);
+					tableNumbers.Add(tableNumber);
+
+					var colNumbers = subclassPropertyColumnNumberClosure[propertyNumber];
+					columnNumbers.AddRange(colNumbers.Where(colNumber => colNumber != -1));
+
+					var formNumbers = subclassPropertyFormulaNumberClosure[propertyNumber];
+					formulaNumbers.AddRange(formNumbers.Where(colNumber => colNumber != -1));
+				}
+
+				if (columnNumbers.Count == 0 && formulaNumbers.Count == 0)
+				{
+					// only one-to-one is lazy fetched
+					continue;
+				}
+
+				result.Add(
+					groupName,
+					RenderSelect(
+						tableNumbers.ToArray(),
+						columnNumbers.ToArray(),
+						formulaNumbers.ToArray()
+					)
+				);
+			}
+
+			return result;
+		}
+
 		public virtual object InitializeLazyProperty(string fieldName, object entity, ISessionImplementor session)
 		{
 			object id = session.GetContextEntityIdentifier(entity);
@@ -1308,22 +1371,27 @@ namespace NHibernate.Persister.Entity
 			}
 
 			var uninitializedLazyProperties = InstrumentationMetadata.GetUninitializedLazyProperties(entity);
-			if (HasCache && session.CacheMode.HasFlag(CacheMode.Get))
+			if (HasCache && session.CacheMode.HasFlag(CacheMode.Get) && IsLazyPropertiesCacheable)
 			{
 				CacheKey cacheKey = session.GenerateCacheKey(id, IdentifierType, EntityName);
 				object ce = Cache.Get(cacheKey, session.Timestamp);
 				if (ce != null)
 				{
 					CacheEntry cacheEntry = (CacheEntry)CacheEntryStructure.Destructure(ce, factory);
-					if (!cacheEntry.AreLazyPropertiesUnfetched)
+					var initializedValue = InitializeLazyPropertiesFromCache(fieldName, entity, session, entry, cacheEntry, uninitializedLazyProperties);
+					if (initializedValue != LazyPropertyInitializer.UnfetchedProperty)
 					{
-						//note early exit here:
-						return InitializeLazyPropertiesFromCache(fieldName, entity, session, entry, cacheEntry, uninitializedLazyProperties);
+						// NOTE EARLY EXIT!!!
+						return initializedValue;
 					}
 				}
 			}
 
-			return InitializeLazyPropertiesFromDatastore(fieldName, entity, session, id, entry, uninitializedLazyProperties);
+			var result =  InitializeLazyPropertiesFromDatastore(fieldName, entity, session, id, entry, uninitializedLazyProperties);
+			// Update cache
+			Loader.Loader.UpdateCacheForEntity(entity, id, entry, this, session, null);
+
+			return result;
 		}
 
 		public void InitializeLazyProperties(
@@ -1388,6 +1456,11 @@ namespace NHibernate.Persister.Entity
 
 			log.Debug("initializing lazy properties from datastore");
 
+			var lazyPropertiesMetadata = EntityMetamodel.BytecodeEnhancementMetadata.LazyPropertiesMetadata;
+			var fetchGroup = lazyPropertiesMetadata.GetFetchGroupName(fieldName);
+			var fetchGroupPropertyDescriptors = lazyPropertiesMetadata.GetFetchGroupPropertyDescriptors(fetchGroup);
+			var lazySelect = GetSQLLazySelectString(fetchGroup);
+
 			using (session.BeginProcess())
 			try
 			{
@@ -1396,7 +1469,6 @@ namespace NHibernate.Persister.Entity
 				DbDataReader rs = null;
 				try
 				{
-					SqlString lazySelect = SQLLazySelectString;
 					if (lazySelect != null)
 					{
 						// null sql means that the only lazy properties
@@ -1408,12 +1480,32 @@ namespace NHibernate.Persister.Entity
 						rs.Read();
 					}
 					object[] snapshot = entry.LoadedState;
-					for (int j = 0; j < lazyPropertyNames.Length; j++)
+					foreach (var fetchGroupPropertyDescriptor in fetchGroupPropertyDescriptors)
 					{
-						object propValue = lazyPropertyTypes[j].NullSafeGet(rs, lazyPropertyColumnAliases[j], session, entity);
-						if (InitializeLazyProperty(fieldName, entity, snapshot, j, propValue, uninitializedLazyProperties))
+						// Iterate over all fetched properties even if they are already set
+						// as their state may not be populated yet. InitializeLazyProperty
+						// method will take care of not overriding their property values and
+						// will only update the states, if they have one.
+
+						var selectedValue = fetchGroupPropertyDescriptor.Type.NullSafeGet(
+							rs,
+							lazyPropertyColumnAliases[fetchGroupPropertyDescriptor.LazyIndex],
+							session,
+							entity
+						);
+
+						var set = InitializeLazyProperty(
+							fieldName,
+							entity,
+							snapshot,
+							fetchGroupPropertyDescriptor.LazyIndex,
+							selectedValue,
+							uninitializedLazyProperties
+						);
+
+						if (set)
 						{
-							result = propValue;
+							result = selectedValue;
 						}
 					}
 				}
@@ -1433,7 +1525,7 @@ namespace NHibernate.Persister.Entity
 											SqlException = sqle,
 											Message =
 												"could not initialize lazy properties: " + MessageHelper.InfoString(this, id, Factory),
-											Sql = SQLLazySelectString.ToString(),
+											Sql = lazySelect?.ToString(),
 											EntityName = EntityName,
 											EntityId = id
 										};
@@ -1452,10 +1544,22 @@ namespace NHibernate.Persister.Entity
 			object[] snapshot = entry.LoadedState;
 			for (int j = 0; j < lazyPropertyNames.Length; j++)
 			{
-				object propValue = lazyPropertyTypes[j].Assemble(disassembledValues[lazyPropertyNumbers[j]], session, entity);
-				if (InitializeLazyProperty(fieldName, entity, snapshot, j, propValue, uninitializedLazyProperties))
+				var cachedValue = disassembledValues[lazyPropertyNumbers[j]];
+				if (cachedValue == LazyPropertyInitializer.UnfetchedProperty)
 				{
-					result = propValue;
+					if (fieldName == lazyPropertyNames[j])
+					{
+						result = LazyPropertyInitializer.UnfetchedProperty;
+					}
+					// don't try to initialize the unfetched property
+				}
+				else
+				{
+					var propValue = lazyPropertyTypes[j].Assemble(cachedValue, session, entity);
+					if (InitializeLazyProperty(fieldName, entity, snapshot, j, propValue, uninitializedLazyProperties))
+					{
+						result = propValue;
+					}
 				}
 			}
 
@@ -3363,7 +3467,7 @@ namespace NHibernate.Persister.Entity
 		{
 			// When having a dirty lazy property and the entity is not yet initialized we have to use a dynamic update for
 			// it even if it is disabled in order to have it updated.
-			return InstrumentationMetadata.GetUninitializedLazyProperties(obj).Count > 0 && dirtyFields.Any(i => PropertyLaziness[i]);
+			return InstrumentationMetadata.HasAnyUninitializedLazyProperties(obj) && dirtyFields.Any(i => PropertyLaziness[i]);
 		}
 
 		public object Insert(object[] fields, object obj, ISessionImplementor session)
@@ -3509,9 +3613,9 @@ namespace NHibernate.Persister.Entity
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Static SQL for entity: {0}", EntityName);
-				if (sqlLazySelectString != null)
+				foreach (var pair in _sqlLazySelectStringsByFetchGroup)
 				{
-					log.Debug(" Lazy select: {0}", sqlLazySelectString);
+					log.Debug(" Lazy select ({0}): {1}", pair.Key, pair.Value);
 				}
 				if (sqlVersionSelectString != null)
 				{
@@ -3836,7 +3940,10 @@ namespace NHibernate.Persister.Entity
 
 			//select SQL
 			sqlSnapshotSelectString = GenerateSnapshotSelectString();
+#pragma warning disable 618
 			sqlLazySelectString = GenerateLazySelectString();
+#pragma warning restore 618
+			_sqlLazySelectStringsByFetchGroup = GenerateLazySelectStringsByFetchGroup();
 			sqlVersionSelectString = GenerateSelectVersionString();
 			if (HasInsertGeneratedProperties)
 			{
@@ -3985,7 +4092,7 @@ namespace NHibernate.Persister.Entity
 		public virtual int[] FindDirty(object[] currentState, object[] previousState, object entity, ISessionImplementor session)
 		{
 			int[] props = TypeHelper.FindDirty(
-				entityMetamodel.Properties, currentState, previousState, propertyColumnUpdateable, HasUninitializedLazyProperties(entity), session);
+				entityMetamodel.Properties, currentState, previousState, propertyColumnUpdateable, session);
 
 			if (props == null)
 			{
@@ -4001,7 +4108,7 @@ namespace NHibernate.Persister.Entity
 		public virtual int[] FindModified(object[] old, object[] current, object entity, ISessionImplementor session)
 		{
 			int[] props = TypeHelper.FindModified(
-				entityMetamodel.Properties, current, old, propertyColumnUpdateable, HasUninitializedLazyProperties(entity), session);
+				entityMetamodel.Properties, current, old, propertyColumnUpdateable, session);
 			if (props == null)
 			{
 				return null;
@@ -4080,7 +4187,7 @@ namespace NHibernate.Persister.Entity
 				}
 				else
 				{
-					var fieldInterceptor = InstrumentationMetadata.InjectInterceptor(entity, false, session);
+					var fieldInterceptor = InstrumentationMetadata.InjectInterceptor(entity, session);
 					fieldInterceptor?.MarkDirty();
 				}
 			}
@@ -4247,7 +4354,12 @@ namespace NHibernate.Persister.Entity
 
 		public void AfterInitialize(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
 		{
-			EntityTuplizer.AfterInitialize(entity, lazyPropertiesAreUnfetched, session);
+			EntityTuplizer.AfterInitialize(entity, session);
+		}
+
+		public void AfterInitialize(object entity, ISessionImplementor session)
+		{
+			EntityTuplizer.AfterInitialize(entity, session);
 		}
 
 		public virtual bool[] PropertyUpdateability
@@ -4335,7 +4447,7 @@ namespace NHibernate.Persister.Entity
 
 		public virtual bool HasUninitializedLazyProperties(object obj)
 		{
-			return EntityTuplizer.HasUninitializedLazyProperties(obj);
+			return EntityMetamodel.BytecodeEnhancementMetadata.HasAnyUninitializedLazyProperties(obj);
 		}
 
 		public virtual void ResetIdentifier(object entity, object currentId, object currentVersion)

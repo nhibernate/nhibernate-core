@@ -982,6 +982,10 @@ namespace NHibernate.Cfg.MappingSchema {
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool lazy;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("lazy-group")]
+        public string lazygroup;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -2234,6 +2238,10 @@ namespace NHibernate.Cfg.MappingSchema {
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool lazy;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("lazy-group")]
+        public string lazygroup;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute("optimistic-lock")]
