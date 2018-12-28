@@ -14,7 +14,6 @@ using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Exceptions;
-using NHibernate.Hql;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Param;
@@ -600,22 +599,22 @@ namespace NHibernate.Loader
 		}
 
 		internal void InitializeEntitiesAndCollections(
-			IList hydratedObjects, object resultSetId, ISessionImplementor session, bool readOnly,
+			IList hydratedObjects, DbDataReader reader, ISessionImplementor session, bool readOnly,
 			CacheBatcher cacheBatcher = null)
 		{
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
 			if (collectionPersisters != null)
 			{
-				for (int i = 0; i < collectionPersisters.Length; i++)
+				foreach (var collectionPersister in collectionPersisters)
 				{
-					if (collectionPersisters[i].IsArray)
+					if (collectionPersister.IsArray)
 					{
 						//for arrays, we should end the collection load before resolving
 						//the entities, since the actual array instances are not instantiated
 						//during loading
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						EndCollectionLoad(resultSetId, session, collectionPersisters[i]);
+						EndCollectionLoad(reader, session, collectionPersister);
 					}
 				}
 			}
@@ -658,28 +657,32 @@ namespace NHibernate.Loader
 
 			if (collectionPersisters != null)
 			{
-				for (int i = 0; i < collectionPersisters.Length; i++)
+				foreach (var collectionPersister in collectionPersisters)
 				{
-					if (!collectionPersisters[i].IsArray)
+					if (!collectionPersister.IsArray)
 					{
 						//for sets, we should end the collection load after resolving
 						//the entities, since we might call hashCode() on the elements
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						EndCollectionLoad(resultSetId, session, collectionPersisters[i]);
+						EndCollectionLoad(reader, session, collectionPersister);
 					}
 				}
 			}
 		}
 
-		private static void EndCollectionLoad(object resultSetId, ISessionImplementor session, ICollectionPersister collectionPersister)
+		private void EndCollectionLoad(DbDataReader reader, ISessionImplementor session, ICollectionPersister collectionPersister)
 		{
 			//this is a query and we are loading multiple instances of the same collection role
-			session.PersistenceContext.LoadContexts.GetCollectionLoadContext((DbDataReader)resultSetId).EndLoadingCollections(
-				collectionPersister);
+			session.PersistenceContext.LoadContexts.GetCollectionLoadContext(reader).EndLoadingCollections(
+				collectionPersister, !IsCollectionPersisterCacheable(collectionPersister));
 		}
 
-		
+		protected virtual bool IsCollectionPersisterCacheable(ICollectionPersister collectionPersister)
+		{
+			return true;
+		}
+
 		/// <summary>
 		/// Determine the actual ResultTransformer that will be used to transform query results.
 		/// </summary>
@@ -1875,75 +1878,7 @@ namespace NHibernate.Loader
 
 		protected SqlString ExpandDynamicFilterParameters(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, ISessionImplementor session)
 		{
-			var enabledFilters = session.EnabledFilters;
-			if (enabledFilters.Count == 0 || !ParserHelper.HasHqlVariable(sqlString))
-			{
-				return sqlString;
-			}
-
-			Dialect.Dialect dialect = session.Factory.Dialect;
-			string symbols = ParserHelper.HqlSeparators + dialect.OpenQuote + dialect.CloseQuote;
-
-			var result = new SqlStringBuilder();
-			foreach (var sqlPart in sqlString)
-			{
-				var parameter = sqlPart as Parameter;
-				if (parameter != null)
-				{
-					result.Add(parameter);
-					continue;
-				}
-
-				var sqlFragment = sqlPart.ToString();
-				var tokens = new StringTokenizer(sqlFragment, symbols, true);
-
-				foreach (string token in tokens)
-				{
-					if (ParserHelper.IsHqlVariable(token))
-					{
-						string filterParameterName = token.Substring(1);
-						string[] parts = StringHelper.ParseFilterParameterName(filterParameterName);
-						string filterName = parts[0];
-						string parameterName = parts[1];
-						var filter = (FilterImpl)enabledFilters[filterName];
-
-						int? collectionSpan = filter.GetParameterSpan(parameterName);
-						IType type = filter.FilterDefinition.GetParameterType(parameterName);
-						int parameterColumnSpan = type.GetColumnSpan(session.Factory);
-
-						// Add query chunk
-						string typeBindFragment = string.Join(", ", Enumerable.Repeat("?", parameterColumnSpan));
-						string bindFragment;
-						if (collectionSpan.HasValue && !type.ReturnedClass.IsArray)
-						{
-							bindFragment = string.Join(", ", Enumerable.Repeat(typeBindFragment, collectionSpan.Value));
-						}
-						else
-						{
-							bindFragment = typeBindFragment;
-						}
-
-						// dynamic-filter parameter tracking
-						var filterParameterFragment = SqlString.Parse(bindFragment);
-						var dynamicFilterParameterSpecification = new DynamicFilterParameterSpecification(filterName, parameterName, type, collectionSpan);
-						var parameters = filterParameterFragment.GetParameters().ToArray();
-						var sqlParameterPos = 0;
-						var paramTrackers = dynamicFilterParameterSpecification.GetIdsForBackTrack(session.Factory);
-						foreach (var paramTracker in paramTrackers)
-						{
-							parameters[sqlParameterPos++].BackTrack = paramTracker;
-						}
-
-						parameterSpecs.Add(dynamicFilterParameterSpecification);
-						result.Add(filterParameterFragment);
-					}
-					else
-					{
-						result.Add(token);
-					}
-				}
-			}
-			return result.ToSqlString();
+			return FilterHelper.ExpandDynamicFilterParameters(sqlString, parameterSpecs, session);
 		}
 
 		protected SqlString AddLimitsParametersIfNeeded(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, QueryParameters queryParameters, ISessionImplementor session)

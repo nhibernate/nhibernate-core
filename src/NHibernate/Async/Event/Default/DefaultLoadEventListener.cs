@@ -414,7 +414,7 @@ namespace NHibernate.Event.Default
 			}
 			ISessionFactoryImplementor factory = source.Factory;
 			var batchSize = persister.GetBatchSize();
-			if (batchSize > 1 && persister.Cache.IsBatchingGetSupported())
+			if (batchSize > 1 && persister.Cache.PreferMultipleGet())
 			{
 				// The first item in the array is the item that we want to load
 				var entityBatch =

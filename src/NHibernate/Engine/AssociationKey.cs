@@ -12,13 +12,11 @@ namespace NHibernate.Engine
 	{
 		private readonly EntityKey ownerKey;
 		private readonly string propertyName;
-		private readonly int hashCode;
 
 		public AssociationKey(EntityKey ownerKey, string propertyName)
 		{
 			this.ownerKey = ownerKey;
 			this.propertyName = propertyName;
-			hashCode = ownerKey.GetHashCode() ^ propertyName.GetHashCode() ^ ownerKey.EntityName.GetHashCode();
 		}
 
 		public override bool Equals(object that)
@@ -40,7 +38,7 @@ namespace NHibernate.Engine
 
 		public override int GetHashCode()
 		{
-			return hashCode;
+			return ownerKey.GetHashCode() ^ propertyName.GetHashCode() ^ ownerKey.EntityName.GetHashCode();
 		}
 	}
 }

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -20,7 +19,6 @@ using NHibernate.Mapping;
 using NHibernate.Metadata;
 using NHibernate.Properties;
 using NHibernate.SqlCommand;
-using NHibernate.Tuple;
 using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -40,7 +38,7 @@ namespace NHibernate.Persister.Entity
 	/// </remarks>
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
 		IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable,
-		ISupportSelectModeJoinable
+		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister
 	{
 		#region InclusionChecker
 
@@ -256,6 +254,9 @@ namespace NHibernate.Persister.Entity
 		private readonly Dictionary<string, string[]> subclassPropertyColumnNames = new Dictionary<string, string[]>();
 
 		protected readonly BasicEntityPropertyMapping propertyMapping;
+
+		// This must be a Lazy<T>, because instances of this class must be thread safe.
+		private readonly Lazy<string[]> defaultUniqueKeyPropertyNamesForSelectId;
 
 		protected AbstractEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
 																			ISessionFactoryImplementor factory)
@@ -513,6 +514,34 @@ namespace NHibernate.Persister.Entity
 
 			temporaryIdTableName = persistentClass.TemporaryIdTableName;
 			temporaryIdTableDDL = persistentClass.TemporaryIdTableDDL;
+
+			defaultUniqueKeyPropertyNamesForSelectId = new Lazy<string[]>(
+				() =>
+				{
+					var naturalIdPropertyIndices = NaturalIdentifierProperties;
+					if (naturalIdPropertyIndices == null)
+					{
+						throw new IdentifierGenerationException(
+							"no natural-id property defined; need to specify [key] in generator parameters");
+					}
+
+					foreach (var naturalIdPropertyIndex in naturalIdPropertyIndices)
+					{
+						var inclusion = PropertyInsertGenerationInclusions[naturalIdPropertyIndex];
+						if (inclusion != ValueInclusion.None)
+						{
+							throw new IdentifierGenerationException(
+								"natural-id also defined as insert-generated; need to specify [key] in generator parameters");
+						}
+					}
+
+					var uniqueKeyPropertyNames = new string[naturalIdPropertyIndices.Length];
+					for (var idx = 0; idx < naturalIdPropertyIndices.Length; idx++)
+					{
+						uniqueKeyPropertyNames[idx] = PropertyNames[naturalIdPropertyIndices[idx]];
+					}
+					return uniqueKeyPropertyNames;
+				});
 		}
 
 		protected abstract int[] SubclassColumnTableNumberClosure { get; }
@@ -654,6 +683,7 @@ namespace NHibernate.Persister.Entity
 			get { return versionColumnName; }
 		}
 
+		[Obsolete("Please use RootTableName instead.")]
 		protected internal string VersionedTableName
 		{
 			get { return GetTableName(0); }
@@ -1251,6 +1281,7 @@ namespace NHibernate.Persister.Entity
 					fieldName);
 			}
 
+			var uninitializedLazyProperties = GetUninitializedLazyProperties(entity);
 			if (HasCache && session.CacheMode.HasFlag(CacheMode.Get))
 			{
 				CacheKey cacheKey = session.GenerateCacheKey(id, IdentifierType, EntityName);
@@ -1261,15 +1292,16 @@ namespace NHibernate.Persister.Entity
 					if (!cacheEntry.AreLazyPropertiesUnfetched)
 					{
 						//note early exit here:
-						return InitializeLazyPropertiesFromCache(fieldName, entity, session, entry, cacheEntry);
+						return InitializeLazyPropertiesFromCache(fieldName, entity, session, entry, cacheEntry, uninitializedLazyProperties);
 					}
 				}
 			}
 
-			return InitializeLazyPropertiesFromDatastore(fieldName, entity, session, id, entry);
+			return InitializeLazyPropertiesFromDatastore(fieldName, entity, session, id, entry, uninitializedLazyProperties);
 		}
 
-		private object InitializeLazyPropertiesFromDatastore(string fieldName, object entity, ISessionImplementor session, object id, EntityEntry entry)
+		private object InitializeLazyPropertiesFromDatastore(string fieldName, object entity, ISessionImplementor session, object id, EntityEntry entry,
+															ISet<string> uninitializedLazyProperties)
 		{
 			if (!HasLazyProperties)
 				throw new AssertionFailure("no lazy properties");
@@ -1299,7 +1331,7 @@ namespace NHibernate.Persister.Entity
 					for (int j = 0; j < lazyPropertyNames.Length; j++)
 					{
 						object propValue = lazyPropertyTypes[j].NullSafeGet(rs, lazyPropertyColumnAliases[j], session, entity);
-						if (InitializeLazyProperty(fieldName, entity, session, snapshot, j, propValue))
+						if (InitializeLazyProperty(fieldName, entity, session, snapshot, j, propValue, uninitializedLazyProperties))
 						{
 							result = propValue;
 						}
@@ -1329,7 +1361,8 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		private object InitializeLazyPropertiesFromCache(string fieldName, object entity, ISessionImplementor session, EntityEntry entry, CacheEntry cacheEntry)
+		private object InitializeLazyPropertiesFromCache(string fieldName, object entity, ISessionImplementor session, EntityEntry entry, CacheEntry cacheEntry,
+														ISet<string> uninitializedLazyProperties)
 		{
 			log.Debug("initializing lazy properties from second-level cache");
 
@@ -1339,7 +1372,7 @@ namespace NHibernate.Persister.Entity
 			for (int j = 0; j < lazyPropertyNames.Length; j++)
 			{
 				object propValue = lazyPropertyTypes[j].Assemble(disassembledValues[lazyPropertyNumbers[j]], session, entity);
-				if (InitializeLazyProperty(fieldName, entity, session, snapshot, j, propValue))
+				if (InitializeLazyProperty(fieldName, entity, session, snapshot, j, propValue, uninitializedLazyProperties))
 				{
 					result = propValue;
 				}
@@ -1350,9 +1383,14 @@ namespace NHibernate.Persister.Entity
 			return result;
 		}
 
-		private bool InitializeLazyProperty(string fieldName, object entity, ISessionImplementor session, object[] snapshot, int j, object propValue)
+		private bool InitializeLazyProperty(string fieldName, object entity, ISessionImplementor session, object[] snapshot, int j, object propValue,
+											ISet<string> uninitializedLazyProperties)
 		{
-			SetPropertyValue(entity, lazyPropertyNumbers[j], propValue);
+			if (uninitializedLazyProperties.Contains(lazyPropertyNames[j]))
+			{
+				SetPropertyValue(entity, lazyPropertyNumbers[j], propValue);
+			}
+
 			if (snapshot != null)
 			{
 				// object have been loaded with setReadOnly(true); HHH-2236
@@ -1511,20 +1549,20 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		protected SqlString GenerateSelectVersionString()
 		{
-			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(Factory.Dialect, factory)
-				.SetTableName(VersionedTableName);
+			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(Factory.Dialect, Factory)
+				.SetTableName(RootTableName);
 
 			if (IsVersioned)
-				builder.AddColumn(versionColumnName);
+				builder.AddColumn(VersionColumnName);
 			else
-				builder.AddColumns(rootTableKeyColumnNames);
+				builder.AddColumns(RootTableIdentifierColumnNames);
 
 			if (Factory.Settings.IsCommentsEnabled)
 			{
 				builder.SetComment("get version " + EntityName);
 			}
 
-			return builder.AddWhereFragment(rootTableKeyColumnNames, IdentifierType, " = ").ToSqlString();
+			return builder.AddWhereFragment(RootTableIdentifierColumnNames, IdentifierType, " = ").ToSqlString();
 		}
 
 		protected SqlString GenerateInsertGeneratedValuesSelectString()
@@ -1693,13 +1731,13 @@ namespace NHibernate.Persister.Entity
 		private SqlCommandInfo GenerateVersionIncrementUpdateString()
 		{
 			SqlUpdateBuilder update = new SqlUpdateBuilder(Factory.Dialect, Factory);
-			update.SetTableName(GetTableName(0));
+			update.SetTableName(RootTableName);
 			if (Factory.Settings.IsCommentsEnabled)
 			{
 				update.SetComment("forced version increment");
 			}
 			update.AddColumn(VersionColumnName, VersionType);
-			update.SetIdentityColumn(IdentifierColumnNames, IdentifierType);
+			update.SetIdentityColumn(RootTableIdentifierColumnNames, IdentifierType);
 			update.SetVersionColumn(new string[] { VersionColumnName }, VersionType);
 			return update.ToSqlCommandInfo();
 		}
@@ -1904,7 +1942,7 @@ namespace NHibernate.Persister.Entity
 			{
 				if (cols[j] == null)
 				{
-					result[j] = StringHelper.Replace(templates[j], Template.Placeholder, alias);
+					result[j] = templates[j]?.Replace(Template.Placeholder, alias);
 				}
 				else
 				{
@@ -2111,7 +2149,9 @@ namespace NHibernate.Persister.Entity
 				if (propertyValue == null)
 					continue;
 				var type = PropertyTypes[i].GetSemiResolvedType(session.Factory);
-				propertyValue = type.SemiResolve(propertyValue, session, entity);
+
+				if (!type.ReturnedClass.IsInstanceOfType(propertyValue))
+					propertyValue = type.SemiResolve(propertyValue, session, entity);
 				var euk = new EntityUniqueKey(EntityName, PropertyNames[i], propertyValue, type, session.Factory);
 				session.PersistenceContext.AddEntity(euk, entity);
 			}
@@ -2165,7 +2205,7 @@ namespace NHibernate.Persister.Entity
 
 		protected string GetSQLWhereString(string alias)
 		{
-			return StringHelper.Replace(sqlWhereStringTemplate, Template.Placeholder, alias);
+			return sqlWhereStringTemplate?.Replace(Template.Placeholder, alias);
 		}
 
 		protected bool HasWhere
@@ -2279,7 +2319,17 @@ namespace NHibernate.Persister.Entity
 				if (includeProperty[i] && IsPropertyOfTable(i, j))
 				{
 					// this is a property of the table, which we are updating
-					updateBuilder.AddColumns(GetPropertyColumnNames(i), propertyColumnUpdateable[i], PropertyTypes[i]);
+					try
+					{
+						updateBuilder.AddColumns(GetPropertyColumnNames(i), propertyColumnUpdateable[i], PropertyTypes[i]);
+					}
+					catch (ArgumentException arex)
+					{
+						throw new MappingException(
+							$"Unable to build the update statement for class {entityMetamodel.Name}: " +
+							$"a failure occured when adding the property {PropertyNames[i]}",
+							arex);
+					}
 					hasColumns = hasColumns || GetPropertyColumnSpan(i) > 0;
 				}
 			}
@@ -2368,24 +2418,54 @@ namespace NHibernate.Persister.Entity
 				if (includeProperty[i] && IsPropertyOfTable(i, j))
 				{
 					// this property belongs on the table and is to be inserted
-					builder.AddColumns(GetPropertyColumnNames(i), propertyColumnInsertable[i], PropertyTypes[i]);
+					try
+					{
+						builder.AddColumns(GetPropertyColumnNames(i), propertyColumnInsertable[i], PropertyTypes[i]);
+					}
+					catch (ArgumentException arex)
+					{
+						throw new MappingException(
+							$"Unable to build the insert statement for class {entityMetamodel.Name}: " +
+							$"a failure occured when adding the property {PropertyNames[i]}",
+							arex);
+					}
 				}
 			}
 
 			// add the discriminator
 			if (j == 0)
 			{
-				AddDiscriminatorToInsert(builder);
+				try
+				{
+					AddDiscriminatorToInsert(builder);
+				}
+				catch (ArgumentException arex)
+				{
+					throw new MappingException(
+						$"Unable to build the insert statement for class {entityMetamodel.Name}: " +
+						"a failure occured when adding the discriminator",
+						arex);
+				}
 			}
 
 			// add the primary key
-			if (j == 0 && identityInsert)
+			try
 			{
-				builder.AddIdentityColumn(GetKeyColumns(0)[0]);
+				if (j == 0 && identityInsert)
+				{
+					builder.AddIdentityColumn(GetKeyColumns(0)[0]);
+				}
+				else
+				{
+					builder.AddColumns(GetKeyColumns(j), null, GetIdentifierType(j));
+				}
 			}
-			else
+			catch (ArgumentException arex)
 			{
-				builder.AddColumns(GetKeyColumns(j), null, GetIdentifierType(j));
+				throw new MappingException(
+					$"Unable to build the insert statement for class {entityMetamodel.Name}: " +
+					"a failure occured when adding the Id of the class",
+					arex);
 			}
 
 			if (Factory.Settings.IsCommentsEnabled)
@@ -2643,12 +2723,62 @@ namespace NHibernate.Persister.Entity
 			return identityDelegate.PerformInsert(sql, session, binder);
 		}
 
+		// Since 5.2
+		[Obsolete("Use GetSelectByUniqueKeyString(string[] suppliedPropertyNames, out IType[] parameterTypes) instead.")]
 		public virtual SqlString GetSelectByUniqueKeyString(string propertyName)
 		{
 			return new SqlSimpleSelectBuilder(Factory.Dialect, Factory)
-				.SetTableName(GetTableName(0))
-				.AddColumns(GetKeyColumns(0))
-				.AddWhereFragment(GetPropertyColumnNames(propertyName), GetPropertyType(propertyName), " = ").ToSqlString();
+			       .SetTableName(GetTableName(0))
+			       .AddColumns(GetKeyColumns(0))
+			       .AddWhereFragment(GetPropertyColumnNames(propertyName), GetPropertyType(propertyName), " = ").ToSqlString();
+		}
+
+		public virtual SqlString GetSelectByUniqueKeyString(string[] suppliedPropertyNames, out IType[] parameterTypes)
+		{
+			var propertyNames = GetUniqueKeyPropertyNames(suppliedPropertyNames);
+			parameterTypes = propertyNames.Select(GetPropertyType).ToArray();
+
+			// 6.0 TODO: remove the next if block
+			if (propertyNames.Length == 1)
+			{
+				// In case it is overriden, call the obsoleted method for avoiding a possible breaking change
+#pragma warning disable 618
+				return GetSelectByUniqueKeyString(propertyNames[0]);
+#pragma warning restore 618
+			}
+
+			var builder =
+				new SqlSimpleSelectBuilder(Factory.Dialect, Factory)
+					.SetTableName(GetTableName(0))
+					.AddColumns(GetKeyColumns(0));
+
+			foreach (var propertyName in propertyNames)
+			{
+				builder.AddWhereFragment(GetPropertyColumnNames(propertyName), GetPropertyType(propertyName), " = ");
+			}
+
+			return builder.ToSqlString();
+		}
+
+		public void BindSelectByUniqueKey(
+			ISessionImplementor session,
+			DbCommand selectCommand,
+			IBinder binder,
+			string[] suppliedPropertyNames)
+		{
+			var propertyNames = GetUniqueKeyPropertyNames(suppliedPropertyNames);
+			var parameterTypes = propertyNames.Select(GetPropertyType).ToArray();
+			var entity = binder.Entity;
+			for (var i = 0; i < propertyNames.Length; i++)
+			{
+				var uniqueKeyValue = GetPropertyValue(entity, propertyNames[i]);
+				parameterTypes[i].NullSafeSet(selectCommand, uniqueKeyValue, i, session);
+			}
+		}
+
+		private string[] GetUniqueKeyPropertyNames(string[] suppliedPropertyNames)
+		{
+			return suppliedPropertyNames ?? defaultUniqueKeyPropertyNamesForSelectId.Value;
 		}
 
 		/// <summary>
@@ -3036,8 +3166,8 @@ namespace NHibernate.Persister.Entity
 			// in the process of being deleted.
 			if (entry == null && !IsMutable)
 				throw new InvalidOperationException("Updating immutable entity that is not in session yet!");
-			
-			if (entityMetamodel.IsDynamicUpdate && dirtyFields != null)
+
+			if (dirtyFields != null && (entityMetamodel.IsDynamicUpdate || HasDirtyLazyProperties(dirtyFields, obj)))
 			{
 				// For the case of dynamic-update="true", we need to generate the UPDATE SQL
 				propsToUpdate = GetPropertiesToUpdate(dirtyFields, hasDirtyCollection);
@@ -3084,6 +3214,13 @@ namespace NHibernate.Persister.Entity
 					UpdateOrInsert(id, fields, oldFields, j == 0 ? rowId : null, propsToUpdate, j, oldVersion, obj, updateStrings[j], session);
 				}
 			}
+		}
+
+		private bool HasDirtyLazyProperties(int[] dirtyFields, object obj)
+		{
+			// When having a dirty lazy property and the entity is not yet initialized we have to use a dynamic update for
+			// it even if it is disabled in order to have it updated.
+			return GetUninitializedLazyProperties(obj).Count > 0 && dirtyFields.Any(i => PropertyLaziness[i]);
 		}
 
 		public object Insert(object[] fields, object obj, ISessionImplementor session)
@@ -3297,10 +3434,17 @@ namespace NHibernate.Persister.Entity
 			IDictionary<string, string> dict = new Dictionary<string, string>();
 			for (int i = 0; i < SubclassColumnTableNumberClosure.Length; i++ )
 			{
+				string fullColumn;
 				string col = SubclassColumnClosure[i];
-				string alias = GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[i]);
-
-				string fullColumn = string.Format("{0}.{1}", alias, col);
+				if (!string.IsNullOrEmpty(rootAlias))
+				{
+					string alias = GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[i]);
+					fullColumn = string.Format("{0}.{1}", alias, col);
+				}
+				else
+				{
+					fullColumn = col;
+				}
 
 				PropertyKey key = new PropertyKey(col, SubclassColumnTableNumberClosure[i]);
 				if (propDictionary.ContainsKey(key))
@@ -3961,6 +4105,30 @@ namespace NHibernate.Persister.Entity
 		public void AfterInitialize(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
 		{
 			EntityTuplizer.AfterInitialize(entity, lazyPropertiesAreUnfetched, session);
+		}
+
+		internal ISet<string> GetUninitializedLazyProperties(object entity)
+		{
+			return EntityTuplizer.GetUninitializedLazyProperties(entity) ?? new HashSet<string>(lazyPropertyNames);
+		}
+
+		internal ISet<string> GetUninitializedLazyProperties(object[] state)
+		{
+			if (!HasLazyProperties)
+			{
+				return CollectionHelper.EmptySet<string>();
+			}
+
+			var uninitializedProperties = new HashSet<string>();
+			for (var j = 0; j < lazyPropertyNames.Length; j++)
+			{
+				if (state[lazyPropertyNumbers[j]] == LazyPropertyInitializer.UnfetchedProperty)
+				{
+					uninitializedProperties.Add(lazyPropertyNames[j]);
+				}
+			}
+
+			return uninitializedProperties;
 		}
 
 		public virtual bool[] PropertyUpdateability

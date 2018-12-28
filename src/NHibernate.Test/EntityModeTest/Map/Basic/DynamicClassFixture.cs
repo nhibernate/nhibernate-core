@@ -1,5 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq.Dynamic.Core;
+using System.Linq;
 using Antlr.Runtime.Misc;
 using NUnit.Framework;
 using NHibernate.Criterion;
@@ -114,6 +117,14 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 				s => s.CreateCriteria("Model").List<IDictionary<string, object>>());
 		}
 
+		[Test]
+		public void ShouldWorkWithLinqAndGenerics()
+		{
+			TestLazyDynamicClass(
+				s => (IDictionary<string, object>) s.Query<dynamic>("ProductLine").OrderBy("Description").Single(),
+				s => s.Query<dynamic>("Model").ToList().Cast<IDictionary<string, object>>().ToList());
+		}
+
 		public void TestLazyDynamicClass(
 			Func<ISession, IDictionary<string, object>> singleCarQueryHandler,
 			Func<ISession, IList<IDictionary<string, object>>> allModelQueryHandler)
@@ -161,6 +172,56 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 				}
 				var model = list[0];
 				Assert.That(((IList<object>) ((IDictionary<string, object>) model["ProductLine"])["Models"]).Contains(model), Is.True);
+				s.Clear();
+
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void ShouldWorkWithLinqAndDynamics()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				dynamic cars = new ExpandoObject();
+				cars.Description = "Cars";
+
+				dynamic monaro = new ExpandoObject();
+				monaro.ProductLine = cars;
+				monaro.Name = "Monaro";
+				monaro.Description = "Holden Monaro";
+
+				dynamic hsv = new ExpandoObject();
+				hsv.ProductLine = cars;
+				hsv.Name = "hsv";
+				hsv.Description = "Holden hsv";
+
+				var models = new List<dynamic> {monaro, hsv};
+
+				cars.Models = models;
+
+				s.Save("ProductLine", cars);
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var cars = s.Query<dynamic>("ProductLine").OrderBy("Description").Single();
+				var models = cars.Models;
+				Assert.That(NHibernateUtil.IsInitialized(models), Is.False);
+				Assert.That(models.Count, Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(models), Is.True);
+				s.Clear();
+
+				var list = s.Query<dynamic>("Model").Where("ProductLine.Description = @0", "Cars").ToList();
+				foreach (var model in list)
+				{
+					Assert.That(NHibernateUtil.IsInitialized(model.ProductLine), Is.False);
+				}
+				var model1 = list[0];
+				Assert.That(model1.ProductLine.Models.Contains(model1), Is.True);
 				s.Clear();
 
 				t.Commit();

@@ -93,6 +93,9 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)"); // Precision ranges from 0-127
 			// Anywhere max precision is 127, but .Net is limited to 28-29.
 			RegisterColumnType(DbType.Decimal, 29, "NUMERIC($p, $s)"); // Precision ranges from 0-127
+			RegisterColumnType(DbType.Byte, "TINYINT");
+			RegisterColumnType(DbType.SByte, "UNSIGNED TINYINT");
+			RegisterColumnType(DbType.Currency, "MONEY"); // Implemented by the database as NUMERIC(19,4)
 		}
 
 		protected virtual void RegisterDateTimeTypeMappings()
@@ -192,6 +195,11 @@ namespace NHibernate.Dialect
 
 		protected virtual void RegisterBitFunctions()
 		{
+			// SQL Anywhere does not respect usual priorities with the bitwise not. Unfortunately the HQL parser
+			// furthermore remove "undue" parenthesis according to usual rules. As the bitwise not should have maximal
+			// priority, we can work around this by using a template forcing parenthesis around it.
+			RegisterFunction("bnot", new VarArgsSQLFunction(NHibernateUtil.Int64, "(~", "", ")"));
+
 			RegisterFunction("bit_length", new StandardSQLFunction("bit_length", NHibernateUtil.Int32));
 			RegisterFunction("bit_substr", new StandardSQLFunction("bit_substr"));
 			RegisterFunction("get_bit", new StandardSQLFunction("get_bit", NHibernateUtil.Boolean));
@@ -243,6 +251,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("byte_length", new StandardSQLFunction("byte_length", NHibernateUtil.Int32));
 			RegisterFunction("byte_substr", new VarArgsSQLFunction(NHibernateUtil.String, "byte_substr(", ",", ")"));
 			RegisterFunction("char", new StandardSQLFunction("char", NHibernateUtil.String));
+			RegisterFunction("chr", new StandardSQLFunction("char", NHibernateUtil.Character));
 			RegisterFunction("charindex", new StandardSQLFunction("charindex", NHibernateUtil.Int32));
 			RegisterFunction("char_length", new StandardSQLFunction("char_length", NHibernateUtil.Int32));
 			RegisterFunction("compare", new VarArgsSQLFunction(NHibernateUtil.Int32, "compare(", ",", ")"));
@@ -284,7 +293,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("to_char", new VarArgsSQLFunction(NHibernateUtil.String, "to_char(", ",", ")"));
 			RegisterFunction("to_nchar", new VarArgsSQLFunction(NHibernateUtil.String, "to_nchar(", ",", ")"));
 
-			RegisterFunction("trim", new StandardSQLFunction("trim", NHibernateUtil.String));
+			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 			RegisterFunction("ucase", new StandardSQLFunction("ucase", NHibernateUtil.String));
 			RegisterFunction("unicode", new StandardSQLFunction("unicode", NHibernateUtil.Int32));
 			RegisterFunction("unistr", new StandardSQLFunction("unistr", NHibernateUtil.String));
@@ -344,6 +353,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("transactsql", new StandardSQLFunction("transactsql", NHibernateUtil.String));
 			RegisterFunction("varexists", new StandardSQLFunction("varexists", NHibernateUtil.Int32));
 			RegisterFunction("watcomsql", new StandardSQLFunction("watcomsql", NHibernateUtil.String));
+			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 		}
 
 		#region private static readonly string[] DialectKeywords = { ... }
@@ -531,7 +541,7 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		private static int GetAfterSelectInsertPoint(SqlString sql)
+		protected static int GetAfterSelectInsertPoint(SqlString sql)
 		{
 			// Assume no common table expressions with the statement.
 			if (sql.StartsWithCaseInsensitive("select distinct"))
@@ -556,6 +566,11 @@ namespace NHibernate.Dialect
 
 			if (insertionPoint > 0)
 			{
+				if (limit == null && offset == null)
+					throw new ArgumentException("Cannot limit with neither a limit nor an offset");
+				if (limit == null)
+					throw new NotSupportedException($"Dialect {this} does not support setting an offset without a limit");
+
 				SqlStringBuilder limitBuilder = new SqlStringBuilder();
 				limitBuilder.Add("select");
 				if (insertionPoint > 6)
@@ -948,5 +963,9 @@ namespace NHibernate.Dialect
 		{
 			return new SybaseAnywhereDataBaseMetaData(connection);
 		}
+
+		/// <inheritdoc />
+		/// <remarks>SQL Anywhere has a micro-second resolution.</remarks>
+		public override long TimestampResolutionInTicks => 10L;
 	}
 }

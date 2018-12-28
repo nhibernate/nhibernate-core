@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -30,7 +29,6 @@ using NHibernate.Mapping;
 using NHibernate.Metadata;
 using NHibernate.Properties;
 using NHibernate.SqlCommand;
-using NHibernate.Tuple;
 using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -45,7 +43,7 @@ namespace NHibernate.Persister.Entity
 	using System.Threading;
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
 		IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable,
-		ISupportSelectModeJoinable
+		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister
 	{
 
 		private partial class GeneratedIdentifierBinder : IBinder
@@ -272,7 +270,9 @@ namespace NHibernate.Persister.Entity
 				if (propertyValue == null)
 					continue;
 				var type = PropertyTypes[i].GetSemiResolvedType(session.Factory);
-				propertyValue = await (type.SemiResolveAsync(propertyValue, session, entity, cancellationToken)).ConfigureAwait(false);
+
+				if (!type.ReturnedClass.IsInstanceOfType(propertyValue))
+					propertyValue = await (type.SemiResolveAsync(propertyValue, session, entity, cancellationToken)).ConfigureAwait(false);
 				var euk = new EntityUniqueKey(EntityName, PropertyNames[i], propertyValue, type, session.Factory);
 				session.PersistenceContext.AddEntity(euk, entity);
 			}
@@ -471,6 +471,23 @@ namespace NHibernate.Persister.Entity
 			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
+			}
+		}
+
+		public async Task BindSelectByUniqueKeyAsync(
+			ISessionImplementor session,
+			DbCommand selectCommand,
+			IBinder binder,
+			string[] suppliedPropertyNames, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var propertyNames = GetUniqueKeyPropertyNames(suppliedPropertyNames);
+			var parameterTypes = propertyNames.Select(GetPropertyType).ToArray();
+			var entity = binder.Entity;
+			for (var i = 0; i < propertyNames.Length; i++)
+			{
+				var uniqueKeyValue = GetPropertyValue(entity, propertyNames[i]);
+				await (parameterTypes[i].NullSafeSetAsync(selectCommand, uniqueKeyValue, i, session, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -859,8 +876,8 @@ namespace NHibernate.Persister.Entity
 			// in the process of being deleted.
 			if (entry == null && !IsMutable)
 				throw new InvalidOperationException("Updating immutable entity that is not in session yet!");
-			
-			if (entityMetamodel.IsDynamicUpdate && dirtyFields != null)
+
+			if (dirtyFields != null && (entityMetamodel.IsDynamicUpdate || HasDirtyLazyProperties(dirtyFields, obj)))
 			{
 				// For the case of dynamic-update="true", we need to generate the UPDATE SQL
 				propsToUpdate = GetPropertiesToUpdate(dirtyFields, hasDirtyCollection);

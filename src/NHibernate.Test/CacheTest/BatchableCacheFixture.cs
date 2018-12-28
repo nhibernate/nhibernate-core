@@ -207,21 +207,23 @@ namespace NHibernate.Test.CacheTest
 			var persister = Sfi.GetEntityPersister(typeof(ReadOnly).FullName);
 			Assert.That(persister.Cache.Cache, Is.Not.Null);
 			Assert.That(persister.Cache.Cache, Is.TypeOf<BatchableCache>());
-			var ids = new List<int>();
+			int[] getIds;
+			int[] loadIds;
 
 			using (var s = Sfi.OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
 				var items = s.Query<ReadOnly>().ToList();
-				ids.AddRange(items.OrderBy(o => o.Id).Select(o => o.Id));
+				loadIds = getIds = items.OrderBy(o => o.Id).Select(o => o.Id).ToArray();
 				tx.Commit();
 			}
 			// Batch size 3
-			var parentTestCases = new List<Tuple<int, int[][], int[], Func<int, bool>>>
+			var parentTestCases = new List<Tuple<int[], int, int[][], int[], Func<int, bool>>>
 			{
 				// When the cache is empty, GetMultiple will be called two times. One time in type
 				// DefaultLoadEventListener and the other time in BatchingEntityLoader.
-				new Tuple<int, int[][], int[], Func<int, bool>>(
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
 					0,
 					new[]
 					{
@@ -233,7 +235,8 @@ namespace NHibernate.Test.CacheTest
 				),
 				// When there are not enough uninitialized entities after the demanded one to fill the batch,
 				// the nearest before the demanded entity are added.
-				new Tuple<int, int[][], int[], Func<int, bool>>(
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
 					4,
 					new[]
 					{
@@ -243,7 +246,8 @@ namespace NHibernate.Test.CacheTest
 					new[] {3, 4, 5},
 					null
 				),
-				new Tuple<int, int[][], int[], Func<int, bool>>(
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
 					5,
 					new[]
 					{
@@ -253,7 +257,8 @@ namespace NHibernate.Test.CacheTest
 					new[] {3, 4, 5},
 					null
 				),
-				new Tuple<int, int[][], int[], Func<int, bool>>(
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
 					0,
 					new[]
 					{
@@ -262,7 +267,8 @@ namespace NHibernate.Test.CacheTest
 					null,
 					(i) => i % 2 == 0 // Cache all even indexes before loading
 				),
-				new Tuple<int, int[][], int[], Func<int, bool>>(
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
 					1,
 					new[]
 					{
@@ -272,7 +278,8 @@ namespace NHibernate.Test.CacheTest
 					new[] {1, 3, 5},
 					(i) => i % 2 == 0
 				),
-				new Tuple<int, int[][], int[], Func<int, bool>>(
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
 					5,
 					new[]
 					{
@@ -282,7 +289,8 @@ namespace NHibernate.Test.CacheTest
 					new[] {1, 3, 5},
 					(i) => i % 2 == 0
 				),
-				new Tuple<int, int[][], int[], Func<int, bool>>(
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
 					0,
 					new[]
 					{
@@ -292,7 +300,8 @@ namespace NHibernate.Test.CacheTest
 					new[] {0, 2, 4},
 					(i) => i % 2 != 0
 				),
-				new Tuple<int, int[][], int[], Func<int, bool>>(
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
 					4,
 					new[]
 					{
@@ -301,12 +310,56 @@ namespace NHibernate.Test.CacheTest
 					},
 					new[] {0, 2, 4},
 					(i) => i % 2 != 0
+				),
+				// Tests by loading different ids
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 0).ToArray(),
+					0,
+					new[]
+					{
+						new[] {0, 5, 4}, // triggered by LoadFromSecondLevelCache method of DefaultLoadEventListener type
+						new[] {3, 4, 5}, // triggered by Load method of BatchingEntityLoader type
+					},
+					new[] {0, 4, 5},
+					null
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 4).ToArray(),
+					4,
+					new[]
+					{
+						new[] {4, 5, 3},
+						new[] {5, 3, 2},
+					},
+					new[] {3, 4, 5},
+					null
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 0).ToArray(),
+					0,
+					new[]
+					{
+						new[] {0, 5, 4} // 0 get assembled and no further processing is done
+					},
+					null,
+					(i) => i % 2 == 0 // Cache all even indexes before loading
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 1).ToArray(),
+					1,
+					new[]
+					{
+						new[] {1, 5, 4}, // 4 gets assembled inside LoadFromSecondLevelCache
+						new[] {5, 3, 2}
+					},
+					new[] {1, 3, 5},
+					(i) => i % 2 == 0
 				)
 			};
 
 			foreach (var tuple in parentTestCases)
 			{
-				AssertMultipleCacheCalls<ReadOnly>(ids, tuple.Item1, tuple.Item2, tuple.Item3, tuple.Item4);
+				AssertMultipleCacheCalls<ReadOnly>(tuple.Item1, getIds, tuple.Item2, tuple.Item3, tuple.Item4, tuple.Item5);
 			}
 		}
 
@@ -316,21 +369,23 @@ namespace NHibernate.Test.CacheTest
 			var persister = Sfi.GetEntityPersister(typeof(ReadOnlyItem).FullName);
 			Assert.That(persister.Cache.Cache, Is.Not.Null);
 			Assert.That(persister.Cache.Cache, Is.TypeOf<BatchableCache>());
-			var ids = new List<int>();
+			int[] getIds;
+			int[] loadIds;
 
 			using (var s = Sfi.OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
 				var items = s.Query<ReadOnlyItem>().Take(6).ToList();
-				ids.AddRange(items.OrderBy(o => o.Id).Select(o => o.Id));
+				loadIds = getIds = items.OrderBy(o => o.Id).Select(o => o.Id).ToArray();
 				tx.Commit();
 			}
 			// Batch size 4
-			var parentTestCases = new List<Tuple<int, int[][], int[], Func<int, bool>>>
+			var parentTestCases = new List<Tuple<int[], int, int[][], int[], Func<int, bool>>>
 			{
 				// When the cache is empty, GetMultiple will be called two times. One time in type
 				// DefaultLoadEventListener and the other time in BatchingEntityLoader.
-				new Tuple<int, int[][], int[], Func<int, bool>>(
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
 					0,
 					new[]
 					{
@@ -342,7 +397,8 @@ namespace NHibernate.Test.CacheTest
 				),
 				// When there are not enough uninitialized entities after the demanded one to fill the batch,
 				// the nearest before the demanded entity are added.
-				new Tuple<int, int[][], int[], Func<int, bool>>(
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
 					4,
 					new[]
 					{
@@ -352,7 +408,8 @@ namespace NHibernate.Test.CacheTest
 					new[] {2, 3, 4, 5},
 					null
 				),
-				new Tuple<int, int[][], int[], Func<int, bool>>(
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
 					5,
 					new[]
 					{
@@ -362,7 +419,8 @@ namespace NHibernate.Test.CacheTest
 					new[] {2, 3, 4, 5},
 					null
 				),
-				new Tuple<int, int[][], int[], Func<int, bool>>(
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
 					0,
 					new[]
 					{
@@ -371,7 +429,8 @@ namespace NHibernate.Test.CacheTest
 					null,
 					(i) => i % 2 == 0 // Cache all even indexes before loading
 				),
-				new Tuple<int, int[][], int[], Func<int, bool>>(
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
 					1,
 					new[]
 					{
@@ -381,7 +440,8 @@ namespace NHibernate.Test.CacheTest
 					new[] {1, 3, 5},
 					(i) => i % 2 == 0
 				),
-				new Tuple<int, int[][], int[], Func<int, bool>>(
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
 					5,
 					new[]
 					{
@@ -391,7 +451,8 @@ namespace NHibernate.Test.CacheTest
 					new[] {1, 3, 5},
 					(i) => i % 2 == 0
 				),
-				new Tuple<int, int[][], int[], Func<int, bool>>(
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
 					0,
 					new[]
 					{
@@ -401,7 +462,8 @@ namespace NHibernate.Test.CacheTest
 					new[] {0, 2, 4},
 					(i) => i % 2 != 0
 				),
-				new Tuple<int, int[][], int[], Func<int, bool>>(
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
 					4,
 					new[]
 					{
@@ -410,12 +472,56 @@ namespace NHibernate.Test.CacheTest
 					},
 					new[] {0, 2, 4},
 					(i) => i % 2 != 0
-				)
+				),
+				// Tests by loading different ids
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 0).ToArray(),
+					0,
+					new[]
+					{
+						new[] {0, 5, 4, 3}, // triggered by LoadFromSecondLevelCache method of DefaultLoadEventListener type
+						new[] {5, 4, 3, 2}, // triggered by Load method of BatchingEntityLoader type
+					},
+					new[] {0, 5, 4, 3},
+					null
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 5).ToArray(),
+					5,
+					new[]
+					{
+						new[] {5, 4, 3, 2},
+						new[] {4, 3, 2, 1},
+					},
+					new[] {2, 3, 4, 5},
+					null
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 0).ToArray(),
+					0,
+					new[]
+					{
+						new[] {0, 5, 4, 3} // 0 get assembled and no further processing is done
+					},
+					null,
+					(i) => i % 2 == 0 // Cache all even indexes before loading
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 1).ToArray(),
+					1,
+					new[]
+					{
+						new[] {1, 5, 4, 3}, // 4 get assembled inside LoadFromSecondLevelCache
+						new[] {5, 3, 2, 0}
+					},
+					new[] {1, 3, 5},
+					(i) => i % 2 == 0
+				),
 			};
 
 			foreach (var tuple in parentTestCases)
 			{
-				AssertMultipleCacheCalls<ReadOnlyItem>(ids, tuple.Item1, tuple.Item2, tuple.Item3, tuple.Item4);
+				AssertMultipleCacheCalls<ReadOnlyItem>(tuple.Item1, getIds, tuple.Item2, tuple.Item3, tuple.Item4, tuple.Item5);
 			}
 		}
 
@@ -525,17 +631,12 @@ namespace NHibernate.Test.CacheTest
 		public void UpdateTimestampsCacheTest()
 		{
 			var timestamp = Sfi.UpdateTimestampsCache;
-			var fieldReadonly = typeof(UpdateTimestampsCache).GetField(
-				"_batchReadOnlyUpdateTimestamps",
-				BindingFlags.NonPublic | BindingFlags.Instance);
-			Assert.That(fieldReadonly, Is.Not.Null, "Unable to find _batchReadOnlyUpdateTimestamps field");
-			Assert.That(fieldReadonly.GetValue(timestamp), Is.Not.Null, "_batchReadOnlyUpdateTimestamps is null");
 			var field = typeof(UpdateTimestampsCache).GetField(
-				"_batchUpdateTimestamps",
+				"_updateTimestamps",
 				BindingFlags.NonPublic | BindingFlags.Instance);
-			Assert.That(field, Is.Not.Null, "Unable to find _batchUpdateTimestamps field");
+			Assert.That(field, Is.Not.Null, "Unable to find _updateTimestamps field");
 			var cache = (BatchableCache) field.GetValue(timestamp);
-			Assert.That(cache, Is.Not.Null, "_batchUpdateTimestamps is null");
+			Assert.That(cache, Is.Not.Null, "Cache field");
 
 			cache.Clear();
 			cache.ClearStatistics();
@@ -594,25 +695,20 @@ namespace NHibernate.Test.CacheTest
 				Assert.Ignore($"{Sfi.ConnectionProvider.Driver} does not support multiple queries");
 
 			var queryCache = Sfi.GetQueryCache(null);
-			var readonlyField = typeof(StandardQueryCache).GetField(
-				"_batchableReadOnlyCache",
-				BindingFlags.NonPublic | BindingFlags.Instance);
-			Assert.That(readonlyField, Is.Not.Null, "Unable to find _batchableReadOnlyCache field");
-			Assert.That(readonlyField.GetValue(queryCache), Is.Not.Null, "_batchableReadOnlyCache is null");
 			var field = typeof(StandardQueryCache).GetField(
-				"_batchableCache",
+				"_cache",
 				BindingFlags.NonPublic | BindingFlags.Instance);
-			Assert.That(field, Is.Not.Null, "Unable to find _batchableCache field");
+			Assert.That(field, Is.Not.Null, "Unable to find _cache field");
 			var cache = (BatchableCache) field.GetValue(queryCache);
-			Assert.That(cache, Is.Not.Null, "_batchableCache is null");
+			Assert.That(cache, Is.Not.Null, "_cache is null");
 
 			var timestamp = Sfi.UpdateTimestampsCache;
 			var tsField = typeof(UpdateTimestampsCache).GetField(
-				"_batchUpdateTimestamps",
+				"_updateTimestamps",
 				BindingFlags.NonPublic | BindingFlags.Instance);
-			Assert.That(tsField, Is.Not.Null, "Unable to find _batchUpdateTimestamps field");
+			Assert.That(tsField, Is.Not.Null, "Unable to find _updateTimestamps field");
 			var tsCache = (BatchableCache) tsField.GetValue(timestamp);
-			Assert.That(tsCache, Is.Not.Null, "_batchUpdateTimestamps is null");
+			Assert.That(tsCache, Is.Not.Null, "_updateTimestamps is null");
 
 			cache.Clear();
 			cache.ClearStatistics();
@@ -762,7 +858,8 @@ namespace NHibernate.Test.CacheTest
 			}
 		}
 
-		private void AssertMultipleCacheCalls<TEntity>(List<int> ids, int idIndex, int[][] fetchedIdIndexes, int[] putIdIndexes, Func<int, bool> cacheBeforeLoadFn = null)
+		private void AssertMultipleCacheCalls<TEntity>(IEnumerable<int> loadIds,  IReadOnlyList<int> getIds, int idIndex, 
+														int[][] fetchedIdIndexes, int[] putIdIndexes, Func<int, bool> cacheBeforeLoadFn = null)
 			where TEntity : CacheEntity
 		{
 			var persister = Sfi.GetEntityPersister(typeof(TEntity).FullName);
@@ -774,7 +871,7 @@ namespace NHibernate.Test.CacheTest
 				using (var s = Sfi.OpenSession())
 				using (var tx = s.BeginTransaction())
 				{
-					foreach (var id in ids.Where((o, i) => cacheBeforeLoadFn(i)))
+					foreach (var id in getIds.Where((o, i) => cacheBeforeLoadFn(i)))
 					{
 						s.Get<TEntity>(id);
 					}
@@ -786,12 +883,11 @@ namespace NHibernate.Test.CacheTest
 			using (var tx = s.BeginTransaction())
 			{
 				cache.ClearStatistics();
-
-				foreach (var id in ids)
+				foreach (var id in loadIds)
 				{
 					s.Load<TEntity>(id);
 				}
-				var item = s.Get<TEntity>(ids[idIndex]);
+				var item = s.Get<TEntity>(getIds[idIndex]);
 				Assert.That(item, Is.Not.Null);
 				Assert.That(cache.GetCalls, Has.Count.EqualTo(0));
 				Assert.That(cache.PutCalls, Has.Count.EqualTo(0));
@@ -805,14 +901,14 @@ namespace NHibernate.Test.CacheTest
 					Assert.That(cache.PutMultipleCalls, Has.Count.EqualTo(1));
 					Assert.That(
 						cache.PutMultipleCalls[0].OfType<CacheKey>().Select(o => (int) o.Key),
-						Is.EquivalentTo(putIdIndexes.Select(o => ids[o])));
+						Is.EquivalentTo(putIdIndexes.Select(o => getIds[o])));
 				}
 
 				for (int i = 0; i < fetchedIdIndexes.GetLength(0); i++)
 				{
 					Assert.That(
 						cache.GetMultipleCalls[i].OfType<CacheKey>().Select(o => (int) o.Key),
-						Is.EquivalentTo(fetchedIdIndexes[i].Select(o => ids[o])));
+						Is.EquivalentTo(fetchedIdIndexes[i].Select(o => getIds[o])));
 				}
 
 				tx.Commit();

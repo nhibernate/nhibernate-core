@@ -1,0 +1,14 @@
+Installation steps for SAP SQL Anywhere 17 for NH TeamCity:
+1.  Download SAP SQL Anywhere 17 from https://www.sap.com/products/sql-anywhere.html.
+    Please make sure you comply with it's license.
+
+2.  Run the installer
+3.  Ensure the MSDTC Windows service is enabled. All transaction scope tests, even
+    those normally not distributed, use it with SAP SQL Anywhere 17
+
+The NHibernate.TestDatabaseSetup should normally do on its own the following operations:
+1.  Create the test database with default options
+2.  Run the query
+    set option ansi_update_constraints = 'Off'
+    (Otherwise some tests will fail.)
+

@@ -18,36 +18,35 @@ namespace NHibernate.Cache
 	public partial class StandardQueryCache : IQueryCache, IBatchableQueryCache
 	{
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof (StandardQueryCache));
-		private readonly ICache _queryCache;
-		private readonly IBatchableReadOnlyCache _batchableReadOnlyCache;
-		private readonly IBatchableCache _batchableCache;
 		private readonly string _regionName;
 		private readonly UpdateTimestampsCache _updateTimestampsCache;
+		// 6.0 TODO: remove
+		private readonly CacheBase _cache;
 
 		public StandardQueryCache(Settings settings, IDictionary<string, string> props, UpdateTimestampsCache updateTimestampsCache, string regionName)
 		{
 			if (regionName == null)
-				regionName = typeof (StandardQueryCache).FullName;
+				regionName = typeof(StandardQueryCache).FullName;
 
-			String prefix = settings.CacheRegionPrefix;
+			var prefix = settings.CacheRegionPrefix;
 			if (!string.IsNullOrEmpty(prefix))
 				regionName = prefix + '.' + regionName;
 
 			Log.Info("starting query cache at region: {0}", regionName);
 
-			_queryCache = settings.CacheProvider.BuildCache(regionName, props);
-			_batchableReadOnlyCache = _queryCache as IBatchableReadOnlyCache;
-			_batchableCache = _queryCache as IBatchableCache;
+			Cache = settings.CacheProvider.BuildCache(regionName, props);
+			_cache = Cache as CacheBase ?? new ObsoleteCacheWrapper(Cache);
+
 			_updateTimestampsCache = updateTimestampsCache;
 			_regionName = regionName;
 		}
 
 		#region IQueryCache Members
 
-		public ICache Cache
-		{
-			get { return _queryCache; }
-		}
+		// 6.0 TODO: type as CacheBase instead
+#pragma warning disable 618
+		public ICache Cache { get; }
+#pragma warning restore 618
 
 		public string RegionName
 		{
@@ -56,7 +55,7 @@ namespace NHibernate.Cache
 
 		public void Clear()
 		{
-			_queryCache.Clear();
+			Cache.Clear();
 		}
 
 		/// <inheritdoc />
@@ -84,7 +83,7 @@ namespace NHibernate.Cache
 
 			Log.Debug("caching query results in region: '{0}'; {1}", _regionName, key);
 
-			_queryCache.Put(key, GetCacheableResult(returnTypes, session, result, ts));
+			Cache.Put(key, GetCacheableResult(returnTypes, session, result, ts));
 
 			return true;
 		}
@@ -125,14 +124,14 @@ namespace NHibernate.Cache
 			if (Log.IsDebugEnabled())
 				Log.Debug("checking cached query results in region: '{0}'; {1}", _regionName, key);
 
-			var cacheable = (IList)_queryCache.Get(key);
+			var cacheable = (IList) Cache.Get(key);
 			if (cacheable == null)
 			{
 				Log.Debug("query results were not found in cache: {0}", key);
 				return null;
 			}
 
-			var timestamp = (long)cacheable[0];
+			var timestamp = (long) cacheable[0];
 
 			if (Log.IsDebugEnabled())
 				Log.Debug("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString(spaces));
@@ -154,21 +153,11 @@ namespace NHibernate.Cache
 			IList[] results,
 			ISessionImplementor session)
 		{
-			var cached = new bool[keys.Length];
-			if (_batchableCache == null)
-			{
-				for (var i = 0; i < keys.Length; i++)
-				{
-					cached[i] = Put(keys[i], queryParameters[i], returnTypes[i], results[i], session);
-				}
-				return cached;
-			}
-
-			var ts = session.Factory.Settings.CacheProvider.NextTimestamp();
-
 			if (Log.IsDebugEnabled())
 				Log.Debug("caching query results in region: '{0}'; {1}", _regionName, StringHelper.CollectionToString(keys));
 
+			var cached = new bool[keys.Length];
+			var ts = session.Factory.Settings.CacheProvider.NextTimestamp();
 			var cachedKeys = new List<object>();
 			var cachedResults = new List<object>();
 			for (var i = 0; i < keys.Length; i++)
@@ -182,7 +171,7 @@ namespace NHibernate.Cache
 				cachedResults.Add(GetCacheableResult(returnTypes[i], session, result, ts));
 			}
 
-			_batchableCache.PutMany(cachedKeys.ToArray(), cachedResults.ToArray());
+			_cache.PutMany(cachedKeys.ToArray(), cachedResults.ToArray());
 
 			return cached;
 		}
@@ -195,20 +184,10 @@ namespace NHibernate.Cache
 			ISet<string>[] spaces,
 			ISessionImplementor session)
 		{
-			var results = new IList[keys.Length];
-			if (_batchableReadOnlyCache == null)
-			{
-				for (var i = 0; i < keys.Length; i++)
-				{
-					results[i] = Get(keys[i], queryParameters[i], returnTypes[i], spaces[i], session);
-				}
-				return results;
-			}
-
 			if (Log.IsDebugEnabled())
 				Log.Debug("checking cached query results in region: '{0}'; {1}", _regionName, StringHelper.CollectionToString(keys));
 
-			var cacheables = _batchableReadOnlyCache.GetMany(keys).Cast<IList>().ToArray();
+			var cacheables = _cache.GetMany(keys).Cast<IList>().ToArray();
 
 			var spacesToCheck = new List<ISet<string>>();
 			var checkedSpacesIndexes = new HashSet<int>();
@@ -241,6 +220,7 @@ namespace NHibernate.Cache
 			var upToDatesIndex = 0;
 			var persistenceContext = session.PersistenceContext;
 			var defaultReadOnlyOrig = persistenceContext.DefaultReadOnly;
+			var results = new IList[keys.Length];
 			for (var i = 0; i < keys.Length; i++)
 			{
 				var cacheable = cacheables[i];
@@ -287,7 +267,7 @@ namespace NHibernate.Cache
 		{
 			try
 			{
-				_queryCache.Destroy();
+				Cache.Destroy();
 			}
 			catch (Exception e)
 			{
@@ -389,7 +369,7 @@ namespace NHibernate.Cache
 					// Handling a RemoveMany here does not look worth it, as this case short-circuits
 					// the result-set. So a Many could only benefit batched queries, and only if many
 					// of them are natural key lookup with an unresolvable object case.
-					_queryCache.Remove(key);
+					Cache.Remove(key);
 					return null;
 				}
 

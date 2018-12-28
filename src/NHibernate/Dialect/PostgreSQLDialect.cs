@@ -94,6 +94,8 @@ namespace NHibernate.Dialect
 
 			// Register the date function, since when used in LINQ select clauses, NH must know the data type.
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
+			
+			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "?1::TEXT"));
 
 			RegisterKeywords();
 		}
@@ -326,6 +328,16 @@ namespace NHibernate.Dialect
 		public override bool SupportsUnboundedLobLocatorMaterialization => false;
 
 		public override string QuerySequencesString => "SELECT c.relname FROM pg_class c WHERE c.relkind = 'S'";
+
+		/// <summary>
+		/// Does this dialect supports distributed transaction? <c>false</c>.
+		/// </summary>
+		/// <remarks>
+		/// Npgsql since its version 3.2.5 version has race conditions: it fails handling the threading involved with
+		/// distributed transactions. This causes a bunch of distributed tests to be flaky with Npgsql. Individually,
+		/// they usually succeed, but run together, some of them fail. The trouble was not occuring with Npgsql 3.2.4.1.
+		/// </remarks>
+		public override bool SupportsDistributedTransactions => false;
 
 		#endregion
 

@@ -395,13 +395,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 			// Make #@%$^#^&# sure no alias is applied to the table name
 			fromElement.Text = persister.TableName;
 
-			// append any filter fragments; the EMPTY_MAP is used under the assumption that
-			// currently enabled filters should not affect this process
-			if (persister.DiscriminatorType != null)
-			{
-				new SyntheticAndFactory(this)
-					.AddDiscriminatorWhereFragment(statement, persister, CollectionHelper.EmptyDictionary<string, IFilter>(), fromElement.TableAlias);
-			}
+			// Use the same logic as query does in order to support session filters
+			var joinProcessor = new JoinProcessor(this);
+			joinProcessor.ProcessJoins(statement);
 		}
 
 		void AfterStatementCompletion(string statementName)
@@ -490,7 +486,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 				// After that, process the JOINs.
 				// Invoke a delegate to do the work, as this is farily complex.
 				JoinProcessor joinProcessor = new JoinProcessor( this );
-				joinProcessor.ProcessJoins( qn );
+				IRestrictableStatement rs = qn;
+				joinProcessor.ProcessJoins(rs);
 
 				// Attach any mapping-defined "ORDER BY" fragments
 				foreach (FromElement fromElement in qn.FromClause.GetProjectionList())

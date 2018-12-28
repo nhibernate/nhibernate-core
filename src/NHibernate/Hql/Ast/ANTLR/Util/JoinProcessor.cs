@@ -61,9 +61,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			}
 		}
 
-		public void ProcessJoins(QueryNode query) 
+		// Since v5.3
+		[Obsolete("Use ProcessJoins taking an IRestrictableStatement instead")]
+		public void ProcessJoins(QueryNode query)
+		{
+			IRestrictableStatement rs = query;
+			ProcessJoins(rs);
+		}
+
+		public void ProcessJoins(IRestrictableStatement query) 
 		{
 			FromClause fromClause = query.FromClause;
+			var supportRootAlias = !(query is DeleteStatement || query is UpdateStatement);
 
 			IList<IASTNode> fromElements;
 			if ( DotNode.UseThetaStyleImplicitJoins ) 
@@ -94,17 +103,21 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 
 				join.SetSelector(new JoinSequenceSelector(_walker, fromClause, fromElement));
 
-				AddJoinNodes( query, join, fromElement );
+				// the delete and update statements created here will never be executed when IsMultiTable is true,
+				// only the where clause will be used by MultiTableUpdateExecutor/MultiTableDeleteExecutor. In that case
+				// we have to use the alias from the persister.
+				AddJoinNodes( query, join, fromElement, supportRootAlias || fromElement.Queryable.IsMultiTable);
 			}
 		}
 
-		private void AddJoinNodes(QueryNode query, JoinSequence join, FromElement fromElement) 
+		private void AddJoinNodes(IRestrictableStatement query, JoinSequence join, FromElement fromElement, bool supportRootAlias)
 		{
 			JoinFragment joinFragment = join.ToJoinFragment(
 					_walker.EnabledFilters,
 					fromElement.UseFromFragment || fromElement.IsDereferencedBySuperclassOrSubclassProperty,
 					fromElement.WithClauseFragment,
-					fromElement.WithClauseJoinAlias
+					fromElement.WithClauseJoinAlias,
+					supportRootAlias ? join.RootAlias : string.Empty
 			);
 
 			SqlString frag = joinFragment.ToFromFragmentString;

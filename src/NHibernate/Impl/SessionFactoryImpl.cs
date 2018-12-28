@@ -95,8 +95,11 @@ namespace NHibernate.Impl
 		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
 		[NonSerialized]
+		// 6.0 TODO: type as CacheBase instead
+#pragma warning disable 618
 		private readonly ConcurrentDictionary<string, ICache> allCacheRegions =
 			new ConcurrentDictionary<string, ICache>();
+#pragma warning restore 618
 
 		[NonSerialized]
 		private readonly IDictionary<string, IClassMetadata> classMetadata;
@@ -1033,16 +1036,21 @@ namespace NHibernate.Impl
 			get { return updateTimestampsCache; }
 		}
 
+		// 6.0 TODO: type as CacheBase instead
+#pragma warning disable 618
 		public IDictionary<string, ICache> GetAllSecondLevelCacheRegions()
+#pragma warning restore 618
 		{
 			// ToArray creates a moment in time snapshot
 			return allCacheRegions.ToArray().ToDictionary(kv => kv.Key, kv => kv.Value);
 		}
 
+		// 6.0 TODO: return CacheBase instead
+#pragma warning disable 618
 		public ICache GetSecondLevelCacheRegion(string regionName)
+#pragma warning restore 618
 		{
-			ICache result;
-			allCacheRegions.TryGetValue(regionName, out result);
+			allCacheRegions.TryGetValue(regionName, out var result);
 			return result;
 		}
 

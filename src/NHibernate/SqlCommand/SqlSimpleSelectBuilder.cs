@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -167,6 +168,23 @@ namespace NHibernate.SqlCommand
 		public SqlSimpleSelectBuilder AddWhereFragment(string[] columnNames, IType type, string op)
 		{
 			whereStrings.Add(ToWhereString(columnNames, op));
+			return this;
+		}
+
+		/// <summary>
+		/// Adds an arbitrary where fragment.
+		/// </summary>
+		/// <param name="fragment">The fragment.</param>
+		/// <returns>The SqlSimpleSelectBuilder</returns>
+		public SqlSimpleSelectBuilder AddWhereFragment(string fragment)
+		{
+			if (string.IsNullOrWhiteSpace(fragment))
+				return this;
+
+			if (fragment.Trim().StartsWith("and ", StringComparison.OrdinalIgnoreCase))
+				fragment = fragment.Substring(fragment.IndexOf("and", StringComparison.OrdinalIgnoreCase) + 3);
+
+			whereStrings.Add(new SqlString(fragment));
 			return this;
 		}
 

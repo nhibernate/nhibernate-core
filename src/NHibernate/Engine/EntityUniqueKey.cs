@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 using NHibernate.Impl;
 using NHibernate.Type;
 
@@ -12,13 +13,16 @@ namespace NHibernate.Engine
 	/// </summary>
 	/// <seealso cref="EntityKey"/>
 	[Serializable]
-	public class EntityUniqueKey
+	public class EntityUniqueKey : IDeserializationCallback
 	{
 		private readonly string entityName;
 		private readonly string uniqueKeyName;
 		private readonly object key;
 		private readonly IType keyType;
-		private readonly int hashCode;
+		private readonly ISessionFactoryImplementor _factory;
+		// hashcode may vary among processes, they cannot be stored and have to be re-computed after deserialization
+		[NonSerialized]
+		private int? _hashCode;
 
 		// 6.0 TODO: rename keyType as semiResolvedKeyType. That is not the responsibility of this class to make any
 		// assumption on the key type being semi-resolved or not, that is the responsibility of its callers.
@@ -37,19 +41,10 @@ namespace NHibernate.Engine
 			this.uniqueKeyName = uniqueKeyName;
 			key = semiResolvedKey;
 			this.keyType = keyType;
-			hashCode = GenerateHashCode(factory);
-		}
+			_factory = factory;
 
-		public int GenerateHashCode(ISessionFactoryImplementor factory)
-		{
-			int result = 17;
-			unchecked
-			{
-				result = 37 * result + entityName.GetHashCode();
-				result = 37 * result + uniqueKeyName.GetHashCode();
-				result = 37 * result + keyType.GetHashCode(key, factory);
-			}
-			return result;
+			// No need to delay computation here, but we need the lazy for the deserialization case.
+			_hashCode = GenerateHashCode();
 		}
 
 		public string EntityName
@@ -69,7 +64,29 @@ namespace NHibernate.Engine
 
 		public override int GetHashCode()
 		{
-			return hashCode;
+			// If the object is put in a set or dictionary during deserialization, the hashcode will not yet be
+			// computed. Compute the hashcode on the fly. So long as this happens only during deserialization, there
+			// will be no thread safety issues. For the hashcode to be always defined after deserialization, the
+			// deserialization callback is used.
+			return _hashCode ?? GenerateHashCode();
+		}
+
+		/// <inheritdoc />
+		public void OnDeserialization(object sender)
+		{
+			_hashCode = GenerateHashCode();
+		}
+
+		public int GenerateHashCode()
+		{
+			int result = 17;
+			unchecked
+			{
+				result = 37 * result + entityName.GetHashCode();
+				result = 37 * result + uniqueKeyName.GetHashCode();
+				result = 37 * result + keyType.GetHashCode(key, _factory);
+			}
+			return result;
 		}
 
 		public override bool Equals(object obj)

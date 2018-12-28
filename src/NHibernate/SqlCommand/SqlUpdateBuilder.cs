@@ -61,7 +61,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlUpdateBuilder.</returns>
 		public SqlUpdateBuilder AddColumn(string columnName, string val)
 		{
-			columns[columnName] = val;
+			AddColumnWithValueOrType(columnName, val);
 			return this;
 		}
 
@@ -74,7 +74,7 @@ namespace NHibernate.SqlCommand
 		public SqlUpdateBuilder AddColumns(string[] columnsName, string val)
 		{
 			foreach (string columnName in columnsName)
-				columns[columnName] = val;
+				AddColumnWithValueOrType(columnName, val);
 
 			return this;
 		}
@@ -84,7 +84,7 @@ namespace NHibernate.SqlCommand
 			SqlType[] sqlTypes = propertyType.SqlTypes(Mapping);
 			if (sqlTypes.Length > 1)
 				throw new AssertionFailure("Adding one column for a composed IType.");
-			columns[columnName] = sqlTypes[0];
+			AddColumnWithValueOrType(columnName, sqlTypes[0]);
 			return this;
 		}
 
@@ -115,11 +115,20 @@ namespace NHibernate.SqlCommand
 				{
 					if (i >= sqlTypes.Length)
 						throw new AssertionFailure("Different columns and it's IType.");
-					columns[columnNames[i]] = sqlTypes[i];
+					AddColumnWithValueOrType(columnNames[i], sqlTypes[i]);
 				}
 			}
 
 			return this;
+		}
+
+		private void AddColumnWithValueOrType(string columnName, object valueOrType)
+		{
+			if (columns.ContainsKey(columnName))
+				throw new ArgumentException(
+					$"The column '{columnName}' has already been added in this SQL builder",
+					nameof(columnName));
+			columns.Add(columnName, valueOrType);
 		}
 
 		public SqlUpdateBuilder AppendAssignmentFragment(SqlString fragment)

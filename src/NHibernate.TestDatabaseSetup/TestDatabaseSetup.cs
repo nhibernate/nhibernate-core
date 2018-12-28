@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Data.Odbc;
 using System.Data.SqlClient;
 #if NETFX
+using System.Data.Common;
 using System.Data.SqlServerCe;
+using System.Diagnostics;
 #endif
 using System.Data.SQLite;
 using System.IO;
@@ -30,7 +32,8 @@ namespace NHibernate.TestDatabaseSetup
 				{"NHibernate.Driver.OdbcDriver", SetupSqlServerOdbc},
 				{"NHibernate.Driver.SQLite20Driver", SetupSQLite},
 #if NETFX
-				{"NHibernate.Driver.SqlServerCeDriver", SetupSqlServerCe}
+				{"NHibernate.Driver.SqlServerCeDriver", SetupSqlServerCe},
+				{"NHibernate.Driver.SapSQLAnywhere17Driver", SetupSqlAnywhere}
 #endif
 			};
 
@@ -239,6 +242,57 @@ namespace NHibernate.TestDatabaseSetup
 			//    }
 			//}
 		}
+
+#if NETFX
+		private static void SetupSqlAnywhere(Cfg.Configuration cfg)
+		{
+			var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
+
+			var factory = DbProviderFactories.GetFactory("Sap.Data.SQLAnywhere");
+			var connBuilder = factory.CreateConnectionStringBuilder();
+			connBuilder.ConnectionString = connStr;
+			var filename = (string) connBuilder["DBF"];
+
+			RunProcess("dbstop", $"-c \"UID=nhibernate;PWD=nhibernate;DBN=nhibernate\" -d", false);
+			RunProcess("dberase", $"-y {filename}", false);
+			// -dba: login,pwd
+			RunProcess("dbinit", $"-dba nhibernate,nhibernate {filename}", true);
+
+			using (var conn = factory.CreateConnection())
+			{
+				conn.ConnectionString = connStr;
+				conn.Open();
+				using (var cmd = conn.CreateCommand())
+				{
+					cmd.CommandText = "set option ansi_update_constraints = 'Off'";
+					cmd.ExecuteNonQuery();
+				}
+			}
+		}
+
+		private static void RunProcess(string processName, string arguments, bool checkSuccess)
+		{
+			using (var process = new Process())
+			{
+				process.StartInfo.FileName = processName;
+				process.StartInfo.Arguments = arguments;
+				process.StartInfo.CreateNoWindow = true;
+				process.StartInfo.UseShellExecute = false;
+				process.StartInfo.RedirectStandardOutput = true;
+				process.StartInfo.RedirectStandardError = true;
+				process.Start();
+				Console.WriteLine($"{processName} output:");
+				Console.Write(process.StandardOutput.ReadToEnd());
+				Console.WriteLine();
+				Console.WriteLine($"{processName} error output:");
+				Console.Write(process.StandardError.ReadToEnd());
+				Console.WriteLine();
+				process.WaitForExit();
+				if (checkSuccess && process.ExitCode != 0)
+					throw new InvalidOperationException($"{processName} has failed");
+			}
+		}
+#endif
 	}
 }
 

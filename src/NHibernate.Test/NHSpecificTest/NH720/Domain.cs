@@ -10,19 +10,19 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 	public class FooCacheProvider : ICacheProvider
 	{
 		private static readonly ILog log;
-		private static Hashtable caches;
+		private static readonly Dictionary<string, CacheBase> caches;
 
 		static FooCacheProvider()
 		{
 			log = LogManager.GetLogger(typeof(FooCacheProvider));
-			caches = new Hashtable();
+			caches = new Dictionary<string, CacheBase>();
 		}
 
-		public static ICache BuildCacheStatic(string regionName, IDictionary<string,string> properties)
+		public static CacheBase BuildCacheStatic(string regionName, IDictionary<string,string> properties)
 		{
-			if (regionName != null && caches[regionName] != null)
+			if (regionName != null && caches.TryGetValue(regionName, out var cache))
 			{
-				return caches[regionName] as ICache;
+				return cache;
 			}
 
 			if (regionName == null)
@@ -46,12 +46,19 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 				}
 				log.Debug("building cache with region: " + regionName + ", properties: " + sb.ToString());
 			}
-			FooCache cache = new FooCache(regionName, properties);
+			cache = new FooCache(regionName, properties);
 			caches.Add(regionName, cache);
 			return cache;
 		}
 
-		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
+		// Since 5.2
+		[Obsolete]
+		ICache ICacheProvider.BuildCache(string regionName, IDictionary<string, string> properties)
+		{
+			return BuildCache(regionName, properties);
+		}
+
+		public CacheBase BuildCache(string regionName, IDictionary<string, string> properties)
 		{
 			return BuildCacheStatic(regionName, properties);
 		}
@@ -85,7 +92,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 		}
 	}
 
-	public partial class FooCache : ICache
+	public partial class FooCache : CacheBase
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(FooCache));
 		private string _region;
@@ -99,7 +106,9 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 			Configure(properties);
 		}
 
-		public string RegionName
+		public override bool PreferMultipleGet => false;
+
+		public override string RegionName
 		{
 			get { return _region; }
 		}
@@ -152,42 +161,43 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 			}
 		}
 
-		public object Get(object key)
+		public override object Get(object key)
 		{
 			return null;
 		}
 
-		public void Put(object key, object value)
+		public override void Put(object key, object value)
 		{
 		}
 
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 		}
 
-		public void Clear()
+		public override void Clear()
 		{
 		}
 
-		public void Destroy()
+		public override void Destroy()
 		{
 			Clear();
 		}
 
-		public void Lock(object key)
+		public override object Lock(object key)
+		{
+			return null;
+		}
+
+		public override void Unlock(object key, object lockValue)
 		{
 		}
 
-		public void Unlock(object key)
-		{
-		}
-
-		public long NextTimestamp()
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
-		public int Timeout
+		public override int Timeout
 		{
 			get { return Timestamper.OneMs * 60000; } // 60 seconds
 		}

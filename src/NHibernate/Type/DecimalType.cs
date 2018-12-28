@@ -39,7 +39,7 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			st.Parameters[index].Value = value;
+			st.Parameters[index].Value = Convert.ToDecimal(value);
 		}
 
 		public override string Name

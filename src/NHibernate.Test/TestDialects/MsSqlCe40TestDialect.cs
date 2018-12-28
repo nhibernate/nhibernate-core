@@ -30,5 +30,10 @@
 		/// Modulo is not supported on real, float, money, and numeric data types. [ Data type = numeric ]
 		/// </summary>
 		public override bool SupportsModuloOnDecimal => false;
+
+		/// <summary>
+		/// Does not support update locks
+		/// </summary>
+		public override bool SupportsSelectForUpdate => false;
 	}
 }

@@ -77,7 +77,7 @@ namespace NHibernate.Linq.ReWriters
 			protected override Expression VisitMember(MemberExpression node)
 			{
 				var result = (MemberExpression) base.VisitMember(node);
-				if (QueryReferenceCounter.CountReferences(result.Expression) > 1)
+				if (ShouldRewrite(result.Expression))
 				{
 					return ConditionalQueryReferenceMemberExpressionRewriter.Rewrite(result.Expression, node);
 				}
@@ -90,39 +90,44 @@ namespace NHibernate.Linq.ReWriters
 				var isExtension = node.Method.GetCustomAttributes<ExtensionAttribute>().Any();
 				var methodObject = isExtension ? node.Arguments[0] : node.Object;
 
-				if (methodObject != null && QueryReferenceCounter.CountReferences(methodObject) > 1)
+				if (ShouldRewrite(methodObject))
 				{
 					return ConditionalQueryReferenceMethodCallExpressionRewriter.Rewrite(methodObject, node);
 				}
 				return result;
 			}
-		}
 
-		private class QueryReferenceCounter : RelinqExpressionVisitor
-		{
-			private readonly System.Type _queryType;
-			private int _queryReferenceCount;
-
-			private QueryReferenceCounter(System.Type queryType)
+			private bool ShouldRewrite(Expression expr, System.Type queryType = null)
 			{
-				_queryType = queryType;
-			}
-
-			protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
-			{
-				if (_queryType.IsAssignableFrom(expression.Type))
+				if (expr == null)
 				{
-					_queryReferenceCount++;
+					return false;
+				}
+				
+				// Strip Converts
+				while (expr.NodeType == ExpressionType.Convert || expr.NodeType == ExpressionType.ConvertChecked)
+				{
+					expr = ((UnaryExpression)expr).Operand;
 				}
 
-				return base.VisitQuerySourceReference(expression);
-			}
+				if (expr is QuerySourceReferenceExpression && queryType?.IsAssignableFrom(expr.Type) == true)
+				{
+					return true;
+				}
 
-			public static int CountReferences(Expression node)
-			{
-				var visitor = new QueryReferenceCounter(node.Type);
-				visitor.Visit(node);
-				return visitor._queryReferenceCount;
+				queryType = queryType ?? expr.Type;
+
+				if (expr.NodeType == ExpressionType.Coalesce && expr is BinaryExpression coalesce)
+				{
+					return ShouldRewrite(coalesce.Left, queryType) && ShouldRewrite(coalesce.Right, queryType);
+				}
+
+				if (expr.NodeType == ExpressionType.Conditional && expr is ConditionalExpression conditional)
+				{
+					return ShouldRewrite(conditional.IfFalse, queryType) && ShouldRewrite(conditional.IfTrue, queryType);
+				}
+				
+				return false;
 			}
 		}
 

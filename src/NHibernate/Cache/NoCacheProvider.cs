@@ -13,13 +13,20 @@ namespace NHibernate.Cache
 
 		public const string WarnMessage = "Second-level cache is enabled in a class, but no cache provider was selected. Fake cache used.";
 
+		// Since 5.2
+		[Obsolete]
+		ICache ICacheProvider.BuildCache(string regionName, IDictionary<string, string> properties)
+		{
+			return BuildCache(regionName, properties);
+		}
+
 		/// <summary>
 		/// Configure the cache
 		/// </summary>
 		/// <param name="regionName">the name of the cache region</param>
 		/// <param name="properties">configuration settings</param>
 		/// <exception cref="CacheException" />
-		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
+		public CacheBase BuildCache(string regionName, IDictionary<string, string> properties)
 		{
 			// NH different behavior because NH-1093
 			log.Warn(WarnMessage);

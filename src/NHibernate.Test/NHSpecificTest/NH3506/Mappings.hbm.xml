@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3506"
+                   assembly="NHibernate.Test">
+
+	<class name="BaseClass">
+		<id name="Id">
+			<generator class="guid.comb" />
+		</id>
+		<discriminator column="discriminator" type="String" />
+
+		<subclass name="Employee" discriminator-value="Emp">
+			<many-to-one name="Department" class="Department" />
+		</subclass>
+
+		<subclass name="Department" discriminator-value="Dep">
+		</subclass>
+	</class>
+
+	<filter-def name="ValidAtFilter">
+		<filter-param name="CurrentDate" type="DateTime" />
+		<![CDATA[ValidAt = :CurrentDate]]>
+	</filter-def>
+
+</hibernate-mapping>

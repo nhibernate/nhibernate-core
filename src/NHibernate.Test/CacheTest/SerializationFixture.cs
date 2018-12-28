@@ -188,7 +188,7 @@ namespace NHibernate.Test.CacheTest
 				{NHibernateUtil.TrueFalse, false},
 				{NHibernateUtil.YesNo, true},
 				{NHibernateUtil.Class, typeof(IType)},
-				{NHibernateUtil.ClassMetaType, entityName},
+				{NHibernateUtil.MetaType, entityName},
 				{NHibernateUtil.Serializable, new MyEntity {Id = 1}},
 				{NHibernateUtil.Object, new MyEntity {Id = 10}},
 				{NHibernateUtil.AnsiChar, 'a'},

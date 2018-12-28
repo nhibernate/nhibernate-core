@@ -135,6 +135,9 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public void Concat()
 		{
+			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
+				Assert.Ignore("Current dialect does not support this test");
+
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
 			{

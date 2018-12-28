@@ -1,17 +1,19 @@
 <Project>
   <Import Project="DotNetSdkMono.props" />
+  <Import Condition="Exists('NHibernate.dev.props')" Project="NHibernate.dev.props"/>
+
   <PropertyGroup>
     <VersionMajor Condition="'$(VersionMajor)' == ''">5</VersionMajor>
-    <VersionMinor Condition="'$(VersionMinor)' == ''">1</VersionMinor>
-    <VersionPatch Condition="'$(VersionPatch)' == ''">3</VersionPatch>
+    <VersionMinor Condition="'$(VersionMinor)' == ''">2</VersionMinor>
+    <VersionPatch Condition="'$(VersionPatch)' == ''">1</VersionPatch>
     <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
 
     <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>
     <AssemblyVersion>$(VersionMajor).$(VersionMinor).0.0</AssemblyVersion>
     <FileVersion>$(VersionPrefix).0</FileVersion>
 
-    <NhAppTargetFrameworks>net461;netcoreapp2.0</NhAppTargetFrameworks>
-    <NhLibTargetFrameworks>net461;netcoreapp2.0;netstandard2.0</NhLibTargetFrameworks>
+    <NhAppTargetFrameworks Condition ="$(NhAppTargetFrameworks) == ''">net461;netcoreapp2.0</NhAppTargetFrameworks>
+    <NhLibTargetFrameworks Condition ="$(NhLibTargetFrameworks) == ''">net461;netcoreapp2.0;netstandard2.0</NhLibTargetFrameworks>
 
     <Product>NHibernate</Product>
     <Company>NHibernate.info</Company>

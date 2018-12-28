@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using NHibernate.Cache;
 
 namespace NHibernate.Test.CacheTest.Caches
 {
-	public partial class BatchableCache : ICache, IBatchableCache
+	public partial class BatchableCache : CacheBase
 	{
+		public override bool PreferMultipleGet => true;
+
 		private readonly IDictionary _hashtable = new Hashtable();
 
 		public List<object[]> GetMultipleCalls { get; } = new List<object[]>();
@@ -25,41 +22,12 @@ namespace NHibernate.Test.CacheTest.Caches
 
 		public List<object> PutCalls { get; } = new List<object>();
 
-		public void PutMany(object[] keys, object[] values)
-		{
-			PutMultipleCalls.Add(keys);
-			for (int i = 0; i < keys.Length; i++)
-			{
-				_hashtable[keys[i]] = values[i];
-			}
-		}
-
-		public object LockMany(object[] keys)
-		{
-			LockMultipleCalls.Add(keys);
-			return null;
-		}
-
-		public void UnlockMany(object[] keys, object lockValue)
-		{
-			UnlockMultipleCalls.Add(keys);
-		}
-
-		#region ICache Members
-
 		public BatchableCache(string regionName)
 		{
 			RegionName = regionName;
 		}
 
-		/// <summary></summary>
-		public object Get(object key)
-		{
-			GetCalls.Add(key);
-			return _hashtable[key];
-		}
-
-		public object[] GetMany(object[] keys)
+		public override object[] GetMany(object[] keys)
 		{
 			GetMultipleCalls.Add(keys);
 			var result = new object[keys.Length];
@@ -70,21 +38,44 @@ namespace NHibernate.Test.CacheTest.Caches
 			return result;
 		}
 
-		/// <summary></summary>
-		public void Put(object key, object value)
+		public override void PutMany(object[] keys, object[] values)
+		{
+			PutMultipleCalls.Add(keys);
+			for (int i = 0; i < keys.Length; i++)
+			{
+				_hashtable[keys[i]] = values[i];
+			}
+		}
+
+		public override object LockMany(object[] keys)
+		{
+			LockMultipleCalls.Add(keys);
+			return null;
+		}
+
+		public override void UnlockMany(object[] keys, object lockValue)
+		{
+			UnlockMultipleCalls.Add(keys);
+		}
+
+		public override object Get(object key)
+		{
+			GetCalls.Add(key);
+			return _hashtable[key];
+		}
+
+		public override void Put(object key, object value)
 		{
 			PutCalls.Add(key);
 			_hashtable[key] = value;
 		}
 
-		/// <summary></summary>
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 			_hashtable.Remove(key);
 		}
 
-		/// <summary></summary>
-		public void Clear()
+		public override void Clear()
 		{
 			_hashtable.Clear();
 		}
@@ -99,34 +90,28 @@ namespace NHibernate.Test.CacheTest.Caches
 			LockMultipleCalls.Clear();
 		}
 
-		/// <summary></summary>
-		public void Destroy()
+		public override void Destroy()
 		{
 		}
 
-		/// <summary></summary>
-		public void Lock(object key)
+		public override object Lock(object key)
 		{
-			// local cache, so we use synchronization
+			// local cache, no need to actually lock.
+			return null;
 		}
 
-		/// <summary></summary>
-		public void Unlock(object key)
+		public override void Unlock(object key, object lockValue)
 		{
-			// local cache, so we use synchronization
+			// local cache, no need to actually lock.
 		}
 
-		/// <summary></summary>
-		public long NextTimestamp()
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
-		/// <summary></summary>
-		public int Timeout => Timestamper.OneMs * 60000;
+		public override int Timeout => Timestamper.OneMs * 60000;
 
-		public string RegionName { get; }
-
-		#endregion
+		public override string RegionName { get; }
 	}
 }
