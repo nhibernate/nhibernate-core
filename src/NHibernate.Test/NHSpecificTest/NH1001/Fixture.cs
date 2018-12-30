@@ -63,12 +63,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			statistics.Clear();
 
 			using (ISession session = OpenSession())
-			using (ITransaction transaction = session.BeginTransaction())
 			{
 				var employee = session.Get<Employee>(employeeId);
 				Assert.That(employee.Department, Is.Not.Null);
 				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(1));
-				transaction.Commit();
 			}
 		}
 	}

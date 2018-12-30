@@ -376,7 +376,7 @@ namespace NHibernate.Loader
 				for (int i = 0; i < entitySpan; i++)
 				{
 					object entity = row[i];
-					var key = keys[i];
+					EntityKey key = keys[i];
 					if (entity == null && key != null && IsChildFetchEntity(i))
 					{
 						// The entity was missing in the session, fallback on internal load (which will just yield a
