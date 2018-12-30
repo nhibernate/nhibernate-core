@@ -24,7 +24,7 @@ namespace NHibernate.Action
 
 		public override void Execute()
 		{
-			object id = Key;
+			object id = GetKey();
 			ISessionImplementor session = Session;
 			ICollectionPersister persister = Persister;
 			IPersistentCollection collection = Collection;
@@ -74,7 +74,8 @@ namespace NHibernate.Action
 				persister.InsertRows(collection, id, session);
 			}
 
-			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
+			var entry = Session.PersistenceContext.GetCollectionEntry(collection);
+			entry.AfterAction(collection);
 
 			Evict();
 
@@ -117,7 +118,7 @@ namespace NHibernate.Action
 		{
 			// NH Different behavior: to support unlocking collections from the cache.(r3260)
 
-			CacheKey ck = Session.GenerateCacheKey(Key, Persister.KeyType, Persister.Role);
+			CacheKey ck = Session.GenerateCacheKey(GetKey(), Persister.KeyType, Persister.Role);
 
 			if (success)
 			{

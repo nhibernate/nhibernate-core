@@ -28,7 +28,7 @@ namespace NHibernate.Action
 		public override async Task ExecuteAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			object id = Key;
+			object id = await (GetKeyAsync(cancellationToken)).ConfigureAwait(false);
 			ISessionImplementor session = Session;
 			ICollectionPersister persister = Persister;
 			IPersistentCollection collection = Collection;
@@ -78,7 +78,8 @@ namespace NHibernate.Action
 				await (persister.InsertRowsAsync(collection, id, session, cancellationToken)).ConfigureAwait(false);
 			}
 
-			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
+			var entry = Session.PersistenceContext.GetCollectionEntry(collection);
+			entry.AfterAction(collection);
 
 			await (EvictAsync(cancellationToken)).ConfigureAwait(false);
 
@@ -124,7 +125,7 @@ namespace NHibernate.Action
 			cancellationToken.ThrowIfCancellationRequested();
 			// NH Different behavior: to support unlocking collections from the cache.(r3260)
 
-			CacheKey ck = Session.GenerateCacheKey(Key, Persister.KeyType, Persister.Role);
+			CacheKey ck = Session.GenerateCacheKey(await (GetKeyAsync(cancellationToken)).ConfigureAwait(false), Persister.KeyType, Persister.Role);
 
 			if (success)
 			{
