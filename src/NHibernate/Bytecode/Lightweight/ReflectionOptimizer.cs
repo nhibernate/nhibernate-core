@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Security;
 using System.Security.Permissions;
-using NHibernate.Linq;
 using NHibernate.Properties;
 using NHibernate.Util;
 
@@ -44,8 +42,9 @@ namespace NHibernate.Bytecode.Lightweight
 		/// <summary>
 		/// Class constructor.
 		/// </summary>
-		public ReflectionOptimizer(System.Type mappedType, IGetter[] getters, ISetter[] setters,
-									IGetter specializedGetter, ISetter specializedSetter)
+		public ReflectionOptimizer(
+			System.Type mappedType, IGetter[] getters, ISetter[] setters,
+			IGetter specializedGetter, ISetter specializedSetter)
 		{
 			// save off references
 			this.mappedType = mappedType;
@@ -59,13 +58,13 @@ namespace NHibernate.Bytecode.Lightweight
 			var getMethods = new GetPropertyValueInvoker[getters.Length];
 			for (var i = 0; i < getters.Length; i++)
 			{
-				getMethods[i] = GenerateGetPropertyValueMethod(getters[i]) ?? getters[i].Get;
+				getMethods[i] = GenerateGetPropertyValueMethod(getters[i]);
 			}
 
 			var setMethods = new SetPropertyValueInvoker[setters.Length];
 			for (var i = 0; i < setters.Length; i++)
 			{
-				setMethods[i] = GenerateSetPropertyValueMethod(setters[i]) ?? setters[i].Set;
+				setMethods[i] = GenerateSetPropertyValueMethod(setters[i]);
 			}
 
 			accessOptimizer = new AccessOptimizer(
@@ -73,13 +72,8 @@ namespace NHibernate.Bytecode.Lightweight
 				setInvoker,
 				getMethods,
 				setMethods,
-				// 6.0 TODO: Remove ternary ifs once the obsolete constructor is removed
-				specializedGetter != null
-					? GenerateGetPropertyValueMethod(specializedGetter) ?? specializedGetter.Get
-					: null,
-				specializedSetter != null
-					? GenerateSetPropertyValueMethod(specializedSetter) ?? specializedSetter.Set
-					: null
+				GenerateGetPropertyValueMethod(specializedGetter),
+				GenerateSetPropertyValueMethod(specializedSetter)
 			);
 
 			createInstanceMethod = CreateCreateInstanceMethod(mappedType);
@@ -171,7 +165,7 @@ namespace NHibernate.Bytecode.Lightweight
 		{
 			if (!(getter is IOptimizableGetter optimizableGetter))
 			{
-				return null;
+				return getter.Get;
 			}
 
 			var method = CreateDynamicMethod(typeof(object), new[] { typeof(object) });
@@ -191,7 +185,7 @@ namespace NHibernate.Bytecode.Lightweight
 		{
 			if (!(setter is IOptimizableSetter optimizableSetter))
 			{
-				return null;
+				return setter.Set;
 			}
 
 			// void (target, value) { ((ClassType) target).SetMethod((FieldType) value); }
