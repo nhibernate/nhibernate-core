@@ -12,6 +12,7 @@ namespace NHibernate.Bytecode
 	///
 	/// Author: Steve Ebersole
 	/// </summary>
+	[Serializable]
 	public class LazyPropertyDescriptor
 	{
 		public static LazyPropertyDescriptor From(

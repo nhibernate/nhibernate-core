@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +13,7 @@ namespace NHibernate.Bytecode
 	/// 
 	/// Author: Steve Ebersole
 	/// </summary>
+	[Serializable]
 	public class NotInstrumentedException : HibernateException
 	{
 		/// <summary>
@@ -21,5 +23,9 @@ namespace NHibernate.Bytecode
 		public NotInstrumentedException(string message) : base(message)
 		{
 		}
+
+		/// <inheritdoc />
+		protected NotInstrumentedException(SerializationInfo info, StreamingContext context)
+			: base(info, context) {}
 	}
 }

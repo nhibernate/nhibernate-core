@@ -959,11 +959,10 @@ namespace NHibernate.Impl
 					entity = initializer.GetImplementation();
 				}
 
-				var interceptor = FieldInterceptionHelper.ExtractFieldInterceptor(entity);
-				if (interceptor != null)
+				if (entity is IFieldInterceptorAccessor interceptorAccessor && interceptorAccessor.FieldInterceptor != null)
 				{
 					// NH: support of field-interceptor-proxy
-					return interceptor.EntityName;
+					return interceptorAccessor.FieldInterceptor.EntityName;
 				}
 				EntityEntry entry = persistenceContext.GetEntry(entity);
 				if (entry == null)

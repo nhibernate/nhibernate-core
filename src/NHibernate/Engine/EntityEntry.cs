@@ -236,7 +236,7 @@ namespace NHibernate.Engine
 
 			if (Persister.IsInstrumented)
 			{
-				persister.ExtractFieldInterceptor(entity)?.ClearDirty();
+				persister.EntityMetamodel.BytecodeEnhancementMetadata.ExtractInterceptor(entity)?.ClearDirty();
 			}
 		}
 
@@ -268,8 +268,8 @@ namespace NHibernate.Engine
 		{
 			return
 				IsModifiableEntity()
-				&& (Persister.HasMutableProperties || !FieldInterceptionHelper.IsInstrumented(entity)
-				|| Persister.ExtractFieldInterceptor(entity).IsDirty);
+				&& (Persister.HasMutableProperties || !(entity is IFieldInterceptorAccessor interceptorAccessor)
+				|| interceptorAccessor.FieldInterceptor.IsDirty);
 		}
 		
 		/// <summary>

@@ -22,11 +22,13 @@ namespace NHibernate.Intercept
 			return Cfg.Environment.BytecodeProvider.ProxyFactoryFactory.IsInstrumented(entityClass);
 		}
 
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public static bool IsInstrumented(object entity)
 		{
 			return entity is IFieldInterceptorAccessor;
 		}
 
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public static IFieldInterceptor ExtractFieldInterceptor(object entity)
 		{
 			var fieldInterceptorAccessor = entity as IFieldInterceptorAccessor;

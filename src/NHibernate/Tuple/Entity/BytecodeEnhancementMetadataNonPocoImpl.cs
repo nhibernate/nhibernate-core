@@ -13,6 +13,7 @@ namespace NHibernate.Tuple.Entity
 	/// <summary>
 	/// Author: Steve Ebersole
 	/// </summary>
+	[Serializable]
 	public class BytecodeEnhancementMetadataNonPocoImpl : IBytecodeEnhancementMetadata
 	{
 		private readonly string _errorMessage;

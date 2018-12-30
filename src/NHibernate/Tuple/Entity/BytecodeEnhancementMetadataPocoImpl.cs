@@ -11,6 +11,7 @@ namespace NHibernate.Tuple.Entity
 	/// <summary>
 	/// Author: Steve Ebersole
 	/// </summary>
+	[Serializable]
 	public class BytecodeEnhancementMetadataPocoImpl : IBytecodeEnhancementMetadata
 	{
 		private readonly System.Type _entityType;
@@ -68,10 +69,9 @@ namespace NHibernate.Tuple.Entity
 			var lazyAvailable = persistentClass.HasPocoRepresentation
 			                     && FieldInterceptionHelper.IsInstrumented(persistentClass.MappedClass);
 
-			// NH: WARNING if we have to disable lazy/unproxy properties we have to do it in the whole process.
 			var lazy = persistentClass.IsLazy && (!persistentClass.HasPocoRepresentation ||
 			                                      !ReflectHelper.IsFinalClass(persistentClass.ProxyInterface));
-			lazyAvailable &= lazy; // <== Disable lazy properties if the class is marked with lazy=false
+			lazyAvailable &= lazy;
 			if (!lazyAvailable)
 			{
 				return false;
@@ -183,7 +183,12 @@ namespace NHibernate.Tuple.Entity
 		public ISet<string> GetUninitializedLazyProperties(object entity)
 		{
 			var interceptor = LazyPropertiesMetadata.HasLazyProperties ? ExtractInterceptor(entity) : null;
-			return interceptor?.GetUninitializedFields() ?? CollectionHelper.EmptySet<string>();
+			if (interceptor == null)
+			{
+				return CollectionHelper.EmptySet<string>();
+			}
+
+			return interceptor.GetUninitializedFields() ?? LazyPropertiesMetadata.LazyPropertyNames;
 		}
 
 		/// <inheritdoc />

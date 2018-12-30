@@ -299,10 +299,11 @@ namespace NHibernate.Event.Default
 
 		private void MarkInterceptorDirty(object entity, IEntityPersister persister, IEventSource source)
 		{
-			if (FieldInterceptionHelper.IsInstrumented(entity))
+			if (persister.IsInstrumented)
 			{
-				var interceptor = persister.InjectFieldInterceptor(entity, null, null, source);
-				interceptor.MarkDirty();
+				var interceptor = persister.EntityMetamodel.BytecodeEnhancementMetadata
+				                           .InjectInterceptor(entity, false, source);
+				interceptor?.MarkDirty();
 			}
 		}
 

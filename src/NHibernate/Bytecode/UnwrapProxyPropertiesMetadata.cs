@@ -9,6 +9,7 @@ namespace NHibernate.Bytecode
 	/// <summary>
 	/// Information about all properties mapped as lazy="no-proxy" for an entity
 	/// </summary>
+	[Serializable]
 	public class UnwrapProxyPropertiesMetadata
 	{
 		public static UnwrapProxyPropertiesMetadata NonEnhanced(string entityName)

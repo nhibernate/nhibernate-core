@@ -404,11 +404,8 @@ namespace NHibernate.Event.Default
 		{
 			if (persister.IsInstrumented)
 			{
-				var interceptor = persister.ExtractFieldInterceptor(target);
-				if (interceptor != null)
-				{
-					interceptor.MarkDirty();
-				}
+				var interceptor = persister.EntityMetamodel.BytecodeEnhancementMetadata.ExtractInterceptor(target);
+				interceptor?.MarkDirty();
 			}
 		}
 

@@ -684,7 +684,7 @@ namespace NHibernate.Persister.Entity
 			get { return versionColumnName; }
 		}
 
-		// 6.0 TODO: Add into IEntityPersister
+		// 6.0 TODO: Add into IEntityPersister and simplify .EntityMetamodel.BytecodeEnhancementMetadata external calls
 		public IBytecodeEnhancementMetadata InstrumentationMetadata => EntityMetamodel.BytecodeEnhancementMetadata;
 
 		[Obsolete("Please use RootTableName instead.")]
@@ -3932,17 +3932,17 @@ namespace NHibernate.Persister.Entity
 
 		public virtual void AfterReassociate(object entity, ISessionImplementor session)
 		{
-			if (FieldInterceptionHelper.IsInstrumented(entity))
+			if (IsInstrumented)
 			{
-				var interceptor = EntityMetamodel.BytecodeEnhancementMetadata.ExtractInterceptor(entity);
+				var interceptor = InstrumentationMetadata.ExtractInterceptor(entity);
 				if (interceptor != null)
 				{
 					interceptor.Session = session;
 				}
 				else
 				{
-					var fieldInterceptor = EntityMetamodel.BytecodeEnhancementMetadata.InjectInterceptor(entity, false, session);
-					fieldInterceptor.MarkDirty();
+					var fieldInterceptor = InstrumentationMetadata.InjectInterceptor(entity, false, session);
+					fieldInterceptor?.MarkDirty();
 				}
 			}
 		}
@@ -4093,7 +4093,7 @@ namespace NHibernate.Persister.Entity
 
 		public bool IsInstrumented
 		{
-			get { return EntityTuplizer.IsInstrumented; }
+			get { return InstrumentationMetadata.EnhancedForLazyLoading; }
 		}
 
 		public bool HasInsertGeneratedProperties

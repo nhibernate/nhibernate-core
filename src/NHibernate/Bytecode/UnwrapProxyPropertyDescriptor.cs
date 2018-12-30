@@ -10,6 +10,7 @@ namespace NHibernate.Bytecode
 	/// <summary>
 	/// Descriptor for a property which is mapped as lazy="no-proxy"
 	/// </summary>
+	[Serializable]
 	public class UnwrapProxyPropertyDescriptor
 	{
 		public static UnwrapProxyPropertyDescriptor From(
