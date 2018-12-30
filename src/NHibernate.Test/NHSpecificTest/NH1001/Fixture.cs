@@ -65,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			using (ISession session = OpenSession())
 			{
 				var employee = session.Get<Employee>(employeeId);
-				Assert.That(employee.Department, Is.Not.Null);
+				Assert.That(employee.Department, Is.Null);
 				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(1));
 			}
 		}

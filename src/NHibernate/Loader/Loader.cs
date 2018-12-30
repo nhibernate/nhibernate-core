@@ -947,22 +947,40 @@ namespace NHibernate.Loader
 			for (int i = 0; i < cols; i++)
 			{
 				object obj = null;
+				ILoadable persister = persisters[i];
 				EntityKey key = keys[i];
 
-//				if (key == null)
-//				{
-//					// do nothing
-//					/* TODO NH-1001 : if (persisters[i]...EntityType) is an OneToMany or a ManyToOne and
-//					 * the keys.length > 1 and the relation IsIgnoreNotFound probably we are in presence of
-//					 * an load with "outer join" the relation can be considerer loaded even if the key is null (mean not found)
-//					*/
-//				}
-				if(key != null)
+				if (key == null)
+				{
+					if (cols > 1)
+					{
+						/*
+						* the keys.length > 1 and the relation IsIgnoreNotFound probably we are in presence of
+						* an load with "outer join" the relation can be considerer loaded even if the key is null (mean not found)
+						*/
+						for (int j = 0; j < persisters.Length; j++)
+						{
+							if (i == j)
+							{
+								continue;
+							}
+
+							IType type = persisters[j].PropertyTypes.FirstOrDefault(x => x.Name == persister.EntityName);
+
+							if (type is ManyToOneType many && many.IsNullable && many.IsNullable)
+							{
+								key = new EntityKey(null, persister);
+								session.PersistenceContext.NullifiableEntityKeys.Add(key);
+							}
+
+						}
+					}
+				}
+				else
 				{
 					//If the object is already loaded, return the loaded one
 					obj = session.GetEntityUsingInterceptor(key);
-					var alreadyLoaded = obj != null;
-					var persister = persisters[i];
+					bool alreadyLoaded = obj != null;
 					if (IsChildFetchEntity(i))
 					{
 						if (!alreadyLoaded && mustLoadMissingEntity)

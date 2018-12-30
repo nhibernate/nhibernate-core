@@ -8,6 +8,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NHibernate.Type
 {
@@ -87,6 +88,11 @@ namespace NHibernate.Type
 
 		public virtual bool IsNull(object owner, ISessionImplementor session)
 		{
+			if (!string.IsNullOrEmpty(associatedEntityName) && session.PersistenceContext.NullifiableEntityKeys.Any(x => x.EntityName == associatedEntityName))
+			{
+				return true;
+			}
+
 			return false;
 		}
 
