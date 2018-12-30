@@ -91,7 +91,6 @@ namespace NHibernate.Type
 			object id = GetIdentifierOrUniqueKeyType(session.Factory)
 				.NullSafeGet(rs, names, session, owner);
 			ScheduleBatchLoadIfNeeded(id, session);
-
 			return id;
 		}
 

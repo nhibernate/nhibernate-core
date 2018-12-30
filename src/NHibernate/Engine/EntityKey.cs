@@ -37,7 +37,7 @@ namespace NHibernate.Engine
 		/// <param name="factory">The session factory </param>
 		private EntityKey(object identifier, string rootEntityName, string entityName, IType identifierType, bool batchLoadable, ISessionFactoryImplementor factory)
 		{
-			this.identifier = identifier;
+			this.identifier = identifier ?? throw new AssertionFailure("null identifier");
 			this.rootEntityName = rootEntityName;
 			this.entityName = entityName;
 			this.identifierType = identifierType;

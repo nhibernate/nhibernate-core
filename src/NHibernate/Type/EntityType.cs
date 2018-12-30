@@ -88,11 +88,22 @@ namespace NHibernate.Type
 
 		public virtual bool IsNull(object owner, ISessionImplementor session)
 		{
-			if (!string.IsNullOrEmpty(associatedEntityName) && session.PersistenceContext.NullifiableEntityKeys.Any(x => x.EntityName == associatedEntityName))
+			if (IsNullable && !string.IsNullOrEmpty(associatedEntityName))
 			{
-				return true;
-			}
+				EntityEntry entry = session.PersistenceContext.GetEntry(owner);
+				int position = -1;
+				for (int i = 0; i < entry.Persister.PropertyTypes.Length; i++)
+				{
+					if (entry.Persister.PropertyTypes[i].Name == associatedEntityName)
+					{
+						position = i;
+						break;
+					}
+				}
 
+				return session.PersistenceContext.IsPropertyNull(entry.EntityKey,entry.Persister.PropertyNames[position]);
+			}
+			
 			return false;
 		}
 
