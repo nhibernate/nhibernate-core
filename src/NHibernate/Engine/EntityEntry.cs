@@ -268,8 +268,8 @@ namespace NHibernate.Engine
 		{
 			return
 				IsModifiableEntity()
-				&& (Persister.HasMutableProperties || !(entity is IFieldInterceptorAccessor interceptorAccessor)
-				|| interceptorAccessor.FieldInterceptor.IsDirty);
+				&& (Persister.HasMutableProperties || !Persister.IsInstrumented
+				|| (Persister.EntityMetamodel.BytecodeEnhancementMetadata.ExtractInterceptor(entity)?.IsDirty ?? true));
 		}
 		
 		/// <summary>
