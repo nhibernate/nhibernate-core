@@ -218,7 +218,7 @@ namespace NHibernate.Type
 
 		public virtual int GetHashCode(object x)
 		{
-			return 	x.GetHashCode();
+			return x.GetHashCode();
 		}
 
 		public virtual int GetHashCode(object x, ISessionFactoryImplementor factory)
