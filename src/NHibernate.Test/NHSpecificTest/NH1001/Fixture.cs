@@ -55,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 		}
 
 		[Test]
-		public void Test()
+		public void DepartmentIsNull()
 		{
 			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID = 99999 WHERE EMPLOYEE_ID = {employeeId}");
 
@@ -66,6 +66,22 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			{
 				var employee = session.Get<Employee>(employeeId);
 				Assert.That(employee.Department, Is.Null);
+				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(1));
+			}
+		}
+		
+		[Test]
+		public void DepartmentIsNotNull()
+		{
+			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID = 11 WHERE EMPLOYEE_ID = {employeeId}");
+
+			IStatistics statistics = Sfi.Statistics;
+			statistics.Clear();
+
+			using (ISession session = OpenSession())
+			{
+				var employee = session.Get<Employee>(employeeId);
+				Assert.That(employee.Department, Is.Not.Null);
 				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(1));
 			}
 		}
