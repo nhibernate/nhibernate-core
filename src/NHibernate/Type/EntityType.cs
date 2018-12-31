@@ -101,7 +101,7 @@ namespace NHibernate.Type
 					}
 				}
 
-				return session.PersistenceContext.IsPropertyNull(entry.EntityKey,entry.Persister.PropertyNames[position]);
+				return position > -1 && session.PersistenceContext.IsPropertyNull(entry.EntityKey,entry.Persister.PropertyNames[position]);
 			}
 			
 			return false;
