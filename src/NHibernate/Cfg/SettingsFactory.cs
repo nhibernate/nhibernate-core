@@ -24,7 +24,7 @@ namespace NHibernate.Cfg
 	public sealed class SettingsFactory
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SettingsFactory));
-		private static readonly string DefaultCacheProvider = typeof(NoCacheProvider).AssemblyQualifiedName;
+		private static readonly System.Type DefaultCacheProvider = typeof(NoCacheProvider);
 
 		public Settings BuildSettings(IDictionary<string, string> properties)
 		{
@@ -210,19 +210,11 @@ namespace NHibernate.Cfg
 
 			if (useQueryCache)
 			{
-				string queryCacheFactoryClassName = PropertiesHelper.GetString(Environment.QueryCacheFactory, properties,
-				                                                               typeof (StandardQueryCacheFactory).FullName);
-				log.Info("query cache factory: {0}", queryCacheFactoryClassName);
-				try
-				{
-					settings.QueryCacheFactory =
-						(IQueryCacheFactory)
-						Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(queryCacheFactoryClassName));
-				}
-				catch (Exception cnfe)
-				{
-					throw new HibernateException("could not instantiate IQueryCacheFactory: " + queryCacheFactoryClassName, cnfe);
-				}
+				settings.QueryCacheFactory = PropertiesHelper.GetInstance<IQueryCacheFactory>(
+					Environment.QueryCacheFactory,
+					properties,
+					typeof(StandardQueryCacheFactory));
+				log.Info("query cache factory: {0}", settings.QueryCacheFactory.GetType().AssemblyQualifiedName);
 			}
 
 			string sessionFactoryName = PropertiesHelper.GetString(Environment.SessionFactoryName, properties, null);
@@ -312,31 +304,42 @@ namespace NHibernate.Cfg
 
 		private static IBatcherFactory CreateBatcherFactory(IDictionary<string, string> properties, int batchSize, IConnectionProvider connectionProvider)
 		{
-			System.Type tBatcher = typeof (NonBatchingBatcherFactory);
-			string batcherClass = PropertiesHelper.GetString(Environment.BatchStrategy, properties, null);
+			System.Type tBatcher = null;
+			var batcherClass = PropertiesHelper.GetString(Environment.BatchStrategy, properties, null);
 			if (string.IsNullOrEmpty(batcherClass))
 			{
 				if (batchSize > 0)
 				{
 					// try to get the BatcherFactory from the Drive if not available use NonBatchingBatcherFactory
-					IEmbeddedBatcherFactoryProvider ebfp = connectionProvider.Driver as IEmbeddedBatcherFactoryProvider;
-					if (ebfp != null && ebfp.BatcherFactoryClass != null)
+					if (connectionProvider.Driver is IEmbeddedBatcherFactoryProvider ebfp && ebfp.BatcherFactoryClass != null)
+					{
 						tBatcher = ebfp.BatcherFactoryClass;
+					}
 				}
 			}
 			else
 			{
 				tBatcher = ReflectHelper.ClassForName(batcherClass);
 			}
-			log.Info("Batcher factory: {0}", tBatcher.AssemblyQualifiedName);
+
+			IBatcherFactory instance = null;
 			try
 			{
-				return (IBatcherFactory) Environment.ObjectsFactory.CreateInstance(tBatcher);
+				if (tBatcher == null)
+				{
+					instance = (IBatcherFactory) Environment.ServiceProvider.GetService(typeof(IBatcherFactory));
+				}
+				if (instance == null)
+				{
+					instance = (IBatcherFactory) Environment.ServiceProvider.GetMandatoryService(tBatcher ?? typeof(NonBatchingBatcherFactory));
+				}
 			}
 			catch (Exception cnfe)
 			{
 				throw new HibernateException("Could not instantiate BatcherFactory: " + batcherClass, cnfe);
 			}
+			log.Info("Batcher factory: {0}", instance.GetType().AssemblyQualifiedName);
+			return instance;
 		}
 
 		private static string EnabledDisabled(bool value)
@@ -346,36 +349,23 @@ namespace NHibernate.Cfg
 
 		private static ICacheProvider CreateCacheProvider(IDictionary<string, string> properties)
 		{
-			string cacheClassName = PropertiesHelper.GetString(Environment.CacheProvider, properties, DefaultCacheProvider);
-			log.Info("cache provider: {0}", cacheClassName);
-			try
-			{
-				return
-					(ICacheProvider)
-					Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(cacheClassName));
-			}
-			catch (Exception e)
-			{
-				throw new HibernateException("could not instantiate CacheProvider: " + cacheClassName, e);
-			}
+			var instance = PropertiesHelper.GetInstance<ICacheProvider>(
+				Environment.CacheProvider,
+				properties,
+				DefaultCacheProvider);
+			log.Info("cache provider: {0}", instance.GetType().AssemblyQualifiedName);
+			return instance;
 		}
 
 		// visibility changed and static modifier added until complete H3.2 porting of SettingsFactory
 		private static IQueryTranslatorFactory CreateQueryTranslatorFactory(IDictionary<string, string> properties)
 		{
-			string className = PropertiesHelper.GetString(
-				Environment.QueryTranslator, properties, typeof(Hql.Ast.ANTLR.ASTQueryTranslatorFactory).FullName);
-			log.Info("Query translator: {0}", className);
-			try
-			{
-				return
-					(IQueryTranslatorFactory)
-					Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
-			}
-			catch (Exception cnfe)
-			{
-				throw new HibernateException("could not instantiate QueryTranslatorFactory: " + className, cnfe);
-			}
+			var instance = PropertiesHelper.GetInstance<IQueryTranslatorFactory>(
+				Environment.QueryTranslator,
+				properties,
+				typeof(Hql.Ast.ANTLR.ASTQueryTranslatorFactory));
+			log.Info("Query translator: {0}", instance.GetType().AssemblyQualifiedName);
+			return instance;
 		}
 
 		private static System.Type CreateLinqQueryProviderType(IDictionary<string, string> properties)
@@ -395,43 +385,23 @@ namespace NHibernate.Cfg
 
 		private static ITransactionFactory CreateTransactionFactory(IDictionary<string, string> properties)
 		{
-			string className = PropertiesHelper.GetString(
-				Environment.TransactionStrategy, properties, typeof(AdoNetWithSystemTransactionFactory).FullName);
-			log.Info("Transaction factory: {0}", className);
-
-			try
-			{
-				var transactionFactory =
-					(ITransactionFactory)
-					Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
-				transactionFactory.Configure(properties);
-				return transactionFactory;
-			}
-			catch (Exception cnfe)
-			{
-				throw new HibernateException("could not instantiate TransactionFactory: " + className, cnfe);
-			}
+			var instance = PropertiesHelper.GetInstance<ITransactionFactory>(
+				Environment.TransactionStrategy,
+				properties,
+				typeof(AdoNetWithSystemTransactionFactory));
+			instance.Configure(properties);
+			log.Info("Transaction factory: {0}", instance.GetType().AssemblyQualifiedName);
+			return instance;
 		}
 
 		private static IQueryModelRewriterFactory CreateQueryModelRewriterFactory(IDictionary<string, string> properties)
 		{
-			string className = PropertiesHelper.GetString(Environment.QueryModelRewriterFactory, properties, null);
-
-			if (className == null)
-				return null;
-
-			log.Info("Query model rewriter factory factory: {0}", className);
-
-			try
-			{
-				return
-					(IQueryModelRewriterFactory)
-					Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
-			}
-			catch (Exception cnfe)
-			{
-				throw new HibernateException("could not instantiate IQueryModelRewriterFactory: " + className, cnfe);
-			}
+			var instance = PropertiesHelper.GetInstance<IQueryModelRewriterFactory>(
+				Environment.QueryModelRewriterFactory,
+				properties,
+				null);
+			log.Info("Query model rewriter factory factory: '{0}'", instance?.GetType().AssemblyQualifiedName ?? "none");
+			return instance;
 		}
 	}
 }

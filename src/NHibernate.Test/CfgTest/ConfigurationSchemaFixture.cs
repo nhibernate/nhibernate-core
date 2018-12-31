@@ -73,14 +73,14 @@ namespace NHibernate.Test.CfgTest
 		}
 
 		[Test]
-		public void ObjectsFactory()
+		public void ServiceProvider()
 		{
 			Assume.That(TestsContext.ExecutingWithVsTest, Is.False);
 
 			var xml =
 				@"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
-		<objects-factory type='test'/>
+		<service-provider type='test'/>
 		<session-factory>
 		</session-factory>
 </hibernate-configuration>";
@@ -89,11 +89,11 @@ namespace NHibernate.Test.CfgTest
 			using (var xtr = new XmlTextReader(xml, XmlNodeType.Document, null))
 			{
 				hc = new HibernateConfiguration(xtr);
-				Assert.That(hc.ObjectsFactoryType, Is.Null);
+				Assert.That(hc.ServiceProviderType, Is.Null);
 			}
 
 			hc = HibernateConfiguration.FromAppConfig(xml);
-			Assert.That(hc.ObjectsFactoryType, Is.EqualTo("test"));
+			Assert.That(hc.ServiceProviderType, Is.EqualTo("test"));
 		}
 
 		[Test]

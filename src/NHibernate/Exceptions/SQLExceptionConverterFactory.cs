@@ -37,11 +37,21 @@ namespace NHibernate.Exceptions
 		{
 			ISQLExceptionConverter converter = null;
 
-			string converterClassName;
-			properties.TryGetValue(Cfg.Environment.SqlExceptionConverter, out converterClassName);
+			properties.TryGetValue(Cfg.Environment.SqlExceptionConverter, out var converterClassName);
 			if (!string.IsNullOrEmpty(converterClassName))
 			{
 				converter = ConstructConverter(converterClassName, dialect.ViolatedConstraintNameExtracter);
+			}
+			else
+			{
+				try
+				{
+					converter = (ISQLExceptionConverter) Cfg.Environment.ServiceProvider.GetService(typeof(ISQLExceptionConverter));
+				}
+				catch (Exception t)
+				{
+					log.Warn(t, "Unable to construct instance of specified SQLExceptionConverter");
+				}
 			}
 
 			if (converter == null)
@@ -105,7 +115,7 @@ namespace NHibernate.Exceptions
 				}
 
 				// Otherwise, try to use the no-arg constructor
-				return (ISQLExceptionConverter) Cfg.Environment.ObjectsFactory.CreateInstance(converterClass);
+				return (ISQLExceptionConverter) Cfg.Environment.ServiceProvider.GetMandatoryService(converterClass);
 			}
 			catch (Exception t)
 			{

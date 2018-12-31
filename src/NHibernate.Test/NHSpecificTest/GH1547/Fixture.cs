@@ -132,7 +132,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1547
 
 		public DriverForSubstitutedCommand()
 		{
-			_driverImplementation = (IDriver) Cfg.Environment.ObjectsFactory.CreateInstance(DriverClass);
+			_driverImplementation = (IDriver) Cfg.Environment.ServiceProvider.GetService(DriverClass) ??
+			                        throw new InvalidOperationException($"Driver {DriverClass} is not registered.");
 		}
 
 		DbCommand IDriver.GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)

@@ -572,7 +572,7 @@ namespace NHibernate.Type
 			{
 				try
 				{
-					type = (IType) Environment.ObjectsFactory.CreateInstance(typeClass);
+					type = (IType) Environment.ServiceProvider.GetMandatoryService(typeClass);
 				}
 				catch (Exception e)
 				{

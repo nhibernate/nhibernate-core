@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 using NHibernate.Util;
@@ -13,37 +12,20 @@ namespace NHibernate.Connection
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ConnectionProviderFactory));
 
-		// cannot be instantiated
 		public static IConnectionProvider NewConnectionProvider(IDictionary<string, string> settings)
 		{
-			IConnectionProvider connections;
-			string providerClass;
-			if (settings.TryGetValue(Environment.ConnectionProvider, out providerClass))
-			{
-				try
-				{
-					log.Info("Initializing connection provider: {0}", providerClass);
-					connections =
-						(IConnectionProvider)
-						Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(providerClass));
-				}
-				catch (Exception e)
-				{
-					log.Fatal(e, "Could not instantiate connection provider");
-					throw new HibernateException("Could not instantiate connection provider: " + providerClass, e);
-				}
-			}
-			else if (settings.ContainsKey(Environment.ConnectionString) || settings.ContainsKey(Environment.ConnectionStringName))
-			{
-				connections = new DriverConnectionProvider();
-			}
-			else
-			{
-				log.Info("No connection provider specified, UserSuppliedConnectionProvider will be used.");
-				connections = new UserSuppliedConnectionProvider();
-			}
-			connections.Configure(settings);
-			return connections;
+			var defaultConnectionProvider =
+				settings.ContainsKey(Environment.ConnectionString) ||
+				settings.ContainsKey(Environment.ConnectionStringName)
+					? typeof(DriverConnectionProvider)
+					: typeof(UserSuppliedConnectionProvider);
+			var connectionProvider = PropertiesHelper.GetInstance<IConnectionProvider>(
+				Environment.ConnectionProvider,
+				settings,
+				defaultConnectionProvider);
+			log.Info("Connection provider: '{0}'", connectionProvider.GetType().AssemblyQualifiedName);
+			connectionProvider.Configure(settings);
+			return connectionProvider;
 		}
 	}
 }

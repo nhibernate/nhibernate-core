@@ -1942,7 +1942,7 @@ namespace NHibernate.Cfg
 				{
 					try
 					{
-						listeners[i] = Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(listenerClasses[i]));
+						listeners[i] = Environment.ServiceProvider.GetMandatoryService(ReflectHelper.ClassForName(listenerClasses[i]));
 					}
 					catch (Exception e)
 					{

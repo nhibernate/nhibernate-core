@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Bytecode;
 using NHibernate.Engine;
 
@@ -46,7 +47,7 @@ namespace NHibernate.Context
 
 	/// <summary>
 	/// An <see cref="ICurrentSessionContext"/> allowing to set its session factory. Implementing
-	/// this interface allows the <see cref="IObjectsFactory"/> to be used for instantiating the
+	/// this interface allows the <see cref="IServiceProvider"/> to be used for instantiating the
 	/// session context.
 	/// </summary>
 	public interface ISessionFactoryAwareCurrentSessionContext : ICurrentSessionContext

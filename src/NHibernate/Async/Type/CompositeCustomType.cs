@@ -16,6 +16,7 @@ using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
+using NHibernate.Util;
 using System.Collections.Generic;
 
 namespace NHibernate.Type

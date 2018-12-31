@@ -558,7 +558,8 @@ namespace NHibernate.Test.TypesTest
 
 		public ClientDriverWithParamsStats()
 		{
-			_driverImplementation = (IDriver) Cfg.Environment.ObjectsFactory.CreateInstance(DriverClass);
+			_driverImplementation = (IDriver) Cfg.Environment.ServiceProvider.GetService(DriverClass) ??
+			                        throw new InvalidOperationException($"Driver {DriverClass} is not registered.");
 		}
 
 		private static void Inc<T>(T type, IDictionary<T, int> dic)

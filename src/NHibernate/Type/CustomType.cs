@@ -34,7 +34,7 @@ namespace NHibernate.Type
 
 			try
 			{
-				userType = (IUserType) Cfg.Environment.ObjectsFactory.CreateInstance(userTypeClass);
+				userType = (IUserType) Cfg.Environment.ServiceProvider.GetMandatoryService(userTypeClass);
 			}
 			catch (ArgumentNullException ane)
 			{

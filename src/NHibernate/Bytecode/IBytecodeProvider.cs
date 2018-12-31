@@ -28,7 +28,7 @@ namespace NHibernate.Bytecode
 		/// For entities <see cref="IReflectionOptimizer"/> and its implementations.
 		/// </remarks>
 		// Since 5.2
-		[Obsolete("Please use NHibernate.Cfg.Environment.ObjectsFactory instead")]
+		[Obsolete("Please use NHibernate.Cfg.Environment.ServiceProvider instead")]
 		IObjectsFactory ObjectsFactory { get; }
 
 		/// <summary>

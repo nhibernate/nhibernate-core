@@ -147,16 +147,7 @@ namespace NHibernate.Dialect
 		/// <returns> The specified Dialect </returns>
 		public static Dialect GetDialect()
 		{
-			string dialectName;
-			try
-			{
-				dialectName = Environment.Properties[Environment.Dialect];
-			}
-			catch (Exception e)
-			{
-				throw new HibernateException("The dialect was not set. Set the property 'dialect'.", e);
-			}
-			return InstantiateDialect(dialectName, Environment.Properties);
+			return GetDialect(Environment.Properties);
 		}
 
 		/// <summary>
@@ -170,29 +161,19 @@ namespace NHibernate.Dialect
 		{
 			if (props == null)
 				throw new ArgumentNullException(nameof(props));
-			string dialectName;
-			if (props.TryGetValue(Environment.Dialect, out dialectName) == false)
+			if (props.TryGetValue(Environment.Dialect, out var dialectName) && dialectName == null)
+				props = Environment.Properties;
+			
+			var dialect = PropertiesHelper.GetInstance<Dialect>(
+				Environment.Dialect,
+				props,
+				null);
+
+			if (dialect == null)
 				throw new InvalidOperationException("Could not find the dialect in the configuration");
-			if (dialectName == null)
-			{
-				return GetDialect();
-			}
 
-			return InstantiateDialect(dialectName, props);
-		}
-
-		private static Dialect InstantiateDialect(string dialectName, IDictionary<string, string> props)
-		{
-			try
-			{
-				var dialect = (Dialect)Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(dialectName));
-				dialect.Configure(props);
-				return dialect;
-			}
-			catch (Exception e)
-			{
-				throw new HibernateException("Could not instantiate dialect class " + dialectName, e);
-			}
+			dialect.Configure(props);
+			return dialect;
 		}
 
 		/// <summary>

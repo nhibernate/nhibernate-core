@@ -14,6 +14,7 @@ using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.UserTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {

@@ -21,11 +21,11 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element ref="objects-factory" minOccurs="0" maxOccurs="1" >
+				<xs:element ref="service-provider" minOccurs="0" maxOccurs="1" >
 					<xs:annotation>
 						<xs:documentation>
-							Specify the AssemblyQualifiedName of your custom objects-factory (implementation of IObjectsFactory).
-							Note: the objects-factory will be effective only when specified in the app.config or web.config.
+							Specify the AssemblyQualifiedName of your custom service-provider (implementation of IServiceProvider).
+							Note: the service-provider will be effective only when specified in the app.config or web.config.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
@@ -361,7 +361,7 @@
 			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="objects-factory">
+	<xs:element name="service-provider">
 		<xs:complexType>
 			<xs:sequence />
 			<xs:attribute name="type" type="xs:string" />

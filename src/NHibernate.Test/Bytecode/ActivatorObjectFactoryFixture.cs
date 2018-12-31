@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Bytecode
 {
-	[TestFixture]
+	[TestFixture, Obsolete]
 	public class ActivatorObjectFactoryFixture
 	{
 		public class WithOutPublicParameterLessCtor

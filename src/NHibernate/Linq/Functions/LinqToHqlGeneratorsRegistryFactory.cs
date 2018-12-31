@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 using NHibernate.Util;
@@ -12,21 +11,12 @@ namespace NHibernate.Linq.Functions
 
 		public static ILinqToHqlGeneratorsRegistry CreateGeneratorsRegistry(IDictionary<string, string> properties)
 		{
-			string registry;
-			if (properties.TryGetValue(Environment.LinqToHqlGeneratorsRegistry, out registry))
-			{
-				try
-				{
-					log.Info("Initializing LinqToHqlGeneratorsRegistry: {0}", registry);
-					return (ILinqToHqlGeneratorsRegistry) Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(registry));
-				}
-				catch (Exception e)
-				{
-					log.Fatal(e, "Could not instantiate LinqToHqlGeneratorsRegistry");
-					throw new HibernateException("Could not instantiate LinqToHqlGeneratorsRegistry: " + registry, e);
-				}
-			}
-			return new DefaultLinqToHqlGeneratorsRegistry();
+			var instance = PropertiesHelper.GetInstance<ILinqToHqlGeneratorsRegistry>(
+				Environment.LinqToHqlGeneratorsRegistry,
+				properties,
+				typeof(DefaultLinqToHqlGeneratorsRegistry));
+			log.Info("LinqToHqlGeneratorsRegistry: '{0}'", instance.GetType().AssemblyQualifiedName);
+			return instance;
 		}
 	}
 }
