@@ -38,7 +38,7 @@ namespace NHibernate.Bytecode.Lightweight
 			: this(mappedType, getters, setters, null, null)
 		{
 		}
-		
+
 		/// <summary>
 		/// Class constructor.
 		/// </summary>
@@ -163,10 +163,10 @@ namespace NHibernate.Bytecode.Lightweight
 
 		private GetPropertyValueInvoker GenerateGetPropertyValueMethod(IGetter getter)
 		{
+			if (getter == null)
+				return null;
 			if (!(getter is IOptimizableGetter optimizableGetter))
-			{
 				return getter.Get;
-			}
 
 			var method = CreateDynamicMethod(typeof(object), new[] { typeof(object) });
 			var il = method.GetILGenerator();
@@ -183,10 +183,10 @@ namespace NHibernate.Bytecode.Lightweight
 
 		private SetPropertyValueInvoker GenerateSetPropertyValueMethod(ISetter setter)
 		{
+			if (setter == null)
+				return null;
 			if (!(setter is IOptimizableSetter optimizableSetter))
-			{
 				return setter.Set;
-			}
 
 			// void (target, value) { ((ClassType) target).SetMethod((FieldType) value); }
 			var method = CreateDynamicMethod(null, new[] { typeof(object), typeof(object) });
