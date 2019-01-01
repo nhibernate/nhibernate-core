@@ -12,6 +12,7 @@ using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Runtime.Serialization;
+using NHibernate.Bytecode.Lightweight;
 
 namespace NHibernate.Tuple.Entity
 {
@@ -27,6 +28,8 @@ namespace NHibernate.Tuple.Entity
 		[NonSerialized]
 		private IReflectionOptimizer optimizer;
 		private readonly IProxyValidator proxyValidator;
+		[NonSerialized]
+		private bool isBytecodeProviderImpl; // 6.0 TODO: remove
 
 		[OnDeserialized]
 		internal void OnDeserialized(StreamingContext context)
@@ -46,7 +49,8 @@ namespace NHibernate.Tuple.Entity
 			if (Cfg.Environment.UseReflectionOptimizer)
 			{
 				// NH different behavior fo NH-1587
-				optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(mappedClass, getters, setters);
+				optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(mappedClass, getters, setters, idGetter, idSetter);
+				isBytecodeProviderImpl = Cfg.Environment.BytecodeProvider is BytecodeProviderImpl;
 			}
 		}
 		public PocoEntityTuplizer(EntityMetamodel entityMetamodel, PersistentClass mappedEntity)
@@ -217,6 +221,16 @@ namespace NHibernate.Tuple.Entity
 			}
 		}
 
+		public override object GetPropertyValue(object entity, int i)
+		{
+			if (isBytecodeProviderImpl && optimizer?.AccessOptimizer != null)
+			{
+				return optimizer.AccessOptimizer.GetPropertyValue(entity, i);
+			}
+
+			return base.GetPropertyValue(entity, i);
+		}
+
 		public override object[] GetPropertyValues(object entity)
 		{
 			if (ShouldGetAllProperties(entity) && optimizer != null && optimizer.AccessOptimizer != null)
@@ -274,6 +288,17 @@ namespace NHibernate.Tuple.Entity
 			get { return islifecycleImplementor; }
 		}
 
+		public override void SetPropertyValue(object entity, int i, object value)
+		{
+			if (isBytecodeProviderImpl && optimizer?.AccessOptimizer != null)
+			{
+				optimizer.AccessOptimizer.SetPropertyValue(entity, i, value);
+				return;
+			}
+
+			base.SetPropertyValue(entity, i, value);
+		}
+
 		public override void SetPropertyValues(object entity, object[] values)
 		{
 			if (!EntityMetamodel.HasLazyProperties && optimizer != null && optimizer.AccessOptimizer != null)
@@ -315,6 +340,27 @@ namespace NHibernate.Tuple.Entity
 			{
 				optimizer = null;
 			}
+		}
+
+		protected override object GetIdentifierPropertyValue(object entity)
+		{
+			if (isBytecodeProviderImpl && optimizer?.AccessOptimizer != null)
+			{
+				return optimizer.AccessOptimizer.GetSpecializedPropertyValue(entity);
+			}
+
+			return base.GetIdentifierPropertyValue(entity);
+		}
+
+		protected override void SetIdentifierPropertyValue(object entity, object value)
+		{
+			if (isBytecodeProviderImpl && optimizer?.AccessOptimizer != null)
+			{
+				optimizer.AccessOptimizer.SetSpecializedPropertyValue(entity, value);
+				return;
+			}
+
+			base.SetIdentifierPropertyValue(entity, value);
 		}
 	}
 }

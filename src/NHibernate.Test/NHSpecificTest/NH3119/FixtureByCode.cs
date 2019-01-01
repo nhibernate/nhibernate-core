@@ -131,7 +131,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3119
 		public static bool IsCalledForComponent { get; set; }
 		
 		public ComponentTestReflectionOptimizer(System.Type mappedType, IGetter[] getters, ISetter[] setters) :
-			base(mappedType, getters, setters)
+			base(mappedType, getters, setters, null, null)
 		{
 			_logCall = mappedType == typeof(Component);
 		}

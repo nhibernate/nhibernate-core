@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -17,8 +18,8 @@ namespace NHibernate.Tuple.Entity
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(AbstractEntityTuplizer));
 		private readonly EntityMetamodel entityMetamodel;
-		private readonly IGetter idGetter;
-		private readonly ISetter idSetter;
+		protected readonly IGetter idGetter;
+		protected readonly ISetter idSetter;
 
 		protected int propertySpan;
 		protected IGetter[] getters;
@@ -137,7 +138,7 @@ namespace NHibernate.Tuple.Entity
 				}
 				else
 				{
-					id = idGetter.Get(entity);
+					id = GetIdentifierPropertyValue(entity);
 				}
 			}
 
@@ -156,7 +157,7 @@ namespace NHibernate.Tuple.Entity
 			}
 			else if (idSetter != null)
 			{
-				idSetter.Set(entity, id);
+				SetIdentifierPropertyValue(entity, id);
 			}
 		}
 
@@ -180,17 +181,17 @@ namespace NHibernate.Tuple.Entity
 		{
 			if (!entityMetamodel.IsVersioned)
 				return null;
-			return getters[entityMetamodel.VersionPropertyIndex].Get(entity);
+			return GetPropertyValue(entity, entityMetamodel.VersionPropertyIndex);
 		}
 
-		public void SetPropertyValue(object entity, int i, object value)
+		public virtual void SetPropertyValue(object entity, int i, object value)
 		{
 			setters[i].Set(entity, value);
 		}
 
 		public void SetPropertyValue(object entity, string propertyName, object value)
 		{
-			setters[entityMetamodel.GetPropertyIndex(propertyName)].Set(entity, value);
+			SetPropertyValue(entity, entityMetamodel.GetPropertyIndex(propertyName), value);
 		}
 
 		public virtual object[] GetPropertyValuesToInsert(object entity, IDictionary mergeMap, ISessionImplementor session)
@@ -265,7 +266,7 @@ namespace NHibernate.Tuple.Entity
 				StandardProperty property = entityMetamodel.Properties[j];
 				if (!uninitializedPropNames.Contains(property.Name) || !property.IsLazy)
 				{
-					result[j] = getters[j].Get(entity);
+					result[j] = GetPropertyValue(entity, j);
 				}
 				else
 				{
@@ -283,7 +284,7 @@ namespace NHibernate.Tuple.Entity
 			{
 				if (setAll || !Equals(LazyPropertyInitializer.UnfetchedProperty, values[j]))
 				{
-					setters[j].Set(entity, values[j]);
+					SetPropertyValue(entity, j, values[j]);
 				}
 			}
 		}
@@ -304,6 +305,16 @@ namespace NHibernate.Tuple.Entity
 		}
 
 		#endregion
+
+		protected virtual object GetIdentifierPropertyValue(object entity)
+		{
+			return idGetter.Get(entity);
+		}
+
+		protected virtual void SetIdentifierPropertyValue(object entity, object value)
+		{
+			idSetter.Set(entity, value);
+		}
 
 		/// <summary> Return the entity-mode handled by this tuplizer instance. </summary>
 		public abstract EntityMode EntityMode { get;}
