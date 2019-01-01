@@ -36,6 +36,7 @@ using Array=System.Array;
 using Property=NHibernate.Mapping.Property;
 using NHibernate.SqlTypes;
 using System.Linq;
+using NHibernate.Bytecode;
 
 namespace NHibernate.Persister.Entity
 {

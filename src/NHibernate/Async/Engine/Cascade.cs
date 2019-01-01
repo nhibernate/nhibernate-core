@@ -60,7 +60,7 @@ namespace NHibernate.Engine
 
 				IType[] types = persister.PropertyTypes;
 				CascadeStyle[] cascadeStyles = persister.PropertyCascadeStyles;
-				var uninitializedLazyProperties = persister.GetUninitializedLazyProperties(parent);
+				var uninitializedLazyProperties = persister.EntityMetamodel.BytecodeEnhancementMetadata.GetUninitializedLazyProperties(parent);
 				for (int i = 0; i < types.Length; i++)
 				{
 					CascadeStyle style = cascadeStyles[i];

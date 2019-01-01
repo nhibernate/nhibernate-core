@@ -119,23 +119,4 @@ namespace NHibernate.Tuple.Entity
 		/// <returns> True if uninitialized lazy properties were found; false otherwise. </returns>
 		bool HasUninitializedLazyProperties(object entity);
 	}
-
-	internal static class EntityTuplizerExtensions
-	{
-		//6.0 TODO: Merge into IEntityTuplizer
-		internal static ISet<string> GetUninitializedLazyProperties(this IEntityTuplizer entityTuplizer, object entity)
-		{
-			if (entityTuplizer is AbstractEntityTuplizer abstractEntityTuplizer)
-			{
-				return abstractEntityTuplizer.GetUninitializedLazyProperties(entity);
-			}
-
-			if (!entityTuplizer.HasUninitializedLazyProperties(entity))
-			{
-				return CollectionHelper.EmptySet<string>();
-			}
-
-			return null; // The caller should use all lazy properties as the result
-		}
-	}
 }
