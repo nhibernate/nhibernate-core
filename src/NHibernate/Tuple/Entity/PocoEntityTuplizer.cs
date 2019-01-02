@@ -97,12 +97,12 @@ namespace NHibernate.Tuple.Entity
 			if (optimizer == null)
 			{
 				log.Debug("Create Instantiator without optimizer for:{0}", persistentClass.MappedClass.FullName);
-				return new PocoInstantiator(persistentClass, null, ProxyFactory, IsInstrumented);
+				return new PocoEntityInstantiator(EntityMetamodel, persistentClass, null, ProxyFactory);
 			}
 			else
 			{
 				log.Debug("Create Instantiator using optimizer for:{0}", persistentClass.MappedClass.FullName);
-				return new PocoInstantiator(persistentClass, optimizer.InstantiationOptimizer, ProxyFactory, IsInstrumented);
+				return new PocoEntityInstantiator(EntityMetamodel, persistentClass, optimizer.InstantiationOptimizer, ProxyFactory);
 			}
 		}
 
@@ -217,7 +217,17 @@ namespace NHibernate.Tuple.Entity
 		{
 			if (IsInstrumented)
 			{
-				EntityMetamodel.BytecodeEnhancementMetadata.InjectInterceptor(entity, lazyPropertiesAreUnfetched, session);
+				var interceptor = EntityMetamodel.BytecodeEnhancementMetadata.ExtractInterceptor(entity);
+				if (interceptor == null)
+				{
+					interceptor = EntityMetamodel.BytecodeEnhancementMetadata.InjectInterceptor(entity, lazyPropertiesAreUnfetched, session);
+				}
+				else
+				{
+					interceptor.Session = session;
+				}
+
+				interceptor?.ClearDirty();
 			}
 		}
 

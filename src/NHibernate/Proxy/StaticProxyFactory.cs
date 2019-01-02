@@ -44,6 +44,11 @@ namespace NHibernate.Proxy
 
 		public override object GetFieldInterceptionProxy(object instanceToWrap)
 		{
+			return GetFieldInterceptionProxy();
+		}
+
+		public object GetFieldInterceptionProxy()
+		{
 			var cacheEntry = new ProxyCacheEntry(PersistentClass, System.Type.EmptyTypes);
 			var proxyActivator = FieldInterceptorCache.GetOrAdd(cacheEntry, CreateFieldInterceptionProxyActivator);
 			return proxyActivator(

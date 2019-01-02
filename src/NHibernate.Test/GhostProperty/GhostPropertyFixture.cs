@@ -36,6 +36,11 @@ namespace NHibernate.Test.GhostProperty
 					Id = 1
 				};
 				s.Persist(wireTransfer);
+				var creditCard = new CreditCard
+				{
+					Id = 2
+				};
+				s.Persist(creditCard);
 				s.Persist(new Order
 				{
 					Id = 1,
@@ -81,6 +86,49 @@ namespace NHibernate.Test.GhostProperty
 				var order = s.Get<Order>(1);
 
 				Assert.IsTrue(order.Payment is WireTransfer);
+			}
+		}
+
+		[Test]
+		public void CanGetInitializedLazyManyToOneAfterClosedSession()
+		{
+			Order order;
+			Payment payment;
+
+			using (var s = OpenSession())
+			{
+				order = s.Get<Order>(1);
+				payment = order.Payment; // Initialize Payment
+			}
+
+			Assert.That(order.Payment, Is.EqualTo(payment));
+		}
+
+		[Test]
+		public void SetUninitializedProxyShouldResetPropertyInitialization()
+		{
+			using (var s = OpenSession())
+			{
+				var order = s.Get<Order>(1);
+				Assert.That(order.Payment is WireTransfer, Is.True); // Load property
+				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.True);
+				order.Payment = s.Load<Payment>(2);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.False);
+			}
+		}
+
+		[Test]
+		public void SetInitializedProxyShouldNotResetPropertyInitialization()
+		{
+			using (var s = OpenSession())
+			{
+				var order = s.Get<Order>(1);
+				var payment = s.Load<Payment>(2);
+				Assert.That(order.Payment is WireTransfer, Is.True); // Load property
+				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.True);
+				s.Get<Payment>(2); // Load the uninitialized payment
+				order.Payment = payment;
+				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.True);
 			}
 		}
 
@@ -177,6 +225,19 @@ namespace NHibernate.Test.GhostProperty
 			order.Payment = newPayment;
 
 			Assert.That(order.Payment, Is.EqualTo(newPayment));
+		}
+
+		[Test]
+		public void WillFetchJoinInSingleHqlQuery()
+		{
+			Order order = null;
+
+			using (ISession s = OpenSession())
+			{
+				order = s.CreateQuery("from Order o left join fetch o.Payment where o.Id = 1").List<Order>()[0];
+			}
+
+			Assert.DoesNotThrow(() => { var x = order.Payment; });
 		}
 	}
 }
