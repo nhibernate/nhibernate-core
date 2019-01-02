@@ -13,6 +13,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR;

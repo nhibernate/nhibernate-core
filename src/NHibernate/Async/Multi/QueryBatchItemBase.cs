@@ -75,6 +75,7 @@ namespace NHibernate.Multi
 					var lockModeArray = loader.GetLockModes(queryParameters.LockModes);
 					var optionalObjectKey = Loader.Loader.GetOptionalObjectKey(queryParameters, Session);
 					var tmpResults = new List<object>();
+					var queryCacheBuilder = new QueryCacheResultBuilder(loader, Session);
 					var cacheBatcher = queryInfo.CacheBatcher;
 					var ownCacheBatcher = cacheBatcher == null;
 					if (ownCacheBatcher)
@@ -95,6 +96,7 @@ namespace NHibernate.Multi
 								keys,
 								true,
 								forcedResultTransformer,
+								queryCacheBuilder,
 								(persister, data) => cacheBatcher.AddToBatch(persister, data)
 , cancellationToken							)).ConfigureAwait(false);
 						if (loader.IsSubselectLoadingEnabled)
@@ -108,7 +110,7 @@ namespace NHibernate.Multi
 
 					queryInfo.Result = tmpResults;
 					if (queryInfo.CanPutToCache)
-						queryInfo.ResultToCache = tmpResults;
+						queryInfo.ResultToCache = queryCacheBuilder.Result;
 
 					if (ownCacheBatcher)
 						await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);

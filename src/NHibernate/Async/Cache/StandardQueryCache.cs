@@ -296,39 +296,27 @@ namespace NHibernate.Cache
 					var returnType = returnTypes[0];
 
 					// Skip first element, it is the timestamp
-					var rows = new List<object>(cacheable.Count - 1);
 					for (var i = 1; i < cacheable.Count; i++)
 					{
-						rows.Add(cacheable[i]);
+						await (returnType.BeforeAssembleAsync(cacheable[i], session, cancellationToken)).ConfigureAwait(false);
 					}
 
-					foreach (var row in rows)
+					for (var i = 1; i < cacheable.Count; i++)
 					{
-						await (returnType.BeforeAssembleAsync(row, session, cancellationToken)).ConfigureAwait(false);
-					}
-
-					foreach (var row in rows)
-					{
-						result.Add(await (returnType.AssembleAsync(row, session, null, cancellationToken)).ConfigureAwait(false));
+						result.Add(await (returnType.AssembleAsync(cacheable[i], session, null, cancellationToken)).ConfigureAwait(false));
 					}
 				}
 				else
 				{
 					// Skip first element, it is the timestamp
-					var rows = new List<object[]>(cacheable.Count - 1);
 					for (var i = 1; i < cacheable.Count; i++)
 					{
-						rows.Add((object[]) cacheable[i]);
+						await (TypeHelper.BeforeAssembleAsync((object[]) cacheable[i], returnTypes, session, cancellationToken)).ConfigureAwait(false);
 					}
 
-					foreach (var row in rows)
+					for (var i = 1; i < cacheable.Count; i++)
 					{
-						await (TypeHelper.BeforeAssembleAsync(row, returnTypes, session, cancellationToken)).ConfigureAwait(false);
-					}
-
-					foreach (var row in rows)
-					{
-						result.Add(await (TypeHelper.AssembleAsync(row, returnTypes, session, null, cancellationToken)).ConfigureAwait(false));
+						result.Add(await (TypeHelper.AssembleAsync((object[]) cacheable[i], returnTypes, session, null, cancellationToken)).ConfigureAwait(false));
 					}
 				}
 

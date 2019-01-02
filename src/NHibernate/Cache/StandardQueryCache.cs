@@ -330,39 +330,27 @@ namespace NHibernate.Cache
 					var returnType = returnTypes[0];
 
 					// Skip first element, it is the timestamp
-					var rows = new List<object>(cacheable.Count - 1);
 					for (var i = 1; i < cacheable.Count; i++)
 					{
-						rows.Add(cacheable[i]);
+						returnType.BeforeAssemble(cacheable[i], session);
 					}
 
-					foreach (var row in rows)
+					for (var i = 1; i < cacheable.Count; i++)
 					{
-						returnType.BeforeAssemble(row, session);
-					}
-
-					foreach (var row in rows)
-					{
-						result.Add(returnType.Assemble(row, session, null));
+						result.Add(returnType.Assemble(cacheable[i], session, null));
 					}
 				}
 				else
 				{
 					// Skip first element, it is the timestamp
-					var rows = new List<object[]>(cacheable.Count - 1);
 					for (var i = 1; i < cacheable.Count; i++)
 					{
-						rows.Add((object[]) cacheable[i]);
+						TypeHelper.BeforeAssemble((object[]) cacheable[i], returnTypes, session);
 					}
 
-					foreach (var row in rows)
+					for (var i = 1; i < cacheable.Count; i++)
 					{
-						TypeHelper.BeforeAssemble(row, returnTypes, session);
-					}
-
-					foreach (var row in rows)
-					{
-						result.Add(TypeHelper.Assemble(row, returnTypes, session, null));
+						result.Add(TypeHelper.Assemble((object[]) cacheable[i], returnTypes, session, null));
 					}
 				}
 
