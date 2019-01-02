@@ -185,10 +185,6 @@ namespace NHibernate.Engine
 			}
 			finally
 			{
-				if (executable.PropertySpaces != null)
-				{
-					executedSpaces.UnionWith(executable.PropertySpaces);
-				}
 				RegisterCleanupActions(executable);
 			}
 		}
@@ -197,6 +193,10 @@ namespace NHibernate.Engine
 		{
 			beforeTransactionProcesses.Register(executable.BeforeTransactionCompletionProcess);
 			afterTransactionProcesses.Register(executable.AfterTransactionCompletionProcess);
+			if (executable.PropertySpaces != null)
+			{
+				executedSpaces.UnionWith(executable.PropertySpaces);
+			}
 		}
 
 		/// <summary> 
