@@ -342,6 +342,20 @@ namespace NHibernate.Cache
 				}
 				else
 				{
+					var collectionTypes = new Dictionary<int, CollectionType>();
+					var nonCollectionTypeIndexes = new List<int>();
+					for (var i = 0; i < returnTypes.Length; i++)
+					{
+						if (returnTypes[i] is CollectionType collectionType)
+						{
+							collectionTypes.Add(i, collectionType);
+						}
+						else
+						{
+							nonCollectionTypeIndexes.Add(i);
+						}
+					}
+
 					// Skip first element, it is the timestamp
 					for (var i = 1; i < cacheable.Count; i++)
 					{
@@ -350,7 +364,15 @@ namespace NHibernate.Cache
 
 					for (var i = 1; i < cacheable.Count; i++)
 					{
-						result.Add(TypeHelper.Assemble((object[]) cacheable[i], returnTypes, session, null));
+						result.Add(TypeHelper.Assemble((object[]) cacheable[i], returnTypes, nonCollectionTypeIndexes, session));
+					}
+
+					// Initialization of the fetched collection must be done at the end in order to be able to batch fetch them
+					// from the cache or database. The collections were already created in the previous for statement so we only
+					// have to initialize them.
+					for (var i = 1; i < cacheable.Count; i++)
+					{
+						TypeHelper.InitializeCollections((object[]) cacheable[i], collectionTypes, session);
 					}
 				}
 

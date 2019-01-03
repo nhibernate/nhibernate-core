@@ -104,9 +104,6 @@
     - conversion: Ignore
       name: GetEnumerator
       containingTypeName: IFutureEnumerable
-    # 6.0 TODO: Remove QueryCacheResultBuilder from ignore
-    - conversion: Ignore
-      containingTypeName: QueryCacheResultBuilder
     - conversion: ToAsync
       name: ExecuteReader
       containingTypeName: IBatcher

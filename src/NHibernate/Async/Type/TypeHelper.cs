@@ -10,6 +10,8 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Intercept;
 using NHibernate.Properties;
@@ -66,6 +68,59 @@ namespace NHibernate.Type
 			return assembled;
 		}
 
+		/// <summary>
+		/// Apply the <see cref="ICacheAssembler.AssembleAsync(object,ISessionImplementor,object,CancellationToken)" /> operation across a series of values.
+		/// </summary>
+		/// <param name="row">The values</param>
+		/// <param name="types">The value types</param>
+		/// <param name="typeIndexes">The indexes of types to assemble.</param>
+		/// <param name="session">The originating session</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns></returns>
+		internal static async Task<object[]> AssembleAsync(object[] row, ICacheAssembler[] types, IList<int> typeIndexes, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var assembled = new object[row.Length];
+			foreach (var i in typeIndexes)
+			{
+				var value = row[i];
+				if (Equals(LazyPropertyInitializer.UnfetchedProperty, value) || Equals(BackrefPropertyAccessor.Unknown, value))
+				{
+					assembled[i] = value;
+				}
+				else
+				{
+					assembled[i] = await (types[i].AssembleAsync(row[i], session, null, cancellationToken)).ConfigureAwait(false);
+				}
+			}
+			return assembled;
+		}
+
+		/// <summary>
+		/// Initialize collections from the query cache row values.
+		/// </summary>
+		/// <param name="row">The values</param>
+		/// <param name="types">The dictionary containing collection types and their indexes in the <paramref name="row"/> parameter as key</param>
+		/// <param name="session">The originating session</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns></returns>
+		internal static async Task InitializeCollectionsAsync(object[] row, IDictionary<int, CollectionType> types, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			foreach (var pair in types)
+			{
+				var value = row[pair.Key];
+				if (value == null)
+				{
+					continue;
+				}
+
+				var persister = session.Factory.GetCollectionPersister(pair.Value.Role);
+				var collection = session.PersistenceContext.GetCollection(new CollectionKey(persister, value));
+				await (collection.ForceInitializationAsync(cancellationToken)).ConfigureAwait(false);
+			}
+		}
+
 		/// <summary>Apply the <see cref="ICacheAssembler.DisassembleAsync(object,ISessionImplementor,object,CancellationToken)" /> operation across a series of values.</summary>
 		/// <param name="row">The values</param>
 		/// <param name="types">The value types</param>
@@ -90,7 +145,14 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					disassembled[i] = await (types[i].DisassembleAsync(row[i], session, owner, cancellationToken)).ConfigureAwait(false);
+					if (owner == null && row[i] is IPersistentCollection collection)
+					{
+						disassembled[i] = await (types[i].DisassembleAsync(row[i], session, collection.Owner, cancellationToken)).ConfigureAwait(false);
+					}
+					else
+					{
+						disassembled[i] = await (types[i].DisassembleAsync(row[i], session, owner, cancellationToken)).ConfigureAwait(false);
+					}
 				}
 			}
 			return disassembled;

@@ -214,7 +214,7 @@ namespace NHibernate.Multi
 					var lockModeArray = loader.GetLockModes(queryParameters.LockModes);
 					var optionalObjectKey = Loader.Loader.GetOptionalObjectKey(queryParameters, Session);
 					var tmpResults = new List<object>();
-					var queryCacheBuilder = new QueryCacheResultBuilder(loader, Session);
+					var queryCacheBuilder = new QueryCacheResultBuilder(loader);
 					var cacheBatcher = queryInfo.CacheBatcher;
 					var ownCacheBatcher = cacheBatcher == null;
 					if (ownCacheBatcher)
@@ -280,7 +280,7 @@ namespace NHibernate.Multi
 				{
 					if (queryInfo.IsResultFromCache)
 					{
-						var queryCacheBuilder = new QueryCacheResultBuilder(queryInfo.Loader, Session);
+						var queryCacheBuilder = new QueryCacheResultBuilder(queryInfo.Loader);
 						queryInfo.Result = queryCacheBuilder.GetResultList(queryInfo.Result);
 					}
 

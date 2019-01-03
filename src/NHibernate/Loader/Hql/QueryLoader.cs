@@ -303,7 +303,7 @@ namespace NHibernate.Loader.Hql
 
 			if (_collectionPersisters != null)
 			{
-				cacheTypes.AddRange(_collectionPersisters.Where((t, i) => CollectionFetches[i]).Select(t => t.KeyType));
+				cacheTypes.AddRange(_collectionPersisters.Where((t, i) => CollectionFetches[i]).Select(t => t.CollectionType));
 			}
 
 			_cacheTypes = cacheTypes.ToArray();
