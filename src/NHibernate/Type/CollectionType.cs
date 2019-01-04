@@ -158,6 +158,24 @@ namespace NHibernate.Type
 			}
 		}
 
+		public override void BeforeAssemble(object oid, ISessionImplementor session)
+		{
+			var queryCacheQueue = session.PersistenceContext.BatchFetchQueue.QueryCacheQueue;
+			if (queryCacheQueue == null)
+			{
+				return;
+			}
+
+			var persister = GetPersister(session);
+			if (persister.GetBatchSize() <= 1)
+			{
+				return;
+			}
+
+			var key = persister.KeyType.Assemble(oid, session, null);
+			queryCacheQueue.AddCollection(persister, new CollectionKey(persister, key));
+		}
+
 		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
 			//we must use the "remembered" uk value, since it is 

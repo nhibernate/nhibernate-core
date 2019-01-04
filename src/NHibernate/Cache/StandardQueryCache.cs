@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg;
+using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -238,43 +239,85 @@ namespace NHibernate.Cache
 			var persistenceContext = session.PersistenceContext;
 			var defaultReadOnlyOrig = persistenceContext.DefaultReadOnly;
 			var results = new IList[keys.Length];
-			for (var i = 0; i < keys.Length; i++)
+			var finalReturnTypes = new ICacheAssembler[keys.Length][];
+			try
 			{
-				var cacheable = cacheables[i];
-				if (cacheable == null)
-					continue;
+				session.PersistenceContext.BatchFetchQueue.InitializeQueryCacheQueue();
 
-				var key = keys[i];
-				if (checkedSpacesIndexes.Contains(i) && !upToDates[upToDatesIndex++])
+				for (var i = 0; i < keys.Length; i++)
 				{
-					Log.Debug("cached query results were not up to date for: {0}", key);
-					continue;
+					var cacheable = cacheables[i];
+					if (cacheable == null)
+						continue;
+
+					var key = keys[i];
+					if (checkedSpacesIndexes.Contains(i) && !upToDates[upToDatesIndex++])
+					{
+						Log.Debug("cached query results were not up to date for: {0}", key);
+						continue;
+					}
+
+					var queryParams = queryParameters[i];
+					if (queryParams.IsReadOnlyInitialized)
+						persistenceContext.DefaultReadOnly = queryParams.ReadOnly;
+					else
+						queryParams.ReadOnly = persistenceContext.DefaultReadOnly;
+
+					Log.Debug("returning cached query results for: {0}", key);
+
+					finalReturnTypes[i] = GetReturnTypes(key, returnTypes[i], cacheable);
+					PerformBeforeAssemble(finalReturnTypes[i], session, cacheable);
 				}
 
-				var queryParams = queryParameters[i];
-				if (queryParams.IsReadOnlyInitialized)
-					persistenceContext.DefaultReadOnly = queryParams.ReadOnly;
-				else
-					queryParams.ReadOnly = persistenceContext.DefaultReadOnly;
-
-				// Adjust the session cache mode, as GetResultFromCacheable assemble types which may cause
-				// entity loads, which may interact with the cache.
-				using (session.SwitchCacheMode(queryParams.CacheMode))
+				for (var i = 0; i < keys.Length; i++)
 				{
-					try
+					if (finalReturnTypes[i] == null)
 					{
-						results[i] = GetResultFromCacheable(
-							key,
-							returnTypes[i],
-							queryParams.NaturalKeyLookup,
-							session,
-							cacheable);
+						continue;
 					}
-					finally
+
+					var queryParams = queryParameters[i];
+					// Adjust the session cache mode, as PerformAssemble assemble types which may cause
+					// entity loads, which may interact with the cache.
+					using (session.SwitchCacheMode(queryParams.CacheMode))
 					{
-						persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
+						try
+						{
+							results[i] = PerformAssemble(keys[i], finalReturnTypes[i], queryParams.NaturalKeyLookup, session, cacheables[i]);
+						}
+						finally
+						{
+							persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
+						}
 					}
 				}
+
+				for (var i = 0; i < keys.Length; i++)
+				{
+					if (finalReturnTypes[i] == null)
+					{
+						continue;
+					}
+
+					var queryParams = queryParameters[i];
+					// Adjust the session cache mode, as InitializeCollections will initialize collections,
+					// which may interact with the cache.
+					using (session.SwitchCacheMode(queryParams.CacheMode))
+					{
+						try
+						{
+							InitializeCollections(finalReturnTypes[i], session, results[i], cacheables[i]);
+						}
+						finally
+						{
+							persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
+						}
+					}
+				}
+			}
+			finally
+			{
+				session.PersistenceContext.BatchFetchQueue.TerminateQueryCacheQueue();
 			}
 
 			return results;
@@ -310,19 +353,51 @@ namespace NHibernate.Cache
 			return cacheable;
 		}
 
-		private IList GetResultFromCacheable(
+		private static ICacheAssembler[] GetReturnTypes(
+			QueryKey key,
+			ICacheAssembler[] returnTypes,
+			IList cacheable)
+		{
+			if (key.ResultTransformer?.AutoDiscoverTypes == true && cacheable.Count > 0)
+			{
+				returnTypes = GuessTypes(cacheable);
+			}
+
+			return returnTypes;
+		}
+
+		private static void PerformBeforeAssemble(
+			ICacheAssembler[] returnTypes,
+			ISessionImplementor session,
+			IList cacheable)
+		{
+			if (returnTypes.Length == 1)
+			{
+				var returnType = returnTypes[0];
+
+				// Skip first element, it is the timestamp
+				for (var i = 1; i < cacheable.Count; i++)
+				{
+					returnType.BeforeAssemble(cacheable[i], session);
+				}
+			}
+			else
+			{
+				// Skip first element, it is the timestamp
+				for (var i = 1; i < cacheable.Count; i++)
+				{
+					TypeHelper.BeforeAssemble((object[]) cacheable[i], returnTypes, session);
+				}
+			}
+		}
+
+		private IList PerformAssemble(
 			QueryKey key,
 			ICacheAssembler[] returnTypes,
 			bool isNaturalKeyLookup,
 			ISessionImplementor session,
 			IList cacheable)
 		{
-			Log.Debug("returning cached query results for: {0}", key);
-			if (key.ResultTransformer?.AutoDiscoverTypes == true && cacheable.Count > 0)
-			{
-				returnTypes = GuessTypes(cacheable);
-			}
-
 			try
 			{
 				var result = new List<object>(cacheable.Count - 1);
@@ -333,25 +408,15 @@ namespace NHibernate.Cache
 					// Skip first element, it is the timestamp
 					for (var i = 1; i < cacheable.Count; i++)
 					{
-						returnType.BeforeAssemble(cacheable[i], session);
-					}
-
-					for (var i = 1; i < cacheable.Count; i++)
-					{
 						result.Add(returnType.Assemble(cacheable[i], session, null));
 					}
 				}
 				else
 				{
-					var collectionIndexes = new Dictionary<int, ICollectionPersister>();
 					var nonCollectionTypeIndexes = new List<int>();
 					for (var i = 0; i < returnTypes.Length; i++)
 					{
-						if (returnTypes[i] is CollectionType collectionType)
-						{
-							collectionIndexes.Add(i, session.Factory.GetCollectionPersister(collectionType.Role));
-						}
-						else
+						if (!(returnTypes[i] is CollectionType))
 						{
 							nonCollectionTypeIndexes.Add(i);
 						}
@@ -360,23 +425,7 @@ namespace NHibernate.Cache
 					// Skip first element, it is the timestamp
 					for (var i = 1; i < cacheable.Count; i++)
 					{
-						TypeHelper.BeforeAssemble((object[]) cacheable[i], returnTypes, session);
-					}
-
-					for (var i = 1; i < cacheable.Count; i++)
-					{
 						result.Add(TypeHelper.Assemble((object[]) cacheable[i], returnTypes, nonCollectionTypeIndexes, session));
-					}
-
-					// Initialization of the fetched collection must be done at the end in order to be able to batch fetch them
-					// from the cache or database. The collections were already created in the previous for statement so we only
-					// have to initialize them.
-					if (collectionIndexes.Count > 0)
-					{
-						for (var i = 1; i < cacheable.Count; i++)
-						{
-							TypeHelper.InitializeCollections((object[]) cacheable[i], (object[]) result[i - 1], collectionIndexes, session);
-						}
 					}
 				}
 
@@ -398,6 +447,64 @@ namespace NHibernate.Cache
 				}
 
 				throw;
+			}
+		}
+
+		private static void InitializeCollections(
+			ICacheAssembler[] returnTypes,
+			ISessionImplementor session,
+			IList assembleResult,
+			IList cacheResult)
+		{
+			var collectionIndexes = new Dictionary<int, ICollectionPersister>();
+			for (var i = 0; i < returnTypes.Length; i++)
+			{
+				if (returnTypes[i] is CollectionType collectionType)
+				{
+					collectionIndexes.Add(i, session.Factory.GetCollectionPersister(collectionType.Role));
+				}
+			}
+
+			if (collectionIndexes.Count == 0)
+			{
+				return;
+			}
+
+			// Skip first element, it is the timestamp
+			for (var i = 1; i < cacheResult.Count; i++)
+			{
+				// Initialization of the fetched collection must be done at the end in order to be able to batch fetch them
+				// from the cache or database. The collections were already created when their owners were assembled so we only
+				// have to initialize them.
+				TypeHelper.InitializeCollections(
+					(object[]) cacheResult[i],
+					(object[]) assembleResult[i - 1],
+					collectionIndexes,
+					session);
+			}
+		}
+
+		private IList GetResultFromCacheable(
+			QueryKey key,
+			ICacheAssembler[] returnTypes,
+			bool isNaturalKeyLookup,
+			ISessionImplementor session,
+			IList cacheable)
+		{
+			Log.Debug("returning cached query results for: {0}", key);
+			returnTypes = GetReturnTypes(key, returnTypes, cacheable);
+			try
+			{
+				session.PersistenceContext.BatchFetchQueue.InitializeQueryCacheQueue();
+
+				PerformBeforeAssemble(returnTypes, session, cacheable);
+				var result = PerformAssemble(key, returnTypes, isNaturalKeyLookup, session, cacheable);
+				InitializeCollections(returnTypes, session, result, cacheable);
+				return result;
+			}
+			finally
+			{
+				session.PersistenceContext.BatchFetchQueue.TerminateQueryCacheQueue();
 			}
 		}
 

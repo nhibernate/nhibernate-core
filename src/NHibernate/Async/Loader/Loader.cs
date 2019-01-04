@@ -348,6 +348,10 @@ namespace NHibernate.Loader
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
+			var ownCacheBatcher = cacheBatcher == null;
+			if (ownCacheBatcher)
+				cacheBatcher = new CacheBatcher(session);
+
 			if (collectionPersisters != null)
 			{
 				foreach (var collectionPersister in collectionPersisters)
@@ -359,7 +363,7 @@ namespace NHibernate.Loader
 						//during loading
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						await (EndCollectionLoadAsync(reader, session, collectionPersister, cancellationToken)).ConfigureAwait(false);
+						await (EndCollectionLoadAsync(reader, session, collectionPersister, cacheBatcher, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 			}
@@ -387,17 +391,12 @@ namespace NHibernate.Loader
 					Log.Debug("total objects hydrated: {0}", hydratedObjectsSize);
 				}
 
-				var ownCacheBatcher = cacheBatcher == null;
-				if (ownCacheBatcher)
-					cacheBatcher = new CacheBatcher(session);
 				for (int i = 0; i < hydratedObjectsSize; i++)
 				{
 					await (TwoPhaseLoad.InitializeEntityAsync(
 						hydratedObjects[i], readOnly, session, pre, post,
 						(persister, data) => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
 				}
-				if (ownCacheBatcher)
-					await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 			}
 
 			if (collectionPersisters != null)
@@ -410,13 +409,17 @@ namespace NHibernate.Loader
 						//the entities, since we might call hashCode() on the elements
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						await (EndCollectionLoadAsync(reader, session, collectionPersister, cancellationToken)).ConfigureAwait(false);
+						await (EndCollectionLoadAsync(reader, session, collectionPersister, cacheBatcher, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 			}
+
+			if (ownCacheBatcher)
+				await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 		}
 
-		private Task EndCollectionLoadAsync(DbDataReader reader, ISessionImplementor session, ICollectionPersister collectionPersister, CancellationToken cancellationToken)
+		private Task EndCollectionLoadAsync(DbDataReader reader, ISessionImplementor session, ICollectionPersister collectionPersister,
+		                               CacheBatcher cacheBatcher, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -426,7 +429,7 @@ namespace NHibernate.Loader
 			{
 				//this is a query and we are loading multiple instances of the same collection role
 				return session.PersistenceContext.LoadContexts.GetCollectionLoadContext(reader).EndLoadingCollectionsAsync(
-				collectionPersister, !IsCollectionPersisterCacheable(collectionPersister), cancellationToken);
+				collectionPersister, !IsCollectionPersisterCacheable(collectionPersister), cacheBatcher, cancellationToken);
 			}
 			catch (Exception ex)
 			{

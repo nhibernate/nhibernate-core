@@ -15,6 +15,7 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Linq;
 using Iesi.Collections.Generic;
 
 namespace NHibernate.Engine
@@ -395,6 +396,13 @@ namespace NHibernate.Engine
 			{
 				return result;
 			}
+
+			// Do not check the cache when disassembling entities from the cached query that were already checked
+			if (QueryCacheQueue != null && entityKeys.All(o => QueryCacheQueue.WasEntityKeyChecked(persister, o.Key)))
+			{
+				return result;
+			}
+
 			var cacheKeys = new object[keyIndexes.Length];
 			var i = 0;
 			foreach (var index in keyIndexes)
@@ -434,6 +442,13 @@ namespace NHibernate.Engine
 			{
 				return result;
 			}
+
+			// Do not check the cache when disassembling collections from the cached query that were already checked
+			if (QueryCacheQueue != null && collectionKeys.All(o => QueryCacheQueue.WasCollectionEntryChecked(persister, o.Key.Key)))
+			{
+				return result;
+			}
+
 			var cacheKeys = new object[keyIndexes.Length];
 			var i = 0;
 			foreach (var index in keyIndexes)

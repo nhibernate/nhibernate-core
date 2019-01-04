@@ -82,10 +82,31 @@ namespace NHibernate.Event.Default
 			var batchSize = persister.GetBatchSize();
 			if (batchSize > 1 && persister.Cache.PreferMultipleGet())
 			{
-				var collectionEntries = new CollectionEntry[batchSize];
 				// The first item in the array is the item that we want to load
-				var collectionBatch = source.PersistenceContext.BatchFetchQueue
-				                            .GetCollectionBatch(persister, collectionKey, batchSize, false, collectionEntries);
+				CollectionEntry[] collectionEntries = null;
+				object[] collectionBatch = null;
+				var queryCacheQueue = source.PersistenceContext.BatchFetchQueue.QueryCacheQueue;
+				if (queryCacheQueue != null)
+				{
+					collectionBatch = queryCacheQueue.GetCollectionBatch(persister, collectionKey, out collectionEntries);
+					if (collectionBatch != null)
+					{
+						if (collectionBatch.Length == 0)
+						{
+							return false; // The key was already checked
+						}
+
+						batchSize = collectionBatch.Length;
+					}
+				}
+
+				if (collectionBatch == null)
+				{
+					collectionEntries = new CollectionEntry[batchSize];
+					collectionBatch = source.PersistenceContext.BatchFetchQueue
+					                        .GetCollectionBatch(persister, collectionKey, batchSize, false, collectionEntries);
+				}
+
 				// Ignore null values as the retrieved batch may contains them when there are not enough
 				// uninitialized collection in the queue
 				var keys = new List<CacheKey>(batchSize);
