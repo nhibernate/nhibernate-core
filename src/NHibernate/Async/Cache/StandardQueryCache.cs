@@ -338,7 +338,7 @@ namespace NHibernate.Cache
 					// have to initialize them.
 					for (var i = 1; i < cacheable.Count; i++)
 					{
-						await (TypeHelper.InitializeCollectionsAsync((object[]) cacheable[i], collectionTypes, session, cancellationToken)).ConfigureAwait(false);
+						await (TypeHelper.InitializeCollectionsAsync((object[]) cacheable[i], (object[]) result[i - 1], collectionTypes, session, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 

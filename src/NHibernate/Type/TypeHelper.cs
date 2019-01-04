@@ -83,12 +83,16 @@ namespace NHibernate.Type
 		/// <summary>
 		/// Apply the <see cref="ICacheAssembler.Assemble" /> operation across a series of values.
 		/// </summary>
-		/// <param name="row">The values</param>
-		/// <param name="types">The value types</param>
+		/// <param name="row">The cached values.</param>
+		/// <param name="types">The value types.</param>
 		/// <param name="typeIndexes">The indexes of types to assemble.</param>
-		/// <param name="session">The originating session</param>
-		/// <returns></returns>
-		internal static object[] Assemble(object[] row, ICacheAssembler[] types, IList<int> typeIndexes, ISessionImplementor session)
+		/// <param name="session">The originating session.</param>
+		/// <returns>A new array of assembled values.</returns>
+		internal static object[] Assemble(
+			object[] row,
+			ICacheAssembler[] types,
+			IList<int> typeIndexes,
+			ISessionImplementor session)
 		{
 			var assembled = new object[row.Length];
 			foreach (var i in typeIndexes)
@@ -103,21 +107,26 @@ namespace NHibernate.Type
 					assembled[i] = types[i].Assemble(row[i], session, null);
 				}
 			}
+
 			return assembled;
 		}
 
 		/// <summary>
-		/// Initialize collections from the query cache row values.
+		/// Initialize collections from the query cached row and update the assembled row.
 		/// </summary>
-		/// <param name="row">The values</param>
-		/// <param name="types">The dictionary containing collection types and their indexes in the <paramref name="row"/> parameter as key</param>
-		/// <param name="session">The originating session</param>
-		/// <returns></returns>
-		internal static void InitializeCollections(object[] row, IDictionary<int, CollectionType> types, ISessionImplementor session)
+		/// <param name="cacheRow">The cached values.</param>
+		/// <param name="assembleRow">The assembled values to update.</param>
+		/// <param name="types">The dictionary containing collection types and their indexes in the <paramref name="cacheRow"/> parameter as key.</param>
+		/// <param name="session">The originating session.</param>
+		internal static void InitializeCollections(
+			object[] cacheRow,
+			object[] assembleRow,
+			IDictionary<int, CollectionType> types,
+			ISessionImplementor session)
 		{
 			foreach (var pair in types)
 			{
-				var value = row[pair.Key];
+				var value = cacheRow[pair.Key];
 				if (value == null)
 				{
 					continue;
@@ -126,6 +135,7 @@ namespace NHibernate.Type
 				var persister = session.Factory.GetCollectionPersister(pair.Value.Role);
 				var collection = session.PersistenceContext.GetCollection(new CollectionKey(persister, value));
 				collection.ForceInitialization();
+				assembleRow[pair.Key] = collection;
 			}
 		}
 

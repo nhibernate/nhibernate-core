@@ -372,7 +372,7 @@ namespace NHibernate.Cache
 					// have to initialize them.
 					for (var i = 1; i < cacheable.Count; i++)
 					{
-						TypeHelper.InitializeCollections((object[]) cacheable[i], collectionTypes, session);
+						TypeHelper.InitializeCollections((object[]) cacheable[i], (object[]) result[i - 1], collectionTypes, session);
 					}
 				}
 
