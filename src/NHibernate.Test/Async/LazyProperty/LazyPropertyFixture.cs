@@ -36,6 +36,8 @@ namespace NHibernate.Test.LazyProperty
 			get { return new[] { "LazyProperty.Mappings.hbm.xml" }; }
 		}
 
+		protected override string CacheConcurrencyStrategy => null;
+
 		protected override DebugSessionFactory BuildSessionFactory()
 		{
 			using (var logSpy = new LogSpy(typeof(EntityMetamodel)))
@@ -312,6 +314,36 @@ namespace NHibernate.Test.LazyProperty
 				Assert.That(book.Name, Is.EqualTo("some name two"));
 				Assert.That(book.ALotOfText, Is.EqualTo("a lot of text two..."));
 			}
+		}
+
+		[Test]
+		public async Task CacheShouldNotContainLazyPropertiesAsync()
+		{
+			Book book;
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+
+				book = await (s.CreateQuery("from Book b fetch all properties where b.Id = :id")
+				        .SetParameter("id", 1)
+				        .UniqueResultAsync<Book>());
+				await (tx.CommitAsync());
+			}
+
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.True);
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Image"), Is.True);
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+
+				book = await (s.GetAsync<Book>(1));
+				await (tx.CommitAsync());
+			}
+
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Image"), Is.False);
 		}
 	}
 }
