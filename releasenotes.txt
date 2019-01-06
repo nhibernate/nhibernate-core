@@ -7,7 +7,7 @@ Release notes - NHibernate - Version 5.2.2
 
 ** Bug
 
-   * #1954 Query space invalidation doesn't work for bulk actions
+   * #1953 Query space invalidation doesn't work for bulk actions
    * #1269 NH-3069 - Cannot use Session.Lock with Version column on abstract base class
 
 ** Task
@@ -283,6 +283,15 @@ Release notes - NHibernate - Version 5.2.0
 
 As part of releasing 5.2.0, a misnamed setting in 5.0.0 release notes has been fixed:
 transaction.use_connection_on_system_events correct name is transaction.use_connection_on_system_prepare
+
+Build 5.1.4
+=============================
+
+Release notes - NHibernate - Version 5.1.4
+
+** Bug
+
+   * #1959 Backport Query space invalidation doesn't work for bulk actions
 
 Build 5.1.3
 =============================
