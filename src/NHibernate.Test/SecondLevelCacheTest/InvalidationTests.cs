@@ -5,6 +5,7 @@ using System.Reflection;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Impl;
+using NHibernate.Linq;
 using NHibernate.Test.SecondLevelCacheTests;
 using NSubstitute;
 using NUnit.Framework;
@@ -47,6 +48,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 
 			using (var session = OpenSession())
 			{
+				//Add Item
 				using (var tx = session.BeginTransaction())
 				{
 					foreach (var i in Enumerable.Range(1, 10))
@@ -58,6 +60,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 					tx.Commit();
 				}
 
+				//Update Item
 				using (var tx = session.BeginTransaction())
 				{
 					foreach (var i in Enumerable.Range(1, 10))
@@ -69,6 +72,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 					tx.Commit();
 				}
 
+				//Delete Item
 				using (var tx = session.BeginTransaction())
 				{
 					foreach (var i in Enumerable.Range(1, 10))
@@ -79,14 +83,44 @@ namespace NHibernate.Test.SecondLevelCacheTest
 
 					tx.Commit();
 				}
+
+				//Update Item using HQL
+				using (var tx = session.BeginTransaction())
+				{
+					session.CreateQuery("UPDATE Item SET Name='Test'").ExecuteUpdate();
+
+					tx.Commit();
+				}
+
+
+				//Update Item using LINQ
+				using (var tx = session.BeginTransaction())
+				{
+					session.Query<Item>()
+					       .UpdateBuilder()
+					       .Set(x => x.Name, "Test")
+					       .Update();
+
+					tx.Commit();
+				}
+
+				//Update Item using SQL
+				using (var tx = session.BeginTransaction())
+				{
+					session.CreateSQLQuery("UPDATE Item SET Name='Test'")
+					       .ExecuteUpdate();
+
+					tx.Commit();
+				}
 			}
 
-			//Should receive one preinvalidation and one invalidation per commit
+			//Should receive one preinvalidation per non-DML commit
 			Assert.That(preInvalidations, Has.Count.EqualTo(3));
 			Assert.That(preInvalidations, Has.All.Count.EqualTo(1).And.Contains("Item"));
 
-			Assert.That(invalidations, Has.Count.EqualTo(3));
-			Assert.That(invalidations, Has.All.Count.EqualTo(1).And.Contains("Item"));
+			///...and one invalidation per commit
+			Assert.That(invalidations, Has.Count.EqualTo(6));
+			Assert.That(invalidations, Has.All.Contains("Item"));
 		}
 
 		protected override void OnTearDown()
