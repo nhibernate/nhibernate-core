@@ -105,7 +105,7 @@ namespace NHibernate.Test.GhostProperty
 		}
 
 		[Test]
-		public void SetUninitializedProxyShouldResetPropertyInitialization()
+		public void SetUninitializedProxyShouldNotTriggerPropertyInitialization()
 		{
 			using (var s = OpenSession())
 			{
@@ -113,7 +113,9 @@ namespace NHibernate.Test.GhostProperty
 				Assert.That(order.Payment is WireTransfer, Is.True); // Load property
 				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.True);
 				order.Payment = s.Load<Payment>(2);
-				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.False);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(order.Payment), Is.False);
+				Assert.That(order.Payment is WireTransfer, Is.False);
 			}
 		}
 
@@ -126,7 +128,7 @@ namespace NHibernate.Test.GhostProperty
 				var payment = s.Load<Payment>(2);
 				Assert.That(order.Payment is WireTransfer, Is.True); // Load property
 				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.True);
-				s.Get<Payment>(2); // Load the uninitialized payment
+				NHibernateUtil.Initialize(payment);
 				order.Payment = payment;
 				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.True);
 			}

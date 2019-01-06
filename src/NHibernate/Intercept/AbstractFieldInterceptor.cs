@@ -119,13 +119,10 @@ namespace NHibernate.Intercept
 					return value;
 				}
 
-				if (!value.IsProxy() || NHibernateUtil.IsInitialized(value))
+				// When a proxy is set by the user which we know when the session is set, we should not unwrap it
+				if (!value.IsProxy() || NHibernateUtil.IsInitialized(value) || session != null)
 				{
 					loadedUnwrapProxyFieldNames.Add(fieldName);
-				}
-				else
-				{
-					loadedUnwrapProxyFieldNames.Remove(fieldName);
 				}
 
 				return value;
@@ -133,9 +130,6 @@ namespace NHibernate.Intercept
 
 			if (IsInitializedField(fieldName))
 			{
-				if (value.IsProxy() && IsInitializedAssociation(fieldName))
-					return InitializeOrGetAssociation(target, (INHibernateProxy) value, fieldName);
-
 				return value;
 			}
 
@@ -159,11 +153,6 @@ namespace NHibernate.Intercept
 				return InitializeOrGetAssociation(target, nhproxy, fieldName);
 			}
 			return InvokeImplementation;
-		}
-
-		private bool IsInitializedAssociation(string fieldName)
-		{
-			return loadedUnwrapProxyFieldNames.Contains(fieldName);
 		}
 
 		private bool IsUninitializedAssociation(string fieldName)
