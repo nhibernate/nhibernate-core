@@ -16,13 +16,9 @@ namespace NHibernate.Proxy
 		private static readonly PropertyInfo AccessorTypeFieldInterceptorProperty =
 			FieldInterceptorAccessorType.GetProperty(nameof(IFieldInterceptorAccessor.FieldInterceptor));
 		private static readonly System.Type FieldInterceptorType = typeof(IFieldInterceptor);
-		// 6.0 TODO: Remove
 		private static readonly System.Type FieldInterceptorExtensionsType = typeof(FieldInterceptorExtensions);
-#pragma warning disable 618
 		private static readonly MethodInfo FieldInterceptorInterceptMethod = FieldInterceptorType.GetMethod(nameof(IFieldInterceptor.Intercept));
-#pragma warning restore 618
 		private static readonly MethodInfo FieldInterceptorMarkDirtyMethod = FieldInterceptorType.GetMethod(nameof(IFieldInterceptor.MarkDirty));
-		// 6.0 TODO: Remove and replace usages with FieldInterceptorInterceptMethod
 		private static readonly MethodInfo FieldInterceptorInterceptExtensionMethod = FieldInterceptorExtensionsType.GetMethod(nameof(FieldInterceptorExtensions.Intercept));
 		private static readonly System.Type AbstractFieldInterceptorType = typeof(AbstractFieldInterceptor);
 		private static readonly FieldInfo AbstractFieldInterceptorInvokeImplementationField =
