@@ -944,10 +944,24 @@ namespace NHibernate.Loader
 
 			object[] rowResults = new object[cols];
 
+			var entityCounter = new Dictionary<string, int>();
+
 			for (int i = 0; i < cols; i++)
 			{
 				object obj = null;
 				ILoadable persister = persisters[i];
+				
+				if (entityCounter.ContainsKey(persister.EntityName))
+				{
+					entityCounter[persister.EntityName]++;
+				}
+				else
+				{
+					entityCounter.Add(persister.EntityName, 1);
+				}
+
+				int total = entityCounter[persister.EntityName];
+
 				EntityKey key = keys[i];
 
 				if (key == null)
@@ -965,19 +979,23 @@ namespace NHibernate.Loader
 								continue;
 							}
 
-							int count = -1;
+							int position = -1;
+							int count = 0;
 							for (int z = 0; z < persisters[j].PropertyTypes.Length; z++)
 							{
-								if (persisters[j].PropertyTypes[z].Name == persister.EntityName)
+								if (persisters[j].PropertyTypes[z].Name == persister.EntityName && ++count == total)
 								{
-									count = z;
+									position = z;
 									break;
 								}
 							}
 
-							if (count >= 0 && persisters[j].PropertyTypes[count] is ManyToOneType many && many.IsNullable && many.IsNullable)
+							
+
+							if (position >= 0 && persisters[j].PropertyTypes[position] is ManyToOneType many && many.IsNullable)
 							{
-								session.PersistenceContext.AddNullProperty(keys[j], persisters[j].PropertyNames[count]);
+								many.PropertyName = persisters[j].PropertyNames[position];
+								session.PersistenceContext.AddNullProperty(keys[j], persisters[j].PropertyNames[position]);
 								break;
 							}
 						}

@@ -88,22 +88,6 @@ namespace NHibernate.Type
 
 		public virtual bool IsNull(object owner, ISessionImplementor session)
 		{
-			if (IsNullable && !string.IsNullOrEmpty(associatedEntityName))
-			{
-				EntityEntry entry = session.PersistenceContext.GetEntry(owner);
-				int position = -1;
-				for (int i = 0; i < entry.Persister.PropertyTypes.Length; i++)
-				{
-					if (entry.Persister.PropertyTypes[i].Name == associatedEntityName)
-					{
-						position = i;
-						break;
-					}
-				}
-
-				return position > -1 && session.PersistenceContext.IsPropertyNull(entry.EntityKey,entry.Persister.PropertyNames[position]);
-			}
-			
 			return false;
 		}
 
@@ -458,10 +442,7 @@ namespace NHibernate.Type
 			get { return uniqueKeyPropertyName; }
 		}
 
-		public virtual string PropertyName
-		{
-			get { return null; }
-		}
+		public virtual string PropertyName { get; set; }
 
 		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
 		{

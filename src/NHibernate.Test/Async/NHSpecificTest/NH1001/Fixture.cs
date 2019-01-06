@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 				emp.Id = 1;
 				emp.FirstName = "John";
 				emp.LastName = "Doe";
-				emp.Department = dept;
+				emp.Department1 = dept;
 
 				await (sess.SaveAsync(emp));
 

@@ -27,12 +27,30 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 
 				session.Save(dept);
 
+				var dept2 = new Department
+				{
+					Id = 12,
+					Name = "HR"
+				};
+
+				session.Save(dept2);
+
+				var dept3 = new Department
+				{
+					Id = 13,
+					Name = "Develop"
+				};
+
+				session.Save(dept3);
+
 				var emp = new Employee
 				{
 					Id = 1,
 					FirstName = "John",
 					LastName = "Doe",
-					Department = dept
+					Department1 = dept,
+					Department2 = dept2,
+					Department3 = dept3
 				};
 
 				session.Save(emp);
@@ -57,7 +75,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 		[Test]
 		public void DepartmentIsNull()
 		{
-			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID = 99999 WHERE EMPLOYEE_ID = {employeeId}");
+			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 99999 WHERE EMPLOYEE_ID = {employeeId}");
 
 			IStatistics statistics = Sfi.Statistics;
 			statistics.Clear();
@@ -65,7 +83,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			using (ISession session = OpenSession())
 			{
 				var employee = session.Get<Employee>(employeeId);
-				Assert.That(employee.Department, Is.Null);
+				Assert.That(employee.Department1, Is.Null);
+				Assert.That(employee.Department2, Is.Not.Null);
+				Assert.That(employee.Department3, Is.Not.Null);
 				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(1));
 			}
 		}
@@ -73,7 +93,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 		[Test]
 		public void DepartmentIsNotNull()
 		{
-			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID = 11 WHERE EMPLOYEE_ID = {employeeId}");
+			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11 WHERE EMPLOYEE_ID = {employeeId}");
 
 			IStatistics statistics = Sfi.Statistics;
 			statistics.Clear();
@@ -81,7 +101,27 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			using (ISession session = OpenSession())
 			{
 				var employee = session.Get<Employee>(employeeId);
-				Assert.That(employee.Department, Is.Not.Null);
+				Assert.That(employee.Department1, Is.Not.Null);
+				Assert.That(employee.Department2, Is.Not.Null);
+				Assert.That(employee.Department3, Is.Not.Null);
+				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(1));
+			}
+		}
+		
+		[Test]
+		public void Departmentg12IsNotNull()
+		{
+			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 99999 WHERE EMPLOYEE_ID = {employeeId}");
+
+			IStatistics statistics = Sfi.Statistics;
+			statistics.Clear();
+
+			using (ISession session = OpenSession())
+			{
+				var employee = session.Get<Employee>(employeeId);
+				Assert.That(employee.Department1, Is.Not.Null);
+				Assert.That(employee.Department2, Is.Null);
+				Assert.That(employee.Department3, Is.Not.Null);
 				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(1));
 			}
 		}

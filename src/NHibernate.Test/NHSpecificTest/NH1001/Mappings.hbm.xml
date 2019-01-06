@@ -19,6 +19,8 @@
 		<property name="FirstName" column="FIRST_NAME" type="String" />
 		<property name="LastName" column="LAST_NAME" type="String" />
 
-		<many-to-one fetch="join" name="Department" class="Department" column="DEPARTMENT_ID" not-found="ignore"/>
+		<many-to-one fetch="join" name="Department1" class="Department" column="DEPARTMENT_ID_1" not-found="ignore"/>
+		<many-to-one fetch="join" name="Department2" class="Department" column="DEPARTMENT_ID_2" not-found="ignore"/>
+		<many-to-one fetch="join" name="Department3" class="Department" column="DEPARTMENT_ID_3" not-found="ignore"/>
 	</class>
 </hibernate-mapping>

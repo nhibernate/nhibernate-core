@@ -28,7 +28,13 @@ namespace NHibernate.Type
 			isLogicalOneToOne = false;
 		}
 
-		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne)
+		public ManyToOneType(
+			string entityName,
+			string uniqueKeyPropertyName,
+			bool lazy,
+			bool unwrapProxy,
+			bool ignoreNotFound,
+			bool isLogicalOneToOne)
 			: base(entityName, uniqueKeyPropertyName, !lazy, unwrapProxy)
 		{
 			this.ignoreNotFound = ignoreNotFound;
@@ -46,7 +52,12 @@ namespace NHibernate.Type
 			return GetIdentifierOrUniqueKeyType(mapping).SqlTypes(mapping);
 		}
 
-		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override void NullSafeSet(
+			DbCommand st,
+			object value,
+			int index,
+			bool[] settable,
+			ISessionImplementor session)
 		{
 			GetIdentifierOrUniqueKeyType(session.Factory)
 				.NullSafeSet(st, GetReferenceValue(value, session), index, settable, session);
@@ -119,10 +130,12 @@ namespace NHibernate.Type
 			{
 				return old != null;
 			}
+
 			if (old == null)
 			{
 				return true;
 			}
+
 			var oldIdentifier = IsIdentifier(old, session) ? old : GetIdentifier(old, session);
 			var currentIdentifier = GetIdentifier(current, session);
 			// the ids are fully resolved, so compare them with isDirty(), not isModified()
@@ -136,7 +149,20 @@ namespace NHibernate.Type
 			{
 				return false;
 			}
+
 			return value.GetType() == identifierType.ReturnedClass;
+		}
+
+		public override bool IsNull(object owner, ISessionImplementor session)
+		{
+			if (IsNullable && !string.IsNullOrEmpty(PropertyName))
+			{
+				EntityEntry entry = session.PersistenceContext.GetEntry(owner);
+
+				return session.PersistenceContext.IsPropertyNull(entry.EntityKey, PropertyName);
+			}
+
+			return false;
 		}
 
 		public override object Disassemble(object value, ISessionImplementor session, object owner)
@@ -152,8 +178,10 @@ namespace NHibernate.Type
 				object id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session);
 				if (id == null)
 				{
-					throw new AssertionFailure("cannot cache a reference to an object with a null id: " + GetAssociatedEntityName());
+					throw new AssertionFailure(
+						"cannot cache a reference to an object with a null id: " + GetAssociatedEntityName());
 				}
+
 				return GetIdentifierType(session).Disassemble(id, session, owner);
 			}
 		}
@@ -214,6 +242,7 @@ namespace NHibernate.Type
 			{
 				ArrayHelper.Fill(result, true);
 			}
+
 			return result;
 		}
 
