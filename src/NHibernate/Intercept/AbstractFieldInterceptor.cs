@@ -120,7 +120,7 @@ namespace NHibernate.Intercept
 				}
 
 				// When a proxy is set by the user which we know when the session is set, we should not unwrap it
-				if (!value.IsProxy() || NHibernateUtil.IsInitialized(value) || session != null)
+				if (session != null || !value.IsProxy() || NHibernateUtil.IsInitialized(value))
 				{
 					loadedUnwrapProxyFieldNames.Add(fieldName);
 				}
