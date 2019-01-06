@@ -1,3 +1,18 @@
+Build 5.2.2
+=============================
+
+Release notes - NHibernate - Version 5.2.2
+
+3 issues were resolved in this release.
+
+** Bug
+
+   * #1954 Query space invalidation doesn't work for bulk actions
+   * #1269 NH-3069 - Cannot use Session.Lock with Version column on abstract base class
+
+** Task
+
+   * #1957 Release 5.2.2
 
 Build 5.2.1
 =============================
