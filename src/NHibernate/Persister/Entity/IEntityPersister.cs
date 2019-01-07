@@ -623,59 +623,5 @@ namespace NHibernate.Persister.Entity
 
 			return 1;
 		}
-
-		//6.0 TODO: Merge into IEntityPersister
-		internal static ISet<string> GetUninitializedLazyProperties(this IEntityPersister persister, object entity)
-		{
-			if (persister is AbstractEntityPersister abstractEntityPersister)
-			{
-				return abstractEntityPersister.GetUninitializedLazyProperties(entity);
-			}
-
-			if (!persister.HasUninitializedLazyProperties(entity))
-			{
-				return CollectionHelper.EmptySet<string>();
-			}
-
-			// Assume they are all uninitialized.
-			var result = new HashSet<string>();
-			for (var i = 0; i < persister.PropertyLaziness.Length; i++)
-			{
-				if (persister.PropertyLaziness[i])
-				{
-					result.Add(persister.PropertyNames[i]);
-				}
-			}
-
-			return result;
-		}
-
-		/// <summary>
-		/// Get uninitialized lazy properties from entity state
-		/// </summary>
-		//6.0 TODO: Merge into IEntityPersister
-		public static ISet<string> GetUninitializedLazyProperties(this IEntityPersister persister, object[] state)
-		{
-			if (persister is AbstractEntityPersister abstractEntityPersister)
-			{
-				return abstractEntityPersister.GetUninitializedLazyProperties(state);
-			}
-
-			if (!persister.HasLazyProperties)
-			{
-				return CollectionHelper.EmptySet<string>();
-			}
-
-			var result = new HashSet<string>();
-			for (var i = 0; i < persister.PropertyLaziness.Length; i++)
-			{
-				if (persister.PropertyLaziness[i] && state[i] == LazyPropertyInitializer.UnfetchedProperty)
-				{
-					result.Add(persister.PropertyNames[i]);
-				}
-			}
-
-			return result;
-		}
 	}
 }
