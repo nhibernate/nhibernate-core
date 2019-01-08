@@ -120,7 +120,7 @@ namespace NHibernate.Intercept
 				}
 
 				// When a proxy is set by the user which we know when the session is set, we should not unwrap it
-				if (session != null || !value.IsProxy() || NHibernateUtil.IsInitialized(value))
+				if (session != null || !value.IsProxy())
 				{
 					loadedUnwrapProxyFieldNames.Add(fieldName);
 				}
@@ -150,7 +150,15 @@ namespace NHibernate.Intercept
 			if (value.IsProxy() && IsUninitializedAssociation(fieldName))
 			{
 				var nhproxy = value as INHibernateProxy;
-				return InitializeOrGetAssociation(target, nhproxy, fieldName);
+				value = InitializeOrGetAssociation(nhproxy, fieldName);
+				// Set the property value in order to be accessible when the session is closed
+				var persister = session.Factory.GetEntityPersister(entityName);
+				persister.SetPropertyValue(
+					target,
+					persister.EntityMetamodel.BytecodeEnhancementMetadata.UnwrapProxyPropertiesMetadata.GetUnwrapProxyPropertyIndex(fieldName),
+					value);
+
+				return value;
 			}
 			return InvokeImplementation;
 		}
@@ -165,22 +173,13 @@ namespace NHibernate.Intercept
 			return uninitializedFields != null && uninitializedFields.Contains(fieldName);
 		}
 
-		private object InitializeOrGetAssociation(object target, INHibernateProxy value, string fieldName)
+		private object InitializeOrGetAssociation(INHibernateProxy value, string fieldName)
 		{
 			if(value.HibernateLazyInitializer.IsUninitialized)
 			{
 				value.HibernateLazyInitializer.Initialize();
 				value.HibernateLazyInitializer.Unwrap = true; // means that future Load/Get from the session will get the implementation
 				loadedUnwrapProxyFieldNames.Add(fieldName);
-				// Set the property value in order to be accessible when the session is closed
-				var implValue = value.HibernateLazyInitializer.GetImplementation(session);
-				var persister = session.Factory.GetEntityPersister(entityName);
-				persister.SetPropertyValue(
-					target,
-					persister.EntityMetamodel.BytecodeEnhancementMetadata.UnwrapProxyPropertiesMetadata.GetUnwrapProxyPropertyIndex(fieldName),
-					implValue);
-
-				return implValue;
 			}
 			return value.HibernateLazyInitializer.GetImplementation(session);
 		}

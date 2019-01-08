@@ -107,6 +107,26 @@ namespace NHibernate.Test.GhostProperty
 			}
 
 			Assert.That(order.Payment, Is.EqualTo(payment));
+			Assert.That(order.Payment is WireTransfer, Is.True);
+		}
+
+		[Test]
+		public async Task InitializedLazyManyToOneBeforeParentShouldNotBeAProxyAsync()
+		{
+			Order order;
+			Payment payment;
+
+			using (var s = OpenSession())
+			{
+				payment = await (s.LoadAsync<Payment>(1));
+				await (NHibernateUtil.InitializeAsync(payment));
+				order = await (s.GetAsync<Order>(1));
+				// Here the Payment property should be unwrapped
+				payment = order.Payment;
+			}
+
+			Assert.That(order.Payment, Is.EqualTo(payment));
+			Assert.That(order.Payment is WireTransfer, Is.True);
 		}
 
 		[Test]
