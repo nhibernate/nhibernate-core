@@ -29,5 +29,13 @@ namespace NHibernate.Test.GhostProperty
 			base.Configure(configuration);
 			configuration.SetProperty(Cfg.Environment.ProxyFactoryFactoryClass, typeof(DefaultProxyFactoryFactory).FullName);
 		}
+
+		protected override void DropSchema()
+		{
+			base.DropSchema();
+			// Reset IProxyFactoryFactory back to default
+			var injectableProxyFactory = (IInjectableProxyFactoryFactory) Cfg.Environment.BytecodeProvider;
+			injectableProxyFactory.SetProxyFactoryFactory(typeof(StaticProxyFactoryFactory).FullName);
+		}
 	}
 }
