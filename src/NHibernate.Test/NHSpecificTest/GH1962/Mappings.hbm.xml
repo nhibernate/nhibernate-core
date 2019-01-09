@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH1962">
+
+  <class name='Order' table='ORDERS'>
+    <id name='Id' column='ORDER_ID'>
+      <generator class='assigned'/>
+    </id>
+
+    <list name='OrderDetails' lazy="false" inverse='false' table='ORDER_DETAILS'>
+      <key column='ORDER_ID'/>
+      <index column='INDEX_NUMBER'/>
+      <one-to-many class='OrderDetail'/>
+    </list>
+
+  </class>
+
+  <class name='Product' table='PRODUCTS'>
+    <id name='Id' column='PRODUCT_ID'>
+      <generator class='assigned'/>
+    </id>
+    <property name='Name' column='NAME'/>
+
+    <bag name='OrderDetails' lazy="false" inverse='true' table='ORDER_DETAILS'>
+      <key column='PRODUCT_ID'/>
+      <one-to-many class='OrderDetail'/>
+    </bag>
+
+  </class>
+
+  <class name='OrderDetail' table='ORDER_DETAILS'>
+    <id name='Id' column='ORDER_DETAIL_ID'>
+      <generator class='assigned'/>
+    </id>
+
+    <many-to-one name='Order' class='Order' column='ORDER_ID'/>
+    <many-to-one name='Product' class='Product' column='PRODUCT_ID'/>
+
+  </class>
+
+</hibernate-mapping>
