@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NHibernate.Bytecode;
 using NUnit.Framework;
-
 
 namespace NHibernate.Test.GhostProperty
 {
@@ -14,9 +9,12 @@ namespace NHibernate.Test.GhostProperty
 	[TestFixture]
 	public class GhostPropertyDynamicProxyFixture : GhostPropertyFixture
 	{
+		private string _originalProxyFactoryFactory;
+
 		protected override void Configure(Cfg.Configuration configuration)
 		{
 			base.Configure(configuration);
+			_originalProxyFactoryFactory = Cfg.Environment.BytecodeProvider.ProxyFactoryFactory.GetType().FullName;
 			configuration.SetProperty(Cfg.Environment.ProxyFactoryFactoryClass, typeof(DefaultProxyFactoryFactory).FullName);
 		}
 
@@ -25,7 +23,7 @@ namespace NHibernate.Test.GhostProperty
 			base.DropSchema();
 			// Reset IProxyFactoryFactory back to default
 			var injectableProxyFactory = (IInjectableProxyFactoryFactory) Cfg.Environment.BytecodeProvider;
-			injectableProxyFactory.SetProxyFactoryFactory(typeof(StaticProxyFactoryFactory).FullName);
+			injectableProxyFactory.SetProxyFactoryFactory(_originalProxyFactoryFactory);
 		}
 	}
 }
