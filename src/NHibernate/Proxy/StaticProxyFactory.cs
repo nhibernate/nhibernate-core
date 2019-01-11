@@ -42,7 +42,14 @@ namespace NHibernate.Proxy
 			return Expression.Lambda<Func<ILazyInitializer, NHibernateProxyFactoryInfo, INHibernateProxy>>(Expression.New(ctor, li, pf), li, pf).Compile();
 		}
 
+		// Since 5.3
+		[Obsolete("Use ProxyFactoryExtensions.GetFieldInterceptionProxy extension method instead.")]
 		public override object GetFieldInterceptionProxy(object instanceToWrap)
+		{
+			return GetFieldInterceptionProxy();
+		}
+
+		public object GetFieldInterceptionProxy()
 		{
 			var cacheEntry = new ProxyCacheEntry(PersistentClass, System.Type.EmptyTypes);
 			var proxyActivator = FieldInterceptorCache.GetOrAdd(cacheEntry, CreateFieldInterceptionProxyActivator);

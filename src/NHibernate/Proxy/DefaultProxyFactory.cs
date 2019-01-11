@@ -31,6 +31,8 @@ namespace NHibernate.Proxy
 			}
 		}
 
+		// Since 5.3
+		[Obsolete("Use ProxyFactoryExtensions.GetFieldInterceptionProxy extension method instead.")]
 		public override object GetFieldInterceptionProxy(object instanceToWrap)
 		{
 			var interceptor = new DefaultDynamicLazyFieldInterceptor();
