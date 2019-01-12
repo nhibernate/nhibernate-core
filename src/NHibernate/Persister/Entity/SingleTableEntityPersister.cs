@@ -785,12 +785,13 @@ possible solutions:
 
 		public override void PostInstantiate()
 		{
-			base.PostInstantiate();
 			if (_hasSequentialSelect && !IsAbstract)
 			{
 				var rootLoadable = (AbstractEntityPersister) Factory.GetEntityPersister(RootEntityName);
 				_sequentialSelectString = rootLoadable.GenerateSequentialSelect(this);
 			}
+
+			base.PostInstantiate();
 		}
 	}
 }

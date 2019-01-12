@@ -260,6 +260,28 @@ namespace NHibernate.Persister.Entity
 		// This must be a Lazy<T>, because instances of this class must be thread safe.
 		private readonly Lazy<string[]> defaultUniqueKeyPropertyNamesForSelectId;
 		private readonly Dictionary<string, int> propertyTableNumbersByNameAndSubclass = new Dictionary<string, int>();
+		private HydrateDelegate _hydrateDelegate;
+		private HydrateDelegate _hydrateLazyPropertiesDelegate;
+		private SequentialHydrateDelegate _sequentialHydrateDelegate;
+		private SequentialHydrateDelegate _sequentialHydrateLazyPropertiesDelegate;
+
+		private delegate object[] HydrateDelegate(
+			DbDataReader reader,
+			string[][] propertiesAliases,
+			ISet<string> fetchedLazyProperties,
+			bool allProperties,
+			ISessionImplementor session,
+			object obj);
+
+		private delegate object[] SequentialHydrateDelegate(
+			DbDataReader reader,
+			DbDataReader sequentialReader,
+			bool sequentialSelectEmpty,
+			string[][] propertiesAliases,
+			ISet<string> fetchedLazyProperties,
+			bool allProperties,
+			ISessionImplementor session,
+			object obj);
 
 		protected AbstractEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
 																			ISessionFactoryImplementor factory)
@@ -1341,40 +1363,38 @@ namespace NHibernate.Persister.Entity
 				throw new HibernateException($"Entity is not associated with the session: {id}");
 			}
 
-			int[] indexes;
-			int[] lazyIndexes;
+			var metadata = InstrumentationMetadata.LazyPropertiesMetadata;
+			int length;
+			ISet<string> fetchedLazyProperties;
 			if (allLazyProperties)
 			{
-				lazyIndexes = indexes = lazyPropertyNumbers;
+				length = lazyPropertyNumbers.Length;
+				fetchedLazyProperties = null;
 			}
 			else
 			{
-				var metadata = InstrumentationMetadata.LazyPropertiesMetadata;
-				indexes = new int[uninitializedLazyProperties.Length];
-				lazyIndexes = new int[uninitializedLazyProperties.Length];
-				for (var i = 0; i < uninitializedLazyProperties.Length; i++)
-				{
-					var descriptor = metadata.GetLazyPropertyDescriptor(uninitializedLazyProperties[i]);
-					indexes[i] = descriptor.PropertyIndex;
-					lazyIndexes[i] = descriptor.LazyIndex;
-				}
+				length = uninitializedLazyProperties.Length;
+				fetchedLazyProperties = new HashSet<string>(uninitializedLazyProperties);
 			}
 
-			var values = Hydrate(rs, id, entity, suffixedPropertyColumns, null, true, indexes, session);
-			for (var i = 0; i < lazyIndexes.Length; i++)
+			var values = Hydrate(rs, id, entity, suffixedPropertyColumns, fetchedLazyProperties, allLazyProperties, true, session);
+
+			for (var j = 0; j < length; j++)
 			{
+				var i = allLazyProperties
+					? j
+					: metadata.GetLazyPropertyDescriptor(uninitializedLazyProperties[j]).LazyIndex;
 				var value = values[i];
 				if (entry.Status == Status.Loading)
 				{
 					// Here loaded state contains hydrated values and is always not null even in ReadOnly mode.
 					// We don't need to set the property value here as it will be set in TwoPhaseLoad.InitializeEntity
-					entry.LoadedState[indexes[i]] = value;
+					entry.LoadedState[lazyPropertyNumbers[i]] = value;
 				}
 				else
 				{
-					var lazyIndex = lazyIndexes[i];
-					var propValue = lazyPropertyTypes[lazyIndex].Assemble(value, session, entity);
-					InitializeLazyProperty(entity, entry.LoadedState, lazyIndex, propValue, null);
+					var propValue = lazyPropertyTypes[i].Assemble(value, session, entity);
+					InitializeLazyProperty(entity, entry.LoadedState, i, propValue, null);
 				}
 			}
 		}
@@ -2710,7 +2730,7 @@ namespace NHibernate.Persister.Entity
 		public object[] Hydrate(DbDataReader rs, object id, object obj,
 			string[][] suffixedPropertyColumns, ISet<string> fetchedLazyProperties, bool allProperties, ISessionImplementor session)
 		{
-			return Hydrate(rs, id, obj, suffixedPropertyColumns, fetchedLazyProperties, allProperties, null, session);
+			return Hydrate(rs, id, obj, suffixedPropertyColumns, fetchedLazyProperties, allProperties, false, session);
 		}
 
 		/// <summary>
@@ -2722,7 +2742,7 @@ namespace NHibernate.Persister.Entity
 		public object[] Hydrate(DbDataReader rs, object id, object obj, ILoadable rootLoadable,
 		                        string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session)
 		{
-			return Hydrate(rs, id, obj, suffixedPropertyColumns, null, allProperties, null, session);
+			return Hydrate(rs, id, obj, suffixedPropertyColumns, null, allProperties, false, session);
 		}
 
 		/// <summary>
@@ -2730,89 +2750,74 @@ namespace NHibernate.Persister.Entity
 		/// without resolving associations or collections
 		/// </summary>
 		private object[] Hydrate(DbDataReader rs, object id, object obj, string[][] suffixedPropertyColumns,
-								ISet<string> fetchedLazyProperties, bool allProperties, int[] indexes, ISessionImplementor session)
+								ISet<string> fetchedLazyProperties, bool allProperties, bool onlyLazyProperties, ISessionImplementor session)
 		{
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Hydrating entity: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
 
+			if (onlyLazyProperties && _hydrateLazyPropertiesDelegate == null)
+			{
+				throw new InvalidOperationException($"Entity name {EntityName} doesn't have lazy properties");
+			}
+
 			var sequentialSql = GetSequentialSelect();
+			if (sequentialSql == null)
+			{
+				return (onlyLazyProperties ? _hydrateLazyPropertiesDelegate : _hydrateDelegate)(
+					rs,
+					suffixedPropertyColumns,
+					fetchedLazyProperties,
+					allProperties,
+					session,
+					obj);
+			}
+
 			DbCommand sequentialSelect = null;
 			DbDataReader sequentialResultSet = null;
 			bool sequentialSelectEmpty = false;
-			using (session.BeginProcess())
 			try
 			{
-				if (sequentialSql != null)
+				//TODO: I am not so sure about the exception handling in this bit!
+				sequentialSelect = session.Batcher.PrepareCommand(CommandType.Text, sequentialSql, IdentifierType.SqlTypes(factory));
+				IdentifierType.NullSafeSet(sequentialSelect, id, 0, session);
+				sequentialResultSet = session.Batcher.ExecuteReader(sequentialSelect);
+				if (!sequentialResultSet.Read())
 				{
-					//TODO: I am not so sure about the exception handling in this bit!
-					sequentialSelect = session.Batcher.PrepareCommand(CommandType.Text, sequentialSql, IdentifierType.SqlTypes(factory));
-					IdentifierType.NullSafeSet(sequentialSelect, id, 0, session);
-					sequentialResultSet = session.Batcher.ExecuteReader(sequentialSelect);
-					if (!sequentialResultSet.Read())
-					{
-						// TODO: Deal with the "optional" attribute in the <join> mapping;
-						// this code assumes that optional defaults to "true" because it
-						// doesn't actually seem to work in the fetch="join" code
-						//
-						// Note that actual proper handling of optional-ality here is actually
-						// more involved than this patch assumes.  Remember that we might have
-						// multiple <join/> mappings associated with a single entity.  Really
-						// a couple of things need to happen to properly handle optional here:
-						//  1) First and foremost, when handling multiple <join/>s, we really
-						//      should be using the entity root table as the driving table;
-						//      another option here would be to choose some non-optional joined
-						//      table to use as the driving table.  In all likelihood, just using
-						//      the root table is much simplier
-						//  2) Need to add the FK columns corresponding to each joined table
-						//      to the generated select list; these would then be used when
-						//      iterating the result set to determine whether all non-optional
-						//      data is present
-						// My initial thoughts on the best way to deal with this would be
-						// to introduce a new SequentialSelect abstraction that actually gets
-						// generated in the persisters (ok, SingleTable...) and utilized here.
-						// It would encapsulated all this required optional-ality checking...
-						sequentialSelectEmpty = true;
-					}
+					// TODO: Deal with the "optional" attribute in the <join> mapping;
+					// this code assumes that optional defaults to "true" because it
+					// doesn't actually seem to work in the fetch="join" code
+					//
+					// Note that actual proper handling of optional-ality here is actually
+					// more involved than this patch assumes.  Remember that we might have
+					// multiple <join/> mappings associated with a single entity.  Really
+					// a couple of things need to happen to properly handle optional here:
+					//  1) First and foremost, when handling multiple <join/>s, we really
+					//      should be using the entity root table as the driving table;
+					//      another option here would be to choose some non-optional joined
+					//      table to use as the driving table.  In all likelihood, just using
+					//      the root table is much simplier
+					//  2) Need to add the FK columns corresponding to each joined table
+					//      to the generated select list; these would then be used when
+					//      iterating the result set to determine whether all non-optional
+					//      data is present
+					// My initial thoughts on the best way to deal with this would be
+					// to introduce a new SequentialSelect abstraction that actually gets
+					// generated in the persisters (ok, SingleTable...) and utilized here.
+					// It would encapsulated all this required optional-ality checking...
+					sequentialSelectEmpty = true;
 				}
 
-				int i;
-				int length = indexes?.Length ?? PropertyTypes.Length;
-				string[] propNames = PropertyNames;
-				IType[] types = PropertyTypes;
-				object[] values = new object[length];
-				bool[] laziness = PropertyLaziness;
-
-				for (int j = 0; j < length; j++)
-				{
-					i = indexes?[j] ?? j;
-					if (!propertySelectable[i])
-					{
-						values[j] = BackrefPropertyAccessor.Unknown;
-					}
-					else if (allProperties || !laziness[i] || fetchedLazyProperties?.Contains(propNames[i]) == true)
-					{
-						//decide which ResultSet to get the property value from:
-						var propertyIsDeferred = sequentialSql != null && IsPropertyDeferred(i);
-						if (propertyIsDeferred && sequentialSelectEmpty)
-						{
-							values[j] = null;
-						}
-						else
-						{
-							var propertyResultSet = propertyIsDeferred ? sequentialResultSet : rs;
-							string[] cols = propertyIsDeferred ? propertyColumnAliases[i] : suffixedPropertyColumns[i];
-							values[j] = types[i].Hydrate(propertyResultSet, cols, session, obj);
-						}
-					}
-					else
-					{
-						values[j] = LazyPropertyInitializer.UnfetchedProperty;
-					}
-				}
-
-				return values;
+				return (onlyLazyProperties ? _sequentialHydrateLazyPropertiesDelegate : _sequentialHydrateDelegate)(
+					rs,
+					sequentialResultSet,
+					sequentialSelectEmpty,
+					suffixedPropertyColumns,
+					fetchedLazyProperties,
+					allProperties,
+					session,
+					obj);
 			}
 			finally
 			{
@@ -3866,6 +3871,23 @@ namespace NHibernate.Persister.Entity
 			CreateLoaders();
 			CreateUniqueKeyLoaders();
 			CreateQueryLoader();
+
+			if (GetSequentialSelect() != null)
+			{
+				_sequentialHydrateDelegate = CreateHydateDelegate<SequentialHydrateDelegate>(this, null);
+				if (HasLazyProperties)
+				{
+					_sequentialHydrateLazyPropertiesDelegate = CreateHydateDelegate<SequentialHydrateDelegate>(this, lazyPropertyNumbers);
+				}
+			}
+			else
+			{
+				_hydrateDelegate = CreateHydateDelegate<HydrateDelegate>(this, null);
+				if (HasLazyProperties)
+				{
+					_hydrateLazyPropertiesDelegate = CreateHydateDelegate<HydrateDelegate>(this, lazyPropertyNumbers);
+				}
+			}
 		}
 
 		private void CreateLoaders()
@@ -4672,6 +4694,109 @@ namespace NHibernate.Persister.Entity
 
 			//render the SQL
 			return RenderSelect(tableNumbers.ToArray(), columnNumbers.ToArray(), formulaNumbers.ToArray());
+		}
+
+		private static T CreateHydateDelegate<T>(AbstractEntityPersister persister, int[] propertyIndexes)
+		{
+			var readerParameter = Expression.Parameter(typeof(DbDataReader), "reader");
+			var sequentialReaderParameter = Expression.Parameter(typeof(DbDataReader), "sequentialReader");
+			var sequentialSelectEmptyParameter = Expression.Parameter(typeof(bool), "sequentialSelectEmpty");
+			var propertiesAliasesParameter = Expression.Parameter(typeof(string[][]), "propertiesAliases");
+			var fetchedLazyPropertiesParameter = Expression.Parameter(typeof(ISet<string>), "fetchedLazyProperties");
+			var allPropertiesParameter = Expression.Parameter(typeof(bool), "allProperties");
+			var sessionParameter = Expression.Parameter(typeof(ISessionImplementor), "session");
+			var objParameter = Expression.Parameter(typeof(object), "obj");
+
+			var types = persister.PropertyTypes;
+			var length = propertyIndexes?.Length ?? types.Length;
+			var names = persister.PropertyNames;
+			var laziness = persister.PropertyLaziness;
+			var parameters = new Expression[length];
+			var setContainsMethod = ReflectHelper.GetMethod<ISet<string>>(o => o.Contains(null));
+			var hydrateMethod = ReflectHelper.GetMethod<IType>(o => o.Hydrate(null, null, null, null));
+			var unfetchedConstant = Expression.Constant(LazyPropertyInitializer.UnfetchedProperty, typeof(object));
+			var unknownConstant = Expression.Constant(BackrefPropertyAccessor.Unknown, typeof(object));
+			var nullConstant = Expression.Constant(null);
+			var sequential = persister.GetSequentialSelect() != null;
+
+			for (var j = 0; j < length; j++)
+			{
+				var i = propertyIndexes?[j] ?? j;
+				if (!persister.propertySelectable[i])
+				{
+					// BackrefPropertyAccessor.Unknown
+					parameters[j] = unknownConstant;
+					continue;
+				}
+
+				var isDeferred = sequential && persister.IsPropertyDeferred(i);
+				// types[i].Hydrate(<isDeferred> ? sequentialReader : reader, <isDeferred> ? <persister.propertyColumnAliases[i]> : propertiesAliases[i], session, obj)
+				var hydrateCall = Expression.Call(
+					Expression.Constant(types[i]),
+					hydrateMethod,
+					isDeferred ? sequentialReaderParameter : readerParameter,
+					isDeferred
+						? (Expression) Expression.Constant(persister.propertyColumnAliases[i])
+						: Expression.ArrayIndex(propertiesAliasesParameter, Expression.Constant(i)),
+					sessionParameter,
+					objParameter
+				);
+
+				// fetchedLazyProperties == null ? false : fetchedLazyProperties.Contains(<persister.PropertyNames[i]>)
+				var containsFetchedLazyProperty = Expression.Condition(
+					Expression.Equal(fetchedLazyPropertiesParameter, nullConstant),
+					Expression.Constant(false),
+					Expression.Call(fetchedLazyPropertiesParameter, setContainsMethod, Expression.Constant(names[i])));
+
+				if (laziness[i])
+				{
+					// sequentialSelectEmpty ? null : <hydrateCall>
+					var condition = Expression.Condition(
+						sequentialSelectEmptyParameter,
+						nullConstant,
+						hydrateCall
+					);
+
+					// allProperties || <containsFetchedLazyProperty> ? (<isDeferred> ? <condition> : <hydrateCall>) : LazyPropertyInitializer.UnfetchedProperty
+					parameters[j] = Expression.Condition(
+						Expression.OrElse(allPropertiesParameter, containsFetchedLazyProperty),
+						isDeferred ? (Expression) condition : hydrateCall,
+						unfetchedConstant
+					);
+				}
+				else
+				{
+					// types[i].Hydrate(reader, propertiesAliases[i], session, obj)
+					parameters[j] = hydrateCall;
+				}
+			}
+
+			if (sequential)
+			{
+				return Expression
+					   .Lambda<T>(
+						   Expression.NewArrayInit(typeof(object), parameters),
+						   readerParameter,
+						   sequentialReaderParameter,
+						   sequentialSelectEmptyParameter,
+						   propertiesAliasesParameter,
+						   fetchedLazyPropertiesParameter,
+						   allPropertiesParameter,
+						   sessionParameter,
+						   objParameter)
+					   .Compile();
+			}
+
+			return Expression
+				   .Lambda<T>(
+					   Expression.NewArrayInit(typeof(object), parameters),
+					   readerParameter,
+					   propertiesAliasesParameter,
+					   fetchedLazyPropertiesParameter,
+					   allPropertiesParameter,
+					   sessionParameter,
+					   objParameter)
+				   .Compile();
 		}
 	}
 }
