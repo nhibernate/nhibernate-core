@@ -12,7 +12,7 @@ namespace NHibernate.Engine
 	/// and the identifier space (eg. tablename)
 	/// </summary>
 	[Serializable]
-	public sealed class EntityKey : IDeserializationCallback, ISerializable
+	public sealed class EntityKey : IDeserializationCallback, ISerializable, IEquatable<EntityKey>
 	{
 		private readonly object identifier;
 		private readonly IEntityPersister _persister;
@@ -49,12 +49,19 @@ namespace NHibernate.Engine
 
 		public override bool Equals(object other)
 		{
-			var otherKey = other as EntityKey;
-			if(otherKey==null) return false;
+			return other is EntityKey otherKey && Equals(otherKey);
+		}
+
+		public bool Equals(EntityKey other)
+		{
+			if (other == null)
+			{
+				return false;
+			}
 
 			return
-				otherKey.RootEntityName.Equals(RootEntityName)
-				&& _persister.IdentifierType.IsEqual(otherKey.Identifier, Identifier, _persister.Factory);
+				other.RootEntityName.Equals(RootEntityName)
+				&& _persister.IdentifierType.IsEqual(other.Identifier, Identifier, _persister.Factory);
 		}
 
 		public override int GetHashCode()
