@@ -29,7 +29,12 @@ namespace NHibernate.Cache.Entry
 			return new CacheEntry
 			{
 				//disassembled state gets put in a new array (we write to cache by value!)
-				DisassembledState = await (TypeHelper.DisassembleAsync(state, persister.PropertyTypes, null, session, owner, cancellationToken)).ConfigureAwait(false),
+				DisassembledState = await (TypeHelper.DisassembleAsync(
+					state,
+					persister.PropertyTypes,
+					persister.IsLazyPropertiesCacheable ? null : persister.PropertyLaziness,
+					session,
+					owner, cancellationToken)).ConfigureAwait(false),
 				AreLazyPropertiesUnfetched = unfetched || !persister.IsLazyPropertiesCacheable,
 				Subclass = persister.EntityName,
 				Version = version

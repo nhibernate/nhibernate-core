@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
+using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Util;
 
@@ -113,17 +114,22 @@ namespace NHibernate.Intercept
 					uninitializedFields.Remove(fieldName);
 				}
 
-				if (IsUninitializedAssociation(fieldName))
+				if (!unwrapProxyFieldNames.Contains(fieldName))
+				{
+					return value;
+				}
+
+				// When a proxy is set by the user which we know when the session is set, we should not unwrap it
+				if (session != null || !value.IsProxy())
 				{
 					loadedUnwrapProxyFieldNames.Add(fieldName);
 				}
+
+				return value;
 			}
 
 			if (IsInitializedField(fieldName))
 			{
-				if (value.IsProxy() && IsInitializedAssociation(fieldName))
-					return InitializeOrGetAssociation((INHibernateProxy) value, fieldName);
-
 				return value;
 			}
 
@@ -144,14 +150,17 @@ namespace NHibernate.Intercept
 			if (value.IsProxy() && IsUninitializedAssociation(fieldName))
 			{
 				var nhproxy = value as INHibernateProxy;
-				return InitializeOrGetAssociation(nhproxy, fieldName);
+				value = InitializeOrGetAssociation(nhproxy, fieldName);
+				// Set the property value in order to be accessible when the session is closed
+				var persister = session.Factory.GetEntityPersister(entityName);
+				persister.SetPropertyValue(
+					target,
+					persister.EntityMetamodel.BytecodeEnhancementMetadata.UnwrapProxyPropertiesMetadata.GetUnwrapProxyPropertyIndex(fieldName),
+					value);
+
+				return value;
 			}
 			return InvokeImplementation;
-		}
-
-		private bool IsInitializedAssociation(string fieldName)
-		{
-			return loadedUnwrapProxyFieldNames.Contains(fieldName);
 		}
 
 		private bool IsUninitializedAssociation(string fieldName)

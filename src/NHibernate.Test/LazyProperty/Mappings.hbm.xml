@@ -4,6 +4,7 @@
 					namespace="NHibernate.Test.LazyProperty">
 	
 	<class name="Book">
+		<cache usage="nonstrict-read-write" include="non-lazy" />
 		<id name="Id">
 			<generator class="assigned" />
 		</id>

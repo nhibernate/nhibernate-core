@@ -32,7 +32,7 @@ namespace NHibernate.Proxy
 
 			if (info.GetBoolean(HasAdditionalDataName))
 			{
-				_deserializedProxy = _proxyFactoryInfo.CreateProxyFactory().GetFieldInterceptionProxy(null);
+				_deserializedProxy = _proxyFactoryInfo.CreateProxyFactory().GetFieldInterceptionProxy();
 
 				var additionalMembers = info.GetValue<MemberInfo[]>(AdditionalMemberName);
 				if (additionalMembers == null)
@@ -62,7 +62,7 @@ namespace NHibernate.Proxy
 			{
 				// Base type has a custom serialization, we need to call the proxy deserialization for deserializing
 				// base type members too.
-				var proxyType = _proxyFactoryInfo.CreateProxyFactory().GetFieldInterceptionProxy(null).GetType();
+				var proxyType = _proxyFactoryInfo.CreateProxyFactory().GetFieldInterceptionProxy().GetType();
 				var deserializationConstructor = proxyType.GetConstructor(
 					BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
 					null,
