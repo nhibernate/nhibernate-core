@@ -1,3 +1,14 @@
+Build 5.2.3
+=============================
+
+Release notes - NHibernate - Version 5.2.3
+
+1 issue was resolved in this release.
+
+** Bug
+
+   * #1964 Unable to serialize session because SerializationFieldInfo is not marked as serializable
+
 Build 5.2.2
 =============================
 

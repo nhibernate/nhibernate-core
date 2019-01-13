@@ -33,13 +33,19 @@ namespace NHibernate.Test.StaticProxyTest
 	}
 
 	[Serializable]
-	public class LazyTextEntity
+	public class LazyTextEntity : BaseTextEntity
 	{
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
 		public virtual string Text { get; set; }
 	}
 
+	[Serializable]
+	public class BaseTextEntity
+	{
+		public virtual int Test { get; set; }
+	}
+	
 	[Serializable]
 	public class InterfacedLazyTextEntity : ILazyTextEntity
 	{

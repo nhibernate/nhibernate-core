@@ -17,7 +17,6 @@ namespace NHibernate.Proxy
 		private readonly object _deserializedProxy;
 
 		private const string HasAdditionalDataName = "proxy$hasAdditionalData";
-		private const string AdditionalMemberName = "proxy$additionalMembers";
 
 		public FieldInterceptorObjectReference(NHibernateProxyFactoryInfo proxyFactoryInfo, IFieldInterceptor fieldInterceptorField)
 		{
@@ -30,26 +29,22 @@ namespace NHibernate.Proxy
 			_proxyFactoryInfo = info.GetValue<NHibernateProxyFactoryInfo>(nameof(_proxyFactoryInfo));
 			_fieldInterceptor = info.GetValue<IFieldInterceptor>(nameof(_fieldInterceptor));
 
+			var proxy = _proxyFactoryInfo.CreateProxyFactory().GetFieldInterceptionProxy(null);
 			if (info.GetBoolean(HasAdditionalDataName))
 			{
-				_deserializedProxy = _proxyFactoryInfo.CreateProxyFactory().GetFieldInterceptionProxy(null);
-
-				var additionalMembers = info.GetValue<MemberInfo[]>(AdditionalMemberName);
-				if (additionalMembers == null)
-					return;
-
-				foreach (var member in additionalMembers)
+				var members = FormatterServices.GetSerializableMembers(_proxyFactoryInfo.PersistentClass, context);
+				foreach (var member in members)
 				{
 					switch (member)
 					{
 						case FieldInfo field:
 							field.SetValue(
-								_deserializedProxy,
+								proxy,
 								info.GetValue(GetAdditionalMemberName(field), field.FieldType));
 							break;
 						case PropertyInfo property:
 							property.SetValue(
-								_deserializedProxy,
+								proxy,
 								info.GetValue(GetAdditionalMemberName(property), property.PropertyType));
 							break;
 						default:
@@ -57,12 +52,13 @@ namespace NHibernate.Proxy
 								$"Deserializing a member of type {member.GetType()} is not supported.");
 					}
 				}
+				_deserializedProxy = proxy;
 			}
 			else
 			{
 				// Base type has a custom serialization, we need to call the proxy deserialization for deserializing
 				// base type members too.
-				var proxyType = _proxyFactoryInfo.CreateProxyFactory().GetFieldInterceptionProxy(null).GetType();
+				var proxyType = proxy.GetType();
 				var deserializationConstructor = proxyType.GetConstructor(
 					BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
 					null,
@@ -95,8 +91,6 @@ namespace NHibernate.Proxy
 			info.AddValue(HasAdditionalDataName, true);
 
 			var members = FormatterServices.GetSerializableMembers(proxyBaseType, context);
-			info.AddValue(AdditionalMemberName, members);
-
 			foreach (var member in members)
 			{
 				switch (member)
