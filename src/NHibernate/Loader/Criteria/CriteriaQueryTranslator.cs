@@ -789,7 +789,7 @@ namespace NHibernate.Loader.Criteria
 				}
 				if (outerQueryTranslator != null)
 				{
-					return outerQueryTranslator.GetType(subcriteria, propertyName);
+					return outerQueryTranslator.GetTypeUsingProjection(subcriteria, propertyName);
 				}
 				throw new QueryException("Could not find property " + propertyName);
 			}

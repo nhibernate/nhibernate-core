@@ -155,5 +155,29 @@ namespace NHibernate.Test.Criteria.Lambda
 				Assert.That(nameAndChildCount[1].ChildCount, Is.EqualTo(1));
 			}
 		}
+
+		//NH-3493 - Cannot use alias between more than 1 level of nested queries
+		[Test]
+		public void ThreeLevelSubquery()
+		{
+			Person p = null;
+			var detachedCriteria2 = DetachedCriteria.For<Person>("vf_inner_2")
+				.SetProjection(Projections.Id())
+				.Add(Restrictions.Eq($@"mk.{nameof(p.Age)}", 20))
+				.Add(Restrictions.EqProperty("vf_inner_2.Id", "vf_inner.Id"));
+
+			var detachedCriteria1 = DetachedCriteria.For<Person>("vf_inner")
+				.SetProjection(Projections.Id())
+				.Add(Subqueries.Exists(detachedCriteria2))
+				.Add(Restrictions.EqProperty("vf_inner.Id", "vf.Id"));
+
+			using (var s = OpenSession())
+			{
+				s.CreateCriteria<Person>("vf")
+					.CreateAlias($"vf.{nameof(p.Father)}", "mk")
+					.AddOrder(Order.Asc(Projections.SubQuery(detachedCriteria1)))
+					.List<Person>();
+			}
+		}
 	}
 }
