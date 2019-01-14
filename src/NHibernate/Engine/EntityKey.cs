@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using System.Security;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
@@ -11,73 +12,56 @@ namespace NHibernate.Engine
 	/// and the identifier space (eg. tablename)
 	/// </summary>
 	[Serializable]
-	public sealed class EntityKey : IDeserializationCallback
+	public sealed class EntityKey : IDeserializationCallback, ISerializable, IEquatable<EntityKey>
 	{
 		private readonly object identifier;
-		private readonly string rootEntityName;
-		private readonly string entityName;
-		private readonly IType identifierType;
-		private readonly bool isBatchLoadable;
-
-		private ISessionFactoryImplementor factory;
+		private readonly IEntityPersister _persister;
 		// hashcode may vary among processes, they cannot be stored and have to be re-computed after deserialization
 		[NonSerialized]
 		private int? _hashCode;
 
 		/// <summary> Construct a unique identifier for an entity class instance</summary>
 		public EntityKey(object id, IEntityPersister persister)
-			: this(id, persister.RootEntityName, persister.EntityName, persister.IdentifierType, persister.IsBatchLoadable, persister.Factory) {}
-
-		/// <summary> Used to reconstruct an EntityKey during deserialization. </summary>
-		/// <param name="identifier">The identifier value </param>
-		/// <param name="rootEntityName">The root entity name </param>
-		/// <param name="entityName">The specific entity name </param>
-		/// <param name="identifierType">The type of the identifier value </param>
-		/// <param name="batchLoadable">Whether represented entity is eligible for batch loading </param>
-		/// <param name="factory">The session factory </param>
-		private EntityKey(object identifier, string rootEntityName, string entityName, IType identifierType, bool batchLoadable, ISessionFactoryImplementor factory)
 		{
-			if (identifier == null)
-				throw new AssertionFailure("null identifier");
-
-			this.identifier = identifier;
-			this.rootEntityName = rootEntityName;
-			this.entityName = entityName;
-			this.identifierType = identifierType;
-			isBatchLoadable = batchLoadable;
-			this.factory = factory;
-
+			identifier = id ?? throw new AssertionFailure("null identifier");
+			_persister = persister;
 			_hashCode = GenerateHashCode();
 		}
 
-		public bool IsBatchLoadable
+		private EntityKey(SerializationInfo info, StreamingContext context)
 		{
-			get { return isBatchLoadable; }
+			identifier = info.GetValue(nameof(Identifier), typeof(object));
+			var factory = (ISessionFactoryImplementor) info.GetValue(nameof(_persister.Factory), typeof(ISessionFactoryImplementor));
+			var entityName = (string) info.GetValue(nameof(EntityName), typeof(string));
+			_persister = factory.GetEntityPersister(entityName);
 		}
+
+		public bool IsBatchLoadable => _persister.IsBatchLoadable;
 
 		public object Identifier
 		{
 			get { return identifier; }
 		}
 
-		public string EntityName
-		{
-			get { return entityName; }
-		}
+		public string EntityName => _persister.EntityName;
 
-		internal string RootEntityName
-		{
-			get { return rootEntityName; }
-		}
+		internal string RootEntityName => _persister.RootEntityName;
 
 		public override bool Equals(object other)
 		{
-			var otherKey = other as EntityKey;
-			if(otherKey==null) return false;
+			return other is EntityKey otherKey && Equals(otherKey);
+		}
+
+		public bool Equals(EntityKey other)
+		{
+			if (other == null)
+			{
+				return false;
+			}
 
 			return
-				otherKey.rootEntityName.Equals(rootEntityName)
-				&& identifierType.IsEqual(otherKey.Identifier, Identifier, factory);
+				other.RootEntityName.Equals(RootEntityName)
+				&& _persister.IdentifierType.IsEqual(other.Identifier, Identifier, _persister.Factory);
 		}
 
 		public override int GetHashCode()
@@ -100,15 +84,23 @@ namespace NHibernate.Engine
 			int result = 17;
 			unchecked
 			{
-				result = 37 * result + rootEntityName.GetHashCode();
-				result = 37 * result + identifierType.GetHashCode(identifier, factory);
+				result = 37 * result + RootEntityName.GetHashCode();
+				result = 37 * result + _persister.IdentifierType.GetHashCode(identifier, _persister.Factory);
 			}
 			return result;
 		}
 
 		public override string ToString()
 		{
-			return "EntityKey" + MessageHelper.InfoString(factory.GetEntityPersister(EntityName), Identifier, factory);
+			return "EntityKey" + MessageHelper.InfoString(_persister, Identifier, _persister.Factory);
+		}
+
+		[SecurityCritical]
+		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			info.AddValue(nameof(Identifier), identifier);
+			info.AddValue(nameof(_persister.Factory), _persister.Factory);
+			info.AddValue(nameof(EntityName), EntityName);
 		}
 	}
 }
