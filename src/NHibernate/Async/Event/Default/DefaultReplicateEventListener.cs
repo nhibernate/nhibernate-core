@@ -102,7 +102,7 @@ namespace NHibernate.Event.Default
 				}
 
 				bool regenerate = persister.IsIdentifierAssignedByInsert; // prefer re-generation of identity!
-				EntityKey key = regenerate ? null : source.GenerateEntityKey(id, persister);
+				EntityKey key = regenerate ? EntityKey.Null : source.GenerateEntityKey(id, persister);
 
 				await (PerformSaveOrReplicateAsync(entity, key, persister, regenerate, replicationMode, source, true, cancellationToken)).ConfigureAwait(false);
 			}

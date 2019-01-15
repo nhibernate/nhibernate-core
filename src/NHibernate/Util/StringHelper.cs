@@ -10,6 +10,8 @@ namespace NHibernate.Util
 	/// <summary></summary>
 	public static class StringHelper
 	{
+		internal const string NullObject = "(null)";
+
 		/// <summary>
 		/// This allows for both CRLF and lone LF line separators.
 		/// </summary>
@@ -396,9 +398,9 @@ namespace NHibernate.Util
 			return trimmed.Equals("true", StringComparison.OrdinalIgnoreCase) || trimmed.Equals("t", StringComparison.OrdinalIgnoreCase);
 		}
 
-		private static string NullSafeToString(object obj)
+		private static string NullSafeToString<T>(T obj)
 		{
-			return obj == null ? "(null)" : obj.ToString();
+			return obj == null ? NullObject : obj.ToString();
 		}
 
 		/// <summary>
@@ -407,6 +409,11 @@ namespace NHibernate.Util
 		/// <param name="array"></param>
 		/// <returns></returns>
 		public static string ToString(object[] array)
+		{
+			return ToString<object>(array);
+		}
+
+		internal static string ToString<T>(T[] array)
 		{
 			int len = array.Length;
 

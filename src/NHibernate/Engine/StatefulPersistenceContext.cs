@@ -784,7 +784,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		public object ProxyFor(IEntityPersister persister, EntityKey key, object impl)
 		{
-			if (!persister.HasProxy || key == null)
+			if (!persister.HasProxy || key.IsNull)
 				return impl;
 
 			INHibernateProxy proxy;
