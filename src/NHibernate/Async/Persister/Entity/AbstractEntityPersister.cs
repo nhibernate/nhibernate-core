@@ -36,6 +36,7 @@ using Array=System.Array;
 using Property=NHibernate.Mapping.Property;
 using NHibernate.SqlTypes;
 using System.Linq;
+using System.Linq.Expressions;
 using NHibernate.Bytecode;
 
 namespace NHibernate.Persister.Entity
@@ -339,7 +340,21 @@ namespace NHibernate.Persister.Entity
 		/// Unmarshall the fields of a persistent instance from a result set,
 		/// without resolving associations or collections
 		/// </summary>
-		public async Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj, ILoadable rootLoadable,
+		public Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj, ILoadable rootLoadable,
+			string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object[]>(cancellationToken);
+			}
+			return HydrateAsync(rs, id, obj, suffixedPropertyColumns, allProperties, session, cancellationToken);
+		}
+
+		/// <summary>
+		/// Unmarshall the fields of a persistent instance from a result set,
+		/// without resolving associations or collections
+		/// </summary>
+		public async Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj,
 			string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -348,9 +363,7 @@ namespace NHibernate.Persister.Entity
 				log.Debug("Hydrating entity: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
 
-			AbstractEntityPersister rootPersister = (AbstractEntityPersister)rootLoadable;
-
-			bool hasDeferred = rootPersister.HasSequentialSelect;
+			bool hasDeferred = HasSequentialSelect;
 			DbCommand sequentialSelect = null;
 			DbDataReader sequentialResultSet = null;
 			bool sequentialSelectEmpty = false;
@@ -359,12 +372,12 @@ namespace NHibernate.Persister.Entity
 			{
 				if (hasDeferred)
 				{
-					SqlString sql = rootPersister.GetSequentialSelect(EntityName);
+					var sql = GetSequentialSelect();
 					if (sql != null)
 					{
 						//TODO: I am not so sure about the exception handling in this bit!
 						sequentialSelect = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, IdentifierType.SqlTypes(factory), cancellationToken)).ConfigureAwait(false);
-						await (rootPersister.IdentifierType.NullSafeSetAsync(sequentialSelect, id, 0, session, cancellationToken)).ConfigureAwait(false);
+						await (IdentifierType.NullSafeSetAsync(sequentialSelect, id, 0, session, cancellationToken)).ConfigureAwait(false);
 						sequentialResultSet = await (session.Batcher.ExecuteReaderAsync(sequentialSelect, cancellationToken)).ConfigureAwait(false);
 						if (!await (sequentialResultSet.ReadAsync(cancellationToken)).ConfigureAwait(false))
 						{
@@ -394,11 +407,9 @@ namespace NHibernate.Persister.Entity
 					}
 				}
 
-				string[] propNames = PropertyNames;
 				IType[] types = PropertyTypes;
 				object[] values = new object[types.Length];
 				bool[] laziness = PropertyLaziness;
-				string[] propSubclassNames = SubclassPropertySubclassNameClosure;
 
 				for (int i = 0; i < types.Length; i++)
 				{
@@ -409,8 +420,7 @@ namespace NHibernate.Persister.Entity
 					else if (allProperties || !laziness[i])
 					{
 						//decide which ResultSet to get the property value from:
-						bool propertyIsDeferred = hasDeferred
-																			&& rootPersister.IsSubclassPropertyDeferred(propNames[i], propSubclassNames[i]);
+						var propertyIsDeferred = hasDeferred && IsPropertyDeferred(i);
 						if (propertyIsDeferred && sequentialSelectEmpty)
 						{
 							values[i] = null;
@@ -428,15 +438,11 @@ namespace NHibernate.Persister.Entity
 					}
 				}
 
-				if (sequentialResultSet != null)
-				{
-					sequentialResultSet.Close();
-				}
-
 				return values;
 			}
 			finally
 			{
+				sequentialResultSet?.Close();
 				if (sequentialSelect != null)
 				{
 					session.Batcher.CloseCommand(sequentialSelect, sequentialResultSet);

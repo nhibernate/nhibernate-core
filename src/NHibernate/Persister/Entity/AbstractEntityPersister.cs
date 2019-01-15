@@ -26,6 +26,7 @@ using Array=System.Array;
 using Property=NHibernate.Mapping.Property;
 using NHibernate.SqlTypes;
 using System.Linq;
+using System.Linq.Expressions;
 using NHibernate.Bytecode;
 
 namespace NHibernate.Persister.Entity
@@ -258,6 +259,7 @@ namespace NHibernate.Persister.Entity
 
 		// This must be a Lazy<T>, because instances of this class must be thread safe.
 		private readonly Lazy<string[]> defaultUniqueKeyPropertyNamesForSelectId;
+		private readonly Dictionary<string, int> propertyTableNumbersByNameAndSubclass = new Dictionary<string, int>();
 
 		protected AbstractEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
 																			ISessionFactoryImplementor factory)
@@ -443,6 +445,8 @@ namespace NHibernate.Persister.Entity
 				definedBySubclass.Add(isDefinedBySubclass);
 				propNullables.Add(prop.IsOptional || isDefinedBySubclass); //TODO: is this completely correct?
 				types.Add(prop.Type);
+				propertyTableNumbersByNameAndSubclass[prop.PersistentClass.EntityName + '.' + prop.Name] =
+					persistentClass.GetJoinNumber(prop);
 
 				string[] cols = new string[prop.ColumnSpan];
 				string[] forms = new string[prop.ColumnSpan];
@@ -1109,6 +1113,16 @@ namespace NHibernate.Persister.Entity
 
 		protected abstract int GetSubclassPropertyTableNumber(int i);
 
+		internal int GetSubclassPropertyTableNumber(string propertyName, string entityName)
+		{
+			IType type = propertyMapping.ToType(propertyName);
+			if (type.IsAssociationType && ((IAssociationType) type).UseLHSPrimaryKey)
+				return 0;
+			int tabnum;
+			propertyTableNumbersByNameAndSubclass.TryGetValue(entityName + '.' + propertyName, out tabnum);
+			return tabnum;
+		}
+
 		public abstract string FilterFragment(string alias);
 
 		protected internal virtual string DiscriminatorAlias
@@ -1161,7 +1175,14 @@ namespace NHibernate.Persister.Entity
 			return deleteCallable[j];
 		}
 
+		//Since 5.3
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		protected virtual bool IsSubclassPropertyDeferred(string propertyName, string entityName)
+		{
+			return false;
+		}
+
+		protected virtual bool IsPropertyDeferred(int propertyIndex)
 		{
 			return false;
 		}
@@ -2591,14 +2612,22 @@ namespace NHibernate.Persister.Entity
 		public object[] Hydrate(DbDataReader rs, object id, object obj, ILoadable rootLoadable,
 			string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session)
 		{
+			return Hydrate(rs, id, obj, suffixedPropertyColumns, allProperties, session);
+		}
+
+		/// <summary>
+		/// Unmarshall the fields of a persistent instance from a result set,
+		/// without resolving associations or collections
+		/// </summary>
+		public object[] Hydrate(DbDataReader rs, object id, object obj,
+			string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session)
+		{
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Hydrating entity: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
 
-			AbstractEntityPersister rootPersister = (AbstractEntityPersister)rootLoadable;
-
-			bool hasDeferred = rootPersister.HasSequentialSelect;
+			bool hasDeferred = HasSequentialSelect;
 			DbCommand sequentialSelect = null;
 			DbDataReader sequentialResultSet = null;
 			bool sequentialSelectEmpty = false;
@@ -2607,12 +2636,12 @@ namespace NHibernate.Persister.Entity
 			{
 				if (hasDeferred)
 				{
-					SqlString sql = rootPersister.GetSequentialSelect(EntityName);
+					var sql = GetSequentialSelect();
 					if (sql != null)
 					{
 						//TODO: I am not so sure about the exception handling in this bit!
 						sequentialSelect = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
-						rootPersister.IdentifierType.NullSafeSet(sequentialSelect, id, 0, session);
+						IdentifierType.NullSafeSet(sequentialSelect, id, 0, session);
 						sequentialResultSet = session.Batcher.ExecuteReader(sequentialSelect);
 						if (!sequentialResultSet.Read())
 						{
@@ -2642,11 +2671,9 @@ namespace NHibernate.Persister.Entity
 					}
 				}
 
-				string[] propNames = PropertyNames;
 				IType[] types = PropertyTypes;
 				object[] values = new object[types.Length];
 				bool[] laziness = PropertyLaziness;
-				string[] propSubclassNames = SubclassPropertySubclassNameClosure;
 
 				for (int i = 0; i < types.Length; i++)
 				{
@@ -2657,8 +2684,7 @@ namespace NHibernate.Persister.Entity
 					else if (allProperties || !laziness[i])
 					{
 						//decide which ResultSet to get the property value from:
-						bool propertyIsDeferred = hasDeferred
-																			&& rootPersister.IsSubclassPropertyDeferred(propNames[i], propSubclassNames[i]);
+						var propertyIsDeferred = hasDeferred && IsPropertyDeferred(i);
 						if (propertyIsDeferred && sequentialSelectEmpty)
 						{
 							values[i] = null;
@@ -2676,15 +2702,11 @@ namespace NHibernate.Persister.Entity
 					}
 				}
 
-				if (sequentialResultSet != null)
-				{
-					sequentialResultSet.Close();
-				}
-
 				return values;
 			}
 			finally
 			{
+				sequentialResultSet?.Close();
 				if (sequentialSelect != null)
 				{
 					session.Batcher.CloseCommand(sequentialSelect, sequentialResultSet);
@@ -2702,9 +2724,16 @@ namespace NHibernate.Persister.Entity
 			return Factory.Settings.IsGetGeneratedKeysEnabled;
 		}
 
+		//Since 5.3
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		protected virtual SqlString GetSequentialSelect(string entityName)
 		{
 			throw new NotSupportedException("no sequential selects");
+		}
+
+		protected virtual SqlString GetSequentialSelect()
+		{
+			throw new NotSupportedException("no sequential select");
 		}
 
 		/// <summary>
@@ -4491,5 +4520,49 @@ namespace NHibernate.Persister.Entity
 			return MessageHelper.InfoString(this);
 		}
 		#endregion
+
+		internal SqlString GenerateSequentialSelect(ILoadable persister)
+		{
+			//figure out which tables need to be fetched (only those that contains at least a no-lazy-property)
+			AbstractEntityPersister subclassPersister = (AbstractEntityPersister) persister;
+			var tableNumbers = new HashSet<int>();
+			string[] props = subclassPersister.PropertyNames;
+			string[] classes = subclassPersister.PropertySubclassNames;
+			for (int i = 0; i < props.Length; i++)
+			{
+				int propTableNumber = GetSubclassPropertyTableNumber(props[i], classes[i]);
+				if (IsSubclassTableSequentialSelect(propTableNumber) && !IsSubclassTableLazy(propTableNumber))
+				{
+					tableNumbers.Add(propTableNumber);
+				}
+			}
+			if ((tableNumbers.Count == 0))
+				return null;
+
+			//figure out which columns are needed (excludes lazy-properties)
+			List<int> columnNumbers = new List<int>();
+			int[] columnTableNumbers = SubclassColumnTableNumberClosure;
+			for (int i = 0; i < SubclassColumnClosure.Length; i++)
+			{
+				if (tableNumbers.Contains(columnTableNumbers[i]))
+				{
+					columnNumbers.Add(i);
+				}
+			}
+
+			//figure out which formulas are needed (excludes lazy-properties)
+			List<int> formulaNumbers = new List<int>();
+			int[] formulaTableNumbers = SubclassFormulaTableNumberClosure;
+			for (int i = 0; i < SubclassFormulaTemplateClosure.Length; i++)
+			{
+				if (tableNumbers.Contains(formulaTableNumbers[i]))
+				{
+					formulaNumbers.Add(i);
+				}
+			}
+
+			//render the SQL
+			return RenderSelect(tableNumbers.ToArray(), columnNumbers.ToArray(), formulaNumbers.ToArray());
+		}
 	}
 }

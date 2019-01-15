@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Type;
 using NHibernate.Engine;
 using System.Data.Common;
@@ -68,7 +69,35 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Retrieve property values from one row of a result set
 		/// </summary>
+		//Since 5.3
+		[Obsolete("Use the extension method without the rootLoadable parameter instead")]
 		object[] Hydrate(DbDataReader rs, object id, object obj, ILoadable rootLoadable, string[][] suffixedPropertyColumns,
 						 bool allProperties, ISessionImplementor session);
+	}
+
+	public static partial class LoadableExtensions
+	{
+		public static object[] Hydrate(
+			this ILoadable loadable,
+			DbDataReader rs,
+			object id,
+			object obj,
+			string[][] suffixedPropertyColumns,
+			bool allProperties,
+			ISessionImplementor session)
+		{
+			if (loadable is AbstractEntityPersister entityPersister)
+			{
+				return entityPersister.Hydrate(rs, id, obj, suffixedPropertyColumns, allProperties, session);
+			}
+
+			var rootLoadable = loadable.RootEntityName == loadable.EntityName
+				? loadable
+				: (ILoadable) loadable.Factory.GetEntityPersister(loadable.RootEntityName);
+
+#pragma warning disable 618
+			return loadable.Hydrate(rs, id, obj, rootLoadable, suffixedPropertyColumns, allProperties, session);
+#pragma warning restore 618
+		}
 	}
 }
