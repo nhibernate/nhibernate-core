@@ -171,6 +171,9 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public async Task ThreeLevelSubqueryAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore("Dialect does not support scalar sub-select");
+
 			Person p = null;
 			var detachedCriteria2 = DetachedCriteria.For<Person>("vf_inner_2")
 				.SetProjection(Projections.Id())
