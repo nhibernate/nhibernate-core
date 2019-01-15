@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 using System.Security;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
-using NHibernate.Type;
 
 namespace NHibernate.Engine
 {
@@ -12,20 +11,19 @@ namespace NHibernate.Engine
 	/// and the identifier space (eg. tablename)
 	/// </summary>
 	[Serializable]
-	public sealed class EntityKey : IDeserializationCallback, ISerializable, IEquatable<EntityKey>
+	public sealed class EntityKey : ISerializable, IEquatable<EntityKey>
 	{
 		private readonly object identifier;
 		private readonly IEntityPersister _persister;
 		// hashcode may vary among processes, they cannot be stored and have to be re-computed after deserialization
-		[NonSerialized]
-		private int? _hashCode;
+		private readonly int _hashCode;
 
 		/// <summary> Construct a unique identifier for an entity class instance</summary>
 		public EntityKey(object id, IEntityPersister persister)
 		{
 			identifier = id ?? throw new AssertionFailure("null identifier");
 			_persister = persister;
-			_hashCode = GenerateHashCode();
+			_hashCode = GenerateHashCode(persister, id);
 		}
 
 		private EntityKey(SerializationInfo info, StreamingContext context)
@@ -34,6 +32,7 @@ namespace NHibernate.Engine
 			var factory = (ISessionFactoryImplementor) info.GetValue(nameof(_persister.Factory), typeof(ISessionFactoryImplementor));
 			var entityName = (string) info.GetValue(nameof(EntityName), typeof(string));
 			_persister = factory.GetEntityPersister(entityName);
+			_hashCode = GenerateHashCode(_persister, identifier);
 		}
 
 		public bool IsBatchLoadable => _persister.IsBatchLoadable;
@@ -66,26 +65,16 @@ namespace NHibernate.Engine
 
 		public override int GetHashCode()
 		{
-			// If the object is put in a set or dictionary during deserialization, the hashcode will not yet be
-			// computed. Compute the hashcode on the fly. So long as this happens only during deserialization, there
-			// will be no thread safety issues. For the hashcode to be always defined after deserialization, the
-			// deserialization callback is used.
-			return _hashCode ?? GenerateHashCode();
+			return _hashCode;
 		}
 
-		/// <inheritdoc />
-		public void OnDeserialization(object sender)
-		{
-			_hashCode = GenerateHashCode();
-		}
-
-		private int GenerateHashCode()
+		private static int GenerateHashCode(IEntityPersister persister, object id)
 		{
 			int result = 17;
 			unchecked
 			{
-				result = 37 * result + RootEntityName.GetHashCode();
-				result = 37 * result + _persister.IdentifierType.GetHashCode(identifier, _persister.Factory);
+				result = 37 * result + persister.RootEntityName.GetHashCode();
+				result = 37 * result + persister.IdentifierType.GetHashCode(id, persister.Factory);
 			}
 			return result;
 		}
