@@ -6,12 +6,13 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Engine
 {
+	//TODO 6.0: Remove IDeserializationCallback interface
 	/// <summary>
 	/// A globally unique identifier of an instance, consisting of the user-visible identifier
 	/// and the identifier space (eg. tablename)
 	/// </summary>
 	[Serializable]
-	public sealed class EntityKey : ISerializable, IEquatable<EntityKey>
+	public sealed class EntityKey : IDeserializationCallback, ISerializable, IEquatable<EntityKey>
 	{
 		private readonly object identifier;
 		private readonly IEntityPersister _persister;
@@ -85,11 +86,15 @@ namespace NHibernate.Engine
 		}
 
 		[SecurityCritical]
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			info.AddValue(nameof(Identifier), identifier);
 			info.AddValue(nameof(_persister.Factory), _persister.Factory);
 			info.AddValue(nameof(EntityName), EntityName);
 		}
+
+		[Obsolete("IDeserializationCallback interface has no usages and will be removed in a future version")]
+		public void OnDeserialization(object sender)
+		{}
 	}
 }
