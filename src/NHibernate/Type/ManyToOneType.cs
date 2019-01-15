@@ -110,9 +110,14 @@ namespace NHibernate.Type
 			//cannot batch fetch by unique key (property-ref associations)
 			if (uniqueKeyPropertyName == null && id != null)
 			{
-				IEntityPersister persister = session.Factory.GetEntityPersister(GetAssociatedEntityName());
-				EntityKey entityKey = session.GenerateEntityKey(id, persister);
-				if (entityKey.IsBatchLoadable && !session.PersistenceContext.ContainsEntity(entityKey))
+				var persister = session.Factory.GetEntityPersister(GetAssociatedEntityName());
+				if (!persister.IsBatchLoadable)
+				{
+					return;
+				}
+
+				var entityKey = session.GenerateEntityKey(id, persister);
+				if (!session.PersistenceContext.ContainsEntity(entityKey))
 				{
 					session.PersistenceContext.BatchFetchQueue.AddBatchLoadableEntityKey(entityKey);
 				}
