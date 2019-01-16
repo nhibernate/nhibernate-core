@@ -12,7 +12,7 @@ namespace NHibernate.Engine
 	/// and the identifier space (eg. tablename)
 	/// </summary>
 	[Serializable]
-	public struct EntityKey : ISerializable, IEquatable<EntityKey>
+	public readonly struct EntityKey : ISerializable, IEquatable<EntityKey>
 	{
 		public static EntityKey Null { get; } = new EntityKey();
 
