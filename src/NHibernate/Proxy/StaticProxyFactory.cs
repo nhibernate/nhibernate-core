@@ -19,14 +19,14 @@ namespace NHibernate.Proxy
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(StaticProxyFactory));
 
 		private NHibernateProxyFactoryInfo _proxyFactoryInfo;
-		private ProxyCacheEntry _cacheEntry;
+		private Lazy<Func<ILazyInitializer, NHibernateProxyFactoryInfo, INHibernateProxy>> _proxyActivator;
+		private Lazy<Func<NHibernateProxyFactoryInfo, IFieldInterceptorAccessor>> _proxyFieldActivator;
 
 		public override INHibernateProxy GetProxy(object id, ISessionImplementor session)
 		{
 			try
 			{
-				var proxyActivator = Cache.GetOrAdd(_cacheEntry, pke => CreateProxyActivator(pke));
-				return proxyActivator(
+				return _proxyActivator.Value(
 					new LiteLazyInitializer(EntityName, id, session, PersistentClass),
 					_proxyFactoryInfo);
 			}
@@ -54,7 +54,14 @@ namespace NHibernate.Proxy
 				GetIdentifierMethod,
 				SetIdentifierMethod,
 				ComponentIdType);
-			_cacheEntry = new ProxyCacheEntry(IsClassProxy ? PersistentClass : typeof(object), Interfaces);
+
+			_proxyActivator = new Lazy<Func<ILazyInitializer, NHibernateProxyFactoryInfo, INHibernateProxy>>(
+				() => Cache.GetOrAdd(
+					new ProxyCacheEntry(IsClassProxy ? PersistentClass : typeof(object), Interfaces),
+					pke => CreateProxyActivator(pke)));
+
+			_proxyFieldActivator = new Lazy<Func<NHibernateProxyFactoryInfo, IFieldInterceptorAccessor>>(
+				() => FieldInterceptorCache.GetOrAdd(PersistentClass, CreateFieldInterceptionProxyActivator));
 		}
 
 		private Func<ILazyInitializer, NHibernateProxyFactoryInfo, INHibernateProxy> CreateProxyActivator(ProxyCacheEntry pke)
@@ -76,8 +83,7 @@ namespace NHibernate.Proxy
 
 		public object GetFieldInterceptionProxy()
 		{
-			var proxyActivator = FieldInterceptorCache.GetOrAdd(PersistentClass, CreateFieldInterceptionProxyActivator);
-			return proxyActivator(_proxyFactoryInfo);
+			return _proxyFieldActivator.Value(_proxyFactoryInfo);
 		}
 
 		private Func<NHibernateProxyFactoryInfo, IFieldInterceptorAccessor> CreateFieldInterceptionProxyActivator(System.Type baseType)
