@@ -1115,11 +1115,10 @@ namespace NHibernate.Persister.Entity
 
 		internal int GetSubclassPropertyTableNumber(string propertyName, string entityName)
 		{
-			IType type = propertyMapping.ToType(propertyName);
+			var type = propertyMapping.ToType(propertyName);
 			if (type.IsAssociationType && ((IAssociationType) type).UseLHSPrimaryKey)
 				return 0;
-			int tabnum;
-			propertyTableNumbersByNameAndSubclass.TryGetValue(entityName + '.' + propertyName, out tabnum);
+			propertyTableNumbersByNameAndSubclass.TryGetValue(entityName + '.' + propertyName, out var tabnum);
 			return tabnum;
 		}
 
@@ -1175,7 +1174,7 @@ namespace NHibernate.Persister.Entity
 			return deleteCallable[j];
 		}
 
-		//Since 5.3
+		//Since v5.3
 		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		protected virtual bool IsSubclassPropertyDeferred(string propertyName, string entityName)
 		{
@@ -2724,7 +2723,7 @@ namespace NHibernate.Persister.Entity
 			return Factory.Settings.IsGetGeneratedKeysEnabled;
 		}
 
-		//Since 5.3
+		//Since v5.3
 		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		protected virtual SqlString GetSequentialSelect(string entityName)
 		{
@@ -4521,28 +4520,27 @@ namespace NHibernate.Persister.Entity
 		}
 		#endregion
 
-		internal SqlString GenerateSequentialSelect(ILoadable persister)
+		internal SqlString GenerateSequentialSelect(AbstractEntityPersister subclassPersister)
 		{
 			//figure out which tables need to be fetched (only those that contains at least a no-lazy-property)
-			AbstractEntityPersister subclassPersister = (AbstractEntityPersister) persister;
 			var tableNumbers = new HashSet<int>();
-			string[] props = subclassPersister.PropertyNames;
-			string[] classes = subclassPersister.PropertySubclassNames;
-			for (int i = 0; i < props.Length; i++)
+			var props = subclassPersister.PropertyNames;
+			var classes = subclassPersister.PropertySubclassNames;
+			for (var i = 0; i < props.Length; i++)
 			{
-				int propTableNumber = GetSubclassPropertyTableNumber(props[i], classes[i]);
+				var propTableNumber = GetSubclassPropertyTableNumber(props[i], classes[i]);
 				if (IsSubclassTableSequentialSelect(propTableNumber) && !IsSubclassTableLazy(propTableNumber))
 				{
 					tableNumbers.Add(propTableNumber);
 				}
 			}
-			if ((tableNumbers.Count == 0))
+			if (tableNumbers.Count == 0)
 				return null;
 
 			//figure out which columns are needed (excludes lazy-properties)
-			List<int> columnNumbers = new List<int>();
-			int[] columnTableNumbers = SubclassColumnTableNumberClosure;
-			for (int i = 0; i < SubclassColumnClosure.Length; i++)
+			var columnNumbers = new List<int>();
+			var columnTableNumbers = SubclassColumnTableNumberClosure;
+			for (var i = 0; i < SubclassColumnClosure.Length; i++)
 			{
 				if (tableNumbers.Contains(columnTableNumbers[i]))
 				{
@@ -4551,9 +4549,9 @@ namespace NHibernate.Persister.Entity
 			}
 
 			//figure out which formulas are needed (excludes lazy-properties)
-			List<int> formulaNumbers = new List<int>();
-			int[] formulaTableNumbers = SubclassFormulaTableNumberClosure;
-			for (int i = 0; i < SubclassFormulaTemplateClosure.Length; i++)
+			var formulaNumbers = new List<int>();
+			var formulaTableNumbers = SubclassFormulaTableNumberClosure;
+			for (var i = 0; i < SubclassFormulaTemplateClosure.Length; i++)
 			{
 				if (tableNumbers.Contains(formulaTableNumbers[i]))
 				{
