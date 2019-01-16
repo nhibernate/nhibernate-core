@@ -951,16 +951,8 @@ namespace NHibernate.Loader
 				object obj = null;
 				ILoadable persister = persisters[i];
 				
-				if (entityCounter.ContainsKey(persister.EntityName))
-				{
-					entityCounter[persister.EntityName]++;
-				}
-				else
-				{
-					entityCounter.Add(persister.EntityName, 1);
-				}
-
-				int total = entityCounter[persister.EntityName];
+				entityCounter.TryGetValue(persister.EntityName, out int total);
+				entityCounter[persister.EntityName] = ++total;
 
 				EntityKey key = keys[i];
 
