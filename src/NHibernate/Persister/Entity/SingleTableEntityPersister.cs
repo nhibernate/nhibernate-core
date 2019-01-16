@@ -25,7 +25,8 @@ namespace NHibernate.Persister.Entity
 		private readonly bool[] isNullableTable;
 		private readonly string[][] keyColumnNames;
 		private readonly bool[] cascadeDeleteEnabled;
-		private readonly bool hasSequentialSelects;
+		private readonly bool hasSequentialSelects; // TODO 6.0: Remove
+		private readonly bool _hasSequentialSelect;
 		private readonly string[] spaces;
 		private readonly string[] subclassClosure;
 		private readonly string[] subclassTableNameClosure;
@@ -164,7 +165,7 @@ namespace NHibernate.Persister.Entity
 
 			bool lazyAvailable = IsInstrumented;
 
-			bool hasDeferred = false;
+			bool hasDeferred = false; // TODO 6.0: Remove
 			List<string> subclassTables = new List<string>();
 			List<string[]> joinKeyColumns = new List<string[]>();
 			//provided so we can join to keys other than the primary key
@@ -192,6 +193,8 @@ namespace NHibernate.Persister.Entity
 				isNullables.Add(join.IsOptional);
 				isLazies.Add(lazyAvailable && join.IsLazy);
 				if (join.IsSequentialSelect)
+					_hasSequentialSelect = true;
+				if (join.IsSequentialSelect && !persistentClass.IsClassOrSuperclassJoin(join))
 					hasDeferred = true;
 				subclassTables.Add(join.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName));
 
@@ -698,9 +701,11 @@ possible solutions:
 
 		protected override bool IsPropertyDeferred(int propertyIndex)
 		{
-			return hasSequentialSelects && subclassTableSequentialSelect[GetSubclassPropertyTableNumber(propertyIndex)];
+			return _hasSequentialSelect && subclassTableSequentialSelect[GetSubclassPropertyTableNumber(propertyIndex)];
 		}
 
+		//Since v5.3
+		[Obsolete("This property has no more usage in NHibernate and will be removed in a future version.")]
 		public override bool HasSequentialSelect
 		{
 			get { return hasSequentialSelects; }
@@ -781,7 +786,7 @@ possible solutions:
 		public override void PostInstantiate()
 		{
 			base.PostInstantiate();
-			if (hasSequentialSelects && !IsAbstract)
+			if (_hasSequentialSelect && !IsAbstract)
 			{
 				var rootLoadable = (AbstractEntityPersister) Factory.GetEntityPersister(RootEntityName);
 				_sequentialSelectString = rootLoadable.GenerateSequentialSelect(this);

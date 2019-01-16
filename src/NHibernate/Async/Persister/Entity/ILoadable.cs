@@ -24,7 +24,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Retrieve property values from one row of a result set
 		/// </summary>
-		//Since 5.3
+		//Since v5.3
 		[Obsolete("Use the extension method without the rootLoadable parameter instead")]
 		Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj, ILoadable rootLoadable, string[][] suffixedPropertyColumns,
 						 bool allProperties, ISessionImplementor session, CancellationToken cancellationToken);

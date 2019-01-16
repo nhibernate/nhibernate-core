@@ -1191,6 +1191,8 @@ namespace NHibernate.Persister.Entity
 			return false;
 		}
 
+		//Since v5.3
+		[Obsolete("This property has no more usage in NHibernate and will be removed in a future version.")]
 		public virtual bool HasSequentialSelect
 		{
 			get { return false; }
@@ -2626,47 +2628,43 @@ namespace NHibernate.Persister.Entity
 				log.Debug("Hydrating entity: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
 
-			bool hasDeferred = HasSequentialSelect;
+			var sequentialSql = GetSequentialSelect();
 			DbCommand sequentialSelect = null;
 			DbDataReader sequentialResultSet = null;
 			bool sequentialSelectEmpty = false;
 			using (session.BeginProcess())
 			try
 			{
-				if (hasDeferred)
+				if (sequentialSql != null)
 				{
-					var sql = GetSequentialSelect();
-					if (sql != null)
+					//TODO: I am not so sure about the exception handling in this bit!
+					sequentialSelect = session.Batcher.PrepareCommand(CommandType.Text, sequentialSql, IdentifierType.SqlTypes(factory));
+					IdentifierType.NullSafeSet(sequentialSelect, id, 0, session);
+					sequentialResultSet = session.Batcher.ExecuteReader(sequentialSelect);
+					if (!sequentialResultSet.Read())
 					{
-						//TODO: I am not so sure about the exception handling in this bit!
-						sequentialSelect = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
-						IdentifierType.NullSafeSet(sequentialSelect, id, 0, session);
-						sequentialResultSet = session.Batcher.ExecuteReader(sequentialSelect);
-						if (!sequentialResultSet.Read())
-						{
-							// TODO: Deal with the "optional" attribute in the <join> mapping;
-							// this code assumes that optional defaults to "true" because it
-							// doesn't actually seem to work in the fetch="join" code
-							//
-							// Note that actual proper handling of optional-ality here is actually
-							// more involved than this patch assumes.  Remember that we might have
-							// multiple <join/> mappings associated with a single entity.  Really
-							// a couple of things need to happen to properly handle optional here:
-							//  1) First and foremost, when handling multiple <join/>s, we really
-							//      should be using the entity root table as the driving table;
-							//      another option here would be to choose some non-optional joined
-							//      table to use as the driving table.  In all likelihood, just using
-							//      the root table is much simplier
-							//  2) Need to add the FK columns corresponding to each joined table
-							//      to the generated select list; these would then be used when
-							//      iterating the result set to determine whether all non-optional
-							//      data is present
-							// My initial thoughts on the best way to deal with this would be
-							// to introduce a new SequentialSelect abstraction that actually gets
-							// generated in the persisters (ok, SingleTable...) and utilized here.
-							// It would encapsulated all this required optional-ality checking...
-							sequentialSelectEmpty = true;
-						}
+						// TODO: Deal with the "optional" attribute in the <join> mapping;
+						// this code assumes that optional defaults to "true" because it
+						// doesn't actually seem to work in the fetch="join" code
+						//
+						// Note that actual proper handling of optional-ality here is actually
+						// more involved than this patch assumes.  Remember that we might have
+						// multiple <join/> mappings associated with a single entity.  Really
+						// a couple of things need to happen to properly handle optional here:
+						//  1) First and foremost, when handling multiple <join/>s, we really
+						//      should be using the entity root table as the driving table;
+						//      another option here would be to choose some non-optional joined
+						//      table to use as the driving table.  In all likelihood, just using
+						//      the root table is much simplier
+						//  2) Need to add the FK columns corresponding to each joined table
+						//      to the generated select list; these would then be used when
+						//      iterating the result set to determine whether all non-optional
+						//      data is present
+						// My initial thoughts on the best way to deal with this would be
+						// to introduce a new SequentialSelect abstraction that actually gets
+						// generated in the persisters (ok, SingleTable...) and utilized here.
+						// It would encapsulated all this required optional-ality checking...
+						sequentialSelectEmpty = true;
 					}
 				}
 
@@ -2683,7 +2681,7 @@ namespace NHibernate.Persister.Entity
 					else if (allProperties || !laziness[i])
 					{
 						//decide which ResultSet to get the property value from:
-						var propertyIsDeferred = hasDeferred && IsPropertyDeferred(i);
+						var propertyIsDeferred = sequentialSql != null && IsPropertyDeferred(i);
 						if (propertyIsDeferred && sequentialSelectEmpty)
 						{
 							values[i] = null;
@@ -2732,7 +2730,7 @@ namespace NHibernate.Persister.Entity
 
 		protected virtual SqlString GetSequentialSelect()
 		{
-			throw new NotSupportedException("no sequential select");
+			return null;
 		}
 
 		/// <summary>
