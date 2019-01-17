@@ -19,9 +19,18 @@ namespace NHibernate.Type
 		public ManyToOneType(string className)
 			: this(className, false)
 		{
+			
 		}
 
 		public ManyToOneType(string className, bool lazy)
+			: base(className, null, !lazy, false)
+		{
+			ignoreNotFound = false;
+			isLogicalOneToOne = false;
+			PropertyName = null;
+		}
+		
+		public ManyToOneType(string className, string propertyName, bool lazy)
 			: base(className, null, !lazy, false)
 		{
 			ignoreNotFound = false;
@@ -34,11 +43,13 @@ namespace NHibernate.Type
 			bool lazy,
 			bool unwrapProxy,
 			bool ignoreNotFound,
-			bool isLogicalOneToOne)
+			bool isLogicalOneToOne,
+			string propertyName)
 			: base(entityName, uniqueKeyPropertyName, !lazy, unwrapProxy)
 		{
 			this.ignoreNotFound = ignoreNotFound;
 			this.isLogicalOneToOne = isLogicalOneToOne;
+			PropertyName = propertyName;
 		}
 
 		public override int GetColumnSpan(IMapping mapping)
@@ -78,6 +89,8 @@ namespace NHibernate.Type
 		{
 			return isLogicalOneToOne;
 		}
+
+		public override string PropertyName { get; }
 
 		public override ForeignKeyDirection ForeignKeyDirection
 		{

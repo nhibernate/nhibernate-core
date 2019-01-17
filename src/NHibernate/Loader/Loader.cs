@@ -982,12 +982,9 @@ namespace NHibernate.Loader
 								}
 							}
 
-							
-
 							if (position >= 0 && persisters[j].PropertyTypes[position] is ManyToOneType many && many.IsNullable)
 							{
-								many.PropertyName = persisters[j].PropertyNames[position];
-								session.PersistenceContext.AddNullProperty(keys[j], persisters[j].PropertyNames[position]);
+								session.PersistenceContext.AddNullProperty(keys[j], many.PropertyName);
 								break;
 							}
 						}

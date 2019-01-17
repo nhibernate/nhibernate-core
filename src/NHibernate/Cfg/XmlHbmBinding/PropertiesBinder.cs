@@ -244,6 +244,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			model.ReferencedEntityName = GetEntityName(manyToOneMapping, mappings);
 			model.IsIgnoreNotFound = manyToOneMapping.NotFoundMode == HbmNotFoundMode.Ignore;
+			model.PropertyName = manyToOneMapping.name;
 
 			if (ukName != null && !model.IsIgnoreNotFound)
 			{

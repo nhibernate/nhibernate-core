@@ -442,7 +442,10 @@ namespace NHibernate.Type
 			get { return uniqueKeyPropertyName; }
 		}
 
-		public virtual string PropertyName { get; set; }
+		public virtual string PropertyName
+		{
+			get { return null; }
+		}
 
 		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
 		{
