@@ -183,7 +183,8 @@ namespace NHibernate.Impl
 		internal SessionImpl(SessionFactoryImpl factory, ISessionCreationOptions options)
 			: base(factory, options)
 		{
-			using (BeginContext())
+			_context = SessionIdLoggingContext.CreateOrNull(SessionId);
+			try
 			{
 				actionQueue = new ActionQueue(this);
 				persistenceContext = new StatefulPersistenceContext(this);
@@ -202,6 +203,11 @@ namespace NHibernate.Impl
 					SessionId, Timestamp, factory.Name, factory.Uuid);
 
 				CheckAndUpdateSessionStatus();
+			}
+			catch
+			{
+				_context?.Dispose();
+				throw;
 			}
 		}
 
@@ -1473,6 +1479,7 @@ namespace NHibernate.Impl
 		#region System.IDisposable Members
 
 		private string fetchProfile;
+		private IDisposable _context;
 
 		/// <summary>
 		/// Finalizer that ensures the object is correctly disposed of.
@@ -1505,6 +1512,7 @@ namespace NHibernate.Impl
 				}
 				Dispose(true);
 			}
+			_context?.Dispose();
 		}
 
 		/// <summary>

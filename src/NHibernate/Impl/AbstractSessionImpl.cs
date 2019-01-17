@@ -370,7 +370,7 @@ namespace NHibernate.Impl
 		/// </returns>
 		public IDisposable BeginContext()
 		{
-			return _processing ? null : new SessionIdLoggingContext(SessionId);
+			return _processing ? null : SessionIdLoggingContext.CreateOrNull(SessionId);
 		}
 
 		[NonSerialized]
@@ -379,12 +379,12 @@ namespace NHibernate.Impl
 		private sealed class ProcessHelper : IDisposable
 		{
 			private AbstractSessionImpl _session;
-			private SessionIdLoggingContext _context;
+			private IDisposable _context;
 
 			public ProcessHelper(AbstractSessionImpl session)
 			{
 				_session = session;
-				_context = new SessionIdLoggingContext(session.SessionId);
+				_context = SessionIdLoggingContext.CreateOrNull(session.SessionId);
 				try
 				{
 					_session.CheckAndUpdateSessionStatus();
@@ -392,7 +392,7 @@ namespace NHibernate.Impl
 				}
 				catch
 				{
-					_context.Dispose();
+					_context?.Dispose();
 					_context = null;
 					throw;
 				}

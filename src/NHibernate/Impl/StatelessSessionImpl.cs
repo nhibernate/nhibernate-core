@@ -31,7 +31,8 @@ namespace NHibernate.Impl
 		internal StatelessSessionImpl(SessionFactoryImpl factory, ISessionCreationOptions options)
 			: base(factory, options)
 		{
-			using (BeginContext())
+			_context = SessionIdLoggingContext.CreateOrNull(SessionId);
+			try
 			{
 				temporaryPersistenceContext = new StatefulPersistenceContext(this);
 
@@ -42,6 +43,11 @@ namespace NHibernate.Impl
 				}
 
 				CheckAndUpdateSessionStatus();
+			}
+			catch
+			{
+				_context?.Dispose();
+				throw;
 			}
 		}
 
@@ -748,6 +754,7 @@ namespace NHibernate.Impl
 		#region IDisposable Members
 
 		private bool _isAlreadyDisposed;
+		private IDisposable _context;
 
 		/// <summary>
 		/// Finalizer that ensures the object is correctly disposed of.
@@ -806,6 +813,7 @@ namespace NHibernate.Impl
 				// nothing for Finalizer to do - so tell the GC to ignore it
 				GC.SuppressFinalize(this);
 			}
+			_context?.Dispose();
 		}
 
 		#endregion

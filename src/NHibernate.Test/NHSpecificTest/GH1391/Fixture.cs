@@ -56,11 +56,11 @@ namespace NHibernate.Test.NHSpecificTest.GH1391
 		public void Enabled()
 		{
 			var guid = Guid.NewGuid();
-			using (new SessionIdLoggingContext(guid))
+			using (SessionIdLoggingContext.CreateOrNull(guid))
 			{
 				Assert.That(SessionIdLoggingContext.SessionId, Is.EqualTo(guid));
 				var guid2 = Guid.NewGuid();
-				using (new SessionIdLoggingContext(guid2))
+				using (SessionIdLoggingContext.CreateOrNull(guid2))
 				{
 					Assert.That(SessionIdLoggingContext.SessionId, Is.EqualTo(guid2));
 				}
@@ -73,14 +73,14 @@ namespace NHibernate.Test.NHSpecificTest.GH1391
 		public async Task EnabledAsync()
 		{
 			var guid = Guid.NewGuid();
-			using (new SessionIdLoggingContext(guid))
+			using (SessionIdLoggingContext.CreateOrNull(guid))
 			{
 				Assert.That(SessionIdLoggingContext.SessionId, Is.EqualTo(guid));
 				await Task.Delay(1).ConfigureAwait(false);
 				Assert.That(SessionIdLoggingContext.SessionId, Is.EqualTo(guid));
 
 				var guid2 = Guid.NewGuid();
-				using (new SessionIdLoggingContext(guid2))
+				using (SessionIdLoggingContext.CreateOrNull(guid2))
 				{
 					Assert.That(SessionIdLoggingContext.SessionId, Is.EqualTo(guid2));
 					await Task.Delay(1).ConfigureAwait(false);
@@ -95,10 +95,10 @@ namespace NHibernate.Test.NHSpecificTest.GH1391
 		public void Disabled()
 		{
 			var guid = Guid.Empty;
-			using (new SessionIdLoggingContext(guid))
+			using (SessionIdLoggingContext.CreateOrNull(guid))
 			{
 				Assert.That(SessionIdLoggingContext.SessionId, Is.Null);
-				using (new SessionIdLoggingContext(guid))
+				using (SessionIdLoggingContext.CreateOrNull(guid))
 				{
 					Assert.That(SessionIdLoggingContext.SessionId, Is.Null);
 				}
@@ -111,13 +111,13 @@ namespace NHibernate.Test.NHSpecificTest.GH1391
 		public async Task DisabledAsync()
 		{
 			var guid = Guid.Empty;
-			using (new SessionIdLoggingContext(guid))
+			using (SessionIdLoggingContext.CreateOrNull(guid))
 			{
 				Assert.That(SessionIdLoggingContext.SessionId, Is.Null);
 				await Task.Delay(1).ConfigureAwait(false);
 				Assert.That(SessionIdLoggingContext.SessionId, Is.Null);
 				
-				using (new SessionIdLoggingContext(guid))
+				using (SessionIdLoggingContext.CreateOrNull(guid))
 				{
 					Assert.That(SessionIdLoggingContext.SessionId, Is.Null);
 					await Task.Delay(1).ConfigureAwait(false);
