@@ -13,6 +13,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1391
 	public class Fixture
 	{
 		private readonly Random _random = new Random();
+
+		[OneTimeSetUp]
+		public void Test()
+		{
+			SessionIdLoggingContext.SessionId = null;
+		}
 		
 		[Test]
 		public void Concurrent()
