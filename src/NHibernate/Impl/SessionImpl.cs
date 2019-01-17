@@ -183,6 +183,9 @@ namespace NHibernate.Impl
 		internal SessionImpl(SessionFactoryImpl factory, ISessionCreationOptions options)
 			: base(factory, options)
 		{
+			// This context is disposed only on session own disposal. This greatly reduces the number of context switches
+			// for most usual session usages. It may cause an irrelevant session id to be set back on disposal, but since all
+			// session entry points are supposed to set it, it should not have any consequences.
 			_context = SessionIdLoggingContext.CreateOrNull(SessionId);
 			try
 			{
