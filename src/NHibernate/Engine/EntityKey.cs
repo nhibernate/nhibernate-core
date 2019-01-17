@@ -25,7 +25,6 @@ namespace NHibernate.Engine
 			identifier = id ?? throw new AssertionFailure("null identifier");
 			_persister = persister;
 			_hashCode = GenerateHashCode(persister, id);
-
 		}
 
 		private EntityKey(SerializationInfo info, StreamingContext context)
