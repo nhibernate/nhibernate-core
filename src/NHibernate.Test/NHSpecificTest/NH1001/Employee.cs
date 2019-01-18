@@ -12,5 +12,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 		public virtual Department Department1 { get; set; }
 		public virtual Department Department2 { get; set; }
 		public virtual Department Department3 { get; set; }
+		public virtual Address Address { get; set; }
 	}
 }
