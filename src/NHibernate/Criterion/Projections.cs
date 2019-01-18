@@ -392,7 +392,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static CountProjection CountDistinct<T>(Expression<Func<T, object>> expression)
 		{
-			return Projections.CountDistinct(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return Count(expression).SetDistinct();
 		}
 
 		/// <summary>
@@ -400,7 +400,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static CountProjection CountDistinct(Expression<Func<object>> expression)
 		{
-			return Projections.CountDistinct(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return Count(expression).SetDistinct();
 		}
 
 		/// <summary>
@@ -410,6 +410,14 @@ namespace NHibernate.Criterion
 		{
 			return Projections.GroupProperty(ExpressionProcessor.FindMemberExpression(expression.Body));
 		}
+		
+		/// <summary>
+		/// A grouping property projection
+		/// </summary>
+		public static GroupedProjection GroupProjection<T>(Expression<Func<T, object>> expression)
+		{
+			return Projections.GroupProperty(ExpressionProcessor.FindMemberProjection(expression.Body).AsProjection());
+		}
 
 		/// <summary>
 		/// A grouping property value
@@ -417,6 +425,14 @@ namespace NHibernate.Criterion
 		public static PropertyProjection Group(Expression<Func<object>> expression)
 		{
 			return Projections.GroupProperty(ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		/// <summary>
+		/// A grouping property projection
+		/// </summary>
+		public static GroupedProjection GroupProjection(Expression<Func<object>> expression)
+		{
+			return Projections.GroupProperty(ExpressionProcessor.FindMemberProjection(expression.Body).AsProjection());
 		}
 
 		/// <summary>
