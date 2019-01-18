@@ -971,20 +971,22 @@ namespace NHibernate.Loader
 								continue;
 							}
 
-							int position = -1;
+							bool found = false;
 							int count = 0;
 							for (int z = 0; z < persisters[j].PropertyTypes.Length; z++)
 							{
-								if (persisters[j].PropertyTypes[z].Name == persister.EntityName && ++count == total)
+								IType type = persisters[j].PropertyTypes[z];
+								if (type.Name == persister.EntityName && ++count == total
+								    && type is ManyToOneType many && many.IsNullable)
 								{
-									position = z;
+									found = true;
+									session.PersistenceContext.AddNullProperty(keys[j], many.PropertyName);
 									break;
 								}
 							}
 
-							if (position >= 0 && persisters[j].PropertyTypes[position] is ManyToOneType many && many.IsNullable)
+							if (found)
 							{
-								session.PersistenceContext.AddNullProperty(keys[j], many.PropertyName);
 								break;
 							}
 						}
