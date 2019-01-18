@@ -117,6 +117,9 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public async Task ProjecionCountDistinctAsync()
 		{
+			if (!TestDialect.SupportsCountDistinct)
+				Assert.Ignore("Dialect does not support count distinct");
+
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
 			{
