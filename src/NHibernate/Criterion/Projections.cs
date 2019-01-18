@@ -114,6 +114,16 @@ namespace NHibernate.Criterion
 		}
 
 		/// <summary>
+		/// A distinct projection value count
+		/// </summary>
+		/// <param name="projection"></param>
+		/// <returns></returns>
+		public static CountProjection CountDistinct(IProjection projection)
+		{
+			return Count(projection).SetDistinct();
+		}
+
+		/// <summary>
 		/// A distinct property value count
 		/// </summary>
 		/// <param name="propertyName"></param>
@@ -414,9 +424,9 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// A grouping property projection
 		/// </summary>
-		public static GroupedProjection GroupProjection<T>(Expression<Func<T, object>> expression)
+		public static IProjection GroupProjection<T>(Expression<Func<T, object>> expression)
 		{
-			return Projections.GroupProperty(ExpressionProcessor.FindMemberProjection(expression.Body).AsProjection());
+			return Create<T, IProjection>(expression, Projections.GroupProperty, Projections.GroupProperty);
 		}
 
 		/// <summary>
@@ -430,9 +440,9 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// A grouping property projection
 		/// </summary>
-		public static GroupedProjection GroupProjection(Expression<Func<object>> expression)
+		public static IProjection GroupProjection(Expression<Func<object>> expression)
 		{
-			return Projections.GroupProperty(ExpressionProcessor.FindMemberProjection(expression.Body).AsProjection());
+			return Create<IProjection>(expression, Projections.GroupProperty, Projections.GroupProperty);
 		}
 
 		/// <summary>
@@ -522,6 +532,16 @@ namespace NHibernate.Criterion
 				projections[i] = ExpressionProcessor.FindMemberProjection(args.Expressions[i]).AsProjection();
 
 			return Projections.SqlFunction("concat", NHibernateUtil.String, projections);
+		}
+
+		private static TProjection Create<T, TProjection>(Expression<Func<T, object>> expression, Func<string, TProjection> stringFunc, Func<IProjection, TProjection> projectionFunc)
+		{
+			return ExpressionProcessor.FindMemberProjection(expression.Body).Create(stringFunc, projectionFunc);
+		}
+
+		private static TProjection Create<TProjection>(Expression<Func<object>> expression, Func<string, TProjection> stringFunc, Func<IProjection, TProjection> projectionFunc)
+		{
+			return ExpressionProcessor.FindMemberProjection(expression.Body).Create(stringFunc, projectionFunc);
 		}
 	}
 }
