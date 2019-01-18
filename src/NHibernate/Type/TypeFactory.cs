@@ -847,6 +847,16 @@ namespace NHibernate.Type
 		{
 			return new ManyToOneType(persistentClass, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, propertyName);
 		}
+		
+		/// <summary>
+		/// A many-to-one association type for the given class and cascade style.
+		/// </summary>
+		//Since 5.3
+		[Obsolete("Please use method ManyToOne with propertyName instead")]
+		public static EntityType ManyToOne(string persistentClass, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne)
+		{
+			return ManyToOne(persistentClass, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, null);
+		}
 
 		public static CollectionType Array(string role, string propertyRef, System.Type elementClass)
 		{

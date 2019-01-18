@@ -29,14 +29,20 @@ namespace NHibernate.Type
 			isLogicalOneToOne = false;
 			PropertyName = null;
 		}
-		
-		public ManyToOneType(string className, string propertyName, bool lazy)
-			: base(className, null, !lazy, false)
-		{
-			ignoreNotFound = false;
-			isLogicalOneToOne = false;
-		}
 
+		//Since 5.3
+		[Obsolete("Please use constructor with propertyName instead")]
+		public ManyToOneType(
+			string entityName,
+			string uniqueKeyPropertyName,
+			bool lazy,
+			bool unwrapProxy,
+			bool ignoreNotFound,
+			bool isLogicalOneToOne)
+			: this(entityName, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, null)
+		{
+		}
+		
 		public ManyToOneType(
 			string entityName,
 			string uniqueKeyPropertyName,
