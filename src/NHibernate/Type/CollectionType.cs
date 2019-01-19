@@ -308,7 +308,6 @@ namespace NHibernate.Type
 					log.Debug("Created collection wrapper: {0}", MessageHelper.CollectionInfoString(persister, collection, key, session));
 				}
 			}
-
 			collection.Owner = owner;
 			return collection.GetValue();
 		}
@@ -364,7 +363,8 @@ namespace NHibernate.Type
 			return Instantiate(-1);
 		}
 
-		public override object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache)
+		public override object Replace(object original, object target, ISessionImplementor session, object owner,
+		                               IDictionary copyCache)
 		{
 			if (original == null)
 			{
@@ -392,7 +392,6 @@ namespace NHibernate.Type
 				ReplaceElements(result, target, owner, copyCache, session);
 				result = target;
 			}
-
 			return result;
 		}
 
@@ -501,7 +500,8 @@ namespace NHibernate.Type
 			return IsDirty(old, current, session);
 		}
 
-		public override bool IsModified(object oldHydratedState, object currentState, bool[] checkable, ISessionImplementor session)
+		public override bool IsModified(object oldHydratedState, object currentState, bool[] checkable,
+		                                ISessionImplementor session)
 		{
 			return false;
 		}
@@ -608,7 +608,6 @@ namespace NHibernate.Type
 					// TODO: check if key contains the owner ID
 				}
 			}
-
 			return ownerId;
 		}
 
@@ -660,7 +659,6 @@ namespace NHibernate.Type
 				if (element == childObject)
 					return true;				
 			}
-
 			return false;
 		}
 
