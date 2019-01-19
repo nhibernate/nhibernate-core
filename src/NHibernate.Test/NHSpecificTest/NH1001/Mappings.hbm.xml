@@ -40,8 +40,8 @@
 		<many-to-one fetch="join" name="Department3" class="Department" column="DEPARTMENT_ID_3" not-found="ignore"/>
 		<many-to-one fetch="join" name="Address" class="Address" column="ADDRESS_ID" not-found="ignore" entity-name="AddressEmployee"/>
 		
-		<bag name="Phones" lazy="false" fetch="join">
-			<key column="PHONE_ID"/>
+		<bag name="Phones" lazy="false" fetch="join" inverse="false">
+			<key column="EMPLOYEE_ID"/>
 			<one-to-many class="Phone" not-found="ignore"/>
 		</bag>
 	</class>
