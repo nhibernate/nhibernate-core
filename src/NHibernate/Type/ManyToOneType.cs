@@ -205,7 +205,6 @@ namespace NHibernate.Type
 					throw new AssertionFailure(
 						"cannot cache a reference to an object with a null id: " + GetAssociatedEntityName());
 				}
-
 				return GetIdentifierType(session).Disassemble(id, session, owner);
 			}
 		}
