@@ -266,7 +266,6 @@ namespace NHibernate.Type
 			{
 				ArrayHelper.Fill(result, true);
 			}
-
 			return result;
 		}
 
