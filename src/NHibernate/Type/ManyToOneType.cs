@@ -172,7 +172,6 @@ namespace NHibernate.Type
 			{
 				return false;
 			}
-
 			return value.GetType() == identifierType.ReturnedClass;
 		}
 
