@@ -19,7 +19,6 @@ namespace NHibernate.Type
 		public ManyToOneType(string className)
 			: this(className, false)
 		{
-			
 		}
 
 		public ManyToOneType(string className, bool lazy)
