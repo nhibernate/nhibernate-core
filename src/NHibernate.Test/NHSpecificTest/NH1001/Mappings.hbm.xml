@@ -18,6 +18,14 @@
 		
 		<property name="Line" column="ADDRESS_NAME" type="String" />
 	</class>
+	
+	<class name="Phone" table="PHONES" lazy="true">
+		<id name="Id" column="PHONE_ID" type="Int32">
+			<generator class="assigned"/>
+		</id>
+		
+		<property name="Number" column="PHONE_NUMBER" type="String"/>
+	</class>
 
 	<class name="Employee" table="EMPLOYEES" lazy="false">
 		<id name="Id" column="EMPLOYEE_ID" type="Int32">
@@ -31,5 +39,10 @@
 		<many-to-one fetch="join" name="Department2" class="Department" column="DEPARTMENT_ID_2" not-found="ignore"/>
 		<many-to-one fetch="join" name="Department3" class="Department" column="DEPARTMENT_ID_3" not-found="ignore"/>
 		<many-to-one fetch="join" name="Address" class="Address" column="ADDRESS_ID" not-found="ignore" entity-name="AddressEmployee"/>
+		
+		<bag name="Phones" lazy="false" fetch="join">
+			<key column="PHONE_ID"/>
+			<one-to-many class="Phone" not-found="ignore"/>
+		</bag>
 	</class>
 </hibernate-mapping>

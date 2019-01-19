@@ -9,7 +9,13 @@ namespace NHibernate.Type
 		private readonly IComparer<TKey> comparer;
 
 		public GenericSortedDictionaryType(string role, string propertyRef, IComparer<TKey> comparer)
-			: base(role, propertyRef)
+			: this(role, propertyRef, comparer, null, null, false)
+		{
+		}
+		
+
+		public GenericSortedDictionaryType(string role, string propertyRef, IComparer<TKey> comparer, string entityName, string propertyName, bool isNullable)
+			: base(role, propertyRef, entityName, propertyName, isNullable)
 		{
 			this.comparer = comparer;
 		}

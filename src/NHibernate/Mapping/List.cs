@@ -30,7 +30,7 @@ namespace NHibernate.Mapping
 				if (IsGeneric)
 				{
 					CheckGenericArgumentsLength(1);
-					return TypeFactory.GenericList(Role, ReferencedPropertyName, GenericArguments[0]);
+					return TypeFactory.GenericList(Role, ReferencedPropertyName, GenericArguments[0], EntityName, PropertyName, IsNullable);
 				}
 
 				throw new MappingException("Non-generic persistent lists are not supported (role " + Role +").");

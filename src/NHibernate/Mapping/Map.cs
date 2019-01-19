@@ -34,13 +34,13 @@ namespace NHibernate.Mapping
 					if (TypeName != null && TypeName.Contains("sorted-list"))
 					{
 						return
-							TypeFactory.GenericSortedList(Role, ReferencedPropertyName, Comparer, GenericArguments[0], GenericArguments[1]);
+							TypeFactory.GenericSortedList(Role, ReferencedPropertyName, Comparer, GenericArguments[0], GenericArguments[1], EntityName, PropertyName, IsNullable);
 					}
 					else if (TypeName != null && TypeName.Contains("sorted-dictionary"))
 					{
 						return
 							TypeFactory.GenericSortedDictionary(Role, ReferencedPropertyName, Comparer, GenericArguments[0],
-																GenericArguments[1]);
+																GenericArguments[1], EntityName, PropertyName, IsNullable);
 					}
 					else
 					{
@@ -74,7 +74,7 @@ namespace NHibernate.Mapping
 					else
 					{
 						CheckGenericArgumentsLength(2);
-						return TypeFactory.GenericMap(Role, ReferencedPropertyName, GenericArguments[0], GenericArguments[1]);
+						return TypeFactory.GenericMap(Role, ReferencedPropertyName, GenericArguments[0], GenericArguments[1], EntityName, PropertyName, IsNullable);
 					}
 				}
 

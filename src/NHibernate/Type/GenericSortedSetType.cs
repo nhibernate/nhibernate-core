@@ -23,7 +23,25 @@ namespace NHibernate.Type
 		/// <param name="comparer">The <see cref="IComparer{T}" /> to use to compare
 		/// set elements.</param>
 		public GenericSortedSetType(string role, string propertyRef, IComparer<T> comparer)
-			: base(role, propertyRef)
+			: this(role, propertyRef, comparer,  null, null, false)
+		{
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of a <see cref="GenericSortedSetType{T}"/> class for
+		/// a specific role.
+		/// </summary>
+		/// <param name="role">The role the persistent collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
+		/// the primary key.</param>
+		/// <param name="comparer">The <see cref="IComparer{T}" /> to use to compare
+		/// set elements.</param>
+		/// <param name="entityName"></param>
+		/// <param name="propertyName"></param>
+		/// <param name="isNullable"></param>
+		public GenericSortedSetType(string role, string propertyRef, IComparer<T> comparer, string entityName, string propertyName, bool isNullable)
+			: base(role, propertyRef, entityName, propertyName, isNullable)
 		{
 			this.comparer = comparer;
 		}

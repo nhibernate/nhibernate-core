@@ -40,15 +40,15 @@ namespace NHibernate.Mapping
 
 				if (IsSorted)
 				{
-					return TypeFactory.GenericSortedSet(Role, ReferencedPropertyName, Comparer, elementType);
+					return TypeFactory.GenericSortedSet(Role, ReferencedPropertyName, Comparer, elementType, EntityName, PropertyName, IsNullable);
 				}
 				else if (HasOrder)
 				{
-					return TypeFactory.GenericOrderedSet(Role, ReferencedPropertyName, elementType);
+					return TypeFactory.GenericOrderedSet(Role, ReferencedPropertyName, elementType, EntityName, PropertyName, IsNullable);
 				}
 				else
 				{
-					return TypeFactory.GenericSet(Role, ReferencedPropertyName, elementType);
+					return TypeFactory.GenericSet(Role, ReferencedPropertyName, elementType, EntityName, PropertyName, IsNullable);
 				}
 			}
 		}

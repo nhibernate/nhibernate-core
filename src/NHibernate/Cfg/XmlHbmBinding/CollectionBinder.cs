@@ -192,6 +192,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				var oneToMany = new OneToMany(model.Owner);
 				model.Element = oneToMany;
 				BindOneToMany(oneToManyMapping, oneToMany);
+				model.EntityName = oneToMany.ReferencedEntityName;
+				model.PropertyName = collectionMapping.Name;
 				//we have to set up the table later!! yuck
 			}
 			else

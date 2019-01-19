@@ -977,13 +977,21 @@ namespace NHibernate.Loader
 							{
 								IType type = persisters[j].PropertyTypes[z];
 								if (type.Name == persister.EntityName && ++count == total
-								    && type is ManyToOneType many && many.IsNullable)
+								                                      && type is ManyToOneType many && many.IsNullable)
 								{
 									found = true;
 									session.PersistenceContext.AddNullProperty(keys[j], many.PropertyName);
 									break;
 								}
-							}
+
+								if (type is CollectionType collection && collection.EntityName == persister.EntityName
+								                                      && ++count == total && collection.IsNullable)
+								{
+									found = true;
+									session.PersistenceContext.AddNullProperty(keys[j], collection.PropertyName);
+									break;
+								}
+						}
 
 							if (found)
 							{

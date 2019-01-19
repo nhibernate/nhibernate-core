@@ -209,7 +209,7 @@ namespace NHibernate.Mapping
 				}
 				else
 				{
-					return TypeFactory.CustomCollection(typeName, typeParameters, role, referencedPropertyName);
+					return TypeFactory.CustomCollection(typeName, typeParameters, role, referencedPropertyName, EntityName, PropertyName, IsNullable);
 				}
 			}
 		}
@@ -268,6 +268,10 @@ namespace NHibernate.Mapping
 		{
 			get { return owner.EntityName; }
 		}
+		
+		public string EntityName { get; set; }
+		public string PropertyName { get; set; }
+		
 
 		public string OrderBy
 		{

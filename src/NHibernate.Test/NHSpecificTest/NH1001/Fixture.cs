@@ -77,6 +77,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			{
 				sess.Delete("from Department");
 				sess.Delete("from AddressEmployee");
+				sess.Delete("from Phone");
 				sess.Delete("from Employee");
 				tx.Commit();
 			}

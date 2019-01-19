@@ -41,23 +41,23 @@ namespace NHibernate.Type
 		private static readonly char[] LengthSplit = { '(', ')' };
 
 		private static readonly MethodInfo BagDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
-			f => f.Bag<object>(null, null));
+			f => f.Bag<object>(null, null, null, null, false));
 		private static readonly MethodInfo IdBagDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
-			f => f.IdBag<object>(null, null));
+			f => f.IdBag<object>(null, null, null, null, false));
 		private static readonly MethodInfo ListDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
-			f => f.List<object>(null, null));
+			f => f.List<object>(null, null, null, null, false));
 		private static readonly MethodInfo MapDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
-			f => f.Map<object, object>(null, null));
+			f => f.Map<object, object>(null, null, null, null, false));
 		private static readonly MethodInfo SortedListDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
-			f => f.SortedList<object, object>(null, null, null));
+			f => f.SortedList<object, object>(null, null, null, null, null, false));
 		private static readonly MethodInfo SortedDictionaryDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
-			f => f.SortedDictionary<object, object>(null, null, null));
+			f => f.SortedDictionary<object, object>(null, null, null, null, null, false));
 		private static readonly MethodInfo SetDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
-			f => f.Set<object>(null, null));
+			f => f.Set<object>(null, null, null, null, false));
 		private static readonly MethodInfo SortedSetDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
-			f => f.SortedSet<object>(null, null, null));
+			f => f.SortedSet<object>(null, null, null, null, null, false));
 		private static readonly MethodInfo OrderedSetDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
-			f => f.OrderedSet<object>(null, null));
+			f => f.OrderedSet<object>(null, null, null, null, false));
 
 		/*
 		 * Maps the string representation of the type to the IType.  The string
@@ -852,82 +852,151 @@ namespace NHibernate.Type
 		/// A many-to-one association type for the given class and cascade style.
 		/// </summary>
 		//Since 5.3
-		[Obsolete("Please use method ManyToOne with propertyName instead")]
+		[Obsolete("Please use ManyToOne method with propertyName instead")]
 		public static EntityType ManyToOne(string persistentClass, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne)
 		{
 			return ManyToOne(persistentClass, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, null);
 		}
 
+		[Obsolete("Please use Array method with propertyName instead")]
 		public static CollectionType Array(string role, string propertyRef, System.Type elementClass)
 		{
-			return CollectionTypeFactory.Array(role, propertyRef, elementClass);
+			return Array(role, propertyRef, elementClass, null, null, false);
+		}
+		
+		public static CollectionType Array(string role, string propertyRef, System.Type elementClass, string entityName, string propertyName, bool isNullable)
+		{
+			return CollectionTypeFactory.Array(role, propertyRef, elementClass, entityName, propertyName, isNullable);
 		}
 
 
+		[Obsolete("Please use GenericBag method with propertyName instead")]
 		public static CollectionType GenericBag(string role, string propertyRef, System.Type elementClass)
+		{
+			return GenericBag(role, propertyRef, null, null, false, elementClass);
+		}
+		
+		public static CollectionType GenericBag(string role, string propertyRef, string entityName, string propertyName, bool isNullable, System.Type elementClass)
 		{
 			MethodInfo mi = BagDefinition.MakeGenericMethod(elementClass);
 
-			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef });
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef, entityName, propertyName, isNullable });
 		}
 
+		[Obsolete("Please use GenericIdBag method with propertyName instead")]
 		public static CollectionType GenericIdBag(string role, string propertyRef, System.Type elementClass)
+		{
+			return GenericIdBag(role, propertyRef, elementClass, null, null, false);
+		}
+		
+		public static CollectionType GenericIdBag(string role, string propertyRef, System.Type elementClass, string entityName, string propertyName, bool isNullable)
 		{
 			MethodInfo mi = IdBagDefinition.MakeGenericMethod(elementClass);
 
-			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef });
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef, entityName, propertyName, isNullable });
 		}
-
+		
+		[Obsolete("Please use GenericIdBag method with propertyName instead")]
 		public static CollectionType GenericList(string role, string propertyRef, System.Type elementClass)
+		{
+			return GenericList(role, propertyRef, elementClass, null, null, false);
+		}
+		
+		public static CollectionType GenericList(string role, string propertyRef, System.Type elementClass, string entityName, string propertyName, bool isNullable)
 		{
 			MethodInfo mi = ListDefinition.MakeGenericMethod(elementClass);
 
-			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef });
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef, entityName, propertyName, isNullable });
 		}
 
+		[Obsolete("Please use GenericMap method with propertyName instead")]
 		public static CollectionType GenericMap(string role, string propertyRef, System.Type indexClass, System.Type elementClass)
+		{
+			return GenericMap(role, propertyRef, indexClass, elementClass, null, null, false);
+		}
+		
+		public static CollectionType GenericMap(string role, string propertyRef, System.Type indexClass, System.Type elementClass, string entityName, string propertyName, bool isNullable)
 		{
 			MethodInfo mi = MapDefinition.MakeGenericMethod(indexClass, elementClass);
 
-			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef });
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef, entityName, propertyName, isNullable });
 		}
 
+		[Obsolete("Please use GenericSortedList method with propertyName instead")]
 		public static CollectionType GenericSortedList(string role, string propertyRef, object comparer, System.Type indexClass, System.Type elementClass)
+		{
+			return GenericSortedList(role, propertyRef, comparer, indexClass, elementClass, null, null, false);
+		}
+		
+		public static CollectionType GenericSortedList(string role, string propertyRef, object comparer, System.Type indexClass, System.Type elementClass, string entityName, string propertyName, bool isNullable)
 		{
 			MethodInfo mi = SortedListDefinition.MakeGenericMethod(indexClass, elementClass);
 
-			return (CollectionType)mi.Invoke(CollectionTypeFactory, new[] { role, propertyRef, comparer });
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new[] { role, propertyRef, comparer, entityName, propertyName, isNullable });
 		}
 
+		[Obsolete("Please use GenericSortedList method with propertyName instead")]
 		public static CollectionType GenericSortedDictionary(string role, string propertyRef, object comparer, System.Type indexClass, System.Type elementClass)
+		{
+			return GenericSortedDictionary(role, propertyRef, comparer, indexClass, elementClass, null, null, false);
+		}
+
+		
+		public static CollectionType GenericSortedDictionary(string role, string propertyRef, object comparer, System.Type indexClass, System.Type elementClass, string entityName, string propertyName, bool isNullable)
 		{
 			MethodInfo mi = SortedDictionaryDefinition.MakeGenericMethod(indexClass, elementClass);
 
-			return (CollectionType)mi.Invoke(CollectionTypeFactory, new[] { role, propertyRef, comparer });
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new[] { role, propertyRef, comparer, entityName, propertyName, isNullable });
 		}
 
+		[Obsolete("Please use GenericSet method with propertyName instead")]
 		public static CollectionType GenericSet(string role, string propertyRef, System.Type elementClass)
+		{
+			return GenericSet(role, propertyRef, elementClass, null, null, false);
+		}
+		
+		public static CollectionType GenericSet(string role, string propertyRef, System.Type elementClass, string entityName, string propertyName, bool isNullable)
 		{
 			MethodInfo mi = SetDefinition.MakeGenericMethod(elementClass);
 
-			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef });
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef, entityName, propertyName, isNullable });
 		}
 
+		[Obsolete("Please use GenericSortedSet method with propertyName instead")]
 		public static CollectionType GenericSortedSet(string role, string propertyRef, object comparer, System.Type elementClass)
+		{
+			return GenericSortedSet(role, propertyRef, comparer, elementClass, null, null, false);
+		}
+		
+		public static CollectionType GenericSortedSet(string role, string propertyRef, object comparer, System.Type elementClass, string entityName, string propertyName, bool isNullable)
 		{
 			MethodInfo mi = SortedSetDefinition.MakeGenericMethod(elementClass);
 
-			return (CollectionType)mi.Invoke(CollectionTypeFactory, new[] { role, propertyRef, comparer });
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new[] { role, propertyRef, comparer, entityName, propertyName, isNullable });
 		}
 
+		[Obsolete("Please use GenericOrderedSet method with propertyName instead")]
 		public static CollectionType GenericOrderedSet(string role, string propertyRef, System.Type elementClass)
 		{
 			MethodInfo mi = OrderedSetDefinition.MakeGenericMethod(elementClass);
 
 			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef });
 		}
+		
+		public static CollectionType GenericOrderedSet(string role, string propertyRef, System.Type elementClass, string entityName, string propertyName, bool isNullable)
+		{
+			MethodInfo mi = OrderedSetDefinition.MakeGenericMethod(elementClass);
 
+			return (CollectionType)mi.Invoke(CollectionTypeFactory, new object[] { role, propertyRef, entityName, propertyName, isNullable  });
+		}
+		
+		[Obsolete("Please use CustomCollection method with propertyName instead")]
 		public static CollectionType CustomCollection(string typeName, IDictionary<string, string> typeParameters, string role, string propertyRef)
+		{
+			return CustomCollection(typeName, typeParameters, role, propertyRef, null, null, false);
+		}
+		
+		public static CollectionType CustomCollection(string typeName, IDictionary<string, string> typeParameters, string role, string propertyRef, string entityName, string propertyName, bool isNullable)
 		{
 			System.Type typeClass;
 			try
@@ -938,7 +1007,7 @@ namespace NHibernate.Type
 			{
 				throw new MappingException("user collection type class not found: " + typeName, cnfe);
 			}
-			CustomCollectionType result = new CustomCollectionType(typeClass, role, propertyRef);
+			CustomCollectionType result = new CustomCollectionType(typeClass, role, propertyRef, entityName, propertyName, isNullable);
 			if (typeParameters != null)
 			{
 				InjectParameters(result.UserType, typeParameters);

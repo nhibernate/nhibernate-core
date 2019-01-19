@@ -26,7 +26,7 @@ namespace NHibernate.Mapping
 					elementType = GenericArguments[0];
 				}
 
-				return TypeFactory.GenericIdBag(Role, ReferencedPropertyName, elementType);
+				return TypeFactory.GenericIdBag(Role, ReferencedPropertyName, elementType, EntityName, PropertyName, IsNullable);
 			}
 		}
 	}

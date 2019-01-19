@@ -31,7 +31,7 @@ namespace NHibernate.Mapping
 					CheckGenericArgumentsLength(1);
 					elementType = GenericArguments[0];
 				}
-				return TypeFactory.GenericBag(Role, ReferencedPropertyName, elementType);
+				return TypeFactory.GenericBag(Role, ReferencedPropertyName, EntityName, PropertyName, IsNullable, elementType);
 			}
 		}
 

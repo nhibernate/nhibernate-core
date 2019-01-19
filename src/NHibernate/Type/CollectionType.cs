@@ -29,7 +29,7 @@ namespace NHibernate.Type
 		private readonly string role;
 		private readonly string foreignKeyPropertyName;
 
-		private static readonly SqlType[] NoSqlTypes = {};
+		private static readonly SqlType[] NoSqlTypes = { };
 
 		/// <summary>
 		/// Initializes a new instance of a <see cref="CollectionType"/> class for
@@ -41,10 +41,32 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.
 		/// </param>
+		//[Obsolete("Use other constructor")]
 		protected CollectionType(string role, string foreignKeyPropertyName)
+			: this(role, foreignKeyPropertyName, null, null, false)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of a <see cref="CollectionType"/> class for
+		/// a specific role.
+		/// </summary>
+		/// <param name="role">The role the persistent collection is in.</param>
+		/// <param name="foreignKeyPropertyName">
+		/// The name of the property in the
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
+		/// the primary key.
+		/// </param>
+		/// <param name="entityName"></param>
+		/// <param name="propertyName"></param>
+		/// <param name="isNullable"></param>
+		protected CollectionType(string role, string foreignKeyPropertyName, string entityName, string propertyName, bool isNullable)
 		{
 			this.role = role;
 			this.foreignKeyPropertyName = foreignKeyPropertyName;
+			EntityName = entityName;
+			PropertyName = propertyName;
+			IsNullable = isNullable;
 		}
 
 		public virtual string Role
@@ -57,11 +79,15 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
+		public string PropertyName { get;  }
+		public string EntityName { get; }
+		public bool IsNullable { get; }
+
 		public override bool IsEqual(object x, object y)
 		{
-			return x == y || 
-				(x is IPersistentCollection && ((IPersistentCollection)x).IsWrapper(y)) || 
-				(y is IPersistentCollection && ((IPersistentCollection)y).IsWrapper(x));
+			return x == y ||
+			       (x is IPersistentCollection && ((IPersistentCollection) x).IsWrapper(y)) ||
+			       (y is IPersistentCollection && ((IPersistentCollection) y).IsWrapper(x));
 		}
 
 		public override int GetHashCode(object x)
@@ -77,11 +103,14 @@ namespace NHibernate.Type
 		/// <param name="persister">The underlying collection persister (metadata) </param>
 		/// <param name="key">The owner key. </param>
 		/// <returns> The instantiated collection. </returns>
-		public abstract IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister, object key);
+		public abstract IPersistentCollection Instantiate(
+			ISessionImplementor session,
+			ICollectionPersister persister,
+			object key);
 
 		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			return NullSafeGet(rs, new string[] { name }, session, owner);
+			return NullSafeGet(rs, new string[] {name}, session, owner);
 		}
 
 		public override object NullSafeGet(DbDataReader rs, string[] name, ISessionImplementor session, object owner)
@@ -89,7 +118,12 @@ namespace NHibernate.Type
 			return ResolveIdentifier(null, session, owner);
 		}
 
-		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override void NullSafeSet(
+			DbCommand st,
+			object value,
+			int index,
+			bool[] settable,
+			ISessionImplementor session)
 		{
 			// NOOP
 		}
@@ -234,6 +268,16 @@ namespace NHibernate.Type
 
 		public object GetCollection(object key, ISessionImplementor session, object owner)
 		{
+			if (IsNullable && !string.IsNullOrEmpty(PropertyName))
+			{
+				EntityEntry entry = session.PersistenceContext.GetEntry(owner);
+
+				if (session.PersistenceContext.IsPropertyNull(entry.EntityKey, PropertyName))
+				{
+					return null;
+				}
+			}
+			
 			ICollectionPersister persister = GetPersister(session);
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 
@@ -269,9 +313,12 @@ namespace NHibernate.Type
 
 				if (log.IsDebugEnabled())
 				{
-					log.Debug("Created collection wrapper: {0}", MessageHelper.CollectionInfoString(persister, collection, key, session));
+					log.Debug(
+						"Created collection wrapper: {0}",
+						MessageHelper.CollectionInfoString(persister, collection, key, session));
 				}
 			}
+
 			collection.Owner = owner;
 			return collection.GetValue();
 		}
@@ -307,7 +354,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				IQueryableCollection collectionPersister = (IQueryableCollection)factory.GetCollectionPersister(role);
+				IQueryableCollection collectionPersister = (IQueryableCollection) factory.GetCollectionPersister(role);
 
 				if (!collectionPersister.ElementType.IsEntityType)
 				{
@@ -327,8 +374,12 @@ namespace NHibernate.Type
 			return Instantiate(-1);
 		}
 
-		public override object Replace(object original, object target, ISessionImplementor session, object owner,
-									   IDictionary copyCache)
+		public override object Replace(
+			object original,
+			object target,
+			ISessionImplementor session,
+			object owner,
+			IDictionary copyCache)
 		{
 			if (original == null)
 			{
@@ -341,8 +392,8 @@ namespace NHibernate.Type
 			}
 
 			object result = target == null || target == original
-								? InstantiateResult(original)
-								: target;
+				? InstantiateResult(original)
+				: target;
 
 			//for arrays, replaceElements() may return a different reference, since
 			//the array length might not match
@@ -360,12 +411,17 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public virtual object ReplaceElements(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session)
+		public virtual object ReplaceElements(
+			object original,
+			object target,
+			object owner,
+			IDictionary copyCache,
+			ISessionImplementor session)
 		{
 			var elemType = GetElementType(session.Factory);
 			var targetPc = target as IPersistentCollection;
 			var originalPc = original as IPersistentCollection;
-			var iterOriginal = (IEnumerable)original;
+			var iterOriginal = (IEnumerable) original;
 			var clearTargetsDirtyFlag = ShouldTargetsDirtyFlagBeCleared(targetPc, originalPc, iterOriginal);
 
 			// copy elements into newly empty target collection
@@ -375,7 +431,7 @@ namespace NHibernate.Type
 				Add(target, elemType.Replace(obj, null, session, owner, copyCache));
 			}
 
-			if(clearTargetsDirtyFlag)
+			if (clearTargetsDirtyFlag)
 			{
 				targetPc.ClearDirty();
 			}
@@ -383,14 +439,17 @@ namespace NHibernate.Type
 			return target;
 		}
 
-		internal bool ShouldTargetsDirtyFlagBeCleared(IPersistentCollection targetPc, IPersistentCollection originalPc, IEnumerable original)
+		internal bool ShouldTargetsDirtyFlagBeCleared(
+			IPersistentCollection targetPc,
+			IPersistentCollection originalPc,
+			IEnumerable original)
 		{
 			if (targetPc == null)
 				return false;
 
 			if (originalPc == null)
 			{
-				if (!targetPc.IsDirty && AreCollectionElementsEqual(original, (IEnumerable)targetPc))
+				if (!targetPc.IsDirty && AreCollectionElementsEqual(original, (IEnumerable) targetPc))
 				{
 					return true;
 				}
@@ -402,11 +461,12 @@ namespace NHibernate.Type
 					return true;
 				}
 			}
+
 			return false;
 		}
 
 		protected virtual bool AreCollectionElementsEqual(IEnumerable original, IEnumerable target)
-		{ 
+		{
 			return original.Cast<object>().SequenceEqual(target.Cast<object>());
 		}
 
@@ -464,8 +524,11 @@ namespace NHibernate.Type
 			return IsDirty(old, current, session);
 		}
 
-		public override bool IsModified(object oldHydratedState, object currentState, bool[] checkable,
-										ISessionImplementor session)
+		public override bool IsModified(
+			object oldHydratedState,
+			object currentState,
+			bool[] checkable,
+			ISessionImplementor session)
 		{
 			return false;
 		}
@@ -562,7 +625,8 @@ namespace NHibernate.Type
 				IEntityPersister ownerPersister = GetPersister(session).OwnerEntityPersister;
 				// TODO: Fix this so it will work for non-POJO entity mode
 				System.Type ownerMappedClass = ownerPersister.MappedClass;
-				if (ownerMappedClass.IsAssignableFrom(keyType.ReturnedClass) && keyType.ReturnedClass.IsInstanceOfType(key))
+				if (ownerMappedClass.IsAssignableFrom(keyType.ReturnedClass) &&
+				    keyType.ReturnedClass.IsInstanceOfType(key))
 				{
 					// the key is the owning entity itself, so get the ID from the key
 					ownerId = ownerPersister.GetIdentifier(key);
@@ -572,6 +636,7 @@ namespace NHibernate.Type
 					// TODO: check if key contains the owner ID
 				}
 			}
+
 			return ownerId;
 		}
 
@@ -586,7 +651,10 @@ namespace NHibernate.Type
 		/// <returns> A newly instantiated collection to be wrapped. </returns>
 		public abstract object Instantiate(int anticipatedSize);
 
-		public string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
+		public string GetOnCondition(
+			string alias,
+			ISessionFactoryImplementor factory,
+			IDictionary<string, IFilter> enabledFilters)
 		{
 			return GetAssociatedJoinable(factory).FilterFragment(alias, enabledFilters);
 		}
@@ -610,19 +678,20 @@ namespace NHibernate.Type
 			{
 				object element = elem;
 				// worrying about proxies is perhaps a little bit of overkill here...
-				
+
 				if (element.IsProxy())
 				{
-					INHibernateProxy proxy = element as INHibernateProxy; 
-					
+					INHibernateProxy proxy = element as INHibernateProxy;
+
 					ILazyInitializer li = proxy.HibernateLazyInitializer;
 					if (!li.IsUninitialized)
 						element = li.GetImplementation();
 				}
 
 				if (element == childObject)
-					return true;				
+					return true;
 			}
+
 			return false;
 		}
 
@@ -644,17 +713,17 @@ namespace NHibernate.Type
 		/// <returns> The iterator. </returns>
 		public virtual IEnumerable GetElementsIterator(object collection)
 		{
-			return ((IEnumerable)collection);
+			return ((IEnumerable) collection);
 		}
 
 		public virtual bool HasHolder()
 		{
-			return false;// entityMode == EntityMode.DOM4J;
+			return false; // entityMode == EntityMode.DOM4J;
 		}
 
 		protected internal virtual bool InitializeImmediately()
 		{
-			return false;// entityMode == EntityMode.DOM4J;
+			return false; // entityMode == EntityMode.DOM4J;
 		}
 
 		public virtual object IndexOf(object collection, object element)
