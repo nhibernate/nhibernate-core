@@ -31,25 +31,12 @@ namespace NHibernate.Type
 
 		//Since 5.3
 		[Obsolete("Please use constructor with propertyName instead")]
-		public ManyToOneType(
-			string entityName,
-			string uniqueKeyPropertyName,
-			bool lazy,
-			bool unwrapProxy,
-			bool ignoreNotFound,
-			bool isLogicalOneToOne)
+		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne)
 			: this(entityName, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, null)
 		{
 		}
 		
-		public ManyToOneType(
-			string entityName,
-			string uniqueKeyPropertyName,
-			bool lazy,
-			bool unwrapProxy,
-			bool ignoreNotFound,
-			bool isLogicalOneToOne,
-			string propertyName)
+		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne, string propertyName)
 			: base(entityName, uniqueKeyPropertyName, !lazy, unwrapProxy)
 		{
 			this.ignoreNotFound = ignoreNotFound;
@@ -68,12 +55,7 @@ namespace NHibernate.Type
 			return GetIdentifierOrUniqueKeyType(mapping).SqlTypes(mapping);
 		}
 
-		public override void NullSafeSet(
-			DbCommand st,
-			object value,
-			int index,
-			bool[] settable,
-			ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			GetIdentifierOrUniqueKeyType(session.Factory)
 				.NullSafeSet(st, GetReferenceValue(value, session), index, settable, session);
@@ -157,7 +139,6 @@ namespace NHibernate.Type
 			{
 				return true;
 			}
-
 			var oldIdentifier = IsIdentifier(old, session) ? old : GetIdentifier(old, session);
 			var currentIdentifier = GetIdentifier(current, session);
 			// the ids are fully resolved, so compare them with isDirty(), not isModified()
@@ -200,7 +181,6 @@ namespace NHibernate.Type
 				if (id == null)
 				{
 					throw new AssertionFailure("cannot cache a reference to an object with a null id: " + GetAssociatedEntityName());
-						"cannot cache a reference to an object with a null id: " + GetAssociatedEntityName());
 				}
 				return GetIdentifierType(session).Disassemble(id, session, owner);
 			}
