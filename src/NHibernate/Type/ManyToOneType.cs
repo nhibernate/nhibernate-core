@@ -154,7 +154,6 @@ namespace NHibernate.Type
 			{
 				return old != null;
 			}
-
 			if (old == null)
 			{
 				return true;
