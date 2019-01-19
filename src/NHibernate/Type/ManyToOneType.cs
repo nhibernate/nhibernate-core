@@ -202,7 +202,7 @@ namespace NHibernate.Type
 				object id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session);
 				if (id == null)
 				{
-					throw new AssertionFailure(
+					throw new AssertionFailure("cannot cache a reference to an object with a null id: " + GetAssociatedEntityName());
 						"cannot cache a reference to an object with a null id: " + GetAssociatedEntityName());
 				}
 				return GetIdentifierType(session).Disassemble(id, session, owner);
