@@ -9,6 +9,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1963
 {
 	[Serializable]
 	public class SqlBoolean : IUserType
+		// Uncomment for checking implementing this solves the query exception
+		//, IEnhancedUserType
 	{
 		/// <summary>
 		/// Compare two instances of the class mapped by this type for persistent "equality"
@@ -148,6 +150,32 @@ namespace NHibernate.Test.NHSpecificTest.GH1963
 		public bool IsMutable
 		{
 			get { return false; }
+		}
+
+		public object FromXMLString(string xml)
+		{
+			if (bool.TryParse(xml, out var value))
+				return value;
+			return null;
+		}
+
+		public string ObjectToSQLString(object value)
+		{
+			var val = value as bool?;
+			switch (val)
+			{
+				case true:
+					return "1";
+				case false:
+					return "0";
+				default:
+					return "null";
+			}
+		}
+
+		public string ToXMLString(object value)
+		{
+			return value?.ToString();
 		}
 	}
 }

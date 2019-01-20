@@ -92,6 +92,10 @@ namespace NHibernate.Type
 
 		public Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (_userVersionType == null)
+				throw new InvalidOperationException(
+					$"User type {userType} does not implement {nameof(IUserVersionType)}, Either implement it, or " +
+					$"avoid using this user type as a version type.");
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
@@ -108,6 +112,10 @@ namespace NHibernate.Type
 
 		public Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (_userVersionType == null)
+				throw new InvalidOperationException(
+					$"User type {userType} does not implement {nameof(IUserVersionType)}, Either implement it, or " +
+					$"avoid using this user type as a version type.");
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);

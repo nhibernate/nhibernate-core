@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using NHibernate.UserTypes;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1963
@@ -11,10 +13,10 @@ namespace NHibernate.Test.NHSpecificTest.GH1963
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new EntityChild {Name = "Bob", Flag = true};
+				var e1 = new Entity {Name = "Bob", Flag = true};
 				session.Save(e1);
 
-				var e2 = new Entity {Name = "Sally", Child = e1};
+				var e2 = new Entity {Name = "Sally"};
 				session.Save(e2);
 
 				transaction.Commit();
@@ -38,16 +40,20 @@ namespace NHibernate.Test.NHSpecificTest.GH1963
 		}
 
 		[Test]
-		public void LinqFilterOnCustomType()
+		public void LinqFilterOnNonLiteralCustomType()
 		{
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
 				var result = from e in session.Query<Entity>()
-							 where e.Child.Flag == true
+							 where e.Flag
 							 select e;
 
-				Assert.That(result.ToList(), Has.Count.EqualTo(1));
+				Assert.That(
+					result.ToList,
+					Throws
+						.InnerException.TypeOf<InvalidOperationException>()
+						.And.InnerException.Message.Contains(nameof(IEnhancedUserType)));
 			}
 		}
 	}

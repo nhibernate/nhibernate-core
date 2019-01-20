@@ -6,13 +6,6 @@
     <id name="Id" generator="guid.comb"/>
     <property name="Name"/>
     <property name="Flag" type="NHibernate.Test.NHSpecificTest.GH1963.SqlBoolean, NHibernate.Test" />
-    <many-to-one name="Child" />
-  </class>
-
-  <class name="EntityChild">
-    <id name="Id" generator="guid.comb"/>
-    <property name="Name"/>
-    <property name="Flag" type="NHibernate.Test.NHSpecificTest.GH1963.SqlBoolean, NHibernate.Test" />
   </class>
 
 </hibernate-mapping>
