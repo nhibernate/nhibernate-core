@@ -88,6 +88,8 @@ namespace NHibernate.Test.Criteria.Lambda
 				var actual = s.QueryOver<Person>()
 					.SelectList(list => list
 						.SelectGroup(p => p.Name).WithAlias(() => summary.Name)
+						//GH1985: DateTime.xxxx are not supported in SelectGroup
+						.SelectGroup(p => p.BirthDate.Year).WithAlias(() => summary.BirthYear)
 						.Select(Projections.RowCount()).WithAlias(() => summary.Count))
 					.OrderByAlias(() => summary.Name).Asc
 					.TransformUsing(Transformers.AliasToBean<PersonSummary>())
@@ -98,6 +100,27 @@ namespace NHibernate.Test.Criteria.Lambda
 				Assert.That(actual[0].Count, Is.EqualTo(2));
 				Assert.That(actual[1].Name, Is.EqualTo("test person 2"));
 				Assert.That(actual[1].Count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public void ProjecionCountDistinct()
+		{
+			if (!TestDialect.SupportsCountDistinct)
+				Assert.Ignore("Dialect does not support count distinct");
+
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var actual
+					= s.QueryOver<Person>()
+					.SelectList(l =>
+					l.SelectCountDistinct(p => p.BirthDate.Year)
+					.SelectCountDistinct(p => p.Name))
+					.List<object[]>().FirstOrDefault();
+
+				Assert.That((int) actual[0], Is.EqualTo(1), "distinct count by birth year");
+				Assert.That((int) actual[1], Is.EqualTo(2), "distinct count by name");
 			}
 		}
 	}
