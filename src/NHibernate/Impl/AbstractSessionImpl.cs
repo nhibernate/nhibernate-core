@@ -358,7 +358,7 @@ namespace NHibernate.Impl
 		/// </returns>
 		public IDisposable BeginProcess()
 		{
-			return _processing ? null : new ProcessHelper(this);
+			return _processHelper.BeginProcess(this);
 		}
 
 		/// <summary>
@@ -370,48 +370,56 @@ namespace NHibernate.Impl
 		/// </returns>
 		public IDisposable BeginContext()
 		{
-			return _processing ? null : SessionIdLoggingContext.CreateOrNull(SessionId);
+			return _processHelper.Processing ? null : SessionIdLoggingContext.CreateOrNull(SessionId);
 		}
 
-		[NonSerialized]
-		private bool _processing;
+		private ProcessHelper _processHelper = new ProcessHelper();
 
+		[Serializable]
 		private sealed class ProcessHelper : IDisposable
 		{
-			private AbstractSessionImpl _session;
+			[NonSerialized]
 			private IDisposable _context;
 
-			public ProcessHelper(AbstractSessionImpl session)
+			[NonSerialized]
+			private bool _processing;
+
+			public ProcessHelper()
 			{
-				_session = session;
-				_context = SessionIdLoggingContext.CreateOrNull(session.SessionId);
+			}
+
+			public bool Processing { get => _processing; set => _processing = value; }
+
+			public IDisposable BeginProcess(AbstractSessionImpl session)
+			{
+				if (Processing)
+					return null;
+
 				try
 				{
-					_session.CheckAndUpdateSessionStatus();
-					_session._processing = true;
+					_context = SessionIdLoggingContext.CreateOrNull(session.SessionId);
+					session.CheckAndUpdateSessionStatus();
+					Processing = true;
 				}
 				catch
 				{
-					_context?.Dispose();
-					_context = null;
+					Dispose();
 					throw;
 				}
+				return this;
 			}
 
 			public void Dispose()
 			{
 				_context?.Dispose();
 				_context = null;
-				if (_session == null)
-					throw new ObjectDisposedException("The session process helper has been disposed already");
-				_session._processing = false;
-				_session = null;
+				Processing = false;
 			}
 		}
 
 		protected internal virtual void CheckAndUpdateSessionStatus()
 		{
-			if (_processing)
+			if (_processHelper.Processing)
 				return;
 
 			ErrorIfClosed();
