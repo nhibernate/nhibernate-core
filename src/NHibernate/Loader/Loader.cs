@@ -322,7 +322,8 @@ namespace NHibernate.Loader
 			{
 				result =
 					GetRowFromResultSet(resultSet, session, queryParameters, GetLockModes(queryParameters.LockModes), null,
-										hydratedObjects, new EntityKey[entitySpan], returnProxies, (persister, data) => cacheBatcher.AddToBatch(persister, data));
+					                    hydratedObjects, new EntityKey[entitySpan], returnProxies, null, null,
+					                    (persister, data) => cacheBatcher.AddToBatch(persister, data));
 			}
 			catch (HibernateException)
 			{
@@ -357,17 +358,6 @@ namespace NHibernate.Loader
 			{
 				return null;
 			}
-		}
-
-		// Since 5.3
-		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
-		internal object GetRowFromResultSet(DbDataReader resultSet, ISessionImplementor session,
-											QueryParameters queryParameters, LockMode[] lockModeArray,
-											EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys,
-											bool returnProxies, Action<IEntityPersister, CachePutData> cacheBatchingHandler)
-		{
-			return GetRowFromResultSet(resultSet, session, queryParameters, lockModeArray, optionalObjectKey, hydratedObjects,
-									   keys, returnProxies, null, null, cacheBatchingHandler);
 		}
 
 		internal object GetRowFromResultSet(DbDataReader resultSet, ISessionImplementor session,

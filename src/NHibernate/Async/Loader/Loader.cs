@@ -121,7 +121,8 @@ namespace NHibernate.Loader
 			{
 				result =
 					await (GetRowFromResultSetAsync(resultSet, session, queryParameters, GetLockModes(queryParameters.LockModes), null,
-										hydratedObjects, new EntityKey[entitySpan], returnProxies, (persister, data) => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
+					                    hydratedObjects, new EntityKey[entitySpan], returnProxies, null, null,
+					                    (persister, data) => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
 			}
 			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
@@ -139,21 +140,6 @@ namespace NHibernate.Loader
 			await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 			await (session.PersistenceContext.InitializeNonLazyCollectionsAsync(cancellationToken)).ConfigureAwait(false);
 			return result;
-		}
-
-		// Since 5.3
-		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
-		internal Task<object> GetRowFromResultSetAsync(DbDataReader resultSet, ISessionImplementor session,
-											QueryParameters queryParameters, LockMode[] lockModeArray,
-											EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys,
-											bool returnProxies, Action<IEntityPersister, CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			return GetRowFromResultSetAsync(resultSet, session, queryParameters, lockModeArray, optionalObjectKey, hydratedObjects,
-									   keys, returnProxies, null, null, cacheBatchingHandler, cancellationToken);
 		}
 
 		internal async Task<object> GetRowFromResultSetAsync(DbDataReader resultSet, ISessionImplementor session,
