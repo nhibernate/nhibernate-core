@@ -388,18 +388,18 @@ namespace NHibernate.Impl
 			{
 			}
 
-			public bool Processing { get => _processing; set => _processing = value; }
+			public bool Processing { get => _processing; }
 
 			public IDisposable BeginProcess(AbstractSessionImpl session)
 			{
-				if (Processing)
+				if (_processing)
 					return null;
 
 				try
 				{
 					_context = SessionIdLoggingContext.CreateOrNull(session.SessionId);
 					session.CheckAndUpdateSessionStatus();
-					Processing = true;
+					_processing = true;
 				}
 				catch
 				{
@@ -413,7 +413,7 @@ namespace NHibernate.Impl
 			{
 				_context?.Dispose();
 				_context = null;
-				Processing = false;
+				_processing = false;
 			}
 		}
 
