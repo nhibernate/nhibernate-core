@@ -35,7 +35,7 @@ namespace NHibernate.Engine
 			if (session == null)
 				return null;
 			return session is AbstractSessionImpl impl
-				? impl.BeginContext()
+				? impl.BeginProcess()
 				// This method has only replaced bare call to setting the id, so this fallback is enough for avoiding a
 				// breaking change in case a custom session implementation is used.
 				: SessionIdLoggingContext.CreateOrNull(session.SessionId);
