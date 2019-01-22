@@ -53,6 +53,8 @@ namespace NHibernate.Cache
 					_collectionFetchIndexes.Add(i);
 				}
 			}
+
+			_hasFetches = _hasFetches || _collectionFetchIndexes.Count > 0;
 		}
 
 		internal IList Result { get; } = new List<object>();

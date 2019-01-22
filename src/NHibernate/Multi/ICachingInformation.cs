@@ -77,13 +77,12 @@ namespace NHibernate.Multi
 
 	internal static class CachingInformationExtensions
 	{
-		// 6.0 TODO: Move to ICachingInformation as a Property
+		// 6.0 TODO: Remove and use CacheTypes instead.
 		public static IType[] GetCacheTypes(this ICachingInformation cachingInformation)
 		{
-			var loaderProperty = cachingInformation.GetType().GetProperty("Loader");
-			if (loaderProperty?.GetValue(cachingInformation) is Loader.Loader loader)
+			if (cachingInformation is ICachingInformationWithFetches cachingInformationWithFetches)
 			{
-				return loader.CacheTypes;
+				return cachingInformationWithFetches.CacheTypes;
 			}
 
 #pragma warning disable 618

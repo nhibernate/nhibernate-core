@@ -22,7 +22,7 @@ namespace NHibernate.Multi
 		private CacheMode? _cacheMode;
 		private IList<TResult> _finalResults;
 
-		protected class QueryInfo : ICachingInformation
+		protected class QueryInfo : ICachingInformation, ICachingInformationWithFetches
 		{
 			/// <summary>
 			/// The query loader.
@@ -55,6 +55,9 @@ namespace NHibernate.Multi
 			// is enabled).
 			/// <inheritdoc />
 			public IType[] ResultTypes => Loader.ResultTypes;
+
+			/// <inheritdoc />
+			public IType[] CacheTypes => Loader.CacheTypes;
 
 			/// <inheritdoc />
 			public string QueryIdentifier => Loader.QueryIdentifier;

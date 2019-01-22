@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Intercept;
+using NHibernate.Persister.Collection;
 using NHibernate.Properties;
 using NHibernate.Tuple;
 
@@ -116,15 +117,15 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="cacheRow">The cached values.</param>
 		/// <param name="assembleRow">The assembled values to update.</param>
-		/// <param name="types">The dictionary containing collection types and their indexes in the <paramref name="cacheRow"/> parameter as key.</param>
+		/// <param name="collectionIndexes">The dictionary containing collection persisters and their indexes in the <paramref name="cacheRow"/> parameter as key.</param>
 		/// <param name="session">The originating session.</param>
 		internal static void InitializeCollections(
 			object[] cacheRow,
 			object[] assembleRow,
-			IDictionary<int, CollectionType> types,
+			IDictionary<int, ICollectionPersister> collectionIndexes,
 			ISessionImplementor session)
 		{
-			foreach (var pair in types)
+			foreach (var pair in collectionIndexes)
 			{
 				var value = cacheRow[pair.Key];
 				if (value == null)
@@ -132,8 +133,7 @@ namespace NHibernate.Type
 					continue;
 				}
 
-				var persister = session.Factory.GetCollectionPersister(pair.Value.Role);
-				var collection = session.PersistenceContext.GetCollection(new CollectionKey(persister, value));
+				var collection = session.PersistenceContext.GetCollection(new CollectionKey(pair.Value, value));
 				collection.ForceInitialization();
 				assembleRow[pair.Key] = collection;
 			}

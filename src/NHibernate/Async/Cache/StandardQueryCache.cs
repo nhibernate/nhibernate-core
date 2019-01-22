@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Engine;
+using NHibernate.Persister.Collection;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -308,13 +309,13 @@ namespace NHibernate.Cache
 				}
 				else
 				{
-					var collectionTypes = new Dictionary<int, CollectionType>();
+					var collectionIndexes = new Dictionary<int, ICollectionPersister>();
 					var nonCollectionTypeIndexes = new List<int>();
 					for (var i = 0; i < returnTypes.Length; i++)
 					{
 						if (returnTypes[i] is CollectionType collectionType)
 						{
-							collectionTypes.Add(i, collectionType);
+							collectionIndexes.Add(i, session.Factory.GetCollectionPersister(collectionType.Role));
 						}
 						else
 						{
@@ -336,9 +337,12 @@ namespace NHibernate.Cache
 					// Initialization of the fetched collection must be done at the end in order to be able to batch fetch them
 					// from the cache or database. The collections were already created in the previous for statement so we only
 					// have to initialize them.
-					for (var i = 1; i < cacheable.Count; i++)
+					if (collectionIndexes.Count > 0)
 					{
-						await (TypeHelper.InitializeCollectionsAsync((object[]) cacheable[i], (object[]) result[i - 1], collectionTypes, session, cancellationToken)).ConfigureAwait(false);
+						for (var i = 1; i < cacheable.Count; i++)
+						{
+							await (TypeHelper.InitializeCollectionsAsync((object[]) cacheable[i], (object[]) result[i - 1], collectionIndexes, session, cancellationToken)).ConfigureAwait(false);
+						}
 					}
 				}
 
