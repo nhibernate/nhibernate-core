@@ -2695,6 +2695,8 @@ namespace NHibernate.Persister.Entity
 		/// Unmarshall the fields of a persistent instance from a result set,
 		/// without resolving associations or collections
 		/// </summary>
+		// Since v5.3
+		[Obsolete("Use the overload with fetchedLazyProperties parameter instead")]
 		public object[] Hydrate(DbDataReader rs, object id, object obj, ILoadable rootLoadable,
 		                        string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session)
 		{

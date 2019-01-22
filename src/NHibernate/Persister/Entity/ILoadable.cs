@@ -70,7 +70,8 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Retrieve property values from one row of a result set
 		/// </summary>
-		[Obsolete("Use the overload with fetchedLazyProperties parameter instead")]
+		// Since v5.3
+		[Obsolete("Use the extension method with fetchedLazyProperties parameter instead")]
 		object[] Hydrate(DbDataReader rs, object id, object obj, ILoadable rootLoadable, string[][] suffixedPropertyColumns,
 						 bool allProperties, ISessionImplementor session);
 	}
@@ -101,7 +102,7 @@ namespace NHibernate.Persister.Entity
 		/// Set lazy properties from one row of a result set
 		/// </summary>
 		//6.0 TODO: Change to void and merge into ILoadable
-		public static bool InitializeLazyProperties(
+		internal static bool InitializeLazyProperties(
 			this ILoadable loadable, DbDataReader rs, object id, object entity, ILoadable rootPersister, string[][] suffixedPropertyColumns,
 			string[] uninitializedLazyProperties, bool allLazyProperties, ISessionImplementor session)
 		{

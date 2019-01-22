@@ -59,7 +59,7 @@ namespace NHibernate.Bytecode
 		/// Get the descriptor for the lazy property.
 		/// </summary>
 		/// <param name="propertyName">The propery name.</param>
-		/// <returns>The index of the property.</returns>
+		/// <returns>The lazy property descriptor.</returns>
 		public LazyPropertyDescriptor GetLazyPropertyDescriptor(string propertyName)
 		{
 			if (!_lazyPropertyDescriptors.TryGetValue(propertyName, out var descriptor))

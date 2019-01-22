@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Util;
 
 namespace NHibernate.Persister.Entity
 {
@@ -17,12 +18,8 @@ namespace NHibernate.Persister.Entity
 		//6.0 TODO: Merge into IQueryable
 		public static string PropertySelectFragment(this IQueryable query, string alias, string suffix, string[] fetchProperties)
 		{
-			if (query is AbstractEntityPersister abstractEntityPersister)
-			{
-				return abstractEntityPersister.PropertySelectFragment(alias, suffix, fetchProperties);
-			}
-
-			throw new InvalidOperationException($"Unable to cast {query.GetType()} to {typeof(AbstractEntityPersister)}.");
+			return ReflectHelper.CastOrThrow<AbstractEntityPersister>(query, "individual lazy property fetches")
+			                    .PropertySelectFragment(alias, suffix, fetchProperties);
 		}
 	}
 

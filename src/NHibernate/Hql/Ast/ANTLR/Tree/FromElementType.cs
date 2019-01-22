@@ -215,7 +215,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			if (queryable == null)
 				return "";
 
-			// Use the old method when fetchProperties is null to prevert any breaking changes
+			// Use the old method when fetchProperties is null to prevent any breaking changes
 			// 6.0 TODO: simplify condition by removing the fetchProperties part
 			string fragment = fetchLazyProperties == null || allProperties
 				? queryable.PropertySelectFragment(TableAlias, GetSuffix(size, k), allProperties)
