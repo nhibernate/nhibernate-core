@@ -40,12 +40,12 @@ namespace NHibernate.Criterion
 			//SqlString result = new SqlString(criteriaQuery.GetSQLAlias(criteria));
 			//result.Replace(sql, "{alias}");
 			//return result;
-			return new SqlString(StringHelper.Replace(sql, "{alias}", criteriaQuery.GetSQLAlias(criteria)));
+			return new SqlString(sql?.Replace("{alias}", criteriaQuery.GetSQLAlias(criteria)));
 		}
 
 		public SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new SqlString(StringHelper.Replace(groupBy, "{alias}", criteriaQuery.GetSQLAlias(criteria)));
+			return new SqlString(groupBy?.Replace("{alias}", criteriaQuery.GetSQLAlias(criteria)));
 		}
 
 		public override string ToString()

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -123,6 +124,47 @@ namespace NHibernate.Impl
 			{
 				After();
 			}
+		}
+
+		public override IList<T> List<T>()
+		{
+			VerifyParameters();
+			var namedParams = NamedParams;
+			Before();
+			try
+			{
+				//6.0 TODO: Add Session.ListFilter<T> that accepts IQueryExpression
+				var result = Session.ListFilter(collection, ExpandParameters(namedParams), GetQueryParameters(namedParams));
+
+				return result as IList<T> ?? result.Cast<T>().ToList();
+			}
+			finally
+			{
+				After();
+			}
+		}
+
+		public override void List(IList results)
+		{
+			ArrayHelper.AddAll(results, List());
+		}
+
+		public override IEnumerable Enumerable()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override IEnumerable<T> Enumerable<T>()
+		{
+			throw new NotImplementedException();
+		}
+
+		protected internal override IEnumerable<ITranslator> GetTranslators(ISessionImplementor session, QueryParameters queryParameters)
+		{
+			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
+			var queryExpression = ExpandParameters(queryParameters.NamedParameters);
+
+			return CollectionFilterImpl.GetTranslators(session, queryParameters, queryExpression, collection);
 		}
 
 		public override IType[] TypeArray()

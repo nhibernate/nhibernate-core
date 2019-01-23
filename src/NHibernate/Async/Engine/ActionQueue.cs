@@ -75,10 +75,6 @@ namespace NHibernate.Engine
 			}
 			finally
 			{
-				if (executable.PropertySpaces != null)
-				{
-					executedSpaces.UnionWith(executable.PropertySpaces);
-				}
 				RegisterCleanupActions(executable);
 			}
 		}

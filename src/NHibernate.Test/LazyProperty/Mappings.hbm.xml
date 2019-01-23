@@ -4,11 +4,13 @@
 					namespace="NHibernate.Test.LazyProperty">
 	
 	<class name="Book">
+		<cache usage="nonstrict-read-write" include="non-lazy" />
 		<id name="Id">
 			<generator class="assigned" />
 		</id>
 		<property name="Name" />
 		<property name="ALotOfText" lazy="true" />
+		<property name="Image" lazy="true" />
 		<property name="FieldInterceptor" />
 	</class>
 

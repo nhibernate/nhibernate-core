@@ -423,7 +423,7 @@ namespace NHibernate.Test.StaticProxyTest
 		{
 			var factory = new StaticProxyFactory();
 			factory.PostInstantiate(typeof(PublicInterfaceTestClass).FullName, typeof(PublicInterfaceTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
-			var proxy = (PublicInterfaceTestClass) factory.GetFieldInterceptionProxy(new PublicInterfaceTestClass());
+			var proxy = (PublicInterfaceTestClass) factory.GetFieldInterceptionProxy();
 			proxy.Id = 1;
 
 			var serializer = GetFormatter();
@@ -441,7 +441,7 @@ namespace NHibernate.Test.StaticProxyTest
 		{
 			var factory = new StaticProxyFactory();
 			factory.PostInstantiate(typeof(CustomSerializationClass).FullName, typeof(CustomSerializationClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
-			var proxy = (CustomSerializationClass) factory.GetFieldInterceptionProxy(new CustomSerializationClass());
+			var proxy = (CustomSerializationClass) factory.GetFieldInterceptionProxy();
 			proxy.Id = 2;
 
 			var serializer = GetFormatter();
@@ -459,7 +459,7 @@ namespace NHibernate.Test.StaticProxyTest
 		{
 			var factory = new StaticProxyFactory();
 			factory.PostInstantiate(typeof(CustomExplicitSerializationClass).FullName, typeof(CustomExplicitSerializationClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
-			var proxy = (CustomExplicitSerializationClass) factory.GetFieldInterceptionProxy(new CustomExplicitSerializationClass());
+			var proxy = (CustomExplicitSerializationClass) factory.GetFieldInterceptionProxy();
 			proxy.Id = 2;
 
 			var serializer = GetFormatter();
@@ -482,7 +482,7 @@ namespace NHibernate.Test.StaticProxyTest
 				() =>
 				{
 #endif
-					var fieldProxy = factory.GetFieldInterceptionProxy(new InternalInterfaceTestClass());
+					var fieldProxy = factory.GetFieldInterceptionProxy();
 					Assert.That(fieldProxy, Is.InstanceOf<InternalInterfaceTestClass>());
 #if NETFX
 				});
@@ -499,7 +499,7 @@ namespace NHibernate.Test.StaticProxyTest
 				() =>
 				{
 #endif
-					var fieldProxy = factory.GetFieldInterceptionProxy(new CustomSerializationClass());
+					var fieldProxy = factory.GetFieldInterceptionProxy();
 					Assert.That(fieldProxy, Is.InstanceOf<CustomSerializationClass>());
 #if NETFX
 				});
@@ -527,7 +527,7 @@ namespace NHibernate.Test.StaticProxyTest
 				() =>
 				{
 #endif
-					var fieldProxy = factory.GetFieldInterceptionProxy(new PublicInterfaceTestClass());
+					var fieldProxy = factory.GetFieldInterceptionProxy();
 					Assert.That(fieldProxy, Is.InstanceOf<PublicInterfaceTestClass>());
 #if NETFX
 				});

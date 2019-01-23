@@ -27,6 +27,8 @@ namespace NHibernate.Proxy
 			_componentIdType = componentIdType;
 		}
 
+		internal System.Type PersistentClass => _persistentClass;
+
 		public IProxyFactory CreateProxyFactory()
 		{
 			var factory = new StaticProxyFactory();
