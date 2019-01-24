@@ -12,7 +12,7 @@
 		<property name="ALotOfText" lazy="true" />
 		<property name="Image" lazy="true" />
 		<property name="FieldInterceptor" />
-    <bag name="Words" table="word"  inverse="true" generic="true"  cascade="all-delete-orphan" lazy="true" >
+    <bag name="Words" table="word" inverse="true" generic="true" cascade="all-delete-orphan" lazy="true" >
       <key column="id_p"/>
       <one-to-many class="Word" />
     </bag>
@@ -22,9 +22,7 @@
     <id name="Id" column="Id">
       <generator class="assigned" />
     </id>
-    <property name="Content"   type="BinaryBlob" length="99999999999"  lazy="true" >
-      <column name="Content" sql-type="BLOB" not-null="false" />
-    </property>
+    <property name="Content" lazy="true" />
     <many-to-one name="Parent" class="Book" column="id_p"/>
   </class>
 
