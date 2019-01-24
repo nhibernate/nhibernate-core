@@ -13,7 +13,7 @@
 		<property name="Image" lazy="true" />
 		<property name="FieldInterceptor" />
     <bag name="Words" inverse="true" generic="true" cascade="all-delete-orphan" lazy="true" >
-      <key column="id_p"/>
+      <key column="ParentId" />
       <one-to-many class="Word" />
     </bag>
 	</class>
@@ -23,7 +23,7 @@
       <generator class="assigned" />
     </id>
     <property name="Content" lazy="true" />
-    <many-to-one name="Parent" class="Book" column="id_p"/>
+    <many-to-one name="Parent" class="Book" column="ParentId" />
   </class>
 
 </hibernate-mapping>

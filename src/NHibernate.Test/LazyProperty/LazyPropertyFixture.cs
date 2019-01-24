@@ -69,6 +69,7 @@ namespace NHibernate.Test.LazyProperty
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
+				s.CreateQuery("delete from Word").ExecuteUpdate();
 				s.CreateQuery("delete from Book").ExecuteUpdate();
 				tx.Commit();
 			}
@@ -341,12 +342,14 @@ namespace NHibernate.Test.LazyProperty
 		}
 
 		[Test]
-		public void CanMergeTransientWithLazyPropertyInCollenction()
+		public void CanMergeTransientWithLazyPropertyInCollection()
 		{
-			using (ISession s = OpenSession())
+			Book book;
+
+			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				var book = new Book
+				book = new Book
 				{
 					Name = "some name two",
 					Id = 3,
@@ -357,32 +360,35 @@ namespace NHibernate.Test.LazyProperty
 				tx.Commit();
 			}
 
-			Book bookz = null;
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
-				bookz = s.Get<Book>(3);
-				Assert.That(bookz, Is.Not.Null);
-				Assert.That(bookz.Name, Is.EqualTo("some name two"));
-				Assert.That(bookz.ALotOfText, Is.EqualTo("a lot of text two..."));
+				book = s.Get<Book>(3);
+				Assert.That(book, Is.Not.Null);
+				Assert.That(book.Name, Is.EqualTo("some name two"));
+				Assert.That(book.ALotOfText, Is.EqualTo("a lot of text two..."));
 
 			}
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				bookz.Words = new List<Word>();
-				var word = new Word { Id = 2, Parent = bookz };
-				word.Content = new byte[1] { 0 };
+				book.Words = new List<Word>();
+				var word = new Word
+				{
+					Id = 2,
+					Parent = book,
+					Content = new byte[1] {0}
+				};
 
-				bookz.Words.Add(word);
-				s.Merge(bookz);
+				book.Words.Add(word);
+				s.Merge(book);
 				tx.Commit();
 			}
 
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
-				bookz = s.Get<Book>(3);
-				Assert.That(bookz.Words.Any(), Is.True);
-				Assert.That(bookz.Words.First().Content, Is.EqualTo(new byte[1] { 0 }));
+				book = s.Get<Book>(3);
+				Assert.That(book.Words.Any(), Is.True);
+				Assert.That(book.Words.First().Content, Is.EqualTo(new byte[1] { 0 }));
 			}
 		}
 	}
