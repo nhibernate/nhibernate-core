@@ -367,6 +367,7 @@ namespace NHibernate.Test.LazyProperty
 
 			}
 			using (ISession s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
 				bookz.Words = new List<Word>();
 				var word = new Word { Id = 2, Parent = bookz };
@@ -374,6 +375,7 @@ namespace NHibernate.Test.LazyProperty
 
 				bookz.Words.Add(word);
 				s.Merge(bookz);
+				tx.Commit();
 			}
 
 			using (ISession s = OpenSession())

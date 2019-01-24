@@ -18,7 +18,7 @@
     </bag>
 	</class>
 
-  <class name="Word" schema="public" table="slova">
+  <class name="Word">
     <id name="Id" column="Id">
       <generator class="assigned" />
     </id>
