@@ -25,17 +25,20 @@ namespace NHibernate.Engine
 		{
 			if (session == null)
 				return null;
-			return (session as AbstractSessionImpl)?.BeginContext() ?? new SessionIdLoggingContext(session.SessionId);
+			return session is AbstractSessionImpl impl
+				? impl.BeginContext()
+				: SessionIdLoggingContext.CreateOrNull(session.SessionId);
 		}
 
 		internal static IDisposable BeginProcess(this ISessionImplementor session)
 		{
 			if (session == null)
 				return null;
-			return (session as AbstractSessionImpl)?.BeginProcess() ??
+			return session is AbstractSessionImpl impl
+				? impl.BeginProcess()
 				// This method has only replaced bare call to setting the id, so this fallback is enough for avoiding a
 				// breaking change in case a custom session implementation is used.
-				new SessionIdLoggingContext(session.SessionId);
+				: SessionIdLoggingContext.CreateOrNull(session.SessionId);
 		}
 
 		//6.0 TODO: Expose as ISessionImplementor.FutureBatch and replace method usages with property

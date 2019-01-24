@@ -105,7 +105,7 @@ namespace NHibernate.Transaction
 		public async Task RollbackAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(sessionId))
+			using (SessionIdLoggingContext.CreateOrNull(sessionId))
 			{
 				CheckNotDisposed();
 				CheckBegun();
@@ -157,7 +157,7 @@ namespace NHibernate.Transaction
 		protected virtual async Task DisposeAsync(bool isDisposing, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(sessionId))
+			using (SessionIdLoggingContext.CreateOrNull(sessionId))
 			{
 				if (_isAlreadyDisposed)
 				{

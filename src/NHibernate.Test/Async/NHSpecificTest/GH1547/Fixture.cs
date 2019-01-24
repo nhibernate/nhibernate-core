@@ -158,14 +158,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1547
 
 			protected override Task<DbDataReader> ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
 			{
-				try
-				{
-					return Task.FromResult<DbDataReader>(_substituteReader);
-				}
-				catch (Exception ex)
-				{
-					return Task.FromException<DbDataReader>(ex);
-				}
+				return Task.FromResult<DbDataReader>(_substituteReader);
 			}
 
 			public override Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken)
