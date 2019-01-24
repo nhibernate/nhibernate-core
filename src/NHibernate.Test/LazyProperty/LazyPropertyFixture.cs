@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Intercept;
@@ -337,6 +338,50 @@ namespace NHibernate.Test.LazyProperty
 
 			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
 			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Image"), Is.False);
+		}
+
+		[Test]
+		public void CanMergeTransientWithLazyPropertyInCollenction()
+		{
+			using (ISession s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var book = new Book
+				{
+					Name = "some name two",
+					Id = 3,
+					ALotOfText = "a lot of text two..."
+				};
+				// This should insert a new entity.
+				s.Merge(book);
+				tx.Commit();
+			}
+
+			Book bookz = null;
+			using (ISession s = OpenSession())
+			{
+				bookz = s.Get<Book>(3);
+				Assert.That(bookz, Is.Not.Null);
+				Assert.That(bookz.Name, Is.EqualTo("some name two"));
+				Assert.That(bookz.ALotOfText, Is.EqualTo("a lot of text two..."));
+
+			}
+			using (ISession s = OpenSession())
+			{
+				bookz.Words = new List<Word>();
+				var word = new Word { Id = 2, Parent = bookz };
+				word.Content = new byte[1] { 0 };
+
+				bookz.Words.Add(word);
+				s.Merge(bookz);
+			}
+
+			using (ISession s = OpenSession())
+			{
+				bookz = s.Get<Book>(3);
+				Assert.That(bookz.Words.Any(), Is.True);
+				Assert.That(bookz.Words.First().Content, Is.EqualTo(new byte[1] { 0 }));
+			}
 		}
 	}
 }
