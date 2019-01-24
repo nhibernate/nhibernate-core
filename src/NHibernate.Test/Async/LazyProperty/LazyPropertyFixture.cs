@@ -9,6 +9,7 @@
 
 
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Intercept;
@@ -81,6 +82,7 @@ namespace NHibernate.Test.LazyProperty
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
+				s.CreateQuery("delete from Word").ExecuteUpdate();
 				s.CreateQuery("delete from Book").ExecuteUpdate();
 				tx.Commit();
 			}
@@ -344,6 +346,57 @@ namespace NHibernate.Test.LazyProperty
 
 			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
 			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Image"), Is.False);
+		}
+
+		[Test]
+		public async Task CanMergeTransientWithLazyPropertyInCollectionAsync()
+		{
+			Book book;
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				book = new Book
+				{
+					Name = "some name two",
+					Id = 3,
+					ALotOfText = "a lot of text two..."
+				};
+				// This should insert a new entity.
+				await (s.MergeAsync(book));
+				await (tx.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			{
+				book = await (s.GetAsync<Book>(3));
+				Assert.That(book, Is.Not.Null);
+				Assert.That(book.Name, Is.EqualTo("some name two"));
+				Assert.That(book.ALotOfText, Is.EqualTo("a lot of text two..."));
+
+			}
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				book.Words = new List<Word>();
+				var word = new Word
+				{
+					Id = 2,
+					Parent = book,
+					Content = new byte[1] {0}
+				};
+
+				book.Words.Add(word);
+				await (s.MergeAsync(book));
+				await (tx.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			{
+				book = await (s.GetAsync<Book>(3));
+				Assert.That(book.Words.Any(), Is.True);
+				Assert.That(book.Words.First().Content, Is.EqualTo(new byte[1] { 0 }));
+			}
 		}
 	}
 }
