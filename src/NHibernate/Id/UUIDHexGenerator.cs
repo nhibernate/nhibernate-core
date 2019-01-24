@@ -69,9 +69,9 @@ namespace NHibernate.Id
 		{
 			string guidString = GenerateNewGuid();
 
-			if (format != FormatWithDigitsOnly && sep != null)
+			if (format != FormatWithDigitsOnly && sep != null && guidString != null)
 			{
-				return StringHelper.Replace(guidString, "-", sep);
+				return guidString.Replace("-", sep);
 			}
 
 			return guidString;

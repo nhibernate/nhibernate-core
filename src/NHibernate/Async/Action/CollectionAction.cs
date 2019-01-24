@@ -25,6 +25,25 @@ namespace NHibernate.Action
 	public abstract partial class CollectionAction : IAsyncExecutable, IComparable<CollectionAction>, IDeserializationCallback, IAfterTransactionCompletionProcess
 	{
 
+		protected async Task<object> GetKeyAsync(CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (key is DelayedPostInsertIdentifier)
+			{
+				// need to look it up
+				var finalKey = await (persister.CollectionType.GetKeyOfOwnerAsync(collection.Owner, session, cancellationToken)).ConfigureAwait(false);
+				if (finalKey == key)
+				{
+					// we may be screwed here since the collection action is about to execute
+					// and we do not know the final owner key value
+				}
+
+				return finalKey;
+			}
+
+			return key;
+		}
+
 		#region IExecutable Members
 
 		/// <summary> Called before executing any actions</summary>
@@ -55,15 +74,8 @@ namespace NHibernate.Action
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				var ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
-				return persister.Cache.ReleaseAsync(ck, softLock, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			var ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
+			return persister.Cache.ReleaseAsync(ck, softLock, cancellationToken);
 		}
 
 		#endregion

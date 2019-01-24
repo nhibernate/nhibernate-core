@@ -62,10 +62,9 @@ namespace NHibernate.Mapping
 				buf.Append(column.GetQuotedName(dialect));
 			}
 
-			return
-				!nullable || dialect.SupportsNullInUnique
-					? StringHelper.Replace(buf.Append(StringHelper.ClosedParen).ToString(), "primary key", "unique")
-					: null;
+			return !nullable || dialect.SupportsNullInUnique
+				? buf.Append(StringHelper.ClosedParen).Replace("primary key", "unique").ToString()
+				: null;
 		}
 
 		public override string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)

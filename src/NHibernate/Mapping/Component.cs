@@ -133,7 +133,7 @@ namespace NHibernate.Mapping
 			get
 			{
 				// NH Different implementation (we use reflection only when needed)
-				if (componentClass == null)
+				if (componentClass == null && !IsDynamic)
 				{
 					try
 					{
@@ -141,9 +141,7 @@ namespace NHibernate.Mapping
 					}
 					catch (Exception cnfe)
 					{
-						if (!IsDynamic) // TODO remove this if leave the Exception
-							throw new MappingException("component class not found: " + componentClassName, cnfe);
-						return null;
+						throw new MappingException("component class not found: " + componentClassName, cnfe);
 					}
 				}
 				return componentClass;

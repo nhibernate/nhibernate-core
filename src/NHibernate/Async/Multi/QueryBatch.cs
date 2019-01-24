@@ -76,7 +76,14 @@ namespace NHibernate.Multi
 			{
 				return Task.FromCanceled<IList<TResult>>(cancellationToken);
 			}
-			return GetResultsAsync<TResult>(_queries[queryIndex], cancellationToken);
+			try
+			{
+				return GetResultsAsync<TResult>(_queries[queryIndex], cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<IList<TResult>>(ex);
+			}
 		}
 
 		/// <inheritdoc />
@@ -86,7 +93,14 @@ namespace NHibernate.Multi
 			{
 				return Task.FromCanceled<IList<TResult>>(cancellationToken);
 			}
-			return GetResultsAsync<TResult>(_queriesByKey[querykey], cancellationToken);
+			try
+			{
+				return GetResultsAsync<TResult>(_queriesByKey[querykey], cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<IList<TResult>>(ex);
+			}
 		}
 
 		private async Task<IList<TResult>> GetResultsAsync<TResult>(IQueryBatchItem query, CancellationToken cancellationToken)

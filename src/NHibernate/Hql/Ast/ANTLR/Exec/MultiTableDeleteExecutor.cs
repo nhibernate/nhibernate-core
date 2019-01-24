@@ -82,10 +82,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					try
 					{
 						var paramsSpec = Walker.Parameters;
-						var sqlQueryParametersList = idInsertSelect.GetParameters().ToList();
+						var sqlString = FilterHelper.ExpandDynamicFilterParameters(idInsertSelect, paramsSpec, session);
+						var sqlQueryParametersList = sqlString.GetParameters().ToList();
 						SqlType[] parameterTypes = paramsSpec.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
 
-						ps = session.Batcher.PrepareCommand(CommandType.Text, idInsertSelect, parameterTypes);
+						ps = session.Batcher.PrepareCommand(CommandType.Text, sqlString, parameterTypes);
 						foreach (var parameterSpecification in paramsSpec)
 						{
 							parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
