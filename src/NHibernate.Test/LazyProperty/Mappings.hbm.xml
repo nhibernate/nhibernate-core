@@ -12,7 +12,7 @@
 		<property name="ALotOfText" lazy="true" />
 		<property name="Image" lazy="true" />
 		<property name="FieldInterceptor" />
-    <bag name="Words" table="word" inverse="true" generic="true" cascade="all-delete-orphan" lazy="true" >
+    <bag name="Words" inverse="true" generic="true" cascade="all-delete-orphan" lazy="true" >
       <key column="id_p"/>
       <one-to-many class="Word" />
     </bag>
