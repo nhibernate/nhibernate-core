@@ -41,7 +41,6 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.
 		/// </param>
-		//[Obsolete("Use other constructor")]
 		protected CollectionType(string role, string foreignKeyPropertyName)
 		{
 			this.role = role;
@@ -329,7 +328,7 @@ namespace NHibernate.Type
 		}
 
 		public override object Replace(object original, object target, ISessionImplementor session, object owner,
-		                               IDictionary copyCache)
+									   IDictionary copyCache)
 		{
 			if (original == null)
 			{
@@ -357,6 +356,7 @@ namespace NHibernate.Type
 				ReplaceElements(result, target, owner, copyCache, session);
 				result = target;
 			}
+
 			return result;
 		}
 
@@ -402,7 +402,6 @@ namespace NHibernate.Type
 					return true;
 				}
 			}
-
 			return false;
 		}
 
@@ -466,7 +465,7 @@ namespace NHibernate.Type
 		}
 
 		public override bool IsModified(object oldHydratedState, object currentState, bool[] checkable,
-		                                ISessionImplementor session)
+										ISessionImplementor session)
 		{
 			return false;
 		}

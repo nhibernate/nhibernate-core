@@ -23,7 +23,6 @@ namespace NHibernate.Type
 			: base(role, propertyRef)
 		{
 		}
-		
 		public override object Instantiate(int anticipatedSize)
 		{
 			return new LinkedHashSet<T>();
