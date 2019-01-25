@@ -205,6 +205,7 @@ namespace NHibernate.Engine
 
 		public object GetLoadedValue(string propertyName)
 		{
+			if (loadedState == null) return null;
 			int propertyIndex = ((IUniqueKeyLoadable) persister).GetPropertyIndex(propertyName);
 			return loadedState[propertyIndex];
 		}

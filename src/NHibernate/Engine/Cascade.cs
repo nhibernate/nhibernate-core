@@ -182,7 +182,9 @@ namespace NHibernate.Engine
 								// which association may be null) in the loadedState of the parent. The unwrap flag
 								// causes it to support having a null implementation, instead of throwing an entity
 								// not found error.
-								loadedValue = eventSource.PersistenceContext.UnproxyAndReassociate(loadedValue);
+								loadedValue = loadedValue != null
+									? eventSource.PersistenceContext.UnproxyAndReassociate(loadedValue)
+									: null;
 							}
 							else
 							{
