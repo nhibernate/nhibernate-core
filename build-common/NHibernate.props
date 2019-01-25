@@ -26,8 +26,9 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>LGPL-2.1-only</PackageLicenseExpression>
     <PackageReleaseNotes>https://github.com/nhibernate/nhibernate-core/blob/$(VersionPrefix)/releasenotes.txt</PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/nhibernate/nhibernate-core.git</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <TreatSpecificWarningsAsErrors />
