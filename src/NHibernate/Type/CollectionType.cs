@@ -43,30 +43,9 @@ namespace NHibernate.Type
 		/// </param>
 		//[Obsolete("Use other constructor")]
 		protected CollectionType(string role, string foreignKeyPropertyName)
-			: this(role, foreignKeyPropertyName, null, null, false)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of a <see cref="CollectionType"/> class for
-		/// a specific role.
-		/// </summary>
-		/// <param name="role">The role the persistent collection is in.</param>
-		/// <param name="foreignKeyPropertyName">
-		/// The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.
-		/// </param>
-		/// <param name="entityName"></param>
-		/// <param name="propertyName"></param>
-		/// <param name="isNullable"></param>
-		protected CollectionType(string role, string foreignKeyPropertyName, string entityName, string propertyName, bool isNullable)
 		{
 			this.role = role;
 			this.foreignKeyPropertyName = foreignKeyPropertyName;
-			EntityName = entityName;
-			PropertyName = propertyName;
-			IsNullable = isNullable;
 		}
 
 		public virtual string Role
@@ -78,10 +57,6 @@ namespace NHibernate.Type
 		{
 			get { return true; }
 		}
-
-		public string PropertyName { get;  }
-		public string EntityName { get; }
-		public bool IsNullable { get; }
 
 		public override bool IsEqual(object x, object y)
 		{
@@ -260,16 +235,6 @@ namespace NHibernate.Type
 
 		public object GetCollection(object key, ISessionImplementor session, object owner)
 		{
-			if (IsNullable && !string.IsNullOrEmpty(PropertyName))
-			{
-				EntityEntry entry = session.PersistenceContext.GetEntry(owner);
-
-				if (session.PersistenceContext.IsPropertyNull(entry.EntityKey, PropertyName))
-				{
-					return null;
-				}
-			}
-			
 			ICollectionPersister persister = GetPersister(session);
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 

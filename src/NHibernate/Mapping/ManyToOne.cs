@@ -52,7 +52,7 @@ namespace NHibernate.Mapping
 				if (type == null)
 				{
 					type =
-						TypeFactory.ManyToOne(ReferencedEntityName, ReferencedPropertyName, IsLazy, UnwrapProxy, IsIgnoreNotFound, isLogicalOneToOne, PropertyName);
+						TypeFactory.ManyToOne(ReferencedEntityName, ReferencedPropertyName, IsLazy, UnwrapProxy, IsIgnoreNotFound, isLogicalOneToOne);
 				}
 				return type;
 			}

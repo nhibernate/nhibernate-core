@@ -29,19 +29,11 @@ namespace NHibernate.Type
 			PropertyName = null;
 		}
 
-		//Since 5.3
-		[Obsolete("Please use constructor with propertyName instead")]
 		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne)
-			: this(entityName, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, null)
-		{
-		}
-		
-		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne, string propertyName)
 			: base(entityName, uniqueKeyPropertyName, !lazy, unwrapProxy)
 		{
 			this.ignoreNotFound = ignoreNotFound;
 			this.isLogicalOneToOne = isLogicalOneToOne;
-			PropertyName = propertyName;
 		}
 
 		public override int GetColumnSpan(IMapping mapping)

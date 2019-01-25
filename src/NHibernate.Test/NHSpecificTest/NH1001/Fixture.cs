@@ -196,7 +196,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 				Assert.That(employee.Department2, Is.Not.Null);
 				Assert.That(employee.Department3, Is.Not.Null);
 				Assert.That(employee.Address, Is.Not.Null);
-				Assert.That(employee.Phones, Is.Null);
+				Assert.That(employee.Phones, Is.Not.Null);
+				Assert.That(employee.Phones.Count, Is.Zero);
 				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(1));
 			}
 		}

@@ -9,12 +9,7 @@ namespace NHibernate.Type
 		private readonly IComparer<TKey> comparer;
 
 		public GenericSortedListType(string role, string propertyRef, IComparer<TKey> comparer)
-			: this(role, propertyRef, comparer, null, null, false)
-		{
-		}
-		
-		public GenericSortedListType(string role, string propertyRef, IComparer<TKey> comparer, string entityName, string propertyName, bool isNullable)
-			: base(role, propertyRef, entityName, propertyName, isNullable)
+			: base(role, propertyRef)
 		{
 			this.comparer = comparer;
 		}

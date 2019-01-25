@@ -28,23 +28,6 @@ namespace NHibernate.Type
 			: base(role, propertyRef)
 		{
 		}
-		
-		/// <summary>
-		/// Initializes a new instance of a <see cref="GenericBagType{T}"/> class for
-		/// a specific role.
-		/// </summary>
-		/// <param name="role">The role the persistent collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="entityName"></param>
-		/// <param name="propertyName"></param>
-		/// <param name="isNullable"></param>
-		public GenericBagType(string role, string propertyRef, string entityName, string propertyName, bool isNullable)
-			: base(role, propertyRef, entityName, propertyName, isNullable)
-		{
-			
-		}
 
 		/// <summary>
 		/// Instantiates a new <see cref="IPersistentCollection"/> for the bag.

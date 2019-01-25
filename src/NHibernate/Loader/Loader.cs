@@ -983,15 +983,7 @@ namespace NHibernate.Loader
 									session.PersistenceContext.AddNullProperty(keys[j], many.PropertyName);
 									break;
 								}
-
-								if (type is CollectionType collection && collection.EntityName == persister.EntityName
-								                                      && ++count == total && collection.IsNullable)
-								{
-									found = true;
-									session.PersistenceContext.AddNullProperty(keys[j], collection.PropertyName);
-									break;
-								}
-						}
+							}
 
 							if (found)
 							{

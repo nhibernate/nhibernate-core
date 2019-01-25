@@ -19,13 +19,7 @@ namespace NHibernate.Type
 		private readonly IUserCollectionType userType;
 
 		public CustomCollectionType(System.Type userTypeClass, string role, string foreignKeyPropertyName)
-			: this(userTypeClass, role, foreignKeyPropertyName, null, null, false)
-		{
-			
-		}
-		
-		public CustomCollectionType(System.Type userTypeClass, string role, string foreignKeyPropertyName, string entityName, string propertyName, bool isNullable)
-			: base(role, foreignKeyPropertyName, entityName, propertyName, isNullable)
+			: base(role, foreignKeyPropertyName)
 		{
 			if (!typeof(IUserCollectionType).IsAssignableFrom(userTypeClass))
 			{

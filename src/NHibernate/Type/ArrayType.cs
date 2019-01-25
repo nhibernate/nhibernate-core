@@ -32,28 +32,7 @@ namespace NHibernate.Type
 		/// This creates a bag that is non-generic.
 		/// </remarks>
 		public ArrayType(string role, string propertyRef, System.Type elementClass)
-			: this(role, propertyRef, elementClass, null, null, false)
-		{
-			
-		}
-		
-		/// <summary>
-		/// Initializes a new instance of a <see cref="ArrayType"/> class for
-		/// a specific role.
-		/// </summary>
-		/// <param name="role">The role the persistent collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="elementClass">The <see cref="System.Type"/> of the element contained in the array.</param>
-		/// <param name="entityName"></param>
-		/// <param name="propertyName"></param>
-		/// <param name="isNullable"></param>
-		/// <remarks>
-		/// This creates a bag that is non-generic.
-		/// </remarks>
-		public ArrayType(string role, string propertyRef, System.Type elementClass, string entityName, string propertyName, bool isNullable)
-			: base(role, propertyRef, entityName, propertyName, isNullable)
+			: base(role, propertyRef)
 		{
 			this.elementClass = elementClass;
 			arrayClass = Array.CreateInstance(elementClass, 0).GetType();
