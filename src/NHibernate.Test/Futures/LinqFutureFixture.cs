@@ -9,9 +9,21 @@ namespace NHibernate.Test.Futures
 	[TestFixture]
 	public class LinqFutureFixture : FutureFixture
 	{
+		protected override void OnTearDown()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				session.Delete("from Person");
+				transaction.Commit();
+			}
+		}
+
 		[Test]
 		public void DefaultReadOnlyTest()
 		{
+			CreatePersons();
+
 			//NH-3575
 			using (var s = Sfi.OpenSession())
 			{
@@ -44,13 +56,6 @@ namespace NHibernate.Test.Futures
 			{
 				var person = s.Query<Person>().Where(p => (p.Name ?? "e") == "e").ToFutureValue();
 				Assert.AreEqual(personId, person.Value.Id);
-			}
-
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
-			{
-				s.Delete("from Person");
-				tx.Commit();
 			}
 		}
 
@@ -125,13 +130,6 @@ namespace NHibernate.Test.Futures
 					var events = logSpy.Appender.GetEvents();
 					Assert.AreEqual(1, events.Length);
 				}
-			}
-
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
-			{
-				s.Delete("from Person");
-				tx.Commit();
 			}
 		}
 
@@ -259,13 +257,6 @@ namespace NHibernate.Test.Futures
 					Assert.AreEqual(1, events.Length);
 				}
 			}
-
-			using (var s = OpenSession())
-			using (var tx = s.BeginTransaction())
-			{
-				s.Delete("from Person");
-				tx.Commit();
-			}
 		}
 
 		[Test]
@@ -349,13 +340,6 @@ namespace NHibernate.Test.Futures
 
 				Assert.AreEqual(personId, meContainer.Value.Id);
 			}
-
-			using (var s = OpenSession())
-			using (var tx = s.BeginTransaction())
-			{
-				s.Delete("from Person");
-				tx.Commit();
-			}
 		}
 
 		[Test]
@@ -423,12 +407,6 @@ namespace NHibernate.Test.Futures
 					var result = query.ToList();
 					Assert.That(result.Count,Is.EqualTo(1));
 				}
-			}
-			using (var s = OpenSession())
-			using (var tx = s.BeginTransaction())
-			{
-				s.Delete("from Person");
-				tx.Commit();
 			}
 		}
 
@@ -515,13 +493,6 @@ namespace NHibernate.Test.Futures
 
 				Assert.That(Sfi.Statistics.PrepareStatementCount , Is.EqualTo(0), "Future queries must be retrieved from cache");
 			}
-
-			using (var s = OpenSession())
-			using (var tx = s.BeginTransaction())
-			{
-				s.Delete("from Person");
-				tx.Commit();
-			}
 		}
 
 		[Test]
@@ -544,6 +515,23 @@ namespace NHibernate.Test.Futures
 				tx.Commit();
 
 				Assert.That(count, Is.EqualTo(0), "Session wasn't auto flushed.");
+			}
+		}
+
+		[Test]
+		public void FutureOnQueryableFilter()
+		{
+			CreatePersons();
+
+			using (var s = Sfi.OpenSession())
+			{
+				var person = s.Query<Person>().Where(n => n.Name == "ParentTwoChildren").FirstOrDefault();
+				var f1 = person.Children.AsQueryable().Where(p => p.Age > 30).ToFuture();
+				var f2 = person.Children.AsQueryable().Where(p => p.Age > 5).ToFuture();
+
+				Assert.That(person.Children.Count, Is.EqualTo(2), "invalid test set up");
+				Assert.That(f1.GetEnumerable().ToList().Count, Is.EqualTo(0), "Invalid filtered results");
+				Assert.That(f2.GetEnumerable().ToList().Count, Is.EqualTo(1), "Invalid filtered results");
 			}
 		}
 	}

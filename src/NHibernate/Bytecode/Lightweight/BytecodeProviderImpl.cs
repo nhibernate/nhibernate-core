@@ -24,9 +24,25 @@ namespace NHibernate.Bytecode.Lightweight
 		/// <returns><see langword="null" /> if the generation fails</returns>
 		public override IReflectionOptimizer GetReflectionOptimizer(System.Type mappedClass, IGetter[] getters, ISetter[] setters)
 		{
-			return new ReflectionOptimizer(mappedClass, getters, setters);
+			return new ReflectionOptimizer(mappedClass, getters, setters, null, null);
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Retrieve the <see cref="IReflectionOptimizer" /> delegate for this provider
+		/// capable of generating reflection optimization components.
+		/// </summary>
+		/// <param name="mappedClass">The class to be reflected upon.</param>
+		/// <param name="getters">All property getters to be accessed via reflection.</param>
+		/// <param name="setters">All property setters to be accessed via reflection.</param>
+		/// <param name="specializedGetter">The specialized getter for the given type.</param>
+		/// <param name="specializedSetter">The specialized setter for the given type.</param>
+		/// <returns>The reflection optimization delegate.</returns>
+		internal IReflectionOptimizer GetReflectionOptimizer(
+			System.Type mappedClass, IGetter[] getters, ISetter[] setters, IGetter specializedGetter, ISetter specializedSetter)
+		{
+			return new ReflectionOptimizer(mappedClass, getters, setters, specializedGetter, specializedSetter);
+		}
 	}
 }

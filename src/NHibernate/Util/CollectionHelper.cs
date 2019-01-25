@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Util
 {
@@ -219,6 +220,8 @@ namespace NHibernate.Util
 		{
 			return EmptyMapClass<TKey, TValue>.Instance;
 		}
+
+		internal static ISet<T> EmptySet<T>() => EmptyReadOnlySet<T>.Instance;
 
 		public static readonly ICollection EmptyCollection = EmptyMap;
 		// Since v5
@@ -460,6 +463,12 @@ namespace NHibernate.Util
 			}
 
 			#endregion
+		}
+
+		[Serializable]
+		private class EmptyReadOnlySet<T>
+		{
+			public static readonly ISet<T> Instance = new ReadOnlySet<T>(new HashSet<T>());
 		}
 
 		/// <summary>

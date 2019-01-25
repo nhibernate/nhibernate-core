@@ -246,7 +246,7 @@ namespace NHibernate.Transaction
 		/// </exception>
 		public void Rollback()
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (SessionIdLoggingContext.CreateOrNull(sessionId))
 			{
 				CheckNotDisposed();
 				CheckBegun();
@@ -363,7 +363,7 @@ namespace NHibernate.Transaction
 		/// </remarks>
 		protected virtual void Dispose(bool isDisposing)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (SessionIdLoggingContext.CreateOrNull(sessionId))
 			{
 				if (_isAlreadyDisposed)
 				{

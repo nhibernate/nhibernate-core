@@ -79,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1439
 							Is.False,
 							"Lazy property initialization status");
 						Assert.That(
-							FieldInterceptionHelper.IsInstrumented(e1),
+							e1 is IFieldInterceptorAccessor,
 							Is.True,
 							"Entity IsInstrumented");
 						Assert.That(
@@ -105,7 +105,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1439
 							Is.False,
 							"Lazy property initialization status");
 						Assert.That(
-							FieldInterceptionHelper.IsInstrumented(e2),
+							e2 is IFieldInterceptorAccessor,
 							Is.True,
 							"Entity IsInstrumented");
 						Assert.That(
