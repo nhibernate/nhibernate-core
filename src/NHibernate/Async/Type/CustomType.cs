@@ -92,7 +92,7 @@ namespace NHibernate.Type
 
 		public Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			if (_userVersionType == null)
+			if (!(userType is IUserVersionType userVersionType))
 				throw new InvalidOperationException(
 					$"User type {userType} does not implement {nameof(IUserVersionType)}, Either implement it, or " +
 					$"avoid using this user type as a version type.");
@@ -112,7 +112,7 @@ namespace NHibernate.Type
 
 		public Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			if (_userVersionType == null)
+			if (!(userType is IUserVersionType userVersionType))
 				throw new InvalidOperationException(
 					$"User type {userType} does not implement {nameof(IUserVersionType)}, Either implement it, or " +
 					$"avoid using this user type as a version type.");

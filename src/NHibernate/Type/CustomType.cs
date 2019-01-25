@@ -18,8 +18,6 @@ namespace NHibernate.Type
 	public partial class CustomType : AbstractType, IDiscriminatorType, IVersionType
 	{
 		private readonly IUserType userType;
-		private readonly IEnhancedUserType _enhancedUserType;
-		private readonly IUserVersionType _userVersionType;
 		private readonly string name;
 		private readonly SqlType[] sqlTypes;
 
@@ -64,8 +62,6 @@ namespace NHibernate.Type
 			}
 			TypeFactory.InjectParameters(userType, parameters);
 			sqlTypes = userType.SqlTypes;
-			_enhancedUserType = userType as IEnhancedUserType;
-			_userVersionType = userType as IUserVersionType;
 		}
 
 		/// <inheritdoc />
@@ -119,11 +115,11 @@ namespace NHibernate.Type
 				return "null";
 			}
 
-			if (_enhancedUserType != null)
+			if (userType is IEnhancedUserType enhancedUserType)
 			{
 				// 6.0 TODO: remove warning disable/restore
 #pragma warning disable 618
-				return _enhancedUserType.ToXMLString(value);
+				return enhancedUserType.ToXMLString(value);
 #pragma warning restore 618
 			}
 			return value.ToString();
@@ -176,13 +172,13 @@ namespace NHibernate.Type
 		/// <inheritdoc />
 		public object StringToObject(string xml)
 		{
-			if (_enhancedUserType == null)
+			if (!(userType is IEnhancedUserType enhancedUserType))
 				throw new InvalidOperationException(
 					$"User type {userType} does not implement {nameof(IEnhancedUserType)}, Either implement it, or " +
 					$"avoid using this user type as an identifier or a discriminator.");
 			// 6.0 TODO: remove warning disable/restore
 #pragma warning disable 618
-			return _enhancedUserType.FromXMLString(xml);
+			return enhancedUserType.FromXMLString(xml);
 #pragma warning restore 618
 		}
 
@@ -191,47 +187,52 @@ namespace NHibernate.Type
 		/// <inheritdoc cref="IVersionType.FromStringValue"/>
 		public object FromStringValue(string xml)
 		{
-			if (_enhancedUserType == null)
+			if (!(userType is IEnhancedUserType enhancedUserType))
 				throw new InvalidOperationException(
 					$"User type {userType} does not implement {nameof(IEnhancedUserType)}, Either implement it, or " +
 					$"avoid using this user type as an identifier or a discriminator.");
 			// 6.0 TODO: remove warning disable/restore
 #pragma warning disable 618
-			return _enhancedUserType.FromXMLString(xml);
+			return enhancedUserType.FromXMLString(xml);
 #pragma warning restore 618
 		}
 
 		public virtual string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			if (_enhancedUserType == null)
+			if (!(userType is IEnhancedUserType enhancedUserType))
 				throw new InvalidOperationException(
 					$"User type {userType} does not implement {nameof(IEnhancedUserType)}, its SQL literal value " +
 					$"cannot be resolved. Either implement it, or avoid using this user type as an identifier, a " +
 					$"discriminator, or with queries requiring its literal value.");
-			return _enhancedUserType.ObjectToSQLString(value);
+			return enhancedUserType.ObjectToSQLString(value);
 		}
 
 		public object Next(object current, ISessionImplementor session)
 		{
-			if (_userVersionType == null)
+			if (!(userType is IUserVersionType userVersionType))
 				throw new InvalidOperationException(
 					$"User type {userType} does not implement {nameof(IUserVersionType)}, Either implement it, or " +
 					$"avoid using this user type as a version type.");
-			return _userVersionType.Next(current, session);
+			return userVersionType.Next(current, session);
 		}
 
 		public object Seed(ISessionImplementor session)
 		{
-			if (_userVersionType == null)
+			if (!(userType is IUserVersionType userVersionType))
 				throw new InvalidOperationException(
 					$"User type {userType} does not implement {nameof(IUserVersionType)}, Either implement it, or " +
 					$"avoid using this user type as a version type.");
-			return _userVersionType.Seed(session);
+			return userVersionType.Seed(session);
 		}
 
 		public IComparer Comparator
 		{
-			get { return _userVersionType ?? (IComparer) userType; }
+			get
+			{
+				return userType as IComparer ?? throw new InvalidOperationException(
+					$"User type {userType} does not implement {nameof(IUserVersionType)}, Either implement it, or " +
+					$"avoid using this user type as a version type.");
+			}
 		}
 
 		public override object Replace(object original, object current, ISessionImplementor session, object owner,
