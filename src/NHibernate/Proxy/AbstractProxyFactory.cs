@@ -47,6 +47,8 @@ namespace NHibernate.Proxy
 
 		public abstract INHibernateProxy GetProxy(object id, ISessionImplementor session);
 
+		// Since 5.3
+		[Obsolete("Use ProxyFactoryExtensions.GetFieldInterceptionProxy extension method instead.")]
 		public virtual object GetFieldInterceptionProxy(object instanceToWrap)
 		{
 			throw new NotSupportedException();

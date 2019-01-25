@@ -681,20 +681,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 
 		protected Task ClearCollectionCacheAsync<T>(Expression<Func<T, IEnumerable>> pathToCollection, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			try
-			{
-				var rootEntityTypeFullPath = typeof(T).FullName;
-				var memberExpression = pathToCollection.Body as MemberExpression;
-				if (memberExpression == null)
-					return Task.FromException<object>(new ArgumentException("pathToCollection should be member expression"));
+			var rootEntityTypeFullPath = typeof(T).FullName;
+			var memberExpression = pathToCollection.Body as MemberExpression;
+			if (memberExpression == null)
+				return Task.FromException<object>(new ArgumentException("pathToCollection should be member expression"));
 
-				var role = $"{rootEntityTypeFullPath}.{memberExpression.Member.Name}";
-				return Sfi.EvictCollectionAsync(role, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			var role = $"{rootEntityTypeFullPath}.{memberExpression.Member.Name}";
+			return Sfi.EvictCollectionAsync(role, cancellationToken);
 		}
 
 		protected void ClearCollectionCache<T>(Expression<Func<T, IEnumerable>> pathToCollection)

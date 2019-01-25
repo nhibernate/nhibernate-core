@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH1928">
+
+  <class name="EntityX">
+    <id name="Id" generator="guid.comb"/>
+    <many-to-one name="Y"/>
+  </class>
+
+  <class name="EntityY">
+    <id name="Id" generator="guid.comb"/>
+    <many-to-one name="Z"/>
+  </class>
+
+  <class name="EntityZ">
+    <id name="Id" generator="guid.comb"/>
+    <property name="Name"/>
+  </class>
+
+</hibernate-mapping>

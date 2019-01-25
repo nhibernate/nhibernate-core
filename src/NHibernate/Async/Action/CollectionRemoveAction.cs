@@ -36,13 +36,14 @@ namespace NHibernate.Action
 
 			if (!emptySnapshot)
 			{
-				await (Persister.RemoveAsync(Key, Session, cancellationToken)).ConfigureAwait(false);
+				await (Persister.RemoveAsync(await (GetKeyAsync(cancellationToken)).ConfigureAwait(false), Session, cancellationToken)).ConfigureAwait(false);
 			}
 
 			IPersistentCollection collection = Collection;
 			if (collection != null)
 			{
-				Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
+				var entry = Session.PersistenceContext.GetCollectionEntry(collection);
+				entry.AfterAction(collection);
 			}
 
 			await (EvictAsync(cancellationToken)).ConfigureAwait(false);

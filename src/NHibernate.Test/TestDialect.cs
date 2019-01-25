@@ -1,4 +1,5 @@
 ﻿using System;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Id;
 using NHibernate.SqlTypes;
 
@@ -33,6 +34,14 @@ namespace NHibernate.Test
 		public bool HasIdentityNativeGenerator
 			=> _dialect.NativeIdentifierGeneratorClass == typeof(IdentityGenerator);
 
+		/// <summary>
+		/// Has a native generator strategy supporting id generation on DML insert.
+		/// </summary>
+		public bool NativeGeneratorSupportsBulkInsertion
+			=> HqlSqlWalker.SupportsIdGenWithBulkInsertion(
+				(IIdentifierGenerator) Cfg.Environment.ObjectsFactory.CreateInstance(
+					_dialect.NativeIdentifierGeneratorClass));
+
 		public virtual bool SupportsOperatorAll => true;
 		public virtual bool SupportsOperatorSome => true;
 		public virtual bool SupportsLocate => true;
@@ -46,7 +55,20 @@ namespace NHibernate.Test
 
 		public virtual bool SupportsNullCharactersInUtfStrings => true;
 
-		public virtual bool SupportsSelectForUpdateOnOuterJoin => true;
+		/// <summary>
+		/// Some databases do not support SELECT FOR UPDATE 
+		/// </summary>
+		public virtual bool SupportsSelectForUpdate => true;
+		
+		/// <summary>
+		/// Some databases do not support SELECT FOR UPDATE with paging
+		/// </summary>
+		public virtual bool SupportsSelectForUpdateWithPaging => SupportsSelectForUpdate;
+
+		/// <summary>
+		///  Some databases do not support SELECT FOR UPDATE in conjunction with outer joins 
+		/// </summary>
+		public virtual bool SupportsSelectForUpdateOnOuterJoin => SupportsSelectForUpdate;
 
 		public virtual bool SupportsHavingWithoutGroupBy => true;
 

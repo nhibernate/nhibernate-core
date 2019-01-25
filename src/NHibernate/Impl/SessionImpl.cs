@@ -183,7 +183,11 @@ namespace NHibernate.Impl
 		internal SessionImpl(SessionFactoryImpl factory, ISessionCreationOptions options)
 			: base(factory, options)
 		{
-			using (BeginContext())
+			// This context is disposed only on session own disposal. This greatly reduces the number of context switches
+			// for most usual session usages. It may cause an irrelevant session id to be set back on disposal, but since all
+			// session entry points are supposed to set it, it should not have any consequences.
+			_context = SessionIdLoggingContext.CreateOrNull(SessionId);
+			try
 			{
 				actionQueue = new ActionQueue(this);
 				persistenceContext = new StatefulPersistenceContext(this);
@@ -202,6 +206,11 @@ namespace NHibernate.Impl
 					SessionId, Timestamp, factory.Name, factory.Uuid);
 
 				CheckAndUpdateSessionStatus();
+			}
+			catch
+			{
+				_context?.Dispose();
+				throw;
 			}
 		}
 
@@ -958,11 +967,11 @@ namespace NHibernate.Impl
 					}
 					entity = initializer.GetImplementation();
 				}
-				if (FieldInterceptionHelper.IsInstrumented(entity))
+
+				if (entity is IFieldInterceptorAccessor interceptorAccessor && interceptorAccessor.FieldInterceptor != null)
 				{
 					// NH: support of field-interceptor-proxy
-					IFieldInterceptor interceptor = FieldInterceptionHelper.ExtractFieldInterceptor(entity);
-					return interceptor.EntityName;
+					return interceptorAccessor.FieldInterceptor.EntityName;
 				}
 				EntityEntry entry = persistenceContext.GetEntry(entity);
 				if (entry == null)
@@ -1473,6 +1482,7 @@ namespace NHibernate.Impl
 		#region System.IDisposable Members
 
 		private string fetchProfile;
+		private IDisposable _context;
 
 		/// <summary>
 		/// Finalizer that ensures the object is correctly disposed of.
@@ -1505,6 +1515,7 @@ namespace NHibernate.Impl
 				}
 				Dispose(true);
 			}
+			_context?.Dispose();
 		}
 
 		/// <summary>

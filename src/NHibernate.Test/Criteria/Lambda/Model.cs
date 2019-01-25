@@ -94,6 +94,7 @@ namespace NHibernate.Test.Criteria.Lambda
 	{
 		public string Name { get; set; }
 		public int Count { get; set; }
+		public int BirthYear { get; set; }
 	}
 
 	public class Parent

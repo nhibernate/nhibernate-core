@@ -638,19 +638,19 @@ namespace NHibernate.Persister.Collection
 
 		public string GetSQLWhereString(string alias)
 		{
-			return StringHelper.Replace(sqlWhereStringTemplate, Template.Placeholder, alias);
+			return sqlWhereStringTemplate?.Replace(Template.Placeholder, alias);
 		}
 
 		public string GetSQLOrderByString(string alias)
 		{
-			return HasOrdering ? StringHelper.Replace(sqlOrderByStringTemplate, Template.Placeholder, alias) : string.Empty;
+			return HasOrdering ? sqlOrderByStringTemplate?.Replace(Template.Placeholder, alias) : string.Empty;
 		}
 
 		public string GetManyToManyOrderByString(string alias)
 		{
 			if (IsManyToMany && manyToManyOrderByString != null)
 			{
-				return StringHelper.Replace(manyToManyOrderByTemplate, Template.Placeholder, alias);
+				return manyToManyOrderByTemplate?.Replace(Template.Placeholder, alias);
 			}
 			else
 			{
@@ -1020,7 +1020,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (columnNames[i] == null)
 				{
-					result[i] = StringHelper.Replace(formulaTemplates[i], Template.Placeholder, alias);
+					result[i] = formulaTemplates[i]?.Replace(Template.Placeholder, alias);
 				}
 				else
 				{
@@ -1375,7 +1375,7 @@ namespace NHibernate.Persister.Collection
 
 			if (manyToManyWhereString != null)
 			{
-				buffer.Append(" and ").Append(StringHelper.Replace(manyToManyWhereTemplate, Template.Placeholder, alias));
+				buffer.Append(" and ").Append(manyToManyWhereTemplate?.Replace(Template.Placeholder, alias));
 			}
 
 			return buffer.ToString();

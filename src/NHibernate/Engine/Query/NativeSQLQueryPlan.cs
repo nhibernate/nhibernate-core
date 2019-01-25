@@ -70,7 +70,7 @@ namespace NHibernate.Engine.Query
 			try
 			{
 				var parametersSpecifications = customQuery.CollectedParametersSpecifications.ToList();
-				SqlString sql = ExpandDynamicFilterParameters(customQuery.SQL, parametersSpecifications, session);
+				SqlString sql = FilterHelper.ExpandDynamicFilterParameters(customQuery.SQL, parametersSpecifications, session);
 				// After the last modification to the SqlString we can collect all parameters types.
 				parametersSpecifications.ResetEffectiveExpectedType(queryParameters);
 
@@ -113,79 +113,6 @@ namespace NHibernate.Engine.Query
 			}
 
 			return result;
-		}
-
-		private SqlString ExpandDynamicFilterParameters(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, ISessionImplementor session)
-		{
-			var enabledFilters = session.EnabledFilters;
-			if (enabledFilters.Count == 0 || !ParserHelper.HasHqlVariable(sqlString))
-			{
-				return sqlString;
-			}
-
-			Dialect.Dialect dialect = session.Factory.Dialect;
-			string symbols = ParserHelper.HqlSeparators + dialect.OpenQuote + dialect.CloseQuote;
-
-			var result = new SqlStringBuilder();
-			foreach (var sqlPart in sqlString)
-			{
-				var parameter = sqlPart as Parameter;
-				if (parameter != null)
-				{
-					result.Add(parameter);
-					continue;
-				}
-
-				var sqlFragment = sqlPart.ToString();
-				var tokens = new StringTokenizer(sqlFragment, symbols, true);
-
-				foreach (string token in tokens)
-				{
-					if (ParserHelper.IsHqlVariable(token))
-					{
-						string filterParameterName = token.Substring(1);
-						string[] parts = StringHelper.ParseFilterParameterName(filterParameterName);
-						string filterName = parts[0];
-						string parameterName = parts[1];
-						var filter = (FilterImpl)enabledFilters[filterName];
-
-						var collectionSpan = filter.GetParameterSpan(parameterName);
-						IType type = filter.FilterDefinition.GetParameterType(parameterName);
-						int parameterColumnSpan = type.GetColumnSpan(session.Factory);
-
-						// Add query chunk
-						string typeBindFragment = string.Join(", ", Enumerable.Repeat("?", parameterColumnSpan));
-						string bindFragment;
-						if (collectionSpan.HasValue && !type.ReturnedClass.IsArray)
-						{
-							bindFragment = string.Join(", ", Enumerable.Repeat(typeBindFragment, collectionSpan.Value));
-						}
-						else
-						{
-							bindFragment = typeBindFragment;
-						}
-
-						// dynamic-filter parameter tracking
-						var filterParameterFragment = SqlString.Parse(bindFragment);
-						var dynamicFilterParameterSpecification = new DynamicFilterParameterSpecification(filterName, parameterName, type, collectionSpan);
-						var parameters = filterParameterFragment.GetParameters().ToArray();
-						var sqlParameterPos = 0;
-						var paramTrackers = dynamicFilterParameterSpecification.GetIdsForBackTrack(session.Factory);
-						foreach (var paramTracker in paramTrackers)
-						{
-							parameters[sqlParameterPos++].BackTrack = paramTracker;
-						}
-
-						parameterSpecs.Add(dynamicFilterParameterSpecification);
-						result.Add(filterParameterFragment);
-					}
-					else
-					{
-						result.Add(token);
-					}
-				}
-			}
-			return result.ToSqlString();
 		}
 	}
 }

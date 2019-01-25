@@ -78,8 +78,8 @@ namespace NHibernate.Test.LazyOneToOne
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			p = await (s.GetAsync<Person>("Gavin"));
-			Assert.That(!NHibernateUtil.IsPropertyInitialized(p, "Employee"));
+			p = await (s.GetAsync<Person>("Gavin")); // The default loader will fetch the employee
+			Assert.That(NHibernateUtil.IsPropertyInitialized(p, "Employee"));
 
 			Assert.That(p.Employee.Person, Is.SameAs(p));
 			Assert.That(NHibernateUtil.IsInitialized(p.Employee.Employments));

@@ -58,5 +58,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 		public virtual int InvoiceNumber { get; set; }
 		public virtual Project Project { get; set; }		
 		public virtual Issue Issue { get; set; }
+		public virtual int Amount { get; set; }
+		public virtual int? SpecialAmount { get; set; }
+		public virtual bool Paid { get; set; }
 	}
 }

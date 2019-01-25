@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using NHibernate.Engine;
@@ -49,6 +50,37 @@ namespace NHibernate.Proxy
 		/// <exception cref="HibernateException">Indicates problems generating requested proxy.</exception>
 		INHibernateProxy GetProxy(object id, ISessionImplementor session);
 
+		// Since 5.3
+		[Obsolete("Use ProxyFactoryExtensions.GetFieldInterceptionProxy extension method instead.")]
 		object GetFieldInterceptionProxy(object instanceToWrap);
+	}
+
+	public static class ProxyFactoryExtensions
+	{
+		// 6.0 TODO: Remove
+		internal static object GetFieldInterceptionProxy(this IProxyFactory proxyFactory, Func<object> instantiateFunc)
+		{
+			if (proxyFactory is StaticProxyFactory staticProxyFactory)
+			{
+				return staticProxyFactory.GetFieldInterceptionProxy();
+			}
+
+#pragma warning disable 618
+			return proxyFactory.GetFieldInterceptionProxy(instantiateFunc?.Invoke());
+#pragma warning restore 618
+		}
+
+		// 6.0 TODO: Move to IProxyFactory
+		public static object GetFieldInterceptionProxy(this IProxyFactory proxyFactory)
+		{
+			if (proxyFactory is StaticProxyFactory staticProxyFactory)
+			{
+				return staticProxyFactory.GetFieldInterceptionProxy();
+			}
+
+#pragma warning disable 618
+			return proxyFactory.GetFieldInterceptionProxy(null);
+#pragma warning restore 618
+		}
 	}
 }

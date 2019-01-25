@@ -26,6 +26,7 @@ using Array=System.Array;
 using Property=NHibernate.Mapping.Property;
 using NHibernate.SqlTypes;
 using System.Linq;
+using NHibernate.Bytecode;
 
 namespace NHibernate.Persister.Entity
 {
@@ -683,6 +684,10 @@ namespace NHibernate.Persister.Entity
 			get { return versionColumnName; }
 		}
 
+		// 6.0 TODO: Add into IEntityPersister and simplify .EntityMetamodel.BytecodeEnhancementMetadata external calls
+		public IBytecodeEnhancementMetadata InstrumentationMetadata => EntityMetamodel.BytecodeEnhancementMetadata;
+
+		[Obsolete("Please use RootTableName instead.")]
 		protected internal string VersionedTableName
 		{
 			get { return GetTableName(0); }
@@ -1280,6 +1285,7 @@ namespace NHibernate.Persister.Entity
 					fieldName);
 			}
 
+			var uninitializedLazyProperties = InstrumentationMetadata.GetUninitializedLazyProperties(entity);
 			if (HasCache && session.CacheMode.HasFlag(CacheMode.Get))
 			{
 				CacheKey cacheKey = session.GenerateCacheKey(id, IdentifierType, EntityName);
@@ -1290,15 +1296,16 @@ namespace NHibernate.Persister.Entity
 					if (!cacheEntry.AreLazyPropertiesUnfetched)
 					{
 						//note early exit here:
-						return InitializeLazyPropertiesFromCache(fieldName, entity, session, entry, cacheEntry);
+						return InitializeLazyPropertiesFromCache(fieldName, entity, session, entry, cacheEntry, uninitializedLazyProperties);
 					}
 				}
 			}
 
-			return InitializeLazyPropertiesFromDatastore(fieldName, entity, session, id, entry);
+			return InitializeLazyPropertiesFromDatastore(fieldName, entity, session, id, entry, uninitializedLazyProperties);
 		}
 
-		private object InitializeLazyPropertiesFromDatastore(string fieldName, object entity, ISessionImplementor session, object id, EntityEntry entry)
+		private object InitializeLazyPropertiesFromDatastore(string fieldName, object entity, ISessionImplementor session, object id, EntityEntry entry,
+															ISet<string> uninitializedLazyProperties)
 		{
 			if (!HasLazyProperties)
 				throw new AssertionFailure("no lazy properties");
@@ -1328,7 +1335,7 @@ namespace NHibernate.Persister.Entity
 					for (int j = 0; j < lazyPropertyNames.Length; j++)
 					{
 						object propValue = lazyPropertyTypes[j].NullSafeGet(rs, lazyPropertyColumnAliases[j], session, entity);
-						if (InitializeLazyProperty(fieldName, entity, session, snapshot, j, propValue))
+						if (InitializeLazyProperty(fieldName, entity, session, snapshot, j, propValue, uninitializedLazyProperties))
 						{
 							result = propValue;
 						}
@@ -1358,7 +1365,8 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		private object InitializeLazyPropertiesFromCache(string fieldName, object entity, ISessionImplementor session, EntityEntry entry, CacheEntry cacheEntry)
+		private object InitializeLazyPropertiesFromCache(string fieldName, object entity, ISessionImplementor session, EntityEntry entry, CacheEntry cacheEntry,
+														ISet<string> uninitializedLazyProperties)
 		{
 			log.Debug("initializing lazy properties from second-level cache");
 
@@ -1368,7 +1376,7 @@ namespace NHibernate.Persister.Entity
 			for (int j = 0; j < lazyPropertyNames.Length; j++)
 			{
 				object propValue = lazyPropertyTypes[j].Assemble(disassembledValues[lazyPropertyNumbers[j]], session, entity);
-				if (InitializeLazyProperty(fieldName, entity, session, snapshot, j, propValue))
+				if (InitializeLazyProperty(fieldName, entity, session, snapshot, j, propValue, uninitializedLazyProperties))
 				{
 					result = propValue;
 				}
@@ -1379,9 +1387,14 @@ namespace NHibernate.Persister.Entity
 			return result;
 		}
 
-		private bool InitializeLazyProperty(string fieldName, object entity, ISessionImplementor session, object[] snapshot, int j, object propValue)
+		private bool InitializeLazyProperty(string fieldName, object entity, ISessionImplementor session, object[] snapshot, int j, object propValue,
+											ISet<string> uninitializedLazyProperties)
 		{
-			SetPropertyValue(entity, lazyPropertyNumbers[j], propValue);
+			if (uninitializedLazyProperties.Contains(lazyPropertyNames[j]))
+			{
+				SetPropertyValue(entity, lazyPropertyNumbers[j], propValue);
+			}
+
 			if (snapshot != null)
 			{
 				// object have been loaded with setReadOnly(true); HHH-2236
@@ -1540,20 +1553,20 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		protected SqlString GenerateSelectVersionString()
 		{
-			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(Factory.Dialect, factory)
-				.SetTableName(VersionedTableName);
+			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(Factory.Dialect, Factory)
+				.SetTableName(RootTableName);
 
 			if (IsVersioned)
-				builder.AddColumn(versionColumnName);
+				builder.AddColumn(VersionColumnName);
 			else
-				builder.AddColumns(rootTableKeyColumnNames);
+				builder.AddColumns(RootTableIdentifierColumnNames);
 
 			if (Factory.Settings.IsCommentsEnabled)
 			{
 				builder.SetComment("get version " + EntityName);
 			}
 
-			return builder.AddWhereFragment(rootTableKeyColumnNames, IdentifierType, " = ").ToSqlString();
+			return builder.AddWhereFragment(RootTableIdentifierColumnNames, IdentifierType, " = ").ToSqlString();
 		}
 
 		protected SqlString GenerateInsertGeneratedValuesSelectString()
@@ -1722,13 +1735,13 @@ namespace NHibernate.Persister.Entity
 		private SqlCommandInfo GenerateVersionIncrementUpdateString()
 		{
 			SqlUpdateBuilder update = new SqlUpdateBuilder(Factory.Dialect, Factory);
-			update.SetTableName(GetTableName(0));
+			update.SetTableName(RootTableName);
 			if (Factory.Settings.IsCommentsEnabled)
 			{
 				update.SetComment("forced version increment");
 			}
 			update.AddColumn(VersionColumnName, VersionType);
-			update.SetIdentityColumn(IdentifierColumnNames, IdentifierType);
+			update.SetIdentityColumn(RootTableIdentifierColumnNames, IdentifierType);
 			update.SetVersionColumn(new string[] { VersionColumnName }, VersionType);
 			return update.ToSqlCommandInfo();
 		}
@@ -1933,7 +1946,7 @@ namespace NHibernate.Persister.Entity
 			{
 				if (cols[j] == null)
 				{
-					result[j] = StringHelper.Replace(templates[j], Template.Placeholder, alias);
+					result[j] = templates[j]?.Replace(Template.Placeholder, alias);
 				}
 				else
 				{
@@ -2140,7 +2153,9 @@ namespace NHibernate.Persister.Entity
 				if (propertyValue == null)
 					continue;
 				var type = PropertyTypes[i].GetSemiResolvedType(session.Factory);
-				propertyValue = type.SemiResolve(propertyValue, session, entity);
+
+				if (!type.ReturnedClass.IsInstanceOfType(propertyValue))
+					propertyValue = type.SemiResolve(propertyValue, session, entity);
 				var euk = new EntityUniqueKey(EntityName, PropertyNames[i], propertyValue, type, session.Factory);
 				session.PersistenceContext.AddEntity(euk, entity);
 			}
@@ -2194,7 +2209,7 @@ namespace NHibernate.Persister.Entity
 
 		protected string GetSQLWhereString(string alias)
 		{
-			return StringHelper.Replace(sqlWhereStringTemplate, Template.Placeholder, alias);
+			return sqlWhereStringTemplate?.Replace(Template.Placeholder, alias);
 		}
 
 		protected bool HasWhere
@@ -3155,8 +3170,8 @@ namespace NHibernate.Persister.Entity
 			// in the process of being deleted.
 			if (entry == null && !IsMutable)
 				throw new InvalidOperationException("Updating immutable entity that is not in session yet!");
-			
-			if (entityMetamodel.IsDynamicUpdate && dirtyFields != null)
+
+			if (dirtyFields != null && (entityMetamodel.IsDynamicUpdate || HasDirtyLazyProperties(dirtyFields, obj)))
 			{
 				// For the case of dynamic-update="true", we need to generate the UPDATE SQL
 				propsToUpdate = GetPropertiesToUpdate(dirtyFields, hasDirtyCollection);
@@ -3203,6 +3218,13 @@ namespace NHibernate.Persister.Entity
 					UpdateOrInsert(id, fields, oldFields, j == 0 ? rowId : null, propsToUpdate, j, oldVersion, obj, updateStrings[j], session);
 				}
 			}
+		}
+
+		private bool HasDirtyLazyProperties(int[] dirtyFields, object obj)
+		{
+			// When having a dirty lazy property and the entity is not yet initialized we have to use a dynamic update for
+			// it even if it is disabled in order to have it updated.
+			return InstrumentationMetadata.GetUninitializedLazyProperties(obj).Count > 0 && dirtyFields.Any(i => PropertyLaziness[i]);
 		}
 
 		public object Insert(object[] fields, object obj, ISessionImplementor session)
@@ -3416,10 +3438,17 @@ namespace NHibernate.Persister.Entity
 			IDictionary<string, string> dict = new Dictionary<string, string>();
 			for (int i = 0; i < SubclassColumnTableNumberClosure.Length; i++ )
 			{
+				string fullColumn;
 				string col = SubclassColumnClosure[i];
-				string alias = GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[i]);
-
-				string fullColumn = string.Format("{0}.{1}", alias, col);
+				if (!string.IsNullOrEmpty(rootAlias))
+				{
+					string alias = GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[i]);
+					fullColumn = string.Format("{0}.{1}", alias, col);
+				}
+				else
+				{
+					fullColumn = col;
+				}
 
 				PropertyKey key = new PropertyKey(col, SubclassColumnTableNumberClosure[i]);
 				if (propDictionary.ContainsKey(key))
@@ -3903,17 +3932,17 @@ namespace NHibernate.Persister.Entity
 
 		public virtual void AfterReassociate(object entity, ISessionImplementor session)
 		{
-			if (FieldInterceptionHelper.IsInstrumented(entity))
+			if (IsInstrumented)
 			{
-				IFieldInterceptor interceptor = FieldInterceptionHelper.ExtractFieldInterceptor(entity);
+				var interceptor = InstrumentationMetadata.ExtractInterceptor(entity);
 				if (interceptor != null)
 				{
 					interceptor.Session = session;
 				}
 				else
 				{
-					IFieldInterceptor fieldInterceptor = FieldInterceptionHelper.InjectFieldInterceptor(entity, EntityName, MappedClass, null, null, session);
-					fieldInterceptor.MarkDirty();
+					var fieldInterceptor = InstrumentationMetadata.InjectInterceptor(entity, false, session);
+					fieldInterceptor?.MarkDirty();
 				}
 			}
 		}
@@ -4064,7 +4093,7 @@ namespace NHibernate.Persister.Entity
 
 		public bool IsInstrumented
 		{
-			get { return EntityTuplizer.IsInstrumented; }
+			get { return InstrumentationMetadata.EnhancedForLazyLoading; }
 		}
 
 		public bool HasInsertGeneratedProperties

@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
+using NHibernate.Util;
 
 namespace NHibernate.Tuple.Entity
 {

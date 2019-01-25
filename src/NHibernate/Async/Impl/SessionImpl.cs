@@ -1266,16 +1266,9 @@ namespace NHibernate.Impl
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				if (FlushMode != FlushMode.Manual)
-					return FlushAsync(cancellationToken);
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			if (FlushMode != FlushMode.Manual)
+				return FlushAsync(cancellationToken);
+			return Task.CompletedTask;
 		}
 
 		private async Task FireDeleteAsync(DeleteEvent @event, CancellationToken cancellationToken)

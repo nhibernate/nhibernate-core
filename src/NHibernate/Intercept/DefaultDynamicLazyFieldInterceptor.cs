@@ -44,7 +44,7 @@ namespace NHibernate.Intercept
 				if (FieldInterceptor != null)
 				{
 					FieldInterceptor.MarkDirty();
-					FieldInterceptor.Intercept(info.Target, ReflectHelper.GetPropertyName(info.TargetMethod), info.Arguments[0]);
+					FieldInterceptor.Intercept(info.Target, ReflectHelper.GetPropertyName(info.TargetMethod), info.Arguments[0], true);
 				}
 			}
 

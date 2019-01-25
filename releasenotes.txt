@@ -1,11 +1,308 @@
+Build 5.2.3
+=============================
+
+Release notes - NHibernate - Version 5.2.3
+
+1 issue was resolved in this release.
+
+** Bug
+
+   * #1964 Unable to serialize session because SerializationFieldInfo is not marked as serializable
+
+Build 5.2.2
+=============================
+
+Release notes - NHibernate - Version 5.2.2
+
+3 issues were resolved in this release.
+
+** Bug
+
+   * #1953 Query space invalidation doesn't work for bulk actions
+   * #1269 NH-3069 - Cannot use Session.Lock with Version column on abstract base class
+
+** Task
+
+   * #1957 Release 5.2.2
+
+Build 5.2.1
+=============================
+
+Release notes - NHibernate - Version 5.2.1
+
+5 issues were resolved in this release.
+
+** Bug
+
+   * #1928 JoinAlias on JoinQueryOver fails
+   * #1920 ISession.Get may fail with a null exception
+   * #1918 Property-ref on many-to-one with composite id fails
+
+** Task
+
+   * #1932 Release 5.2.1
+   * #1927 Add missing possible breaking change
+
+As part of releasing 5.2.1, a missing 5.2.0 possible breaking change has been added about duplicated columns
+in mapping. See 5.2.0 possible breaking changes.
+
 Build 5.2.0
 =============================
 
 Release notes - NHibernate - Version 5.2.0
 
+157 issues were resolved in this release.
+
+    ##### Possible Breaking Changes #####
+        * Entities having many non-readonly properties (including many-to-one) mapped to
+          the same column will no more silently ignore the trouble till an insert or update
+          is attempted. They will now cause the session factory built to fail. When
+          mapping many properties to the same column, all of them excepted at most one
+          should be mapped with `insert="false" update="false"`.
+        * Mappings mixing column elements and formula elements were taking into account
+          only the formula elements. They will now take into account all elements.
+        * Mappings mixing column elements and/or formula elements with a column attribute
+          or a formula attribute were silently ignoring the attribute. They will now throw.
+        * Mappings mixing a column attribute and a formula attribute were silently doing
+          some best effort logic, either considering this as a two columns mapping, the
+          second one being the formula (most cases), or only taking into account the
+          formula (case of the `<element>` mapping). They will now throw.
+        * NHibernate StringType has gained case-sensitivity and culture parameters.
+          Previously it was ignoring parameters. This type may change its behavior
+          for any mapping having defined parameters for this type. See #1833.
+        * Mapping a dynamic component with a Hashtable property instead of an
+          IDictionary is no more supported.
+        * Querying a dynamic entity as a Hashtable instead of an IDictionary is no more
+          supported.
+        * With PostgreSQL, a HQL query using the bitwise xor operator "^" or "bxor"
+          was exponentiating the arguments instead. It will now correctly apply the xor
+          operator. (# operator in PostgreSQL SQL.)
+        * Auto-generated constraint names will not be the same than the ones generated
+          with previous NHibernate versions under .Net Framework. (Under .Net Core those
+          names were anyway changing at each run.) The new ones will be the same
+          whatever the runtime used for generating them.
+        * Some generated PK names may change, if a table name has a quoting symbol at
+          precise 13th character.
+        * The WcfOperationSessionContext has been removed from .Net Core and .Net
+          Standard builds. See #1842.
+        * Some classes, which were not serializing the session factory, do now serialize it.
+          In case of cross-process serialization/deserialization, these session factories
+          will need to be properly named, by setting the session_factory_name setting in the
+          configuration used to build them. This may mainly affect users of a distributed
+          second level cache, if their cache implementation uses binary serialization.
+          Affected classes are: CacheKey, CollectionKey, EntityKey and EntityUniqueKey.
+        * Some types cache representations have changed. Out-of-process second level
+          caches should be cleared after upgrading NHibernate, if some of those types
+          were cached. The concerned types are: CultureInfoType, TypeType, UriType,
+          XDocType, XmlDocType.
+        * Dialect.GetIdentitySelectString was called by the entity persisters with
+          inverted parameter values: the table name in the column parameter, and the
+          column name in the table parameter. No built-in dialects were using the
+          parameter values. External dialects which were using it inverted (causing issues
+          to collection persisters, which have always supplied them correctly) needs
+          to be accordingly adjusted.
+        * Users providing through an IObjectFactory some custom logic for instantiating
+          value types will now need to supply their own result transformer if they were
+          using AliasToBeanResultTransformer with value types, or their own entity
+          tuplizer if they were using value types as entities.
+        * Users providing through an IObjectFactory some custom logic for instantiating
+          their custom session contexts will have to implement
+          ICurrentSessionContextWithFactory and add a parameterless public constructor
+          to their custom context, and move their custom instantiation logic from
+          IObjectsFactory.CreateInstance(Type, object[]) to
+          IObjectsFactory.CreateInstance(Type).
+        * Various *Binding classes of NHibernate will now always have their protected
+          dialect field null. (These classes are not expected to be derived by users,
+          as there is no way to use custom descendants with NHibernate.)
+        * AbstractPersistentCollection.AfterInitialize does no more perform queued
+          operations. Queued operations are now run by a later call to a new method,
+          ApplyPendingOperations. Concrete custom implementations relying on the queued
+          operations to be done by their base AfterInitialize will need to be changed
+          accordingly.
+
+** Bug
+
+   * #1900 Do not generate FK on non-generated unique constraint
+   * #1888 Second level cache key mismatch
+   * #1886 Superfluous SQL casts generated in FirebirdClientDriver
+   * #1885 Process classes accordingly to inheritance path in mapping by code
+   * #1884 Fix attempt of static proxies to call base method for abstract classes
+   * #1874 Item in child collection not being removed
+   * #1872 Fix property ref handling
+   * #1870 Update build-menu options in documentation
+   * #1867 Fix registration of current_date for some dialects
+   * #1859 Fix filter & where fragment appended after lock hint
+   * #1855 Fix NotNullUnique not taken into account for single column
+   * #1849 Loquatious QueryCache constraint should be an IQueryCacheFactory constraint
+   * #1836 Cannot create configuration due to log4net loading failure
+   * #1824 property-ref on a component's property causes "wrong number of columns" error
+   * #1821 Allow using ICompositeUserType for collection element mappings in Mapping By Code
+   * #1818 Handle DbDataReaders that do not support GetSchemaTable
+   * #1812 Fix the <any/> handling without meta-values
+   * #1809 Update the mapping documentation
+   * #1799 Default value of 'proxyfactory.factory_class' in the documentation
+   * #1774 HQL and LINQ query by the type on with meta-type "string" fails
+   * #1769 Table mapping for UniqueColumn uses unstable GetHashCode() method
+   * #1764 Fix configuration schema forbidding custom bytecode provider
+   * #1760 Support formula on one-to-many map-key
+   * #1756 Fix unsaved-value for assigned identifiers
+   * #1753 Fix possible InvalidCastException in ActionQueue
+   * #1751 Avoid completing the same transaction twice
+   * #1748 Fix a bad setting naming about transaction scopes
+   * #1745 Remove obsoleted hibernate configuration prefix
+   * #1744 Reconnect lazy property proxy on deserialization
+   * #1737 Remove a binary breaking change introduced in #305
+   * #1728 Generate a correct proxy for interfaces
+   * #1727 Fix a null-ref exception with no-proxy one-to-one
+   * #1726 Fix serialization exception when run on .NET Core 2.1
+   * #1719 Cascade delete-orphan on no-proxy null association fails
+   * #1706 Entity Projection: Fixed AsEntity() for root entity
+   * #1704 GroupBy to custom class fails with ArgumentException
+   * #1696 Fixed CriteriaImpl.Clone for readonly query
+   * #1692 Update base_mapping.xml
+   * #1673 Bitwise xor treated as pow with PostgreSQL
+   * #1654 Fix the url to the quickstart of DocBook
+   * #1635 IdentitySelectString implementation is inconsistent
+   * #1612 Fix TypedValue not always using adequate comparer with SetParameterList
+   * #1609 Schema validation using SQLite and a specific schema fails
+   * #1366 NH-3506 - ICriteria/QueryOver create incorrect left join condition when table-per-hierarchy is used with filters
+   * #1358 NH-3992 - Intermediate inherited classes are not mapped correctly
+   * #1344 NH-3864 - Cacheable Multicriteria/Future'd query with aliased join throw exception
+   * #1339 NH-3823 - Initialization of Set with Lazy=Extra causes pending additions to disappear
+   * #1338 NH-3806 - Saving entities with proxy associations leads to fetching associated entities
+   * #1300 NH-3403 - Wrong parameter size in query with MsSql2000Dialect,MsSql2005Dialect and MsSql2008Dialect
+   * #1293 NH-3350 - Duplicate records using Future()
+   * #1278 NH-3189 - IManyToOneMapper lacks method to add columns AND formula into a single relationship
+   * #1214 NH-2180 - Many-To-Many with Property-ref fails to get subitems with FetchMode Join
+   * #1201 NH-1316 - PostgreSQL dialect use of lastval to retrieve last inserted "id" not safe with Triggers
+   * #1182 NH-3860 - Missing EntityName in IManyToOneMapper
+   * #1170 NH-3646 - Incorrect query when items removed from a collection of components contain null values
+   * #1163 NH-3545 - SchemaValidator fails for PostgreSql sequences
+   * #1151 NH-3426 - Wrong result when converting Guid to string
+   * #1121 NH-3095 - Cast from mapped long field to enum leads to 'Specified cast not valid'
+   * #1096 NH-2836 - SchemaValidator throws with SqlCe4 if db-schema set
+   * #1089 NH-2755 - LockMode hash differs in x86 and 64bit OS
+   * #1037 NH-3749 - Unnecessary comma in CREATE TABLE statement
+   * #1016 NH-3007 - Informix dialect generates incorrect boolean constants
+   * #1000 NH-2558 - NoViableAltException with boolean expression in OrderBy clause
+   * #990 NH-2016 - Duplicate Association Path when creating multiple aliases
+   * #460 Fix Criteria caching filtered collections
+
+** New Feature
+
+   * #1892 Allow disabling Firebird driver parameter casting
+   * #1879 LINQ Coalesce and Conditional on Properties
+   * #1854 Add SQL Anywhere 17 support
+   * #1848 Add in ByCode support of all type mappings on Id
+   * #1833 Parametrize string type comparer
+   * #1830 Add a Linux build menu
+   * #1796 Support CacheMode in QueryBatch
+   * #1786 Document future results
+   * #1772 Support futures with stateless session
+   * #1752 Async ISynchronization
+   * #1742 Add new DB2CoreDriver to use with IBM.Data.DB2.Core provider
+   * #1693 Implement SurrogateSelector
+   * #1690 Bitwise xor not supported by SQLite
+   * #1682 Add support for System.MathF methods
+   * #1662 Add support for SAP HANA
+   * #1633 Added support for batching 2nd level cache operations when loading entities and collections
+   * #1631 Create UtcTicks and UtcDbTimestamp types
+   * #1599 Full control of entities fetching in Criteria
+   * #1381 NHibernate's IQuery is missing AddSynchronizedQuerySpace
+   * #968 NH-2285 - Support for LockMode in linq provider
+   * #920 NH-3991 - Support for Sybase ASE ADO.NET 4 Provider
+   * #897 NH-2187 - ElementAt LINQ extension method is not supported.
+   * #838 NH-3805 - Add support for string indexer property (get_Chars)
+   * #819 NH-3088 - Support the item operator [] on lists in linq queries
+
+** Improvement
+
+   * #1908 Control over BeginTransaction in AdoTransaction
+   * #1905 Improve support of Npgsql 4
+   * #1901 Add ability to use dynamic entities as C# dynamic
+   * #1890 Merge two logs in one
+   * #1875 Improve exception message in case of duplicated column
+   * #1869 Replace an O(n) lookup in LINQ query parsing by an O(1) one
+   * #1846 Remove dependency on System.Security.Permissions package for .NET Standard and .NET Core
+   * #1842 Remove WcfOperationSessionContext from .Net Core and .Net Standard
+   * #1838 Cannot add HqlJoin to HqlFrom
+   * #1827 Include the query in loader PostInstantiate QueryException
+   * #1819 Append the batched sql statement when StaleStateException occurs
+   * #1814 Mark proxy assembly with IgnoresAccessChecksToAttribute to allow implementing non public interfaces
+   * #1808 Support mixed formulas and columns
+   * #1792 Obsolete HolderInstantiator
+   * #1788 Implement multiple get and put for query cache and query batch
+   * #1785 Update user types documentation
+   * #1782 Refactor BugTestCase
+   * #1781 Clean-up IObjectsFactory usages
+   * #1778 Allow to use dynamic objects as dynamic components
+   * #1777 Replace ICache interface by a CacheBase class
+   * #1776 Make cache types serialization friendly
+   * #1775 Start/Stop required db-service for TeamCity
+   * #1770 Make obsolete abstract virtual
+   * #1767 Allow generic dictionaries for dynamic entities
+   * #1765 Provide cacheable representations for all NHibernate built-in types
+   * #1762 Remove duplicated and obsolete interceptor documentation
+   * #1761 Update mapping documentation
+   * #1759 Support mixed formulas and columns in By Code
+   * #1736 Remove excessive rowIdAlias parameter in Loader
+   * #1713 Update contributing guidelines
+   * #1712 Support IEquatable in LINQ provider
+   * #1710 Rationalize DateTimeOffset read and write
+   * #1709 Lazy properties static proxy
+   * #1703 Remove dialect instantiation in AddDeserializedMapping
+   * #1700 Single place to specify TargetFrameworks
+   * #1699 Add ability to load types from in-memory-only assemblies
+   * #1698 Document setting the logger factory programmatically
+   * #1694 Implement CollectionHelper.GetHashCode that accepts IEqualityComparer
+   * #1689 Purge more Invariant culture usages
+   * #1671 Decouple configuration of IObjectsFactory from BytecodeProvider
+   * #1666 Handle multi-queries support in FutureBatch
+   * #1656 Allow any cache.* property in NHibernate configuration
+   * #1641 Add cross platform build for full .NET Framework
+   * #1452 Async After-/BeforeTransactionCompletion
+   * #874 NH-3543 - Enhanced Db2 driver to support multi query
+   * #865 NH-2428 - Session.MultiCriteria and FlushMode.Auto inside transaction
+   * #840 NH-3835 - Future/MultiCriteria 2nd level caching
+   * #822 NH-3150 - Select Post Insert Generator Improvements
+   * #755 NH-3670 - Dynamic component should allow generic dictionary
+   * #752 NH-3541 - Future queries of Criteria API/QueryOver are batched separately from other query methods
+   * #696 Upgrade to ReLinq 2.2.0
+   * #415 Add check to ensure that IUserCollectionType.Instantiate returns uninitialized collection
+
+** Task
+
+   * #1863 Release 5.2.0
+   * #1823 Run tests for SQLite on .NET Core
+   * #1783 Obsolete MultiQuery and MultiCriteria
+   * #1773 Obsolete unused version related methods of SByteType
+   * #1771 Obsolete unused "xml" type methods
+   * #1743 Merge 5.1.3 into master
+   * #1739 Upgrade to AsyncGenerator 0.8.2.7
+   * #1688 Merge 5.1.2 into master
+   * #1687 Update NUnit to 3.10.1
+   * #881 NH-3358 - Document all attributes for the element tag
+
+** Tests
+
+   * #1887 Test ref and out methods with static proxy
+   * #1724 NH-2716 - Modify test case for discarding the alleged bug
+   * #1584 Test Parent property is not accessible in queries
+   * #1531 Test for Merging a bidirectional list creates unnecessary UPDATE statement
+   * #1440 Test case for ComposedId Entity with Lazy Property is not proxified
+   * #1414 Test ISession.IsDirty() should not trigger cascade saving
 
 As part of releasing 5.2.0, a misnamed setting in 5.0.0 release notes has been fixed:
 transaction.use_connection_on_system_events correct name is transaction.use_connection_on_system_prepare
+
+Build 5.1.4
+=============================
+
+Release notes - NHibernate - Version 5.1.4
+
+** Bug
+
+   * #1959 Backport Query space invalidation doesn't work for bulk actions
 
 Build 5.1.3
 =============================
