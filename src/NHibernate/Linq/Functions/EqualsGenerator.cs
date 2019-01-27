@@ -63,14 +63,14 @@ namespace NHibernate.Linq.Functions
 				};
 		}
 
+		public override bool AllowsNullableReturnType(MethodInfo method) => false;
+
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			Expression lhs = arguments.Count == 1 ? targetObject : arguments[0];
 			Expression rhs = arguments.Count == 1 ? arguments[0] : arguments[1];
 
-			return treeBuilder.Equality(
-				visitor.Visit(lhs).ToArithmeticExpression(),
-				visitor.Visit(rhs).ToArithmeticExpression());
+			return visitor.Visit(Expression.Equal(lhs, rhs));
 		}
 	}
 }
