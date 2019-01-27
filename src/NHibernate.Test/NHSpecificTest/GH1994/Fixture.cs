@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using NHibernate.Linq;
+using NHibernate.Transform;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1994
@@ -13,8 +14,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 			using (var transaction = session.BeginTransaction())
 			{
 				var a = new Asset();
-				var d = new Document { IsDeleted = true };
-				a.Documents.Add(d);
+				a.Documents.Add(new Document { IsDeleted = true });
+				a.Documents.Add(new Document { IsDeleted = false });
 
 				session.Save(a);
 				transaction.Commit();
@@ -43,12 +44,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 		{
 			using (var s = OpenSession())
 			{
-				var assetsUnfiltered = s.Query<Asset>()
-									.FetchMany(x => x.Documents)
-									.ToList();
+				var query = s.Query<Asset>()
+				             .FetchMany(x => x.Documents)
+				             .ToList();
 				
-				Assert.That(assetsUnfiltered.Count, Is.EqualTo(1), "unfiltered assets");
-				Assert.That(assetsUnfiltered[0].Documents.Count, Is.EqualTo(1), "unfiltered asset documents");
+				Assert.That(query.Count, Is.EqualTo(1), "unfiltered assets");
+				Assert.That(query[0].Documents.Count, Is.EqualTo(2), "unfiltered asset documents");
 			}
 		}
 
@@ -58,13 +59,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 			using (var s = OpenSession())
 			{
 				s.EnableFilter("deletedFilter").SetParameter("deletedParam", false);
+				var query = s.Query<Asset>()
+				             .FetchMany(x => x.Documents)
+				             .ToList();
 
-				var assetsFilteredQuery = s.Query<Asset>()
-									.FetchMany(x => x.Documents)
-									.ToList();
-
-				Assert.That(assetsFilteredQuery.Count, Is.EqualTo(1), "query filtered assets");
-				Assert.That(assetsFilteredQuery[0].Documents.Count, Is.EqualTo(0), "query filtered asset documents");
+				Assert.That(query.Count, Is.EqualTo(1), "filtered assets");
+				Assert.That(query[0].Documents.Count, Is.EqualTo(1), "filtered asset documents");
 			}
 		}
 
@@ -75,12 +75,13 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 			{
 				s.EnableFilter("deletedFilter").SetParameter("deletedParam", false);
 
-				var assetsFilteredQueryOver = s.QueryOver<Asset>()
-				                               .Fetch(SelectMode.Fetch, x => x.Documents)
-				                               .List<Asset>();
+				var query = s.QueryOver<Asset>()
+				             .Fetch(SelectMode.Fetch, x => x.Documents)
+				             .TransformUsing(Transformers.DistinctRootEntity)
+				             .List<Asset>();
 
-				Assert.That(assetsFilteredQueryOver.Count, Is.EqualTo(1), " query over filtered assets");
-				Assert.That(assetsFilteredQueryOver[0].Documents.Count, Is.EqualTo(0), "query over filtered asset documents");
+				Assert.That(query.Count, Is.EqualTo(1), "filtered assets");
+				Assert.That(query[0].Documents.Count, Is.EqualTo(1), "filtered asset documents");
 			}
 		}
 	}
