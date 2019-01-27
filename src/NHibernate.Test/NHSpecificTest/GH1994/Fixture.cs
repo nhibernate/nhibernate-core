@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 		}
 
 		[Test]
-		public void YourTestName()
+		public void TestUnfilteredLinqQuery()
 		{
 			using (var s = OpenSession())
 			{
@@ -47,26 +47,40 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 									.FetchMany(x => x.Documents)
 									.ToList();
 				
+				Assert.That(assetsUnfiltered.Count, Is.EqualTo(1), "unfiltered assets");
+				Assert.That(assetsUnfiltered[0].Documents.Count, Is.EqualTo(1), "unfiltered asset documents");
+			}
+		}
+
+		[Test]
+		public void TestFilteredLinqQuery()
+		{
+			using (var s = OpenSession())
+			{
 				s.EnableFilter("deletedFilter").SetParameter("deletedParam", false);
 
-				s.Clear();
 				var assetsFilteredQuery = s.Query<Asset>()
 									.FetchMany(x => x.Documents)
 									.ToList();
 
-				s.Clear();
-				var assetsFilteredQueryOver = s.QueryOver<Asset>()
-									.Fetch(SelectMode.Fetch, x => x.Documents)
-									.List<Asset>();
+				Assert.That(assetsFilteredQuery.Count, Is.EqualTo(1), "query filtered assets");
+				Assert.That(assetsFilteredQuery[0].Documents.Count, Is.EqualTo(0), "query filtered asset documents");
+			}
+		}
 
-				Assert.That(assetsUnfiltered.Count, Is.EqualTo(1), "unfiltered assets");
-				Assert.That(assetsUnfiltered[0].Documents.Count, Is.EqualTo(1), "unfiltered asset documents");
+		[Test]
+		public void TestFilteredQueryOver()
+		{
+			using (var s = OpenSession())
+			{
+				s.EnableFilter("deletedFilter").SetParameter("deletedParam", false);
+
+				var assetsFilteredQueryOver = s.QueryOver<Asset>()
+				                               .Fetch(SelectMode.Fetch, x => x.Documents)
+				                               .List<Asset>();
 
 				Assert.That(assetsFilteredQueryOver.Count, Is.EqualTo(1), " query over filtered assets");
 				Assert.That(assetsFilteredQueryOver[0].Documents.Count, Is.EqualTo(0), "query over filtered asset documents");
-
-				Assert.That(assetsFilteredQuery.Count, Is.EqualTo(1), "query filtered assets");
-				Assert.That(assetsFilteredQuery[0].Documents.Count, Is.EqualTo(0), "query filtered asset documents");
 			}
 		}
 	}
