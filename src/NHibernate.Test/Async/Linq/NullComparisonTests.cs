@@ -33,9 +33,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task NullInequalityWithNotNullAsync()
 		{
-			IQueryable<AnotherEntityRequired> q;
-
-			q = session.Query<AnotherEntityRequired>().Where(o => o.Input != null);
+			var q = session.Query<AnotherEntityRequired>().Where(o => o.Input != null);
 			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, InputSet, BothSame, BothDifferent));
 
 			q = session.Query<AnotherEntityRequired>().Where(o => null != o.Input);
@@ -134,18 +132,6 @@ namespace NHibernate.Test.Linq
 			q = session.Query<AnotherEntityRequired>().Where(o => (o.Input + o.Output) != o.Output);
 			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothSame, BothDifferent));
 
-			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Count != 1);
-			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
-
-			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Max(r => r.Id) != 0);
-			await (ExpectAllAsync(q, Does.Contain("is null").IgnoreCase));
-
-			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Take(10).All(r => r.Output != null) != o.NullableBool);
-			await (ExpectAllAsync(q, Does.Not.Contain("or case").IgnoreCase));
-
-			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Where(r => r.Id == 0).Sum(r => r.Input.Length) != 5);
-			await (ExpectAllAsync(q, Does.Contain("or (").IgnoreCase));
-
 			q = session.Query<AnotherEntityRequired>().Where(o => o.Address.Street != o.Output);
 			await (ExpectAsync(q, Does.Contain("Input is null").IgnoreCase, BothDifferent, OutputSet, BothNull));
 
@@ -157,6 +143,27 @@ namespace NHibernate.Test.Linq
 
 			q = session.Query<AnotherEntityRequired>().Where(o => o.Address.Street != null && o.Address.Street != o.NullableOutput);
 			await (ExpectAsync(q, Does.Contain("Output is null").IgnoreCase, InputSet, BothDifferent));
+		}
+
+		[Test]
+		public async Task NullInequalityWithNotNullSubSelectAsync()
+		{
+			if (!Dialect.SupportsScalarSubSelects)
+			{
+				Assert.Ignore("Dialect does not support scalar subselects");
+			}
+
+			var q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Count != 1);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Max(r => r.Id) != 0);
+			await (ExpectAllAsync(q, Does.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.All(r => r.Output != null) != o.NullableBool);
+			await (ExpectAllAsync(q, Does.Not.Contain("or case").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Where(r => r.Id == 0).Sum(r => r.Input.Length) != 5);
+			await (ExpectAllAsync(q, Does.Contain("or (").IgnoreCase));
 
 			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.All(r => r.Output != null) != (o.NullableOutput.Length > 0));
 			await (ExpectAsync(q, Does.Not.Contain("or case").IgnoreCase));
@@ -165,9 +172,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task NullEqualityWithNotNullAsync()
 		{
-			IQueryable<AnotherEntityRequired> q;
-
-			q = session.Query<AnotherEntityRequired>().Where(o => o.Input == null);
+			var q = session.Query<AnotherEntityRequired>().Where(o => o.Input == null);
 			await (ExpectAsync(q, Does.Not.Contain("or is null").IgnoreCase, OutputSet, BothNull));
 
 			q = session.Query<AnotherEntityRequired>().Where(o => null == o.Input);
@@ -260,13 +265,7 @@ namespace NHibernate.Test.Linq
 			q = session.Query<AnotherEntityRequired>().Where(o => (o.NullableOutput + o.Output) == o.Output);
 			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
 
-			q = session.Query<AnotherEntityRequired>().Where(o => (o.Input + o.Output) == o.Output);
-			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
-
-			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Count == 1);
-			await (ExpectAllAsync(q, Does.Not.Contain("is null").IgnoreCase));
-
-			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Max(r => r.Id) == 0);
+			q = session.Query<AnotherEntityRequired>().Where(o => (o.Output + o.Output) == o.Output);
 			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
 
 			q = session.Query<AnotherEntityRequired>().Where(o => !o.Input.Equals(o.Output));
@@ -292,6 +291,21 @@ namespace NHibernate.Test.Linq
 
 			q = session.Query<AnotherEntityRequired>().Where(o => o.Address.Street != null && o.Address.Street == o.NullableOutput);
 			await (ExpectAsync(q, Does.Not.Contain("Output is null").IgnoreCase, BothSame));
+		}
+
+		[Test]
+		public async Task NullEqualityWithNotNullSubSelectAsync()
+		{
+			if (!Dialect.SupportsScalarSubSelects)
+			{
+				Assert.Ignore("Dialect does not support scalar subselects");
+			}
+
+			var q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Count == 1);
+			await (ExpectAllAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Max(r => r.Id) == 0);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
 		}
 
 
