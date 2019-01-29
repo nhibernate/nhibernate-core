@@ -38,7 +38,14 @@ namespace NHibernate.Event.Default
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return ProcessValueAsync(values[i], types[i], cancellationToken);
+			try
+			{
+				return ProcessValueAsync(values[i], types[i], cancellationToken);
+			}
+			catch (System.Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		/// <summary> 
