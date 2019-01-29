@@ -201,13 +201,13 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 		}
 
 		[Test]
-		public void WillCleanlyFailOnDoubleProcessDispose()
+		public void DoubleProcessDisposeIsAllowed()
 		{
 			using (var s = OpenSession())
 			{
 				var p = ((AbstractSessionImpl) s).BeginProcess();
 				p.Dispose();
-				Assert.That(() => p.Dispose(), Throws.TypeOf<ObjectDisposedException>());
+				Assert.That(() => p.Dispose(), Throws.Nothing);
 			}
 		}
 

@@ -46,18 +46,11 @@ namespace NHibernate.Engine
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
+			if (session.Factory.Settings.IsQueryCacheEnabled)
 			{
-				if (session.Factory.Settings.IsQueryCacheEnabled)
-				{
-					return session.Factory.UpdateTimestampsCache.PreInvalidateAsync(executedSpaces, cancellationToken);
-				}
-				return Task.CompletedTask;
+				return session.Factory.UpdateTimestampsCache.PreInvalidateAsync(executedSpaces, cancellationToken);
 			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return Task.CompletedTask;
 		}
 
 		public async Task ExecuteAsync(IExecutable executable, CancellationToken cancellationToken)
