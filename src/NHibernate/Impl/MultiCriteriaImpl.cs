@@ -225,6 +225,7 @@ namespace NHibernate.Impl
 				stopWatch.Start();
 			}
 			int rowCount = 0;
+			var cacheBatcher = new CacheBatcher(session);
 
 			try
 			{
@@ -257,7 +258,8 @@ namespace NHibernate.Impl
 
 							object o =
 								loader.GetRowFromResultSet(reader, session, queryParameters, loader.GetLockModes(queryParameters.LockModes),
-																					 null, hydratedObjects[i], keys, true);
+																					 null, hydratedObjects[i], keys, true,
+																					(persister, data) => cacheBatcher.AddToBatch(persister, data));
 							if (createSubselects[i])
 							{
 								subselectResultKeys[i].Add(keys);
@@ -273,13 +275,15 @@ namespace NHibernate.Impl
 					for (int i = 0; i < loaders.Count; i++)
 					{
 						CriteriaLoader loader = loaders[i];
-						loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, session.DefaultReadOnly);
+						loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, session.DefaultReadOnly, cacheBatcher);
 
 						if (createSubselects[i])
 						{
 							loader.CreateSubselects(subselectResultKeys[i], parameters[i], session);
 						}
 					}
+
+					cacheBatcher.ExecuteBatch();
 				}
 			}
 			catch (Exception sqle)

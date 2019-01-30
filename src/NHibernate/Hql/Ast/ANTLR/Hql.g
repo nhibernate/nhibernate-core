@@ -301,7 +301,7 @@ alias
 
 propertyFetch
 	: FETCH ALL! PROPERTIES!
-	;
+	| (FETCH path)+;
 
 groupByClause
 	: GROUP^ 

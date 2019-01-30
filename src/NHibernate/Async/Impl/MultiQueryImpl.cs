@@ -89,6 +89,7 @@ namespace NHibernate.Impl
 			var hydratedObjects = new List<object>[Translators.Count];
 			List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[Translators.Count];
 			bool[] createSubselects = new bool[Translators.Count];
+			var cacheBatcher = new CacheBatcher(session);
 
 			try
 			{
@@ -142,7 +143,8 @@ namespace NHibernate.Impl
 
 							rowCount++;
 							object result = await (translator.Loader.GetRowFromResultSetAsync(
-								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true, cancellationToken)).ConfigureAwait(false);
+								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true,
+								(persister, data) => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
 							tempResults.Add(result);
 
 							if (createSubselects[i])
@@ -172,13 +174,15 @@ namespace NHibernate.Impl
 						ITranslator translator = translators[i];
 						QueryParameters parameter = parameters[i];
 
-						await (translator.Loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, false, cancellationToken: cancellationToken)).ConfigureAwait(false);
+						await (translator.Loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, false, cacheBatcher, cancellationToken)).ConfigureAwait(false);
 
 						if (createSubselects[i])
 						{
 							translator.Loader.CreateSubselects(subselectResultKeys[i], parameter, session);
 						}
 					}
+
+					await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			catch (OperationCanceledException) { throw; }
