@@ -429,7 +429,6 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 		[Test]
 		public void OrderedInnerJoinFetch()
 		{
-			using (var log = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
 				var list = session.QueryOver<EntityComplex>()
