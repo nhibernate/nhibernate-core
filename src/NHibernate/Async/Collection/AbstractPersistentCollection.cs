@@ -12,7 +12,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Collection.Generic;
+using NHibernate.Collection.Trackers;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader;
@@ -26,6 +28,50 @@ namespace NHibernate.Collection
 	using System.Threading;
 	public abstract partial class AbstractPersistentCollection : IPersistentCollection, ILazyInitializedCollection
 	{
+
+		protected virtual async Task<bool?> ReadKeyExistenceAsync<TKey, TValue>(TKey elementKey, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (!initialized)
+			{
+				ThrowLazyInitializationExceptionIfNotConnected();
+				CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(this);
+				ICollectionPersister persister = entry.LoadedPersister;
+				if (persister.IsExtraLazy)
+				{
+					var queueOperationTracker = (AbstractMapQueueOperationTracker<TKey, TValue>) GetOrCreateQueueOperationTracker();
+					if (queueOperationTracker == null)
+					{
+						if (HasQueuedOperations)
+						{
+							await (session.FlushAsync(cancellationToken)).ConfigureAwait(false);
+						}
+
+						return persister.IndexExists(entry.LoadedKey, elementKey, session);
+					}
+
+					if (queueOperationTracker.ContainsKey(elementKey))
+					{
+						return true;
+					}
+
+					if (queueOperationTracker.Cleared)
+					{
+						return false;
+					}
+
+					if (queueOperationTracker.IsElementKeyQueuedForDelete(elementKey))
+					{
+						return false;
+					}
+
+					// As keys are unordered we don't have to calculate the current order of the key
+					return persister.IndexExists(entry.LoadedKey, elementKey, session);
+				}
+				Read();
+			}
+			return null;
+		}
 
 		/// <summary>
 		/// Initialize the collection, if possible, wrapping any exceptions
@@ -102,20 +148,35 @@ namespace NHibernate.Collection
 			{
 				if (HasQueuedOperations)
 				{
-					List<object> additions = new List<object>(operationQueue.Count);
-					List<object> removals = new List<object>(operationQueue.Count);
-					for (int i = 0; i < operationQueue.Count; i++)
+					List<object> additions;
+					List<object> removals;
+
+					// Use the queue operation tracker when available to get the orphans as the default logic
+					// does not work correctly when readding a transient entity. Removals list should
+					// contain only entities that are already in the database.
+					if (_queueOperationTracker != null)
 					{
-						IDelayedOperation op = operationQueue[i];
-						if (op.AddedInstance != null)
+						removals = new List<object>(_queueOperationTracker.GetOrphans().Cast<object>());
+						additions = new List<object>(_queueOperationTracker.GetAddedElements().Cast<object>());
+					}
+					else // 6.0 TODO: Remove whole else block
+					{
+						additions = new List<object>(operationQueue.Count);
+						removals = new List<object>(operationQueue.Count);
+						for (int i = 0; i < operationQueue.Count; i++)
 						{
-							additions.Add(op.AddedInstance);
-						}
-						if (op.Orphan != null)
-						{
-							removals.Add(op.Orphan);
+							var op = operationQueue[i];
+							if (op.AddedInstance != null)
+							{
+								additions.Add(op.AddedInstance);
+							}
+							if (op.Orphan != null)
+							{
+								removals.Add(op.Orphan);
+							}
 						}
 					}
+
 					return GetOrphansAsync(removals, additions, entityName, session, cancellationToken);
 				}
 

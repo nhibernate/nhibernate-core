@@ -6,11 +6,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Collection.Generic.SetHelpers;
+using NHibernate.Collection.Trackers;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Linq;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
+using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -74,6 +76,12 @@ namespace NHibernate.Collection.Generic
 			IsDirectlyAccessible = true;
 		}
 
+		internal override AbstractQueueOperationTracker CreateQueueOperationTracker()
+		{
+			var entry = Session.PersistenceContext.GetCollectionEntry(this);
+			return new SetQueueOperationTracker<T>(entry.LoadedPersister);
+		}
+
 		public override bool RowUpdatePossible
 		{
 			get { return false; }
@@ -129,6 +137,13 @@ namespace NHibernate.Collection.Generic
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
 			WrappedSet = (ISet<T>)persister.CollectionType.Instantiate(anticipatedSize);
+		}
+
+		public override void ApplyQueuedOperations()
+		{
+			var queueOperation = (SetQueueOperationTracker<T>) QueueOperationTracker;
+			queueOperation?.ApplyChanges(WrappedSet);
+			QueueOperationTracker = null;
 		}
 
 		/// <summary>
@@ -295,17 +310,14 @@ namespace NHibernate.Collection.Generic
 
 		#region ISet<T> Members
 
-
 		public bool Contains(T item)
 		{
-			bool? exists = ReadElementExistence(item);
-			return exists == null ? WrappedSet.Contains(item) : exists.Value;
+			return ReadElementExistence(item, out _) ?? WrappedSet.Contains(item);
 		}
-
 
 		public bool Add(T o)
 		{
-			bool? exists = IsOperationQueueEnabled ? ReadElementExistence(o) : null;
+			var exists = IsOperationQueueEnabled ? ReadElementExistence(o, out _) : null;
 			if (!exists.HasValue)
 			{
 				Initialize(true);
@@ -321,7 +333,16 @@ namespace NHibernate.Collection.Generic
 			{
 				return false;
 			}
+
+			var queueOperationTracker = GetOrCreateQueueOperationTracker();
+			if (queueOperationTracker != null)
+			{
+				return QueueAddElement(o);
+			}
+
+#pragma warning disable 618
 			QueueOperation(new SimpleAddDelayedOperation(this, o));
+#pragma warning restore 618
 			return true;
 		}
 
@@ -425,7 +446,8 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove(T o)
 		{
-			bool? exists = PutQueueEnabled ? ReadElementExistence(o) : null;
+			var existsInDb = default(bool?);
+			var exists = PutQueueEnabled ? ReadElementExistence(o, out existsInDb) : null;
 			if (!exists.HasValue)
 			{
 				Initialize(true);
@@ -439,9 +461,21 @@ namespace NHibernate.Collection.Generic
 
 			if (exists.Value)
 			{
-				QueueOperation(new SimpleRemoveDelayedOperation(this, o));
+				var queueOperationTracker = GetOrCreateQueueOperationTracker();
+				if (queueOperationTracker != null)
+				{
+					QueueRemoveExistingElement(o, existsInDb);
+				}
+				else
+				{
+#pragma warning disable 618
+					QueueOperation(new SimpleRemoveDelayedOperation(this, o));
+#pragma warning restore 618
+				}
+
 				return true;
 			}
+
 			return false;
 		}
 
@@ -449,7 +483,17 @@ namespace NHibernate.Collection.Generic
 		{
 			if (ClearQueueEnabled)
 			{
-				QueueOperation(new ClearDelayedOperation(this));
+				var queueOperationTracker = GetOrCreateQueueOperationTracker();
+				if (queueOperationTracker != null)
+				{
+					QueueClearCollection();
+				}
+				else
+				{
+#pragma warning disable 618
+					QueueOperation(new ClearDelayedOperation(this));
+#pragma warning restore 618
+				}
 			}
 			else
 			{
@@ -494,7 +538,41 @@ namespace NHibernate.Collection.Generic
 
 		void ICollection<T>.Add(T item)
 		{
-			Add(item);
+			if (!IsOperationQueueEnabled)
+			{
+				Initialize(true);
+				if (WrappedSet.Add(item))
+				{
+					Dirty();
+				}
+
+				return;
+			}
+
+			// If the item is not transient we have to use the ISet Add method as we have to check whether it is already added
+			var queryableCollection = (IQueryableCollection) Session.Factory.GetCollectionPersister(Role);
+			if (
+				queryableCollection == null ||
+				!queryableCollection.ElementType.IsEntityType ||
+				item.IsProxy() ||
+				Session.PersistenceContext.IsEntryFor(item) ||
+				ForeignKeys.IsTransientFast(queryableCollection.ElementPersister.EntityName, item, Session) != true)
+			{
+				Add(item);
+				return;
+			}
+
+			var queueOperationTracker = GetOrCreateQueueOperationTracker();
+			if (queueOperationTracker != null)
+			{
+				QueueAddElement(item);
+			}
+			else
+			{
+#pragma warning disable 618
+				QueueOperation(new SimpleAddDelayedOperation(this, item));
+#pragma warning restore 618
+			}
 		}
 
 		#endregion
@@ -536,6 +614,8 @@ namespace NHibernate.Collection.Generic
 
 		#region DelayedOperations
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		protected sealed class ClearDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericSet<T> _enclosingInstance;
@@ -561,6 +641,8 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		protected sealed class SimpleAddDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericSet<T> _enclosingInstance;
@@ -588,6 +670,8 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		protected sealed class SimpleRemoveDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericSet<T> _enclosingInstance;
