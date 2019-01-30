@@ -27,20 +27,19 @@ namespace NHibernate.Cache
 			_resultTypes = loader.ResultTypes;
 			_cacheTypes = loader.CacheTypes;
 
-			if (loader.EntityFetches == null)
+			if (loader.EntityFetches != null)
 			{
-				return;
-			}
-
-			for (var i = 0; i < loader.EntityFetches.Length; i++)
-			{
-				if (loader.EntityFetches[i])
+				for (var i = 0; i < loader.EntityFetches.Length; i++)
 				{
-					_entityFetchIndexes.Add(i);
+					if (loader.EntityFetches[i])
+					{
+						_entityFetchIndexes.Add(i);
+					}
 				}
+
+				_hasFetches = _entityFetchIndexes.Count > 0;
 			}
 
-			_hasFetches = _entityFetchIndexes.Count > 0;
 			if (loader.CollectionFetches == null)
 			{
 				return;
