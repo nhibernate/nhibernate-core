@@ -12,24 +12,16 @@ namespace NHibernate.Transform
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DistinctRootEntityResultTransformer));
 		private static readonly object Hasher = new object();
 
-		internal sealed class Identity
+		internal sealed class IdentityComparer : IEqualityComparer<object>
 		{
-			internal readonly object entity;
-
-			internal Identity(object entity)
+			public new bool Equals(object x, object y)
 			{
-				this.entity = entity;
+				return ReferenceEquals(x, y);
 			}
 
-			public override bool Equals(object other)
+			public int GetHashCode(object obj)
 			{
-				Identity that = (Identity) other;
-				return ReferenceEquals(entity, that.entity);
-			}
-
-			public override int GetHashCode()
-			{
-				return RuntimeHelpers.GetHashCode(entity);
+				return RuntimeHelpers.GetHashCode(obj);
 			}
 		}
 
@@ -40,13 +32,16 @@ namespace NHibernate.Transform
 
 		public IList TransformList(IList list)
 		{
-			IList result = (IList)Activator.CreateInstance(list.GetType());
-			var distinct = new HashSet<Identity>();
+			if (list.Count < 2)
+				return list;
+
+			IList result = (IList) Activator.CreateInstance(list.GetType());
+			var distinct = new HashSet<object>(new IdentityComparer());
 
 			for (int i = 0; i < list.Count; i++)
 			{
 				object entity = list[i];
-				if (distinct.Add(new Identity(entity)))
+				if (distinct.Add(entity))
 				{
 					result.Add(entity);
 				}
