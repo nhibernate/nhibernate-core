@@ -882,32 +882,26 @@ namespace NHibernate.Loader
 			OuterJoinableAssociation last = null;
 			foreach (OuterJoinableAssociation oj in associations)
 			{
-				if (oj.JoinType == JoinType.LeftOuterJoin)
+				if (oj.ShouldFetchCollectionPersister())
 				{
-					if (oj.Joinable.IsCollection)
+					IQueryableCollection queryableCollection = (IQueryableCollection) oj.Joinable;
+					if (queryableCollection.HasOrdering)
 					{
-						IQueryableCollection queryableCollection = (IQueryableCollection)oj.Joinable;
-						if (queryableCollection.HasOrdering)
-						{
-							string orderByString = queryableCollection.GetSQLOrderByString(oj.RHSAlias);
-							buf.Add(orderByString).Add(StringHelper.CommaSpace);
-						}
+						string orderByString = queryableCollection.GetSQLOrderByString(oj.RHSAlias);
+						buf.Add(orderByString).Add(StringHelper.CommaSpace);
 					}
-					else
+				}
+				else if (!oj.IsCollection && last?.ShouldFetchCollectionPersister() == true)
+				{
+					// it might still need to apply a collection ordering based on a
+					// many-to-many defined order-by...
+					IQueryableCollection queryableCollection = (IQueryableCollection) last.Joinable;
+					if (queryableCollection.IsManyToMany && last.IsManyToManyWith(oj))
 					{
-						// it might still need to apply a collection ordering based on a
-						// many-to-many defined order-by...
-						if (last != null && last.Joinable.IsCollection)
+						if (queryableCollection.HasManyToManyOrdering)
 						{
-							IQueryableCollection queryableCollection = (IQueryableCollection)last.Joinable;
-							if (queryableCollection.IsManyToMany && last.IsManyToManyWith(oj))
-							{
-								if (queryableCollection.HasManyToManyOrdering)
-								{
-									string orderByString = queryableCollection.GetManyToManyOrderByString(oj.RHSAlias);
-									buf.Add(orderByString).Add(StringHelper.CommaSpace);
-								}
-							}
+							string orderByString = queryableCollection.GetManyToManyOrderByString(oj.RHSAlias);
+							buf.Add(orderByString).Add(StringHelper.CommaSpace);
 						}
 					}
 				}
