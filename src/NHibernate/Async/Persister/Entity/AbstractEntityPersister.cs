@@ -61,6 +61,67 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
+		public Task InitializeLazyPropertiesAsync(
+			DbDataReader rs, object id, object entity, ILoadable rootPersister, string[][] suffixedPropertyColumns,
+			string[] uninitializedLazyProperties, bool allLazyProperties, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (!HasLazyProperties)
+			{
+				throw new AssertionFailure("No lazy properties");
+			}
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return InternalInitializeLazyPropertiesAsync();
+			async Task InternalInitializeLazyPropertiesAsync()
+			{
+
+				var entry = session.PersistenceContext.GetEntry(entity);
+				if (entry == null)
+				{
+					throw new HibernateException($"Entity is not associated with the session: {id}");
+				}
+
+				int[] indexes;
+				int[] lazyIndexes;
+				if (allLazyProperties)
+				{
+					lazyIndexes = indexes = lazyPropertyNumbers;
+				}
+				else
+				{
+					var metadata = InstrumentationMetadata.LazyPropertiesMetadata;
+					indexes = new int[uninitializedLazyProperties.Length];
+					lazyIndexes = new int[uninitializedLazyProperties.Length];
+					for (var i = 0; i < uninitializedLazyProperties.Length; i++)
+					{
+						var descriptor = metadata.GetLazyPropertyDescriptor(uninitializedLazyProperties[i]);
+						indexes[i] = descriptor.PropertyIndex;
+						lazyIndexes[i] = descriptor.LazyIndex;
+					}
+				}
+
+				var values = await (HydrateAsync(rs, id, entity, suffixedPropertyColumns, null, true, indexes, session, cancellationToken)).ConfigureAwait(false);
+				for (var i = 0; i < lazyIndexes.Length; i++)
+				{
+					var value = values[i];
+					if (entry.Status == Status.Loading)
+					{
+						// Here loaded state contains hydrated values and is always not null even in ReadOnly mode.
+						// We don't need to set the property value here as it will be set in TwoPhaseLoad.InitializeEntity
+						entry.LoadedState[indexes[i]] = value;
+					}
+					else
+					{
+						var lazyIndex = lazyIndexes[i];
+						var propValue = await (lazyPropertyTypes[lazyIndex].AssembleAsync(value, session, entity, cancellationToken)).ConfigureAwait(false);
+						InitializeLazyProperty(entity, entry.LoadedState, lazyIndex, propValue, null);
+					}
+				}
+			}
+		}
+
 		public async Task<object[]> GetDatabaseSnapshotAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -340,24 +401,38 @@ namespace NHibernate.Persister.Entity
 		/// Unmarshall the fields of a persistent instance from a result set,
 		/// without resolving associations or collections
 		/// </summary>
-		//Since v5.3
-		[Obsolete("Use the overload without the rootLoadable parameter instead")]
-		public Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj, ILoadable rootLoadable,
-			string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session, CancellationToken cancellationToken)
+		public Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj,
+			string[][] suffixedPropertyColumns, ISet<string> fetchedLazyProperties, bool allProperties, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object[]>(cancellationToken);
 			}
-			return HydrateAsync(rs, id, obj, suffixedPropertyColumns, allProperties, session, cancellationToken);
+			return HydrateAsync(rs, id, obj, suffixedPropertyColumns, fetchedLazyProperties, allProperties, null, session, cancellationToken);
 		}
 
 		/// <summary>
 		/// Unmarshall the fields of a persistent instance from a result set,
 		/// without resolving associations or collections
 		/// </summary>
-		public async Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj,
-			string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session, CancellationToken cancellationToken)
+		// Since v5.3
+		[Obsolete("Use the overload with fetchedLazyProperties parameter instead")]
+		public Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj, ILoadable rootLoadable,
+		                        string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object[]>(cancellationToken);
+			}
+			return HydrateAsync(rs, id, obj, suffixedPropertyColumns, null, allProperties, null, session, cancellationToken);
+		}
+
+		/// <summary>
+		/// Unmarshall the fields of a persistent instance from a result set,
+		/// without resolving associations or collections
+		/// </summary>
+		private async Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj, string[][] suffixedPropertyColumns,
+								ISet<string> fetchedLazyProperties, bool allProperties, int[] indexes, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled())
@@ -405,34 +480,38 @@ namespace NHibernate.Persister.Entity
 					}
 				}
 
+				int i;
+				int length = indexes?.Length ?? PropertyTypes.Length;
+				string[] propNames = PropertyNames;
 				IType[] types = PropertyTypes;
-				object[] values = new object[types.Length];
+				object[] values = new object[length];
 				bool[] laziness = PropertyLaziness;
 
-				for (int i = 0; i < types.Length; i++)
+				for (int j = 0; j < length; j++)
 				{
+					i = indexes?[j] ?? j;
 					if (!propertySelectable[i])
 					{
-						values[i] = BackrefPropertyAccessor.Unknown;
+						values[j] = BackrefPropertyAccessor.Unknown;
 					}
-					else if (allProperties || !laziness[i])
+					else if (allProperties || !laziness[i] || fetchedLazyProperties?.Contains(propNames[i]) == true)
 					{
 						//decide which ResultSet to get the property value from:
 						var propertyIsDeferred = sequentialSql != null && IsPropertyDeferred(i);
 						if (propertyIsDeferred && sequentialSelectEmpty)
 						{
-							values[i] = null;
+							values[j] = null;
 						}
 						else
 						{
 							var propertyResultSet = propertyIsDeferred ? sequentialResultSet : rs;
 							string[] cols = propertyIsDeferred ? propertyColumnAliases[i] : suffixedPropertyColumns[i];
-							values[i] = await (types[i].HydrateAsync(propertyResultSet, cols, session, obj, cancellationToken)).ConfigureAwait(false);
+							values[j] = await (types[i].HydrateAsync(propertyResultSet, cols, session, obj, cancellationToken)).ConfigureAwait(false);
 						}
 					}
 					else
 					{
-						values[i] = LazyPropertyInitializer.UnfetchedProperty;
+						values[j] = LazyPropertyInitializer.UnfetchedProperty;
 					}
 				}
 
