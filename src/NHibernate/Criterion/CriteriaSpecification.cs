@@ -31,10 +31,10 @@ namespace NHibernate.Criterion
 
 		static CriteriaSpecification()
 		{
-			AliasToEntityMap = new AliasToEntityMapResultTransformer();
-			RootEntity = new RootEntityResultTransformer();
-			DistinctRootEntity = new DistinctRootEntityResultTransformer();
-			Projection = new PassThroughResultTransformer();
+			AliasToEntityMap = AliasToEntityMapResultTransformer.Instance;
+			RootEntity = RootEntityResultTransformer.Instance;
+			DistinctRootEntity = DistinctRootEntityResultTransformer.Instance;
+			Projection = PassThroughResultTransformer.Instance;
 			InnerJoin = JoinType.InnerJoin;
 			FullJoin = JoinType.FullJoin;
 			LeftJoin = JoinType.LeftOuterJoin;

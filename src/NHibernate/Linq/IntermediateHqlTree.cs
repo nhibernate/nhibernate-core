@@ -110,7 +110,7 @@ namespace NHibernate.Linq
 			if (!_hasDistinctRootOperator)
 			{
 				Expression<Func<IEnumerable<object>, IList>> x =
-					l => new DistinctRootEntityResultTransformer().TransformList(l.ToList());
+					l => DistinctRootEntityResultTransformer.Instance.TransformList(l.ToList());
 
 				_listTransformers.Add(x);
 				_hasDistinctRootOperator = true;
