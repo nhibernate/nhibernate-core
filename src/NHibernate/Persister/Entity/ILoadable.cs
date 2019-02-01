@@ -83,14 +83,18 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		//6.0 TODO: Merge into ILoadable
 		public static object[] Hydrate(
-			this ILoadable loadable, DbDataReader rs, object id, object obj, ILoadable rootLoadable,
+			this ILoadable loadable, DbDataReader rs, object id, object obj,
 			string[][] suffixedPropertyColumns, ISet<string> fetchedLazyProperties, bool allProperties, ISessionImplementor session)
 		{
 			if (loadable is AbstractEntityPersister abstractEntityPersister)
 			{
 				return abstractEntityPersister.Hydrate(
-					rs, id, obj, rootLoadable, suffixedPropertyColumns, fetchedLazyProperties, allProperties, session);
+					rs, id, obj, suffixedPropertyColumns, fetchedLazyProperties, allProperties, session);
 			}
+			
+			var rootLoadable = loadable.RootEntityName == loadable.EntityName
+				? loadable
+				: (ILoadable) loadable.Factory.GetEntityPersister(loadable.RootEntityName);
 
 #pragma warning disable 618
 			// Fallback to the old behavior

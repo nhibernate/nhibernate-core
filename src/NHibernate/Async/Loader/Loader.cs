@@ -907,7 +907,7 @@ namespace NHibernate.Loader
 								? EntityAliases[i].SuffixedPropertyAliases
 								: GetSubclassEntityAliases(i, persister);
 
-			object[] values = await (persister.HydrateAsync(rs, id, obj, rootPersister, cols, eagerFetchProperties, eagerPropertyFetch, session, cancellationToken)).ConfigureAwait(false);
+			object[] values = await (persister.HydrateAsync(rs, id, obj, cols, eagerFetchProperties, eagerPropertyFetch, session, cancellationToken)).ConfigureAwait(false);
 
 			object rowId = persister.HasRowId ? rs[EntityAliases[i].RowIdAlias] : null;
 
