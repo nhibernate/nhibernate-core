@@ -38,7 +38,7 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		//6.0 TODO: Merge into ILoadable
 		public static Task<object[]> HydrateAsync(
-			this ILoadable loadable, DbDataReader rs, object id, object obj, ILoadable rootLoadable,
+			this ILoadable loadable, DbDataReader rs, object id, object obj,
 			string[][] suffixedPropertyColumns, ISet<string> fetchedLazyProperties, bool allProperties, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -50,8 +50,12 @@ namespace NHibernate.Persister.Entity
 				if (loadable is AbstractEntityPersister abstractEntityPersister)
 				{
 					return abstractEntityPersister.HydrateAsync(
-					rs, id, obj, rootLoadable, suffixedPropertyColumns, fetchedLazyProperties, allProperties, session, cancellationToken);
+					rs, id, obj, suffixedPropertyColumns, fetchedLazyProperties, allProperties, session, cancellationToken);
 				}
+				
+				var rootLoadable = loadable.RootEntityName == loadable.EntityName
+				? loadable
+				: (ILoadable) loadable.Factory.GetEntityPersister(loadable.RootEntityName);
 
 #pragma warning disable 618
 				// Fallback to the old behavior
