@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 
@@ -12,24 +13,16 @@ namespace NHibernate.Transform
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DistinctRootEntityResultTransformer));
 		internal static readonly DistinctRootEntityResultTransformer Instance = new DistinctRootEntityResultTransformer();
 
-		internal sealed class Identity
+		sealed class IdentityComparer<T> : IEqualityComparer<T>
 		{
-			internal readonly object entity;
-
-			internal Identity(object entity)
+			public bool Equals(T x, T y)
 			{
-				this.entity = entity;
+				return ReferenceEquals(x, y);
 			}
 
-			public override bool Equals(object other)
+			public int GetHashCode(T obj)
 			{
-				Identity that = (Identity) other;
-				return ReferenceEquals(entity, that.entity);
-			}
-
-			public override int GetHashCode()
-			{
-				return RuntimeHelpers.GetHashCode(entity);
+				return RuntimeHelpers.GetHashCode(obj);
 			}
 		}
 
@@ -40,13 +33,16 @@ namespace NHibernate.Transform
 
 		public IList TransformList(IList list)
 		{
-			IList result = (IList)Activator.CreateInstance(list.GetType());
-			var distinct = new HashSet<Identity>();
+			if (list.Count < 2)
+				return list;
+
+			IList result = (IList) Activator.CreateInstance(list.GetType());
+			var distinct = new HashSet<object>(new IdentityComparer<object>());
 
 			for (int i = 0; i < list.Count; i++)
 			{
 				object entity = list[i];
-				if (distinct.Add(new Identity(entity)))
+				if (distinct.Add(entity))
 				{
 					result.Add(entity);
 				}
@@ -59,6 +55,15 @@ namespace NHibernate.Transform
 			return result;
 		}
 
+		internal static List<T> TransformList<T>(IEnumerable<T> list)
+		{
+			var result = list.Distinct(new IdentityComparer<T>()).ToList();
+			if (log.IsDebugEnabled())
+			{
+				log.Debug("transformed: {0} rows to: {1} distinct results", list.Count(), result.Count);
+			}
+			return result;
+		}
 
 		public bool[] IncludeInTransform(String[] aliases, int tupleLength)
 		{
