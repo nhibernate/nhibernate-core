@@ -10,7 +10,7 @@ namespace NHibernate.Transform
 	public class DistinctRootEntityResultTransformer : IResultTransformer, ITupleSubsetResultTransformer
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DistinctRootEntityResultTransformer));
-		private static readonly object Hasher = new object();
+		internal static readonly DistinctRootEntityResultTransformer Instance = new DistinctRootEntityResultTransformer();
 
 		internal sealed class Identity
 		{
@@ -62,33 +62,26 @@ namespace NHibernate.Transform
 
 		public bool[] IncludeInTransform(String[] aliases, int tupleLength)
 		{
-			//return RootEntityResultTransformer.INSTANCE.includeInTransform(aliases, tupleLength);
-			var transformer = new RootEntityResultTransformer();
-			return transformer.IncludeInTransform(aliases, tupleLength);
+			return RootEntityResultTransformer.Instance.IncludeInTransform(aliases, tupleLength);
 		}
-
 
 		public bool IsTransformedValueATupleElement(String[] aliases, int tupleLength)
 		{
-			//return RootEntityResultTransformer.INSTANCE.isTransformedValueATupleElement(null, tupleLength);
-			var transformer = new RootEntityResultTransformer();
-			return transformer.IsTransformedValueATupleElement(null, tupleLength);
+			return RootEntityResultTransformer.Instance.IsTransformedValueATupleElement(null, tupleLength);
 		}
 
 		public override bool Equals(object obj)
 		{
-			if (obj == null || obj.GetHashCode() != Hasher.GetHashCode())
-			{
+			if (ReferenceEquals(obj, this))
+				return true;
+			if (obj == null)
 				return false;
-			}
-			// NH-3957: do not rely on hashcode alone.
-			// Must be the exact same type
-			return obj.GetType() == typeof(DistinctRootEntityResultTransformer);
+			return obj.GetType() == GetType();
 		}
 
 		public override int GetHashCode()
 		{
-			return Hasher.GetHashCode();
+			return RuntimeHelpers.GetHashCode(Instance);
 		}
 	}
 }
