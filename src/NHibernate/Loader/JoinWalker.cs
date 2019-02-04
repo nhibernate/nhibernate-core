@@ -19,7 +19,7 @@ namespace NHibernate.Loader
 		private readonly HashSet<AssociationKey> visitedAssociationKeys = new HashSet<AssociationKey>();
 		private readonly IDictionary<string, IFilter> enabledFilters;
 		private readonly IDictionary<string, IFilter> enabledFiltersForManyToOne;
-		private static readonly Regex aliasRegex = new Regex(@"([\w]+)\.", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static readonly Regex aliasRegex = new Regex(@"[\w]+(?=\.)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 		private string[] suffixes;
 		private string[] collectionSuffixes;
@@ -253,7 +253,7 @@ namespace NHibernate.Loader
 				var dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 				foreach (Match match in aliasRegex.Matches(on))
 				{
-					string alias = match.Groups[1].Value;
+					string alias = match.Value;
 					if (string.Equals(alias, subalias, StringComparison.OrdinalIgnoreCase))
 						continue;
 					dependencies.Add(alias);
