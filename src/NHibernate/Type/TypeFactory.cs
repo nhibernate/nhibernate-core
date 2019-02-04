@@ -582,9 +582,9 @@ namespace NHibernate.Type
 			{
 				typeClass = ReflectHelper.ClassForName(parsedTypeName[0]); //typeName);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				return null;
+				throw new MappingException("Could not find IType for given" + typeName + ": " + ex, ex);
 			}
 			return HeuristicType(typeClass, parameters, length, false);
 		}
