@@ -523,6 +523,22 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
+		/// Uses heuristics to deduce a NHibernate type given a string naming the
+		/// type.
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns>An instance of <c>NHibernate.Type.IType</c></returns>
+		/// <remarks>
+		/// We check to see if it implements IType, ICompositeUserType, IUserType, ILifecycle (Association), or
+		/// IPersistentEnum.  If none of those are implemented then we will serialize the Type to the
+		/// database using NHibernate.Type.SerializableType(typeName)
+		/// </remarks>
+		public static IType HeuristicType(System.Type type)
+		{
+			return HeuristicType(type, parameters: null, length: null);
+		}
+
+		/// <summary>
 		/// Uses heuristics to deduce a NHibernate type given a string naming the type.
 		/// </summary>
 		/// <param name="typeName">the type name</param>
@@ -532,7 +548,7 @@ namespace NHibernate.Type
 		{
 			return HeuristicType(typeName, parameters, null);
 		}
-		
+
 		/// <summary>
 		/// Uses heuristics to deduce a NHibernate type given a string naming the type.
 		/// </summary>
@@ -546,14 +562,20 @@ namespace NHibernate.Type
 
 			if (type != null)
 				return type;
-			
+
 			string[] parsedTypeName;
-			TypeClassification typeClassification = GetTypeClassification(typeName);
+			var typeClassification = GetTypeClassification(typeName);
 			if (typeClassification == TypeClassification.LengthOrScale)
+			{
 				parsedTypeName = typeName.Split(LengthSplit);
+				if (!int.TryParse(parsedTypeName[1], out int parsedLength))
+				{
+					throw new MappingException($"Could not parse length value '{parsedTypeName[1]}' as int for type '{typeName}'");
+				}
+				length = parsedLength;
+			}
 			else
 				parsedTypeName = typeClassification == TypeClassification.PrecisionScale ? typeName.Split(PrecisionScaleSplit) : new[] { typeName };
-
 
 			System.Type typeClass;
 			try
@@ -562,30 +584,42 @@ namespace NHibernate.Type
 			}
 			catch (Exception)
 			{
-				typeClass = null;
-			}
-
-			if (typeClass == null)
 				return null;
-				
+			}
+			return HeuristicType(typeClass, parameters, length, false);
+		}
+
+		private static IType HeuristicType(System.Type typeClass, IDictionary<string, string> parameters, int? length, bool tryBasic = true)
+		{
+			if(tryBasic)
+			{
+				IType type = Basic(typeClass.AssemblyQualifiedName, parameters);
+
+				if (type != null)
+					return type;
+			}
 			if (typeof(IType).IsAssignableFrom(typeClass))
 			{
 				try
 				{
-					type = (IType) Environment.ObjectsFactory.CreateInstance(typeClass);
+					var type = (IType) Environment.ObjectsFactory.CreateInstance(typeClass);
+					InjectParameters(type, parameters);
+
+					var obsolete = typeClass.GetCustomAttribute<ObsoleteAttribute>(false);
+					if (obsolete != null)
+					{
+						_log.Warn("{0} is obsolete. {1}", typeClass.AssemblyQualifiedName, obsolete.Message);
+					}
+					return type;
+				}
+				catch (HibernateException)
+				{
+					throw;
 				}
 				catch (Exception e)
 				{
 					throw new MappingException("Could not instantiate IType " + typeClass.Name + ": " + e, e);
 				}
-				InjectParameters(type, parameters);
-
-				var obsolete = typeClass.GetCustomAttribute<ObsoleteAttribute>(false);
-				if (obsolete != null)
-				{
-					_log.Warn("{0} is obsolete. {1}", typeName, obsolete.Message);
-				}
-				return type;
 			}
 			if (typeof(ICompositeUserType).IsAssignableFrom(typeClass))
 			{
@@ -603,19 +637,16 @@ namespace NHibernate.Type
 			var unwrapped = typeClass.UnwrapIfNullable();
 			if (unwrapped.IsEnum)
 			{
-				return (IType) Activator.CreateInstance(typeof (EnumType<>).MakeGenericType(unwrapped));
+				return (IType) Activator.CreateInstance(typeof(EnumType<>).MakeGenericType(unwrapped));
 			}
 
 			if (!typeClass.IsSerializable)
 				return null;
 
-			if (typeClassification == TypeClassification.LengthOrScale)
-				return GetSerializableType(typeClass, Int32.Parse(parsedTypeName[1]));
-			
 			if (length.HasValue)
 				return GetSerializableType(typeClass, length.Value);
 
-			return GetSerializableType(typeClass);
+			return GetSerializedOrBasicType(typeClass);
 		}
 
 		/// <summary>
@@ -684,13 +715,18 @@ namespace NHibernate.Type
 		/// </remarks>
 		public static NullableType GetSerializableType(System.Type serializableType)
 		{
+			return (NullableType) GetSerializedOrBasicType(serializableType);
+		}
+
+		private static IType GetSerializedOrBasicType(System.Type serializableType)
+		{
 			var key = serializableType.AssemblyQualifiedName;
 
 			// The value factory may be run concurrently, but only one resulting value will be yielded to all threads.
 			// So we should add the type with its other key in a later operation in order to ensure we cache the same
 			// instance for both keys.
 			var added = false;
-			var type = (NullableType)typeByTypeOfName.GetOrAdd(
+			var type = typeByTypeOfName.GetOrAdd(
 				key,
 				k =>
 				{
