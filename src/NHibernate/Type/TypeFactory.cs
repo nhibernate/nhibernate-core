@@ -608,7 +608,7 @@ namespace NHibernate.Type
 					var obsolete = typeClass.GetCustomAttribute<ObsoleteAttribute>(false);
 					if (obsolete != null)
 					{
-						_log.Warn("{0} is obsolete. {1}", typeClass.AssemblyQualifiedName, obsolete.Message);
+						_log.Warn("{0} ({1}) is obsolete. {2}", typeClass.Namespace + "." + typeClass.Name, type.Name, obsolete.Message);
 					}
 					return type;
 				}
