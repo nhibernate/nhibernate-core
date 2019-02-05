@@ -540,8 +540,8 @@ namespace NHibernate.Type
 		/// </remarks>
 		public static IType HeuristicType(System.Type type)
 		{
-			return GetBasicTypeByName(type.AssemblyQualifiedName, null) ??
-			       HeuristicType(type, null, null);
+			return GetBasicTypeByName(type.AssemblyQualifiedName, null)
+				?? GetBySystemType(type, null, null);
 		}
 
 		/// <summary>
@@ -593,10 +593,10 @@ namespace NHibernate.Type
 				return null;
 			}
 
-			return HeuristicType(typeClass, parameters, length);
+			return GetBySystemType(typeClass, parameters, length);
 		}
 
-		private static IType HeuristicType(System.Type typeClass, IDictionary<string, string> parameters, int? length)
+		private static IType GetBySystemType(System.Type typeClass, IDictionary<string, string> parameters, int? length)
 		{
 			if (typeof(IType).IsAssignableFrom(typeClass))
 			{
