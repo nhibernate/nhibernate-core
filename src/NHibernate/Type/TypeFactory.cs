@@ -654,7 +654,7 @@ namespace NHibernate.Type
 			if (length.HasValue)
 				return GetSerializableType(typeClass, length.Value);
 
-			return GetSerializedOrBasicType(typeClass);
+			return GetSerializableType(typeClass);
 		}
 
 		/// <summary>
@@ -723,11 +723,6 @@ namespace NHibernate.Type
 		/// </remarks>
 		public static NullableType GetSerializableType(System.Type serializableType)
 		{
-			return (NullableType) GetSerializedOrBasicType(serializableType);
-		}
-
-		private static IType GetSerializedOrBasicType(System.Type serializableType)
-		{
 			var key = serializableType.AssemblyQualifiedName;
 
 			// The value factory may be run concurrently, but only one resulting value will be yielded to all threads.
@@ -747,7 +742,7 @@ namespace NHibernate.Type
 				throw new HibernateException($"Another item with the key {type.Name} has already been added to typeByTypeOfName.");
 			}
 
-			return type;
+			return (NullableType) type;
 		}
 
 		public static NullableType GetSerializableType(System.Type serializableType, int length)
