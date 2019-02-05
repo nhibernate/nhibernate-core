@@ -405,6 +405,11 @@ namespace NHibernate.Type
 		/// </remarks>
 		public static IType Basic(string name, IDictionary<string, string> parameters)
 		{
+			return Basic(name, parameters, parseName: true);
+		}
+
+		private static IType Basic(string name, IDictionary<string, string> parameters, bool parseName)
+		{
 			string typeName;
 
 			// Use the basic name (such as String or String(255)) to get the
@@ -425,6 +430,9 @@ namespace NHibernate.Type
 				}
 				return returnType;
 			}
+
+			if (!parseName)
+				return null;
 
 			// if we get to here then the basic type with the length or precision/scale
 			// combination doesn't exists - so lets figure out which one we have and
@@ -593,7 +601,7 @@ namespace NHibernate.Type
 		{
 			if(tryBasic)
 			{
-				IType type = Basic(typeClass.AssemblyQualifiedName, parameters);
+				IType type = Basic(typeClass.AssemblyQualifiedName, parameters, parseName: false);
 
 				if (type != null)
 					return type;
