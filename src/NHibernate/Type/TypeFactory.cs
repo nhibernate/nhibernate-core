@@ -540,7 +540,8 @@ namespace NHibernate.Type
 		/// </remarks>
 		public static IType HeuristicType(System.Type type)
 		{
-			return HeuristicType(type, parameters: null, length: null);
+			return GetBasicTypeByName(type.AssemblyQualifiedName, null) ??
+			       HeuristicType(type, null, null);
 		}
 
 		/// <summary>
@@ -591,18 +592,12 @@ namespace NHibernate.Type
 			{
 				return null;
 			}
-			return HeuristicType(typeClass, parameters, length, false);
+
+			return HeuristicType(typeClass, parameters, length);
 		}
 
-		private static IType HeuristicType(System.Type typeClass, IDictionary<string, string> parameters, int? length, bool tryBasic = true)
+		private static IType HeuristicType(System.Type typeClass, IDictionary<string, string> parameters, int? length)
 		{
-			if(tryBasic)
-			{
-				IType type = GetBasicTypeByName(typeClass.AssemblyQualifiedName, parameters);
-
-				if (type != null)
-					return type;
-			}
 			if (typeof(IType).IsAssignableFrom(typeClass))
 			{
 				try
@@ -615,6 +610,7 @@ namespace NHibernate.Type
 					{
 						_log.Warn("{0} ({1}) is obsolete. {2}", typeClass.FullName, type.Name, obsolete.Message);
 					}
+
 					return type;
 				}
 				catch (HibernateException)
@@ -626,14 +622,17 @@ namespace NHibernate.Type
 					throw new MappingException("Could not instantiate IType " + typeClass.Name + ": " + e, e);
 				}
 			}
+
 			if (typeof(ICompositeUserType).IsAssignableFrom(typeClass))
 			{
 				return new CompositeCustomType(typeClass, parameters);
 			}
+
 			if (typeof(IUserType).IsAssignableFrom(typeClass))
 			{
 				return new CustomType(typeClass, parameters);
 			}
+
 			if (typeof(ILifecycle).IsAssignableFrom(typeClass))
 			{
 				return NHibernateUtil.Entity(typeClass);
