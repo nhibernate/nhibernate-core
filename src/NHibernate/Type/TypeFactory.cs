@@ -405,34 +405,11 @@ namespace NHibernate.Type
 		/// </remarks>
 		public static IType Basic(string name, IDictionary<string, string> parameters)
 		{
-			return Basic(name, parameters, parseName: true);
-		}
-
-		private static IType Basic(string name, IDictionary<string, string> parameters, bool parseName)
-		{
-			string typeName;
-
 			// Use the basic name (such as String or String(255)) to get the
-			// instance of the IType object.
-			IType returnType;
-			if (typeByTypeOfName.TryGetValue(name, out returnType))
-			{
-				if (_obsoleteMessageByAlias.TryGetValue(name, out string obsoleteMessage))
-					_log.Warn("{0} is obsolete. {1}", name, obsoleteMessage);
-
-				if (parameters?.Count > 0 && returnType is IParameterizedType)
-				{
-					// The type is parameterized, must apply the parameters to a new instance of the type.
-					// Some built-in types have internal default constructor like StringType, so we need to
-					// allow non-public constructors.
-					returnType = (IType) Activator.CreateInstance(returnType.GetType(), true);
-					InjectParameters(returnType, parameters);
-				}
+			// instance of the IType object.			
+			var returnType = GetBasicTypeByName(name, parameters);
+			if (returnType != null)
 				return returnType;
-			}
-
-			if (!parseName)
-				return null;
 
 			// if we get to here then the basic type with the length or precision/scale
 			// combination doesn't exists - so lets figure out which one we have and
@@ -450,7 +427,7 @@ namespace NHibernate.Type
 						"TypeClassification.PrecisionScale", name, "It is not a valid Precision/Scale name");
 				}
 
-				typeName = parsedName[0].Trim();
+				string typeName = parsedName[0].Trim();
 				byte precision = Byte.Parse(parsedName[1].Trim());
 				byte scale = Byte.Parse(parsedName[2].Trim());
 
@@ -467,7 +444,7 @@ namespace NHibernate.Type
 						"TypeClassification.LengthOrScale", name, "It is not a valid Length or Scale name");
 				}
 
-				typeName = parsedName[0].Trim();
+				string typeName = parsedName[0].Trim();
 				int length = Int32.Parse(parsedName[1].Trim());
 
 				returnType = BuiltInType(typeName, length);
@@ -484,6 +461,26 @@ namespace NHibernate.Type
 
 			InjectParameters(returnType, parameters);
 			return returnType;
+		}
+
+		private static IType GetBasicTypeByName(string name, IDictionary<string, string> parameters)
+		{
+			if (typeByTypeOfName.TryGetValue(name, out var returnType))
+			{
+				if (_obsoleteMessageByAlias.TryGetValue(name, out string obsoleteMessage))
+					_log.Warn("{0} is obsolete. {1}", name, obsoleteMessage);
+
+				if (parameters?.Count > 0 && returnType is IParameterizedType)
+				{
+					// The type is parameterized, must apply the parameters to a new instance of the type.
+					// Some built-in types have internal default constructor like StringType, so we need to
+					// allow non-public constructors.
+					returnType = (IType) Activator.CreateInstance(returnType.GetType(), true);
+					InjectParameters(returnType, parameters);
+				}
+				return returnType;
+			}
+			return null;
 		}
 
 		internal static IType BuiltInType(string typeName, int lengthOrScale)
@@ -601,7 +598,7 @@ namespace NHibernate.Type
 		{
 			if(tryBasic)
 			{
-				IType type = Basic(typeClass.AssemblyQualifiedName, parameters, parseName: false);
+				IType type = GetBasicTypeByName(typeClass.AssemblyQualifiedName, parameters);
 
 				if (type != null)
 					return type;
@@ -616,7 +613,7 @@ namespace NHibernate.Type
 					var obsolete = typeClass.GetCustomAttribute<ObsoleteAttribute>(false);
 					if (obsolete != null)
 					{
-						_log.Warn("{0} ({1}) is obsolete. {2}", typeClass.Namespace + "." + typeClass.Name, type.Name, obsolete.Message);
+						_log.Warn("{0} ({1}) is obsolete. {2}", typeClass.FullName, type.Name, obsolete.Message);
 					}
 					return type;
 				}
