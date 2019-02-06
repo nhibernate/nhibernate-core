@@ -23,6 +23,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Loader.Hql;
 using NHibernate.Param;
+using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;

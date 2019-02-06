@@ -72,7 +72,7 @@ namespace NHibernate.Cache
 		}
 
 		//Since v5.1
-		[Obsolete("Please use PreInvalidate(IReadOnlyCollection<string>) instead.")]
+		[Obsolete("Please use Invalidate(IReadOnlyCollection<string>) instead.")]
 		public Task InvalidateAsync(object[] spaces, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
