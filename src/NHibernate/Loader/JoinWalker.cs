@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -18,7 +19,7 @@ namespace NHibernate.Loader
 		private readonly HashSet<AssociationKey> visitedAssociationKeys = new HashSet<AssociationKey>();
 		private readonly IDictionary<string, IFilter> enabledFilters;
 		private readonly IDictionary<string, IFilter> enabledFiltersForManyToOne;
-		private static readonly Regex aliasRegex = new Regex(@"([\w]+)\.", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static readonly Regex aliasRegex = new Regex(@"[\w]+(?=\.)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 		private string[] suffixes;
 		private string[] collectionSuffixes;
@@ -206,12 +207,12 @@ namespace NHibernate.Loader
 		private static int[] GetTopologicalSortOrder(List<DependentAlias> fields)
 		{
 			TopologicalSorter g = new TopologicalSorter(fields.Count);
-			Dictionary<string, int> _indexes = new Dictionary<string, int>();
+			Dictionary<string, int> indexes = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
 			// add vertices
 			for (int i = 0; i < fields.Count; i++)
 			{
-				_indexes[fields[i].Alias.ToLower()] = g.AddVertex(i);
+				indexes[fields[i].Alias] = g.AddVertex(i);
 			}
 
 			// add edges
@@ -222,9 +223,9 @@ namespace NHibernate.Loader
 				{
 					for (int j = 0; j < dependentAlias.DependsOn.Length; j++)
 					{
-						var dependentField = dependentAlias.DependsOn[j].ToLower();
+						var dependentField = dependentAlias.DependsOn[j];
 						int end;
-						if (_indexes.TryGetValue(dependentField, out end))
+						if (indexes.TryGetValue(dependentField, out end))
 						{
 							g.AddEdge(i, end);
 						}
@@ -240,25 +241,25 @@ namespace NHibernate.Loader
 		/// </summary>
 		private void AddAssociation(string subalias, OuterJoinableAssociation association)
 		{
-			subalias = subalias.ToLower();
-
-			var dependencies = new List<string>();
-			var on = association.On.ToString();
-			if (!String.IsNullOrEmpty(on))
-			{
-				foreach (Match match in aliasRegex.Matches(on))
-				{
-					string alias = match.Groups[1].Value;
-					if (alias == subalias) continue;
-					dependencies.Add(alias.ToLower());
-				}
-			}
-
-			_dependentAliases.Add(new DependentAlias
+			var dependentAlias = new DependentAlias
 			{
 				Alias = subalias,
-				DependsOn = dependencies.ToArray()
-			});
+			};
+			_dependentAliases.Add(dependentAlias);
+
+			var on = association.On.ToString();
+			if (!string.IsNullOrEmpty(on))
+			{
+				var dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+				foreach (Match match in aliasRegex.Matches(on))
+				{
+					string alias = match.Value;
+					if (string.Equals(alias, subalias, StringComparison.OrdinalIgnoreCase))
+						continue;
+					dependencies.Add(alias);
+				}
+				dependentAlias.DependsOn = dependencies.ToArray();
+			}
 
 			associations.Add(association);
 		}
