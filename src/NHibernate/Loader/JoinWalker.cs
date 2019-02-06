@@ -204,8 +204,14 @@ namespace NHibernate.Loader
 			return SelectMode.Undefined;
 		}
 
+		/// <summary>
+		/// Returns null if sorting is not required, otherwise list of indexes in sorted order
+		/// </summary>
 		private static int[] GetTopologicalSortOrder(List<DependentAlias> fields)
 		{
+			if (!fields.Exists(a => a.DependsOn?.Length > 0))
+				return null;
+
 			TopologicalSorter g = new TopologicalSorter(fields.Count);
 			Dictionary<string, int> indexes = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
@@ -799,16 +805,9 @@ namespace NHibernate.Loader
 		/// </summary>
 		protected JoinFragment MergeOuterJoins(IList<OuterJoinableAssociation> associations)
 		{
-			IList<OuterJoinableAssociation> sortedAssociations = new List<OuterJoinableAssociation>();
-
-			var indices = GetTopologicalSortOrder(_dependentAliases);
-			for (int index = indices.Length - 1; index >= 0; index--)
-			{
-				sortedAssociations.Add(associations[indices[index]]);
-			}
-
 			JoinFragment outerjoin = Dialect.CreateOuterJoinFragment();
 
+			var sortedAssociations = GetSortedAssociations(associations);
 			OuterJoinableAssociation last = null;
 			foreach (OuterJoinableAssociation oj in sortedAssociations)
 			{
@@ -838,6 +837,21 @@ namespace NHibernate.Loader
 			}
 
 			return outerjoin;
+		}
+
+		private IList<OuterJoinableAssociation> GetSortedAssociations(IList<OuterJoinableAssociation> associations)
+		{
+			var indexes = GetTopologicalSortOrder(_dependentAliases);
+			if (indexes == null)
+				return associations;
+
+			var sortedAssociations = new List<OuterJoinableAssociation>(associations.Count);
+			for (int index = indexes.Length - 1; index >= 0; index--)
+			{
+				sortedAssociations.Add(associations[indexes[index]]);
+			}
+
+			return sortedAssociations;
 		}
 
 		/// <summary>
