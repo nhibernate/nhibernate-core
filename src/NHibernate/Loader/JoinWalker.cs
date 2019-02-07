@@ -203,17 +203,10 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Returns null if sorting is not required, otherwise list of indexes in sorted order
+		/// Returns list of indexes in sorted order
 		/// </summary>
-		private static int[] GetTopologicalSortOrder(IList<OuterJoinableAssociation> associations)
+		private static int[] GetTopologicalSortOrder(IList<DependentAlias> fields)
 		{
-			if (associations.Count < 2)
-				return null;
-
-			var fields = GetDependentAliases(associations);
-			if (!fields.Exists(a => a.DependsOn?.Length > 0))
-				return null;
-
 			TopologicalSorter g = new TopologicalSorter(fields.Count);
 			Dictionary<string, int> indexes = new Dictionary<string, int>(fields.Count, StringComparer.OrdinalIgnoreCase);
 
@@ -851,12 +844,16 @@ namespace NHibernate.Loader
 			return outerjoin;
 		}
 
-		private IList<OuterJoinableAssociation> GetSortedAssociations(IList<OuterJoinableAssociation> associations)
+		private static IList<OuterJoinableAssociation> GetSortedAssociations(IList<OuterJoinableAssociation> associations)
 		{
-			var indexes = GetTopologicalSortOrder(associations);
-			if (indexes == null)
+			if (associations.Count < 2)
 				return associations;
 
+			var fields = GetDependentAliases(associations);
+			if (!fields.Exists(a => a.DependsOn?.Length > 0))
+				return associations;
+
+			var indexes = GetTopologicalSortOrder(fields);
 			var sortedAssociations = new List<OuterJoinableAssociation>(associations.Count);
 			for (int index = indexes.Length - 1; index >= 0; index--)
 			{
