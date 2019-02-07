@@ -121,8 +121,6 @@ namespace NHibernate.Loader
 			public string[] DependsOn { get; set; }
 		}
 
-		readonly List<DependentAlias> _dependentAliases = new List<DependentAlias>();
-
 		protected JoinWalker(ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 		{
 			this.factory = factory;
@@ -181,7 +179,7 @@ namespace NHibernate.Loader
 					enabledFilters,
 					GetSelectMode(path));
 			assoc.ValidateJoin(path);
-			AddAssociation(subalias, assoc);
+			AddAssociation(assoc);
 
 			int nextDepth = currentDepth + 1;
 
@@ -207,13 +205,17 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Returns null if sorting is not required, otherwise list of indexes in sorted order
 		/// </summary>
-		private static int[] GetTopologicalSortOrder(List<DependentAlias> fields)
+		private static int[] GetTopologicalSortOrder(IList<OuterJoinableAssociation> associations)
 		{
+			if (associations.Count < 2)
+				return null;
+
+			var fields = GetDependentAliases(associations);
 			if (!fields.Exists(a => a.DependsOn?.Length > 0))
 				return null;
 
 			TopologicalSorter g = new TopologicalSorter(fields.Count);
-			Dictionary<string, int> indexes = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			Dictionary<string, int> indexes = new Dictionary<string, int>(fields.Count, StringComparer.OrdinalIgnoreCase);
 
 			// add vertices
 			for (int i = 0; i < fields.Count; i++)
@@ -242,31 +244,41 @@ namespace NHibernate.Loader
 			return g.Sort();
 		}
 
-		/// <summary>
-		/// Adds an association and extracts the aliases the association's 'with clause' is dependent on
-		/// </summary>
-		private void AddAssociation(string subalias, OuterJoinableAssociation association)
+		private static List<DependentAlias> GetDependentAliases(IList<OuterJoinableAssociation> associations)
 		{
-			var dependentAlias = new DependentAlias
-			{
-				Alias = subalias,
-			};
-			_dependentAliases.Add(dependentAlias);
+			var dependentAliases = new List<DependentAlias>(associations.Count);
 
-			var on = association.On.ToString();
-			if (!string.IsNullOrEmpty(on))
+			foreach (var association in associations)
 			{
-				var dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-				foreach (Match match in aliasRegex.Matches(on))
+				var dependentAlias = new DependentAlias
 				{
-					string alias = match.Value;
-					if (string.Equals(alias, subalias, StringComparison.OrdinalIgnoreCase))
-						continue;
-					dependencies.Add(alias);
-				}
-				dependentAlias.DependsOn = dependencies.ToArray();
-			}
+					Alias = association.RHSAlias,
+				};
 
+				dependentAliases.Add(dependentAlias);
+
+				var on = association.On.ToString();
+				if (!string.IsNullOrEmpty(on))
+				{
+					var dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+					foreach (Match match in aliasRegex.Matches(on))
+					{
+						string alias = match.Value;
+						if (string.Equals(alias, dependentAlias.Alias, StringComparison.OrdinalIgnoreCase))
+							continue;
+						dependencies.Add(alias);
+					}
+					dependentAlias.DependsOn = dependencies.ToArray();
+				}
+			}
+			return dependentAliases;
+		}
+
+		/// <summary>
+		/// Adds an association
+		/// </summary>
+		private void AddAssociation(OuterJoinableAssociation association)
+		{
 			associations.Add(association);
 		}
 
@@ -366,7 +378,7 @@ namespace NHibernate.Loader
 					Factory,
 					enabledFilters,
 					GetSelectMode(path));
-			AddAssociation(tableAlias, assoc);
+			AddAssociation(assoc);
 		}
 
 		private void WalkEntityAssociationTree(IAssociationType associationType, IOuterJoinLoadable persister,
@@ -841,7 +853,7 @@ namespace NHibernate.Loader
 
 		private IList<OuterJoinableAssociation> GetSortedAssociations(IList<OuterJoinableAssociation> associations)
 		{
-			var indexes = GetTopologicalSortOrder(_dependentAliases);
+			var indexes = GetTopologicalSortOrder(associations);
 			if (indexes == null)
 				return associations;
 
