@@ -115,6 +115,8 @@ namespace NHibernate.Loader
 			get { return false; }
 		}
 
+		//Since v5.3
+		[Obsolete("This class is not used and will be removed in a future version.")]
 		public class DependentAlias
 		{
 			public string Alias { get; set; }
@@ -202,10 +204,22 @@ namespace NHibernate.Loader
 			return SelectMode.Undefined;
 		}
 
+		private struct DependentAlias2
+		{
+			public DependentAlias2(string alias, ICollection<string> dependsOn)
+			{
+				Alias = alias;
+				DependsOn = dependsOn;
+			}
+
+			public string Alias { get; }
+			public ICollection<string> DependsOn { get; }
+		}
+
 		/// <summary>
 		/// Returns list of indexes in sorted order
 		/// </summary>
-		private static int[] GetTopologicalSortOrder(IList<DependentAlias> fields)
+		private static int[] GetTopologicalSortOrder(IList<DependentAlias2> fields)
 		{
 			TopologicalSorter g = new TopologicalSorter(fields.Count);
 			Dictionary<string, int> indexes = new Dictionary<string, int>(fields.Count, StringComparer.OrdinalIgnoreCase);
@@ -219,14 +233,12 @@ namespace NHibernate.Loader
 			// add edges
 			for (int i = 0; i < fields.Count; i++)
 			{
-				var dependentAlias = fields[i];
-				if (dependentAlias.DependsOn != null)
+				var dependentFields = fields[i].DependsOn;
+				if (dependentFields != null)
 				{
-					for (int j = 0; j < dependentAlias.DependsOn.Length; j++)
+					foreach (var dependentField in dependentFields)
 					{
-						var dependentField = dependentAlias.DependsOn[j];
-						int end;
-						if (indexes.TryGetValue(dependentField, out end))
+						if (indexes.TryGetValue(dependentField, out var end))
 						{
 							g.AddEdge(i, end);
 						}
@@ -237,34 +249,33 @@ namespace NHibernate.Loader
 			return g.Sort();
 		}
 
-		private static List<DependentAlias> GetDependentAliases(IList<OuterJoinableAssociation> associations)
+		private static List<DependentAlias2> GetDependentAliases(IList<OuterJoinableAssociation> associations)
 		{
-			var dependentAliases = new List<DependentAlias>(associations.Count);
-
+			var dependentAliases = new List<DependentAlias2>(associations.Count);
 			foreach (var association in associations)
 			{
-				var dependentAlias = new DependentAlias
-				{
-					Alias = association.RHSAlias,
-				};
-
-				dependentAliases.Add(dependentAlias);
-
-				var on = association.On.ToString();
-				if (!string.IsNullOrEmpty(on))
-				{
-					var dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-					foreach (Match match in aliasRegex.Matches(on))
-					{
-						string alias = match.Value;
-						if (string.Equals(alias, dependentAlias.Alias, StringComparison.OrdinalIgnoreCase))
-							continue;
-						dependencies.Add(alias);
-					}
-					dependentAlias.DependsOn = dependencies.ToArray();
-				}
+				dependentAliases.Add(new DependentAlias2(association.RHSAlias, GetDependsOn(association)));
 			}
+
 			return dependentAliases;
+		}
+
+		private static HashSet<string> GetDependsOn(OuterJoinableAssociation association)
+		{
+			if (SqlStringHelper.IsEmpty(association.On))
+				return null;
+
+			var dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			foreach (Match match in aliasRegex.Matches(association.On.ToString()))
+			{
+				string alias = match.Value;
+				if (string.Equals(alias, association.RHSAlias, StringComparison.OrdinalIgnoreCase))
+					continue;
+
+				dependencies.Add(alias);
+			}
+
+			return dependencies;
 		}
 
 		/// <summary>
@@ -850,7 +861,7 @@ namespace NHibernate.Loader
 				return associations;
 
 			var fields = GetDependentAliases(associations);
-			if (!fields.Exists(a => a.DependsOn?.Length > 0))
+			if (!fields.Exists(a => a.DependsOn?.Count > 0))
 				return associations;
 
 			var indexes = GetTopologicalSortOrder(fields);
