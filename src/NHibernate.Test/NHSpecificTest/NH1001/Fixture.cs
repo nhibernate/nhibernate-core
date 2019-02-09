@@ -201,5 +201,28 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(1));
 			}
 		}
+		
+		[Test]
+		public void Department2IsNull_QueryOver()
+		{
+			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 99999 WHERE EMPLOYEE_ID = {employeeId}");
+
+			IStatistics statistics = Sfi.Statistics;
+			statistics.Clear();
+
+			using (ISession session = OpenSession())
+			{
+				var employee = session.QueryOver<Employee>()
+					.Fetch(SelectMode.Fetch, e => e.Department2)
+					.Fetch(SelectMode.Skip, e => e.Department1, e => e.Department3, e => e.Address)
+					.Where(e => e.Id == employeeId)
+					.SingleOrDefault();
+
+				Assert.That(employee.Department1, Is.Not.Null);
+				Assert.That(employee.Department2, Is.Null);
+				Assert.That(employee.Department3, Is.Not.Null);
+				Assert.That(employee.Address, Is.Not.Null);
+			}
+		}
 	}
 }
