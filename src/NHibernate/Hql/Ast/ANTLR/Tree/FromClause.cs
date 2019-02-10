@@ -9,6 +9,9 @@ using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
+	// 6.0 TODO: consider retyping methods yielding IList<IASTNode> as IList<FromElement>
+	// They all do actually yield FromElement, and most of their callers end up recasting
+	// them.
 	/// <summary>
 	/// Represents the 'FROM' part of a query or subquery, containing all mapped class references.
 	/// Author: josh

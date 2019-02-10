@@ -7,7 +7,7 @@ namespace NHibernate.Transform
 	[Serializable]
 	public class PassThroughResultTransformer : IResultTransformer, ITupleSubsetResultTransformer
 	{
-		private static readonly object Hasher = new object();
+		internal static readonly PassThroughResultTransformer Instance = new PassThroughResultTransformer();
 
 		#region IResultTransformer Members
 
@@ -58,21 +58,18 @@ namespace NHibernate.Transform
 			return isSingleResult ? new[] {transformed} : (object[]) transformed;
 		}
 
-
 		public override bool Equals(object obj)
 		{
-			if (obj == null || obj.GetHashCode() != Hasher.GetHashCode())
-			{
+			if (ReferenceEquals(obj, this))
+				return true;
+			if (obj == null)
 				return false;
-			}
-			// NH-3957: do not rely on hashcode alone.
-			// Must be the exact same type
-			return obj.GetType() == typeof(PassThroughResultTransformer);
+			return obj.GetType() == GetType();
 		}
 
 		public override int GetHashCode()
 		{
-			return Hasher.GetHashCode();
+			return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(Instance);
 		}
 	}
 }

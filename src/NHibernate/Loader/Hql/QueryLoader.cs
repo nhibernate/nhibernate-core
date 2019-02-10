@@ -43,6 +43,7 @@ namespace NHibernate.Loader.Hql
 		private readonly NullableDictionary<string, string> _sqlAliasByEntityAlias = new NullableDictionary<string, string>();
 		private int _selectLength;
 		private LockMode[] _defaultLockModes;
+		private ISet<ICollectionPersister> _uncacheableCollectionPersisters;
 
 		public QueryLoader(QueryTranslatorImpl queryTranslator, ISessionFactoryImplementor factory, SelectClause selectClause)
 			: base(factory)
@@ -289,6 +290,7 @@ namespace NHibernate.Loader.Hql
 
 			//NONE, because its the requested lock mode, not the actual! 
 			_defaultLockModes = ArrayHelper.Fill(LockMode.None, size);
+			_uncacheableCollectionPersisters = _queryTranslator.UncacheableCollectionPersisters;
 		}
 
 		public IList List(ISessionImplementor session, QueryParameters queryParameters)
@@ -323,6 +325,11 @@ namespace NHibernate.Loader.Hql
 			{
 				return results;
 			}
+		}
+
+		protected override bool IsCollectionPersisterCacheable(ICollectionPersister collectionPersister)
+		{
+			return !_uncacheableCollectionPersisters.Contains(collectionPersister);
 		}
 
 		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
