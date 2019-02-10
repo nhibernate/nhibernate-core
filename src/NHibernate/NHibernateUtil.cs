@@ -588,9 +588,9 @@ namespace NHibernate
 				entity = proxy;
 			}
 
-			if (FieldInterceptionHelper.IsInstrumented(entity))
+			if (entity is IFieldInterceptorAccessor interceptorAccessor)
 			{
-				IFieldInterceptor interceptor = FieldInterceptionHelper.ExtractFieldInterceptor(entity);
+				var interceptor = interceptorAccessor.FieldInterceptor;
 				return interceptor == null || interceptor.IsInitializedField(propertyName);
 			}
 			else

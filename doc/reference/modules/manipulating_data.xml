@@ -529,8 +529,7 @@ firstSession.Save(potentialMate);
 cat.Mate = potentialMate;
 
 // later, in a new session
-secondSession.Update(cat);  // update cat
-secondSession.Update(mate); // update mate]]></programlisting>
+secondSession.Update(cat);  // update cat]]></programlisting>
 
             <para>
                 If the <literal>Cat</literal> with identifier <literal>catId</literal> had already

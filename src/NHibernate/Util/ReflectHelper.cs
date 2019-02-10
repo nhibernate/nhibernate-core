@@ -293,7 +293,7 @@ namespace NHibernate.Util
 
 			var heuristicClass = propertyClass.UnwrapIfNullable();
 
-			return TypeFactory.HeuristicType(heuristicClass.AssemblyQualifiedName);
+			return TypeFactory.HeuristicType(heuristicClass);
 		}
 
 		/// <summary>

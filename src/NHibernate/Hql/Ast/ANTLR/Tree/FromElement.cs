@@ -28,6 +28,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private string _collectionTableAlias;
 		private FromClause _fromClause;
 		private string[] _columns;
+		private string[] _fetchLazyProperties;
 		private FromElement _origin;
 		private bool _useFromFragment;
 		private bool _useWhereFragment = true;
@@ -107,6 +108,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get { return _isAllPropertyFetch; }
 			set { _isAllPropertyFetch = value; }
+		}
+
+		/// <summary>
+		/// Names of lazy properties to be fetched.
+		/// </summary>
+		public string[] FetchLazyProperties
+		{
+			get { return _fetchLazyProperties; }
+			set { _fetchLazyProperties = value; }
 		}
 
 		public virtual bool IsImpliedInFromClause
@@ -327,7 +337,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <returns>the property select SQL fragment.</returns>
 		public string RenderPropertySelect(int size, int k)
 		{
-			return _elementType.RenderPropertySelect(size, k, IsAllPropertyFetch);
+			return IsAllPropertyFetch
+				? _elementType.RenderPropertySelect(size, k, IsAllPropertyFetch)
+				: _elementType.RenderPropertySelect(size, k, _fetchLazyProperties);
 		}
 
 		public override SqlString RenderText(Engine.ISessionFactoryImplementor sessionFactory)

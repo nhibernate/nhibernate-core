@@ -239,6 +239,40 @@ namespace NHibernate.Cfg
 				NHibernate.Dialect.Dialect.GetDialect(configuration.Properties);
 		}
 
+		[Serializable]
+		private class StaticDialectMappingWrapper : IMapping
+		{
+			private readonly IMapping _mapping;
+
+			public StaticDialectMappingWrapper(IMapping mapping)
+			{
+				_mapping = mapping;
+				Dialect = mapping.Dialect;
+			}
+
+			public IType GetIdentifierType(string className)
+			{
+				return _mapping.GetIdentifierType(className);
+			}
+
+			public string GetIdentifierPropertyName(string className)
+			{
+				return _mapping.GetIdentifierPropertyName(className);
+			}
+
+			public IType GetReferencedPropertyType(string className, string propertyName)
+			{
+				return _mapping.GetReferencedPropertyType(className, propertyName);
+			}
+
+			public bool HasNonIdentifierPropertyNamedId(string className)
+			{
+				return _mapping.HasNonIdentifierPropertyNamedId(className);
+			}
+
+			public Dialect.Dialect Dialect { get; }
+		}
+
 		private IMapping mapping;
 
 		protected Configuration(SettingsFactory settingsFactory)
@@ -1272,7 +1306,7 @@ namespace NHibernate.Cfg
 			// Ok, don't need schemas anymore, so free them
 			Schemas = null;
 
-			return new SessionFactoryImpl(this, mapping, settings, GetInitializedEventListeners());
+			return new SessionFactoryImpl(this, new StaticDialectMappingWrapper(mapping), settings, GetInitializedEventListeners());
 		}
 
 		/// <summary>

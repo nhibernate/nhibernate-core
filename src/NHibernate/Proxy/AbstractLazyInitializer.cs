@@ -1,6 +1,5 @@
 using System;
 using NHibernate.Engine;
-using NHibernate.Persister.Entity;
 
 namespace NHibernate.Proxy
 {
@@ -30,7 +29,6 @@ namespace NHibernate.Proxy
 		private bool unwrap;
 		private readonly string _entityName;
 		private bool readOnly;
-		private bool? readOnlyBeforeAttachedToSession;
 
 		/// <summary>
 		/// Create a LazyInitializer to handle all of the Methods/Properties that are called
@@ -43,46 +41,33 @@ namespace NHibernate.Proxy
 		{
 			_id = id;
 			_entityName = entityName;
-			
-			if (session == null)
-				UnsetSession();
-			else
-				SetSession(session);
+
+			SetSession(session);
 		}
 
 		/// <inheritdoc />
 		public void SetSession(ISessionImplementor s)
 		{
-			if (s != _session)
+			if (s == _session)
+				return;
+
+			// check for s == null first, since it is least expensive
+			if (s == null)
 			{
-				// check for s == null first, since it is least expensive
-				if (s == null)
-				{
-					UnsetSession();
-				}
-				else if (IsConnectedToSession)
-				{
-					//TODO: perhaps this should be some other RuntimeException...
-					throw new HibernateException("illegally attempted to associate a proxy with two open Sessions");
-				}
-				else
-				{
-					// s != null
-					_session = s;
-					if (readOnlyBeforeAttachedToSession == null)
-					{
-						// use the default read-only/modifiable setting
-						IEntityPersister persister = s.Factory.GetEntityPersister(_entityName);
-						SetReadOnly(s.PersistenceContext.DefaultReadOnly || !persister.IsMutable);
-					}
-					else
-					{
-						// use the read-only/modifiable setting indicated during deserialization
-						SetReadOnly(readOnlyBeforeAttachedToSession.Value);
-						readOnlyBeforeAttachedToSession = null;
-					}
-				}
+				UnsetSession();
+				return;
 			}
+
+			if (IsConnectedToSession)
+			{
+				//TODO: perhaps this should be some other RuntimeException...
+				throw new HibernateException("illegally attempted to associate a proxy with two open Sessions");
+			}
+
+			_session = s;
+
+			// use the default read-only/modifiable setting
+			SetReadOnly(s.PersistenceContext.DefaultReadOnly || !s.Factory.GetEntityPersister(_entityName).IsMutable);
 		}
 		
 		/// <inheritdoc />
@@ -90,7 +75,6 @@ namespace NHibernate.Proxy
 		{
 			_session = null;
 			readOnly = false;
-			readOnlyBeforeAttachedToSession = null;
 		}
 		
 		protected internal bool IsConnectedToSession
@@ -275,9 +259,7 @@ namespace NHibernate.Proxy
 		
 		private void SetReadOnly(bool readOnly)
 		{
-			IEntityPersister persister = _session.Factory.GetEntityPersister(_entityName);
-
-			if (!persister.IsMutable && !readOnly)
+			if (!readOnly && !_session.Factory.GetEntityPersister(_entityName).IsMutable)
 			{
 				throw new InvalidOperationException("cannot make proxies for immutable entities modifiable");
 			}

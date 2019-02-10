@@ -43,6 +43,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 	{
 		public virtual IList<Level2Child> Children { get; set; } = new List<Level2Child>();
 		public virtual string LazyProp { get; set; }
+		public virtual int OrderIdx { get; set; }
 	}
 
 	public class Level2Child : BaseChild

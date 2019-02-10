@@ -121,24 +121,17 @@ namespace NHibernate.Action
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				//TODO Make 100% certain that this is called before any subsequent ScheduledUpdate.afterTransactionCompletion()!!
-				//TODO from H3.2: reenable if we also fix the above todo
-				/*EntityPersister persister = getEntityPersister();
+			//TODO Make 100% certain that this is called before any subsequent ScheduledUpdate.afterTransactionCompletion()!!
+			//TODO from H3.2: reenable if we also fix the above todo
+			/*EntityPersister persister = getEntityPersister();
 			if ( success && persister.hasCache() && !persister.isCacheInvalidationRequired() ) {
 			persister.getCache().afterInsert( getGeneratedId(), cacheEntry );
 			}*/
-				if (success)
-				{
-					return PostCommitInsertAsync(cancellationToken);
-				}
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
+			if (success)
 			{
-				return Task.FromException<object>(ex);
+				return PostCommitInsertAsync(cancellationToken);
 			}
+			return Task.CompletedTask;
 		}
 	}
 }

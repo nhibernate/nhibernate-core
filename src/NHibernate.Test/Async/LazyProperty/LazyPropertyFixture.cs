@@ -9,15 +9,19 @@
 
 
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using NHibernate.Cfg;
 using NHibernate.Intercept;
 using NHibernate.Tuple.Entity;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using NHibernate.Linq;
 
 namespace NHibernate.Test.LazyProperty
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	[TestFixture]
 	public class LazyPropertyFixtureAsync : TestCase
 	{
@@ -33,6 +37,8 @@ namespace NHibernate.Test.LazyProperty
 			get { return new[] { "LazyProperty.Mappings.hbm.xml" }; }
 		}
 
+		protected override string CacheConcurrencyStrategy => null;
+
 		protected override DebugSessionFactory BuildSessionFactory()
 		{
 			using (var logSpy = new LogSpy(typeof(EntityMetamodel)))
@@ -41,6 +47,11 @@ namespace NHibernate.Test.LazyProperty
 				log = logSpy.GetWholeLog();
 				return factory;
 			}
+		}
+
+		protected override void Configure(Configuration configuration)
+		{
+			configuration.SetProperty(Environment.GenerateStatistics, "true");
 		}
 
 		protected override void OnSetUp()
@@ -58,6 +69,7 @@ namespace NHibernate.Test.LazyProperty
 					Name = "some name",
 					Id = 1,
 					ALotOfText = "a lot of text ...",
+					Image = new byte[10],
 					FieldInterceptor = "Why not that name?"
 				});
 				tx.Commit();
@@ -70,6 +82,7 @@ namespace NHibernate.Test.LazyProperty
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
+				s.CreateQuery("delete from Word").ExecuteUpdate();
 				s.CreateQuery("delete from Book").ExecuteUpdate();
 				tx.Commit();
 			}
@@ -120,6 +133,94 @@ namespace NHibernate.Test.LazyProperty
 				Assert.That(book.ALotOfText, Is.EqualTo("a lot of text ..."));
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.True);
 			}
+		}
+
+		[Test]
+		public async Task CanSetValueForLazyPropertyAsync()
+		{
+			Book book;
+			using (ISession s = OpenSession())
+			{
+				book = await (s.GetAsync<Book>(1));
+			}
+
+			book.ALotOfText = "text";
+
+			Assert.That(book.ALotOfText, Is.EqualTo("text"));
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.True);
+		}
+
+		[TestCase(false)]
+		[TestCase(true)]
+		public async Task CanUpdateValueForLazyPropertyAsync(bool initializeAfterSet, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			Book book;
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				book = await (s.GetAsync<Book>(1, cancellationToken));
+				book.ALotOfText = "update-text";
+				if (initializeAfterSet)
+				{
+					var image = book.Image;
+				}
+
+				await (tx.CommitAsync(cancellationToken));
+			}
+
+			using (var s = OpenSession())
+			{
+				book = await (s.GetAsync<Book>(1, cancellationToken));
+				var text = book.ALotOfText;
+			}
+
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.True);
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Image"), Is.True);
+			Assert.That(book.ALotOfText, Is.EqualTo("update-text"));
+			Assert.That(book.Image, Has.Length.EqualTo(10));
+		}
+
+		[TestCase(false)]
+		[TestCase(true)]
+		public async Task UpdateValueForLazyPropertyToSameValueAsync(bool initializeAfterSet, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			Book book;
+			string text;
+
+			using (var s = OpenSession())
+			{
+				book = await (s.GetAsync<Book>(1, cancellationToken));
+				text = book.ALotOfText;
+			}
+
+			Sfi.Statistics.Clear();
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				book = await (s.GetAsync<Book>(1, cancellationToken));
+				book.ALotOfText = text;
+				if (initializeAfterSet)
+				{
+					var image = book.Image;
+				}
+
+				await (tx.CommitAsync(cancellationToken));
+			}
+
+			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(initializeAfterSet ? 0 : 1));
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.True);
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Image"), initializeAfterSet ? (Constraint) Is.True : Is.False);
+			Assert.That(book.ALotOfText, Is.EqualTo(text));
+
+			using (var s = OpenSession())
+			{
+				book = await (s.GetAsync<Book>(1, cancellationToken));
+				text = book.ALotOfText;
+			}
+
+			Assert.That(book.Image, Has.Length.EqualTo(10));
+			Assert.That(book.ALotOfText, Is.EqualTo(text));
 		}
 
 		[Test]
@@ -214,6 +315,87 @@ namespace NHibernate.Test.LazyProperty
 				Assert.That(book, Is.Not.Null);
 				Assert.That(book.Name, Is.EqualTo("some name two"));
 				Assert.That(book.ALotOfText, Is.EqualTo("a lot of text two..."));
+			}
+		}
+
+		[Test]
+		public async Task CacheShouldNotContainLazyPropertiesAsync()
+		{
+			Book book;
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+
+				book = await (s.CreateQuery("from Book b fetch all properties where b.Id = :id")
+				        .SetParameter("id", 1)
+				        .UniqueResultAsync<Book>());
+				await (tx.CommitAsync());
+			}
+
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.True);
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Image"), Is.True);
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+
+				book = await (s.GetAsync<Book>(1));
+				await (tx.CommitAsync());
+			}
+
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Image"), Is.False);
+		}
+
+		[Test]
+		public async Task CanMergeTransientWithLazyPropertyInCollectionAsync()
+		{
+			Book book;
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				book = new Book
+				{
+					Name = "some name two",
+					Id = 3,
+					ALotOfText = "a lot of text two..."
+				};
+				// This should insert a new entity.
+				await (s.MergeAsync(book));
+				await (tx.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			{
+				book = await (s.GetAsync<Book>(3));
+				Assert.That(book, Is.Not.Null);
+				Assert.That(book.Name, Is.EqualTo("some name two"));
+				Assert.That(book.ALotOfText, Is.EqualTo("a lot of text two..."));
+
+			}
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				book.Words = new List<Word>();
+				var word = new Word
+				{
+					Id = 2,
+					Parent = book,
+					Content = new byte[1] {0}
+				};
+
+				book.Words.Add(word);
+				await (s.MergeAsync(book));
+				await (tx.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			{
+				book = await (s.GetAsync<Book>(3));
+				Assert.That(book.Words.Any(), Is.True);
+				Assert.That(book.Words.First().Content, Is.EqualTo(new byte[1] { 0 }));
 			}
 		}
 	}

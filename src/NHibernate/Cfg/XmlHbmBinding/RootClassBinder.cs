@@ -268,6 +268,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				rootClass.CacheConcurrencyStrategy = cacheSchema.usage.ToCacheConcurrencyStrategy();
 				rootClass.CacheRegionName = cacheSchema.region;
+				rootClass.SetLazyPropertiesCacheable(cacheSchema.include == HbmCacheInclude.All);
 			}
 		}
 	}

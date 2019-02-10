@@ -132,28 +132,14 @@ namespace NHibernate.Test.TransactionTest
 
 		public Task ExecuteBeforeTransactionCompletionAsync(CancellationToken cancellationToken)
 		{
-			try
-			{
-				BeforeExecutions += 1;
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			BeforeExecutions += 1;
+			return Task.CompletedTask;
 		}
 
 		public Task ExecuteAfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
 		{
-			try
-			{
-				AfterExecutions += 1;
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			AfterExecutions += 1;
+			return Task.CompletedTask;
 		}
 	}
 

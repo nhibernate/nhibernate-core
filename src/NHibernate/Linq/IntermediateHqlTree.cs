@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Transform;
 using NHibernate.Type;
 
@@ -109,7 +110,7 @@ namespace NHibernate.Linq
 			if (!_hasDistinctRootOperator)
 			{
 				Expression<Func<IEnumerable<object>, IList>> x =
-					l => new DistinctRootEntityResultTransformer().TransformList(l.ToList());
+					l => DistinctRootEntityResultTransformer.TransformList(l);
 
 				_listTransformers.Add(x);
 				_hasDistinctRootOperator = true;
@@ -129,6 +130,15 @@ namespace NHibernate.Linq
 		public void AddSelectClause(HqlTreeNode select)
 		{
 			_root.NodesPreOrder.OfType<HqlSelectFrom>().First().AddChild(select);
+		}
+
+		public void AddFromLastChildClause(params HqlTreeNode[] nodes)
+		{
+			var fromChild = _root.NodesPreOrder.OfType<HqlFrom>().First().Children.Last();
+			foreach (var node in nodes)
+			{
+				fromChild.AddChild(node);
+			}
 		}
 
 		public void AddInsertClause(HqlIdent target, HqlRange columnSpec)

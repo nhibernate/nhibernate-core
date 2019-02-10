@@ -19,7 +19,7 @@ namespace NHibernate.Transform
 		// is private (as it should be for a singleton)
 		//private const PassThroughResultTransformer ACTUAL_TRANSFORMER =
 		//    PassThroughResultTransformer.INSTANCE;
-		private readonly PassThroughResultTransformer _actualTransformer = new PassThroughResultTransformer();
+		private readonly PassThroughResultTransformer _actualTransformer = PassThroughResultTransformer.Instance;
 
 		public bool AutoDiscoverTypes { get; }
 
@@ -358,7 +358,7 @@ namespace NHibernate.Transform
 			if (this == o)
 				return true;
 
-			if (o == null || typeof (CacheableResultTransformer) != o.GetType())
+			if (o == null || GetType() != o.GetType())
 				return false;
 
 			var that = (CacheableResultTransformer) o;
