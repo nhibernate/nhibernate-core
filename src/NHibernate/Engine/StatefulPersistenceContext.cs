@@ -513,6 +513,8 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Adds an entity to the internal caches.</summary>
+		// Since v5.3
+		[Obsolete("Use overload without lazyPropertiesAreUnfetched parameter")]
 		public EntityEntry AddEntity(object entity, Status status, object[] loadedState, EntityKey entityKey, object version,
 																 LockMode lockMode, bool existsInDatabase, IEntityPersister persister,
 																 bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
@@ -536,15 +538,15 @@ namespace NHibernate.Engine
 		/// Generates an appropriate EntityEntry instance and adds it
 		/// to the event source's internal caches.
 		/// </summary>
+		// Since v5.3
+		[Obsolete("Use overload without lazyPropertiesAreUnfetched parameter")]
 		public EntityEntry AddEntry(object entity, Status status, object[] loadedState, object rowId, object id,
 																object version, LockMode lockMode, bool existsInDatabase, IEntityPersister persister,
 																bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
 		{
 			EntityEntry e =
-#pragma warning disable 618
 				new EntityEntry(status, loadedState, rowId, id, version, lockMode, existsInDatabase, persister,
 								disableVersionIncrement, lazyPropertiesAreUnfetched);
-#pragma warning restore 618
 			entityEntries[entity] = e;
 
 			SetHasNonReadOnlyEnties(status);

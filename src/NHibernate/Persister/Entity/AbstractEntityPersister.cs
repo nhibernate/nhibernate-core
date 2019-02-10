@@ -4352,6 +4352,8 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.HasUpdateGeneratedValues; }
 		}
 
+		// Since v5.3
+		[Obsolete("Use overload without lazyPropertiesAreUnfetched parameter")]
 		public void AfterInitialize(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
 		{
 			EntityTuplizer.AfterInitialize(entity, session);

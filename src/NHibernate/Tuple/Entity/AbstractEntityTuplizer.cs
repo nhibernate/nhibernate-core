@@ -224,8 +224,11 @@ namespace NHibernate.Tuple.Entity
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("Use overload without lazyPropertiesAreUnfetched parameter")]
 		public virtual void AfterInitialize(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
 		{
+			AfterInitialize(entity, session);
 		}
 
 		public virtual void AfterInitialize(object entity, ISessionImplementor session)

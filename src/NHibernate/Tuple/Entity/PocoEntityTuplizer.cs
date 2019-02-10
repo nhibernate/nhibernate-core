@@ -215,11 +215,6 @@ namespace NHibernate.Tuple.Entity
 			return Cfg.Environment.BytecodeProvider.ProxyFactoryFactory.BuildProxyFactory();
 		}
 
-		public override void AfterInitialize(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
-		{
-			AfterInitialize(entity, session);
-		}
-
 		public override void AfterInitialize(object entity, ISessionImplementor session)
 		{
 			if (IsInstrumented)

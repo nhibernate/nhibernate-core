@@ -34,7 +34,7 @@ namespace NHibernate.Mapping.ByCode
 	public interface IComponentMapper<TComponent> : IComponentAttributesMapper<TComponent>, IPropertyContainerMapper<TComponent>
 	{}
 
-	public static class ComponentAttributesMapper
+	public static class ComponentAttributesMapperExtensions
 	{
 		// 6.0 TODO: Move to IComponentAttributesMapper
 		public static void LazyGroup(this IComponentAttributesMapper mapper, string name)
