@@ -7,6 +7,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -944,22 +945,34 @@ namespace NHibernate.Loader
 
 			object[] rowResults = new object[cols];
 
-			var entityCounter = new Dictionary<string, int>();
-
 			for (int i = 0; i < cols; i++)
 			{
 				object obj = null;
 				ILoadable persister = persisters[i];
-				
-				entityCounter.TryGetValue(persister.EntityName, out int total);
-				entityCounter[persister.EntityName] = ++total;
 
 				EntityKey key = keys[i];
 
 				if (key == null)
 				{
-					if (cols > 1)
+					if (cols > 1 && CollectionOwners != null)
 					{
+						var sb = new StringBuilder();
+						string name = Aliases[i];
+						for (int p = name.Length - 2; p >0; p--)
+						{
+							char c = name[p];
+							if (char.IsNumber(c))
+							{
+								sb.Insert(0, c);
+							}
+							else
+							{
+								break;
+							}
+						}
+						
+						int position = int.Parse(sb.ToString());
+						
 						/*
 						* the keys.length > 1 and the relation IsIgnoreNotFound probably we are in presence of
 						* an load with "outer join" the relation can be considerer loaded even if the key is null (mean not found)
@@ -976,8 +989,9 @@ namespace NHibernate.Loader
 							for (int z = 0; z < persisters[j].PropertyTypes.Length; z++)
 							{
 								IType type = persisters[j].PropertyTypes[z];
-								if (type.Name == persister.EntityName && ++count == total
-								                                      && type is ManyToOneType many && many.IsNullable)
+								if (type is ManyToOneType many 
+								    && ++count == position
+								    && type.Name == persister.EntityName && many.IsNullable)
 								{
 									found = true;
 									session.PersistenceContext.AddNullProperty(keys[j], many.PropertyName);
