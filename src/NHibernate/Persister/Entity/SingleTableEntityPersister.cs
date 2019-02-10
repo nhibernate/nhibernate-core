@@ -25,7 +25,8 @@ namespace NHibernate.Persister.Entity
 		private readonly bool[] isNullableTable;
 		private readonly string[][] keyColumnNames;
 		private readonly bool[] cascadeDeleteEnabled;
-		private readonly bool hasSequentialSelects;
+		private readonly bool hasSequentialSelects; // TODO 6.0: Remove
+		private readonly bool _hasSequentialSelect;
 		private readonly string[] spaces;
 		private readonly string[] subclassClosure;
 		private readonly string[] subclassTableNameClosure;
@@ -66,9 +67,8 @@ namespace NHibernate.Persister.Entity
 		private readonly string[][] constraintOrderedKeyColumnNames;
 
 		//private readonly IDictionary propertyTableNumbersByName = new Hashtable();
-		private readonly Dictionary<string, int> propertyTableNumbersByNameAndSubclass = new Dictionary<string, int>();
 
-		private readonly Dictionary<string, SqlString> sequentialSelectStringsByEntityName = new Dictionary<string, SqlString>();
+		private SqlString _sequentialSelectString;
 
 		private static readonly object NullDiscriminator = new object();
 		private static readonly object NotNullDiscriminator = new object();
@@ -165,7 +165,7 @@ namespace NHibernate.Persister.Entity
 
 			bool lazyAvailable = IsInstrumented;
 
-			bool hasDeferred = false;
+			bool hasDeferred = false; // TODO 6.0: Remove
 			List<string> subclassTables = new List<string>();
 			List<string[]> joinKeyColumns = new List<string[]>();
 			//provided so we can join to keys other than the primary key
@@ -192,6 +192,8 @@ namespace NHibernate.Persister.Entity
 				isInverses.Add(join.IsInverse);
 				isNullables.Add(join.IsOptional);
 				isLazies.Add(lazyAvailable && join.IsLazy);
+				if (join.IsSequentialSelect)
+					_hasSequentialSelect = true;
 				if (join.IsSequentialSelect && !persistentClass.IsClassOrSuperclassJoin(join))
 					hasDeferred = true;
 				subclassTables.Add(join.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName));
@@ -329,7 +331,6 @@ namespace NHibernate.Persister.Entity
 				int join = persistentClass.GetJoinNumber(prop);
 				propertyJoinNumbers.Add(join);
 
-				propertyTableNumbersByNameAndSubclass[prop.PersistentClass.EntityName + '.' + prop.Name] = join;
 				foreach (ISelectable thing in prop.ColumnIterator)
 				{
 					if (thing.IsFormula)
@@ -690,79 +691,44 @@ possible solutions:
 				insert.AddColumn(DiscriminatorColumnName, DiscriminatorSQLValue);
 		}
 
+		//Since v5.3
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		protected override bool IsSubclassPropertyDeferred(string propertyName, string entityName)
 		{
 			return
-				hasSequentialSelects && IsSubclassTableSequentialSelect(GetSubclassPropertyTableNumber(propertyName, entityName));
+				hasSequentialSelects && IsSubclassTableSequentialSelect(base.GetSubclassPropertyTableNumber(propertyName, entityName));
 		}
 
+		protected override bool IsPropertyDeferred(int propertyIndex)
+		{
+			return _hasSequentialSelect && subclassTableSequentialSelect[GetSubclassPropertyTableNumber(propertyIndex)];
+		}
+
+		//Since v5.3
+		[Obsolete("This property has no more usage in NHibernate and will be removed in a future version.")]
 		public override bool HasSequentialSelect
 		{
 			get { return hasSequentialSelects; }
 		}
 
-		public int GetSubclassPropertyTableNumber(string propertyName, string entityName)
+		//Since v5.3
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
+		public new int GetSubclassPropertyTableNumber(string propertyName, string entityName)
 		{
-			IType type = propertyMapping.ToType(propertyName);
-			if (type.IsAssociationType && ((IAssociationType)type).UseLHSPrimaryKey)
-				return 0;
-			int tabnum;
-			propertyTableNumbersByNameAndSubclass.TryGetValue(entityName + '.' + propertyName, out tabnum);
-			return tabnum;
+			return base.GetSubclassPropertyTableNumber(propertyName, entityName);
 		}
 
+		//Since v5.3
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		protected override SqlString GetSequentialSelect(string entityName)
 		{
-			SqlString result;
-			sequentialSelectStringsByEntityName.TryGetValue(entityName, out result);
-			return result;
+			var persister = Factory.GetEntityPersister(entityName) as SingleTableEntityPersister;
+			return persister?.GetSequentialSelect();
 		}
 
-		private SqlString GenerateSequentialSelect(ILoadable persister)
+		protected override SqlString GetSequentialSelect()
 		{
-			//note that this method could easily be moved up to BasicEntityPersister,
-			//if we ever needed to reuse it from other subclasses
-
-			//figure out which tables need to be fetched (only those that contains at least a no-lazy-property)
-			AbstractEntityPersister subclassPersister = (AbstractEntityPersister)persister;
-			var tableNumbers = new HashSet<int>();
-			string[] props = subclassPersister.PropertyNames;
-			string[] classes = subclassPersister.PropertySubclassNames;
-			for (int i = 0; i < props.Length; i++)
-			{
-				int propTableNumber = GetSubclassPropertyTableNumber(props[i], classes[i]);
-				if (IsSubclassTableSequentialSelect(propTableNumber) && !IsSubclassTableLazy(propTableNumber))
-				{
-					tableNumbers.Add(propTableNumber);
-				}
-			}
-			if ((tableNumbers.Count == 0))
-				return null;
-
-			//figure out which columns are needed (excludes lazy-properties)
-			List<int> columnNumbers = new List<int>();
-			int[] columnTableNumbers = SubclassColumnTableNumberClosure;
-			for (int i = 0; i < SubclassColumnClosure.Length; i++)
-			{
-				if (tableNumbers.Contains(columnTableNumbers[i]))
-				{
-					columnNumbers.Add(i);
-				}
-			}
-
-			//figure out which formulas are needed (excludes lazy-properties)
-			List<int> formulaNumbers = new List<int>();
-			int[] formulaTableNumbers = SubclassFormulaTableNumberClosure;
-			for (int i = 0; i < SubclassFormulaTemplateClosure.Length; i++)
-			{
-				if (tableNumbers.Contains(formulaTableNumbers[i]))
-				{
-					formulaNumbers.Add(i);
-				}
-			}
-
-			//render the SQL
-			return RenderSelect(tableNumbers.ToArray(), columnNumbers.ToArray(), formulaNumbers.ToArray());
+			return _sequentialSelectString;
 		}
 
 		//provide columns to join to if the key is other than the primary key
@@ -820,19 +786,10 @@ possible solutions:
 		public override void PostInstantiate()
 		{
 			base.PostInstantiate();
-			if (hasSequentialSelects)
+			if (_hasSequentialSelect && !IsAbstract)
 			{
-				string[] entityNames = SubclassClosure;
-				for (int i = 1; i < entityNames.Length; i++)
-				{
-					ILoadable loadable = (ILoadable)Factory.GetEntityPersister(entityNames[i]);
-					if (!loadable.IsAbstract)
-					{
-						//perhaps not really necessary...
-						SqlString sequentialSelect = GenerateSequentialSelect(loadable);
-						sequentialSelectStringsByEntityName[entityNames[i]] = sequentialSelect;
-					}
-				}
+				var rootLoadable = (AbstractEntityPersister) Factory.GetEntityPersister(RootEntityName);
+				_sequentialSelectString = rootLoadable.GenerateSequentialSelect(this);
 			}
 		}
 	}

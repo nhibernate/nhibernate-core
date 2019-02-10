@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 using NHibernate.Transform;
 using NUnit.Framework;
 
@@ -8,53 +7,20 @@ namespace NHibernate.Test.NHSpecificTest.NH3957
 	[TestFixture]
 	public class ResultTransformerEqualityFixture
 	{
-		/// <summary>
-		/// Allows to simulate a hashcode collision. Issue would be unpractical to test otherwise.
-		/// Hashcode collision must be supported for avoiding unexpected and hard to reproduce failures.
-		/// </summary>
-		private void TweakHashcode(System.Type transformerToTweak, object hasher)
-		{
-			var hasherTargetField = transformerToTweak.GetField("Hasher", BindingFlags.Static | BindingFlags.NonPublic);
-			if (!_hasherBackup.ContainsKey(transformerToTweak))
-				_hasherBackup.Add(transformerToTweak, hasherTargetField.GetValue(null));
-
-			// Though hasher is a readonly field, this works at the time of this writing. If it starts breaking and cannot be fixed,
-			// ignore those tests or throw them away.
-			hasherTargetField.SetValue(null, hasher);
-		}
-
-		private Dictionary<System.Type, object> _hasherBackup = new Dictionary<System.Type, object>();
-
-		[SetUp]
-		public void Setup()
-		{
-			var hasherForAll = typeof(AliasToEntityMapResultTransformer)
-				.GetField("Hasher", BindingFlags.Static | BindingFlags.NonPublic)
-				.GetValue(null);
-			TweakHashcode(typeof(DistinctRootEntityResultTransformer), hasherForAll);
-			TweakHashcode(typeof(PassThroughResultTransformer), hasherForAll);
-			TweakHashcode(typeof(RootEntityResultTransformer), hasherForAll);
-			TweakHashcode(typeof(ToListResultTransformer), hasherForAll);
-		}
-
-		[TearDown]
-		public void TearDown()
-		{
-			// Restore those types hashcode. (Avoid impacting perf of other tests, avoid second level query cache
-			// issues if it was holding cached entries (but would mean some tests have not cleaned up properly).)
-			foreach(var backup in _hasherBackup)
-			{
-				TweakHashcode(backup.Key, backup.Value);
-			}
-		}
-
+		public class CustomAliasToEntityMapResultTransformer : AliasToEntityMapResultTransformer { }
+		public class CustomDistinctRootEntityResultTransformer : DistinctRootEntityResultTransformer { }
+		public class CustomPassThroughResultTransformer : PassThroughResultTransformer { }
+		public class CustomRootEntityResultTransformer : RootEntityResultTransformer { }
+		
 		// Non reg test case
 		[Test]
 		public void AliasToEntityMapEquality()
 		{
 			var transf1 = new AliasToEntityMapResultTransformer();
 			var transf2 = new AliasToEntityMapResultTransformer();
+			HashSet<IResultTransformer> set = new HashSet<IResultTransformer>() { transf1, transf2, };
 
+			Assert.That(set.Count, Is.EqualTo(1));
 			Assert.IsTrue(transf1.Equals(transf2));
 			Assert.IsTrue(transf2.Equals(transf1));
 		}
@@ -63,8 +29,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3957
 		public void AliasToEntityMapAndDistinctRootEntityInequality()
 		{
 			var transf1 = new AliasToEntityMapResultTransformer();
-			var transf2 = new DistinctRootEntityResultTransformer();
+			var transf2 = new CustomAliasToEntityMapResultTransformer();
+			HashSet<IResultTransformer> set = new HashSet<IResultTransformer>() { transf1, transf2, };
 
+			Assert.That(transf1.GetHashCode(), Is.EqualTo(transf2.GetHashCode()), "prerequisite");
+			Assert.That(set.Count, Is.EqualTo(2));
 			Assert.IsFalse(transf1.Equals(transf2));
 			Assert.IsFalse(transf2.Equals(transf1));
 		}
@@ -75,9 +44,24 @@ namespace NHibernate.Test.NHSpecificTest.NH3957
 		{
 			var transf1 = new DistinctRootEntityResultTransformer();
 			var transf2 = new DistinctRootEntityResultTransformer();
+			HashSet<IResultTransformer> set = new HashSet<IResultTransformer>() { transf1, transf2, };
 
+			Assert.That(set.Count, Is.EqualTo(1));
 			Assert.IsTrue(transf1.Equals(transf2));
 			Assert.IsTrue(transf2.Equals(transf1));
+		}
+
+		[Test]
+		public void DistinctRootEntityEqualityInequality()
+		{
+			var transf1 = new DistinctRootEntityResultTransformer();
+			var transf2 = new CustomDistinctRootEntityResultTransformer();
+			HashSet<IResultTransformer> set = new HashSet<IResultTransformer>() { transf1, transf2, };
+
+			Assert.That(transf1.GetHashCode(), Is.EqualTo(transf2.GetHashCode()), "prerequisite");
+			Assert.That(set.Count, Is.EqualTo(2));
+			Assert.IsFalse(transf1.Equals(transf2));
+			Assert.IsFalse(transf2.Equals(transf1));
 		}
 
 		// Non reg test case
@@ -86,7 +70,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3957
 		{
 			var transf1 = new PassThroughResultTransformer();
 			var transf2 = new PassThroughResultTransformer();
+			HashSet<IResultTransformer> set = new HashSet<IResultTransformer>() { transf1, transf2, };
 
+			Assert.That(set.Count, Is.EqualTo(1));
 			Assert.IsTrue(transf1.Equals(transf2));
 			Assert.IsTrue(transf2.Equals(transf1));
 		}
@@ -95,8 +81,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3957
 		public void PassThroughAndRootEntityInequality()
 		{
 			var transf1 = new PassThroughResultTransformer();
-			var transf2 = new RootEntityResultTransformer();
-			
+			var transf2 = new CustomPassThroughResultTransformer();
+			HashSet<IResultTransformer> set = new HashSet<IResultTransformer>() { transf1, transf2, };
+
+			Assert.That(transf1.GetHashCode(), Is.EqualTo(transf2.GetHashCode()), "prerequisite");
+			Assert.That(set.Count, Is.EqualTo(2));
 			Assert.IsFalse(transf1.Equals(transf2));
 			Assert.IsFalse(transf2.Equals(transf1));
 		}
@@ -107,7 +96,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3957
 		{
 			var transf1 = new RootEntityResultTransformer();
 			var transf2 = new RootEntityResultTransformer();
+			HashSet<IResultTransformer> set = new HashSet<IResultTransformer>() { transf1, transf2, };
 
+			Assert.That(set.Count, Is.EqualTo(1));
 			Assert.IsTrue(transf1.Equals(transf2));
 			Assert.IsTrue(transf2.Equals(transf1));
 		}
@@ -116,8 +107,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3957
 		public void RootEntityAndToListInequality()
 		{
 			var transf1 = new RootEntityResultTransformer();
-			var transf2 = new ToListResultTransformer();
-			
+			var transf2 = new CustomRootEntityResultTransformer();
+			HashSet<IResultTransformer> set = new HashSet<IResultTransformer>() { transf1, transf2, };
+
+			Assert.That(transf1.GetHashCode(), Is.EqualTo(transf2.GetHashCode()), "prerequisite");
+			Assert.That(set.Count, Is.EqualTo(2));
 			Assert.IsFalse(transf1.Equals(transf2));
 			Assert.IsFalse(transf2.Equals(transf1));
 		}
@@ -128,7 +122,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3957
 		{
 			var transf1 = new ToListResultTransformer();
 			var transf2 = new ToListResultTransformer();
+			HashSet<IResultTransformer> set = new HashSet<IResultTransformer>() { transf1, transf2 };
 
+			Assert.That(set.Count, Is.EqualTo(1));
 			Assert.IsTrue(transf1.Equals(transf2));
 			Assert.IsTrue(transf2.Equals(transf1));
 		}

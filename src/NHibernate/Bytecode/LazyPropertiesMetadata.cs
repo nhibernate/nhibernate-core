@@ -54,5 +54,21 @@ namespace NHibernate.Bytecode
 
 		public IEnumerable<LazyPropertyDescriptor> LazyPropertyDescriptors =>
 			_lazyPropertyDescriptors?.Values ?? Enumerable.Empty<LazyPropertyDescriptor>();
+
+		/// <summary>
+		/// Get the descriptor for the lazy property.
+		/// </summary>
+		/// <param name="propertyName">The propery name.</param>
+		/// <returns>The lazy property descriptor.</returns>
+		public LazyPropertyDescriptor GetLazyPropertyDescriptor(string propertyName)
+		{
+			if (!_lazyPropertyDescriptors.TryGetValue(propertyName, out var descriptor))
+			{
+				throw new InvalidOperationException(
+					$"Property {propertyName} is not mapped as lazy on entity {EntityName}");
+			}
+
+			return descriptor;
+		}
 	}
 }

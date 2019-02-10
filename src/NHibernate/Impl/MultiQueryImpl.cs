@@ -533,6 +533,7 @@ namespace NHibernate.Impl
 			var hydratedObjects = new List<object>[Translators.Count];
 			List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[Translators.Count];
 			bool[] createSubselects = new bool[Translators.Count];
+			var cacheBatcher = new CacheBatcher(session);
 
 			try
 			{
@@ -586,7 +587,8 @@ namespace NHibernate.Impl
 
 							rowCount++;
 							object result = translator.Loader.GetRowFromResultSet(
-								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true);
+								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true,
+								(persister, data) => cacheBatcher.AddToBatch(persister, data));
 							tempResults.Add(result);
 
 							if (createSubselects[i])
@@ -616,13 +618,15 @@ namespace NHibernate.Impl
 						ITranslator translator = translators[i];
 						QueryParameters parameter = parameters[i];
 
-						translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false);
+						translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false, cacheBatcher);
 
 						if (createSubselects[i])
 						{
 							translator.Loader.CreateSubselects(subselectResultKeys[i], parameter, session);
 						}
 					}
+
+					cacheBatcher.ExecuteBatch();
 				}
 			}
 			catch (Exception sqle)

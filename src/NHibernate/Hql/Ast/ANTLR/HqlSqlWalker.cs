@@ -706,7 +706,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				{
 					throw new InvalidPathException("Invalid join: " + dot.Path);
 				}
-				fromElement.SetAllPropertyFetch(propertyFetch != null);
+				SetPropertyFetch(fromElement, propertyFetch, alias);
 
 				if (with != null)
 				{
@@ -725,11 +725,73 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
+		private static string GetPropertyPath(DotNode dotNode, IASTNode alias)
+		{
+			var lhs = dotNode.GetLhs();
+			var rhs = (SqlNode) lhs.NextSibling;
+
+			if (lhs is DotNode nextDotNode)
+			{
+				return GetPropertyPath(nextDotNode, alias) + "." + rhs.OriginalText;
+			}
+
+			var path = rhs.OriginalText;
+
+			if (alias != null && alias.Text == lhs.Text)
+			{
+				return path;
+			}
+
+			return lhs.Path + "." + path;
+		}
+
 		IASTNode CreateFromElement(string path, IASTNode pathNode, IASTNode alias, IASTNode propertyFetch)
 		{
 			FromElement fromElement = _currentFromClause.AddFromElement(path, alias);
-			fromElement.SetAllPropertyFetch(propertyFetch != null);
+			SetPropertyFetch(fromElement, propertyFetch, alias);
 			return fromElement;
+		}
+
+		static void SetPropertyFetch(FromElement fromElement, IASTNode propertyFetch, IASTNode alias)
+		{
+			if (propertyFetch == null)
+			{
+				return;
+			}
+
+			if (propertyFetch.ChildCount == 0)
+			{
+				fromElement.SetAllPropertyFetch(true);
+			}
+			else
+			{
+				var propertyPaths = new string[propertyFetch.ChildCount / 2];
+				for (var i = 1; i < propertyFetch.ChildCount; i = i + 2)
+				{
+					string propertyPath;
+					var child = propertyFetch.GetChild(i);
+
+					// o.PropName
+					if (child is DotNode dotNode)
+					{
+						dotNode.JoinType = JoinType.None;
+						dotNode.PropertyPath = GetPropertyPath(dotNode, alias);
+						propertyPath = dotNode.PropertyPath;
+					}
+					else if (child is IdentNode identNode)
+					{
+						propertyPath = identNode.OriginalText;
+					}
+					else
+					{
+						throw new InvalidOperationException($"Unable to determine property path for AST node: {child.ToStringTree()}");
+					}
+
+					propertyPaths[(i - 1) / 2] = propertyPath;
+				}
+
+				fromElement.FetchLazyProperties = propertyPaths;
+			}
 		}
 
 		IASTNode CreateFromFilterElement(IASTNode filterEntity, IASTNode alias)

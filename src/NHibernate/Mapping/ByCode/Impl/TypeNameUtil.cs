@@ -8,7 +8,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public static string GetNhTypeName(this System.Type type)
 		{
 			string typeName;
-			IType nhType = TypeFactory.HeuristicType(type.AssemblyQualifiedName);
+			IType nhType = TypeFactory.HeuristicType(type);
 			if (nhType != null)
 			{
 				typeName = nhType.Name;

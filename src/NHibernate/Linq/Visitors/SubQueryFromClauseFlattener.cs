@@ -13,6 +13,7 @@ namespace NHibernate.Linq.Visitors
 		private static readonly System.Type[] FlattenableResultOperators =
 		{
 			typeof(LockResultOperator),
+			typeof(FetchLazyPropertiesResultOperator),
 			typeof(FetchOneRequest),
 			typeof(FetchManyRequest)
 		};

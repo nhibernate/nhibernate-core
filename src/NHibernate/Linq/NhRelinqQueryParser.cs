@@ -74,6 +74,9 @@ namespace NHibernate.Linq
 				new[] { ReflectHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.Fetch<object, object>(null, null)) },
 				typeof(FetchOneExpressionNode));
 			methodInfoRegistry.Register(
+				new[] { ReflectHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.FetchLazyProperties<object>(null)) },
+				typeof(FetchLazyPropertiesExpressionNode));
+			methodInfoRegistry.Register(
 				new[] { ReflectHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.FetchMany<object, object>(null, null)) },
 				typeof(FetchManyExpressionNode));
 			methodInfoRegistry.Register(

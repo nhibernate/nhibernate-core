@@ -152,6 +152,7 @@ namespace NHibernate.Impl
 				stopWatch.Start();
 			}
 			int rowCount = 0;
+			var cacheBatcher = new CacheBatcher(session);
 
 			try
 			{
@@ -184,7 +185,8 @@ namespace NHibernate.Impl
 
 							object o =
 								await (loader.GetRowFromResultSetAsync(reader, session, queryParameters, loader.GetLockModes(queryParameters.LockModes),
-																					 null, hydratedObjects[i], keys, true, cancellationToken)).ConfigureAwait(false);
+																					 null, hydratedObjects[i], keys, true,
+																					(persister, data) => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
 							if (createSubselects[i])
 							{
 								subselectResultKeys[i].Add(keys);
@@ -200,13 +202,15 @@ namespace NHibernate.Impl
 					for (int i = 0; i < loaders.Count; i++)
 					{
 						CriteriaLoader loader = loaders[i];
-						await (loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, session.DefaultReadOnly, cancellationToken: cancellationToken)).ConfigureAwait(false);
+						await (loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, session.DefaultReadOnly, cacheBatcher, cancellationToken)).ConfigureAwait(false);
 
 						if (createSubselects[i])
 						{
 							loader.CreateSubselects(subselectResultKeys[i], parameters[i], session);
 						}
 					}
+
+					await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			catch (OperationCanceledException) { throw; }

@@ -405,26 +405,11 @@ namespace NHibernate.Type
 		/// </remarks>
 		public static IType Basic(string name, IDictionary<string, string> parameters)
 		{
-			string typeName;
-
 			// Use the basic name (such as String or String(255)) to get the
-			// instance of the IType object.
-			IType returnType;
-			if (typeByTypeOfName.TryGetValue(name, out returnType))
-			{
-				if (_obsoleteMessageByAlias.TryGetValue(name, out string obsoleteMessage))
-					_log.Warn("{0} is obsolete. {1}", name, obsoleteMessage);
-
-				if (parameters?.Count > 0 && returnType is IParameterizedType)
-				{
-					// The type is parameterized, must apply the parameters to a new instance of the type.
-					// Some built-in types have internal default constructor like StringType, so we need to
-					// allow non-public constructors.
-					returnType = (IType) Activator.CreateInstance(returnType.GetType(), true);
-					InjectParameters(returnType, parameters);
-				}
+			// instance of the IType object.			
+			var returnType = GetBasicTypeByName(name, parameters);
+			if (returnType != null)
 				return returnType;
-			}
 
 			// if we get to here then the basic type with the length or precision/scale
 			// combination doesn't exists - so lets figure out which one we have and
@@ -442,7 +427,7 @@ namespace NHibernate.Type
 						"TypeClassification.PrecisionScale", name, "It is not a valid Precision/Scale name");
 				}
 
-				typeName = parsedName[0].Trim();
+				string typeName = parsedName[0].Trim();
 				byte precision = Byte.Parse(parsedName[1].Trim());
 				byte scale = Byte.Parse(parsedName[2].Trim());
 
@@ -459,7 +444,7 @@ namespace NHibernate.Type
 						"TypeClassification.LengthOrScale", name, "It is not a valid Length or Scale name");
 				}
 
-				typeName = parsedName[0].Trim();
+				string typeName = parsedName[0].Trim();
 				int length = Int32.Parse(parsedName[1].Trim());
 
 				returnType = BuiltInType(typeName, length);
@@ -476,6 +461,26 @@ namespace NHibernate.Type
 
 			InjectParameters(returnType, parameters);
 			return returnType;
+		}
+
+		private static IType GetBasicTypeByName(string name, IDictionary<string, string> parameters)
+		{
+			if (typeByTypeOfName.TryGetValue(name, out var returnType))
+			{
+				if (_obsoleteMessageByAlias.TryGetValue(name, out string obsoleteMessage))
+					_log.Warn("{0} is obsolete. {1}", name, obsoleteMessage);
+
+				if (parameters?.Count > 0 && returnType is IParameterizedType)
+				{
+					// The type is parameterized, must apply the parameters to a new instance of the type.
+					// Some built-in types have internal default constructor like StringType, so we need to
+					// allow non-public constructors.
+					returnType = (IType) Activator.CreateInstance(returnType.GetType(), true);
+					InjectParameters(returnType, parameters);
+				}
+				return returnType;
+			}
+			return null;
 		}
 
 		internal static IType BuiltInType(string typeName, int lengthOrScale)
@@ -523,6 +528,23 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
+		/// Uses heuristics to deduce a NHibernate type given a string naming the
+		/// type.
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns>An instance of <c>NHibernate.Type.IType</c></returns>
+		/// <remarks>
+		/// We check to see if it implements IType, ICompositeUserType, IUserType, ILifecycle (Association), or
+		/// IPersistentEnum.  If none of those are implemented then we will serialize the Type to the
+		/// database using NHibernate.Type.SerializableType(typeName)
+		/// </remarks>
+		public static IType HeuristicType(System.Type type)
+		{
+			return GetBasicTypeByName(type.AssemblyQualifiedName, null)
+				?? GetBySystemType(type, null, null);
+		}
+
+		/// <summary>
 		/// Uses heuristics to deduce a NHibernate type given a string naming the type.
 		/// </summary>
 		/// <param name="typeName">the type name</param>
@@ -532,7 +554,7 @@ namespace NHibernate.Type
 		{
 			return HeuristicType(typeName, parameters, null);
 		}
-		
+
 		/// <summary>
 		/// Uses heuristics to deduce a NHibernate type given a string naming the type.
 		/// </summary>
@@ -546,14 +568,20 @@ namespace NHibernate.Type
 
 			if (type != null)
 				return type;
-			
+
 			string[] parsedTypeName;
-			TypeClassification typeClassification = GetTypeClassification(typeName);
+			var typeClassification = GetTypeClassification(typeName);
 			if (typeClassification == TypeClassification.LengthOrScale)
+			{
 				parsedTypeName = typeName.Split(LengthSplit);
+				if (!int.TryParse(parsedTypeName[1], out int parsedLength))
+				{
+					throw new MappingException($"Could not parse length value '{parsedTypeName[1]}' as int for type '{typeName}'");
+				}
+				length = parsedLength;
+			}
 			else
 				parsedTypeName = typeClassification == TypeClassification.PrecisionScale ? typeName.Split(PrecisionScaleSplit) : new[] { typeName };
-
 
 			System.Type typeClass;
 			try
@@ -562,39 +590,49 @@ namespace NHibernate.Type
 			}
 			catch (Exception)
 			{
-				typeClass = null;
+				return null;
 			}
 
-			if (typeClass == null)
-				return null;
-				
+			return GetBySystemType(typeClass, parameters, length);
+		}
+
+		private static IType GetBySystemType(System.Type typeClass, IDictionary<string, string> parameters, int? length)
+		{
 			if (typeof(IType).IsAssignableFrom(typeClass))
 			{
 				try
 				{
-					type = (IType) Environment.ObjectsFactory.CreateInstance(typeClass);
+					var type = (IType) Environment.ObjectsFactory.CreateInstance(typeClass);
+					InjectParameters(type, parameters);
+
+					var obsolete = typeClass.GetCustomAttribute<ObsoleteAttribute>(false);
+					if (obsolete != null)
+					{
+						_log.Warn("{0} ({1}) is obsolete. {2}", typeClass.FullName, type.Name, obsolete.Message);
+					}
+
+					return type;
+				}
+				catch (HibernateException)
+				{
+					throw;
 				}
 				catch (Exception e)
 				{
 					throw new MappingException("Could not instantiate IType " + typeClass.Name + ": " + e, e);
 				}
-				InjectParameters(type, parameters);
-
-				var obsolete = typeClass.GetCustomAttribute<ObsoleteAttribute>(false);
-				if (obsolete != null)
-				{
-					_log.Warn("{0} is obsolete. {1}", typeName, obsolete.Message);
-				}
-				return type;
 			}
+
 			if (typeof(ICompositeUserType).IsAssignableFrom(typeClass))
 			{
 				return new CompositeCustomType(typeClass, parameters);
 			}
+
 			if (typeof(IUserType).IsAssignableFrom(typeClass))
 			{
 				return new CustomType(typeClass, parameters);
 			}
+
 			if (typeof(ILifecycle).IsAssignableFrom(typeClass))
 			{
 				return NHibernateUtil.Entity(typeClass);
@@ -603,15 +641,12 @@ namespace NHibernate.Type
 			var unwrapped = typeClass.UnwrapIfNullable();
 			if (unwrapped.IsEnum)
 			{
-				return (IType) Activator.CreateInstance(typeof (EnumType<>).MakeGenericType(unwrapped));
+				return (IType) Activator.CreateInstance(typeof(EnumType<>).MakeGenericType(unwrapped));
 			}
 
 			if (!typeClass.IsSerializable)
 				return null;
 
-			if (typeClassification == TypeClassification.LengthOrScale)
-				return GetSerializableType(typeClass, Int32.Parse(parsedTypeName[1]));
-			
 			if (length.HasValue)
 				return GetSerializableType(typeClass, length.Value);
 
@@ -690,7 +725,7 @@ namespace NHibernate.Type
 			// So we should add the type with its other key in a later operation in order to ensure we cache the same
 			// instance for both keys.
 			var added = false;
-			var type = (NullableType)typeByTypeOfName.GetOrAdd(
+			var type = typeByTypeOfName.GetOrAdd(
 				key,
 				k =>
 				{
@@ -703,7 +738,7 @@ namespace NHibernate.Type
 				throw new HibernateException($"Another item with the key {type.Name} has already been added to typeByTypeOfName.");
 			}
 
-			return type;
+			return (NullableType) type;
 		}
 
 		public static NullableType GetSerializableType(System.Type serializableType, int length)

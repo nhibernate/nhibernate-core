@@ -19,6 +19,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
+using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -26,6 +27,7 @@ using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
+using NHibernate.Intercept;
 using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -102,19 +104,22 @@ namespace NHibernate.Loader
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The loaded "row".</returns>
 		/// <exception cref="HibernateException" />
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		protected async Task<object> LoadSingleRowAsync(DbDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters,
 									   bool returnProxies, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			int entitySpan = EntityPersisters.Length;
 			IList hydratedObjects = entitySpan == 0 ? null : new List<object>(entitySpan);
+			var cacheBatcher = new CacheBatcher(session);
 
 			object result;
 			try
 			{
 				result =
 					await (GetRowFromResultSetAsync(resultSet, session, queryParameters, GetLockModes(queryParameters.LockModes), null,
-										hydratedObjects, new EntityKey[entitySpan], returnProxies, cancellationToken)).ConfigureAwait(false);
+										hydratedObjects, new EntityKey[entitySpan], returnProxies, (persister, data) => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
 			}
 			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
@@ -128,7 +133,8 @@ namespace NHibernate.Loader
 												 queryParameters.NamedParameters);
 			}
 
-			await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session), cancellationToken: cancellationToken)).ConfigureAwait(false);
+			await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session), cacheBatcher, cancellationToken)).ConfigureAwait(false);
+			await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 			await (session.PersistenceContext.InitializeNonLazyCollectionsAsync(cancellationToken)).ConfigureAwait(false);
 			return result;
 		}
@@ -136,20 +142,21 @@ namespace NHibernate.Loader
 		internal Task<object> GetRowFromResultSetAsync(DbDataReader resultSet, ISessionImplementor session,
 											QueryParameters queryParameters, LockMode[] lockModeArray,
 											EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys,
-											bool returnProxies, CancellationToken cancellationToken)
+											bool returnProxies, Action<IEntityPersister, CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
 			return GetRowFromResultSetAsync(resultSet, session, queryParameters, lockModeArray, optionalObjectKey, hydratedObjects,
-									   keys, returnProxies, null, cancellationToken);
+									   keys, returnProxies, null, cacheBatchingHandler, cancellationToken);
 		}
 
 		internal async Task<object> GetRowFromResultSetAsync(DbDataReader resultSet, ISessionImplementor session,
 											QueryParameters queryParameters, LockMode[] lockModeArray,
 											EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys,
-											bool returnProxies, IResultTransformer forcedResultTransformer, CancellationToken cancellationToken)
+											bool returnProxies, IResultTransformer forcedResultTransformer,
+											Action<IEntityPersister, CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ILoadable[] persisters = EntityPersisters;
@@ -167,7 +174,7 @@ namespace NHibernate.Loader
 			// this call is side-effecty
 			object[] row =
 				await (GetRowAsync(resultSet, persisters, keys, queryParameters.OptionalObject, optionalObjectKey, lockModeArray,
-					   hydratedObjects, session, !returnProxies, cancellationToken)).ConfigureAwait(false);
+					   hydratedObjects, session, !returnProxies, cacheBatchingHandler, cancellationToken)).ConfigureAwait(false);
 
 			await (ReadCollectionElementsAsync(row, resultSet, session, cancellationToken)).ConfigureAwait(false);
 
@@ -273,6 +280,7 @@ namespace NHibernate.Loader
 				bool createSubselects = IsSubselectLoadingEnabled;
 				List<EntityKey[]> subselectResultKeys = createSubselects ? new List<EntityKey[]>() : null;
 				IList results = new List<object>();
+				var cacheBatcher = new CacheBatcher(session);
 
 				try
 				{
@@ -294,7 +302,8 @@ namespace NHibernate.Loader
 
 						object result = await (GetRowFromResultSetAsync(rs, session, queryParameters, lockModeArray, optionalObjectKey,
 															hydratedObjects,
-															keys, returnProxies, forcedResultTransformer, cancellationToken)).ConfigureAwait(false);
+															keys, returnProxies, forcedResultTransformer,
+															(persister, data) => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
 						results.Add(result);
 
 						if (createSubselects)
@@ -320,7 +329,8 @@ namespace NHibernate.Loader
 					session.Batcher.CloseCommand(st, rs);
 				}
 
-				await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, rs, session, queryParameters.IsReadOnly(session), cancellationToken: cancellationToken)).ConfigureAwait(false);
+				await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, rs, session, queryParameters.IsReadOnly(session), cacheBatcher, cancellationToken)).ConfigureAwait(false);
+				await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 
 				if (createSubselects)
 				{
@@ -333,7 +343,7 @@ namespace NHibernate.Loader
 
 		internal async Task InitializeEntitiesAndCollectionsAsync(
 			IList hydratedObjects, DbDataReader reader, ISessionImplementor session, bool readOnly,
-			CacheBatcher cacheBatcher = null, CancellationToken cancellationToken = default(CancellationToken))
+			CacheBatcher cacheBatcher, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
@@ -593,7 +603,7 @@ namespace NHibernate.Loader
 		/// </summary>
 		private async Task<object[]> GetRowAsync(DbDataReader rs, ILoadable[] persisters, EntityKey[] keys, object optionalObject,
 								EntityKey optionalObjectKey, LockMode[] lockModes, IList hydratedObjects,
-								ISessionImplementor session, bool mustLoadMissingEntity, CancellationToken cancellationToken)
+								ISessionImplementor session, bool mustLoadMissingEntity, Action<IEntityPersister, CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			int cols = persisters.Length;
@@ -638,7 +648,7 @@ namespace NHibernate.Loader
 					if (alreadyLoaded)
 					{
 						//its already loaded so dont need to hydrate it
-						await (InstanceAlreadyLoadedAsync(rs, i, persister, key, obj, lockModes[i], session, cancellationToken)).ConfigureAwait(false);
+						await (InstanceAlreadyLoadedAsync(rs, i, persister, key, obj, lockModes[i], session, cacheBatchingHandler, cancellationToken)).ConfigureAwait(false);
 					}
 					else
 					{
@@ -696,8 +706,8 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// The entity instance is already in the session cache
 		/// </summary>
-		private async Task InstanceAlreadyLoadedAsync(DbDataReader rs, int i, IEntityPersister persister, EntityKey key, object obj,
-										   LockMode lockMode, ISessionImplementor session, CancellationToken cancellationToken)
+		private async Task InstanceAlreadyLoadedAsync(DbDataReader rs, int i, ILoadable persister, EntityKey key, object obj,
+										   LockMode lockMode, ISessionImplementor session, Action<IEntityPersister, CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!persister.IsInstance(obj))
@@ -706,9 +716,10 @@ namespace NHibernate.Loader
 				throw new WrongClassException(errorMsg, key.Identifier, persister.EntityName);
 			}
 
+			EntityEntry entry = null;
 			if (LockMode.None != lockMode && UpgradeLocks())
 			{
-				EntityEntry entry = session.PersistenceContext.GetEntry(obj);
+				entry = session.PersistenceContext.GetEntry(obj);
 				bool isVersionCheckNeeded = persister.IsVersioned && entry.LockMode.LessThan(lockMode);
 
 				// we don't need to worry about existing version being uninitialized
@@ -722,6 +733,15 @@ namespace NHibernate.Loader
 					entry.LockMode = lockMode;
 				}
 			}
+
+			if (!persister.HasLazyProperties)
+			{
+				return;
+			}
+
+			var instanceClass = await (GetInstanceClassAsync(rs, i, persister, key.Identifier, session, cancellationToken)).ConfigureAwait(false);
+			entry = entry ?? session.PersistenceContext.GetEntry(obj);
+			await (UpdateLazyPropertiesFromResultSetAsync(rs, i, obj, instanceClass, key, entry, persister, session, cacheBatchingHandler, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -760,6 +780,99 @@ namespace NHibernate.Loader
 			return obj;
 		}
 
+		private async Task UpdateLazyPropertiesFromResultSetAsync(DbDataReader rs, int i, object obj, string instanceClass, EntityKey key,
+		                                               EntityEntry entry, ILoadable rootPersister, ISessionImplementor session,
+		                                               Action<IEntityPersister, CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (!entry.LoadedWithLazyPropertiesUnfetched)
+			{
+				return; // All lazy properties were already loaded
+			}
+
+			var eagerPropertyFetch = IsEagerPropertyFetchEnabled(i);
+			var fetchLazyProperties = GetFetchLazyProperties(i);
+
+			if (!eagerPropertyFetch && fetchLazyProperties == null)
+			{
+				return; // No lazy properties were loaded
+			}
+
+			// Get the persister for the _subclass_
+			var persister = instanceClass == rootPersister.EntityName
+				? rootPersister
+				: (ILoadable) Factory.GetEntityPersister(instanceClass);
+
+			// The property values will not be set when the entry status is Loading so in that case we have to get
+			// the uninitialized lazy properties from the loaded state
+			var uninitializedProperties = entry.Status == Status.Loading
+				? persister.EntityMetamodel.BytecodeEnhancementMetadata.GetUninitializedLazyProperties(entry.LoadedState)
+				: persister.EntityMetamodel.BytecodeEnhancementMetadata.GetUninitializedLazyProperties(obj);
+
+			var updateLazyProperties = fetchLazyProperties?.Intersect(uninitializedProperties).ToArray();
+			if (updateLazyProperties?.Length == 0)
+			{
+				return; // No new lazy properites were loaded
+			}
+
+			var id = key.Identifier;
+
+			if (Log.IsDebugEnabled())
+			{
+				Log.Debug("Updating lazy properites from DataReader: {0}", MessageHelper.InfoString(persister, id));
+			}
+
+			var cols = persister == rootPersister
+				? EntityAliases[i].SuffixedPropertyAliases
+				: GetSubclassEntityAliases(i, persister);
+
+			if (!await (persister.InitializeLazyPropertiesAsync(rs, id, obj, rootPersister, cols, updateLazyProperties, eagerPropertyFetch, session, cancellationToken)).ConfigureAwait(false))
+			{
+				return;
+			}
+
+			if (entry.Status == Status.Loading || !persister.HasCache ||
+			    !session.CacheMode.HasFlag(CacheMode.Put) || !persister.IsLazyPropertiesCacheable)
+			{
+				return;
+			}
+
+			if (Log.IsDebugEnabled())
+			{
+				Log.Debug("Updating entity to second-level cache: {0}", MessageHelper.InfoString(persister, id, session.Factory));
+			}
+
+			var factory = session.Factory;
+			var state = persister.GetPropertyValues(obj);
+			var version = Versioning.GetVersion(state, persister);
+			var cacheEntry = await (CacheEntry.CreateAsync(state, persister, entry.LoadedWithLazyPropertiesUnfetched, version, session, obj, cancellationToken)).ConfigureAwait(false);
+			var cacheKey = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
+
+			if (cacheBatchingHandler != null && persister.IsBatchLoadable)
+			{
+				cacheBatchingHandler(
+					persister,
+					new CachePutData(
+						cacheKey,
+						persister.CacheEntryStructure.Structure(cacheEntry),
+						version,
+						persister.IsVersioned ? persister.VersionType.Comparator : null,
+						false));
+			}
+			else
+			{
+				var put =
+					await (persister.Cache.PutAsync(cacheKey, persister.CacheEntryStructure.Structure(cacheEntry), session.Timestamp, version,
+										persister.IsVersioned ? persister.VersionType.Comparator : null,
+										false, cancellationToken)).ConfigureAwait(false);
+
+				if (put && factory.Statistics.IsStatisticsEnabled)
+				{
+					factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+				}
+			}
+		}
+
 		/// <summary>
 		/// Hydrate the state of an object from the SQL <c>DbDataReader</c>, into
 		/// an array of "hydrated" values (do not resolve associations yet),
@@ -783,6 +896,7 @@ namespace NHibernate.Loader
 			}
 
 			bool eagerPropertyFetch = IsEagerPropertyFetchEnabled(i);
+			var eagerFetchProperties = GetFetchLazyProperties(i);
 
 			// add temp entry so that the next step is circular-reference
 			// safe - only needed because some types don't take proper
@@ -793,7 +907,7 @@ namespace NHibernate.Loader
 								? EntityAliases[i].SuffixedPropertyAliases
 								: GetSubclassEntityAliases(i, persister);
 
-			object[] values = await (persister.HydrateAsync(rs, id, obj, rootPersister, cols, eagerPropertyFetch, session, cancellationToken)).ConfigureAwait(false);
+			object[] values = await (persister.HydrateAsync(rs, id, obj, cols, eagerFetchProperties, eagerPropertyFetch, session, cancellationToken)).ConfigureAwait(false);
 
 			object rowId = persister.HasRowId ? rs[EntityAliases[i].RowIdAlias] : null;
 

@@ -33,6 +33,7 @@ namespace NHibernate.Loader.Hql
 		private string[] _collectionSuffixes;
 		private IQueryable[] _entityPersisters;
 		private bool[] _entityEagerPropertyFetches;
+		private HashSet<string>[] _entityFetchLazyProperties;
 		private string[] _entityAliases;
 		private string[] _sqlAliases;
 		private string[] _sqlAliasSuffixes;
@@ -42,6 +43,7 @@ namespace NHibernate.Loader.Hql
 		private readonly NullableDictionary<string, string> _sqlAliasByEntityAlias = new NullableDictionary<string, string>();
 		private int _selectLength;
 		private LockMode[] _defaultLockModes;
+		private ISet<ICollectionPersister> _uncacheableCollectionPersisters;
 
 		public QueryLoader(QueryTranslatorImpl queryTranslator, ISessionFactoryImplementor factory, SelectClause selectClause)
 			: base(factory)
@@ -113,6 +115,11 @@ namespace NHibernate.Loader.Hql
 		protected override bool[] EntityEagerPropertyFetches
 		{
 			get { return _entityEagerPropertyFetches; }
+		}
+
+		protected override HashSet<string>[] EntityFetchLazyProperties
+		{
+			get { return _entityFetchLazyProperties; }
 		}
 
 		protected override EntityType[] OwnerAssociationTypes
@@ -228,6 +235,7 @@ namespace NHibernate.Loader.Hql
 			int size = fromElementList.Count;
 			_entityPersisters = new IQueryable[size];
 			_entityEagerPropertyFetches = new bool[size];
+			_entityFetchLazyProperties = new HashSet<string>[size];
 			_entityAliases = new String[size];
 			_sqlAliases = new String[size];
 			_sqlAliasSuffixes = new String[size];
@@ -246,6 +254,9 @@ namespace NHibernate.Loader.Hql
 				}
 
 				_entityEagerPropertyFetches[i] = element.IsAllPropertyFetch;
+				_entityFetchLazyProperties[i] = element.FetchLazyProperties != null
+					? new HashSet<string>(element.FetchLazyProperties)
+					: null;
 				_sqlAliases[i] = element.TableAlias;
 				_entityAliases[i] = element.ClassAlias;
 				_sqlAliasByEntityAlias.Add(_entityAliases[i], _sqlAliases[i]);
@@ -279,6 +290,7 @@ namespace NHibernate.Loader.Hql
 
 			//NONE, because its the requested lock mode, not the actual! 
 			_defaultLockModes = ArrayHelper.Fill(LockMode.None, size);
+			_uncacheableCollectionPersisters = _queryTranslator.UncacheableCollectionPersisters;
 		}
 
 		public IList List(ISessionImplementor session, QueryParameters queryParameters)
@@ -313,6 +325,11 @@ namespace NHibernate.Loader.Hql
 			{
 				return results;
 			}
+		}
+
+		protected override bool IsCollectionPersisterCacheable(ICollectionPersister collectionPersister)
+		{
+			return !_uncacheableCollectionPersisters.Contains(collectionPersister);
 		}
 
 		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
