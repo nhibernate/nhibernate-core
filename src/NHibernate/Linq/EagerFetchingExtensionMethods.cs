@@ -19,6 +19,21 @@ namespace NHibernate.Linq
             return CreateFluentFetchRequest<TOriginating, TRelated>(methodInfo, query, relatedObjectSelector);
         }
 
+		/// <summary>
+		/// Fetch all lazy properties. Note that this method cannot be mixed with <see cref="Fetch{TOriginating,TRelated}"/> method that
+		/// is used for fetching an individual lazy property.
+		/// </summary>
+		/// <typeparam name="TOriginating">The type on where all lazy properties will be fetched.</typeparam>
+		/// <param name="query">The NHibernate query.</param>
+		public static INhFetchRequest<TOriginating, TOriginating> FetchLazyProperties<TOriginating>(
+			this IQueryable<TOriginating> query)
+		{
+			if (query == null) throw new ArgumentNullException(nameof(query));
+
+			var methodInfo = ((MethodInfo)MethodBase.GetCurrentMethod()).MakeGenericMethod(typeof(TOriginating));
+			return CreateFluentFetchRequest<TOriginating, TOriginating>(methodInfo, query, null);
+		}
+
         public static INhFetchRequest<TOriginating, TRelated> FetchMany<TOriginating, TRelated>(
             this IQueryable<TOriginating> query, Expression<Func<TOriginating, IEnumerable<TRelated>>> relatedObjectSelector)
         {
@@ -55,7 +70,10 @@ namespace NHibernate.Linq
             LambdaExpression relatedObjectSelector)
         {
             var queryProvider = query.Provider; // ArgumentUtility.CheckNotNullAndType<QueryProviderBase>("query.Provider", query.Provider);
-            var callExpression = Expression.Call(currentFetchMethod, query.Expression, relatedObjectSelector);
+            var callExpression = relatedObjectSelector != null
+				? Expression.Call(currentFetchMethod, query.Expression, relatedObjectSelector)
+				: Expression.Call(currentFetchMethod, query.Expression);
+
             return new NhFetchRequest<TOriginating, TRelated>(queryProvider, callExpression);
         }
     }

@@ -75,6 +75,10 @@ namespace NHibernate.Multi
 					var lockModeArray = loader.GetLockModes(queryParameters.LockModes);
 					var optionalObjectKey = Loader.Loader.GetOptionalObjectKey(queryParameters, Session);
 					var tmpResults = new List<object>();
+					var cacheBatcher = queryInfo.CacheBatcher;
+					var ownCacheBatcher = cacheBatcher == null;
+					if (ownCacheBatcher)
+						cacheBatcher = new CacheBatcher(Session);
 
 					for (var count = 0; count < maxRows && await (reader.ReadAsync(cancellationToken)).ConfigureAwait(false); count++)
 					{
@@ -90,7 +94,8 @@ namespace NHibernate.Multi
 								hydratedObjects[i],
 								keys,
 								true,
-								forcedResultTransformer
+								forcedResultTransformer,
+								(persister, data) => cacheBatcher.AddToBatch(persister, data)
 , cancellationToken							)).ConfigureAwait(false);
 						if (loader.IsSubselectLoadingEnabled)
 						{
@@ -104,6 +109,9 @@ namespace NHibernate.Multi
 					queryInfo.Result = tmpResults;
 					if (queryInfo.CanPutToCache)
 						queryInfo.ResultToCache = tmpResults;
+
+					if (ownCacheBatcher)
+						await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 
 					await (reader.NextResultAsync(cancellationToken)).ConfigureAwait(false);
 				}

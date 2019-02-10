@@ -7,10 +7,10 @@ namespace NHibernate.Transform
 		/// <summary>
 		/// Each row of results is a map (<see cref="IDictionary" />) from alias to values/entities
 		/// </summary>
-		public static readonly IResultTransformer AliasToEntityMap = new AliasToEntityMapResultTransformer();
+		public static readonly IResultTransformer AliasToEntityMap = AliasToEntityMapResultTransformer.Instance;
 
 		/// <summary> Each row of results is a <see cref="IList"/></summary>
-		public static readonly ToListResultTransformer ToList = new ToListResultTransformer();
+		public static readonly ToListResultTransformer ToList = ToListResultTransformer.Instance;
 
 		/// <summary>
 		/// Creates a result transformer that will inject aliased values into instances
@@ -44,15 +44,15 @@ namespace NHibernate.Transform
 			return AliasToBean(typeof(T));
 		}
 
-		public static readonly IResultTransformer DistinctRootEntity = new DistinctRootEntityResultTransformer();
+		public static readonly IResultTransformer DistinctRootEntity = DistinctRootEntityResultTransformer.Instance;
 
 		public static IResultTransformer AliasToBeanConstructor(System.Reflection.ConstructorInfo constructor)
 		{
 			return new AliasToBeanConstructorResultTransformer(constructor);
 		}
 
-		public static readonly IResultTransformer PassThrough = new PassThroughResultTransformer();
+		public static readonly IResultTransformer PassThrough = PassThroughResultTransformer.Instance;
 
-		public static readonly IResultTransformer RootEntity = new RootEntityResultTransformer();
+		public static readonly IResultTransformer RootEntity = RootEntityResultTransformer.Instance;
 	}
 }

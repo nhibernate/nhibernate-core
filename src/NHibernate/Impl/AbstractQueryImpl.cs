@@ -196,32 +196,22 @@ namespace NHibernate.Impl
 				throw new ArgumentNullException("clazz", "The IType can not be guessed for a null value.");
 			}
 
-			string typename = clazz.AssemblyQualifiedName;
-			IType type = TypeFactory.HeuristicType(typename);
-			bool serializable = (type != null && type is SerializableType);
-			if (type == null || serializable)
+			var type = TypeFactory.HeuristicType(clazz);
+			if (type == null || type is SerializableType)
 			{
-				try
+				if (session.Factory.TryGetEntityPersister(clazz.FullName) != null)
 				{
-					session.Factory.GetEntityPersister(clazz.FullName);
+					return NHibernateUtil.Entity(clazz);
 				}
-				catch (MappingException)
+
+				if (type == null)
 				{
-					if (serializable)
-					{
-						return type;
-					}
-					else
-					{
-						throw new HibernateException("Could not determine a type for class: " + typename);
-					}
+					throw new HibernateException(
+						"Could not determine a type for class: " + clazz.AssemblyQualifiedName);
 				}
-				return NHibernateUtil.Entity(clazz);
 			}
-			else
-			{
-				return type;
-			}
+
+			return type;
 		}
 
 		/// <summary>
