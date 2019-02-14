@@ -785,15 +785,10 @@ namespace NHibernate.Loader
 		                                               Action<IEntityPersister, CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (!entry.LoadedWithLazyPropertiesUnfetched)
-			{
-				return; // All lazy properties were already loaded
-			}
-
-			var eagerPropertyFetch = IsEagerPropertyFetchEnabled(i);
+			var fetchAllProperties = IsEagerPropertyFetchEnabled(i);
 			var fetchLazyProperties = GetFetchLazyProperties(i);
 
-			if (!eagerPropertyFetch && fetchLazyProperties == null)
+			if (!fetchAllProperties && fetchLazyProperties == null)
 			{
 				return; // No lazy properties were loaded
 			}
@@ -826,11 +821,19 @@ namespace NHibernate.Loader
 				? EntityAliases[i].SuffixedPropertyAliases
 				: GetSubclassEntityAliases(i, persister);
 
-			if (!await (persister.InitializeLazyPropertiesAsync(rs, id, obj, rootPersister, cols, updateLazyProperties, eagerPropertyFetch, session, cancellationToken)).ConfigureAwait(false))
+			if (!await (persister.InitializeLazyPropertiesAsync(rs, id, obj, rootPersister, cols, updateLazyProperties, fetchAllProperties, session, cancellationToken)).ConfigureAwait(false))
 			{
 				return;
 			}
 
+			await (UpdateCacheForEntityAsync(obj, id, entry, persister, session, cacheBatchingHandler, cancellationToken)).ConfigureAwait(false);
+		}
+
+		internal static async Task UpdateCacheForEntityAsync(
+			object obj, object id, EntityEntry entry, IEntityPersister persister, ISessionImplementor session,
+			Action<IEntityPersister, CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (entry.Status == Status.Loading || !persister.HasCache ||
 			    !session.CacheMode.HasFlag(CacheMode.Put) || !persister.IsLazyPropertiesCacheable)
 			{
@@ -845,7 +848,7 @@ namespace NHibernate.Loader
 			var factory = session.Factory;
 			var state = persister.GetPropertyValues(obj);
 			var version = Versioning.GetVersion(state, persister);
-			var cacheEntry = await (CacheEntry.CreateAsync(state, persister, entry.LoadedWithLazyPropertiesUnfetched, version, session, obj, cancellationToken)).ConfigureAwait(false);
+			var cacheEntry = await (CacheEntry.CreateAsync(state, persister, version, session, obj, cancellationToken)).ConfigureAwait(false);
 			var cacheKey = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
 
 			if (cacheBatchingHandler != null && persister.IsBatchLoadable)
@@ -895,23 +898,23 @@ namespace NHibernate.Loader
 				Log.Debug("Initializing object from DataReader: {0}", MessageHelper.InfoString(persister, id));
 			}
 
-			bool eagerPropertyFetch = IsEagerPropertyFetchEnabled(i);
+			bool fetchAllProperties = IsEagerPropertyFetchEnabled(i);
 			var eagerFetchProperties = GetFetchLazyProperties(i);
 
 			// add temp entry so that the next step is circular-reference
 			// safe - only needed because some types don't take proper
 			// advantage of two-phase-load (esp. components)
-			TwoPhaseLoad.AddUninitializedEntity(key, obj, persister, lockMode, !eagerPropertyFetch, session);
+			TwoPhaseLoad.AddUninitializedEntity(key, obj, persister, lockMode, session);
 
 			string[][] cols = persister == rootPersister
 								? EntityAliases[i].SuffixedPropertyAliases
 								: GetSubclassEntityAliases(i, persister);
 
-			object[] values = await (persister.HydrateAsync(rs, id, obj, cols, eagerFetchProperties, eagerPropertyFetch, session, cancellationToken)).ConfigureAwait(false);
+			object[] values = await (persister.HydrateAsync(rs, id, obj, cols, eagerFetchProperties, fetchAllProperties, session, cancellationToken)).ConfigureAwait(false);
 
 			object rowId = persister.HasRowId ? rs[EntityAliases[i].RowIdAlias] : null;
 
-			TwoPhaseLoad.PostHydrate(persister, id, values, rowId, obj, lockMode, !eagerPropertyFetch, session);
+			TwoPhaseLoad.PostHydrate(persister, id, values, rowId, obj, lockMode, session);
 		}
 
 		/// <summary>

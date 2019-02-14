@@ -37,6 +37,8 @@ namespace NHibernate.Tuple.Entity
 		System.Type ConcreteProxyClass { get; }
 
 		/// <summary> Is it an instrumented POCO?</summary>
+		// Since 5.3
+		[Obsolete("This property is not used and will be removed in a future version.")]
 		bool IsInstrumented { get; }
 
 		/// <summary> Create an entity instance initialized with the given identifier. </summary>
@@ -100,6 +102,8 @@ namespace NHibernate.Tuple.Entity
 		/// <param name="entity">The entity being initialized. </param>
 		/// <param name="lazyPropertiesAreUnfetched">Are defined lazy properties currently unfecthed </param>
 		/// <param name="session">The session initializing this entity. </param>
+		// Since 5.3
+		[Obsolete("Use the extension method instead")]
 		void AfterInitialize(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session);
 
 		/// <summary> Does this entity, for this mode, present a possibility for proxying? </summary>
@@ -117,6 +121,28 @@ namespace NHibernate.Tuple.Entity
 		/// <summary> Does the given entity instance have any currently uninitialized lazy properties? </summary>
 		/// <param name="entity">The entity to be check for uninitialized lazy properties. </param>
 		/// <returns> True if uninitialized lazy properties were found; false otherwise. </returns>
+		// Since 5.3
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		bool HasUninitializedLazyProperties(object entity);
+	}
+
+	public static class EntityTuplizerExtensions
+	{
+		/// <summary> Called just after the entities properties have been initialized. </summary>
+		/// <param name="entityTuplizer">The entity tupilizer.</param>
+		/// <param name="entity">The entity being initialized. </param>
+		/// <param name="session">The session initializing this entity. </param>
+		public static void AfterInitialize(this IEntityTuplizer entityTuplizer, object entity, ISessionImplementor session)
+		{
+			if (entityTuplizer is AbstractEntityTuplizer abstractEntityTuplizer)
+			{
+				abstractEntityTuplizer.AfterInitialize(entity, session);
+				return;
+			}
+
+#pragma warning disable 618
+			entityTuplizer.AfterInitialize(entity, true, session);
+#pragma warning restore 618
+		}
 	}
 }

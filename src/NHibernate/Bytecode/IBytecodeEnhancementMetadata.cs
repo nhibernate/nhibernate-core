@@ -40,11 +40,9 @@ namespace NHibernate.Bytecode
 		/// Build and inject an interceptor instance into the enhanced entity.
 		/// </summary>
 		/// <param name="entity">The entity into which built interceptor should be injected.</param>
-		/// <param name="lazyPropertiesAreUnfetched">Whether all lazy properties were unfetched or not.</param>
 		/// <param name="session">The session to which the entity instance belongs.</param>
 		/// <returns>The built and injected interceptor.</returns>
-		// TODO: Remove lazyPropertiesAreUnfetched when interceptor will be injected on entity instantiation
-		IFieldInterceptor InjectInterceptor(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session);
+		IFieldInterceptor InjectInterceptor(object entity, ISessionImplementor session);
 
 		/// <summary>
 		/// Extract the field interceptor instance from the enhanced entity.
@@ -66,5 +64,12 @@ namespace NHibernate.Bytecode
 		/// <param name="entityState">The entity state from which to retrieve the uninitialized lazy properties.</param>
 		/// <returns>The uninitialized property names.</returns>
 		ISet<string> GetUninitializedLazyProperties(object[] entityState);
+
+		/// <summary>
+		/// Check whether the enhanced entity has any uninitialized lazy properties.
+		/// </summary>
+		/// <param name="entity">The entity to check for uninitialized lazy properties.</param>
+		/// <returns>Whether the enhanced entity has any uninitialized lazy properties.</returns>
+		bool HasAnyUninitializedLazyProperties(object entity);
 	}
 }

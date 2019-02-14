@@ -70,6 +70,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			_component.lazy = isLazy;
 		}
 
+		public void LazyGroup(string name)
+		{
+			_component.lazygroup = name;
+		}
+
 		public void Unique(bool unique)
 		{
 			_component.unique = unique;

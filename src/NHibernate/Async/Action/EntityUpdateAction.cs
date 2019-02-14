@@ -99,7 +99,7 @@ namespace NHibernate.Action
 				}
 				else
 				{
-					CacheEntry ce = await (CacheEntry.CreateAsync(state, persister, persister.HasUninitializedLazyProperties(instance), nextVersion, Session, instance, cancellationToken)).ConfigureAwait(false);
+					CacheEntry ce = await (CacheEntry.CreateAsync(state, persister, nextVersion, Session, instance, cancellationToken)).ConfigureAwait(false);
 					cacheEntry = persister.CacheEntryStructure.Structure(ce);
 
 					bool put = await (persister.Cache.UpdateAsync(ck, cacheEntry, nextVersion, previousVersion, cancellationToken)).ConfigureAwait(false);

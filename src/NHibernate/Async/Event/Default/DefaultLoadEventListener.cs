@@ -505,7 +505,7 @@ namespace NHibernate.Event.Default
 
 			// make it circular-reference safe
 			EntityKey entityKey = session.GenerateEntityKey(id, subclassPersister);
-			TwoPhaseLoad.AddUninitializedCachedEntity(entityKey, result, subclassPersister, LockMode.None, entry.AreLazyPropertiesUnfetched, entry.Version, session);
+			TwoPhaseLoad.AddUninitializedCachedEntity(entityKey, result, subclassPersister, LockMode.None, entry.Version, session);
 
 			IType[] types = subclassPersister.PropertyTypes;
 			object[] values = await (entry.AssembleAsync(result, id, subclassPersister, session.Interceptor, session, cancellationToken)).ConfigureAwait(false); // intializes result by side-effect
@@ -543,10 +543,9 @@ namespace NHibernate.Event.Default
 				LockMode.None,
 				true,
 				subclassPersister,
-				false,
-				entry.AreLazyPropertiesUnfetched);
+				false);
 			
-			subclassPersister.AfterInitialize(result, entry.AreLazyPropertiesUnfetched, session);
+			subclassPersister.AfterInitialize(result, session);
 			await (persistenceContext.InitializeNonLazyCollectionsAsync(cancellationToken)).ConfigureAwait(false);
 			// upgrade the lock if necessary:
 			//lock(result, lockMode);

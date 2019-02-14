@@ -39,7 +39,7 @@ namespace NHibernate.Tuple.Entity
 		public UnwrapProxyPropertiesMetadata UnwrapProxyPropertiesMetadata { get; }
 
 		/// <inheritdoc />
-		public IFieldInterceptor InjectInterceptor(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
+		public IFieldInterceptor InjectInterceptor(object entity, ISessionImplementor session)
 		{
 			throw new NotInstrumentedException(_errorMessage);
 		}
@@ -60,6 +60,12 @@ namespace NHibernate.Tuple.Entity
 		public ISet<string> GetUninitializedLazyProperties(object[] entityState)
 		{
 			return CollectionHelper.EmptySet<string>();
+		}
+
+		/// <inheritdoc />
+		public bool HasAnyUninitializedLazyProperties(object entity)
+		{
+			return false;
 		}
 	}
 }

@@ -264,6 +264,8 @@ namespace NHibernate.Mapping
 			set { isLazy = value; }
 		}
 
+		public string LazyGroup { get; set; }
+
 		public virtual bool BackRef
 		{
 			get { return false; }
