@@ -577,17 +577,20 @@ namespace NHibernate.Test.Extralazy
 
 				// Add transient companies with Insert
 				Sfi.Statistics.Clear();
-				for (var i = 10; i < 15; i++)
+				using (var sqlLog = new SqlLogSpy())
 				{
-					var item = new Company($"c{i}", i, gavin);
-					addedItems.Add(item);
-					gavin.Companies.Insert(i, item);
+					for (var i = 10; i < 15; i++)
+					{
+						var item = new Company($"c{i}", i, gavin);
+						addedItems.Add(item);
+						gavin.Companies.Insert(i, item);
+					}
+
+					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "INSERT \n    INTO"), Is.EqualTo(5));
 				}
 
 				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
 				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1));
-				// 5 inserts from the previous for statement were triggered
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
 
 				// Add transient companies with Add
@@ -606,21 +609,30 @@ namespace NHibernate.Test.Extralazy
 
 				// Remove last 5 transient companies
 				Sfi.Statistics.Clear();
-				for (var i = 15; i < 20; i++)
+				using (var sqlLog = new SqlLogSpy())
 				{
-					Assert.That(gavin.Companies.Remove(addedItems[i]), Is.True);
+					for (var i = 15; i < 20; i++)
+					{
+						Assert.That(gavin.Companies.Remove(addedItems[i]), Is.True);
+					}
+
+					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "INSERT \n    INTO"), Is.EqualTo(10));
 				}
 
 				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
 				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(14));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
 
 				// Remove last 5 transient companies
 				Sfi.Statistics.Clear();
-				for (var i = 10; i < 15; i++)
+				using (var sqlLog = new SqlLogSpy())
 				{
-					gavin.Companies.RemoveAt(10);
+					for (var i = 10; i < 15; i++)
+					{
+						gavin.Companies.RemoveAt(10);
+					}
+
+					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "DELETE \n    FROM"), Is.EqualTo(5));
 				}
 
 				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
@@ -644,11 +656,16 @@ namespace NHibernate.Test.Extralazy
 
 				// Remove last transient company
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Companies.Remove(addedItems[14]), Is.EqualTo(true));
+				using (var sqlLog = new SqlLogSpy())
+				{
+					Assert.That(gavin.Companies.Remove(addedItems[14]), Is.EqualTo(true));
+					var log = sqlLog.GetWholeLog();
+					Assert.That(FindAllOccurrences(log, "DELETE \n    FROM"), Is.EqualTo(5));
+					Assert.That(FindAllOccurrences(log, "INSERT \n    INTO"), Is.EqualTo(5));
+				}
 
 				Assert.That(gavin.Companies.Count, Is.EqualTo(14));
 				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(6));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
 
 				// Test index getter
@@ -681,21 +698,27 @@ namespace NHibernate.Test.Extralazy
 				// Test manual flush after remove
 				Sfi.Statistics.Clear();
 				gavin.Companies.RemoveAt(12);
-				s.Flush();
+				using (var sqlLog = new SqlLogSpy())
+				{
+					s.Flush();
+					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "DELETE \n    FROM"), Is.EqualTo(1));
+				}
 
 				Assert.That(gavin.Companies.Count, Is.EqualTo(12));
 				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
 
 				// Test manual flush after insert
 				Sfi.Statistics.Clear();
 				gavin.Companies.Add(new Company($"c{12}", 12, gavin));
-				s.Flush();
+				using (var sqlLog = new SqlLogSpy())
+				{
+					s.Flush();
+					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "INSERT \n    INTO"), Is.EqualTo(1));
+				}
 
 				Assert.That(gavin.Companies.Count, Is.EqualTo(13));
 				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
 
 				for (var i = 0; i < gavin.Companies.Count; i++)
@@ -2247,6 +2270,21 @@ namespace NHibernate.Test.Extralazy
 				s.Delete(gavin);
 				t.Commit();
 			}
+		}
+
+		private int FindAllOccurrences(string source, string substring)
+		{
+			if (source == null)
+			{
+				return 0;
+			}
+			int n = 0, count = 0;
+			while ((n = source.IndexOf(substring, n, StringComparison.InvariantCulture)) != -1)
+			{
+				n += substring.Length;
+				++count;
+			}
+			return count;
 		}
 	}
 }
