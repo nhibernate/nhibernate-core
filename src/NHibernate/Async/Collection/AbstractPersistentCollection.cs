@@ -19,6 +19,7 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
+using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -71,6 +72,18 @@ namespace NHibernate.Collection
 				Read();
 			}
 			return null;
+		}
+
+		internal async Task<bool> IsTransientAsync(object element, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var queryableCollection = (IQueryableCollection) Session.Factory.GetCollectionPersister(Role);
+			return
+				queryableCollection != null &&
+				queryableCollection.ElementType.IsEntityType &&
+				!element.IsProxy() &&
+				!Session.PersistenceContext.IsEntryFor(element) &&
+				await (ForeignKeys.IsTransientFastAsync(queryableCollection.ElementPersister.EntityName, element, Session, cancellationToken)).ConfigureAwait(false) == true;
 		}
 
 		/// <summary>

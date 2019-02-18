@@ -12,7 +12,6 @@ using NHibernate.Engine;
 using NHibernate.Linq;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
-using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -317,21 +316,26 @@ namespace NHibernate.Collection.Generic
 
 		public bool Add(T o)
 		{
-			var exists = IsOperationQueueEnabled ? ReadElementExistence(o, out _) : null;
-			if (!exists.HasValue)
+			// Skip checking the element existance in the database if we know that the element
+			// is transient and the operation queue is enabled
+			if (WasInitialized || !IsOperationQueueEnabled || !IsTransient(o))
 			{
-				Initialize(true);
-				if (WrappedSet.Add(o))
+				var exists = IsOperationQueueEnabled ? ReadElementExistence(o, out _) : null;
+				if (!exists.HasValue)
 				{
-					Dirty();
-					return true;
+					Initialize(true);
+					if (WrappedSet.Add(o))
+					{
+						Dirty();
+						return true;
+					}
+					return false;
 				}
-				return false;
-			}
 
-			if (exists.Value)
-			{
-				return false;
+				if (exists.Value)
+				{
+					return false;
+				}
 			}
 
 			var queueOperationTracker = GetOrCreateQueueOperationTracker();
@@ -538,41 +542,7 @@ namespace NHibernate.Collection.Generic
 
 		void ICollection<T>.Add(T item)
 		{
-			if (!IsOperationQueueEnabled)
-			{
-				Initialize(true);
-				if (WrappedSet.Add(item))
-				{
-					Dirty();
-				}
-
-				return;
-			}
-
-			// If the item is not transient we have to use the ISet Add method as we have to check whether it is already added
-			var queryableCollection = (IQueryableCollection) Session.Factory.GetCollectionPersister(Role);
-			if (
-				queryableCollection == null ||
-				!queryableCollection.ElementType.IsEntityType ||
-				item.IsProxy() ||
-				Session.PersistenceContext.IsEntryFor(item) ||
-				ForeignKeys.IsTransientFast(queryableCollection.ElementPersister.EntityName, item, Session) != true)
-			{
-				Add(item);
-				return;
-			}
-
-			var queueOperationTracker = GetOrCreateQueueOperationTracker();
-			if (queueOperationTracker != null)
-			{
-				QueueAddElement(item);
-			}
-			else
-			{
-#pragma warning disable 618
-				QueueOperation(new SimpleAddDelayedOperation(this, item));
-#pragma warning restore 618
-			}
+			Add(item);
 		}
 
 		#endregion

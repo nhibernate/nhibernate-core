@@ -1138,7 +1138,7 @@ namespace NHibernate.Test.Extralazy
 
 		[TestCase(false)]
 		[TestCase(true)]
-		public void SetCollectionAdd(bool initialize)
+		public void SetAddTransient(bool initialize)
 		{
 			User gavin;
 			var addedItems = new List<UserPermission>();
@@ -1222,6 +1222,57 @@ namespace NHibernate.Test.Extralazy
 				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(6));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False);
 
+
+				// Test adding permissions with ISet interface
+				Sfi.Statistics.Clear();
+				for (var i = 0; i < 5; i++)
+				{
+					var item = new UserPermission($"p3{i}", gavin);
+					addedItems.Add(item);
+					gavin.Permissions.Add(item);
+				}
+
+				Assert.That(gavin.Permissions.Count, Is.EqualTo(15));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False);
+
+				// Test readding permissions with ISet interface
+				Sfi.Statistics.Clear();
+				foreach (var item in addedItems.Skip(10))
+				{
+					gavin.Permissions.Add(item);
+				}
+
+				Assert.That(gavin.Permissions.Count, Is.EqualTo(15));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False);
+
+				// Test adding not loaded permissions with ISet interface
+				Sfi.Statistics.Clear();
+				foreach (var item in addedItems.Take(5))
+				{
+					gavin.Permissions.Add(item);
+				}
+
+				Assert.That(gavin.Permissions.Count, Is.EqualTo(15));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False);
+
+				// Test adding loaded permissions with ISet interface
+				Sfi.Statistics.Clear();
+				foreach (var item in s.Query<UserPermission>())
+				{
+					gavin.Permissions.Add(item);
+				}
+
+				Assert.That(gavin.Permissions.Count, Is.EqualTo(15));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(6));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False);
+
 				if (initialize)
 				{
 					using (var e = gavin.Permissions.GetEnumerator())
@@ -1230,7 +1281,7 @@ namespace NHibernate.Test.Extralazy
 					}
 
 					Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.True);
-					Assert.That(gavin.Permissions.Count, Is.EqualTo(10));
+					Assert.That(gavin.Permissions.Count, Is.EqualTo(15));
 				}
 
 				t.Commit();
@@ -1240,7 +1291,7 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = s.Get<User>("gavin");
-				Assert.That(gavin.Permissions.Count, Is.EqualTo(10));
+				Assert.That(gavin.Permissions.Count, Is.EqualTo(15));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False);
 
 				t.Commit();
@@ -1452,7 +1503,7 @@ namespace NHibernate.Test.Extralazy
 				}
 
 				Assert.That(collection.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
 				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False);
 
 				Sfi.Statistics.Clear();

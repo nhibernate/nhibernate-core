@@ -22,7 +22,6 @@ using NHibernate.Engine;
 using NHibernate.Linq;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
-using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 

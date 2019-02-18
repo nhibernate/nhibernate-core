@@ -9,6 +9,7 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
+using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -752,6 +753,17 @@ namespace NHibernate.Collection
 
 			dirty = true;  // Needed so that we remove this collection from the second-level cache
 			return queueOperationTracker;
+		}
+
+		internal bool IsTransient(object element)
+		{
+			var queryableCollection = (IQueryableCollection) Session.Factory.GetCollectionPersister(Role);
+			return
+				queryableCollection != null &&
+				queryableCollection.ElementType.IsEntityType &&
+				!element.IsProxy() &&
+				!Session.PersistenceContext.IsEntryFor(element) &&
+				ForeignKeys.IsTransientFast(queryableCollection.ElementPersister.EntityName, element, Session) == true;
 		}
 
 		// Obsolete since v5.2
