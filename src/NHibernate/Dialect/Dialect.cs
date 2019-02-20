@@ -148,15 +148,18 @@ namespace NHibernate.Dialect
 		public static Dialect GetDialect()
 		{
 			string dialectName;
+#pragma warning disable 618
+			var properties = Environment.Properties;
+#pragma warning restore 618
 			try
 			{
-				dialectName = Environment.Properties[Environment.Dialect];
+				dialectName = properties[Environment.Dialect];
 			}
 			catch (Exception e)
 			{
 				throw new HibernateException("The dialect was not set. Set the property 'dialect'.", e);
 			}
-			return InstantiateDialect(dialectName, Environment.Properties);
+			return InstantiateDialect(dialectName, properties);
 		}
 
 		/// <summary>

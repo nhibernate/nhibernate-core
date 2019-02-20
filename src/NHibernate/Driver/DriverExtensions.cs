@@ -20,7 +20,9 @@ namespace NHibernate.Driver
 			if (driver is DriverBase driverBase)
 				return driverBase.CommandTimeout;
 
+#pragma warning disable 618
 			return PropertiesHelper.GetInt32(Cfg.Environment.CommandTimeout, Cfg.Environment.Properties, -1);
+#pragma warning restore 618
 		}
 
 		// 6.0 TODO: merge into IDriver
