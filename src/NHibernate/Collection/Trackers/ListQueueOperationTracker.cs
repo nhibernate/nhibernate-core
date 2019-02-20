@@ -70,8 +70,9 @@ namespace NHibernate.Collection.Trackers
 		/// <inheritdoc />
 		public override void AfterFlushing()
 		{
-			// Update the collection size to avoid an additional query for getting the size for further operations
-			DatabaseCollectionSize = _tracker == null || _tracker.DatabaseCollectionSize < 0 ? -1 : _tracker.GetCollectionSize();
+			// We have to reset the current database collection size in case an element
+			// was added multiple times
+			DatabaseCollectionSize = -1;
 			_tracker = null;
 		}
 

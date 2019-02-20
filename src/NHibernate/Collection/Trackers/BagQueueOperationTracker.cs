@@ -11,6 +11,14 @@ namespace NHibernate.Collection.Trackers
 		{
 		}
 
+		public override void AfterFlushing()
+		{
+			// We have to reset the current database collection size in case an element
+			// was added multiple times
+			DatabaseCollectionSize = -1;
+			base.AfterFlushing();
+		}
+
 		/// <inheritdoc />
 		public override void ApplyChanges(IList<T> loadedCollection)
 		{

@@ -168,6 +168,92 @@ namespace NHibernate.Test.Extralazy
 			}
 		}
 
+		[TestCase(false, false)]
+		[TestCase(false, true)]
+		[TestCase(true, false)]
+		[TestCase(true, true)]
+		public async Task ListAddDuplicatedAsync(bool initialize, bool flush, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			User gavin;
+			var addedItems = new List<Company>();
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = new User("gavin", "secret");
+				await (s.PersistAsync(gavin, cancellationToken));
+
+				for (var i = 0; i < 5; i++)
+				{
+					var item = new Company($"c{i}", i, gavin);
+					addedItems.Add(item);
+					gavin.Companies.Add(item);
+					gavin.Companies.Add(item);
+				}
+
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
+
+				await (t.CommitAsync(cancellationToken));
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				// Refresh added items
+				for (var i = 0; i < 5; i++)
+				{
+					addedItems[i] = await (s.GetAsync<Company>(addedItems[i].Id, cancellationToken));
+				}
+
+				Sfi.Statistics.Clear();
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+
+				// Readd items
+				Sfi.Statistics.Clear();
+				for (var i = 0; i < 5; i++)
+				{
+					gavin.Companies.Add(addedItems[i]);
+				}
+
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+
+				if (flush)
+				{
+					await (s.FlushAsync(cancellationToken));
+					Assert.That(gavin.Companies.Count, Is.EqualTo(5));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				}
+
+				if (initialize)
+				{
+					using (var e = gavin.Companies.GetEnumerator())
+					{
+						e.MoveNext();
+					}
+
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
+					Assert.That(gavin.Companies.Count, Is.EqualTo(flush ? 5 : 10));
+				}
+
+				await (t.CommitAsync(cancellationToken));
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+
+				await (t.CommitAsync(cancellationToken));
+			}
+		}
+
 		[TestCase(false)]
 		[TestCase(true)]
 		public async Task ListInsertAsync(bool initialize, CancellationToken cancellationToken = default(CancellationToken))
@@ -280,6 +366,93 @@ namespace NHibernate.Test.Extralazy
 			{
 				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
 				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+
+				await (t.CommitAsync(cancellationToken));
+			}
+		}
+
+		[TestCase(false, false)]
+		[TestCase(false, true)]
+		[TestCase(true, false)]
+		[TestCase(true, true)]
+		public async Task ListInsertDuplicatedAsync(bool initialize, bool flush, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			User gavin;
+			var addedItems = new List<Company>();
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = new User("gavin", "secret");
+				await (s.PersistAsync(gavin, cancellationToken));
+
+				for (var i = 0; i < 5; i++)
+				{
+					var item = new Company($"c{i}", i, gavin);
+					addedItems.Add(item);
+					gavin.Companies.Insert(i, item);
+					gavin.Companies.Insert(i, item);
+				}
+
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
+
+				await (t.CommitAsync(cancellationToken));
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				// Refresh added items
+				for (var i = 0; i < 5; i++)
+				{
+					addedItems[i] = await (s.GetAsync<Company>(addedItems[i].Id, cancellationToken));
+				}
+
+				Sfi.Statistics.Clear();
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+
+				// Readd items
+				Sfi.Statistics.Clear();
+				for (var i = 0; i < 5; i++)
+				{
+					gavin.Companies.Insert(4 - i, addedItems[i]);
+				}
+
+				Assert.That(gavin.Companies[0].ListIndex, Is.EqualTo(4));
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+
+				if (flush)
+				{
+					await (s.FlushAsync(cancellationToken));
+					Assert.That(gavin.Companies.Count, Is.EqualTo(5));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				}
+
+				if (initialize)
+				{
+					using (var e = gavin.Companies.GetEnumerator())
+					{
+						e.MoveNext();
+					}
+
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
+					Assert.That(gavin.Companies.Count, Is.EqualTo(flush ? 5 : 10));
+				}
+
+				await (t.CommitAsync(cancellationToken));
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
 
 				await (t.CommitAsync(cancellationToken));
@@ -649,7 +822,7 @@ namespace NHibernate.Test.Extralazy
 
 				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
 				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(6));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(7));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
 
 				// Add transient companies with Add
@@ -686,7 +859,7 @@ namespace NHibernate.Test.Extralazy
 
 				Assert.That(gavin.Companies.Count, Is.EqualTo(14));
 				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(3));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
 
 				// Remove last transient company
@@ -704,7 +877,7 @@ namespace NHibernate.Test.Extralazy
 
 				Assert.That(gavin.Companies.Count, Is.EqualTo(13));
 				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(3));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
 
 				// Test manual flush after remove
@@ -1142,6 +1315,92 @@ namespace NHibernate.Test.Extralazy
 				Assert.That(gavin.Documents.Count, Is.EqualTo(12));
 				Assert.That(gavin.Documents.Contains(hia2), Is.True);
 				Assert.That(gavin.Documents.Contains(hia), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+
+				await (t.CommitAsync(cancellationToken));
+			}
+		}
+
+		[TestCase(false, false)]
+		[TestCase(false, true)]
+		[TestCase(true, false)]
+		[TestCase(true, true)]
+		public async Task SetAddDuplicatedAsync(bool initialize, bool flush, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			User gavin;
+			var addedItems = new List<Document>();
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = new User("gavin", "secret");
+				await (s.PersistAsync(gavin, cancellationToken));
+
+				for (var i = 0; i < 5; i++)
+				{
+					var item = new Document($"d{i}", $"c{i}", gavin);
+					addedItems.Add(item);
+					gavin.Documents.Add(item);
+					gavin.Documents.Add(item);
+				}
+
+				Assert.That(gavin.Documents.Count, Is.EqualTo(5));
+
+				await (t.CommitAsync(cancellationToken));
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				// Refresh added items
+				for (var i = 0; i < 5; i++)
+				{
+					addedItems[i] = await (s.GetAsync<Document>(addedItems[i].Title, cancellationToken));
+				}
+
+				Sfi.Statistics.Clear();
+				Assert.That(gavin.Documents.Count, Is.EqualTo(5));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+
+				// Readd items
+				Sfi.Statistics.Clear();
+				for (var i = 0; i < 5; i++)
+				{
+					Assert.That(gavin.Documents.Add(addedItems[i]), Is.False);
+				}
+
+				Assert.That(gavin.Documents.Count, Is.EqualTo(5));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+
+				if (flush)
+				{
+					await (s.FlushAsync(cancellationToken));
+					Assert.That(gavin.Documents.Count, Is.EqualTo(5));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				}
+
+				if (initialize)
+				{
+					using (var e = gavin.Documents.GetEnumerator())
+					{
+						e.MoveNext();
+					}
+
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.True);
+					Assert.That(gavin.Documents.Count, Is.EqualTo(5));
+				}
+
+				await (t.CommitAsync(cancellationToken));
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				Assert.That(gavin.Documents.Count, Is.EqualTo(5));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
 
 				await (t.CommitAsync(cancellationToken));
