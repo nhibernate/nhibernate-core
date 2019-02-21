@@ -42,6 +42,8 @@ namespace NHibernate.Transform
 		private readonly Dictionary<string, NamedMember<PropertyInfo>> _propertiesByNameCaseSensitive;
 		private readonly Dictionary<string, NamedMember<PropertyInfo>> _propertiesByNameCaseInsensitive;
 
+		public System.Type ResultClass => _resultClass;
+
 		public AliasToBeanResultTransformer(System.Type resultClass)
 		{
 			_resultClass = resultClass ?? throw new ArgumentNullException("resultClass");
@@ -60,7 +62,7 @@ namespace NHibernate.Transform
 
 			var fields = new List<RankedMember<FieldInfo>>();
 			var properties = new List<RankedMember<PropertyInfo>>();
-			FetchFieldsAndProperties(fields, properties);
+			FetchFieldsAndProperties(resultClass, fields, properties);
 
 			_fieldsByNameCaseSensitive = GetMapByName(fields, StringComparer.Ordinal);
 			_fieldsByNameCaseInsensitive = GetMapByName(fields, StringComparer.OrdinalIgnoreCase);
@@ -139,6 +141,15 @@ namespace NHibernate.Transform
 			throw new PropertyNotFoundException(resultObj.GetType(), alias, "setter");
 		}
 
+		protected MemberInfo GetMemberInfo(string alias)
+		{
+			return TryGetMemberInfo(alias, _propertiesByNameCaseSensitive)
+				?? TryGetMemberInfo(alias, _fieldsByNameCaseSensitive)
+				?? TryGetMemberInfo(alias, _propertiesByNameCaseInsensitive)
+				?? (MemberInfo) TryGetMemberInfo(alias, _fieldsByNameCaseInsensitive)
+				?? throw new PropertyNotFoundException(_resultClass, alias, "setter");
+		}
+
 		private bool TrySet(string alias, object value, object resultObj, Dictionary<string, NamedMember<FieldInfo>> fieldsMap)
 		{
 			if (fieldsMap.TryGetValue(alias, out var field))
@@ -161,6 +172,19 @@ namespace NHibernate.Transform
 			return false;
 		}
 
+		private TMemberInfo TryGetMemberInfo<TMemberInfo>(string alias, params Dictionary<string, NamedMember<TMemberInfo>>[] propertiesMaps) where TMemberInfo: MemberInfo
+		{
+			foreach (var propertiesMap in propertiesMaps)
+			{
+				if (propertiesMap.TryGetValue(alias, out var property))
+				{
+					CheckMember(property, alias);
+					return property.Member;
+				}
+			}
+			return null;
+		}
+
 		private void CheckMember<T>(NamedMember<T> member, string alias) where T : MemberInfo
 		{
 			if (member.Member != null)
@@ -179,10 +203,10 @@ namespace NHibernate.Transform
 					$"{string.Join(", ", member.AmbiguousMembers.Select(m => m.Name))}");
 		}
 
-		private void FetchFieldsAndProperties(List<RankedMember<FieldInfo>> fields, List<RankedMember<PropertyInfo>> properties)
+		private static void FetchFieldsAndProperties(System.Type resultClass, List<RankedMember<FieldInfo>> fields, List<RankedMember<PropertyInfo>> properties)
 		{
 			const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-			var currentType = _resultClass;
+			var currentType = resultClass;
 			var rank = 1;
 			// For grasping private members, we need to manually walk the hierarchy.
 			while (currentType != null && currentType != typeof(object))
@@ -201,7 +225,7 @@ namespace NHibernate.Transform
 			}
 		}
 
-		private int GetFieldVisibilityRank(FieldInfo field)
+		private static int GetFieldVisibilityRank(FieldInfo field)
 		{
 			if (field.IsPublic)
 				return 1;
@@ -214,7 +238,7 @@ namespace NHibernate.Transform
 			return 5;
 		}
 
-		private int GetPropertyVisibilityRank(PropertyInfo property)
+		private static int GetPropertyVisibilityRank(PropertyInfo property)
 		{
 			var setter = property.SetMethod;
 			if (setter.IsPublic)
@@ -228,7 +252,7 @@ namespace NHibernate.Transform
 			return 5;
 		}
 
-		private Dictionary<string, NamedMember<T>> GetMapByName<T>(IEnumerable<RankedMember<T>> members, StringComparer comparer) where T : MemberInfo
+		private static Dictionary<string, NamedMember<T>> GetMapByName<T>(IEnumerable<RankedMember<T>> members, StringComparer comparer) where T : MemberInfo
 		{
 			return members
 				.GroupBy(m => m.Member.Name,

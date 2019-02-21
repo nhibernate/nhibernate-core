@@ -28,6 +28,11 @@ namespace NHibernate.Transform
 			return new AliasToBeanResultTransformer(target);
 		}
 
+		public static IResultTransformer AliasToBeanCompiled(System.Type target)
+		{
+			return new AliasToBeanCompiledResultTransformer(target);
+		}
+
 		/// <summary>
 		/// Creates a result transformer that will inject aliased values into instances
 		/// of <typeparamref name="T"/> via property methods or fields.
@@ -42,6 +47,11 @@ namespace NHibernate.Transform
 		public static IResultTransformer AliasToBean<T>()
 		{
 			return AliasToBean(typeof(T));
+		}
+
+		public static IResultTransformer AliasToBeanCompiled<T>()
+		{
+			return AliasToBeanCompiled(typeof(T));
 		}
 
 		public static readonly IResultTransformer DistinctRootEntity = DistinctRootEntityResultTransformer.Instance;
