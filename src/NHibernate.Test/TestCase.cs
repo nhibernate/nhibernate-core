@@ -493,14 +493,14 @@ namespace NHibernate.Test
 				stop.Start();
 			}
 
-			public static Timer Start(string message)
-			{ return new Timer(message); }
+			public static Timer Start(string message = null) => new Timer(message);
+
 			public void Dispose()
 			{
 				stop.Stop();
 				if (!string.IsNullOrEmpty(_message))
 					Console.Write($"({_message}) ");
-				Console.WriteLine("Elapsed time (ms): " + Timer.ElapsedMilliseconds);
+				Console.WriteLine("Elapsed time (ms): " + ElapsedMilliseconds);
 			}
 
 			static public long ElapsedMilliseconds { get { return stop.ElapsedMilliseconds; } }
