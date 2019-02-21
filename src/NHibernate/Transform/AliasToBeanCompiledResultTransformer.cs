@@ -109,5 +109,16 @@ namespace NHibernate.Transform
 
 			return Expression.New(beanConstructor);
 		}
+
+		//Equality members are required by tests. But we are OK to use base equality members
+		public override bool Equals(object obj)
+		{
+			return base.Equals(obj);
+		}
+
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
 	}
 }

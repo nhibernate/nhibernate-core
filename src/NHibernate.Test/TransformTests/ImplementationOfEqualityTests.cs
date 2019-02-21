@@ -59,7 +59,9 @@ namespace NHibernate.Test.TransformTests
 			Assert.That(transformer1.GetHashCode(), Is.EqualTo(transformer2.GetHashCode()));
 
 			var transformer3 = new AliasToBeanResultTransformer(typeof(int));
+			var transformer4 = new AliasToBeanCompiledResultTransformer(typeof(int));
 			Assert.That(transformer1, Is.Not.EqualTo(transformer3));
+			Assert.That(transformer3, Is.Not.EqualTo(transformer4));
 			Assert.That(transformer1.GetHashCode(), Is.Not.EqualTo(transformer3.GetHashCode()));
 		}
 

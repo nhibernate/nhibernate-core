@@ -334,6 +334,8 @@ namespace NHibernate.Transform
 			{
 				return true;
 			}
+			if (GetType() != other.GetType())
+				return false;
 			return Equals(other._resultClass, _resultClass);
 		}
 
