@@ -8,7 +8,8 @@ namespace NHibernate.Transform
 	/// Result transformer that allows to transform a result to
 	/// a user specified class which will be populated via setter
 	/// methods or fields matching the alias names.
-	/// NOTE: This class can be statically cached for performance. But should be used only for the same query
+	/// "Compiled" version of AliasToBean transformer. Performs better if you have many aliases and/or load many records.
+	/// NOTE: This transformer can't be reused by different queries as it caches query aliases on first transformation
 	/// </summary>
 	/// <example>
 	/// <code>
@@ -61,16 +62,15 @@ namespace NHibernate.Transform
 					continue;
 
 				var memberInfo = GetMemberInfo(alias);
-				IndexExpression arrayAccessExpr = Expression.ArrayAccess(tupleParam, Expression.Constant(i));
-				bindings[i] = Expression.Bind(memberInfo, GetTyped(memberInfo, arrayAccessExpr));
+				var valueExpr = Expression.ArrayAccess(tupleParam, Expression.Constant(i));
+				bindings[i] = Expression.Bind(memberInfo, GetTyped(memberInfo, valueExpr));
 			}
 
 			Expression initExpr = Expression.MemberInit(GetNewExpression(ResultClass), bindings);
 			if (!ResultClass.IsClass)
 				initExpr = Expression.Convert(initExpr, typeof(object));
-			var expressionToCompile = Expression.Lambda(initExpr, tupleParam);
 
-			return (Func<object[], object>) expressionToCompile.Compile();
+			return (Func<object[], object>) Expression.Lambda(initExpr, tupleParam).Compile();
 		}
 
 		private static Expression GetTyped(MemberInfo memberInfo, Expression expr)

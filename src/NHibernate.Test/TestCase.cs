@@ -16,6 +16,7 @@ using NUnit.Framework.Interfaces;
 using System.Text;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using System.Diagnostics;
 
 namespace NHibernate.Test
 {
@@ -477,6 +478,33 @@ namespace NHibernate.Test
 				$"{Dialect} doesn't support {functionName} standard function.");
 		}
 
+		/// <summary>
+		/// Stopwatch wrapper
+		/// </summary>
+		protected class Timer : IDisposable
+		{
+			static Stopwatch stop = new Stopwatch();
+			private readonly string _message;
+
+			public Timer(string message)
+			{
+				stop.Reset();
+				_message = message;
+				stop.Start();
+			}
+
+			public static Timer Start(string message)
+			{ return new Timer(message); }
+			public void Dispose()
+			{
+				stop.Stop();
+				if (!string.IsNullOrEmpty(_message))
+					Console.Write($"({_message}) ");
+				Console.WriteLine("Elapsed time (ms): " + Timer.ElapsedMilliseconds);
+			}
+
+			static public long ElapsedMilliseconds { get { return stop.ElapsedMilliseconds; } }
+		}
 		#endregion
 	}
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using NHibernate.Criterion;
 using NUnit.Framework;
 
@@ -100,38 +99,14 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			for (int j = 0; j < 5; j++)
 			{
-				using (Timer.Start)
+				using (Timer.Start("SQL generation for criteria"))
 				for (int i = 0; i < iterations; i++)
 				{
 					var batchItem = new Multi.CriteriaBatchItem<Person>(criteria);
 					batchItem.Init(s.GetSessionImplementation());
 					commands.AddRange(batchItem.GetCommands());
 				}
-				Console.WriteLine("Elapsed time (ms): " + Timer.ElapsedMilliseconds);
 			}
-		}
-
-		/// <summary>
-		/// Stopwatch wrapper
-		/// </summary>
-		class Timer : IDisposable
-		{
-			static Stopwatch stop = new Stopwatch();
-
-			public Timer()
-			{
-				stop.Reset();
-				stop.Start();
-			}
-
-			public static Timer Start { get { return new Timer(); } }
-
-			public void Dispose()
-			{
-				stop.Stop();
-			}
-
-			static public long ElapsedMilliseconds { get { return stop.ElapsedMilliseconds; } }
 		}
 	}
 }

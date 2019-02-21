@@ -8,6 +8,8 @@
 //------------------------------------------------------------------------------
 
 
+using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Transform;
 using NUnit.Framework;
 
@@ -20,6 +22,15 @@ namespace NHibernate.Test.TransformTests
 		protected override IResultTransformer GetTransformer<T>()
 		{
 			return Transformers.AliasToBeanCompiled<T>();
+		}
+
+		public class PersonDTO
+		{
+			public string FirstName { get; set; }
+			public string LastName { get; set; }
+			public int Age { get; set; }
+			public decimal SomeAmount { get; set; }
+			public double SomeOtherAmount { get; set; }
 		}
 	}
 }

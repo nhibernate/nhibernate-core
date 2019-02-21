@@ -28,6 +28,19 @@ namespace NHibernate.Transform
 			return new AliasToBeanResultTransformer(target);
 		}
 
+		/// <summary>
+		/// Creates a result transformer that will inject aliased values into instances
+		/// of <paramref name="target"/> via property methods or fields.
+		/// "Compiled" version of AliasToBean transformer. Performs better if you have many aliases and/or load many records.
+		/// NOTE: This transformer can't be reused by different queries as it caches query aliases on first transformation
+		/// </summary>
+		/// <param name="target">The type of the instances to build.</param>
+		/// <returns>A result transformer for supplied type.</returns>
+		/// <remarks>
+		/// Resolves setter for an alias with a heuristic: search among properties then fields for matching name and case, then,
+		/// if no matching property or field was found, retry with a case insensitive match. For members having the same name, it
+		/// sorts them by inheritance depth then by visibility from public to private, and takes those ranking first.
+		/// </remarks>
 		public static IResultTransformer AliasToBeanCompiled(System.Type target)
 		{
 			return new AliasToBeanCompiledResultTransformer(target);
@@ -49,6 +62,19 @@ namespace NHibernate.Transform
 			return AliasToBean(typeof(T));
 		}
 
+		/// <summary>
+		/// Creates a result transformer that will inject aliased values into instances
+		/// of <typeparamref name="T"/> via property methods or fields.
+		/// "Compiled" version of AliasToBean transformer. Performs better if you have many aliases and/or load many records.
+		/// NOTE: This transformer can't be reused by different queries as it caches query aliases on first transformation
+		/// </summary>
+		/// <typeparam name="T">The type of the instances to build.</typeparam>
+		/// <returns>A result transformer for supplied type.</returns>
+		/// <remarks>
+		/// Resolves setter for an alias with a heuristic: search among properties then fields for matching name and case, then,
+		/// if no matching property or field was found, retry with a case insensitive match. For members having the same name, it
+		/// sorts them by inheritance depth then by visibility from public to private, and takes those ranking first.
+		/// </remarks>
 		public static IResultTransformer AliasToBeanCompiled<T>()
 		{
 			return AliasToBeanCompiled(typeof(T));
