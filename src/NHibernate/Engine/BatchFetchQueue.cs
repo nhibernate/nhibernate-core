@@ -61,7 +61,7 @@ namespace NHibernate.Engine
 		/// <param name="key">The entity key for which to locate any defined subselect fetch.</param>
 		/// <returns>The fetch descriptor; may return null if no subselect fetch queued for
 		/// this entity key.</returns>
-		public SubselectFetch GetSubselect(EntityKey key)
+		public SubselectFetch GetSubselect(in EntityKey key)
 		{
 			SubselectFetch result;
 			subselectsByEntityKey.TryGetValue(key, out result);
@@ -73,7 +73,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="key">The entity for which to register the subselect fetch.</param>
 		/// <param name="subquery">The fetch descriptor.</param>
-		public void AddSubselect(EntityKey key, SubselectFetch subquery)
+		public void AddSubselect(in EntityKey key, SubselectFetch subquery)
 		{
 			subselectsByEntityKey[key] = subquery;
 		}
@@ -84,7 +84,7 @@ namespace NHibernate.Engine
 		/// call this after loading the entity, since we might still
 		/// need to load its collections)
 		/// </summary>
-		public void RemoveSubselect(EntityKey key)
+		public void RemoveSubselect(in EntityKey key)
 		{
 			subselectsByEntityKey.Remove(key);
 		}
@@ -111,7 +111,7 @@ namespace NHibernate.Engine
 		/// referenced entity to be included in a batch even though it is
 		/// already associated with the <see cref="ISession" />.
 		/// </remarks>
-		public void AddBatchLoadableEntityKey(EntityKey key)
+		public void AddBatchLoadableEntityKey(in EntityKey key)
 		{
 			if (key.IsBatchLoadable)
 			{
@@ -129,7 +129,7 @@ namespace NHibernate.Engine
 		/// need to batch fetch it anymore, remove it from the queue
 		/// if necessary
 		/// </summary>
-		public void RemoveBatchLoadableEntityKey(EntityKey key)
+		public void RemoveBatchLoadableEntityKey(in EntityKey key)
 		{
 			if (key.IsBatchLoadable)
 			{

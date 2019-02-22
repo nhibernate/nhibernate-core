@@ -425,7 +425,7 @@ namespace NHibernate.Engine
 			object entity,
 			Status status,
 			object[] loadedState,
-			EntityKey entityKey,
+			in EntityKey entityKey,
 			object version,
 			LockMode lockMode,
 			bool existsInDatabase,
