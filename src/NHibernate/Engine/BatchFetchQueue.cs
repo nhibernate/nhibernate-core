@@ -244,7 +244,7 @@ namespace NHibernate.Engine
 
 			foreach (KeyValuePair<CollectionEntry, IPersistentCollection> me in map)
 			{
-				if (ProcessKey(me))
+				if (ProcessKeyAndCheckCache(me))
 				{
 					return keys;
 				}
@@ -276,7 +276,7 @@ namespace NHibernate.Engine
 				{
 					for (var j = 0; j < collectionKeys.Count; j++)
 					{
-						if (ProcessKey(collectionKeys[indexes[j]].Key))
+						if (ProcessKey(collectionKeys[indexes[j]].Key) == true)
 						{
 							return true;
 						}
@@ -287,7 +287,7 @@ namespace NHibernate.Engine
 					var results = AreCached(collectionKeys, indexes, collectionPersister, batchableCache, checkCache);
 					for (var j = 0; j < results.Length; j++)
 					{
-						if (!results[j] && ProcessKey(collectionKeys[indexes[j]].Key, true))
+						if (!results[j] && ProcessKey(collectionKeys[indexes[j]].Key, true) == true)
 						{
 							return true;
 						}
@@ -301,7 +301,12 @@ namespace NHibernate.Engine
 				return false;
 			}
 
-			bool ProcessKey(KeyValuePair<CollectionEntry, IPersistentCollection> me, bool ignoreCache = false)
+			bool ProcessKeyAndCheckCache(KeyValuePair<CollectionEntry, IPersistentCollection> me)
+			{
+				return ProcessKey(me) ?? CheckCacheAndProcessResult();
+			}
+
+			bool? ProcessKey(KeyValuePair<CollectionEntry, IPersistentCollection> me, bool ignoreCache = false)
 			{
 				var ce = me.Key;
 				var collection = me.Value;
@@ -367,7 +372,7 @@ namespace NHibernate.Engine
 					{
 						return false;
 					}
-					return CheckCacheAndProcessResult();
+					return null;
 				}
 				if (i == batchSize)
 				{

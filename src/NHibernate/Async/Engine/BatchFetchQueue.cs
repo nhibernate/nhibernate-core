@@ -74,7 +74,7 @@ namespace NHibernate.Engine
 			foreach (KeyValuePair<CollectionEntry, IPersistentCollection> me in map)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				if (await (ProcessKeyAsync(me)).ConfigureAwait(false))
+				if (await (ProcessKeyAndCheckCacheAsync(me)).ConfigureAwait(false))
 				{
 					return keys;
 				}
@@ -107,7 +107,7 @@ namespace NHibernate.Engine
 				{
 					for (var j = 0; j < collectionKeys.Count; j++)
 					{
-						if (await (ProcessKeyAsync(collectionKeys[indexes[j]].Key)).ConfigureAwait(false))
+						if (ProcessKey(collectionKeys[indexes[j]].Key) == true)
 						{
 							return true;
 						}
@@ -118,7 +118,7 @@ namespace NHibernate.Engine
 					var results = await (AreCachedAsync(collectionKeys, indexes, collectionPersister, batchableCache, checkCache, cancellationToken)).ConfigureAwait(false);
 					for (var j = 0; j < results.Length; j++)
 					{
-						if (!results[j] && await (ProcessKeyAsync(collectionKeys[indexes[j]].Key, true)).ConfigureAwait(false))
+						if (!results[j] && ProcessKey(collectionKeys[indexes[j]].Key, true) == true)
 						{
 							return true;
 						}
@@ -132,91 +132,89 @@ namespace NHibernate.Engine
 				return false;
 			}
 
-			Task<bool> ProcessKeyAsync(KeyValuePair<CollectionEntry, IPersistentCollection> me, bool ignoreCache = false)
+			async Task<bool> ProcessKeyAndCheckCacheAsync(KeyValuePair<CollectionEntry, IPersistentCollection> me)
 			{
-				try
+				return ProcessKey(me) ?? await (CheckCacheAndProcessResultAsync()).ConfigureAwait(false);
+			}
+
+			bool? ProcessKey(KeyValuePair<CollectionEntry, IPersistentCollection> me, bool ignoreCache = false)
+			{
+				var ce = me.Key;
+				var collection = me.Value;
+				if (ce.LoadedKey == null)
 				{
-					var ce = me.Key;
-					var collection = me.Value;
-					if (ce.LoadedKey == null)
-					{
-						// the LoadedKey of the CollectionEntry might be null as it might have been reset to null
-						// (see for example Collections.ProcessDereferencedCollection()
-						// and CollectionEntry.AfterAction())
-						// though we clear the queue on flush, it seems like a good idea to guard
-						// against potentially null LoadedKey:s
-						return Task.FromResult<bool>(false);
-					}
+					// the LoadedKey of the CollectionEntry might be null as it might have been reset to null
+					// (see for example Collections.ProcessDereferencedCollection()
+					// and CollectionEntry.AfterAction())
+					// though we clear the queue on flush, it seems like a good idea to guard
+					// against potentially null LoadedKey:s
+					return false;
+				}
 
-					if (collection.WasInitialized)
-					{
-						log.Warn("Encountered initialized collection in BatchFetchQueue, this should not happen.");
-						return Task.FromResult<bool>(false);
-					}
+				if (collection.WasInitialized)
+				{
+					log.Warn("Encountered initialized collection in BatchFetchQueue, this should not happen.");
+					return false;
+				}
 
-					if (checkForEnd && (index == map.Count || index >= keyIndex.Value + batchSize))
+				if (checkForEnd && (index == map.Count || index >= keyIndex.Value + batchSize))
+				{
+					return true;
+				}
+				if (collectionPersister.KeyType.IsEqual(key, ce.LoadedKey, collectionPersister.Factory))
+				{
+					if (collectionEntries != null)
 					{
-						return Task.FromResult<bool>(true);
+						collectionEntries[0] = ce;
 					}
-					if (collectionPersister.KeyType.IsEqual(key, ce.LoadedKey, collectionPersister.Factory))
-					{
-						if (collectionEntries != null)
-						{
-							collectionEntries[0] = ce;
-						}
-						keyIndex = index;
-					}
-					else if (!checkCache || batchableCache == null)
-					{
-						if (index < map.Count && (!keyIndex.HasValue || index < keyIndex.Value))
-						{
-							collectionKeys.Add(new KeyValuePair<KeyValuePair<CollectionEntry, IPersistentCollection>, int>(me, index));
-							return Task.FromResult<bool>(false);
-						}
-
-						// No need to check "!checkCache || !IsCached(ce.LoadedKey, collectionPersister)":
-						// "batchableCache == null" already means there is no cache, so IsCached can only yield false.
-						// (This method is now removed.)
-						if (collectionEntries != null)
-						{
-							collectionEntries[i] = ce;
-						}
-						keys[i++] = ce.LoadedKey;
-					}
-					else if (ignoreCache)
-					{
-						if (collectionEntries != null)
-						{
-							collectionEntries[i] = ce;
-						}
-						keys[i++] = ce.LoadedKey;
-					}
-					else
+					keyIndex = index;
+				}
+				else if (!checkCache || batchableCache == null)
+				{
+					if (index < map.Count && (!keyIndex.HasValue || index < keyIndex.Value))
 					{
 						collectionKeys.Add(new KeyValuePair<KeyValuePair<CollectionEntry, IPersistentCollection>, int>(me, index));
-						// Check the cache only when we have collected as many keys as are needed to fill the batch,
-						// that are after the demanded key.
-						if (!keyIndex.HasValue || index < keyIndex.Value + batchSize)
-						{
-							return Task.FromResult<bool>(false);
-						}
-						return CheckCacheAndProcessResultAsync();
+						return false;
 					}
-					if (i == batchSize)
+
+					// No need to check "!checkCache || !IsCached(ce.LoadedKey, collectionPersister)":
+					// "batchableCache == null" already means there is no cache, so IsCached can only yield false.
+					// (This method is now removed.)
+					if (collectionEntries != null)
 					{
-						i = 1; // End of array, start filling again from start
-						if (index == map.Count || keyIndex.HasValue)
-						{
-							checkForEnd = true;
-							return Task.FromResult<bool>(index == map.Count || index >= keyIndex.Value + batchSize);
-						}
+						collectionEntries[i] = ce;
 					}
-					return Task.FromResult<bool>(false);
+					keys[i++] = ce.LoadedKey;
 				}
-				catch (Exception ex)
+				else if (ignoreCache)
 				{
-					return Task.FromException<bool>(ex);
+					if (collectionEntries != null)
+					{
+						collectionEntries[i] = ce;
+					}
+					keys[i++] = ce.LoadedKey;
 				}
+				else
+				{
+					collectionKeys.Add(new KeyValuePair<KeyValuePair<CollectionEntry, IPersistentCollection>, int>(me, index));
+					// Check the cache only when we have collected as many keys as are needed to fill the batch,
+					// that are after the demanded key.
+					if (!keyIndex.HasValue || index < keyIndex.Value + batchSize)
+					{
+						return false;
+					}
+					return null;
+				}
+				if (i == batchSize)
+				{
+					i = 1; // End of array, start filling again from start
+					if (index == map.Count || keyIndex.HasValue)
+					{
+						checkForEnd = true;
+						return index == map.Count || index >= keyIndex.Value + batchSize;
+					}
+				}
+				return false;
 			}
 		}
 
