@@ -6,7 +6,6 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Engine
 {
-	//TODO 6.0: Remove IDeserializationCallback interface
 	/// <summary>
 	/// A globally unique identifier of an instance, consisting of the user-visible identifier
 	/// and the identifier space (eg. tablename)
@@ -14,10 +13,10 @@ namespace NHibernate.Engine
 	[Serializable]
 	public readonly struct EntityKey : ISerializable, IEquatable<EntityKey>
 	{
-		public static EntityKey Null { get; } = new EntityKey();
+		public static EntityKey Empty { get; } = new EntityKey();
 
-		public bool IsNull => identifier == null;
-		public bool IsNotNull => !IsNull;
+		public bool IsEmpty => identifier == null;
+		public bool IsNotEmpty => !IsEmpty;
 
 		private readonly object identifier;
 		private readonly IEntityPersister _persister;
@@ -67,8 +66,8 @@ namespace NHibernate.Engine
 
 		public bool Equals(EntityKey other)
 		{
-			if (other.IsNull)
-				return IsNull;
+			if (other.IsEmpty)
+				return IsEmpty;
 
 			return
 				other.RootEntityName.Equals(RootEntityName)
@@ -93,7 +92,7 @@ namespace NHibernate.Engine
 
 		public override string ToString()
 		{
-			return IsNull
+			return IsEmpty
 				? Util.StringHelper.NullObject 
 				: "EntityKey" + MessageHelper.InfoString(_persister, Identifier, _persister?.Factory);
 		}
@@ -108,9 +107,5 @@ namespace NHibernate.Engine
 			info.AddValue(nameof(_persister.Factory), _persister.Factory);
 			info.AddValue(nameof(EntityName), EntityName);
 		}
-
-		[Obsolete("IDeserializationCallback interface has no usages and will be removed in a future version")]
-		public void OnDeserialization(object sender)
-		{}
 	}
 }

@@ -215,7 +215,7 @@ namespace NHibernate.Engine
 		{
 			get
 			{
-				if (cachedEntityKey.IsNull)
+				if (cachedEntityKey.IsEmpty)
 				{
 					if (id == null)
 						throw new InvalidOperationException("cannot generate an EntityKey when id is null.");
