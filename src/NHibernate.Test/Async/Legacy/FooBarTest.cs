@@ -28,6 +28,7 @@ using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 using NUnit.Framework;
+using System.Linq;
 
 namespace NHibernate.Test.Legacy
 {
@@ -1225,8 +1226,7 @@ namespace NHibernate.Test.Legacy
 				await (s.DeleteAsync(baz2));
 				await (s.DeleteAsync(baz3));
 
-				IEnumerable en = new JoinedEnumerable(
-					new IEnumerable[] {baz.FooSet, baz2.FooSet});
+				IEnumerable en = Enumerable.Concat(baz.FooSet, baz2.FooSet);
 
 				foreach (object obj in en)
 				{
@@ -3411,7 +3411,7 @@ namespace NHibernate.Test.Legacy
 		}
 		
 		[Test]
-		public async Task EnumerableAsync()
+		public async Task EnumerableTestAsync()
 		{
 			// this test used to be called Iterators()
 
@@ -5282,10 +5282,9 @@ namespace NHibernate.Test.Legacy
 			baz.FooBag = foos;
 			await (s.SaveAsync(baz));
 
-			IEnumerator enumer = new JoinedEnumerable(new IEnumerable[] {foos, bars}).GetEnumerator();
-			while (enumer.MoveNext())
+			foreach(Foo foo in Enumerable.Concat<object>(foos, bars))
 			{
-				FooComponent cmp = ((Foo) enumer.Current).Component;
+				FooComponent cmp = foo.Component;
 				await (s.DeleteAsync(cmp.Glarch));
 				cmp.Glarch = null;
 			}

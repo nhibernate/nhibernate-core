@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 using NHibernate.Event;
 using NHibernate.Hql;
 using NHibernate.Linq;
@@ -157,21 +157,13 @@ namespace NHibernate.Engine.Query
 				Log.Debug("enumerable: {0}", _sourceQuery);
 				queryParameters.LogParameters(session.Factory);
 			}
-			if (Translators.Length == 0)
+
+			//TODO: FIXME AsyncGenerator throws for this code..
+			foreach (var translator in Translators)
+			foreach (object obj in translator.GetEnumerable(queryParameters, session))
 			{
-				return CollectionHelper.EmptyEnumerable;
+				yield return obj;
 			}
-			if (Translators.Length == 1)
-			{
-				return Translators[0].GetEnumerable(queryParameters, session);
-			}
-			var results = new IEnumerable[Translators.Length];
-			for (int i = 0; i < Translators.Length; i++)
-			{
-				var result = Translators[i].GetEnumerable(queryParameters, session);
-				results[i] = result;
-			}
-			return new JoinedEnumerable(results);
 		}
 
 		public IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session)
