@@ -435,467 +435,470 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task QueryAsync()
 		{
-			ISession s = OpenSession();
-			ITransaction txn = s.BeginTransaction();
-			Foo foo = new Foo();
-			await (s.SaveAsync(foo));
-			Foo foo2 = new Foo();
-			await (s.SaveAsync(foo2));
-			foo.TheFoo = foo2;
-
-			IList list = await (s.CreateQuery("from Foo foo inner join fetch foo.TheFoo").ListAsync());
-			Foo foof = (Foo) list[0];
-			Assert.IsTrue(NHibernateUtil.IsInitialized(foof.TheFoo));
-
-			list = await (s.CreateQuery("from Baz baz left outer join fetch baz.FooToGlarch").ListAsync());
-
-			list = await (s.CreateQuery("select foo, bar from Foo foo left outer join foo.TheFoo bar where foo = ?")
-				.SetEntity(0, foo).ListAsync());
-
-			object[] row1 = (object[]) list[0];
-			Assert.IsTrue(row1[0] == foo && row1[1] == foo2);
-
-			await (s.CreateQuery("select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo = 'bar'").ListAsync());
-			await (s.CreateQuery("select foo.TheFoo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar'").ListAsync());
-			await (s.CreateQuery("select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'bar'").
-				ListAsync());
-			//			if( !( dialect is Dialect.HSQLDialect ) ) 
-			//			{
-			await (s.CreateQuery("select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo = foo.TheFoo.TheFoo").ListAsync());
-			//			}
-			await (s.CreateQuery(
-				"select foo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar' and foo.TheFoo.TheFoo.TheFoo = 'baz'").ListAsync
-				());
-			await (s.CreateQuery(
-				"select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'a' and foo.TheFoo.String = 'b'").
-				ListAsync());
-
-			await (s.CreateQuery("from bar in class Bar, foo in elements(bar.Baz.FooArray)").ListAsync());
-
-			if (Dialect is DB2Dialect)
+			Foo foo = null;
+			using (var s = OpenSession())
+			using (var txn = s.BeginTransaction())
 			{
-				await (s.CreateQuery("from foo in class Foo where lower( foo.TheFoo.String ) = 'foo'").ListAsync());
-				await (s.CreateQuery("from foo in class Foo where lower( (foo.TheFoo.String || 'foo') || 'bar' ) = 'foo'").ListAsync());
-				await (s.CreateQuery("from foo in class Foo where repeat( (foo.TheFoo.STring || 'foo') || 'bar', 2 ) = 'foo'").ListAsync());
+				foo = new Foo();
+				await (s.SaveAsync(foo));
+				Foo foo2 = new Foo();
+				await (s.SaveAsync(foo2));
+				foo.TheFoo = foo2;
+
+				IList list = await (s.CreateQuery("from Foo foo inner join fetch foo.TheFoo").ListAsync());
+				Foo foof = (Foo) list[0];
+				Assert.IsTrue(NHibernateUtil.IsInitialized(foof.TheFoo));
+
+				list = await (s.CreateQuery("from Baz baz left outer join fetch baz.FooToGlarch").ListAsync());
+
+				list = await (s.CreateQuery("select foo, bar from Foo foo left outer join foo.TheFoo bar where foo = ?")
+					.SetEntity(0, foo).ListAsync());
+
+				object[] row1 = (object[]) list[0];
+				Assert.IsTrue(row1[0] == foo && row1[1] == foo2);
+
+				await (s.CreateQuery("select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo = 'bar'").ListAsync());
+				await (s.CreateQuery("select foo.TheFoo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar'").ListAsync());
+				await (s.CreateQuery("select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'bar'").
+					ListAsync());
+				//			if( !( dialect is Dialect.HSQLDialect ) ) 
+				//			{
+				await (s.CreateQuery("select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo = foo.TheFoo.TheFoo").ListAsync());
+				//			}
 				await (s.CreateQuery(
-					"From foo in class Bar where foo.TheFoo.Integer is not null and repeat( (foo.TheFoo.String || 'foo') || 'bar', (5+5)/2 ) = 'foo'")
-					.ListAsync());
-				await (s.CreateQuery(
-					"From foo in class Bar where foo.TheFoo.Integer is not null or repeat( (foo.TheFoo.String || 'foo') || 'bar', (5+5)/2 ) = 'foo'")
-					.ListAsync());
-			}
-
-			if (Dialect is MsSql2000Dialect)
-			{
-				await (s.CreateQuery("select baz from Baz as baz join baz.FooArray foo group by baz order by sum(foo.Float)").EnumerableAsync());
-			}
-
-			await (s.CreateQuery("from Foo as foo where foo.Component.Glarch.Name is not null").ListAsync());
-			await (s.CreateQuery("from Foo as foo left outer join foo.Component.Glarch as glarch where glarch.Name = 'foo'").ListAsync());
-
-			list = await (s.CreateQuery("from Foo").ListAsync());
-			Assert.AreEqual(2, list.Count);
-			Assert.IsTrue(list[0] is FooProxy);
-			list = await (s.CreateQuery("from Foo foo left outer join foo.TheFoo").ListAsync());
-			Assert.AreEqual(2, list.Count);
-			Assert.IsTrue(((object[]) list[0])[0] is FooProxy);
-
-			await (s.CreateQuery("From Foo, Bar").ListAsync());
-			await (s.CreateQuery("from Baz baz left join baz.FooToGlarch, Bar bar join bar.TheFoo").ListAsync());
-			await (s.CreateQuery("from Baz baz left join baz.FooToGlarch join baz.FooSet").ListAsync());
-			await (s.CreateQuery("from Baz baz left join baz.FooToGlarch join fetch baz.FooSet foo left join fetch foo.TheFoo").ListAsync());
-
-			list =
-				await (s.CreateQuery(
-					"from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' and foo.Boolean = true order by foo.String asc, foo.Component.Count desc")
-					.ListAsync());
-			Assert.AreEqual(0, list.Count, "empty query");
-			IEnumerable enumerable =
-				await (s.CreateQuery(
-					"from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' order by foo.String asc, foo.Component.Count desc")
-					.EnumerableAsync());
-			Assert.IsTrue(IsEmpty(enumerable), "empty enumerator");
-
-			list = await (s.CreateQuery("select foo.TheFoo from foo in class NHibernate.DomainModel.Foo").ListAsync());
-			Assert.AreEqual(1, list.Count, "query");
-			Assert.AreEqual(foo.TheFoo, list[0], "returned object");
-			foo.TheFoo.TheFoo = foo;
-			foo.String = "fizard";
-
-			if (Dialect.SupportsSubSelects && TestDialect.SupportsOperatorSome)
-			{
-				if (!(Dialect is FirebirdDialect))
-				{
-					list = await (s.CreateQuery(
-							"from foo in class NHibernate.DomainModel.Foo where ? = some elements(foo.Component.ImportantDates)").
-							SetDateTime(0, DateTime.Today).ListAsync());
-					
-					Assert.AreEqual(2, list.Count, "component query");
-				}
-
-				if (Dialect.SupportsScalarSubSelects)
-				{
-					list =
-						await (s.CreateQuery("from foo in class NHibernate.DomainModel.Foo where size(foo.Component.ImportantDates) = 3").ListAsync());
-					Assert.AreEqual(2, list.Count, "component query");
-					list = await (s.CreateQuery("from foo in class Foo where 0 = size(foo.Component.ImportantDates)").ListAsync());
-					Assert.AreEqual(0, list.Count, "component query");
-				}
-				list = await (s.CreateQuery("from foo in class Foo where exists elements(foo.Component.ImportantDates)").ListAsync());
-				Assert.AreEqual(2, list.Count, "component query");
-				await (s.CreateQuery("from foo in class Foo where not exists (from bar in class Bar where bar.id = foo.id)").ListAsync());
-
-				await (s.CreateQuery(
-					"select foo.TheFoo from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)")
-					.ListAsync());
-				await (s.CreateQuery(
-					"from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long) and foo.TheFoo.String='baz'")
-					.ListAsync());
-				await (s.CreateQuery(
-					"from foo in class Foo where foo.TheFoo.String='baz' and foo = some(select x from x in class Foo where x.Long>foo.TheFoo.Long)")
-					.ListAsync());
-				await (s.CreateQuery("from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)")
-					.ListAsync());
-
-				await (s.CreateQuery(
-					"select foo.String, foo.Date, foo.TheFoo.String, foo.id from foo in class Foo, baz in class Baz where foo in elements(baz.FooArray) and foo.String like 'foo'")
-					.EnumerableAsync());
-			}
-
-			list = await (s.CreateQuery("from foo in class Foo where foo.Component.Count is null order by foo.Component.Count").ListAsync());
-			Assert.AreEqual(0, list.Count, "component query");
-
-			list = await (s.CreateQuery("from foo in class Foo where foo.Component.Name='foo'").ListAsync());
-			Assert.AreEqual(2, list.Count, "component query");
-
-			list =
-				await (s.CreateQuery(
-					"select distinct foo.Component.Name, foo.Component.Name from foo in class Foo where foo.Component.Name='foo'").ListAsync
+					"select foo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar' and foo.TheFoo.TheFoo.TheFoo = 'baz'").ListAsync
 					());
-			Assert.AreEqual(1, list.Count, "component query");
-
-			list =
-				await (s.CreateQuery("select distinct foo.Component.Name, foo.id from foo in class Foo where foo.Component.Name='foo'").
+				await (s.CreateQuery(
+					"select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'a' and foo.TheFoo.String = 'b'").
 					ListAsync());
-			Assert.AreEqual(2, list.Count, "component query");
 
-			list = await (s.CreateQuery("select foo.TheFoo from foo in class Foo").ListAsync());
-			Assert.AreEqual(2, list.Count, "query");
+				await (s.CreateQuery("from bar in class Bar, foo in elements(bar.Baz.FooArray)").ListAsync());
 
-			list = await (s.CreateQuery("from foo in class Foo where foo.id=?").SetString(0, foo.Key).ListAsync());
-			Assert.AreEqual(1, list.Count, "id query");
+				if (Dialect is DB2Dialect)
+				{
+					await (s.CreateQuery("from foo in class Foo where lower( foo.TheFoo.String ) = 'foo'").ListAsync());
+					await (s.CreateQuery("from foo in class Foo where lower( (foo.TheFoo.String || 'foo') || 'bar' ) = 'foo'").ListAsync());
+					await (s.CreateQuery("from foo in class Foo where repeat( (foo.TheFoo.STring || 'foo') || 'bar', 2 ) = 'foo'").ListAsync());
+					await (s.CreateQuery(
+						"From foo in class Bar where foo.TheFoo.Integer is not null and repeat( (foo.TheFoo.String || 'foo') || 'bar', (5+5)/2 ) = 'foo'")
+						.ListAsync());
+					await (s.CreateQuery(
+						"From foo in class Bar where foo.TheFoo.Integer is not null or repeat( (foo.TheFoo.String || 'foo') || 'bar', (5+5)/2 ) = 'foo'")
+						.ListAsync());
+				}
 
-			list = await (s.CreateQuery("from foo in class Foo where foo.Key=?").SetString(0, foo.Key).ListAsync());
-			Assert.AreEqual(1, list.Count, "named id query");
-			Assert.AreSame(foo, list[0], "id query");
+				if (Dialect is MsSql2000Dialect)
+				{
+					await (s.CreateQuery("select baz from Baz as baz join baz.FooArray foo group by baz order by sum(foo.Float)").EnumerableAsync());
+				}
 
-			list = await (s.CreateQuery("select foo.TheFoo from foo in class Foo where foo.String='fizard'").ListAsync());
-			Assert.AreEqual(1, list.Count, "query");
-			Assert.AreSame(foo.TheFoo, list[0], "returned object");
+				await (s.CreateQuery("from Foo as foo where foo.Component.Glarch.Name is not null").ListAsync());
+				await (s.CreateQuery("from Foo as foo left outer join foo.Component.Glarch as glarch where glarch.Name = 'foo'").ListAsync());
 
-			list = await (s.CreateQuery("from foo in class Foo where foo.Component.Subcomponent.Name='bar'").ListAsync());
-			Assert.AreEqual(2, list.Count, "components of components");
+				list = await (s.CreateQuery("from Foo").ListAsync());
+				Assert.AreEqual(2, list.Count);
+				Assert.IsTrue(list[0] is FooProxy);
+				list = await (s.CreateQuery("from Foo foo left outer join foo.TheFoo").ListAsync());
+				Assert.AreEqual(2, list.Count);
+				Assert.IsTrue(((object[]) list[0])[0] is FooProxy);
 
-			list = await (s.CreateQuery("select foo.TheFoo from foo in class Foo where foo.TheFoo.id=?")
-				.SetString(0, foo.TheFoo.Key).ListAsync());
-			Assert.AreEqual(1, list.Count, "by id query");
-			Assert.AreSame(foo.TheFoo, list[0], "by id returned object");
+				await (s.CreateQuery("From Foo, Bar").ListAsync());
+				await (s.CreateQuery("from Baz baz left join baz.FooToGlarch, Bar bar join bar.TheFoo").ListAsync());
+				await (s.CreateQuery("from Baz baz left join baz.FooToGlarch join baz.FooSet").ListAsync());
+				await (s.CreateQuery("from Baz baz left join baz.FooToGlarch join fetch baz.FooSet foo left join fetch foo.TheFoo").ListAsync());
 
-			await (s.CreateQuery("from foo in class Foo where foo.TheFoo = ?").SetEntity(0, foo.TheFoo).ListAsync());
-
-			Assert.IsTrue(
-				IsEmpty(await (s.CreateQuery("from bar in class Bar where bar.String='a string' or bar.String='a string'").EnumerableAsync())
-					));
-
-			enumerable = await (s.CreateQuery(
-						"select foo.Component.Name, elements(foo.Component.ImportantDates) from foo in class Foo where foo.TheFoo.id=?").
-						SetString(0, foo.TheFoo.Key).EnumerableAsync());
-
-			int i = 0;
-			foreach (object[] row in enumerable)
-			{
-				i++;
-				Assert.IsTrue(row[0] is String);
-				Assert.IsTrue(row[1] == null || row[1] is DateTime);
-			}
-			Assert.AreEqual(3, i); //WAS: 4
-
-			enumerable = await (s.CreateQuery("select max(elements(foo.Component.ImportantDates)) from foo in class Foo group by foo.id").
-						EnumerableAsync());
-			
-			IEnumerator enumerator = enumerable.GetEnumerator();
-
-			Assert.IsTrue(enumerator.MoveNext());
-			Assert.IsTrue(enumerator.Current is DateTime);
-
-			list = await (s.CreateQuery(
-				"select foo.TheFoo.TheFoo.TheFoo from foo in class Foo, foo2 in class Foo where"
-				+ " foo = foo2.TheFoo and not not ( not foo.String='fizard' )"
-				+ " and foo2.String between 'a' and (foo.TheFoo.String)"
-				+ (Dialect is SQLiteDialect
-				   	? " and ( foo2.String in ( 'fiz', 'blah') or 1=1 )"
-				   	: " and ( foo2.String in ( 'fiz', 'blah', foo.TheFoo.String, foo.String, foo2.String ) )")
-				).ListAsync());
-			Assert.AreEqual(1, list.Count, "complex query");
-			Assert.AreSame(foo, list[0], "returned object");
-
-			foo.String = "from BoogieDown  -tinsel town  =!@#$^&*())";
-
-			list = await (s.CreateQuery("from foo in class Foo where foo.String='from BoogieDown  -tinsel town  =!@#$^&*())'").ListAsync());
-			Assert.AreEqual(1, list.Count, "single quotes");
-
-			list = await (s.CreateQuery("from foo in class Foo where not foo.String='foo''bar'").ListAsync());
-			Assert.AreEqual(2, list.Count, "single quotes");
-
-			list = await (s.CreateQuery("from foo in class Foo where foo.Component.Glarch.Next is null").ListAsync());
-			Assert.AreEqual(2, list.Count, "query association in component");
-
-			Bar bar = new Bar();
-			Baz baz = new Baz();
-			baz.SetDefaults();
-			bar.Baz = baz;
-			baz.ManyToAny = new List<object>();
-			baz.ManyToAny.Add(bar);
-			baz.ManyToAny.Add(foo);
-			await (s.SaveAsync(bar));
-			await (s.SaveAsync(baz));
-			list =
-				await (s.CreateQuery(" from bar in class Bar where bar.Baz.Count=667 and bar.Baz.Count!=123 and not bar.Baz.Name='1-E-1'").
-					ListAsync());
-			Assert.AreEqual(1, list.Count, "query many-to-one");
-			list = await (s.CreateQuery(" from i in class Bar where i.Baz.Name='Bazza'").ListAsync());
-			Assert.AreEqual(1, list.Count, "query many-to-one");
-
-			if (TestDialect.SupportsCountDistinct)
-			{
-				enumerable = await (s.CreateQuery("select count(distinct foo.TheFoo) from foo in class Foo").EnumerableAsync());
-				Assert.IsTrue(ContainsSingleObject(enumerable, (long) 2), "count"); // changed to Int64 (HQLFunction H3.2)
-			}
-
-			enumerable = await (s.CreateQuery("select count(foo.TheFoo.Boolean) from foo in class Foo").EnumerableAsync());
-			Assert.IsTrue(ContainsSingleObject(enumerable, (long) 2), "count"); // changed to Int64 (HQLFunction H3.2)
-
-			enumerable = await (s.CreateQuery("select count(*), foo.Int from foo in class Foo group by foo.Int").EnumerableAsync());
-			enumerator = enumerable.GetEnumerator();
-			Assert.IsTrue(enumerator.MoveNext());
-			Assert.AreEqual(3L, (long) ((object[]) enumerator.Current)[0]);
-			Assert.IsFalse(enumerator.MoveNext());
-
-			enumerable = await (s.CreateQuery("select sum(foo.TheFoo.Int) from foo in class Foo").EnumerableAsync());
-			Assert.IsTrue(ContainsSingleObject(enumerable, (long) 4), "sum"); // changed to Int64 (HQLFunction H3.2)
-
-			enumerable = await (s.CreateQuery("select count(foo) from foo in class Foo where foo.id=?")
-				.SetString(0, foo.Key).EnumerableAsync());
-			Assert.IsTrue(ContainsSingleObject(enumerable, (long) 1), "id query count");
-
-			list = await (s.CreateQuery("from foo in class Foo where foo.Boolean = ?").SetBoolean(0, true).ListAsync());
-
-			list = await (s.CreateQuery("select new Foo(fo.X) from Fo fo").ListAsync());
-			list = await (s.CreateQuery("select new Foo(fo.Integer) from Foo fo").ListAsync());
-
-			list = await (s.CreateQuery("select new Foo(fo.X) from Foo fo")
-				.SetCacheable(true)
-				.ListAsync());
-			Assert.IsTrue(list.Count == 3);
-			list = await (s.CreateQuery("select new Foo(fo.X) from Foo fo")
-				.SetCacheable(true)
-				.ListAsync());
-			Assert.IsTrue(list.Count == 3);
-
-			enumerable = await (s.CreateQuery("select new Foo(fo.X) from Foo fo").EnumerableAsync());
-			enumerator = enumerable.GetEnumerator();
-			Assert.IsTrue(enumerator.MoveNext(), "projection iterate (results)");
-			Assert.IsTrue(typeof(Foo).IsAssignableFrom(enumerator.Current.GetType()),
-			              "projection iterate (return check)");
-
-			// TODO: ScrollableResults not implemented
-			//ScrollableResults sr = s.CreateQuery("select new Foo(fo.x) from Foo fo").Scroll();
-			//Assert.IsTrue( "projection scroll (results)", sr.next() );
-			//Assert.IsTrue( "projection scroll (return check)", typeof(Foo).isAssignableFrom( sr.get(0).getClass() ) );
-
-			list = await (s.CreateQuery("select foo.Long, foo.Component.Name, foo, foo.TheFoo from foo in class Foo").ListAsync());
-			Assert.IsTrue(list.Count > 0);
-			foreach (object[] row in list)
-			{
-				Assert.IsTrue(row[0] is long);
-				Assert.IsTrue(row[1] is string);
-				Assert.IsTrue(row[2] is Foo);
-				Assert.IsTrue(row[3] is Foo);
-			}
-
-			if (TestDialect.SupportsCountDistinct)
-			{
 				list =
-					await (s.CreateQuery("select avg(foo.Float), max(foo.Component.Name), count(distinct foo.id) from foo in class Foo").ListAsync());
+					await (s.CreateQuery(
+						"from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' and foo.Boolean = true order by foo.String asc, foo.Component.Count desc")
+						.ListAsync());
+				Assert.AreEqual(0, list.Count, "empty query");
+				IEnumerable enumerable =
+					await (s.CreateQuery(
+						"from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' order by foo.String asc, foo.Component.Count desc")
+						.EnumerableAsync());
+				Assert.IsTrue(IsEmpty(enumerable), "empty enumerator");
+
+				list = await (s.CreateQuery("select foo.TheFoo from foo in class NHibernate.DomainModel.Foo").ListAsync());
+				Assert.AreEqual(1, list.Count, "query");
+				Assert.AreEqual(foo.TheFoo, list[0], "returned object");
+				foo.TheFoo.TheFoo = foo;
+				foo.String = "fizard";
+
+				if (Dialect.SupportsSubSelects && TestDialect.SupportsOperatorSome)
+				{
+					if (!(Dialect is FirebirdDialect))
+					{
+						list = await (s.CreateQuery(
+								"from foo in class NHibernate.DomainModel.Foo where ? = some elements(foo.Component.ImportantDates)").
+								SetDateTime(0, DateTime.Today).ListAsync());
+
+						Assert.AreEqual(2, list.Count, "component query");
+					}
+
+					if (Dialect.SupportsScalarSubSelects)
+					{
+						list =
+							await (s.CreateQuery("from foo in class NHibernate.DomainModel.Foo where size(foo.Component.ImportantDates) = 3").ListAsync());
+						Assert.AreEqual(2, list.Count, "component query");
+						list = await (s.CreateQuery("from foo in class Foo where 0 = size(foo.Component.ImportantDates)").ListAsync());
+						Assert.AreEqual(0, list.Count, "component query");
+					}
+					list = await (s.CreateQuery("from foo in class Foo where exists elements(foo.Component.ImportantDates)").ListAsync());
+					Assert.AreEqual(2, list.Count, "component query");
+					await (s.CreateQuery("from foo in class Foo where not exists (from bar in class Bar where bar.id = foo.id)").ListAsync());
+
+					await (s.CreateQuery(
+						"select foo.TheFoo from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)")
+						.ListAsync());
+					await (s.CreateQuery(
+						"from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long) and foo.TheFoo.String='baz'")
+						.ListAsync());
+					await (s.CreateQuery(
+						"from foo in class Foo where foo.TheFoo.String='baz' and foo = some(select x from x in class Foo where x.Long>foo.TheFoo.Long)")
+						.ListAsync());
+					await (s.CreateQuery("from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)")
+						.ListAsync());
+
+					await (s.CreateQuery(
+						"select foo.String, foo.Date, foo.TheFoo.String, foo.id from foo in class Foo, baz in class Baz where foo in elements(baz.FooArray) and foo.String like 'foo'")
+						.EnumerableAsync());
+				}
+
+				list = await (s.CreateQuery("from foo in class Foo where foo.Component.Count is null order by foo.Component.Count").ListAsync());
+				Assert.AreEqual(0, list.Count, "component query");
+
+				list = await (s.CreateQuery("from foo in class Foo where foo.Component.Name='foo'").ListAsync());
+				Assert.AreEqual(2, list.Count, "component query");
+
+				list =
+					await (s.CreateQuery(
+						"select distinct foo.Component.Name, foo.Component.Name from foo in class Foo where foo.Component.Name='foo'").ListAsync
+						());
+				Assert.AreEqual(1, list.Count, "component query");
+
+				list =
+					await (s.CreateQuery("select distinct foo.Component.Name, foo.id from foo in class Foo where foo.Component.Name='foo'").
+						ListAsync());
+				Assert.AreEqual(2, list.Count, "component query");
+
+				list = await (s.CreateQuery("select foo.TheFoo from foo in class Foo").ListAsync());
+				Assert.AreEqual(2, list.Count, "query");
+
+				list = await (s.CreateQuery("from foo in class Foo where foo.id=?").SetString(0, foo.Key).ListAsync());
+				Assert.AreEqual(1, list.Count, "id query");
+
+				list = await (s.CreateQuery("from foo in class Foo where foo.Key=?").SetString(0, foo.Key).ListAsync());
+				Assert.AreEqual(1, list.Count, "named id query");
+				Assert.AreSame(foo, list[0], "id query");
+
+				list = await (s.CreateQuery("select foo.TheFoo from foo in class Foo where foo.String='fizard'").ListAsync());
+				Assert.AreEqual(1, list.Count, "query");
+				Assert.AreSame(foo.TheFoo, list[0], "returned object");
+
+				list = await (s.CreateQuery("from foo in class Foo where foo.Component.Subcomponent.Name='bar'").ListAsync());
+				Assert.AreEqual(2, list.Count, "components of components");
+
+				list = await (s.CreateQuery("select foo.TheFoo from foo in class Foo where foo.TheFoo.id=?")
+					.SetString(0, foo.TheFoo.Key).ListAsync());
+				Assert.AreEqual(1, list.Count, "by id query");
+				Assert.AreSame(foo.TheFoo, list[0], "by id returned object");
+
+				await (s.CreateQuery("from foo in class Foo where foo.TheFoo = ?").SetEntity(0, foo.TheFoo).ListAsync());
+
+				Assert.IsTrue(
+					IsEmpty(await (s.CreateQuery("from bar in class Bar where bar.String='a string' or bar.String='a string'").EnumerableAsync())
+						));
+
+				enumerable = await (s.CreateQuery(
+							"select foo.Component.Name, elements(foo.Component.ImportantDates) from foo in class Foo where foo.TheFoo.id=?").
+							SetString(0, foo.TheFoo.Key).EnumerableAsync());
+
+				int i = 0;
+				foreach (object[] row in enumerable)
+				{
+					i++;
+					Assert.IsTrue(row[0] is String);
+					Assert.IsTrue(row[1] == null || row[1] is DateTime);
+				}
+				Assert.AreEqual(3, i); //WAS: 4
+
+				enumerable = await (s.CreateQuery("select max(elements(foo.Component.ImportantDates)) from foo in class Foo group by foo.id").
+							EnumerableAsync());
+
+				IEnumerator enumerator = enumerable.GetEnumerator();
+
+				Assert.IsTrue(enumerator.MoveNext());
+				Assert.IsTrue(enumerator.Current is DateTime);
+
+				list = await (s.CreateQuery(
+					"select foo.TheFoo.TheFoo.TheFoo from foo in class Foo, foo2 in class Foo where"
+					+ " foo = foo2.TheFoo and not not ( not foo.String='fizard' )"
+					+ " and foo2.String between 'a' and (foo.TheFoo.String)"
+					+ (Dialect is SQLiteDialect
+						   ? " and ( foo2.String in ( 'fiz', 'blah') or 1=1 )"
+						   : " and ( foo2.String in ( 'fiz', 'blah', foo.TheFoo.String, foo.String, foo2.String ) )")
+					).ListAsync());
+				Assert.AreEqual(1, list.Count, "complex query");
+				Assert.AreSame(foo, list[0], "returned object");
+
+				foo.String = "from BoogieDown  -tinsel town  =!@#$^&*())";
+
+				list = await (s.CreateQuery("from foo in class Foo where foo.String='from BoogieDown  -tinsel town  =!@#$^&*())'").ListAsync());
+				Assert.AreEqual(1, list.Count, "single quotes");
+
+				list = await (s.CreateQuery("from foo in class Foo where not foo.String='foo''bar'").ListAsync());
+				Assert.AreEqual(2, list.Count, "single quotes");
+
+				list = await (s.CreateQuery("from foo in class Foo where foo.Component.Glarch.Next is null").ListAsync());
+				Assert.AreEqual(2, list.Count, "query association in component");
+
+				Bar bar = new Bar();
+				Baz baz = new Baz();
+				baz.SetDefaults();
+				bar.Baz = baz;
+				baz.ManyToAny = new List<object>();
+				baz.ManyToAny.Add(bar);
+				baz.ManyToAny.Add(foo);
+				await (s.SaveAsync(bar));
+				await (s.SaveAsync(baz));
+				list =
+					await (s.CreateQuery(" from bar in class Bar where bar.Baz.Count=667 and bar.Baz.Count!=123 and not bar.Baz.Name='1-E-1'").
+						ListAsync());
+				Assert.AreEqual(1, list.Count, "query many-to-one");
+				list = await (s.CreateQuery(" from i in class Bar where i.Baz.Name='Bazza'").ListAsync());
+				Assert.AreEqual(1, list.Count, "query many-to-one");
+
+				if (TestDialect.SupportsCountDistinct)
+				{
+					enumerable = await (s.CreateQuery("select count(distinct foo.TheFoo) from foo in class Foo").EnumerableAsync());
+					Assert.IsTrue(ContainsSingleObject(enumerable, (long) 2), "count"); // changed to Int64 (HQLFunction H3.2)
+				}
+
+				enumerable = await (s.CreateQuery("select count(foo.TheFoo.Boolean) from foo in class Foo").EnumerableAsync());
+				Assert.IsTrue(ContainsSingleObject(enumerable, (long) 2), "count"); // changed to Int64 (HQLFunction H3.2)
+
+				enumerable = await (s.CreateQuery("select count(*), foo.Int from foo in class Foo group by foo.Int").EnumerableAsync());
+				enumerator = enumerable.GetEnumerator();
+				Assert.IsTrue(enumerator.MoveNext());
+				Assert.AreEqual(3L, (long) ((object[]) enumerator.Current)[0]);
+				Assert.IsFalse(enumerator.MoveNext());
+
+				enumerable = await (s.CreateQuery("select sum(foo.TheFoo.Int) from foo in class Foo").EnumerableAsync());
+				Assert.IsTrue(ContainsSingleObject(enumerable, (long) 4), "sum"); // changed to Int64 (HQLFunction H3.2)
+
+				enumerable = await (s.CreateQuery("select count(foo) from foo in class Foo where foo.id=?")
+					.SetString(0, foo.Key).EnumerableAsync());
+				Assert.IsTrue(ContainsSingleObject(enumerable, (long) 1), "id query count");
+
+				list = await (s.CreateQuery("from foo in class Foo where foo.Boolean = ?").SetBoolean(0, true).ListAsync());
+
+				list = await (s.CreateQuery("select new Foo(fo.X) from Fo fo").ListAsync());
+				list = await (s.CreateQuery("select new Foo(fo.Integer) from Foo fo").ListAsync());
+
+				list = await (s.CreateQuery("select new Foo(fo.X) from Foo fo")
+					.SetCacheable(true)
+					.ListAsync());
+				Assert.IsTrue(list.Count == 3);
+				list = await (s.CreateQuery("select new Foo(fo.X) from Foo fo")
+					.SetCacheable(true)
+					.ListAsync());
+				Assert.IsTrue(list.Count == 3);
+
+				enumerable = await (s.CreateQuery("select new Foo(fo.X) from Foo fo").EnumerableAsync());
+				enumerator = enumerable.GetEnumerator();
+				Assert.IsTrue(enumerator.MoveNext(), "projection iterate (results)");
+				Assert.IsTrue(typeof(Foo).IsAssignableFrom(enumerator.Current.GetType()),
+							  "projection iterate (return check)");
+
+				// TODO: ScrollableResults not implemented
+				//ScrollableResults sr = s.CreateQuery("select new Foo(fo.x) from Foo fo").Scroll();
+				//Assert.IsTrue( "projection scroll (results)", sr.next() );
+				//Assert.IsTrue( "projection scroll (return check)", typeof(Foo).isAssignableFrom( sr.get(0).getClass() ) );
+
+				list = await (s.CreateQuery("select foo.Long, foo.Component.Name, foo, foo.TheFoo from foo in class Foo").ListAsync());
 				Assert.IsTrue(list.Count > 0);
 				foreach (object[] row in list)
 				{
-					Assert.IsTrue(row[0] is double); // changed from float to double (HQLFunction H3.2) 
+					Assert.IsTrue(row[0] is long);
 					Assert.IsTrue(row[1] is string);
-					Assert.IsTrue(row[2] is long); // changed from int to long (HQLFunction H3.2)
+					Assert.IsTrue(row[2] is Foo);
+					Assert.IsTrue(row[3] is Foo);
 				}
-			}
 
-			list = await (s.CreateQuery("select foo.Long, foo.Component, foo, foo.TheFoo from foo in class Foo").ListAsync());
-			Assert.IsTrue(list.Count > 0);
-			foreach (object[] row in list)
-			{
-				Assert.IsTrue(row[0] is long);
-				Assert.IsTrue(row[1] is FooComponent);
-				Assert.IsTrue(row[2] is Foo);
-				Assert.IsTrue(row[3] is Foo);
-			}
-
-			await (s.SaveAsync(new Holder("ice T")));
-			await (s.SaveAsync(new Holder("ice cube")));
-
-			Assert.AreEqual(15, (await (s.CreateQuery("from o in class System.Object").ListAsync())).Count);
-			Assert.AreEqual(7, (await (s.CreateQuery("from n in class INamed").ListAsync())).Count);
-			Assert.IsTrue((await (s.CreateQuery("from n in class INamed where n.Name is not null").ListAsync())).Count == 4);
-
-			foreach (INamed named in await (s.CreateQuery("from n in class INamed").EnumerableAsync()))
-			{
-				Assert.IsNotNull(named);
-			}
-
-			await (s.SaveAsync(new Holder("bar")));
-			enumerable = await (s.CreateQuery("from n0 in class INamed, n1 in class INamed where n0.Name = n1.Name").EnumerableAsync());
-			int cnt = 0;
-			foreach (object[] row in enumerable)
-			{
-				if (row[0] != row[1])
+				if (TestDialect.SupportsCountDistinct)
 				{
-					cnt++;
+					list =
+						await (s.CreateQuery("select avg(foo.Float), max(foo.Component.Name), count(distinct foo.id) from foo in class Foo").ListAsync());
+					Assert.IsTrue(list.Count > 0);
+					foreach (object[] row in list)
+					{
+						Assert.IsTrue(row[0] is double); // changed from float to double (HQLFunction H3.2) 
+						Assert.IsTrue(row[1] is string);
+						Assert.IsTrue(row[2] is long); // changed from int to long (HQLFunction H3.2)
+					}
 				}
-			}
 
-			//if ( !(dialect is Dialect.HSQLDialect) )
-			//{
-			Assert.IsTrue(cnt == 2);
-			Assert.IsTrue((await (s.CreateQuery("from n0 in class INamed, n1 in class INamed where n0.Name = n1.Name").ListAsync())).Count == 7);
-			//}
+				list = await (s.CreateQuery("select foo.Long, foo.Component, foo, foo.TheFoo from foo in class Foo").ListAsync());
+				Assert.IsTrue(list.Count > 0);
+				foreach (object[] row in list)
+				{
+					Assert.IsTrue(row[0] is long);
+					Assert.IsTrue(row[1] is FooComponent);
+					Assert.IsTrue(row[2] is Foo);
+					Assert.IsTrue(row[3] is Foo);
+				}
 
-			IQuery qu = s.CreateQuery("from n in class INamed where n.Name = :name");
-			object temp = qu.ReturnTypes;
-			temp = qu.NamedParameters;
+				await (s.SaveAsync(new Holder("ice T")));
+				await (s.SaveAsync(new Holder("ice cube")));
 
-			int c = 0;
+				Assert.AreEqual(15, (await (s.CreateQuery("from o in class System.Object").ListAsync())).Count);
+				Assert.AreEqual(7, (await (s.CreateQuery("from n in class INamed").ListAsync())).Count);
+				Assert.IsTrue((await (s.CreateQuery("from n in class INamed where n.Name is not null").ListAsync())).Count == 4);
 
-			foreach (object obj in await (s.CreateQuery("from o in class System.Object").EnumerableAsync()))
-			{
-				c++;
-			}
-			Assert.IsTrue(c == 16);
+				foreach (INamed named in await (s.CreateQuery("from n in class INamed").EnumerableAsync()))
+				{
+					Assert.IsNotNull(named);
+				}
 
-			await (s.CreateQuery("select baz.Code, min(baz.Count) from baz in class Baz group by baz.Code").EnumerableAsync());
+				await (s.SaveAsync(new Holder("bar")));
+				enumerable = await (s.CreateQuery("from n0 in class INamed, n1 in class INamed where n0.Name = n1.Name").EnumerableAsync());
+				int cnt = 0;
+				foreach (object[] row in enumerable)
+				{
+					if (row[0] != row[1])
+					{
+						cnt++;
+					}
+				}
 
-			Assert.IsTrue(
-				IsEmpty(
+				//if ( !(dialect is Dialect.HSQLDialect) )
+				//{
+				Assert.IsTrue(cnt == 2);
+				Assert.IsTrue((await (s.CreateQuery("from n0 in class INamed, n1 in class INamed where n0.Name = n1.Name").ListAsync())).Count == 7);
+				//}
+
+				IQuery qu = s.CreateQuery("from n in class INamed where n.Name = :name");
+				object temp = qu.ReturnTypes;
+				temp = qu.NamedParameters;
+
+				int c = 0;
+
+				foreach (object obj in await (s.CreateQuery("from o in class System.Object").EnumerableAsync()))
+				{
+					c++;
+				}
+				Assert.IsTrue(c == 16);
+
+				await (s.CreateQuery("select baz.Code, min(baz.Count) from baz in class Baz group by baz.Code").EnumerableAsync());
+
+				Assert.IsTrue(
+					IsEmpty(
+						await (s.CreateQuery(
+							"selecT baz from baz in class Baz where baz.StringDateMap['foo'] is not null or baz.StringDateMap['bar'] = ?")
+							.SetDateTime(0, DateTime.Today).EnumerableAsync())));
+
+				list = await (s.CreateQuery("select baz from baz in class Baz where baz.StringDateMap['now'] is not null").ListAsync());
+				Assert.AreEqual(1, list.Count);
+
+				list =
+					await (s.CreateQuery("select baz from baz in class Baz where baz.StringDateMap[:now] is not null").SetString("now", "now").
+						ListAsync());
+				Assert.AreEqual(1, list.Count);
+
+				list =
 					await (s.CreateQuery(
-						"selecT baz from baz in class Baz where baz.StringDateMap['foo'] is not null or baz.StringDateMap['bar'] = ?")
-						.SetDateTime(0, DateTime.Today).EnumerableAsync())));
+						"select baz from baz in class Baz where baz.StringDateMap['now'] is not null and baz.StringDateMap['big bang'] < baz.StringDateMap['now']")
+						.ListAsync());
+				Assert.AreEqual(1, list.Count);
 
-			list = await (s.CreateQuery("select baz from baz in class Baz where baz.StringDateMap['now'] is not null").ListAsync());
-			Assert.AreEqual(1, list.Count);
+				list = await (s.CreateQuery("select index(date) from Baz baz join baz.StringDateMap date").ListAsync());
+				Console.WriteLine(list);
+				Assert.AreEqual(3, list.Count);
 
-			list =
-				await (s.CreateQuery("select baz from baz in class Baz where baz.StringDateMap[:now] is not null").SetString("now", "now").
+				await (s.CreateQuery(
+					"from foo in class Foo where foo.Integer not between 1 and 5 and foo.String not in ('cde', 'abc') and foo.String is not null and foo.Integer<=3")
+					.ListAsync());
+
+				await (s.CreateQuery("from Baz baz inner join baz.CollectionComponent.Nested.Foos foo where foo.String is null").ListAsync());
+				if (Dialect.SupportsSubSelects)
+				{
+					await (s.CreateQuery("from Baz baz inner join baz.FooSet where '1' in (from baz.FooSet foo where foo.String is not null)").
+						ListAsync());
+					await (s.CreateQuery(
+						"from Baz baz where 'a' in elements(baz.CollectionComponent.Nested.Foos) and 1.0 in elements(baz.CollectionComponent.Nested.Floats)")
+						.ListAsync());
+					await (s.CreateQuery(
+						"from Baz baz where 'b' in elements(baz.CollectionComponent.Nested.Foos) and 1.0 in elements(baz.CollectionComponent.Nested.Floats)")
+						.ListAsync());
+				}
+
+				await (s.CreateQuery("from Foo foo join foo.TheFoo where foo.TheFoo in ('1','2','3')").ListAsync());
+
+				//if ( !(dialect is Dialect.HSQLDialect) )
+				await (s.CreateQuery("from Foo foo left join foo.TheFoo where foo.TheFoo in ('1','2','3')").ListAsync());
+				await (s.CreateQuery("select foo.TheFoo from Foo foo where foo.TheFoo in ('1','2','3')").ListAsync());
+				await (s.CreateQuery("select foo.TheFoo.String from Foo foo where foo.TheFoo in ('1','2','3')").ListAsync());
+				await (s.CreateQuery("select foo.TheFoo.String from Foo foo where foo.TheFoo.String in ('1','2','3')").ListAsync());
+				await (s.CreateQuery("select foo.TheFoo.Long from Foo foo where foo.TheFoo.String in ('1','2','3')").ListAsync());
+				await (s.CreateQuery("select count(*) from Foo foo where foo.TheFoo.String in ('1','2','3') or foo.TheFoo.Long in (1,2,3)").
 					ListAsync());
-			Assert.AreEqual(1, list.Count);
+				await (s.CreateQuery("select count(*) from Foo foo where foo.TheFoo.String in ('1','2','3') group by foo.TheFoo.Long").ListAsync());
 
-			list =
+				await (s.CreateQuery("from Foo foo1 left join foo1.TheFoo foo2 left join foo2.TheFoo where foo1.String is not null").ListAsync());
+				await (s.CreateQuery("from Foo foo1 left join foo1.TheFoo.TheFoo where foo1.String is not null").ListAsync());
 				await (s.CreateQuery(
-					"select baz from baz in class Baz where baz.StringDateMap['now'] is not null and baz.StringDateMap['big bang'] < baz.StringDateMap['now']")
-					.ListAsync());
-			Assert.AreEqual(1, list.Count);
+					"from Foo foo1 left join foo1.TheFoo foo2 left join foo1.TheFoo.TheFoo foo3 where foo1.String is not null").ListAsync());
 
-			list = await (s.CreateQuery("select index(date) from Baz baz join baz.StringDateMap date").ListAsync());
-			Console.WriteLine(list);
-			Assert.AreEqual(3, list.Count);
+				await (s.CreateQuery("select foo.Formula from Foo foo where foo.Formula > 0").ListAsync());
 
-			await (s.CreateQuery(
-				"from foo in class Foo where foo.Integer not between 1 and 5 and foo.String not in ('cde', 'abc') and foo.String is not null and foo.Integer<=3")
-				.ListAsync());
+				int len = (await (s.CreateQuery("from Foo as foo join foo.TheFoo as foo2 where foo2.id >'a' or foo2.id <'a'").ListAsync())).Count;
+				Assert.IsTrue(len == 2);
 
-			await (s.CreateQuery("from Baz baz inner join baz.CollectionComponent.Nested.Foos foo where foo.String is null").ListAsync());
-			if (Dialect.SupportsSubSelects)
-			{
-				await (s.CreateQuery("from Baz baz inner join baz.FooSet where '1' in (from baz.FooSet foo where foo.String is not null)").
-					ListAsync());
-				await (s.CreateQuery(
-					"from Baz baz where 'a' in elements(baz.CollectionComponent.Nested.Foos) and 1.0 in elements(baz.CollectionComponent.Nested.Floats)")
-					.ListAsync());
-				await (s.CreateQuery(
-					"from Baz baz where 'b' in elements(baz.CollectionComponent.Nested.Foos) and 1.0 in elements(baz.CollectionComponent.Nested.Floats)")
-					.ListAsync());
+				await (s.DeleteAsync("from Holder"));
+				await (txn.CommitAsync());
 			}
 
-			await (s.CreateQuery("from Foo foo join foo.TheFoo where foo.TheFoo in ('1','2','3')").ListAsync());
+			using (var s = OpenSession())
+			using (var txn = s.BeginTransaction())
+			{
+				var baz = (Baz) await (s.CreateQuery("from Baz baz left outer join fetch baz.ManyToAny").UniqueResultAsync());
+				Assert.IsTrue(NHibernateUtil.IsInitialized(baz.ManyToAny));
+				Assert.IsTrue(baz.ManyToAny.Count == 2);
+				BarProxy barp = (BarProxy) baz.ManyToAny[0];
+				await (s.CreateQuery("from Baz baz join baz.ManyToAny").ListAsync());
+				Assert.IsTrue((await (s.CreateQuery("select baz from Baz baz join baz.ManyToAny a where index(a) = 0").ListAsync())).Count == 1);
 
-			//if ( !(dialect is Dialect.HSQLDialect) )
-			await (s.CreateQuery("from Foo foo left join foo.TheFoo where foo.TheFoo in ('1','2','3')").ListAsync());
-			await (s.CreateQuery("select foo.TheFoo from Foo foo where foo.TheFoo in ('1','2','3')").ListAsync());
-			await (s.CreateQuery("select foo.TheFoo.String from Foo foo where foo.TheFoo in ('1','2','3')").ListAsync());
-			await (s.CreateQuery("select foo.TheFoo.String from Foo foo where foo.TheFoo.String in ('1','2','3')").ListAsync());
-			await (s.CreateQuery("select foo.TheFoo.Long from Foo foo where foo.TheFoo.String in ('1','2','3')").ListAsync());
-			await (s.CreateQuery("select count(*) from Foo foo where foo.TheFoo.String in ('1','2','3') or foo.TheFoo.Long in (1,2,3)").
-				ListAsync());
-			await (s.CreateQuery("select count(*) from Foo foo where foo.TheFoo.String in ('1','2','3') group by foo.TheFoo.Long").ListAsync());
+				FooProxy foop = (FooProxy) await (s.GetAsync(typeof(Foo), foo.Key));
+				Assert.IsTrue(foop == baz.ManyToAny[1]);
 
-			await (s.CreateQuery("from Foo foo1 left join foo1.TheFoo foo2 left join foo2.TheFoo where foo1.String is not null").ListAsync());
-			await (s.CreateQuery("from Foo foo1 left join foo1.TheFoo.TheFoo where foo1.String is not null").ListAsync());
-			await (s.CreateQuery(
-				"from Foo foo1 left join foo1.TheFoo foo2 left join foo1.TheFoo.TheFoo foo3 where foo1.String is not null").ListAsync());
+				barp.Baz = baz;
+				Assert.IsTrue((await (s.CreateQuery("select bar from Bar bar where bar.Baz.StringDateMap['now'] is not null").ListAsync())).Count ==
+							  1);
+				Assert.IsTrue(
+					(await (s.CreateQuery(
+						"select bar from Bar bar join bar.Baz b where b.StringDateMap['big bang'] < b.StringDateMap['now'] and b.StringDateMap['now'] is not null")
+						.ListAsync())).Count == 1);
+				Assert.IsTrue(
+					(await (s.CreateQuery(
+						"select bar from Bar bar where bar.Baz.StringDateMap['big bang'] < bar.Baz.StringDateMap['now'] and bar.Baz.StringDateMap['now'] is not null")
+						.ListAsync())).Count == 1);
 
-			await (s.CreateQuery("select foo.Formula from Foo foo where foo.Formula > 0").ListAsync());
+				var list = await (s.CreateQuery("select foo.String, foo.Component, foo.id from Bar foo").ListAsync());
+				Assert.IsTrue(((FooComponent) ((object[]) list[0])[1]).Name == "foo");
+				list = await (s.CreateQuery("select elements(baz.Components) from Baz baz").ListAsync());
+				Assert.IsTrue(list.Count == 2);
+				list = await (s.CreateQuery("select bc.Name from Baz baz join baz.Components bc").ListAsync());
+				Assert.IsTrue(list.Count == 2);
+				//list = s.CreateQuery("select bc from Baz baz join baz.components bc").List();
 
-			int len = (await (s.CreateQuery("from Foo as foo join foo.TheFoo as foo2 where foo2.id >'a' or foo2.id <'a'").ListAsync())).Count;
-			Assert.IsTrue(len == 2);
+				await (s.CreateQuery("from Foo foo where foo.Integer < 10 order by foo.String").SetMaxResults(12).ListAsync());
 
-			await (s.DeleteAsync("from Holder"));
-			await (txn.CommitAsync());
-			s.Close();
-
-			s = OpenSession();
-			txn = s.BeginTransaction();
-			baz = (Baz) await (s.CreateQuery("from Baz baz left outer join fetch baz.ManyToAny").UniqueResultAsync());
-			Assert.IsTrue(NHibernateUtil.IsInitialized(baz.ManyToAny));
-			Assert.IsTrue(baz.ManyToAny.Count == 2);
-			BarProxy barp = (BarProxy) baz.ManyToAny[0];
-			await (s.CreateQuery("from Baz baz join baz.ManyToAny").ListAsync());
-			Assert.IsTrue((await (s.CreateQuery("select baz from Baz baz join baz.ManyToAny a where index(a) = 0").ListAsync())).Count == 1);
-
-			FooProxy foop = (FooProxy) await (s.GetAsync(typeof(Foo), foo.Key));
-			Assert.IsTrue(foop == baz.ManyToAny[1]);
-
-			barp.Baz = baz;
-			Assert.IsTrue((await (s.CreateQuery("select bar from Bar bar where bar.Baz.StringDateMap['now'] is not null").ListAsync())).Count ==
-			              1);
-			Assert.IsTrue(
-				(await (s.CreateQuery(
-					"select bar from Bar bar join bar.Baz b where b.StringDateMap['big bang'] < b.StringDateMap['now'] and b.StringDateMap['now'] is not null")
-					.ListAsync())).Count == 1);
-			Assert.IsTrue(
-				(await (s.CreateQuery(
-					"select bar from Bar bar where bar.Baz.StringDateMap['big bang'] < bar.Baz.StringDateMap['now'] and bar.Baz.StringDateMap['now'] is not null")
-					.ListAsync())).Count == 1);
-
-			list = await (s.CreateQuery("select foo.String, foo.Component, foo.id from Bar foo").ListAsync());
-			Assert.IsTrue(((FooComponent) ((object[]) list[0])[1]).Name == "foo");
-			list = await (s.CreateQuery("select elements(baz.Components) from Baz baz").ListAsync());
-			Assert.IsTrue(list.Count == 2);
-			list = await (s.CreateQuery("select bc.Name from Baz baz join baz.Components bc").ListAsync());
-			Assert.IsTrue(list.Count == 2);
-			//list = s.CreateQuery("select bc from Baz baz join baz.components bc").List();
-
-			await (s.CreateQuery("from Foo foo where foo.Integer < 10 order by foo.String").SetMaxResults(12).ListAsync());
-
-			await (s.DeleteAsync(barp));
-			await (s.DeleteAsync(baz));
-			await (s.DeleteAsync(foop.TheFoo));
-			await (s.DeleteAsync(foop));
-			await (txn.CommitAsync());
-			s.Close();
+				await (s.DeleteAsync(barp));
+				await (s.DeleteAsync(baz));
+				await (s.DeleteAsync(foop.TheFoo));
+				await (s.DeleteAsync(foop));
+				await (txn.CommitAsync());
+			}
 		}
 
 		[Test]

@@ -423,467 +423,470 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void Query()
 		{
-			ISession s = OpenSession();
-			ITransaction txn = s.BeginTransaction();
-			Foo foo = new Foo();
-			s.Save(foo);
-			Foo foo2 = new Foo();
-			s.Save(foo2);
-			foo.TheFoo = foo2;
-
-			IList list = s.CreateQuery("from Foo foo inner join fetch foo.TheFoo").List();
-			Foo foof = (Foo) list[0];
-			Assert.IsTrue(NHibernateUtil.IsInitialized(foof.TheFoo));
-
-			list = s.CreateQuery("from Baz baz left outer join fetch baz.FooToGlarch").List();
-
-			list = s.CreateQuery("select foo, bar from Foo foo left outer join foo.TheFoo bar where foo = ?")
-				.SetEntity(0, foo).List();
-
-			object[] row1 = (object[]) list[0];
-			Assert.IsTrue(row1[0] == foo && row1[1] == foo2);
-
-			s.CreateQuery("select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo = 'bar'").List();
-			s.CreateQuery("select foo.TheFoo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar'").List();
-			s.CreateQuery("select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'bar'").
-				List();
-			//			if( !( dialect is Dialect.HSQLDialect ) ) 
-			//			{
-			s.CreateQuery("select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo = foo.TheFoo.TheFoo").List();
-			//			}
-			s.CreateQuery(
-				"select foo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar' and foo.TheFoo.TheFoo.TheFoo = 'baz'").List
-				();
-			s.CreateQuery(
-				"select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'a' and foo.TheFoo.String = 'b'").
-				List();
-
-			s.CreateQuery("from bar in class Bar, foo in elements(bar.Baz.FooArray)").List();
-
-			if (Dialect is DB2Dialect)
+			Foo foo = null;
+			using (var s = OpenSession())
+			using (var txn = s.BeginTransaction())
 			{
-				s.CreateQuery("from foo in class Foo where lower( foo.TheFoo.String ) = 'foo'").List();
-				s.CreateQuery("from foo in class Foo where lower( (foo.TheFoo.String || 'foo') || 'bar' ) = 'foo'").List();
-				s.CreateQuery("from foo in class Foo where repeat( (foo.TheFoo.STring || 'foo') || 'bar', 2 ) = 'foo'").List();
+				foo = new Foo();
+				s.Save(foo);
+				Foo foo2 = new Foo();
+				s.Save(foo2);
+				foo.TheFoo = foo2;
+
+				IList list = s.CreateQuery("from Foo foo inner join fetch foo.TheFoo").List();
+				Foo foof = (Foo) list[0];
+				Assert.IsTrue(NHibernateUtil.IsInitialized(foof.TheFoo));
+
+				list = s.CreateQuery("from Baz baz left outer join fetch baz.FooToGlarch").List();
+
+				list = s.CreateQuery("select foo, bar from Foo foo left outer join foo.TheFoo bar where foo = ?")
+					.SetEntity(0, foo).List();
+
+				object[] row1 = (object[]) list[0];
+				Assert.IsTrue(row1[0] == foo && row1[1] == foo2);
+
+				s.CreateQuery("select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo = 'bar'").List();
+				s.CreateQuery("select foo.TheFoo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar'").List();
+				s.CreateQuery("select foo.TheFoo.TheFoo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'bar'").
+					List();
+				//			if( !( dialect is Dialect.HSQLDialect ) ) 
+				//			{
+				s.CreateQuery("select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo = foo.TheFoo.TheFoo").List();
+				//			}
 				s.CreateQuery(
-					"From foo in class Bar where foo.TheFoo.Integer is not null and repeat( (foo.TheFoo.String || 'foo') || 'bar', (5+5)/2 ) = 'foo'")
-					.List();
-				s.CreateQuery(
-					"From foo in class Bar where foo.TheFoo.Integer is not null or repeat( (foo.TheFoo.String || 'foo') || 'bar', (5+5)/2 ) = 'foo'")
-					.List();
-			}
-
-			if (Dialect is MsSql2000Dialect)
-			{
-				s.CreateQuery("select baz from Baz as baz join baz.FooArray foo group by baz order by sum(foo.Float)").Enumerable();
-			}
-
-			s.CreateQuery("from Foo as foo where foo.Component.Glarch.Name is not null").List();
-			s.CreateQuery("from Foo as foo left outer join foo.Component.Glarch as glarch where glarch.Name = 'foo'").List();
-
-			list = s.CreateQuery("from Foo").List();
-			Assert.AreEqual(2, list.Count);
-			Assert.IsTrue(list[0] is FooProxy);
-			list = s.CreateQuery("from Foo foo left outer join foo.TheFoo").List();
-			Assert.AreEqual(2, list.Count);
-			Assert.IsTrue(((object[]) list[0])[0] is FooProxy);
-
-			s.CreateQuery("From Foo, Bar").List();
-			s.CreateQuery("from Baz baz left join baz.FooToGlarch, Bar bar join bar.TheFoo").List();
-			s.CreateQuery("from Baz baz left join baz.FooToGlarch join baz.FooSet").List();
-			s.CreateQuery("from Baz baz left join baz.FooToGlarch join fetch baz.FooSet foo left join fetch foo.TheFoo").List();
-
-			list =
-				s.CreateQuery(
-					"from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' and foo.Boolean = true order by foo.String asc, foo.Component.Count desc")
-					.List();
-			Assert.AreEqual(0, list.Count, "empty query");
-			IEnumerable enumerable =
-				s.CreateQuery(
-					"from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' order by foo.String asc, foo.Component.Count desc")
-					.Enumerable();
-			Assert.IsTrue(IsEmpty(enumerable), "empty enumerator");
-
-			list = s.CreateQuery("select foo.TheFoo from foo in class NHibernate.DomainModel.Foo").List();
-			Assert.AreEqual(1, list.Count, "query");
-			Assert.AreEqual(foo.TheFoo, list[0], "returned object");
-			foo.TheFoo.TheFoo = foo;
-			foo.String = "fizard";
-
-			if (Dialect.SupportsSubSelects && TestDialect.SupportsOperatorSome)
-			{
-				if (!(Dialect is FirebirdDialect))
-				{
-					list = s.CreateQuery(
-							"from foo in class NHibernate.DomainModel.Foo where ? = some elements(foo.Component.ImportantDates)").
-							SetDateTime(0, DateTime.Today).List();
-					
-					Assert.AreEqual(2, list.Count, "component query");
-				}
-
-				if (Dialect.SupportsScalarSubSelects)
-				{
-					list =
-						s.CreateQuery("from foo in class NHibernate.DomainModel.Foo where size(foo.Component.ImportantDates) = 3").List();
-					Assert.AreEqual(2, list.Count, "component query");
-					list = s.CreateQuery("from foo in class Foo where 0 = size(foo.Component.ImportantDates)").List();
-					Assert.AreEqual(0, list.Count, "component query");
-				}
-				list = s.CreateQuery("from foo in class Foo where exists elements(foo.Component.ImportantDates)").List();
-				Assert.AreEqual(2, list.Count, "component query");
-				s.CreateQuery("from foo in class Foo where not exists (from bar in class Bar where bar.id = foo.id)").List();
-
-				s.CreateQuery(
-					"select foo.TheFoo from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)")
-					.List();
-				s.CreateQuery(
-					"from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long) and foo.TheFoo.String='baz'")
-					.List();
-				s.CreateQuery(
-					"from foo in class Foo where foo.TheFoo.String='baz' and foo = some(select x from x in class Foo where x.Long>foo.TheFoo.Long)")
-					.List();
-				s.CreateQuery("from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)")
-					.List();
-
-				s.CreateQuery(
-					"select foo.String, foo.Date, foo.TheFoo.String, foo.id from foo in class Foo, baz in class Baz where foo in elements(baz.FooArray) and foo.String like 'foo'")
-					.Enumerable();
-			}
-
-			list = s.CreateQuery("from foo in class Foo where foo.Component.Count is null order by foo.Component.Count").List();
-			Assert.AreEqual(0, list.Count, "component query");
-
-			list = s.CreateQuery("from foo in class Foo where foo.Component.Name='foo'").List();
-			Assert.AreEqual(2, list.Count, "component query");
-
-			list =
-				s.CreateQuery(
-					"select distinct foo.Component.Name, foo.Component.Name from foo in class Foo where foo.Component.Name='foo'").List
+					"select foo.String from foo in class Foo where foo.TheFoo.TheFoo = 'bar' and foo.TheFoo.TheFoo.TheFoo = 'baz'").List
 					();
-			Assert.AreEqual(1, list.Count, "component query");
-
-			list =
-				s.CreateQuery("select distinct foo.Component.Name, foo.id from foo in class Foo where foo.Component.Name='foo'").
+				s.CreateQuery(
+					"select foo.String from foo in class Foo where foo.TheFoo.TheFoo.TheFoo.String = 'a' and foo.TheFoo.String = 'b'").
 					List();
-			Assert.AreEqual(2, list.Count, "component query");
 
-			list = s.CreateQuery("select foo.TheFoo from foo in class Foo").List();
-			Assert.AreEqual(2, list.Count, "query");
+				s.CreateQuery("from bar in class Bar, foo in elements(bar.Baz.FooArray)").List();
 
-			list = s.CreateQuery("from foo in class Foo where foo.id=?").SetString(0, foo.Key).List();
-			Assert.AreEqual(1, list.Count, "id query");
+				if (Dialect is DB2Dialect)
+				{
+					s.CreateQuery("from foo in class Foo where lower( foo.TheFoo.String ) = 'foo'").List();
+					s.CreateQuery("from foo in class Foo where lower( (foo.TheFoo.String || 'foo') || 'bar' ) = 'foo'").List();
+					s.CreateQuery("from foo in class Foo where repeat( (foo.TheFoo.STring || 'foo') || 'bar', 2 ) = 'foo'").List();
+					s.CreateQuery(
+						"From foo in class Bar where foo.TheFoo.Integer is not null and repeat( (foo.TheFoo.String || 'foo') || 'bar', (5+5)/2 ) = 'foo'")
+						.List();
+					s.CreateQuery(
+						"From foo in class Bar where foo.TheFoo.Integer is not null or repeat( (foo.TheFoo.String || 'foo') || 'bar', (5+5)/2 ) = 'foo'")
+						.List();
+				}
 
-			list = s.CreateQuery("from foo in class Foo where foo.Key=?").SetString(0, foo.Key).List();
-			Assert.AreEqual(1, list.Count, "named id query");
-			Assert.AreSame(foo, list[0], "id query");
+				if (Dialect is MsSql2000Dialect)
+				{
+					s.CreateQuery("select baz from Baz as baz join baz.FooArray foo group by baz order by sum(foo.Float)").Enumerable();
+				}
 
-			list = s.CreateQuery("select foo.TheFoo from foo in class Foo where foo.String='fizard'").List();
-			Assert.AreEqual(1, list.Count, "query");
-			Assert.AreSame(foo.TheFoo, list[0], "returned object");
+				s.CreateQuery("from Foo as foo where foo.Component.Glarch.Name is not null").List();
+				s.CreateQuery("from Foo as foo left outer join foo.Component.Glarch as glarch where glarch.Name = 'foo'").List();
 
-			list = s.CreateQuery("from foo in class Foo where foo.Component.Subcomponent.Name='bar'").List();
-			Assert.AreEqual(2, list.Count, "components of components");
+				list = s.CreateQuery("from Foo").List();
+				Assert.AreEqual(2, list.Count);
+				Assert.IsTrue(list[0] is FooProxy);
+				list = s.CreateQuery("from Foo foo left outer join foo.TheFoo").List();
+				Assert.AreEqual(2, list.Count);
+				Assert.IsTrue(((object[]) list[0])[0] is FooProxy);
 
-			list = s.CreateQuery("select foo.TheFoo from foo in class Foo where foo.TheFoo.id=?")
-				.SetString(0, foo.TheFoo.Key).List();
-			Assert.AreEqual(1, list.Count, "by id query");
-			Assert.AreSame(foo.TheFoo, list[0], "by id returned object");
+				s.CreateQuery("From Foo, Bar").List();
+				s.CreateQuery("from Baz baz left join baz.FooToGlarch, Bar bar join bar.TheFoo").List();
+				s.CreateQuery("from Baz baz left join baz.FooToGlarch join baz.FooSet").List();
+				s.CreateQuery("from Baz baz left join baz.FooToGlarch join fetch baz.FooSet foo left join fetch foo.TheFoo").List();
 
-			s.CreateQuery("from foo in class Foo where foo.TheFoo = ?").SetEntity(0, foo.TheFoo).List();
-
-			Assert.IsTrue(
-				IsEmpty(s.CreateQuery("from bar in class Bar where bar.String='a string' or bar.String='a string'").Enumerable()
-					));
-
-			enumerable = s.CreateQuery(
-						"select foo.Component.Name, elements(foo.Component.ImportantDates) from foo in class Foo where foo.TheFoo.id=?").
-						SetString(0, foo.TheFoo.Key).Enumerable();
-
-			int i = 0;
-			foreach (object[] row in enumerable)
-			{
-				i++;
-				Assert.IsTrue(row[0] is String);
-				Assert.IsTrue(row[1] == null || row[1] is DateTime);
-			}
-			Assert.AreEqual(3, i); //WAS: 4
-
-			enumerable = s.CreateQuery("select max(elements(foo.Component.ImportantDates)) from foo in class Foo group by foo.id").
-						Enumerable();
-			
-			IEnumerator enumerator = enumerable.GetEnumerator();
-
-			Assert.IsTrue(enumerator.MoveNext());
-			Assert.IsTrue(enumerator.Current is DateTime);
-
-			list = s.CreateQuery(
-				"select foo.TheFoo.TheFoo.TheFoo from foo in class Foo, foo2 in class Foo where"
-				+ " foo = foo2.TheFoo and not not ( not foo.String='fizard' )"
-				+ " and foo2.String between 'a' and (foo.TheFoo.String)"
-				+ (Dialect is SQLiteDialect
-				   	? " and ( foo2.String in ( 'fiz', 'blah') or 1=1 )"
-				   	: " and ( foo2.String in ( 'fiz', 'blah', foo.TheFoo.String, foo.String, foo2.String ) )")
-				).List();
-			Assert.AreEqual(1, list.Count, "complex query");
-			Assert.AreSame(foo, list[0], "returned object");
-
-			foo.String = "from BoogieDown  -tinsel town  =!@#$^&*())";
-
-			list = s.CreateQuery("from foo in class Foo where foo.String='from BoogieDown  -tinsel town  =!@#$^&*())'").List();
-			Assert.AreEqual(1, list.Count, "single quotes");
-
-			list = s.CreateQuery("from foo in class Foo where not foo.String='foo''bar'").List();
-			Assert.AreEqual(2, list.Count, "single quotes");
-
-			list = s.CreateQuery("from foo in class Foo where foo.Component.Glarch.Next is null").List();
-			Assert.AreEqual(2, list.Count, "query association in component");
-
-			Bar bar = new Bar();
-			Baz baz = new Baz();
-			baz.SetDefaults();
-			bar.Baz = baz;
-			baz.ManyToAny = new List<object>();
-			baz.ManyToAny.Add(bar);
-			baz.ManyToAny.Add(foo);
-			s.Save(bar);
-			s.Save(baz);
-			list =
-				s.CreateQuery(" from bar in class Bar where bar.Baz.Count=667 and bar.Baz.Count!=123 and not bar.Baz.Name='1-E-1'").
-					List();
-			Assert.AreEqual(1, list.Count, "query many-to-one");
-			list = s.CreateQuery(" from i in class Bar where i.Baz.Name='Bazza'").List();
-			Assert.AreEqual(1, list.Count, "query many-to-one");
-
-			if (TestDialect.SupportsCountDistinct)
-			{
-				enumerable = s.CreateQuery("select count(distinct foo.TheFoo) from foo in class Foo").Enumerable();
-				Assert.IsTrue(ContainsSingleObject(enumerable, (long) 2), "count"); // changed to Int64 (HQLFunction H3.2)
-			}
-
-			enumerable = s.CreateQuery("select count(foo.TheFoo.Boolean) from foo in class Foo").Enumerable();
-			Assert.IsTrue(ContainsSingleObject(enumerable, (long) 2), "count"); // changed to Int64 (HQLFunction H3.2)
-
-			enumerable = s.CreateQuery("select count(*), foo.Int from foo in class Foo group by foo.Int").Enumerable();
-			enumerator = enumerable.GetEnumerator();
-			Assert.IsTrue(enumerator.MoveNext());
-			Assert.AreEqual(3L, (long) ((object[]) enumerator.Current)[0]);
-			Assert.IsFalse(enumerator.MoveNext());
-
-			enumerable = s.CreateQuery("select sum(foo.TheFoo.Int) from foo in class Foo").Enumerable();
-			Assert.IsTrue(ContainsSingleObject(enumerable, (long) 4), "sum"); // changed to Int64 (HQLFunction H3.2)
-
-			enumerable = s.CreateQuery("select count(foo) from foo in class Foo where foo.id=?")
-				.SetString(0, foo.Key).Enumerable();
-			Assert.IsTrue(ContainsSingleObject(enumerable, (long) 1), "id query count");
-
-			list = s.CreateQuery("from foo in class Foo where foo.Boolean = ?").SetBoolean(0, true).List();
-
-			list = s.CreateQuery("select new Foo(fo.X) from Fo fo").List();
-			list = s.CreateQuery("select new Foo(fo.Integer) from Foo fo").List();
-
-			list = s.CreateQuery("select new Foo(fo.X) from Foo fo")
-				.SetCacheable(true)
-				.List();
-			Assert.IsTrue(list.Count == 3);
-			list = s.CreateQuery("select new Foo(fo.X) from Foo fo")
-				.SetCacheable(true)
-				.List();
-			Assert.IsTrue(list.Count == 3);
-
-			enumerable = s.CreateQuery("select new Foo(fo.X) from Foo fo").Enumerable();
-			enumerator = enumerable.GetEnumerator();
-			Assert.IsTrue(enumerator.MoveNext(), "projection iterate (results)");
-			Assert.IsTrue(typeof(Foo).IsAssignableFrom(enumerator.Current.GetType()),
-			              "projection iterate (return check)");
-
-			// TODO: ScrollableResults not implemented
-			//ScrollableResults sr = s.CreateQuery("select new Foo(fo.x) from Foo fo").Scroll();
-			//Assert.IsTrue( "projection scroll (results)", sr.next() );
-			//Assert.IsTrue( "projection scroll (return check)", typeof(Foo).isAssignableFrom( sr.get(0).getClass() ) );
-
-			list = s.CreateQuery("select foo.Long, foo.Component.Name, foo, foo.TheFoo from foo in class Foo").List();
-			Assert.IsTrue(list.Count > 0);
-			foreach (object[] row in list)
-			{
-				Assert.IsTrue(row[0] is long);
-				Assert.IsTrue(row[1] is string);
-				Assert.IsTrue(row[2] is Foo);
-				Assert.IsTrue(row[3] is Foo);
-			}
-
-			if (TestDialect.SupportsCountDistinct)
-			{
 				list =
-					s.CreateQuery("select avg(foo.Float), max(foo.Component.Name), count(distinct foo.id) from foo in class Foo").List();
+					s.CreateQuery(
+						"from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' and foo.Boolean = true order by foo.String asc, foo.Component.Count desc")
+						.List();
+				Assert.AreEqual(0, list.Count, "empty query");
+				IEnumerable enumerable =
+					s.CreateQuery(
+						"from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' order by foo.String asc, foo.Component.Count desc")
+						.Enumerable();
+				Assert.IsTrue(IsEmpty(enumerable), "empty enumerator");
+
+				list = s.CreateQuery("select foo.TheFoo from foo in class NHibernate.DomainModel.Foo").List();
+				Assert.AreEqual(1, list.Count, "query");
+				Assert.AreEqual(foo.TheFoo, list[0], "returned object");
+				foo.TheFoo.TheFoo = foo;
+				foo.String = "fizard";
+
+				if (Dialect.SupportsSubSelects && TestDialect.SupportsOperatorSome)
+				{
+					if (!(Dialect is FirebirdDialect))
+					{
+						list = s.CreateQuery(
+								"from foo in class NHibernate.DomainModel.Foo where ? = some elements(foo.Component.ImportantDates)").
+								SetDateTime(0, DateTime.Today).List();
+
+						Assert.AreEqual(2, list.Count, "component query");
+					}
+
+					if (Dialect.SupportsScalarSubSelects)
+					{
+						list =
+							s.CreateQuery("from foo in class NHibernate.DomainModel.Foo where size(foo.Component.ImportantDates) = 3").List();
+						Assert.AreEqual(2, list.Count, "component query");
+						list = s.CreateQuery("from foo in class Foo where 0 = size(foo.Component.ImportantDates)").List();
+						Assert.AreEqual(0, list.Count, "component query");
+					}
+					list = s.CreateQuery("from foo in class Foo where exists elements(foo.Component.ImportantDates)").List();
+					Assert.AreEqual(2, list.Count, "component query");
+					s.CreateQuery("from foo in class Foo where not exists (from bar in class Bar where bar.id = foo.id)").List();
+
+					s.CreateQuery(
+						"select foo.TheFoo from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)")
+						.List();
+					s.CreateQuery(
+						"from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long) and foo.TheFoo.String='baz'")
+						.List();
+					s.CreateQuery(
+						"from foo in class Foo where foo.TheFoo.String='baz' and foo = some(select x from x in class Foo where x.Long>foo.TheFoo.Long)")
+						.List();
+					s.CreateQuery("from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)")
+						.List();
+
+					s.CreateQuery(
+						"select foo.String, foo.Date, foo.TheFoo.String, foo.id from foo in class Foo, baz in class Baz where foo in elements(baz.FooArray) and foo.String like 'foo'")
+						.Enumerable();
+				}
+
+				list = s.CreateQuery("from foo in class Foo where foo.Component.Count is null order by foo.Component.Count").List();
+				Assert.AreEqual(0, list.Count, "component query");
+
+				list = s.CreateQuery("from foo in class Foo where foo.Component.Name='foo'").List();
+				Assert.AreEqual(2, list.Count, "component query");
+
+				list =
+					s.CreateQuery(
+						"select distinct foo.Component.Name, foo.Component.Name from foo in class Foo where foo.Component.Name='foo'").List
+						();
+				Assert.AreEqual(1, list.Count, "component query");
+
+				list =
+					s.CreateQuery("select distinct foo.Component.Name, foo.id from foo in class Foo where foo.Component.Name='foo'").
+						List();
+				Assert.AreEqual(2, list.Count, "component query");
+
+				list = s.CreateQuery("select foo.TheFoo from foo in class Foo").List();
+				Assert.AreEqual(2, list.Count, "query");
+
+				list = s.CreateQuery("from foo in class Foo where foo.id=?").SetString(0, foo.Key).List();
+				Assert.AreEqual(1, list.Count, "id query");
+
+				list = s.CreateQuery("from foo in class Foo where foo.Key=?").SetString(0, foo.Key).List();
+				Assert.AreEqual(1, list.Count, "named id query");
+				Assert.AreSame(foo, list[0], "id query");
+
+				list = s.CreateQuery("select foo.TheFoo from foo in class Foo where foo.String='fizard'").List();
+				Assert.AreEqual(1, list.Count, "query");
+				Assert.AreSame(foo.TheFoo, list[0], "returned object");
+
+				list = s.CreateQuery("from foo in class Foo where foo.Component.Subcomponent.Name='bar'").List();
+				Assert.AreEqual(2, list.Count, "components of components");
+
+				list = s.CreateQuery("select foo.TheFoo from foo in class Foo where foo.TheFoo.id=?")
+					.SetString(0, foo.TheFoo.Key).List();
+				Assert.AreEqual(1, list.Count, "by id query");
+				Assert.AreSame(foo.TheFoo, list[0], "by id returned object");
+
+				s.CreateQuery("from foo in class Foo where foo.TheFoo = ?").SetEntity(0, foo.TheFoo).List();
+
+				Assert.IsTrue(
+					IsEmpty(s.CreateQuery("from bar in class Bar where bar.String='a string' or bar.String='a string'").Enumerable()
+						));
+
+				enumerable = s.CreateQuery(
+							"select foo.Component.Name, elements(foo.Component.ImportantDates) from foo in class Foo where foo.TheFoo.id=?").
+							SetString(0, foo.TheFoo.Key).Enumerable();
+
+				int i = 0;
+				foreach (object[] row in enumerable)
+				{
+					i++;
+					Assert.IsTrue(row[0] is String);
+					Assert.IsTrue(row[1] == null || row[1] is DateTime);
+				}
+				Assert.AreEqual(3, i); //WAS: 4
+
+				enumerable = s.CreateQuery("select max(elements(foo.Component.ImportantDates)) from foo in class Foo group by foo.id").
+							Enumerable();
+
+				IEnumerator enumerator = enumerable.GetEnumerator();
+
+				Assert.IsTrue(enumerator.MoveNext());
+				Assert.IsTrue(enumerator.Current is DateTime);
+
+				list = s.CreateQuery(
+					"select foo.TheFoo.TheFoo.TheFoo from foo in class Foo, foo2 in class Foo where"
+					+ " foo = foo2.TheFoo and not not ( not foo.String='fizard' )"
+					+ " and foo2.String between 'a' and (foo.TheFoo.String)"
+					+ (Dialect is SQLiteDialect
+						   ? " and ( foo2.String in ( 'fiz', 'blah') or 1=1 )"
+						   : " and ( foo2.String in ( 'fiz', 'blah', foo.TheFoo.String, foo.String, foo2.String ) )")
+					).List();
+				Assert.AreEqual(1, list.Count, "complex query");
+				Assert.AreSame(foo, list[0], "returned object");
+
+				foo.String = "from BoogieDown  -tinsel town  =!@#$^&*())";
+
+				list = s.CreateQuery("from foo in class Foo where foo.String='from BoogieDown  -tinsel town  =!@#$^&*())'").List();
+				Assert.AreEqual(1, list.Count, "single quotes");
+
+				list = s.CreateQuery("from foo in class Foo where not foo.String='foo''bar'").List();
+				Assert.AreEqual(2, list.Count, "single quotes");
+
+				list = s.CreateQuery("from foo in class Foo where foo.Component.Glarch.Next is null").List();
+				Assert.AreEqual(2, list.Count, "query association in component");
+
+				Bar bar = new Bar();
+				Baz baz = new Baz();
+				baz.SetDefaults();
+				bar.Baz = baz;
+				baz.ManyToAny = new List<object>();
+				baz.ManyToAny.Add(bar);
+				baz.ManyToAny.Add(foo);
+				s.Save(bar);
+				s.Save(baz);
+				list =
+					s.CreateQuery(" from bar in class Bar where bar.Baz.Count=667 and bar.Baz.Count!=123 and not bar.Baz.Name='1-E-1'").
+						List();
+				Assert.AreEqual(1, list.Count, "query many-to-one");
+				list = s.CreateQuery(" from i in class Bar where i.Baz.Name='Bazza'").List();
+				Assert.AreEqual(1, list.Count, "query many-to-one");
+
+				if (TestDialect.SupportsCountDistinct)
+				{
+					enumerable = s.CreateQuery("select count(distinct foo.TheFoo) from foo in class Foo").Enumerable();
+					Assert.IsTrue(ContainsSingleObject(enumerable, (long) 2), "count"); // changed to Int64 (HQLFunction H3.2)
+				}
+
+				enumerable = s.CreateQuery("select count(foo.TheFoo.Boolean) from foo in class Foo").Enumerable();
+				Assert.IsTrue(ContainsSingleObject(enumerable, (long) 2), "count"); // changed to Int64 (HQLFunction H3.2)
+
+				enumerable = s.CreateQuery("select count(*), foo.Int from foo in class Foo group by foo.Int").Enumerable();
+				enumerator = enumerable.GetEnumerator();
+				Assert.IsTrue(enumerator.MoveNext());
+				Assert.AreEqual(3L, (long) ((object[]) enumerator.Current)[0]);
+				Assert.IsFalse(enumerator.MoveNext());
+
+				enumerable = s.CreateQuery("select sum(foo.TheFoo.Int) from foo in class Foo").Enumerable();
+				Assert.IsTrue(ContainsSingleObject(enumerable, (long) 4), "sum"); // changed to Int64 (HQLFunction H3.2)
+
+				enumerable = s.CreateQuery("select count(foo) from foo in class Foo where foo.id=?")
+					.SetString(0, foo.Key).Enumerable();
+				Assert.IsTrue(ContainsSingleObject(enumerable, (long) 1), "id query count");
+
+				list = s.CreateQuery("from foo in class Foo where foo.Boolean = ?").SetBoolean(0, true).List();
+
+				list = s.CreateQuery("select new Foo(fo.X) from Fo fo").List();
+				list = s.CreateQuery("select new Foo(fo.Integer) from Foo fo").List();
+
+				list = s.CreateQuery("select new Foo(fo.X) from Foo fo")
+					.SetCacheable(true)
+					.List();
+				Assert.IsTrue(list.Count == 3);
+				list = s.CreateQuery("select new Foo(fo.X) from Foo fo")
+					.SetCacheable(true)
+					.List();
+				Assert.IsTrue(list.Count == 3);
+
+				enumerable = s.CreateQuery("select new Foo(fo.X) from Foo fo").Enumerable();
+				enumerator = enumerable.GetEnumerator();
+				Assert.IsTrue(enumerator.MoveNext(), "projection iterate (results)");
+				Assert.IsTrue(typeof(Foo).IsAssignableFrom(enumerator.Current.GetType()),
+							  "projection iterate (return check)");
+
+				// TODO: ScrollableResults not implemented
+				//ScrollableResults sr = s.CreateQuery("select new Foo(fo.x) from Foo fo").Scroll();
+				//Assert.IsTrue( "projection scroll (results)", sr.next() );
+				//Assert.IsTrue( "projection scroll (return check)", typeof(Foo).isAssignableFrom( sr.get(0).getClass() ) );
+
+				list = s.CreateQuery("select foo.Long, foo.Component.Name, foo, foo.TheFoo from foo in class Foo").List();
 				Assert.IsTrue(list.Count > 0);
 				foreach (object[] row in list)
 				{
-					Assert.IsTrue(row[0] is double); // changed from float to double (HQLFunction H3.2) 
+					Assert.IsTrue(row[0] is long);
 					Assert.IsTrue(row[1] is string);
-					Assert.IsTrue(row[2] is long); // changed from int to long (HQLFunction H3.2)
+					Assert.IsTrue(row[2] is Foo);
+					Assert.IsTrue(row[3] is Foo);
 				}
-			}
 
-			list = s.CreateQuery("select foo.Long, foo.Component, foo, foo.TheFoo from foo in class Foo").List();
-			Assert.IsTrue(list.Count > 0);
-			foreach (object[] row in list)
-			{
-				Assert.IsTrue(row[0] is long);
-				Assert.IsTrue(row[1] is FooComponent);
-				Assert.IsTrue(row[2] is Foo);
-				Assert.IsTrue(row[3] is Foo);
-			}
-
-			s.Save(new Holder("ice T"));
-			s.Save(new Holder("ice cube"));
-
-			Assert.AreEqual(15, s.CreateQuery("from o in class System.Object").List().Count);
-			Assert.AreEqual(7, s.CreateQuery("from n in class INamed").List().Count);
-			Assert.IsTrue(s.CreateQuery("from n in class INamed where n.Name is not null").List().Count == 4);
-
-			foreach (INamed named in s.CreateQuery("from n in class INamed").Enumerable())
-			{
-				Assert.IsNotNull(named);
-			}
-
-			s.Save(new Holder("bar"));
-			enumerable = s.CreateQuery("from n0 in class INamed, n1 in class INamed where n0.Name = n1.Name").Enumerable();
-			int cnt = 0;
-			foreach (object[] row in enumerable)
-			{
-				if (row[0] != row[1])
+				if (TestDialect.SupportsCountDistinct)
 				{
-					cnt++;
+					list =
+						s.CreateQuery("select avg(foo.Float), max(foo.Component.Name), count(distinct foo.id) from foo in class Foo").List();
+					Assert.IsTrue(list.Count > 0);
+					foreach (object[] row in list)
+					{
+						Assert.IsTrue(row[0] is double); // changed from float to double (HQLFunction H3.2) 
+						Assert.IsTrue(row[1] is string);
+						Assert.IsTrue(row[2] is long); // changed from int to long (HQLFunction H3.2)
+					}
 				}
-			}
 
-			//if ( !(dialect is Dialect.HSQLDialect) )
-			//{
-			Assert.IsTrue(cnt == 2);
-			Assert.IsTrue(s.CreateQuery("from n0 in class INamed, n1 in class INamed where n0.Name = n1.Name").List().Count == 7);
-			//}
+				list = s.CreateQuery("select foo.Long, foo.Component, foo, foo.TheFoo from foo in class Foo").List();
+				Assert.IsTrue(list.Count > 0);
+				foreach (object[] row in list)
+				{
+					Assert.IsTrue(row[0] is long);
+					Assert.IsTrue(row[1] is FooComponent);
+					Assert.IsTrue(row[2] is Foo);
+					Assert.IsTrue(row[3] is Foo);
+				}
 
-			IQuery qu = s.CreateQuery("from n in class INamed where n.Name = :name");
-			object temp = qu.ReturnTypes;
-			temp = qu.NamedParameters;
+				s.Save(new Holder("ice T"));
+				s.Save(new Holder("ice cube"));
 
-			int c = 0;
+				Assert.AreEqual(15, s.CreateQuery("from o in class System.Object").List().Count);
+				Assert.AreEqual(7, s.CreateQuery("from n in class INamed").List().Count);
+				Assert.IsTrue(s.CreateQuery("from n in class INamed where n.Name is not null").List().Count == 4);
 
-			foreach (object obj in s.CreateQuery("from o in class System.Object").Enumerable())
-			{
-				c++;
-			}
-			Assert.IsTrue(c == 16);
+				foreach (INamed named in s.CreateQuery("from n in class INamed").Enumerable())
+				{
+					Assert.IsNotNull(named);
+				}
 
-			s.CreateQuery("select baz.Code, min(baz.Count) from baz in class Baz group by baz.Code").Enumerable();
+				s.Save(new Holder("bar"));
+				enumerable = s.CreateQuery("from n0 in class INamed, n1 in class INamed where n0.Name = n1.Name").Enumerable();
+				int cnt = 0;
+				foreach (object[] row in enumerable)
+				{
+					if (row[0] != row[1])
+					{
+						cnt++;
+					}
+				}
 
-			Assert.IsTrue(
-				IsEmpty(
+				//if ( !(dialect is Dialect.HSQLDialect) )
+				//{
+				Assert.IsTrue(cnt == 2);
+				Assert.IsTrue(s.CreateQuery("from n0 in class INamed, n1 in class INamed where n0.Name = n1.Name").List().Count == 7);
+				//}
+
+				IQuery qu = s.CreateQuery("from n in class INamed where n.Name = :name");
+				object temp = qu.ReturnTypes;
+				temp = qu.NamedParameters;
+
+				int c = 0;
+
+				foreach (object obj in s.CreateQuery("from o in class System.Object").Enumerable())
+				{
+					c++;
+				}
+				Assert.IsTrue(c == 16);
+
+				s.CreateQuery("select baz.Code, min(baz.Count) from baz in class Baz group by baz.Code").Enumerable();
+
+				Assert.IsTrue(
+					IsEmpty(
+						s.CreateQuery(
+							"selecT baz from baz in class Baz where baz.StringDateMap['foo'] is not null or baz.StringDateMap['bar'] = ?")
+							.SetDateTime(0, DateTime.Today).Enumerable()));
+
+				list = s.CreateQuery("select baz from baz in class Baz where baz.StringDateMap['now'] is not null").List();
+				Assert.AreEqual(1, list.Count);
+
+				list =
+					s.CreateQuery("select baz from baz in class Baz where baz.StringDateMap[:now] is not null").SetString("now", "now").
+						List();
+				Assert.AreEqual(1, list.Count);
+
+				list =
 					s.CreateQuery(
-						"selecT baz from baz in class Baz where baz.StringDateMap['foo'] is not null or baz.StringDateMap['bar'] = ?")
-						.SetDateTime(0, DateTime.Today).Enumerable()));
+						"select baz from baz in class Baz where baz.StringDateMap['now'] is not null and baz.StringDateMap['big bang'] < baz.StringDateMap['now']")
+						.List();
+				Assert.AreEqual(1, list.Count);
 
-			list = s.CreateQuery("select baz from baz in class Baz where baz.StringDateMap['now'] is not null").List();
-			Assert.AreEqual(1, list.Count);
+				list = s.CreateQuery("select index(date) from Baz baz join baz.StringDateMap date").List();
+				Console.WriteLine(list);
+				Assert.AreEqual(3, list.Count);
 
-			list =
-				s.CreateQuery("select baz from baz in class Baz where baz.StringDateMap[:now] is not null").SetString("now", "now").
+				s.CreateQuery(
+					"from foo in class Foo where foo.Integer not between 1 and 5 and foo.String not in ('cde', 'abc') and foo.String is not null and foo.Integer<=3")
+					.List();
+
+				s.CreateQuery("from Baz baz inner join baz.CollectionComponent.Nested.Foos foo where foo.String is null").List();
+				if (Dialect.SupportsSubSelects)
+				{
+					s.CreateQuery("from Baz baz inner join baz.FooSet where '1' in (from baz.FooSet foo where foo.String is not null)").
+						List();
+					s.CreateQuery(
+						"from Baz baz where 'a' in elements(baz.CollectionComponent.Nested.Foos) and 1.0 in elements(baz.CollectionComponent.Nested.Floats)")
+						.List();
+					s.CreateQuery(
+						"from Baz baz where 'b' in elements(baz.CollectionComponent.Nested.Foos) and 1.0 in elements(baz.CollectionComponent.Nested.Floats)")
+						.List();
+				}
+
+				s.CreateQuery("from Foo foo join foo.TheFoo where foo.TheFoo in ('1','2','3')").List();
+
+				//if ( !(dialect is Dialect.HSQLDialect) )
+				s.CreateQuery("from Foo foo left join foo.TheFoo where foo.TheFoo in ('1','2','3')").List();
+				s.CreateQuery("select foo.TheFoo from Foo foo where foo.TheFoo in ('1','2','3')").List();
+				s.CreateQuery("select foo.TheFoo.String from Foo foo where foo.TheFoo in ('1','2','3')").List();
+				s.CreateQuery("select foo.TheFoo.String from Foo foo where foo.TheFoo.String in ('1','2','3')").List();
+				s.CreateQuery("select foo.TheFoo.Long from Foo foo where foo.TheFoo.String in ('1','2','3')").List();
+				s.CreateQuery("select count(*) from Foo foo where foo.TheFoo.String in ('1','2','3') or foo.TheFoo.Long in (1,2,3)").
 					List();
-			Assert.AreEqual(1, list.Count);
+				s.CreateQuery("select count(*) from Foo foo where foo.TheFoo.String in ('1','2','3') group by foo.TheFoo.Long").List();
 
-			list =
+				s.CreateQuery("from Foo foo1 left join foo1.TheFoo foo2 left join foo2.TheFoo where foo1.String is not null").List();
+				s.CreateQuery("from Foo foo1 left join foo1.TheFoo.TheFoo where foo1.String is not null").List();
 				s.CreateQuery(
-					"select baz from baz in class Baz where baz.StringDateMap['now'] is not null and baz.StringDateMap['big bang'] < baz.StringDateMap['now']")
-					.List();
-			Assert.AreEqual(1, list.Count);
+					"from Foo foo1 left join foo1.TheFoo foo2 left join foo1.TheFoo.TheFoo foo3 where foo1.String is not null").List();
 
-			list = s.CreateQuery("select index(date) from Baz baz join baz.StringDateMap date").List();
-			Console.WriteLine(list);
-			Assert.AreEqual(3, list.Count);
+				s.CreateQuery("select foo.Formula from Foo foo where foo.Formula > 0").List();
 
-			s.CreateQuery(
-				"from foo in class Foo where foo.Integer not between 1 and 5 and foo.String not in ('cde', 'abc') and foo.String is not null and foo.Integer<=3")
-				.List();
+				int len = s.CreateQuery("from Foo as foo join foo.TheFoo as foo2 where foo2.id >'a' or foo2.id <'a'").List().Count;
+				Assert.IsTrue(len == 2);
 
-			s.CreateQuery("from Baz baz inner join baz.CollectionComponent.Nested.Foos foo where foo.String is null").List();
-			if (Dialect.SupportsSubSelects)
-			{
-				s.CreateQuery("from Baz baz inner join baz.FooSet where '1' in (from baz.FooSet foo where foo.String is not null)").
-					List();
-				s.CreateQuery(
-					"from Baz baz where 'a' in elements(baz.CollectionComponent.Nested.Foos) and 1.0 in elements(baz.CollectionComponent.Nested.Floats)")
-					.List();
-				s.CreateQuery(
-					"from Baz baz where 'b' in elements(baz.CollectionComponent.Nested.Foos) and 1.0 in elements(baz.CollectionComponent.Nested.Floats)")
-					.List();
+				s.Delete("from Holder");
+				txn.Commit();
 			}
 
-			s.CreateQuery("from Foo foo join foo.TheFoo where foo.TheFoo in ('1','2','3')").List();
+			using (var s = OpenSession())
+			using (var txn = s.BeginTransaction())
+			{
+				var baz = (Baz) s.CreateQuery("from Baz baz left outer join fetch baz.ManyToAny").UniqueResult();
+				Assert.IsTrue(NHibernateUtil.IsInitialized(baz.ManyToAny));
+				Assert.IsTrue(baz.ManyToAny.Count == 2);
+				BarProxy barp = (BarProxy) baz.ManyToAny[0];
+				s.CreateQuery("from Baz baz join baz.ManyToAny").List();
+				Assert.IsTrue(s.CreateQuery("select baz from Baz baz join baz.ManyToAny a where index(a) = 0").List().Count == 1);
 
-			//if ( !(dialect is Dialect.HSQLDialect) )
-			s.CreateQuery("from Foo foo left join foo.TheFoo where foo.TheFoo in ('1','2','3')").List();
-			s.CreateQuery("select foo.TheFoo from Foo foo where foo.TheFoo in ('1','2','3')").List();
-			s.CreateQuery("select foo.TheFoo.String from Foo foo where foo.TheFoo in ('1','2','3')").List();
-			s.CreateQuery("select foo.TheFoo.String from Foo foo where foo.TheFoo.String in ('1','2','3')").List();
-			s.CreateQuery("select foo.TheFoo.Long from Foo foo where foo.TheFoo.String in ('1','2','3')").List();
-			s.CreateQuery("select count(*) from Foo foo where foo.TheFoo.String in ('1','2','3') or foo.TheFoo.Long in (1,2,3)").
-				List();
-			s.CreateQuery("select count(*) from Foo foo where foo.TheFoo.String in ('1','2','3') group by foo.TheFoo.Long").List();
+				FooProxy foop = (FooProxy) s.Get(typeof(Foo), foo.Key);
+				Assert.IsTrue(foop == baz.ManyToAny[1]);
 
-			s.CreateQuery("from Foo foo1 left join foo1.TheFoo foo2 left join foo2.TheFoo where foo1.String is not null").List();
-			s.CreateQuery("from Foo foo1 left join foo1.TheFoo.TheFoo where foo1.String is not null").List();
-			s.CreateQuery(
-				"from Foo foo1 left join foo1.TheFoo foo2 left join foo1.TheFoo.TheFoo foo3 where foo1.String is not null").List();
+				barp.Baz = baz;
+				Assert.IsTrue(s.CreateQuery("select bar from Bar bar where bar.Baz.StringDateMap['now'] is not null").List().Count ==
+							  1);
+				Assert.IsTrue(
+					s.CreateQuery(
+						"select bar from Bar bar join bar.Baz b where b.StringDateMap['big bang'] < b.StringDateMap['now'] and b.StringDateMap['now'] is not null")
+						.List().Count == 1);
+				Assert.IsTrue(
+					s.CreateQuery(
+						"select bar from Bar bar where bar.Baz.StringDateMap['big bang'] < bar.Baz.StringDateMap['now'] and bar.Baz.StringDateMap['now'] is not null")
+						.List().Count == 1);
 
-			s.CreateQuery("select foo.Formula from Foo foo where foo.Formula > 0").List();
+				var list = s.CreateQuery("select foo.String, foo.Component, foo.id from Bar foo").List();
+				Assert.IsTrue(((FooComponent) ((object[]) list[0])[1]).Name == "foo");
+				list = s.CreateQuery("select elements(baz.Components) from Baz baz").List();
+				Assert.IsTrue(list.Count == 2);
+				list = s.CreateQuery("select bc.Name from Baz baz join baz.Components bc").List();
+				Assert.IsTrue(list.Count == 2);
+				//list = s.CreateQuery("select bc from Baz baz join baz.components bc").List();
 
-			int len = s.CreateQuery("from Foo as foo join foo.TheFoo as foo2 where foo2.id >'a' or foo2.id <'a'").List().Count;
-			Assert.IsTrue(len == 2);
+				s.CreateQuery("from Foo foo where foo.Integer < 10 order by foo.String").SetMaxResults(12).List();
 
-			s.Delete("from Holder");
-			txn.Commit();
-			s.Close();
-
-			s = OpenSession();
-			txn = s.BeginTransaction();
-			baz = (Baz) s.CreateQuery("from Baz baz left outer join fetch baz.ManyToAny").UniqueResult();
-			Assert.IsTrue(NHibernateUtil.IsInitialized(baz.ManyToAny));
-			Assert.IsTrue(baz.ManyToAny.Count == 2);
-			BarProxy barp = (BarProxy) baz.ManyToAny[0];
-			s.CreateQuery("from Baz baz join baz.ManyToAny").List();
-			Assert.IsTrue(s.CreateQuery("select baz from Baz baz join baz.ManyToAny a where index(a) = 0").List().Count == 1);
-
-			FooProxy foop = (FooProxy) s.Get(typeof(Foo), foo.Key);
-			Assert.IsTrue(foop == baz.ManyToAny[1]);
-
-			barp.Baz = baz;
-			Assert.IsTrue(s.CreateQuery("select bar from Bar bar where bar.Baz.StringDateMap['now'] is not null").List().Count ==
-			              1);
-			Assert.IsTrue(
-				s.CreateQuery(
-					"select bar from Bar bar join bar.Baz b where b.StringDateMap['big bang'] < b.StringDateMap['now'] and b.StringDateMap['now'] is not null")
-					.List().Count == 1);
-			Assert.IsTrue(
-				s.CreateQuery(
-					"select bar from Bar bar where bar.Baz.StringDateMap['big bang'] < bar.Baz.StringDateMap['now'] and bar.Baz.StringDateMap['now'] is not null")
-					.List().Count == 1);
-
-			list = s.CreateQuery("select foo.String, foo.Component, foo.id from Bar foo").List();
-			Assert.IsTrue(((FooComponent) ((object[]) list[0])[1]).Name == "foo");
-			list = s.CreateQuery("select elements(baz.Components) from Baz baz").List();
-			Assert.IsTrue(list.Count == 2);
-			list = s.CreateQuery("select bc.Name from Baz baz join baz.Components bc").List();
-			Assert.IsTrue(list.Count == 2);
-			//list = s.CreateQuery("select bc from Baz baz join baz.components bc").List();
-
-			s.CreateQuery("from Foo foo where foo.Integer < 10 order by foo.String").SetMaxResults(12).List();
-
-			s.Delete(barp);
-			s.Delete(baz);
-			s.Delete(foop.TheFoo);
-			s.Delete(foop);
-			txn.Commit();
-			s.Close();
+				s.Delete(barp);
+				s.Delete(baz);
+				s.Delete(foop.TheFoo);
+				s.Delete(foop);
+				txn.Commit();
+			}
 		}
 
 		[Test]
