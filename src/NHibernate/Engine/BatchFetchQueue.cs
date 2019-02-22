@@ -244,7 +244,7 @@ namespace NHibernate.Engine
 
 			foreach (KeyValuePair<CollectionEntry, IPersistentCollection> me in map)
 			{
-				if (ProcessKeyAndCheckCache(me))
+				if (ProcessKey(me) ?? CheckCacheAndProcessResult())
 				{
 					return keys;
 				}
@@ -299,11 +299,6 @@ namespace NHibernate.Engine
 					collectionKeys.RemoveAt(j);
 				}
 				return false;
-			}
-
-			bool ProcessKeyAndCheckCache(KeyValuePair<CollectionEntry, IPersistentCollection> me)
-			{
-				return ProcessKey(me) ?? CheckCacheAndProcessResult();
 			}
 
 			bool? ProcessKey(KeyValuePair<CollectionEntry, IPersistentCollection> me, bool ignoreCache = false)

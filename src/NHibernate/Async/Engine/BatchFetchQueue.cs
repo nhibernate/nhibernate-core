@@ -74,7 +74,7 @@ namespace NHibernate.Engine
 			foreach (KeyValuePair<CollectionEntry, IPersistentCollection> me in map)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				if (await (ProcessKeyAndCheckCacheAsync(me)).ConfigureAwait(false))
+				if (ProcessKey(me) ?? await (CheckCacheAndProcessResultAsync()).ConfigureAwait(false))
 				{
 					return keys;
 				}
@@ -130,11 +130,6 @@ namespace NHibernate.Engine
 					collectionKeys.RemoveAt(j);
 				}
 				return false;
-			}
-
-			async Task<bool> ProcessKeyAndCheckCacheAsync(KeyValuePair<CollectionEntry, IPersistentCollection> me)
-			{
-				return ProcessKey(me) ?? await (CheckCacheAndProcessResultAsync()).ConfigureAwait(false);
 			}
 
 			bool? ProcessKey(KeyValuePair<CollectionEntry, IPersistentCollection> me, bool ignoreCache = false)
