@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Event;
 using NHibernate.Hql;
 using NHibernate.Linq;
@@ -158,11 +160,20 @@ namespace NHibernate.Engine.Query
 				queryParameters.LogParameters(session.Factory);
 			}
 
-			//TODO: FIXME AsyncGenerator throws for this code..
-			foreach (var translator in Translators)
-			foreach (object obj in translator.GetEnumerable(queryParameters, session))
+			if (Translators.Length == 1)
+				return Translators[0].GetEnumerable(queryParameters, session);
+
+			return GetEnumerable(queryParameters, session);
+		}
+
+		private IEnumerable<object> GetEnumerable(QueryParameters queryParameters, IEventSource session)
+		{
+			foreach (var t in Translators)
 			{
-				yield return obj;
+				foreach (object obj in t.GetEnumerable(queryParameters, session))
+				{
+					yield return obj;
+				}
 			}
 		}
 

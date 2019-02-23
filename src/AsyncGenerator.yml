@@ -12,6 +12,9 @@
       name: ProcessResults
       containingTypeName: IQueryBatchItem
     - conversion: Ignore
+      name: GetEnumerable
+      containingTypeName: HQLQueryPlan
+    - conversion: Ignore
       name: PostProcessInsert
       containingTypeName: HqlSqlWalker
     - conversion: Ignore
