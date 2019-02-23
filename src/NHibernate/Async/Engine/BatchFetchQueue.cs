@@ -266,7 +266,7 @@ namespace NHibernate.Engine
 			foreach (var key in set)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				if (await (ProcessKeyAsync(key)).ConfigureAwait(false))
+				if (ProcessKey(key) ?? await (CheckCacheAndProcessResultAsync()).ConfigureAwait(false))
 				{
 					return ids;
 				}
@@ -299,7 +299,7 @@ namespace NHibernate.Engine
 				{
 					for (var j = 0; j < entityKeys.Count; j++)
 					{
-						if (await (ProcessKeyAsync(entityKeys[indexes[j]].Key)).ConfigureAwait(false))
+						if (ProcessKey(entityKeys[indexes[j]].Key) == true)
 						{
 							return true;
 						}
@@ -310,7 +310,7 @@ namespace NHibernate.Engine
 					var results = await (AreCachedAsync(entityKeys, indexes, persister, batchableCache, checkCache, cancellationToken)).ConfigureAwait(false);
 					for (var j = 0; j < results.Length; j++)
 					{
-						if (!results[j] && await (ProcessKeyAsync(entityKeys[indexes[j]].Key, true)).ConfigureAwait(false))
+						if (!results[j] && ProcessKey(entityKeys[indexes[j]].Key, true) == true)
 						{
 							return true;
 						}
@@ -324,62 +324,55 @@ namespace NHibernate.Engine
 				return false;
 			}
 
-			Task<bool> ProcessKeyAsync(EntityKey key, bool ignoreCache = false)
+			bool? ProcessKey(EntityKey key, bool ignoreCache = false)
 			{
-				try
+				//TODO: this needn't exclude subclasses...
+				if (checkForEnd && (index == set.Count || index >= idIndex.Value + batchSize))
 				{
-					//TODO: this needn't exclude subclasses...
-					if (checkForEnd && (index == set.Count || index >= idIndex.Value + batchSize))
-					{
-						return Task.FromResult<bool>(true);
-					}
-					if (persister.IdentifierType.IsEqual(id, key.Identifier))
-					{
-						idIndex = index;
-					}
-					else if (!checkCache || batchableCache == null)
-					{
-						if (index < set.Count && (!idIndex.HasValue || index < idIndex.Value))
-						{
-							entityKeys.Add(new KeyValuePair<EntityKey, int>(key, index));
-							return Task.FromResult<bool>(false);
-						}
-
-						// No need to check "!checkCache || !IsCached(key, persister)": "batchableCache == null"
-						// already means there is no cache, so IsCached can only yield false. (This method is now
-						// removed.)
-						ids[i++] = key.Identifier;
-					}
-					else if (ignoreCache)
-					{
-						ids[i++] = key.Identifier;
-					}
-					else
+					return true;
+				}
+				if (persister.IdentifierType.IsEqual(id, key.Identifier))
+				{
+					idIndex = index;
+				}
+				else if (!checkCache || batchableCache == null)
+				{
+					if (index < set.Count && (!idIndex.HasValue || index < idIndex.Value))
 					{
 						entityKeys.Add(new KeyValuePair<EntityKey, int>(key, index));
-						// Check the cache only when we have collected as many keys as are needed to fill the batch,
-						// that are after the demanded key.
-						if (!idIndex.HasValue || index < idIndex.Value + batchSize)
-						{
-							return Task.FromResult<bool>(false);
-						}
-						return CheckCacheAndProcessResultAsync();
+						return false;
 					}
-					if (i == batchSize)
-					{
-						i = 1; // End of array, start filling again from start
-						if (index == set.Count || idIndex.HasValue)
-						{
-							checkForEnd = true;
-							return Task.FromResult<bool>(index == set.Count || index >= idIndex.Value + batchSize);
-						}
-					}
-					return Task.FromResult<bool>(false);
+
+					// No need to check "!checkCache || !IsCached(key, persister)": "batchableCache == null"
+					// already means there is no cache, so IsCached can only yield false. (This method is now
+					// removed.)
+					ids[i++] = key.Identifier;
 				}
-				catch (Exception ex)
+				else if (ignoreCache)
 				{
-					return Task.FromException<bool>(ex);
+					ids[i++] = key.Identifier;
 				}
+				else
+				{
+					entityKeys.Add(new KeyValuePair<EntityKey, int>(key, index));
+					// Check the cache only when we have collected as many keys as are needed to fill the batch,
+					// that are after the demanded key.
+					if (!idIndex.HasValue || index < idIndex.Value + batchSize)
+					{
+						return false;
+					}
+					return null;
+				}
+				if (i == batchSize)
+				{
+					i = 1; // End of array, start filling again from start
+					if (index == set.Count || idIndex.HasValue)
+					{
+						checkForEnd = true;
+						return index == set.Count || index >= idIndex.Value + batchSize;
+					}
+				}
+				return false;
 			}
 		}
 

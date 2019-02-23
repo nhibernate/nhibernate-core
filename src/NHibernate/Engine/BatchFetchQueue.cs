@@ -427,7 +427,7 @@ namespace NHibernate.Engine
 
 			foreach (var key in set)
 			{
-				if (ProcessKey(key))
+				if (ProcessKey(key) ?? CheckCacheAndProcessResult())
 				{
 					return ids;
 				}
@@ -459,7 +459,7 @@ namespace NHibernate.Engine
 				{
 					for (var j = 0; j < entityKeys.Count; j++)
 					{
-						if (ProcessKey(entityKeys[indexes[j]].Key))
+						if (ProcessKey(entityKeys[indexes[j]].Key) == true)
 						{
 							return true;
 						}
@@ -470,7 +470,7 @@ namespace NHibernate.Engine
 					var results = AreCached(entityKeys, indexes, persister, batchableCache, checkCache);
 					for (var j = 0; j < results.Length; j++)
 					{
-						if (!results[j] && ProcessKey(entityKeys[indexes[j]].Key, true))
+						if (!results[j] && ProcessKey(entityKeys[indexes[j]].Key, true) == true)
 						{
 							return true;
 						}
@@ -484,7 +484,7 @@ namespace NHibernate.Engine
 				return false;
 			}
 
-			bool ProcessKey(EntityKey key, bool ignoreCache = false)
+			bool? ProcessKey(EntityKey key, bool ignoreCache = false)
 			{
 				//TODO: this needn't exclude subclasses...
 				if (checkForEnd && (index == set.Count || index >= idIndex.Value + batchSize))
@@ -521,7 +521,7 @@ namespace NHibernate.Engine
 					{
 						return false;
 					}
-					return CheckCacheAndProcessResult();
+					return null;
 				}
 				if (i == batchSize)
 				{
