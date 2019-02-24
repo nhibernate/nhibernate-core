@@ -587,7 +587,7 @@ namespace NHibernate.Impl
 
 							rowCount++;
 							object result = translator.Loader.GetRowFromResultSet(
-								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true,
+								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true, null, null,
 								(persister, data) => cacheBatcher.AddToBatch(persister, data));
 							tempResults.Add(result);
 

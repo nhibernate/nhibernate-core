@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Engine;
+using NHibernate.Persister.Collection;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -330,39 +331,52 @@ namespace NHibernate.Cache
 					var returnType = returnTypes[0];
 
 					// Skip first element, it is the timestamp
-					var rows = new List<object>(cacheable.Count - 1);
 					for (var i = 1; i < cacheable.Count; i++)
 					{
-						rows.Add(cacheable[i]);
+						returnType.BeforeAssemble(cacheable[i], session);
 					}
 
-					foreach (var row in rows)
+					for (var i = 1; i < cacheable.Count; i++)
 					{
-						returnType.BeforeAssemble(row, session);
-					}
-
-					foreach (var row in rows)
-					{
-						result.Add(returnType.Assemble(row, session, null));
+						result.Add(returnType.Assemble(cacheable[i], session, null));
 					}
 				}
 				else
 				{
+					var collectionIndexes = new Dictionary<int, ICollectionPersister>();
+					var nonCollectionTypeIndexes = new List<int>();
+					for (var i = 0; i < returnTypes.Length; i++)
+					{
+						if (returnTypes[i] is CollectionType collectionType)
+						{
+							collectionIndexes.Add(i, session.Factory.GetCollectionPersister(collectionType.Role));
+						}
+						else
+						{
+							nonCollectionTypeIndexes.Add(i);
+						}
+					}
+
 					// Skip first element, it is the timestamp
-					var rows = new List<object[]>(cacheable.Count - 1);
 					for (var i = 1; i < cacheable.Count; i++)
 					{
-						rows.Add((object[]) cacheable[i]);
+						TypeHelper.BeforeAssemble((object[]) cacheable[i], returnTypes, session);
 					}
 
-					foreach (var row in rows)
+					for (var i = 1; i < cacheable.Count; i++)
 					{
-						TypeHelper.BeforeAssemble(row, returnTypes, session);
+						result.Add(TypeHelper.Assemble((object[]) cacheable[i], returnTypes, nonCollectionTypeIndexes, session));
 					}
 
-					foreach (var row in rows)
+					// Initialization of the fetched collection must be done at the end in order to be able to batch fetch them
+					// from the cache or database. The collections were already created in the previous for statement so we only
+					// have to initialize them.
+					if (collectionIndexes.Count > 0)
 					{
-						result.Add(TypeHelper.Assemble(row, returnTypes, session, null));
+						for (var i = 1; i < cacheable.Count; i++)
+						{
+							TypeHelper.InitializeCollections((object[]) cacheable[i], (object[]) result[i - 1], collectionIndexes, session);
+						}
 					}
 				}
 

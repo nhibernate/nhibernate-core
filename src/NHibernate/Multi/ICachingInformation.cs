@@ -1,8 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Multi
 {
@@ -44,6 +48,8 @@ namespace NHibernate.Multi
 		/// <summary>
 		/// The query result types.
 		/// </summary>
+		// Since 5.3
+		[Obsolete("This property is not used and will be removed in a future version.")]
 		IType[] ResultTypes { get; }
 
 		/// <summary>
@@ -67,5 +73,21 @@ namespace NHibernate.Multi
 		/// </summary>
 		/// <param name="cacheBatcher">A cache batcher.</param>
 		void SetCacheBatcher(CacheBatcher cacheBatcher);
+	}
+
+	internal static class CachingInformationExtensions
+	{
+		// 6.0 TODO: Remove and use CacheTypes instead.
+		public static IType[] GetCacheTypes(this ICachingInformation cachingInformation)
+		{
+			if (cachingInformation is ICachingInformationWithFetches cachingInformationWithFetches)
+			{
+				return cachingInformationWithFetches.CacheTypes;
+			}
+
+#pragma warning disable 618
+			return cachingInformation.ResultTypes;
+#pragma warning restore 618
+		}
 	}
 }

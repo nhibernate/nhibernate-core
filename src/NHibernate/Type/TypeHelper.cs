@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Intercept;
+using NHibernate.Persister.Collection;
 using NHibernate.Properties;
 using NHibernate.Tuple;
 
@@ -78,6 +81,64 @@ namespace NHibernate.Type
 			return assembled;
 		}
 
+		/// <summary>
+		/// Apply the <see cref="ICacheAssembler.Assemble" /> operation across a series of values.
+		/// </summary>
+		/// <param name="row">The cached values.</param>
+		/// <param name="types">The value types.</param>
+		/// <param name="typeIndexes">The indexes of types to assemble.</param>
+		/// <param name="session">The originating session.</param>
+		/// <returns>A new array of assembled values.</returns>
+		internal static object[] Assemble(
+			object[] row,
+			ICacheAssembler[] types,
+			IList<int> typeIndexes,
+			ISessionImplementor session)
+		{
+			var assembled = new object[row.Length];
+			foreach (var i in typeIndexes)
+			{
+				var value = row[i];
+				if (Equals(LazyPropertyInitializer.UnfetchedProperty, value) || Equals(BackrefPropertyAccessor.Unknown, value))
+				{
+					assembled[i] = value;
+				}
+				else
+				{
+					assembled[i] = types[i].Assemble(row[i], session, null);
+				}
+			}
+
+			return assembled;
+		}
+
+		/// <summary>
+		/// Initialize collections from the query cached row and update the assembled row.
+		/// </summary>
+		/// <param name="cacheRow">The cached values.</param>
+		/// <param name="assembleRow">The assembled values to update.</param>
+		/// <param name="collectionIndexes">The dictionary containing collection persisters and their indexes in the <paramref name="cacheRow"/> parameter as key.</param>
+		/// <param name="session">The originating session.</param>
+		internal static void InitializeCollections(
+			object[] cacheRow,
+			object[] assembleRow,
+			IDictionary<int, ICollectionPersister> collectionIndexes,
+			ISessionImplementor session)
+		{
+			foreach (var pair in collectionIndexes)
+			{
+				var value = cacheRow[pair.Key];
+				if (value == null)
+				{
+					continue;
+				}
+
+				var collection = session.PersistenceContext.GetCollection(new CollectionKey(pair.Value, value));
+				collection.ForceInitialization();
+				assembleRow[pair.Key] = collection;
+			}
+		}
+
 		/// <summary>Apply the <see cref="ICacheAssembler.Disassemble" /> operation across a series of values.</summary>
 		/// <param name="row">The values</param>
 		/// <param name="types">The value types</param>
@@ -100,7 +161,14 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					disassembled[i] = types[i].Disassemble(row[i], session, owner);
+					if (owner == null && row[i] is IPersistentCollection collection)
+					{
+						disassembled[i] = types[i].Disassemble(row[i], session, collection.Owner);
+					}
+					else
+					{
+						disassembled[i] = types[i].Disassemble(row[i], session, owner);
+					}
 				}
 			}
 			return disassembled;
