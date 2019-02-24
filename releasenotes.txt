@@ -1,3 +1,33 @@
+Build 5.2.4
+=============================
+
+Release notes - NHibernate - Version 5.2.4
+
+4 issues were resolved in this release. The dialect change has the side effect of
+re-enabling a hack used by NHibernate.Spatial, allowing Spatial users to upgrade
+to NHibernate 5.2.x. See NHibernate.Spatial#104.
+
+    ##### Possible Breaking Changes #####
+        * Using DML on an entity collection was applying the changes without
+          filtering according to the entity. It will now throw a
+          NotSupportedException.
+
+** Bug
+
+   * #2020 Throw for DML on filter
+   * #2011 Use a statically resolved dialect when building the session factory
+
+** Improvement
+
+   * #1950 Caching of Property Dialect in class Configuration.Mapping
+
+** Task
+
+   * #2030 Release 5.2.4
+
+As part of releasing 5.2.4, a missing 5.2.0 possible breaking change has been added about
+property-ref on null values. See 5.2.0 possible breaking changes.
+
 Build 5.2.3
 =============================
 
@@ -74,6 +104,9 @@ Release notes - NHibernate - Version 5.2.0
           IDictionary is no more supported.
         * Querying a dynamic entity as a Hashtable instead of an IDictionary is no more
           supported.
+        * A collection mapped with a `property-ref` will no more support being accessed
+          when the referenced property is null. It will throw. Previously, the collection
+          was not throwing but was always loaded empty.
         * With PostgreSQL, a HQL query using the bitwise xor operator "^" or "bxor"
           was exponentiating the arguments instead. It will now correctly apply the xor
           operator. (# operator in PostgreSQL SQL.)
