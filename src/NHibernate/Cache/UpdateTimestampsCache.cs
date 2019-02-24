@@ -20,20 +20,30 @@ namespace NHibernate.Cache
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(UpdateTimestampsCache));
 		private readonly CacheBase _updateTimestamps;
 
-		private readonly string regionName = typeof(UpdateTimestampsCache).Name;
-
 		public virtual void Clear()
 		{
 			_updateTimestamps.Clear();
 		}
 
+		// Since v5.3
+		[Obsolete("Please use overload with a CacheBase parameter.")]
 		public UpdateTimestampsCache(Settings settings, IDictionary<string, string> props)
+			: this(
+				CacheFactory.BuildCacheBase(
+					settings.GetFullCacheRegionName(nameof(UpdateTimestampsCache)),
+					settings,
+					props))
 		{
-			var prefix = settings.CacheRegionPrefix;
-			regionName = prefix == null ? regionName : prefix + '.' + regionName;
-			log.Info("starting update timestamps cache at region: {0}", regionName);
-			var updateTimestamps = settings.CacheProvider.BuildCache(regionName, props);
-			_updateTimestamps = updateTimestamps as CacheBase ?? new ObsoleteCacheWrapper(updateTimestamps);
+		}
+
+		/// <summary>
+		/// Build the update timestamps cache.
+		/// </summary>x
+		/// <param name="cache">The <see cref="ICache" /> to use.</param>
+		public UpdateTimestampsCache(CacheBase cache)
+		{
+			log.Info("starting update timestamps cache at region: {0}", cache.RegionName);
+			_updateTimestamps = cache;
 		}
 
 		//Since v5.1
@@ -145,16 +155,12 @@ namespace NHibernate.Cache
 			return results;
 		}
 
+		// Since v5.3
+		[Obsolete("This method has no usages anymore")]
 		public virtual void Destroy()
 		{
-			try
-			{
-				_updateTimestamps.Destroy();
-			}
-			catch (Exception e)
-			{
-				log.Warn(e, "could not destroy UpdateTimestamps cache");
-			}
+			// The cache is externally provided and may be shared. Destroying the cache is
+			// not the responsibility of this class.
 		}
 
 		private bool IsOutdated(long? lastUpdate, long timestamp)

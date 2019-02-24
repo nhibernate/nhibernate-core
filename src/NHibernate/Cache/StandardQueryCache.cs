@@ -20,32 +20,48 @@ namespace NHibernate.Cache
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof (StandardQueryCache));
 		private readonly string _regionName;
 		private readonly UpdateTimestampsCache _updateTimestampsCache;
-		// 6.0 TODO: remove
 		private readonly CacheBase _cache;
 
-		public StandardQueryCache(Settings settings, IDictionary<string, string> props, UpdateTimestampsCache updateTimestampsCache, string regionName)
+		// Since v5.3
+		[Obsolete("Please use overload with a CacheBase parameter.")]
+		public StandardQueryCache(
+			Settings settings,
+			IDictionary<string, string> props,
+			UpdateTimestampsCache updateTimestampsCache,
+			string regionName)
+			: this(
+				updateTimestampsCache,
+				CacheFactory.BuildCacheBase(
+					settings.GetFullCacheRegionName(regionName ?? typeof(StandardQueryCache).FullName),
+					settings,
+					props))
 		{
-			if (regionName == null)
-				regionName = typeof(StandardQueryCache).FullName;
+		}
 
-			var prefix = settings.CacheRegionPrefix;
-			if (!string.IsNullOrEmpty(prefix))
-				regionName = prefix + '.' + regionName;
+		/// <summary>
+		/// Build a query cache.
+		/// </summary>
+		/// <param name="updateTimestampsCache">The cache of updates timestamps.</param>
+		/// <param name="regionCache">The <see cref="ICache" /> to use for the region.</param>
+		public StandardQueryCache(
+			UpdateTimestampsCache updateTimestampsCache,
+			CacheBase regionCache)
+		{
+			if (regionCache == null)
+				throw new ArgumentNullException(nameof(regionCache));
 
-			Log.Info("starting query cache at region: {0}", regionName);
+			_regionName = regionCache.RegionName;
+			Log.Info("starting query cache at region: {0}", _regionName);
 
-			Cache = settings.CacheProvider.BuildCache(regionName, props);
-			_cache = Cache as CacheBase ?? new ObsoleteCacheWrapper(Cache);
-
+			_cache = regionCache;
 			_updateTimestampsCache = updateTimestampsCache;
-			_regionName = regionName;
 		}
 
 		#region IQueryCache Members
 
 		// 6.0 TODO: type as CacheBase instead
 #pragma warning disable 618
-		public ICache Cache { get; }
+		public ICache Cache => _cache;
 #pragma warning restore 618
 
 		public string RegionName
@@ -265,14 +281,8 @@ namespace NHibernate.Cache
 
 		public void Destroy()
 		{
-			try
-			{
-				Cache.Destroy();
-			}
-			catch (Exception e)
-			{
-				Log.Warn(e, "could not destroy query cache: {0}", _regionName);
-			}
+			// The cache is externally provided and may be shared. Destroying the cache is
+			// not the responsibility of this class.
 		}
 
 		#endregion
