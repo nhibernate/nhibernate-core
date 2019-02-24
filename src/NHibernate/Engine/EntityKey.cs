@@ -6,14 +6,18 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Engine
 {
-	//TODO 6.0: Remove IDeserializationCallback interface
 	/// <summary>
 	/// A globally unique identifier of an instance, consisting of the user-visible identifier
 	/// and the identifier space (eg. tablename)
 	/// </summary>
 	[Serializable]
-	public sealed class EntityKey : IDeserializationCallback, ISerializable, IEquatable<EntityKey>
+	public readonly struct EntityKey : ISerializable, IEquatable<EntityKey>
 	{
+		public static EntityKey Empty { get; } = new EntityKey();
+
+		public bool IsEmpty => identifier == null;
+		public bool IsNotEmpty => !IsEmpty;
+
 		private readonly object identifier;
 		private readonly IEntityPersister _persister;
 		// hashcode may vary among processes, they cannot be stored and have to be re-computed after deserialization
@@ -30,8 +34,16 @@ namespace NHibernate.Engine
 		private EntityKey(SerializationInfo info, StreamingContext context)
 		{
 			identifier = info.GetValue(nameof(Identifier), typeof(object));
+			if (identifier == null)
+			{
+				_hashCode = 0;
+				_persister = null;
+				return;
+			}
+
 			var factory = (ISessionFactoryImplementor) info.GetValue(nameof(_persister.Factory), typeof(ISessionFactoryImplementor));
-			var entityName = (string) info.GetValue(nameof(EntityName), typeof(string));
+			var entityName = info.GetString(nameof(EntityName));
+
 			_persister = factory.GetEntityPersister(entityName);
 			_hashCode = GenerateHashCode(_persister, identifier);
 		}
@@ -54,10 +66,8 @@ namespace NHibernate.Engine
 
 		public bool Equals(EntityKey other)
 		{
-			if (other == null)
-			{
-				return false;
-			}
+			if (other.IsEmpty)
+				return IsEmpty;
 
 			return
 				other.RootEntityName.Equals(RootEntityName)
@@ -82,19 +92,20 @@ namespace NHibernate.Engine
 
 		public override string ToString()
 		{
-			return "EntityKey" + MessageHelper.InfoString(_persister, Identifier, _persister.Factory);
+			return IsEmpty
+				? Util.StringHelper.NullObject 
+				: "EntityKey" + MessageHelper.InfoString(_persister, Identifier, _persister?.Factory);
 		}
 
 		[SecurityCritical]
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			info.AddValue(nameof(Identifier), identifier);
+			if (identifier == null)
+				return;
+
 			info.AddValue(nameof(_persister.Factory), _persister.Factory);
 			info.AddValue(nameof(EntityName), EntityName);
 		}
-
-		[Obsolete("IDeserializationCallback interface has no usages and will be removed in a future version")]
-		public void OnDeserialization(object sender)
-		{}
 	}
 }

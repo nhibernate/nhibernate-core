@@ -150,7 +150,7 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-				key = null;
+				key = EntityKey.Empty;
 			}
 
 			if (InvokeSaveLifecycle(entity, persister, source))
@@ -184,7 +184,7 @@ namespace NHibernate.Event.Default
 			cancellationToken.ThrowIfCancellationRequested();
 			Validate(entity, persister, source);
 
-			object id = key == null ? null : key.Identifier;
+			object id = key.IsEmpty ? null : key.Identifier;
 
 			bool shouldDelayIdentityInserts = !requiresImmediateIdAccess;
 

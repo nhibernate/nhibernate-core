@@ -355,7 +355,7 @@ namespace NHibernate.Engine
 		/// <item><description>an entry of NO_ROW here is interpreted as an exception</description></item>
 		/// </list>
 		/// </remarks>
-		public object[] GetCachedDatabaseSnapshot(EntityKey key)
+		public object[] GetCachedDatabaseSnapshot(in EntityKey key)
 		{
 			object snapshot;
 			if (!entitySnapshotsByKey.TryGetValue(key, out snapshot))
@@ -418,7 +418,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Add a canonical mapping from entity key to entity instance</summary>
-		public void AddEntity(EntityKey key, object entity)
+		public void AddEntity(in EntityKey key, object entity)
 		{
 			entitiesByKey[key] = entity;
 			BatchFetchQueue.RemoveBatchLoadableEntityKey(key);
@@ -427,7 +427,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Get the entity instance associated with the given <tt>EntityKey</tt>
 		/// </summary>
-		public object GetEntity(EntityKey key)
+		public object GetEntity(in EntityKey key)
 		{
 			object result;
 			entitiesByKey.TryGetValue(key, out result);
@@ -435,7 +435,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Is there an entity with the given key in the persistence context</summary>
-		public bool ContainsEntity(EntityKey key)
+		public bool ContainsEntity(in EntityKey key)
 		{
 			return entitiesByKey.ContainsKey(key);
 		}
@@ -445,7 +445,7 @@ namespace NHibernate.Engine
 		/// up other state associated with the entity, all except
 		/// for the <tt>EntityEntry</tt>
 		/// </summary>
-		public object RemoveEntity(EntityKey key)
+		public object RemoveEntity(in EntityKey key)
 		{
 			object tempObject = entitiesByKey[key];
 			entitiesByKey.Remove(key);
@@ -525,7 +525,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Adds an entity to the internal caches.</summary>
-		public EntityEntry AddEntity(object entity, Status status, object[] loadedState, EntityKey entityKey, object version,
+		public EntityEntry AddEntity(object entity, Status status, object[] loadedState, in EntityKey entityKey, object version,
 		                             LockMode lockMode, bool existsInDatabase, IEntityPersister persister,
 		                             bool disableVersionIncrement)
 		{
@@ -712,9 +712,9 @@ namespace NHibernate.Engine
 		/// Attempts to check whether the given key represents an entity already loaded within the
 		/// current session.
 		/// </summary>
-		/// <param name="obj">The entity reference against which to perform the uniqueness check.</param>
 		/// <param name="key">The entity key.</param>
-		public void CheckUniqueness(EntityKey key, object obj)
+		/// <param name="obj">The entity reference against which to perform the uniqueness check.</param>
+		public void CheckUniqueness(in EntityKey key, object obj)
 		{
 			object entity = GetEntity(key);
 			if (entity == obj)
@@ -738,7 +738,7 @@ namespace NHibernate.Engine
 		/// <param name="key">The internal cache key for the proxied entity. </param>
 		/// <param name="obj">(optional) the actual proxied entity instance. </param>
 		/// <returns> An appropriately narrowed instance. </returns>
-		public object NarrowProxy(INHibernateProxy proxy, IEntityPersister persister, EntityKey key, object obj)
+		public object NarrowProxy(INHibernateProxy proxy, IEntityPersister persister, in EntityKey key, object obj)
 		{
 			bool alreadyNarrow = persister.ConcreteProxyClass.IsInstanceOfType(proxy);
 
@@ -782,9 +782,9 @@ namespace NHibernate.Engine
 		/// third argument (the entity associated with the key) if no proxy exists. Init
 		/// the proxy to the target implementation, if necessary.
 		/// </summary>
-		public object ProxyFor(IEntityPersister persister, EntityKey key, object impl)
+		public object ProxyFor(IEntityPersister persister, in EntityKey key, object impl)
 		{
-			if (!persister.HasProxy || key == null)
+			if (!persister.HasProxy || key.IsEmpty)
 				return impl;
 
 			INHibernateProxy proxy;
@@ -1076,7 +1076,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Get an existing proxy by key</summary>
-		public object GetProxy(EntityKey key)
+		public object GetProxy(in EntityKey key)
 		{
 			INHibernateProxy result;
 			if (proxiesByKey.TryGetValue(key, out result))
@@ -1086,13 +1086,13 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Add a proxy to the session cache</summary>
-		public void AddProxy(EntityKey key, INHibernateProxy proxy)
+		public void AddProxy(in EntityKey key, INHibernateProxy proxy)
 		{
 			proxiesByKey[key] = proxy;
 		}
 
 		/// <summary> Remove a proxy from the session cache</summary>
-		public object RemoveProxy(EntityKey key)
+		public object RemoveProxy(in EntityKey key)
 		{
 			if (batchFetchQueue != null)
 			{
@@ -1295,13 +1295,13 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Record the fact that the association belonging to the keyed entity is null.
 		/// </summary>
-		public void AddNullProperty(EntityKey ownerKey, string propertyName)
+		public void AddNullProperty(in EntityKey ownerKey, string propertyName)
 		{
 			nullAssociations.Add(new AssociationKey(ownerKey, propertyName));
 		}
 
 		/// <summary> Is the association property belonging to the keyed entity null?</summary>
-		public bool IsPropertyNull(EntityKey ownerKey, string propertyName)
+		public bool IsPropertyNull(in EntityKey ownerKey, string propertyName)
 		{
 			return nullAssociations.Contains(new AssociationKey(ownerKey, propertyName));
 		}
@@ -1382,7 +1382,7 @@ namespace NHibernate.Engine
 			return isReadOnly;
 		}
 		
-		public void ReplaceDelayedEntityIdentityInsertKeys(EntityKey oldKey, object generatedId)
+		public void ReplaceDelayedEntityIdentityInsertKeys(in EntityKey oldKey, object generatedId)
 		{
 			object tempObject = entitiesByKey[oldKey];
 			entitiesByKey.Remove(oldKey);

@@ -118,7 +118,7 @@ namespace NHibernate.Loader
 			try
 			{
 				result =
-					await (GetRowFromResultSetAsync(resultSet, session, queryParameters, GetLockModes(queryParameters.LockModes), null,
+					await (GetRowFromResultSetAsync(resultSet, session, queryParameters, GetLockModes(queryParameters.LockModes), EntityKey.Empty,
 										hydratedObjects, new EntityKey[entitySpan], returnProxies, (persister, data) => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
 			}
 			catch (OperationCanceledException) { throw; }
@@ -185,7 +185,7 @@ namespace NHibernate.Loader
 				{
 					object entity = row[i];
 					var key = keys[i];
-					if (entity == null && key != null && IsChildFetchEntity(i))
+					if (entity == null && key.IsNotEmpty && IsChildFetchEntity(i))
 					{
 						// The entity was missing in the session, fallback on internal load (which will just yield a
 						// proxy if the persister supports it).
@@ -564,7 +564,7 @@ namespace NHibernate.Loader
 				}
 			}
 
-			return resultId == null ? null : session.GenerateEntityKey(resultId, persister);
+			return resultId == null ? EntityKey.Empty : session.GenerateEntityKey(resultId, persister);
 		}
 
 		/// <summary>
@@ -620,7 +620,7 @@ namespace NHibernate.Loader
 				object obj = null;
 				EntityKey key = keys[i];
 
-				if (key == null)
+				if (key.IsEmpty)
 				{
 					// do nothing
 					/* TODO NH-1001 : if (persisters[i]...EntityType) is an OneToMany or a ManyToOne and
@@ -756,7 +756,7 @@ namespace NHibernate.Loader
 
 			string instanceClass = await (GetInstanceClassAsync(dr, i, persister, key.Identifier, session, cancellationToken)).ConfigureAwait(false);
 
-			if (optionalObjectKey != null && key.Equals(optionalObjectKey))
+			if (optionalObjectKey.IsNotEmpty && key.Equals(optionalObjectKey))
 			{
 				// its the given optional object
 				obj = optionalObject;

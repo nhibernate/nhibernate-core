@@ -113,7 +113,7 @@ namespace NHibernate.Engine
 		/// <item><description>an entry of NO_ROW here is interpreted as an exception</description></item>
 		/// </list>
 		/// </remarks>
-		object[] GetCachedDatabaseSnapshot(EntityKey key);
+		object[] GetCachedDatabaseSnapshot(in EntityKey key);
 
 		/// <summary>
 		/// Get the values of the natural id fields as known to the underlying
@@ -123,22 +123,22 @@ namespace NHibernate.Engine
 		object[] GetNaturalIdSnapshot(object id, IEntityPersister persister);
 
 		/// <summary> Add a canonical mapping from entity key to entity instance</summary>
-		void AddEntity(EntityKey key, object entity);
+		void AddEntity(in EntityKey key, object entity);
 
 		/// <summary>
 		/// Get the entity instance associated with the given <tt>EntityKey</tt>
 		/// </summary>
-		object GetEntity(EntityKey key);
+		object GetEntity(in EntityKey key);
 
 		/// <summary> Is there an entity with the given key in the persistence context</summary>
-		bool ContainsEntity(EntityKey key);
+		bool ContainsEntity(in EntityKey key);
 
 		/// <summary>
 		/// Remove an entity from the session cache, also clear
 		/// up other state associated with the entity, all except
 		/// for the <tt>EntityEntry</tt>
 		/// </summary>
-		object RemoveEntity(EntityKey key);
+		object RemoveEntity(in EntityKey key);
 
 		/// <summary> Get an entity cached by unique key</summary>
 		object GetEntity(EntityUniqueKey euk);
@@ -216,9 +216,9 @@ namespace NHibernate.Engine
 		/// Attempts to check whether the given key represents an entity already loaded within the
 		/// current session.
 		/// </summary>
-		/// <param name="obj">The entity reference against which to perform the uniqueness check.</param>
 		/// <param name="key">The entity key.</param>
-		void CheckUniqueness(EntityKey key, object obj);
+		/// <param name="obj">The entity reference against which to perform the uniqueness check.</param>
+		void CheckUniqueness(in EntityKey key, object obj);
 
 		/// <summary>
 		/// If the existing proxy is insufficiently "narrow" (derived), instantiate a new proxy
@@ -231,14 +231,14 @@ namespace NHibernate.Engine
 		/// <param name="key">The internal cache key for the proxied entity. </param>
 		/// <param name="obj">(optional) the actual proxied entity instance. </param>
 		/// <returns> An appropriately narrowed instance. </returns>
-		object NarrowProxy(INHibernateProxy proxy, IEntityPersister persister, EntityKey key, object obj);
+		object NarrowProxy(INHibernateProxy proxy, IEntityPersister persister, in EntityKey key, object obj);
 
 		/// <summary>
 		/// Return the existing proxy associated with the given <tt>EntityKey</tt>, or the
 		/// third argument (the entity associated with the key) if no proxy exists. Init
 		/// the proxy to the target implementation, if necessary.
 		/// </summary>
-		object ProxyFor(IEntityPersister persister, EntityKey key, object impl);
+		object ProxyFor(IEntityPersister persister,in EntityKey key, object impl);
 
 		/// <summary>
 		/// Return the existing proxy associated with the given <tt>EntityKey</tt>, or the
@@ -326,13 +326,13 @@ namespace NHibernate.Engine
 		CollectionEntry GetCollectionEntryOrNull(object collection);
 
 		/// <summary> Get an existing proxy by key</summary>
-		object GetProxy(EntityKey key);
+		object GetProxy(in EntityKey key);
 
 		/// <summary> Add a proxy to the session cache</summary>
-		void AddProxy(EntityKey key, INHibernateProxy proxy);
+		void AddProxy(in EntityKey key, INHibernateProxy proxy);
 
 		/// <summary> Remove a proxy from the session cache</summary>
-		object RemoveProxy(EntityKey key);
+		object RemoveProxy(in EntityKey key);
 
 		/// <summary> Called before cascading</summary>
 		int IncrementCascadeLevel();
@@ -360,10 +360,10 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Record the fact that the association belonging to the keyed entity is null.
 		/// </summary>
-		void AddNullProperty(EntityKey ownerKey, string propertyName);
+		void AddNullProperty(in EntityKey ownerKey, string propertyName);
 
 		/// <summary> Is the association property belonging to the keyed entity null?</summary>
-		bool IsPropertyNull(EntityKey ownerKey, string propertyName);
+		bool IsPropertyNull(in EntityKey ownerKey, string propertyName);
 
 		/// <summary>
 		/// Change the read-only status of an entity (or proxy).
@@ -398,7 +398,7 @@ namespace NHibernate.Engine
 		/// <seealso cref="IPersistenceContext.SetReadOnly(object, bool)" />
 		bool IsReadOnly(object entityOrProxy);
 		
-		void ReplaceDelayedEntityIdentityInsertKeys(EntityKey oldKey, object generatedId);
+		void ReplaceDelayedEntityIdentityInsertKeys(in EntityKey oldKey, object generatedId);
 
 		/// <summary>Is in a two-phase load? </summary>
 		bool IsLoadFinished { get; }
@@ -425,7 +425,7 @@ namespace NHibernate.Engine
 			object entity,
 			Status status,
 			object[] loadedState,
-			EntityKey entityKey,
+			in EntityKey entityKey,
 			object version,
 			LockMode lockMode,
 			bool existsInDatabase,
