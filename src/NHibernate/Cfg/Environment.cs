@@ -383,6 +383,8 @@ namespace NHibernate.Cfg
 		/// <remarks>
 		/// This is the replacement for hibernate.properties
 		/// </remarks>
+		//Since v5.3
+		[Obsolete("This property is not used and will be removed in a future version.")]
 		public static IDictionary<string, string> Properties
 		{
 			get { return new Dictionary<string, string>(GlobalProperties); }
