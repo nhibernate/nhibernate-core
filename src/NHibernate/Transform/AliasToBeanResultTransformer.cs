@@ -152,6 +152,10 @@ namespace NHibernate.Transform
 			var type = GetMemberType(memberInfo);
 			if (type == typeof(object))
 				return expr;
+			if (!type.IsClass)
+			{
+				expr = Expression.Coalesce(expr, Expression.Default(type));
+			}
 			return Expression.Convert(expr, type);
 		}
 
