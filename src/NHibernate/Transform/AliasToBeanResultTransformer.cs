@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
 using NHibernate.Util;
@@ -12,6 +13,7 @@ namespace NHibernate.Transform
 	/// Result transformer that allows to transform a result to
 	/// a user specified class which will be populated via setter
 	/// methods or fields matching the alias names.
+	/// NOTE: This transformer can't be reused by different queries as it caches query aliases on first transformation
 	/// </summary>
 	/// <example>
 	/// <code>
@@ -36,31 +38,23 @@ namespace NHibernate.Transform
 	public class AliasToBeanResultTransformer : AliasedTupleSubsetResultTransformer, IEquatable<AliasToBeanResultTransformer>
 	{
 		private readonly System.Type _resultClass;
-		private readonly ConstructorInfo _beanConstructor;
 		private readonly Dictionary<string, NamedMember<FieldInfo>> _fieldsByNameCaseSensitive;
 		private readonly Dictionary<string, NamedMember<FieldInfo>> _fieldsByNameCaseInsensitive;
 		private readonly Dictionary<string, NamedMember<PropertyInfo>> _propertiesByNameCaseSensitive;
 		private readonly Dictionary<string, NamedMember<PropertyInfo>> _propertiesByNameCaseInsensitive;
 
+		[NonSerialized]
+		Func<object[], object> _objectIniter;
+
+		public System.Type ResultClass => _resultClass;
+
 		public AliasToBeanResultTransformer(System.Type resultClass)
 		{
 			_resultClass = resultClass ?? throw new ArgumentNullException("resultClass");
 
-			const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-			_beanConstructor = resultClass.GetConstructor(bindingFlags, null, System.Type.EmptyTypes, null);
-
-			// if resultClass is a ValueType (struct), GetConstructor will return null... 
-			// in that case, we'll use Activator.CreateInstance instead of the ConstructorInfo to create instances
-			if (_beanConstructor == null && resultClass.IsClass)
-			{
-				throw new ArgumentException(
-					"The target class of a AliasToBeanResultTransformer need a parameter-less constructor",
-					nameof(resultClass));
-			}
-
 			var fields = new List<RankedMember<FieldInfo>>();
 			var properties = new List<RankedMember<PropertyInfo>>();
-			FetchFieldsAndProperties(fields, properties);
+			FetchFieldsAndProperties(resultClass, fields, properties);
 
 			_fieldsByNameCaseSensitive = GetMapByName(fields, StringComparer.Ordinal);
 			_fieldsByNameCaseInsensitive = GetMapByName(fields, StringComparer.OrdinalIgnoreCase);
@@ -73,35 +67,10 @@ namespace NHibernate.Transform
 			return false;
 		}
 
-		public override object TransformTuple(object[] tuple, String[] aliases)
+		public override object TransformTuple(object[] tuple, string[] aliases)
 		{
-			if (aliases == null)
-			{
-				throw new ArgumentNullException("aliases");
-			}
-			object result;
-
-			try
-			{
-				result = _resultClass.IsClass
-							? _beanConstructor.Invoke(null)
-							: Activator.CreateInstance(_resultClass, true);
-
-				for (int i = 0; i < aliases.Length; i++)
-				{
-					SetProperty(aliases[i], tuple[i], result);
-				}
-			}
-			catch (InstantiationException e)
-			{
-				throw new HibernateException("Could not instantiate result class: " + _resultClass.FullName, e);
-			}
-			catch (MethodAccessException e)
-			{
-				throw new HibernateException("Could not instantiate result class: " + _resultClass.FullName, e);
-			}
-
-			return result;
+			var initer = _objectIniter ?? (_objectIniter = CompileObjectIniter(aliases));
+			return initer(tuple);
 		}
 
 		public override IList TransformList(IList collection)
@@ -111,54 +80,26 @@ namespace NHibernate.Transform
 
 		#region Setter resolution
 
-		/// <summary>
-		/// Set the value of a property or field matching an alias.
-		/// </summary>
-		/// <param name="alias">The alias for which resolving the property or field.</param>
-		/// <param name="value">The value to which the property or field should be set.</param>
-		/// <param name="resultObj">The object on which to set the property or field. It must be of the type for which
-		/// this instance has been built.</param>
-		/// <exception cref="PropertyNotFoundException">Thrown if no matching property or field can be found.</exception>
-		/// <exception cref="AmbiguousMatchException">Thrown if many matching properties or fields are found, having the
-		/// same visibility and inheritance depth.</exception>
-		private void SetProperty(string alias, object value, object resultObj)
+		protected MemberInfo GetMemberInfo(string alias)
 		{
-			if (alias == null)
-				// Grouping properties in criteria are selected without alias, just ignore them.
-				return;
-
-			if (TrySet(alias, value, resultObj, _propertiesByNameCaseSensitive))
-				return;
-			if (TrySet(alias, value, resultObj, _fieldsByNameCaseSensitive))
-				return;
-			if (TrySet(alias, value, resultObj, _propertiesByNameCaseInsensitive))
-				return;
-			if (TrySet(alias, value, resultObj, _fieldsByNameCaseInsensitive))
-				return;
-
-			throw new PropertyNotFoundException(resultObj.GetType(), alias, "setter");
+			return TryGetMemberInfo(alias, _propertiesByNameCaseSensitive)
+				?? TryGetMemberInfo(alias, _fieldsByNameCaseSensitive)
+				?? TryGetMemberInfo(alias, _propertiesByNameCaseInsensitive)
+				?? (MemberInfo) TryGetMemberInfo(alias, _fieldsByNameCaseInsensitive)
+				?? throw new PropertyNotFoundException(_resultClass, alias, "setter");
 		}
 
-		private bool TrySet(string alias, object value, object resultObj, Dictionary<string, NamedMember<FieldInfo>> fieldsMap)
+		private TMemberInfo TryGetMemberInfo<TMemberInfo>(string alias, params Dictionary<string, NamedMember<TMemberInfo>>[] propertiesMaps) where TMemberInfo: MemberInfo
 		{
-			if (fieldsMap.TryGetValue(alias, out var field))
+			foreach (var propertiesMap in propertiesMaps)
 			{
-				CheckMember(field, alias);
-				field.Member.SetValue(resultObj, value);
-				return true;
+				if (propertiesMap.TryGetValue(alias, out var property))
+				{
+					CheckMember(property, alias);
+					return property.Member;
+				}
 			}
-			return false;
-		}
-
-		private bool TrySet(string alias, object value, object resultObj, Dictionary<string, NamedMember<PropertyInfo>> propertiesMap)
-		{
-			if (propertiesMap.TryGetValue(alias, out var property))
-			{
-				CheckMember(property, alias);
-				property.Member.SetValue(resultObj, value);
-				return true;
-			}
-			return false;
+			return null;
 		}
 
 		private void CheckMember<T>(NamedMember<T> member, string alias) where T : MemberInfo
@@ -179,10 +120,74 @@ namespace NHibernate.Transform
 					$"{string.Join(", ", member.AmbiguousMembers.Select(m => m.Name))}");
 		}
 
-		private void FetchFieldsAndProperties(List<RankedMember<FieldInfo>> fields, List<RankedMember<PropertyInfo>> properties)
+		private Func<object[], object> CompileObjectIniter(string[] aliases)
+		{
+			if (aliases == null)
+			{
+				throw new ArgumentNullException("aliases");
+			}
+
+			var bindings = new List<MemberAssignment>(aliases.Length);
+			var tupleParam = Expression.Parameter(typeof(object[]), "tuple");
+			for (int i = 0; i < aliases.Length; i++)
+			{
+				string alias = aliases[i];
+				if (string.IsNullOrEmpty(alias))
+					continue;
+
+				var memberInfo = GetMemberInfo(alias);
+				var valueExpr = Expression.ArrayAccess(tupleParam, Expression.Constant(i));
+				bindings.Add(Expression.Bind(memberInfo, GetTyped(memberInfo, valueExpr)));
+			}
+
+			Expression initExpr = Expression.MemberInit(GetNewExpression(ResultClass), bindings);
+			if (!ResultClass.IsClass)
+				initExpr = Expression.Convert(initExpr, typeof(object));
+
+			return (Func<object[], object>) Expression.Lambda(initExpr, tupleParam).Compile();
+		}
+
+		private static Expression GetTyped(MemberInfo memberInfo, Expression expr)
+		{
+			var type = GetMemberType(memberInfo);
+			if (type == typeof(object))
+				return expr;
+			return Expression.Convert(expr, type);
+		}
+
+		private static System.Type GetMemberType(MemberInfo memberInfo)
+		{
+			if (memberInfo is PropertyInfo prop)
+				return prop.PropertyType;
+
+			if (memberInfo is FieldInfo field)
+				return field.FieldType;
+
+			throw new NotSupportedException($"Member type {memberInfo} is not supported");
+		}
+
+		private static NewExpression GetNewExpression(System.Type resultClass)
+		{
+			if (!resultClass.IsClass)
+				return Expression.New(resultClass);
+
+			const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+			var beanConstructor = resultClass.GetConstructor(bindingFlags, null, System.Type.EmptyTypes, null);
+
+			if (beanConstructor == null)
+			{
+				throw new ArgumentException(
+					"The target class of a AliasToBeanResultTransformer need a parameter-less constructor",
+					nameof(resultClass));
+			}
+
+			return Expression.New(beanConstructor);
+		}
+
+		private static void FetchFieldsAndProperties(System.Type resultClass, List<RankedMember<FieldInfo>> fields, List<RankedMember<PropertyInfo>> properties)
 		{
 			const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-			var currentType = _resultClass;
+			var currentType = resultClass;
 			var rank = 1;
 			// For grasping private members, we need to manually walk the hierarchy.
 			while (currentType != null && currentType != typeof(object))
@@ -201,7 +206,7 @@ namespace NHibernate.Transform
 			}
 		}
 
-		private int GetFieldVisibilityRank(FieldInfo field)
+		private static int GetFieldVisibilityRank(FieldInfo field)
 		{
 			if (field.IsPublic)
 				return 1;
@@ -214,7 +219,7 @@ namespace NHibernate.Transform
 			return 5;
 		}
 
-		private int GetPropertyVisibilityRank(PropertyInfo property)
+		private static int GetPropertyVisibilityRank(PropertyInfo property)
 		{
 			var setter = property.SetMethod;
 			if (setter.IsPublic)
@@ -228,7 +233,7 @@ namespace NHibernate.Transform
 			return 5;
 		}
 
-		private Dictionary<string, NamedMember<T>> GetMapByName<T>(IEnumerable<RankedMember<T>> members, StringComparer comparer) where T : MemberInfo
+		private static Dictionary<string, NamedMember<T>> GetMapByName<T>(IEnumerable<RankedMember<T>> members, StringComparer comparer) where T : MemberInfo
 		{
 			return members
 				.GroupBy(m => m.Member.Name,
@@ -310,6 +315,8 @@ namespace NHibernate.Transform
 			{
 				return true;
 			}
+			if (GetType() != other.GetType())
+				return false;
 			return Equals(other._resultClass, _resultClass);
 		}
 

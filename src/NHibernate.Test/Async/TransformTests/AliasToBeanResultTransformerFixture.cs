@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
 using System.Reflection;
 using NHibernate.Transform;
 using NHibernate.Util;
@@ -225,7 +224,7 @@ namespace NHibernate.Test.TransformTests
 		{
 			using (var s = OpenSession())
 			{
-				var transformer = Transformers.AliasToBean<NewPropertiesSimpleDTO>();
+				var transformer = GetTransformer<NewPropertiesSimpleDTO>();
 				var l = await (s.CreateSQLQuery("select id as ID, Name as NamE from Simple")
 						.SetResultTransformer(transformer)
 						.ListAsync<NewPropertiesSimpleDTO>());
@@ -244,7 +243,7 @@ namespace NHibernate.Test.TransformTests
 		{
 			using (var s = OpenSession())
 			{
-				var transformer = Transformers.AliasToBean<PropertiesInsensitivelyDuplicated>();
+				var transformer = GetTransformer<PropertiesInsensitivelyDuplicated>();
 				Assert.ThrowsAsync<AmbiguousMatchException>(() =>
 				{
 					return s.CreateSQLQuery("select * from Simple")
@@ -268,7 +267,7 @@ namespace NHibernate.Test.TransformTests
 		{
 			using (var s = OpenSession())
 			{
-				transformer = transformer ?? Transformers.AliasToBean<T>();
+				transformer = transformer ?? GetTransformer<T>();
 				var l = await (s.CreateSQLQuery("select * from Simple")
 						.SetResultTransformer(transformer)
 						.ListAsync<T>(cancellationToken));
@@ -285,7 +284,7 @@ namespace NHibernate.Test.TransformTests
 		{
 			using (var s = OpenSession())
 			{
-				var transformer = Transformers.AliasToBean<T>();
+				var transformer = GetTransformer<T>();
 				var l = await (s.CreateSQLQuery(queryString)
 						.SetResultTransformer(transformer)
 						.ListAsync<T>(cancellationToken));
@@ -301,15 +300,20 @@ namespace NHibernate.Test.TransformTests
 		{
 			try
 			{
-				var transformer = Transformers.AliasToBean<T>();
+				var transformer = GetTransformer<T>();
 				var bytes = SerializationHelper.Serialize(transformer);
-				transformer = (IResultTransformer)SerializationHelper.Deserialize(bytes);
+				transformer = (IResultTransformer) SerializationHelper.Deserialize(bytes);
 				return AssertCardinalityNameAndIdAsync<T>(transformer: transformer, cancellationToken: cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
+		}
+
+		protected IResultTransformer GetTransformer<T>()
+		{
+			return Transformers.AliasToBean<T>();
 		}
 	}
 }

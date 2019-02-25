@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Reflection;
 using NHibernate.Transform;
 using NHibernate.Util;
@@ -213,7 +212,7 @@ namespace NHibernate.Test.TransformTests
 		{
 			using (var s = OpenSession())
 			{
-				var transformer = Transformers.AliasToBean<NewPropertiesSimpleDTO>();
+				var transformer = GetTransformer<NewPropertiesSimpleDTO>();
 				var l = s.CreateSQLQuery("select id as ID, Name as NamE from Simple")
 						.SetResultTransformer(transformer)
 						.List<NewPropertiesSimpleDTO>();
@@ -232,7 +231,7 @@ namespace NHibernate.Test.TransformTests
 		{
 			using (var s = OpenSession())
 			{
-				var transformer = Transformers.AliasToBean<PropertiesInsensitivelyDuplicated>();
+				var transformer = GetTransformer<PropertiesInsensitivelyDuplicated>();
 				Assert.Throws<AmbiguousMatchException>(() =>
 				{
 					s.CreateSQLQuery("select * from Simple")
@@ -256,7 +255,7 @@ namespace NHibernate.Test.TransformTests
 		{
 			using (var s = OpenSession())
 			{
-				transformer = transformer ?? Transformers.AliasToBean<T>();
+				transformer = transformer ?? GetTransformer<T>();
 				var l = s.CreateSQLQuery("select * from Simple")
 						.SetResultTransformer(transformer)
 						.List<T>();
@@ -273,7 +272,7 @@ namespace NHibernate.Test.TransformTests
 		{
 			using (var s = OpenSession())
 			{
-				var transformer = Transformers.AliasToBean<T>();
+				var transformer = GetTransformer<T>();
 				var l = s.CreateSQLQuery(queryString)
 						.SetResultTransformer(transformer)
 						.List<T>();
@@ -287,10 +286,15 @@ namespace NHibernate.Test.TransformTests
 
 		private void AssertSerialization<T>()
 		{
-			var transformer = Transformers.AliasToBean<T>();
+			var transformer = GetTransformer<T>();
 			var bytes = SerializationHelper.Serialize(transformer);
-			transformer = (IResultTransformer)SerializationHelper.Deserialize(bytes);
+			transformer = (IResultTransformer) SerializationHelper.Deserialize(bytes);
 			AssertCardinalityNameAndId<T>(transformer: transformer);
+		}
+
+		protected IResultTransformer GetTransformer<T>()
+		{
+			return Transformers.AliasToBean<T>();
 		}
 	}
 }
