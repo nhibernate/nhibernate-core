@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using NHibernate.Transform;
 using NHibernate.Util;
@@ -249,6 +251,70 @@ namespace NHibernate.Test.TransformTests
 			AssertSerialization<PublicInheritedPropertiesSimpleDTO>();
 			AssertSerialization<PrivateInheritedFieldsSimpleDTO>();
 			AssertSerialization<NewPropertiesSimpleDTO>();
+		}
+
+		enum TestEnum
+		{ Value0, Value1 }
+
+		class TestDto
+		{
+			private TestDto()
+			{ }
+
+			public TestDto(bool bogus) { }
+
+			public string StringProp { get; set; }
+			public int IntProp { get; set; }
+			public int IntPropNull { get; set; }
+			public int? IntPropNullNullable { get; set; }
+			public TestEnum EnumProp { get; set; }
+		}
+
+		[Test]
+		public void TupleConversion()
+		{
+			var o = new TestDto(true)
+			{
+				IntProp = 1,
+				IntPropNull = 0,
+				StringProp = "hello",
+				IntPropNullNullable = null,
+				EnumProp = TestEnum.Value1,
+			};
+			string nullMarker = "NULL";
+			var testData = new Dictionary<string, object>
+			{
+				{nameof(o.IntProp), o.IntProp},
+				{nullMarker, decimal.MaxValue},
+				{nameof(o.IntPropNull).ToLowerInvariant(), null},
+				{string.Empty, new object()},
+				{nameof(o.IntPropNullNullable).ToLowerInvariant(), null},
+				{nameof(o.EnumProp), 1},
+				{nameof(o.StringProp), o.StringProp},
+			};
+			var aliases = testData.Keys.Select(k => k == nullMarker ? null : k).ToArray();
+
+			var tuple = testData.Values.ToArray();
+
+			var actual = (TestDto) GetTransformer<TestDto>().TransformTuple(tuple, aliases);
+			Assert.That(actual.IntProp, Is.EqualTo(o.IntProp));
+			Assert.That(actual.IntPropNull, Is.EqualTo(o.IntPropNull));
+			Assert.That(actual.StringProp, Is.EqualTo(o.StringProp));
+			Assert.That(actual.IntPropNullNullable, Is.EqualTo(o.IntPropNullNullable));
+			Assert.That(actual.EnumProp, Is.EqualTo(o.EnumProp));
+		}
+
+		class NoDefCtorDto
+		{
+			public NoDefCtorDto(bool bogus)
+			{
+			}
+		}
+
+		[Test]
+		public void ThrowsForClassWithoutDefaultCtor()
+		{
+			Assert.That(() => GetTransformer<NoDefCtorDto>().TransformTuple(new object[0], new string[0]), Throws.ArgumentException);
 		}
 
 		private void AssertCardinalityNameAndId<T>(IResultTransformer transformer = null)
