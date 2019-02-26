@@ -162,16 +162,20 @@ namespace NHibernate.Transform
 			}
 			expr = Expression.Convert(expr, type);
 
-			var tryCatch =
-				Expression.TryCatch(
+#if NETFX
+			//TODO: find an universal way for check
+			//On .net461 throws if DTO is struct: TryExpression is not supported as a child expression when accessing a member on type '[TYPE]' because it is a value type.
+			if (!memberInfo.DeclaringType.IsClass)
+				return expr;
+#endif
+
+			expr = Expression.TryCatch(
 					expr,
 					Expression.Catch(
 						typeof(InvalidCastException),
 						Expression.Throw(Expression.Invoke(getEx, Expression.Constant(memberInfo.ToString()), originalValue), type)
 					));
-			if (type.IsClass)
-				return expr;
-			return Expression.Block(type, tryCatch);
+			return expr;
 		}
 
 		private static System.Type GetMemberType(MemberInfo memberInfo)
