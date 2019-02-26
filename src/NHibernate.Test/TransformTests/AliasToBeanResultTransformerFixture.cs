@@ -298,7 +298,7 @@ namespace NHibernate.Test.TransformTests
 				{nameof(o.IntPropNull).ToLowerInvariant(), null},
 				{string.Empty, new object()},
 				{nameof(o.IntPropNullNullable).ToLowerInvariant(), null},
-				{nameof(o.EnumProp), 1.5},
+				{nameof(o.EnumProp), 1},
 				{nameof(o.StringProp), o.StringProp},
 			};
 			var aliases = testData.Keys.Select(k => k == nullMarker ? null : k).ToArray();
