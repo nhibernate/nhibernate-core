@@ -7,9 +7,6 @@
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
     <ContentSQLiteInteropFiles>true</ContentSQLiteInteropFiles>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
-    <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
@@ -58,7 +55,7 @@
     <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.3.0" />
     <PackageReference Include="Npgsql" Version="4.0.3" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime" />
     <Reference Include="System.Transactions" />
