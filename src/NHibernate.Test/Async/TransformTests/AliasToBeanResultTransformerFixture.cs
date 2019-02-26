@@ -282,6 +282,15 @@ namespace NHibernate.Test.TransformTests
 			public TestEnum EnumProp { get; set; }
 		}
 
+		struct TestDtoAsStruct
+		{
+			public string StringProp { get; set; }
+			public int IntProp { get; set; }
+			public int IntPropNull { get; set; }
+			public int? IntPropNullNullable { get; set; }
+			public TestEnum EnumProp { get; set; }
+		}
+
 		class NoDefCtorDto
 		{
 			public NoDefCtorDto(bool bogus)

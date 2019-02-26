@@ -270,6 +270,15 @@ namespace NHibernate.Test.TransformTests
 			public TestEnum EnumProp { get; set; }
 		}
 
+		struct TestDtoAsStruct
+		{
+			public string StringProp { get; set; }
+			public int IntProp { get; set; }
+			public int IntPropNull { get; set; }
+			public int? IntPropNullNullable { get; set; }
+			public TestEnum EnumProp { get; set; }
+		}
+
 		[Test]
 		public void TupleConversion()
 		{
@@ -289,7 +298,7 @@ namespace NHibernate.Test.TransformTests
 				{nameof(o.IntPropNull).ToLowerInvariant(), null},
 				{string.Empty, new object()},
 				{nameof(o.IntPropNullNullable).ToLowerInvariant(), null},
-				{nameof(o.EnumProp), 1},
+				{nameof(o.EnumProp), 1.5},
 				{nameof(o.StringProp), o.StringProp},
 			};
 			var aliases = testData.Keys.Select(k => k == nullMarker ? null : k).ToArray();
@@ -297,11 +306,29 @@ namespace NHibernate.Test.TransformTests
 			var tuple = testData.Values.ToArray();
 
 			var actual = (TestDto) GetTransformer<TestDto>().TransformTuple(tuple, aliases);
+			var actualStruct = (TestDtoAsStruct) GetTransformer<TestDtoAsStruct>().TransformTuple(tuple, aliases);
 			Assert.That(actual.IntProp, Is.EqualTo(o.IntProp));
 			Assert.That(actual.IntPropNull, Is.EqualTo(o.IntPropNull));
 			Assert.That(actual.StringProp, Is.EqualTo(o.StringProp));
 			Assert.That(actual.IntPropNullNullable, Is.EqualTo(o.IntPropNullNullable));
 			Assert.That(actual.EnumProp, Is.EqualTo(o.EnumProp));
+		}
+
+		[Test]
+		public void ThrowUserFriendlyException()
+		{
+			var o = new TestDto(true) { };
+			
+			string nullMarker = "NULL";
+			var testData = new Dictionary<string, object>
+			{
+				{nameof(o.IntProp), "hello"},
+			};
+			var aliases = testData.Keys.Select(k => k == nullMarker ? null : k).ToArray();
+			var tuple = testData.Values.ToArray();
+
+			var ex = Assert.Throws<System.InvalidCastException>(() => GetTransformer<TestDto>().TransformTuple(tuple, aliases));
+			Assert.That(ex, Has.Message.Contains(nameof(o.IntProp)));
 		}
 
 		class NoDefCtorDto

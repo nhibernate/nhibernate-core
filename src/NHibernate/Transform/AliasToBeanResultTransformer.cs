@@ -127,6 +127,8 @@ namespace NHibernate.Transform
 				throw new ArgumentNullException("aliases");
 			}
 
+			Expression<Func<string, object, Exception>> getException = (name, obj) => new InvalidCastException($"Failed to set property '{name}' with value of type '{obj.GetType()}'");
+
 			var bindings = new List<MemberAssignment>(aliases.Length);
 			var tupleParam = Expression.Parameter(typeof(object[]), "tuple");
 			for (int i = 0; i < aliases.Length; i++)
@@ -137,7 +139,7 @@ namespace NHibernate.Transform
 
 				var memberInfo = GetMemberInfo(alias);
 				var valueExpr = Expression.ArrayAccess(tupleParam, Expression.Constant(i));
-				bindings.Add(Expression.Bind(memberInfo, GetTyped(memberInfo, valueExpr)));
+				bindings.Add(Expression.Bind(memberInfo, GetTyped(memberInfo, valueExpr, getException)));
 			}
 
 			Expression initExpr = Expression.MemberInit(GetNewExpression(ResultClass), bindings);
@@ -147,16 +149,29 @@ namespace NHibernate.Transform
 			return (Func<object[], object>) Expression.Lambda(initExpr, tupleParam).Compile();
 		}
 
-		private static Expression GetTyped(MemberInfo memberInfo, Expression expr)
+		private static Expression GetTyped(MemberInfo memberInfo, Expression expr, Expression<Func<string, object, Exception>> getEx)
 		{
 			var type = GetMemberType(memberInfo);
 			if (type == typeof(object))
 				return expr;
+
+			var originalValue = expr;
 			if (!type.IsClass)
 			{
 				expr = Expression.Coalesce(expr, Expression.Default(type));
 			}
-			return Expression.Convert(expr, type);
+			expr = Expression.Convert(expr, type);
+
+			var tryCatch =
+				Expression.TryCatch(
+					expr,
+					Expression.Catch(
+						typeof(InvalidCastException),
+						Expression.Throw(Expression.Invoke(getEx, Expression.Constant(memberInfo.Name), originalValue), type)
+					));
+			if (type.IsClass)
+				return expr;
+			return Expression.Block(type, tryCatch);
 		}
 
 		private static System.Type GetMemberType(MemberInfo memberInfo)
