@@ -198,7 +198,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s.Query<Car>().InsertInto(x => new Pickup { Id = -x.Id, Vin = x.Vin, Owner = x.Owner });
+				var count = await (s.Query<Car>().InsertIntoAsync(x => new Pickup { Id = -x.Id, Vin = x.Vin, Owner = x.Owner }));
 				Assert.AreEqual(1, count);
 
 				await (t.CommitAsync());
@@ -211,7 +211,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s.Query<Car>().InsertInto<Car, Pickup>(x => new { Id = -x.Id, x.Vin, x.Owner });
+				var count = await (s.Query<Car>().InsertIntoAsync<Car, Pickup>(x => new { Id = -x.Id, x.Vin, x.Owner }));
 				Assert.AreEqual(1, count);
 
 				await (t.CommitAsync());
@@ -224,11 +224,11 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s
+				var count = await (s
 					.Query<Car>()
 					.GroupBy(x => x.Id)
 					.Select(x => new { Id = x.Key, Vin = x.Max(y => y.Vin), Owner = x.Max(y => y.Owner) })
-					.InsertInto(x => new Pickup { Id = -x.Id, Vin = x.Vin, Owner = x.Owner });
+					.InsertIntoAsync(x => new Pickup { Id = -x.Id, Vin = x.Vin, Owner = x.Owner }));
 				Assert.AreEqual(1, count);
 
 				await (t.CommitAsync());
@@ -241,11 +241,11 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s
+				var count = await (s
 					.Query<Vehicle>()
 					.Skip(1)
 					.Take(1)
-					.InsertInto(x => new Pickup { Id = -x.Id, Vin = x.Vin, Owner = x.Owner });
+					.InsertIntoAsync(x => new Pickup { Id = -x.Id, Vin = x.Vin, Owner = x.Owner }));
 				Assert.AreEqual(1, count);
 
 				await (t.CommitAsync());
@@ -291,10 +291,10 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				Assert.Throws<NotSupportedException>(
+				Assert.ThrowsAsync<NotSupportedException>(
 					() => s
 						.Query<Car>()
-						.InsertInto(x => new Pickup { Id = -x.Id, Vin = x.Vin, Owner = x.Owner.PadRight(200) }));
+						.InsertIntoAsync(x => new Pickup { Id = -x.Id, Vin = x.Vin, Owner = x.Owner.PadRight(200) }));
 
 				await (t.CommitAsync());
 			}
@@ -308,9 +308,9 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s
+				var count = await (s
 					.Query<Human>()
-					.InsertInto(x => new Animal { Description = x.Description, BodyWeight = x.BodyWeight, Mother = x.Mother });
+					.InsertIntoAsync(x => new Animal { Description = x.Description, BodyWeight = x.BodyWeight, Mother = x.Mother }));
 				Assert.AreEqual(3, count);
 
 				await (t.CommitAsync());
@@ -325,9 +325,9 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s
+				var count = await (s
 					.Query<Human>()
-					.InsertInto(x => new Animal { Description = x.Description, BodyWeight = x.BodyWeight, Mother = _butterfly });
+					.InsertIntoAsync(x => new Animal { Description = x.Description, BodyWeight = x.BodyWeight, Mother = _butterfly }));
 				Assert.AreEqual(3, count);
 
 				await (t.CommitAsync());
@@ -342,9 +342,9 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s
+				var count = await (s
 					.Query<EntityWithCrazyCompositeKey>()
-					.InsertInto(x => new EntityReferencingEntityWithCrazyCompositeKey { Name = "Child", Parent = x });
+					.InsertIntoAsync(x => new EntityReferencingEntityWithCrazyCompositeKey { Name = "Child", Parent = x }));
 				Assert.AreEqual(1, count);
 
 				await (t.CommitAsync());
@@ -357,8 +357,8 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				Assert.Throws<QueryException>(
-					() => s.Query<Lizard>().InsertInto(x => new Human { Id = -x.Id, BodyWeight = x.BodyWeight }),
+				Assert.ThrowsAsync<QueryException>(
+					() => s.Query<Lizard>().InsertIntoAsync(x => new Human { Id = -x.Id, BodyWeight = x.BodyWeight }),
 					"superclass prop insertion did not error");
 
 				await (t.CommitAsync());
@@ -373,8 +373,8 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				Assert.Throws<QueryException>(
-					() => s.Query<Car>().InsertInto(x => new Joiner { Name = x.Vin, JoinedName = x.Owner }),
+				Assert.ThrowsAsync<QueryException>(
+					() => s.Query<Car>().InsertIntoAsync(x => new Joiner { Name = x.Vin, JoinedName = x.Owner }),
 					"mapped-join insertion did not error");
 
 				await (t.CommitAsync());
@@ -389,7 +389,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s.Query<Zoo>().Where(z => z.Id == _zoo.Id).InsertInto(x => new PettingZoo { Name = x.Name });
+				var count = await (s.Query<Zoo>().Where(z => z.Id == _zoo.Id).InsertIntoAsync(x => new PettingZoo { Name = x.Name }));
 				Assert.That(count, Is.EqualTo(1), "unexpected insertion count");
 				await (t.CommitAsync());
 			}
@@ -415,10 +415,10 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s
+				var count = await (s
 					.Query<IntegerVersioned>()
 					.Where(x => x.Id == initialId)
-					.InsertInto(x => new IntegerVersioned { Name = x.Name, Data = x.Data });
+					.InsertIntoAsync(x => new IntegerVersioned { Name = x.Name, Data = x.Data }));
 				Assert.That(count, Is.EqualTo(1), "unexpected insertion count");
 				await (t.CommitAsync());
 			}
@@ -442,10 +442,10 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s
+				var count = await (s
 					.Query<TimestampVersioned>()
 					.Where(x => x.Id == initialId)
-					.InsertInto(x => new TimestampVersioned { Name = x.Name, Data = x.Data });
+					.InsertIntoAsync(x => new TimestampVersioned { Name = x.Name, Data = x.Data }));
 				Assert.That(count, Is.EqualTo(1), "unexpected insertion count");
 
 				await (t.CommitAsync());
@@ -470,11 +470,11 @@ namespace NHibernate.Test.LinqBulkManipulation
 			{
 				s.BeginTransaction();
 
-				Assert.DoesNotThrow(() =>
+				Assert.DoesNotThrowAsync(() =>
 				{
-					s
+					return s
 						.Query<Human>().Where(x => x.Mother.Mother != null)
-						.InsertInto(x => new Animal { Description = x.Description, BodyWeight = x.BodyWeight });
+						.InsertIntoAsync(x => new Animal { Description = x.Description, BodyWeight = x.BodyWeight });
 				});
 
 				await (s.Transaction.CommitAsync());
@@ -500,22 +500,22 @@ namespace NHibernate.Test.LinqBulkManipulation
 					.InsertAsync());
 				Assert.That(count, Is.EqualTo(1), "incorrect insert count from individual setters");
 
-				count = s
+				count = await (s
 					.Query<SimpleClassWithComponent>()
 					.Where(x => x.Name.First == correctName && x.Name.Initial != 'Z')
-					.InsertInto(x => new SimpleClassWithComponent { Name = new Name { First = x.Name.First, Last = x.Name.Last, Initial = 'Z' } });
+					.InsertIntoAsync(x => new SimpleClassWithComponent { Name = new Name { First = x.Name.First, Last = x.Name.Last, Initial = 'Z' } }));
 				Assert.That(count, Is.EqualTo(1), "incorrect insert from non anonymous selector");
 
-				count = s
+				count = await (s
 					.Query<SimpleClassWithComponent>()
 					.Where(x => x.Name.First == correctName && x.Name.Initial == 'Z')
-					.InsertInto<SimpleClassWithComponent, SimpleClassWithComponent>(x => new { Name = new { x.Name.First, x.Name.Last, Initial = 'W' } });
+					.InsertIntoAsync<SimpleClassWithComponent, SimpleClassWithComponent>(x => new { Name = new { x.Name.First, x.Name.Last, Initial = 'W' } }));
 				Assert.That(count, Is.EqualTo(1), "incorrect insert from anonymous selector");
 
-				count = s
+				count = await (s
 					.Query<SimpleClassWithComponent>()
 					.Where(x => x.Name.First == correctName && x.Name.Initial == 'Z')
-					.InsertInto<SimpleClassWithComponent, SimpleClassWithComponent>(x => new { Name = new Name { First = x.Name.First, Last = x.Name.Last, Initial = 'V' } });
+					.InsertIntoAsync<SimpleClassWithComponent, SimpleClassWithComponent>(x => new { Name = new Name { First = x.Name.First, Last = x.Name.Last, Initial = 'V' } }));
 				Assert.That(count, Is.EqualTo(1), "incorrect insert from hybrid selector");
 				await (t.CommitAsync());
 			}
@@ -533,7 +533,34 @@ namespace NHibernate.Test.LinqBulkManipulation
 		}
 
 		#endregion
+
 		#region UPDATES
+
+		[Test]
+		public async Task SimpleUpdateAsync()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var count = await (s
+					.Query<Car>()
+					.UpdateAsync(a => new Car { Owner = a.Owner + " a" }));
+				Assert.AreEqual(1, count);
+			}
+		}
+
+		[Test]
+		public async Task SimpleAnonymousUpdateAsync()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var count = await (s
+					.Query<Car>()
+					.UpdateAsync(a => new { Owner = a.Owner + " a" }));
+				Assert.AreEqual(1, count);
+			}
+		}
 
 		[Test]
 		public async Task UpdateWithWhereExistsSubqueryAsync()
@@ -658,7 +685,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 				using (var t = s.BeginTransaction())
 				{
 					var count =
-						s.Query<Human>().Where(x => x.Id == _stevee.Id).Update(x => new Human { Name = { First = correctName } });
+						await (s.Query<Human>().Where(x => x.Id == _stevee.Id).UpdateAsync(x => new Human { Name = { First = correctName } }));
 
 					Assert.That(count, Is.EqualTo(1), "incorrect update count");
 					await (t.CommitAsync());
@@ -681,8 +708,8 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				Assert.Throws<NotSupportedException>(
-					() => s.Query<Human>().Where(x => x.Id == _stevee.Id).Update(x => new Human { Name = { First = x.Name.First.PadLeft(200) } })
+				Assert.ThrowsAsync<NotSupportedException>(
+					() => s.Query<Human>().Where(x => x.Id == _stevee.Id).UpdateAsync(x => new Human { Name = { First = x.Name.First.PadLeft(200) } })
 				);
 
 				await (t.CommitAsync());
@@ -933,6 +960,18 @@ namespace NHibernate.Test.LinqBulkManipulation
 			}
 		}
 
+		[Test]
+		public void UpdateOnOtherClassThrowsAsync()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var query = s
+					.Query<Animal>().Where(x => x.Mother == _butterfly);
+				Assert.That(() => query.UpdateAsync(a => new Human { Description = a.Description + " humanized" }), Throws.TypeOf<TypeMismatchException>());
+			}
+		}
+
 		#endregion
 
 		#region DELETES
@@ -948,7 +987,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			{
 				s.BeginTransaction();
-				var count = s.Query<SimpleEntityWithAssociation>().Where(x => x.AssociatedEntities.Count == 0 && x.Name.Contains("myEntity")).Delete();
+				var count = await (s.Query<SimpleEntityWithAssociation>().Where(x => x.AssociatedEntities.Count == 0 && x.Name.Contains("myEntity")).DeleteAsync());
 				Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
 				await (s.Transaction.CommitAsync());
 			}
@@ -979,19 +1018,19 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var t = s.BeginTransaction())
 			{
 
-				var count = s.Query<Animal>().Where(x => x.Id == _polliwog.Id).Delete();
+				var count = await (s.Query<Animal>().Where(x => x.Id == _polliwog.Id).DeleteAsync());
 				Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
 
-				count = s.Query<Animal>().Where(x => x.Id == _catepillar.Id).Delete();
+				count = await (s.Query<Animal>().Where(x => x.Id == _catepillar.Id).DeleteAsync());
 				Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
 
 				if (Dialect.SupportsSubqueryOnMutatingTable)
 				{
-					count = s.Query<User>().Where(x => s.Query<User>().Contains(x)).Delete();
+					count = await (s.Query<User>().Where(x => s.Query<User>().Contains(x)).DeleteAsync());
 					Assert.That(count, Is.EqualTo(0));
 				}
 
-				count = s.Query<Animal>().Delete();
+				count = await (s.Query<Animal>().DeleteAsync());
 				Assert.That(count, Is.EqualTo(8), "Incorrect delete count");
 
 				IList list = await (s.Query<Animal>().ToListAsync());
@@ -1007,10 +1046,10 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s.Query<PettingZoo>().Delete();
+				var count = await (s.Query<PettingZoo>().DeleteAsync());
 				Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
 
-				count = s.Query<Zoo>().Delete();
+				count = await (s.Query<Zoo>().DeleteAsync());
 				Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
 
 				await (t.CommitAsync());
@@ -1037,13 +1076,13 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s.Query<Mammal>().Where(x => x.BodyWeight > 150).Delete();
+				var count = await (s.Query<Mammal>().Where(x => x.BodyWeight > 150).DeleteAsync());
 				Assert.That(count, Is.EqualTo(1), "Incorrect deletion count on joined subclass");
 
-				count = s.Query<Mammal>().Delete();
+				count = await (s.Query<Mammal>().DeleteAsync());
 				Assert.That(count, Is.EqualTo(4), "Incorrect deletion count on joined subclass");
 
-				count = s.Query<SubMulti>().Delete();
+				count = await (s.Query<SubMulti>().DeleteAsync());
 				Assert.That(count, Is.EqualTo(0), "Incorrect deletion count on joined subclass");
 
 				await (t.CommitAsync());
@@ -1061,7 +1100,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s.Query<Joiner>().Where(x => x.JoinedName == "joined-name").Delete();
+				var count = await (s.Query<Joiner>().Where(x => x.JoinedName == "joined-name").DeleteAsync());
 				Assert.That(count, Is.EqualTo(1), "Incorrect deletion count on joined class");
 
 				await (t.CommitAsync());
@@ -1080,10 +1119,10 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s.Query<Vehicle>().Where(x => x.Owner == "Steve").Delete();
+				var count = await (s.Query<Vehicle>().Where(x => x.Owner == "Steve").DeleteAsync());
 				Assert.That(count, Is.EqualTo(1), "incorrect restricted update count");
 
-				count = s.Query<Vehicle>().Delete();
+				count = await (s.Query<Vehicle>().DeleteAsync());
 				Assert.That(count, Is.EqualTo(3), "incorrect update count");
 
 				await (t.CommitAsync());
@@ -1102,10 +1141,10 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s.Query<Truck>().Where(x => x.Owner == "Steve").Delete();
+				var count = await (s.Query<Truck>().Where(x => x.Owner == "Steve").DeleteAsync());
 				Assert.That(count, Is.EqualTo(1), "incorrect restricted update count");
 
-				count = s.Query<Truck>().Delete();
+				count = await (s.Query<Truck>().DeleteAsync());
 				Assert.That(count, Is.EqualTo(2), "incorrect update count");
 				await (t.CommitAsync());
 			}
@@ -1118,10 +1157,10 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s.Query<Car>().Where(x => x.Owner == "Kirsten").Delete();
+				var count = await (s.Query<Car>().Where(x => x.Owner == "Kirsten").DeleteAsync());
 				Assert.That(count, Is.EqualTo(1), "incorrect restricted update count");
 
-				count = s.Query<Car>().Delete();
+				count = await (s.Query<Car>().DeleteAsync());
 				Assert.That(count, Is.EqualTo(0), "incorrect update count");
 
 				await (t.CommitAsync());
@@ -1139,7 +1178,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s.Query<Animal>().Where(x => x.Mother == _butterfly).Delete();
+				var count = await (s.Query<Animal>().Where(x => x.Mother == _butterfly).DeleteAsync());
 				Assert.That(count, Is.EqualTo(1));
 
 				await (t.CommitAsync());
@@ -1152,9 +1191,22 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				s.Query<EntityWithCrazyCompositeKey>().Where(x => x.Id.Id == 1 && x.Id.OtherId == 2).Delete();
+				await (s.Query<EntityWithCrazyCompositeKey>().Where(x => x.Id.Id == 1 && x.Id.OtherId == 2).DeleteAsync());
 
 				await (t.CommitAsync());
+			}
+		}
+
+		[Test]
+		public void DeleteOnProjectionThrowsAsync()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var query = s
+					.Query<Animal>().Where(x => x.Mother == _butterfly)
+					.Select(x => new Car { Id = x.Id });
+				Assert.That(() => query.DeleteAsync(), Throws.InvalidOperationException);
 			}
 		}
 
