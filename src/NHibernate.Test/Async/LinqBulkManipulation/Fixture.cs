@@ -1158,6 +1158,18 @@ namespace NHibernate.Test.LinqBulkManipulation
 			}
 		}
 
+		[Test]
+		public async Task DeleteOnFilterThrowsAsync()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var a = await (s.Query<SimpleEntityWithAssociation>().Take(1).SingleOrDefaultAsync());
+				var query = a.AssociatedEntities.AsQueryable();
+				Assert.That(() => query.Delete(), Throws.InstanceOf<NotSupportedException>());
+			}
+		}
+
 		#endregion
 	}
 }
