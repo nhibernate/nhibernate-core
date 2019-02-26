@@ -44,7 +44,7 @@ namespace NHibernate.Transform
 		private readonly Dictionary<string, NamedMember<PropertyInfo>> _propertiesByNameCaseInsensitive;
 
 		[NonSerialized]
-		Func<object[], object> _objectIniter;
+		Func<object[], object> _transformer;
 
 		public System.Type ResultClass => _resultClass;
 
@@ -69,8 +69,8 @@ namespace NHibernate.Transform
 
 		public override object TransformTuple(object[] tuple, string[] aliases)
 		{
-			var initer = _objectIniter ?? (_objectIniter = CompileObjectIniter(aliases));
-			return initer(tuple);
+			var transformer = _transformer ?? (_transformer = CreateTransformerDelegate(aliases));
+			return transformer(tuple);
 		}
 
 		public override IList TransformList(IList collection)
@@ -120,14 +120,14 @@ namespace NHibernate.Transform
 					$"{string.Join(", ", member.AmbiguousMembers.Select(m => m.Name))}");
 		}
 
-		private Func<object[], object> CompileObjectIniter(string[] aliases)
+		protected Func<object[], object> CreateTransformerDelegate(string[] aliases)
 		{
 			if (aliases == null)
 			{
 				throw new ArgumentNullException("aliases");
 			}
 
-			Expression<Func<string, object, Exception>> getException = (name, obj) => new InvalidCastException($"Failed to set property '{name}' with value of type '{obj.GetType()}'");
+			Expression<Func<string, object, Exception>> getException = (name, obj) => new InvalidCastException($"Failed to set property/field '{name}' with value of type '{obj.GetType()}'");
 
 			var bindings = new List<MemberAssignment>(aliases.Length);
 			var tupleParam = Expression.Parameter(typeof(object[]), "tuple");
@@ -142,7 +142,7 @@ namespace NHibernate.Transform
 				bindings.Add(Expression.Bind(memberInfo, GetTyped(memberInfo, valueExpr, getException)));
 			}
 
-			Expression initExpr = Expression.MemberInit(GetNewExpression(ResultClass), bindings);
+			Expression initExpr = Expression.MemberInit(Expression.New(_resultClass), bindings);
 			if (!ResultClass.IsClass)
 				initExpr = Expression.Convert(initExpr, typeof(object));
 
@@ -183,24 +183,6 @@ namespace NHibernate.Transform
 				return field.FieldType;
 
 			throw new NotSupportedException($"Member type {memberInfo} is not supported");
-		}
-
-		private static NewExpression GetNewExpression(System.Type resultClass)
-		{
-			if (!resultClass.IsClass)
-				return Expression.New(resultClass);
-
-			const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-			var beanConstructor = resultClass.GetConstructor(bindingFlags, null, System.Type.EmptyTypes, null);
-
-			if (beanConstructor == null)
-			{
-				throw new ArgumentException(
-					"The target class of a AliasToBeanResultTransformer need a parameter-less constructor",
-					nameof(resultClass));
-			}
-
-			return Expression.New(beanConstructor);
 		}
 
 		private static void FetchFieldsAndProperties(System.Type resultClass, List<RankedMember<FieldInfo>> fields, List<RankedMember<PropertyInfo>> properties)
