@@ -73,12 +73,15 @@ namespace NHibernate.Linq
 
 		public Task<int> ExecuteDmlAsync<T>(QueryMode queryMode, Expression expression, CancellationToken cancellationToken)
 		{
+			if (Collection != null)
+				throw new NotSupportedException("DML operations are not supported for filters.");
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<int>(cancellationToken);
 			}
 			try
 			{
+
 				var nhLinqExpression = new NhLinqDmlExpression<T>(queryMode, expression, Session.Factory);
 
 				var query = Session.CreateQuery(nhLinqExpression);
