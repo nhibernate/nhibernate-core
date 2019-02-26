@@ -127,7 +127,7 @@ namespace NHibernate.Transform
 				throw new ArgumentNullException("aliases");
 			}
 
-			Expression<Func<string, object, Exception>> getException = (name, obj) => new InvalidCastException($"Failed to set property/field '{name}' with value of type '{obj.GetType()}'");
+			Expression<Func<string, object, Exception>> getException = (name, obj) => new InvalidCastException($"Failed to init member '{name}' with value of type '{obj.GetType()}'");
 
 			var bindings = new List<MemberAssignment>(aliases.Length);
 			var tupleParam = Expression.Parameter(typeof(object[]), "tuple");
@@ -167,7 +167,7 @@ namespace NHibernate.Transform
 					expr,
 					Expression.Catch(
 						typeof(InvalidCastException),
-						Expression.Throw(Expression.Invoke(getEx, Expression.Constant(memberInfo.Name), originalValue), type)
+						Expression.Throw(Expression.Invoke(getEx, Expression.Constant(memberInfo.ToString()), originalValue), type)
 					));
 			if (type.IsClass)
 				return expr;
