@@ -1199,6 +1199,18 @@ namespace NHibernate.Test.LinqBulkManipulation
 			}
 		}
 
+		[Test]
+		public void DeleteOnFilterThrows()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var a = s.Query<SimpleEntityWithAssociation>().Take(1).SingleOrDefault();
+				var query = a.AssociatedEntities.AsQueryable();
+				Assert.That(() => query.Delete(), Throws.InstanceOf<NotSupportedException>());
+			}
+		}
+
 		#endregion
 	}
 }
