@@ -490,10 +490,11 @@ namespace NHibernate.Type
 				begin += length;
 			}
 
-			if (ReturnedClass.IsValueType)
-				return values;
-			else
-				return notNull ? values : null;
+			// CZ: Always return a non-null collection, even if all the entries are null.
+			//if (ReturnedClass.IsValueType)
+			return values;
+			//else
+			//	return notNull ? values : null;
 		}
 
 		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner)
