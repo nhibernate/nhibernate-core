@@ -29,6 +29,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public HqlSqlWalker Walker
 		{
 			get { return _walker; }
+			protected set { _walker = value; }
 		}
 
 		internal SessionFactoryHelperExtensions SessionFactoryHelper

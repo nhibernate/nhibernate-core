@@ -145,7 +145,7 @@ namespace NHibernate.Engine
 			return ToJoinFragment(enabledFilters, includeExtraJoins, withClauseFragment, withClauseJoinAlias, rootAlias);
 		}
 
-		internal JoinFragment ToJoinFragment(
+		internal virtual JoinFragment ToJoinFragment(
 			IDictionary<string, IFilter> enabledFilters,
 			bool includeExtraJoins,
 			SqlString withClauseFragment,
@@ -325,5 +325,7 @@ namespace NHibernate.Engine
 		}
 
 		internal string RootAlias => rootAlias;
+
+		public ISessionFactoryImplementor Factory => factory;
 	}
 }
