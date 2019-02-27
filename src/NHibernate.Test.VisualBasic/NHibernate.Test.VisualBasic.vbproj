@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <NhVbNet>True</NhVbNet>
+    <NhVbNet>true</NhVbNet>
   </PropertyGroup>
   <Import Project="../../build-common/NHibernate.props" />
   <PropertyGroup>
@@ -16,7 +16,7 @@
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('net4'))">
+  <PropertyGroup Condition="$(NhNetFx)">
     <DefineConstants>NETFX,$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>

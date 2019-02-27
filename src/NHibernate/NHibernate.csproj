@@ -41,7 +41,7 @@
     <PackageReference Include="Remotion.Linq.EagerFetching" Version="[2.2.0, 3.0)" />
   </ItemGroup>
 
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
+  <ItemGroup Condition="$(NhNetFx)">
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Configuration" />

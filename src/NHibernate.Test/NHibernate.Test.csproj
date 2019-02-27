@@ -55,7 +55,7 @@
     <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.3.0" />
     <PackageReference Include="Npgsql" Version="4.0.3" />
   </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
+  <ItemGroup Condition="$(NhNetFx)">
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime" />
     <Reference Include="System.Transactions" />

@@ -14,7 +14,9 @@
 
     <NhAppTargetFrameworks Condition ="$(NhAppTargetFrameworks) == ''">net461;netcoreapp2.0</NhAppTargetFrameworks>
     <NhLibTargetFrameworks Condition ="$(NhLibTargetFrameworks) == ''">net461;netcoreapp2.0;netstandard2.0</NhLibTargetFrameworks>
-    <DefineConstants Condition="$(TargetFramework.StartsWith('net4')) AND $(NhVbNet) == ''" >NETFX;$(DefineConstants)</DefineConstants>
+    <NhNetFx>false</NhNetFx>
+    <NhNetFx Condition="$(TargetFramework.StartsWith('net4'))">true</NhNetFx>
+    <DefineConstants Condition="$(NhNetFx) AND $(NhVbNet) == ''" >NETFX;$(DefineConstants)</DefineConstants>
 
     <Product>NHibernate</Product>
     <Company>NHibernate.info</Company>
