@@ -239,6 +239,40 @@ namespace NHibernate.Cfg
 				NHibernate.Dialect.Dialect.GetDialect(configuration.Properties);
 		}
 
+		[Serializable]
+		private class StaticDialectMappingWrapper : IMapping
+		{
+			private readonly IMapping _mapping;
+
+			public StaticDialectMappingWrapper(IMapping mapping)
+			{
+				_mapping = mapping;
+				Dialect = mapping.Dialect;
+			}
+
+			public IType GetIdentifierType(string className)
+			{
+				return _mapping.GetIdentifierType(className);
+			}
+
+			public string GetIdentifierPropertyName(string className)
+			{
+				return _mapping.GetIdentifierPropertyName(className);
+			}
+
+			public IType GetReferencedPropertyType(string className, string propertyName)
+			{
+				return _mapping.GetReferencedPropertyType(className, propertyName);
+			}
+
+			public bool HasNonIdentifierPropertyNamedId(string className)
+			{
+				return _mapping.HasNonIdentifierPropertyNamedId(className);
+			}
+
+			public Dialect.Dialect Dialect { get; }
+		}
+
 		private IMapping mapping;
 
 		protected Configuration(SettingsFactory settingsFactory)
@@ -1254,6 +1288,7 @@ namespace NHibernate.Cfg
 
 			#endregion
 		}
+
 		/// <summary>
 		/// Instantiate a new <see cref="ISessionFactory" />, using the properties and mappings in this
 		/// configuration. The <see cref="ISessionFactory" /> will be immutable, so changes made to the
@@ -1262,17 +1297,33 @@ namespace NHibernate.Cfg
 		/// <returns>An <see cref="ISessionFactory" /> instance.</returns>
 		public ISessionFactory BuildSessionFactory()
 		{
+			var dynamicDialectMapping = mapping;
+			// Use a mapping which does store the dialect instead of instantiating a new one
+			// at each access. The dialect does not change while building a session factory.
+			// It furthermore allows some hack on NHibernate.Spatial side to go on working,
+			// See nhibernate/NHibernate.Spatial#104
+			mapping = new StaticDialectMappingWrapper(mapping);
+			try
+			{
+				ConfigureProxyFactoryFactory();
+				SecondPassCompile();
+				Validate();
+				Environment.VerifyProperties(properties);
+				Settings settings = BuildSettings();
 
-			ConfigureProxyFactoryFactory();
-			SecondPassCompile();
-			Validate();
-			Environment.VerifyProperties(properties);
-			Settings settings = BuildSettings();
+				// Ok, don't need schemas anymore, so free them
+				Schemas = null;
 
-			// Ok, don't need schemas anymore, so free them
-			Schemas = null;
-
-			return new SessionFactoryImpl(this, mapping, settings, GetInitializedEventListeners());
+				return new SessionFactoryImpl(
+					this,
+					mapping,
+					settings,
+					GetInitializedEventListeners());
+			}
+			finally
+			{
+				mapping = dynamicDialectMapping;
+			}
 		}
 
 		/// <summary>
