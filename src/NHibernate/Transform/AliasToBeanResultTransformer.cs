@@ -128,9 +128,12 @@ namespace NHibernate.Transform
 			}
 
 			Expression<Func<string, object, Exception>> getException = (name, obj) => new InvalidCastException($"Failed to init member '{name}' with value of type '{obj.GetType()}'");
-
+			bool wrapInVariables = ShouldWrapInVariables();
 			var bindings = new List<MemberAssignment>(aliases.Length);
 			var tupleParam = Expression.Parameter(typeof(object[]), "tuple");
+			var variableAndAssigmentDic = wrapInVariables
+				? new Dictionary<ParameterExpression, Expression>(aliases.Length)
+				: null;
 			for (int i = 0; i < aliases.Length; i++)
 			{
 				string alias = aliases[i];
@@ -139,14 +142,34 @@ namespace NHibernate.Transform
 
 				var memberInfo = GetMemberInfo(alias);
 				var valueExpr = Expression.ArrayAccess(tupleParam, Expression.Constant(i));
-				bindings.Add(Expression.Bind(memberInfo, GetTyped(memberInfo, valueExpr, getException)));
+				var valueToAssign = GetTyped(memberInfo, valueExpr, getException);
+				if (wrapInVariables)
+				{
+					var variable = Expression.Variable(valueToAssign.Type);
+					variableAndAssigmentDic[variable] = Expression.Assign(variable, valueToAssign);
+					valueToAssign = variable;
+				}
+				bindings.Add(Expression.Bind(memberInfo, valueToAssign));
 			}
-
 			Expression initExpr = Expression.MemberInit(Expression.New(_resultClass), bindings);
 			if (!ResultClass.IsClass)
 				initExpr = Expression.Convert(initExpr, typeof(object));
 
+			if (wrapInVariables)
+			{
+				initExpr = Expression.Block(variableAndAssigmentDic.Keys, variableAndAssigmentDic.Values.Concat(new[] { initExpr }));
+			}
 			return (Func<object[], object>) Expression.Lambda(initExpr, tupleParam).Compile();
+		}
+
+		private bool ShouldWrapInVariables()
+		{
+#if NETFX
+			//On .net461 throws if DTO is struct: TryExpression is not supported as a child expression when accessing a member on type '[TYPE]' because it is a value type.
+			if (!_resultClass.IsClass)
+				return true;
+#endif
+			return false;
 		}
 
 		private static Expression GetTyped(MemberInfo memberInfo, Expression expr, Expression<Func<string, object, Exception>> getEx)
@@ -160,22 +183,13 @@ namespace NHibernate.Transform
 			{
 				expr = Expression.Coalesce(expr, Expression.Default(type));
 			}
-			expr = Expression.Convert(expr, type);
 
-#if NETFX
-			//TODO: find an universal way for check
-			//On .net461 throws if DTO is struct: TryExpression is not supported as a child expression when accessing a member on type '[TYPE]' because it is a value type.
-			if (!memberInfo.DeclaringType.IsClass)
-				return expr;
-#endif
-
-			expr = Expression.TryCatch(
-					expr,
+			return Expression.TryCatch(
+					Expression.Convert(expr, type),
 					Expression.Catch(
 						typeof(InvalidCastException),
 						Expression.Throw(Expression.Invoke(getEx, Expression.Constant(memberInfo.ToString()), originalValue), type)
 					));
-			return expr;
 		}
 
 		private static System.Type GetMemberType(MemberInfo memberInfo)

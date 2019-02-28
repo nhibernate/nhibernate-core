@@ -330,10 +330,7 @@ namespace NHibernate.Test.TransformTests
 			var ex = Assert.Throws<System.InvalidCastException>(() => GetTransformer<TestDto>().TransformTuple(tuple, aliases));
 			Assert.That(ex, Has.Message.Contains(nameof(o.IntProp)));
 			var ex2 = Assert.Throws<System.InvalidCastException>(() => GetTransformer<TestDtoAsStruct>().TransformTuple(tuple, aliases));
-
-#if NETSTANDARD2_0
 			Assert.That(ex2, Has.Message.Contains(nameof(o.IntProp)));
-#endif
 		}
 
 		class NoDefCtorDto
