@@ -468,7 +468,6 @@ namespace NHibernate.Type
 		public override object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			int begin = 0;
-			bool notNull = false;
 			object[] values = new object[propertySpan];
 			for (int i = 0; i < propertySpan; i++)
 			{
@@ -482,18 +481,11 @@ namespace NHibernate.Type
 						return null; //different nullability rules for pk/fk
 					}
 				}
-				else
-				{
-					notNull = true;
-				}
 				values[i] = val;
 				begin += length;
 			}
 
-			if (ReturnedClass.IsValueType)
-				return values;
-			else
-				return notNull ? values : null;
+			return values;
 		}
 
 		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner)
