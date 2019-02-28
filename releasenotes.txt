@@ -3,7 +3,7 @@ Build 5.2.4
 
 Release notes - NHibernate - Version 5.2.4
 
-4 issues were resolved in this release. The dialect change has the side effect of
+3 issues were resolved in this release. The dialect change has the side effect of
 re-enabling a hack used by NHibernate.Spatial, allowing Spatial users to upgrade
 to NHibernate 5.2.x. See NHibernate.Spatial#104.
 
@@ -16,10 +16,6 @@ to NHibernate 5.2.x. See NHibernate.Spatial#104.
 
    * #2020 Throw for DML on filter
    * #2011 Use a statically resolved dialect when building the session factory
-
-** Improvement
-
-   * #1950 Caching of Property Dialect in class Configuration.Mapping
 
 ** Task
 
