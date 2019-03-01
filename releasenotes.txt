@@ -1,3 +1,21 @@
+Build 5.1.5
+=============================
+
+Release notes - NHibernate - Version 5.1.5
+
+    ##### Possible Breaking Changes #####
+        * Using DML on an entity collection was applying the changes without
+          filtering according to the entity. It will now throw a
+          NotSupportedException.
+
+** Bug
+
+   * #2043 System.Reflection.TargetException when an interface is used as class mapping proxy definition
+   * #2020 Throw for DML on filter
+
+** Task
+   * #2074 Release 5.1.5
+
 Build 5.1.4
 =============================
 
@@ -242,6 +260,24 @@ Release notes - NHibernate - Version 5.1.0
 
 As part of releasing 5.1.0, a missing 5.0.0 possible breaking change has been added about inequality semantic in LINQ
 queries. See 5.0.0 possible breaking changes.
+
+﻿Build 5.0.7
+=============================
+
+Release notes - NHibernate - Version 5.0.7
+
+    ##### Possible Breaking Changes #####
+        * Using DML on an entity collection was applying the changes without
+          filtering according to the entity. It will now throw a
+          NotSupportedException.
+
+** Bug
+
+   * #2043 System.Reflection.TargetException when an interface is used as class mapping proxy definition
+   * #2020 Throw for DML on filter
+
+** Task
+   * #2073 Release 5.0.7
 
 Build 5.0.6
 =============================
