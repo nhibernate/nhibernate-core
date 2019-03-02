@@ -14,10 +14,6 @@
     <PackageTags>ORM; O/RM; DataBase; DAL; ObjectRelationalMapping; NHibernate; ADO.Net; Core</PackageTags>
   </PropertyGroup>
   
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
-    <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
-  </PropertyGroup>
-
   <ItemGroup>
     <None Remove="**\*.g" />
     <None Remove="**\*.xsd" />
@@ -46,7 +42,7 @@
     <PackageReference Include="Remotion.Linq.EagerFetching" Version="[2.2.0, 3.0)" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
+  <ItemGroup Condition="$(NhNetFx)">
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Configuration" />
