@@ -5,9 +5,11 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Functions;
 using NHibernate.Param;
+using NHibernate.Type;
 using NHibernate.Util;
 using Remotion.Linq.Clauses.Expressions;
 
@@ -261,6 +263,14 @@ possible solutions:
 
 		protected HqlTreeNode VisitNhSum(NhSumExpression expression)
 		{
+			var type = expression.Type.UnwrapIfNullable();
+			var nhType = TypeFactory.GetDefaultTypeFor(type);
+			if (nhType != null && _parameters.SessionFactory.SQLFunctionRegistry.FindSQLFunction("sum")
+			                      ?.ReturnType(nhType, _parameters.SessionFactory)?.ReturnedClass == type)
+			{
+				return _hqlTreeBuilder.Sum(VisitExpression(expression.Expression).AsExpression());
+			}
+
 			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Sum(VisitExpression(expression.Expression).AsExpression()), expression.Type);
 		}
 
@@ -475,8 +485,10 @@ possible solutions:
 				case ExpressionType.Convert:
 				case ExpressionType.ConvertChecked:
 				case ExpressionType.TypeAs:
-					if ((expression.Operand.Type.IsPrimitive || expression.Operand.Type == typeof(Decimal)) &&
-						(expression.Type.IsPrimitive || expression.Type == typeof(Decimal)))
+					var operandType = expression.Operand.Type.UnwrapIfNullable();
+					if ((operandType.IsPrimitive || operandType == typeof(decimal)) &&
+					    (expression.Type.IsPrimitive || expression.Type == typeof(decimal)) &&
+					    expression.Type != operandType)
 					{
 						return _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), expression.Type);
 					}
