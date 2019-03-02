@@ -268,7 +268,9 @@ possible solutions:
 			if (nhType != null && _parameters.SessionFactory.SQLFunctionRegistry.FindSQLFunction("sum")
 			                      ?.ReturnType(nhType, _parameters.SessionFactory)?.ReturnedClass == type)
 			{
-				return _hqlTreeBuilder.Sum(VisitExpression(expression.Expression).AsExpression());
+				return _hqlTreeBuilder.TransparentCast(
+					_hqlTreeBuilder.Sum(VisitExpression(expression.Expression).AsExpression()),
+					expression.Type);
 			}
 
 			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Sum(VisitExpression(expression.Expression).AsExpression()), expression.Type);

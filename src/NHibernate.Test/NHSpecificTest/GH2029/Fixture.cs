@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Dialect;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
@@ -31,6 +32,11 @@ namespace NHibernate.Test.NHSpecificTest.GH2029
 			});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is SQLiteDialect);
 		}
 
 		protected override void OnSetUp()
