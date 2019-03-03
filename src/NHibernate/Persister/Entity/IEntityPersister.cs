@@ -442,6 +442,8 @@ namespace NHibernate.Persister.Entity
 		#region stuff that is tuplizer-centric, but is passed a session
 
 		/// <summary> Called just after the entities properties have been initialized</summary>
+		// Since 5.3
+		[Obsolete("Use the extension method instead")]
 		void AfterInitialize(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session);
 
 		/// <summary> Called just after the entity has been reassociated with the session</summary>
@@ -622,6 +624,21 @@ namespace NHibernate.Persister.Entity
 				.Warn("Entity persister of {0} type is not supported, returning 1 as a batch size.", persister?.GetType());
 
 			return 1;
+		}
+
+		/// <summary> Called just after the entities properties have been initialized</summary>
+		//6.0 TODO: Merge into IEntityPersister.
+		public static void AfterInitialize(this IEntityPersister persister, object entity, ISessionImplementor session)
+		{
+			if (persister is AbstractEntityPersister abstractEntityPersister)
+			{
+				abstractEntityPersister.AfterInitialize(entity, session);
+				return;
+			}
+
+#pragma warning disable 618
+			persister.AfterInitialize(entity, true, session);
+#pragma warning restore 618
 		}
 	}
 }

@@ -21,6 +21,7 @@ namespace NHibernate.Hql
 			beforeClassTokens.Add("update");
 			//beforeClassTokens.Add("new"); DEFINITELY DON'T HAVE THIS!! (form H3.2)
 			beforeClassTokens.Add(",");
+			beforeClassTokens.Add("join");
 			notAfterClassTokens.Add("in");
 			//notAfterClassTokens.Add(",");
 			notAfterClassTokens.Add("from");

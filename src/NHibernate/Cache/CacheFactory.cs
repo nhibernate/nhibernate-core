@@ -1,6 +1,6 @@
-
-using NHibernate.Cfg;
+using System;
 using System.Collections.Generic;
+using NHibernate.Cfg;
 
 namespace NHibernate.Cache
 {
@@ -30,27 +30,42 @@ namespace NHibernate.Cache
 		/// <param name="settings">Used to retrieve the global cache region prefix.</param>
 		/// <param name="properties">Properties the cache provider can use to configure the cache.</param>
 		/// <returns>An <see cref="ICacheConcurrencyStrategy"/> to use for this object in the <see cref="ICache"/>.</returns>
-		public static ICacheConcurrencyStrategy CreateCache(string usage, string name, bool mutable, Settings settings,
-		                                                    IDictionary<string,string> properties)
+		// Since v5.3
+		[Obsolete("Please use overload with a CacheBase parameter.")]
+		public static ICacheConcurrencyStrategy CreateCache(
+			string usage,
+			string name,
+			bool mutable,
+			Settings settings,
+			IDictionary<string, string> properties)
 		{
-			if (usage == null || !settings.IsSecondLevelCacheEnabled) return null; //no cache
+			if (usage == null || !settings.IsSecondLevelCacheEnabled) return null;
 
-			string prefix = settings.CacheRegionPrefix;
-			if (prefix != null) name = prefix + '.' + name;
+			var cache = BuildCacheBase(name, settings, properties);
 
+			var ccs = CreateCache(usage, cache);
+
+			if (mutable && usage == ReadOnly)
+				log.Warn("read-only cache configured for mutable: {0}", name);
+
+			return ccs;
+		}
+
+		/// <summary>
+		/// Creates an <see cref="ICacheConcurrencyStrategy"/> from the parameters.
+		/// </summary>
+		/// <param name="usage">The name of the strategy that <see cref="ICacheProvider"/> should use for the class.</param>
+		/// <param name="cache">The <see cref="CacheBase"/> used for this strategy.</param>
+		/// <returns>An <see cref="ICacheConcurrencyStrategy"/> to use for this object in the <see cref="ICache"/>.</returns>
+		public static ICacheConcurrencyStrategy CreateCache(string usage, CacheBase cache)
+		{
 			if (log.IsDebugEnabled())
-			{
-				log.Debug("cache for: {0} usage strategy: {1}", name, usage);
-			}
+				log.Debug("cache for: {0} usage strategy: {1}", cache.RegionName, usage);
 
 			ICacheConcurrencyStrategy ccs;
 			switch (usage)
 			{
 				case ReadOnly:
-					if (mutable)
-					{
-						log.Warn("read-only cache configured for mutable: {0}", name);
-					}
 					ccs = new ReadOnlyCache();
 					break;
 				case ReadWrite:
@@ -59,24 +74,29 @@ namespace NHibernate.Cache
 				case NonstrictReadWrite:
 					ccs = new NonstrictReadWriteCache();
 					break;
-					//case CacheFactory.Transactional:
-					//	ccs = new TransactionalCache();
-					//	break;
+				//case CacheFactory.Transactional:
+				//	ccs = new TransactionalCache();
+				//	break;
 				default:
 					throw new MappingException(
-						"cache usage attribute should be read-write, read-only, nonstrict-read-write, or transactional");
+						"cache usage attribute should be read-write, read-only or nonstrict-read-write");
 			}
 
+			ccs.Cache = cache;
+
+			return ccs;
+		}
+
+		internal static CacheBase BuildCacheBase(string name, Settings settings, IDictionary<string, string> properties)
+		{
 			try
 			{
-				ccs.Cache = settings.CacheProvider.BuildCache(name, properties);
+				return settings.CacheProvider.BuildCache(name, properties).AsCacheBase();
 			}
 			catch (CacheException e)
 			{
 				throw new HibernateException("Could not instantiate cache implementation", e);
 			}
-
-			return ccs;
 		}
 	}
 }

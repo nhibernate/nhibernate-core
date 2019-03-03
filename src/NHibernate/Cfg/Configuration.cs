@@ -171,7 +171,9 @@ namespace NHibernate.Cfg
 			propertyReferences = new List<Mappings.PropertyReference>();
 			FilterDefinitions = new Dictionary<string, FilterDefinition>();
 			interceptor = EmptyInterceptor.Instance;
+#pragma warning disable 618
 			properties = Environment.Properties;
+#pragma warning restore 618
 			auxiliaryDatabaseObjects = new List<IAuxiliaryDatabaseObject>();
 			SqlFunctions = new Dictionary<string, ISQLFunction>();
 			mappingsQueue = new MappingsQueue();

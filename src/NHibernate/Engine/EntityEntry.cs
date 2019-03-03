@@ -45,9 +45,31 @@ namespace NHibernate.Engine
 		/// <param name="persister">The <see cref="IEntityPersister"/> that is responsible for this Entity.</param>
 		/// <param name="disableVersionIncrement"></param>
 		/// <param name="lazyPropertiesAreUnfetched"></param>
+		// Since 5.3
+		[Obsolete("Use the constructor without lazyPropertiesAreUnfetched parameter")]
+		internal EntityEntry(Status status, object[] loadedState, object rowId, object id, object version, LockMode lockMode,
+		                     bool existsInDatabase, IEntityPersister persister,
+		                     bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
+			:this(status, loadedState, rowId, id, version, lockMode, existsInDatabase, persister, disableVersionIncrement)
+		{
+			loadedWithLazyPropertiesUnfetched = lazyPropertiesAreUnfetched;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of EntityEntry.
+		/// </summary>
+		/// <param name="status">The current <see cref="Status"/> of the Entity.</param>
+		/// <param name="loadedState">The snapshot of the Entity's state when it was loaded.</param>
+		/// <param name="rowId"></param>
+		/// <param name="id">The identifier of the Entity in the database.</param>
+		/// <param name="version">The version of the Entity.</param>
+		/// <param name="lockMode">The <see cref="LockMode"/> for the Entity.</param>
+		/// <param name="existsInDatabase">A boolean indicating if the Entity exists in the database.</param>
+		/// <param name="persister">The <see cref="IEntityPersister"/> that is responsible for this Entity.</param>
+		/// <param name="disableVersionIncrement"></param>
 		internal EntityEntry(Status status, object[] loadedState, object rowId, object id, object version, LockMode lockMode,
 			bool existsInDatabase, IEntityPersister persister,
-			bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
+			bool disableVersionIncrement)
 		{
 			this.status = status;
 			this.previousStatus = null;
@@ -59,7 +81,6 @@ namespace NHibernate.Engine
 			this.version = version;
 			this.lockMode = lockMode;
 			isBeingReplicated = disableVersionIncrement;
-			loadedWithLazyPropertiesUnfetched = lazyPropertiesAreUnfetched;
 			this.persister = persister;
 			entityName = persister == null ? null : persister.EntityName;
 		}
@@ -180,6 +201,8 @@ namespace NHibernate.Engine
 			get { return rowId; }
 		}
 
+		// Since 5.3
+		[Obsolete("This property is not used and will be removed in a future version.")]
 		public bool LoadedWithLazyPropertiesUnfetched
 		{
 			get { return loadedWithLazyPropertiesUnfetched; }

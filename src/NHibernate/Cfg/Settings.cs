@@ -137,5 +137,13 @@ namespace NHibernate.Cfg
 		public IQueryModelRewriterFactory QueryModelRewriterFactory { get; internal set; }
 		
 		#endregion
+
+		internal string GetFullCacheRegionName(string name)
+		{
+			var prefix = CacheRegionPrefix;
+			if (!string.IsNullOrEmpty(prefix))
+				return prefix + '.' + name;
+			return name;
+		}
 	}
 }

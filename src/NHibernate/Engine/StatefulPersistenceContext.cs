@@ -513,6 +513,8 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Adds an entity to the internal caches.</summary>
+		// Since v5.3
+		[Obsolete("Use overload without lazyPropertiesAreUnfetched parameter")]
 		public EntityEntry AddEntity(object entity, Status status, object[] loadedState, EntityKey entityKey, object version,
 																 LockMode lockMode, bool existsInDatabase, IEntityPersister persister,
 																 bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
@@ -522,10 +524,22 @@ namespace NHibernate.Engine
 			return AddEntry(entity, status, loadedState, null, entityKey.Identifier, version, lockMode, existsInDatabase, persister, disableVersionIncrement, lazyPropertiesAreUnfetched);
 		}
 
+		/// <summary> Adds an entity to the internal caches.</summary>
+		public EntityEntry AddEntity(object entity, Status status, object[] loadedState, EntityKey entityKey, object version,
+		                             LockMode lockMode, bool existsInDatabase, IEntityPersister persister,
+		                             bool disableVersionIncrement)
+		{
+			AddEntity(entityKey, entity);
+
+			return AddEntry(entity, status, loadedState, null, entityKey.Identifier, version, lockMode, existsInDatabase, persister, disableVersionIncrement);
+		}
+
 		/// <summary>
 		/// Generates an appropriate EntityEntry instance and adds it
 		/// to the event source's internal caches.
 		/// </summary>
+		// Since v5.3
+		[Obsolete("Use overload without lazyPropertiesAreUnfetched parameter")]
 		public EntityEntry AddEntry(object entity, Status status, object[] loadedState, object rowId, object id,
 																object version, LockMode lockMode, bool existsInDatabase, IEntityPersister persister,
 																bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
@@ -533,6 +547,23 @@ namespace NHibernate.Engine
 			EntityEntry e =
 				new EntityEntry(status, loadedState, rowId, id, version, lockMode, existsInDatabase, persister,
 								disableVersionIncrement, lazyPropertiesAreUnfetched);
+			entityEntries[entity] = e;
+
+			SetHasNonReadOnlyEnties(status);
+			return e;
+		}
+
+		/// <summary>
+		/// Generates an appropriate EntityEntry instance and adds it
+		/// to the event source's internal caches.
+		/// </summary>
+		public EntityEntry AddEntry(object entity, Status status, object[] loadedState, object rowId, object id,
+		                            object version, LockMode lockMode, bool existsInDatabase, IEntityPersister persister,
+		                            bool disableVersionIncrement)
+		{
+			EntityEntry e =
+				new EntityEntry(status, loadedState, rowId, id, version, lockMode, existsInDatabase, persister,
+				                disableVersionIncrement);
 			entityEntries[entity] = e;
 
 			SetHasNonReadOnlyEnties(status);
@@ -1364,8 +1395,7 @@ namespace NHibernate.Engine
 			var newKey = Session.GenerateEntityKey(generatedId, oldEntry.Persister);
 			AddEntity(newKey, entity);
 			AddEntry(entity, oldEntry.Status, oldEntry.LoadedState, oldEntry.RowId, generatedId, oldEntry.Version,
-					 oldEntry.LockMode, oldEntry.ExistsInDatabase, oldEntry.Persister, oldEntry.IsBeingReplicated,
-					 oldEntry.LoadedWithLazyPropertiesUnfetched);
+					 oldEntry.LockMode, oldEntry.ExistsInDatabase, oldEntry.Persister, oldEntry.IsBeingReplicated);
 		}
 
 		public bool IsLoadFinished

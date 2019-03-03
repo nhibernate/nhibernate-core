@@ -2,6 +2,7 @@ using System.Data;
 using System.Data.Common;
 using NHibernate.AdoNet;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Driver
 {
@@ -11,6 +12,17 @@ namespace NHibernate.Driver
 		{
 			var adjustingDriver = driver as IParameterAdjuster;
 			adjustingDriver?.AdjustParameterForValue(parameter, sqlType, value);
+		}
+
+		//6.0 TODO: inline
+		internal static int GetCommandTimeout(this IDriver driver)
+		{
+			if (driver is DriverBase driverBase)
+				return driverBase.CommandTimeout;
+
+#pragma warning disable 618
+			return PropertiesHelper.GetInt32(Cfg.Environment.CommandTimeout, Cfg.Environment.Properties, -1);
+#pragma warning restore 618
 		}
 
 		// 6.0 TODO: merge into IDriver

@@ -420,6 +420,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 						PropertyAccessorName = propertyAccessorName,
 						Value = value,
                         IsLazy = propertyMapping.IsLazyProperty,
+						LazyGroup = propertyMapping.GetLazyGroup(),
 						IsOptimisticLocked = propertyMapping.OptimisticLock,
 						MetaAttributes = GetMetas(propertyMapping, inheritedMetas)
 					};

@@ -85,14 +85,15 @@ namespace NHibernate.Impl
 
 			if (settings.IsQueryCacheEnabled)
 			{
-				queryCache.Destroy();
-
 				foreach (var cache in queryCaches.Values)
 				{
 					cache.Value.Destroy();
 				}
+			}
 
-				updateTimestampsCache.Destroy();
+			foreach (var cache in _allCacheRegions.Values)
+			{
+				cache.Destroy();
 			}
 
 			settings.CacheProvider.Stop();

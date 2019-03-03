@@ -6,6 +6,7 @@
 >
 
 	<property name="root.dir" value="." />
+	<property name="target.dir" value="net461" />
 
 	<include buildfile="${root.dir}/build-common/common.xml" />
 
@@ -144,7 +145,7 @@
 	</target>
 
 	<target name="put-connection-settings-into-app-config">
-		<property name="app.config" value="src/${test.file}/bin/${build.config}/net461/${test.file}.dll.config" />
+		<property name="app.config" value="src/${test.file}/bin/${build.config}/${target.dir}/${test.file}.dll.config" />
 		<call target="put-connection-settings-into-defined-app-config" />
 	</target>
 
@@ -156,7 +157,7 @@
 
 	<target name="run-tests" depends="find-nunit" description="Run NUnit tests">
 		<exec program="${nunit-console}" failonerror="${not property::exists(test.file + '.IgnoreFail')}">
-			<arg value="${root.dir}/src/${test.file}/bin/${build.config}/net461/${test.file}.dll" />
+			<arg value="${root.dir}/src/${test.file}/bin/${build.config}/${target.dir}/${test.file}.dll" />
 			<arg value="--result=${testresults.dir}/${test.file}.dll-results.xml;format=nunit2" />
 			<arg value="--teamcity" if="${property::exists('config.teamcity')}" />
 			<arg value="--x86" unless="${property::exists('nunit-x64')}" />
@@ -164,7 +165,7 @@
 	</target>
 
 	<target name="remove-connection-settings-from-app-config">
-		<property name="app.config" value="${root.dir}/src/${test.file}/bin/${build.config}/net461/${test.file}.dll.config" />
+		<property name="app.config" value="${root.dir}/src/${test.file}/bin/${build.config}/${target.dir}/${test.file}.dll.config" />
 
 		<xmlpoke
 			file="${app.config}"
@@ -246,7 +247,7 @@
 			</fileset>
 		</copy>
 		<copy todir="${bin-pack.required}">
-			<fileset basedir="${root.dir}/src/NHibernate/bin/${build.config}/net461/">
+			<fileset basedir="${root.dir}/src/NHibernate/bin/${build.config}/${target.dir}/">
 				<include name="Antlr3.Runtime.???" />
 				<include name="Iesi.Collections.???" />
 				<include name="NHibernate.???" />
@@ -263,7 +264,7 @@
 			</fileset>
 		</copy>
 		<copy todir="${bin-pack.tests}">
-			<fileset basedir="${root.dir}/src/NHibernate.Test/bin/${build.config}/net461">
+			<fileset basedir="${root.dir}/src/NHibernate.Test/bin/${build.config}/${target.dir}">
 				<include name="log4net*" />
 				<include name="NHibernate.DomainModel.*" />
 				<include name="NHibernate.Test.*" />
@@ -271,12 +272,12 @@
 			</fileset>
 		</copy>
 		<copy todir="${bin-pack.tests}">
-			<fileset basedir="${root.dir}/src/NHibernate.Test.VisualBasic/bin/${build.config}/net461">
+			<fileset basedir="${root.dir}/src/NHibernate.Test.VisualBasic/bin/${build.config}/${target.dir}">
 				<include name="NHibernate.Test.VisualBasic.*" />
 			</fileset>
 		</copy>
 		<copy todir="${bin-pack.tests}">
-			<fileset basedir="${root.dir}/src/NHibernate.TestDatabaseSetup/bin/${build.config}/net461">
+			<fileset basedir="${root.dir}/src/NHibernate.TestDatabaseSetup/bin/${build.config}/${target.dir}">
 				<include name="NHibernate.TestDatabaseSetup.*" />
 			</fileset>
 		</copy>
@@ -319,21 +320,10 @@
 			<in>
 				<items>
 					<include name="${nuget.nupackages.dir}/*.nupkg"/>
-					<exclude name="${nuget.nupackages.dir}/*.symbols.nupkg"/>
 				</items>
 			</in>
 			<do>
 				<echo message="nuget push -source https://nuget.org/ ${path::get-file-name(filename)} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
-			</do>
-		</foreach>
-		<foreach item="File" property="filename">
-			<in>
-				<items>
-					<include name="${nuget.nupackages.dir}/*.symbols.nupkg"/>
-				</items>
-			</in>
-			<do>
-				<echo message="nuget push -source https://nuget.smbsrc.net/ ${path::get-file-name(filename)} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
 			</do>
 		</foreach>
 	</target>

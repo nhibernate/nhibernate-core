@@ -101,7 +101,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public bool IsFromOrJoinFragment
 		{
-			get { return Type == HqlSqlWalker.FROM_FRAGMENT || Type == HqlSqlWalker.JOIN_FRAGMENT; }
+			get { return Type == HqlSqlWalker.FROM_FRAGMENT || Type == HqlSqlWalker.JOIN_FRAGMENT || Type == HqlSqlWalker.ENTITY_JOIN; }
 		}
 
 		public bool IsAllPropertyFetch
@@ -697,6 +697,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_className = className;
 			_classAlias = classAlias;
 			_elementType = new FromElementType(this, persister, type);
+			if (Walker == null)
+			{
+				Walker = _fromClause.Walker;
+			}
 
 			// Register the FromElement with the FROM clause, now that we have the names and aliases.
 			fromClause.RegisterFromElement(this);
@@ -723,5 +727,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_embeddedParameters.Add(specification);
 		}
 
+		internal bool IsEntityJoin()
+		{
+			return Type == HqlSqlWalker.ENTITY_JOIN;
+		}
 	}
 }

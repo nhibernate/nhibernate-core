@@ -10,8 +10,11 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Intercept;
+using NHibernate.Persister.Collection;
 using NHibernate.Properties;
 using NHibernate.Tuple;
 
@@ -66,6 +69,68 @@ namespace NHibernate.Type
 			return assembled;
 		}
 
+		/// <summary>
+		/// Apply the <see cref="ICacheAssembler.AssembleAsync(object,ISessionImplementor,object,CancellationToken)" /> operation across a series of values.
+		/// </summary>
+		/// <param name="row">The cached values.</param>
+		/// <param name="types">The value types.</param>
+		/// <param name="typeIndexes">The indexes of types to assemble.</param>
+		/// <param name="session">The originating session.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>A new array of assembled values.</returns>
+		internal static async Task<object[]> AssembleAsync(
+			object[] row,
+			ICacheAssembler[] types,
+			IList<int> typeIndexes,
+			ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var assembled = new object[row.Length];
+			foreach (var i in typeIndexes)
+			{
+				var value = row[i];
+				if (Equals(LazyPropertyInitializer.UnfetchedProperty, value) || Equals(BackrefPropertyAccessor.Unknown, value))
+				{
+					assembled[i] = value;
+				}
+				else
+				{
+					assembled[i] = await (types[i].AssembleAsync(row[i], session, null, cancellationToken)).ConfigureAwait(false);
+				}
+			}
+
+			return assembled;
+		}
+
+		/// <summary>
+		/// Initialize collections from the query cached row and update the assembled row.
+		/// </summary>
+		/// <param name="cacheRow">The cached values.</param>
+		/// <param name="assembleRow">The assembled values to update.</param>
+		/// <param name="collectionIndexes">The dictionary containing collection persisters and their indexes in the <paramref name="cacheRow"/> parameter as key.</param>
+		/// <param name="session">The originating session.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		internal static async Task InitializeCollectionsAsync(
+			object[] cacheRow,
+			object[] assembleRow,
+			IDictionary<int, ICollectionPersister> collectionIndexes,
+			ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			foreach (var pair in collectionIndexes)
+			{
+				var value = cacheRow[pair.Key];
+				if (value == null)
+				{
+					continue;
+				}
+
+				var collection = session.PersistenceContext.GetCollection(new CollectionKey(pair.Value, value));
+				await (collection.ForceInitializationAsync(cancellationToken)).ConfigureAwait(false);
+				assembleRow[pair.Key] = collection;
+			}
+		}
+
 		/// <summary>Apply the <see cref="ICacheAssembler.DisassembleAsync(object,ISessionImplementor,object,CancellationToken)" /> operation across a series of values.</summary>
 		/// <param name="row">The values</param>
 		/// <param name="types">The value types</param>
@@ -90,7 +155,14 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					disassembled[i] = await (types[i].DisassembleAsync(row[i], session, owner, cancellationToken)).ConfigureAwait(false);
+					if (owner == null && row[i] is IPersistentCollection collection)
+					{
+						disassembled[i] = await (types[i].DisassembleAsync(row[i], session, collection.Owner, cancellationToken)).ConfigureAwait(false);
+					}
+					else
+					{
+						disassembled[i] = await (types[i].DisassembleAsync(row[i], session, owner, cancellationToken)).ConfigureAwait(false);
+					}
 				}
 			}
 			return disassembled;
@@ -262,11 +334,38 @@ namespace NHibernate.Type
 		/// <param name="session">The session from which the dirty check request originated.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>Array containing indices of the dirty properties, or null if no properties considered dirty.</returns>
-		public static async Task<int[]> FindDirtyAsync(StandardProperty[] properties,
+		// Since 5.3
+		[Obsolete("Use overload without anyUninitializedProperties parameter instead")]
+		public static Task<int[]> FindDirtyAsync(StandardProperty[] properties,
 										object[] currentState,
 										object[] previousState,
 										bool[][] includeColumns,
 										bool anyUninitializedProperties,
+										ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<int[]>(cancellationToken);
+			}
+			return FindDirtyAsync(properties, currentState, previousState, includeColumns, session, cancellationToken);
+		}
+
+		/// <summary>
+		/// <para>Determine if any of the given field values are dirty, returning an array containing
+		/// indices of the dirty fields.</para>
+		/// <para>If it is determined that no fields are dirty, null is returned.</para>
+		/// </summary>
+		/// <param name="properties">The property definitions</param>
+		/// <param name="currentState">The current state of the entity</param>
+		/// <param name="previousState">The baseline state of the entity</param>
+		/// <param name="includeColumns">Columns to be included in the dirty checking, per property</param>
+		/// <param name="session">The session from which the dirty check request originated.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>Array containing indices of the dirty properties, or null if no properties considered dirty.</returns>
+		public static async Task<int[]> FindDirtyAsync(StandardProperty[] properties,
+										object[] currentState,
+										object[] previousState,
+										bool[][] includeColumns,
 										ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -276,7 +375,7 @@ namespace NHibernate.Type
 
 			for (int i = 0; i < span; i++)
 			{
-				var dirty = await (DirtyAsync(properties, currentState, previousState, includeColumns, anyUninitializedProperties, session, i, cancellationToken)).ConfigureAwait(false);
+				var dirty = await (DirtyAsync(properties, currentState, previousState, includeColumns, session, i, cancellationToken)).ConfigureAwait(false);
 				if (dirty)
 				{
 					if (results == null)
@@ -298,14 +397,14 @@ namespace NHibernate.Type
 			}
 		}
 
-		private static async Task<bool> DirtyAsync(StandardProperty[] properties, object[] currentState, object[] previousState, bool[][] includeColumns, bool anyUninitializedProperties, ISessionImplementor session, int i, CancellationToken cancellationToken)
+		private static async Task<bool> DirtyAsync(StandardProperty[] properties, object[] currentState, object[] previousState, bool[][] includeColumns, ISessionImplementor session, int i, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (Equals(LazyPropertyInitializer.UnfetchedProperty, currentState[i]))
 				return false;
 			if (Equals(LazyPropertyInitializer.UnfetchedProperty, previousState[i]))
 				return true;
-			return properties[i].IsDirtyCheckable(anyUninitializedProperties) &&
+			return properties[i].IsDirtyCheckable() &&
 				   await (properties[i].Type.IsDirtyAsync(previousState[i], currentState[i], includeColumns[i], session, cancellationToken)).ConfigureAwait(false);
 		}
 
@@ -322,11 +421,38 @@ namespace NHibernate.Type
 		/// <param name="session">The session from which the dirty check request originated.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>Array containing indices of the modified properties, or null if no properties considered modified.</returns>
-		public static async Task<int[]> FindModifiedAsync(StandardProperty[] properties,
+		// Since 5.3
+		[Obsolete("Use the overload without anyUninitializedProperties parameter.")]
+		public static Task<int[]> FindModifiedAsync(StandardProperty[] properties,
 											object[] currentState,
 											object[] previousState,
 											bool[][] includeColumns,
 											bool anyUninitializedProperties,
+											ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<int[]>(cancellationToken);
+			}
+			return FindModifiedAsync(properties, currentState, previousState, includeColumns, session, cancellationToken);
+		}
+
+		/// <summary>
+		/// <para>Determine if any of the given field values are modified, returning an array containing
+		/// indices of the modified fields.</para>
+		/// <para>If it is determined that no fields are dirty, null is returned.</para>
+		/// </summary>
+		/// <param name="properties">The property definitions</param>
+		/// <param name="currentState">The current state of the entity</param>
+		/// <param name="previousState">The baseline state of the entity</param>
+		/// <param name="includeColumns">Columns to be included in the mod checking, per property</param>
+		/// <param name="session">The session from which the dirty check request originated.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>Array containing indices of the modified properties, or null if no properties considered modified.</returns>
+		public static async Task<int[]> FindModifiedAsync(StandardProperty[] properties,
+											object[] currentState,
+											object[] previousState,
+											bool[][] includeColumns,
 											ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -338,7 +464,7 @@ namespace NHibernate.Type
 			{
 				bool dirty =
 					!Equals(LazyPropertyInitializer.UnfetchedProperty, currentState[i]) &&
-					properties[i].IsDirtyCheckable(anyUninitializedProperties)
+					properties[i].IsDirtyCheckable()
 					&& await (properties[i].Type.IsModifiedAsync(previousState[i], currentState[i], includeColumns[i], session, cancellationToken)).ConfigureAwait(false);
 
 				if (dirty)

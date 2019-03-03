@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Engine;
+using NHibernate.Persister.Collection;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -20,32 +21,48 @@ namespace NHibernate.Cache
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof (StandardQueryCache));
 		private readonly string _regionName;
 		private readonly UpdateTimestampsCache _updateTimestampsCache;
-		// 6.0 TODO: remove
 		private readonly CacheBase _cache;
 
-		public StandardQueryCache(Settings settings, IDictionary<string, string> props, UpdateTimestampsCache updateTimestampsCache, string regionName)
+		// Since v5.3
+		[Obsolete("Please use overload with a CacheBase parameter.")]
+		public StandardQueryCache(
+			Settings settings,
+			IDictionary<string, string> props,
+			UpdateTimestampsCache updateTimestampsCache,
+			string regionName)
+			: this(
+				updateTimestampsCache,
+				CacheFactory.BuildCacheBase(
+					settings.GetFullCacheRegionName(regionName ?? typeof(StandardQueryCache).FullName),
+					settings,
+					props))
 		{
-			if (regionName == null)
-				regionName = typeof(StandardQueryCache).FullName;
+		}
 
-			var prefix = settings.CacheRegionPrefix;
-			if (!string.IsNullOrEmpty(prefix))
-				regionName = prefix + '.' + regionName;
+		/// <summary>
+		/// Build a query cache.
+		/// </summary>
+		/// <param name="updateTimestampsCache">The cache of updates timestamps.</param>
+		/// <param name="regionCache">The <see cref="ICache" /> to use for the region.</param>
+		public StandardQueryCache(
+			UpdateTimestampsCache updateTimestampsCache,
+			CacheBase regionCache)
+		{
+			if (regionCache == null)
+				throw new ArgumentNullException(nameof(regionCache));
 
-			Log.Info("starting query cache at region: {0}", regionName);
+			_regionName = regionCache.RegionName;
+			Log.Info("starting query cache at region: {0}", _regionName);
 
-			Cache = settings.CacheProvider.BuildCache(regionName, props);
-			_cache = Cache as CacheBase ?? new ObsoleteCacheWrapper(Cache);
-
+			_cache = regionCache;
 			_updateTimestampsCache = updateTimestampsCache;
-			_regionName = regionName;
 		}
 
 		#region IQueryCache Members
 
 		// 6.0 TODO: type as CacheBase instead
 #pragma warning disable 618
-		public ICache Cache { get; }
+		public ICache Cache => _cache;
 #pragma warning restore 618
 
 		public string RegionName
@@ -265,14 +282,8 @@ namespace NHibernate.Cache
 
 		public void Destroy()
 		{
-			try
-			{
-				Cache.Destroy();
-			}
-			catch (Exception e)
-			{
-				Log.Warn(e, "could not destroy query cache: {0}", _regionName);
-			}
+			// The cache is externally provided and may be shared. Destroying the cache is
+			// not the responsibility of this class.
 		}
 
 		#endregion
@@ -320,39 +331,52 @@ namespace NHibernate.Cache
 					var returnType = returnTypes[0];
 
 					// Skip first element, it is the timestamp
-					var rows = new List<object>(cacheable.Count - 1);
 					for (var i = 1; i < cacheable.Count; i++)
 					{
-						rows.Add(cacheable[i]);
+						returnType.BeforeAssemble(cacheable[i], session);
 					}
 
-					foreach (var row in rows)
+					for (var i = 1; i < cacheable.Count; i++)
 					{
-						returnType.BeforeAssemble(row, session);
-					}
-
-					foreach (var row in rows)
-					{
-						result.Add(returnType.Assemble(row, session, null));
+						result.Add(returnType.Assemble(cacheable[i], session, null));
 					}
 				}
 				else
 				{
+					var collectionIndexes = new Dictionary<int, ICollectionPersister>();
+					var nonCollectionTypeIndexes = new List<int>();
+					for (var i = 0; i < returnTypes.Length; i++)
+					{
+						if (returnTypes[i] is CollectionType collectionType)
+						{
+							collectionIndexes.Add(i, session.Factory.GetCollectionPersister(collectionType.Role));
+						}
+						else
+						{
+							nonCollectionTypeIndexes.Add(i);
+						}
+					}
+
 					// Skip first element, it is the timestamp
-					var rows = new List<object[]>(cacheable.Count - 1);
 					for (var i = 1; i < cacheable.Count; i++)
 					{
-						rows.Add((object[]) cacheable[i]);
+						TypeHelper.BeforeAssemble((object[]) cacheable[i], returnTypes, session);
 					}
 
-					foreach (var row in rows)
+					for (var i = 1; i < cacheable.Count; i++)
 					{
-						TypeHelper.BeforeAssemble(row, returnTypes, session);
+						result.Add(TypeHelper.Assemble((object[]) cacheable[i], returnTypes, nonCollectionTypeIndexes, session));
 					}
 
-					foreach (var row in rows)
+					// Initialization of the fetched collection must be done at the end in order to be able to batch fetch them
+					// from the cache or database. The collections were already created in the previous for statement so we only
+					// have to initialize them.
+					if (collectionIndexes.Count > 0)
 					{
-						result.Add(TypeHelper.Assemble(row, returnTypes, session, null));
+						for (var i = 1; i < cacheable.Count; i++)
+						{
+							TypeHelper.InitializeCollections((object[]) cacheable[i], (object[]) result[i - 1], collectionIndexes, session);
+						}
 					}
 				}
 

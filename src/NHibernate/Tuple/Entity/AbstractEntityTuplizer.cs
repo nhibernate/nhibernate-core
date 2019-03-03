@@ -224,7 +224,14 @@ namespace NHibernate.Tuple.Entity
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("Use overload without lazyPropertiesAreUnfetched parameter")]
 		public virtual void AfterInitialize(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
+		{
+			AfterInitialize(entity, session);
+		}
+
+		public virtual void AfterInitialize(object entity, ISessionImplementor session)
 		{
 		}
 
@@ -401,7 +408,12 @@ namespace NHibernate.Tuple.Entity
 
 		protected virtual bool ShouldGetAllProperties(object entity)
 		{
-			return !HasUninitializedLazyProperties(entity);
+			if (!EntityMetamodel.BytecodeEnhancementMetadata.EnhancedForLazyLoading)
+			{
+				return true;
+			}
+
+			return !EntityMetamodel.BytecodeEnhancementMetadata.HasAnyUninitializedLazyProperties(entity);
 		}
 
 		protected EntityMetamodel EntityMetamodel

@@ -64,6 +64,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			AddCustomizer(m => m.Lazy(isLazy));
 		}
 
+		public void LazyGroup(string name)
+		{
+			AddCustomizer(m => m.LazyGroup(name));
+		}
+
 		public void Unique(bool unique)
 		{
 			AddCustomizer(m=>m.Unique(unique));

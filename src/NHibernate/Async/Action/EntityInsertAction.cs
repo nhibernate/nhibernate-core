@@ -70,7 +70,7 @@ namespace NHibernate.Action
 
 			if (IsCachePutEnabled(persister))
 			{
-				CacheEntry ce = await (CacheEntry.CreateAsync(State, persister, persister.HasUninitializedLazyProperties(instance), version, session, instance, cancellationToken)).ConfigureAwait(false);
+				CacheEntry ce = await (CacheEntry.CreateAsync(State, persister, version, session, instance, cancellationToken)).ConfigureAwait(false);
 				cacheEntry = persister.CacheEntryStructure.Structure(ce);
 
 				CacheKey ck = Session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
