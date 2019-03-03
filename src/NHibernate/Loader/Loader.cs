@@ -972,55 +972,49 @@ namespace NHibernate.Loader
 
 				if (key == null)
 				{
-					if (cols > 1 && CollectionOwners != null)
+					if (cols == 1 || CollectionOwners == null)
 					{
-						var sb = new StringBuilder();
-						string name = Aliases[i];
-						for (int p = name.Length - 2; p >0; p--)
+						continue;
+					}
+
+					int position = GetPosition(i);
+
+					if (position == -1)
+					{
+						continue;
+					}
+					
+					/*
+					* the keys.length > 1 and the relation IsIgnoreNotFound probably we are in presence of
+					* an load with "outer join" the relation can be considerer loaded even if the key is null (mean not found)
+					*/
+					
+					
+					foreach (int owner in CollectionOwners)
+					{
+						if (owner == -1)
 						{
-							char c = name[p];
-							if (char.IsNumber(c))
+							continue;
+						}
+						
+						bool found = false;
+						int count = 0;
+						
+						foreach (IType type in persisters[owner].PropertyTypes)
+						{
+							if (type is ManyToOneType many 
+							    && ++count == position
+							    && type.Name == persister.EntityName && many.IsNullable)
 							{
-								sb.Insert(0, c);
-							}
-							else
-							{
+								found = true;
+								session.PersistenceContext.AddNullProperty(keys[owner], many.PropertyName);
 								break;
 							}
 						}
-						
-						int position = int.Parse(sb.ToString());
-						
-						/*
-						* the keys.length > 1 and the relation IsIgnoreNotFound probably we are in presence of
-						* an load with "outer join" the relation can be considerer loaded even if the key is null (mean not found)
-						*/
-						for (int j = 0; j < persisters.Length; j++)
+
+						if (found)
 						{
-							if (i == j)
-							{
-								continue;
-							}
-
-							bool found = false;
-							int count = 0;
-							for (int z = 0; z < persisters[j].PropertyTypes.Length; z++)
-							{
-								IType type = persisters[j].PropertyTypes[z];
-								if (type is ManyToOneType many 
-								    && ++count == position
-								    && type.Name == persister.EntityName && many.IsNullable)
-								{
-									found = true;
-									session.PersistenceContext.AddNullProperty(keys[j], many.PropertyName);
-									break;
-								}
-							}
-
-							if (found)
-							{
-								break;
-							}
+							break;
 						}
 					}
 				}
@@ -1068,6 +1062,31 @@ namespace NHibernate.Loader
 				rowResults[i] = obj;
 			}
 			return rowResults;
+		}
+
+		private int GetPosition(int key)
+		{
+			if (Aliases == null || Aliases.Length <= key)
+			{
+				return -1;
+			}
+
+			var sb = new StringBuilder();
+			string name = Aliases[key];
+			for (int p = name.Length - 2; p > 0; p--)
+			{
+				char c = name[p];
+				if (char.IsNumber(c))
+				{
+					sb.Insert(0, c);
+				}
+				else
+				{
+					break;
+				}
+			}
+					
+			return int.Parse(sb.ToString());
 		}
 
 		/// <summary>
