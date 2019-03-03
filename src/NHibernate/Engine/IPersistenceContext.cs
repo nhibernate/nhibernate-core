@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
+using NHibernate.Intercept;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -160,6 +163,8 @@ namespace NHibernate.Engine
 		CollectionEntry GetCollectionEntry(IPersistentCollection coll);
 
 		/// <summary> Adds an entity to the internal caches.</summary>
+		// Since 5.3
+		[Obsolete("Use the AddEntity extension method instead")]
 		EntityEntry AddEntity(object entity, Status status, object[] loadedState, EntityKey entityKey, object version,
 													LockMode lockMode, bool existsInDatabase, IEntityPersister persister,
 													bool disableVersionIncrement, bool lazyPropertiesAreUnfetched);
@@ -168,6 +173,8 @@ namespace NHibernate.Engine
 		/// Generates an appropriate EntityEntry instance and adds it
 		/// to the event source's internal caches.
 		/// </summary>
+		// Since 5.3
+		[Obsolete("Use the AddEntry extension method instead")]
 		EntityEntry AddEntry(object entity, Status status, object[] loadedState, object rowId, object id, object version,
 		                     LockMode lockMode, bool existsInDatabase, IEntityPersister persister, bool disableVersionIncrement,
 		                     bool lazyPropertiesAreUnfetched);
@@ -408,5 +415,98 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="child">The child.</param>
 		void RemoveChildParent(object child);
+	}
+
+	public static class PersistenceContextExtensions
+	{
+		/// <summary> Adds an entity to the internal caches.</summary>
+		public static EntityEntry AddEntity(
+			this IPersistenceContext context,
+			object entity,
+			Status status,
+			object[] loadedState,
+			EntityKey entityKey,
+			object version,
+			LockMode lockMode,
+			bool existsInDatabase,
+			IEntityPersister persister,
+			bool disableVersionIncrement)
+		{
+			if (context is StatefulPersistenceContext statefulPersistence)
+			{
+				return statefulPersistence.AddEntity(
+					entity,
+					status,
+					loadedState,
+					entityKey,
+					version,
+					lockMode,
+					existsInDatabase,
+					persister,
+					disableVersionIncrement);
+			}
+
+#pragma warning disable 618
+			return context.AddEntity(
+				entity,
+				status,
+				loadedState,
+				entityKey,
+				version,
+				lockMode,
+				existsInDatabase,
+				persister,
+				disableVersionIncrement,
+				loadedState?.Any(o => o == LazyPropertyInitializer.UnfetchedProperty) == true);
+#pragma warning restore 618
+		}
+
+		/// <summary>
+		/// Generates an appropriate EntityEntry instance and adds it
+		/// to the event source's internal caches.
+		/// </summary>
+		public static EntityEntry AddEntry(
+			this IPersistenceContext context,
+			object entity,
+			Status status,
+			object[] loadedState,
+			object rowId,
+			object id,
+			object version,
+			LockMode lockMode,
+			bool existsInDatabase,
+			IEntityPersister persister,
+			bool disableVersionIncrement)
+		{
+			if (context is StatefulPersistenceContext statefulPersistence)
+			{
+				return statefulPersistence.AddEntry(
+					entity,
+					status,
+					loadedState,
+					rowId,
+					id,
+					version,
+					lockMode,
+					existsInDatabase,
+					persister,
+					disableVersionIncrement);
+			}
+
+#pragma warning disable 618
+			return context.AddEntry(
+				entity,
+				status,
+				loadedState,
+				rowId,
+				id,
+				version,
+				lockMode,
+				existsInDatabase,
+				persister,
+				disableVersionIncrement,
+				loadedState?.Any(o => o == LazyPropertyInitializer.UnfetchedProperty) == true);
+#pragma warning restore 618
+		}
 	}
 }

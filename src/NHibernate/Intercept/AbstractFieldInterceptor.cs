@@ -100,13 +100,6 @@ namespace NHibernate.Intercept
 
 		public object Intercept(object target, string fieldName, object value, bool setter)
 		{
-			// NH Specific: Hibernate only deals with lazy properties here, we deal with 
-			// both lazy properties and with no-proxy. 
-			if (initializing)
-			{
-				return InvokeImplementation;
-			}
-
 			if (setter)
 			{
 				if (IsUninitializedProperty(fieldName))
@@ -126,6 +119,13 @@ namespace NHibernate.Intercept
 				}
 
 				return value;
+			}
+
+			// NH Specific: Hibernate only deals with lazy properties here, we deal with 
+			// both lazy properties and with no-proxy. 
+			if (initializing)
+			{
+				return InvokeImplementation;
 			}
 
 			if (IsInitializedField(fieldName))
@@ -197,8 +197,7 @@ namespace NHibernate.Intercept
 			{
 				initializing = false;
 			}
-			uninitializedFields = null; //let's assume that there is only one lazy fetch group, for now!
-			uninitializedFieldsReadOnly = null;
+
 			return result;
 		}
 

@@ -28,7 +28,7 @@ namespace NHibernate.Engine
 	using System.Threading;
 	public static partial class TwoPhaseLoad
 	{
-		
+
 		/// <summary>
 		/// Perform the second step of 2-phase load. Fully initialize the entity instance.
 		/// After processing a JDBC result set, we "resolve" all the associations
@@ -124,7 +124,7 @@ namespace NHibernate.Engine
 
 				object version = Versioning.GetVersion(hydratedState, persister);
 				CacheEntry entry =
-					await (CacheEntry.CreateAsync(hydratedState, persister, entityEntry.LoadedWithLazyPropertiesUnfetched, version, session, entity, cancellationToken)).ConfigureAwait(false);
+					await (CacheEntry.CreateAsync(hydratedState, persister, version, session, entity, cancellationToken)).ConfigureAwait(false);
 				CacheKey cacheKey = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
 
 				if (cacheBatchingHandler != null && persister.IsBatchLoadable)
@@ -184,7 +184,7 @@ namespace NHibernate.Engine
 				persistenceContext.SetEntryStatus(entityEntry, Status.Loaded);
 			}
 
-			persister.AfterInitialize(entity, entityEntry.LoadedWithLazyPropertiesUnfetched, session);
+			persister.AfterInitialize(entity, session);
 
 			if (session.IsEventSource)
 			{

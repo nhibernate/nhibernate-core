@@ -1131,7 +1131,7 @@ namespace NHibernate.Persister.Entity
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			int[] props = await (TypeHelper.FindDirtyAsync(
-				entityMetamodel.Properties, currentState, previousState, propertyColumnUpdateable, HasUninitializedLazyProperties(entity), session, cancellationToken)).ConfigureAwait(false);
+				entityMetamodel.Properties, currentState, previousState, propertyColumnUpdateable, session, cancellationToken)).ConfigureAwait(false);
 
 			if (props == null)
 			{
@@ -1148,7 +1148,7 @@ namespace NHibernate.Persister.Entity
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			int[] props = await (TypeHelper.FindModifiedAsync(
-				entityMetamodel.Properties, current, old, propertyColumnUpdateable, HasUninitializedLazyProperties(entity), session, cancellationToken)).ConfigureAwait(false);
+				entityMetamodel.Properties, current, old, propertyColumnUpdateable, session, cancellationToken)).ConfigureAwait(false);
 			if (props == null)
 			{
 				return null;

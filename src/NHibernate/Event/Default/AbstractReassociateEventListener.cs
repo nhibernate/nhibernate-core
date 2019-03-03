@@ -51,8 +51,7 @@ namespace NHibernate.Event.Default
 				LockMode.None,
 				true,
 				persister,
-				false,
-				true);
+				false);
 
 			new OnLockVisitor(source, id, entity).Process(entity, persister);
 

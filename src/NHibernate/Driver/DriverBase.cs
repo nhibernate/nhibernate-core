@@ -345,5 +345,11 @@ namespace NHibernate.Driver
 
 		/// <inheritdoc />
 		public virtual DateTime MinDate => DateTime.MinValue;
+
+		//6.0 TODO: Add property definition to IDialect
+		/// <summary>
+		/// Get the timeout in seconds for ADO.NET queries.
+		/// </summary>
+		public virtual int CommandTimeout => commandTimeout;
 	}
 }

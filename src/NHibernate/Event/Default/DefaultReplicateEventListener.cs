@@ -119,8 +119,7 @@ namespace NHibernate.Event.Default
 				LockMode.None, 
 				true, 
 				persister,
-				true, 
-				false);
+				true);
 
 			CascadeAfterReplicate(entity, persister, replicationMode, source);
 		}

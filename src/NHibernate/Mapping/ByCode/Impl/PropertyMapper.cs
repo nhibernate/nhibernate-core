@@ -241,6 +241,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			propertyMapping.lazy = isLazy;
 		}
 
+		public void FetchGroup(string name)
+		{
+			propertyMapping.lazygroup = name;
+		}
+
 		public void Generated(PropertyGeneration generation)
 		{
 			if (generation == null)

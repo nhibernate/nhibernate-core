@@ -16,6 +16,8 @@ namespace NHibernate.Intercept
 		ISessionImplementor Session { get; set; }
 
 		/// <summary> Is the entity to which we are bound completely initialized? </summary>
+		// Since 5.3
+		[Obsolete("This property is not used and will be removed in a future version.")]
 		bool IsInitialized { get;}
 
 		/// <summary> The the given field initialized for the entity to which we are bound? </summary>
@@ -51,7 +53,9 @@ namespace NHibernate.Intercept
 				return fieldInterceptor.GetUninitializedFields();
 			}
 
+#pragma warning disable 618
 			if (interceptor.IsInitialized)
+#pragma warning restore 618
 			{
 				return CollectionHelper.EmptySet<string>();
 			}

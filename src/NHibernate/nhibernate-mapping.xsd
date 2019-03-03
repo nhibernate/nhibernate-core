@@ -280,6 +280,7 @@
 			</xs:attribute>
 			<xs:attribute name="lazy" default="false" type="xs:boolean">
 			</xs:attribute>
+			<xs:attribute name="lazy-group" type="xs:string" />
 			<xs:attribute name="optimistic-lock" default="true" type="xs:boolean">
 			</xs:attribute>
 			<xs:attribute name="node" type="xs:string" />
@@ -1168,6 +1169,7 @@
 			<xs:attribute name="formula" type="xs:string" />
 			<xs:attribute name="lazy" default="false" type="xs:boolean">
 			</xs:attribute>
+			<xs:attribute name="lazy-group" type="xs:string" />
 			<xs:attribute name="generated" default="never" type="propertyGeneration">
 			</xs:attribute>
 		</xs:complexType>

@@ -20,13 +20,16 @@ namespace NHibernate.Bytecode
 			int propertyIndex,
 			int lazyIndex)
 		{
-			// TODO: port lazy fetch groups
+			var fetchGroupName = string.IsNullOrEmpty(property.LazyGroup)
+				? "DEFAULT"
+				: property.LazyGroup;
 
 			return new LazyPropertyDescriptor(
 				propertyIndex,
 				lazyIndex,
 				property.Name,
-				property.Type
+				property.Type,
+				fetchGroupName
 			);
 		}
 
@@ -34,7 +37,8 @@ namespace NHibernate.Bytecode
 			int propertyIndex,
 			int lazyIndex,
 			string name,
-			IType type)
+			IType type,
+			string fetchGroupName)
 		{
 			if (propertyIndex < lazyIndex)
 			{
@@ -45,6 +49,7 @@ namespace NHibernate.Bytecode
 			LazyIndex = lazyIndex;
 			Name = name;
 			Type = type;
+			FetchGroupName = fetchGroupName;
 		}
 
 		/// <summary>
@@ -66,5 +71,10 @@ namespace NHibernate.Bytecode
 		/// Access to the property's type
 		/// </summary>
 		public IType Type { get; }
+
+		/// <summary>
+		/// Access to the name of the fetch group to which the property belongs
+		/// </summary>
+		public string FetchGroupName { get; }
 	}
 }

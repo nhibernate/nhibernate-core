@@ -1,3 +1,4 @@
+using NHibernate.Mapping.ByCode.Impl;
 using NHibernate.Type;
 
 namespace NHibernate.Mapping.ByCode
@@ -22,5 +23,17 @@ namespace NHibernate.Mapping.ByCode
 		void Insert(bool consideredInInsertQuery);
 		void Lazy(bool isLazy);
 		void Generated(PropertyGeneration generation);
+	}
+
+	public static class PropertyMapperExtensions
+	{
+		// 6.0 TODO: Move to IPropertyMapper
+		public static void FetchGroup(this IPropertyMapper mapper, string name)
+		{
+			if (mapper is PropertyMapper property)
+			{
+				property.FetchGroup(name);
+			}
+		}
 	}
 }
