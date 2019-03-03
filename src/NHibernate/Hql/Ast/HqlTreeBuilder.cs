@@ -363,6 +363,11 @@ namespace NHibernate.Hql.Ast
 			return new HqlJoin(_factory, expression, @alias);
 		}
 
+		public HqlInnerJoin InnerJoin(HqlExpression expression, HqlAlias @alias)
+		{
+			return new HqlInnerJoin(_factory, expression, @alias);
+		}
+
 		public HqlAny Any()
 		{
 			return new HqlAny(_factory);

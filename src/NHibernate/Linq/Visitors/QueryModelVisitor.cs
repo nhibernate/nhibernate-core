@@ -346,7 +346,7 @@ namespace NHibernate.Linq.Visitors
 			HqlTreeNode hqlJoin;
 			if (joinClause.IsInner)
 			{
-				hqlJoin = _hqlTree.TreeBuilder.Join(expression, alias);
+				hqlJoin = _hqlTree.TreeBuilder.InnerJoin(expression, alias);
 			}
 			else
 			{
@@ -497,15 +497,17 @@ namespace NHibernate.Linq.Visitors
 
 		public override void VisitJoinClause(JoinClause joinClause, QueryModel queryModel, int index)
 		{
+			var querySourceName = VisitorParameters.QuerySourceNamer.GetName(joinClause);
 			var equalityVisitor = new EqualityHqlGenerator(VisitorParameters);
 			var whereClause = equalityVisitor.Visit(joinClause.InnerKeySelector, joinClause.OuterKeySelector);
 
-			_hqlTree.AddWhereClause(whereClause);
-
-			_hqlTree.AddFromClause(
-				_hqlTree.TreeBuilder.Range(
-					HqlGeneratorExpressionVisitor.Visit(joinClause.InnerSequence, VisitorParameters),
-					_hqlTree.TreeBuilder.Alias(joinClause.ItemName)));
+			var expression = HqlGeneratorExpressionVisitor.Visit(joinClause.InnerSequence, VisitorParameters).AsExpression();
+			var hqlJoin = _hqlTree.TreeBuilder.InnerJoin(
+				expression,
+				_hqlTree.TreeBuilder.Alias(querySourceName)
+			);
+			hqlJoin.AddChild(_hqlTree.TreeBuilder.With(whereClause.ToBooleanExpression()));
+			_hqlTree.AddFromClause(hqlJoin);
 		}
 
 		public override void VisitGroupJoinClause(GroupJoinClause groupJoinClause, QueryModel queryModel, int index)
