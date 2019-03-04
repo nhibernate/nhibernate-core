@@ -783,7 +783,7 @@
 			<title>Memcached distributed cache factory</title>
 
 			<para>
-				<literal>NHibernate.Caches.CoreDistributedCache.Memcached</literal> provides a Redis distributed cache factory.
+				<literal>NHibernate.Caches.CoreDistributedCache.Memcached</literal> provides a Memcached distributed cache factory.
 				This factory yields a <literal>Enyim.Caching.MemcachedClient</literal> from <literal>EnyimMemcachedCore</literal>.
 				For using it, reference the cache factory package and set the <literal>factory-class</literal> attribute of the
 				<literal>coredistributedcache</literal> configuration section to
