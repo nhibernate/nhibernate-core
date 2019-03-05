@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Ast.ANTLR;
@@ -63,7 +64,7 @@ namespace NHibernate.Test.Hql.Ast
 		}
 
 		[Test]
-		public void InvalidWithSemanticsAsync()
+		public async Task InvalidWithSemanticsAsync()
 		{
 			using (ISession s = OpenSession())
 			{
@@ -75,12 +76,18 @@ namespace NHibernate.Test.Hql.Ast
 					() =>
 						s.CreateQuery("from Human h inner join h.friends as f with f.bodyWeight < :someLimit").SetDouble("someLimit", 1).ListAsync());
 
-				//The query below is no longer throw InvalidWithClauseException but generates invalid SQL to better support various with join clauses.
-				Assert.ThrowsAsync<GenericADOException>(
-					() =>
-						s.CreateQuery("from Human h inner join h.offspring o with o.mother.father = :cousin")
-						.SetInt32("cousin", 123)
-						.ListAsync());
+				//The query below is no longer throw InvalidWithClauseException but generates "invalid" SQL to better support complex with join clauses.
+				//Invalid SQL means that additional joins for "o.mother.father" are currently added after "offspring" join. Some DBs can process such query and some can't.
+				try
+				{
+					await (s.CreateQuery("from Human h inner join h.offspring o with o.mother.father = :cousin")
+					.SetInt32("cousin", 123)
+					.ListAsync());
+				}
+				catch (GenericADOException)
+				{
+					//Apparently SQLite can process queries with wrong join orders
+				}
 			}
 		}
 
