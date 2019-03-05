@@ -80,24 +80,20 @@ namespace NHibernate.Event.Default
 			}
 
 			var batchSize = persister.GetBatchSize();
-			if (batchSize > 1 && persister.Cache.PreferMultipleGet())
+			CollectionEntry[] collectionEntries = null;
+			var collectionBatch = source.PersistenceContext.BatchFetchQueue.QueryCacheQueue
+			                            ?.GetCollectionBatch(persister, collectionKey, out collectionEntries);
+			if ((collectionBatch != null || batchSize > 1) && persister.Cache.PreferMultipleGet())
 			{
 				// The first item in the array is the item that we want to load
-				CollectionEntry[] collectionEntries = null;
-				object[] collectionBatch = null;
-				var queryCacheQueue = source.PersistenceContext.BatchFetchQueue.QueryCacheQueue;
-				if (queryCacheQueue != null)
+				if (collectionBatch != null)
 				{
-					collectionBatch = queryCacheQueue.GetCollectionBatch(persister, collectionKey, out collectionEntries);
-					if (collectionBatch != null)
+					if (collectionBatch.Length == 0)
 					{
-						if (collectionBatch.Length == 0)
-						{
-							return false; // The key was already checked
-						}
-
-						batchSize = collectionBatch.Length;
+						return false; // The key was already checked
 					}
+
+					batchSize = collectionBatch.Length;
 				}
 
 				if (collectionBatch == null)

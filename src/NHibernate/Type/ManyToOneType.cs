@@ -100,13 +100,13 @@ namespace NHibernate.Type
 			if (uniqueKeyPropertyName == null && id != null)
 			{
 				var persister = session.Factory.GetEntityPersister(GetAssociatedEntityName());
-				if (!persister.IsBatchLoadable)
+				if (!persister.IsBatchLoadable && !addToQueryCacheBatch)
 				{
 					return;
 				}
 
 				var entityKey = session.GenerateEntityKey(id, persister);
-				if (!session.PersistenceContext.ContainsEntity(entityKey))
+				if (persister.IsBatchLoadable && !session.PersistenceContext.ContainsEntity(entityKey))
 				{
 					session.PersistenceContext.BatchFetchQueue.AddBatchLoadableEntityKey(entityKey);
 				}

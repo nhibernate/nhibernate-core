@@ -188,11 +188,6 @@ namespace NHibernate.Engine
 		/// <param name="key">The entity key.</param>
 		internal void AddEntityKey(EntityKey key)
 		{
-			if (!key.IsBatchLoadable)
-			{
-				return;
-			}
-
 			if (!_queryEntityKeys.TryGetValue(key.EntityName, out var querySet))
 			{
 				querySet = new HashSet<EntityKey>();
@@ -209,11 +204,6 @@ namespace NHibernate.Engine
 		/// <param name="ce">The collection entry.</param>
 		internal void AddCollection(ICollectionPersister persister, CollectionKey ce)
 		{
-			if (persister.GetBatchSize() <= 1)
-			{
-				return;
-			}
-
 			if (!_queryCollectionKeys.TryGetValue(persister.Role, out var querySet))
 			{
 				querySet = new Dictionary<CollectionKey, CollectionEntry>();

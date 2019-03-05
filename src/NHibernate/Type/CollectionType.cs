@@ -167,11 +167,6 @@ namespace NHibernate.Type
 			}
 
 			var persister = GetPersister(session);
-			if (persister.GetBatchSize() <= 1)
-			{
-				return;
-			}
-
 			var key = persister.KeyType.Assemble(oid, session, null);
 			queryCacheQueue.AddCollection(persister, new CollectionKey(persister, key));
 		}
