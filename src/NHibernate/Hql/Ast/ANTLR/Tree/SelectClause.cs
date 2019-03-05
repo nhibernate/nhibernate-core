@@ -51,7 +51,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			//			// NOTE : the isSubQuery() bit is a temporary hack...
 			//			throw new QuerySyntaxException( "JPA-QL compliance requires select clause" );
 			//		}
-			IList<IASTNode> fromElements = fromClause.GetProjectionList();
+			var fromElements = fromClause.GetProjectionListTyped();
 
 			ASTAppender appender = new ASTAppender(ASTFactory, this);	// Get ready to start adding nodes.
 			int size = fromElements.Count;
@@ -182,7 +182,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			if (!Walker.IsShallowQuery)
 			{
 				// add the fetched entities
-				IList<IASTNode> fromElements = fromClause.GetProjectionList();
+				var fromElements = fromClause.GetProjectionListTyped();
 
 				ASTAppender appender = new ASTAppender(ASTFactory, this);	// Get ready to start adding nodes.
 				int size = fromElements.Count;
