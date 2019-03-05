@@ -65,7 +65,6 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void InvalidWithSemanticsAsync()
 		{
-			using(new SqlLogSpy())
 			using (ISession s = OpenSession())
 			{
 				// PROBLEM : f.bodyWeight is a reference to a column on the Animal table; however, the 'f'
