@@ -1201,7 +1201,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				NodeTraverser traverser = new NodeTraverser(visitor);
 				traverser.TraverseDepthFirst(hqlSqlWithNode);
 				FromElement referencedFromElement = visitor.GetReferencedFromElement();
-				if (referencedFromElement != fromElement)
+				if (referencedFromElement != fromElement && referencedFromElement != null)
 				{
 					if (!referencedFromElement.IsEntityJoin() && !fromElement.IsEntityJoin())
 						throw new InvalidWithClauseException(
