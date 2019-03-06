@@ -1036,31 +1036,6 @@ namespace NHibernate.Loader
 			return rowResults;
 		}
 
-		private int GetPosition(int key)
-		{
-			if (Aliases == null || Aliases.Length <= key)
-			{
-				return -1;
-			}
-
-			var sb = new StringBuilder();
-			string name = Aliases[key];
-			for (int p = name.Length - 2; p > 0; p--)
-			{
-				char c = name[p];
-				if (char.IsNumber(c))
-				{
-					sb.Insert(0, c);
-				}
-				else
-				{
-					break;
-				}
-			}
-					
-			return int.Parse(sb.ToString());
-		}
-
 		/// <summary>
 		/// The entity instance is already in the session cache
 		/// </summary>
