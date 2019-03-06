@@ -1,6 +1,5 @@
 using NHibernate.Cfg;
 using NUnit.Framework;
-using NHibernate.Stat;
 
 namespace NHibernate.Test.NHSpecificTest.NH1001
 {
@@ -16,8 +15,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 
 		protected override void OnSetUp()
 		{
-			using (ISession session = OpenSession())
-			using (ITransaction transaction = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
 				var dept = new Department
 				{
@@ -91,13 +90,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 
 		protected override void OnTearDown()
 		{
-			using (ISession sess = OpenSession())
-			using (ITransaction tx = sess.BeginTransaction())
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
 			{
-				sess.Delete("from Department");
-				sess.Delete("from AddressEmployee");
-				sess.Delete("from Phone");
-				sess.Delete("from Employee");
+				session.Delete("from Department");
+				session.Delete("from AddressEmployee");
+				session.Delete("from Phone");
+				session.Delete("from Employee");
 				tx.Commit();
 			}
 		}
@@ -107,10 +106,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 		{
 			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 99999 WHERE EMPLOYEE_ID = {employeeId}");
 
-			IStatistics statistics = Sfi.Statistics;
+			var statistics = Sfi.Statistics;
 			statistics.Clear();
 
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
 				var employee = session.Get<Employee>(employeeId);
 				Assert.That(employee.Department1, Is.Null);
@@ -127,10 +126,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 		{
 			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11 WHERE EMPLOYEE_ID = {employeeId}");
 
-			IStatistics statistics = Sfi.Statistics;
+			var statistics = Sfi.Statistics;
 			statistics.Clear();
 
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
 				var employee = session.Get<Employee>(employeeId);
 				Assert.That(employee.Department1, Is.Not.Null);
@@ -146,10 +145,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 		{
 			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 99999 WHERE EMPLOYEE_ID = {employeeId}");
 
-			IStatistics statistics = Sfi.Statistics;
+			var statistics = Sfi.Statistics;
 			statistics.Clear();
 
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
 				var employee = session.Get<Employee>(employeeId);
 				Assert.That(employee.Department1, Is.Not.Null);
@@ -163,13 +162,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 		[Test]
 		public void AddressNull()
 		{
-			ExecuteStatement(
-				$"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 12, ADDRESS_ID = 99999 WHERE EMPLOYEE_ID = {employeeId}");
+			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 12, ADDRESS_ID = 99999 WHERE EMPLOYEE_ID = {employeeId}");
 
-			IStatistics statistics = Sfi.Statistics;
+			var statistics = Sfi.Statistics;
 			statistics.Clear();
 
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
 				var employee = session.Get<Employee>(employeeId);
 				Assert.That(employee.Department1, Is.Not.Null);
@@ -186,10 +184,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 12, ADDRESS_ID = 15 WHERE EMPLOYEE_ID = {employeeId}");
 			ExecuteStatement($"UPDATE PHONES SET EMPLOYEE_ID = NULL");
 
-			IStatistics statistics = Sfi.Statistics;
+			var statistics = Sfi.Statistics;
 			statistics.Clear();
 
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
 				var employee = session.Get<Employee>(employeeId);
 				Assert.That(employee.Department1, Is.Not.Null);
@@ -207,19 +205,44 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 		{
 			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 99999 WHERE EMPLOYEE_ID = {employeeId}");
 
-			IStatistics statistics = Sfi.Statistics;
+			var statistics = Sfi.Statistics;
 			statistics.Clear();
 
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
 				var employee = session.QueryOver<Employee>()
 					.Fetch(SelectMode.Fetch, e => e.Department2)
 					.Fetch(SelectMode.Skip, e => e.Department1, e => e.Department3, e => e.Address)
 					.Where(e => e.Id == employeeId)
 					.SingleOrDefault();
+				Assert.That(employee.Department2, Is.Null);
+				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(4), "Employee, Department1, Department3, and Address");
 
 				Assert.That(employee.Department1, Is.Not.Null);
+				Assert.That(employee.Department3, Is.Not.Null);
+				Assert.That(employee.Address, Is.Not.Null);
+			}
+		}
+
+		[Test]
+		public void Department2IsNullSkipPhones_QueryOver()
+		{
+			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 99999 WHERE EMPLOYEE_ID = {employeeId}");
+
+			var statistics = Sfi.Statistics;
+			statistics.Clear();
+
+			using (var session = OpenSession())
+			{
+				var employee = session.QueryOver<Employee>()
+					.Fetch(SelectMode.Fetch, e => e.Department2)
+					.Fetch(SelectMode.Skip, e => e.Department1, e => e.Department3, e => e.Address, e => e.Phones)
+					.Where(e => e.Id == employeeId)
+					.SingleOrDefault();
 				Assert.That(employee.Department2, Is.Null);
+				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(5), "Employee, Department1, Department3, Address, and Phones");
+
+				Assert.That(employee.Department1, Is.Not.Null);
 				Assert.That(employee.Department3, Is.Not.Null);
 				Assert.That(employee.Address, Is.Not.Null);
 			}
