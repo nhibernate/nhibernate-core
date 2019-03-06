@@ -779,24 +779,25 @@ namespace NHibernate.Loader
 		/// </summary>
 		private void RegisterNonExists(EntityKey[] keys, ISessionImplementor session)
 		{
-			int[] owners = Owners;
-			if (owners != null)
+			var owners = Owners;
+			var ownerAssociationTypes = OwnerAssociationTypes;
+			if (owners != null && ownerAssociationTypes != null)
 			{
-				EntityType[] ownerAssociationTypes = OwnerAssociationTypes;
 				for (int i = 0; i < keys.Length; i++)
 				{
-					int owner = owners[i];
-					if (owner > -1)
+					if (keys[i] == null)
 					{
-						EntityKey ownerKey = keys[owner];
-						if (keys[i] == null && ownerKey != null)
+						var ownerAssociationType = ownerAssociationTypes[i];
+						if (ownerAssociationType != null)
 						{
-							var isEntityAssociation = ownerAssociationTypes != null &&
-							                          ownerAssociationTypes[i] != null &&
-							                          ownerAssociationTypes[i].IsEntityType;
-							if (isEntityAssociation)
+							int owner = owners[i];
+							if (owner > -1)
 							{
-								session.PersistenceContext.AddNullProperty(ownerKey, ownerAssociationTypes[i].PropertyName);
+								var ownerKey = keys[owner];
+								if (ownerKey != null)
+								{
+									session.PersistenceContext.AddNullProperty(ownerKey, ownerAssociationType.PropertyName);
+								}
 							}
 						}
 					}
