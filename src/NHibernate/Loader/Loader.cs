@@ -782,14 +782,14 @@ namespace NHibernate.Loader
 			var ownerAssociationTypes = OwnerAssociationTypes;
 			if (owners != null && ownerAssociationTypes != null)
 			{
-				for (int i = 0; i < keys.Length; i++)
+				for (var i = 0; i < keys.Length; i++)
 				{
 					if (keys[i] == null)
 					{
 						var ownerAssociationType = ownerAssociationTypes[i];
-						if (ownerAssociationType != null)
+						if (ownerAssociationType?.PropertyName != null)
 						{
-							int owner = owners[i];
+							var owner = owners[i];
 							if (owner > -1)
 							{
 								var ownerKey = keys[owner];
