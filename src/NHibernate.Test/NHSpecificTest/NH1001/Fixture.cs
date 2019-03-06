@@ -92,6 +92,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 
 		protected override void OnTearDown()
 		{
+			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 12, ADDRESS_ID = 15 WHERE EMPLOYEE_ID = {employeeId}");
+
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
