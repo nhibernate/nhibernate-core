@@ -982,19 +982,15 @@ namespace NHibernate.Loader
 			for (int i = 0; i < cols; i++)
 			{
 				object obj = null;
-				ILoadable persister = persisters[i];
-
 				EntityKey key = keys[i];
 
-				if (key == null)
-				{
-					//do nothing
-				}
-				else
+				// if key is null do nothing
+				if(key != null)
 				{
 					//If the object is already loaded, return the loaded one
 					obj = session.GetEntityUsingInterceptor(key);
 					bool alreadyLoaded = obj != null;
+					var persister = persisters[i];
 					if (IsChildFetchEntity(i))
 					{
 						if (!alreadyLoaded && mustLoadMissingEntity)
