@@ -101,7 +101,7 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// An array of indexes of the entity that owns a one-to-one association
+		/// An array of indexes of the entity that owns an association
 		/// to the entity at the given index (-1 if there is no "owner")
 		/// </summary>
 		/// <remarks>
@@ -114,7 +114,7 @@ namespace NHibernate.Loader
 
 		/// <summary> 
 		/// An array of the owner types corresponding to the <see cref="Owners"/>
-		/// returns.  Indices indicating no owner would be null here. 
+		/// returns. Indices indicating no owner would be null here. 
 		/// </summary>
 		protected virtual EntityType[] OwnerAssociationTypes
 		{
@@ -772,7 +772,7 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// For missing objects associated by one-to-one with another object in the
+		/// For missing objects associated with another object in the
 		/// result set, register the fact that the the object is missing with the
 		/// session.
 		/// </summary>
