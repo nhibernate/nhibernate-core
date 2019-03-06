@@ -1,4 +1,6 @@
+using System.Linq;
 using NHibernate.Cfg;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1001
@@ -217,6 +219,28 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 					.SingleOrDefault();
 				Assert.That(employee.Department2, Is.Null);
 				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(4), "Employee, Department1, Department3, and Address");
+
+				Assert.That(employee.Department1, Is.Not.Null);
+				Assert.That(employee.Department3, Is.Not.Null);
+				Assert.That(employee.Address, Is.Not.Null);
+			}
+		}
+
+		[Test]
+		public void Department2IsNull_Linq()
+		{
+			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 99999 WHERE EMPLOYEE_ID = {employeeId}");
+
+			var statistics = Sfi.Statistics;
+			statistics.Clear();
+
+			using (var session = OpenSession())
+			{
+				//NOTE: HQL and Linq ignore fetch="join" in mapping.
+				var employee = session.Query<Employee>().Fetch(x => x.Department2).Single();
+				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(5), "Employee, Department1, Department3, Address, and Phones");
+				Assert.That(employee.Department2, Is.Null);
+				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(5), "Employee, Department1, Department3, Address, and Phones");
 
 				Assert.That(employee.Department1, Is.Not.Null);
 				Assert.That(employee.Department3, Is.Not.Null);

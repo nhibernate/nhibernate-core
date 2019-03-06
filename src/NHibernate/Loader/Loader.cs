@@ -791,9 +791,10 @@ namespace NHibernate.Loader
 						EntityKey ownerKey = keys[owner];
 						if (keys[i] == null && ownerKey != null)
 						{
-							bool isOneToOneAssociation = ownerAssociationTypes != null && ownerAssociationTypes[i] != null
-														 && ownerAssociationTypes[i].IsOneToOne;
-							if (isOneToOneAssociation)
+							var isEntityAssociation = ownerAssociationTypes != null &&
+							                          ownerAssociationTypes[i] != null &&
+							                          ownerAssociationTypes[i].IsEntityType;
+							if (isEntityAssociation)
 							{
 								session.PersistenceContext.AddNullProperty(ownerKey, ownerAssociationTypes[i].PropertyName);
 							}
@@ -987,51 +988,7 @@ namespace NHibernate.Loader
 
 				if (key == null)
 				{
-					if (cols == 1 || CollectionOwners == null)
-					{
-						continue;
-					}
-
-					int position = GetPosition(i);
-
-					if (position == -1)
-					{
-						continue;
-					}
-					
-					/*
-					* the keys.length > 1 and the relation IsIgnoreNotFound probably we are in presence of
-					* an load with "outer join" the relation can be considerer loaded even if the key is null (mean not found)
-					*/
-					
-					
-					foreach (int owner in CollectionOwners)
-					{
-						if (owner == -1)
-						{
-							continue;
-						}
-						
-						bool found = false;
-						int count = 0;
-						
-						foreach (IType type in persisters[owner].PropertyTypes)
-						{
-							if (type is ManyToOneType many 
-							    && ++count == position
-							    && type.Name == persister.EntityName && many.IsNullable)
-							{
-								found = true;
-								session.PersistenceContext.AddNullProperty(keys[owner], many.PropertyName);
-								break;
-							}
-						}
-
-						if (found)
-						{
-							break;
-						}
-					}
+					//do nothing
 				}
 				else
 				{
