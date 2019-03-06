@@ -23,7 +23,7 @@ namespace NHibernate.Mapping
 
 		private EntityType EntityType
 		{
-			get { return TypeFactory.ManyToOne(ReferencedEntityName, null, false, false, IsIgnoreNotFound, false, PropertyName); }
+			get { return TypeFactory.ManyToOne(ReferencedEntityName, null, false, false, IsIgnoreNotFound, false, null); }
 		}
 
 		public bool IsIgnoreNotFound
@@ -59,8 +59,6 @@ namespace NHibernate.Mapping
 		{
 			get { return EntityType; }
 		}
-		
-		public string PropertyName { get; set; }
 
 		/// <summary></summary>
 		public PersistentClass AssociatedClass

@@ -1,7 +1,6 @@
 using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Linq;
-using NHibernate.Mapping;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1001
