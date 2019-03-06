@@ -7,7 +7,6 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -393,7 +392,7 @@ namespace NHibernate.Loader
 				for (int i = 0; i < entitySpan; i++)
 				{
 					object entity = row[i];
-					EntityKey key = keys[i];
+					var key = keys[i];
 					if (entity == null && key != null && IsChildFetchEntity(i))
 					{
 						// The entity was missing in the session, fallback on internal load (which will just yield a
@@ -990,7 +989,7 @@ namespace NHibernate.Loader
 				{
 					//If the object is already loaded, return the loaded one
 					obj = session.GetEntityUsingInterceptor(key);
-					bool alreadyLoaded = obj != null;
+					var alreadyLoaded = obj != null;
 					var persister = persisters[i];
 					if (IsChildFetchEntity(i))
 					{
