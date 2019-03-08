@@ -787,7 +787,7 @@ namespace NHibernate.Loader
 					if (keys[i] == null)
 					{
 						var ownerAssociationType = ownerAssociationTypes[i];
-						if (ownerAssociationType?.PropertyName != null)
+						if (ownerAssociationType?.PropertyName != null && ownerAssociationType.IsNullable)
 						{
 							var owner = owners[i];
 							if (owner > -1)
