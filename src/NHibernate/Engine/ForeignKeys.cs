@@ -179,9 +179,17 @@ namespace NHibernate.Engine
 			}
 
 			// let the interceptor inspect the instance to decide
-			// let the persister inspect the instance to decide
-			return session.Interceptor.IsTransient(entity) ??
-			       session.GetEntityPersister(entityName, entity).IsTransient(entity, session);
+
+			if (session.Interceptor.IsTransient(entity) == true)
+				return true;
+
+			if (entity is INHibernateProxy proxy && proxy.HibernateLazyInitializer.IsUninitialized)
+			{
+				return false;
+			}
+
+			// let the persister inspect the instance to decide	
+			return session.GetEntityPersister(entityName, entity).IsTransient(entity, session);
 		}
 
 		/// <summary> 

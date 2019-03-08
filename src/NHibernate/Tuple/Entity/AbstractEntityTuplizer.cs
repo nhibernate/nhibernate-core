@@ -114,6 +114,11 @@ namespace NHibernate.Tuple.Entity
 
 		public object GetIdentifier(object entity)
 		{
+			if (entity is INHibernateProxy proxy)
+			{
+				return proxy.HibernateLazyInitializer.Identifier;
+			}
+			
 			object id;
 			if (entityMetamodel.IdentifierProperty.IsEmbedded)
 			{
