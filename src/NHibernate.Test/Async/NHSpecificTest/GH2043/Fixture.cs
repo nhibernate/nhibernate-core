@@ -16,7 +16,7 @@ using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using NHibernate.Linq;
 
-namespace NHibernate.Test.NHSpecificTest.IlogsProxyTest
+namespace NHibernate.Test.NHSpecificTest.GH2043
 {
 	using System.Threading.Tasks;
 	[TestFixture]

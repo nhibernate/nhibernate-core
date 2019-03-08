@@ -179,7 +179,6 @@ namespace NHibernate.Engine
 			}
 
 			// let the interceptor inspect the instance to decide
-
 			if (session.Interceptor.IsTransient(entity) == true)
 				return true;
 

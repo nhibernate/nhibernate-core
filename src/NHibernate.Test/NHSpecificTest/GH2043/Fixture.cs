@@ -5,7 +5,7 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.IlogsProxyTest
+namespace NHibernate.Test.NHSpecificTest.GH2043
 {
 	[TestFixture]
 	public class Fixture : TestCaseMappingByCode
