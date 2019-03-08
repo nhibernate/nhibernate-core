@@ -173,7 +173,6 @@ namespace NHibernate.Test.NHSpecificTest.IlogsProxyTest
 												.FirstAsync(e => e.Id == _entityWithInterfaceLookupId));
 
 					entityToUpdate.EntityLookup = (IEntityProxy)await (session.LoadAsync(typeof(EntityWithInterfaceProxyDefinition), _entityWithInterfaceProxy2Id));
-					entityToUpdate.EntityLookup.Id = Guid.Empty;
 
 					await (session.UpdateAsync(entityToUpdate));
 					await (session.FlushAsync());

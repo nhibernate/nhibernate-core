@@ -161,7 +161,6 @@ namespace NHibernate.Test.NHSpecificTest.IlogsProxyTest
 												.First(e => e.Id == _entityWithInterfaceLookupId);
 
 					entityToUpdate.EntityLookup = (IEntityProxy)session.Load(typeof(EntityWithInterfaceProxyDefinition), _entityWithInterfaceProxy2Id);
-					entityToUpdate.EntityLookup.Id = Guid.Empty;
 
 					session.Update(entityToUpdate);
 					session.Flush();
