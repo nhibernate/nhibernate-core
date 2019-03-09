@@ -10,7 +10,6 @@
 
 using System;
 using System.Linq;
-using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
@@ -22,9 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 	[TestFixture]
 	public class FixtureAsync : TestCaseMappingByCode
 	{
-		private Guid _entityWithClassProxy1Id;
 		private Guid _entityWithClassProxy2Id;
-		private Guid _entityWithInterfaceProxy1Id;
 		private Guid _entityWithInterfaceProxy2Id;
 		private Guid _entityWithClassLookupId;
 		private Guid _entityWithInterfaceLookupId;
@@ -34,6 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 			var mapper = new ModelMapper();
 			mapper.Class<EntityWithClassProxyDefinition>(rc =>
 			{
+				rc.Table("ProxyDefinition");
 				rc.Proxy(typeof(EntityWithClassProxyDefinition));
 
 				rc.Id(x => x.Id);
@@ -42,6 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 
 			mapper.Class<EntityWithInterfaceProxyDefinition>(rc =>
 			{
+				rc.Table("IProxyDefinition");
 				rc.Proxy(typeof(IEntityProxy));
 
 				rc.Id(x => x.Id);
@@ -69,13 +68,13 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 		protected override void OnSetUp()
 		{
 			using(var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
 				var entityCP1 = new EntityWithClassProxyDefinition
 								{
 									Id = Guid.NewGuid(),
 									Name = "Name 1"
 								};
-				_entityWithClassProxy1Id = entityCP1.Id;
 
 				var entityCP2 = new EntityWithClassProxyDefinition
 								{
@@ -89,7 +88,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 									Id = Guid.NewGuid(),
 									Name = "Name 1"
 								};
-				_entityWithInterfaceProxy1Id = entityIP1.Id;
 
 				var entityIP2 = new EntityWithInterfaceProxyDefinition
 								{
@@ -123,6 +121,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 				session.Save(entityIL);
 
 				session.Flush();
+				transaction.Commit();
 			}
 		}
 
@@ -130,14 +129,12 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 		protected override void OnTearDown()
 		{
 			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
-				using (var transaction = session.BeginTransaction())
-				{
-					session.Delete("from System.Object");
+				session.Delete("from System.Object");
 
-					session.Flush();
-					transaction.Commit();
-				}
+				session.Flush();
+				transaction.Commit();
 			}
 		}
 
@@ -146,18 +143,16 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 		public async Task UpdateEntityWithClassLookupAsync()
 		{
 			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
-				using(var transaction = session.BeginTransaction())
-				{
-					var entityToUpdate = await (session.Query<EntityWithClassLookup>()
-												.FirstAsync(e => e.Id == _entityWithClassLookupId));
+				var entityToUpdate = await (session.Query<EntityWithClassLookup>()
+											.FirstAsync(e => e.Id == _entityWithClassLookupId));
 
-					entityToUpdate.EntityLookup = (EntityWithClassProxyDefinition)await (session.LoadAsync(typeof(EntityWithClassProxyDefinition), _entityWithClassProxy2Id));
+				entityToUpdate.EntityLookup = (EntityWithClassProxyDefinition) await (session.LoadAsync(typeof(EntityWithClassProxyDefinition), _entityWithClassProxy2Id));
 
-					await (session.UpdateAsync(entityToUpdate));
-					await (session.FlushAsync());
-					await (transaction.RollbackAsync());
-				}
+				await (session.UpdateAsync(entityToUpdate));
+				await (session.FlushAsync());
+				await (transaction.CommitAsync());
 			}
 		}
 
@@ -165,19 +160,17 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 		[Test]
 		public async Task UpdateEntityWithInterfaceLookupAsync()
 		{
-			using(var session = OpenSession())
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
-				using(var transaction = session.BeginTransaction())
-				{
-					var entityToUpdate = await (session.Query<EntityWithInterfaceLookup>()
-												.FirstAsync(e => e.Id == _entityWithInterfaceLookupId));
+				var entityToUpdate = await (session.Query<EntityWithInterfaceLookup>()
+											.FirstAsync(e => e.Id == _entityWithInterfaceLookupId));
 
-					entityToUpdate.EntityLookup = (IEntityProxy)await (session.LoadAsync(typeof(EntityWithInterfaceProxyDefinition), _entityWithInterfaceProxy2Id));
+				entityToUpdate.EntityLookup = (IEntityProxy) await (session.LoadAsync(typeof(EntityWithInterfaceProxyDefinition), _entityWithInterfaceProxy2Id));
 
-					await (session.UpdateAsync(entityToUpdate));
-					await (session.FlushAsync());
-					await (transaction.RollbackAsync());
-				}
+				await (session.UpdateAsync(entityToUpdate));
+				await (session.FlushAsync());
+				await (transaction.CommitAsync());
 			}
 		}
 	}
