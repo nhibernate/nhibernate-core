@@ -625,7 +625,7 @@ namespace NHibernate.Loader
 				object obj = null;
 				EntityKey key = keys[i];
 
-				// if key is null do nothing
+				// null keys are handled in RegisterNonExists
 				if(key != null)
 				{
 					//If the object is already loaded, return the loaded one
