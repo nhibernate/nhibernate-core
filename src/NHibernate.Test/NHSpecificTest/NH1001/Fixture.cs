@@ -76,12 +76,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 					Department1 = dept,
 					Department2 = dept2,
 					Department3 = dept3,
+					Department4 = new Department {Name = "PropRef", Id = 22, PropRefId = 23 },
 					Address = address
 				};
 
 				emp.Phones.Add(phone1);
 				emp.Phones.Add(phone2);
 
+				session.Save(emp.Department4);
 				session.Save(emp);
 
 				transaction.Commit();
@@ -92,8 +94,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 
 		protected override void OnTearDown()
 		{
-			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 12, DEPARTMENT_ID_3 = 13, ADDRESS_ID = 15 WHERE EMPLOYEE_ID = {employeeId}");
-
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
@@ -185,13 +185,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 		[Test]
 		public void Department3IsNotFound()
 		{
-			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 12, DEPARTMENT_ID_3 = 99999, ADDRESS_ID = 15 WHERE EMPLOYEE_ID = {employeeId}");
-
 			var statistics = Sfi.Statistics;
 			statistics.Clear();
 
 			using (var session = OpenSession())
+			using(session.BeginTransaction())
 			{
+				ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 12, DEPARTMENT_ID_3 = 99999, ADDRESS_ID = 15 WHERE EMPLOYEE_ID = {employeeId}");
 				Assert.That(() => session.Get<Employee>(employeeId), Throws.InstanceOf<ObjectNotFoundException>());
 			}
 		}
@@ -238,9 +238,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 		}
 		
 		[Test]
-		public void Department2IsNull_QueryOver()
+		public void Department2And4AreNull_QueryOver()
 		{
-			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 99999, DEPARTMENT_ID_3 = 13, ADDRESS_ID = 15 WHERE EMPLOYEE_ID = {employeeId}");
+			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 99999, DEPARTMENT_ID_4 = 99999, DEPARTMENT_ID_3 = 13, ADDRESS_ID = 15 WHERE EMPLOYEE_ID = {employeeId}");
 
 			var statistics = Sfi.Statistics;
 			statistics.Clear();
@@ -248,11 +248,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			using (var session = OpenSession())
 			{
 				var employee = session.QueryOver<Employee>()
-					.Fetch(SelectMode.Fetch, e => e.Department2)
+					.Fetch(SelectMode.Fetch, e => e.Department2, e => e.Department4)
 					.Fetch(SelectMode.Skip, e => e.Department1, e => e.Department3, e => e.Address)
 					.Where(e => e.Id == employeeId)
 					.SingleOrDefault();
 				Assert.That(employee.Department2, Is.Null);
+				Assert.That(employee.Department4, Is.Null);
 				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(4), "Employee, Department1, Department3, and Address");
 
 				Assert.That(employee.Department1, Is.Not.Null);
@@ -262,9 +263,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 		}
 
 		[Test]
-		public void Department2IsNull_Linq()
+		public void Department2And4AreNull_Linq()
 		{
-			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 99999, DEPARTMENT_ID_3 = 13, ADDRESS_ID = 15 WHERE EMPLOYEE_ID = {employeeId}");
+			ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 99999, DEPARTMENT_ID_4 = 99999, DEPARTMENT_ID_3 = 13, ADDRESS_ID = 15 WHERE EMPLOYEE_ID = {employeeId}");
 
 			var statistics = Sfi.Statistics;
 			statistics.Clear();
@@ -272,9 +273,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			using (var session = OpenSession())
 			{
 				//NOTE: HQL and Linq ignore fetch="join" in mapping.
-				var employee = session.Query<Employee>().Fetch(x => x.Department2).Single();
+				var employee = session.Query<Employee>().Fetch(x => x.Department2).Fetch(x => x.Department4).Single();
 				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(5), "Employee, Department1, Department3, Address, and Phones");
 				Assert.That(employee.Department2, Is.Null);
+				Assert.That(employee.Department4, Is.Null);
 				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(5), "Employee, Department1, Department3, Address, and Phones");
 
 				Assert.That(employee.Department1, Is.Not.Null);
@@ -294,11 +296,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			using (var session = OpenSession())
 			{
 				var employee = session.QueryOver<Employee>()
-					.Fetch(SelectMode.Fetch, e => e.Department2)
+					.Fetch(SelectMode.Fetch, e => e.Department2, e => e.Department4)
 					.Fetch(SelectMode.Skip, e => e.Department1, e => e.Department3, e => e.Address, e => e.Phones)
 					.Where(e => e.Id == employeeId)
 					.SingleOrDefault();
 				Assert.That(employee.Department2, Is.Null);
+				Assert.That(employee.Department4, Is.Not.Null);
 				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(5), "Employee, Department1, Department3, Address, and Phones");
 
 				Assert.That(employee.Department1, Is.Not.Null);
