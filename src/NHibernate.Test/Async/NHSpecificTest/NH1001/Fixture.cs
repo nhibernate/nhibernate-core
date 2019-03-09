@@ -200,9 +200,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			statistics.Clear();
 
 			using (var session = OpenSession())
-			using(session.BeginTransaction())
+			using(var transaction = session.BeginTransaction())
 			{
-				ExecuteStatement($"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 12, DEPARTMENT_ID_3 = 99999, ADDRESS_ID = 15 WHERE EMPLOYEE_ID = {employeeId}");
+				ExecuteStatement(session, transaction, $"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 12, DEPARTMENT_ID_3 = 99999, ADDRESS_ID = 15 WHERE EMPLOYEE_ID = {employeeId}");
 				Assert.That(() => session.GetAsync<Employee>(employeeId), Throws.InstanceOf<ObjectNotFoundException>());
 			}
 		}
