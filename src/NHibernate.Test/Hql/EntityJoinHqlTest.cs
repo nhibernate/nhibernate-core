@@ -37,6 +37,26 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test]
+		public void CanJoinNotAssociatedEntity_OnKeyword()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex = 
+				session
+					.CreateQuery("select ex " +
+						"from EntityWithNoAssociation root " +
+						"left join EntityComplex ex on root.Complex1Id = ex.Id")
+						.SetMaxResults(1)
+					.UniqueResult<EntityComplex>();
+
+				Assert.That(entityComplex, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(entityComplex), Is.True);
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
 		public void EntityJoinForCompositeKey()
 		{
 			using (var sqlLog = new SqlLogSpy())

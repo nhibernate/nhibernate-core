@@ -1104,8 +1104,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			get
 			{
-				// Note: once we add support for "JOIN ... ON ...",
-				// the ON clause needs to get included here
+				//Note: "JOIN ... ON ..." case is treated as "JOIN ... WITH ..." by parser 
 				return CurrentClauseType == WHERE ||
 						CurrentClauseType == WITH ||
 						IsInCase;
