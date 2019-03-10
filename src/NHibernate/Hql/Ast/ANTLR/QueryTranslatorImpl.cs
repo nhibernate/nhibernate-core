@@ -89,12 +89,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 			ErrorIfDML();
 			var query = ( QueryNode ) _sqlAst;
 			bool hasLimit = queryParameters.RowSelection != null && queryParameters.RowSelection.DefinesLimits;
-			var containsCollectionFetches = ContainsCollectionFetches;
-			bool needsDistincting = ( query.GetSelectClause().IsDistinct || hasLimit ) && containsCollectionFetches;
+			bool needsDistincting = ( query.GetSelectClause().IsDistinct || hasLimit ) && ContainsCollectionFetches;
 
 			QueryParameters queryParametersToUse;
 
-			if ( hasLimit && containsCollectionFetches ) 
+			if ( hasLimit && ContainsCollectionFetches ) 
 			{
 				log.Warn( "firstResult/maxResults specified with collection fetch; applying in memory!" );
 				var selection = new RowSelection
