@@ -235,7 +235,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return ASTUtil.CollectChildren<IASTNode>(this, ProjectionListPredicate);
 		}
 
-		public IList<FromElement> GetProjectionListTyped()
+		internal IList<FromElement> GetProjectionListTyped()
 		{
 			return ASTUtil.CollectChildren<FromElement>(this, ProjectionListPredicate);
 		}
