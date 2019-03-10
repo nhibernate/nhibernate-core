@@ -271,18 +271,18 @@ namespace NHibernate.Collection.Generic
 				var found = TryReadElementByKey<TKey, TValue>(key, out _, out _);
 				if (found.HasValue)
 				{
-					if (found.Value)
-					{
-						throw new ArgumentException("An item with the same key has already been added."); // Mimic dictionary behavior
-					}
-
 					var queueOperationTracker = GetOrCreateQueueOperationTracker();
 					if (queueOperationTracker != null)
 					{
-						QueueAddElementByKey(key, value);
+						QueueAddElementByKey(key, value, found.Value);
 					}
 					else
 					{
+						if (found.Value)
+						{
+							throw new ArgumentException("An item with the same key has already been added."); // Mimic dictionary behavior
+						}
+
 #pragma warning disable 618
 						QueueOperation(new PutDelayedOperation(this, key, value, default(TValue)));
 #pragma warning restore 618

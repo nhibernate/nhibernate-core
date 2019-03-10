@@ -86,6 +86,14 @@ namespace NHibernate.Collection.Trackers
 		}
 
 		/// <summary>
+		/// A method that will be called when an element was flushed separately due to a special requirement
+		/// (e.g. saving an element with an id generator that requries an immediate insert). The queue should
+		/// ignore the flushed element when appending elements to the loaded collection in order to prevent duplicates.
+		/// </summary>
+		/// <param name="element">The element to evict.</param>
+		public abstract void AfterElementFlushing(object element);
+
+		/// <summary>
 		/// Returns an <see cref="IEnumerable"/> of elements that were added into the collection.
 		/// </summary>
 		/// <returns>An <see cref="IEnumerable"/> of added elements.</returns>

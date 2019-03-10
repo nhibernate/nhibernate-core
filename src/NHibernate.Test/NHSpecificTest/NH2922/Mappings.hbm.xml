@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2922" default-access="property"
+                   default-lazy="false" auto-import="true" default-cascade="none" >
+  <class name="Employee" table="`Employee`">
+    <id name="Id">
+      <column name="Id"/>
+      <generator class="assigned"/>
+    </id>
+    <property name="Name" />
+    <many-to-one class="Store" name="Store">
+      <column name="Store_id"/>
+    </many-to-one>
+  </class>
+  <class name="Store" table="`Store`">
+    <id name="Id">
+      <column name="Id"/>
+      <generator class="assigned"/>
+    </id>
+    <property name="Name"/>
+    <bag name="Staff" cascade="all-delete-orphan" inverse="true">
+      <key>
+        <column name="Store_id"/>
+      </key>
+      <one-to-many class="Employee"/>
+    </bag>
+  </class>
+</hibernate-mapping>

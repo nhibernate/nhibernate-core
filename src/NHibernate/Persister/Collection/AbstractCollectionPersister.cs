@@ -124,6 +124,7 @@ namespace NHibernate.Persister.Collection
 		private readonly IIdentifierGenerator identifierGenerator;
 		private readonly IPropertyMapping elementPropertyMapping;
 		private readonly IEntityPersister elementPersister;
+		private readonly ElementOwnerProperty[] _elementOwnerProperties;
 		private readonly ICacheConcurrencyStrategy cache;
 		private readonly CollectionType collectionType;
 		private ICollectionInitializer initializer;
@@ -162,6 +163,15 @@ namespace NHibernate.Persister.Collection
 		private readonly IDictionary<string, object> collectionPropertyColumnNames = new Dictionary<string, object>();
 
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (ICollectionPersister));
+
+		private class ElementOwnerProperty
+		{
+			public IType Type { get; set; }
+
+			public int PropertyIndex { get; set; }
+
+			public ElementOwnerProperty ComponentProperty { get; set; }
+		}
 
 		public AbstractCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
 		{
@@ -253,6 +263,46 @@ namespace NHibernate.Persister.Collection
 				string _entityName = ((EntityType) elementType).GetAssociatedEntityName();
 				elementPersister = factory.GetEntityPersister(_entityName);
 				// NativeSQL: collect element column and auto-aliases
+				if (elementPersister is IOuterJoinLoadable elementLoadable)
+				{
+					var ownerProperties = new ElementOwnerProperty[keyColumnNames.Length];
+					for (var i = 0; i < elementLoadable.PropertyNames.Length; i++)
+					{
+						var columns = elementLoadable.GetPropertyColumnNames(i);
+						foreach (var column in columns)
+						{
+							var index = System.Array.FindIndex(keyColumnNames, t => t.Equals(column, StringComparison.OrdinalIgnoreCase));
+							if (index < 0)
+							{
+								continue;
+							}
+
+							var type = elementLoadable.PropertyTypes[i];
+							if (type is IAbstractComponentType componentType)
+							{
+								FillComponentRelatedProperties(componentType, elementLoadable, ownerProperties, i);
+							}
+							else
+							{
+								ownerProperties[index] = new ElementOwnerProperty
+								{
+									PropertyIndex = i,
+									Type = type
+								};
+							}
+						}
+					}
+
+					if (elementLoadable.IdentifierType is IAbstractComponentType idComponentType)
+					{
+						FillComponentRelatedProperties(idComponentType, elementLoadable, ownerProperties, -1);
+					}
+
+					if (ownerProperties.All(o => o != null))
+					{
+						_elementOwnerProperties = ownerProperties;
+					}
+				}
 			}
 			else
 			{
@@ -898,6 +948,113 @@ namespace NHibernate.Persister.Collection
 		{
 			// when the index has at least one column then use that column to perform the count, otherwise it will use the formula.
 			return IndexColumnNames[0] ?? IndexFormulas[0];
+		}
+
+		public object GetElementOwner(object element, ISessionImplementor session)
+		{
+			if (_elementOwnerProperties == null)
+			{
+				return null;
+			}
+
+			var values = new object[_elementOwnerProperties.Length];
+			for (var i = 0; i < _elementOwnerProperties.Length; i++)
+			{
+				var ownerProperty = _elementOwnerProperties[i];
+				var ownerValue = GetElementOwnerPropertyValue(element, ownerProperty, session);
+				if (ownerProperty.Type is ManyToOneType)
+				{
+					return ownerValue;
+				}
+
+				values[i] = ownerValue;
+			}
+
+			if (!CollectionType.UseLHSPrimaryKey) // property-ref
+			{
+				var propertyType = OwnerEntityPersister.GetPropertyType(CollectionType.LHSPropertyName);
+				if (propertyType is ComponentType propertyRefComponentType)
+				{
+					var ownerKey = propertyRefComponentType.Instantiate();
+					propertyRefComponentType.SetPropertyValues(ownerKey, values);
+					return session.PersistenceContext.GetCollectionOwner(ownerKey, this);
+				}
+
+				return values.Length == 1 ? session.PersistenceContext.GetCollectionOwner(values[0], this) : null;
+			}
+
+			if (OwnerEntityPersister.IdentifierType is ComponentType identifierComponentType)
+			{
+				var ownerKey = identifierComponentType.Instantiate();
+				identifierComponentType.SetPropertyValues(ownerKey, values);
+				return session.PersistenceContext.GetCollectionOwner(ownerKey, this);
+			}
+
+			if (values.Length == 1 && values[0] != null)
+			{
+				return session.PersistenceContext.GetEntity(new EntityKey(values[0], OwnerEntityPersister));
+			}
+
+			return null;
+		}
+
+		internal object GetElementOwnerKey(object element, ISessionImplementor session)
+		{
+			var owner = GetElementOwner(element, session);
+			return owner == null ? null : CollectionType.GetKeyOfOwner(owner, session);
+		}
+
+		private object GetElementOwnerPropertyValue(object element, ElementOwnerProperty ownerProperty, ISessionImplementor session)
+		{
+			var componentProperty = ownerProperty.ComponentProperty;
+			if (componentProperty == null)
+			{
+				return ownerProperty.PropertyIndex < 0
+					? elementPersister.GetIdentifier(element)
+					: elementPersister.GetPropertyValue(element, ownerProperty.PropertyIndex);
+			}
+
+			var componentType = (IAbstractComponentType) componentProperty.Type;
+			var component = componentProperty.PropertyIndex < 0
+				? elementPersister.GetIdentifier(element)
+				: elementPersister.GetPropertyValue(element, componentProperty.PropertyIndex);
+
+			return componentType.GetPropertyValue(component, ownerProperty.PropertyIndex, session);
+		}
+
+		private void FillComponentRelatedProperties(IAbstractComponentType componentType, IOuterJoinLoadable elementLoadable, ElementOwnerProperty[] ownerProperties, int propertyIndex)
+		{
+			var componentProperty = new ElementOwnerProperty
+			{
+				PropertyIndex = propertyIndex,
+				Type = propertyIndex < 0 ? elementLoadable.IdentifierType : elementLoadable.PropertyTypes[propertyIndex]
+			};
+
+			for (var i = 0; i < componentType.PropertyNames.Length; i++)
+			{
+				var propertyName = componentType.PropertyNames[i];
+				var columns = elementLoadable.GetPropertyColumnNames(
+					propertyIndex < 0
+						? $"{EntityPersister.EntityID}.{propertyName}"
+						: $"{elementLoadable.PropertyNames[propertyIndex]}.{propertyName}");
+				foreach (var column in columns)
+				{
+					var index = System.Array.FindIndex(keyColumnNames, t => t.Equals(column, StringComparison.OrdinalIgnoreCase));
+					if (index < 0)
+					{
+						continue;
+					}
+
+					var subProperty = new ElementOwnerProperty
+					{
+						ComponentProperty = componentProperty,
+						PropertyIndex = i,
+						Type = componentType.Subtypes[i]
+					};
+
+					ownerProperties[index] = subProperty;
+				}
+			}
 		}
 
 		private SqlString GenerateDetectRowByIndexString()

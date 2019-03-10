@@ -46,18 +46,18 @@ namespace NHibernate.Event.Default
 
 			session.Interceptor.PreFlush((ICollection) persistenceContext.EntitiesByKey.Values);
 
-			PrepareEntityFlushes(session);
-			// we could move this inside if we wanted to
-			// tolerate collection initializations during
-			// collection dirty checking:
-			PrepareCollectionFlushes(session);
-			// now, any collections that are initialized
-			// inside this block do not get updated - they
-			// are ignored until the next flush
-
 			persistenceContext.Flushing = true;
 			try
 			{
+				PrepareEntityFlushes(session);
+				// we could move this inside if we wanted to
+				// tolerate collection initializations during
+				// collection dirty checking:
+				PrepareCollectionFlushes(session);
+				// now, any collections that are initialized
+				// inside this block do not get updated - they
+				// are ignored until the next flush
+
 				FlushEntities(@event);
 				FlushCollections(session);
 			}

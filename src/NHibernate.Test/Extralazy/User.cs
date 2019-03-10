@@ -62,5 +62,13 @@ namespace NHibernate.Test.Extralazy
 				Companies[i].ListIndex = i;
 			}
 		}
+
+		public virtual void UpdateCreditCardsIndexes()
+		{
+			for (var i = 0; i < CreditCards.Count; i++)
+			{
+				CreditCards[i].ListIndex = i;
+			}
+		}
 	}
 }

@@ -236,12 +236,7 @@ namespace NHibernate.Collection
 		protected virtual async Task<ICollection> GetOrphansAsync(ICollection oldElements, ICollection currentElements, string entityName, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			// short-circuit(s)
-			if (currentElements.Count == 0)
-			{
-				// no new elements, the old list contains only Orphans
-				return oldElements;
-			}
+			var collectionPersister = session.PersistenceContext.GetCollectionEntry(this).LoadedPersister as AbstractCollectionPersister;
 			if (oldElements.Count == 0)
 			{
 				// no old elements, so no Orphans neither
@@ -267,6 +262,11 @@ namespace NHibernate.Collection
 			// iterate over the *old* list
 			foreach (object old in oldElements)
 			{
+				if (!IsOrphan(old, collectionPersister))
+				{
+					continue;
+				}
+
 				object oldId = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, old, session, cancellationToken)).ConfigureAwait(false);
 				if (!currentIds.Contains(new TypedValue(idType, oldId, false)))
 				{

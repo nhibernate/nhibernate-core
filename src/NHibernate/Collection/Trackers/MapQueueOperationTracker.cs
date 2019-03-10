@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Persister.Collection;
@@ -13,6 +14,7 @@ namespace NHibernate.Collection.Trackers
 		private IDictionary<TKey, TValue> _orphanMap;
 		private ISet<TKey> _removalQueue;
 		private int _queueSize;
+		private ISet<TValue> _flushedElements;
 
 		public MapQueueOperationTracker(ICollectionPersister collectionPersister)
 		{
@@ -35,6 +37,21 @@ namespace NHibernate.Collection.Trackers
 		}
 
 		/// <inheritdoc />
+		public override void AfterElementFlushing(object element)
+		{
+			var value = (TValue) element;
+			if (!TryGetKeyForValue(value, out var key))
+			{
+				GetOrCreateFlushedElements().Add(value);
+			}
+			else
+			{
+				_queue.Remove(key);
+				_queueSize--;
+			}
+		}
+
+		/// <inheritdoc />
 		public override IEnumerable GetAddedElements()
 		{
 			return _queue?.Values ?? (IEnumerable) Enumerable.Empty<object>();
@@ -47,8 +64,18 @@ namespace NHibernate.Collection.Trackers
 		}
 
 		/// <inheritdoc />
-		public override void AddElementByKey(TKey elementKey, TValue element)
+		public override void AddElementByKey(TKey elementKey, TValue element, bool exists)
 		{
+			if (_flushedElements?.Remove(element) == true)
+			{
+				return;
+			}
+
+			if (exists)
+			{
+				throw new ArgumentException("An item with the same key has already been added."); // Mimic dictionary behavior
+			}
+
 			_removalQueue?.Remove(elementKey); // We have to remove the key from the removal list when the element is readded
 			GetOrCreateQueue().Add(elementKey, element);
 			if (!Cleared)
@@ -194,6 +221,27 @@ namespace NHibernate.Collection.Trackers
 			}
 		}
 
+		private bool TryGetKeyForValue(TValue value, out TKey key)
+		{
+			if (_queue == null)
+			{
+				key = default(TKey);
+				return false;
+			}
+
+			foreach (var pair in _queue)
+			{
+				if (EqualityComparer<TValue>.Default.Equals(pair.Value, value))
+				{
+					key = pair.Key;
+					return true;
+				}
+			}
+
+			key = default(TKey);
+			return false;
+		}
+
 		private IDictionary<TKey, TValue> GetOrCreateQueue()
 		{
 			return _queue ?? (_queue = (IDictionary<TKey, TValue>) _collectionPersister.CollectionType.Instantiate(-1));
@@ -207,6 +255,11 @@ namespace NHibernate.Collection.Trackers
 		private ISet<TKey> GetOrCreateRemovalQueue()
 		{
 			return _removalQueue ?? (_removalQueue = new HashSet<TKey>());
+		}
+
+		private ISet<TValue> GetOrCreateFlushedElements()
+		{
+			return _flushedElements ?? (_flushedElements = new HashSet<TValue>());
 		}
 	}
 }

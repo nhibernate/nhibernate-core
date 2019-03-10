@@ -199,6 +199,23 @@ namespace NHibernate.Persister.Collection
 			return i + 1;
 		}
 
+		internal Task<object> GetElementOwnerKeyAsync(object element, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				var owner = GetElementOwner(element, session);
+				return owner == null ? Task.FromResult<object>(null ): CollectionType.GetKeyOfOwnerAsync(owner, session, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
 		public async Task RemoveAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();

@@ -31,6 +31,12 @@ namespace NHibernate.Collection.Trackers
 		private int _queueSize;
 		private List<KeyValuePair<int, T>> _removedDbIndexes; // Sorted removed db indexes
 		private ISet<T> _removalQueue;
+		private ISet<T> _flushedElements;
+
+		public IndexedListQueueOperationTracker(ISet<T> flushedElements)
+		{
+			_flushedElements = flushedElements;
+		}
 
 		/// <inheritdoc />
 		public override bool RequiresFlushing(string operationName)
@@ -145,6 +151,21 @@ namespace NHibernate.Collection.Trackers
 		public override int GetQueueSize()
 		{
 			return _queueSize;
+		}
+
+		/// <inheritdoc />
+		protected internal override void AfterElementFlushing(T element)
+		{
+			var index = _queue?.FindIndex(pair => EqualityComparer<T>.Default.Equals(pair.Value, element));
+			if (!index.HasValue || index < 0)
+			{
+				GetOrCreateFlushedElements().Add(element);
+			}
+			else
+			{
+				_queue.RemoveAt(index.Value);
+				_queueSize--;
+			}
 		}
 
 		/// <inheritdoc />
@@ -264,6 +285,11 @@ namespace NHibernate.Collection.Trackers
 				throw new ArgumentOutOfRangeException(nameof(index), "Index must be within the bounds of the List.");
 			}
 
+			if (_flushedElements?.Remove(element) == true)
+			{
+				return;
+			}
+
 			var pair = new KeyValuePair<int, T>(index, element);
 			var i = GetQueueIndex(ref _queue, pair, false);
 			_queue.Insert(i, pair);
@@ -342,6 +368,11 @@ namespace NHibernate.Collection.Trackers
 		private ISet<T> GetOrCreateRemovalQueue()
 		{
 			return _removalQueue ?? (_removalQueue = new HashSet<T>());
+		}
+
+		private ISet<T> GetOrCreateFlushedElements()
+		{
+			return _flushedElements ?? (_flushedElements = new HashSet<T>());
 		}
 	}
 }

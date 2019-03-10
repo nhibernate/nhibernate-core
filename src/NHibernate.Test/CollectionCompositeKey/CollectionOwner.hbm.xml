@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   namespace="NHibernate.Test.CollectionCompositeKey"
+                   assembly="NHibernate.Test">
+
+  <class name="Parent">
+    <composite-id unsaved-value="any">
+      <key-property name="Code" column="code" length="10" />
+      <key-property name="Number" column="number" />
+    </composite-id>
+
+    <property name="Name" not-null="true" length="10" unique="true" />
+
+    <properties name="Reference" update="false" unique="true">
+      <property name="ReferenceCode" length="8" not-null="true" />
+      <property name="ReferenceNumber" not-null="true" />
+    </properties>
+
+    <bag name="ChildrenByCompositeId" inverse="true" lazy="true" cascade="all">
+      <key>
+        <column name="coIdParentCode" not-null="true" length="10" />
+        <column name="coIdParentNumber" not-null="true" />
+      </key>
+      <one-to-many class="Child" />
+    </bag>
+
+    <bag name="Children" inverse="true" lazy="true" cascade="all">
+      <key>
+        <column name="parentCode" />
+        <column name="parentNumber" />
+      </key>
+      <one-to-many class="Child" />
+    </bag>
+
+    <bag name="ChildrenByForeignKeys" inverse="true" lazy="true" cascade="all">
+      <key>
+        <column name="fkParentCode" />
+        <column name="fkParentNumber" />
+      </key>
+      <one-to-many class="Child" />
+    </bag>
+
+    <bag name="ChildrenByComponent" inverse="true" lazy="true" cascade="all">
+      <key>
+        <column name="coParentCode" />
+        <column name="coParentNumber" />
+      </key>
+      <one-to-many class="Child" />
+    </bag>
+
+    <bag name="ChildrenByComponentForeignKeys" inverse="true" lazy="true" cascade="all">
+      <key>
+        <column name="coFkParentCode" />
+        <column name="coFkParentNumber" />
+      </key>
+      <one-to-many class="Child" />
+    </bag>
+
+    <bag name="ChildrenByUniqueKey" inverse="true" lazy="true" cascade="all">
+      <key column="parentName" property-ref="Name" />
+      <one-to-many class="Child" />
+    </bag>
+    
+    <bag name="ChildrenByUniqueKeyNoManyToOne" inverse="true" lazy="true" cascade="all">
+      <key column="ukFkParentName" property-ref="Name" />
+      <one-to-many class="Child" />
+    </bag>
+    
+    <bag name="ChildrenByCompositeUniqueKey" inverse="true" lazy="true" cascade="all">
+      <key property-ref="Reference">
+        <column name="coUkReferenceCode" />
+        <column name="coUkReferenceNumber" />
+      </key>
+      <one-to-many class="Child" />
+    </bag>
+    
+    <bag name="ChildrenByCompositeUniqueKeyNoManyToOne" inverse="true" lazy="true" cascade="all">
+      <key property-ref="Reference">
+        <column name="coUkFkReferenceCode" />
+        <column name="coUkFkReferenceNumber" />
+      </key>
+      <one-to-many class="Child" />
+    </bag>
+
+    <bag name="ChildrenNoProperties" inverse="false" lazy="true" cascade="all">
+      <key>
+        <column name="_parentCode" />
+        <column name="_parentNumber" />
+      </key>
+      <one-to-many class="Child" />
+    </bag>
+
+    <bag name="GrandChildren" inverse="true" lazy="true" cascade="all">
+      <key>
+        <column name="grandParentCode" />
+        <column name="grandParentNumber" />
+      </key>
+      <one-to-many class="GrandChild" />
+    </bag>
+
+  </class>
+
+  <class name="Child">
+    <composite-id name="Id" unsaved-value="any">
+      <key-property name="Number" column="number" />
+      <key-property name="ParentCode" column="coIdParentCode" length="10" />
+      <key-property name="ParentNumber" column="coIdParentNumber" />
+    </composite-id>
+
+    <property name="Name" />
+
+    <property name="ParentCode" column="fkParentCode" length="10" />
+    <property name="ParentNumber" column="fkParentNumber" />
+
+    <many-to-one name="Parent">
+      <column name="parentCode" length="10 "/>
+      <column name="parentNumber" />
+    </many-to-one>
+
+    <many-to-one name="ParentByName" property-ref="Name">
+      <column name="parentName" length="10" />
+    </many-to-one>
+
+    <property name="ParentName" column="ukFkParentName" length="10" />
+
+    <many-to-one name="ParentByReference" property-ref="Reference">
+      <column name="coUkReferenceCode" length="8" />
+      <column name="coUkReferenceNumber" />
+    </many-to-one>
+
+    <property name="ParentReferenceCode" column="coUkFkReferenceCode" length="8" />
+    <property name="ParentReferenceNumber" column="coUkFkReferenceNumber" />
+
+    <component name="Component">
+      <many-to-one name="Parent">
+        <column name="coParentCode" length="10" />
+        <column name="coParentNumber" />
+      </many-to-one>
+
+      <property name="ParentCode" column="coFkParentCode" length="10" />
+      <property name="ParentNumber" column="coFkParentNumber" />
+    </component>
+  </class>
+
+  <class name="GrandChild">
+    <composite-id>
+      <key-property name="Number" />
+      <key-many-to-one name="GrandParent">
+        <column name="grandParentCode" length="10 "/>
+        <column name="grandParentNumber" />
+      </key-many-to-one>
+    </composite-id>
+
+    <property name="Name" />
+  </class>
+
+</hibernate-mapping>

@@ -33,6 +33,20 @@ namespace NHibernate.Collection.Trackers
 		/// <returns>True whether the element is queued for removal, false otherwise.</returns>
 		public abstract bool IsElementQueuedForDelete(T element);
 
+		/// <inheritdoc />
+		public override void AfterElementFlushing(object element)
+		{
+			AfterElementFlushing((T) element);
+		}
+
+		/// <summary>
+		/// A method that will be called when an element was flushed separately due to a special requirement
+		/// (e.g. saving an element with an id generator that requries an immediate insert). The queue should
+		/// ignore the flushed element when appending elements to the loaded collection in order to prevent duplicates.
+		/// </summary>
+		/// <param name="element">The element to evict.</param>
+		protected internal virtual void AfterElementFlushing(T element) { }
+
 		#region Indexed operations
 
 		/// <summary>

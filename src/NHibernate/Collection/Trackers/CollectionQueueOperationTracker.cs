@@ -13,6 +13,7 @@ namespace NHibernate.Collection.Trackers
 		protected ISet<T> RemovalQueue;
 		protected int QueueSize;
 		protected ISet<T> Orphans;
+		protected internal ISet<T> FlushedElements;
 		protected readonly ICollectionPersister CollectionPersister;
 
 		protected CollectionQueueOperationTracker(ICollectionPersister collectionPersister)
@@ -25,6 +26,11 @@ namespace NHibernate.Collection.Trackers
 		{
 			InitializeQueue();
 			RemovalQueue?.Remove(element); // We have to remove the element from the removal list when the element is readded
+			if (FlushedElements?.Remove(element) == true)
+			{
+				return true;
+			}
+
 			return Add(element);
 		}
 
@@ -46,12 +52,26 @@ namespace NHibernate.Collection.Trackers
 			QueueSize = 0;
 			Orphans?.Clear();
 			RemovalQueue?.Clear();
+			FlushedElements?.Clear();
 		}
 
 		/// <inheritdoc />
 		public override bool HasChanges()
 		{
 			return Cleared || RemovalQueue?.Count > 0 || Queue?.Count > 0;
+		}
+
+		/// <inheritdoc />
+		protected internal override void AfterElementFlushing(T element)
+		{
+			if (Queue?.Remove(element) != true)
+			{
+				GetOrCreateFlushedElements().Add(element);
+			}
+			else
+			{
+				QueueSize--;
+			}
 		}
 
 		/// <inheritdoc />
@@ -177,6 +197,11 @@ namespace NHibernate.Collection.Trackers
 		protected ISet<T> GetOrCreateOrphansSet()
 		{
 			return Orphans ?? (Orphans = new HashSet<T>());
+		}
+
+		protected ISet<T> GetOrCreateFlushedElements()
+		{
+			return FlushedElements ?? (FlushedElements = new HashSet<T>());
 		}
 
 		private void InitializeQueue()

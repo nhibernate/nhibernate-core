@@ -226,6 +226,11 @@ namespace NHibernate.Collection
 			}
 		}
 
+		internal void ResetCachedSize()
+		{
+			cachedSize = -1;
+		}
+
 		/// <summary>
 		/// Return the user-visible collection (or array) instance
 		/// </summary>
@@ -634,6 +639,11 @@ namespace NHibernate.Collection
 
 		internal AbstractQueueOperationTracker GetOrCreateQueueOperationTracker()
 		{
+			if (!IsOperationQueueEnabled)
+			{
+				return null;
+			}
+
 			if (_queueOperationTracker != null)
 			{
 				return _queueOperationTracker;
@@ -694,10 +704,10 @@ namespace NHibernate.Collection
 			queueOperationTracker.ClearCollection();
 		}
 
-		protected void QueueAddElementByKey<TKey, TValue>(TKey elementKey, TValue element)
+		protected void QueueAddElementByKey<TKey, TValue>(TKey elementKey, TValue element, bool exists)
 		{
 			var queueOperationTracker = TryFlushAndGetQueueOperationTracker<TKey, TValue>(nameof(AbstractMapQueueOperationTracker<TKey, TValue>.AddElementByKey));
-			queueOperationTracker.AddElementByKey(elementKey, element);
+			queueOperationTracker.AddElementByKey(elementKey, element, exists);
 		}
 
 		protected void QueueSetElementByKey<TKey, TValue>(TKey elementKey, TValue element, TValue oldElement, bool? existsInDb)
@@ -1111,12 +1121,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		protected virtual ICollection GetOrphans(ICollection oldElements, ICollection currentElements, string entityName, ISessionImplementor session)
 		{
-			// short-circuit(s)
-			if (currentElements.Count == 0)
-			{
-				// no new elements, the old list contains only Orphans
-				return oldElements;
-			}
+			var collectionPersister = session.PersistenceContext.GetCollectionEntry(this).LoadedPersister as AbstractCollectionPersister;
 			if (oldElements.Count == 0)
 			{
 				// no old elements, so no Orphans neither
@@ -1142,6 +1147,11 @@ namespace NHibernate.Collection
 			// iterate over the *old* list
 			foreach (object old in oldElements)
 			{
+				if (!IsOrphan(old, collectionPersister))
+				{
+					continue;
+				}
+
 				object oldId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, old, session);
 				if (!currentIds.Contains(new TypedValue(idType, oldId, false)))
 				{
@@ -1283,5 +1293,39 @@ namespace NHibernate.Collection
 		 */
 
 		#endregion
+
+		/// <summary>
+		/// Checks whether the element is actual an orphan or it was moved to a new parent.
+		/// </summary>
+		/// <param name="element">The element to check</param>
+		/// <param name="collectionPersister">The collection persister</param>
+		/// <returns>Whether the element is an orphan or not.</returns>
+		private bool IsOrphan(object element, AbstractCollectionPersister collectionPersister)
+		{
+			if (collectionPersister?.ElementPersister == null)
+			{
+				return true; // Fallback to the old behavior if it is an unknown persister
+			}
+
+			var entry = session.PersistenceContext.GetEntry(element);
+			if (entry == null)
+			{
+				return true; // The entity may not be loaded yet, can happen when using an instance from an another session
+			}
+
+			if (!entry.ExistsInDatabase)
+			{
+				return false;
+			}
+
+			var elementOwner = collectionPersister.GetElementOwner(element, session);
+			var ownerPersister = collectionPersister.OwnerEntityPersister;
+			if (elementOwner == null || ownerPersister.IdentifierType.IsEqual(ownerPersister.GetIdentifier(elementOwner), ownerPersister.GetIdentifier(Owner)))
+			{
+				return true;
+			}
+
+			return false; // The element has moved to a new parent
+		}
 	}
 }

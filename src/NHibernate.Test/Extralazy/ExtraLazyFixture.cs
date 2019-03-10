@@ -43,6 +43,627 @@ namespace NHibernate.Test.Extralazy
 
 		[TestCase(false)]
 		[TestCase(true)]
+		public void MapAddChildSaveChangeParent(bool initialize)
+		{
+			User gavin;
+			User turin;
+			var gavinItems = new List<UserSetting>();
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = new User("gavin", "secret");
+				turin = new User("turin", "tiger");
+				s.Persist(gavin);
+				s.Persist(turin);
+
+				for (var i = 0; i < 5; i++)
+				{
+					var item = new UserSetting($"g{i}", $"data{i}", gavin);
+					gavinItems.Add(item);
+					gavin.Settings.Add(item.Name, item);
+
+					item = new UserSetting($"t{i}", $"data{i}", turin);
+					turin.Settings.Add(item.Name, item);
+				}
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = s.Get<User>("gavin");
+				turin = s.Get<User>("turin");
+
+				Sfi.Statistics.Clear();
+				Assert.That(gavin.Settings.Count, Is.EqualTo(5));
+				Assert.That(turin.Settings.Count, Is.EqualTo(5));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(NHibernateUtil.IsInitialized(turin.Settings), Is.False);
+
+				// Save companies and then add them to the collection
+				Sfi.Statistics.Clear();
+				for (var i = 5; i < 10; i++)
+				{
+					var item = new UserSetting($"c{i}", $"data{i}", gavin);
+					s.Save(item);
+					gavinItems.Add(item);
+				}
+
+				for (var i = 5; i < 10; i++)
+				{
+					gavin.Settings.Add(gavinItems[i].Name, gavinItems[i]);
+				}
+
+				Assert.That(gavin.Settings.Count, Is.EqualTo(10));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+
+				// Add companies to the collection and then save them
+				Sfi.Statistics.Clear();
+				for (var i = 10; i < 15; i++)
+				{
+					var item = new UserSetting($"c{i}", $"data{i}", gavin);
+					gavin.Settings.Add(item.Name, item);
+					gavinItems.Add(item);
+					s.Save(item);
+				}
+
+				Assert.That(gavin.Settings.Count, Is.EqualTo(15));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+
+				// Remove added items from the collection and add them to a different parent
+				foreach (var item in gavinItems.Skip(5).Take(5))
+				{
+					gavin.Settings.Remove(item.Name);
+
+					item.Owner = turin;
+					turin.Settings.Add(item.Name, item);
+				}
+
+				// Remove added items from the collection
+				foreach (var item in gavinItems.Skip(10))
+				{
+					gavin.Settings.Remove(item.Name);
+					item.Owner = null;
+				}
+
+				Assert.That(gavin.Settings.Count, Is.EqualTo(5));
+				Assert.That(turin.Settings.Count, Is.EqualTo(10));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(NHibernateUtil.IsInitialized(turin.Settings), Is.False);
+
+				if (initialize)
+				{
+					using (var e = gavin.Settings.GetEnumerator())
+					{
+						e.MoveNext();
+					}
+					using (var e = turin.Settings.GetEnumerator())
+					{
+						e.MoveNext();
+					}
+
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.True);
+					Assert.That(NHibernateUtil.IsInitialized(turin.Settings), Is.True);
+					Assert.That(gavin.Settings.Count, Is.EqualTo(5));
+					Assert.That(turin.Settings.Count, Is.EqualTo(10));
+				}
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = s.Get<User>("gavin");
+				turin = s.Get<User>("turin");
+				Assert.That(gavin.Settings.Count, Is.EqualTo(5));
+				Assert.That(turin.Settings.Count, Is.EqualTo(10));
+
+				t.Commit();
+			}
+		}
+
+		[TestCase(false)]
+		[TestCase(true)]
+		public void ListInsertChildSaveChangeParent(bool initialize)
+		{
+			User gavin;
+			User turin;
+			var gavinItems = new List<Company>();
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = new User("gavin", "secret");
+				turin = new User("turin", "tiger");
+				s.Persist(gavin);
+				s.Persist(turin);
+
+				for (var i = 0; i < 5; i++)
+				{
+					var item = new Company($"g{i}", i, gavin);
+					gavinItems.Add(item);
+					gavin.Companies.Add(item);
+
+					item = new Company($"t{i}", i, turin);
+					turin.Companies.Add(item);
+				}
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = s.Get<User>("gavin");
+				turin = s.Get<User>("turin");
+
+				Sfi.Statistics.Clear();
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
+				Assert.That(turin.Companies.Count, Is.EqualTo(5));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(NHibernateUtil.IsInitialized(turin.Companies), Is.False);
+
+				// Save companies and then add them to the collection
+				Sfi.Statistics.Clear();
+				for (var i = 5; i < 10; i++)
+				{
+					var item = new Company($"c{i}", i, gavin);
+					s.Save(item);
+					gavinItems.Add(item);
+				}
+
+				for (var i = 5; i < 10; i++)
+				{
+					if (i % 2 != 0)
+					{
+						gavin.Companies.Insert(i, gavinItems[i]);
+					}
+					else
+					{
+						gavin.Companies.Add(gavinItems[i]);
+					}
+				}
+
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+
+				// Add companies to the collection and then save them
+				Sfi.Statistics.Clear();
+				for (var i = 10; i < 15; i++)
+				{
+					var item = new Company($"c{i}", i, gavin);
+					if (i % 2 != 0)
+					{
+						gavin.Companies.Insert(i, item);
+					}
+					else
+					{
+						gavin.Companies.Add(item);
+					}
+
+					gavinItems.Add(item);
+					s.Save(item);
+				}
+
+				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+
+				// Remove added items from the collection and add them to a different parent
+				foreach (var item in gavinItems.Skip(5).Take(5))
+				{
+					gavin.Companies.RemoveAt(5);
+
+					item.Owner = turin;
+					turin.Companies.Insert(item.ListIndex, item);
+				}
+
+				// Remove added items from the collection
+				foreach (var item in gavinItems.Skip(10))
+				{
+					gavin.Companies.RemoveAt(5);
+					item.Owner = null;
+				}
+
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
+				Assert.That(turin.Companies.Count, Is.EqualTo(10));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(NHibernateUtil.IsInitialized(turin.Companies), Is.False);
+
+				if (initialize)
+				{
+					using (var e = gavin.Companies.GetEnumerator())
+					{
+						e.MoveNext();
+					}
+					using (var e = turin.Companies.GetEnumerator())
+					{
+						e.MoveNext();
+					}
+
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
+					Assert.That(NHibernateUtil.IsInitialized(turin.Companies), Is.True);
+					Assert.That(gavin.Companies.Count, Is.EqualTo(5));
+					Assert.That(turin.Companies.Count, Is.EqualTo(10));
+				}
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = s.Get<User>("gavin");
+				turin = s.Get<User>("turin");
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
+				Assert.That(turin.Companies.Count, Is.EqualTo(10));
+
+				t.Commit();
+			}
+		}
+
+		[TestCase(false)]
+		[TestCase(true)]
+		public void ListClearChildSaveChangeParent(bool initialize)
+		{
+			User gavin;
+			User turin;
+			var gavinItems = new List<CreditCard>();
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = new User("gavin", "secret");
+				turin = new User("turin", "tiger");
+				s.Persist(gavin);
+				s.Persist(turin);
+
+				for (var i = 0; i < 5; i++)
+				{
+					var item = new CreditCard($"g{i}", i, gavin);
+					gavin.CreditCards.Add(item);
+
+					item = new CreditCard($"t{i}", i, turin);
+					turin.CreditCards.Add(item);
+				}
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = s.Get<User>("gavin");
+				turin = s.Get<User>("turin");
+
+				Sfi.Statistics.Clear();
+				Assert.That(gavin.CreditCards.Count, Is.EqualTo(5));
+				Assert.That(turin.CreditCards.Count, Is.EqualTo(5));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.CreditCards), Is.False);
+				Assert.That(NHibernateUtil.IsInitialized(turin.CreditCards), Is.False);
+
+				Sfi.Statistics.Clear();
+				gavin.CreditCards.Clear();
+				turin.CreditCards.Clear();
+				Assert.That(gavin.CreditCards.Count, Is.EqualTo(0));
+				Assert.That(turin.CreditCards.Count, Is.EqualTo(0));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.CreditCards), Is.False);
+				Assert.That(NHibernateUtil.IsInitialized(turin.CreditCards), Is.False);
+
+				// Save credit cards and then add them to the collection
+				Sfi.Statistics.Clear();
+				for (var i = 0; i < 5; i++)
+				{
+					var item = new CreditCard($"c2{i}", i, gavin);
+					s.Save(item);
+					gavinItems.Add(item);
+				}
+
+				for (var i = 0; i < 5; i++)
+				{
+					gavin.CreditCards.Add(gavinItems[i]);
+				}
+
+				Assert.That(gavin.CreditCards.Count, Is.EqualTo(5));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.CreditCards), Is.False);
+
+				// Add credit cards to the collection and then save them
+				Sfi.Statistics.Clear();
+				for (var i = 5; i < 10; i++)
+				{
+					var item = new CreditCard($"c2{i}", i, gavin);
+					Assert.That(((IList) gavin.CreditCards).Add(item), Is.EqualTo(i));
+					gavinItems.Add(item);
+					s.Save(item);
+				}
+
+				Assert.That(gavin.CreditCards.Count, Is.EqualTo(10));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.CreditCards), Is.False);
+
+				// Remove added items from the collection and add them to a different parent
+				foreach (var item in gavinItems.Take(5))
+				{
+					gavin.CreditCards.Remove(item);
+
+					item.Owner = turin;
+					item.ListIndex += 5;
+					turin.CreditCards.Add(item);
+				}
+
+				Assert.That(gavin.CreditCards.Count, Is.EqualTo(5));
+				Assert.That(turin.CreditCards.Count, Is.EqualTo(5));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.CreditCards), Is.False);
+				Assert.That(NHibernateUtil.IsInitialized(turin.CreditCards), Is.False);
+
+				if (initialize)
+				{
+					using (var e = gavin.CreditCards.GetEnumerator())
+					{
+						e.MoveNext();
+					}
+					using (var e = turin.CreditCards.GetEnumerator())
+					{
+						e.MoveNext();
+					}
+
+					Assert.That(NHibernateUtil.IsInitialized(gavin.CreditCards), Is.True);
+					Assert.That(NHibernateUtil.IsInitialized(turin.CreditCards), Is.True);
+					Assert.That(gavin.CreditCards.Count, Is.EqualTo(5));
+					Assert.That(turin.CreditCards.Count, Is.EqualTo(5));
+				}
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = s.Get<User>("gavin");
+				turin = s.Get<User>("turin");
+				Assert.That(gavin.CreditCards.Count, Is.EqualTo(10));
+				Assert.That(turin.CreditCards.Count, Is.EqualTo(10));
+
+				t.Commit();
+			}
+		}
+
+		[TestCase(false)]
+		[TestCase(true)]
+		public void ListAddChildSaveChangeParent(bool initialize)
+		{
+			User gavin;
+			User turin;
+			var gavinItems = new List<Company>();
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = new User("gavin", "secret");
+				turin = new User("turin", "tiger");
+				s.Persist(gavin);
+				s.Persist(turin);
+
+				for (var i = 0; i < 5; i++)
+				{
+					var item = new Company($"g{i}", i, gavin);
+					gavinItems.Add(item);
+					gavin.Companies.Add(item);
+
+					item = new Company($"t{i}", i, turin);
+					turin.Companies.Add(item);
+				}
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = s.Get<User>("gavin");
+				turin = s.Get<User>("turin");
+
+				Sfi.Statistics.Clear();
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
+				Assert.That(turin.Companies.Count, Is.EqualTo(5));
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(NHibernateUtil.IsInitialized(turin.Companies), Is.False);
+
+				// Save companies and then add them to the collection
+				Sfi.Statistics.Clear();
+				for (var i = 5; i < 10; i++)
+				{
+					var item = new Company($"c{i}", i, gavin);
+					s.Save(item);
+					gavinItems.Add(item);
+				}
+
+				for (var i = 5; i < 10; i++)
+				{
+					gavin.Companies.Add(gavinItems[i]);
+				}
+
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+
+				// Add companies to the collection and then save them
+				Sfi.Statistics.Clear();
+				for (var i = 10; i < 15; i++)
+				{
+					var item = new Company($"c{i}", i, gavin);
+					Assert.That(((IList) gavin.Companies).Add(item), Is.EqualTo(i));
+					gavinItems.Add(item);
+					s.Save(item);
+				}
+
+				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+
+				// Remove added items from the collection and add them to a different parent
+				foreach (var item in gavinItems.Skip(5).Take(5))
+				{
+					gavin.Companies.Remove(item);
+
+					item.Owner = turin;
+					turin.Companies.Add(item);
+				}
+
+				// Remove added items from the collection
+				foreach (var item in gavinItems.Skip(10))
+				{
+					gavin.Companies.Remove(item);
+					item.Owner = null;
+				}
+
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
+				Assert.That(turin.Companies.Count, Is.EqualTo(10));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(NHibernateUtil.IsInitialized(turin.Companies), Is.False);
+
+				if (initialize)
+				{
+					using (var e = gavin.Companies.GetEnumerator())
+					{
+						e.MoveNext();
+					}
+					using (var e = turin.Companies.GetEnumerator())
+					{
+						e.MoveNext();
+					}
+
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
+					Assert.That(NHibernateUtil.IsInitialized(turin.Companies), Is.True);
+					Assert.That(gavin.Companies.Count, Is.EqualTo(5));
+					Assert.That(turin.Companies.Count, Is.EqualTo(10));
+				}
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = s.Get<User>("gavin");
+				turin = s.Get<User>("turin");
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
+				Assert.That(turin.Companies.Count, Is.EqualTo(10));
+
+				t.Commit();
+			}
+		}
+
+		[TestCase(false)]
+		[TestCase(true)]
+		public void ListAddChildSave(bool initialize)
+		{
+			User gavin;
+			var gavinItems = new List<Company>();
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = new User("gavin", "secret");
+				s.Persist(gavin);
+
+				for (var i = 0; i < 5; i++)
+				{
+					var item = new Company($"g{i}", i, gavin);
+					gavinItems.Add(item);
+					gavin.Companies.Add(item);
+				}
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = s.Get<User>("gavin");
+
+				Sfi.Statistics.Clear();
+
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+
+				// Save companies and then add them to the collection
+				Sfi.Statistics.Clear();
+				for (var i = 5; i < 10; i++)
+				{
+					var item = new Company($"c{i}", i, gavin);
+					s.Save(item);
+					gavinItems.Add(item);
+				}
+
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
+
+				for (var i = 5; i < 10; i++)
+				{
+					gavin.Companies.Add(gavinItems[i]);
+				}
+
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+
+				// Add companies to the collection and then save them
+				Sfi.Statistics.Clear();
+				for (var i = 10; i < 15; i++)
+				{
+					var item = new Company($"c{i}", i, gavin);
+					Assert.That(((IList) gavinItems).Add(item), Is.EqualTo(i));
+					gavin.Companies.Add(item);
+					s.Save(item);
+				}
+
+				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+
+				if (initialize)
+				{
+					using (var e = gavin.Companies.GetEnumerator())
+					{
+						e.MoveNext();
+					}
+
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
+					Assert.That(gavin.Companies.Count, Is.EqualTo(15));
+				}
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = s.Get<User>("gavin");
+				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+
+				t.Commit();
+			}
+		}
+
+		[TestCase(false)]
+		[TestCase(true)]
 		public void ListAdd(bool initialize)
 		{
 			User gavin;

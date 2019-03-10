@@ -33,7 +33,8 @@ namespace NHibernate.Collection.Trackers
 		/// </summary>
 		/// <param name="elementKey">The key to add.</param>
 		/// <param name="element">The element to add </param>
-		public abstract void AddElementByKey(TKey elementKey, TValue element);
+		/// <param name="exists">Whether the key exists in the database or in the queue.</param>
+		public abstract void AddElementByKey(TKey elementKey, TValue element, bool exists);
 
 		/// <summary>
 		/// A method that is called when the map <see cref="IDictionary{TKey,TValue}.this"/> is set.

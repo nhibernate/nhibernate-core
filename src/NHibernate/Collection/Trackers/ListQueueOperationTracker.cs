@@ -10,6 +10,7 @@ namespace NHibernate.Collection.Trackers
 	{
 		private readonly ICollectionPersister _collectionPersister;
 		private AbstractCollectionQueueOperationTracker<T, IList<T>> _tracker;
+		private ISet<T> _flushedElements;
 
 		public ListQueueOperationTracker(ICollectionPersister collectionPersister)
 		{
@@ -45,6 +46,9 @@ namespace NHibernate.Collection.Trackers
 		/// <inheritdoc />
 		public override void ClearCollection()
 		{
+			// ClearedListQueueOperationTracker does not need the flushed elements as it will never
+			// use the database collection size to calculate the current size
+			_flushedElements = null;
 			_tracker = new ClearedListQueueOperationTracker<T>(_collectionPersister);
 			Cleared = true;
 		}
@@ -59,6 +63,18 @@ namespace NHibernate.Collection.Trackers
 		public override IEnumerable GetOrphans()
 		{
 			return _tracker?.GetOrphans() ?? Enumerable.Empty<object>();
+		}
+
+		/// <inheritdoc />
+		protected internal override void AfterElementFlushing(T element)
+		{
+			if (_tracker == null)
+			{
+				GetOrCreateFlushedElements().Add(element);
+				return;
+			}
+
+			_tracker.AfterElementFlushing(element);
 		}
 
 		/// <inheritdoc />
@@ -84,13 +100,14 @@ namespace NHibernate.Collection.Trackers
 			}
 
 			_tracker = IndexOperations.Contains(operationName)
-				? (AbstractCollectionQueueOperationTracker<T, IList<T>>) new IndexedListQueueOperationTracker<T>
+				? (AbstractCollectionQueueOperationTracker<T, IList<T>>) new IndexedListQueueOperationTracker<T>(_flushedElements)
 				{
 					DatabaseCollectionSize = DatabaseCollectionSize
 				}
 				: new NonIndexedListQueueOperationTracker<T>(_collectionPersister)
 				{
-					DatabaseCollectionSize = DatabaseCollectionSize
+					DatabaseCollectionSize = DatabaseCollectionSize,
+					FlushedElements = _flushedElements
 				};
 		}
 
@@ -164,16 +181,22 @@ namespace NHibernate.Collection.Trackers
 		{
 			return _tracker ?? (_tracker = new NonIndexedListQueueOperationTracker<T>(_collectionPersister)
 			{
-				DatabaseCollectionSize = DatabaseCollectionSize
+				DatabaseCollectionSize = DatabaseCollectionSize,
+				FlushedElements = _flushedElements
 			});
 		}
 
 		private AbstractCollectionQueueOperationTracker<T, IList<T>> GetOrCreateIndexedStrategy()
 		{
-			return _tracker ?? (_tracker = new IndexedListQueueOperationTracker<T>
+			return _tracker ?? (_tracker = new IndexedListQueueOperationTracker<T>(_flushedElements)
 			{
 				DatabaseCollectionSize = DatabaseCollectionSize
 			});
+		}
+
+		protected ISet<T> GetOrCreateFlushedElements()
+		{
+			return _flushedElements ?? (_flushedElements = new HashSet<T>());
 		}
 
 		public override bool HasChanges()
