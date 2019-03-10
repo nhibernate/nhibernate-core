@@ -104,10 +104,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 			using (var session = OpenSession())
 			{
 				var list = await (session.Query<Entity>()
-				                  .Where(x => ((Guid?) x.Id).ToString() == x.Name)
+				                  .Where(x => ((Guid?) x.Id).ToString() == x.Id.ToString())
 				                  .ToListAsync());
 
-				Assert.That(list, Has.Count.EqualTo(0));
+				Assert.That(list, Has.Count.EqualTo(1));
 			}
 		}
 	}
