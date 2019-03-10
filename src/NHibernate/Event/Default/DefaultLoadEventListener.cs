@@ -427,7 +427,7 @@ namespace NHibernate.Event.Default
 			var batchSize = persister.GetBatchSize();
 			var entityBatch = source.PersistenceContext.BatchFetchQueue.QueryCacheQueue
 			                        ?.GetEntityBatch(persister, @event.EntityId);
-			if ((entityBatch != null || batchSize > 1) && persister.Cache.PreferMultipleGet())
+			if (entityBatch != null || batchSize > 1 && persister.Cache.PreferMultipleGet())
 			{
 				// The first item in the array is the item that we want to load
 				if (entityBatch != null)
