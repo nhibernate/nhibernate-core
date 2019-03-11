@@ -97,5 +97,18 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 				Assert.That(list, Has.Count.EqualTo(0));
 			}
 		}
+
+		[Test]
+		public async Task CompareStringColumnWithNullableGuidToStringAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var list = await (session.Query<Entity>()
+				                  .Where(x => ((Guid?) x.Id).ToString() == x.Id.ToString())
+				                  .ToListAsync());
+
+				Assert.That(list, Has.Count.EqualTo(1));
+			}
+		}
 	}
 }
