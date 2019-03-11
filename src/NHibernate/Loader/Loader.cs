@@ -101,7 +101,7 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// An array of indexes of the entity that owns a one-to-one association
+		/// An array of indexes of the entity that owns an association
 		/// to the entity at the given index (-1 if there is no "owner")
 		/// </summary>
 		/// <remarks>
@@ -114,7 +114,7 @@ namespace NHibernate.Loader
 
 		/// <summary> 
 		/// An array of the owner types corresponding to the <see cref="Owners"/>
-		/// returns.  Indices indicating no owner would be null here. 
+		/// returns. Indices indicating no owner would be null here. 
 		/// </summary>
 		protected virtual EntityType[] OwnerAssociationTypes
 		{
@@ -772,29 +772,31 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// For missing objects associated by one-to-one with another object in the
+		/// For missing objects associated with another object in the
 		/// result set, register the fact that the the object is missing with the
 		/// session.
 		/// </summary>
 		private void RegisterNonExists(EntityKey[] keys, ISessionImplementor session)
 		{
-			int[] owners = Owners;
-			if (owners != null)
+			var owners = Owners;
+			var ownerAssociationTypes = OwnerAssociationTypes;
+			if (owners != null && ownerAssociationTypes != null)
 			{
-				EntityType[] ownerAssociationTypes = OwnerAssociationTypes;
-				for (int i = 0; i < keys.Length; i++)
+				for (var i = 0; i < keys.Length; i++)
 				{
-					int owner = owners[i];
-					if (owner > -1)
+					if (keys[i] == null)
 					{
-						EntityKey ownerKey = keys[owner];
-						if (keys[i] == null && ownerKey != null)
+						var ownerAssociationType = ownerAssociationTypes[i];
+						if (ownerAssociationType?.PropertyName != null && ownerAssociationType.IsNullable)
 						{
-							bool isOneToOneAssociation = ownerAssociationTypes != null && ownerAssociationTypes[i] != null
-														 && ownerAssociationTypes[i].IsOneToOne;
-							if (isOneToOneAssociation)
+							var owner = owners[i];
+							if (owner > -1)
 							{
-								session.PersistenceContext.AddNullProperty(ownerKey, ownerAssociationTypes[i].PropertyName);
+								var ownerKey = keys[owner];
+								if (ownerKey != null)
+								{
+									session.PersistenceContext.AddNullProperty(ownerKey, ownerAssociationType.PropertyName);
+								}
 							}
 						}
 					}
@@ -982,15 +984,8 @@ namespace NHibernate.Loader
 				object obj = null;
 				EntityKey key = keys[i];
 
-				if (key == null)
-				{
-					// do nothing
-					/* TODO NH-1001 : if (persisters[i]...EntityType) is an OneToMany or a ManyToOne and
-					 * the keys.length > 1 and the relation IsIgnoreNotFound probably we are in presence of
-					 * an load with "outer join" the relation can be considerer loaded even if the key is null (mean not found)
-					*/
-				}
-				else
+				// null keys are handled in RegisterNonExists
+				if(key != null)
 				{
 					//If the object is already loaded, return the loaded one
 					obj = session.GetEntityUsingInterceptor(key);

@@ -26,13 +26,24 @@ namespace NHibernate.Type
 		{
 			ignoreNotFound = false;
 			isLogicalOneToOne = false;
+			PropertyName = null;
+		}
+		
+		//Since 5.3
+		[Obsolete("Use Constructor with property name")]
+		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne)
+			: this(entityName, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, null)
+		{
+			
 		}
 
-		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne)
+
+		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne, string propertyName)
 			: base(entityName, uniqueKeyPropertyName, !lazy, unwrapProxy)
 		{
 			this.ignoreNotFound = ignoreNotFound;
 			this.isLogicalOneToOne = isLogicalOneToOne;
+			PropertyName = propertyName;
 		}
 
 		public override int GetColumnSpan(IMapping mapping)
@@ -67,6 +78,8 @@ namespace NHibernate.Type
 		{
 			return isLogicalOneToOne;
 		}
+
+		public override string PropertyName { get; }
 
 		public override ForeignKeyDirection ForeignKeyDirection
 		{
@@ -142,6 +155,18 @@ namespace NHibernate.Type
 				return false;
 			}
 			return value.GetType() == identifierType.ReturnedClass;
+		}
+
+		public override bool IsNull(object owner, ISessionImplementor session)
+		{
+			if (IsNullable && !string.IsNullOrEmpty(PropertyName))
+			{
+				EntityEntry entry = session.PersistenceContext.GetEntry(owner);
+
+				return session.PersistenceContext.IsPropertyNull(entry.EntityKey, PropertyName);
+			}
+
+			return false;
 		}
 
 		public override object Disassemble(object value, ISessionImplementor session, object owner)

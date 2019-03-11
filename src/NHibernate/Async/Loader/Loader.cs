@@ -625,15 +625,8 @@ namespace NHibernate.Loader
 				object obj = null;
 				EntityKey key = keys[i];
 
-				if (key == null)
-				{
-					// do nothing
-					/* TODO NH-1001 : if (persisters[i]...EntityType) is an OneToMany or a ManyToOne and
-					 * the keys.length > 1 and the relation IsIgnoreNotFound probably we are in presence of
-					 * an load with "outer join" the relation can be considerer loaded even if the key is null (mean not found)
-					*/
-				}
-				else
+				// null keys are handled in RegisterNonExists
+				if(key != null)
 				{
 					//If the object is already loaded, return the loaded one
 					obj = await (session.GetEntityUsingInterceptorAsync(key, cancellationToken)).ConfigureAwait(false);
