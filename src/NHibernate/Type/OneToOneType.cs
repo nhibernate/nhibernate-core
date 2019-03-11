@@ -111,6 +111,7 @@ namespace NHibernate.Type
 			return identifier;
 		}
 
+		/// <inheritdoc />
 		public override bool IsNullable
 		{
 			get { return foreignKeyDirection.Equals(ForeignKeyDirection.ForeignKeyToParent); }

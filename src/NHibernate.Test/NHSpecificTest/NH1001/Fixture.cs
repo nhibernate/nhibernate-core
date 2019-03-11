@@ -244,7 +244,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			}
 		}
 
-		[Test, Ignore("Not fixed yet")]
+		[Test]
 		public void Department5IsNotFound()
 		{
 			var statistics = Sfi.Statistics;
