@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -240,10 +241,13 @@ possible solutions:
 		protected HqlTreeNode VisitNhAverage(NhAverageExpression expression)
 		{
 			var hqlExpression = VisitExpression(expression.Expression).AsExpression();
-			if (expression.Type != expression.Expression.Type)
-				hqlExpression = _hqlTreeBuilder.Cast(hqlExpression, expression.Type);
+			hqlExpression = IsCastRequired(expression.Expression, expression.Type)
+				? (HqlExpression) _hqlTreeBuilder.Cast(hqlExpression, expression.Type)
+				: _hqlTreeBuilder.TransparentCast(hqlExpression, expression.Type);
 
-			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Average(hqlExpression), expression.Type);
+			return IsCastRequired(expression.Type, "avg")
+				? (HqlTreeNode) _hqlTreeBuilder.Cast(_hqlTreeBuilder.Average(hqlExpression), expression.Type)
+				: _hqlTreeBuilder.TransparentCast(_hqlTreeBuilder.Average(hqlExpression), expression.Type);
 		}
 
 		protected HqlTreeNode VisitNhCount(NhCountExpression expression)
@@ -263,17 +267,9 @@ possible solutions:
 
 		protected HqlTreeNode VisitNhSum(NhSumExpression expression)
 		{
-			var type = expression.Type.UnwrapIfNullable();
-			var nhType = TypeFactory.GetDefaultTypeFor(type);
-			if (nhType != null && _parameters.SessionFactory.SQLFunctionRegistry.FindSQLFunction("sum")
-			                      ?.ReturnType(nhType, _parameters.SessionFactory)?.ReturnedClass == type)
-			{
-				return _hqlTreeBuilder.TransparentCast(
-					_hqlTreeBuilder.Sum(VisitExpression(expression.Expression).AsExpression()),
-					expression.Type);
-			}
-
-			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Sum(VisitExpression(expression.Expression).AsExpression()), expression.Type);
+			return IsCastRequired(expression.Type, "sum")
+				? (HqlTreeNode) _hqlTreeBuilder.Cast(_hqlTreeBuilder.Sum(VisitExpression(expression.Expression).AsExpression()), expression.Type)
+				: _hqlTreeBuilder.TransparentCast(_hqlTreeBuilder.Sum(VisitExpression(expression.Expression).AsExpression()), expression.Type);
 		}
 
 		protected HqlTreeNode VisitNhDistinct(NhDistinctExpression expression)
@@ -487,15 +483,9 @@ possible solutions:
 				case ExpressionType.Convert:
 				case ExpressionType.ConvertChecked:
 				case ExpressionType.TypeAs:
-					var operandType = expression.Operand.Type.UnwrapIfNullable();
-					if ((operandType.IsPrimitive || operandType == typeof(decimal)) &&
-					    (expression.Type.IsPrimitive || expression.Type == typeof(decimal)) &&
-					    expression.Type != operandType)
-					{
-						return _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), expression.Type);
-					}
-
-					return VisitExpression(expression.Operand);
+					return IsCastRequired(expression.Operand, expression.Type)
+						? _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), expression.Type)
+						: VisitExpression(expression.Operand);
 			}
 
 			throw new NotSupportedException(expression.ToString());
@@ -595,6 +585,97 @@ possible solutions:
 		{
 			var expressionSubTree = expression.Expressions.ToArray(exp => VisitExpression(exp));
 			return _hqlTreeBuilder.ExpressionSubTreeHolder(expressionSubTree);
+		}
+
+		private bool IsCastRequired(Expression expression, System.Type toType)
+		{
+			return toType != typeof(object) && IsCastRequired(GetType(expression), TypeFactory.GetDefaultTypeFor(toType));
+		}
+
+		private bool IsCastRequired(IType type, IType toType)
+		{
+			// A type can be null when casting an entity into a base class, in that case we should not cast
+			if (type == null || toType == null || Equals(type, toType))
+			{
+				return false;
+			}
+
+			var sqlTypes = type.SqlTypes(_parameters.SessionFactory);
+			var toSqlTypes = toType.SqlTypes(_parameters.SessionFactory);
+			if (sqlTypes.Length != 1 || toSqlTypes.Length != 1)
+			{
+				return false; // Casting a multi-column type is not possible
+			}
+
+			if (type.ReturnedClass.IsEnum && sqlTypes[0].DbType == DbType.String)
+			{
+				return false; // Never cast an enum that is mapped as string, the type will provide a string for the parameter value
+			}
+
+			return sqlTypes[0].DbType != toSqlTypes[0].DbType;
+		}
+
+		private bool IsCastRequired(System.Type type, string sqlFunctionName)
+		{
+			if (type == typeof(object))
+			{
+				return false;
+			}
+
+			var toType = TypeFactory.GetDefaultTypeFor(type);
+			if (toType == null)
+			{
+				return true; // Fallback to the old behavior
+			}
+
+			var sqlFunction = _parameters.SessionFactory.SQLFunctionRegistry.FindSQLFunction(sqlFunctionName);
+			if (sqlFunction == null)
+			{
+				return true; // Fallback to the old behavior
+			}
+
+			var fnReturnType = sqlFunction.ReturnType(toType, _parameters.SessionFactory);
+			return fnReturnType == null || IsCastRequired(fnReturnType, toType);
+		}
+
+		private IType GetType(Expression expression)
+		{
+			if (!(expression is MemberExpression memberExpression))
+			{
+				return expression.Type != typeof(object)
+					? TypeFactory.GetDefaultTypeFor(expression.Type)
+					: null;
+			}
+
+			// Try to get the mapped type for the member as it may be a non default one
+			var entityName = TryGetEntityName(memberExpression);
+			if (entityName == null)
+			{
+				return TypeFactory.GetDefaultTypeFor(expression.Type); // Not mapped
+			}
+
+			var persister = _parameters.SessionFactory.GetEntityPersister(entityName);
+			var index = persister.EntityMetamodel.GetPropertyIndexOrNull(memberExpression.Member.Name);
+			return !index.HasValue
+				? TypeFactory.GetDefaultTypeFor(expression.Type) // Not mapped
+				: persister.EntityMetamodel.PropertyTypes[index.Value];
+		}
+
+		private string TryGetEntityName(MemberExpression memberExpression)
+		{
+			System.Type entityType;
+			// Try to get the actual entity type from the query source if possbile as member can be declared
+			// in a base type
+			if (memberExpression.Expression is QuerySourceReferenceExpression querySourceReferenceExpression)
+			{
+				entityType = querySourceReferenceExpression.Type;
+			}
+			else
+			{
+				entityType = memberExpression.Member.ReflectedType;
+			}
+
+			return _parameters.SessionFactory.TryGetGuessEntityName(entityType);
 		}
 	}
 }
