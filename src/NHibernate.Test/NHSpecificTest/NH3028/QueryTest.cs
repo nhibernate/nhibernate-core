@@ -17,8 +17,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3028
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.CreateQuery("delete from Person").ExecuteUpdate();
-				session.CreateQuery("delete from Company").ExecuteUpdate();
+				session.Delete("from Person");
+				session.Delete("from Company");
 				transaction.Commit();
 			}
 		}
