@@ -607,12 +607,20 @@ possible solutions:
 				return false; // Casting a multi-column type is not possible
 			}
 
+			if (sqlTypes[0].DbType == toSqlTypes[0].DbType)
+			{
+				return false;
+			}
+
 			if (type.ReturnedClass.IsEnum && sqlTypes[0].DbType == DbType.String)
 			{
 				return false; // Never cast an enum that is mapped as string, the type will provide a string for the parameter value
 			}
 
-			return sqlTypes[0].DbType != toSqlTypes[0].DbType;
+			// Some dialects can map several sql types into one, cast only if the dialect types are different
+			var castTypeName = _parameters.SessionFactory.Dialect.GetCastTypeName(sqlTypes[0]);
+			var toCastTypeName = _parameters.SessionFactory.Dialect.GetCastTypeName(toSqlTypes[0]);
+			return castTypeName != toCastTypeName;
 		}
 
 		private bool IsCastRequired(System.Type type, string sqlFunctionName)
