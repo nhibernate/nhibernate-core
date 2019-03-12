@@ -5,7 +5,7 @@ using NHibernate.Mapping.ByCode;
 using NHibernate.Transform;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.NH3028
+namespace NHibernate.Test.NHSpecificTest.NH3033
 {
 	[TestFixture]
 	public class QueryTest : TestCaseMappingByCode

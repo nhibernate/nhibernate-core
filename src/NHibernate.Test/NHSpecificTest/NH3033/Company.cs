@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NHibernate.Test.NHSpecificTest.NH3028
+namespace NHibernate.Test.NHSpecificTest.NH3033
 {
 	public class Company
     {

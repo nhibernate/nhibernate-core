@@ -1,21 +1,20 @@
-﻿namespace NHibernate.Test.NHSpecificTest.NH3028
+﻿namespace NHibernate.Test.NHSpecificTest.NH3033
 {
-    public class Employee : Person
+    public class ExEmployee : Person
     {
-        protected Employee() :
+        protected ExEmployee() :
             this(string.Empty)
         {
         }
 
-
-        public Employee(string name)
+        public ExEmployee(string name)
             : base(name)
         {
         }
 
         public virtual Company Company { get; protected set; }
 
-        public virtual void WorksIn(Company company)
+        public virtual void HasWorkedIn(Company company)
         {
             this.Company = company;
         }
