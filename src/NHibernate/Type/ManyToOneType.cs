@@ -103,25 +103,30 @@ namespace NHibernate.Type
 			// NOTE: the owner of the association is not really the owner of the id!
 			object id = GetIdentifierOrUniqueKeyType(session.Factory)
 				.NullSafeGet(rs, names, session, owner);
-			ScheduleBatchLoadIfNeeded(id, session);
+			ScheduleBatchLoadIfNeeded(id, session, false);
 			return id;
 		}
 
-		private void ScheduleBatchLoadIfNeeded(object id, ISessionImplementor session)
+		private void ScheduleBatchLoadIfNeeded(object id, ISessionImplementor session, bool addToQueryCacheBatch)
 		{
 			//cannot batch fetch by unique key (property-ref associations)
 			if (uniqueKeyPropertyName == null && id != null)
 			{
 				var persister = session.Factory.GetEntityPersister(GetAssociatedEntityName());
-				if (!persister.IsBatchLoadable)
+				if (!persister.IsBatchLoadable && !addToQueryCacheBatch)
 				{
 					return;
 				}
 
 				var entityKey = session.GenerateEntityKey(id, persister);
-				if (!session.PersistenceContext.ContainsEntity(entityKey))
+				if (persister.IsBatchLoadable && !session.PersistenceContext.ContainsEntity(entityKey))
 				{
 					session.PersistenceContext.BatchFetchQueue.AddBatchLoadableEntityKey(entityKey);
+				}
+
+				if (addToQueryCacheBatch)
+				{
+					session.PersistenceContext.BatchFetchQueue.QueryCacheQueue?.AddEntityKey(entityKey);
 				}
 			}
 		}
@@ -207,7 +212,7 @@ namespace NHibernate.Type
 
 		public override void BeforeAssemble(object oid, ISessionImplementor session)
 		{
-			ScheduleBatchLoadIfNeeded(AssembleId(oid, session), session);
+			ScheduleBatchLoadIfNeeded(AssembleId(oid, session), session, true);
 		}
 
 		private object AssembleId(object oid, ISessionImplementor session)

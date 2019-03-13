@@ -632,6 +632,10 @@ namespace NHibernate.Loader
 			CacheBatcher cacheBatcher)
 		{
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
+			var ownCacheBatcher = cacheBatcher == null;
+			if (ownCacheBatcher)
+				cacheBatcher = new CacheBatcher(session);
+
 			if (collectionPersisters != null)
 			{
 				foreach (var collectionPersister in collectionPersisters)
@@ -643,7 +647,7 @@ namespace NHibernate.Loader
 						//during loading
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						EndCollectionLoad(reader, session, collectionPersister);
+						EndCollectionLoad(reader, session, collectionPersister, cacheBatcher);
 					}
 				}
 			}
@@ -671,17 +675,12 @@ namespace NHibernate.Loader
 					Log.Debug("total objects hydrated: {0}", hydratedObjectsSize);
 				}
 
-				var ownCacheBatcher = cacheBatcher == null;
-				if (ownCacheBatcher)
-					cacheBatcher = new CacheBatcher(session);
 				for (int i = 0; i < hydratedObjectsSize; i++)
 				{
 					TwoPhaseLoad.InitializeEntity(
 						hydratedObjects[i], readOnly, session, pre, post,
 						(persister, data) => cacheBatcher.AddToBatch(persister, data));
 				}
-				if (ownCacheBatcher)
-					cacheBatcher.ExecuteBatch();
 			}
 
 			if (collectionPersisters != null)
@@ -694,17 +693,21 @@ namespace NHibernate.Loader
 						//the entities, since we might call hashCode() on the elements
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						EndCollectionLoad(reader, session, collectionPersister);
+						EndCollectionLoad(reader, session, collectionPersister, cacheBatcher);
 					}
 				}
 			}
+
+			if (ownCacheBatcher)
+				cacheBatcher.ExecuteBatch();
 		}
 
-		private void EndCollectionLoad(DbDataReader reader, ISessionImplementor session, ICollectionPersister collectionPersister)
+		private void EndCollectionLoad(DbDataReader reader, ISessionImplementor session, ICollectionPersister collectionPersister,
+		                               CacheBatcher cacheBatcher)
 		{
 			//this is a query and we are loading multiple instances of the same collection role
 			session.PersistenceContext.LoadContexts.GetCollectionLoadContext(reader).EndLoadingCollections(
-				collectionPersister, !IsCollectionPersisterCacheable(collectionPersister));
+				collectionPersister, !IsCollectionPersisterCacheable(collectionPersister), cacheBatcher);
 		}
 
 		protected virtual bool IsCollectionPersisterCacheable(ICollectionPersister collectionPersister)
