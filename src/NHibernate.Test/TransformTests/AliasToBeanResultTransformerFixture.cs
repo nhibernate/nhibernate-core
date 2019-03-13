@@ -214,7 +214,7 @@ namespace NHibernate.Test.TransformTests
 		{
 			using (var s = OpenSession())
 			{
-				var transformer = GetTransformer<NewPropertiesSimpleDTO>();
+				var transformer = Transformers.AliasToBean<NewPropertiesSimpleDTO>();
 				var l = s.CreateSQLQuery("select id as ID, Name as NamE from Simple")
 						.SetResultTransformer(transformer)
 						.List<NewPropertiesSimpleDTO>();
@@ -233,7 +233,7 @@ namespace NHibernate.Test.TransformTests
 		{
 			using (var s = OpenSession())
 			{
-				var transformer = GetTransformer<PropertiesInsensitivelyDuplicated>();
+				var transformer = Transformers.AliasToBean<PropertiesInsensitivelyDuplicated>();
 				Assert.Throws<AmbiguousMatchException>(() =>
 				{
 					s.CreateSQLQuery("select * from Simple")
@@ -305,8 +305,8 @@ namespace NHibernate.Test.TransformTests
 
 			var tuple = testData.Values.ToArray();
 
-			var actual = (TestDto) GetTransformer<TestDto>().TransformTuple(tuple, aliases);
-			var actualStruct = (TestDtoAsStruct) GetTransformer<TestDtoAsStruct>().TransformTuple(tuple, aliases);
+			var actual = (TestDto) Transformers.AliasToBean<TestDto>().TransformTuple(tuple, aliases);
+			var actualStruct = (TestDtoAsStruct) Transformers.AliasToBean<TestDtoAsStruct>().TransformTuple(tuple, aliases);
 			Assert.That(actual.IntProp, Is.EqualTo(o.IntProp));
 			Assert.That(actual.IntPropNull, Is.EqualTo(o.IntPropNull));
 			Assert.That(actual.StringProp, Is.EqualTo(o.StringProp));
@@ -327,9 +327,9 @@ namespace NHibernate.Test.TransformTests
 			var aliases = testData.Keys.Select(k => k == nullMarker ? null : k).ToArray();
 			var tuple = testData.Values.ToArray();
 
-			var ex = Assert.Throws<System.InvalidCastException>(() => GetTransformer<TestDto>().TransformTuple(tuple, aliases));
+			var ex = Assert.Throws<System.InvalidCastException>(() => Transformers.AliasToBean<TestDto>().TransformTuple(tuple, aliases));
 			Assert.That(ex, Has.Message.Contains(nameof(o.IntProp)));
-			var ex2 = Assert.Throws<System.InvalidCastException>(() => GetTransformer<TestDtoAsStruct>().TransformTuple(tuple, aliases));
+			var ex2 = Assert.Throws<System.InvalidCastException>(() => Transformers.AliasToBean<TestDtoAsStruct>().TransformTuple(tuple, aliases));
 			Assert.That(ex2, Has.Message.Contains(nameof(o.IntProp)));
 		}
 
@@ -343,14 +343,14 @@ namespace NHibernate.Test.TransformTests
 		[Test]
 		public void ThrowsForClassWithoutDefaultCtor()
 		{
-			Assert.That(() => GetTransformer<NoDefCtorDto>().TransformTuple(new object[0], new string[0]), Throws.ArgumentException);
+			Assert.That(() => Transformers.AliasToBean<NoDefCtorDto>().TransformTuple(new object[0], new string[0]), Throws.ArgumentException);
 		}
 
 		private void AssertCardinalityNameAndId<T>(IResultTransformer transformer = null)
 		{
 			using (var s = OpenSession())
 			{
-				transformer = transformer ?? GetTransformer<T>();
+				transformer = transformer ?? Transformers.AliasToBean<T>();
 				var l = s.CreateSQLQuery("select * from Simple")
 						.SetResultTransformer(transformer)
 						.List<T>();
@@ -367,7 +367,7 @@ namespace NHibernate.Test.TransformTests
 		{
 			using (var s = OpenSession())
 			{
-				var transformer = GetTransformer<T>();
+				var transformer = Transformers.AliasToBean<T>();
 				var l = s.CreateSQLQuery(queryString)
 						.SetResultTransformer(transformer)
 						.List<T>();
@@ -381,15 +381,10 @@ namespace NHibernate.Test.TransformTests
 
 		private void AssertSerialization<T>()
 		{
-			var transformer = GetTransformer<T>();
+			var transformer = Transformers.AliasToBean<T>();
 			var bytes = SerializationHelper.Serialize(transformer);
 			transformer = (IResultTransformer) SerializationHelper.Deserialize(bytes);
 			AssertCardinalityNameAndId<T>(transformer: transformer);
-		}
-
-		protected IResultTransformer GetTransformer<T>()
-		{
-			return Transformers.AliasToBean<T>();
 		}
 	}
 }
