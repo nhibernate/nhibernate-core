@@ -17,8 +17,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3033
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.Delete("from Person");
-				session.Delete("from Company");
+				session.CreateQuery("delete from Employee").ExecuteUpdate();
+				session.CreateQuery("delete from ExEmployee").ExecuteUpdate();
+				session.CreateQuery("delete from Company").ExecuteUpdate();
 				transaction.Commit();
 			}
 		}
@@ -122,10 +123,18 @@ namespace NHibernate.Test.NHSpecificTest.NH3033
 		{
 			var mapper = new ModelMapper();
 			mapper.Class<Company>(rc => { rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb)); });
-			mapper.Class<Person>(
-				rc => { rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb)); });
-			mapper.JoinedSubclass<Employee>(rc => rc.ManyToOne(x => x.Company, m => m.NotNullable(true)));
-			mapper.JoinedSubclass<ExEmployee>(rc => rc.ManyToOne(x => x.Company, m => m.NotNullable(true)));
+			mapper.Class<Employee>(
+				rc =>
+				{
+					rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+					rc.ManyToOne(x => x.Company, m => m.NotNullable(true));
+				});
+			mapper.Class<ExEmployee>(
+				rc =>
+				{
+					rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+					rc.ManyToOne(x => x.Company, m => m.NotNullable(true));
+				});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
