@@ -265,7 +265,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			using(var transaction = session.BeginTransaction())
 			{
 				ExecuteStatement(session, transaction, $"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 12, DEPARTMENT_ID_3 = 13, DEPARTMENT_ID_4 = 24, DEPARTMENT_ID_5 = 99999, ADDRESS_ID = 31 WHERE EMPLOYEE_ID = {employeeId}");
-				Assert.That(() => session.GetAsync<Employee>(employeeId), Throws.InstanceOf<ObjectNotFoundException>());
+				Assert.That(() => session.GetAsync<Employee>(employeeId), Throws.InstanceOf<ObjectNotFoundByUniqueKeyException>());
 			}
 		}
 

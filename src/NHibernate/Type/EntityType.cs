@@ -531,7 +531,7 @@ namespace NHibernate.Type
 					result = persister.LoadByUniqueKey(uniqueKeyPropertyName, key, session);
 					if (result == null && !IsNullable)
 					{
-						factory.EntityNotFoundDelegate.HandleEntityNotFound(entityName, euk);
+						factory.EntityNotFoundDelegate.HandleEntityNotFound(entityName, uniqueKeyPropertyName, key);
 					}
 				}
 				return result == null ? null : persistenceContext.ProxyFor(result);
