@@ -89,16 +89,15 @@ namespace NHibernate.Transform
 				?? throw new PropertyNotFoundException(_resultClass, alias, "setter");
 		}
 
-		private TMemberInfo TryGetMemberInfo<TMemberInfo>(string alias, params Dictionary<string, NamedMember<TMemberInfo>>[] propertiesMaps) where TMemberInfo: MemberInfo
+		private TMemberInfo TryGetMemberInfo<TMemberInfo>(string alias, Dictionary<string, NamedMember<TMemberInfo>> propertiesMap)
+			where TMemberInfo: MemberInfo
 		{
-			foreach (var propertiesMap in propertiesMaps)
+			if (propertiesMap.TryGetValue(alias, out var property))
 			{
-				if (propertiesMap.TryGetValue(alias, out var property))
-				{
-					CheckMember(property, alias);
-					return property.Member;
-				}
+				CheckMember(property, alias);
+				return property.Member;
 			}
+
 			return null;
 		}
 
@@ -109,7 +108,7 @@ namespace NHibernate.Transform
 
 			if (member.AmbiguousMembers == null || member.AmbiguousMembers.Length < 2)
 			{
-				// Should never happen, check NamedMember instanciations.
+				// Should never happen, check NamedMember instantiations.
 				throw new InvalidOperationException(
 					$"{nameof(NamedMember<T>.Member)} missing and {nameof(NamedMember<T>.AmbiguousMembers)} invalid.");
 			}
