@@ -292,6 +292,8 @@ namespace NHibernate.Dialect
 		/// <inheritdoc />
 		public override int MaxAliasLength => 32;
 
+		public override long TimestampResolutionInTicks => 10L; // Microseconds.
+
 		#region Overridden informational metadata
 
 		public override bool SupportsEmptyInList => false;
