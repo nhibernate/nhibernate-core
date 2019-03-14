@@ -241,13 +241,13 @@ possible solutions:
 		protected HqlTreeNode VisitNhAverage(NhAverageExpression expression)
 		{
 			var hqlExpression = VisitExpression(expression.Expression).AsExpression();
-			hqlExpression = IsCastRequired(expression.Expression, expression.Type)
+			hqlExpression = IsCastRequired(expression.Expression, expression.Type, out _)
 				? (HqlExpression) _hqlTreeBuilder.Cast(hqlExpression, expression.Type)
 				: _hqlTreeBuilder.TransparentCast(hqlExpression, expression.Type);
 
-			return IsCastRequired(expression.Type, "avg")
-				? (HqlTreeNode) _hqlTreeBuilder.Cast(_hqlTreeBuilder.Average(hqlExpression), expression.Type)
-				: _hqlTreeBuilder.TransparentCast(_hqlTreeBuilder.Average(hqlExpression), expression.Type);
+			// In Oracle the avg function can return a number with up to 40 digits which cannot be retrieved from the data reader due to the lack of such
+			// numeric type in .NET. In order to avoid that we have to add a cast to trim the number so that it can be converted into a .NET numeric type.
+			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Average(hqlExpression), expression.Type);
 		}
 
 		protected HqlTreeNode VisitNhCount(NhCountExpression expression)
@@ -267,7 +267,7 @@ possible solutions:
 
 		protected HqlTreeNode VisitNhSum(NhSumExpression expression)
 		{
-			return IsCastRequired(expression.Type, "sum")
+			return IsCastRequired(expression.Type, "sum", out _)
 				? (HqlTreeNode) _hqlTreeBuilder.Cast(_hqlTreeBuilder.Sum(VisitExpression(expression.Expression).AsExpression()), expression.Type)
 				: _hqlTreeBuilder.TransparentCast(_hqlTreeBuilder.Sum(VisitExpression(expression.Expression).AsExpression()), expression.Type);
 		}
@@ -483,9 +483,12 @@ possible solutions:
 				case ExpressionType.Convert:
 				case ExpressionType.ConvertChecked:
 				case ExpressionType.TypeAs:
-					return IsCastRequired(expression.Operand, expression.Type)
+					return IsCastRequired(expression.Operand, expression.Type, out var existType)
 						? _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), expression.Type)
-						: VisitExpression(expression.Operand);
+						// Make a transparent cast when an IType exists, so that it can be used to retrieve the value from the data reader
+						: existType
+							? _hqlTreeBuilder.TransparentCast(VisitExpression(expression.Operand).AsExpression(), expression.Type)
+							: VisitExpression(expression.Operand);
 			}
 
 			throw new NotSupportedException(expression.ToString());
@@ -587,16 +590,18 @@ possible solutions:
 			return _hqlTreeBuilder.ExpressionSubTreeHolder(expressionSubTree);
 		}
 
-		private bool IsCastRequired(Expression expression, System.Type toType)
+		private bool IsCastRequired(Expression expression, System.Type toType, out bool existType)
 		{
-			return toType != typeof(object) && IsCastRequired(GetType(expression), TypeFactory.GetDefaultTypeFor(toType));
+			existType = false;
+			return toType != typeof(object) && IsCastRequired(GetType(expression), TypeFactory.GetDefaultTypeFor(toType), out existType);
 		}
 
-		private bool IsCastRequired(IType type, IType toType)
+		private bool IsCastRequired(IType type, IType toType, out bool existType)
 		{
 			// A type can be null when casting an entity into a base class, in that case we should not cast
 			if (type == null || toType == null || Equals(type, toType))
 			{
+				existType = false;
 				return false;
 			}
 
@@ -604,9 +609,11 @@ possible solutions:
 			var toSqlTypes = toType.SqlTypes(_parameters.SessionFactory);
 			if (sqlTypes.Length != 1 || toSqlTypes.Length != 1)
 			{
+				existType = false;
 				return false; // Casting a multi-column type is not possible
 			}
 
+			existType = true;
 			if (sqlTypes[0].DbType == toSqlTypes[0].DbType)
 			{
 				return false;
@@ -614,28 +621,36 @@ possible solutions:
 
 			if (type.ReturnedClass.IsEnum && sqlTypes[0].DbType == DbType.String)
 			{
+				existType = false;
 				return false; // Never cast an enum that is mapped as string, the type will provide a string for the parameter value
 			}
 
 			// Some dialects can map several sql types into one, cast only if the dialect types are different
-			var castTypeName = _parameters.SessionFactory.Dialect.GetCastTypeName(sqlTypes[0]);
-			var toCastTypeName = _parameters.SessionFactory.Dialect.GetCastTypeName(toSqlTypes[0]);
+			if (!_parameters.SessionFactory.Dialect.TryGetCastTypeName(sqlTypes[0], out var castTypeName) ||
+			    !_parameters.SessionFactory.Dialect.TryGetCastTypeName(toSqlTypes[0], out var toCastTypeName))
+			{
+				return false; // The dialect does not support such cast
+			}
+
 			return castTypeName != toCastTypeName;
 		}
 
-		private bool IsCastRequired(System.Type type, string sqlFunctionName)
+		private bool IsCastRequired(System.Type type, string sqlFunctionName, out bool existType)
 		{
 			if (type == typeof(object))
 			{
+				existType = false;
 				return false;
 			}
 
 			var toType = TypeFactory.GetDefaultTypeFor(type);
 			if (toType == null)
 			{
+				existType = false;
 				return true; // Fallback to the old behavior
 			}
 
+			existType = true;
 			var sqlFunction = _parameters.SessionFactory.SQLFunctionRegistry.FindSQLFunction(sqlFunctionName);
 			if (sqlFunction == null)
 			{
@@ -643,7 +658,7 @@ possible solutions:
 			}
 
 			var fnReturnType = sqlFunction.ReturnType(toType, _parameters.SessionFactory);
-			return fnReturnType == null || IsCastRequired(fnReturnType, toType);
+			return fnReturnType == null || IsCastRequired(fnReturnType, toType, out existType);
 		}
 
 		private IType GetType(Expression expression)

@@ -50,10 +50,9 @@ namespace NHibernate.Dialect.Function
 				{
 					throw new QueryException("invalid NHibernate type for cast(), was:" + typeName);
 				}
-				sqlType = factory.Dialect.GetCastTypeName(sqlTypeCodes[0]);
-				if (sqlType == null)
+
+				if (!factory.Dialect.TryGetCastTypeName(sqlTypeCodes[0], out sqlType))
 				{
-					//TODO: never reached, since GetTypeName() actually throws an exception!
 					sqlType = typeName;
 				}
 				//else 

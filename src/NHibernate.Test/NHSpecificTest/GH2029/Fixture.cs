@@ -84,6 +84,9 @@ namespace NHibernate.Test.NHSpecificTest.GH2029
 		[Test]
 		public void NullableIntOverflow()
 		{
+			var hasCast = Dialect.GetCastTypeName(NHibernateUtil.Int32.SqlType) !=
+			              Dialect.GetCastTypeName(NHibernateUtil.Int64.SqlType);
+
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			using (var sqlLog = new SqlLogSpy())
@@ -96,7 +99,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2029
 					   })
 					   .ToList();
 
-				Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "cast"), Is.EqualTo(1));
+				Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "cast"), Is.EqualTo(hasCast ? 1 : 0));
 				Assert.That(groups, Has.Count.EqualTo(1));
 				Assert.That(groups[0].s, Is.EqualTo((long) int.MaxValue * 2));
 			}
@@ -105,6 +108,9 @@ namespace NHibernate.Test.NHSpecificTest.GH2029
 		[Test]
 		public void IntOverflow()
 		{
+			var hasCast = Dialect.GetCastTypeName(NHibernateUtil.Int32.SqlType) !=
+			              Dialect.GetCastTypeName(NHibernateUtil.Int64.SqlType);
+
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			using (var sqlLog = new SqlLogSpy())
@@ -117,7 +123,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2029
 									})
 									.ToList();
 
-				Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "cast"), Is.EqualTo(1));
+				Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "cast"), Is.EqualTo(hasCast ? 1 : 0));
 				Assert.That(groups, Has.Count.EqualTo(1));
 				Assert.That(groups[0].s, Is.EqualTo((long) int.MaxValue * 3));
 			}
