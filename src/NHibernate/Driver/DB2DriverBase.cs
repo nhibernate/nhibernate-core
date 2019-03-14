@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.Common;
 using NHibernate.Engine;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Driver
 {
@@ -47,7 +48,15 @@ namespace NHibernate.Driver
 
 		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
-			dbParam.DbType = sqlType.DbType;
+			switch (sqlType.DbType)
+			{
+				case DbType.Guid:
+					dbParam.DbType = DbType.Binary;
+					break;
+				default:
+					dbParam.DbType = sqlType.DbType;
+					break;
+			}
 		}
 	}
 }
