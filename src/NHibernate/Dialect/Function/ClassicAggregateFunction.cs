@@ -9,7 +9,7 @@ using NHibernate.Util;
 namespace NHibernate.Dialect.Function
 {
 	[Serializable]
-	public class ClassicAggregateFunction : ISQLFunction, IFunctionGrammar
+	public class ClassicAggregateFunction : ISQLFunction, IFunctionGrammar, ISQLAggregateFunction
 	{
 		private IType returnType = null;
 		private readonly string name;
@@ -107,6 +107,19 @@ namespace NHibernate.Dialect.Function
 		{
 			return "distinct".Equals(token, StringComparison.OrdinalIgnoreCase) ||
 				"all".Equals(token, StringComparison.OrdinalIgnoreCase);
+		}
+
+		#endregion
+
+		#region ISQLAggregateFunction Members
+
+		/// <inheritdoc />
+		public string FunctionName => name;
+
+		/// <inheritdoc />
+		public virtual IType GetActualReturnType(IType argumentType, IMapping mapping)
+		{
+			return ReturnType(argumentType, mapping);
 		}
 
 		#endregion

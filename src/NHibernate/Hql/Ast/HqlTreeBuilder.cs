@@ -307,6 +307,11 @@ namespace NHibernate.Hql.Ast
 			return new HqlCount(_factory, child);
 		}
 
+		public HqlCountBig CountBig(HqlExpression child)
+		{
+			return new HqlCountBig(_factory, child);
+		}
+
 		public HqlRowStar RowStar()
 		{
 			return new HqlRowStar(_factory);

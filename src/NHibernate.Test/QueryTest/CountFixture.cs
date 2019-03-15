@@ -2,6 +2,8 @@ using System;
 using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
 using NHibernate.DomainModel;
+using NHibernate.Engine;
+using NHibernate.Type;
 using NUnit.Framework;
 using Environment=NHibernate.Cfg.Environment;
 
@@ -42,6 +44,19 @@ namespace NHibernate.Test.QueryTest
 				Assert.IsTrue(count is Int32);
 			}
 			sf.Close();
+		}
+	}
+
+	[Serializable]
+	internal class ClassicCountFunction : ClassicAggregateFunction
+	{
+		public ClassicCountFunction() : base("count", true)
+		{
+		}
+
+		public override IType ReturnType(IType columnType, IMapping mapping)
+		{
+			return NHibernateUtil.Int32;
 		}
 	}
 }

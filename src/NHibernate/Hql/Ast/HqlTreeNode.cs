@@ -697,6 +697,19 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
+	public class HqlCountBig : HqlExpression
+	{
+		public HqlCountBig(IASTFactory factory)
+			: base(HqlSqlWalker.COUNT, "count_big", factory)
+		{
+		}
+
+		public HqlCountBig(IASTFactory factory, HqlExpression child)
+			: base(HqlSqlWalker.COUNT, "count_big", factory, child)
+		{
+		}
+	}
+
 	public class HqlAs : HqlExpression
 	{
 		public HqlAs(IASTFactory factory, HqlExpression expression, System.Type type)

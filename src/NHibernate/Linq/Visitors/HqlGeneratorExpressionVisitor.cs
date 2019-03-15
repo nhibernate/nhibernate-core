@@ -257,7 +257,16 @@ possible solutions:
 
 		protected HqlTreeNode VisitNhCount(NhCountExpression expression)
 		{
-			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Count(VisitExpression(expression.Expression).AsExpression()), expression.Type);
+			if (expression is NhLongCountExpression)
+			{
+				return IsCastRequired(expression.Type, "count_big", out _)
+					? (HqlTreeNode) _hqlTreeBuilder.Cast(_hqlTreeBuilder.CountBig(VisitExpression(expression.Expression).AsExpression()), expression.Type)
+					: _hqlTreeBuilder.TransparentCast(_hqlTreeBuilder.CountBig(VisitExpression(expression.Expression).AsExpression()), expression.Type);
+			}
+
+			return IsCastRequired(expression.Type, "count", out _)
+				? (HqlTreeNode) _hqlTreeBuilder.Cast(_hqlTreeBuilder.Count(VisitExpression(expression.Expression).AsExpression()), expression.Type)
+				: _hqlTreeBuilder.TransparentCast(_hqlTreeBuilder.Count(VisitExpression(expression.Expression).AsExpression()), expression.Type);
 		}
 
 		protected HqlTreeNode VisitNhMin(NhMinExpression expression)

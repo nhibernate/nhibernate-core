@@ -135,7 +135,8 @@ namespace NHibernate.Test.Hql
 			Assert.Throws<QueryException>(() => csf.Render(args, factoryImpl));
 		}
 
-		[Test]
+		// Since v5.3
+		[Test, Obsolete]
 		public void ClassicCount()
 		{
 			//ANSI-SQL92 definition

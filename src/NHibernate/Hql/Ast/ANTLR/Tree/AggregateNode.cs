@@ -1,5 +1,6 @@
 ﻿using System;
 using Antlr.Runtime;
+using NHibernate.Dialect.Function;
 using NHibernate.Type;
 using NHibernate.Hql.Ast.ANTLR.Util;
 
@@ -18,6 +19,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			: base(token)
 		{
 		}
+
+		internal ISQLAggregateFunction SqlFunction => SessionFactoryHelper.FindSQLFunction(Text) as ISQLAggregateFunction;
 
 		public override IType DataType
 		{
