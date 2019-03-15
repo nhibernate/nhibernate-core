@@ -218,7 +218,7 @@ namespace NHibernate.Id
 			do
 			{
 				//the loop ensure atomicitiy of the 
-				//select + uspdate even for no transaction
+				//select + update even for no transaction
 				//or read committed isolation level (needed for .net?)
 
 				var qps = conn.CreateCommand();

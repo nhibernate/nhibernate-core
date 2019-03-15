@@ -14,10 +14,9 @@ namespace NHibernate.Action
 	/// Any action relating to insert/update/delete of a collection
 	/// </summary>
 	[Serializable]
-	public abstract partial class CollectionAction : IExecutable, IComparable<CollectionAction>, IDeserializationCallback
+	public abstract partial class CollectionAction : IAsyncExecutable, IComparable<CollectionAction>, IDeserializationCallback, IAfterTransactionCompletionProcess
 	{
 		private readonly object key;
-		private object finalKey;
 		[NonSerialized] private ICollectionPersister persister;
 		private readonly ISessionImplementor session;
 		private readonly string collectionRole;
@@ -51,23 +50,26 @@ namespace NHibernate.Action
 			get { return persister; }
 		}
 
-		protected internal object Key
+		//Since v5.3
+		[Obsolete("Please use GetKey() instead.")]
+		protected internal object Key => GetKey();
+
+		protected object GetKey()
 		{
-			get
+			if (key is DelayedPostInsertIdentifier)
 			{
-				finalKey = key;
-				if (key is DelayedPostInsertIdentifier)
+				// need to look it up
+				var finalKey = persister.CollectionType.GetKeyOfOwner(collection.Owner, session);
+				if (finalKey == key)
 				{
-					// need to look it up from the persistence-context
-					finalKey = session.PersistenceContext.GetEntry(collection.Owner).Id;
-					if (finalKey == key)
-					{
-						// we may be screwed here since the collection action is about to execute
-						// and we do not know the final owner key value
-					}
+					// we may be screwed here since the collection action is about to execute
+					// and we do not know the final owner key value
 				}
+
 				return finalKey;
 			}
+
+			return key;
 		}
 
 		protected internal ISessionImplementor Session
@@ -104,32 +106,28 @@ namespace NHibernate.Action
 		/// <summary>Execute this action</summary>
 		public abstract void Execute();
 
-		public virtual BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess
+		IBeforeTransactionCompletionProcess IAsyncExecutable.BeforeTransactionCompletionProcess => 
+			null;
+
+		IAfterTransactionCompletionProcess IAsyncExecutable.AfterTransactionCompletionProcess =>
+			persister.HasCache ? this : null;
+
+		//Since v5.2
+		[Obsolete("This property is not used and will be removed in a future version.")]
+		public virtual BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess => 
+			null;
+
+		//Since v5.2
+		[Obsolete("This property is not used and will be removed in a future version.")]
+		public virtual AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess =>
+			persister.HasCache ? ExecuteAfterTransactionCompletion : default(AfterTransactionCompletionProcessDelegate);
+
+		public virtual void ExecuteAfterTransactionCompletion(bool success)
 		{
-			get 
-			{ 
-				return null; 
-			}
+			var ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
+			persister.Cache.Release(ck, softLock);
 		}
 
-		public virtual AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess
-		{
-
-			get
-			{
-				// Only make sense to add the delegate if there is a cache.
-				if (persister.HasCache)
-				{
-					return new AfterTransactionCompletionProcessDelegate((success) =>
-					{
-						CacheKey ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
-						persister.Cache.Release(ck, softLock);
-					});
-				}
-				return null; 
-			}
-		}
-		
 		#endregion
 
 		public ISoftLock Lock

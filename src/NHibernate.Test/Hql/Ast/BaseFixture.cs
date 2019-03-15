@@ -12,7 +12,7 @@ namespace NHibernate.Test.Hql.Ast
 		
 		#region Overrides of TestCase
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return Array.Empty<string>(); }
 		}

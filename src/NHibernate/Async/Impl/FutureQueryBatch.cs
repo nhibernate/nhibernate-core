@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using NHibernate.Transform;
 
@@ -17,6 +18,15 @@ namespace NHibernate.Impl
 	using System.Threading;
 	public partial class FutureQueryBatch : FutureBatch<IQuery, IMultiQuery>
 	{
+
+		protected override Task<IList> ListAsync(IQuery query, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList>(cancellationToken);
+			}
+			return query.ListAsync(cancellationToken);
+		}
 
 		protected override Task<IList> GetResultsFromAsync(IMultiQuery multiApproach, CancellationToken cancellationToken)
 		{

@@ -45,9 +45,7 @@ namespace NHibernate.Mapping
 
 		private static string InjectCatalogAndSchema(string ddlString, string defaultCatalog, string defaultSchema)
 		{
-			string rtn = StringHelper.Replace(ddlString, "${catalog}", defaultCatalog);
-			rtn = StringHelper.Replace(rtn, "${schema}", defaultSchema);
-			return rtn;
+			return ddlString?.Replace("${catalog}", defaultCatalog).Replace("${schema}", defaultSchema);
 		}
 	}
 }

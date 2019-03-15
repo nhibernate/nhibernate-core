@@ -77,8 +77,8 @@ namespace NHibernate.Dialect.Function
 			if (args.Count > 1)
 			{
 				object firstArg = args[0];
-				if (!StringHelper.EqualsCaseInsensitive("distinct", firstArg.ToString()) &&
-				    !StringHelper.EqualsCaseInsensitive("all", firstArg.ToString()))
+				if (!"distinct".Equals(firstArg.ToString(), StringComparison.OrdinalIgnoreCase) &&
+				    !"all".Equals(firstArg.ToString(), StringComparison.OrdinalIgnoreCase))
 				{
 					throw new QueryException(string.Format("Aggregate {0}(): token unknow {1}.", name, firstArg));
 				}

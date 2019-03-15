@@ -4,11 +4,15 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql;
+using NHibernate.Multi;
 using NHibernate.Proxy;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
@@ -18,7 +22,7 @@ namespace NHibernate.Impl
 	public abstract partial class AbstractQueryImpl : IQuery
 	{
 		private readonly string queryString;
-		private readonly ISessionImplementor session;
+		protected readonly ISessionImplementor session;
 		protected internal ParameterMetadata parameterMetadata;
 
 		private readonly RowSelection selection;
@@ -192,32 +196,22 @@ namespace NHibernate.Impl
 				throw new ArgumentNullException("clazz", "The IType can not be guessed for a null value.");
 			}
 
-			string typename = clazz.AssemblyQualifiedName;
-			IType type = TypeFactory.HeuristicType(typename);
-			bool serializable = (type != null && type is SerializableType);
-			if (type == null || serializable)
+			var type = TypeFactory.HeuristicType(clazz);
+			if (type == null || type is SerializableType)
 			{
-				try
+				if (session.Factory.TryGetEntityPersister(clazz.FullName) != null)
 				{
-					session.Factory.GetEntityPersister(clazz.FullName);
+					return NHibernateUtil.Entity(clazz);
 				}
-				catch (MappingException)
+
+				if (type == null)
 				{
-					if (serializable)
-					{
-						return type;
-					}
-					else
-					{
-						throw new HibernateException("Could not determine a type for class: " + typename);
-					}
+					throw new HibernateException(
+						"Could not determine a type for class: " + clazz.AssemblyQualifiedName);
 				}
-				return NHibernateUtil.Entity(clazz);
 			}
-			else
-			{
-				return type;
-			}
+
+			return type;
 		}
 
 		/// <summary>
@@ -241,7 +235,7 @@ namespace NHibernate.Impl
 			var type = typedList.Type;
 
 			var typedValues = (from object value in vals
-							   select new TypedValue(type, value))
+							   select new TypedValue(type, value, false))
 				.ToList();
 
 			if (typedValues.Count == 1)
@@ -262,7 +256,10 @@ namespace NHibernate.Impl
 
 			var paramPrefix = isJpaPositionalParam ? StringHelper.SqlParameter : ParserHelper.HqlVariablePrefix;
 
-			return StringHelper.Replace(query, paramPrefix + name, string.Join(StringHelper.CommaSpace, aliases), true);
+			return Regex.Replace(
+				query,
+				Regex.Escape(paramPrefix + name) + @"\b",
+				string.Join(StringHelper.CommaSpace, aliases));
 		}
 
 		#region Parameters
@@ -300,7 +297,7 @@ namespace NHibernate.Impl
 			}
 			else
 			{
-				namedParameters[name] = new TypedValue(type, val);
+				namedParameters[name] = new TypedValue(type, val, false);
 				return this;
 			}
 		}
@@ -723,7 +720,7 @@ namespace NHibernate.Impl
 			{
 				throw new QueryException(string.Format("An empty parameter-list generates wrong SQL; parameter name '{0}'", name));
 			}
-			namedParameterLists[name] = new TypedValue(type, vals);
+			namedParameterLists[name] = new TypedValue(type, vals, true);
 			return this;
 		}
 
@@ -903,24 +900,12 @@ namespace NHibernate.Impl
 
 		public IFutureEnumerable<T> Future<T>()
 		{
-			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
-			{
-				return new DelayedEnumerator<T>(List<T>, async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
-			}
-
-			session.FutureQueryBatch.Add<T>(this);
-			return session.FutureQueryBatch.GetEnumerator<T>();
+			return session.GetFutureBatch().AddAsFuture<T>(this);
 		}
 
 		public IFutureValue<T> FutureValue<T>()
 		{
-			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
-			{
-				return new FutureValue<T>(List<T>, async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
-			}
-			
-			session.FutureQueryBatch.Add<T>(this);
-			return session.FutureQueryBatch.GetFutureValue<T>();
+			return session.GetFutureBatch().AddAsFutureValue<T>(this);
 		}
 
 		/// <summary> Override the current session cache mode, just for this query.
@@ -1006,21 +991,24 @@ namespace NHibernate.Impl
 		public virtual QueryParameters GetQueryParameters(IDictionary<string, TypedValue> namedParams)
 		{
 			return new QueryParameters(
-					TypeArray(),
-					ValueArray(),
-					namedParams,
-					LockModes,
-					Selection,
-					true,
-					IsReadOnly,
-					cacheable,
-					cacheRegion,
-					comment,
-					collectionKey == null ? null : new[] { collectionKey },
-					optionalObject,
-					optionalEntityName,
-					optionalId,
-					resultTransformer);
+				TypeArray(),
+				ValueArray(),
+				namedParams,
+				LockModes,
+				Selection,
+				true,
+				IsReadOnly,
+				cacheable,
+				cacheRegion,
+				comment,
+				collectionKey == null ? null : new[] { collectionKey },
+				optionalObject,
+				optionalEntityName,
+				optionalId,
+				resultTransformer)
+			{
+				CacheMode = cacheMode
+			};
 		}
 
 		protected void Before()
@@ -1059,5 +1047,9 @@ namespace NHibernate.Impl
 		}
 
 		protected internal abstract IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters);
+
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
+		protected internal abstract Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters, CancellationToken cancellationToken);
 	}
 }

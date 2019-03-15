@@ -7,6 +7,7 @@ using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.SqlCommand;
+using NHibernate.Transform;
 using NHibernate.Type;
 
 namespace NHibernate.Impl
@@ -39,7 +40,8 @@ namespace NHibernate.Impl
 		// when we start enumerating through the DataReader we are positioned
 		// before the first record we need
 		private int _currentRow = -1;
-		private HolderInstantiator _holderInstantiator;
+		private IResultTransformer _resultTransformer;
+		private string[] _returnAliases;
 		private RowSelection _selection;
 
 		/// <summary>
@@ -56,6 +58,8 @@ namespace NHibernate.Impl
 		/// <remarks>
 		/// The <see cref="DbDataReader"/> should already be positioned on the first record in <see cref="RowSelection"/>.
 		/// </remarks>
+		//Since v5.2
+		[Obsolete("Please use the constructor accepting resultTransformer and queryReturnAliases")]
 		public EnumerableImpl(DbDataReader reader,
 							  DbCommand cmd,
 							  IEventSource session,
@@ -64,6 +68,35 @@ namespace NHibernate.Impl
 							  string[][] columnNames,
 							  RowSelection selection,
 							  HolderInstantiator holderInstantiator)
+			: this(reader, cmd, session, readOnly, types, columnNames, selection, holderInstantiator.ResultTransformer, holderInstantiator.QueryReturnAliases)
+		{
+		}
+
+		/// <summary>
+		/// Create an <see cref="IEnumerable"/> wrapper over an <see cref="DbDataReader"/>.
+		/// </summary>
+		/// <param name="reader">The <see cref="DbDataReader"/> to enumerate over.</param>
+		/// <param name="cmd">The <see cref="DbCommand"/> used to create the <see cref="DbDataReader"/>.</param>
+		/// <param name="session">The <see cref="ISession"/> to use to load objects.</param>
+		/// <param name="readOnly"></param>
+		/// <param name="types">The <see cref="IType"/>s contained in the <see cref="DbDataReader"/>.</param>
+		/// <param name="columnNames">The names of the columns in the <see cref="DbDataReader"/>.</param>
+		/// <param name="selection">The <see cref="RowSelection"/> that should be applied to the <see cref="DbDataReader"/>.</param>
+		/// <param name="resultTransformer">The <see cref="IResultTransformer"/> that should be applied to a result row or <c>null</c>.</param>
+		/// <param name="returnAliases">The aliases that correspond to a result row.</param>
+		/// <remarks>
+		/// The <see cref="DbDataReader"/> should already be positioned on the first record in <see cref="RowSelection"/>.
+		/// </remarks>
+		public EnumerableImpl(
+			DbDataReader reader,
+			DbCommand cmd,
+			IEventSource session,
+			bool readOnly,
+			IType[] types,
+			string[][] columnNames,
+			RowSelection selection,
+			IResultTransformer resultTransformer,
+			string[] returnAliases)
 		{
 			_reader = reader;
 			_cmd = cmd;
@@ -72,9 +105,10 @@ namespace NHibernate.Impl
 			_types = types;
 			_names = columnNames;
 			_selection = selection;
-			_holderInstantiator = holderInstantiator;
 
 			_single = _types.Length == 1;
+			_resultTransformer = resultTransformer;
+			_returnAliases = returnAliases;
 		}
 
 		/// <summary>
@@ -179,9 +213,8 @@ namespace NHibernate.Impl
 				else
 				{
 					log.Debug("retrieving next results");
-					bool isHolder = _holderInstantiator.IsRequired;
-	
-					if (_single && !isHolder)
+
+					if (_single && _resultTransformer == null)
 					{
 						_currentResult = _types[0].NullSafeGet(_reader, _names[0], _session, null);
 					}
@@ -199,10 +232,10 @@ namespace NHibernate.Impl
 							// and use the ISession to load an instance of the object.
 							currentResults[i] = _types[i].NullSafeGet(_reader, _names[i], _session, null);
 						}
-	
-						if (isHolder)
+
+						if (_resultTransformer != null)
 						{
-							_currentResult = _holderInstantiator.Instantiate(currentResults);
+							_currentResult = _resultTransformer.TransformTuple(currentResults, _returnAliases);
 						}
 						else
 						{

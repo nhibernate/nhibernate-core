@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -17,6 +18,8 @@ using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
+	// Since v5.2
+	[Obsolete("Use Multi.QueryBatch instead, obtainable with ISession.CreateQueryBatch.")]
 	public partial class MultiQueryImpl : IMultiQuery
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(MultiQueryImpl));
@@ -423,7 +426,14 @@ namespace NHibernate.Impl
 				try
 				{
 					Before();
-					return cacheable ? ListUsingQueryCache() : ListIgnoreQueryCache();
+
+					var querySpaces = new HashSet<string>(Translators.SelectMany(t => t.QuerySpaces));
+					if (resultSetsCommand.HasQueries)
+					{
+						session.AutoFlushIfRequired(querySpaces);
+					}
+
+					return cacheable ? ListUsingQueryCache(querySpaces) : ListIgnoreQueryCache();
 				}
 				finally
 				{
@@ -523,6 +533,7 @@ namespace NHibernate.Impl
 			var hydratedObjects = new List<object>[Translators.Count];
 			List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[Translators.Count];
 			bool[] createSubselects = new bool[Translators.Count];
+			var cacheBatcher = new CacheBatcher(session);
 
 			try
 			{
@@ -576,7 +587,8 @@ namespace NHibernate.Impl
 
 							rowCount++;
 							object result = translator.Loader.GetRowFromResultSet(
-								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true);
+								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true, null, null,
+								(persister, data) => cacheBatcher.AddToBatch(persister, data));
 							tempResults.Add(result);
 
 							if (createSubselects[i])
@@ -606,13 +618,15 @@ namespace NHibernate.Impl
 						ITranslator translator = translators[i];
 						QueryParameters parameter = parameters[i];
 
-						translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false);
+						translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false, cacheBatcher);
 
 						if (createSubselects[i])
 						{
 							translator.Loader.CreateSubselects(subselectResultKeys[i], parameter, session);
 						}
 					}
+
+					cacheBatcher.ExecuteBatch();
 				}
 			}
 			catch (Exception sqle)
@@ -685,18 +699,16 @@ namespace NHibernate.Impl
 			return GetResultList(DoList());
 		}
 
-		private IList ListUsingQueryCache()
+		private IList ListUsingQueryCache(HashSet<string> querySpaces)
 		{
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
 
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters);
 
-			ISet<string> querySpaces = new HashSet<string>();
 			List<IType[]> resultTypesList = new List<IType[]>(Translators.Count);
 			for (int i = 0; i < Translators.Count; i++)
 			{
 				ITranslator queryTranslator = Translators[i];
-				querySpaces.UnionWith(queryTranslator.QuerySpaces);
 				resultTypesList.Add(queryTranslator.ReturnTypes);
 			}
 			int[] firstRows = new int[Parameters.Count];
@@ -720,7 +732,7 @@ namespace NHibernate.Impl
 			{
 				log.Debug("Cache miss for multi query");
 				var list = DoList();
-				queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, false, session);
+				queryCache.Put(key, combinedParameters, new ICacheAssembler[] { assembler }, new object[] { list }, session);
 				result = list;
 			}
 

@@ -170,10 +170,10 @@ namespace NHibernate.Tool.hbm2ddl
 					await (ExecuteSqlAsync(statement, sql, cancellationToken)).ConfigureAwait(false);
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
-				log.Warn("Unsuccessful: {0}", sql);
-				log.Warn(e, e.Message);
+				log.Warn(e, "Unsuccessful: {0}", sql);
 				if (throwOnError)
 				{
 					throw;
@@ -186,10 +186,7 @@ namespace NHibernate.Tool.hbm2ddl
 			cancellationToken.ThrowIfCancellationRequested();
 			if (dialect.SupportsSqlBatches)
 			{
-				var objFactory = Environment.BytecodeProvider.ObjectsFactory;
-				ScriptSplitter splitter = (ScriptSplitter)objFactory.CreateInstance(typeof(ScriptSplitter), sql);
-
-				foreach (string stmt in splitter)
+				foreach (var stmt in new ScriptSplitter(sql))
 				{
 					log.Debug("SQL Batch: {0}", stmt);
 					cmd.CommandText = stmt;
@@ -385,6 +382,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 				await (ExecuteAsync(scriptAction, execute, justDrop, connection, fileOutput, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				// So that we don't wrap HibernateExceptions in HibernateExceptions

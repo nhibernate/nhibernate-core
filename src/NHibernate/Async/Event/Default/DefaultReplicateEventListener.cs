@@ -127,8 +127,7 @@ namespace NHibernate.Event.Default
 				LockMode.None, 
 				true, 
 				persister,
-				true, 
-				false);
+				true);
 
 			await (CascadeAfterReplicateAsync(entity, persister, replicationMode, source, cancellationToken)).ConfigureAwait(false);
 		}

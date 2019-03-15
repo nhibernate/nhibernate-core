@@ -27,6 +27,16 @@ namespace NHibernate.Util
 		private static readonly MethodInfo Exception_InternalPreserveStackTrace =
 			typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
 
+		internal static T CastOrThrow<T>(object obj, string supportMessage) where T : class
+		{
+			if (obj is T t)
+				return t;
+
+			var typeKind = typeof(T).IsInterface ? "interface" : "class";
+			var objType = obj?.GetType().FullName ?? "Object must not be null and";
+			throw new ArgumentException($@"{objType} requires to implement {typeof(T).FullName} {typeKind} to support {supportMessage}.");
+		}
+
 		/// <summary>
 		/// Extract the <see cref="MethodInfo"/> from a given expression.
 		/// </summary>
@@ -52,6 +62,21 @@ namespace NHibernate.Util
 				throw new ArgumentNullException(nameof(method));
 
 			return ((MethodCallExpression)method.Body).Method;
+		}
+
+		/// <summary>
+		/// Extract the <see cref="MethodInfo"/> from a given expression.
+		/// </summary>
+		/// <typeparam name="TSource">The declaring-type of the method.</typeparam>
+		/// <typeparam name="TResult">The return type of the method.</typeparam>
+		/// <param name="method">The method.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the method.</returns>
+		public static MethodInfo GetMethod<TSource, TResult>(Expression<Func<TSource, TResult>> method)
+		{
+			if (method == null)
+				throw new ArgumentNullException(nameof(method));
+
+			return ((MethodCallExpression) method.Body).Method;
 		}
 
 		/// <summary>
@@ -268,7 +293,7 @@ namespace NHibernate.Util
 
 			var heuristicClass = propertyClass.UnwrapIfNullable();
 
-			return TypeFactory.HeuristicType(heuristicClass.AssemblyQualifiedName);
+			return TypeFactory.HeuristicType(heuristicClass);
 		}
 
 		/// <summary>
@@ -398,7 +423,6 @@ namespace NHibernate.Util
 			{
 				// Try to get the type from an already loaded assembly
 				System.Type type = System.Type.GetType(name.ToString());
-
 				if (type != null)
 				{
 					return type;
@@ -411,6 +435,16 @@ namespace NHibernate.Util
 					log.Warn(noAssembly, name);
 					if (throwOnError) throw new TypeLoadException(string.Format(noAssembly, name));
 					return null;
+				}
+
+				//Load type from already loaded assembly
+				type = System.Type.GetType(
+					name.ToString(),
+					an => AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName == an.FullName),
+					null);
+				if (type != null)
+				{
+					return type;
 				}
 
 				Assembly assembly = Assembly.Load(name.Assembly);

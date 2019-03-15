@@ -129,7 +129,7 @@ namespace NHibernate.Test.TransformTests
 
 		#region Overrides of TestCase
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "TransformTests.Simple.hbm.xml" }; }
 		}
@@ -167,57 +167,57 @@ namespace NHibernate.Test.TransformTests
 		#endregion
 
 		[Test]
-		public Task WorkWithOutPublicParameterLessCtorAsync()
+		public async Task WorkWithOutPublicParameterLessCtorAsync()
 		{
-			return AssertCardinalityAndSomethingAsync<WithOutPublicParameterLessCtor>();
+			await (AssertCardinalityAndSomethingAsync<WithOutPublicParameterLessCtor>());
 		}
 
 		[Test]
-		public Task ToPublicProperties_WithoutAnyProjectionsAsync()
+		public async Task ToPublicProperties_WithoutAnyProjectionsAsync()
 		{
-			return AssertCardinalityNameAndIdAsync<PublicPropertiesSimpleDTO>();
+			await (AssertCardinalityNameAndIdAsync<PublicPropertiesSimpleDTO>());
 		}
 
 		[Test]
-		public Task ToPrivateFields_WithoutAnyProjectionsAsync()
+		public async Task ToPrivateFields_WithoutAnyProjectionsAsync()
 		{
-			return AssertCardinalityNameAndIdAsync<PrivateFieldsSimpleDTO>();
+			await (AssertCardinalityNameAndIdAsync<PrivateFieldsSimpleDTO>());
 		}
 
 		[Test]
-		public Task ToInheritedPublicProperties_WithoutProjectionsAsync()
+		public async Task ToInheritedPublicProperties_WithoutProjectionsAsync()
 		{
-			return AssertCardinalityNameAndIdAsync<PublicInheritedPropertiesSimpleDTO>();
+			await (AssertCardinalityNameAndIdAsync<PublicInheritedPropertiesSimpleDTO>());
 		}
 
 		[Test]
-		public Task ToInheritedPrivateFields_WithoutProjectionsAsync()
+		public async Task ToInheritedPrivateFields_WithoutProjectionsAsync()
 		{
-			return AssertCardinalityNameAndIdAsync<PrivateInheritedFieldsSimpleDTO>();
+			await (AssertCardinalityNameAndIdAsync<PrivateInheritedFieldsSimpleDTO>());
 		}
 
 		[Test]
-		public Task WorkWithPublicParameterLessCtor_FieldsAsync()
+		public async Task WorkWithPublicParameterLessCtor_FieldsAsync()
 		{
-			return AssertCardinalityAndSomethingAsync<PublicParameterLessCtor>();
+			await (AssertCardinalityAndSomethingAsync<PublicParameterLessCtor>());
 		}
 
 		[Test]
-		public Task WorkWithPublicParameterLessCtor_PropertiesAsync()
+		public async Task WorkWithPublicParameterLessCtor_PropertiesAsync()
 		{
-			return AssertCardinalityAndSomethingAsync<PublicParameterLessCtor>("select s.Name as Something from Simple s");
+			await (AssertCardinalityAndSomethingAsync<PublicParameterLessCtor>("select s.Name as Something from Simple s"));
 		}
 
 		[Test]
-		public Task WorksWithStructAsync()
+		public async Task WorksWithStructAsync()
 		{
-			return AssertCardinalityAndSomethingAsync<TestStruct>();
+			await (AssertCardinalityAndSomethingAsync<TestStruct>());
 		}
 
 		[Test]
-		public Task WorksWithNewPropertyAsync()
+		public async Task WorksWithNewPropertyAsync()
 		{
-			return AssertCardinalityNameAndIdAsync<NewPropertiesSimpleDTO>();
+			await (AssertCardinalityNameAndIdAsync<NewPropertiesSimpleDTO>());
 		}
 
 		[Test]
@@ -257,8 +257,6 @@ namespace NHibernate.Test.TransformTests
 		[Test]
 		public async Task SerializationAsync()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			await (AssertSerializationAsync<PublicPropertiesSimpleDTO>());
 			await (AssertSerializationAsync<PrivateFieldsSimpleDTO>());
 			await (AssertSerializationAsync<PublicInheritedPropertiesSimpleDTO>());
@@ -306,7 +304,7 @@ namespace NHibernate.Test.TransformTests
 				var transformer = Transformers.AliasToBean<T>();
 				var bytes = SerializationHelper.Serialize(transformer);
 				transformer = (IResultTransformer)SerializationHelper.Deserialize(bytes);
-				return AssertCardinalityNameAndIdAsync<T>(transformer: transformer, cancellationToken:cancellationToken);
+				return AssertCardinalityNameAndIdAsync<T>(transformer: transformer, cancellationToken: cancellationToken);
 			}
 			catch (System.Exception ex)
 			{

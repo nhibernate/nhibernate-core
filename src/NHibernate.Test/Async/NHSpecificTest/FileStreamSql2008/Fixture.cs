@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.FileStreamSql2008
 	[TestFixture, Explicit]
 	public class FixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"NHSpecificTest.FileStreamSql2008.Mappings.hbm.xml"}; }
 		}

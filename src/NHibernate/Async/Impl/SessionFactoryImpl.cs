@@ -85,14 +85,15 @@ namespace NHibernate.Impl
 
 			if (settings.IsQueryCacheEnabled)
 			{
-				queryCache.Destroy();
-
 				foreach (var cache in queryCaches.Values)
 				{
 					cache.Value.Destroy();
 				}
+			}
 
-				updateTimestampsCache.Destroy();
+			foreach (var cache in _allCacheRegions.Values)
+			{
+				cache.Destroy();
 			}
 
 			settings.CacheProvider.Stop();
@@ -165,6 +166,24 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public Task EvictAsync(IEnumerable<System.Type> persistentClasses, CancellationToken cancellationToken)
+		{
+			if (persistentClasses == null)
+				throw new ArgumentNullException(nameof(persistentClasses));
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				return EvictEntityAsync(persistentClasses.Select(x => x.FullName), cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
 		public Task EvictEntityAsync(string entityName, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -187,6 +206,30 @@ namespace NHibernate.Impl
 			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
+			}
+		}
+
+		public Task EvictEntityAsync(IEnumerable<string> entityNames, CancellationToken cancellationToken)
+		{
+			if (entityNames == null)
+				throw new ArgumentNullException(nameof(entityNames));
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return InternalEvictEntityAsync();
+			async Task InternalEvictEntityAsync()
+			{
+
+				foreach (var cacheGroup in entityNames.Select(GetEntityPersister).Where(x => x.HasCache).GroupBy(x => x.Cache))
+				{
+					if (log.IsDebugEnabled())
+					{
+						log.Debug("evicting second-level cache for: {0}",
+					          string.Join(", ", cacheGroup.Select(p => p.EntityName)));
+					}
+					await (cacheGroup.Key.ClearAsync(cancellationToken)).ConfigureAwait(false);
+				}
 			}
 		}
 
@@ -264,6 +307,30 @@ namespace NHibernate.Impl
 			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
+			}
+		}
+
+		public Task EvictCollectionAsync(IEnumerable<string> roleNames, CancellationToken cancellationToken)
+		{
+			if (roleNames == null)
+				throw new ArgumentNullException(nameof(roleNames));
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return InternalEvictCollectionAsync();
+			async Task InternalEvictCollectionAsync()
+			{
+
+				foreach (var cacheGroup in roleNames.Select(GetCollectionPersister).Where(x => x.HasCache).GroupBy(x => x.Cache))
+				{
+					if (log.IsDebugEnabled())
+					{
+						log.Debug("evicting second-level cache for: {0}",
+					          string.Join(", ", cacheGroup.Select(p => p.Role)));
+					}
+					await (cacheGroup.Key.ClearAsync(cancellationToken)).ConfigureAwait(false);
+				}
 			}
 		}
 

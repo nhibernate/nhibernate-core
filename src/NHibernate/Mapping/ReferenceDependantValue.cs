@@ -24,7 +24,7 @@ namespace NHibernate.Mapping
 
 		public override void CreateForeignKeyOfEntity(string entityName)
 		{
-			if (!HasFormula && !string.Equals("none", ForeignKeyName, StringComparison.InvariantCultureIgnoreCase))
+			if (!HasFormula && !string.Equals("none", ForeignKeyName, StringComparison.OrdinalIgnoreCase))
 			{
 				var referencedColumns = new List<Column>(_prototype.ColumnSpan);
 				foreach (Column column in _prototype.ColumnIterator)

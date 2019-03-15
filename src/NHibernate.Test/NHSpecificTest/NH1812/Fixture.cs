@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1812
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return Dialect.SupportsScalarSubSelects;
+			return Dialect.SupportsScalarSubSelects && TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		protected override void OnTearDown()

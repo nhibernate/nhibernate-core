@@ -263,7 +263,7 @@ namespace NHibernate.Dialect
 
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
-			return new MsSqlCeDataBaseSchema(connection);
+			return new MsSqlCeDataBaseSchema(connection, this);
 		}
 
 		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)

@@ -9,9 +9,21 @@ namespace NHibernate.Test.Futures
 	[TestFixture]
 	public class LinqFutureFixture : FutureFixture
 	{
+		protected override void OnTearDown()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				session.Delete("from Person");
+				transaction.Commit();
+			}
+		}
+
 		[Test]
 		public void DefaultReadOnlyTest()
 		{
+			CreatePersons();
+
 			//NH-3575
 			using (var s = Sfi.OpenSession())
 			{
@@ -44,13 +56,6 @@ namespace NHibernate.Test.Futures
 			{
 				var person = s.Query<Person>().Where(p => (p.Name ?? "e") == "e").ToFutureValue();
 				Assert.AreEqual(personId, person.Value.Id);
-			}
-
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
-			{
-				s.Delete("from Person");
-				tx.Commit();
 			}
 		}
 
@@ -126,13 +131,6 @@ namespace NHibernate.Test.Futures
 					Assert.AreEqual(1, events.Length);
 				}
 			}
-
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
-			{
-				s.Delete("from Person");
-				tx.Commit();
-			}
 		}
 
 		[Test]
@@ -148,6 +146,36 @@ namespace NHibernate.Test.Futures
 				var persons5 = s.Query<Person>()
 					.Take(5)
 					.ToFuture();
+
+				using (var logSpy = new SqlLogSpy())
+				{
+					foreach (var person in persons5.GetEnumerable())
+					{
+					}
+
+					foreach (var person in persons10.GetEnumerable())
+					{
+					}
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
+				}
+			}
+		}
+
+		[Test]
+		public void CanUseFutureQueryAndQueryOverForSatelessSession()
+		{
+			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+			using (var s = Sfi.OpenStatelessSession())
+			{
+				var persons10 = s.Query<Person>()
+					.Take(10)
+					.ToFuture();
+				var persons5 = s.QueryOver<Person>()
+					.Take(5)
+					.Future();
 
 				using (var logSpy = new SqlLogSpy())
 				{
@@ -228,13 +256,6 @@ namespace NHibernate.Test.Futures
 					var events = logSpy.Appender.GetEvents();
 					Assert.AreEqual(1, events.Length);
 				}
-			}
-
-			using (var s = OpenSession())
-			using (var tx = s.BeginTransaction())
-			{
-				s.Delete("from Person");
-				tx.Commit();
 			}
 		}
 
@@ -319,13 +340,6 @@ namespace NHibernate.Test.Futures
 
 				Assert.AreEqual(personId, meContainer.Value.Id);
 			}
-
-			using (var s = OpenSession())
-			using (var tx = s.BeginTransaction())
-			{
-				s.Delete("from Person");
-				tx.Commit();
-			}
 		}
 
 		[Test]
@@ -394,11 +408,130 @@ namespace NHibernate.Test.Futures
 					Assert.That(result.Count,Is.EqualTo(1));
 				}
 			}
+		}
+
+		[Test]
+		public void FutureCombineCachedAndNonCachedQueries()
+		{
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				s.Delete("from Person");
+				var p1 = new Person
+				{
+					Name = "Person name",
+					Age = 15
+				};
+				var p2 = new Person
+				{
+					Name = "Person name",
+					Age = 20
+				};
+
+				s.Save(p1);
+				s.Save(p2);
 				tx.Commit();
+			}
+
+			using (var s = Sfi.OpenSession())
+			{
+				var list = new List<IFutureEnumerable<Person>>();
+				for (var i = 0; i < 5; i++)
+				{
+					var i1 = i;
+					var query = s.Query<Person>().Where(x => x.Age > i1);
+					list.Add(query.WithOptions(x => x.SetCacheable(true)).ToFuture());
+				}
+
+				foreach (var query in list)
+				{
+					var result = query.GetEnumerable().ToList();
+					Assert.That(result.Count, Is.EqualTo(2));
+				}
+			}
+
+			//Check query.List returns data from cache
+			Sfi.Statistics.IsStatisticsEnabled = true;
+			using (var s = Sfi.OpenSession())
+			{
+				var list = new List<IEnumerable<Person>>();
+				for (var i = 0; i < 5; i++)
+				{
+					var i1 = i;
+					var query = s.Query<Person>().Where(x => x.Age > i1);
+
+					list.Add(query.WithOptions(x => x.SetCacheable(true)).ToList());
+				}
+
+				foreach (var query in list)
+				{
+					var result = query.ToList();
+					Assert.That(result.Count, Is.EqualTo(2));
+				}
+
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Queries must be retrieved from cache");
+			}
+
+			//Check another Future returns data from cache
+			Sfi.Statistics.Clear();
+			using (var s = Sfi.OpenSession())
+			{
+				var list = new List<IFutureEnumerable<Person>>();
+				//Reverse order of queries added to cache
+				for (var i = 5 - 1; i >= 0; i--)
+				{
+					var i1 = i;
+					var query = s.Query<Person>().Where(x => x.Age > i1);
+
+					list.Add(query.WithOptions(x => x.SetCacheable(true)).ToFuture());
+				}
+
+				foreach (var query in list)
+				{
+					var result = query.GetEnumerable().ToList();
+					Assert.That(result.Count, Is.EqualTo(2));
+				}
+
+				Assert.That(Sfi.Statistics.PrepareStatementCount , Is.EqualTo(0), "Future queries must be retrieved from cache");
+			}
+		}
+
+		[Test]
+		public void FutureAutoFlush()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.FlushMode = FlushMode.Auto;
+				var p1 = new Person
+				{
+					Name = "Person name",
+					Age = 15
+				};
+				s.Save(p1);
+				s.Flush();
+
+				s.Delete(p1);
+				var count = s.QueryOver<Person>().ToRowCountQuery().FutureValue<int>().Value;
+				tx.Commit();
+
+				Assert.That(count, Is.EqualTo(0), "Session wasn't auto flushed.");
+			}
+		}
+
+		[Test]
+		public void FutureOnQueryableFilter()
+		{
+			CreatePersons();
+
+			using (var s = Sfi.OpenSession())
+			{
+				var person = s.Query<Person>().Where(n => n.Name == "ParentTwoChildren").FirstOrDefault();
+				var f1 = person.Children.AsQueryable().Where(p => p.Age > 30).ToFuture();
+				var f2 = person.Children.AsQueryable().Where(p => p.Age > 5).ToFuture();
+
+				Assert.That(person.Children.Count, Is.EqualTo(2), "invalid test set up");
+				Assert.That(f1.GetEnumerable().ToList().Count, Is.EqualTo(0), "Invalid filtered results");
+				Assert.That(f2.GetEnumerable().ToList().Count, Is.EqualTo(1), "Invalid filtered results");
 			}
 		}
 	}

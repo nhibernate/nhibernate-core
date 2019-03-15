@@ -158,6 +158,19 @@ namespace NHibernate.Type
 			}
 		}
 
+		public override void BeforeAssemble(object oid, ISessionImplementor session)
+		{
+			var queryCacheQueue = session.PersistenceContext.BatchFetchQueue.QueryCacheQueue;
+			if (queryCacheQueue == null)
+			{
+				return;
+			}
+
+			var persister = GetPersister(session);
+			var key = persister.KeyType.Assemble(oid, session, null);
+			queryCacheQueue.AddCollection(persister, new CollectionKey(persister, key));
+		}
+
 		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
 			//we must use the "remembered" uk value, since it is 
@@ -471,16 +484,72 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Get the key value from the owning entity instance.
+		/// Get the key value from the owning entity instance. It is usually the identifier, but it might be some
+		/// other unique key, in the case of a property-ref.
 		/// </summary>
 		public object GetKeyOfOwner(object owner, ISessionImplementor session)
 		{
-			EntityEntry entityEntry = session.PersistenceContext.GetEntry(owner);
+			var entityEntry = session.PersistenceContext.GetEntry(owner);
 			if (entityEntry == null)
-				return null; // This just handles a particular case of component
-			// projection, perhaps get rid of it and throw an exception
+			{
+				// This just handles a particular case of component
+				// projection, perhaps get rid of it and throw an exception
+				return null;
+			}
 
-			return entityEntry.Id;
+			if (foreignKeyPropertyName == null)
+			{
+				return entityEntry.Id;
+			}
+
+			var key = entityEntry.LoadedState != null
+				? entityEntry.GetLoadedValue(foreignKeyPropertyName)
+				: entityEntry.Persister.GetPropertyValue(owner, foreignKeyPropertyName);
+
+			// At the point where we are resolving collection references for loading
+			// a collection element from an entity query with eager loads, the uk value
+			// is not yet resolved in the entity state. This means that an uk value being
+			// a component will be represented by just its properties values, and an uk value
+			// being an entity (one-to-one or many-to-one) will be represented by just its
+			// identifier.
+			// We detect this by checking the type of the key value.
+			// (This condition was also occuring with simple entity load previously, when the
+			// property-ref target was mapped after the collection. But TwoPhaseLoad has been
+			// adjusted for resolving collections after all other properties, avoiding this
+			// trouble when initializing the entities. (It occurs after having processed each row of the
+			// row of the result set.) Unfortunately for eager loads, we must resolve the collection
+			// earlier, during the row processing, for associating a read collection element
+			// to its collection.)
+			var keyType = GetPersister(session).KeyType;
+			if (keyType.ReturnedClass.IsInstanceOfType(key))
+				return key;
+
+			// key value is not yet resolved
+			var resolvedKey = keyType.SemiResolve(key, session, owner);
+			if (key != resolvedKey)
+				return resolvedKey;
+
+			// The key type SemiResolve was a no-op, which happens with entity types.
+			// We have to fully resolve it here, potentially causing n+1 loads. (It happens if
+			// the entity has lazy loading disabled while being a key property-ref for a collection:
+			// quite a special case mapping.)
+			// But anyway, Loader.ReadCollectionElement does already that some instructions later, when
+			// there is a collection element. This is due to its "collectionRowKey = persister.ReadKey"
+			// call which does a keyType.NullSafeGet which ends up calling keyType.ResolveIdentifier for
+			// entity types.
+			// So better do it here too, otherwise when there are no collection element, the logic
+			// handling empty collections fail by having a wrong key. (When there are collection elements,
+			// they supply the right key by the way, and the key resolved here is ignored.)
+			resolvedKey = keyType.ResolveIdentifier(key, session, owner);
+
+			if (key != resolvedKey)
+				return resolvedKey;
+
+			// This should not happen. If that changes, at least yield null, instead of yielding
+			// a value of an unexpected type.
+			throw new AssertionFailure(
+				$"Unable to correctly resolve the owner key, property {foreignKeyPropertyName} for " +
+				$"collection {role}. Unresolved value '{key}', key type '{keyType}', owner '{owner}'.");
 		}
 
 		/// <summary> 

@@ -191,13 +191,12 @@ namespace NHibernate.Collection.Generic
 		/// </summary>
 		public override bool EndRead(ICollectionPersister persister)
 		{
-			foreach (T item in _tempList)
+			foreach (var item in _tempList)
 			{
 				WrappedSet.Add(item);
 			}
 			_tempList = null;
-			SetInitialized();
-			return true;
+			return base.EndRead(persister);
 		}
 
 		public override IEnumerable Entries(ICollectionPersister persister)
@@ -469,7 +468,6 @@ namespace NHibernate.Collection.Generic
 
 		public void CopyTo(T[] array, int arrayIndex)
 		{
-			// NH : we really need to initialize the set ?
 			Read();
 			WrappedSet.CopyTo(array, arrayIndex);
 		}

@@ -21,7 +21,7 @@ namespace NHibernate.Test.Legacy
 	[TestFixture]
 	public class CriteriaTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
@@ -173,7 +173,7 @@ namespace NHibernate.Test.Legacy
 				await (s.FlushAsync());
 				Assert.AreEqual(1, (await (s.CreateCriteria(typeof(Master))
 				                   	.CreateAlias("Details", "detail", JoinType.LeftOuterJoin)
-				                   	.SetFetchMode("Details", FetchMode.Join)
+				                   	.Fetch("Details")
 				                   	.ListAsync())).Count);
 				await (s.DeleteAsync("from Master"));
 				await (s.FlushAsync());

@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Linq;
-using NHibernate.Engine;
-using NHibernate.Test;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Cascade.Circle
 {
-	
+
 	/**
 	* The test case uses the following model:
 	*
@@ -30,7 +27,7 @@ namespace NHibernate.Test.Cascade.Circle
 	*
 	* @author Pavol Zibrita, Gail Badner
 	*/
-	
+
 	[TestFixture]
 	public class MultiPathCircleCascadeTest : TestCase
 	{
@@ -39,7 +36,7 @@ namespace NHibernate.Test.Cascade.Circle
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Cascade.Circle.MultiPathCircleCascade.hbm.xml" }; }
 		}
@@ -69,7 +66,7 @@ namespace NHibernate.Test.Cascade.Circle
 			routeNew.Nodes.Add(node);
 			node.Route = routeNew;
 	
-			using (ISession session = base.OpenSession())
+			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
 				try
@@ -88,10 +85,6 @@ namespace NHibernate.Test.Cascade.Circle
 //						assertTrue( ex instanceof JDBCException );
 //					}
 				}
-				finally
-				{
-					transaction.Rollback();
-				}
 			}
 		}
 
@@ -103,7 +96,7 @@ namespace NHibernate.Test.Cascade.Circle
 			route.Nodes.Remove(node);
 			node.Route = null;
 	
-			using (ISession session = base.OpenSession())
+			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
 				try
@@ -122,10 +115,6 @@ namespace NHibernate.Test.Cascade.Circle
 //						assertTrue( ex instanceof JDBCException );
 //					}
 				}
-				finally
-				{
-					transaction.Rollback();
-				}
 			}
 		}
 		
@@ -135,7 +124,7 @@ namespace NHibernate.Test.Cascade.Circle
 			Node node = route.Nodes.First();
 			node.Name = null;
 	
-			using (ISession session = base.OpenSession())
+			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
 				try
@@ -154,113 +143,114 @@ namespace NHibernate.Test.Cascade.Circle
 //						assertTrue( ex instanceof JDBCException );
 //					}
 				}
-				finally
-				{
-					transaction.Rollback();
-				}
 			}
 		}
-		
+
 		[Test]
 		public void MergeRoute()
 		{
 			Route route = this.GetUpdatedDetachedEntity();
-	
+
 			ClearCounts();
-	
-			ISession s = base.OpenSession();
-			s.BeginTransaction();
-			s.Merge(route);
-			s.Transaction.Commit();
-			s.Close();
-	
+
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Merge(route);
+				s.Transaction.Commit();
+			}
+
 			AssertInsertCount(4);
 			AssertUpdateCount(1);
-	
-			s = base.OpenSession();
-			s.BeginTransaction();
-			route = s.Get<Route>(route.RouteId);
-			CheckResults(route, true);
-			s.Transaction.Commit();
-			s.Close();
+
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				route = s.Get<Route>(route.RouteId);
+				CheckResults(route, true);
+				s.Transaction.Commit();
+			}
 		}
-		
+
 		[Test]
 		public void MergePickupNode()
 		{
 			Route route = GetUpdatedDetachedEntity();
-	
-			ClearCounts();
-	
-			ISession s = OpenSession();
-			s.BeginTransaction();
 
-			Node pickupNode = route.Nodes.First(n => n.Name == "pickupNodeB");
-			pickupNode = (Node)s.Merge(pickupNode);
-			
-			s.Transaction.Commit();
-			s.Close();
+			ClearCounts();
+
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				Node pickupNode = route.Nodes.First(n => n.Name == "pickupNodeB");
+				pickupNode = (Node) s.Merge(pickupNode);
+
+				s.Transaction.Commit();
+			}
 
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
-	
-			s = OpenSession();
-			s.BeginTransaction();
-			route = s.Get<Route>(route.RouteId);
-			CheckResults(route, false);
-			s.Transaction.Commit();
-			s.Close();
+
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				route = s.Get<Route>(route.RouteId);
+				CheckResults(route, false);
+				s.Transaction.Commit();
+			}
 		}
-		
+
 		[Test]
 		public void MergeDeliveryNode()
 		{
 			Route route = GetUpdatedDetachedEntity();
-	
-			ClearCounts();
-	
-			ISession s = OpenSession();
-			s.BeginTransaction();
 
-			Node deliveryNode = route.Nodes.First(n => n.Name == "deliveryNodeB");
-			deliveryNode = (Node)s.Merge(deliveryNode);
-			
-			s.Transaction.Commit();
-			s.Close();
+			ClearCounts();
+
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				Node deliveryNode = route.Nodes.First(n => n.Name == "deliveryNodeB");
+				deliveryNode = (Node) s.Merge(deliveryNode);
+				s.Transaction.Commit();
+			}
 
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
-	
-			s = OpenSession();
-			s.BeginTransaction();
-			route = s.Get<Route>(route.RouteId);
-			CheckResults(route, false);
-			s.Transaction.Commit();
-			s.Close();
+
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				route = s.Get<Route>(route.RouteId);
+				CheckResults(route, false);
+				s.Transaction.Commit();
+			}
 		}
-		
+
 		[Test]
 		public void MergeTour()
 		{
 			Route route = GetUpdatedDetachedEntity();
-	
+
 			ClearCounts();
-	
-			ISession s = OpenSession();
-			s.BeginTransaction();
-			Tour tour = (Tour)s.Merge(route.Nodes.First().Tour);
-			s.Transaction.Commit();
-			s.Close();
-	
+
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				Tour tour = s.Merge(route.Nodes.First().Tour);
+				s.Transaction.Commit();
+			}
+
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
-	
-			s = OpenSession();
-			s.BeginTransaction();
-			route = s.Get<Route>(route.RouteId);
-			CheckResults(route, false);
-			s.Transaction.Commit();
-			s.Close();
+
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				route = s.Get<Route>(route.RouteId);
+				CheckResults(route, false);
+				s.Transaction.Commit();
+			}
 		}
 		
 		[Test]
@@ -269,46 +259,46 @@ namespace NHibernate.Test.Cascade.Circle
 			Route route = GetUpdatedDetachedEntity();
 	
 			ClearCounts();
-	
-			ISession s = OpenSession();
-			s.BeginTransaction();
-	
-			Node node = route.Nodes.First();
-			Transport transport = null;
-			
-			if (node.PickupTransports.Count == 1)
-				transport = node.PickupTransports.First();
-			else
-				transport = node.DeliveryTransports.First();
-	
-			transport = (Transport)s.Merge(transport);
-	
-			s.Transaction.Commit();
-			s.Close();
+
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				Node node = route.Nodes.First();
+				Transport transport = null;
+
+				if (node.PickupTransports.Count == 1)
+					transport = node.PickupTransports.First();
+				else
+					transport = node.DeliveryTransports.First();
+
+				transport = (Transport) s.Merge(transport);
+
+				s.Transaction.Commit();
+			}
 	
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
-	
-			s = OpenSession();
-			s.BeginTransaction();
-			route = s.Get<Route>(route.RouteId);
-			CheckResults(route, false);
-			s.Transaction.Commit();
-			s.Close();
+
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				route = s.Get<Route>(route.RouteId);
+				CheckResults(route, false);
+				s.Transaction.Commit();
+			}
 		}
-		
+
 		private Route GetUpdatedDetachedEntity()
 		{
-			ISession s = OpenSession();
-			s.BeginTransaction();
-	
 			Route route = new Route();
-			route.Name = "routeA";
-	
-			s.Save(route);
-			s.Transaction.Commit();
-			s.Close();
-	
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				route.Name = "routeA";
+
+				s.Save(route);
+				s.Transaction.Commit();
+			}
 			route.Name = "new routeA";
 			route.TransientField = "sfnaouisrbn";
 	
@@ -410,7 +400,7 @@ namespace NHibernate.Test.Cascade.Circle
 		
 		protected override void OnTearDown()
 		{
-			using (ISession session = base.OpenSession())
+			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
 				session.CreateQuery("delete from Transport").ExecuteUpdate();

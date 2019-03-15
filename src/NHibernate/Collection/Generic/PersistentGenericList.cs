@@ -407,11 +407,17 @@ namespace NHibernate.Collection.Generic
 
 		#region ICollection Members
 
-		void ICollection.CopyTo(Array array, int index)
+		void ICollection.CopyTo(Array array, int arrayIndex)
 		{
-			for (int i = index; i < Count; i++)
+			Read();
+			if (WrappedList is ICollection collection)
 			{
-				array.SetValue(this[i], i);
+				collection.CopyTo(array, arrayIndex);
+			}
+			else
+			{
+				foreach (var item in WrappedList)
+					array.SetValue(item, arrayIndex++);
 			}
 		}
 
@@ -450,16 +456,13 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(T item)
 		{
-			bool? exists = ReadElementExistence(item);
-			return !exists.HasValue ? WrappedList.Contains(item) : exists.Value;
+			return ReadElementExistence(item) ?? WrappedList.Contains(item);
 		}
 
 		public void CopyTo(T[] array, int arrayIndex)
 		{
-			for (int i = arrayIndex; i < Count; i++)
-			{
-				array.SetValue(this[i], i);
-			}
+			Read();
+			WrappedList.CopyTo(array, arrayIndex);
 		}
 
 		bool ICollection<T>.IsReadOnly {

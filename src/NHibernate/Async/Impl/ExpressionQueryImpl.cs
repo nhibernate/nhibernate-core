@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,59 @@ namespace NHibernate.Impl
 			finally
 			{
 				After();
+			}
+		}
+
+		public override async Task<IList<T>> ListAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			VerifyParameters();
+			var namedParams = NamedParams;
+			Before();
+			try
+			{
+				//6.0 TODO: Add Session.ListFilter<T> that accepts IQueryExpression
+				var result = await (Session.ListFilterAsync(collection, ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken)).ConfigureAwait(false);
+
+				return result as IList<T> ?? result.Cast<T>().ToList();
+			}
+			finally
+			{
+				After();
+			}
+		}
+
+		public override async Task ListAsync(IList results, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			ArrayHelper.AddAll(results, await (ListAsync(cancellationToken)).ConfigureAwait(false));
+		}
+
+		public override Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			throw new NotImplementedException();
+		}
+
+		public override Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			throw new NotImplementedException();
+		}
+
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
+		protected internal override Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IEnumerable<ITranslator>>(cancellationToken);
+			}
+			try
+			{
+				return Task.FromResult<IEnumerable<ITranslator>>(GetTranslators(session, queryParameters));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<IEnumerable<ITranslator>>(ex);
 			}
 		}
 	}

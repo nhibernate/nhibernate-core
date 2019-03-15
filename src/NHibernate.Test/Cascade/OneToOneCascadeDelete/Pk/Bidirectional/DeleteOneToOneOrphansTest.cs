@@ -85,7 +85,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Pk.Bidirectional
 	[TestFixture]
 	public class DeleteOneToOneOrphansTestHbm : DeleteOneToOneOrphansTest
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"Cascade.OneToOneCascadeDelete.Pk.Bidirectional.Mappings.hbm.xml"}; }
 		}
@@ -94,7 +94,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Pk.Bidirectional
 	[TestFixture]
 	public class DeleteOneToOneOrphansTestByCode : DeleteOneToOneOrphansTest
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return Array.Empty<string>(); }
 		}

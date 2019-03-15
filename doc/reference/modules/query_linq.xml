@@ -425,7 +425,7 @@ using NHibernate.Linq;]]></programlisting>
 
     <para>
       Future results are supported by the Linq provider. They are not evaluated till one gets executed.
-      At that point, all defined future results are evaluated in one single round-trip to database.
+      At that point, all defined future results are evaluated in one single round-trip to the database.
     </para>
     <programlisting><![CDATA[// Define queries
 IFutureEnumerable<Cat> cats =
@@ -446,10 +446,7 @@ if (catCount.Value > 10)
 }
 ]]></programlisting>
     <para>
-      In above example, accessing <literal>catCount.Value</literal> does not trigger a round-trip to database:
-      it has been evaluated with <literal>cats.GetEnumerable()</literal> call. If instead
-      <literal>catCount.Value</literal> was accessed first, it would have executed both future and
-      <literal>cats.GetEnumerable()</literal> would have not trigger a round-trip to database.
+      See <xref linkend="performance-future" /> for more information.
     </para>
   </sect1>
 

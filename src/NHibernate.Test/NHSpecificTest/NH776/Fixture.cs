@@ -5,11 +5,6 @@ namespace NHibernate.Test.NHSpecificTest.NH776
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH776"; }
-		}
-
 		[Test]
 		public void ProxiedOneToOneTest()
 		{

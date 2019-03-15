@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Linq;
 using NUnit.Framework;
@@ -38,10 +37,6 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-		static readonly PropertyInfo SessionProperty = typeof(DefaultQueryProvider).GetProperty(
-			"Session",
-			BindingFlags.NonPublic | BindingFlags.Instance);
-
 		[Theory]
 		public void SessionIsNotNullOrResurrected(bool? disposeSession)
 		{
@@ -50,7 +45,6 @@ namespace NHibernate.Test.Linq
 
 			if (provider == null)
 				Assert.Ignore("Another query provider than NHibernate default one is used");
-			Assert.That(SessionProperty, Is.Not.Null, $"Session property on {nameof(DefaultQueryProvider)} is not found.");
 
 			// Force collection of no more strongly referenced objects.
 			// Do not wait for pending finalizers
@@ -58,12 +52,12 @@ namespace NHibernate.Test.Linq
 
 			try
 			{
-				var s = SessionProperty.GetValue(provider);
+				var s = provider.Session;
 				Assert.Fail($"Getting provider Session property did not failed. Obtained {(s == null ? "null" : s.GetType().Name)}.");
 			}
-			catch (TargetInvocationException tie)
+			catch (Exception e)
 			{
-				Assert.That(tie.InnerException, Is.TypeOf<InvalidOperationException>().And.Message.Contains("garbage coll"));
+				Assert.That(e, Is.TypeOf<InvalidOperationException>().And.Message.Contains("garbage coll"));
 			}
 		}
 

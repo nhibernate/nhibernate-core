@@ -18,6 +18,7 @@ using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace NHibernate.Type
 {
@@ -41,9 +42,11 @@ namespace NHibernate.Type
 		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			string entityName = (string)await (metaType.NullSafeGetAsync(rs, names[0], session, owner, cancellationToken)).ConfigureAwait(false);
-			object id = await (identifierType.NullSafeGetAsync(rs, names[1], session, owner, cancellationToken)).ConfigureAwait(false);
-			return new ObjectTypeCacheEntry(entityName, id);
+			return new ObjectTypeCacheEntry
+			{
+				Id = await (identifierType.NullSafeGetAsync(rs, names[1], session, owner, cancellationToken)).ConfigureAwait(false),
+				EntityName = (string) await (metaType.NullSafeGetAsync(rs, names[0], session, owner, cancellationToken)).ConfigureAwait(false)
+			};
 		}
 
 		public override Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
@@ -55,7 +58,7 @@ namespace NHibernate.Type
 			try
 			{
 				ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry) value;
-				return ResolveAnyAsync(holder.entityName, holder.id, session, cancellationToken);
+				return ResolveAnyAsync(holder.EntityName, holder.Id, session, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -116,23 +119,20 @@ namespace NHibernate.Type
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				ObjectTypeCacheEntry e = cached as ObjectTypeCacheEntry;
-				return (e == null) ? Task.FromResult<object>(null ): session.InternalLoadAsync(e.entityName, e.id, false, false, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			ObjectTypeCacheEntry e = cached as ObjectTypeCacheEntry;
+			return (e == null) ? Task.FromResult<object>(null ): session.InternalLoadAsync(e.EntityName, e.Id, false, false, cancellationToken);
 		}
 
 		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			return value == null ? null : 
-				new ObjectTypeCacheEntry(session.BestGuessEntityName(value), 
-				await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(session.BestGuessEntityName(value), value, session, cancellationToken)).ConfigureAwait(false));
+			return value == null
+				? null
+				: new ObjectTypeCacheEntry
+				{
+					EntityName = session.BestGuessEntityName(value),
+					Id = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(session.BestGuessEntityName(value), value, session, cancellationToken)).ConfigureAwait(false)
+				};
 		}
 
 		public override async Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner,
@@ -206,8 +206,8 @@ namespace NHibernate.Type
 			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry)old;
 			bool[] idcheckable = new bool[checkable.Length - 1];
 			Array.Copy(checkable, 1, idcheckable, 0, idcheckable.Length);
-			return (checkable[0] && !holder.entityName.Equals(session.BestGuessEntityName(current))) || 
-				await (identifierType.IsModifiedAsync(holder.id, await (IdAsync(current, session, cancellationToken)).ConfigureAwait(false), idcheckable, session, cancellationToken)).ConfigureAwait(false);
+			return (checkable[0] && !holder.EntityName.Equals(session.BestGuessEntityName(current))) || 
+				await (identifierType.IsModifiedAsync(holder.Id, await (IdAsync(current, session, cancellationToken)).ConfigureAwait(false), idcheckable, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		private Task<object> ResolveAnyAsync(string entityName, object id, ISessionImplementor session, CancellationToken cancellationToken)

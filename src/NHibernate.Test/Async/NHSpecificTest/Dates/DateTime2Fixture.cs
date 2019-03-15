@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 	[TestFixture]
 	public class DateTime2FixtureAsync : FixtureBaseAsync
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"NHSpecificTest.Dates.Mappings.DateTime2.hbm.xml"}; }
 		}
@@ -46,19 +46,12 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 		}
 
 		[Test]
-		public Task SaveMillisecondAsync()
+		public async Task SaveMillisecondAsync()
 		{
-			try
-			{
-				DateTime datetime2 = DateTime.MinValue.AddMilliseconds(123);
+			DateTime datetime2 = DateTime.MinValue.AddMilliseconds(123);
 
-				return SavingAndRetrievingActionAsync(new AllDates { Sql_datetime2 = datetime2 },
-																entity => Assert.That(entity.Sql_datetime2, Is.EqualTo(datetime2)));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (SavingAndRetrievingActionAsync(new AllDates { Sql_datetime2 = datetime2 },
+																entity => Assert.That(entity.Sql_datetime2, Is.EqualTo(datetime2))));
 		}
 	}
 }

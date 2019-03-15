@@ -95,8 +95,8 @@ namespace NHibernate.Impl
 		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
 		[NonSerialized]
-		private readonly ConcurrentDictionary<string, ICache> allCacheRegions =
-			new ConcurrentDictionary<string, ICache>();
+		private readonly ConcurrentDictionary<string, CacheBase> _allCacheRegions =
+			new ConcurrentDictionary<string, CacheBase>();
 
 		[NonSerialized]
 		private readonly IDictionary<string, IClassMetadata> classMetadata;
@@ -232,7 +232,7 @@ namespace NHibernate.Impl
 
 			#region Persisters
 
-			Dictionary<string, ICacheConcurrencyStrategy> caches = new Dictionary<string, ICacheConcurrencyStrategy>();
+			var caches = new Dictionary<Tuple<string, string>, ICacheConcurrencyStrategy>();
 			entityPersisters = new Dictionary<string, IEntityPersister>();
 			implementorToEntityName = new Dictionary<System.Type, string>();
 
@@ -241,22 +241,12 @@ namespace NHibernate.Impl
 			foreach (PersistentClass model in cfg.ClassMappings)
 			{
 				model.PrepareTemporaryTables(mapping, settings.Dialect);
-				string cacheRegion = model.RootClazz.CacheRegionName;
-				ICacheConcurrencyStrategy cache;
-				if (!caches.TryGetValue(cacheRegion, out cache))
-				{
-					cache =
-						CacheFactory.CreateCache(model.CacheConcurrencyStrategy, cacheRegion, model.IsMutable, settings, properties);
-					if (cache != null)
-					{
-						caches.Add(cacheRegion, cache);
-						if (!allCacheRegions.TryAdd(cache.RegionName, cache.Cache))
-						{
-							throw new HibernateException("An item with the same key has already been added to allCacheRegions.");
-						}
-					}
-				}
-				IEntityPersister cp = PersisterFactory.CreateClassPersister(model, cache, this, mapping);
+				var cache = GetCacheConcurrencyStrategy(
+					model.RootClazz.CacheRegionName,
+					model.CacheConcurrencyStrategy,
+					model.IsMutable,
+					caches);
+				var cp = PersisterFactory.CreateClassPersister(model, cache, this, mapping);
 				entityPersisters[model.EntityName] = cp;
 				classMeta[model.EntityName] = cp.ClassMetadata;
 
@@ -271,14 +261,12 @@ namespace NHibernate.Impl
 			collectionPersisters = new Dictionary<string, ICollectionPersister>();
 			foreach (Mapping.Collection model in cfg.CollectionMappings)
 			{
-				ICacheConcurrencyStrategy cache =
-					CacheFactory.CreateCache(model.CacheConcurrencyStrategy, model.CacheRegionName, model.Owner.IsMutable, settings,
-											 properties);
-				if (cache != null)
-				{
-					allCacheRegions[cache.RegionName] = cache.Cache;
-				}
-				ICollectionPersister persister = PersisterFactory.CreateCollectionPersister(model, cache, this);
+				var cache = GetCacheConcurrencyStrategy(
+					model.CacheRegionName,
+					model.CacheConcurrencyStrategy,
+					model.Owner.IsMutable,
+					caches);
+				var persister = PersisterFactory.CreateCollectionPersister(model, cache, this);
 				collectionPersisters[model.Role] = persister;
 				IType indexType = persister.IndexType;
 				if (indexType != null && indexType.IsAssociationType && !indexType.IsAnyType)
@@ -379,9 +367,12 @@ namespace NHibernate.Impl
 
 			if (settings.IsQueryCacheEnabled)
 			{
-				updateTimestampsCache = new UpdateTimestampsCache(settings, properties);
-				queryCache = settings.QueryCacheFactory.GetQueryCache(null, updateTimestampsCache, settings, properties);
+				var updateTimestampsCacheName = typeof(UpdateTimestampsCache).Name;
+				updateTimestampsCache = new UpdateTimestampsCache(GetCache(updateTimestampsCacheName));
+				var queryCacheName = typeof(StandardQueryCache).FullName;
+				queryCache = BuildQueryCache(queryCacheName);
 				queryCaches = new ConcurrentDictionary<string, Lazy<IQueryCache>>();
+				queryCaches.TryAdd(queryCacheName, new Lazy<IQueryCache>(() => queryCache));
 			}
 			else
 			{
@@ -416,6 +407,44 @@ namespace NHibernate.Impl
 				enfd = new DefaultEntityNotFoundDelegate();
 			}
 			entityNotFoundDelegate = enfd;
+		}
+
+		private IQueryCache BuildQueryCache(string queryCacheName)
+		{
+			return
+				settings.QueryCacheFactory.GetQueryCache(
+					updateTimestampsCache,
+					properties,
+					GetCache(queryCacheName))
+				// 6.0 TODO: remove the coalesce once IQueryCacheFactory todos are done
+#pragma warning disable 618
+				?? settings.QueryCacheFactory.GetQueryCache(
+#pragma warning restore 618
+					queryCacheName,
+					updateTimestampsCache,
+					settings,
+					properties);
+		}
+
+		private ICacheConcurrencyStrategy GetCacheConcurrencyStrategy(
+			string cacheRegion,
+			string strategy,
+			bool isMutable,
+			Dictionary<Tuple<string, string>, ICacheConcurrencyStrategy> caches)
+		{
+			if (strategy == null || !settings.IsSecondLevelCacheEnabled)
+				return null;
+
+			var cacheKey = new Tuple<string, string>(cacheRegion, strategy);
+			if (caches.TryGetValue(cacheKey, out var cache)) 
+				return cache;
+
+			cache = CacheFactory.CreateCache(strategy, GetCache(cacheRegion));
+			caches.Add(cacheKey, cache);
+			if (isMutable && strategy == CacheFactory.ReadOnly)
+				log.Warn("read-only cache configured for mutable: {0}", name);
+
+			return cache;
 		}
 
 		public EventListeners EventListeners
@@ -845,14 +874,15 @@ namespace NHibernate.Impl
 
 			if (settings.IsQueryCacheEnabled)
 			{
-				queryCache.Destroy();
-
 				foreach (var cache in queryCaches.Values)
 				{
 					cache.Value.Destroy();
 				}
+			}
 
-				updateTimestampsCache.Destroy();
+			foreach (var cache in _allCacheRegions.Values)
+			{
+				cache.Destroy();
 			}
 
 			settings.CacheProvider.Stop();
@@ -901,6 +931,13 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public void Evict(IEnumerable<System.Type> persistentClasses)
+		{
+			if (persistentClasses == null)
+				throw new ArgumentNullException(nameof(persistentClasses));
+			EvictEntity(persistentClasses.Select(x => x.FullName));
+		}
+
 		public void EvictEntity(string entityName)
 		{
 			IEntityPersister p = GetEntityPersister(entityName);
@@ -911,6 +948,22 @@ namespace NHibernate.Impl
 					log.Debug("evicting second-level cache: {0}", p.EntityName);
 				}
 				p.Cache.Clear();
+			}
+		}
+
+		public void EvictEntity(IEnumerable<string> entityNames)
+		{
+			if (entityNames == null)
+				throw new ArgumentNullException(nameof(entityNames));
+
+			foreach (var cacheGroup in entityNames.Select(GetEntityPersister).Where(x => x.HasCache).GroupBy(x => x.Cache))
+			{
+				if (log.IsDebugEnabled())
+				{
+					log.Debug("evicting second-level cache for: {0}",
+					          string.Join(", ", cacheGroup.Select(p => p.EntityName)));
+				}
+				cacheGroup.Key.Clear();
 			}
 		}
 
@@ -969,6 +1022,22 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public void EvictCollection(IEnumerable<string> roleNames)
+		{
+			if (roleNames == null)
+				throw new ArgumentNullException(nameof(roleNames));
+
+			foreach (var cacheGroup in roleNames.Select(GetCollectionPersister).Where(x => x.HasCache).GroupBy(x => x.Cache))
+			{
+				if (log.IsDebugEnabled())
+				{
+					log.Debug("evicting second-level cache for: {0}",
+					          string.Join(", ", cacheGroup.Select(p => p.Role)));
+				}
+				cacheGroup.Key.Clear();
+			}
+		}
+
 		public IType GetReferencedPropertyType(string className, string propertyName)
 		{
 			return GetEntityPersister(className).GetPropertyType(propertyName);
@@ -994,17 +1063,41 @@ namespace NHibernate.Impl
 			get { return updateTimestampsCache; }
 		}
 
+		// 6.0 TODO: type as CacheBase instead
+#pragma warning disable 618
 		public IDictionary<string, ICache> GetAllSecondLevelCacheRegions()
+#pragma warning restore 618
 		{
-			// ToArray creates a moment in time snapshot
-			return allCacheRegions.ToArray().ToDictionary(kv => kv.Key, kv => kv.Value);
+			return
+				_allCacheRegions
+					// ToArray creates a moment in time snapshot
+					.ToArray()
+#pragma warning disable 618
+					.ToDictionary(kv => kv.Key, kv => (ICache) kv.Value);
+#pragma warning restore 618
 		}
 
+		// 6.0 TODO: return CacheBase instead
+#pragma warning disable 618
 		public ICache GetSecondLevelCacheRegion(string regionName)
+#pragma warning restore 618
 		{
-			ICache result;
-			allCacheRegions.TryGetValue(regionName, out result);
+			_allCacheRegions.TryGetValue(regionName, out var result);
 			return result;
+		}
+
+		private CacheBase GetCache(string cacheRegion)
+		{
+			// If run concurrently for the same region and type, this may built many caches for the same region and type.
+			// Currently only GetQueryCache may be run concurrently, and its implementation prevents
+			// concurrent creation call for the same region, so this will not happen.
+			// Otherwise the dictionary will have to be changed for using a lazy, see
+			// https://stackoverflow.com/a/31637510/1178314
+			cacheRegion = settings.GetFullCacheRegionName(cacheRegion);
+
+			return _allCacheRegions.GetOrAdd(
+				cacheRegion,
+				cr => CacheFactory.BuildCacheBase(cr, settings, properties));
 		}
 
 		/// <summary> Statistics SPI</summary>
@@ -1032,15 +1125,12 @@ namespace NHibernate.Impl
 			// The factory may be run concurrently by threads trying to get the same region.
 			// But the GetOrAdd will yield the same lazy for all threads, so only one will
 			// initialize. https://stackoverflow.com/a/31637510/1178314
-			return queryCaches.GetOrAdd(
-				cacheRegion,
-				cr => new Lazy<IQueryCache>(
-					() =>
-					{
-						var currentQueryCache = settings.QueryCacheFactory.GetQueryCache(cr, updateTimestampsCache, settings, properties);
-						allCacheRegions[currentQueryCache.RegionName] = currentQueryCache.Cache;
-						return currentQueryCache;
-					})).Value;
+			return
+				queryCaches
+					.GetOrAdd(
+						cacheRegion,
+						cr => new Lazy<IQueryCache>(() => BuildQueryCache(cr)))
+					.Value;
 		}
 
 		public void EvictQueries()
@@ -1237,14 +1327,38 @@ namespace NHibernate.Impl
 				case "web":
 					return new WebSessionContext(this);
 				case "wcf_operation":
+#if NETFX
 					return new WcfOperationSessionContext(this);
+#else
+					// There is no support of WCF Server under .Net Core, so it makes little sense to provide
+					// a WCF OperationContext for it. Since it adds additional heavy dependencies, it has been
+					// considered not desirable to provide it for .Net Standard. (It could be useful in case some
+					// WCF server becames available in another frameworks or if a .Net Framework application
+					// consumes the .Net Standard distribution of NHibernate instead of the .Net Framework one.)
+					// See https://github.com/dotnet/wcf/issues/1200 and #1842
+					throw new PlatformNotSupportedException(
+						"WcfOperationSessionContext is not supported for the current framework");
+#endif
 			}
 
 			try
 			{
-				System.Type implClass = ReflectHelper.ClassForName(impl);
-				return
-					(ICurrentSessionContext)Environment.BytecodeProvider.ObjectsFactory.CreateInstance(implClass, new object[] { this });
+				var implClass = ReflectHelper.ClassForName(impl);
+				var constructor = implClass.GetConstructor(new [] { typeof(ISessionFactoryImplementor) });
+				ICurrentSessionContext context;
+				if (constructor != null)
+				{
+					context = (ICurrentSessionContext) constructor.Invoke(new object[] { this });
+				}
+				else
+				{
+					context = (ICurrentSessionContext) Environment.ObjectsFactory.CreateInstance(implClass);
+				}
+				if (context is ISessionFactoryAwareCurrentSessionContext sessionFactoryAwareContext)
+				{
+					sessionFactoryAwareContext.SetFactory(this);
+				}
+				return context;
 			}
 			catch (Exception e)
 			{

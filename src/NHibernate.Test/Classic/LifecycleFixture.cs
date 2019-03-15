@@ -12,7 +12,7 @@ namespace NHibernate.Test.Classic
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Classic.EntityWithLifecycle.hbm.xml" }; }
 		}

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -108,7 +109,9 @@ namespace NHibernate.Engine.Loading
 						// create one
 						if (log.IsDebugEnabled())
 						{
-							log.Debug("instantiating new collection [key={0}, rs={1}]", key, resultSet);
+							// Do not log the resultSet as-is, it is an IEnumerable which may get enumerated by loggers.
+							// (Serilog does that.) See #1667.
+							log.Debug("instantiating new collection [key={0}, rs={1}]", key, resultSet.GetType());
 						}
 						collection = persister.CollectionType.Instantiate(loadContexts.PersistenceContext.Session, persister, key);
 					}
@@ -136,13 +139,42 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		/// <summary> 
-		/// Finish the process of collection-loading for this bound result set.  Mainly this
+		/// <summary>
+		/// Finish the process of collection-loading for this bound result set. Mainly this
 		/// involves cleaning up resources and notifying the collections that loading is
-		/// complete. 
+		/// complete.
 		/// </summary>
-		/// <param name="persister">The persister for which to complete loading. </param>
+		/// <param name="persister">The persister for which to complete loading.</param>
+		// Since v5.2
+		[Obsolete("Please use overload with skipCache and cacheBatcher parameter instead.")]
 		public void EndLoadingCollections(ICollectionPersister persister)
+		{
+			EndLoadingCollections(persister, false);
+		}
+
+		/// <summary>
+		/// Finish the process of collection-loading for this bound result set. Mainly this
+		/// involves cleaning up resources and notifying the collections that loading is
+		/// complete.
+		/// </summary>
+		/// <param name="persister">The persister for which to complete loading.</param>
+		/// <param name="skipCache">Indicates if collection must not be put in cache.</param>
+		// Since v5.3
+		[Obsolete("Please use overload with cacheBatcher parameter instead.")]
+		public void EndLoadingCollections(ICollectionPersister persister, bool skipCache)
+		{
+			EndLoadingCollections(persister, skipCache, null);
+		}
+
+		/// <summary>
+		/// Finish the process of collection-loading for this bound result set. Mainly this
+		/// involves cleaning up resources and notifying the collections that loading is
+		/// complete.
+		/// </summary>
+		/// <param name="persister">The persister for which to complete loading.</param>
+		/// <param name="skipCache">Indicates if collection must not be put in cache.</param>
+		/// <param name="cacheBatcher">The cache batcher used to batch put the collections into the cache.</param>
+		public void EndLoadingCollections(ICollectionPersister persister, bool skipCache, CacheBatcher cacheBatcher)
 		{
 			if (!loadContexts.HasLoadingCollectionEntries && (localLoadingCollectionKeys.Count == 0))
 			{
@@ -187,7 +219,7 @@ namespace NHibernate.Engine.Loading
 			}
 			localLoadingCollectionKeys.ExceptWith(toRemove);
 
-			EndLoadingCollections(persister, matches);
+			EndLoadingCollections(persister, matches, skipCache, cacheBatcher);
 			if ((localLoadingCollectionKeys.Count == 0))
 			{
 				// todo : hack!!!
@@ -200,7 +232,8 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		private void EndLoadingCollections(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries)
+		private void EndLoadingCollections(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, bool skipCache,
+		                                   CacheBatcher cacheBatcher = null)
 		{
 			if (matchedCollectionEntries == null || matchedCollectionEntries.Count == 0)
 			{
@@ -217,10 +250,19 @@ namespace NHibernate.Engine.Loading
 				log.Debug("{0} collections were found in result set for role: {1}", count, persister.Role);
 			}
 
+			var ownCacheBatcher = cacheBatcher == null;
+			if (ownCacheBatcher)
+				cacheBatcher = new CacheBatcher(LoadContext.PersistenceContext.Session);
 			for (int i = 0; i < count; i++)
 			{
-				EndLoadingCollection(matchedCollectionEntries[i], persister);
+				EndLoadingCollection(
+					matchedCollectionEntries[i], 
+					persister,
+					data => cacheBatcher.AddToBatch(persister, data),
+					skipCache);
 			}
+			if (ownCacheBatcher)
+				cacheBatcher.ExecuteBatch();
 
 			if (log.IsDebugEnabled())
 			{
@@ -228,7 +270,11 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		private void EndLoadingCollection(LoadingCollectionEntry lce, ICollectionPersister persister)
+		private void EndLoadingCollection(
+			LoadingCollectionEntry lce, 
+			ICollectionPersister persister,
+			Action<CachePutData> cacheBatchingHandler,
+			bool skipCache)
 		{
 			if (log.IsDebugEnabled())
 			{
@@ -245,7 +291,7 @@ namespace NHibernate.Engine.Loading
 				stopWath.Start();
 			}
 
-			bool hasNoQueuedAdds = lce.Collection.EndRead(persister); // warning: can cause a recursive calls! (proxy initialization)
+			bool hasNoQueuedOperations = lce.Collection.EndRead(persister); // warning: can cause a recursive calls! (proxy initialization)
 
 			if (persister.CollectionType.HasHolder())
 			{
@@ -262,13 +308,18 @@ namespace NHibernate.Engine.Loading
 				ce.PostInitialize(lce.Collection, persistenceContext);
 			}
 
-			bool addToCache = hasNoQueuedAdds && persister.HasCache && 
-				session.CacheMode.HasFlag(CacheMode.Put) && !ce.IsDoremove; // and this is not a forced initialization during flush
+			bool addToCache = hasNoQueuedOperations && !skipCache && persister.HasCache &&
+				session.CacheMode.HasFlag(CacheMode.Put) &&
+				// and this is not a forced initialization during flush
+				!ce.IsDoremove;
 
 			if (addToCache)
 			{
-				AddCollectionToCache(lce, persister);
+				AddCollectionToCache(lce, persister, cacheBatchingHandler);
 			}
+
+			if (!hasNoQueuedOperations)
+				lce.Collection.ApplyQueuedOperations();
 
 			if (log.IsDebugEnabled())
 			{
@@ -285,7 +336,9 @@ namespace NHibernate.Engine.Loading
 		/// <summary> Add the collection to the second-level cache </summary>
 		/// <param name="lce">The entry representing the collection to add </param>
 		/// <param name="persister">The persister </param>
-		private void AddCollectionToCache(LoadingCollectionEntry lce, ICollectionPersister persister)
+		/// <param name="cacheBatchingHandler">The action for handling cache batching</param>
+		private void AddCollectionToCache(LoadingCollectionEntry lce, ICollectionPersister persister,
+		                                  Action<CachePutData> cacheBatchingHandler)
 		{
 			ISessionImplementor session = LoadContext.PersistenceContext.Session;
 			ISessionFactoryImplementor factory = session.Factory;
@@ -313,6 +366,8 @@ namespace NHibernate.Engine.Loading
 			{
 				versionComparator = persister.OwnerEntityPersister.VersionType.Comparator;
 				object collectionOwner = LoadContext.PersistenceContext.GetCollectionOwner(lce.Key, persister);
+				if (collectionOwner == null)
+					return;
 				version = LoadContext.PersistenceContext.GetEntry(collectionOwner).Version;
 			}
 			else
@@ -321,15 +376,29 @@ namespace NHibernate.Engine.Loading
 				versionComparator = null;
 			}
 
-			CollectionCacheEntry entry = new CollectionCacheEntry(lce.Collection, persister);
+			CollectionCacheEntry entry = CollectionCacheEntry.Create(lce.Collection, persister);
 			CacheKey cacheKey = session.GenerateCacheKey(lce.Key, persister.KeyType, persister.Role);
-			bool put = persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry), 
-								session.Timestamp, version, versionComparator,
-													factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh);
 
-			if (put && factory.Statistics.IsStatisticsEnabled)
+			if (persister.GetBatchSize() > 1)
 			{
-				factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+				cacheBatchingHandler(
+					new CachePutData(
+						cacheKey,
+						persister.CacheEntryStructure.Structure(entry),
+						version,
+						versionComparator,
+						factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh));
+			}
+			else
+			{
+				bool put = persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry),
+				                               session.Timestamp, version, versionComparator,
+				                               factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh);
+
+				if (put && factory.Statistics.IsStatisticsEnabled)
+				{
+					factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+				}
 			}
 		}
 

@@ -14,6 +14,8 @@ using NHibernate.SqlTypes;
 using NHibernate.Transaction;
 using NHibernate.Util;
 using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
@@ -47,11 +49,30 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		{
 			var action = new BulkOperationCleanupAction(session, AffectedQueryables);
 
-			action.Init();
-
 			if (session.IsEventSource)
 			{
-				((IEventSource)session).ActionQueue.AddAction(action);
+				((IEventSource) session).ActionQueue.AddAction(action);
+			}
+			else
+			{
+				action.ExecuteAfterTransactionCompletion(true);
+			}
+		}
+
+		// Since v5.2
+		[Obsolete("This method has no more actual async calls to do, use its sync version instead.")]
+		protected virtual Task CoordinateSharedCacheCleanupAsync(ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+
+			try
+			{
+				CoordinateSharedCacheCleanup(session);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
 			}
 		}
 
@@ -169,17 +190,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 				if (ShouldIsolateTemporaryTableDDL())
 				{
-					session.ConnectionManager.Transaction.RegisterSynchronization(new AfterTransactionCompletes((success) =>
-					{
-						if (Factory.Settings.IsDataDefinitionInTransactionSupported)
-						{
-							Isolater.DoIsolatedWork(work, session);
-						}
-						else
-						{
-							Isolater.DoNonTransactedWork(work, session);
-						}
-					}));
+					session.ConnectionManager.Transaction.RegisterSynchronization(
+						new IsolatedWorkAfterTransaction(work, session));
 				}
 				else
 				{

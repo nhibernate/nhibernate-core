@@ -23,7 +23,7 @@ namespace NHibernate.Test.Hql
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Hql.Animal.hbm.xml" }; }
 		}

@@ -13,7 +13,7 @@ namespace NHibernate.Test.TransactionTest
 {
 	public abstract class TransactionFixtureBase : TestCase
 	{
-		protected override IList Mappings => new[] { "TransactionTest.Person.hbm.xml" };
+		protected override string[] Mappings => new[] { "TransactionTest.Person.hbm.xml" };
 
 		protected override string MappingsAssembly => "NHibernate.Test";
 

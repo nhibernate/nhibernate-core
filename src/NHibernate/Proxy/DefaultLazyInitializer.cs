@@ -9,6 +9,8 @@ using NHibernate.Util;
 namespace NHibernate.Proxy
 {
 	[Serializable]
+	// Since v5.2
+	[Obsolete("Dynamic proxy has been obsoleted, use static proxies instead (see StaticProxyFactory)")]
 	public class DefaultLazyInitializer : BasicLazyInitializer, DynamicProxy.IInterceptor
 	{
 		public DefaultLazyInitializer(string entityName, System.Type persistentClass, object id, MethodInfo getIdentifierMethod,

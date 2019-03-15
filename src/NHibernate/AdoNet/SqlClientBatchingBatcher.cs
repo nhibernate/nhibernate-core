@@ -3,8 +3,8 @@ using System;
 using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet.Util;
+using NHibernate.Driver;
 using NHibernate.Exceptions;
-using NHibernate.Util;
 
 namespace NHibernate.AdoNet
 {
@@ -20,7 +20,7 @@ namespace NHibernate.AdoNet
 			: base(connectionManager, interceptor)
 		{
 			_batchSize = Factory.Settings.AdoBatchSize;
-			_defaultTimeout = PropertiesHelper.GetInt32(Cfg.Environment.CommandTimeout, Cfg.Environment.Properties, -1);
+			_defaultTimeout = Driver.GetCommandTimeout();
 
 			_currentBatch = CreateConfiguredBatch();
 			//we always create this, because we need to deal with a scenario in which
@@ -91,7 +91,7 @@ namespace NHibernate.AdoNet
 					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
 				}
 
-				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected);
+				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected, ps);
 			}
 			finally
 			{

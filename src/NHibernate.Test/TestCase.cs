@@ -41,7 +41,7 @@ namespace NHibernate.Test
 		/// <summary>
 		/// Mapping files used in the TestCase
 		/// </summary>
-		protected abstract IList Mappings { get; }
+		protected abstract string[] Mappings { get; }
 
 		/// <summary>
 		/// Assembly to load mapping files from (default is NHibernate.DomainModel).

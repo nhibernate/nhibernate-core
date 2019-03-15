@@ -1,13 +1,14 @@
 using System;
-using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 using NUnit.Framework;
 using NHibernate.Proxy.DynamicProxy;
+using NHibernate.Test.ProxyTest;
 
 namespace NHibernate.Test.DynamicProxyTests
 {
 	[TestFixture]
+	[Obsolete]
 	public class PeVerifyFixture
 	{
 		private static bool wasCalled;

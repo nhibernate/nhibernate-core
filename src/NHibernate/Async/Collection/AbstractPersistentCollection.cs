@@ -73,30 +73,23 @@ namespace NHibernate.Collection
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
+			if (!initialized)
 			{
-				if (!initialized)
+				if (initializing)
 				{
-					if (initializing)
-					{
-						return Task.FromException<object>(new AssertionFailure("force initialize loading collection"));
-					}
-					if (session == null)
-					{
-						return Task.FromException<object>(new HibernateException("collection is not associated with any session"));
-					}
-					if (!session.IsConnected)
-					{
-						return Task.FromException<object>(new HibernateException("disconnected session"));
-					}
-					return session.InitializeCollectionAsync(this, false, cancellationToken);
+					return Task.FromException<object>(new AssertionFailure("force initialize loading collection"));
 				}
-				return Task.CompletedTask;
+				if (session == null)
+				{
+					return Task.FromException<object>(new HibernateException("collection is not associated with any session"));
+				}
+				if (!session.IsConnected)
+				{
+					return Task.FromException<object>(new HibernateException("disconnected session"));
+				}
+				return session.InitializeCollectionAsync(this, false, cancellationToken);
 			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return Task.CompletedTask;
 		}
 
 		public Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken)
@@ -193,7 +186,7 @@ namespace NHibernate.Collection
 				if (current != null && await (ForeignKeys.IsNotTransientSlowAsync(entityName, current, session, cancellationToken)).ConfigureAwait(false))
 				{
 					object currentId = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, current, session, cancellationToken)).ConfigureAwait(false);
-					currentIds.Add(new TypedValue(idType, currentId));
+					currentIds.Add(new TypedValue(idType, currentId, false));
 				}
 			}
 
@@ -201,7 +194,7 @@ namespace NHibernate.Collection
 			foreach (object old in oldElements)
 			{
 				object oldId = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, old, session, cancellationToken)).ConfigureAwait(false);
-				if (!currentIds.Contains(new TypedValue(idType, oldId)))
+				if (!currentIds.Contains(new TypedValue(idType, oldId, false)))
 				{
 					res.Add(old);
 				}

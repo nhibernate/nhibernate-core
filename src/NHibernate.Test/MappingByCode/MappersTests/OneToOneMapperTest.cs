@@ -123,6 +123,21 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		}
 
 		[Test]
+		public void CanSetMultipleFormulas()
+		{
+			var member = For<MyClass>.Property(c => c.Relation);
+			var mapping = new HbmOneToOne();
+			var mapper = new OneToOneMapper(member, mapping);
+
+			mapper.Formulas("formula1", "formula2", "formula3");
+			Assert.That(mapping.formula1, Is.Null);
+			Assert.That(mapping.formula, Has.Length.EqualTo(3));
+			Assert.That(
+				mapping.formula.Select(f => f.Text.Single()),
+				Is.EquivalentTo(new[] { "formula1", "formula2", "formula3" }));
+		}
+
+		[Test]
 		public void WhenSetFormulaWithNullThenSetFormulaWithNull()
 		{
 			var member = For<MyClass>.Property(c => c.Relation);

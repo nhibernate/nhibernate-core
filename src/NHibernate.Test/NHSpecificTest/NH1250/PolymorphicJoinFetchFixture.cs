@@ -11,11 +11,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1250
 	[TestFixture]
 	public class PolymorphicJoinFetchFixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1250"; }
-		}
-
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			return dialect is MsSql2000Dialect;

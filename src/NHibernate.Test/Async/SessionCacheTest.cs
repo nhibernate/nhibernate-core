@@ -22,7 +22,7 @@ namespace NHibernate.Test
 	[TestFixture]
 	public class SessionCacheTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Simple.hbm.xml"}; }
 		}

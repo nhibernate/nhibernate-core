@@ -57,6 +57,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 		[Test]
 		public void ShouldBeAbleToSelectUserGroupAndOrderByUserCount()
 		{
+			if (!TestDialect.SupportsAggregatingScalarSubSelectsInOrderBy)
+				Assert.Ignore("Dialect does not support aggregating scalar sub-selects in order by");
+
 			using (ISession session = base.OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
@@ -125,6 +128,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 		[Test]
 		public void ShouldBeAbleToSelectUserGroupAndOrderByUserCountWithHql()
 		{
+			if (!TestDialect.SupportsAggregatingScalarSubSelectsInOrderBy)
+				Assert.Ignore("Dialect does not support aggregating scalar sub-selects in order by");
+
 			using (ISession session = base.OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{

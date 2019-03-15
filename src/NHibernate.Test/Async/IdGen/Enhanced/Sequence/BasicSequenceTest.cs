@@ -18,7 +18,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Sequence
 	[TestFixture]
 	public class BasicSequenceTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "IdGen.Enhanced.Sequence.Basic.hbm.xml" }; }
 		}

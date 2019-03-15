@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.ElementsEnums
 	[TestFixture]
 	public class IntEnumsBagPartialNameFixtureAsync : AbstractIntEnumsBagFixtureAsync
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "NHSpecificTest.ElementsEnums.SimpleWithEnumsPartialName.hbm.xml" }; }
 		}

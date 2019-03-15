@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using NHibernate.Cfg;
 using NUnit.Framework;
@@ -16,6 +17,7 @@ namespace NHibernate.Test.DynamicEntity.Interceptor
 {
 	using System.Threading.Tasks;
 	[TestFixture]
+	[Obsolete("Require dynamic proxies")]
 	public class InterceptorDynamicEntityAsync : TestCase
 	{
 		protected override string MappingsAssembly
@@ -23,7 +25,7 @@ namespace NHibernate.Test.DynamicEntity.Interceptor
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"DynamicEntity.Interceptor.Customer.hbm.xml"}; }
 		}

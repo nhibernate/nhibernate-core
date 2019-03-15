@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using NHibernate.Cfg;
 
 namespace NHibernate.Test.NHSpecificTest
 {
@@ -10,29 +10,20 @@ namespace NHibernate.Test.NHSpecificTest
 	/// </summary>
 	public abstract class BugTestCase : TestCase
 	{
-		protected override string MappingsAssembly
-		{
-			get { return "NHibernate.Test"; }
-		}
+		protected override string[] Mappings => new[] {"Mappings.hbm.xml"};
 
-		public virtual string BugNumber
-		{
-			get
-			{
-				string ns = GetType().Namespace;
-				return ns.Substring(ns.LastIndexOf('.') + 1);
-			}
-		}
+		protected sealed override string MappingsAssembly =>
+			throw new InvalidOperationException("BugTestCase does not support overriding mapping assembly.");
 
-		protected override IList Mappings
+		protected sealed override void AddMappings(Configuration configuration)
 		{
-			get
-			{
-				return new string[]
-					{
-						"NHSpecificTest." + BugNumber + ".Mappings.hbm.xml"
-					};
-			}
+			var mappings = Mappings;
+			if (mappings == null || mappings.Length == 0)
+				return;
+			
+			var type = GetType();
+			foreach (var file in mappings)
+				configuration.AddResource(type.Namespace + "." + file, type.Assembly);
 		}
 	}
 }

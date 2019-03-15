@@ -15,6 +15,7 @@ using System.Reflection;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Impl;
+using NHibernate.Linq;
 using NHibernate.Test.SecondLevelCacheTests;
 using NSubstitute;
 using NUnit.Framework;
@@ -28,7 +29,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings => new[] { "SecondLevelCacheTest.Item.hbm.xml" };
+		protected override string[] Mappings => new[] { "SecondLevelCacheTest.Item.hbm.xml" };
 
 		protected override void Configure(Configuration configuration)
 		{
@@ -59,6 +60,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 
 			using (var session = OpenSession())
 			{
+				//Add Item
 				using (var tx = session.BeginTransaction())
 				{
 					foreach (var i in Enumerable.Range(1, 10))
@@ -70,6 +72,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 					await (tx.CommitAsync());
 				}
 
+				//Update Item
 				using (var tx = session.BeginTransaction())
 				{
 					foreach (var i in Enumerable.Range(1, 10))
@@ -81,6 +84,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 					await (tx.CommitAsync());
 				}
 
+				//Delete Item
 				using (var tx = session.BeginTransaction())
 				{
 					foreach (var i in Enumerable.Range(1, 10))
@@ -91,13 +95,44 @@ namespace NHibernate.Test.SecondLevelCacheTest
 
 					await (tx.CommitAsync());
 				}
+
+				//Update Item using HQL
+				using (var tx = session.BeginTransaction())
+				{
+					await (session.CreateQuery("UPDATE Item SET Name='Test'").ExecuteUpdateAsync());
+
+					await (tx.CommitAsync());
+				}
+
+
+				//Update Item using LINQ
+				using (var tx = session.BeginTransaction())
+				{
+					await (session.Query<Item>()
+					       .UpdateBuilder()
+					       .Set(x => x.Name, "Test")
+					       .UpdateAsync());
+
+					await (tx.CommitAsync());
+				}
+
+				//Update Item using SQL
+				using (var tx = session.BeginTransaction())
+				{
+					await (session.CreateSQLQuery("UPDATE Item SET Name='Test'")
+					       .AddSynchronizedQuerySpace("Item")
+					       .ExecuteUpdateAsync());
+
+					await (tx.CommitAsync());
+				}
 			}
 
-			//Should receive one preinvalidation and one invalidation per commit
+			//Should receive one preinvalidation per non-DML commit
 			Assert.That(preInvalidations, Has.Count.EqualTo(3));
 			Assert.That(preInvalidations, Has.All.Count.EqualTo(1).And.Contains("Item"));
 
-			Assert.That(invalidations, Has.Count.EqualTo(3));
+			///...and one invalidation per commit
+			Assert.That(invalidations, Has.Count.EqualTo(6));
 			Assert.That(invalidations, Has.All.Count.EqualTo(1).And.Contains("Item"));
 		}
 

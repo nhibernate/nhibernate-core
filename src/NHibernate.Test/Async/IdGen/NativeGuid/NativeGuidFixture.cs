@@ -22,7 +22,7 @@ namespace NHibernate.Test.IdGen.NativeGuid
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"IdGen.NativeGuid.NativeGuidPoid.hbm.xml"}; }
 		}

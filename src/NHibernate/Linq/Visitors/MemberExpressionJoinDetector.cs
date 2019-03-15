@@ -55,6 +55,14 @@ namespace NHibernate.Linq.Visitors
 			return result;
 		}
 
+		protected override Expression VisitMethodCall(MethodCallExpression node)
+		{
+			_memberExpressionDepth++;
+			var result = base.VisitMethodCall(node);
+			_memberExpressionDepth--;
+			return result;
+		}
+
 		protected override Expression VisitSubQuery(SubQueryExpression expression)
 		{
 			expression.QueryModel.TransformExpressions(Visit);
@@ -69,9 +77,7 @@ namespace NHibernate.Linq.Visitors
 			_requiresJoinForNonIdentifier = oldRequiresJoinForNonIdentifier;
 			var newFalse = Visit(expression.IfFalse);
 			var newTrue = Visit(expression.IfTrue);
-			if ((newTest != expression.Test) || (newFalse != expression.IfFalse) || (newTrue != expression.IfTrue))
-				return Expression.Condition(newTest, newTrue, newFalse);
-			return expression;
+			return expression.Update(newTest, newTrue, newFalse);
 		}
 
 		protected override Expression VisitExtension(Expression expression)

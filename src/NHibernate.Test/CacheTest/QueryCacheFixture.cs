@@ -9,7 +9,7 @@ namespace NHibernate.Test.CacheTest
 	[TestFixture]
 	public class QueryCacheFixture : TestCase
 	{
-		protected override IList Mappings => new[] { "Simple.hbm.xml" };
+		protected override string[] Mappings => new[] { "Simple.hbm.xml" };
 
 		protected override void Configure(Configuration configuration)
 		{

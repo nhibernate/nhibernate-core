@@ -82,7 +82,9 @@ public whereClause
 	;
 
 whereClauseExpr
+	// 6.0 TODO: Remove "(SQL_TOKEN) => conditionList"
 	: (SQL_TOKEN) => conditionList
+	| filters ( { Out(" and "); } booleanExpr [ true ] )?
 	| booleanExpr[ false ]
 	;
 
@@ -186,6 +188,7 @@ fromTable
 	// Write the table node (from fragment) and all the join fragments associated with it.
 	: ^( a=FROM_FRAGMENT  { Out(a); } (tableJoin [ a ])* )
 	| ^( a=JOIN_FRAGMENT  { Out(a); } (tableJoin [ a ])* )
+	| ^( a=ENTITY_JOIN    { Out(a); } )
 	;
 
 tableJoin [ IASTNode parent ]

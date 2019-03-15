@@ -9,6 +9,9 @@ using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
+	// 6.0 TODO: consider retyping methods yielding IList<IASTNode> as IList<FromElement>
+	// They all do actually yield FromElement, and most of their callers end up recasting
+	// them.
 	/// <summary>
 	/// Represents the 'FROM' part of a query or subquery, containing all mapped class references.
 	/// Author: josh
@@ -33,6 +36,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private readonly Dictionary<string, FromElement> _fromElementByTableAlias = new Dictionary<string, FromElement>();
 		private readonly NullableDictionary<string, FromElement> _fromElementsByPath = new NullableDictionary<string, FromElement>();
 		private readonly List<FromElement> _fromElements = new List<FromElement>();
+		private readonly List<EntityJoinFromElement> _entityJoinFromElements = new List<EntityJoinFromElement>();
 
 		/// <summary>
 		/// All of the implicit FROM xxx JOIN yyy elements that are the destination of a collection.  These are created from
@@ -350,6 +354,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				_fromElementByTableAlias[tableAlias] = element;
 			}
+
+			if (element.IsEntityJoin())
+			{
+				_entityJoinFromElements.Add((EntityJoinFromElement) element);
+			}
 		}
 
 		private FromElement FindJoinByPathLocal(string path)
@@ -382,6 +391,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public FromElement GetFromElementByClassName(string className)
 		{
 			return _fromElementByClassAlias.Values.FirstOrDefault(variable => variable.ClassName == className);
+		}
+
+		internal void FinishInit()
+		{
+			foreach (var item in _entityJoinFromElements)
+			{
+				AddChild(item);
+			}
+			_entityJoinFromElements.Clear();
 		}
 	}
 }

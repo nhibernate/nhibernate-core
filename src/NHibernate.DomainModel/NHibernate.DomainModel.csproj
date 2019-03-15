@@ -2,12 +2,9 @@
   <Import Project="../../build-common/NHibernate.props" />
   <PropertyGroup>
     <Description>The Domain Model used by the Unit Tests.</Description>
-    <TargetFrameworks>netstandard2.0;net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>$(NhLibTargetFrameworks)</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
-    <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="**\*.hbm.xml" />

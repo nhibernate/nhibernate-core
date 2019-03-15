@@ -10,7 +10,7 @@ namespace NHibernate.Test.Criteria.Lambda
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings => new[] { "Criteria.Lambda.Mappings.hbm.xml" };
+		protected override string[] Mappings => new[] { "Criteria.Lambda.Mappings.hbm.xml" };
 
 		protected override void OnTearDown()
 		{
@@ -135,6 +135,9 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public void Concat()
 		{
+			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
+				Assert.Ignore("Current dialect does not support this test");
+
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
 			{

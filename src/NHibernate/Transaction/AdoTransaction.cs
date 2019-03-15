@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Impl;
 
@@ -21,7 +21,10 @@ namespace NHibernate.Transaction
 		private bool committed;
 		private bool rolledBack;
 		private bool commitFailed;
+		// Since v5.2
+		[Obsolete]
 		private IList<ISynchronization> synchronizations;
+		private IList<ITransactionCompletionSynchronization> _completionSynchronizations;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AdoTransaction"/> class.
@@ -83,6 +86,8 @@ namespace NHibernate.Transaction
 			}
 		}
 
+		// Since 5.2
+		[Obsolete("Use RegisterSynchronization(ITransactionCompletionSynchronization) instead")]
 		public void RegisterSynchronization(ISynchronization sync)
 		{
 			if (sync == null) throw new ArgumentNullException("sync");
@@ -91,6 +96,19 @@ namespace NHibernate.Transaction
 				synchronizations = new List<ISynchronization>();
 			}
 			synchronizations.Add(sync);
+		}
+
+		public void RegisterSynchronization(ITransactionCompletionSynchronization synchronization)
+		{
+			if (synchronization == null)
+				throw new ArgumentNullException(nameof(synchronization));
+
+			// It is tempting to use the session ActionQueue instead, but stateless sessions do not have one.
+			if (_completionSynchronizations == null)
+			{
+				_completionSynchronizations = new List<ITransactionCompletionSynchronization>();
+			}
+			_completionSynchronizations.Add(synchronization);
 		}
 
 		public void Begin()
@@ -129,14 +147,7 @@ namespace NHibernate.Transaction
 
 				try
 				{
-					if (isolationLevel == IsolationLevel.Unspecified)
-					{
-						trans = session.Connection.BeginTransaction();
-					}
-					else
-					{
-						trans = session.Connection.BeginTransaction(isolationLevel);
-					}
+					trans = session.Factory.ConnectionProvider.Driver.BeginTransaction(isolationLevel, session.Connection);
 				}
 				catch (HibernateException)
 				{
@@ -235,7 +246,7 @@ namespace NHibernate.Transaction
 		/// </exception>
 		public void Rollback()
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (SessionIdLoggingContext.CreateOrNull(sessionId))
 			{
 				CheckNotDisposed();
 				CheckBegun();
@@ -352,7 +363,7 @@ namespace NHibernate.Transaction
 		/// </remarks>
 		protected virtual void Dispose(bool isDisposing)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (SessionIdLoggingContext.CreateOrNull(sessionId))
 			{
 				if (_isAlreadyDisposed)
 				{
@@ -414,11 +425,12 @@ namespace NHibernate.Transaction
 
 		private void NotifyLocalSynchsBeforeTransactionCompletion()
 		{
+#pragma warning disable 612
 			if (synchronizations != null)
 			{
-				for (int i = 0; i < synchronizations.Count; i++)
+				foreach (var sync in synchronizations)
+#pragma warning restore 612
 				{
-					ISynchronization sync = synchronizations[i];
 					try
 					{
 						sync.BeforeCompletion();
@@ -430,16 +442,26 @@ namespace NHibernate.Transaction
 					}
 				}
 			}
+
+			if (_completionSynchronizations == null)
+				return;
+
+			foreach (var sync in _completionSynchronizations)
+			{
+				sync.ExecuteBeforeTransactionCompletion();
+			}
 		}
 
 		private void NotifyLocalSynchsAfterTransactionCompletion(bool success)
 		{
 			begun = false;
+
+#pragma warning disable 612
 			if (synchronizations != null)
 			{
-				for (int i = 0; i < synchronizations.Count; i++)
+				foreach (var sync in synchronizations)
+#pragma warning restore 612
 				{
-					ISynchronization sync = synchronizations[i];
 					try
 					{
 						sync.AfterCompletion(success);
@@ -448,6 +470,21 @@ namespace NHibernate.Transaction
 					{
 						log.Error(e, "exception calling user Synchronization");
 					}
+				}
+			}
+
+			if (_completionSynchronizations == null)
+				return;
+
+			foreach (var sync in _completionSynchronizations)
+			{
+				try
+				{
+					sync.ExecuteAfterTransactionCompletion(success);
+				}
+				catch (Exception e)
+				{
+					log.Error(e, "exception calling user Synchronization");
 				}
 			}
 		}

@@ -406,7 +406,7 @@ namespace NHibernate.Mapping
 
 				if (col.IsUnique)
 				{
-					if (dialect.SupportsUnique)
+					if (dialect.SupportsUnique && (!col.IsNullable || dialect.SupportsNullInUnique))
 					{
 						buf.Append(" unique");
 					}
@@ -453,7 +453,7 @@ namespace NHibernate.Mapping
 			{
 				foreach (ForeignKey foreignKey in ForeignKeyIterator)
 				{
-					if (foreignKey.HasPhysicalConstraint)
+					if (foreignKey.IsGenerated(dialect))
 					{
 						buf.Append(",").Append(foreignKey.SqlConstraintString(dialect, foreignKey.Name, defaultCatalog, defaultSchema));
 					}
@@ -669,7 +669,7 @@ namespace NHibernate.Mapping
 				}
 
 				bool useUniqueConstraint = column.Unique && dialect.SupportsUnique
-										   && (!column.IsNullable || dialect.SupportsNotNullUnique);
+										   && (!column.IsNullable || dialect.SupportsNullInUnique);
 				if (useUniqueConstraint)
 				{
 					alter.Append(" unique");
@@ -686,6 +686,7 @@ namespace NHibernate.Mapping
 					alter.Append(dialect.GetColumnComment(columnComment));
 				}
 
+				alter.Append(dialect.AddColumnSuffixString);
 				results.Add(alter.ToString());
 			}
 
@@ -807,15 +808,9 @@ namespace NHibernate.Mapping
 			if (fk == null)
 			{
 				fk = new ForeignKey();
-				if (!string.IsNullOrEmpty(keyName))
-				{
-					fk.Name = keyName;
-				}
-				else
-				{
-					fk.Name = "FK" + UniqueColumnString(kCols, referencedEntityName);
-					//TODO: add referencedClass to disambiguate to FKs on the same columns, pointing to different tables
-				}
+				// NOTE : if the name is null, we will generate an implicit name during second pass processing
+				// after we know the referenced table name (which might not be resolved yet).
+				fk.Name = keyName;
 				fk.Table = this;
 				foreignKeys.Add(key, fk);
 				fk.ReferencedEntityName = referencedEntityName;
@@ -836,8 +831,8 @@ namespace NHibernate.Mapping
 
 		public virtual UniqueKey CreateUniqueKey(IList<Column> keyColumns)
 		{
-			string keyName = "UK" + UniqueColumnString(keyColumns);
-			UniqueKey uk = GetOrCreateUniqueKey(keyName);
+			var keyName = Constraint.GenerateName( "UK_", this, null, keyColumns);
+			var uk = GetOrCreateUniqueKey(keyName);
 			uk.AddColumns(keyColumns);
 			return uk;
 		}
@@ -850,11 +845,15 @@ namespace NHibernate.Mapping
 		/// <returns>
 		/// An unique string for the <see cref="Column"/> objects.
 		/// </returns>
+		// Since v5.2
+		[Obsolete("Use Constraint.GenerateName instead.")]
 		public string UniqueColumnString(IEnumerable uniqueColumns)
 		{
 			return UniqueColumnString(uniqueColumns, null);
 		}
 
+		// Since v5.2
+		[Obsolete("Use Constraint.GenerateName instead.")]
 		public string UniqueColumnString(IEnumerable iterator, string referencedEntityName)
 		{
 			// NH Different implementation (NH-1399)
@@ -1082,14 +1081,13 @@ namespace NHibernate.Mapping
 			{
 				// NH : Different implementation to prevent NH930 (look test)
 				return //y.referencedClassName.Equals(x.referencedClassName) &&
-					CollectionHelper.SequenceEquals<Column>(y.columns, x.columns)
-					&& CollectionHelper.SequenceEquals<Column>(y.referencedColumns, x.referencedColumns);
+					CollectionHelper.SequenceEquals(y.columns, x.columns)
+					&& CollectionHelper.SequenceEquals(y.referencedColumns, x.referencedColumns);
 			}
 
 			public int GetHashCode(ForeignKeyKey obj)
 			{
-				int result = CollectionHelper.GetHashCode(obj.columns) ^ CollectionHelper.GetHashCode(obj.referencedColumns);
-				return result;
+				return CollectionHelper.GetHashCode(obj.columns) ^ CollectionHelper.GetHashCode(obj.referencedColumns);
 			}
 
 			#endregion

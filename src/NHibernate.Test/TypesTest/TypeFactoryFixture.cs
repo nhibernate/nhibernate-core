@@ -56,6 +56,7 @@ namespace NHibernate.Test.TypesTest
 			//Assert.AreEqual(int64Type, TypeFactory.HeuristicType("Int64?"), "'Int64?' should return a NH Int64Type");
 
 			System.Type reflectedType = Util.ReflectHelper.ReflectedPropertyClass( typeof(GenericPropertyClass), "GenericInt64", "property" );
+			Assert.AreEqual( int64Type, TypeFactory.HeuristicType( reflectedType ), "using System.Type should return nh Int64Type" );
 			Assert.AreEqual( int64Type, TypeFactory.HeuristicType( reflectedType.AssemblyQualifiedName ), "using AQN should return nh Int64Type" );
 			Assert.AreEqual( int64Type, TypeFactory.HeuristicType( reflectedType.FullName ), "using FullName should return nh Int64Type" );
 
@@ -141,6 +142,20 @@ namespace NHibernate.Test.TypesTest
 		public void WhenUseNullableEnumThenReturnGenericEnumType()
 		{
 			var iType = TypeFactory.HeuristicType(typeof(MyEnum?).AssemblyQualifiedName);
+			Assert.That(iType, Is.TypeOf<EnumType<MyEnum>>());
+		}
+		
+		[Test]
+		public void WhenUseEnumTypeThenReturnGenericEnumType()
+		{
+			var iType = TypeFactory.HeuristicType(typeof (MyEnum));
+			Assert.That(iType, Is.TypeOf<EnumType<MyEnum>>());
+		}
+
+		[Test]
+		public void WhenUseNullableEnumTypeThenReturnGenericEnumType()
+		{
+			var iType = TypeFactory.HeuristicType(typeof(MyEnum?));
 			Assert.That(iType, Is.TypeOf<EnumType<MyEnum>>());
 		}
 	}

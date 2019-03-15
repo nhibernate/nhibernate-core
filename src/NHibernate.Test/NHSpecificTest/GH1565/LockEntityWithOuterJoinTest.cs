@@ -8,6 +8,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1565
 		[Test]
 		public void LockWithOuterJoin_ShouldBePossible()
 		{
+			// For this test to succeed with SQL Anywhere, ansi_update_constraints must be off.
+			// In I-SQL: set option ansi_update_constraints = 'Off'
 			using (var session = OpenSession())
 			{
 				using (var transaction = session.BeginTransaction())
@@ -43,6 +45,11 @@ namespace NHibernate.Test.NHSpecificTest.GH1565
 			{
 				session.CreateSQLQuery("delete from MainEntity").ExecuteUpdate();
 			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 	}
 

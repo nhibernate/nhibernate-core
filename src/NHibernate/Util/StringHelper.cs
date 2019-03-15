@@ -83,11 +83,16 @@ namespace NHibernate.Util
 			return buf.ToString();
 		}
 
+		//Since v5.3
+		[Obsolete("Please use string.Replace or Regex.Replace instead.")]
 		public static string Replace(string template, string placeholder, string replacement)
 		{
-			return Replace(template, placeholder, replacement, false);
+			// sometimes a null value will get passed in here -> SqlWhereStrings are a good example
+			return template?.Replace(placeholder, replacement);
 		}
 
+		//Since v5.3
+		[Obsolete("Please use string.Replace or Regex.Replace instead.")]
 		public static string Replace(string template, string placeholder, string replacement, bool wholeWords)
 		{
 			Predicate<string> isWholeWord = c => WhiteSpace.Contains(c) || ClosedParen.Equals(c) || Comma.Equals(c);
@@ -129,6 +134,8 @@ namespace NHibernate.Util
 			}
 		}
 
+		//Since v5.3
+		[Obsolete("Please use string.Replace or Regex.Replace instead.")]
 		public static string ReplaceWholeWord(this string template, string placeholder, string replacement)
 		{
 			Predicate<string> isWholeWord = s => !Char.IsLetterOrDigit(s[0]);
@@ -351,6 +358,26 @@ namespace NHibernate.Util
 			if (loc < 0)
 				return false;
 
+			root = qualifiedName.Substring(0, loc);
+			return true;
+		}
+
+		/// <summary>
+		/// Returns true if given name is not root property name
+		/// </summary>
+		/// <param name="qualifiedName"></param>
+		/// <param name="root">Returns root name</param>
+		/// <param name="unrootPath">Returns "unrooted" name, or empty string for root </param>
+		/// <returns></returns>
+		internal static bool IsNotRoot(string qualifiedName, out string root, out string unrootPath)
+		{
+			unrootPath = string.Empty;
+			root = qualifiedName;
+			int loc = qualifiedName.IndexOf('.');
+			if (loc < 0)
+				return false;
+
+			unrootPath = qualifiedName.Substring(loc + 1);
 			root = qualifiedName.Substring(0, loc);
 			return true;
 		}
@@ -658,31 +685,43 @@ namespace NHibernate.Util
 			return (loc < 0) ? qualifiedName : qualifiedName.Substring(loc + 1);
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usage and will be removed in a future version")]
 		public static bool EqualsCaseInsensitive(string a, string b)
 		{
 			return StringComparer.InvariantCultureIgnoreCase.Compare(a, b) == 0;
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usage and will be removed in a future version")]
 		public static int IndexOfCaseInsensitive(string source, string value)
 		{
 			return source.IndexOf(value, StringComparison.InvariantCultureIgnoreCase);
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usage and will be removed in a future version")]
 		public static int IndexOfCaseInsensitive(string source, string value, int startIndex)
 		{
 			return source.IndexOf(value, startIndex, StringComparison.InvariantCultureIgnoreCase);
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usage and will be removed in a future version")]
 		public static int IndexOfCaseInsensitive(string source, string value, int startIndex, int count)
 		{
 			return source.IndexOf(value, startIndex, count, StringComparison.InvariantCultureIgnoreCase);
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usage and will be removed in a future version")]
 		public static int LastIndexOfCaseInsensitive(string source, string value)
 		{
 			return source.LastIndexOf(value, StringComparison.InvariantCultureIgnoreCase);
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usage and will be removed in a future version")]
 		public static bool StartsWithCaseInsensitive(string source, string prefix)
 		{
 			return source.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase);

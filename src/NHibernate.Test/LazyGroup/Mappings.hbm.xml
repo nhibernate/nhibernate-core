@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.LazyGroup">
+
+  <class name="Person" batch-size="2">
+    <cache usage="read-write" />
+    <id name="Id">
+      <generator class="assigned" />
+    </id>
+    <property name="Name" />
+    <property name="NickName" lazy="true" />
+    <component name="Address" lazy="true" lazy-group="address">
+      <property name="City" />
+      <property name="Street" />
+      <property name="PostCode" />
+    </component>
+    <property name="Image" lazy="true" lazy-group="image" />
+    <property name="Age" formula="(Id)" lazy="true" update="false" insert="false" lazy-group="age" />
+  </class>
+
+</hibernate-mapping>

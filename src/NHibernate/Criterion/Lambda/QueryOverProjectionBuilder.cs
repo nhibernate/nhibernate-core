@@ -1,10 +1,8 @@
 
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 
 using NHibernate.Impl;
-using NHibernate.SqlCommand;
 
 namespace NHibernate.Criterion.Lambda
 {
@@ -48,6 +46,15 @@ namespace NHibernate.Criterion.Lambda
 		{
 			string aliasContainer = ExpressionProcessor.FindPropertyExpression(alias.Body);
 			lastProjection = Projections.Alias(lastProjection, aliasContainer);
+			return this;
+		}
+		
+		/// <summary>
+		/// Create an alias for the previous projection
+		/// </summary>
+		public QueryOverProjectionBuilder<T> WithAlias(string alias)
+		{
+			lastProjection = Projections.Alias(lastProjection, alias);
 			return this;
 		}
 
@@ -119,7 +126,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public QueryOverProjectionBuilder<T> SelectGroup(Expression<Func<T, object>> expression)
 		{
-			PushProjection(Projections.Group(expression));
+			PushProjection(Projections.GroupProjection(expression));
 			return this;
 		}
 
@@ -128,7 +135,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public QueryOverProjectionBuilder<T> SelectGroup(Expression<Func<object>> expression)
 		{
-			PushProjection(Projections.Group(expression));
+			PushProjection(Projections.GroupProjection(expression));
 			return this;
 		}
 

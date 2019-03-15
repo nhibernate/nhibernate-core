@@ -1,5 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Dialect;
 using NUnit.Framework;
 
@@ -17,7 +21,7 @@ namespace NHibernate.Test.Hql
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "Hql.Animal.hbm.xml", "Hql.MaterialResource.hbm.xml" }; }
 		}
@@ -936,6 +940,13 @@ namespace NHibernate.Test.Hql
 								throw;
 							}
 						}
+						else if (Dialect is HanaDialectBase)
+						{
+							string msgToCheck =
+								"not a GROUP BY expression: 'ANIMAL0_.BODYWEIGHT' must be in group by clause";
+							if (!ex.InnerException.Message.Contains(msgToCheck))
+								throw;
+						}
 						else
 						{
 							string msgToCheck =
@@ -1037,6 +1048,53 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test]
+		public void Current_Date()
+		{
+			AssumeFunctionSupported("current_date");
+			using (var s = OpenSession())
+			{
+				var a1 = new Animal("abcdef", 1.3f);
+				s.Save(a1);
+				s.Flush();
+			}
+			using (var s = OpenSession())
+			{
+				var hql = "select current_date() from Animal";
+				s.CreateQuery(hql).List();
+			}
+		}
+
+		[Test]
+		public void Current_Date_IsLowestTimeOfDay()
+		{
+			AssumeFunctionSupported("current_date");
+			if (!TestDialect.SupportsNonDataBoundCondition)
+				Assert.Ignore("Test is not supported by the target database");
+			var now = DateTime.Now;
+			if (now.TimeOfDay < TimeSpan.FromMinutes(5) || now.TimeOfDay > TimeSpan.Parse("23:55"))
+				Assert.Ignore("Test is unreliable around midnight");
+
+			var lowTimeDate = now.Date.AddSeconds(1);
+
+			using (var s = OpenSession())
+			{
+				var a1 = new Animal("abcdef", 1.3f);
+				s.Save(a1);
+				s.Flush();
+			}
+			using (var s = OpenSession())
+			{
+				var hql = "from Animal where current_date() < :lowTimeDate";
+				var result =
+					s
+						.CreateQuery(hql)
+						.SetDateTime("lowTimeDate", lowTimeDate)
+						.List();
+				Assert.That(result, Has.Count.GreaterThan(0));
+			}
+		}
+
+		[Test]
 		public void Extract()
 		{
 			AssumeFunctionSupported("extract");
@@ -1126,6 +1184,7 @@ namespace NHibernate.Test.Hql
 
 				hql = "from Animal a where str(123) = '123'";
 				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
+				Assert.That(result, Is.Not.Null);
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
@@ -1133,7 +1192,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Iif()
 		{
-			AssumeFunctionSupported("Iif");
+			AssumeFunctionSupported("iif");
 			using (ISession s = OpenSession())
 			{
 				s.Save(new MaterialResource("Flash card 512MB", "A001/07", MaterialResource.MaterialState.Available));
@@ -1220,7 +1279,192 @@ group by mr.Description";
 				Assert.AreEqual(1, l.Count);
 			}
 		}
+
+		[Test]
+		public void BitwiseAnd()
+		{
+			AssumeFunctionSupported("band");
+			CreateMaterialResources();
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var query = s.CreateQuery("from MaterialResource m where (m.State & 1) > 0");
+				var result = query.List();
+				Assert.That(result, Has.Count.EqualTo(1), "& 1");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State & 2) > 0");
+				result = query.List();
+				Assert.That(result, Has.Count.EqualTo(1), "& 2");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State & 3) > 0");
+				result = query.List();
+				Assert.That(result, Has.Count.EqualTo(2), "& 3");
+
+				tx.Commit();
+			}
+		}
+
+		[Test]
+		public void BitwiseOr()
+		{
+			AssumeFunctionSupported("bor");
+			CreateMaterialResources();
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var query = s.CreateQuery("from MaterialResource m where (m.State | 1) > 0");
+				var result = query.List();
+				Assert.That(result, Has.Count.EqualTo(3), "| 1) > 0");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State | 1) > 1");
+				result = query.List();
+				Assert.That(result, Has.Count.EqualTo(1), "| 1) > 1");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State | 0) > 0");
+				result = query.List();
+				Assert.That(result, Has.Count.EqualTo(2), "| 0) > 0");
+
+				tx.Commit();
+			}
+		}
+
+		[Test]
+		public void BitwiseXor()
+		{
+			AssumeFunctionSupported("bxor");
+			CreateMaterialResources();
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var query = s.CreateQuery("from MaterialResource m where (m.State ^ 1) > 0");
+				var result = query.List();
+				Assert.That(result, Has.Count.EqualTo(2), "^ 1");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State ^ 2) > 0");
+				result = query.List();
+				Assert.That(result, Has.Count.EqualTo(2), "^ 2");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State ^ 3) > 0");
+				result = query.List();
+				Assert.That(result, Has.Count.EqualTo(3), "^ 3");
+
+				tx.Commit();
+			}
+		}
+
+		[Test]
+		public void BitwiseNot()
+		{
+			AssumeFunctionSupported("bnot");
+			AssumeFunctionSupported("band");
+			CreateMaterialResources();
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				// The bitwise "not" should take precedence over the bitwise "and", but when it is implemented as a
+				// function, its argument is the whole following statement, unless parenthesis are used to prevent this.
+				var query = s.CreateQuery("from MaterialResource m where ((!m.State) & 3) = 3");
+				var result = query.List();
+				Assert.That(result, Has.Count.EqualTo(1), "((!m.State) & 3) = 3");
+
+				query = s.CreateQuery("from MaterialResource m where ((!m.State) & 3) = 2");
+				result = query.List();
+				Assert.That(result, Has.Count.EqualTo(1), "((!m.State) & 3) = 2");
+
+				query = s.CreateQuery("from MaterialResource m where ((!m.State) & 3) = 1");
+				result = query.List();
+				Assert.That(result, Has.Count.EqualTo(1), "((!m.State) & 3) = 1");
+
+				tx.Commit();
+			}
+		}
+
+		// #1670
+		[Test]
+		public void BitwiseIsThreadsafe()
+		{
+			AssumeFunctionSupported("band");
+			AssumeFunctionSupported("bor");
+			AssumeFunctionSupported("bxor");
+			AssumeFunctionSupported("bnot");
+			var queries = new List<Tuple<string, int>>
+			{
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State & 1) > 0", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State & 2) > 0", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State & 3) > 0", 2),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State | 1) > 0", 3),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State | 1) > 1", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State | 0) > 0", 2),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State ^ 1) > 0", 2),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State ^ 2) > 0", 2),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State ^ 3) > 0", 3),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where ((!m.State) & 3) = 3", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where ((!m.State) & 3) = 2", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where ((!m.State) & 3) = 1", 1)
+			};
+
+			if (TestDialect.MaxNumberOfConnections < queries.Count)
+				Assert.Ignore("Current database has a too low connection count limit.");
+
+			// Do not use a ManualResetEventSlim, it does not support async and exhausts the task thread pool in the
+			// async counterparts of this test. SemaphoreSlim has the async support and release the thread when waiting.
+			var semaphore = new SemaphoreSlim(0);
+			var failures = new ConcurrentBag<Exception>();
+
+			CreateMaterialResources();
+
+			Parallel.For(
+				0, queries.Count + 1,
+				i =>
+				{
+					if (i >= queries.Count)
+					{
+						// Give some time to threads for reaching the wait, having all of them ready to do the
+						// critical part of their job concurrently.
+						Thread.Sleep(100);
+						semaphore.Release(queries.Count);
+						return;
+					}
+
+					try
+					{
+						var query = queries[i];
+						using (var s = OpenSession())
+						using (var tx = s.BeginTransaction())
+						{
+							semaphore.Wait();
+							var q = s.CreateQuery(query.Item1);
+							var result = q.UniqueResult<long>();
+							Assert.That(result, Is.EqualTo(query.Item2), query.Item1);
+							tx.Commit();
+						}
+					}
+					catch (Exception e)
+					{
+						failures.Add(e);
+					}
+				});
+
+			Assert.That(failures, Is.Empty, $"{failures.Count} task(s) failed.");
+		}
+
+		private void CreateMaterialResources()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.Save(new MaterialResource("m1", "18", MaterialResource.MaterialState.Available) { Cost = 51.76m });
+				s.Save(new MaterialResource("m2", "19", MaterialResource.MaterialState.Reserved) { Cost = 15.24m });
+				s.Save(new MaterialResource("m3", "20", MaterialResource.MaterialState.Discarded) { Cost = 21.54m });
+				tx.Commit();
+			}
+		}
 	}
+
 	public class ForNh1725
 	{
 		public string Description { get; set; }

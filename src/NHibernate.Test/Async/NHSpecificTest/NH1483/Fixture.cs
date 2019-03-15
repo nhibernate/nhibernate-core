@@ -138,18 +138,18 @@ namespace NHibernate.Test.NHSpecificTest.NH1483
 		/// Verifies that a subclass can be loaded from the second level cache
 		/// </summary>
 		[Test]
-		public Task LoadSubclassFromSecondLevelCacheAsync()
+		public async Task LoadSubclassFromSecondLevelCacheAsync()
 		{
-			return TestLoadFromSecondLevelCacheAsync<SubClass>();
+			await (TestLoadFromSecondLevelCacheAsync<SubClass>());
 		}
 
 		/// <summary>
 		/// Verifies that a subclass can be loaded from the second level cache
 		/// </summary>
 		[Test]
-		public Task LoadSubclassFromSecondLevelCacheAsBaseClassAsync()
+		public async Task LoadSubclassFromSecondLevelCacheAsBaseClassAsync()
 		{
-			return TestLoadFromSecondLevelCacheAsync<BaseClass>();
+			await (TestLoadFromSecondLevelCacheAsync<BaseClass>());
 		}
 	}
 }

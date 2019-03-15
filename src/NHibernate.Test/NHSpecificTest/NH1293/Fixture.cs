@@ -9,12 +9,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1293
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		protected override System.Collections.IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
 				if (Dialect is PostgreSQLDialect)
-					return new[] {"NHSpecificTest.NH1293.MappingsFilterAsBoolean.hbm.xml"};
+					return new[] {"MappingsFilterAsBoolean.hbm.xml"};
 
 				return base.Mappings;
 			}

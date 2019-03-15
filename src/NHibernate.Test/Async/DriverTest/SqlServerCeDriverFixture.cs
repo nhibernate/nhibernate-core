@@ -28,7 +28,7 @@ namespace NHibernate.Test.DriverTest
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "DriverTest.SqlServerCeEntity.hbm.xml" }; }
 		}

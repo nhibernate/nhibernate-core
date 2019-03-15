@@ -93,7 +93,6 @@ namespace NHibernate.Event.Default
 					LockMode.None, 
 					true, 
 					persister, 
-					false, 
 					false);
 			}
 			else
@@ -222,40 +221,42 @@ namespace NHibernate.Event.Default
 		protected virtual async Task CascadeBeforeDeleteAsync(IEventSource session, IEntityPersister persister, object entity, EntityEntry entityEntry, ISet<object> transientEntities, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			ISessionImplementor si = session;
-			CacheMode cacheMode = si.CacheMode;
-			si.CacheMode = CacheMode.Get;
-			session.PersistenceContext.IncrementCascadeLevel();
-			try
+			using (session.SwitchCacheMode(CacheMode.Get))
 			{
-				// cascade-delete to collections BEFORE the collection owner is deleted
-				await (new Cascade(CascadingAction.Delete, CascadePoint.AfterInsertBeforeDelete, session).CascadeOnAsync(persister, entity,
-				                                                                                             transientEntities, cancellationToken)).ConfigureAwait(false);
-			}
-			finally
-			{
-				session.PersistenceContext.DecrementCascadeLevel();
-				si.CacheMode = cacheMode;
+				session.PersistenceContext.IncrementCascadeLevel();
+				try
+				{
+					// cascade-delete to collections BEFORE the collection owner is deleted
+					await (new Cascade(CascadingAction.Delete, CascadePoint.AfterInsertBeforeDelete, session).CascadeOnAsync(
+						persister,
+						entity,
+						transientEntities, cancellationToken)).ConfigureAwait(false);
+				}
+				finally
+				{
+					session.PersistenceContext.DecrementCascadeLevel();
+				}
 			}
 		}
 
 		protected virtual async Task CascadeAfterDeleteAsync(IEventSource session, IEntityPersister persister, object entity, ISet<object> transientEntities, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			ISessionImplementor si = session;
-			CacheMode cacheMode = si.CacheMode;
-			si.CacheMode = CacheMode.Get;
-			session.PersistenceContext.IncrementCascadeLevel();
-			try
+			using (session.SwitchCacheMode(CacheMode.Get))
 			{
-				// cascade-delete to many-to-one AFTER the parent was deleted
-				await (new Cascade(CascadingAction.Delete, CascadePoint.BeforeInsertAfterDelete, session).CascadeOnAsync(persister, entity,
-				                                                                                             transientEntities, cancellationToken)).ConfigureAwait(false);
-			}
-			finally
-			{
-				session.PersistenceContext.DecrementCascadeLevel();
-				si.CacheMode = cacheMode;
+				session.PersistenceContext.IncrementCascadeLevel();
+				try
+				{
+					// cascade-delete to many-to-one AFTER the parent was deleted
+					await (new Cascade(CascadingAction.Delete, CascadePoint.BeforeInsertAfterDelete, session).CascadeOnAsync(
+						persister,
+						entity,
+						transientEntities, cancellationToken)).ConfigureAwait(false);
+				}
+				finally
+				{
+					session.PersistenceContext.DecrementCascadeLevel();
+				}
 			}
 		}
 	}

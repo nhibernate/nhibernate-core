@@ -74,6 +74,22 @@ namespace NHibernate.Hql.Ast
 			return new HqlSelectFrom(_factory, @from);
 		}
 
+		public HqlFrom From(HqlRange range, params HqlJoin[] joins)
+		{
+			var hqlFrom = new HqlFrom(_factory, range);
+			foreach (var join in joins)
+				hqlFrom.AddChild(join);
+			return hqlFrom;
+		}
+
+		public HqlFrom From(HqlRange range, IEnumerable<HqlJoin>  joins)
+		{
+			var hqlFrom = new HqlFrom(_factory, range);
+			foreach (var join in joins)
+				hqlFrom.AddChild(join);
+			return hqlFrom;
+		}
+
 		public HqlFrom From(HqlRange range)
 		{
 			return new HqlFrom(_factory, range);
@@ -477,6 +493,11 @@ namespace NHibernate.Hql.Ast
 			return new HqlLeftFetchJoin(_factory, expression, @alias);
 		}
 
+		public HqlFetch Fetch()
+		{
+			return new HqlFetch(_factory);
+		}
+
 		public HqlClass Class()
 		{
 			return new HqlClass(_factory);
@@ -497,9 +518,16 @@ namespace NHibernate.Hql.Ast
 			return new HqlCoalesce(_factory, lhs, rhs);
 		}
 
+		//Since v5.2
+		[Obsolete("Please use Index method instead.")]
 		public HqlTreeNode DictionaryItem(HqlExpression dictionary, HqlExpression index)
 		{
 			return new HqlDictionaryIndex(_factory, dictionary, index);
+		}
+
+		public HqlTreeNode Index(HqlExpression collection, HqlExpression index)
+		{
+			return new HqlIndex(_factory, collection, index);
 		}
 
 		public HqlTreeNode Indices(HqlExpression dictionary)

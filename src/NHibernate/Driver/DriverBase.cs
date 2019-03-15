@@ -47,6 +47,21 @@ namespace NHibernate.Driver
 		public abstract DbCommand CreateCommand();
 
 		/// <summary>
+		/// Begin an ADO <see cref="DbTransaction" />.
+		/// </summary>
+		/// <param name="isolationLevel">The isolation level requested for the transaction.</param>
+		/// <param name="connection">The connection on which to start the transaction.</param>
+		/// <returns>The started <see cref="DbTransaction" />.</returns>
+		public virtual DbTransaction BeginTransaction(IsolationLevel isolationLevel, DbConnection connection)
+		{
+			if (isolationLevel == IsolationLevel.Unspecified)
+			{
+				return connection.BeginTransaction();
+			}
+			return connection.BeginTransaction(isolationLevel);
+		}
+
+		/// <summary>
 		/// Does this Driver require the use of a Named Prefix in the SQL statement.  
 		/// </summary>
 		/// <remarks>
@@ -330,5 +345,11 @@ namespace NHibernate.Driver
 
 		/// <inheritdoc />
 		public virtual DateTime MinDate => DateTime.MinValue;
+
+		//6.0 TODO: Add property definition to IDialect
+		/// <summary>
+		/// Get the timeout in seconds for ADO.NET queries.
+		/// </summary>
+		public virtual int CommandTimeout => commandTimeout;
 	}
 }

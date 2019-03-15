@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2166
 	[TestFixture]
 	public class Fixture: TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return Array.Empty<string>(); }
 		}

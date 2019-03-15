@@ -326,10 +326,11 @@ namespace NHibernate.Type
 
 		/// <summary>
 		/// Given an instance of the type, return an array of boolean, indicating
-		/// which mapped columns would be null.
+		/// which mapped columns would be null. <see langword="true" /> indicates
+		/// a non-null column, <see langword="false" /> indicates a null column.
 		/// </summary>
-		/// <param name="value">an instance of the type </param>
-		/// <param name="mapping"></param>
+		/// <param name="value">An instance of the type.</param>
+		/// <param name="mapping">The mapping.</param>
 		bool[] ToColumnNullness(object value, IMapping mapping);
 	}
 }

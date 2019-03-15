@@ -18,7 +18,7 @@ namespace NHibernate.Test.CollectionTest
 	[TestFixture]
 	public class NullableValueTypeElementMapFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"CollectionTest.NullableValueTypeElementMapFixture.hbm.xml"}; }
 		}

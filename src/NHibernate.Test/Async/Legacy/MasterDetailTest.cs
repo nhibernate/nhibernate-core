@@ -18,6 +18,7 @@ using NHibernate.DomainModel;
 using NHibernate.Engine;
 using NHibernate.Criterion;
 using NHibernate.Mapping;
+using NHibernate.Util;
 using NUnit.Framework;
 using Single=NHibernate.DomainModel.Single;
 
@@ -30,7 +31,7 @@ namespace NHibernate.Test.Legacy
 	[TestFixture]
 	public class MasterDetailTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
@@ -52,6 +53,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task ParentChildrenAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession session = OpenSession();
 
 			M parent = new M();
@@ -640,8 +644,6 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task SerializationAsync()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			ISession s = OpenSession();
 			Master m = new Master();
 			Detail d1 = new Detail();
@@ -662,7 +664,12 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Disconnect();
 			MemoryStream stream = new MemoryStream();
-			BinaryFormatter f = new BinaryFormatter();
+			var f = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			f.Serialize(stream, s);
 			s.Close();
 			stream.Position = 0;
@@ -842,6 +849,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task CollectionReplaceOnUpdateAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Category c = new Category();
@@ -887,6 +897,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task CollectionReplace2Async()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Category c = new Category();
@@ -926,6 +939,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task CollectionReplaceAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Category c = new Category();
@@ -971,6 +987,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task CategoriesAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			Category c = new Category();
 			c.Name = Category.RootCategory;
 			Category c1 = new Category();
@@ -1012,6 +1031,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task CollectionRefreshAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			Category c = new Category();
 			IList<Category> list = new List<Category>();
@@ -1055,6 +1077,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task CachedCollectionRefreshAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			Category c = new Category();
 			IList<Category> list = new List<Category>();
@@ -1240,6 +1265,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task PolymorphicCriteriaAsync()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			ISession s = OpenSession();
 			ITransaction txn = s.BeginTransaction();
 			Category f = new Category();

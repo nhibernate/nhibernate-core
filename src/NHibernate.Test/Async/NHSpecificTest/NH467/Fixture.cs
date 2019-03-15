@@ -17,11 +17,6 @@ namespace NHibernate.Test.NHSpecificTest.NH467
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH467"; }
-		}
-
 		[Test]
 		public async Task WhereClauseInManyToOneNavigationAsync()
 		{

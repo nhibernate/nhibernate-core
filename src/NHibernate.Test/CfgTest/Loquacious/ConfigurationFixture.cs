@@ -9,7 +9,6 @@ using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Ast.ANTLR;
-using NHibernate.Linq;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -30,14 +29,14 @@ namespace NHibernate.Test.CfgTest.Loquacious
 					.Through<HashtableCacheProvider>()
 					.PrefixingRegionsWith("xyz")
 					.Queries
-						.Through<StandardQueryCache>()
+						.Through<StandardQueryCacheFactory>()
 					.UsingMinimalPuts()
 					.WithDefaultExpiration(15)
 				.GeneratingCollections
 					.Through<DefaultCollectionTypeFactory>()
 				.Proxy
 					.DisableValidation()
-					.Through<DefaultProxyFactoryFactory>()
+					.Through<StaticProxyFactoryFactory>()
 				.ParsingHqlThrough<ASTQueryTranslatorFactory>()
 				.Mapping
 					.UsingDefaultCatalog("MyCatalog")
@@ -70,12 +69,12 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(cfg.Properties[Environment.SessionFactoryName], Is.EqualTo("SomeName"));
 			Assert.That(cfg.Properties[Environment.CacheProvider], Is.EqualTo(typeof(HashtableCacheProvider).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.CacheRegionPrefix], Is.EqualTo("xyz"));
-			Assert.That(cfg.Properties[Environment.QueryCacheFactory], Is.EqualTo(typeof(StandardQueryCache).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.QueryCacheFactory], Is.EqualTo(typeof(StandardQueryCacheFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.UseMinimalPuts], Is.EqualTo("true"));
 			Assert.That(cfg.Properties[Environment.CacheDefaultExpiration], Is.EqualTo("15"));
 			Assert.That(cfg.Properties[Environment.CollectionTypeFactoryClass], Is.EqualTo(typeof(DefaultCollectionTypeFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.UseProxyValidator], Is.EqualTo("false"));
-			Assert.That(cfg.Properties[Environment.ProxyFactoryFactoryClass], Is.EqualTo(typeof(DefaultProxyFactoryFactory).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.ProxyFactoryFactoryClass], Is.EqualTo(typeof(StaticProxyFactoryFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.QueryTranslator], Is.EqualTo(typeof(ASTQueryTranslatorFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.DefaultCatalog], Is.EqualTo("MyCatalog"));
 			Assert.That(cfg.Properties[Environment.DefaultSchema], Is.EqualTo("MySche"));
@@ -98,6 +97,12 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(cfg.Properties[Environment.MaxFetchDepth], Is.EqualTo("11"));
 			Assert.That(cfg.Properties[Environment.QuerySubstitutions], Is.EqualTo("true 1, false 0, yes 'Y', no 'N'"));
 			Assert.That(cfg.Properties[Environment.Hbm2ddlAuto], Is.EqualTo("validate"));
+
+			// Keywords import and auto-validation require a valid connection string, disable them before checking
+			// the session factory can be built.
+			cfg.SetProperty(Environment.Hbm2ddlKeyWords, "none");
+			cfg.SetProperty(Environment.Hbm2ddlAuto, null);
+			Assert.That(() => cfg.BuildSessionFactory().Dispose(), Throws.Nothing);
 		}
 
 		[Test]
@@ -108,13 +113,13 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			// The place where put default properties values is the Dialect itself.
 			var cfg = new Configuration();
 			cfg.SessionFactory()
-				.Proxy.Through<DefaultProxyFactoryFactory>()
+				.Proxy.Through<StaticProxyFactoryFactory>()
 				.Integrate
 					.Using<MsSql2005Dialect>()
 					.Connected
 						.Using(new SqlConnectionStringBuilder { DataSource = "(local)", InitialCatalog = "nhibernate", IntegratedSecurity = true });
 
-			Assert.That(cfg.Properties[Environment.ProxyFactoryFactoryClass], Is.EqualTo(typeof(DefaultProxyFactoryFactory).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.ProxyFactoryFactoryClass], Is.EqualTo(typeof(StaticProxyFactoryFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.Dialect], Is.EqualTo(typeof(MsSql2005Dialect).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.ConnectionString], Is.EqualTo("Data Source=(local);Initial Catalog=nhibernate;Integrated Security=True"));
 		}

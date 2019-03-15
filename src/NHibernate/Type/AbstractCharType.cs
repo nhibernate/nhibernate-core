@@ -55,6 +55,9 @@ namespace NHibernate.Type
 			return '\'' + value.ToString() + '\'';
 		}
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior.
+		/// <inheritdoc />
 		public virtual object StringToObject(string xml)
 		{
 			if (xml.Length != 1)
@@ -63,6 +66,8 @@ namespace NHibernate.Type
 			return xml[0];
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
 			return xml[0];

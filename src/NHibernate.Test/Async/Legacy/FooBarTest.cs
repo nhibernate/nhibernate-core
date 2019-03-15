@@ -42,7 +42,7 @@ namespace NHibernate.Test.Legacy
 			return Encoding.Unicode.GetBytes(str);
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
@@ -2058,8 +2058,8 @@ namespace NHibernate.Test.Legacy
 				.Add(Expression.EqProperty("Integer", "Integer"))
 				.Add(Expression.Like("String", f.String))
 				.Add(Expression.In("Boolean", new bool[] {f.Boolean, f.Boolean}))
-				.SetFetchMode("TheFoo", FetchMode.Eager)
-				.SetFetchMode("Baz", FetchMode.Lazy)
+				.Fetch("TheFoo")
+				.Fetch(SelectMode.Skip, "Baz")
 				.ListAsync());
 
 			Assert.IsTrue(list.Count == 1 && list[0] == f);
@@ -2119,11 +2119,11 @@ namespace NHibernate.Test.Legacy
 				.Add(Expression.Like("String", f.String))
 				.Add(Expression.In("Boolean", new bool[] {f.Boolean, f.Boolean}))
 				.Add(Expression.IsNotNull("TheFoo"))
-				.SetFetchMode("TheFoo", FetchMode.Eager)
-				.SetFetchMode("Baz", FetchMode.Lazy)
-				.SetFetchMode("Component.Glarch", FetchMode.Lazy)
-				.SetFetchMode("TheFoo.Baz", FetchMode.Lazy)
-				.SetFetchMode("TheFoo.Component.Glarch", FetchMode.Lazy)
+				.Fetch("TheFoo")
+				.Fetch(SelectMode.Skip, "Baz")
+				.Fetch(SelectMode.Skip, "Component.Glarch")
+				.Fetch(SelectMode.Skip, "TheFoo.Baz")
+				.Fetch(SelectMode.Skip, "TheFoo.Component.Glarch")
 				.ListAsync());
 
 			f = (Foo) list[0];
@@ -2490,7 +2490,7 @@ namespace NHibernate.Test.Legacy
 				// probably the conversion ProxyArray.id (to_number ensuring a not null value)
 				// Indeed, ProxyArray.id is Glarch.tha_key which is a string filled with a Guid. It does
 				// not fail with most engine likely because there are no results thanks to other conditions.
-				if (!(Dialect is Oracle8iDialect) && !(Dialect is MsSqlCeDialect))
+				if (!(Dialect is Oracle8iDialect) && !(Dialect is MsSqlCeDialect) && !(Dialect is HanaDialectBase))
 				{
 					await (s.CreateQuery(
 						"select count(*) from Bar as bar join bar.Component.Glarch.ProxyArray as g where cast(g.id as Int32) in indices(bar.Baz.FooArray)").
@@ -2644,8 +2644,6 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task PersistCollectionsAsync()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			ISession s = OpenSession();
 			ITransaction txn = s.BeginTransaction();
 			IEnumerator enumer = (await (s.CreateQuery("select count(*) from b in class Bar").EnumerableAsync())).GetEnumerator();
@@ -2843,7 +2841,20 @@ namespace NHibernate.Test.Legacy
 
 			// serialize and then deserialize the session.
 			Stream stream = new MemoryStream();
-			IFormatter formatter = new BinaryFormatter();
+#if NETFX
+			var formatter = new BinaryFormatter();
+#else
+			var selector = new SurrogateSelector();
+			selector.AddSurrogate(
+				typeof(CultureInfo),
+				new StreamingContext(StreamingContextStates.All),
+				new CultureInfoSerializationSurrogate());
+			selector.ChainSelector(new SerializationHelper.SurrogateSelector());
+			var formatter = new BinaryFormatter
+			{
+				SurrogateSelector = selector
+			};
+#endif
 			formatter.Serialize(stream, s);
 
 			s.Close();
@@ -4103,6 +4114,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task UpdateFromTransientAsync()
 		{
+			if (!TestDialect.SupportsBatchingDependentDML)
+				Assert.Ignore($"Dialect {Dialect} does not support batching of dependent DML (fee update on related fee)");
+
 			ISession s = OpenSession();
 			Fee fee1 = new Fee();
 			await (s.SaveAsync(fee1));
@@ -4656,8 +4670,6 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task ProxyArrayAsync()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			ISession s = OpenSession();
 			GlarchProxy g = new Glarch();
 			Glarch g1 = new Glarch();
@@ -4694,7 +4706,12 @@ namespace NHibernate.Test.Legacy
 
 			// serialize the session.
 			Stream stream = new MemoryStream();
-			IFormatter formatter = new BinaryFormatter();
+			var formatter = new BinaryFormatter()
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			formatter.Serialize(stream, s);
 
 			// close the original session
@@ -5163,8 +5180,13 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 
 			s = OpenSession();
-			IList list = await (s.CreateQuery("from Bar bar where bar.Object.id = ? and bar.Object.class = ?")
-				.SetParameter(0, oid, NHibernateUtil.Int64).SetParameter(1, typeof(One).FullName, NHibernateUtil.ClassMetaType).ListAsync());
+			var list = await (s.CreateQuery("from Bar bar where bar.Object.id = ? and bar.Object.class = ?")
+#pragma warning disable 618
+			              .SetParameter(0, oid, NHibernateUtil.Int64).SetParameter(1, typeof(One).FullName, NHibernateUtil.ClassMetaType).ListAsync());
+#pragma warning restore 618
+			Assert.AreEqual(1, list.Count);
+			list = await (s.CreateQuery("from Bar bar where bar.Object.id = ? and bar.Object.class = ?")
+				.SetParameter(0, oid, NHibernateUtil.Int64).SetParameter(1, typeof(One).FullName, NHibernateUtil.MetaType).ListAsync());
 			Assert.AreEqual(1, list.Count);
 
 			// this is a little different from h2.0.3 because the full type is stored, not

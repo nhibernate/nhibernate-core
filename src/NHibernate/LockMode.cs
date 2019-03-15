@@ -15,7 +15,6 @@ namespace NHibernate
 	{
 		private readonly int level;
 		private readonly string name;
-		private readonly int hashcode;
 
 		/// <summary>
 		/// 
@@ -26,10 +25,6 @@ namespace NHibernate
 		{
 			this.level = level;
 			this.name = name;
-			unchecked
-			{
-				hashcode = (level * 37) ^ (name != null ? name.GetHashCode() : 0);
-			}
 		}
 
 		/// <summary></summary>
@@ -126,7 +121,10 @@ namespace NHibernate
 
 		public override int GetHashCode()
 		{
-			return hashcode;
+			unchecked
+			{
+				return (level * 37) ^ (name?.GetHashCode() ?? 0);
+			}
 		}
 	}
 }

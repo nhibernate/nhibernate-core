@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators.Mappings.hbm.xml" }; }
 		}

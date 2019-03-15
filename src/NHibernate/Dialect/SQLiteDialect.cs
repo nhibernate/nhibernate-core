@@ -88,8 +88,14 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("round", new StandardSQLFunction("round"));
 
+			// SQLite has no built-in support of bitwise xor, but can emulate it.
+			// http://sqlite.1065341.n5.nabble.com/XOR-operator-td98004.html
+			RegisterFunction("bxor", new SQLFunctionTemplate(null, "((?1 | ?2) - (?1 & ?2))"));
+
 			// NH-3787: SQLite requires the cast in SQL too for not defaulting to string.
 			RegisterFunction("transparentcast", new CastFunction());
+			
+			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "substr(hex(?1), 7, 2) || substr(hex(?1), 5, 2) || substr(hex(?1), 3, 2) || substr(hex(?1), 1, 2) || '-' || substr(hex(?1), 11, 2) || substr(hex(?1), 9, 2) || '-' || substr(hex(?1), 15, 2) || substr(hex(?1), 13, 2) || '-' || substr(hex(?1), 17, 4) || '-' || substr(hex(?1), 21) "));
 		}
 
 		#region private static readonly string[] DialectKeywords = { ... }
@@ -138,6 +144,7 @@ namespace NHibernate.Dialect
 			"memo",
 			"money",
 			"note",
+			"nothing",
 			"notnull",
 			"ntext",
 			"nvarchar",
@@ -186,7 +193,7 @@ namespace NHibernate.Dialect
 
 		public override Schema.IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
-			return new Schema.SQLiteDataBaseMetaData(connection);
+			return new Schema.SQLiteDataBaseMetaData(connection, this);
 		}
 
 		public override string AddColumnString

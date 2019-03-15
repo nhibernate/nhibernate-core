@@ -11,7 +11,7 @@ namespace NHibernate.Test.Operations
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

@@ -19,7 +19,7 @@ namespace NHibernate.Test.Component.Basic
 			get { return "NHibernate.Test"; }
 		}		
 
-		protected override System.Collections.IList Mappings
+		protected override string[] Mappings
 		{
 			get { return Array.Empty<string>(); }
 		}

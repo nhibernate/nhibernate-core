@@ -25,7 +25,7 @@ namespace NHibernate.Linq
 		/// <param name="source">The query matching the entities to delete.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The number of deleted entities.</returns>
-		public static Task<int> DeleteAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken)
+		public static Task<int> DeleteAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -51,7 +51,7 @@ namespace NHibernate.Linq
 		/// <c>x => new Dog { Name = x.Name, Age = x.Age + 5 }</c>. Unset members are ignored and left untouched.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The number of updated entities.</returns>
-		public static Task<int> UpdateAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, TSource>> expression, CancellationToken cancellationToken)
+		public static Task<int> UpdateAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, TSource>> expression, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -77,7 +77,7 @@ namespace NHibernate.Linq
 		/// <c>x => new { Name = x.Name, Age = x.Age + 5 }</c>. Unset members are ignored and left untouched.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The number of updated entities.</returns>
-		public static Task<int> UpdateAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, object>> expression, CancellationToken cancellationToken)
+		public static Task<int> UpdateAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, object>> expression, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -103,7 +103,7 @@ namespace NHibernate.Linq
 		/// <c>x => new Dog { Name = x.Name, Age = x.Age + 5 }</c>. Unset members are ignored and left untouched.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The number of updated entities.</returns>
-		public static Task<int> UpdateVersionedAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, TSource>> expression, CancellationToken cancellationToken)
+		public static Task<int> UpdateVersionedAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, TSource>> expression, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -129,7 +129,7 @@ namespace NHibernate.Linq
 		/// <c>x => new { Name = x.Name, Age = x.Age + 5 }</c>. Unset members are ignored and left untouched.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The number of updated entities.</returns>
-		public static Task<int> UpdateVersionedAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, object>> expression, CancellationToken cancellationToken)
+		public static Task<int> UpdateVersionedAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, object>> expression, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -145,7 +145,7 @@ namespace NHibernate.Linq
 			}
 		}
 
-		internal static Task<int> ExecuteUpdateAsync<TSource>(this IQueryable<TSource> source, Expression updateExpression, bool versioned, CancellationToken cancellationToken)
+		internal static Task<int> ExecuteUpdateAsync<TSource>(this IQueryable<TSource> source, Expression updateExpression, bool versioned, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -171,7 +171,7 @@ namespace NHibernate.Linq
 		/// <param name="expression">The expression projecting a source entity to the entity to insert.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The number of inserted entities.</returns>
-		public static Task<int> InsertIntoAsync<TSource, TTarget>(this IQueryable<TSource> source, Expression<Func<TSource, TTarget>> expression, CancellationToken cancellationToken)
+		public static Task<int> InsertIntoAsync<TSource, TTarget>(this IQueryable<TSource> source, Expression<Func<TSource, TTarget>> expression, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -199,7 +199,7 @@ namespace NHibernate.Linq
 		/// the entity to insert.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The number of inserted entities.</returns>
-		public static Task<int> InsertIntoAsync<TSource, TTarget>(this IQueryable<TSource> source, Expression<Func<TSource, object>> expression, CancellationToken cancellationToken)
+		public static Task<int> InsertIntoAsync<TSource, TTarget>(this IQueryable<TSource> source, Expression<Func<TSource, object>> expression, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -215,7 +215,7 @@ namespace NHibernate.Linq
 			}
 		}
 
-		internal static Task<int> ExecuteInsertAsync<TSource, TTarget>(this IQueryable<TSource> source, Expression insertExpression, CancellationToken cancellationToken)
+		internal static Task<int> ExecuteInsertAsync<TSource, TTarget>(this IQueryable<TSource> source, Expression insertExpression, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

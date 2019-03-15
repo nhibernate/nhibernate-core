@@ -72,8 +72,8 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public async Task OrderByCalculatedAggregatedSubselectPropertyAsync()
 		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore("Dialect does not support scalar sub-selects");
+			if (!TestDialect.SupportsAggregatingScalarSubSelectsInOrderBy)
+				Assert.Ignore("Dialect does not support aggregating scalar sub-selects in order by");
 
 			//NH-2781
 			var result = await (db.Orders
@@ -93,8 +93,8 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public async Task AggregateAscendingOrderByClauseAsync()
 		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore("Dialect does not support scalar sub-selects");
+			if (!TestDialect.SupportsAggregatingScalarSubSelectsInOrderBy)
+				Assert.Ignore("Dialect does not support aggregating scalar sub-selects in order by");
 
 			var query = from c in db.Customers
 						orderby c.Orders.Count
@@ -109,8 +109,8 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public async Task AggregateDescendingOrderByClauseAsync()
 		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore("Dialect does not support scalar sub-selects");
+			if (!TestDialect.SupportsAggregatingScalarSubSelectsInOrderBy)
+				Assert.Ignore("Dialect does not support aggregating scalar sub-selects in order by");
 
 			var query = from c in db.Customers
 						orderby c.Orders.Count descending
@@ -191,6 +191,9 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore("Dialect does not support scalar sub-selects");
 
+			if (!TestDialect.SupportsOrderByAndLimitInSubQueries)
+				Assert.Ignore("Dialect does not support sub-selects with order by or limit/top");
+
 			if (Dialect is Oracle8iDialect)
 				Assert.Ignore("On Oracle this generates a correlated subquery two levels deep which isn't supported until Oracle 10g.");
 
@@ -209,6 +212,9 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore("Dialect does not support scalar sub-selects");
 
+			if (!TestDialect.SupportsOrderByAndLimitInSubQueries)
+				Assert.Ignore("Dialect does not support sub-selects with order by or limit/top");
+
 			if (Dialect is Oracle8iDialect)
 				Assert.Ignore("On Oracle this generates a correlated subquery two levels deep which isn't supported until Oracle 10g.");
 
@@ -226,28 +232,28 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test(Description = "NH-3217")]
-		public Task OrderByNullCompareAndSkipAndTakeAsync()
+		public async Task OrderByNullCompareAndSkipAndTakeAsync()
 		{
-			try
-			{
-				return db.Orders.OrderBy(o => o.Shipper == null ? 0 : o.Shipper.ShipperId).Skip(3).Take(4).ToListAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (db.Orders.OrderBy(o => o.Shipper == null ? 0 : o.Shipper.ShipperId).Skip(3).Take(4).ToListAsync());
 		}
 
 		[Test(Description = "NH-3445"), KnownBug("NH-3445")]
-		public Task OrderByWithSelectDistinctAndTakeAsync()
+		public async Task OrderByWithSelectDistinctAndTakeAsync()
 		{
-			try
+			await (db.Orders.Select(o => o.ShippedTo).Distinct().OrderBy(o => o).Take(1000).ToListAsync());
+		}
+		
+		[Test]
+		public async Task BooleanOrderByDescendingClauseAsync()
+		{
+			var query = from c in db.Customers
+			            orderby c.Address.Country == "Belgium" descending, c.Address.Country
+			            select c;
+
+			var customers = await (query.ToListAsync());
+			if (customers.Count > 1)
 			{
-				return db.Orders.Select(o => o.ShippedTo).Distinct().OrderBy(o => o).Take(1000).ToListAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				Assert.That(customers[0].Address.Country, Is.EqualTo("Belgium"));
 			}
 		}
 	}

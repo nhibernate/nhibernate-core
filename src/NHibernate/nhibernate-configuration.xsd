@@ -21,6 +21,14 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
+				<xs:element ref="objects-factory" minOccurs="0" maxOccurs="1" >
+					<xs:annotation>
+						<xs:documentation>
+							Specify the AssemblyQualifiedName of your custom objects-factory (implementation of IObjectsFactory).
+							Note: the objects-factory will be effective only when specified in the app.config or web.config.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 				<xs:element ref="reflection-optimizer" maxOccurs="1" minOccurs="0" />
 				<xs:element ref="session-factory" minOccurs="0" maxOccurs="1" />
 			</xs:sequence>
@@ -92,6 +100,17 @@
 										<xs:enumeration value="cache.region_prefix" />
 										<xs:enumeration value="cache.use_minimal_puts" />
 										<xs:enumeration value="cache.default_expiration" />
+										<xs:enumeration value="cache.use_sliding_expiration">
+											<xs:annotation>
+												<xs:documentation>
+													The use_sliding_expiration value is whether you wish to use a
+													sliding expiration or not. Defaults
+													to false. Not all providers support this setting, it may be ignored.
+													Check their respective
+													documentation.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="query.substitutions" />
 										<xs:enumeration value="query.factory_class" />
 										<xs:enumeration value="query.linq_provider_class" />
@@ -166,6 +185,18 @@
 													See https://docs.oracle.com/cd/B19306_01/server.102/b14225/ch6unicode.htm#CACHCAHF
 													https://docs.oracle.com/database/121/ODPNT/featOraCommand.htm#i1007557
 													This setting applies only to Oracle dialects and ODP.Net managed or unmanaged driver.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="firebird.disable_parameter_casting">
+											<xs:annotation>
+												<xs:documentation>
+													Firebird with FirebirdSql.Data.FirebirdClient may be unable to determine the type
+													of parameters in many circumstances, unless they are explicitly casted in the SQL
+													query. To avoid this trouble, the NHibernate FirebirdClientDriver parses SQL
+													commands for detecting parameters in them and adding an explicit SQL cast around
+													parameters which may trigger the issue.
+													For disabling this behavior, set this setting to true.
 												</xs:documentation>
 											</xs:annotation>
 										</xs:enumeration>
@@ -315,12 +346,25 @@
 			</xs:sequence>
 			<xs:attribute name="type" default="lcg">
 				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="lcg" />
-						<xs:enumeration value="null" />
-					</xs:restriction>
+					<xs:union>
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="lcg" />
+								<xs:enumeration value="null" />
+							</xs:restriction>
+						</xs:simpleType>
+						<xs:simpleType>
+							<xs:restriction base="xs:string" />
+						</xs:simpleType>
+					</xs:union>
 				</xs:simpleType>
 			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="objects-factory">
+		<xs:complexType>
+			<xs:sequence />
+			<xs:attribute name="type" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="reflection-optimizer">

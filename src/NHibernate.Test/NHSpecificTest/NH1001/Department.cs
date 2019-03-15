@@ -1,25 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace NHibernate.Test.NHSpecificTest.NH1001
 {
-    public class Department
-    {
-        private int id;
-
-        public int Id
-        {
-            get { return id; }
-            set { id = value; }
-        }
-
-        private string name;
-
-        public string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
-    }
+	public class Department
+	{
+		public virtual int Id { get; set; }
+		public virtual string Name { get; set; }
+		public virtual int PropRefId { get; set; }
+	}
 }

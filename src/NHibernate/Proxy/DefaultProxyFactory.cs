@@ -5,6 +5,8 @@ using NHibernate.Proxy.DynamicProxy;
 
 namespace NHibernate.Proxy
 {
+	// Since v5.2
+	[Obsolete("Use StaticProxyFactory instead")]
 	public class DefaultProxyFactory : AbstractProxyFactory
 	{
 		private readonly ProxyFactory factory = new ProxyFactory();
@@ -29,6 +31,8 @@ namespace NHibernate.Proxy
 			}
 		}
 
+		// Since 5.3
+		[Obsolete("Use ProxyFactoryExtensions.GetFieldInterceptionProxy extension method instead.")]
 		public override object GetFieldInterceptionProxy(object instanceToWrap)
 		{
 			var interceptor = new DefaultDynamicLazyFieldInterceptor();

@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.FetchLazyProperties">
+
+  <class name="Person" batch-size="2">
+    <cache usage="read-write" />
+    <id name="Id">
+      <generator class="assigned" />
+    </id>
+    <property name="Name" />
+    <property name="Image" lazy="true" />
+    <property name="Formula" formula="(Id)" lazy="true" update="false" insert="false" />
+    <component name="Address" lazy="true">
+      <property name="Country" />
+      <property name="City" />
+      <many-to-one name="Continent" column="ContinentId" class="Continent" cascade="all" />
+    </component>
+    <many-to-one name="BestFriend" column="BestFriendId" class="Person" cascade="all" />
+    <set name="Pets" cascade="all-delete-orphan" inverse="true">
+      <key column="OwnerId" not-null="true" />
+      <one-to-many class="Animal" />
+    </set>
+    <set name="Cats" cascade="none" inverse="true">
+      <key column="OwnerId" not-null="true" />
+      <one-to-many class="Cat" />
+    </set>
+    <set name="Dogs" cascade="none" inverse="true">
+      <key column="OwnerId" not-null="true" />
+      <one-to-many class="Dog" />
+    </set>
+  </class>
+
+  <class name="Animal" abstract="true">
+    <id name="Id">
+      <generator class="assigned"/>
+    </id>
+    <property name="Name" />
+    <many-to-one name="Owner" column="OwnerId" class="Person" />
+    <property name="Image" lazy="true" />
+    <property name="Formula" formula="(Id)" lazy="true" update="false" insert="false" />
+    <component name="Address" lazy="true">
+      <property name="Country" />
+      <property name="City" />
+      <many-to-one name="Continent" column="ContinentId" class="Continent" cascade="all" />
+    </component>
+    <union-subclass name="Cat">
+      <property name="SecondImage" lazy="true" />
+      <property name="SecondFormula" formula="(Name)" lazy="true" />
+    </union-subclass>
+    <union-subclass name="Dog">
+    </union-subclass>
+  </class>
+
+  <class name="Continent" >
+    <id name="Id">
+      <generator class="assigned" />
+    </id>
+    <property name="Name" />
+  </class>
+
+</hibernate-mapping>

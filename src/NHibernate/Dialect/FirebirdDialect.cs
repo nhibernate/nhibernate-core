@@ -419,13 +419,14 @@ namespace NHibernate.Dialect
 			RegisterFunction("upper", new StandardSafeSQLFunction("upper", NHibernateUtil.String, 1));
 			RegisterFunction("mod", new StandardSafeSQLFunction("mod", NHibernateUtil.Double, 2));
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as VARCHAR(255))"));
+			RegisterFunction("strguid", new StandardSQLFunction("uuid_to_char", NHibernateUtil.String));
 			RegisterFunction("sysdate", new CastedFunction("today", NHibernateUtil.Date));
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
 			// Bitwise operations
-			RegisterFunction("band", new BitwiseFunctionOperation("bin_and"));
-			RegisterFunction("bor", new BitwiseFunctionOperation("bin_or"));
-			RegisterFunction("bxor", new BitwiseFunctionOperation("bin_xor"));
-			RegisterFunction("bnot", new BitwiseFunctionOperation("bin_not"));
+			RegisterFunction("band", new Function.BitwiseFunctionOperation("bin_and"));
+			RegisterFunction("bor", new Function.BitwiseFunctionOperation("bin_or"));
+			RegisterFunction("bxor", new Function.BitwiseFunctionOperation("bin_xor"));
+			RegisterFunction("bnot", new Function.BitwiseFunctionOperation("bin_not"));
 		}
 
 		private void RegisterFirebirdServerEmbeddedFunctions()

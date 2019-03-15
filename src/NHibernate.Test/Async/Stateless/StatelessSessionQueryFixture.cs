@@ -24,7 +24,7 @@ namespace NHibernate.Test.Stateless
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"Stateless.Contact.hbm.xml"}; }
 		}
@@ -33,6 +33,11 @@ namespace NHibernate.Test.Stateless
 		{
 			base.Configure(configuration);
 			cfg.SetProperty(Environment.MaxFetchDepth, 1.ToString());
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		private class TestData
@@ -107,7 +112,7 @@ namespace NHibernate.Test.Stateless
 
 			using (IStatelessSession s = Sfi.OpenStatelessSession())
 			{
-				Assert.AreEqual(1, (await (s.CreateCriteria<Contact>().SetFetchMode("Org", FetchMode.Select).ListAsync())).Count);
+				Assert.AreEqual(1, (await (s.CreateCriteria<Contact>().Fetch(SelectMode.Skip, "Org").ListAsync())).Count);
 			}
 
 			await (testData.cleanDataAsync());

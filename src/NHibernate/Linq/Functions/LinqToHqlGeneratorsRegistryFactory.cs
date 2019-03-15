@@ -18,7 +18,7 @@ namespace NHibernate.Linq.Functions
 				try
 				{
 					log.Info("Initializing LinqToHqlGeneratorsRegistry: {0}", registry);
-					return (ILinqToHqlGeneratorsRegistry) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(registry));
+					return (ILinqToHqlGeneratorsRegistry) Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(registry));
 				}
 				catch (Exception e)
 				{

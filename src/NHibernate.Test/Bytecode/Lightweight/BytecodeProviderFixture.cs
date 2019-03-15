@@ -131,8 +131,7 @@ namespace NHibernate.Test.Bytecode.Lightweight
 			// "mapping-sources" is better to limitate the moment of injectability.
 			var cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			cfg.SetProperty(Environment.CollectionTypeFactoryClass, typeof(CustomCollectionTypeFactory).AssemblyQualifiedName);
-			Dialect.Dialect dialect = Dialect.Dialect.GetDialect(cfg.Properties);
-			cfg.CreateMappings(dialect);
+			cfg.CreateMappings();
 			Assert.That(Environment.BytecodeProvider.CollectionTypeFactory, Is.TypeOf<CustomCollectionTypeFactory>());
 		}
 

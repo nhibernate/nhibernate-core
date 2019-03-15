@@ -37,6 +37,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1388
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
+
 		[Test]
 		public void BagTest()
 		{

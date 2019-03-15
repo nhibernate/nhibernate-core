@@ -38,7 +38,7 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			st.Parameters[index].Value = value;
+			st.Parameters[index].Value = Convert.ToDouble(value);
 		}
 
 		/// <summary></summary>
@@ -47,6 +47,8 @@ namespace NHibernate.Type
 			get { return "Double"; }
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
 			return double.Parse(xml);

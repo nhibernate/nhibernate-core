@@ -17,6 +17,7 @@ namespace NHibernate.AdoNet
 	/// - FirebirdSql.Data.FirebirdClient
 	/// - Oracle.ManagedDataAccess
 	/// - System.Data.SqlServerCe
+	/// - Sap.Data.Hana
 	/// </summary>
 	public partial class GenericBatchingBatcher : AbstractBatcher
 	{
@@ -66,7 +67,7 @@ namespace NHibernate.AdoNet
 		{
 			if (_currentBatch.CountOfCommands == 0)
 			{
-				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, 0);
+				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, 0, ps);
 				return;
 			}
 			try
@@ -88,7 +89,7 @@ namespace NHibernate.AdoNet
 					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
 				}
 
-				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected);
+				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected, ps);
 			}
 			finally
 			{

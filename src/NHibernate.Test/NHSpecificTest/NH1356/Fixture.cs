@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 
@@ -46,24 +45,18 @@ namespace NHibernate.Test.NHSpecificTest.NH1356
 	[TestFixture]
 	public class FixtureWithList : Fixture
 	{
-		protected override IList Mappings
-		{
-			get { return new[] {"NHSpecificTest." + BugNumber + ".MappingsList.hbm.xml"}; }
-		}
+		protected override string[] Mappings => new[] {"MappingsList.hbm.xml"};
 
 		protected override ICollection<Address> NewCollection()
 		{
-				return new List<Address>();
+			return new List<Address>();
 		}
 	}
 
 	[TestFixture]
 	public class FixtureWithBag : Fixture
 	{
-		protected override IList Mappings
-		{
-			get { return new[] {"NHSpecificTest." + BugNumber + ".MappingsBag.hbm.xml"}; }
-		}
+		protected override string[] Mappings => new[] {"MappingsBag.hbm.xml"};
 
 		protected override ICollection<Address> NewCollection()
 		{
@@ -74,10 +67,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1356
 	[TestFixture]
 	public class FixtureWithSet : Fixture
 	{
-		protected override IList Mappings
-		{
-			get { return new[] {"NHSpecificTest." + BugNumber + ".MappingsSet.hbm.xml"}; }
-		}
+		protected override string[] Mappings => new[] {"MappingsSet.hbm.xml"};
 
 		protected override ICollection<Address> NewCollection()
 		{

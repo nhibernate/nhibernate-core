@@ -21,7 +21,7 @@ namespace NHibernate.Test.ReadOnly
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "ReadOnly.Enrolment.hbm.xml" }; }
 		}
@@ -137,6 +137,55 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(s.DefaultReadOnly, Is.False);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
 				Assert.That(criteria.IsReadOnly, Is.True);
+				
+				Student gavin = criteria.UniqueResult<Student>();
+				Assert.That(s.DefaultReadOnly, Is.False);
+				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
+				Assert.That(criteria.IsReadOnly, Is.True);
+				Assert.That(s.IsReadOnly(gavin), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(gavin.PreferredCourse), Is.False);
+				CheckProxyReadOnly(s, gavin.PreferredCourse, true);
+				Assert.That(NHibernateUtil.IsInitialized(gavin.PreferredCourse), Is.False);
+
+				NHibernateUtil.Initialize(gavin.PreferredCourse);
+				Assert.That(NHibernateUtil.IsInitialized(gavin.PreferredCourse), Is.True);
+				CheckProxyReadOnly(s, gavin.PreferredCourse, true);
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Enrolments), Is.False);
+
+				NHibernateUtil.Initialize(gavin.Enrolments);
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Enrolments), Is.True);
+				Assert.That(gavin.Enrolments.Count, Is.EqualTo(1));
+				IEnumerator<Enrolment> enrolments = gavin.Enrolments.GetEnumerator();
+				enrolments.MoveNext();
+				Enrolment enrolment = enrolments.Current;
+				Assert.That(s.IsReadOnly(enrolment), Is.False);
+				Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.False);
+				CheckProxyReadOnly(s, enrolment.Course, false);
+
+				NHibernateUtil.Initialize(enrolment.Course);
+				CheckProxyReadOnly(s, enrolment.Course, false);
+
+				s.Delete(gavin.PreferredCourse);
+				s.Delete(gavin);
+				s.Delete(enrolment.Course);
+				s.Delete(enrolment);
+
+				t.Commit();
+			}
+		}
+		
+		[Test]
+		public void ModifiableSessionReadOnlyClonedCriteria()
+		{
+			DefaultTestSetup();
+
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				ICriteria criteria = (ICriteria) s.CreateCriteria<Student>().SetReadOnly(true).Clone();
+				Assert.That(s.DefaultReadOnly, Is.False);
+				Assert.That(criteria.IsReadOnlyInitialized, Is.True, "Cloned criteria must have IsReadOnlyInitialized == true");
+				Assert.That(criteria.IsReadOnly, Is.True, "Cloned criteria must be readonly");
 				
 				Student gavin = criteria.UniqueResult<Student>();
 				Assert.That(s.DefaultReadOnly, Is.False);
@@ -1056,8 +1105,6 @@ namespace NHibernate.Test.ReadOnly
 		[Test]
 		public void DetachedCriteria()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			DetachedCriteria dc = NHibernate.Criterion.DetachedCriteria.For<Student>()
 				.Add(Property.ForName("Name").Eq("Gavin King"))
 				.AddOrder(Order.Asc("StudentNumber"));

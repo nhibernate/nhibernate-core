@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Cfg;
@@ -6,6 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.DynamicEntity.Tuplizer
 {
 	[TestFixture]
+	[Obsolete("Require dynamic proxies")]
 	public class TuplizerDynamicEntity : TestCase
 	{
 		protected override string MappingsAssembly
@@ -13,7 +15,7 @@ namespace NHibernate.Test.DynamicEntity.Tuplizer
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"DynamicEntity.Tuplizer.Customer.hbm.xml"}; }
 		}

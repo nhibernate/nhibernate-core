@@ -34,7 +34,7 @@ namespace NHibernate.Type
 
 			try
 			{
-				userType = (IUserType) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(userTypeClass);
+				userType = (IUserType) Cfg.Environment.ObjectsFactory.CreateInstance(userTypeClass);
 			}
 			catch (ArgumentNullException ane)
 			{
@@ -107,22 +107,20 @@ namespace NHibernate.Type
 			userType.NullSafeSet(cmd, value, index, session);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="factory"></param>
-		/// <returns></returns>
+		/// <inheritdoc />
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{
 			if (value == null)
 			{
 				return "null";
 			}
-			IEnhancedUserType eut = userType as IEnhancedUserType;
-			if (eut != null)
+
+			if (userType is IEnhancedUserType enhancedUserType)
 			{
-				return eut.ToXMLString(value);
+				// 6.0 TODO: remove warning disable/restore
+#pragma warning disable 618
+				return enhancedUserType.ToXMLString(value);
+#pragma warning restore 618
 			}
 			return value.ToString();
 		}
@@ -169,34 +167,72 @@ namespace NHibernate.Type
 			return checkable[0] && IsDirty(old, current, session);
 		}
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior.
+		/// <inheritdoc />
 		public object StringToObject(string xml)
 		{
-			return ((IEnhancedUserType) userType).FromXMLString(xml);
+			if (!(userType is IEnhancedUserType enhancedUserType))
+				throw new InvalidOperationException(
+					$"User type {userType} does not implement {nameof(IEnhancedUserType)}, Either implement it, or " +
+					$"avoid using this user type as an identifier or a discriminator.");
+			// 6.0 TODO: remove warning disable/restore
+#pragma warning disable 618
+			return enhancedUserType.FromXMLString(xml);
+#pragma warning restore 618
 		}
-		
+
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior.
+		/// <inheritdoc cref="IVersionType.FromStringValue"/>
 		public object FromStringValue(string xml)
 		{
-			return ((IEnhancedUserType)userType).FromXMLString(xml);
+			if (!(userType is IEnhancedUserType enhancedUserType))
+				throw new InvalidOperationException(
+					$"User type {userType} does not implement {nameof(IEnhancedUserType)}, Either implement it, or " +
+					$"avoid using this user type as an identifier or a discriminator.");
+			// 6.0 TODO: remove warning disable/restore
+#pragma warning disable 618
+			return enhancedUserType.FromXMLString(xml);
+#pragma warning restore 618
 		}
 
 		public virtual string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return ((IEnhancedUserType)userType).ObjectToSQLString(value);
+			if (!(userType is IEnhancedUserType enhancedUserType))
+				throw new InvalidOperationException(
+					$"User type {userType} does not implement {nameof(IEnhancedUserType)}, its SQL literal value " +
+					$"cannot be resolved. Either implement it, or avoid using this user type as an identifier, a " +
+					$"discriminator, or with queries requiring its literal value.");
+			return enhancedUserType.ObjectToSQLString(value);
 		}
 
 		public object Next(object current, ISessionImplementor session)
 		{
-			return ((IUserVersionType) userType).Next(current, session);
+			if (!(userType is IUserVersionType userVersionType))
+				throw new InvalidOperationException(
+					$"User type {userType} does not implement {nameof(IUserVersionType)}, Either implement it, or " +
+					$"avoid using this user type as a version type.");
+			return userVersionType.Next(current, session);
 		}
 
 		public object Seed(ISessionImplementor session)
 		{
-			return ((IUserVersionType) userType).Seed(session);
+			if (!(userType is IUserVersionType userVersionType))
+				throw new InvalidOperationException(
+					$"User type {userType} does not implement {nameof(IUserVersionType)}, Either implement it, or " +
+					$"avoid using this user type as a version type.");
+			return userVersionType.Seed(session);
 		}
 
 		public IComparer Comparator
 		{
-			get { return (IComparer) userType; }
+			get
+			{
+				return userType as IComparer ?? throw new InvalidOperationException(
+					$"User type {userType} does not implement {nameof(IUserVersionType)}, Either implement it, or " +
+					$"avoid using this user type as a version type.");
+			}
 		}
 
 		public override object Replace(object original, object current, ISessionImplementor session, object owner,

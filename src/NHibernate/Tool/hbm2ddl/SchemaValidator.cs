@@ -60,7 +60,7 @@ namespace NHibernate.Tool.hbm2ddl
 						{
 							cfg.SetNamingStrategy(
 								(INamingStrategy)
-								Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(args[i].Substring(9))));
+								Cfg.Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(args[i].Substring(9))));
 						}
 					}
 					else

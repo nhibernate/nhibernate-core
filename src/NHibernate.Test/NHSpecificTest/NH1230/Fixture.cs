@@ -7,11 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1230
 	[TestFixture,Ignore("TODO(Dario)This test demostrate the need of eliminate the 'bool' on pre-insert eventlisteners.")]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1230"; }
-		}
-
 		protected override void Configure(Configuration cfg)
 		{
 			cfg.SetListener(ListenerType.PreInsert, new PreSaveDoVeto());

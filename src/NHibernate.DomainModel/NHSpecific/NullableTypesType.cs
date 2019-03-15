@@ -35,11 +35,6 @@ namespace NHibernate.DomainModel.NHSpecific
 			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
-		public override string ToString(object value)
-		{
-			return value.ToString();
-		}
-
 		public override string Name
 		{
 			get { return ReturnedClass.Name; }

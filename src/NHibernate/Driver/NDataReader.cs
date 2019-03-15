@@ -488,6 +488,7 @@ namespace NHibernate.Driver
 			private int colCount = 0;
 
 			private DataTable schemaTable;
+			private NotSupportedException schemaTableNotSupportedException;
 
 			// key = field name
 			// index = field index
@@ -508,9 +509,11 @@ namespace NHibernate.Driver
 			/// </param>
 			internal static NResult Create(DbDataReader reader, bool isMidstream)
 			{
+				var schemaTable = SafeGetSchemaTable(reader, out var exception);
 				var result = new NResult
 				{
-					schemaTable = reader.GetSchemaTable()
+					schemaTable = schemaTable,
+					schemaTableNotSupportedException = exception
 				};
 
 				List<object[]> recordsList = new List<object[]>();
@@ -547,6 +550,22 @@ namespace NHibernate.Driver
 
 				result.records = recordsList.ToArray();
 				return result;
+			}
+
+
+			private static DataTable SafeGetSchemaTable(IDataReader reader, out NotSupportedException exception)
+			{
+				exception = null;
+				try
+				{
+					return reader.GetSchemaTable();
+				}
+				catch (NotSupportedException e)
+				{
+					ReflectHelper.PreserveStackTrace(e);
+					exception = e;
+					return null;
+				}
 			}
 
 			/// <summary>
@@ -591,6 +610,8 @@ namespace NHibernate.Driver
 			/// <summary></summary>
 			public DataTable GetSchemaTable()
 			{
+				if (schemaTableNotSupportedException != null)
+					throw schemaTableNotSupportedException;
 				return schemaTable;
 			}
 
@@ -612,7 +633,7 @@ namespace NHibernate.Driver
 
 				foreach (KeyValuePair<string, int> pair in fieldNameToIndex)
 				{
-					if (StringHelper.EqualsCaseInsensitive(pair.Key, colName))
+					if (string.Equals(pair.Key, colName, StringComparison.InvariantCultureIgnoreCase))
 					{
 						return pair.Value;
 					}

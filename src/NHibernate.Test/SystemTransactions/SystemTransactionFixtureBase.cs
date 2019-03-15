@@ -39,8 +39,12 @@ namespace NHibernate.Test.SystemTransactions
 			}
 			// Purge any previous enlist
 			connectionString = Regex.Replace(
-				connectionString, $"[^;\"a-zA-Z]*{autoEnlistmentKeywordPattern}=[^;\"]*", string.Empty,
-				RegexOptions.IgnoreCase | RegexOptions.Multiline);
+				connectionString, $"[^;\"a-zA-Z]*{autoEnlistmentKeywordPattern}=[^;\"]*;?", string.Empty,
+				RegexOptions.IgnoreCase);
+			// Avoid redundant semi-colon
+			connectionString = Regex.Replace(
+				connectionString, $";[/s]*$", string.Empty,
+				RegexOptions.IgnoreCase);
 			connectionString += $";{autoEnlistmentKeyword}=false;";
 			configuration.SetProperty(Cfg.Environment.ConnectionString, connectionString);
 		}
@@ -48,7 +52,11 @@ namespace NHibernate.Test.SystemTransactions
 		protected void IgnoreIfUnsupported(bool explicitFlush)
 		{
 			Assume.That(
-				new[] { explicitFlush, UseConnectionOnSystemTransactionPrepare },
+				new[]
+				{
+					explicitFlush,
+					UseConnectionOnSystemTransactionPrepare && TestDialect.SupportsUsingConnectionOnSystemTransactionPrepare
+				},
 				Has.Some.EqualTo(true),
 				"Implicit flush cannot work without using connection from system transaction prepare phase");
 		}

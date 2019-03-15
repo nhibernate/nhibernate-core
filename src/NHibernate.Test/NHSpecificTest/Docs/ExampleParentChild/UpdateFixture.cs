@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using NUnit.Framework;
 
@@ -12,9 +11,14 @@ namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"NHSpecificTest.Docs.ExampleParentChild.Mappings.hbm.xml"}; }
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		[Test]

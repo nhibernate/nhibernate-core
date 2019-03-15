@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -30,7 +29,6 @@ using NHibernate.Mapping;
 using NHibernate.Metadata;
 using NHibernate.Properties;
 using NHibernate.SqlCommand;
-using NHibernate.Tuple;
 using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -38,12 +36,16 @@ using Array=System.Array;
 using Property=NHibernate.Mapping.Property;
 using NHibernate.SqlTypes;
 using System.Linq;
+using System.Linq.Expressions;
+using NHibernate.Bytecode;
 
 namespace NHibernate.Persister.Entity
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata, IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable
+	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
+		IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable,
+		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister
 	{
 
 		private partial class GeneratedIdentifierBinder : IBinder
@@ -56,6 +58,67 @@ namespace NHibernate.Persister.Entity
 					return Task.FromCanceled<object>(cancellationToken);
 				}
 				return entityPersister.DehydrateAsync(null, fields, notNull, entityPersister.propertyColumnInsertable, 0, ps, session, cancellationToken);
+			}
+		}
+
+		public Task InitializeLazyPropertiesAsync(
+			DbDataReader rs, object id, object entity, ILoadable rootPersister, string[][] suffixedPropertyColumns,
+			string[] uninitializedLazyProperties, bool allLazyProperties, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (!HasLazyProperties)
+			{
+				throw new AssertionFailure("No lazy properties");
+			}
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return InternalInitializeLazyPropertiesAsync();
+			async Task InternalInitializeLazyPropertiesAsync()
+			{
+
+				var entry = session.PersistenceContext.GetEntry(entity);
+				if (entry == null)
+				{
+					throw new HibernateException($"Entity is not associated with the session: {id}");
+				}
+
+				int[] indexes;
+				int[] lazyIndexes;
+				if (allLazyProperties)
+				{
+					lazyIndexes = indexes = lazyPropertyNumbers;
+				}
+				else
+				{
+					var metadata = InstrumentationMetadata.LazyPropertiesMetadata;
+					indexes = new int[uninitializedLazyProperties.Length];
+					lazyIndexes = new int[uninitializedLazyProperties.Length];
+					for (var i = 0; i < uninitializedLazyProperties.Length; i++)
+					{
+						var descriptor = metadata.GetLazyPropertyDescriptor(uninitializedLazyProperties[i]);
+						indexes[i] = descriptor.PropertyIndex;
+						lazyIndexes[i] = descriptor.LazyIndex;
+					}
+				}
+
+				var values = await (HydrateAsync(rs, id, entity, suffixedPropertyColumns, null, true, indexes, session, cancellationToken)).ConfigureAwait(false);
+				for (var i = 0; i < lazyIndexes.Length; i++)
+				{
+					var value = values[i];
+					if (entry.Status == Status.Loading)
+					{
+						// Here loaded state contains hydrated values and is always not null even in ReadOnly mode.
+						// We don't need to set the property value here as it will be set in TwoPhaseLoad.InitializeEntity
+						entry.LoadedState[indexes[i]] = value;
+					}
+					else
+					{
+						var lazyIndex = lazyIndexes[i];
+						var propValue = await (lazyPropertyTypes[lazyIndex].AssembleAsync(value, session, entity, cancellationToken)).ConfigureAwait(false);
+						InitializeLazyProperty(entity, entry.LoadedState, lazyIndex, propValue, null);
+					}
+				}
 			}
 		}
 
@@ -257,6 +320,27 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
+		public async Task CacheByUniqueKeysAsync(object entity, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			for (var i = 0; i < PropertySpan; i++)
+			{
+				if (!propertyUniqueness[i])
+					continue;
+
+				// The caching is done by semi-resolved values.
+				var propertyValue = session.PersistenceContext.GetEntry(entity).LoadedState[i];
+				if (propertyValue == null)
+					continue;
+				var type = PropertyTypes[i].GetSemiResolvedType(session.Factory);
+
+				if (!type.ReturnedClass.IsInstanceOfType(propertyValue))
+					propertyValue = await (type.SemiResolveAsync(propertyValue, session, entity, cancellationToken)).ConfigureAwait(false);
+				var euk = new EntityUniqueKey(EntityName, PropertyNames[i], propertyValue, type, session.Factory);
+				session.PersistenceContext.AddEntity(euk, entity);
+			}
+		}
+
 		protected Task<int> DehydrateAsync(object id, object[] fields, bool[] includeProperty, bool[][] includeColumns, int j, DbCommand st, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -288,6 +372,7 @@ namespace NHibernate.Persister.Entity
 						await (PropertyTypes[i].NullSafeSetAsync(statement, fields[i], index, includeColumns[i], session, cancellationToken)).ConfigureAwait(false);
 						index += ArrayHelper.CountTrue(includeColumns[i]); //TODO:  this is kinda slow...
 					}
+					catch (OperationCanceledException) { throw; }
 					catch (Exception ex)
 					{
 						throw new PropertyValueException("Error dehydrating property value for", EntityName, entityMetamodel.PropertyNames[i], ex);
@@ -316,8 +401,38 @@ namespace NHibernate.Persister.Entity
 		/// Unmarshall the fields of a persistent instance from a result set,
 		/// without resolving associations or collections
 		/// </summary>
-		public async Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj, ILoadable rootLoadable,
-			string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session, CancellationToken cancellationToken)
+		public Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj,
+			string[][] suffixedPropertyColumns, ISet<string> fetchedLazyProperties, bool allProperties, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object[]>(cancellationToken);
+			}
+			return HydrateAsync(rs, id, obj, suffixedPropertyColumns, fetchedLazyProperties, allProperties, null, session, cancellationToken);
+		}
+
+		/// <summary>
+		/// Unmarshall the fields of a persistent instance from a result set,
+		/// without resolving associations or collections
+		/// </summary>
+		// Since v5.3
+		[Obsolete("Use the overload with fetchedLazyProperties parameter instead")]
+		public Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj, ILoadable rootLoadable,
+		                        string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object[]>(cancellationToken);
+			}
+			return HydrateAsync(rs, id, obj, suffixedPropertyColumns, null, allProperties, null, session, cancellationToken);
+		}
+
+		/// <summary>
+		/// Unmarshall the fields of a persistent instance from a result set,
+		/// without resolving associations or collections
+		/// </summary>
+		private async Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj, string[][] suffixedPropertyColumns,
+								ISet<string> fetchedLazyProperties, bool allProperties, int[] indexes, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled())
@@ -325,95 +440,86 @@ namespace NHibernate.Persister.Entity
 				log.Debug("Hydrating entity: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
 
-			AbstractEntityPersister rootPersister = (AbstractEntityPersister)rootLoadable;
-
-			bool hasDeferred = rootPersister.HasSequentialSelect;
+			var sequentialSql = GetSequentialSelect();
 			DbCommand sequentialSelect = null;
 			DbDataReader sequentialResultSet = null;
 			bool sequentialSelectEmpty = false;
 			using (session.BeginProcess())
 			try
 			{
-				if (hasDeferred)
+				if (sequentialSql != null)
 				{
-					SqlString sql = rootPersister.GetSequentialSelect(EntityName);
-					if (sql != null)
+					//TODO: I am not so sure about the exception handling in this bit!
+					sequentialSelect = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sequentialSql, IdentifierType.SqlTypes(factory), cancellationToken)).ConfigureAwait(false);
+					await (IdentifierType.NullSafeSetAsync(sequentialSelect, id, 0, session, cancellationToken)).ConfigureAwait(false);
+					sequentialResultSet = await (session.Batcher.ExecuteReaderAsync(sequentialSelect, cancellationToken)).ConfigureAwait(false);
+					if (!await (sequentialResultSet.ReadAsync(cancellationToken)).ConfigureAwait(false))
 					{
-						//TODO: I am not so sure about the exception handling in this bit!
-						sequentialSelect = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, IdentifierType.SqlTypes(factory), cancellationToken)).ConfigureAwait(false);
-						await (rootPersister.IdentifierType.NullSafeSetAsync(sequentialSelect, id, 0, session, cancellationToken)).ConfigureAwait(false);
-						sequentialResultSet = await (session.Batcher.ExecuteReaderAsync(sequentialSelect, cancellationToken)).ConfigureAwait(false);
-						if (!await (sequentialResultSet.ReadAsync(cancellationToken)).ConfigureAwait(false))
-						{
-							// TODO: Deal with the "optional" attribute in the <join> mapping;
-							// this code assumes that optional defaults to "true" because it
-							// doesn't actually seem to work in the fetch="join" code
-							//
-							// Note that actual proper handling of optional-ality here is actually
-							// more involved than this patch assumes.  Remember that we might have
-							// multiple <join/> mappings associated with a single entity.  Really
-							// a couple of things need to happen to properly handle optional here:
-							//  1) First and foremost, when handling multiple <join/>s, we really
-							//      should be using the entity root table as the driving table;
-							//      another option here would be to choose some non-optional joined
-							//      table to use as the driving table.  In all likelihood, just using
-							//      the root table is much simplier
-							//  2) Need to add the FK columns corresponding to each joined table
-							//      to the generated select list; these would then be used when
-							//      iterating the result set to determine whether all non-optional
-							//      data is present
-							// My initial thoughts on the best way to deal with this would be
-							// to introduce a new SequentialSelect abstraction that actually gets
-							// generated in the persisters (ok, SingleTable...) and utilized here.
-							// It would encapsulated all this required optional-ality checking...
-							sequentialSelectEmpty = true;
-						}
+						// TODO: Deal with the "optional" attribute in the <join> mapping;
+						// this code assumes that optional defaults to "true" because it
+						// doesn't actually seem to work in the fetch="join" code
+						//
+						// Note that actual proper handling of optional-ality here is actually
+						// more involved than this patch assumes.  Remember that we might have
+						// multiple <join/> mappings associated with a single entity.  Really
+						// a couple of things need to happen to properly handle optional here:
+						//  1) First and foremost, when handling multiple <join/>s, we really
+						//      should be using the entity root table as the driving table;
+						//      another option here would be to choose some non-optional joined
+						//      table to use as the driving table.  In all likelihood, just using
+						//      the root table is much simplier
+						//  2) Need to add the FK columns corresponding to each joined table
+						//      to the generated select list; these would then be used when
+						//      iterating the result set to determine whether all non-optional
+						//      data is present
+						// My initial thoughts on the best way to deal with this would be
+						// to introduce a new SequentialSelect abstraction that actually gets
+						// generated in the persisters (ok, SingleTable...) and utilized here.
+						// It would encapsulated all this required optional-ality checking...
+						sequentialSelectEmpty = true;
 					}
 				}
 
+				int i;
+				int length = indexes?.Length ?? PropertyTypes.Length;
 				string[] propNames = PropertyNames;
 				IType[] types = PropertyTypes;
-				object[] values = new object[types.Length];
+				object[] values = new object[length];
 				bool[] laziness = PropertyLaziness;
-				string[] propSubclassNames = SubclassPropertySubclassNameClosure;
 
-				for (int i = 0; i < types.Length; i++)
+				for (int j = 0; j < length; j++)
 				{
+					i = indexes?[j] ?? j;
 					if (!propertySelectable[i])
 					{
-						values[i] = BackrefPropertyAccessor.Unknown;
+						values[j] = BackrefPropertyAccessor.Unknown;
 					}
-					else if (allProperties || !laziness[i])
+					else if (allProperties || !laziness[i] || fetchedLazyProperties?.Contains(propNames[i]) == true)
 					{
 						//decide which ResultSet to get the property value from:
-						bool propertyIsDeferred = hasDeferred
-																			&& rootPersister.IsSubclassPropertyDeferred(propNames[i], propSubclassNames[i]);
+						var propertyIsDeferred = sequentialSql != null && IsPropertyDeferred(i);
 						if (propertyIsDeferred && sequentialSelectEmpty)
 						{
-							values[i] = null;
+							values[j] = null;
 						}
 						else
 						{
 							var propertyResultSet = propertyIsDeferred ? sequentialResultSet : rs;
 							string[] cols = propertyIsDeferred ? propertyColumnAliases[i] : suffixedPropertyColumns[i];
-							values[i] = await (types[i].HydrateAsync(propertyResultSet, cols, session, obj, cancellationToken)).ConfigureAwait(false);
+							values[j] = await (types[i].HydrateAsync(propertyResultSet, cols, session, obj, cancellationToken)).ConfigureAwait(false);
 						}
 					}
 					else
 					{
-						values[i] = LazyPropertyInitializer.UnfetchedProperty;
+						values[j] = LazyPropertyInitializer.UnfetchedProperty;
 					}
-				}
-
-				if (sequentialResultSet != null)
-				{
-					sequentialResultSet.Close();
 				}
 
 				return values;
 			}
 			finally
 			{
+				sequentialResultSet?.Close();
 				if (sequentialSelect != null)
 				{
 					session.Batcher.CloseCommand(sequentialSelect, sequentialResultSet);
@@ -449,6 +555,23 @@ namespace NHibernate.Persister.Entity
 			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
+			}
+		}
+
+		public async Task BindSelectByUniqueKeyAsync(
+			ISessionImplementor session,
+			DbCommand selectCommand,
+			IBinder binder,
+			string[] suppliedPropertyNames, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var propertyNames = GetUniqueKeyPropertyNames(suppliedPropertyNames);
+			var parameterTypes = propertyNames.Select(GetPropertyType).ToArray();
+			var entity = binder.Entity;
+			for (var i = 0; i < propertyNames.Length; i++)
+			{
+				var uniqueKeyValue = GetPropertyValue(entity, propertyNames[i]);
+				await (parameterTypes[i].NullSafeSetAsync(selectCommand, uniqueKeyValue, i, session, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -520,6 +643,7 @@ namespace NHibernate.Persister.Entity
 						expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(insertCmd, cancellationToken)).ConfigureAwait(false), insertCmd);
 					}
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{
 					if (useBatch)
@@ -658,6 +782,7 @@ namespace NHibernate.Persister.Entity
 						return Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), id, j, expectation, statement);
 					}
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (StaleStateException e)
 				{
 					if (useBatch)
@@ -787,6 +912,7 @@ namespace NHibernate.Persister.Entity
 						Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), tableId, j, expectation, statement);
 					}
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{
 					if (useBatch)
@@ -834,8 +960,8 @@ namespace NHibernate.Persister.Entity
 			// in the process of being deleted.
 			if (entry == null && !IsMutable)
 				throw new InvalidOperationException("Updating immutable entity that is not in session yet!");
-			
-			if (entityMetamodel.IsDynamicUpdate && dirtyFields != null)
+
+			if (dirtyFields != null && (entityMetamodel.IsDynamicUpdate || HasDirtyLazyProperties(dirtyFields, obj)))
 			{
 				// For the case of dynamic-update="true", we need to generate the UPDATE SQL
 				propsToUpdate = GetPropertiesToUpdate(dirtyFields, hasDirtyCollection);
@@ -1005,7 +1131,7 @@ namespace NHibernate.Persister.Entity
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			int[] props = await (TypeHelper.FindDirtyAsync(
-				entityMetamodel.Properties, currentState, previousState, propertyColumnUpdateable, HasUninitializedLazyProperties(entity), session, cancellationToken)).ConfigureAwait(false);
+				entityMetamodel.Properties, currentState, previousState, propertyColumnUpdateable, session, cancellationToken)).ConfigureAwait(false);
 
 			if (props == null)
 			{
@@ -1022,7 +1148,7 @@ namespace NHibernate.Persister.Entity
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			int[] props = await (TypeHelper.FindModifiedAsync(
-				entityMetamodel.Properties, current, old, propertyColumnUpdateable, HasUninitializedLazyProperties(entity), session, cancellationToken)).ConfigureAwait(false);
+				entityMetamodel.Properties, current, old, propertyColumnUpdateable, session, cancellationToken)).ConfigureAwait(false);
 			if (props == null)
 			{
 				return null;
@@ -1053,34 +1179,24 @@ namespace NHibernate.Persister.Entity
 				return true;
 			}
 
-            // check the id unsaved-value
-            // We do this first so we don't have to hydrate the version property if the id property already gives us the info we need (NH-3505).
-            bool? result2 = entityMetamodel.IdentifierProperty.UnsavedValue.IsUnsaved(id);
-            if (result2.HasValue)
-            {
-                if (IdentifierGenerator is Assigned)
-                {
-                    // if using assigned identifier, we can only make assumptions
-                    // if the value is a known unsaved-value
-                    if (result2.Value)
-                        return true;
-                }
-                else
-                {
-                    return result2;
-                }
-            }
-
-            // check the version unsaved-value, if appropriate
-            if (IsVersioned)
-            {
-                object version = GetVersion(entity);
-                bool? result = entityMetamodel.VersionProperty.UnsavedValue.IsUnsaved(version);
-                if (result.HasValue)
-                {
-                    return result;
-                }
-            }
+			// check the id unsaved-value
+			// We do this first so we don't have to hydrate the version property if the id property already gives us the info we need (NH-3505).
+			bool? result2 = entityMetamodel.IdentifierProperty.UnsavedValue.IsUnsaved(id);
+			if (result2.HasValue)
+			{
+				return result2;
+			}
+	
+			// check the version unsaved-value, if appropriate
+			if (IsVersioned)
+			{
+				object version = GetVersion(entity);
+				bool? result = entityMetamodel.VersionProperty.UnsavedValue.IsUnsaved(version);
+				if (result.HasValue)
+				{
+					return result;
+				}
+			}
 
 			// check to see if it is in the second-level cache
 			if (HasCache && session.CacheMode.HasFlag(CacheMode.Get))

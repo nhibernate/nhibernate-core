@@ -10,12 +10,16 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Hql
 {
-	using System.Threading.Tasks;
+	using System.Linq;
 	/// <summary>
 	/// This test run each HQL function separately so is easy to know which function need
 	/// an override in the specific dialect implementation.
@@ -28,7 +32,7 @@ namespace NHibernate.Test.Hql
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "Hql.Animal.hbm.xml", "Hql.MaterialResource.hbm.xml" }; }
 		}
@@ -947,6 +951,13 @@ namespace NHibernate.Test.Hql
 								throw;
 							}
 						}
+						else if (Dialect is HanaDialectBase)
+						{
+							string msgToCheck =
+								"not a GROUP BY expression: 'ANIMAL0_.BODYWEIGHT' must be in group by clause";
+							if (!ex.InnerException.Message.Contains(msgToCheck))
+								throw;
+						}
 						else
 						{
 							string msgToCheck =
@@ -1048,6 +1059,53 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test]
+		public async Task Current_DateAsync()
+		{
+			AssumeFunctionSupported("current_date");
+			using (var s = OpenSession())
+			{
+				var a1 = new Animal("abcdef", 1.3f);
+				await (s.SaveAsync(a1));
+				await (s.FlushAsync());
+			}
+			using (var s = OpenSession())
+			{
+				var hql = "select current_date() from Animal";
+				await (s.CreateQuery(hql).ListAsync());
+			}
+		}
+
+		[Test]
+		public async Task Current_Date_IsLowestTimeOfDayAsync()
+		{
+			AssumeFunctionSupported("current_date");
+			if (!TestDialect.SupportsNonDataBoundCondition)
+				Assert.Ignore("Test is not supported by the target database");
+			var now = DateTime.Now;
+			if (now.TimeOfDay < TimeSpan.FromMinutes(5) || now.TimeOfDay > TimeSpan.Parse("23:55"))
+				Assert.Ignore("Test is unreliable around midnight");
+
+			var lowTimeDate = now.Date.AddSeconds(1);
+
+			using (var s = OpenSession())
+			{
+				var a1 = new Animal("abcdef", 1.3f);
+				await (s.SaveAsync(a1));
+				await (s.FlushAsync());
+			}
+			using (var s = OpenSession())
+			{
+				var hql = "from Animal where current_date() < :lowTimeDate";
+				var result =
+					await (s
+						.CreateQuery(hql)
+						.SetDateTime("lowTimeDate", lowTimeDate)
+						.ListAsync());
+				Assert.That(result, Has.Count.GreaterThan(0));
+			}
+		}
+
+		[Test]
 		public async Task ExtractAsync()
 		{
 			AssumeFunctionSupported("extract");
@@ -1137,6 +1195,7 @@ namespace NHibernate.Test.Hql
 
 				hql = "from Animal a where str(123) = '123'";
 				Animal result = (Animal) await (s.CreateQuery(hql).UniqueResultAsync());
+				Assert.That(result, Is.Not.Null);
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
@@ -1144,7 +1203,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task IifAsync()
 		{
-			AssumeFunctionSupported("Iif");
+			AssumeFunctionSupported("iif");
 			using (ISession s = OpenSession())
 			{
 				await (s.SaveAsync(new MaterialResource("Flash card 512MB", "A001/07", MaterialResource.MaterialState.Available)));
@@ -1229,6 +1288,189 @@ group by mr.Description";
 					"select cast(:aParam+a.BodyWeight as int) from Animal a group by cast(:aParam+a.BodyWeight as int) having cast(:aParam+a.BodyWeight as Double)>0";
 				l = await (s.CreateQuery(hql).SetInt32("aParam", 10).ListAsync());
 				Assert.AreEqual(1, l.Count);
+			}
+		}
+
+		[Test]
+		public async Task BitwiseAndAsync()
+		{
+			AssumeFunctionSupported("band");
+			await (CreateMaterialResourcesAsync());
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var query = s.CreateQuery("from MaterialResource m where (m.State & 1) > 0");
+				var result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(1), "& 1");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State & 2) > 0");
+				result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(1), "& 2");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State & 3) > 0");
+				result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(2), "& 3");
+
+				await (tx.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task BitwiseOrAsync()
+		{
+			AssumeFunctionSupported("bor");
+			await (CreateMaterialResourcesAsync());
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var query = s.CreateQuery("from MaterialResource m where (m.State | 1) > 0");
+				var result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(3), "| 1) > 0");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State | 1) > 1");
+				result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(1), "| 1) > 1");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State | 0) > 0");
+				result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(2), "| 0) > 0");
+
+				await (tx.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task BitwiseXorAsync()
+		{
+			AssumeFunctionSupported("bxor");
+			await (CreateMaterialResourcesAsync());
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var query = s.CreateQuery("from MaterialResource m where (m.State ^ 1) > 0");
+				var result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(2), "^ 1");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State ^ 2) > 0");
+				result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(2), "^ 2");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State ^ 3) > 0");
+				result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(3), "^ 3");
+
+				await (tx.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task BitwiseNotAsync()
+		{
+			AssumeFunctionSupported("bnot");
+			AssumeFunctionSupported("band");
+			await (CreateMaterialResourcesAsync());
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				// The bitwise "not" should take precedence over the bitwise "and", but when it is implemented as a
+				// function, its argument is the whole following statement, unless parenthesis are used to prevent this.
+				var query = s.CreateQuery("from MaterialResource m where ((!m.State) & 3) = 3");
+				var result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(1), "((!m.State) & 3) = 3");
+
+				query = s.CreateQuery("from MaterialResource m where ((!m.State) & 3) = 2");
+				result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(1), "((!m.State) & 3) = 2");
+
+				query = s.CreateQuery("from MaterialResource m where ((!m.State) & 3) = 1");
+				result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(1), "((!m.State) & 3) = 1");
+
+				await (tx.CommitAsync());
+			}
+		}
+
+		// #1670
+		[Test]
+		public async Task BitwiseIsThreadsafeAsync()
+		{
+			AssumeFunctionSupported("band");
+			AssumeFunctionSupported("bor");
+			AssumeFunctionSupported("bxor");
+			AssumeFunctionSupported("bnot");
+			var queries = new List<Tuple<string, int>>
+			{
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State & 1) > 0", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State & 2) > 0", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State & 3) > 0", 2),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State | 1) > 0", 3),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State | 1) > 1", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State | 0) > 0", 2),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State ^ 1) > 0", 2),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State ^ 2) > 0", 2),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State ^ 3) > 0", 3),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where ((!m.State) & 3) = 3", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where ((!m.State) & 3) = 2", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where ((!m.State) & 3) = 1", 1)
+			};
+
+			if (TestDialect.MaxNumberOfConnections < queries.Count)
+				Assert.Ignore("Current database has a too low connection count limit.");
+
+			// Do not use a ManualResetEventSlim, it does not support async and exhausts the task thread pool in the
+			// async counterparts of this test. SemaphoreSlim has the async support and release the thread when waiting.
+			var semaphore = new SemaphoreSlim(0);
+			var failures = new ConcurrentBag<Exception>();
+
+			await (CreateMaterialResourcesAsync());
+
+			await (Task.WhenAll(
+				Enumerable.Range(0, queries.Count + 1 - 0).Select(async i =>
+				{
+					if (i >= queries.Count)
+					{
+						// Give some time to threads for reaching the wait, having all of them ready to do the
+						// critical part of their job concurrently.
+						await (Task.Delay(100));
+						semaphore.Release(queries.Count);
+						return;
+					}
+
+					try
+					{
+						var query = queries[i];
+						using (var s = OpenSession())
+						using (var tx = s.BeginTransaction())
+						{
+							await (semaphore.WaitAsync());
+							var q = s.CreateQuery(query.Item1);
+							var result = await (q.UniqueResultAsync<long>());
+							Assert.That(result, Is.EqualTo(query.Item2), query.Item1);
+							await (tx.CommitAsync());
+						}
+					}
+					catch (Exception e)
+					{
+						failures.Add(e);
+					}
+				})));
+
+			Assert.That(failures, Is.Empty, $"{failures.Count} task(s) failed.");
+		}
+
+		private async Task CreateMaterialResourcesAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				await (s.SaveAsync(new MaterialResource("m1", "18", MaterialResource.MaterialState.Available) { Cost = 51.76m }, cancellationToken));
+				await (s.SaveAsync(new MaterialResource("m2", "19", MaterialResource.MaterialState.Reserved) { Cost = 15.24m }, cancellationToken));
+				await (s.SaveAsync(new MaterialResource("m3", "20", MaterialResource.MaterialState.Discarded) { Cost = 21.54m }, cancellationToken));
+				await (tx.CommitAsync(cancellationToken));
 			}
 		}
 	}

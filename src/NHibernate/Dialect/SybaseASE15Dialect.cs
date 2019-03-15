@@ -68,8 +68,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(","+",")"));
 			RegisterFunction("cos", new StandardSQLFunction("cos", NHibernateUtil.Double));
 			RegisterFunction("cot", new StandardSQLFunction("cot", NHibernateUtil.Double));
-			RegisterFunction("current_date", new NoArgSQLFunction("getdate", NHibernateUtil.Date));
-			RegisterFunction("current_time", new NoArgSQLFunction("getdate", NHibernateUtil.Time));
+			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.Date));
+			RegisterFunction("current_time", new NoArgSQLFunction("current_time", NHibernateUtil.Time));
 			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime));
 			RegisterFunction("datename", new StandardSQLFunction("datename", NHibernateUtil.String));
 			RegisterFunction("day", new StandardSQLFunction("day", NHibernateUtil.Int32));
@@ -104,8 +104,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
 			RegisterFunction("square", new StandardSQLFunction("square"));
 			RegisterFunction("str", new StandardSQLFunction("str", NHibernateUtil.String));
+			RegisterFunction("strguid", new StandardSQLFunction("str", NHibernateUtil.String));
 			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
-			// TODO RegisterFunction("trim", new SQLFunctionTemplate(NHibernateUtil.String, "ltrim(rtrim(?1))"));
+			RegisterFunction("trim", new AnsiTrimEmulationFunction("str_replace"));
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
 			RegisterFunction("user", new NoArgSQLFunction("user", NHibernateUtil.String));
 			RegisterFunction("year", new StandardSQLFunction("year", NHibernateUtil.Int32));
@@ -162,7 +163,14 @@ namespace NHibernate.Dialect
 		{
 			get { return "select getdate()"; }
 		}
-		
+
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSelectString =>
+			"SELECT " + CurrentUtcTimestampSQLFunctionName;
+
+		/// <inheritdoc />
+		public override bool SupportsCurrentUtcTimestampSelection => true;
+
 		/// <summary>
 		/// Sybase ASE 15 temporary tables are not supported
 		/// </summary>
@@ -231,7 +239,10 @@ namespace NHibernate.Dialect
 		{
 			get { return "getdate()"; }
 		}
-		
+
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSQLFunctionName => "getutcdate()";
+
 		public override bool SupportsExpectedLobUsagePattern
 		{
 			get { return false; }

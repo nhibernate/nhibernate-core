@@ -20,20 +20,13 @@ namespace NHibernate.Test.NHSpecificTest.NH873
 	public class FixtureAsync
 	{
 		[Test]
-		public Task CacheDisabledAsync()
+		public async Task CacheDisabledAsync()
 		{
-			try
-			{
-				Configuration cfg = new Configuration();
-				cfg.SetProperty(Environment.UseSecondLevelCache, "false");
-				cfg.SetProperty(Environment.UseQueryCache, "false");
-				cfg.SetProperty(Environment.CacheProvider, null);
-				return cfg.BuildSessionFactory().CloseAsync();
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			Configuration cfg = new Configuration();
+			cfg.SetProperty(Environment.UseSecondLevelCache, "false");
+			cfg.SetProperty(Environment.UseQueryCache, "false");
+			cfg.SetProperty(Environment.CacheProvider, null);
+			await (cfg.BuildSessionFactory().CloseAsync());
 		}
 	}
 }

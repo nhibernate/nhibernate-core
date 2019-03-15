@@ -1,14 +1,22 @@
 <Project>
   <Import Project="DotNetSdkMono.props" />
+  <Import Condition="Exists('NHibernate.dev.props')" Project="NHibernate.dev.props"/>
+
   <PropertyGroup>
     <VersionMajor Condition="'$(VersionMajor)' == ''">5</VersionMajor>
-    <VersionMinor Condition="'$(VersionMinor)' == ''">1</VersionMinor>
-    <VersionPatch Condition="'$(VersionPatch)' == ''">1</VersionPatch>
+    <VersionMinor Condition="'$(VersionMinor)' == ''">2</VersionMinor>
+    <VersionPatch Condition="'$(VersionPatch)' == ''">3</VersionPatch>
     <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
 
     <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>
     <AssemblyVersion>$(VersionMajor).$(VersionMinor).0.0</AssemblyVersion>
     <FileVersion>$(VersionPrefix).0</FileVersion>
+
+    <NhAppTargetFrameworks Condition ="$(NhAppTargetFrameworks) == ''">net461;netcoreapp2.0</NhAppTargetFrameworks>
+    <NhLibTargetFrameworks Condition ="$(NhLibTargetFrameworks) == ''">net461;netcoreapp2.0;netstandard2.0</NhLibTargetFrameworks>
+    <NhNetFx>false</NhNetFx>
+    <NhNetFx Condition="$(TargetFramework.StartsWith('net4'))">true</NhNetFx>
+    <DefineConstants Condition="$(NhNetFx) AND $(NhVbNet) == ''" >NETFX;$(DefineConstants)</DefineConstants>
 
     <Product>NHibernate</Product>
     <Company>NHibernate.info</Company>
@@ -19,10 +27,11 @@
     <PackageProjectUrl>http://nhibernate.info</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/nhibernate/nhibernate-core/master/logo/NHibernate-NuGet.png</PackageIconUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/nhibernate/nhibernate-core/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageLicenseExpression>LGPL-2.1-only</PackageLicenseExpression>
     <PackageReleaseNotes>https://github.com/nhibernate/nhibernate-core/blob/$(VersionPrefix)/releasenotes.txt</PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/nhibernate/nhibernate-core.git</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <TreatSpecificWarningsAsErrors />

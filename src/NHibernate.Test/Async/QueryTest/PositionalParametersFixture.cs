@@ -21,7 +21,7 @@ namespace NHibernate.Test.QueryTest
 	[TestFixture]
 	public class PositionalParametersFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Simple.hbm.xml"}; }
 		}

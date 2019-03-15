@@ -10,7 +10,6 @@
 
 using System;
 using System.Collections;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH898
@@ -19,18 +18,17 @@ namespace NHibernate.Test.NHSpecificTest.NH898
 	[TestFixture]
 	public class NH898FixtureAsync : BugTestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings => new[]
 		{
-			get
-			{
-				return new string[]
-					{
-						"NHSpecificTest.NH898.ClassA.hbm.xml",
-						"NHSpecificTest.NH898.ClassBParent.hbm.xml",
-						"NHSpecificTest.NH898.ClassB.hbm.xml",
-						"NHSpecificTest.NH898.ClassC.hbm.xml",
-					};
-			}
+			"ClassA.hbm.xml",
+			"ClassBParent.hbm.xml",
+			"ClassB.hbm.xml",
+			"ClassC.hbm.xml",
+		};
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		[Test]

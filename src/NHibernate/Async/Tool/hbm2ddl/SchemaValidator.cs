@@ -48,7 +48,7 @@ namespace NHibernate.Tool.hbm2ddl
 						{
 							cfg.SetNamingStrategy(
 								(INamingStrategy)
-								Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(args[i].Substring(9))));
+								Cfg.Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(args[i].Substring(9))));
 						}
 					}
 					else
@@ -66,6 +66,7 @@ namespace NHibernate.Tool.hbm2ddl
 				*/
 				await (new SchemaValidator(cfg).ValidateAsync(cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				log.Error(e, "Error running schema update");
@@ -88,6 +89,7 @@ namespace NHibernate.Tool.hbm2ddl
 					var connection = connectionHelper.Connection;
 					meta = new DatabaseMetadata(connection, dialect, false);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception sqle)
 				{
 					log.Error(sqle, "could not get database metadata");
@@ -95,6 +97,7 @@ namespace NHibernate.Tool.hbm2ddl
 				}
 				configuration.ValidateSchema(dialect, meta);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				log.Error(e, "could not complete schema validation");

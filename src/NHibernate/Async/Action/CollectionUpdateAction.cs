@@ -28,7 +28,7 @@ namespace NHibernate.Action
 		public override async Task ExecuteAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			object id = Key;
+			object id = await (GetKeyAsync(cancellationToken)).ConfigureAwait(false);
 			ISessionImplementor session = Session;
 			ICollectionPersister persister = Persister;
 			IPersistentCollection collection = Collection;
@@ -78,7 +78,8 @@ namespace NHibernate.Action
 				await (persister.InsertRowsAsync(collection, id, session, cancellationToken)).ConfigureAwait(false);
 			}
 
-			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
+			var entry = Session.PersistenceContext.GetCollectionEntry(collection);
+			entry.AfterAction(collection);
 
 			await (EvictAsync(cancellationToken)).ConfigureAwait(false);
 
@@ -116,6 +117,34 @@ namespace NHibernate.Action
 				{
 					await (postListeners[i].OnPostUpdateCollectionAsync(postEvent, cancellationToken)).ConfigureAwait(false);
 				}
+			}
+		}
+
+		public override async Task ExecuteAfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			// NH Different behavior: to support unlocking collections from the cache.(r3260)
+
+			CacheKey ck = Session.GenerateCacheKey(await (GetKeyAsync(cancellationToken)).ConfigureAwait(false), Persister.KeyType, Persister.Role);
+
+			if (success)
+			{
+				// we can't disassemble a collection if it was uninitialized 
+				// or detached from the session
+				if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
+				{
+					CollectionCacheEntry entry = await (CollectionCacheEntry.CreateAsync(Collection, Persister, cancellationToken)).ConfigureAwait(false);
+					bool put = await (Persister.Cache.AfterUpdateAsync(ck, entry, null, Lock, cancellationToken)).ConfigureAwait(false);
+
+					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
+					{
+						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+					}
+				}
+			}
+			else
+			{
+				await (Persister.Cache.ReleaseAsync(ck, Lock, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 	}

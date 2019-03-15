@@ -54,12 +54,20 @@ namespace NHibernate.Test.NHSpecificTest.NH3436
 		[Test]
 		public void TestQueryWithContainsInParallel()
 		{
+			if (!TestDialect.SupportsConcurrencyTests)
+			{
+				Assert.Ignore($"Dialect {Dialect} does not supports concurrency tests");
+			}
+
 			var ids = new List<Guid>
 			{
 				Guid.NewGuid(),
 				Guid.NewGuid(),
 			};
-			const int threadsToRun = 32;
+			var threadsToRun = 32;
+			if (threadsToRun > TestDialect.MaxNumberOfConnections)
+				threadsToRun = TestDialect.MaxNumberOfConnections.Value;
+
 			var events = new WaitHandle[threadsToRun];
 			var exceptions = new List<Exception>();
 			for (var i = 0; i < threadsToRun; i++)

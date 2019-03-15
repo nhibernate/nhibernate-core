@@ -7,7 +7,7 @@ namespace NHibernate.Test.ListIndex
 	[TestFixture]
 	public class ListIndexFixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "ListIndex.ListIndex.hbm.xml" }; }
 		}

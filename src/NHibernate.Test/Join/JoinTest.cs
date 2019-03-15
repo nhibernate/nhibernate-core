@@ -21,7 +21,7 @@ namespace NHibernate.Test.Join
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

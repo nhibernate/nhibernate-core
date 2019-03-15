@@ -21,7 +21,7 @@ namespace NHibernate.Test.ReadOnly
 	[TestFixture]
 	public class ReadOnlyTestAsync : AbstractReadOnlyTest
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
@@ -30,7 +30,7 @@ namespace NHibernate.Test.ReadOnly
 				if (TextHolder.SupportedForDialect(Dialect))
 					mappings.Add("ReadOnly.TextHolder.hbm.xml");
 
-				return mappings;
+				return mappings.ToArray();
 			}
 		}
 		

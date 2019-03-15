@@ -37,7 +37,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				return StringHelper.EqualsCaseInsensitive(code, TrueString);
+				return code.Equals(TrueString, StringComparison.InvariantCultureIgnoreCase);
 			}
 		}
 
@@ -61,18 +61,16 @@ namespace NHibernate.Type
 			return "'" + ToCharacter(value) + "'";
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior.
+		/// <inheritdoc />
 		public override object StringToObject(String xml)
 		{
-			if (StringHelper.EqualsCaseInsensitive(TrueString, xml))
+			if (string.Equals(TrueString, xml, StringComparison.InvariantCultureIgnoreCase))
 			{
 				return true;
 			}
-			else if (StringHelper.EqualsCaseInsensitive(FalseString, xml))
+			else if (string.Equals(FalseString, xml, StringComparison.InvariantCultureIgnoreCase))
 			{
 				return false;
 			}

@@ -24,7 +24,7 @@ namespace NHibernate.Test.SessionBuilder
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings => new[] { "SessionBuilder.Mappings.hbm.xml" };
+		protected override string[] Mappings => new[] { "SessionBuilder.Mappings.hbm.xml" };
 
 		protected override void Configure(Configuration configuration)
 		{
@@ -187,51 +187,6 @@ namespace NHibernate.Test.SessionBuilder
 				Sfi.Settings.DefaultFlushMode,
 				// values
 				FlushMode.Always, FlushMode.Auto, FlushMode.Commit, FlushMode.Manual);
-		}
-
-		[Test]
-		public async Task CanSetInterceptorAsync()
-		{
-			var sb = Sfi.WithOptions();
-			await (CanSetInterceptorAsync(sb));
-			using (var s = sb.OpenSession())
-			{
-				await (CanSetInterceptorAsync(s.SessionWithOptions()));
-			}
-		}
-
-		private Task CanSetInterceptorAsync<T>(T sb) where T : ISessionBuilder<T>
-		{
-			try
-			{
-				var sbType = sb.GetType().Name;
-				// Do not use .Instance here, we want another instance.
-				var interceptor = new EmptyInterceptor();
-				var options = DebugSessionFactory.GetCreationOptions(sb);
-
-				Assert.AreEqual(Sfi.Interceptor, options.SessionInterceptor, $"{sbType}: Initial value");
-				var fsb = sb.Interceptor(interceptor);
-				Assert.AreEqual(interceptor, options.SessionInterceptor, $"{sbType}: After call with an interceptor");
-				Assert.AreEqual(sb, fsb, $"{sbType}: Unexpected fluent return after call with an interceptor");
-
-				if (sb is ISharedSessionBuilder ssb)
-				{
-					var fssb = ssb.Interceptor();
-					Assert.AreEqual(EmptyInterceptor.Instance, options.SessionInterceptor, $"{sbType}: After call with shared interceptor");
-					Assert.AreEqual(sb, fssb, $"{sbType}: Unexpected fluent return on shared");
-				}
-
-				Assert.Throws<ArgumentNullException>(() => sb.Interceptor(null), $"{sbType}: After call with null");
-
-				fsb = sb.NoInterceptor();
-				Assert.AreEqual(EmptyInterceptor.Instance, options.SessionInterceptor, $"{sbType}: After no call");
-				Assert.AreEqual(sb, fsb, $"{sbType}: Unexpected fluent return after no call");
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
 		}
 
 		private void CanSet<T, V>(T sb, Func<V, T> setter, Func<V> getter, Func<ISharedSessionBuilder> shared, V initialValue,

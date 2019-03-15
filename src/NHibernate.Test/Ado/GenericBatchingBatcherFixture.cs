@@ -15,7 +15,7 @@ namespace NHibernate.Test.Ado
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings => new[] {"Ado.VerySimple.hbm.xml"};
+		protected override string[] Mappings => new[] {"Ado.VerySimple.hbm.xml"};
 
 		protected override void Configure(Configuration configuration)
 		{
@@ -28,7 +28,12 @@ namespace NHibernate.Test.Ado
 		{
 			return !(dialect is FirebirdDialect) &&
 			       !(dialect is Oracle8iDialect) &&
-			       !(dialect is MsSqlCeDialect);
+			       !(dialect is MsSqlCeDialect) &&
+			       !(dialect is HanaDialectBase) &&
+			       // A workaround exists for SQL Anywhere, see https://stackoverflow.com/a/32860293/1178314
+			       // It would imply some tweaking in the generic batcher. The same workaround could
+			       // be used for enabling future support.
+			       !(dialect is SybaseSQLAnywhere10Dialect);
 		}
 
 		[Test]

@@ -18,11 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1904
 	[TestFixture]
 	public class StructFixtureAsync : BugTestCase
 	{
-		protected override IList Mappings =>
-			new string[]
-			{
-				"NHSpecificTest." + BugNumber + ".StructMappings.hbm.xml"
-			};
+		protected override string[] Mappings => new[] {"StructMappings.hbm.xml"};
 
 		[Test]
 		public async Task ExecuteQueryAsync()

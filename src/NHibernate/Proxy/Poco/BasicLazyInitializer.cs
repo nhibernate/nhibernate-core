@@ -8,8 +8,10 @@ using NHibernate.Util;
 
 namespace NHibernate.Proxy.Poco
 {
+	// Obsolete since v5.2
 	/// <summary> Lazy initializer for POCOs</summary>
 	[Serializable]
+	[Obsolete("DynamicProxy has been obsoleted, use static proxies instead (see StaticProxyFactory)")]
 	public abstract class BasicLazyInitializer : AbstractLazyInitializer
 	{
 		private static readonly IEqualityComparer IdentityEqualityComparer = new IdentityEqualityComparer();

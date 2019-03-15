@@ -77,6 +77,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		private void Parse(XPathNavigator navigator, bool fromAppConfig)
 		{
 			ParseByteCodeProvider(navigator, fromAppConfig);
+			ParseObjectsFactory(navigator, fromAppConfig);
 			ParseReflectionOptimizer(navigator, fromAppConfig);
 			XPathNavigator xpn = navigator.SelectSingleNode(CfgXmlHelper.SessionFactoryExpression);
 			if (xpn != null)
@@ -106,6 +107,23 @@ namespace NHibernate.Cfg.ConfigurationSchema
 				else
 				{
 					LogWarnIgnoredProperty("bytecode-provider");
+				}
+			}
+		}
+
+		private void ParseObjectsFactory(XPathNavigator navigator, bool fromAppConfig)
+		{
+			var xpn = navigator.SelectSingleNode(CfgXmlHelper.ObjectsFactoryExpression);
+			if (xpn != null)
+			{
+				if (fromAppConfig)
+				{
+					xpn.MoveToFirstAttribute();
+					ObjectsFactoryType = xpn.Value;
+				}
+				else
+				{
+					LogWarnIgnoredProperty("objects-factory");
 				}
 			}
 		}
@@ -142,6 +160,13 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		{
 			get { return byteCodeProviderType; }
 		}
+
+		/// <summary>
+		/// Value for objects-factory system property.
+		/// </summary>
+		/// <remarks>Default value <see langword="null" />.</remarks>
+		// 6.0 TODO add to IHibernateConfiguration
+		public string ObjectsFactoryType { get; private set; }
 
 		private bool useReflectionOptimizer = true;
 		/// <summary>

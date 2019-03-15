@@ -109,6 +109,11 @@ namespace NHibernate.Dialect
 			return insertSql.Append("; " + IdentitySelectString);
 		}
 
+		public override SqlString AppendIdentitySelectToInsert(SqlString insertString, string identifierColumnName)
+		{
+			return insertString.Append(" returning ").Append(identifierColumnName);
+		}
+
 		public override bool SupportsInsertSelectIdentity
 		{
 			get { return true; }

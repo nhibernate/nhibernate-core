@@ -21,18 +21,11 @@ namespace NHibernate.Test.NHSpecificTest.NH965
     public class NH965FixtureAsync
     {
         [Test]
-        public Task BugAsync()
+        public async Task BugAsync()
         {
-            try
-            {
-                Configuration cfg = new Configuration();
-                cfg.AddResource(GetType().Namespace + ".Mappings.hbm.xml", GetType().Assembly);
-                return cfg.BuildSessionFactory().CloseAsync();
-            }
-            catch (Exception ex)
-            {
-                return Task.FromException<object>(ex);
-            }
+            Configuration cfg = new Configuration();
+            cfg.AddResource(GetType().Namespace + ".Mappings.hbm.xml", GetType().Assembly);
+            await (cfg.BuildSessionFactory().CloseAsync());
         }
     }
 }

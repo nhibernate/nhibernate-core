@@ -6,11 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH350
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH350"; }
-		}
-
 		// We pass an Int32 id to Load and expect an exception, since the class
 		// uses Int64 ids.
 		[Test]

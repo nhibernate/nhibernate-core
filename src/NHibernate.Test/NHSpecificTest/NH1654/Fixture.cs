@@ -6,11 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1654
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1654"; }
-		}
-
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
 		{
 			return dialect is MsSql2000Dialect;

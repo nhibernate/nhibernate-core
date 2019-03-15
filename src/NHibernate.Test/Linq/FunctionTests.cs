@@ -101,6 +101,19 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void GetCharsFunction()
+		{
+			var query = (
+				from e in db.Employees
+				where e.FirstName[2] == 'e'
+				select e
+			).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(1));
+			Assert.That(query[0].FirstName, Is.EqualTo("Steven"));
+		}
+
+		[Test]
 		public void LeftFunction()
 		{
 			var query = (from e in db.Employees
@@ -487,6 +500,16 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.OrderLines
 						where item.Discount.Equals(-1)
 						select item;
+
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void WhereEquatableEqual()
+		{
+			var query = from item in db.Shippers
+			            where ((IEquatable<Guid>) item.Reference).Equals(Guid.Empty)
+			            select item;
 
 			ObjectDumper.Write(query);
 		}

@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.QueryTest
 {
-	[TestFixture]
+	[TestFixture, Obsolete]
 	public class MultipleQueriesFixture : TestCase
 	{
 		protected override string MappingsAssembly
@@ -17,7 +17,7 @@ namespace NHibernate.Test.QueryTest
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "SecondLevelCacheTest.Item.hbm.xml" }; }
 		}

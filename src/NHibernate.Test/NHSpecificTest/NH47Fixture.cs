@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class NH47Fixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"NHSpecific.UnsavedType.hbm.xml"}; }
 		}

@@ -15,7 +15,7 @@ namespace NHibernate.Test.Events.PostEvents
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"Events.PostEvents.SimpleEntity.hbm.xml"}; }
 		}

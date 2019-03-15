@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
@@ -28,6 +29,11 @@ namespace NHibernate.Test.Criteria
 		private const string customEntityName = "CustomEntityName";
 		private EntityWithCompositeId _entityWithCompositeId;
 		private EntityCustomEntityName _entityWithCustomEntityName;
+
+		protected override void Configure(Configuration configuration)
+		{
+			configuration.SetProperty(Environment.FormatSql, "false");
+		}
 
 		protected override HbmMapping GetMappings()
 		{
@@ -228,16 +234,38 @@ namespace NHibernate.Test.Criteria
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
+		
+		[Test]
+		public async Task EntityProjectionAsSelectExpressionForArgumentAliasAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntitySimpleChild child1 = null;
+				var complex = await (session
+					.QueryOver<EntityComplex>()
+					.JoinAlias(ep => ep.Child1, () => child1)
+					.Select(ec => ec.AsEntity())
+					.Take(1).SingleOrDefaultAsync());
+
+				Assert.That(complex, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(complex), Is.True, "Object must be initialized");
+				Assert.That(NHibernateUtil.IsInitialized(complex.Child1), Is.False, "Object must be lazy");
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
 
 		[Test]
 		public async Task EntityProjectionLockModeAsync()
 		{
+			// For this test to succeed with SQL Anywhere, ansi_update_constraints must be off.
+			// In I-SQL: set option ansi_update_constraints = 'Off'
 			if (Dialect is Oracle8iDialect)
 				Assert.Ignore("Oracle is not supported due to #1352 bug (NH-3902)");
 
 			var upgradeHint = Dialect.ForUpdateString;
 			if(string.IsNullOrEmpty(upgradeHint))
-				upgradeHint = this.Dialect.AppendLockHint(LockMode.Upgrade, string.Empty);
+				upgradeHint = Dialect.AppendLockHint(LockMode.Upgrade, string.Empty);
 			if (string.IsNullOrEmpty(upgradeHint))
 			{
 				Assert.Ignore($"Upgrade hint is not supported by dialect {Dialect.GetType().Name}");

@@ -142,11 +142,21 @@ namespace NHibernate.Engine
 			SqlString withClauseFragment,
 			string withClauseJoinAlias)
 		{
+			return ToJoinFragment(enabledFilters, includeExtraJoins, withClauseFragment, withClauseJoinAlias, rootAlias);
+		}
+
+		internal virtual JoinFragment ToJoinFragment(
+			IDictionary<string, IFilter> enabledFilters,
+			bool includeExtraJoins,
+			SqlString withClauseFragment,
+			string withClauseJoinAlias,
+			string withRootAlias)
+		{
 			QueryJoinFragment joinFragment = new QueryJoinFragment(factory.Dialect, useThetaStyle);
 			if (rootJoinable != null)
 			{
-				joinFragment.AddCrossJoin(rootJoinable.TableName, rootAlias);
-				string filterCondition = rootJoinable.FilterFragment(rootAlias, enabledFilters);
+				joinFragment.AddCrossJoin(rootJoinable.TableName, withRootAlias);
+				string filterCondition = rootJoinable.FilterFragment(withRootAlias, enabledFilters);
 				// JoinProcessor needs to know if the where clause fragment came from a dynamic filter or not so it
 				// can put the where clause fragment in the right place in the SQL AST.   'hasFilterCondition' keeps track
 				// of that fact.
@@ -154,7 +164,7 @@ namespace NHibernate.Engine
 				if (includeExtraJoins)
 				{
 					//TODO: not quite sure about the full implications of this!
-					AddExtraJoins(joinFragment, rootAlias, rootJoinable, true);
+					AddExtraJoins(joinFragment, withRootAlias, rootJoinable, true);
 				}
 			}
 
@@ -313,5 +323,9 @@ namespace NHibernate.Engine
 		{
 			bool IncludeSubclasses(string alias);
 		}
+
+		internal string RootAlias => rootAlias;
+
+		public ISessionFactoryImplementor Factory => factory;
 	}
 }

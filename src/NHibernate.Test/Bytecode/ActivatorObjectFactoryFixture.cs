@@ -45,7 +45,7 @@ namespace NHibernate.Test.Bytecode
 
 
 
-		[Test]
+		[Test, Obsolete]
 		public void CreateInstanceWithNoPublicCtor()
 		{
 			IObjectsFactory of = GetObjectsFactory();
@@ -55,7 +55,7 @@ namespace NHibernate.Test.Bytecode
 			Assert.That(instance, Is.InstanceOf<WithOutPublicParameterLessCtor>());
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public void CreateInstanceOfValueType()
 		{
 			IObjectsFactory of = GetObjectsFactory();
@@ -64,7 +64,7 @@ namespace NHibernate.Test.Bytecode
 			Assert.That(instance, Is.InstanceOf<ValueType>());
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public void CreateInstanceWithArguments()
 		{
 			IObjectsFactory of = GetObjectsFactory();

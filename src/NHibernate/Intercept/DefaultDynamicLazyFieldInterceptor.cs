@@ -6,6 +6,8 @@ using NHibernate.Util;
 namespace NHibernate.Intercept
 {
 	[Serializable]
+	// Since v5.2
+	[Obsolete("Dynamic proxy has been obsoleted, use static proxies instead (see StaticProxyFactory)")]
 	public class DefaultDynamicLazyFieldInterceptor : IFieldInterceptorAccessor, Proxy.DynamicProxy.IInterceptor
 	{
 		public IFieldInterceptor FieldInterceptor { get; set; }
@@ -42,7 +44,7 @@ namespace NHibernate.Intercept
 				if (FieldInterceptor != null)
 				{
 					FieldInterceptor.MarkDirty();
-					FieldInterceptor.Intercept(info.Target, ReflectHelper.GetPropertyName(info.TargetMethod), info.Arguments[0]);
+					FieldInterceptor.Intercept(info.Target, ReflectHelper.GetPropertyName(info.TargetMethod), info.Arguments[0], true);
 				}
 			}
 

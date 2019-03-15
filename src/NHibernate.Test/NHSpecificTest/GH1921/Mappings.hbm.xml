@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH1921">
+
+  <class name="Entity">
+    <id name="Id" generator="native"/>
+    <property name="Name"/>
+
+    <filter name="NameFilter"/>
+  </class>
+
+  <class name="MultiTableEntity">
+    <id name="Id" generator="native"/>
+    <property name="Name"/>
+
+    <join table="SecondTable" optional="true">
+      <key column="Id"/>
+      <property name="OtherName"/>
+    </join>
+
+    <filter name="NameFilter"/>
+    <filter name="OtherNameFilter"/>
+  </class>
+
+  <filter-def name="NameFilter" condition="Name = :name">
+    <filter-param name="name" type="System.String"/>
+  </filter-def>
+
+  <filter-def name="OtherNameFilter" condition="OtherName = :name">
+    <filter-param name="name" type="System.String"/>
+  </filter-def>
+</hibernate-mapping>

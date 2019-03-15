@@ -26,7 +26,7 @@ namespace NHibernate.Linq
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The number of inserted entities.</returns>
-		public Task<int> InsertAsync(CancellationToken cancellationToken)
+		public Task<int> InsertAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

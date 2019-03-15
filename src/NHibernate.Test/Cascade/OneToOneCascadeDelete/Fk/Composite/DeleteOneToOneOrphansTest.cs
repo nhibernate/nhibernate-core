@@ -83,7 +83,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 	[TestFixture]
 	public class DeleteOneToOneOrphansTestHbm : DeleteOneToOneOrphansTest
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Cascade.OneToOneCascadeDelete.Fk.Composite.Mappings.hbm.xml" }; }
 		}
@@ -92,7 +92,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 	[TestFixture]
 	public class DeleteOneToOneOrphansTestByCode : DeleteOneToOneOrphansTest
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return Array.Empty<string>(); }
 		}

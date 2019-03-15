@@ -62,7 +62,7 @@ namespace NHibernate.Loader
 			// so be careful about how you formulate your queries in this case
 			if (bagCount > 1)
 			{
-				throw new QueryException("Cannot simultaneously fetch multiple bags.");
+				throw new QueryException($"Cannot simultaneously fetch multiple bags: {this}");
 			}
 		}
 

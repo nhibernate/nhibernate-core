@@ -17,7 +17,7 @@ namespace NHibernate.Test.Generatedkeys.Select
 	[TestFixture]
 	public class SelectGeneratorTestAsync: TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Generatedkeys.Select.MyEntity.hbm.xml" }; }
 		}

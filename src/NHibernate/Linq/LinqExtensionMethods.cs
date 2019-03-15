@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Impl;
+using NHibernate.Multi;
 using NHibernate.Type;
 using NHibernate.Util;
 using Remotion.Linq.Parsing.ExpressionVisitors;
 using System.Threading;
 using System.Threading.Tasks;
+using NHibernate.Engine;
 
 namespace NHibernate.Linq
 {
@@ -2404,8 +2406,14 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
 		public static IFutureEnumerable<TSource> ToFuture<TSource>(this IQueryable<TSource> source)
 		{
+			if (source.Provider is ISupportFutureBatchNhQueryProvider batchProvider)
+			{
+				return batchProvider.Session.GetFutureBatch().AddAsFuture(source);
+			}
+#pragma warning disable CS0618 // Type or member is obsolete
 			var provider = GetNhProvider(source);
 			return provider.ExecuteFuture<TSource>(source.Expression);
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		/// <summary>
@@ -2419,9 +2427,15 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
 		public static IFutureValue<TSource> ToFutureValue<TSource>(this IQueryable<TSource> source)
 		{
+			if (source.Provider is ISupportFutureBatchNhQueryProvider batchProvider)
+			{
+				return batchProvider.Session.GetFutureBatch().AddAsFutureValue(source);
+			}
+#pragma warning disable CS0618, CS0612// Type or member is obsolete
 			var provider = GetNhProvider(source);
 			var future = provider.ExecuteFuture<TSource>(source.Expression);
 			return new FutureValue<TSource>(future.GetEnumerable, future.GetEnumerableAsync);
+#pragma warning restore CS0618, CS0612// Type or member is obsolete
 		}
 
 		/// <summary>
@@ -2437,12 +2451,16 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
 		public static IFutureValue<TResult> ToFutureValue<TSource, TResult>(this IQueryable<TSource> source, Expression<Func<IQueryable<TSource>, TResult>> selector)
 		{
-			var provider = GetNhProvider(source);
-
+			if (source.Provider is ISupportFutureBatchNhQueryProvider batchProvider)
+			{
+				return batchProvider.Session.GetFutureBatch().AddAsFutureValue(source, selector);
+			}
+#pragma warning disable CS0618 // Type or member is obsolete
 			var expression = ReplacingExpressionVisitor
 				.Replace(selector.Parameters.Single(), source.Expression, selector.Body);
-
+			var provider = GetNhProvider(source);
 			return provider.ExecuteFutureValue<TResult>(expression);
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 
@@ -2495,6 +2513,21 @@ namespace NHibernate.Linq
 		[Obsolete("Please use WithOptions instead.")]
 		public static IQueryable<T> Timeout<T>(this IQueryable<T> query, int timeout)
 			=> query.WithOptions(o => o.SetTimeout(timeout));
+
+		public static IQueryable<T> WithLock<T>(this IQueryable<T> query, LockMode lockMode)
+		{
+			var method = ReflectHelper.GetMethod(() => WithLock(query, lockMode));
+
+			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(lockMode));
+
+			return new NhQueryable<T>(query.Provider, callExpression);
+		}
+
+		public static IEnumerable<T> WithLock<T>(this IEnumerable<T> query, LockMode lockMode)
+		{
+			throw new InvalidOperationException(
+				"The NHibernate.Linq.LinqExtensionMethods.WithLock(IEnumerable<T>, LockMode) method can only be used in a Linq expression.");
+		}
 
 		/// <summary>
 		/// Allows to specify the parameter NHibernate type to use for a literal in a queryable expression.

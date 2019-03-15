@@ -11,6 +11,7 @@
 using System.Collections;
 using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
+using NHibernate.Util;
 
 namespace NHibernate.Cache
 {
@@ -120,5 +121,69 @@ namespace NHibernate.Cache
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <exception cref="CacheException"></exception>
 		Task ClearAsync(CancellationToken cancellationToken);
+#pragma warning restore 618
+	}
+
+	internal static partial class CacheConcurrencyStrategyExtensions
+	{
+		/// <summary>
+		/// Attempt to retrieve multiple objects from the Cache
+		/// </summary>
+		/// <param name="cache">The cache concurrency strategy.</param>
+		/// <param name="keys">The keys (id) of the objects to get out of the Cache.</param>
+		/// <param name="timestamp">A timestamp prior to the transaction start time</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>An array of cached objects or <see langword="null" /></returns>
+		/// <exception cref="CacheException"></exception>
+		public static Task<object[]> GetManyAsync(this ICacheConcurrencyStrategy cache, CacheKey[] keys, long timestamp, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object[]>(cancellationToken);
+			}
+			try
+			{
+				// PreferMultipleGet yields false if !IBatchableCacheConcurrencyStrategy, no GetMany call should be done
+				// in such case.
+				return ReflectHelper
+				.CastOrThrow<IBatchableCacheConcurrencyStrategy>(cache, "batching")
+				.GetManyAsync(keys, timestamp, cancellationToken);
+			}
+			catch (System.Exception ex)
+			{
+				return Task.FromException<object[]>(ex);
+			}
+		}
+
+		/// <summary>
+		/// Attempt to cache objects, after loading them from the database.
+		/// </summary>
+		/// <param name="cache">The cache concurrency strategy.</param>
+		/// <param name="keys">The keys (id) of the objects to put in the Cache.</param>
+		/// <param name="values">The objects to put in the cache.</param>
+		/// <param name="timestamp">A timestamp prior to the transaction start time.</param>
+		/// <param name="versions">The version numbers of the objects we are putting.</param>
+		/// <param name="versionComparers">The comparers to be used to compare version numbers</param>
+		/// <param name="minimalPuts">Indicates that the cache should avoid a put if the item is already cached.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns><see langword="true" /> if the objects were successfully cached.</returns>
+		/// <exception cref="CacheException"></exception>
+		public static async Task<bool[]> PutManyAsync(this ICacheConcurrencyStrategy cache, CacheKey[] keys, object[] values, long timestamp,
+		                          object[] versions, IComparer[] versionComparers, bool[] minimalPuts, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (cache is IBatchableCacheConcurrencyStrategy batchableCache)
+			{
+				return await (batchableCache.PutManyAsync(keys, values, timestamp, versions, versionComparers, minimalPuts, cancellationToken)).ConfigureAwait(false);
+			}
+
+			var result = new bool[keys.Length];
+			for (var i = 0; i < keys.Length; i++)
+			{
+				result[i] = await (cache.PutAsync(keys[i], values[i], timestamp, versions[i], versionComparers[i], minimalPuts[i], cancellationToken)).ConfigureAwait(false);
+			}
+
+			return result;
+		}
 	}
 }

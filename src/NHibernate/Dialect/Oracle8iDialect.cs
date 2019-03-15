@@ -250,7 +250,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("to_char", new StandardSQLFunction("to_char", NHibernateUtil.String));
 			RegisterFunction("to_date", new StandardSQLFunction("to_date", NHibernateUtil.DateTime));
 
-			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.Date, false));
+			// In Oracle, date includes a time, just with fractional seconds dropped. For actually only having
+			// the date, it must be truncated. Otherwise comparisons may yield unexpected results.
+			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.Date, "trunc(current_date)"));
 			RegisterFunction("current_time", new NoArgSQLFunction("current_timestamp", NHibernateUtil.Time, false));
 			RegisterFunction("current_timestamp", new CurrentTimeStamp());
 
@@ -300,10 +302,11 @@ namespace NHibernate.Dialect
 			RegisterFunction("next_day", new StandardSQLFunction("next_day", NHibernateUtil.Date));
 
 			RegisterFunction("str", new StandardSQLFunction("to_char", NHibernateUtil.String));
+			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "substr(rawtohex(?1), 7, 2) || substr(rawtohex(?1), 5, 2) || substr(rawtohex(?1), 3, 2) || substr(rawtohex(?1), 1, 2) || '-' || substr(rawtohex(?1), 11, 2) || substr(rawtohex(?1), 9, 2) || '-' || substr(rawtohex(?1), 15, 2) || substr(rawtohex(?1), 13, 2) || '-' || substr(rawtohex(?1), 17, 4) || '-' || substr(rawtohex(?1), 21) "));
 
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 
-			RegisterFunction("band", new BitwiseFunctionOperation("bitand"));
+			RegisterFunction("band", new Function.BitwiseFunctionOperation("bitand"));
 			RegisterFunction("bor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2)"));
 			RegisterFunction("bxor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2) * 2"));
 			RegisterFunction("bnot", new SQLFunctionTemplate(null, "(-1 - ?1)"));

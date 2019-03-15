@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.Odbc;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
@@ -47,12 +46,12 @@ namespace NHibernate.Driver
 #else
 		public override DbConnection CreateConnection()
 		{
-			return new OdbcConnection();
+			return new System.Data.Odbc.OdbcConnection();
 		}
 
 		public override DbCommand CreateCommand()
 		{
-			return new OdbcCommand();
+			return new System.Data.Odbc.OdbcCommand();
 		}
 #endif
 

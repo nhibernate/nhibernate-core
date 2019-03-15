@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class EmptyMappingsFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return Array.Empty<string>(); }
 		}

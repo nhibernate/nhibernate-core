@@ -19,7 +19,7 @@ namespace NHibernate.Test.Criteria
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
@@ -464,8 +464,6 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void DetachedCriteriaTest()
 		{
-			TestsContext.AssumeSystemTypeIsSerializable();
-
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
 				.Add(Property.ForName("Name").Eq("Gavin King"))
 				.AddOrder(Order.Asc("StudentNumber"))
@@ -1080,7 +1078,7 @@ namespace NHibernate.Test.Criteria
 
 			object g = s.CreateCriteria(typeof(Student))
 				.Add(Expression.IdEq(667L))
-				.SetFetchMode("enrolments", FetchMode.Join)
+				.Fetch("enrolments")
 				//.setFetchMode("enrolments.course", FetchMode.JOIN) //TODO: would love to make that work...
 				.UniqueResult();
 			Assert.AreSame(gavin, g);
@@ -1270,7 +1268,7 @@ namespace NHibernate.Test.Criteria
 
 			ICriteria criteriaToClone6 = s.CreateCriteria(typeof(Student))
 				.Add(Expression.IdEq(667L))
-				.SetFetchMode("enrolments", FetchMode.Join);
+				.Fetch("enrolments");
 			object g = CriteriaTransformer.Clone(criteriaToClone6)
 				.UniqueResult();
 			Assert.AreSame(gavin, g);
@@ -2417,7 +2415,7 @@ namespace NHibernate.Test.Criteria
 			}
 
 			result = session.CreateCriteria(typeof(Student))
-				.SetFetchMode("PreferredCourse", FetchMode.Join)
+				.Fetch("PreferredCourse")
 				.CreateCriteria("PreferredCourse", JoinType.LeftOuterJoin)
 				.AddOrder(Order.Asc("CourseCode"))
 				.List();
@@ -2427,7 +2425,7 @@ namespace NHibernate.Test.Criteria
 			Assert.IsNotNull(result[2]);
 
 			result = session.CreateCriteria(typeof(Student))
-				.SetFetchMode("PreferredCourse", FetchMode.Join)
+				.Fetch("PreferredCourse")
 				.CreateAlias("PreferredCourse", "pc", JoinType.LeftOuterJoin)
 				.AddOrder(Order.Asc("pc.CourseCode"))
 				.List();
@@ -2736,6 +2734,9 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void OrderProjectionAliasedTest()
 		{
+			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
+				Assert.Ignore("Current dialect does not support this test");
+
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{

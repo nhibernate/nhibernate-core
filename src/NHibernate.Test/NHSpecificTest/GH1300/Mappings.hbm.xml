@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.GH1300">
+  <class name="Entity">
+    <id name="Id" generator="native" />
+    <property name="Name" length="3"/>
+    <property name="AnsiName" length="3" type="AnsiString"/>
+    <property name="FullText" length="5000"/>
+    <property name="AnsiFullText" length="10000" type="AnsiString"/>
+  </class>
+</hibernate-mapping>

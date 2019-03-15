@@ -9,7 +9,7 @@ namespace NHibernate.Test.Insertordering.FamilyModel
 	[TestFixture]
 	public class Fixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Insertordering.FamilyModel.Mappings.hbm.xml" }; }
 		}
@@ -17,6 +17,11 @@ namespace NHibernate.Test.Insertordering.FamilyModel
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsBatchingDependentDML;
 		}
 
 		protected override void Configure(Configuration configuration)

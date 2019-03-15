@@ -114,15 +114,8 @@ namespace NHibernate.Test.Linq
 
 			public override Task<DbDataReader> ExecuteReaderAsync(DbCommand cmd, CancellationToken cancellationToken)
 			{
-				try
-				{
-					LastCommandTimeout = cmd.CommandTimeout;
-					return base.ExecuteReaderAsync(cmd, cancellationToken);
-				}
-				catch (System.Exception ex)
-				{
-					return Task.FromException<DbDataReader>(ex);
-				}
+				LastCommandTimeout = cmd.CommandTimeout;
+				return base.ExecuteReaderAsync(cmd, cancellationToken);
 			}
 
 			public override DbDataReader ExecuteReader(DbCommand cmd)
@@ -150,15 +143,8 @@ namespace NHibernate.Test.Linq
 
 			public override Task<DbDataReader> ExecuteReaderAsync(DbCommand cmd, CancellationToken cancellationToken)
 			{
-				try
-				{
-					LastCommandTimeout = cmd.CommandTimeout;
-					return base.ExecuteReaderAsync(cmd, cancellationToken);
-				}
-				catch (System.Exception ex)
-				{
-					return Task.FromException<DbDataReader>(ex);
-				}
+				LastCommandTimeout = cmd.CommandTimeout;
+				return base.ExecuteReaderAsync(cmd, cancellationToken);
 			}
 		}
 	}

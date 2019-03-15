@@ -316,6 +316,8 @@ namespace NHibernate.AdoNet
 
 		private void CloseCommand(DbCommand cmd)
 		{
+			if (cmd == null)
+				return;
 			try
 			{
 				// no equiv to the java code in here

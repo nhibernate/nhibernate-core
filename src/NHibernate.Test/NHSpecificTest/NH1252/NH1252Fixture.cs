@@ -8,11 +8,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1252
 	[TestFixture]
 	public class NH1252Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1252"; }
-		}
-
 		protected override void OnTearDown()
 		{
 			base.OnTearDown();

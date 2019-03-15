@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 	[TestFixture]
 	public class LogsFixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "NHSpecificTest.Logs.Mappings.hbm.xml" }; }
 		}
@@ -136,6 +136,11 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 		[Test]
 		public void WillGetSessionIdFromSessionLogsConcurrent()
 		{
+			if (!TestDialect.SupportsConcurrencyTests)
+			{
+				Assert.Ignore($"Dialect {Dialect} does not supports concurrency tests");
+			}
+
 			GlobalContext.Properties["sessionId"] = new SessionIdCapturer();
 
 			// Do not use a ManualResetEventSlim, it does not support async and exhausts the task thread pool in the
@@ -143,13 +148,16 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 			var semaphore = new SemaphoreSlim(0);
 			var failures = new ConcurrentBag<Exception>();
 			var sessionIds = new ConcurrentDictionary<int, Guid>();
+			var threadCount = 10;
+			if (threadCount > TestDialect.MaxNumberOfConnections)
+				threadCount = TestDialect.MaxNumberOfConnections.Value;
 			using (var spy = new TextLogSpy("NHibernate.SQL", "%message | SessionId: %property{sessionId}"))
 			{
 				Parallel.For(
-					1, 12,
+					1, threadCount + 2,
 					i =>
 					{
-						if (i > 10)
+						if (i > threadCount)
 						{
 							// Give some time to threads for reaching the wait, having all of them ready to do most of their job concurrently.
 							Thread.Sleep(100);
@@ -183,7 +191,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 				Assert.That(failures, Is.Empty, $"{failures.Count} task(s) failed.");
 
 				var loggingEvent = spy.GetWholeLog();
-				for (var i = 1; i < 11; i++)
+				for (var i = 1; i < threadCount + 1; i++)
 				for (var j = 0; j < 10; j++)
 				{
 					var sessionId = sessionIds[i];
@@ -193,13 +201,13 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 		}
 
 		[Test]
-		public void WillCleanlyFailOnDoubleProcessDispose()
+		public void DoubleProcessDisposeIsAllowed()
 		{
 			using (var s = OpenSession())
 			{
 				var p = ((AbstractSessionImpl) s).BeginProcess();
 				p.Dispose();
-				Assert.That(() => p.Dispose(), Throws.TypeOf<ObjectDisposedException>());
+				Assert.That(() => p.Dispose(), Throws.Nothing);
 			}
 		}
 

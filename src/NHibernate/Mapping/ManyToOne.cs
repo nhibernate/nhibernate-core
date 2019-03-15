@@ -41,6 +41,8 @@ namespace NHibernate.Mapping
 			get { return isLogicalOneToOne; }
 			set { isLogicalOneToOne = value; }
 		}
+		
+		public string PropertyName { get; set; }
 
 		private IType type;
 		public override IType Type
@@ -50,7 +52,7 @@ namespace NHibernate.Mapping
 				if (type == null)
 				{
 					type =
-						TypeFactory.ManyToOne(ReferencedEntityName, ReferencedPropertyName, IsLazy, UnwrapProxy, IsIgnoreNotFound, isLogicalOneToOne);
+						TypeFactory.ManyToOne(ReferencedEntityName, ReferencedPropertyName, IsLazy, UnwrapProxy, IsIgnoreNotFound, isLogicalOneToOne, PropertyName);
 				}
 				return type;
 			}
@@ -73,7 +75,7 @@ namespace NHibernate.Mapping
 				if (property == null)
 					throw new MappingException("Could not find property " + ReferencedPropertyName + " on " + ReferencedEntityName);
 
-				if (!HasFormula && !"none".Equals(ForeignKeyName, StringComparison.InvariantCultureIgnoreCase))
+				if (!HasFormula && !"none".Equals(ForeignKeyName, StringComparison.OrdinalIgnoreCase))
 				{
 
 					IEnumerable<Column> ce = new SafetyEnumerable<Column>(property.ColumnIterator);

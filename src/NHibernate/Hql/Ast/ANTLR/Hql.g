@@ -259,6 +259,9 @@ fromJoin
 
 withClause
 	: WITH^ logicalExpression
+	| ON logicalExpression 
+	// it's really just a WITH clause, so treat it as such...
+		-> ^(WITH["with"] logicalExpression)
 	;
 
 fromRange
@@ -301,7 +304,7 @@ alias
 
 propertyFetch
 	: FETCH ALL! PROPERTIES!
-	;
+	| (FETCH path)+;
 
 groupByClause
 	: GROUP^ 

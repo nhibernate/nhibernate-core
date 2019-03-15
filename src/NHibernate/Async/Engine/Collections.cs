@@ -145,51 +145,41 @@ namespace NHibernate.Engine
 		/// <param name="entity">The owner of the collection. </param>
 		/// <param name="session">The session.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public static Task ProcessReachableCollectionAsync(IPersistentCollection collection, CollectionType type, object entity, ISessionImplementor session, CancellationToken cancellationToken)
+		public static async Task ProcessReachableCollectionAsync(IPersistentCollection collection, CollectionType type, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			collection.Owner = entity;
+			CollectionEntry ce = session.PersistenceContext.GetCollectionEntry(collection);
+
+			if (ce == null)
 			{
-				return Task.FromCanceled<object>(cancellationToken);
+				// refer to comment in StatefulPersistenceContext.addCollection()
+				throw new HibernateException(string.Format("Found two representations of same collection: {0}", type.Role));
 			}
-			try
+
+			// The CollectionEntry.isReached() stuff is just to detect any silly users  
+			// who set up circular or shared references between/to collections.
+			if (ce.IsReached)
 			{
-				collection.Owner = entity;
-				CollectionEntry ce = session.PersistenceContext.GetCollectionEntry(collection);
+				// We've been here before
+				throw new HibernateException(string.Format("Found shared references to a collection: {0}", type.Role));
+			}
+			ce.IsReached = true;
 
-				if (ce == null)
-				{
-					// refer to comment in StatefulPersistenceContext.addCollection()
-					return Task.FromException<object>(new HibernateException(string.Format("Found two representations of same collection: {0}", type.Role)));
-				}
+			ISessionFactoryImplementor factory = session.Factory;
+			ICollectionPersister persister = factory.GetCollectionPersister(type.Role);
+			ce.CurrentPersister = persister;
+			ce.CurrentKey = await (type.GetKeyOfOwnerAsync(entity, session, cancellationToken)).ConfigureAwait(false); //TODO: better to pass the id in as an argument?
 
-				// The CollectionEntry.isReached() stuff is just to detect any silly users  
-				// who set up circular or shared references between/to collections.
-				if (ce.IsReached)
-				{
-					// We've been here before
-					return Task.FromException<object>(new HibernateException(string.Format("Found shared references to a collection: {0}", type.Role)));
-				}
-				ce.IsReached = true;
-
-				ISessionFactoryImplementor factory = session.Factory;
-				ICollectionPersister persister = factory.GetCollectionPersister(type.Role);
-				ce.CurrentPersister = persister;
-				ce.CurrentKey = type.GetKeyOfOwner(entity, session); //TODO: better to pass the id in as an argument?
-
-				if (log.IsDebugEnabled())
-				{
-					log.Debug("Collection found: {0}, was: {1}{2}",
+			if (log.IsDebugEnabled())
+			{
+				log.Debug("Collection found: {0}, was: {1}{2}",
 				          MessageHelper.CollectionInfoString(persister, collection, ce.CurrentKey, session),
 				          MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, session),
 				          (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
-				}
+			}
 
-				return PrepareCollectionForUpdateAsync(collection, ce, factory, cancellationToken);
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (PrepareCollectionForUpdateAsync(collection, ce, factory, cancellationToken)).ConfigureAwait(false);
 		}
 
 		private static Task PrepareCollectionForUpdateAsync(IPersistentCollection collection, CollectionEntry entry, ISessionFactoryImplementor factory, CancellationToken cancellationToken)

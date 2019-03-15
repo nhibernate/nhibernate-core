@@ -21,12 +21,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1326
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1326"; }
-		}
-
-
 		[Test]
 		public async Task ShouldThrowIfCallingDisconnectInsideTransactionAsync()
 		{

@@ -1,14 +1,13 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Param;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Loader.Criteria
@@ -29,8 +28,12 @@ namespace NHibernate.Loader.Criteria
 		private readonly string[] userAliases;
 		private readonly bool[] includeInResultRow;
 		private readonly int resultRowLength;
+
+		private readonly ISet<ICollectionPersister> _uncacheableCollectionPersisters;
+
 		// caching NH-3486
 		private readonly string[] cachedProjectedColumnAliases;
+		private bool[] childFetchEntities;
 
 		public CriteriaLoader(IOuterJoinLoadable persister, ISessionFactoryImplementor factory, CriteriaImpl rootCriteria,
 							  string rootEntityName, IDictionary<string, IFilter> enabledFilters)
@@ -45,10 +48,12 @@ namespace NHibernate.Loader.Criteria
 
 			InitFromWalker(walker);
 
+			_uncacheableCollectionPersisters = translator.UncacheableCollectionPersisters;
 			userAliases = walker.UserAliases;
 			ResultTypes = walker.ResultTypes;
 			includeInResultRow = walker.IncludeInResultRow;
 			resultRowLength = ArrayHelper.CountTrue(IncludeInResultRow);
+			childFetchEntities = walker.ChildFetchEntities;
 			// fill caching objects only if there is a projection
 			if (translator.HasProjection)
 			{
@@ -83,6 +88,11 @@ namespace NHibernate.Loader.Criteria
 		protected override bool[] IncludeInResultRow
 		{
 			get { return includeInResultRow; }
+		}
+
+		protected override bool IsChildFetchEntity(int i)
+		{
+			return childFetchEntities?[i] == true;
 		}
 
 		public IList List(ISessionImplementor session)
@@ -138,7 +148,6 @@ namespace NHibernate.Loader.Criteria
 			}
 			return result;
 		}
-
 
 		private object[] ToResultRow(object[] row)
 		{
@@ -219,6 +228,11 @@ namespace NHibernate.Loader.Criteria
 		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()
 		{
 			return translator.CollectedParameterSpecifications;
+		}
+
+		protected override bool IsCollectionPersisterCacheable(ICollectionPersister collectionPersister)
+		{
+			return !_uncacheableCollectionPersisters.Contains(collectionPersister);
 		}
 	}
 }

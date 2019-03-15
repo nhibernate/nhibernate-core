@@ -9,7 +9,7 @@ namespace NHibernate.Test.QueryTest
 	[TestFixture]
 	public class BadNamedQueriesFixture : TestCase
 	{
-		protected override IList Mappings => new[] { "QueryTest.BadNamedQueriesFixture.hbm.xml" };
+		protected override string[] Mappings => new[] { "QueryTest.BadNamedQueriesFixture.hbm.xml" };
 
 		protected override string MappingsAssembly => "NHibernate.Test";
 

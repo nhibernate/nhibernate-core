@@ -13,7 +13,7 @@ namespace NHibernate.Test.Unionsubclass2
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "Unionsubclass2.Person.hbm.xml" }; }
 		}

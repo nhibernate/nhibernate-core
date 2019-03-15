@@ -12,7 +12,7 @@ namespace NHibernate.Test.BulkManipulation
 
 		#region Overrides of TestCase
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return Array.Empty<string>(); }
 		}

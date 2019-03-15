@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Collections.Generic;
 
@@ -25,6 +24,11 @@ namespace NHibernate.Util
 
 		public static readonly bool[] True = new bool[] { true };
 		public static readonly bool[] False = new bool[] { false };
+
+		internal static bool IsNullOrEmpty(Array array)
+		{
+			return array == null || array.Length == 0;
+		}
 
 		public static bool IsAllNegative(int[] array)
 		{
@@ -179,45 +183,12 @@ namespace NHibernate.Util
 
 		public static bool ArrayEquals<T>(T[] a, T[] b)
 		{
-			if (a == b)
-				return true;
-
-			if (a == null || b == null)
-				return false;
-
-			if (a.Length != b.Length)
-				return false;
-
-			for (int i = 0; i < a.Length; i++)
-			{
-				if (!Equals(a[i], b[i]))
-					return false;
-			}
-
-			return true;
+			return ArrayComparer<T>.Default.Equals(a, b);
 		}
 
 		public static bool ArrayEquals(byte[] a, byte[] b)
 		{
-			if (a == b)
-				return true;
-
-			if (a == null || b == null)
-				return false;
-
-			if (a.Length != b.Length)
-				return false;
-
-			int i = 0;
-			int len = a.Length;
-			while (i < len)
-			{
-				if (a[i] != b[i])
-					return false;
-
-				i++;
-			}
-			return true;
+			return ArrayComparer<byte>.Default.Equals(a, b);
 		}
 
 		/// <summary>
@@ -230,12 +201,54 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		public static int ArrayGetHashCode<T>(T[] array)
 		{
-			int hc = array.Length;
+			return ArrayComparer<T>.Default.GetHashCode(array);
+		}
 
-			foreach (var e in array)
-				hc = unchecked(hc*31 + e.GetHashCode());
+		internal class ArrayComparer<T> : IEqualityComparer<T[]>
+		{
+			private readonly IEqualityComparer<T> _elementComparer;
 
-			return hc;
+			internal static ArrayComparer<T> Default { get; } = new ArrayComparer<T>();
+
+			internal ArrayComparer() : this(EqualityComparer<T>.Default) { }
+
+			internal ArrayComparer(IEqualityComparer<T> elementComparer)
+			{
+				_elementComparer = elementComparer ?? throw new ArgumentNullException(nameof(elementComparer));
+			}
+
+			public bool Equals(T[] a, T[] b)
+			{
+				if (a == b)
+					return true;
+
+				if (a == null || b == null)
+					return false;
+
+				if (a.Length != b.Length)
+					return false;
+
+				for (var i = 0; i < a.Length; i++)
+				{
+					if (!_elementComparer.Equals(a[i], b[i]))
+						return false;
+				}
+
+				return true;
+			}
+
+			public int GetHashCode(T[] array)
+			{
+				if (array == null)
+					return 0;
+
+				var hc = array.Length;
+
+				foreach (var e in array)
+					hc = unchecked(hc * 31 + _elementComparer.GetHashCode(e));
+
+				return hc;
+			}
 		}
 	}
 }

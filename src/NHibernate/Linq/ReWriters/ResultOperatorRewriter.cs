@@ -68,6 +68,8 @@ namespace NHibernate.Linq.ReWriters
 					typeof(OfTypeResultOperator),
 					typeof(CastResultOperator),
 					typeof(AsQueryableResultOperator),
+					typeof(LockResultOperator),
+					typeof(FetchLazyPropertiesResultOperator)
 				};
 
 			private readonly List<ResultOperatorBase> resultOperators = new List<ResultOperatorBase>();

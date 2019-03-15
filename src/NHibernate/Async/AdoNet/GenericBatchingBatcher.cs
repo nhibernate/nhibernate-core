@@ -49,7 +49,7 @@ namespace NHibernate.AdoNet
 			cancellationToken.ThrowIfCancellationRequested();
 			if (_currentBatch.CountOfCommands == 0)
 			{
-				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, 0);
+				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, 0, ps);
 				return;
 			}
 			try
@@ -71,7 +71,7 @@ namespace NHibernate.AdoNet
 					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
 				}
 
-				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected);
+				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected, ps);
 			}
 			finally
 			{

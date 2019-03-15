@@ -16,6 +16,7 @@ using NHibernate.Hql;
 using NHibernate.Linq;
 using NHibernate.Loader.Custom;
 using NHibernate.Loader.Custom.Sql;
+using NHibernate.Multi;
 using NHibernate.Persister.Entity;
 using NHibernate.Transaction;
 using NHibernate.Type;
@@ -29,6 +30,9 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private ISessionFactoryImplementor _factory;
 		private FlushMode _flushMode;
+
+		[NonSerialized]
+		private IQueryBatch _futureMultiBatch;
 
 		private bool closed;
 
@@ -265,6 +269,8 @@ namespace NHibernate.Impl
 		/// <inheritdoc />
 		public virtual DbConnection Connection => ConnectionManager.GetConnection();
 
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
 		public abstract IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar);
 		public abstract EventListeners Listeners { get; }
 		public abstract bool IsEventSource { get; }
@@ -276,8 +282,16 @@ namespace NHibernate.Impl
 		public abstract string BestGuessEntityName(object entity);
 		public abstract string GuessEntityName(object entity);
 		public abstract int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
+
+		//Since 5.2
+		[Obsolete("Replaced by FutureBatch")]
 		public abstract FutureCriteriaBatch FutureCriteriaBatch { get; protected internal set; }
+		//Since 5.2
+		[Obsolete("Replaced by FutureBatch")]
 		public abstract FutureQueryBatch FutureQueryBatch { get; protected internal set; }
+	
+		public virtual IQueryBatch FutureBatch
+			=>_futureMultiBatch ?? (_futureMultiBatch = new QueryBatch(this, true));
 
 		public virtual IInterceptor Interceptor { get; protected set; }
 
@@ -285,6 +299,18 @@ namespace NHibernate.Impl
 		{
 			get => _flushMode;
 			set => _flushMode = value;
+		}
+
+		//6.0 TODO: Make abstract
+		/// <summary>
+		/// detect in-memory changes, determine if the changes are to tables
+		/// named in the query and, if so, complete execution the flush
+		/// </summary>
+		/// <param name="querySpaces"></param>
+		/// <returns>Returns true if flush was executed</returns>
+		public virtual bool AutoFlushIfRequired(ISet<string> querySpaces)
+		{
+			return false;
 		}
 
 		public virtual IQuery GetNamedQuery(string queryName)
@@ -333,7 +359,7 @@ namespace NHibernate.Impl
 		/// </returns>
 		public IDisposable BeginProcess()
 		{
-			return _processing ? null : new ProcessHelper(this);
+			return _processHelper.BeginProcess(this);
 		}
 
 		/// <summary>
@@ -345,48 +371,56 @@ namespace NHibernate.Impl
 		/// </returns>
 		public IDisposable BeginContext()
 		{
-			return _processing ? null : new SessionIdLoggingContext(SessionId);
+			return _processHelper.Processing ? null : SessionIdLoggingContext.CreateOrNull(SessionId);
 		}
 
-		[NonSerialized]
-		private bool _processing;
+		private ProcessHelper _processHelper = new ProcessHelper();
 
+		[Serializable]
 		private sealed class ProcessHelper : IDisposable
 		{
-			private AbstractSessionImpl _session;
-			private SessionIdLoggingContext _context;
+			[NonSerialized]
+			private IDisposable _context;
 
-			public ProcessHelper(AbstractSessionImpl session)
+			[NonSerialized]
+			private bool _processing;
+
+			public ProcessHelper()
 			{
-				_session = session;
-				_context = new SessionIdLoggingContext(session.SessionId);
+			}
+
+			public bool Processing { get => _processing; }
+
+			public IDisposable BeginProcess(AbstractSessionImpl session)
+			{
+				if (_processing)
+					return null;
+
 				try
 				{
-					_session.CheckAndUpdateSessionStatus();
-					_session._processing = true;
+					_context = SessionIdLoggingContext.CreateOrNull(session.SessionId);
+					session.CheckAndUpdateSessionStatus();
+					_processing = true;
 				}
 				catch
 				{
-					_context.Dispose();
-					_context = null;
+					Dispose();
 					throw;
 				}
+				return this;
 			}
 
 			public void Dispose()
 			{
 				_context?.Dispose();
 				_context = null;
-				if (_session == null)
-					throw new ObjectDisposedException("The session process helper has been disposed already");
-				_session._processing = false;
-				_session = null;
+				_processing = false;
 			}
 		}
 
 		protected internal virtual void CheckAndUpdateSessionStatus()
 		{
-			if (_processing)
+			if (_processHelper.Processing)
 				return;
 
 			ErrorIfClosed();
@@ -615,6 +649,11 @@ namespace NHibernate.Impl
 		public IQueryable<T> Query<T>(string entityName)
 		{
 			return new NhQueryable<T>(this, entityName);
+		}
+
+		public virtual IQueryBatch CreateQueryBatch()
+		{
+			return new QueryBatch(this, false);
 		}
 	}
 }

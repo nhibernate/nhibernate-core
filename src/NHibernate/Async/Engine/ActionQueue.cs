@@ -23,7 +23,7 @@ namespace NHibernate.Engine
 {
 	public partial class ActionQueue
 	{
-	
+
 		private async Task ExecuteActionsAsync(IList list, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -46,18 +46,11 @@ namespace NHibernate.Engine
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
+			if (session.Factory.Settings.IsQueryCacheEnabled)
 			{
-				if (session.Factory.Settings.IsQueryCacheEnabled)
-				{
-					return session.Factory.UpdateTimestampsCache.PreInvalidateAsync(executedSpaces, cancellationToken);
-				}
-				return Task.CompletedTask;
+				return session.Factory.UpdateTimestampsCache.PreInvalidateAsync(executedSpaces, cancellationToken);
 			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return Task.CompletedTask;
 		}
 
 		public async Task ExecuteAsync(IExecutable executable, CancellationToken cancellationToken)
@@ -82,10 +75,6 @@ namespace NHibernate.Engine
 			}
 			finally
 			{
-				if (executable.PropertySpaces != null)
-				{
-					executedSpaces.UnionWith(executable.PropertySpaces);
-				}
 				RegisterCleanupActions(executable);
 			}
 		}
@@ -148,27 +137,30 @@ namespace NHibernate.Engine
 			await (PrepareActionsAsync(collectionCreations, cancellationToken)).ConfigureAwait(false);
 		}
 
-		/// <summary> 
-		/// Performs cleanup of any held cache softlocks.
+		/// <summary>
+		/// Execute any registered <see cref="IBeforeTransactionCompletionProcess" />
 		/// </summary>
-		/// <param name="success">Was the transaction successful.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public Task AfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
+		public Task BeforeTransactionCompletionAsync(CancellationToken cancellationToken) 
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				afterTransactionProcesses.AfterTransactionCompletion(success);
+			return beforeTransactionProcesses.BeforeTransactionCompletionAsync(cancellationToken);
+		}
 
-				return InvalidateCachesAsync(cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+		/// <summary> 
+		/// Performs cleanup of any held cache softlocks.
+		/// </summary>
+		/// <param name="success">Was the transaction successful.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public async Task AfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			await (afterTransactionProcesses.AfterTransactionCompletionAsync(success, cancellationToken)).ConfigureAwait(false);
+
+			await (InvalidateCachesAsync(cancellationToken)).ConfigureAwait(false);
 		}
 
 		private async Task InvalidateCachesAsync(CancellationToken cancellationToken)
@@ -180,6 +172,102 @@ namespace NHibernate.Engine
 			}
 
 			executedSpaces.Clear();
+		}
+		private partial class BeforeTransactionCompletionProcessQueue 
+		{
+	
+			public async Task BeforeTransactionCompletionAsync(CancellationToken cancellationToken) 
+			{
+				cancellationToken.ThrowIfCancellationRequested();
+				int size = processes.Count;
+				for (int i = 0; i < size; i++)
+				{
+					try 
+					{
+						var process = processes[i];
+						await (process.ExecuteBeforeTransactionCompletionAsync(cancellationToken)).ConfigureAwait(false);
+					}
+					catch (OperationCanceledException) { throw; }
+					catch (HibernateException)
+					{
+						throw;
+					}
+					catch (Exception e) 
+					{
+						throw new AssertionFailure("Unable to perform BeforeTransactionCompletion callback", e);
+					}
+				}
+				processes.Clear();
+			}
+		}
+		private partial class AfterTransactionCompletionProcessQueue 
+		{
+	
+			public async Task AfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken) 
+			{
+				cancellationToken.ThrowIfCancellationRequested();
+				int size = processes.Count;
+				
+				for (int i = 0; i < size; i++)
+				{
+					try
+					{
+						var process = processes[i];
+						await (process.ExecuteAfterTransactionCompletionAsync(success, cancellationToken)).ConfigureAwait(false);
+					}
+					catch (OperationCanceledException) { throw; }
+					catch (CacheException e)
+					{
+						log.Error(e, "could not release a cache lock");
+						// continue loop
+					}
+					catch (Exception e)
+					{
+						throw new AssertionFailure("Unable to perform AfterTransactionCompletion callback", e);
+					}
+				}
+				processes.Clear();
+			}
+		}
+		private partial class BeforeTransactionCompletionDelegatedProcess : IBeforeTransactionCompletionProcess
+		{
+
+			public Task ExecuteBeforeTransactionCompletionAsync(CancellationToken cancellationToken)
+			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
+				try
+				{
+					ExecuteBeforeTransactionCompletion();
+					return Task.CompletedTask;
+				}
+				catch (Exception ex)
+				{
+					return Task.FromException<object>(ex);
+				}
+			}
+		}
+		private partial class AfterTransactionCompletionDelegatedProcess : IAfterTransactionCompletionProcess
+		{
+
+			public Task ExecuteAfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
+			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
+				try
+				{
+					ExecuteAfterTransactionCompletion(success);
+					return Task.CompletedTask;
+				}
+				catch (Exception ex)
+				{
+					return Task.FromException<object>(ex);
+				}
+			}
 		}
 	}
 }

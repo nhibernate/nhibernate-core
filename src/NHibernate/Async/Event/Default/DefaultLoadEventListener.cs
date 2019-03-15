@@ -9,8 +9,10 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using NHibernate.Action;
 using NHibernate.Cache;
 using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
@@ -63,7 +65,8 @@ namespace NHibernate.Event.Default
 			else
 			{
 				System.Type idClass = persister.IdentifierType.ReturnedClass;
-				if (idClass != null && !idClass.IsInstanceOfType(@event.EntityId))
+				if (idClass != null && !idClass.IsInstanceOfType(@event.EntityId) &&
+					!(@event.EntityId is DelayedPostInsertIdentifier))
 				{
 					throw new TypeMismatchException("Provided id of the wrong type. Expected: " + idClass + ", got " + @event.EntityId.GetType());
 				}
@@ -405,41 +408,99 @@ namespace NHibernate.Event.Default
 			bool useCache = persister.HasCache && source.CacheMode .HasFlag(CacheMode.Get)
 				&& @event.LockMode.LessThan(LockMode.Read);
 
-			if (useCache)
+			if (!useCache)
 			{
-				ISessionFactoryImplementor factory = source.Factory;
-
-				CacheKey ck = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
-				object ce = await (persister.Cache.GetAsync(ck, source.Timestamp, cancellationToken)).ConfigureAwait(false);
-
-				if (factory.Statistics.IsStatisticsEnabled)
+				return null;
+			}
+			ISessionFactoryImplementor factory = source.Factory;
+			var batchSize = persister.GetBatchSize();
+			var entityBatch = source.PersistenceContext.BatchFetchQueue.QueryCacheQueue
+			                        ?.GetEntityBatch(persister, @event.EntityId);
+			if ((entityBatch != null || batchSize > 1) && persister.Cache.PreferMultipleGet())
+			{
+				// The first item in the array is the item that we want to load
+				if (entityBatch != null)
 				{
-					if (ce == null)
+					if (entityBatch.Length == 0)
 					{
-						factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
-						log.Debug("Entity cache miss: {0}", ck);
+						return null; // The key was already checked
 					}
-					else
-					{
-						factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
-						log.Debug("Entity cache hit: {0}", ck);
-					}
+
+					batchSize = entityBatch.Length;
 				}
 
-				if (ce != null)
+				if (entityBatch == null)
 				{
-					CacheEntry entry = (CacheEntry) persister.CacheEntryStructure.Destructure(ce, factory);
+					entityBatch = await (source.PersistenceContext.BatchFetchQueue.GetEntityBatchAsync(persister, @event.EntityId, batchSize, false, cancellationToken)).ConfigureAwait(false);
+				}
 
-					// Entity was found in second-level cache...
-					// NH: Different behavior (take a look to options.ExactPersister (NH-295))
-					if (!options.ExactPersister || persister.EntityMetamodel.SubclassEntityNames.Contains(entry.Subclass))
+				// Ignore null values as the retrieved batch may contains them when there are not enough
+				// uninitialized entities in the queue
+				var keys = new List<CacheKey>(batchSize);
+				for (var i = 0; i < entityBatch.Length; i++)
+				{
+					var key = entityBatch[i];
+					if (key == null)
 					{
-						return await (AssembleCacheEntryAsync(entry, @event.EntityId, persister, @event, cancellationToken)).ConfigureAwait(false);
+						break;
 					}
+					keys.Add(source.GenerateCacheKey(key, persister.IdentifierType, persister.RootEntityName));
+				}
+				var cachedObjects = await (persister.Cache.GetManyAsync(keys.ToArray(), source.Timestamp, cancellationToken)).ConfigureAwait(false);
+				for (var i = 1; i < cachedObjects.Length; i++)
+				{
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AssembleAsync(
+						keys[i],
+						cachedObjects[i],
+						new LoadEvent(entityBatch[i], @event.EntityClassName, @event.LockMode, @event.Session),
+						false)).ConfigureAwait(false);
+				}
+				cancellationToken.ThrowIfCancellationRequested();
+				return await (AssembleAsync(keys[0], cachedObjects[0], @event, true)).ConfigureAwait(false);
+			}
+			var cacheKey = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
+			var cachedObject = await (persister.Cache.GetAsync(cacheKey, source.Timestamp, cancellationToken)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			return await (AssembleAsync(cacheKey, cachedObject, @event, true)).ConfigureAwait(false);
+
+			Task<object> AssembleAsync(CacheKey ck, object ce, LoadEvent evt, bool alterStatistics)
+			{
+				try
+				{
+					if (factory.Statistics.IsStatisticsEnabled && alterStatistics)
+					{
+						if (ce == null)
+						{
+							factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
+							log.Debug("Entity cache miss: {0}", ck);
+						}
+						else
+						{
+							factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
+							log.Debug("Entity cache hit: {0}", ck);
+						}
+					}
+
+					if (ce != null)
+					{
+						CacheEntry entry = (CacheEntry) persister.CacheEntryStructure.Destructure(ce, factory);
+
+						// Entity was found in second-level cache...
+						// NH: Different behavior (take a look to options.ExactPersister (NH-295))
+						if (!options.ExactPersister || persister.EntityMetamodel.SubclassEntityNames.Contains(entry.Subclass))
+						{
+							return AssembleCacheEntryAsync(entry, evt.EntityId, persister, evt, cancellationToken);
+						}
+					}
+
+					return Task.FromResult<object>(null);
+				}
+				catch (Exception ex)
+				{
+					return Task.FromException<object>(ex);
 				}
 			}
-
-			return null;
 		}
 
 		private async Task<object> AssembleCacheEntryAsync(CacheEntry entry, object id, IEntityPersister persister, LoadEvent @event, CancellationToken cancellationToken)
@@ -459,7 +520,7 @@ namespace NHibernate.Event.Default
 
 			// make it circular-reference safe
 			EntityKey entityKey = session.GenerateEntityKey(id, subclassPersister);
-			TwoPhaseLoad.AddUninitializedCachedEntity(entityKey, result, subclassPersister, LockMode.None, entry.AreLazyPropertiesUnfetched, entry.Version, session);
+			TwoPhaseLoad.AddUninitializedCachedEntity(entityKey, result, subclassPersister, LockMode.None, entry.Version, session);
 
 			IType[] types = subclassPersister.PropertyTypes;
 			object[] values = await (entry.AssembleAsync(result, id, subclassPersister, session.Interceptor, session, cancellationToken)).ConfigureAwait(false); // intializes result by side-effect
@@ -497,10 +558,9 @@ namespace NHibernate.Event.Default
 				LockMode.None,
 				true,
 				subclassPersister,
-				false,
-				entry.AreLazyPropertiesUnfetched);
+				false);
 			
-			subclassPersister.AfterInitialize(result, entry.AreLazyPropertiesUnfetched, session);
+			subclassPersister.AfterInitialize(result, session);
 			await (persistenceContext.InitializeNonLazyCollectionsAsync(cancellationToken)).ConfigureAwait(false);
 			// upgrade the lock if necessary:
 			//lock(result, lockMode);

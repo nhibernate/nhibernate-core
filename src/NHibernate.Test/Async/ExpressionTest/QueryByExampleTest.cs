@@ -20,7 +20,7 @@ namespace NHibernate.Test.ExpressionTest
 	[TestFixture]
 	public class QueryByExampleTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Componentizable.hbm.xml"}; }
 		}

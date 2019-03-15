@@ -117,12 +117,13 @@ namespace NHibernate.Dialect
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(year from ?1)"));
 
 			// Bitwise operations
-			RegisterFunction("band", new BitwiseNativeOperation("&"));
-			RegisterFunction("bor", new BitwiseNativeOperation("|"));
-			RegisterFunction("bxor", new BitwiseNativeOperation("^"));
-			RegisterFunction("bnot", new BitwiseNativeOperation("~", true));
+			RegisterFunction("band", new Function.BitwiseNativeOperation("&"));
+			RegisterFunction("bor", new Function.BitwiseNativeOperation("|"));
+			RegisterFunction("bxor", new Function.BitwiseNativeOperation("^"));
+			RegisterFunction("bnot", new Function.BitwiseNativeOperation("~", true));
 
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
+			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "?1"));
 
 			// register hibernate types for default use in scalar sqlquery type auto detection
 			RegisterHibernateType(DbType.Int64, NHibernateUtil.Int64.Name);
@@ -147,15 +148,18 @@ namespace NHibernate.Dialect
 		public static Dialect GetDialect()
 		{
 			string dialectName;
+#pragma warning disable 618
+			var properties = Environment.Properties;
+#pragma warning restore 618
 			try
 			{
-				dialectName = Environment.Properties[Environment.Dialect];
+				dialectName = properties[Environment.Dialect];
 			}
 			catch (Exception e)
 			{
 				throw new HibernateException("The dialect was not set. Set the property 'dialect'.", e);
 			}
-			return InstantiateDialect(dialectName, Environment.Properties);
+			return InstantiateDialect(dialectName, properties);
 		}
 
 		/// <summary>
@@ -184,7 +188,7 @@ namespace NHibernate.Dialect
 		{
 			try
 			{
-				var dialect = (Dialect)Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(dialectName));
+				var dialect = (Dialect)Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(dialectName));
 				dialect.Configure(props);
 				return dialect;
 			}
@@ -468,10 +472,24 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		// Since v5.2
+		[Obsolete("Use or override SupportsNullInUnique instead")]
 		public virtual bool SupportsNotNullUnique
 		{
 			get { return true; }
 		}
+
+		/// <summary>
+		/// Does this dialect supports <c>null</c> values in columns belonging to an unique constraint/index?
+		/// </summary>
+		/// <remarks>Some databases do not accept <c>null</c> in unique constraints at all. In such case,
+		/// this property should be overriden for yielding <c>false</c>. This property is not meant for distinguishing
+		/// databases ignoring <c>null</c> when checking uniqueness (ANSI behavior) from those considering <c>null</c>
+		/// as a value and checking for its uniqueness.</remarks>
+		public virtual bool SupportsNullInUnique
+#pragma warning disable 618
+			=> SupportsNotNullUnique;
+#pragma warning restore 618
 
 		public virtual IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
@@ -738,6 +756,9 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
+		/// <summary> Does this dialect support a way to retrieve the database's current UTC timestamp value? </summary>
+		public virtual bool SupportsCurrentUtcTimestampSelection => false;
+
 		/// <summary>
 		/// Gives the best resolution that the database can use for storing
 		/// date/time values, in ticks.
@@ -976,7 +997,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary> 
-		/// Provided we <see cref="SupportsInsertSelectIdentity"/>, then attch the
+		/// Provided we <see cref="SupportsInsertSelectIdentity"/>, then attach the
 		/// "select identity" clause to the  insert statement.
 		/// </summary>
 		/// <param name="insertString">The insert command </param>
@@ -988,6 +1009,22 @@ namespace NHibernate.Dialect
 		public virtual SqlString AppendIdentitySelectToInsert(SqlString insertString)
 		{
 			return insertString;
+		}
+
+		/// <summary> 
+		/// Provided we <see cref="SupportsInsertSelectIdentity"/>, then attach the
+		/// "select identity" clause to the  insert statement.
+		/// </summary>
+		/// <param name="insertString">The insert command </param>
+		/// <param name="identifierColumnName">The identifier name</param>
+		/// <returns> 
+		/// The insert command with any necessary identity select clause attached.
+		/// Note, if <see cref="SupportsInsertSelectIdentity"/> == false then
+		/// the insert-string should be returned without modification.
+		/// </returns>
+		public virtual SqlString AppendIdentitySelectToInsert(SqlString insertString, string identifierColumnName)
+		{
+			return AppendIdentitySelectToInsert(insertString);
 		}
 
 		/// <summary>
@@ -2418,8 +2455,8 @@ namespace NHibernate.Dialect
 			get { throw new NotSupportedException("Database not known to define a current timestamp function"); }
 		}
 
-		/// <summary> 
-		/// Retrieve the command used to retrieve the current timestammp from the database. 
+		/// <summary>
+		/// Retrieve the command used to retrieve the current timestamp from the database.
 		/// </summary>
 		public virtual string CurrentTimestampSelectString
 		{
@@ -2434,6 +2471,20 @@ namespace NHibernate.Dialect
 		{
 			get { return "current_timestamp"; }
 		}
+
+		/// <summary>
+		/// Retrieve the command used to retrieve the current UTC timestamp from the database.
+		/// </summary>
+		public virtual string CurrentUtcTimestampSelectString =>
+			throw new NotSupportedException("Database not known to define a current UTC timestamp function");
+
+		/// <summary>
+		/// The name of the database-specific SQL function for retrieving the
+		/// current UTC timestamp.
+		/// </summary>
+		public virtual string CurrentUtcTimestampSQLFunctionName =>
+			// It seems there are no SQL ANSI function for UTC
+			throw new NotSupportedException("Database not known to define a current UTC timestamp function");
 
 		public virtual IViolatedConstraintNameExtracter ViolatedConstraintNameExtracter
 		{
@@ -2473,11 +2524,19 @@ namespace NHibernate.Dialect
 		public virtual char StatementTerminator => ';';
 
 		/// <summary>
-		/// The syntax used to add a column to a table. Note this is deprecated
+		/// The syntax used to add a column to a table.
 		/// </summary>
 		public virtual string AddColumnString
 		{
 			get { throw new NotSupportedException("No add column syntax supported by Dialect"); }
+		}
+
+		/// <summary>
+		/// The syntax for the suffix used to add a column to a table.
+		/// </summary>
+		public virtual string AddColumnSuffixString
+		{
+			get { return String.Empty; }
 		}
 
 		public virtual string DropForeignKeyString
