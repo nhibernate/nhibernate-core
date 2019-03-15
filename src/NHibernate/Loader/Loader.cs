@@ -1070,9 +1070,7 @@ namespace NHibernate.Loader
 				return;
 			}
 
-			var concretePersister  = GetConcretePersister(rs, i, persister, key.Identifier, session);
-			entry = entry ?? session.PersistenceContext.GetEntry(obj);
-			UpdateLazyPropertiesFromResultSet(rs, i, obj, concretePersister, key, entry, persister, session, cacheBatchingHandler);
+			UpdateLazyPropertiesFromResultSet(rs, i, obj, key, entry, persister, session, cacheBatchingHandler);
 		}
 
 		private void CacheByUniqueKey(int i, IEntityPersister persister, object obj, ISessionImplementor session, bool alreadyLoaded)
@@ -1159,8 +1157,8 @@ namespace NHibernate.Loader
 			return array?[i];
 		}
 
-		private void UpdateLazyPropertiesFromResultSet(DbDataReader rs, int i, object obj, ILoadable persister, EntityKey key,
-		                                               EntityEntry entry, ILoadable rootPersister, ISessionImplementor session,
+		private void UpdateLazyPropertiesFromResultSet(DbDataReader rs, int i, object obj, EntityKey key,
+		                                               EntityEntry optionalEntry, ILoadable rootPersister, ISessionImplementor session,
 		                                               Action<IEntityPersister, CachePutData> cacheBatchingHandler)
 		{
 			var fetchAllProperties = IsEagerPropertyFetchEnabled(i);
@@ -1171,6 +1169,8 @@ namespace NHibernate.Loader
 				return; // No lazy properties were loaded
 			}
 
+			var persister = GetConcretePersister(rs, i, rootPersister, key.Identifier, session);
+			var entry = optionalEntry ?? session.PersistenceContext.GetEntry(obj);
 			// The property values will not be set when the entry status is Loading so in that case we have to get
 			// the uninitialized lazy properties from the loaded state
 			var uninitializedProperties = entry.Status == Status.Loading
@@ -1194,7 +1194,7 @@ namespace NHibernate.Loader
 				? EntityAliases[i].SuffixedPropertyAliases
 				: GetSubclassEntityAliases(i, persister);
 
-			if (!persister.InitializeLazyProperties(rs, id, obj, rootPersister, cols, updateLazyProperties, fetchAllProperties, session))
+			if (!persister.InitializeLazyProperties(rs, id, obj, cols, updateLazyProperties, fetchAllProperties, session))
 			{
 				return;
 			}

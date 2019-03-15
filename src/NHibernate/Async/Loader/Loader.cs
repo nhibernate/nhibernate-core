@@ -740,9 +740,7 @@ namespace NHibernate.Loader
 				return;
 			}
 
-			var concretePersister  = await (GetConcretePersisterAsync(rs, i, persister, key.Identifier, session, cancellationToken)).ConfigureAwait(false);
-			entry = entry ?? session.PersistenceContext.GetEntry(obj);
-			await (UpdateLazyPropertiesFromResultSetAsync(rs, i, obj, concretePersister, key, entry, persister, session, cacheBatchingHandler, cancellationToken)).ConfigureAwait(false);
+			await (UpdateLazyPropertiesFromResultSetAsync(rs, i, obj, key, entry, persister, session, cacheBatchingHandler, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -781,8 +779,8 @@ namespace NHibernate.Loader
 			return obj;
 		}
 
-		private async Task UpdateLazyPropertiesFromResultSetAsync(DbDataReader rs, int i, object obj, ILoadable persister, EntityKey key,
-		                                               EntityEntry entry, ILoadable rootPersister, ISessionImplementor session,
+		private async Task UpdateLazyPropertiesFromResultSetAsync(DbDataReader rs, int i, object obj, EntityKey key,
+		                                               EntityEntry optionalEntry, ILoadable rootPersister, ISessionImplementor session,
 		                                               Action<IEntityPersister, CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -794,6 +792,8 @@ namespace NHibernate.Loader
 				return; // No lazy properties were loaded
 			}
 
+			var persister = await (GetConcretePersisterAsync(rs, i, rootPersister, key.Identifier, session, cancellationToken)).ConfigureAwait(false);
+			var entry = optionalEntry ?? session.PersistenceContext.GetEntry(obj);
 			// The property values will not be set when the entry status is Loading so in that case we have to get
 			// the uninitialized lazy properties from the loaded state
 			var uninitializedProperties = entry.Status == Status.Loading
@@ -817,7 +817,7 @@ namespace NHibernate.Loader
 				? EntityAliases[i].SuffixedPropertyAliases
 				: GetSubclassEntityAliases(i, persister);
 
-			if (!await (persister.InitializeLazyPropertiesAsync(rs, id, obj, rootPersister, cols, updateLazyProperties, fetchAllProperties, session, cancellationToken)).ConfigureAwait(false))
+			if (!await (persister.InitializeLazyPropertiesAsync(rs, id, obj, cols, updateLazyProperties, fetchAllProperties, session, cancellationToken)).ConfigureAwait(false))
 			{
 				return;
 			}
