@@ -1296,25 +1296,24 @@ namespace NHibernate.Loader
 		/// </summary>
 		private ILoadable GetConcretePersister(DbDataReader rs, int i, ILoadable persister, object id, ISessionImplementor session)
 		{
-			if (!persister.HasSubclasses)
+			if (persister.HasSubclasses)
 			{
-				return persister;
+				// code to handle subclasses of topClass
+				object discriminatorValue =
+					persister.DiscriminatorType.NullSafeGet(rs, EntityAliases[i].SuffixedDiscriminatorAlias, session, null);
+
+				string result = persister.GetSubclassForDiscriminatorValue(discriminatorValue);
+
+				if (result == null)
+				{
+					// woops we got an instance of another class hierarchy branch.
+					throw new WrongClassException(string.Format("Discriminator was: '{0}'", discriminatorValue), id,
+												  persister.EntityName);
+				}
+
+				return (ILoadable) Factory.GetEntityPersister(result);
 			}
-
-			// code to handle subclasses of topClass
-			object discriminatorValue =
-				persister.DiscriminatorType.NullSafeGet(rs, EntityAliases[i].SuffixedDiscriminatorAlias, session, null);
-
-			string result = persister.GetSubclassForDiscriminatorValue(discriminatorValue);
-
-			if (result == null)
-			{
-				// woops we got an instance of another class hierarchy branch.
-				throw new WrongClassException(string.Format("Discriminator was: '{0}'", discriminatorValue), id,
-											  persister.EntityName);
-			}
-
-			return (ILoadable) Factory.GetEntityPersister(result);
+			return persister;
 		}
 
 		/// <summary>
