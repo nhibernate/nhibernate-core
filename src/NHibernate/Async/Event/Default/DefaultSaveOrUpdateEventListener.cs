@@ -34,9 +34,9 @@ namespace NHibernate.Event.Default
 			{
 				//assign the requested id to the proxy, *before* 
 				//reassociating the proxy
-				if (obj.IsProxy())
+				if (obj.IsProxy(out var proxy))
 				{
-					((INHibernateProxy)obj).HibernateLazyInitializer.Identifier = requestedId;
+					proxy.HibernateLazyInitializer.Identifier = requestedId;
 				}
 			}
 

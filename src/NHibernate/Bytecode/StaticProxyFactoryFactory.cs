@@ -13,5 +13,7 @@ namespace NHibernate.Bytecode
 		public bool IsInstrumented(System.Type entityClass) => true;
 
 		public bool IsProxy(object entity) => entity is INHibernateProxy;
+
+		public bool IsProxy(object entity, out INHibernateProxy proxy) => (proxy = entity as INHibernateProxy) != null;
 	}
 }

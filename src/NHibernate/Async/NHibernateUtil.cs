@@ -44,9 +44,9 @@ namespace NHibernate
 				{
 					return Task.CompletedTask;
 				}
-				if (proxy.IsProxy())
+				if (proxy.IsProxy(out var entityProxy))
 				{
-					return ((INHibernateProxy)proxy).HibernateLazyInitializer.InitializeAsync(cancellationToken);
+					return entityProxy.HibernateLazyInitializer.InitializeAsync(cancellationToken);
 				}
 				else if (proxy is ILazyInitializedCollection coll)
 				{
@@ -76,9 +76,9 @@ namespace NHibernate
 		public static async Task<System.Type> GetClassAsync(object proxy, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (proxy.IsProxy())
+			if (proxy.IsProxy(out var entityProxy))
 			{
-				return (await (((INHibernateProxy)proxy).HibernateLazyInitializer.GetImplementationAsync(cancellationToken)).ConfigureAwait(false)).GetType();
+				return (await (entityProxy.HibernateLazyInitializer.GetImplementationAsync(cancellationToken)).ConfigureAwait(false)).GetType();
 			}
 			else
 			{

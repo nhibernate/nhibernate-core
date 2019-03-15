@@ -46,9 +46,9 @@ namespace NHibernate.Event.Default
 			object obj = @event.Entity;
 
 			object entity;
-			if (obj.IsProxy())
+			if (obj.IsProxy(out var proxy))
 			{
-				ILazyInitializer li = ((INHibernateProxy)obj).HibernateLazyInitializer;
+				ILazyInitializer li = proxy.HibernateLazyInitializer;
 				if (li.IsUninitialized)
 				{
 					if (li.Session == source)

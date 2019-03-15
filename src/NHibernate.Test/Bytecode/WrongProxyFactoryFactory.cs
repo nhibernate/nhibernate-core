@@ -33,6 +33,8 @@ namespace NHibernate.Test.Bytecode
             return entity is INHibernateProxy;
         }
 
+		public bool IsProxy(object entity, out INHibernateProxy proxy) => (proxy = entity as INHibernateProxy) != null;
+
 		#endregion
 	}
 }

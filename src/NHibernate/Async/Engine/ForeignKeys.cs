@@ -103,10 +103,8 @@ namespace NHibernate.Engine
 				//if (obj == org.hibernate.intercept.LazyPropertyInitializer_Fields.UNFETCHED_PROPERTY)
 				//  return false; //this is kinda the best we can do...
 
-				if (obj.IsProxy())
+				if (obj.IsProxy(out var proxy))
 				{
-                    INHibernateProxy proxy = obj as INHibernateProxy;
-                    
                     // if its an uninitialized proxy it can't be transient
 					ILazyInitializer li = proxy.HibernateLazyInitializer;
 					if (li.GetImplementation(session) == null)
@@ -181,8 +179,7 @@ namespace NHibernate.Engine
 				return false;
 			}
 
-			var proxy = entity as INHibernateProxy;
-			if (proxy?.HibernateLazyInitializer.IsUninitialized == true)
+			if (entity.IsProxy(out var proxy) && proxy.HibernateLazyInitializer.IsUninitialized)
 			{
 				return false;
 			}

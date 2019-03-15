@@ -149,9 +149,8 @@ namespace NHibernate.Type
 
 			object proxyOrEntity = await (session.InternalLoadAsync(entityName, id, eager, IsNullable && !isProxyUnwrapEnabled, cancellationToken)).ConfigureAwait(false);
 
-			if (proxyOrEntity.IsProxy())
+			if (proxyOrEntity.IsProxy(out var proxy))
 			{
-				INHibernateProxy proxy = (INHibernateProxy) proxyOrEntity;
 				proxy.HibernateLazyInitializer.Unwrap = isProxyUnwrapEnabled;
 			}
 

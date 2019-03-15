@@ -395,9 +395,9 @@ namespace NHibernate
 			{
 				return;
 			}
-			if (proxy.IsProxy())
+			if (proxy.IsProxy(out var entityProxy))
 			{
-				((INHibernateProxy)proxy).HibernateLazyInitializer.Initialize();
+				entityProxy.HibernateLazyInitializer.Initialize();
 			}
 			else if (proxy is ILazyInitializedCollection coll)
 			{
@@ -418,9 +418,9 @@ namespace NHibernate
 		/// <returns>true if the argument is already initialized, or is not a proxy or collection</returns>
 		public static bool IsInitialized(object proxy)
 		{
-			if (proxy.IsProxy())
+			if (proxy.IsProxy(out var entityProxy))
 			{
-				return !((INHibernateProxy)proxy).HibernateLazyInitializer.IsUninitialized;
+				return !entityProxy.HibernateLazyInitializer.IsUninitialized;
 			}
 			else if (proxy is ILazyInitializedCollection coll)
 			{
@@ -445,9 +445,9 @@ namespace NHibernate
 		/// <returns>the true class of the instance</returns>
 		public static System.Type GetClass(object proxy)
 		{
-			if (proxy.IsProxy())
+			if (proxy.IsProxy(out var entityProxy))
 			{
-				return ((INHibernateProxy)proxy).HibernateLazyInitializer.GetImplementation().GetType();
+				return entityProxy.HibernateLazyInitializer.GetImplementation().GetType();
 			}
 			else
 			{
@@ -571,9 +571,9 @@ namespace NHibernate
 		public static bool IsPropertyInitialized(object proxy, string propertyName)
 		{
 			object entity;
-			if (proxy.IsProxy())
+			if (proxy.IsProxy(out var entityProxy))
 			{
-				ILazyInitializer li = ((INHibernateProxy)proxy).HibernateLazyInitializer;
+				ILazyInitializer li = entityProxy.HibernateLazyInitializer;
 				if (li.IsUninitialized)
 				{
 					return false;

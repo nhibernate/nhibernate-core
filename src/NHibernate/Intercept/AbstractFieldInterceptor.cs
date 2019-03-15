@@ -147,9 +147,8 @@ namespace NHibernate.Intercept
 				return InitializeField(fieldName, target);
 			}
 
-			if (value.IsProxy() && IsUninitializedAssociation(fieldName))
+			if (value.IsProxy(out var nhproxy) && IsUninitializedAssociation(fieldName))
 			{
-				var nhproxy = value as INHibernateProxy;
 				value = InitializeOrGetAssociation(nhproxy, fieldName);
 				// Set the property value in order to be accessible when the session is closed
 				var persister = session.Factory.GetEntityPersister(entityName);

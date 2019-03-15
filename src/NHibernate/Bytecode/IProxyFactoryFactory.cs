@@ -2,6 +2,22 @@ using NHibernate.Proxy;
 
 namespace NHibernate.Bytecode
 {
+	//6.0 TODO Merge with IProxyFactoryFactory interface
+	public static class ProxyFactoryFactoryExtensions
+	{
+		public static bool IsProxy(this IProxyFactoryFactory factory, object entity, out INHibernateProxy proxy)
+		{
+			if (factory.IsProxy(entity))
+			{
+				proxy = (INHibernateProxy) factory;
+				return true;
+			}
+
+			proxy = null;
+			return false;
+		}
+	}
+
 	/// <summary> 
 	/// An interface for factories of <see cref="IProxyFactory">proxy factory</see> instances.
 	/// </summary>

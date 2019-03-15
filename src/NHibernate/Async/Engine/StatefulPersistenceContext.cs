@@ -124,10 +124,8 @@ namespace NHibernate.Engine
 				//{
 				//  maybeProxy = wrapper.Element;
 				//}
-				if (maybeProxy.IsProxy())
+				if (maybeProxy.IsProxy(out var proxy))
 				{
-					var proxy = maybeProxy as INHibernateProxy; 
-					
 					ILazyInitializer li = proxy.HibernateLazyInitializer;
 					ReassociateProxy(li, proxy);
 					return li.GetImplementationAsync(cancellationToken); //initialize + unwrap the object

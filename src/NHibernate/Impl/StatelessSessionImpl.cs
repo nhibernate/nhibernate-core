@@ -355,9 +355,8 @@ namespace NHibernate.Impl
 		{
 			using (BeginContext())
 			{
-				if (entity.IsProxy())
+				if (entity.IsProxy(out var proxy))
 				{
-					var proxy = entity as INHibernateProxy;
 					entity = proxy.HibernateLazyInitializer.GetImplementation();
 				}
 				return GuessEntityName(entity);

@@ -98,9 +98,9 @@ namespace NHibernate.Event.Default
 			if (original != null)
 			{
 				object entity;
-				if (original.IsProxy())
+				if (original.IsProxy(out var proxy))
 				{
-					ILazyInitializer li = ((INHibernateProxy)original).HibernateLazyInitializer;
+					ILazyInitializer li = proxy.HibernateLazyInitializer;
 					if (li.IsUninitialized)
 					{
 						log.Debug("ignoring uninitialized proxy");
@@ -530,8 +530,8 @@ namespace NHibernate.Event.Default
 			{
 				object entityCopy = copyCache[entity];
 				
-				if (entityCopy.IsProxy())
-					entityCopy = ((INHibernateProxy)entityCopy).HibernateLazyInitializer.GetImplementation();
+				if (entityCopy.IsProxy(out var proxy))
+					entityCopy = proxy.HibernateLazyInitializer.GetImplementation();
 				
 				// NH-specific: Disregard entities that implement ILifecycle and manage their own state - they 
 				// don't have an EntityEntry, and we can't determine if they are transient or not

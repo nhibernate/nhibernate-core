@@ -624,10 +624,8 @@ namespace NHibernate.Type
 				object element = elem;
 				// worrying about proxies is perhaps a little bit of overkill here...
 				
-				if (element.IsProxy())
+				if (element.IsProxy(out var proxy))
 				{
-					INHibernateProxy proxy = element as INHibernateProxy; 
-					
 					ILazyInitializer li = proxy.HibernateLazyInitializer;
 					if (!li.IsUninitialized)
 						element = li.GetImplementation();

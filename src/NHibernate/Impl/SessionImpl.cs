@@ -351,9 +351,8 @@ namespace NHibernate.Impl
 					throw new ArgumentNullException("obj", "null object passed to GetCurrentLockMode");
 				}
 
-				if (obj.IsProxy())
+				if (obj.IsProxy(out var proxy))
 				{
-					var proxy = obj as INHibernateProxy;
 					obj = proxy.HibernateLazyInitializer.GetImplementation(this);
 					if (obj == null)
 					{
@@ -956,9 +955,8 @@ namespace NHibernate.Impl
 		{
 			using (BeginContext())
 			{
-				if (entity.IsProxy())
+				if (entity.IsProxy(out var proxy))
 				{
-					INHibernateProxy proxy = entity as INHibernateProxy;
 					ILazyInitializer initializer = proxy.HibernateLazyInitializer;
 
 					// it is possible for this method to be called during flush processing,
@@ -1202,10 +1200,8 @@ namespace NHibernate.Impl
 		{
 			using (BeginProcess())
 			{
-				if (obj.IsProxy())
+				if (obj.IsProxy(out var proxy))
 				{
-					var proxy = obj as INHibernateProxy;
-
 					if (!persistenceContext.ContainsProxy(proxy))
 					{
 						throw new TransientObjectException("proxy was not associated with the session");
@@ -1383,10 +1379,8 @@ namespace NHibernate.Impl
 				// the session closed, but do the check here anyway, so that
 				// the behavior is uniform.
 
-				if (obj.IsProxy())
+				if (obj.IsProxy(out var proxy))
 				{
-					var proxy = obj as INHibernateProxy;
-
 					ILazyInitializer li = proxy.HibernateLazyInitializer;
 					if (li.Session != this)
 					{
@@ -1414,10 +1408,8 @@ namespace NHibernate.Impl
 		{
 			using (BeginProcess())
 			{
-				if (obj.IsProxy())
+				if (obj.IsProxy(out var proxy))
 				{
-					INHibernateProxy proxy = obj as INHibernateProxy;
-
 					return proxy.HibernateLazyInitializer.Identifier;
 				}
 				else
@@ -1755,10 +1747,8 @@ namespace NHibernate.Impl
 		{
 			using (BeginProcess())
 			{
-				if (obj.IsProxy())
+				if (obj.IsProxy(out var proxy))
 				{
-					var proxy = obj as INHibernateProxy;
-
 					//do not use proxiesByKey, since not all
 					//proxies that point to this session's
 					//instances are in that collection!

@@ -1,5 +1,6 @@
 using NHibernate.Cfg;
 using NHibernate.Intercept;
+using NHibernate.Bytecode;
 
 namespace NHibernate.Proxy
 {
@@ -18,10 +19,8 @@ namespace NHibernate.Proxy
 		/// <returns>The Underlying Type for the object regardless of if it is a Proxy.</returns>
 		public static System.Type GetClassWithoutInitializingProxy(object obj)
 		{
-			if (obj.IsProxy())
+			if (obj.IsProxy(out var proxy))
 			{
-				var proxy = obj as INHibernateProxy;
-
 				return proxy.HibernateLazyInitializer.PersistentClass;
 			}
 			return obj.GetType();
@@ -38,9 +37,8 @@ namespace NHibernate.Proxy
 		/// </remarks>
 		public static System.Type GuessClass(object entity)
 		{
-			if (entity.IsProxy())
+			if (entity.IsProxy(out var proxy))
 			{
-				var proxy = entity as INHibernateProxy;
 				var li = proxy.HibernateLazyInitializer;
 				if (li.IsUninitialized)
 				{
@@ -61,6 +59,11 @@ namespace NHibernate.Proxy
 		public static bool IsProxy(this object entity)
 		{
 			return Environment.BytecodeProvider.ProxyFactoryFactory.IsProxy(entity);
+		}
+
+		public static bool IsProxy(this object entity, out INHibernateProxy proxy)
+		{
+			return Environment.BytecodeProvider.ProxyFactoryFactory.IsProxy(entity, out proxy);
 		}
 	}
 }

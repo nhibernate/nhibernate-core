@@ -60,9 +60,8 @@ namespace NHibernate.Type
 
 			object xid;
 
-			if (x.IsProxy())
+			if (x.IsProxy(out var proxy))
 			{
-				INHibernateProxy proxy = x as INHibernateProxy;
 				xid = proxy.HibernateLazyInitializer.Identifier;
 			}
 			else
@@ -72,9 +71,8 @@ namespace NHibernate.Type
 
 			object yid;
 
-			if (y.IsProxy())
+			if (y.IsProxy(out proxy))
 			{
-				INHibernateProxy proxy = y as INHibernateProxy;
 				yid = proxy.HibernateLazyInitializer.Identifier;
 			}
 			else
@@ -134,9 +132,8 @@ namespace NHibernate.Type
 		/// <returns> The extracted identifier. </returns>
 		private static object GetIdentifier(object obj, IEntityPersister persister)
 		{
-			if (obj.IsProxy())
+			if (obj.IsProxy(out var proxy))
 			{
-				INHibernateProxy proxy = obj as INHibernateProxy;
 				ILazyInitializer li = proxy.HibernateLazyInitializer;
 
 				return li.Identifier;
@@ -369,9 +366,8 @@ namespace NHibernate.Type
 
 			object proxyOrEntity = session.InternalLoad(entityName, id, eager, IsNullable && !isProxyUnwrapEnabled);
 
-			if (proxyOrEntity.IsProxy())
+			if (proxyOrEntity.IsProxy(out var proxy))
 			{
-				INHibernateProxy proxy = (INHibernateProxy) proxyOrEntity;
 				proxy.HibernateLazyInitializer.Unwrap = isProxyUnwrapEnabled;
 			}
 
@@ -461,9 +457,8 @@ namespace NHibernate.Type
 
 			object id;
 
-			if (x.IsProxy())
+			if (x.IsProxy(out var proxy))
 			{
-				INHibernateProxy proxy = x as INHibernateProxy;
 				id = proxy.HibernateLazyInitializer.Identifier;
 			}
 			else

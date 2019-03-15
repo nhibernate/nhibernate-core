@@ -858,10 +858,8 @@ namespace NHibernate.Impl
 			cancellationToken.ThrowIfCancellationRequested();
 			using (BeginProcess())
 			{
-				if (obj.IsProxy())
+				if (obj.IsProxy(out var proxy))
 				{
-					var proxy = obj as INHibernateProxy;
-
 					if (!persistenceContext.ContainsProxy(proxy))
 					{
 						throw new TransientObjectException("proxy was not associated with the session");
