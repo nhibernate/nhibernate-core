@@ -2400,7 +2400,7 @@ namespace NHibernate.Impl
 				}
 			}
 		}
-	// NH different implementation: will not try to support covariant return type for specializations
+		// NH different implementation: will not try to support covariant return type for specializations
 		// of SharedSessionBuilderImpl until they need to exist.
 		private class SharedSessionBuilderImpl : SessionFactoryImpl.SessionBuilderImpl<ISharedSessionBuilder>,
 			ISharedSessionBuilder, ISharedSessionCreationOptions
@@ -2515,5 +2515,6 @@ namespace NHibernate.Impl
 
 			// NH different implementation: need to port Hibernate transaction management.
 			public ConnectionManager ConnectionManager => _shareTransactionContext ? _session.ConnectionManager : null;
-		}}
+		}
+	}
 }
