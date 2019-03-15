@@ -497,6 +497,10 @@ namespace NHibernate.Dialect
 		public override string GetCastTypeName(SqlType sqlType) =>
 			GetCastTypeName(sqlType, castTypeNames);
 
+		/// <inheritdoc />
+		public override bool TryGetCastTypeName(SqlType sqlType, out string typeName) =>
+			TryGetCastTypeName(sqlType, castTypeNames, out typeName);
+
 		public override long TimestampResolutionInTicks
 		{
 			get
