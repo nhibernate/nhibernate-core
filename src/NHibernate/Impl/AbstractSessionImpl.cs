@@ -192,8 +192,18 @@ namespace NHibernate.Impl
 		public abstract void FlushBeforeTransactionCompletion();
 		public abstract void AfterTransactionCompletion(bool successful, ITransaction tx);
 		public abstract object GetContextEntityIdentifier(object obj);
+
+		//Since 5.3
+		[Obsolete("Use override with persister parameter")]
 		public abstract object Instantiate(string clazz, object id);
-		public abstract object Instantiate(IEntityPersister persister, object id);
+
+		//6.0 TODO: Make abstract
+		public virtual object Instantiate(IEntityPersister persister, object id)
+		{
+#pragma warning disable 618
+			return Instantiate(persister.EntityName, id);
+#pragma warning restore 618
+		}
 
 		public virtual IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
 		{

@@ -244,6 +244,8 @@ namespace NHibernate.Impl
 			}
 		}
 
+		//Since 5.3
+		[Obsolete("Use override with persister parameter")]
 		public override object Instantiate(string clazz, object id)
 		{
 		  return Instantiate(Factory.GetEntityPersister(clazz), id);

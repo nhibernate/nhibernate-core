@@ -1070,9 +1070,9 @@ namespace NHibernate.Loader
 				return;
 			}
 
-			var instanceClass = GetInstanceClass(rs, i, persister, key.Identifier, session);
+			var concretePersister  = GetConcretePersister(rs, i, persister, key.Identifier, session);
 			entry = entry ?? session.PersistenceContext.GetEntry(obj);
-			UpdateLazyPropertiesFromResultSet(rs, i, obj, instanceClass, key, entry, persister, session, cacheBatchingHandler);
+			UpdateLazyPropertiesFromResultSet(rs, i, obj, concretePersister, key, entry, persister, session, cacheBatchingHandler);
 		}
 
 		private void CacheByUniqueKey(int i, IEntityPersister persister, object obj, ISessionImplementor session, bool alreadyLoaded)
@@ -1159,7 +1159,7 @@ namespace NHibernate.Loader
 			return array?[i];
 		}
 
-		private void UpdateLazyPropertiesFromResultSet(DbDataReader rs, int i, object obj, string instanceClass, EntityKey key,
+		private void UpdateLazyPropertiesFromResultSet(DbDataReader rs, int i, object obj, ILoadable persister, EntityKey key,
 		                                               EntityEntry entry, ILoadable rootPersister, ISessionImplementor session,
 		                                               Action<IEntityPersister, CachePutData> cacheBatchingHandler)
 		{
@@ -1170,11 +1170,6 @@ namespace NHibernate.Loader
 			{
 				return; // No lazy properties were loaded
 			}
-
-			// Get the persister for the _subclass_
-			var persister = instanceClass == rootPersister.EntityName
-				? rootPersister
-				: (ILoadable) Factory.GetEntityPersister(instanceClass);
 
 			// The property values will not be set when the entry status is Loading so in that case we have to get
 			// the uninitialized lazy properties from the loaded state
@@ -1259,15 +1254,10 @@ namespace NHibernate.Loader
 		/// and pass the hydrated state to the session.
 		/// </summary>
 		private void LoadFromResultSet(DbDataReader rs, int i, object obj, ILoadable persister, EntityKey key,
-									   string rowIdAlias, LockMode lockMode, ILoadable rootPersister,
+									   LockMode lockMode, ILoadable rootPersister,
 									   ISessionImplementor session)
 		{
 			object id = key.Identifier;
-
-			// Get the persister for the _subclass_
-			ILoadable persister = instanceClass == rootPersister.EntityName
-				? rootPersister
-				: (ILoadable) Factory.GetEntityPersister(instanceClass);
 
 			if (Log.IsDebugEnabled())
 			{
@@ -1306,25 +1296,25 @@ namespace NHibernate.Loader
 		/// </summary>
 		private ILoadable GetConcretePersister(DbDataReader rs, int i, ILoadable persister, object id, ISessionImplementor session)
 		{
-			if (persister.HasSubclasses)
+			if (!persister.HasSubclasses)
 			{
-				// code to handle subclasses of topClass
-				object discriminatorValue =
-					persister.DiscriminatorType.NullSafeGet(rs, EntityAliases[i].SuffixedDiscriminatorAlias, session, null);
-
-				string result = persister.GetSubclassForDiscriminatorValue(discriminatorValue);
-
-				if (result == null)
-				{
-					// woops we got an instance of another class hierarchy branch.
-					throw new WrongClassException(string.Format("Discriminator was: '{0}'", discriminatorValue), id,
-												  persister.EntityName);
-				}
-
-				return (ILoadable)Factory.GetEntityPersister(result);
+				return persister;
 			}
 
-			return persister;
+			// code to handle subclasses of topClass
+			object discriminatorValue =
+				persister.DiscriminatorType.NullSafeGet(rs, EntityAliases[i].SuffixedDiscriminatorAlias, session, null);
+
+			string result = persister.GetSubclassForDiscriminatorValue(discriminatorValue);
+
+			if (result == null)
+			{
+				// woops we got an instance of another class hierarchy branch.
+				throw new WrongClassException(string.Format("Discriminator was: '{0}'", discriminatorValue), id,
+											  persister.EntityName);
+			}
+
+			return (ILoadable) Factory.GetEntityPersister(result);
 		}
 
 		/// <summary>

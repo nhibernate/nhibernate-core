@@ -16,6 +16,7 @@ namespace NHibernate.Event
 		/// </summary>
 		bool AutoFlushSuspended { get; }
 
+		//6.0 TODO Remove it (it's added directly to ISessionImplementor)
 		/// <summary> 
 		/// Instantiate an entity instance, using either an interceptor,
 		/// or the given persister

@@ -21,6 +21,16 @@ namespace NHibernate.Engine
 	// 6.0 TODO: Convert to interface methods, excepted SwitchCacheMode
 	internal static partial class SessionImplementorExtensions
 	{
+		/// <summary>
+		/// Instantiate the entity class, initializing with the given identifier
+		/// </summary>
+		internal static object Instantiate(this ISessionImplementor session, IEntityPersister persister, object id)
+		{
+			if(session is AbstractSessionImpl impl)
+				return impl.Instantiate(persister, id);
+			return session.Instantiate(persister.EntityName, id);
+		}
+
 		internal static IDisposable BeginContext(this ISessionImplementor session)
 		{
 			if (session == null)
@@ -249,16 +259,12 @@ namespace NHibernate.Engine
 		/// </summary>
 		object GetContextEntityIdentifier(object obj);
 
+		//Since 5.3
+		//TODO 6.0 Remove (see SessionImplementorExtensions.Instantiate for replacement)
 		/// <summary>
 		/// Instantiate the entity class, initializing with the given identifier
 		/// </summary>
 		object Instantiate(string entityName, object id);
-
-		/// <summary>
-		/// Instantiate the entity class, initializing with the given identifier
-		/// </summary>
-		object Instantiate(IEntityPersister persister, object id);
-
 
 		/// <summary>
 		/// Execute an SQL Query
