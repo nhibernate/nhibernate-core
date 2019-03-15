@@ -1041,16 +1041,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private CriteriaLoader[] CreateCriteriaLoaders(CriteriaImpl criteria, string[] implementors)
-		{
-			CriteriaLoader[] loaders =
-				implementors.Select(
-					implementor => new CriteriaLoader(GetOuterJoinLoadable(implementor), Factory, criteria, implementor, enabledFilters))
-										.ToArray();
-
-			return loaders;
-		}
-
 		/// <summary>
 		/// detect in-memory changes, determine if the changes are to tables
 		/// named in the query and, if so, complete execution the flush
@@ -1713,10 +1703,23 @@ namespace NHibernate.Impl
 			{
 				string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
 				int size = implementors.Length;
-        
-				CriteriaLoader[] loaders = CreateCriteriaLoaders(criteria, implementors);
-				ISet<string> spaces = new HashSet<string>(loaders.SelectMany(x => x.QuerySpaces));
-        
+
+				CriteriaLoader[] loaders = new CriteriaLoader[size];
+				ISet<string> spaces = new HashSet<string>();
+
+				for (int i = 0; i < size; i++)
+				{
+					loaders[i] = new CriteriaLoader(
+						GetOuterJoinLoadable(implementors[i]),
+						Factory,
+						criteria,
+						implementors[i],
+						enabledFilters
+						);
+
+					spaces.UnionWith(loaders[i].QuerySpaces);
+				}
+
 				AutoFlushIfRequired(spaces);
 
 				bool success = false;
