@@ -1311,7 +1311,9 @@ namespace NHibernate.Loader
 												  persister.EntityName);
 				}
 
-				return (ILoadable) Factory.GetEntityPersister(result);
+				return persister.EntityName == result
+					? persister
+					: (ILoadable) Factory.GetEntityPersister(result);
 			}
 			return persister;
 		}
