@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Engine;
 using NHibernate.Mapping.ByCode;
+using NHibernate.Proxy;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH2043
@@ -49,9 +51,30 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 				rc.ManyToOne(x => x.EntityLookup, x => x.Class(typeof(EntityWithInterfaceProxyDefinition)));
 			});
 
+			mapper.Class<EntityAssigned>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.Assigned));
+				rc.Property(x => x.Name);
+				rc.ManyToOne(x => x.Parent);
+			});
+
+			mapper.Class<EntityWithAssignedBag>(
+				rc =>
+				{
+					rc.Id(x => x.Id, m => m.Generator(Generators.Assigned));
+					rc.Property(x => x.Name);
+					rc.Bag(
+						x => x.Children,
+						m =>
+						{
+							m.Inverse(true);
+							m.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
+						},
+						cm => { cm.OneToMany(); });
+				});
+
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
-
 
 		protected override void OnSetUp()
 		{
@@ -113,7 +136,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 			}
 		}
 
-
 		protected override void OnTearDown()
 		{
 			using (var session = OpenSession())
@@ -125,7 +147,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 				transaction.Commit();
 			}
 		}
-
 
 		[Test]
 		public void UpdateEntityWithClassLookup()
@@ -144,7 +165,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 			}
 		}
 
-
 		[Test]
 		public void UpdateEntityWithInterfaceLookup()
 		{
@@ -160,6 +180,112 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 				session.Flush();
 				transaction.Commit();
 			}
+		}
+
+		[Test]
+		public void TransientProxySave()
+		{
+			var id = 10;
+
+			using (var session = OpenSession())
+			using(var t = session.BeginTransaction())
+			{
+				var e = new EntityAssigned() {Id = id, Name = "a"};
+
+				session.Save(e);
+				session.Flush();
+				t.Commit();
+			}
+
+			using (var session = OpenSession())
+			using(var t = session.BeginTransaction())
+			{
+				var e = GetTransientProxy(session, id);
+				session.Save(e);
+				session.Flush();
+				
+				t.Commit();
+			}
+
+			using (var session = OpenSession())
+			{
+				var entity = session.Get<EntityAssigned>(id);
+				Assert.That(entity, Is.Not.Null, "Transient proxy wasn't saved");
+			}
+		}
+
+		[Test]
+		public void TransientProxyBagCascadeSave()
+		{
+			var id = 10;
+
+			using (var session = OpenSession())
+			using(var t = session.BeginTransaction())
+			{
+				var e = new EntityAssigned() {Id = id, Name = "a"};
+				session.Save(e);
+				session.Flush();
+				t.Commit();
+			}
+
+			using (var session = OpenSession())
+			using(var t = session.BeginTransaction())
+			{
+				var child = GetTransientProxy(session, id);
+				var parent = new EntityWithAssignedBag()
+				{
+					Id = 1, Name = "p", Children =
+					{
+						child
+					}
+				};
+				child.Parent = parent;
+
+				session.Save(parent);
+				session.Flush();
+				
+				t.Commit();
+			}
+
+			using (var session = OpenSession())
+			{
+				var entity = session.Get<EntityAssigned>(id);
+				Assert.That(entity, Is.Not.Null, "Transient proxy wasn't saved");
+			}
+		}
+
+		[Test]
+		public void TransientProxyDetectionFromUserCode()
+		{
+			var id = 10;
+
+			using (var session = OpenSession())
+			using (var t = session.BeginTransaction())
+			{
+				var e = new EntityAssigned() {Id = id, Name = "a"};
+				session.Save(e);
+				session.Flush();
+				t.Commit();
+			}
+
+			using (var session = OpenSession())
+			using (var t = session.BeginTransaction())
+			{
+				var child = GetTransientProxy(session, id);
+				Assert.That(ForeignKeys.IsTransientSlow(typeof(EntityAssigned).FullName, child, session.GetSessionImplementation()), Is.True);
+				t.Commit();
+			}
+		}
+
+		private static EntityAssigned GetTransientProxy(ISession session, int id)
+		{
+			EntityAssigned e;
+			e = session.Load<EntityAssigned>(id);
+			e.Name = "b";
+			session.Delete(e);
+			session.Flush();
+			Assert.That(e.IsProxy(), Is.True, "Failed test set up");
+			return e;
 		}
 	}
 }

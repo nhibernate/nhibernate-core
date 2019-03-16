@@ -11,13 +11,16 @@
 using System;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Engine;
 using NHibernate.Mapping.ByCode;
+using NHibernate.Proxy;
 using NUnit.Framework;
 using NHibernate.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.GH2043
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCaseMappingByCode
 	{
@@ -61,9 +64,30 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 				rc.ManyToOne(x => x.EntityLookup, x => x.Class(typeof(EntityWithInterfaceProxyDefinition)));
 			});
 
+			mapper.Class<EntityAssigned>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.Assigned));
+				rc.Property(x => x.Name);
+				rc.ManyToOne(x => x.Parent);
+			});
+
+			mapper.Class<EntityWithAssignedBag>(
+				rc =>
+				{
+					rc.Id(x => x.Id, m => m.Generator(Generators.Assigned));
+					rc.Property(x => x.Name);
+					rc.Bag(
+						x => x.Children,
+						m =>
+						{
+							m.Inverse(true);
+							m.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
+						},
+						cm => { cm.OneToMany(); });
+				});
+
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
-
 
 		protected override void OnSetUp()
 		{
@@ -125,7 +149,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 			}
 		}
 
-
 		protected override void OnTearDown()
 		{
 			using (var session = OpenSession())
@@ -137,7 +160,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 				transaction.Commit();
 			}
 		}
-
 
 		[Test]
 		public async Task UpdateEntityWithClassLookupAsync()
@@ -156,7 +178,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 			}
 		}
 
-
 		[Test]
 		public async Task UpdateEntityWithInterfaceLookupAsync()
 		{
@@ -172,6 +193,112 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 				await (session.FlushAsync());
 				await (transaction.CommitAsync());
 			}
+		}
+
+		[Test]
+		public async Task TransientProxySaveAsync()
+		{
+			var id = 10;
+
+			using (var session = OpenSession())
+			using(var t = session.BeginTransaction())
+			{
+				var e = new EntityAssigned() {Id = id, Name = "a"};
+
+				await (session.SaveAsync(e));
+				await (session.FlushAsync());
+				await (t.CommitAsync());
+			}
+
+			using (var session = OpenSession())
+			using(var t = session.BeginTransaction())
+			{
+				var e = await (GetTransientProxyAsync(session, id));
+				await (session.SaveAsync(e));
+				await (session.FlushAsync());
+				
+				await (t.CommitAsync());
+			}
+
+			using (var session = OpenSession())
+			{
+				var entity = await (session.GetAsync<EntityAssigned>(id));
+				Assert.That(entity, Is.Not.Null, "Transient proxy wasn't saved");
+			}
+		}
+
+		[Test]
+		public async Task TransientProxyBagCascadeSaveAsync()
+		{
+			var id = 10;
+
+			using (var session = OpenSession())
+			using(var t = session.BeginTransaction())
+			{
+				var e = new EntityAssigned() {Id = id, Name = "a"};
+				await (session.SaveAsync(e));
+				await (session.FlushAsync());
+				await (t.CommitAsync());
+			}
+
+			using (var session = OpenSession())
+			using(var t = session.BeginTransaction())
+			{
+				var child = await (GetTransientProxyAsync(session, id));
+				var parent = new EntityWithAssignedBag()
+				{
+					Id = 1, Name = "p", Children =
+					{
+						child
+					}
+				};
+				child.Parent = parent;
+
+				await (session.SaveAsync(parent));
+				await (session.FlushAsync());
+				
+				await (t.CommitAsync());
+			}
+
+			using (var session = OpenSession())
+			{
+				var entity = await (session.GetAsync<EntityAssigned>(id));
+				Assert.That(entity, Is.Not.Null, "Transient proxy wasn't saved");
+			}
+		}
+
+		[Test]
+		public async Task TransientProxyDetectionFromUserCodeAsync()
+		{
+			var id = 10;
+
+			using (var session = OpenSession())
+			using (var t = session.BeginTransaction())
+			{
+				var e = new EntityAssigned() {Id = id, Name = "a"};
+				await (session.SaveAsync(e));
+				await (session.FlushAsync());
+				await (t.CommitAsync());
+			}
+
+			using (var session = OpenSession())
+			using (var t = session.BeginTransaction())
+			{
+				var child = await (GetTransientProxyAsync(session, id));
+				Assert.That(await (ForeignKeys.IsTransientSlowAsync(typeof(EntityAssigned).FullName, child, session.GetSessionImplementation(), CancellationToken.None)), Is.True);
+				await (t.CommitAsync());
+			}
+		}
+
+		private static async Task<EntityAssigned> GetTransientProxyAsync(ISession session, int id, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			EntityAssigned e;
+			e = await (session.LoadAsync<EntityAssigned>(id, cancellationToken));
+			e.Name = "b";
+			await (session.DeleteAsync(e, cancellationToken));
+			await (session.FlushAsync(cancellationToken));
+			Assert.That(e.IsProxy(), Is.True, "Failed test set up");
+			return e;
 		}
 	}
 }
