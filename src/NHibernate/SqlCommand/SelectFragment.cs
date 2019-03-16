@@ -105,7 +105,7 @@ namespace NHibernate.SqlCommand
 		{
 			AddColumn(
 				null,
-				formula?.Replace(Template.Placeholder, tableAlias),
+				Template.ReplacePlaceholder(formula, tableAlias),
 				formulaAlias);
 
 			return this;
