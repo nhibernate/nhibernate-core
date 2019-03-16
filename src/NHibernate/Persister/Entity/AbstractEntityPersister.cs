@@ -2169,7 +2169,7 @@ namespace NHibernate.Persister.Entity
 			{
 				if (cols[j] == null)
 				{
-					result[j] = templates[j]?.Replace(Template.Placeholder, alias);
+					result[j] = Template.ReplacePlaceholder(templates[j], alias);
 				}
 				else
 				{
@@ -2432,7 +2432,7 @@ namespace NHibernate.Persister.Entity
 
 		protected string GetSQLWhereString(string alias)
 		{
-			return sqlWhereStringTemplate?.Replace(Template.Placeholder, alias);
+			return Template.ReplacePlaceholder(sqlWhereStringTemplate, alias);
 		}
 
 		protected bool HasWhere
