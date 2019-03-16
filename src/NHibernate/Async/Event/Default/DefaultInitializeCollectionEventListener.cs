@@ -95,7 +95,7 @@ namespace NHibernate.Event.Default
 			CollectionEntry[] collectionEntries = null;
 			var collectionBatch = source.PersistenceContext.BatchFetchQueue.QueryCacheQueue
 			                            ?.GetCollectionBatch(persister, collectionKey, out collectionEntries);
-			if ((collectionBatch != null || batchSize > 1) && persister.Cache.PreferMultipleGet())
+			if (collectionBatch != null || batchSize > 1 && persister.Cache.PreferMultipleGet())
 			{
 				// The first item in the array is the item that we want to load
 				if (collectionBatch != null)
