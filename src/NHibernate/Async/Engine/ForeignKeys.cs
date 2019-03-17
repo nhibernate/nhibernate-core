@@ -181,15 +181,29 @@ namespace NHibernate.Engine
 				return false;
 			}
 
-			if (entity is INHibernateProxy proxy && proxy.HibernateLazyInitializer.IsUninitialized)
+			var proxy = entity as INHibernateProxy;
+			if (proxy?.HibernateLazyInitializer.IsUninitialized == true)
 			{
 				return false;
 			}
 
 			// let the interceptor inspect the instance to decide
+			var interceptorResult = session.Interceptor.IsTransient(entity);
+			if (interceptorResult.HasValue)
+				return interceptorResult;
+
 			// let the persister inspect the instance to decide
-			return session.Interceptor.IsTransient(entity) ??
-			       await (session.GetEntityPersister(entityName, entity).IsTransientAsync(entity, session, cancellationToken)).ConfigureAwait(false);
+			if (proxy != null)
+			{
+				// The persister only deals with unproxied entities.
+				entity = await (proxy.HibernateLazyInitializer.GetImplementationAsync(cancellationToken)).ConfigureAwait(false);
+			}
+
+			return await (session
+				.GetEntityPersister(
+					entityName,
+					entity)
+				.IsTransientAsync(entity, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <summary> 
