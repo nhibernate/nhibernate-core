@@ -214,7 +214,6 @@ namespace NHibernate.Test.Extralazy
 				t.Commit();
 			}
 
-			HibernatingRhinos.Profiler.Appender.NHibernate.NHibernateProfiler.Initialize();
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{

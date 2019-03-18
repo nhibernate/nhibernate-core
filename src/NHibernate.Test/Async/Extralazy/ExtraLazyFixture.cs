@@ -226,7 +226,6 @@ namespace NHibernate.Test.Extralazy
 				await (t.CommitAsync(cancellationToken));
 			}
 
-			HibernatingRhinos.Profiler.Appender.NHibernate.NHibernateProfiler.Initialize();
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
