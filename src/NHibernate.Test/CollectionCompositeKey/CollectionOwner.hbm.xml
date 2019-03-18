@@ -6,7 +6,7 @@
   <class name="Parent">
     <composite-id unsaved-value="any">
       <key-property name="Code" column="code" length="10" />
-      <key-property name="Number" column="number" />
+      <key-property name="Number" column="`number`" />
     </composite-id>
 
     <property name="Name" not-null="true" length="10" unique="true" />
@@ -84,8 +84,8 @@
 
     <bag name="ChildrenNoProperties" inverse="false" lazy="true" cascade="all">
       <key>
-        <column name="_parentCode" />
-        <column name="_parentNumber" />
+        <column name="npParentCode" />
+        <column name="npParentNumber" />
       </key>
       <one-to-many class="Child" />
     </bag>
@@ -102,7 +102,7 @@
 
   <class name="Child">
     <composite-id name="Id" unsaved-value="any">
-      <key-property name="Number" column="number" />
+      <key-property name="Number" column="`number`" />
       <key-property name="ParentCode" column="coIdParentCode" length="10" />
       <key-property name="ParentNumber" column="coIdParentNumber" />
     </composite-id>
@@ -144,7 +144,7 @@
 
   <class name="GrandChild">
     <composite-id>
-      <key-property name="Number" />
+      <key-property name="Number" column="`number`" />
       <key-many-to-one name="GrandParent">
         <column name="grandParentCode" length="10 "/>
         <column name="grandParentNumber" />

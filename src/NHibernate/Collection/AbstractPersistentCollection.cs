@@ -671,55 +671,77 @@ namespace NHibernate.Collection
 		protected bool QueueAddElement<T>(T element)
 		{
 			var queueOperationTracker = TryFlushAndGetQueueOperationTracker<T>(nameof(AbstractCollectionQueueOperationTracker<T>.AddElement));
-			return queueOperationTracker.AddElement(element);
+			var result = queueOperationTracker.AddElement(element);
+			UpdateCachedFields(queueOperationTracker);
+			return result;
 		}
 
 		protected void QueueRemoveExistingElement<T>(T element, bool? existsInDb)
 		{
 			var queueOperationTracker = TryFlushAndGetQueueOperationTracker<T>(nameof(AbstractCollectionQueueOperationTracker<T>.RemoveExistingElement), out var wasFlushed);
 			queueOperationTracker.RemoveExistingElement(element, wasFlushed ? true : existsInDb);
+			UpdateCachedFields(queueOperationTracker);
 		}
 
 		protected void QueueRemoveElementAtIndex<T>(int index, T element)
 		{
 			var queueOperationTracker = TryFlushAndGetQueueOperationTracker<T>(nameof(AbstractCollectionQueueOperationTracker<T>.RemoveElementAtIndex));
 			queueOperationTracker.RemoveElementAtIndex(index, element);
+			UpdateCachedFields(queueOperationTracker);
 		}
 
 		protected void QueueAddElementAtIndex<T>(int index, T element)
 		{
 			var queueOperationTracker = TryFlushAndGetQueueOperationTracker<T>(nameof(AbstractCollectionQueueOperationTracker<T>.AddElementAtIndex));
 			queueOperationTracker.AddElementAtIndex(index, element);
+			UpdateCachedFields(queueOperationTracker);
 		}
 
 		protected void QueueSetElementAtIndex<T>(int index, T element, T oldElement)
 		{
 			var queueOperationTracker = TryFlushAndGetQueueOperationTracker<T>(nameof(AbstractCollectionQueueOperationTracker<T>.SetElementAtIndex));
 			queueOperationTracker.SetElementAtIndex(index, element, oldElement);
+			UpdateCachedFields(queueOperationTracker);
 		}
 
 		protected void QueueClearCollection()
 		{
 			var queueOperationTracker = TryFlushAndGetQueueOperationTracker(nameof(AbstractQueueOperationTracker.ClearCollection), out _);
 			queueOperationTracker.ClearCollection();
+			UpdateCachedFields(queueOperationTracker);
 		}
 
 		protected void QueueAddElementByKey<TKey, TValue>(TKey elementKey, TValue element, bool exists)
 		{
 			var queueOperationTracker = TryFlushAndGetQueueOperationTracker<TKey, TValue>(nameof(AbstractMapQueueOperationTracker<TKey, TValue>.AddElementByKey));
 			queueOperationTracker.AddElementByKey(elementKey, element, exists);
+			UpdateCachedFields(queueOperationTracker);
 		}
 
 		protected void QueueSetElementByKey<TKey, TValue>(TKey elementKey, TValue element, TValue oldElement, bool? existsInDb)
 		{
 			var queueOperationTracker = TryFlushAndGetQueueOperationTracker<TKey, TValue>(nameof(AbstractMapQueueOperationTracker<TKey, TValue>.SetElementByKey));
 			queueOperationTracker.SetElementByKey(elementKey, element, oldElement, existsInDb);
+			UpdateCachedFields(queueOperationTracker);
 		}
 
 		protected bool QueueRemoveElementByKey<TKey, TValue>(TKey elementKey, TValue oldElement, bool? existsInDb)
 		{
 			var queueOperationTracker = TryFlushAndGetQueueOperationTracker<TKey, TValue>(nameof(AbstractMapQueueOperationTracker<TKey, TValue>.RemoveElementByKey));
-			return queueOperationTracker.RemoveElementByKey(elementKey, oldElement, existsInDb);
+			var result = queueOperationTracker.RemoveElementByKey(elementKey, oldElement, existsInDb);
+			UpdateCachedFields(queueOperationTracker);
+			return result;
+		}
+
+		private void UpdateCachedFields(AbstractQueueOperationTracker tracker)
+		{
+			dirty = tracker.HasChanges();
+			if (cachedSize < 0)
+			{
+				return;
+			}
+
+			cachedSize = tracker.Cleared ? tracker.GetQueueSize() : tracker.GetCollectionSize();
 		}
 
 		private AbstractMapQueueOperationTracker<TKey, TValue> TryFlushAndGetQueueOperationTracker<TKey, TValue>(string operationName)

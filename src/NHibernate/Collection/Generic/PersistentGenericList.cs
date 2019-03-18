@@ -279,7 +279,7 @@ namespace NHibernate.Collection.Generic
 #pragma warning restore 618
 			}
 
-			return CachedSize;
+			return CachedSize - 1;
 		}
 
 		bool IList.Contains(object value)

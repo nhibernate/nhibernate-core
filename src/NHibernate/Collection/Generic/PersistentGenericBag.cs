@@ -152,7 +152,7 @@ namespace NHibernate.Collection.Generic
 #pragma warning restore 618
 			}
 
-			return CachedSize;
+			return CachedSize - 1;
 		}
 
 		void IList.Insert(int index, object value)

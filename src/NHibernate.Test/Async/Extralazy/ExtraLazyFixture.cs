@@ -137,10 +137,26 @@ namespace NHibernate.Test.Extralazy
 				}
 
 				// Remove added items from the collection
-				foreach (var item in gavinItems.Skip(10))
+				for (var i = 10; i < 15; i++)
 				{
+					var item = gavinItems[i];
 					gavin.Settings.Remove(item.Name);
-					item.Owner = null;
+					// When identity is used for the primary key the item will be already inserted in the database,
+					// so the RemoveAt method will mark it as an orphan which will be deleted on flush.
+					// The same would work for an initialized collection as the collection snapshot would contain the item.
+					// When dealing with an id generator that supports a delayed insert, we have to trigger a delete
+					// for the item as it is currently scheduled for insertion.
+					if (Dialect.SupportsIdentityColumns)
+					{
+						if (i % 2 != 0)
+						{
+							item.Owner = null;
+						}
+					}
+					else
+					{
+						await (s.DeleteAsync(item, cancellationToken));
+					}
 				}
 
 				Assert.That(gavin.Settings.Count, Is.EqualTo(5));
@@ -210,6 +226,7 @@ namespace NHibernate.Test.Extralazy
 				await (t.CommitAsync(cancellationToken));
 			}
 
+			HibernatingRhinos.Profiler.Appender.NHibernate.NHibernateProfiler.Initialize();
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
@@ -280,10 +297,26 @@ namespace NHibernate.Test.Extralazy
 				}
 
 				// Remove added items from the collection
-				foreach (var item in gavinItems.Skip(10))
+				for (var i = 10; i < 15; i++)
 				{
+					var item = gavinItems[i];
 					gavin.Companies.RemoveAt(5);
-					item.Owner = null;
+					// When identity is used for the primary key the item will be already inserted in the database,
+					// so the RemoveAt method will mark it as an orphan which will be deleted on flush.
+					// The same would work for an initialized collection as the collection snapshot would contain the item.
+					// When dealing with an id generator that supports a delayed insert, we have to trigger a delete
+					// for the item as it is currently scheduled for insertion.
+					if (Dialect.SupportsIdentityColumns)
+					{
+						if (i % 2 != 0)
+						{
+							item.Owner = null;
+						}
+					}
+					else
+					{
+						await (s.DeleteAsync(item, cancellationToken));
+					}
 				}
 
 				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
@@ -538,10 +571,26 @@ namespace NHibernate.Test.Extralazy
 				}
 
 				// Remove added items from the collection
-				foreach (var item in gavinItems.Skip(10))
+				for (var i = 10; i < 15; i++)
 				{
+					var item = gavinItems[i];
 					gavin.Companies.Remove(item);
-					item.Owner = null;
+					// When identity is used for the primary key the item will be already inserted in the database,
+					// so the RemoveAt method will mark it as an orphan which will be deleted on flush.
+					// The same would work for an initialized collection as the collection snapshot would contain the item.
+					// When dealing with an id generator that supports a delayed insert, we have to trigger a delete
+					// for the item as it is currently scheduled for insertion.
+					if (Dialect.SupportsIdentityColumns)
+					{
+						if (i % 2 != 0)
+						{
+							item.Owner = null;
+						}
+					}
+					else
+					{
+						await (s.DeleteAsync(item, cancellationToken));
+					}
 				}
 
 				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
@@ -624,7 +673,7 @@ namespace NHibernate.Test.Extralazy
 					gavinItems.Add(item);
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
+				Assert.That(gavin.Companies.Count, Is.EqualTo(Dialect.SupportsIdentityColumns ? 10 : 5));
 
 				for (var i = 5; i < 10; i++)
 				{
