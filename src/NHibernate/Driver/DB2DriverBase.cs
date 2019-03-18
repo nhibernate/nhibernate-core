@@ -53,6 +53,9 @@ namespace NHibernate.Driver
 				case DbType.Guid:
 					dbParam.DbType = DbType.Binary;
 					break;
+				case DbType.Byte:
+					dbParam.DbType = DbType.Int16;
+					break;
 				default:
 					dbParam.DbType = sqlType.DbType;
 					break;
