@@ -13,6 +13,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg;
+using NHibernate.Id;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 
@@ -146,7 +147,7 @@ namespace NHibernate.Test.Extralazy
 					// The same would work for an initialized collection as the collection snapshot would contain the item.
 					// When dealing with an id generator that supports a delayed insert, we have to trigger a delete
 					// for the item as it is currently scheduled for insertion.
-					if (Dialect.SupportsIdentityColumns)
+					if (IsNativeIdentityGenerator)
 					{
 						if (i % 2 != 0)
 						{
@@ -305,7 +306,7 @@ namespace NHibernate.Test.Extralazy
 					// The same would work for an initialized collection as the collection snapshot would contain the item.
 					// When dealing with an id generator that supports a delayed insert, we have to trigger a delete
 					// for the item as it is currently scheduled for insertion.
-					if (Dialect.SupportsIdentityColumns)
+					if (IsNativeIdentityGenerator)
 					{
 						if (i % 2 != 0)
 						{
@@ -579,7 +580,7 @@ namespace NHibernate.Test.Extralazy
 					// The same would work for an initialized collection as the collection snapshot would contain the item.
 					// When dealing with an id generator that supports a delayed insert, we have to trigger a delete
 					// for the item as it is currently scheduled for insertion.
-					if (Dialect.SupportsIdentityColumns)
+					if (IsNativeIdentityGenerator)
 					{
 						if (i % 2 != 0)
 						{
@@ -672,7 +673,7 @@ namespace NHibernate.Test.Extralazy
 					gavinItems.Add(item);
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(Dialect.SupportsIdentityColumns ? 10 : 5));
+				Assert.That(gavin.Companies.Count, Is.EqualTo(IsNativeIdentityGenerator ? 10 : 5));
 
 				for (var i = 5; i < 10; i++)
 				{
@@ -3277,5 +3278,7 @@ namespace NHibernate.Test.Extralazy
 			}
 			return count;
 		}
+
+		private bool IsNativeIdentityGenerator => Dialect.NativeIdentifierGeneratorClass == typeof(IdentityGenerator);
 	}
 }
