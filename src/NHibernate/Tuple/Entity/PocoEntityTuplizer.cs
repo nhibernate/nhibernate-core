@@ -5,7 +5,6 @@ using System.Reflection;
 using NHibernate.Bytecode;
 using NHibernate.Classic;
 using NHibernate.Engine;
-using NHibernate.Intercept;
 using NHibernate.Mapping;
 using NHibernate.Properties;
 using NHibernate.Proxy;
@@ -172,11 +171,6 @@ namespace NHibernate.Tuple.Entity
 			IProxyFactory pf = BuildProxyFactoryInternal(persistentClass, idGetter, idSetter);
 			try
 			{
-				if (pf is AbstractProxyFactory apf)
-				{
-					apf.IsClassProxy = !isInterface;
-				}
-				
 				pf.PostInstantiate(
 					EntityName,
 					_mappedClass,
@@ -185,7 +179,8 @@ namespace NHibernate.Tuple.Entity
 					proxySetIdentifierMethod,
 					persistentClass.HasEmbeddedIdentifier
 						? (IAbstractComponentType) persistentClass.Identifier.Type
-						: null);
+						: null,
+					!isInterface);
 			}
 			catch (HibernateException he)
 			{

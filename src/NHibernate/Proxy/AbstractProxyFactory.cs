@@ -18,12 +18,17 @@ namespace NHibernate.Proxy
 		protected virtual MethodInfo GetIdentifierMethod { get; private set; }
 		protected virtual MethodInfo SetIdentifierMethod { get; private set; }
 		protected virtual IAbstractComponentType ComponentIdType { get; private set; }
+		protected virtual bool IsClassProxy { get; private set; }
 		protected virtual bool OverridesEquals { get; set; }
-		protected internal bool IsClassProxy { get; internal set; }
 
-		public virtual void PostInstantiate(string entityName, System.Type persistentClass, ISet<System.Type> interfaces,
-																				MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod,
-																				IAbstractComponentType componentIdType)
+		public virtual void PostInstantiate(
+			string entityName,
+			System.Type persistentClass,
+			ISet<System.Type> interfaces,
+			MethodInfo getIdentifierMethod,
+			MethodInfo setIdentifierMethod,
+			IAbstractComponentType componentIdType,
+			bool isClassProxy)
 		{
 			EntityName = entityName;
 			PersistentClass = persistentClass;
@@ -38,6 +43,26 @@ namespace NHibernate.Proxy
 			SetIdentifierMethod = setIdentifierMethod;
 			ComponentIdType = componentIdType;
 			OverridesEquals = ReflectHelper.OverridesEquals(persistentClass);
+			IsClassProxy = isClassProxy;
+		}
+
+		[Obsolete("Override PostInstantiate method with isClassProxy parameter instead.")]
+		public virtual void PostInstantiate(
+			string entityName,
+			System.Type persistentClass,
+			ISet<System.Type> interfaces,
+			MethodInfo getIdentifierMethod,
+			MethodInfo setIdentifierMethod,
+			IAbstractComponentType componentIdType)
+		{
+			PostInstantiate(
+				entityName,
+				persistentClass,
+				interfaces,
+				getIdentifierMethod,
+				setIdentifierMethod,
+				componentIdType,
+				interfaces.Count == 1);
 		}
 
 		public abstract INHibernateProxy GetProxy(object id, ISessionImplementor session);

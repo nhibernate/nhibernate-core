@@ -41,8 +41,14 @@ namespace NHibernate.Proxy
 		public IProxyFactory CreateProxyFactory()
 		{
 			var factory = new StaticProxyFactory();
-			factory.IsClassProxy = _isClassProxy;
-			factory.PostInstantiate(_entityName, _persistentClass, new HashSet<System.Type>(_interfaces), _getIdentifierMethod, _setIdentifierMethod, _componentIdType);
+			factory.PostInstantiate(
+				_entityName,
+				_persistentClass,
+				new HashSet<System.Type>(_interfaces),
+				_getIdentifierMethod,
+				_setIdentifierMethod,
+				_componentIdType,
+				_isClassProxy);
 			return factory;
 		}
 

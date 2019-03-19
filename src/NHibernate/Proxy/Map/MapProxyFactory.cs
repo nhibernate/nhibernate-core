@@ -10,12 +10,22 @@ namespace NHibernate.Proxy.Map
 	{
 		private string entityName;
 
-		#region IProxyFactory Members
+		[Obsolete("Please use constructor accepting entityName instead.")]
+		public MapProxyFactory()
+		{
+		}
 
+		public MapProxyFactory(string entityName)
+		{
+			this.entityName = entityName;
+		}
+
+		[Obsolete("Please use constructor accepting entityName instead.")]
 		public void PostInstantiate(string entityName, System.Type persistentClass, ISet<System.Type> interfaces,
 																MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod,
 																IAbstractComponentType componentIdType)
 		{
+			//6.0 TODO: throw NotSupportedException
 			this.entityName = entityName;
 		}
 
@@ -28,7 +38,5 @@ namespace NHibernate.Proxy.Map
 		{
 			throw new NotSupportedException();
 		}
-
-		#endregion
 	}
 }

@@ -43,9 +43,10 @@ namespace NHibernate.Proxy
 			ISet<System.Type> interfaces,
 			MethodInfo getIdentifierMethod,
 			MethodInfo setIdentifierMethod,
-			IAbstractComponentType componentIdType)
+			IAbstractComponentType componentIdType,
+			bool isClassProxy)
 		{
-			base.PostInstantiate(entityName, persistentClass, interfaces, getIdentifierMethod, setIdentifierMethod, componentIdType);
+			base.PostInstantiate(entityName, persistentClass, interfaces, getIdentifierMethod, setIdentifierMethod, componentIdType, isClassProxy);
 
 			_proxyFactoryInfo = new NHibernateProxyFactoryInfo(
 				EntityName,
