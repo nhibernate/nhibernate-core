@@ -61,6 +61,10 @@ namespace NHibernate.Test.NHSpecificTest.GH2067
 			{
 				var cat = session.Load<Cat>(domesticCatId);
 				Assert.That(cat, Is.Not.Null);
+				Assert.That(cat.Name, Is.EqualTo("Tom"));
+				var domesticCat = (IDomesticCat) cat;
+				Assert.That(domesticCat.Name, Is.EqualTo("Tom"));
+				Assert.That(domesticCat.OwnerName, Is.EqualTo("Jerry"));
 			}
 		}
 		
@@ -72,6 +76,10 @@ namespace NHibernate.Test.NHSpecificTest.GH2067
 			{
 				var cat = session.Load<ICat>(domesticCatId);
 				Assert.That(cat, Is.Not.Null);
+				Assert.That(cat.Name, Is.EqualTo("Tom"));
+				var domesticCat = (IDomesticCat) cat;
+				Assert.That(domesticCat.Name, Is.EqualTo("Tom"));
+				Assert.That(domesticCat.OwnerName, Is.EqualTo("Jerry"));
 			}
 		}
 
@@ -83,6 +91,8 @@ namespace NHibernate.Test.NHSpecificTest.GH2067
 			{
 				var cat = session.Load<IDomesticCat>(domesticCatId);
 				Assert.That(cat, Is.Not.Null);
+				Assert.That(cat.Name, Is.EqualTo("Tom"));
+				Assert.That(cat.OwnerName, Is.EqualTo("Jerry"));
 			}
 		}
 
@@ -104,6 +114,8 @@ namespace NHibernate.Test.NHSpecificTest.GH2067
 			{
 				var cat = (IDomesticCat) session.Load(typeof(DomesticCat), domesticCatId);
 				Assert.That(cat, Is.Not.Null);
+				Assert.That(cat.Name, Is.EqualTo("Tom"));
+				Assert.That(cat.OwnerName, Is.EqualTo("Jerry"));
 			}
 		}
 
@@ -115,6 +127,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2067
 			{
 				var cat = session.Load<IPet>(domesticCatId);
 				Assert.That(cat, Is.Not.Null);
+				Assert.That(cat.OwnerName, Is.EqualTo("Jerry"));
 			}
 		}
 
@@ -126,6 +139,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2067
 			{
 				var cat = session.Load<Cat>(catId);
 				Assert.That(cat, Is.Not.Null);
+				Assert.That(cat.Name, Is.EqualTo("Bob"));
 			}
 		}
 		
@@ -137,6 +151,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2067
 			{
 				var cat = session.Load<ICat>(catId);
 				Assert.That(cat, Is.Not.Null);
+				Assert.That(cat.Name, Is.EqualTo("Bob"));
 			}
 		}
 	}
