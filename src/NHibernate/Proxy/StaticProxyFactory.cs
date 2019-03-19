@@ -53,8 +53,9 @@ namespace NHibernate.Proxy
 				Interfaces,
 				GetIdentifierMethod,
 				SetIdentifierMethod,
-				ComponentIdType);
-			_cacheEntry = new ProxyCacheEntry(PersistentClass, Interfaces);
+				ComponentIdType,
+				IsClassProxy);
+			_cacheEntry = new ProxyCacheEntry(IsClassProxy ? PersistentClass : typeof(object), Interfaces);
 		}
 
 		private Func<ILazyInitializer, NHibernateProxyFactoryInfo, INHibernateProxy> CreateProxyActivator(ProxyCacheEntry pke)

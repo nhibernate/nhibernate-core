@@ -19,11 +19,7 @@ namespace NHibernate.Proxy
 		protected virtual MethodInfo SetIdentifierMethod { get; private set; }
 		protected virtual IAbstractComponentType ComponentIdType { get; private set; }
 		protected virtual bool OverridesEquals { get; set; }
-
-		protected bool IsClassProxy
-		{
-			get { return Interfaces.Length == 1; }
-		}
+		protected internal bool IsClassProxy { get; internal set; }
 
 		public virtual void PostInstantiate(string entityName, System.Type persistentClass, ISet<System.Type> interfaces,
 																				MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod,
@@ -43,7 +39,6 @@ namespace NHibernate.Proxy
 			ComponentIdType = componentIdType;
 			OverridesEquals = ReflectHelper.OverridesEquals(persistentClass);
 		}
-
 
 		public abstract INHibernateProxy GetProxy(object id, ISessionImplementor session);
 

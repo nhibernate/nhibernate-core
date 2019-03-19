@@ -1,6 +1,7 @@
 ﻿using System;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
+using NHibernate.Proxy;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH2067
@@ -65,9 +66,11 @@ namespace NHibernate.Test.NHSpecificTest.GH2067
 				var domesticCat = (IDomesticCat) cat;
 				Assert.That(domesticCat.Name, Is.EqualTo("Tom"));
 				Assert.That(domesticCat.OwnerName, Is.EqualTo("Jerry"));
+				var proxy = (INHibernateProxy) cat;
+				Assert.That(proxy.HibernateLazyInitializer.PersistentClass, Is.EqualTo(typeof(Cat)));
 			}
 		}
-		
+
 		[Test]
 		public void CanLoadDomesticCatUsingBaseClassInterface()
 		{
@@ -80,6 +83,8 @@ namespace NHibernate.Test.NHSpecificTest.GH2067
 				var domesticCat = (IDomesticCat) cat;
 				Assert.That(domesticCat.Name, Is.EqualTo("Tom"));
 				Assert.That(domesticCat.OwnerName, Is.EqualTo("Jerry"));
+				var proxy = (INHibernateProxy) cat;
+				Assert.That(proxy.HibernateLazyInitializer.PersistentClass, Is.EqualTo(typeof(Cat)));
 			}
 		}
 
@@ -93,6 +98,8 @@ namespace NHibernate.Test.NHSpecificTest.GH2067
 				Assert.That(cat, Is.Not.Null);
 				Assert.That(cat.Name, Is.EqualTo("Tom"));
 				Assert.That(cat.OwnerName, Is.EqualTo("Jerry"));
+				var proxy = (INHibernateProxy) cat;
+				Assert.That(proxy.HibernateLazyInitializer.PersistentClass, Is.EqualTo(typeof(DomesticCat)));
 			}
 		}
 
@@ -116,6 +123,8 @@ namespace NHibernate.Test.NHSpecificTest.GH2067
 				Assert.That(cat, Is.Not.Null);
 				Assert.That(cat.Name, Is.EqualTo("Tom"));
 				Assert.That(cat.OwnerName, Is.EqualTo("Jerry"));
+				var proxy = (INHibernateProxy) cat;
+				Assert.That(proxy.HibernateLazyInitializer.PersistentClass, Is.EqualTo(typeof(DomesticCat)));
 			}
 		}
 
@@ -128,6 +137,8 @@ namespace NHibernate.Test.NHSpecificTest.GH2067
 				var cat = session.Load<IPet>(domesticCatId);
 				Assert.That(cat, Is.Not.Null);
 				Assert.That(cat.OwnerName, Is.EqualTo("Jerry"));
+				var proxy = (INHibernateProxy) cat;
+				Assert.That(proxy.HibernateLazyInitializer.PersistentClass, Is.EqualTo(typeof(DomesticCat)));
 			}
 		}
 
@@ -140,6 +151,8 @@ namespace NHibernate.Test.NHSpecificTest.GH2067
 				var cat = session.Load<Cat>(catId);
 				Assert.That(cat, Is.Not.Null);
 				Assert.That(cat.Name, Is.EqualTo("Bob"));
+				var proxy = (INHibernateProxy) cat;
+				Assert.That(proxy.HibernateLazyInitializer.PersistentClass, Is.EqualTo(typeof(Cat)));
 			}
 		}
 		
@@ -152,6 +165,8 @@ namespace NHibernate.Test.NHSpecificTest.GH2067
 				var cat = session.Load<ICat>(catId);
 				Assert.That(cat, Is.Not.Null);
 				Assert.That(cat.Name, Is.EqualTo("Bob"));
+				var proxy = (INHibernateProxy) cat;
+				Assert.That(proxy.HibernateLazyInitializer.PersistentClass, Is.EqualTo(typeof(Cat)));
 			}
 		}
 	}

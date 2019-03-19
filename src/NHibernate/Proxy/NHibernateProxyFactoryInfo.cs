@@ -16,8 +16,16 @@ namespace NHibernate.Proxy
 		private readonly MethodInfo _getIdentifierMethod;
 		private readonly MethodInfo _setIdentifierMethod;
 		private readonly IAbstractComponentType _componentIdType;
+		private readonly bool _isClassProxy;
 
-		internal NHibernateProxyFactoryInfo(string entityName, System.Type persistentClass, System.Type[] interfaces, MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, IAbstractComponentType componentIdType)
+		internal NHibernateProxyFactoryInfo(
+			string entityName,
+			System.Type persistentClass,
+			System.Type[] interfaces,
+			MethodInfo getIdentifierMethod,
+			MethodInfo setIdentifierMethod,
+			IAbstractComponentType componentIdType,
+			bool isClassProxy)
 		{
 			_entityName = entityName;
 			_persistentClass = persistentClass;
@@ -25,6 +33,7 @@ namespace NHibernate.Proxy
 			_getIdentifierMethod = getIdentifierMethod;
 			_setIdentifierMethod = setIdentifierMethod;
 			_componentIdType = componentIdType;
+			_isClassProxy = isClassProxy;
 		}
 
 		internal System.Type PersistentClass => _persistentClass;
@@ -32,6 +41,7 @@ namespace NHibernate.Proxy
 		public IProxyFactory CreateProxyFactory()
 		{
 			var factory = new StaticProxyFactory();
+			factory.IsClassProxy = _isClassProxy;
 			factory.PostInstantiate(_entityName, _persistentClass, new HashSet<System.Type>(_interfaces), _getIdentifierMethod, _setIdentifierMethod, _componentIdType);
 			return factory;
 		}
@@ -44,6 +54,7 @@ namespace NHibernate.Proxy
 			_getIdentifierMethod = (MethodInfo) info.GetValue(nameof(_getIdentifierMethod), typeof(MethodInfo));
 			_setIdentifierMethod = (MethodInfo) info.GetValue(nameof(_setIdentifierMethod), typeof(MethodInfo));
 			_componentIdType = (IAbstractComponentType) info.GetValue(nameof(_componentIdType), typeof(IAbstractComponentType));
+			_isClassProxy = (bool) info.GetValue(nameof(_isClassProxy), typeof(bool));
 		}
 
 		[SecurityCritical]
@@ -55,6 +66,7 @@ namespace NHibernate.Proxy
 			info.AddValue(nameof(_getIdentifierMethod), _getIdentifierMethod);
 			info.AddValue(nameof(_setIdentifierMethod), _setIdentifierMethod);
 			info.AddValue(nameof(_componentIdType), _componentIdType);
+			info.AddValue(nameof(_isClassProxy), _isClassProxy);
 		}
 	}
 }

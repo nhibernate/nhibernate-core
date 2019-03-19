@@ -172,9 +172,14 @@ namespace NHibernate.Tuple.Entity
 			IProxyFactory pf = BuildProxyFactoryInternal(persistentClass, idGetter, idSetter);
 			try
 			{
+				if (pf is AbstractProxyFactory apf)
+				{
+					apf.IsClassProxy = !isInterface;
+				}
+				
 				pf.PostInstantiate(
 					EntityName,
-					isInterface ? typeof(object) : _mappedClass,
+					_mappedClass,
 					proxyInterfaces,
 					proxyGetIdentifierMethod,
 					proxySetIdentifierMethod,
