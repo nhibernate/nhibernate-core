@@ -46,6 +46,7 @@ namespace NHibernate.Proxy
 			IsClassProxy = isClassProxy;
 		}
 
+		// Since v5.3
 		[Obsolete("Override PostInstantiate method with isClassProxy parameter instead.")]
 		public virtual void PostInstantiate(
 			string entityName,

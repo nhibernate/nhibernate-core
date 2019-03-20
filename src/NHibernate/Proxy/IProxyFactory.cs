@@ -38,6 +38,7 @@ namespace NHibernate.Proxy
 		/// Essentially equivalent to constructor injection, but contracted
 		/// here via interface.
 		/// </remarks>
+		//Since v5.3
 		[Obsolete("Use ProxyFactoryExtensions.PostInstantiate extension method instead.")]
 		void PostInstantiate(string entityName, System.Type persistentClass, ISet<System.Type> interfaces,
 			MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, IAbstractComponentType componentIdType);
@@ -51,7 +52,7 @@ namespace NHibernate.Proxy
 		/// <exception cref="HibernateException">Indicates problems generating requested proxy.</exception>
 		INHibernateProxy GetProxy(object id, ISessionImplementor session);
 
-		// Since 5.3
+		// Since v5.3
 		[Obsolete("Use ProxyFactoryExtensions.GetFieldInterceptionProxy extension method instead.")]
 		object GetFieldInterceptionProxy(object instanceToWrap);
 	}
