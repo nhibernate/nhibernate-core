@@ -16,6 +16,10 @@ Release notes - NHibernate - Version 5.0.7
 ** Task
    * #2073 Release 5.0.7
 
+As part of releasing 5.0.7, missing 5.0.0 possible breaking changes have been added. One is about future queries with data
+providers not actually supporting them. The other one is about inequality semantic in LINQ queries. See 5.0.0 possible
+breaking changes.
+
 Build 5.0.6
 =============================
 
@@ -155,6 +159,10 @@ Build 5.0.0
           the dialect. They resolve to 4000 length string and (28, 10) precision/scale decimals by default, and are
           trimmed down according to dialect. Those defaults can be overridden with query.default_cast_length,
           query.default_cast_precision and query.default_cast_scale settings.
+        * Future queries with data provider not actually supporting them (not supporting mutliple queries in a single
+          SQL command) are no more immediately executed at the .Future call. They are executed only when directly
+          enumerated or when their IFutureEnumerable.GetEnumerable method is called. (This aligns them with the behavior
+          of FutureValue.)
         * Dialects are now configurable. If you instantiate a dialect directly, make sure you call its Configure
           method, with as argument the properties of a NHibernate Configuration object. You may use instead
           Dialect.GetDialect methods, which configure the dialect before returning it.
@@ -172,6 +180,9 @@ Build 5.0.0
           already doing CriteriaImpl.UniqueResult<T>.
         * AliasToBeanResultTransformer property/field resolution logic has changed for supporting members
           which names differ only by case. See NH-3693 last comments for details.
+        * Linq inequality implementation has been changed for supporting null, meaning that a "a != b" expression
+          will now be considered matching if one side is null, while previously due to SQL null semantic it was
+          considered non-matching. See NH-3100.
         * Linq extension methods marked with attribute LinqExtensionMethod will no more be evaluated
           in-memory prior to query execution when they do not depend on query results, but will always be
           translated to their corresponding SQL call. This can be changed with a parameter of the attribute.
