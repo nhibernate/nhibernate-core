@@ -59,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2067
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				// HQL Delete of entities with joins require temp tables, which are not
+				// HQL Delete of entities with joins requires temp tables, which are not
 				// supported by all dialects: use in memory-delete instead.
 				session.Delete("from System.Object");
 
