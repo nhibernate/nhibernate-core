@@ -389,6 +389,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string property = _propertyName;
 			bool joinIsNeeded;
 
+			//For nullable entity comparisons we always need to add join (like not constrained one-to-one or not-found ignore associations) 
+			bool comparisonWithNullableEntity = false;
+
 			if ( IsDotNode( parent ) ) 
 			{
 				// our parent is another dot node, meaning we are being further dereferenced.
@@ -396,7 +399,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// entity's PK (because 'our' table would know the FK).
 				parentAsDotNode = ( DotNode ) parent;
 				property = parentAsDotNode._propertyName;
-				joinIsNeeded = generateJoin && !IsReferenceToPrimaryKey( parentAsDotNode._propertyName, entityType );
+				joinIsNeeded = generateJoin && (entityType.IsNullable || !IsReferenceToPrimaryKey( parentAsDotNode._propertyName, entityType ));
 			}
 			else if ( ! Walker.IsSelectStatement ) 
 			{
@@ -409,12 +412,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else
 			{
-				joinIsNeeded = generateJoin || ((Walker.IsInSelect && !Walker.IsInCase) || (Walker.IsInFrom && !Walker.IsComparativeExpressionClause));
+				comparisonWithNullableEntity = (Walker.IsComparativeExpressionClause && entityType.IsNullable);
+				joinIsNeeded = generateJoin || (Walker.IsInSelect && !Walker.IsInCase) || (Walker.IsInFrom && !Walker.IsComparativeExpressionClause)
+				               || comparisonWithNullableEntity;
 			}
 
 			if ( joinIsNeeded ) 
 			{
 				DereferenceEntityJoin( classAlias, entityType, implicitJoin, parent );
+				if (comparisonWithNullableEntity)
+				{
+					_columns = FromElement.GetIdentityColumns();
+				}
 			}
 			else 
 			{
