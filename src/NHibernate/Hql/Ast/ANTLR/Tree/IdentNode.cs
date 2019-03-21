@@ -314,14 +314,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private FromElement LocateSingleFromElement()
 		{
-			IList<IASTNode> fromElements = Walker.CurrentFromClause.GetFromElements();
+			var fromElements = Walker.CurrentFromClause.GetFromElementsTyped();
 			if (fromElements == null || fromElements.Count != 1)
 			{
 				// TODO : should this be an error?
 				return null;
 			}
 
-			FromElement element = (FromElement)fromElements[0];
+			FromElement element = fromElements[0];
 			if (element.ClassAlias != null)
 			{
 				// naked property-refs cannot be used with an aliased from element

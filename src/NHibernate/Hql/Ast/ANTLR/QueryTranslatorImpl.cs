@@ -285,8 +285,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 			get
 			{
 				ErrorIfDML();
-				IList<IASTNode> collectionFetches = ((QueryNode)_sqlAst).FromClause.GetCollectionFetches();
-				return collectionFetches != null && collectionFetches.Count > 0;
+				var collectionFetches = ((QueryNode)_sqlAst).FromClause.GetCollectionFetchesTyped();
+				return collectionFetches.Count > 0;
 			}
 		}
 
