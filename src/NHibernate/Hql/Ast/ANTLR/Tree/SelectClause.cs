@@ -23,7 +23,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private IType[] _queryReturnTypes;
 		private string[][] _columnNames;
 		private readonly List<FromElement> _fromElementsForLoad = new List<FromElement>();
-		private readonly Dictionary<int, int> _entityToScalarResultMap = new Dictionary<int, int>();
+		private readonly Dictionary<int, int> _entityByResultTypeDic = new Dictionary<int, int>();
 
 		private ConstructorNode _constructorNode;
 		private string[] _aliases;
@@ -148,7 +148,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 						if (IsReturnableEntity(se))
 						{
-							AddEntityToScalarResults(queryReturnTypeList.Count + j, se);
+							AddEntityToProjection(queryReturnTypeList.Count + j, se);
 						}
 					}
 
@@ -171,7 +171,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					}
 					else if (IsReturnableEntity(expr))
 					{
-						AddEntityToScalarResults(queryReturnTypeList.Count, expr);
+						AddEntityToProjection(queryReturnTypeList.Count, expr);
 					}
 
 					// Always add the type to the return type list.
@@ -253,9 +253,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			FinishInitialization( /*sqlResultTypeList,*/ queryReturnTypeList);
 		}
 
-		private void AddEntityToScalarResults(int i, ISelectExpression se)
+		private void AddEntityToProjection(int resultIndex, ISelectExpression se)
 		{
-			_entityToScalarResultMap[i] = _fromElementsForLoad.Count;
+			_entityByResultTypeDic[resultIndex] = _fromElementsForLoad.Count;
 			_fromElementsForLoad.Add(se.FromElement);
 		}
 
@@ -283,7 +283,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			get { return _fromElementsForLoad; }
 		}
 
-		internal IReadOnlyDictionary<int, int> EntityToScalarResultMap => _entityToScalarResultMap;
+		/// <summary>
+		/// Maps QueryReturnTypes[key] to entities from FromElementsForLoad[value]
+		/// </summary>
+		internal IReadOnlyDictionary<int, int> EntityByResultTypeDic => _entityByResultTypeDic;
 
 		public bool IsScalarSelect
 		{

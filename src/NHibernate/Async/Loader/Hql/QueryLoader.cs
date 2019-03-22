@@ -76,7 +76,7 @@ namespace NHibernate.Loader.Hql
 				resultRow = new object[queryCols];
 				for (int i = 0; i < queryCols; i++)
 				{
-					resultRow[i] = _entityToScalarResultMap.TryGetValue(i, out var rowIndex)
+					resultRow[i] = _entityByResultTypeDic.TryGetValue(i, out var rowIndex)
 						? row[rowIndex]
 						: await (ResultTypes[i].NullSafeGetAsync(rs, scalarColumns[i], session, null, cancellationToken)).ConfigureAwait(false);
 				}
