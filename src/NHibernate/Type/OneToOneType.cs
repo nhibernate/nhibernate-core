@@ -26,7 +26,7 @@ namespace NHibernate.Type
 
 		public override SqlType[] SqlTypes(IMapping mapping)
 		{
-			return NoSqlTypes;
+			return GetIdentifierOrUniqueKeyType(mapping).SqlTypes(mapping);
 		}
 
 		public OneToOneType(string referencedEntityName, ForeignKeyDirection foreignKeyType, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, string entityName, string propertyName)
@@ -44,7 +44,8 @@ namespace NHibernate.Type
 
 		public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			//nothing to do
+			GetIdentifierOrUniqueKeyType(session.Factory)
+				.NullSafeSet(cmd, GetReferenceValue(value, session), index, session);
 		}
 
 		public override bool IsOneToOne

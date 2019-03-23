@@ -5,6 +5,7 @@ using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Param;
 using NHibernate.SqlTypes;
+using NHibernate.Type;
 
 namespace NHibernate.SqlCommand
 {
@@ -115,7 +116,7 @@ namespace NHibernate.SqlCommand
 					int firstParamNameIndex = effectiveParameterLocations[0] + singleSqlParametersOffset;
 					foreach (int location in effectiveParameterLocations)
 					{
-						int parameterSpan = Math.Min(specification.ExpectedType.GetColumnSpan(factory), SqlQueryParametersList.Count);
+						int parameterSpan = Math.Min(specification.ExpectedType.GetParameterColumnSpan(factory), SqlQueryParametersList.Count);
 						for (int j = 0; j < parameterSpan; j++)
 						{
 							sqlQueryParametersList[location + j].ParameterPosition = firstParamNameIndex + j;
