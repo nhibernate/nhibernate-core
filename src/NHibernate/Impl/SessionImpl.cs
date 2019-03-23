@@ -2399,6 +2399,7 @@ namespace NHibernate.Impl
 				}
 			}
 		}
+
 		// NH different implementation: will not try to support covariant return type for specializations
 		// of SharedSessionBuilderImpl until they need to exist.
 		private class SharedSessionBuilderImpl : SessionFactoryImpl.SessionBuilderImpl<ISharedSessionBuilder>,
