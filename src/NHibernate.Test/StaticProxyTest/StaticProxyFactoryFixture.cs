@@ -176,7 +176,7 @@ namespace NHibernate.Test.StaticProxyTest
 		public void VerifyProxyForClassWithInternalInterface()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(InternalInterfaceTestClass).FullName, typeof(InternalInterfaceTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+			factory.PostInstantiate(typeof(InternalInterfaceTestClass).FullName, typeof(InternalInterfaceTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null, true);
 
 #if NETFX
 			VerifyGeneratedAssembly(
@@ -202,7 +202,7 @@ namespace NHibernate.Test.StaticProxyTest
 				// having an additional interface in the interface list, instead of just having INHibernateProxy.
 				// (Quite a loose semantic...)
 				new HashSet<System.Type> { typeof(INHibernateProxy), typeof(IPublic) },
-				null, null, null);
+				null, null, null, false);
 
 #if NETFX
 			VerifyGeneratedAssembly(
@@ -226,7 +226,7 @@ namespace NHibernate.Test.StaticProxyTest
 				typeof(PublicInterfaceTestClass).FullName,
 				typeof(PublicInterfaceTestClass),
 				new HashSet<System.Type> {typeof(INHibernateProxy)},
-				null, null, null);
+				null, null, null, true);
 
 #if NETFX
 			VerifyGeneratedAssembly(
@@ -266,7 +266,7 @@ namespace NHibernate.Test.StaticProxyTest
 				typeof(PublicExplicitInterfaceTestClass).FullName,
 				typeof(PublicExplicitInterfaceTestClass),
 				new HashSet<System.Type> {typeof(INHibernateProxy)},
-				null, null, null);
+				null, null, null, true);
 #if NETFX
 			VerifyGeneratedAssembly(
 				() =>
@@ -307,7 +307,8 @@ namespace NHibernate.Test.StaticProxyTest
 				new HashSet<System.Type> { typeof(INHibernateProxy) },
 				null,
 				null,
-				null);
+				null,
+				true);
 
 #if NETFX
 			VerifyGeneratedAssembly(
@@ -350,7 +351,7 @@ namespace NHibernate.Test.StaticProxyTest
 				typeof(AbstractTestClass).FullName,
 				typeof(AbstractTestClass),
 				new HashSet<System.Type> { typeof(INHibernateProxy) },
-				null, null, null);
+				null, null, null, true);
 
 #if NETFX
 			VerifyGeneratedAssembly(
@@ -370,7 +371,7 @@ namespace NHibernate.Test.StaticProxyTest
 		public void InitializedProxyStaysInitializedAfterDeserialization()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(SimpleTestClass).FullName, typeof(SimpleTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+			factory.PostInstantiate(typeof(SimpleTestClass).FullName, typeof(SimpleTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null, true);
 			var proxy = factory.GetProxy(2, null);
 			Assert.That(proxy, Is.Not.Null, "proxy");
 			Assert.That(NHibernateUtil.IsInitialized(proxy), Is.False, "proxy already initialized after creation");
@@ -399,7 +400,7 @@ namespace NHibernate.Test.StaticProxyTest
 		public void NonInitializedProxyStaysNonInitializedAfterSerialization()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(SimpleTestClass).FullName, typeof(SimpleTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+			factory.PostInstantiate(typeof(SimpleTestClass).FullName, typeof(SimpleTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null, true);
 			var proxy = factory.GetProxy(2, null);
 			Assert.That(proxy, Is.Not.Null, "proxy");
 			Assert.That(NHibernateUtil.IsInitialized(proxy), Is.False, "proxy already initialized after creation");
@@ -422,7 +423,7 @@ namespace NHibernate.Test.StaticProxyTest
 		public void CanSerializeFieldInterceptorProxy()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(PublicInterfaceTestClass).FullName, typeof(PublicInterfaceTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+			factory.PostInstantiate(typeof(PublicInterfaceTestClass).FullName, typeof(PublicInterfaceTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null, true);
 			var proxy = (PublicInterfaceTestClass) factory.GetFieldInterceptionProxy();
 			proxy.Id = 1;
 
@@ -440,7 +441,7 @@ namespace NHibernate.Test.StaticProxyTest
 		public void CanSerializeFieldInterceptorProxyWithISerializableEntity()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(CustomSerializationClass).FullName, typeof(CustomSerializationClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+			factory.PostInstantiate(typeof(CustomSerializationClass).FullName, typeof(CustomSerializationClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null, true);
 			var proxy = (CustomSerializationClass) factory.GetFieldInterceptionProxy();
 			proxy.Id = 2;
 
@@ -458,7 +459,7 @@ namespace NHibernate.Test.StaticProxyTest
 		public void CanSerializeFieldInterceptorProxyWithExplicitISerializableEntity()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(CustomExplicitSerializationClass).FullName, typeof(CustomExplicitSerializationClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+			factory.PostInstantiate(typeof(CustomExplicitSerializationClass).FullName, typeof(CustomExplicitSerializationClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null, true);
 			var proxy = (CustomExplicitSerializationClass) factory.GetFieldInterceptionProxy();
 			proxy.Id = 2;
 
@@ -476,7 +477,7 @@ namespace NHibernate.Test.StaticProxyTest
 		public void VerifyFieldInterceptorProxy()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(InternalInterfaceTestClass).FullName, typeof(InternalInterfaceTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+			factory.PostInstantiate(typeof(InternalInterfaceTestClass).FullName, typeof(InternalInterfaceTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null, true);
 #if NETFX
 			VerifyGeneratedAssembly(
 				() =>
@@ -493,7 +494,7 @@ namespace NHibernate.Test.StaticProxyTest
 		public void VerifyFieldInterceptorProxyWithISerializableEntity()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(CustomSerializationClass).FullName, typeof(CustomSerializationClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+			factory.PostInstantiate(typeof(CustomSerializationClass).FullName, typeof(CustomSerializationClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null, true);
 #if NETFX
 			VerifyGeneratedAssembly(
 				() =>
@@ -521,7 +522,7 @@ namespace NHibernate.Test.StaticProxyTest
 				// to an instance of the persistentClass, and so cannot implement interface methods if it does not
 				// inherit the persistentClass.
 				new HashSet<System.Type> {typeof(INHibernateProxy), typeof(IPublic)},
-				null, null, null);
+				null, null, null, false);
 #if NETFX
 			VerifyGeneratedAssembly(
 				() =>
