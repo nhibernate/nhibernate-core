@@ -8,8 +8,8 @@ namespace NHibernate.Loader.Custom
 	/// </summary>
 	public class ColumnEntityAliases : DefaultEntityAliases
 	{
-		public ColumnEntityAliases(IDictionary<string, string[]> returnProperties, ILoadable persister, string suffix)
-			: base(returnProperties, persister, suffix) {}
+		public ColumnEntityAliases(IDictionary<string, string[]> returnProperties, ILoadable persister)
+			: base(returnProperties, persister, null) {}
 
 		protected override string[] GetIdentifierAliases(ILoadable persister, string suffix)
 		{

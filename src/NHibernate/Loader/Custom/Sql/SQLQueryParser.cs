@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,27 +11,16 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Loader.Custom.Sql
 {
-	public class SQLQueryParser
+	internal class SQLQueryParser
 	{
-		public interface IParserContext
-		{
-			bool IsEntityAlias(string aliasName);
-			ISqlLoadable GetEntityPersisterByAlias(string alias);
-			string GetEntitySuffixByAlias(string alias);
-			bool IsCollectionAlias(string aliasName);
-			ISqlLoadableCollection GetCollectionPersisterByAlias(string alias);
-			string GetCollectionSuffixByAlias(string alias);
-			IDictionary<string, string[]> GetPropertyResultsMapByAlias(string alias);
-		}
-
 		private readonly ISessionFactoryImplementor factory;
 		private readonly string originalQueryString;
-		private readonly IParserContext context;
+		private readonly SQLQueryContext context;
 
 		private long aliasesFound;
 		private IEnumerable<IParameterSpecification> parametersSpecifications;
 
-		public SQLQueryParser(ISessionFactoryImplementor factory, string sqlQuery, IParserContext context)
+		public SQLQueryParser(ISessionFactoryImplementor factory, string sqlQuery, SQLQueryContext context)
 		{
 			this.factory = factory;
 			originalQueryString = sqlQuery;
@@ -54,7 +42,7 @@ namespace NHibernate.Loader.Custom.Sql
 			get { return parametersSpecifications; }
 		}
 
-		// TODO: should "record" how many properties we have reffered to - and if we 
+		// TODO: should "record" how many properties we have referred to - and if we 
 		//       don't get'em'all we throw an exception! Way better than trial and error ;)
 		private string SubstituteBrackets()
 		{
@@ -132,16 +120,16 @@ namespace NHibernate.Loader.Custom.Sql
 
 		private string ResolveCollectionProperties(string aliasName, string propertyName)
 		{
-			IDictionary<string, string[]> fieldResults = context.GetPropertyResultsMapByAlias(aliasName);
-			ISqlLoadableCollection collectionPersister = context.GetCollectionPersisterByAlias(aliasName);
-			string collectionSuffix = context.GetCollectionSuffixByAlias(aliasName);
+			IDictionary<string, string[]> fieldResults = context.GetCollectionPropertyResultsMap(aliasName);
+			ISqlLoadableCollection collectionPersister = context.GetCollectionPersister(aliasName);
+			string collectionSuffix = context.GetCollectionSuffix(aliasName);
 
 			// NH Different behavior for NH-1612
 			if ("*".Equals(propertyName))
 			{
-				if (fieldResults.Count != 0)
+				if (fieldResults != null)
 				{
-					throw new QueryException("Using return-propertys together with * syntax is not supported.");
+					throw new QueryException("Using return-property elements together with * syntax is not supported.");
 				}
 
 				string selectFragment = collectionPersister.SelectFragment(aliasName, collectionSuffix);
@@ -162,7 +150,7 @@ namespace NHibernate.Loader.Custom.Sql
 				{
 					return ResolveProperties(aliasName, elementPropertyName);
 				}
-				else if (elementPropertyName == "*")
+				if (elementPropertyName == "*")
 				{
 					throw new QueryException("Using element.* syntax is only supported for entity elements.");
 				}
@@ -171,7 +159,7 @@ namespace NHibernate.Loader.Custom.Sql
 			string[] columnAliases;
 
 			// Let return-propertys override whatever the persister has for aliases.
-			if (!fieldResults.TryGetValue(propertyName, out columnAliases))
+			if (fieldResults == null || !fieldResults.TryGetValue(propertyName, out columnAliases))
 			{
 				columnAliases = collectionPersister.GetCollectionPropertyColumnAliases(propertyName, collectionSuffix);
 			}
@@ -194,44 +182,44 @@ namespace NHibernate.Loader.Custom.Sql
 
 		private string ResolveProperties(string aliasName, string propertyName)
 		{
-			IDictionary<string, string[]> fieldResults = context.GetPropertyResultsMapByAlias(aliasName);
-			ISqlLoadable persister = context.GetEntityPersisterByAlias(aliasName);
-			string suffix = context.GetEntitySuffixByAlias(aliasName);
+			IDictionary<string, string[]> fieldResults = context.GetEntityPropertyResultsMap(aliasName);
+			ISqlLoadable persister = context.GetEntityPersister(aliasName);
+			string suffix = context.GetEntitySuffix(aliasName);
 
 			if ("*".Equals(propertyName))
 			{
-				if (fieldResults.Count != 0)
+				if (fieldResults != null)
 				{
-					throw new QueryException("Using return-propertys together with * syntax is not supported.");
+					throw new QueryException("Using return-property elements together with * syntax is not supported.");
 				}
 				aliasesFound++;
 				return persister.SelectFragment(aliasName, suffix);
 			}
-			else
+
+			string[] columnAliases;
+
+			// Let return-property elements override whatever the persister has for aliases.
+			if (fieldResults == null || !fieldResults.TryGetValue(propertyName, out columnAliases))
 			{
-				string[] columnAliases;
-
-				// Let return-propertys override whatever the persister has for aliases.
-				if (!fieldResults.TryGetValue(propertyName, out columnAliases))
-				{
-					columnAliases = persister.GetSubclassPropertyColumnAliases(propertyName, suffix);
-				}
-
-				if (columnAliases == null || columnAliases.Length == 0)
-				{
-					throw new QueryException("No column name found for property [" + propertyName + "] for alias [" + aliasName + "]",
-					                         originalQueryString);
-				}
-				if (columnAliases.Length != 1)
-				{
-					// TODO: better error message since we actually support composites if names are explicitly listed.
-					throw new QueryException(
-						"SQL queries only support properties mapped to a single column - property [" + propertyName + "] is mapped to "
-						+ columnAliases.Length + " columns.", originalQueryString);
-				}
-				aliasesFound++;
-				return columnAliases[0];
+				columnAliases = persister.GetSubclassPropertyColumnAliases(propertyName, suffix);
 			}
+
+			if (columnAliases == null || columnAliases.Length == 0)
+			{
+				throw new QueryException(
+					"No column name found for property [" + propertyName + "] for alias [" + aliasName + "]",
+					originalQueryString);
+			}
+			if (columnAliases.Length != 1)
+			{
+				// TODO: better error message since we actually support composites if names are explicitly listed.
+				throw new QueryException(
+					"SQL queries only support properties mapped to a single column - property [" + propertyName + "] is mapped to "
+					+ columnAliases.Length + " columns.", originalQueryString);
+			}
+			aliasesFound++;
+
+			return columnAliases[0];
 		}
 
 		/// <summary> 

@@ -1,30 +1,15 @@
+using System;
 using System.Collections;
 using System.Linq;
+using NHibernate.Criterion;
 using NHibernate.Transform;
 using NUnit.Framework;
-using NHibernate.Criterion;
 
 namespace NHibernate.Test.SqlTest.Query
 {
 	[TestFixture]
 	public class GeneralTest : TestCase
 	{
-		protected const string OrganizationFetchJoinEmploymentSQL =
-			"SELECT org.ORGID as {org.id}, " +
-			"        org.NAME as {org.name}, " +
-			"        emp.EMPLOYER as {emp.key}, " +
-			"        emp.EMPID as {emp.element}, " +
-			"        {emp.element.*}  " +
-			"FROM ORGANIZATION org " +
-			"    LEFT OUTER JOIN EMPLOYMENT emp ON org.ORGID = emp.EMPLOYER";
-
-		protected const string OrganizationJoinEmploymentSQL =
-			"SELECT org.ORGID as {org.id}, " +
-			"        org.NAME as {org.name}, " +
-			"        {emp.*}  " +
-			"FROM ORGANIZATION org " +
-			"    LEFT OUTER JOIN EMPLOYMENT emp ON org.ORGID = emp.EMPLOYER";
-
 		protected const string EmploymentSQL = "SELECT * FROM EMPLOYMENT";
 
 		protected string EmploymentSQLMixedScalarEntity =
@@ -295,24 +280,6 @@ namespace NHibernate.Test.SqlTest.Query
 			t.Commit();
 			s.Close();
 
-			if (TestDialect.SupportsDuplicatedColumnAliases)
-			{
-				s = OpenSession();
-				t = s.BeginTransaction();
-				sqlQuery = s.GetNamedQuery("organizationreturnproperty");
-				sqlQuery.SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
-				list = sqlQuery.List();
-				Assert.AreEqual(2, list.Count);
-				m = (IDictionary) list[0];
-				Assert.IsTrue(m.Contains("org"));
-				AssertClassAssignability(m["org"].GetType(), typeof(Organization));
-				Assert.IsTrue(m.Contains("emp"));
-				AssertClassAssignability(m["emp"].GetType(), typeof(Employment));
-				Assert.AreEqual(2, m.Count);
-				t.Commit();
-				s.Close();
-			}
-
 			s = OpenSession();
 			t = s.BeginTransaction();
 			namedQuery = s.GetNamedQuery("EmploymentAndPerson");
@@ -458,9 +425,9 @@ namespace NHibernate.Test.SqlTest.Query
 
 			// TODO H3: H3.2 can guess the return column type so they can use just addScalar("employerid"),
 			// but NHibernate currently can't do it.
-			list =
-				s.CreateSQLQuery(EmploymentSQLMixedScalarEntity).AddScalar("employerid", NHibernateUtil.Int64).AddEntity(
-					typeof(Employment)).List();
+			list = s.CreateSQLQuery(EmploymentSQLMixedScalarEntity)
+				.AddScalar("employerid", NHibernateUtil.Int64)
+				.AddEntity(typeof(Employment)).List();
 			Assert.AreEqual(1, list.Count);
 			o = (object[]) list[0];
 			Assert.AreEqual(2, o.Length);
@@ -472,37 +439,6 @@ namespace NHibernate.Test.SqlTest.Query
 			queryWithCollection.SetInt64("id", jboss.Id);
 			list = queryWithCollection.List();
 			Assert.AreEqual(list.Count, 1);
-
-			s.Clear();
-
-			list = s.CreateSQLQuery(OrganizationJoinEmploymentSQL)
-			        .AddEntity("org", typeof(Organization))
-			        .AddJoin("emp", "org.employments")
-			        .List();
-			Assert.AreEqual(2, list.Count);
-
-			s.Clear();
-
-			list = s.CreateSQLQuery(OrganizationFetchJoinEmploymentSQL)
-			        .AddEntity("org", typeof(Organization))
-			        .AddJoin("emp", "org.employments")
-			        .List();
-			Assert.AreEqual(2, list.Count);
-
-			s.Clear();
-
-			if (TestDialect.SupportsDuplicatedColumnAliases)
-			{
-				// TODO : why twice?
-				s.GetNamedQuery("organizationreturnproperty").List();
-				list = s.GetNamedQuery("organizationreturnproperty").List();
-				Assert.AreEqual(2, list.Count);
-
-				s.Clear();
-
-				list = s.GetNamedQuery("organizationautodetect").List();
-				Assert.AreEqual(2, list.Count);
-			}
 
 			t.Commit();
 			s.Close();
@@ -545,6 +481,99 @@ namespace NHibernate.Test.SqlTest.Query
 			s.Delete(enterprise);
 			t.Commit();
 			s.Close();
+		}
+
+		public void CanQueryWithGeneratedAliasesOnly_UsingWildcard()
+		{
+			const string SQL =
+				"SELECT org.ORGID as {org.id}, " +
+				"        org.NAME as {org.name}, " +
+				"        {emp.*}  " +
+				"FROM ORGANIZATION org " +
+				"    LEFT OUTER JOIN EMPLOYMENT emp ON org.ORGID = emp.EMPLOYER";
+
+			VerifyOrganisationQuery(session => session.CreateSQLQuery(SQL)
+				.AddEntity("org", typeof(Organization))
+				.AddJoin("emp", "org.employments"));
+		}
+
+		[Test]
+		public void CanQueryWithGeneratedAliasesOnly_UsingCollectionElementWildcard()
+		{
+			const string SQL =
+				"SELECT org.ORGID as {org.id}, " +
+				"        org.NAME as {org.name}, " +
+				"        emp.EMPLOYER as {emp.key}, " +
+				"        emp.EMPID as {emp.element}, " +
+				"        {emp.element.*}  " +
+				"FROM ORGANIZATION org " +
+				"    LEFT OUTER JOIN EMPLOYMENT emp ON org.ORGID = emp.EMPLOYER";
+
+			VerifyOrganisationQuery(session => session.CreateSQLQuery(SQL)
+				.AddEntity("org", typeof(Organization))
+				.AddJoin("emp", "org.employments"));
+		}
+
+		[Test]
+		public void CanQueryWithColumnNamesOnly()
+		{
+			VerifyOrganisationQuery(session => session.GetNamedQuery("organization-using-manual-aliases"));
+		}
+
+		[Test]
+		public void CanQueryWithManualAliasesOnly()
+		{
+			VerifyOrganisationQuery(session => session.GetNamedQuery("organization-using-column-names"));
+		}
+
+		[Test]
+		public void CanQueryWithMixOfColumnNamesAndManualAliases()
+		{
+			VerifyOrganisationQuery(session => session.GetNamedQuery("organization-using-column-names-and-manual-aliases"));
+		}
+
+		private void VerifyOrganisationQuery(Func<ISession, IQuery> queryFactory)
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				var ifa = new Organization("IFA");
+				var jboss = new Organization("JBoss");
+				var gavin = new Person("Gavin");
+				var emp = new Employment(gavin, jboss, "AU");
+				s.Save(jboss);
+				s.Save(ifa);
+				s.Save(gavin);
+				s.Save(emp);
+
+				var list = queryFactory(s).List();
+				Assert.AreEqual(2, list.Count);
+			}
+		}
+
+		[Test]
+		public void CanQueryWithManualComponentPropertyAliases()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				SpaceShip enterprise = new SpaceShip();
+				enterprise.Model = "USS";
+				enterprise.Name = "Entreprise";
+				enterprise.Speed = 50d;
+				Dimension d = new Dimension(45, 10);
+				enterprise.Dimensions = d;
+				s.Save(enterprise);
+
+				s.Flush();
+				s.Clear();
+
+				object[] result = (object[])s.GetNamedQuery("spaceship").UniqueResult();
+				enterprise = (SpaceShip)result[0];
+				Assert.AreEqual(50d, enterprise.Speed, "Speed");
+				Assert.AreEqual(45, enterprise.Dimensions.Length, "Dimensions.Length");
+				Assert.AreEqual(10, enterprise.Dimensions.Width, "Dimensions.Width");
+			}
 		}
 
 		[Test]

@@ -4,10 +4,7 @@ using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Param;
-using NHibernate.Persister.Collection;
-using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
-using NHibernate.Util;
 
 namespace NHibernate.Loader.Custom.Sql
 {
@@ -17,7 +14,7 @@ namespace NHibernate.Loader.Custom.Sql
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (SQLCustomQuery));
 
-		private readonly List<IReturn> customQueryReturns = new List<IReturn>();
+		private readonly List<IReturn> customQueryReturns;
 		private readonly ISet<string> querySpaces = new HashSet<string>();
 		private readonly SqlString sql;
 		private readonly List<IParameterSpecification> parametersSpecifications;
@@ -26,12 +23,11 @@ namespace NHibernate.Loader.Custom.Sql
 		                      ISessionFactoryImplementor factory)
 		{
 			log.Debug("starting processing of sql query [{0}]", sqlQuery);
-			SQLQueryReturnProcessor processor = new SQLQueryReturnProcessor(queryReturns, factory);
-			SQLQueryReturnProcessor.ResultAliasContext aliasContext = processor.Process();
+			var processor = new SQLQueryContext(queryReturns, factory);
 
-			SQLQueryParser parser = new SQLQueryParser(factory, sqlQuery, new ParserContext(aliasContext));
+			var parser = new SQLQueryParser(factory, sqlQuery, processor);
 			sql = parser.Process();
-			ArrayHelper.AddAll(customQueryReturns, processor.GenerateCustomReturns(parser.QueryHasAliases));
+			customQueryReturns = GenerateCustomReturns(queryReturns, parser.QueryHasAliases, processor).ToList();
 			parametersSpecifications = parser.CollectedParametersSpecifications.ToList();
 
 			if (additionalQuerySpaces != null)
@@ -64,53 +60,39 @@ namespace NHibernate.Loader.Custom.Sql
 
 		#endregion
 
-		private class ParserContext : SQLQueryParser.IParserContext
+		#region private methods
+
+		private static IEnumerable<IReturn> GenerateCustomReturns(IEnumerable<INativeSQLQueryReturn> queryReturns, bool queryHadAliases, SQLQueryContext context)
 		{
-			private readonly SQLQueryReturnProcessor.ResultAliasContext aliasContext;
+			IDictionary<string, NonScalarReturn> customReturnsByAlias = new Dictionary<string, NonScalarReturn>();
 
-			public ParserContext(SQLQueryReturnProcessor.ResultAliasContext aliasContext)
+			foreach (var nativeRtn in queryReturns)
 			{
-				this.aliasContext = aliasContext;
+				var nativeScalarRtn = nativeRtn as NativeSQLQueryScalarReturn;
+				if (nativeScalarRtn != null)
+				{
+					yield return new ScalarReturn(nativeScalarRtn.Type, nativeScalarRtn.ColumnAlias);
+					continue;
+				}
+
+				var nativeJoinRtn = nativeRtn as NativeSQLQueryJoinReturn;
+				if (nativeJoinRtn != null)
+				{
+					var owner = customReturnsByAlias[nativeJoinRtn.OwnerAlias];
+					var fetchReturn = new NonScalarReturn(context, queryHadAliases, nativeJoinRtn.Alias, nativeJoinRtn.LockMode, owner);
+					yield return customReturnsByAlias[fetchReturn.Alias] = fetchReturn;
+					continue;
+				}
+
+				var nativeNonScalarRtn = nativeRtn as NativeSQLQueryNonScalarReturn;
+				if (nativeNonScalarRtn != null)
+				{
+					var nonFetchReturn = new NonScalarReturn(context, queryHadAliases, nativeNonScalarRtn.Alias, nativeNonScalarRtn.LockMode);
+					yield return customReturnsByAlias[nonFetchReturn.Alias] = nonFetchReturn;
+				}
 			}
-
-			#region IParserContext Members
-
-			public bool IsEntityAlias(string alias)
-			{
-				return GetEntityPersisterByAlias(alias) != null;
-			}
-
-			public ISqlLoadable GetEntityPersisterByAlias(string alias)
-			{
-				return aliasContext.GetEntityPersister(alias);
-			}
-
-			public string GetEntitySuffixByAlias(string alias)
-			{
-				return aliasContext.GetEntitySuffix(alias);
-			}
-
-			public bool IsCollectionAlias(string alias)
-			{
-				return GetCollectionPersisterByAlias(alias) != null;
-			}
-
-			public ISqlLoadableCollection GetCollectionPersisterByAlias(string alias)
-			{
-				return aliasContext.GetCollectionPersister(alias);
-			}
-
-			public string GetCollectionSuffixByAlias(string alias)
-			{
-				return aliasContext.GetCollectionSuffix(alias);
-			}
-
-			public IDictionary<string,string[]> GetPropertyResultsMapByAlias(string alias)
-			{
-				return aliasContext.GetPropertyResultsMap(alias);
-			}
-
-			#endregion
 		}
+
+		#endregion
 	}
 }
