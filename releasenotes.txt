@@ -10,7 +10,7 @@ Release notes - NHibernate - Version 5.2.5
    * #2075 Missing cast when comparing a guid and string columns in SAP SQL Anywhere
    * #2046 Fix nullable Guid ToString is not translated correctly on some dialects
    * #2043 System.Reflection.TargetException when an interface is used as class mapping proxy definition
-   * #2040 Incorrect SQL for cast inside a linq join (MS SQL)
+   * #2040 Incorrect SQL when comparing a guid and string column in Sql Server
 
 ** Task
 
