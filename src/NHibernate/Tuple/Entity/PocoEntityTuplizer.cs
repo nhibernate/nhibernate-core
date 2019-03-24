@@ -109,7 +109,7 @@ namespace NHibernate.Tuple.Entity
 
 		protected override IProxyFactory BuildProxyFactory(PersistentClass persistentClass, IGetter idGetter, ISetter idSetter)
 		{
-			bool isInterface = false; // NH specific (look the comment below)
+			bool isInterface = false;
 
 			// determine the id getter and setter methods from the proxy interface (if any)
 			// determine all interfaces needed by the resulting proxy
@@ -124,13 +124,13 @@ namespace NHibernate.Tuple.Entity
 				{
 					throw new MappingException("proxy must be either an interface, or the class itself: " + EntityName);
 				}
-				isInterface = true; // NH (the proxy is an interface all properties can be overridden)
+				isInterface = true;
 				proxyInterfaces.Add(_proxyInterface);
 			}
 
 			if (_mappedClass.IsInterface)
 			{
-				isInterface = true; // NH (the mapped class is an interface all properties can be overridden)
+				isInterface = true;
 				proxyInterfaces.Add(_mappedClass);
 			}
 

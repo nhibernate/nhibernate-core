@@ -30,19 +30,15 @@ namespace NHibernate.Proxy
 			IAbstractComponentType componentIdType,
 			bool isClassProxy)
 		{
-			EntityName = entityName;
-			PersistentClass = persistentClass;
-			Interfaces = new System.Type[interfaces.Count];
-
-			if (interfaces.Count > 0)
-			{
-				interfaces.CopyTo(Interfaces, 0);
-			}
-
-			GetIdentifierMethod = getIdentifierMethod;
-			SetIdentifierMethod = setIdentifierMethod;
-			ComponentIdType = componentIdType;
-			OverridesEquals = ReflectHelper.OverridesEquals(persistentClass);
+#pragma warning disable 618
+			PostInstantiate(
+				entityName,
+				persistentClass,
+				interfaces,
+				getIdentifierMethod,
+				setIdentifierMethod,
+				componentIdType);
+#pragma warning restore 618
 			IsClassProxy = isClassProxy;
 		}
 
@@ -56,14 +52,20 @@ namespace NHibernate.Proxy
 			MethodInfo setIdentifierMethod,
 			IAbstractComponentType componentIdType)
 		{
-			PostInstantiate(
-				entityName,
-				persistentClass,
-				interfaces,
-				getIdentifierMethod,
-				setIdentifierMethod,
-				componentIdType,
-				interfaces.Count == 1);
+			EntityName = entityName;
+			PersistentClass = persistentClass;
+			Interfaces = new System.Type[interfaces.Count];
+
+			if (interfaces.Count > 0)
+			{
+				interfaces.CopyTo(Interfaces, 0);
+			}
+
+			GetIdentifierMethod = getIdentifierMethod;
+			SetIdentifierMethod = setIdentifierMethod;
+			ComponentIdType = componentIdType;
+			OverridesEquals = ReflectHelper.OverridesEquals(persistentClass);
+			IsClassProxy = interfaces.Count == 1;
 		}
 
 		public abstract INHibernateProxy GetProxy(object id, ISessionImplementor session);
