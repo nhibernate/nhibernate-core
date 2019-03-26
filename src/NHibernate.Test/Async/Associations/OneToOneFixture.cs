@@ -12,14 +12,16 @@ using System;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
+using NHibernate.Test.Associations.OneToOneFixtureEntities;
 using NUnit.Framework;
 using NHibernate.Linq;
 
-namespace NHibernate.Test.Associations.OneToOne
+namespace NHibernate.Test.Associations
 {
 	using System.Threading.Tasks;
+
 	[TestFixture]
-	public class OneToOneFixtureAsync: TestCaseMappingByCode
+	public class OneToOneFixtureAsync : TestCaseMappingByCode
 	{
 		[Test]
 		public async Task OneToOneCompositeQueryByEntityParamAsync()
@@ -32,7 +34,19 @@ namespace NHibernate.Test.Associations.OneToOne
 				Assert.That(loadedEntity, Is.Not.Null);
 			}
 		}
-		
+
+		[Test]
+		public async Task OneToOneCompositeQueryOverByEntityParamAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var e = await (session.Query<EntityWithCompositeId>().FirstOrDefaultAsync());
+				var loadedEntity = await (session.QueryOver<Parent>().Where(p => p.OneToOneComp == e).SingleOrDefaultAsync());
+
+				Assert.That(loadedEntity, Is.Not.Null);
+			}
+		}
+
 		[Test]
 		public async Task OneToOneCompositeQueryByKeyAsync()
 		{
@@ -40,18 +54,110 @@ namespace NHibernate.Test.Associations.OneToOne
 			{
 				var e = await (session.Query<EntityWithCompositeId>().FirstOrDefaultAsync());
 				var loadedEntity = await (session.Query<Parent>().Where(p => p.OneToOneComp.Key == e.Key).FirstOrDefaultAsync());
-				
+
 				Assert.That(loadedEntity, Is.Not.Null);
 			}
 		}
-		
+
+		[Test]
+		public async Task OneToOneCompositeQueryOverByKeyAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var e = await (session.Query<EntityWithCompositeId>().FirstOrDefaultAsync());
+				var loadedEntity = await (session.QueryOver<Parent>().Where(p => p.OneToOneComp.Key == e.Key).SingleOrDefaultAsync());
+
+				Assert.That(loadedEntity, Is.Not.Null);
+			}
+		}
+
 		[Test]
 		public async Task OneToOneCompositeQueryByNotNullAsync()
 		{
 			using (var session = OpenSession())
 			{
-				var e = await (session.Query<EntityWithCompositeId>().FirstOrDefaultAsync());
 				var loadedEntity = await (session.Query<Parent>().Where(p => p.OneToOneComp != null).FirstOrDefaultAsync());
+
+				Assert.That(loadedEntity, Is.Not.Null);
+			}
+		}
+
+		[Test]
+		public async Task OneToOneCompositeQueryOverByNotNullAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var loadedEntity = await (session.QueryOver<Parent>().Where(p => p.OneToOneComp != null).SingleOrDefaultAsync());
+
+				Assert.That(loadedEntity, Is.Not.Null);
+			}
+		}
+
+		[Test]
+		public async Task OneToOneCompositeQueryCompareWithJoinAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var loadedEntity = await (session.CreateQuery("select e from Parent p, EntityWithCompositeId e where p.OneToOneComp = e").UniqueResultAsync<EntityWithCompositeId>());
+
+				Assert.That(loadedEntity, Is.Not.Null);
+			}
+		}
+
+		[Explicit("Expression in Restrictions.Where can't recognize direct alias comparison.")]
+		[Test]
+		public async Task OneToOneCompositeQueryOverCompareWithJoinAsync()
+		{
+			using (new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				Parent parent = null;
+				EntityWithCompositeId oneToOne = null;
+
+				var loadedEntity = await (session.QueryOver<Parent>(() => parent)
+												.JoinEntityAlias(() => oneToOne, () => parent.OneToOneComp == oneToOne)
+												.SingleOrDefaultAsync());
+
+				Assert.That(loadedEntity, Is.Not.Null);
+			}
+		}
+
+		[Test]
+		public async Task OneToOneCompositeQueryOverCompareWithJoinByIdAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var e = await (session.Query<EntityWithCompositeId>().FirstOrDefaultAsync());
+				Parent parent = null;
+				EntityWithCompositeId oneToOne = null;
+
+				var loadedEntity = await (session.QueryOver<Parent>(() => parent)
+												.JoinEntityAlias(() => oneToOne, () => parent.OneToOneComp.Key == oneToOne.Key)
+												.SingleOrDefaultAsync());
+
+				Assert.That(loadedEntity, Is.Not.Null);
+			}
+		}
+
+		[Test]
+		public async Task OneToOneCompositeQuerySelectProjectionAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var loadedEntity = await (session.Query<Parent>().Select(x => new {x.OneToOneComp, x.Key}).FirstOrDefaultAsync());
+
+				Assert.That(loadedEntity, Is.Not.Null);
+			}
+		}
+
+		[Test]
+		public async Task OneToOneQueryOverSelectProjectionAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var loadedEntity = await (session.QueryOver<Parent>()
+												.Select(x => x.OneToOneComp)
+												.SingleOrDefaultAsync<EntityWithCompositeId>());
 
 				Assert.That(loadedEntity, Is.Not.Null);
 			}
@@ -62,7 +168,7 @@ namespace NHibernate.Test.Associations.OneToOne
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
-			
+
 			mapper.Class<EntityWithCompositeId>(
 				rc =>
 				{
@@ -76,7 +182,7 @@ namespace NHibernate.Test.Associations.OneToOne
 
 					rc.Property(e => e.Name);
 				});
-			
+
 			mapper.Class<Parent>(
 				rc =>
 				{

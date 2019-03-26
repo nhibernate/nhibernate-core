@@ -33,7 +33,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 
 			ISessionFactoryImplementor sessionFactory = SessionFactoryHelper.Factory;
-			int operandColumnSpan = operandType.GetParameterColumnSpan(sessionFactory);
+			int operandColumnSpan = operandType.GetColumnSpan(sessionFactory);
 
 			if ( operandColumnSpan > 1 ) 
 			{

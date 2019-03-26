@@ -13,13 +13,17 @@ namespace NHibernate.Type
 	[Serializable]
 	public partial class OneToOneType : EntityType, IAssociationType
 	{
-		private static readonly SqlType[] NoSqlTypes = Array.Empty<SqlType>();
-
 		private readonly ForeignKeyDirection foreignKeyDirection;
 		private readonly string propertyName;
 		private readonly string entityName;
 
-		public override int GetColumnSpan(IMapping session)
+		public override int GetColumnSpan(IMapping mapping)
+		{
+			// our column span is the number of columns in the PK
+			return GetIdentifierOrUniqueKeyType(mapping).GetColumnSpan(mapping);
+		}
+		
+		public override int GetOwnerColumnSpan(IMapping mapping)
 		{
 			return 0;
 		}
@@ -70,7 +74,7 @@ namespace NHibernate.Type
 
 		public override bool IsNull(object owner, ISessionImplementor session)
 		{
-			if (propertyName != null)
+			if (propertyName != null && owner != null)
 			{
 				IEntityPersister ownerPersister = session.Factory.GetEntityPersister(entityName);
 				object id = session.GetContextEntityIdentifier(owner);
@@ -92,6 +96,16 @@ namespace NHibernate.Type
 
 		public override object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
+			if (owner == null && names.Length > 0)
+			{
+				// return the (fully resolved) identifier value, but do not resolve
+				// to the actual referenced entity instance
+				// NOTE: the owner of the association is not really the owner of the id!
+				object id = GetIdentifierOrUniqueKeyType(session.Factory)
+					.NullSafeGet(rs, names, session, null);
+				//ScheduleBatchLoadIfNeeded(id, session, false);
+				return id;
+			}
 			IType type = GetIdentifierOrUniqueKeyType(session.Factory);
 			object identifier = session.GetContextEntityIdentifier(owner);
 
@@ -152,7 +166,12 @@ namespace NHibernate.Type
 
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
 		{
-			return Array.Empty<bool>();
+			bool[] result = new bool[GetColumnSpan(mapping)];
+			if (value != null)
+			{
+				ArrayHelper.Fill(result, true);
+			}
+			return result;
 		}
 	}
 }

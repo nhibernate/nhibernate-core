@@ -7,10 +7,10 @@ namespace NHibernate.Type
 {
 	internal static class TypeExtensions
 	{
-		public static int GetParameterColumnSpan(this IType type, IMapping sessionFactory)
+		public static int GetOwnerColumnSpan(this IType type, IMapping sessionFactory)
 		{
 			return type.IsEntityType
-				? ((EntityType) type).GetIdentifierOrUniqueKeyType(sessionFactory).GetColumnSpan(sessionFactory)
+				? ((EntityType) type).GetOwnerColumnSpan(sessionFactory)
 				: type.GetColumnSpan(sessionFactory);
 		}
 	}

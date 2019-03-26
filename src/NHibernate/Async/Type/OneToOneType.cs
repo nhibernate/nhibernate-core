@@ -97,6 +97,16 @@ namespace NHibernate.Type
 		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			if (owner == null && names.Length > 0)
+			{
+				// return the (fully resolved) identifier value, but do not resolve
+				// to the actual referenced entity instance
+				// NOTE: the owner of the association is not really the owner of the id!
+				object id = await (GetIdentifierOrUniqueKeyType(session.Factory)
+					.NullSafeGetAsync(rs, names, session, null, cancellationToken)).ConfigureAwait(false);
+				//ScheduleBatchLoadIfNeeded(id, session, false);
+				return id;
+			}
 			IType type = GetIdentifierOrUniqueKeyType(session.Factory);
 			object identifier = session.GetContextEntityIdentifier(owner);
 
