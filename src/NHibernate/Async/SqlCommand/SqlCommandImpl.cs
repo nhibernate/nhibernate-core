@@ -15,7 +15,6 @@ using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Param;
 using NHibernate.SqlTypes;
-using NHibernate.Type;
 
 namespace NHibernate.SqlCommand
 {

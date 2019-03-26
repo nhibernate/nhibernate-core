@@ -89,7 +89,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			if (lhsType != null && rhsType != null)
 			{
 				int lhsColumnSpan = lhsType.GetColumnSpan(sessionFactory);
-				var rhsColumnSpan = lhsType.GetColumnSpan(sessionFactory);
+				var rhsColumnSpan = rhsType.GetColumnSpan(sessionFactory);
 				// NH different behavior NH-1801
 				if (lhsColumnSpan != rhsColumnSpan && !AreCompatibleEntityTypes(lhsType, rhsType))
 				{
