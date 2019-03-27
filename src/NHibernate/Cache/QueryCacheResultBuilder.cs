@@ -14,15 +14,18 @@ namespace NHibernate.Cache
 		private readonly IType[] _resultTypes;
 		private readonly Loader.Loader.QueryCacheInfo _cacheInfo;
 
-
+		public static bool IsCacheWithFetches(Loader.Loader loader)
+		{
+			return loader.CacheTypes.Length > loader.ResultTypes.Length;
+		}
+		
 		internal QueryCacheResultBuilder(Loader.Loader loader)
 		{
 			_resultTypes = loader.ResultTypes;
 
-			var cacheInfo = loader.CacheInfo;
-			if (cacheInfo?.CacheTypes.Length > _resultTypes.Length)
+			if (IsCacheWithFetches(loader))
 			{
-				_cacheInfo = cacheInfo;
+				_cacheInfo = loader.CacheInfo;
 			}
 		}
 

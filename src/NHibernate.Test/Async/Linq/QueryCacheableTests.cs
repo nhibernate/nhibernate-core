@@ -12,6 +12,7 @@ using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Linq;
+using NHibernate.Transform;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -407,12 +408,55 @@ namespace NHibernate.Test.Linq
 			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(2), "Unexpected cache hit count");
 		}
 
+		[Test]
+		public async Task CacheHqlQueryWithFetchAndTransformerThatChangeTupleAsync()
+		{
+			Sfi.Statistics.Clear();
+			await (Sfi.EvictQueriesAsync());
+			Order order;
+			
+			// the combination of query and transformer doesn't make sense.
+			// It's simply used as example of returned data being transformed before caching leading to mismatch between 
+			// Loader.ResultTypes collection and provided tuple
+			order = await (session.CreateQuery("select o.Customer.CompanyName, o from Order o join fetch o.Customer")
+										.SetMaxResults(1)
+										.SetCacheable(true)
+										.SetResultTransformer(Transformers.RootEntity)
+										.UniqueResultAsync<Order>());
+
+			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1), "Unexpected execution count");
+			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1), "Unexpected cache put count");
+			Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(1), "Unexpected cache miss count");
+			Assert.That(order, Is.Not.Null);
+			Assert.That(order.Customer, Is.Not.Null);
+			Assert.That(NHibernateUtil.IsInitialized(order.Customer), Is.True);
+			
+			session.Clear();
+			Sfi.Statistics.Clear();
+
+			order = await (session.CreateQuery("select o.Customer.CompanyName, o from Order o join fetch o.Customer")
+										.SetMaxResults(1)
+										.SetCacheable(true)
+										.SetResultTransformer(Transformers.RootEntity)
+										.UniqueResultAsync<Order>());
+
+			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(0), "Unexpected execution count");
+			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(0), "Unexpected cache put count");
+			Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(0), "Unexpected cache miss count");
+			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1), "Unexpected cache hit count");
+			Assert.That(order, Is.Not.Null);
+			Assert.That(order.Customer, Is.Not.Null);
+			Assert.That(NHibernateUtil.IsInitialized(order.Customer), Is.True);
+		}
+
 		private static void AssertFetchedOrder(Order order)
 		{
+			Assert.That(order.Customer, Is.Not.Null, "Expected the fetched Customer to be initialized");
 			Assert.That(NHibernateUtil.IsInitialized(order.Customer), Is.True, "Expected the fetched Customer to be initialized");
 			Assert.That(NHibernateUtil.IsInitialized(order.OrderLines), Is.True, "Expected the fetched  OrderLines to be initialized");
 			Assert.That(order.OrderLines, Has.Count.EqualTo(3), "Expected the fetched OrderLines to have 3 items");
 			var orderLine = order.OrderLines.First();
+			Assert.That(orderLine.Product, Is.Not.Null, "Expected the fetched Product to be initialized");
 			Assert.That(NHibernateUtil.IsInitialized(orderLine.Product), Is.True, "Expected the fetched Product to be initialized");
 			Assert.That(NHibernateUtil.IsInitialized(orderLine.Product.OrderLines), Is.True, "Expected the fetched OrderLines to be initialized");
 		}

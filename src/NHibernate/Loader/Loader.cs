@@ -1886,9 +1886,11 @@ namespace NHibernate.Loader
 
 		private CacheableResultTransformer CreateCacheableResultTransformer(QueryParameters queryParameters)
 		{
+			bool skipTransformer = QueryCacheResultBuilder.IsCacheWithFetches(this);
+			
 			return CacheableResultTransformer.Create(
 				queryParameters.ResultTransformer, ResultRowAliases, IncludeInResultRow,
-				queryParameters.HasAutoDiscoverScalarTypes, SqlString);
+				queryParameters.HasAutoDiscoverScalarTypes, SqlString, skipTransformer);
 		}
 
 		private IList GetResultFromQueryCache(

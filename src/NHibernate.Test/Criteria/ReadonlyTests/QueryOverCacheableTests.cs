@@ -1,6 +1,7 @@
 using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.SqlCommand;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Criteria.ReadonlyTests
@@ -24,8 +25,8 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 			Sfi.Statistics.Clear();
 			Sfi.EvictQueries();
 
-			var x = db.Customers.Cacheable().List();
-			var x2 = db.Customers.Cacheable().List();
+			var x = db.Customers.Cacheable().Take(1).List();
+			var x2 = db.Customers.Cacheable().Take(1).List();
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1), "Unexpected cache put count");
@@ -38,8 +39,8 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 			Sfi.Statistics.Clear();
 			Sfi.EvictQueries();
 
-			var x = db.Customers.Cacheable().List();
-			var x2 = db.Customers.List();
+			var x = db.Customers.Cacheable().Take(1).List();
+			var x2 = db.Customers.Take(1).List();
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1), "Unexpected cache put count");
@@ -54,9 +55,9 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 			Sfi.EvictQueries("test");
 			Sfi.EvictQueries("other");
 
-			var x = db.Customers.Cacheable().CacheRegion("test").List();
-			var x2 = db.Customers.Cacheable().CacheRegion("test").List();
-			var x3 = db.Customers.Cacheable().CacheRegion("other").List();
+			var x = db.Customers.Cacheable().Take(1).CacheRegion("test").List();
+			var x2 = db.Customers.Cacheable().Take(1).CacheRegion("test").List();
+			var x3 = db.Customers.Cacheable().Take(1).CacheRegion("other").List();
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(2), "Unexpected cache put count");
@@ -77,16 +78,19 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 
 			db.Orders
 				.Cacheable()
+				.Take(1)
 				.List();
 
 			db.Customers
 				.Fetch(SelectMode.Fetch, x => x.Orders)
 				.Cacheable()
+				.Take(1)
 				.List();
 
 			db.Orders
 				.Fetch(SelectMode.Fetch, x => x.OrderLines)
 				.Cacheable()
+				.Take(1)
 				.List();
 
 			var customer = db.Customers
@@ -154,7 +158,57 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 			Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(0), "Unexpected cache miss count");
 			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1), "Unexpected cache hit count");
 		}
-		
+
+
+		[Test]
+		public void FetchIsCacheableForJoinAlias()
+		{
+			Sfi.Statistics.Clear();
+			Sfi.EvictQueries();
+
+			Order order;
+			Customer customer = null;
+			OrderLine orderLines = null;
+			Product product = null;
+			OrderLine prOrderLines = null;
+			
+			order = db.Orders
+					.JoinAlias(x => x.Customer, () => customer)
+					.JoinAlias(x => x.OrderLines, () => orderLines, JoinType.LeftOuterJoin)
+					.JoinAlias(() => orderLines.Product, () => product)
+					.JoinAlias(() => product.OrderLines, () => prOrderLines, JoinType.LeftOuterJoin)
+					.Where(x => x.OrderId == 10248)
+					.Cacheable()
+					.List()
+					.First();
+
+			AssertFetchedOrder(order);
+
+			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1), "Unexpected execution count");
+			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1), "Unexpected cache put count");
+			Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(1), "Unexpected cache miss count");
+
+			Sfi.Statistics.Clear();
+			Session.Clear();
+
+			order = db.Orders
+					.JoinAlias(x => x.Customer, () => customer)
+					.JoinAlias(x => x.OrderLines, () => orderLines, JoinType.LeftOuterJoin)
+					.JoinAlias(() => orderLines.Product, () => product)
+					.JoinAlias(() => product.OrderLines, () => prOrderLines, JoinType.LeftOuterJoin)
+					.Where(x => x.OrderId == 10248)
+					.Cacheable()
+					.List()
+					.First();
+
+			AssertFetchedOrder(order);
+
+			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(0), "Unexpected execution count");
+			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(0), "Unexpected cache put count");
+			Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(0), "Unexpected cache miss count");
+			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1), "Unexpected cache hit count");
+		}
+
 		[Test]
 		public void FutureFetchIsCacheable()
 		{
@@ -219,10 +273,12 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 
 		private static void AssertFetchedOrder(Order order)
 		{
+			Assert.That(order.Customer, Is.Not.Null, "Expected the fetched Customer to be initialized");
 			Assert.That(NHibernateUtil.IsInitialized(order.Customer), Is.True, "Expected the fetched Customer to be initialized");
 			Assert.That(NHibernateUtil.IsInitialized(order.OrderLines), Is.True, "Expected the fetched  OrderLines to be initialized");
 			Assert.That(order.OrderLines, Has.Count.EqualTo(3), "Expected the fetched OrderLines to have 3 items");
 			var orderLine = order.OrderLines.First();
+			Assert.That(orderLine.Product, Is.Not.Null, "Expected the fetched Product to be initialized");
 			Assert.That(NHibernateUtil.IsInitialized(orderLine.Product), Is.True, "Expected the fetched Product to be initialized");
 			Assert.That(NHibernateUtil.IsInitialized(orderLine.Product.OrderLines), Is.True, "Expected the fetched OrderLines to be initialized");
 		}
