@@ -54,7 +54,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			ASTAppender appender = new ASTAppender(ASTFactory, this);	// Get ready to start adding nodes.
 			int size = fromElements.Count;
-			List<IType> sqlResultTypeList = new List<IType>(size);
 			List<IType> queryReturnTypeList = new List<IType>(size);
 
 			int k = 0;
@@ -76,7 +75,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 						}
 
 						_fromElementsForLoad.Add(fromElement);
-						sqlResultTypeList.Add(type);
 
 						// Generate the select expression.
 						string text = fromElement.RenderIdentifierSelect(size, k);

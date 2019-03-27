@@ -44,7 +44,6 @@ namespace NHibernate.Loader.Hql
 		private readonly NullableDictionary<string, string> _sqlAliasByEntityAlias = new NullableDictionary<string, string>();
 		private int _selectLength;
 		private LockMode[] _defaultLockModes;
-		private IType[] _cacheTypes;
 		private ISet<ICollectionPersister> _uncacheableCollectionPersisters;
 		private Dictionary<string, string[]>[] _collectionUserProvidedAliases;
 
@@ -199,12 +198,10 @@ namespace NHibernate.Loader.Hql
 			get { return _collectionSuffixes; }
 		}
 
-		protected override ICollectionPersister[] CollectionPersisters
+		protected internal override ICollectionPersister[] CollectionPersisters
 		{
 			get { return _collectionPersisters; }
 		}
-
-		public override IType[] CacheTypes => _cacheTypes;
 
 		protected override IDictionary<string, string[]> GetCollectionUserProvidedAlias(int index)
 		{
@@ -230,7 +227,6 @@ namespace NHibernate.Loader.Hql
 				_collectionPersisters = new IQueryableCollection[length];
 				_collectionOwners = new int[length];
 				_collectionSuffixes = new string[length];
-				CollectionFetches = new bool[length];
 				if (collectionFromElements.Any(qc => qc.QueryableCollection.IsManyToMany))
 					_collectionUserProvidedAliases = new Dictionary<string, string[]>[length];
 
@@ -242,7 +238,6 @@ namespace NHibernate.Loader.Hql
 					//				collectionSuffixes[i] = collectionFromElement.getColumnAliasSuffix();
 					//				collectionSuffixes[i] = Integer.toString( i ) + "_";
 					_collectionSuffixes[i] = collectionFromElement.CollectionSuffix;
-					CollectionFetches[i] = collectionFromElement.IsFetch;
 				}
 			}
 
@@ -256,8 +251,7 @@ namespace NHibernate.Loader.Hql
 			_includeInSelect = new bool[size];
 			_owners = new int[size];
 			_ownerAssociationTypes = new EntityType[size];
-			EntityFetches = new bool[size];
-			var cacheTypes = new List<IType>(ResultTypes);
+			List<int> resultTypePersisters = new List<int>();
 
 			for (int i = 0; i < size; i++)
 			{
@@ -280,14 +274,10 @@ namespace NHibernate.Loader.Hql
 				_sqlAliasSuffixes[i] = (size == 1) ? "" : i + "_";
 				//			sqlAliasSuffixes[i] = element.getColumnAliasSuffix();
 				_includeInSelect[i] = !element.IsFetch;
-				EntityFetches[i] = element.IsFetch;
-				if (element.IsFetch)
-				{
-					cacheTypes.Add(_entityPersisters[i].Type);
-				}
 				if (_includeInSelect[i])
 				{
 					_selectLength++;
+					resultTypePersisters.Add(i);
 				}
 
 				if (collectionFromElements != null && element.IsFetch && element.QueryableCollection?.IsManyToMany == true
@@ -323,16 +313,10 @@ namespace NHibernate.Loader.Hql
 				}
 			}
 
-			if (_collectionPersisters != null)
-			{
-				cacheTypes.AddRange(_collectionPersisters.Where((t, i) => CollectionFetches[i]).Select(t => t.CollectionType));
-			}
-
-			_cacheTypes = cacheTypes.ToArray();
-
 			//NONE, because its the requested lock mode, not the actual! 
 			_defaultLockModes = ArrayHelper.Fill(LockMode.None, size);
 			_uncacheableCollectionPersisters = _queryTranslator.UncacheableCollectionPersisters;
+			CachePersistersWithCollections(resultTypePersisters);
 		}
 
 		public IList List(ISessionImplementor session, QueryParameters queryParameters)

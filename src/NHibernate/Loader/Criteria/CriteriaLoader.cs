@@ -75,7 +75,7 @@ namespace NHibernate.Loader.Criteria
 			userAliases = walker.UserAliases;
 			ResultTypes = walker.ResultTypes;
 			includeInResultRow = walker.IncludeInResultRow;
-			resultRowLength = ArrayHelper.CountTrue(IncludeInResultRow);
+			resultRowLength = ArrayHelper.CountTrue(includeInResultRow);
 			childFetchEntities = walker.ChildFetchEntities;
 			EntityFetchLazyProperties = walker.EntityFetchLazyProperties;
 			// fill caching objects only if there is a projection
@@ -85,6 +85,10 @@ namespace NHibernate.Loader.Criteria
 			}
 
 			PostInstantiate();
+			if(!translator.HasProjection)
+			{
+				CachePersistersWithCollections(ArrayHelper.IndexesOf(includeInResultRow, true));
+			}
 		}
 
 		// Not ported: scroll (not supported)

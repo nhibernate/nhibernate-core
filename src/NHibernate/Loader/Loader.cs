@@ -17,7 +17,6 @@ using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
-using NHibernate.Intercept;
 using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -52,8 +51,21 @@ namespace NHibernate.Loader
 	/// <seealso cref="NHibernate.Persister.Entity.ILoadable"/>
 	public abstract partial class Loader
 	{
-		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(Loader));
+		 /// <summary>
+		 /// DTO for providing all query cache related details
+		 /// </summary>
+		public sealed class QueryCacheInfo
+		{
+			public IType[] CacheTypes { get; set; }
+			
+			/// <summary>
+			/// Loader.EntityPersister indexes to be cached. 
+			/// </summary>
+			public IReadOnlyList<int> AdditionalEntities { get; set; }
+		}
 
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(Loader));
+		private Lazy<QueryCacheInfo> _cacheInfo;
 		private readonly ISessionFactoryImplementor _factory;
 		private readonly SessionFactoryHelper _helper;
 		private ColumnNameCache _columnNameCache;
@@ -156,11 +168,18 @@ namespace NHibernate.Loader
 		/// </summary>
 		public IType[] ResultTypes { get; protected set; }
 
-		public bool[] EntityFetches { get; protected set; }
+		public IType[] CacheTypes => CacheInfo?.CacheTypes ?? ResultTypes;
 
-		public bool[] CollectionFetches { get; protected set; }
+		public virtual QueryCacheInfo CacheInfo => _cacheInfo?.Value;
 
-		public virtual IType[] CacheTypes => ResultTypes;
+		/// <summary>
+		/// Cache all additional persisters and collection persisters that were loaded by query (fetched entities and collections)
+		/// </summary>
+		/// <param name="resultTypePersisters">Persister indexes that are cached as part of query result (so present in ResultTypes)</param>
+		private protected void CachePersistersWithCollections(IEnumerable<int> resultTypePersisters)
+		{
+			_cacheInfo = new Lazy<QueryCacheInfo>(() => GetQueryCacheInfo(resultTypePersisters));
+		}
 
 		public ISessionFactoryImplementor Factory
 		{
@@ -186,7 +205,7 @@ namespace NHibernate.Loader
 		/// An (optional) persister for a collection to be initialized; only collection loaders
 		/// return a non-null value
 		/// </summary>
-		protected virtual ICollectionPersister[] CollectionPersisters
+		protected internal virtual ICollectionPersister[] CollectionPersisters
 		{
 			get { return null; }
 		}
@@ -2078,6 +2097,31 @@ namespace NHibernate.Loader
 
 			_canUseLimits = false;
 			return false;
+		}
+
+		private QueryCacheInfo GetQueryCacheInfo(IEnumerable<int> resultTypePersisters)
+		{
+			var resultTypes = ResultTypes.EmptyIfNull();
+
+			var cacheTypes = new List<IType>(resultTypes.Count + EntityPersisters.Length + CollectionPersisters?.Length ?? 0);
+			cacheTypes.AddRange(resultTypes);
+
+			int[] additionalEntities = null;
+			if (EntityPersisters.Length > 0)
+			{
+				additionalEntities = Enumerable.Range(0, EntityPersisters.Length).Except(resultTypePersisters).ToArray();
+				cacheTypes.AddRange(additionalEntities.Select(i => EntityPersisters[i].EntityMetamodel.EntityType));
+			}
+
+			cacheTypes.AddRange(CollectionPersisters.EmptyIfNull().Select(p => p.CollectionType));
+
+			return cacheTypes.Count == resultTypes.Count
+				? null
+				: new QueryCacheInfo
+				{
+					CacheTypes = cacheTypes.ToArray(),
+					AdditionalEntities = additionalEntities.EmptyIfNull(),
+				};
 		}
 
 		#endregion
