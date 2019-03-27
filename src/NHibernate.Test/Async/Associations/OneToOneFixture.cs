@@ -34,6 +34,7 @@ namespace NHibernate.Test.Associations
 			}
 		}
 		
+		//NH-3778 (GH-1368)
 		[Test]
 		public async Task OneToOneCompositeQueryOverByEntityParamAsync()
 		{
@@ -70,6 +71,7 @@ namespace NHibernate.Test.Associations
 			}
 		}
 
+		//NH-3469 (GH-1309)
 		[Test]
 		public async Task OneToOneCompositeQueryByNotNullAsync()
 		{
@@ -138,17 +140,19 @@ namespace NHibernate.Test.Associations
 			}
 		}
 		
+		//GH-2064
 		[Test]
 		public async Task OneToOneCompositeQuerySelectProjectionAsync()
 		{
 			using (var session = OpenSession())
 			{
-				var loadedEntity = await (session.Query<Parent>().Select(x => new {x.OneToOneComp, x.Key}).FirstOrDefaultAsync());
+				var loadedProjection = await (session.Query<Parent>().Select(x => new {x.OneToOneComp, x.Key}).FirstOrDefaultAsync());
 
-				Assert.That(loadedEntity, Is.Not.Null);
+				Assert.That(loadedProjection.OneToOneComp, Is.Not.Null);
 			}
 		}
 		
+		//NH-3178 (GH-1125)
 		[Test]
 		public async Task OneToOneQueryOverSelectProjectionAsync()
 		{

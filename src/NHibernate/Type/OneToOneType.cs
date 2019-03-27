@@ -100,18 +100,14 @@ namespace NHibernate.Type
 			{
 				// return the (fully resolved) identifier value, but do not resolve
 				// to the actual referenced entity instance
-				// NOTE: the owner of the association is not really the owner of the id!
-				object id = GetIdentifierOrUniqueKeyType(session.Factory)
+				return GetIdentifierOrUniqueKeyType(session.Factory)
 					.NullSafeGet(rs, names, session, null);
-				//ScheduleBatchLoadIfNeeded(id, session, false);
-				return id;
 			}
 			IType type = GetIdentifierOrUniqueKeyType(session.Factory);
 			object identifier = session.GetContextEntityIdentifier(owner);
 
 			//This ugly mess is only used when mapping one-to-one entities with component ID types
-			EmbeddedComponentType componentType = type as EmbeddedComponentType;
-			if (componentType != null)
+			if (type.IsComponentType && type is EmbeddedComponentType componentType)
 			{
 				EmbeddedComponentType ownerIdType = session.GetEntityPersister(null, owner).IdentifierType as EmbeddedComponentType;
 				if (ownerIdType != null)

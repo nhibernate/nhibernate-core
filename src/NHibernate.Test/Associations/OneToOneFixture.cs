@@ -22,6 +22,7 @@ namespace NHibernate.Test.Associations
 			}
 		}
 		
+		//NH-3778 (GH-1368)
 		[Test]
 		public void OneToOneCompositeQueryOverByEntityParam()
 		{
@@ -58,6 +59,7 @@ namespace NHibernate.Test.Associations
 			}
 		}
 
+		//NH-3469 (GH-1309)
 		[Test]
 		public void OneToOneCompositeQueryByNotNull()
 		{
@@ -126,17 +128,19 @@ namespace NHibernate.Test.Associations
 			}
 		}
 		
+		//GH-2064
 		[Test]
 		public void OneToOneCompositeQuerySelectProjection()
 		{
 			using (var session = OpenSession())
 			{
-				var loadedEntity = session.Query<Parent>().Select(x => new {x.OneToOneComp, x.Key}).FirstOrDefault();
+				var loadedProjection = session.Query<Parent>().Select(x => new {x.OneToOneComp, x.Key}).FirstOrDefault();
 
-				Assert.That(loadedEntity, Is.Not.Null);
+				Assert.That(loadedProjection.OneToOneComp, Is.Not.Null);
 			}
 		}
 		
+		//NH-3178 (GH-1125)
 		[Test]
 		public void OneToOneQueryOverSelectProjection()
 		{
