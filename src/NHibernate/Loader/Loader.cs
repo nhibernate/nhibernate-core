@@ -176,7 +176,7 @@ namespace NHibernate.Loader
 		/// Cache all additional persisters and collection persisters that were loaded by query (fetched entities and collections)
 		/// </summary>
 		/// <param name="resultTypePersisters">Persister indexes that are cached as part of query result (so present in ResultTypes)</param>
-		private protected void CachePersistersWithCollections(IEnumerable<int> resultTypePersisters)
+		protected void CachePersistersWithCollections(IEnumerable<int> resultTypePersisters)
 		{
 			_cacheInfo = new Lazy<QueryCacheInfo>(() => GetQueryCacheInfo(resultTypePersisters));
 		}
