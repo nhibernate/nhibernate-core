@@ -462,8 +462,8 @@ namespace NHibernate.Test.Linq
 			// the combination of query and transformer doesn't make sense.
 			// It's simply used as example of returned data being transformed before caching leading to mismatch between 
 			// Loader.ResultTypes collection and provided tuple
-			order = await (session.CreateQuery("select o.Employee.FirstName, o from Order o join fetch o.Customer")
-							.SetMaxResults(1)
+			order = await (session.CreateQuery("select o.Employee.FirstName, o from Order o join fetch o.Customer where o.OrderId = :id")
+							.SetInt32("id", 10248)
 							.SetCacheable(true)
 							.SetResultTransformer(Transformers.RootEntity)
 							.UniqueResultAsync<Order>());
@@ -478,8 +478,8 @@ namespace NHibernate.Test.Linq
 			session.Clear();
 			Sfi.Statistics.Clear();
 
-			order = await (session.CreateQuery("select o.Employee.FirstName, o from Order o join fetch o.Customer")
-							.SetMaxResults(1)
+			order = await (session.CreateQuery("select o.Employee.FirstName, o from Order o join fetch o.Customer where o.OrderId = :id")
+							.SetInt32("id", 10248)
 							.SetCacheable(true)
 							.SetResultTransformer(Transformers.RootEntity)
 							.UniqueResultAsync<Order>());
