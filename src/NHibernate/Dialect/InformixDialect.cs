@@ -441,14 +441,14 @@ namespace NHibernate.Dialect
 			var res = new StringBuilder(200);
 
 			res.Append(" add constraint foreign key (")
-				.Append(StringHelper.Join(StringHelper.CommaSpace, foreignKey))
+				.Append(string.Join(StringHelper.CommaSpace, foreignKey))
 				.Append(") references ")
 				.Append(referencedTable);
 
 			if (!referencesPrimaryKey)
 			{
 				res.Append(" (")
-					.Append(StringHelper.Join(StringHelper.CommaSpace, primaryKey))
+					.Append(string.Join(StringHelper.CommaSpace, primaryKey))
 					.Append(')');
 			}
 

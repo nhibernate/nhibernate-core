@@ -788,7 +788,7 @@ namespace NHibernate.Dialect
 
 				// Regex matching any alias out of those given. Aliases should contain
 				// no dangerous characters (they are identifiers) so they are not escaped.
-				var aliasesPattern = StringHelper.Join("|", aliasedLockModes.Keys);
+				var aliasesPattern = string.Join("|", aliasedLockModes.Keys);
 
 				// Match < alias >, < alias,>, or < alias$>, the intent is to capture alias names
 				// in various kinds of "FROM table1 alias1, table2 alias2".

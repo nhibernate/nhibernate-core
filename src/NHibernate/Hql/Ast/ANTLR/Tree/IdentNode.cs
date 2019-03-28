@@ -209,7 +209,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					? persister.ToColumns(fromElement.TableAlias, property)
 					: persister.ToColumns(property);
 
-			string text = StringHelper.Join(", ", columns);
+			string text = string.Join(", ", columns);
 			Text = columns.Length == 1 ? text : "(" + text + ")";
 			Type = HqlSqlWalker.SQL_TOKEN;
 

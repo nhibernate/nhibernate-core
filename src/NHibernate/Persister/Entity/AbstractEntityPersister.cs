@@ -1872,7 +1872,7 @@ namespace NHibernate.Persister.Entity
 			}
 
 			string[] aliasedIdColumns = StringHelper.Qualify(RootAlias, IdentifierColumnNames);
-			string selectClause = StringHelper.Join(StringHelper.CommaSpace, aliasedIdColumns)
+			string selectClause = string.Join(StringHelper.CommaSpace, aliasedIdColumns)
 														+ ConcretePropertySelectFragment(RootAlias, PropertyUpdateability);
 
 			SqlString fromClause = new SqlString(
@@ -3840,7 +3840,7 @@ namespace NHibernate.Persister.Entity
 		protected SqlString CreateWhereByKey(int tableNumber, string alias)
 		{
 			//TODO: move to .sql package, and refactor with similar things!
-			//return new SqlString(StringHelper.Join("= ? and ",
+			//return new SqlString(string.Join("= ? and ",
 			//        StringHelper.Qualify(alias, GetSubclassTableKeyColumns(tableNumber))) + "= ?");
 			string[] subclauses = StringHelper.Qualify(alias, GetSubclassTableKeyColumns(tableNumber));
 			SqlStringBuilder builder = new SqlStringBuilder(subclauses.Length * 4);
