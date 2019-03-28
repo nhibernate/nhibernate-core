@@ -251,7 +251,6 @@ namespace NHibernate.Loader.Hql
 			_includeInSelect = new bool[size];
 			_owners = new int[size];
 			_ownerAssociationTypes = new EntityType[size];
-			List<int> resultTypePersisters = new List<int>();
 
 			for (int i = 0; i < size; i++)
 			{
@@ -277,7 +276,6 @@ namespace NHibernate.Loader.Hql
 				if (_includeInSelect[i])
 				{
 					_selectLength++;
-					resultTypePersisters.Add(i);
 				}
 
 				if (collectionFromElements != null && element.IsFetch && element.QueryableCollection?.IsManyToMany == true
@@ -316,7 +314,7 @@ namespace NHibernate.Loader.Hql
 			//NONE, because its the requested lock mode, not the actual! 
 			_defaultLockModes = ArrayHelper.Fill(LockMode.None, size);
 			_uncacheableCollectionPersisters = _queryTranslator.UncacheableCollectionPersisters;
-			CachePersistersWithCollections(resultTypePersisters);
+			CachePersistersWithCollections(ArrayHelper.IndexesOf(_includeInSelect, true));
 		}
 
 		public IList List(ISessionImplementor session, QueryParameters queryParameters)

@@ -407,6 +407,47 @@ namespace NHibernate.Test.Linq
 			Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(0), "Unexpected cache miss count");
 			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(2), "Unexpected cache hit count");
 		}
+		
+		[Explicit("Not working. dto.Customer retrieved from cache as uninitialized proxy")]
+		[Test]
+		public async Task ProjectedEntitiesAreCachableAsync()
+		{
+			Sfi.Statistics.Clear();
+			await (Sfi.EvictQueriesAsync());
+			var	dto = await (session.Query<Order>()
+						.WithOptions(o => o.SetCacheable(true))
+						.Where(x => x.OrderId == 10248)
+						.Select(x => new {Customer = x.Customer, Order = x})
+						.FirstOrDefaultAsync());
+
+			Assert.That(dto.Order, Is.Not.Null);
+			Assert.That(NHibernateUtil.IsInitialized(dto.Order), Is.True);
+			Assert.That(dto.Customer, Is.Not.Null);
+			Assert.That(NHibernateUtil.IsInitialized(dto.Customer), Is.True);
+
+			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1), "Unexpected execution count");
+			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1), "Unexpected cache put count");
+			Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(1), "Unexpected cache miss count");
+
+			Sfi.Statistics.Clear();
+			session.Clear();
+
+			dto = await (session.Query<Order>()
+							.WithOptions(o => o.SetCacheable(true))
+							.Where(x => x.OrderId == 10248)
+							.Select(x => new {Customer = x.Customer, Order = x})
+							.FirstOrDefaultAsync());
+
+			Assert.That(dto.Order, Is.Not.Null);
+			Assert.That(NHibernateUtil.IsInitialized(dto.Order), Is.True);
+			Assert.That(dto.Customer, Is.Not.Null);
+			Assert.That(NHibernateUtil.IsInitialized(dto.Customer), Is.True);
+
+			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(0), "Unexpected execution count");
+			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(0), "Unexpected cache put count");
+			Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(0), "Unexpected cache miss count");
+			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1), "Unexpected cache hit count");
+		}
 
 		[Test]
 		public async Task CacheHqlQueryWithFetchAndTransformerThatChangeTupleAsync()
@@ -418,11 +459,11 @@ namespace NHibernate.Test.Linq
 			// the combination of query and transformer doesn't make sense.
 			// It's simply used as example of returned data being transformed before caching leading to mismatch between 
 			// Loader.ResultTypes collection and provided tuple
-			order = await (session.CreateQuery("select o.Customer.CompanyName, o from Order o join fetch o.Customer")
-										.SetMaxResults(1)
-										.SetCacheable(true)
-										.SetResultTransformer(Transformers.RootEntity)
-										.UniqueResultAsync<Order>());
+			order = await (session.CreateQuery("select o.Employee.FirstName, o from Order o join fetch o.Customer")
+							.SetMaxResults(1)
+							.SetCacheable(true)
+							.SetResultTransformer(Transformers.RootEntity)
+							.UniqueResultAsync<Order>());
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1), "Unexpected cache put count");
@@ -434,7 +475,7 @@ namespace NHibernate.Test.Linq
 			session.Clear();
 			Sfi.Statistics.Clear();
 
-			order = await (session.CreateQuery("select o.Customer.CompanyName, o from Order o join fetch o.Customer")
+			order = await (session.CreateQuery("select o.Employee.FirstName, o from Order o join fetch o.Customer")
 										.SetMaxResults(1)
 										.SetCacheable(true)
 										.SetResultTransformer(Transformers.RootEntity)
@@ -451,6 +492,7 @@ namespace NHibernate.Test.Linq
 
 		private static void AssertFetchedOrder(Order order)
 		{
+			Assert.That(NHibernateUtil.IsInitialized(order));
 			Assert.That(order.Customer, Is.Not.Null, "Expected the fetched Customer to be initialized");
 			Assert.That(NHibernateUtil.IsInitialized(order.Customer), Is.True, "Expected the fetched Customer to be initialized");
 			Assert.That(NHibernateUtil.IsInitialized(order.OrderLines), Is.True, "Expected the fetched  OrderLines to be initialized");
