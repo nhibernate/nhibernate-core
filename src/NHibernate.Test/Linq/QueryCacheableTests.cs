@@ -441,10 +441,13 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void CacheHqlQueryWithFetchAndTransformerThatChangeTuple()
 		{
+			if (!TestDialect.SupportsDuplicatedColumnAliases)
+				Assert.Ignore("Ignored due to GH-2092");
+
 			Sfi.Statistics.Clear();
 			Sfi.EvictQueries();
 			Order order;
-			
+
 			// the combination of query and transformer doesn't make sense.
 			// It's simply used as example of returned data being transformed before caching leading to mismatch between 
 			// Loader.ResultTypes collection and provided tuple
@@ -460,15 +463,15 @@ namespace NHibernate.Test.Linq
 			Assert.That(order, Is.Not.Null);
 			Assert.That(order.Customer, Is.Not.Null);
 			Assert.That(NHibernateUtil.IsInitialized(order.Customer), Is.True);
-			
+
 			session.Clear();
 			Sfi.Statistics.Clear();
 
 			order = session.CreateQuery("select o.Employee.FirstName, o from Order o join fetch o.Customer")
-										.SetMaxResults(1)
-										.SetCacheable(true)
-										.SetResultTransformer(Transformers.RootEntity)
-										.UniqueResult<Order>();
+							.SetMaxResults(1)
+							.SetCacheable(true)
+							.SetResultTransformer(Transformers.RootEntity)
+							.UniqueResult<Order>();
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(0), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(0), "Unexpected cache put count");
