@@ -1,3 +1,21 @@
+Build 5.2.5
+=============================
+
+Release notes - NHibernate - Version 5.2.5
+
+5 issues were resolved in this release.
+
+** Bug
+
+   * #2075 Missing cast when comparing a guid and string columns in SAP SQL Anywhere
+   * #2046 Fix nullable Guid ToString is not translated correctly on some dialects
+   * #2043 System.Reflection.TargetException when an interface is used as class mapping proxy definition
+   * #2040 Incorrect SQL when comparing a guid and string column in Sql Server
+
+** Task
+
+   * #2086 Release 5.2.5
+
 Build 5.2.4
 =============================
 
@@ -324,6 +342,24 @@ Release notes - NHibernate - Version 5.2.0
 As part of releasing 5.2.0, a misnamed setting in 5.0.0 release notes has been fixed:
 transaction.use_connection_on_system_events correct name is transaction.use_connection_on_system_prepare
 
+Build 5.1.5
+=============================
+
+Release notes - NHibernate - Version 5.1.5
+
+    ##### Possible Breaking Changes #####
+        * Using DML on an entity collection was applying the changes without
+          filtering according to the entity. It will now throw a
+          NotSupportedException.
+
+** Bug
+
+   * #2043 System.Reflection.TargetException when an interface is used as class mapping proxy definition
+   * #2020 Throw for DML on filter
+
+** Task
+   * #2074 Release 5.1.5
+
 Build 5.1.4
 =============================
 
@@ -568,6 +604,24 @@ Release notes - NHibernate - Version 5.1.0
 
 As part of releasing 5.1.0, a missing 5.0.0 possible breaking change has been added about inequality semantic in LINQ
 queries. See 5.0.0 possible breaking changes.
+
+﻿Build 5.0.7
+=============================
+
+Release notes - NHibernate - Version 5.0.7
+
+    ##### Possible Breaking Changes #####
+        * Using DML on an entity collection was applying the changes without
+          filtering according to the entity. It will now throw a
+          NotSupportedException.
+
+** Bug
+
+   * #2043 System.Reflection.TargetException when an interface is used as class mapping proxy definition
+   * #2020 Throw for DML on filter
+
+** Task
+   * #2073 Release 5.0.7
 
 Build 5.0.6
 =============================
