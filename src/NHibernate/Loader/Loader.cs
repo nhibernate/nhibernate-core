@@ -95,7 +95,7 @@ namespace NHibernate.Loader
 		/// <summary> 
 		/// An array of hash sets indicating which lazy properties will be fetched for an entity persister.
 		/// </summary>
-		protected virtual HashSet<string>[] EntityFetchLazyProperties
+		protected virtual ISet<string>[] EntityFetchLazyProperties
 		{
 			get { return null; }
 		}
@@ -1151,7 +1151,7 @@ namespace NHibernate.Loader
 			return array != null && array[i];
 		}
 
-		private HashSet<string> GetFetchLazyProperties(int i)
+		private ISet<string> GetFetchLazyProperties(int i)
 		{
 			var array = EntityFetchLazyProperties;
 			return array?[i];

@@ -58,6 +58,7 @@ namespace NHibernate.Loader
 
 		public bool[] EagerPropertyFetches { get; set; }
 		public bool[] ChildFetchEntities { get; set; }
+		public ISet<string>[] EntityFetchLazyProperties { get; set; }
 
 		public int[] CollectionOwners
 		{
@@ -170,16 +171,18 @@ namespace NHibernate.Loader
 			string subalias = GenerateTableAlias(associations.Count + 1, path, subPathAlias, joinable);
 
 			var assoc =
-				new OuterJoinableAssociation(
-					type,
-					alias,
-					aliasedLhsColumns,
-					subalias,
-					joinType,
-					GetWithClause(path, subPathAlias),
-					Factory,
-					enabledFilters,
-					GetSelectMode(path));
+				InitAssociation(
+					new OuterJoinableAssociation(
+						type,
+						alias,
+						aliasedLhsColumns,
+						subalias,
+						joinType,
+						GetWithClause(path, subPathAlias),
+						Factory,
+						enabledFilters,
+						GetSelectMode(path)),
+					path);
 			assoc.ValidateJoin(path);
 			AddAssociation(assoc);
 
@@ -204,6 +207,11 @@ namespace NHibernate.Loader
 			return SelectMode.Undefined;
 		}
 
+		protected virtual ISet<string> GetEntityFetchLazyProperties(string path)
+		{
+			return null;
+		}
+		
 		private struct DependentAlias2
 		{
 			public DependentAlias2(string alias, ICollection<string> dependsOn)
@@ -372,7 +380,7 @@ namespace NHibernate.Loader
 			string alias)
 		{
 			OuterJoinableAssociation assoc =
-				new OuterJoinableAssociation(
+				InitAssociation(new OuterJoinableAssociation(
 					persister.EntityType,
 					string.Empty,
 					Array.Empty<string>(),
@@ -381,8 +389,14 @@ namespace NHibernate.Loader
 					GetWithClause(path, alias),
 					Factory,
 					enabledFilters,
-					GetSelectMode(path));
+					GetSelectMode(path)), path);
 			AddAssociation(assoc);
+		}
+
+		internal OuterJoinableAssociation InitAssociation(OuterJoinableAssociation association, string path)
+		{
+			association.EntityFetchLazyProperties = GetEntityFetchLazyProperties(path);
+			return association;
 		}
 
 		private void WalkEntityAssociationTree(IAssociationType associationType, IOuterJoinLoadable persister,
@@ -1019,6 +1033,7 @@ namespace NHibernate.Loader
 			owners = new int[joins];
 			ownerAssociationTypes = new EntityType[joins];
 			lockModeArray = ArrayHelper.Fill(lockMode, joins);
+			EntityFetchLazyProperties = new ISet<string>[joins];
 
 			int i = 0;
 			int j = 0;
@@ -1068,6 +1083,7 @@ namespace NHibernate.Loader
 			aliases[i] = oj.RHSAlias;
 			EagerPropertyFetches[i] = oj.SelectMode == SelectMode.FetchLazyProperties;
 			ChildFetchEntities[i] = oj.SelectMode == SelectMode.ChildFetch;
+			EntityFetchLazyProperties[i] = oj.EntityFetchLazyProperties;
 		}
 
 		/// <summary>
@@ -1134,7 +1150,8 @@ namespace NHibernate.Loader
 #pragma warning restore 618
 
 				case SelectMode.FetchLazyProperties:
-					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(join.Joinable, "fetch lazy propertie")
+#pragma warning disable 618
+					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(join.Joinable, "fetch lazy properties")
 						.SelectFragment(
 							next?.Joinable,
 							next?.RHSAlias,
@@ -1143,7 +1160,20 @@ namespace NHibernate.Loader
 							collectionSuffix,
 							join.ShouldFetchCollectionPersister(),
 							true);
-				
+#pragma warning restore 618
+
+				case SelectMode.FetchProperty:
+					return ReflectHelper.CastOrThrow<ISupportLazyPropsJoinable>(join.Joinable, "fetch lazy property")
+										.SelectFragment(
+											next?.Joinable,
+											next?.RHSAlias,
+											join.RHSAlias,
+											collectionSuffix,
+											join.ShouldFetchCollectionPersister(),
+											new EntityLoadInfo(entitySuffix)
+											{
+												LazyProperties = join.EntityFetchLazyProperties
+											});
 				case SelectMode.ChildFetch:
 					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(join.Joinable, "child fetch select mode").IdentifierSelectFragment(join.RHSAlias, entitySuffix);
 

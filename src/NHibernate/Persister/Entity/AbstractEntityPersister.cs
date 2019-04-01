@@ -40,7 +40,7 @@ namespace NHibernate.Persister.Entity
 	/// </remarks>
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
 		IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable,
-		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister
+		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable
 	{
 		#region InclusionChecker
 
@@ -1641,12 +1641,12 @@ namespace NHibernate.Persister.Entity
 			return PropertySelectFragment(name, suffix, null, allProperties);
 		}
 
-		public string PropertySelectFragment(string name, string suffix, string[] fetchProperties)
+		public string PropertySelectFragment(string name, string suffix, ICollection<string> fetchProperties)
 		{
 			return PropertySelectFragment(name, suffix, fetchProperties, false);
 		}
 
-		private string PropertySelectFragment(string name, string suffix, string[] fetchProperties, bool allProperties)
+		private string PropertySelectFragment(string name, string suffix, ICollection<string> fetchProperties, bool allProperties)
 		{
 			SelectFragment select = new SelectFragment(Factory.Dialect)
 				.SetSuffix(suffix)
@@ -4323,18 +4323,27 @@ namespace NHibernate.Persister.Entity
 
 		// 6.0 TODO: Remove (to inline usages)
 		// Since v5.2
-		[Obsolete("Use overload taking includeLazyProperties parameter")]
+		[Obsolete("Use overload taking entityInfo parameter")]
 		public string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias,
 			string entitySuffix, string collectionSuffix, bool includeCollectionColumns)
 		{
 			return SelectFragment(rhs, rhsAlias, lhsAlias, entitySuffix, collectionSuffix, includeCollectionColumns, false);
 		}
 
+		// 6.0 TODO: Remove (to inline usages)
+		// Since v5.3
+		[Obsolete("Use overload taking entityInfo parameter")]
 		public string SelectFragment(
 			IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix,
 			bool includeCollectionColumns, bool includeLazyProperties)
 		{
-			return SelectFragment(lhsAlias, entitySuffix, includeLazyProperties);
+			return SelectFragment(rhs, rhsAlias, lhsAlias, collectionSuffix, includeCollectionColumns, new EntityLoadInfo(entitySuffix) {IncludeLazyProps = includeLazyProperties});
+		}
+
+		public string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string collectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
+		{
+			return IdentifierSelectFragment(lhsAlias, entityInfo.EntitySuffix)
+					+ PropertySelectFragment(lhsAlias, entityInfo.EntitySuffix, entityInfo.LazyProperties, entityInfo.IncludeLazyProps);
 		}
 
 		public bool IsInstrumented

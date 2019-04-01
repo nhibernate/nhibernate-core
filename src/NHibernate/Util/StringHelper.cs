@@ -380,6 +380,24 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
+		/// Returns true if supplied fullPath has non empty pathToProperty
+		/// "alias.Entity.Value" -> pathToProperty = "alias.Entity", propertyName = "Value"
+		/// </summary>
+		internal static bool ParsePathAndPropertyName(string fullPath, out string pathToProperty, out string propertyName)
+		{
+			propertyName = fullPath;
+			pathToProperty = string.Empty;
+			int loc = fullPath.LastIndexOf('.');
+			if (loc < 0)
+				return false;
+
+			propertyName = fullPath.Substring(loc + 1);
+			pathToProperty = fullPath.Substring(0, loc);
+			return true;
+		}
+		
+		
+		/// <summary>
 		/// Converts a <see cref="String"/> in the format of "true", "t", "false", or "f" to
 		/// a <see cref="Boolean"/>.
 		/// </summary>

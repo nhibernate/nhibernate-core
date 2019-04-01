@@ -98,6 +98,8 @@ namespace NHibernate.Loader
 			get { return _selectMode; }
 		}
 
+		public ISet<string> EntityFetchLazyProperties { get; set; }
+
 		public int GetOwner(IList<OuterJoinableAssociation> associations)
 		{
 			if (IsEntityType || IsCollection)

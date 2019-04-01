@@ -54,6 +54,7 @@ namespace NHibernate.Loader.Criteria
 			includeInResultRow = walker.IncludeInResultRow;
 			resultRowLength = ArrayHelper.CountTrue(IncludeInResultRow);
 			childFetchEntities = walker.ChildFetchEntities;
+			EntityFetchLazyProperties = walker.EntityFetchLazyProperties;
 			// fill caching objects only if there is a projection
 			if (translator.HasProjection)
 			{
@@ -94,6 +95,8 @@ namespace NHibernate.Loader.Criteria
 		{
 			return childFetchEntities?[i] == true;
 		}
+
+		protected override ISet<string>[] EntityFetchLazyProperties { get; }
 
 		public IList List(ISessionImplementor session)
 		{
