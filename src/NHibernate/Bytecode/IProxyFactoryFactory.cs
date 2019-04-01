@@ -9,7 +9,7 @@ namespace NHibernate.Bytecode
 		{
 			if (factory.IsProxy(entity))
 			{
-				proxy = (INHibernateProxy) factory;
+				proxy = (INHibernateProxy) entity;
 				return true;
 			}
 
