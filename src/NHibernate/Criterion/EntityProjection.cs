@@ -1,7 +1,9 @@
 ﻿﻿using System;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Loader.Criteria;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
@@ -38,9 +40,15 @@ namespace NHibernate.Criterion
 		}
 
 		/// <summary>
-		/// Fetch lazy properties
+		/// Fetch all lazy properties
 		/// </summary>
 		public bool FetchLazyProperties { get; set; }
+
+		/// <summary>
+		/// Fetch individual lazy properties or property groups
+		/// Note: To fetch single property it must be mapped with unique fetch group (lazy-group)
+		/// </summary>
+		public ICollection<string> FetchLazyPropertyGroups { get; set; }
 
 		/// <summary>
 		/// Lazy load entity
@@ -63,11 +71,21 @@ namespace NHibernate.Criterion
 		}
 
 		/// <summary>
-		/// Fetch lazy properties
+		/// Fetch all lazy properties
 		/// </summary>
 		public EntityProjection SetFetchLazyProperties(bool fetchLazyProperties = true)
 		{
 			FetchLazyProperties = fetchLazyProperties;
+			return this;
+		}
+
+		/// <summary>
+		/// Fetch individual lazy properties or property groups
+		/// Note: To fetch single property it must be mapped with unique fetch group (lazy-group)
+		/// </summary>
+		public EntityProjection SetFetchLazyPropertyGroups(params string[] lazyPropertyGroups)
+		{
+			FetchLazyPropertyGroups = lazyPropertyGroups;
 			return this;
 		}
 
@@ -115,7 +133,14 @@ namespace NHibernate.Criterion
 					? identifierSelectFragment
 					: string.Concat(
 						identifierSelectFragment,
-						Persister.PropertySelectFragment(TableAlias, ColumnAliasSuffix, FetchLazyProperties)));
+						GetPropertySelectFragment()));
+		}
+
+		private string GetPropertySelectFragment()
+		{
+			return FetchLazyProperties
+				? Persister.PropertySelectFragment(TableAlias, ColumnAliasSuffix, FetchLazyProperties)
+				: Persister.PropertySelectFragment(TableAlias, ColumnAliasSuffix, FetchLazyPropertyGroups);
 		}
 
 		SqlString IProjection.ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
