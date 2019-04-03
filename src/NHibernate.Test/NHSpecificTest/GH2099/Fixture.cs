@@ -17,9 +17,9 @@ namespace NHibernate.Test.NHSpecificTest.GH2099
 		[Test]
 		public void BaseClassCanShareIndexNameWithSubclass()
 		{
-			var table = cfg.CreateMappings().IterateTables.FirstOrDefault(t => t.Name == "WFE_workflowinstance");
+			var table = cfg.CreateMappings().IterateTables.FirstOrDefault(t => t.Name == "WInstance");
 
-			var index = table.GetIndex("CF_BASE_COMPOSITE_IDX");
+			var index = table.GetIndex("CF_BASE_IDX");
 			Assert.That(index?.ColumnSpan, Is.EqualTo(3));
 			Assert.That(index.ColumnIterator.FirstOrDefault(c => c.Name == "PDO_Deleted"), Is.Not.Null);
 		}
