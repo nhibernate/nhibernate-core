@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH2099">
+
+  <class name="PersistentObject" table="RAD_persistentobject" abstract="true" dynamic-update="true" lazy="true">
+    <id name="Id" generator="guid.comb" />
+    <property name="PDO_Deleted" column="PDO_Deleted" index="INDEX_PDO_DELETED, CF_BASE_COMPOSITE_IDX" />
+  </class>
+  
+  <union-subclass name="WorkflowInstance" table="WFE_workflowinstance" abstract="false" dynamic-update="true" lazy="true" extends="PersistentObject">
+    <property name="IsActive" column="IsActive" index="CF_BASE_COMPOSITE_IDX" />
+    <property name="IsWaiting" column="IsWaiting" index="CF_BASE_COMPOSITE_IDX" />
+  </union-subclass>
+
+  <union-subclass name="WorkflowInstance2" table="WFE_workflowinstance2" abstract="false" dynamic-update="true" lazy="true" extends="PersistentObject">
+    <property name="IsActive" column="IsActive" index="CF_BASE_COMPOSITE_IDX" />
+    <property name="IsWaiting" column="IsWaiting" index="CF_BASE_COMPOSITE_IDX" />
+  </union-subclass>
+
+</hibernate-mapping>
