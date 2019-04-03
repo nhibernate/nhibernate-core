@@ -8,14 +8,27 @@ namespace NHibernate.Proxy.Map
 {
 	public class MapProxyFactory : IProxyFactory
 	{
+		//6.0 TODO: make readonly
 		private string entityName;
 
-		#region IProxyFactory Members
+		//Since v5.3
+		[Obsolete("Please use constructor accepting entityName instead.")]
+		public MapProxyFactory()
+		{
+		}
 
+		public MapProxyFactory(string entityName)
+		{
+			this.entityName = entityName;
+		}
+
+		//Since v5.3
+		[Obsolete("Please use constructor accepting entityName instead.")]
 		public void PostInstantiate(string entityName, System.Type persistentClass, ISet<System.Type> interfaces,
 																MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod,
 																IAbstractComponentType componentIdType)
 		{
+			//6.0 TODO: throw NotSupportedException in the new override
 			this.entityName = entityName;
 		}
 
@@ -28,7 +41,5 @@ namespace NHibernate.Proxy.Map
 		{
 			throw new NotSupportedException();
 		}
-
-		#endregion
 	}
 }

@@ -55,7 +55,7 @@ namespace NHibernate.Type
 			// NOTE: the owner of the association is not really the owner of the id!
 			object id = await (GetIdentifierOrUniqueKeyType(session.Factory)
 				.NullSafeGetAsync(rs, names, session, owner, cancellationToken)).ConfigureAwait(false);
-			ScheduleBatchLoadIfNeeded(id, session);
+			ScheduleBatchLoadIfNeeded(id, session, false);
 			return id;
 		}
 
@@ -117,7 +117,7 @@ namespace NHibernate.Type
 		public override async Task BeforeAssembleAsync(object oid, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			ScheduleBatchLoadIfNeeded(await (AssembleIdAsync(oid, session, cancellationToken)).ConfigureAwait(false), session);
+			ScheduleBatchLoadIfNeeded(await (AssembleIdAsync(oid, session, cancellationToken)).ConfigureAwait(false), session, true);
 		}
 
 		private Task<object> AssembleIdAsync(object oid, ISessionImplementor session, CancellationToken cancellationToken)

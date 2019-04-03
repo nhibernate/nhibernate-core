@@ -68,20 +68,9 @@ namespace NHibernate.Loader
 			get { return on; }
 		}
 
-		private bool IsOneToOne
+		private bool IsEntityType
 		{
-			get
-			{
-				if (joinableType.IsEntityType)
-				{
-					EntityType etype = (EntityType) joinableType;
-					return etype.IsOneToOne;
-				}
-				else
-				{
-					return false;
-				}
-			}
+			get { return joinableType.IsEntityType; }
 		}
 
 		public IAssociationType JoinableType
@@ -111,7 +100,7 @@ namespace NHibernate.Loader
 
 		public int GetOwner(IList<OuterJoinableAssociation> associations)
 		{
-			if (IsOneToOne || IsCollection)
+			if (IsEntityType || IsCollection)
 			{
 				return GetPosition(lhsAlias, associations);
 			}

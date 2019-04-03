@@ -407,9 +407,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// this is the regression style determination which matches the logic of the classic translator
 				joinIsNeeded = generateJoin && ( !Walker.IsInSelect || !Walker.IsShallowQuery);
 			}
-			else 
+			else
 			{
-				joinIsNeeded = generateJoin || ( (Walker.IsInSelect && !Walker.IsInCase ) || Walker.IsInFrom );
+				joinIsNeeded = generateJoin || ((Walker.IsInSelect && !Walker.IsInCase) || (Walker.IsInFrom && !Walker.IsComparativeExpressionClause));
 			}
 
 			if ( joinIsNeeded ) 
@@ -661,7 +661,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private void InitText()
 		{
 			string[] cols = GetColumns();
-			string text = StringHelper.Join(", ", cols);
+			string text = string.Join(", ", cols);
 			if (cols.Length > 1 && Walker.IsComparativeExpressionClause)
 			{
 				text = "(" + text + ")";

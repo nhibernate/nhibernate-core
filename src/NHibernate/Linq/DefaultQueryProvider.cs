@@ -282,6 +282,9 @@ namespace NHibernate.Linq
 
 		public int ExecuteDml<T>(QueryMode queryMode, Expression expression)
 		{
+			if (Collection != null)
+				throw new NotSupportedException("DML operations are not supported for filters.");
+
 			var nhLinqExpression = new NhLinqDmlExpression<T>(queryMode, expression, Session.Factory);
 
 			var query = Session.CreateQuery(nhLinqExpression);

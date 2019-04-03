@@ -185,6 +185,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			classMapping.extends = baseType.GetShortClassName(MapDoc);
 		}
 
+		public void Extends(string entityOrClassName)
+		{
+			classMapping.extends = entityOrClassName ?? throw new ArgumentNullException(nameof(entityOrClassName));
+		}
+
 		#endregion
 	}
 }

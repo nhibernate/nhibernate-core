@@ -1,4 +1,5 @@
-﻿using NHibernate.Cfg.MappingSchema;
+﻿using System.Text.RegularExpressions;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Test.Hql.EntityJoinHqlTestEntities;
 using NUnit.Framework;
@@ -140,6 +141,67 @@ namespace NHibernate.Test.Hql
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
+
+		[Test]
+		public void EntityJoinWithEntityComparisonInWithClausShouldNotAddJoin()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex =
+					session
+						.CreateQuery(
+							"select ex "
+							+ "from EntityComplex ex "
+							+ "inner join EntityComplex st with st = ex.SameTypeChild "
+						).SetMaxResults(1)
+						.UniqueResult<EntityComplex>();
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "EntityComplex").Count, Is.EqualTo(2));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public void EntityJoinWithEntityAssociationComparisonShouldAddJoin()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex =
+					session
+						.CreateQuery(
+							"select ex "
+							+ "from EntityComplex ex "
+							+ "inner join EntityComplex st with st = ex.SameTypeChild.SameTypeChild "
+						).SetMaxResults(1)
+						.UniqueResult<EntityComplex>();
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "EntityComplex").Count, Is.EqualTo(3));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public void EntityJoinWithEntityAssociationComparison2ShouldAddJoin()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex =
+					session
+						.CreateQuery(
+							"select ex "
+							+ "from EntityComplex ex "
+							+ "inner join EntityComplex st with st.Version = ex.SameTypeChild.Version "
+						).SetMaxResults(1)
+						.UniqueResult<EntityComplex>();
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "EntityComplex").Count, Is.EqualTo(3));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
 
 		[Test, Ignore("Failing for unrelated reasons")]
 		public void CrossJoinAndWithClause()

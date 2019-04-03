@@ -513,7 +513,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				cols = GetPropertyMapping(propertyName).ToColumns(propertyName);
 			}
-			string result = StringHelper.Join(", ", cols);
+			string result = string.Join(", ", cols);
 
 			// There used to be code here that added parentheses if the number of columns was greater than one.
 			// This was causing invalid queries like select (c1, c2) from x.  I couldn't think of a reason that

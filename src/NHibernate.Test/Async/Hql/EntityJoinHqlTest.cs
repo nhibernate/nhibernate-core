@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System.Text.RegularExpressions;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Test.Hql.EntityJoinHqlTestEntities;
@@ -151,6 +152,67 @@ namespace NHibernate.Test.Hql
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
+
+		[Test]
+		public async Task EntityJoinWithEntityComparisonInWithClausShouldNotAddJoinAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex =
+					await (session
+						.CreateQuery(
+							"select ex "
+							+ "from EntityComplex ex "
+							+ "inner join EntityComplex st with st = ex.SameTypeChild "
+						).SetMaxResults(1)
+						.UniqueResultAsync<EntityComplex>());
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "EntityComplex").Count, Is.EqualTo(2));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public async Task EntityJoinWithEntityAssociationComparisonShouldAddJoinAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex =
+					await (session
+						.CreateQuery(
+							"select ex "
+							+ "from EntityComplex ex "
+							+ "inner join EntityComplex st with st = ex.SameTypeChild.SameTypeChild "
+						).SetMaxResults(1)
+						.UniqueResultAsync<EntityComplex>());
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "EntityComplex").Count, Is.EqualTo(3));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public async Task EntityJoinWithEntityAssociationComparison2ShouldAddJoinAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex =
+					await (session
+						.CreateQuery(
+							"select ex "
+							+ "from EntityComplex ex "
+							+ "inner join EntityComplex st with st.Version = ex.SameTypeChild.Version "
+						).SetMaxResults(1)
+						.UniqueResultAsync<EntityComplex>());
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "EntityComplex").Count, Is.EqualTo(3));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
 
 		[Test, Ignore("Failing for unrelated reasons")]
 		public async Task CrossJoinAndWithClauseAsync()

@@ -425,11 +425,26 @@ namespace NHibernate.Event.Default
 			}
 			ISessionFactoryImplementor factory = source.Factory;
 			var batchSize = persister.GetBatchSize();
-			if (batchSize > 1 && persister.Cache.PreferMultipleGet())
+			var entityBatch = source.PersistenceContext.BatchFetchQueue.QueryCacheQueue
+			                        ?.GetEntityBatch(persister, @event.EntityId);
+			if (entityBatch != null || batchSize > 1 && persister.Cache.PreferMultipleGet())
 			{
 				// The first item in the array is the item that we want to load
-				var entityBatch =
-					source.PersistenceContext.BatchFetchQueue.GetEntityBatch(persister, @event.EntityId, batchSize, false);
+				if (entityBatch != null)
+				{
+					if (entityBatch.Length == 0)
+					{
+						return null; // The key was already checked
+					}
+
+					batchSize = entityBatch.Length;
+				}
+
+				if (entityBatch == null)
+				{
+					entityBatch = source.PersistenceContext.BatchFetchQueue.GetEntityBatch(persister, @event.EntityId, batchSize, false);
+				}
+
 				// Ignore null values as the retrieved batch may contains them when there are not enough
 				// uninitialized entities in the queue
 				var keys = new List<CacheKey>(batchSize);

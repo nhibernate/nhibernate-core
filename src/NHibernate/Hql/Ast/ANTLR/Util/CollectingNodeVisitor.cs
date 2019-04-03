@@ -12,10 +12,20 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	[CLSCompliant(false)]
 	public delegate bool FilterPredicate(IASTNode node);
 
+	//Since 5.3
+	[Obsolete("Use generic version instead")]
 	[CLSCompliant(false)]
-	public class CollectingNodeVisitor : IVisitationStrategy
+	public class CollectingNodeVisitor : CollectingNodeVisitor<IASTNode>
 	{
-		private readonly List<IASTNode> collectedNodes = new List<IASTNode>();
+		public CollectingNodeVisitor(FilterPredicate predicate) : base(predicate)
+		{
+		}
+	}
+
+	[CLSCompliant(false)]
+	public class CollectingNodeVisitor<TNode> : IVisitationStrategy 
+	{
+		private readonly List<TNode> collectedNodes = new List<TNode>();
 		private readonly FilterPredicate predicate;
 
 		public CollectingNodeVisitor(FilterPredicate predicate)
@@ -29,13 +39,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 		{
 			if (predicate == null || predicate(node))
 			{
-				collectedNodes.Add(node);
+				collectedNodes.Add((TNode) node);
 			}
 		}
 
 		#endregion
 
-		public IList<IASTNode> Collect(IASTNode root)
+		public IList<TNode> Collect(IASTNode root)
 		{
 			var traverser = new NodeTraverser(this);
 			traverser.TraverseDepthFirst(root);

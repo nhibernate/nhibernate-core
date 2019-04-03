@@ -90,61 +90,130 @@ namespace NHibernate.Test.SqlTest.Query
 		[Test]
 		public async Task SQLQueryInterfaceAsync()
 		{
-			ISession s = OpenSession();
-			ITransaction t = s.BeginTransaction();
 			Organization ifa = new Organization("IFA");
 			Organization jboss = new Organization("JBoss");
 			Person gavin = new Person("Gavin");
 			Employment emp = new Employment(gavin, jboss, "AU");
 
-			await (s.SaveAsync(ifa));
-			await (s.SaveAsync(jboss));
-			await (s.SaveAsync(gavin));
-			await (s.SaveAsync(emp));
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(ifa));
+				await (s.SaveAsync(jboss));
+				await (s.SaveAsync(gavin));
+				await (s.SaveAsync(emp));
 
-			IList l = await (s.CreateSQLQuery(OrgEmpRegionSQL)
-			           .AddEntity("org", typeof(Organization))
-			           .AddJoin("emp", "org.employments")
-			           .AddScalar("regionCode", NHibernateUtil.String)
-			           .ListAsync());
-			Assert.AreEqual(2, l.Count);
+				IList l = await (s.CreateSQLQuery(OrgEmpRegionSQL)
+							.AddEntity("org", typeof(Organization))
+							.AddJoin("emp", "org.employments")
+							.AddScalar("regionCode", NHibernateUtil.String)
+							.ListAsync());
+				Assert.AreEqual(2, l.Count);
 
-			l = await (s.CreateSQLQuery(OrgEmpPersonSQL)
-			     .AddEntity("org", typeof(Organization))
-			     .AddJoin("emp", "org.employments")
-			     .AddJoin("pers", "emp.employee")
-			     .ListAsync());
-			Assert.AreEqual(l.Count, 1);
+				l = await (s.CreateSQLQuery(OrgEmpPersonSQL)
+					.AddEntity("org", typeof(Organization))
+					.AddJoin("emp", "org.employments")
+					.AddJoin("pers", "emp.employee")
+					.ListAsync());
+				Assert.AreEqual(l.Count, 1);
 
-			await (t.CommitAsync());
-			s.Close();
+				await (t.CommitAsync());
+			}
 
-			s = OpenSession();
-			t = s.BeginTransaction();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var l = await (s.CreateSQLQuery(
+							"select {org.*}, {emp.*} " +
+							"from ORGANIZATION org " +
+							"     left outer join EMPLOYMENT emp on org.ORGID = emp.EMPLOYER, ORGANIZATION org2")
+						.AddEntity("org", typeof(Organization))
+						.AddJoin("emp", "org.employments")
+						.SetResultTransformer(new DistinctRootEntityResultTransformer())
+						.ListAsync());
+				Assert.AreEqual(l.Count, 2);
 
-			l = await (s.CreateSQLQuery(
-				     "select {org.*}, {emp.*} " +
-				     "from ORGANIZATION org " +
-				     "     left outer join EMPLOYMENT emp on org.ORGID = emp.EMPLOYER, ORGANIZATION org2")
-			     .AddEntity("org", typeof(Organization))
-			     .AddJoin("emp", "org.employments")
-			     .SetResultTransformer(new DistinctRootEntityResultTransformer())
-			     .ListAsync());
-			Assert.AreEqual(l.Count, 2);
+				await (t.CommitAsync());
+				s.Close();
+			}
 
-			await (t.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.DeleteAsync(emp));
+				await (s.DeleteAsync(gavin));
+				await (s.DeleteAsync(ifa));
+				await (s.DeleteAsync(jboss));
 
-			s = OpenSession();
-			t = s.BeginTransaction();
+				await (t.CommitAsync());
+				s.Close();
+			}
+		}
 
-			await (s.DeleteAsync(emp));
-			await (s.DeleteAsync(gavin));
-			await (s.DeleteAsync(ifa));
-			await (s.DeleteAsync(jboss));
+		[Test]
+		public async Task SQLQueryInterfaceCacheableAsync()
+		{
+			Organization ifa = new Organization("IFA");
+			Organization jboss = new Organization("JBoss");
+			Person gavin = new Person("Gavin");
+			Employment emp = new Employment(gavin, jboss, "AU");
 
-			await (t.CommitAsync());
-			s.Close();
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(ifa));
+				await (s.SaveAsync(jboss));
+				await (s.SaveAsync(gavin));
+				await (s.SaveAsync(emp));
+
+				IList l = await (s.CreateSQLQuery(OrgEmpRegionSQL)
+							.AddEntity("org", typeof(Organization))
+							.AddJoin("emp", "org.employments")
+							.AddScalar("regionCode", NHibernateUtil.String)
+							.SetCacheable(true)
+							.ListAsync());
+				Assert.AreEqual(2, l.Count);
+
+				l = await (s.CreateSQLQuery(OrgEmpPersonSQL)
+					.AddEntity("org", typeof(Organization))
+					.AddJoin("emp", "org.employments")
+					.AddJoin("pers", "emp.employee")
+					.SetCacheable(true)
+					.ListAsync());
+				Assert.AreEqual(l.Count, 1);
+
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var l = await (s.CreateSQLQuery(
+							"select {org.*}, {emp.*} " +
+							"from ORGANIZATION org " +
+							"     left outer join EMPLOYMENT emp on org.ORGID = emp.EMPLOYER, ORGANIZATION org2")
+						.AddEntity("org", typeof(Organization))
+						.AddJoin("emp", "org.employments")
+						.SetCacheable(true)
+						.SetResultTransformer(new DistinctRootEntityResultTransformer())
+						.ListAsync());
+				Assert.AreEqual(l.Count, 2);
+
+				await (t.CommitAsync());
+				s.Close();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.DeleteAsync(emp));
+				await (s.DeleteAsync(gavin));
+				await (s.DeleteAsync(ifa));
+				await (s.DeleteAsync(jboss));
+
+				await (t.CommitAsync());
+				s.Close();
+			}
 		}
 
 		[Test]

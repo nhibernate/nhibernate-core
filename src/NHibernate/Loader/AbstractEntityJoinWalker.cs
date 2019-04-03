@@ -126,7 +126,10 @@ namespace NHibernate.Loader
 				.SetFromClause(Dialect.AppendLockHint(lockMode, persister.FromTableFragment(alias)) +persister.FromJoinFragment(alias, true, true))
 				.SetWhereClause(condition)
 				.SetOuterJoins(ojf.ToFromFragmentString,ojf.ToWhereFragmentString + WhereFragment)
-				.SetOrderByClause(OrderBy(associations, orderBy))
+				.SetOrderByClause(
+					projection == null
+						? OrderBy(associations, orderBy)
+						: orderBy)
 				.SetGroupByClause(groupBy)
 				.SetHavingClause(having);
 

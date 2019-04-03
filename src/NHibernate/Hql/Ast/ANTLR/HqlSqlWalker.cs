@@ -390,7 +390,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			statement.FromClause.Resolve();
 
-			var fromElement = (FromElement)statement.FromClause.GetFromElements()[0];
+			var fromElement = statement.FromClause.GetFromElementsTyped()[0];
 			IQueryable persister = fromElement.Queryable;
 			// Make #@%$^#^&# sure no alias is applied to the table name
 			fromElement.Text = persister.TableName;
@@ -495,7 +495,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				joinProcessor.ProcessJoins(rs);
 
 				// Attach any mapping-defined "ORDER BY" fragments
-				foreach (FromElement fromElement in qn.FromClause.GetProjectionList())
+				foreach (FromElement fromElement in qn.FromClause.GetProjectionListTyped())
 				{
 					if ( fromElement.IsFetch && fromElement.QueryableCollection != null ) 
 					{
@@ -588,7 +588,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			// Turn off includeSubclasses on all FromElements.
 			FromClause from = CurrentFromClause;
 
-			foreach (FromElement fromElement in from.GetFromElements())
+			foreach (FromElement fromElement in from.GetFromElementsTyped())
 			{
 				fromElement.IncludeSubclasses = false;
 			}
@@ -966,10 +966,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 				return false;
 			}
 
-			IList<IASTNode> fromElements = _currentFromClause.GetExplicitFromElements();
-			if ( fromElements.Count == 1 ) 
+			var fromElements = _currentFromClause.GetExplicitFromElementsTyped();
+			if ( fromElements.Count == 1 )
 			{
-				FromElement fromElement = (FromElement) fromElements[0];
+				FromElement fromElement = fromElements[0];
 
 				log.Info("attempting to resolve property [{0}] as a non-qualified ref", identText);
 
@@ -982,7 +982,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		IASTNode LookupNonQualifiedProperty(IASTNode property)
 		{
-			FromElement fromElement = (FromElement) _currentFromClause.GetExplicitFromElements()[0];
+			FromElement fromElement = _currentFromClause.GetExplicitFromElementsTyped()[0];
 			IASTNode syntheticDotNode = GenerateSyntheticDotNodeForNonQualifiedPropertyRef( property, fromElement );
 			return LookupProperty( syntheticDotNode, false, _currentClauseType == SELECT );
 		}

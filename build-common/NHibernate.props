@@ -5,7 +5,7 @@
   <PropertyGroup>
     <VersionMajor Condition="'$(VersionMajor)' == ''">5</VersionMajor>
     <VersionMinor Condition="'$(VersionMinor)' == ''">2</VersionMinor>
-    <VersionPatch Condition="'$(VersionPatch)' == ''">3</VersionPatch>
+    <VersionPatch Condition="'$(VersionPatch)' == ''">5</VersionPatch>
     <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
 
     <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>

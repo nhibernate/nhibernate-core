@@ -1,7 +1,9 @@
 using System.Data;
+using System.Data.Common;
 using System.Text;
 using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
+using NHibernate.Dialect.Schema;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
@@ -53,6 +55,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 8000, "VARCHAR($l)");
 			RegisterColumnType(DbType.String, 2147483647, "CLOB");
 			RegisterColumnType(DbType.Time, "TIME");
+			RegisterColumnType(DbType.Guid, "CHAR(16) FOR BIT DATA");
 
 			RegisterFunction("abs", new StandardSQLFunction("abs"));
 			RegisterFunction("absval", new StandardSQLFunction("absval"));
@@ -61,7 +64,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
 			RegisterFunction("ceil", new StandardSQLFunction("ceil"));
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
-			RegisterFunction("round", new StandardSQLFunction("round"));
+			RegisterFunction("round", new StandardSQLFunctionWithRequiredParameters("round", new object[] { null, "0" }));
 
 			RegisterFunction("acos", new StandardSQLFunction("acos", NHibernateUtil.Double));
 			RegisterFunction("asin", new StandardSQLFunction("asin", NHibernateUtil.Double));
@@ -127,8 +130,15 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
 
-			// DB2 does not support ANSI substring syntax.
-			RegisterFunction("substring", new SQLFunctionTemplate(NHibernateUtil.String, "substring(?1, ?2, ?3)"));
+			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
+
+			// Bitwise operations
+			RegisterFunction("band", new Function.BitwiseFunctionOperation("bitand"));
+			RegisterFunction("bor", new Function.BitwiseFunctionOperation("bitor"));
+			RegisterFunction("bxor", new Function.BitwiseFunctionOperation("bitxor"));
+			RegisterFunction("bnot", new Function.BitwiseFunctionOperation("bitnot"));
+
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.DateTime, false));
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.DB2Driver";
 		}
@@ -191,6 +201,11 @@ namespace NHibernate.Dialect
 		public override string GetDropSequenceString(string sequenceName)
 		{
 			return string.Concat("drop sequence ", sequenceName, " restrict");
+		}
+
+		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
+		{
+			return new DB2MetaData(connection);
 		}
 
 		/// <summary></summary>
@@ -277,6 +292,8 @@ namespace NHibernate.Dialect
 		// As of DB2 9.5 documentation, limit is 128 bytes which with Unicode names could mean only 32 characters.
 		/// <inheritdoc />
 		public override int MaxAliasLength => 32;
+
+		public override long TimestampResolutionInTicks => 10L; // Microseconds.
 
 		#region Overridden informational metadata
 
