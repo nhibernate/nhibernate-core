@@ -43,14 +43,17 @@ namespace NHibernate.Mapping
 				IEnumerable<Index> includedIdxs = includedTable.IndexIterator;
 				foreach (Index parentIndex in includedIdxs)
 				{
+					//TODO: Change index name only for DB that require unique index name (like PostgreSQL)
+					var newName = Name + parentIndex.Name;
 					var sharedIndex = GetIndex(parentIndex.Name);
 					if (sharedIndex != null)
 					{
 						sharedIndex.AddColumns(parentIndex.ColumnIterator);
+						sharedIndex.Name = newName;
 						continue;
 					}
 					Index index = new Index();
-					index.Name = Name + parentIndex.Name;
+					index.Name = newName;
 					index.Table = this;
 					index.AddColumns(parentIndex.ColumnIterator);
 					indexes.Add(index);
