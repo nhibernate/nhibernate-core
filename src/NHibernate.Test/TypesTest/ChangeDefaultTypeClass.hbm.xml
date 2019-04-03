@@ -12,5 +12,9 @@
     </id>
 
     <property name="NormalDateTimeValue"/>
+    <property name="StringTypeExplicitLength20" length="20"/>
+    <property name="StringTypeLengthInType25" type="string(25)" />
+    <property name="CurrencyTypePrecisionInType5And2" type="currency(5,2)" /> 
+    <property name="CurrencyTypeExplicitPrecision6And3" type="currency" precision="6" scale="3" /> 
   </class>
 </hibernate-mapping>

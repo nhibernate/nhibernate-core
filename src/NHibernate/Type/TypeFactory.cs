@@ -91,12 +91,41 @@ namespace NHibernate.Type
 		private static readonly ConcurrentDictionary<string, GetNullableTypeWithPrecision> getTypeDelegatesWithPrecision =
 			new ConcurrentDictionary<string, GetNullableTypeWithPrecision>();
 
-		private delegate NullableType GetNullableTypeWithLengthOrScale(int lengthOrScale); // Func<int, NullableType>
+		public delegate NullableType GetNullableTypeWithLengthOrScale(int lengthOrScale); // Func<int, NullableType>
 
-		private delegate NullableType GetNullableTypeWithPrecision(byte precision, byte scale);
+		public delegate NullableType GetNullableTypeWithPrecision(byte precision, byte scale);
 
 		private delegate NullableType NullableTypeCreatorDelegate(SqlType sqlType);
 
+		public class TypeConfigurator
+		{
+			internal GetNullableTypeWithLengthOrScale TypeByLengthOrScale { get; set; }
+			internal GetNullableTypeWithPrecision TypeByPrecision { get; set; }
+
+			internal TypeConfigurator()
+			{
+			}
+
+			/// <summary>
+			/// Allows to provide delegate that returns custom type for given length parameter
+			/// </summary>
+			public TypeConfigurator SetTypeByLengthOrScale(GetNullableTypeWithLengthOrScale typeByLength)
+			{
+				TypeByLengthOrScale = typeByLength;
+				return this;
+			}
+
+			/// <summary>
+			/// Allows to provide delegate that returns custom type for given precision and scale parameters
+			/// </summary>
+			public TypeConfigurator SetTypeByPrecision(GetNullableTypeWithPrecision typeByPrecision)
+			{
+				TypeByPrecision = typeByPrecision;
+				return this;
+			}
+		}
+
+		//6.0 TODO: Remove
 		/// <summary>
 		/// <para>Defines which NHibernate type should be chosen by default for handling a given .Net type.</para>
 		/// <para>This must be done before any operation on NHibernate, including building its
@@ -111,6 +140,43 @@ namespace NHibernate.Type
 			typeAliases.AddRange(GetClrTypeAliases(systemType));
 
 			RegisterType(nhibernateType, typeAliases);
+		}
+
+		/// <summary>
+		/// <para>Defines which NHibernate type should be chosen by default for handling a given .Net type.</para>
+		/// <para>This must be done before any operation on NHibernate, including building its
+		/// <see cref="Configuration" /> and building session factory. Otherwise the behavior will be undefined.</para>
+		/// </summary>
+		/// <param name="systemType">The .Net type.</param>
+		/// <param name="nhibernateType">The NHibernate type.</param>
+		/// <param name="aliases">The additional aliases to map to the type. Use <see cref="EmptyAliases"/> if none.</param>
+		/// <param name="typeConfigurator">Provides methods for handling types with standard parameters (like length or precision)</param>
+		public static void RegisterType(System.Type systemType, IType nhibernateType, IEnumerable<string> aliases, Action<TypeConfigurator> typeConfigurator = null)
+		{
+			var typeAliases = new List<string>(aliases);
+			typeAliases.AddRange(GetClrTypeAliases(systemType));
+
+			RegisterType(nhibernateType, typeAliases);
+			if (typeConfigurator == null) 
+				return;
+			
+			var configurator = new TypeConfigurator();
+			typeConfigurator(configurator);
+			if (configurator.TypeByPrecision != null)
+			{
+				foreach (string alias in typeAliases)
+				{
+					getTypeDelegatesWithPrecision[alias] = configurator.TypeByPrecision;
+				}
+			}
+
+			if (configurator.TypeByLengthOrScale != null)
+			{
+				foreach (string alias in typeAliases)
+				{
+					_getTypeDelegatesWithLengthOrScale[alias] = configurator.TypeByLengthOrScale;
+				}
+			}
 		}
 
 		private static void RegisterType(System.Type systemType, IType nhibernateType,
@@ -204,11 +270,29 @@ namespace NHibernate.Type
 		/// <summary></summary>
 		static TypeFactory()
 		{
-			// set up the mappings of .NET Classes/Structs to their NHibernate types.
+			RegisterTypes();
+		}
+
+		private static void RegisterTypes()
+		{
+			// set up the mappings 	of .NET Classes/Structs to their NHibernate types.
 			RegisterDefaultNetTypes();
 
 			// add the mappings of the NHibernate specific names that are used in type=""
 			RegisterBuiltInTypes();
+		}
+
+		/// <summary>
+		/// Clears all custom type registrations and re-register all default NHibernate types
+		/// </summary>
+		public static void ClearCustomRegistrations()
+		{
+			typeByTypeOfName.Clear();
+			_obsoleteMessageByAlias.Clear();
+			_getTypeDelegatesWithLengthOrScale.Clear();
+			getTypeDelegatesWithPrecision.Clear();
+
+			RegisterTypes();
 		}
 
 		/// <summary>
