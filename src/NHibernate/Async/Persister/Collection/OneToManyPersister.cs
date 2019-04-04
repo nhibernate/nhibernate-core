@@ -53,7 +53,7 @@ namespace NHibernate.Persister.Collection
 
 					foreach (object entry in entries)
 					{
-						if (await (collection.NeedsUpdatingAsync(entry, i, ElementType, cancellationToken)).ConfigureAwait(false))
+						if (collection.NeedsUpdating(entry, i, ElementType))
 						{
 							DbCommand st;
 							// will still be issued when it used to be null
@@ -70,10 +70,10 @@ namespace NHibernate.Persister.Collection
 
 							try
 							{
-								int loc = await (WriteKeyAsync(st, id, offset, session, cancellationToken)).ConfigureAwait(false);
+								int loc = WriteKey(st, id, offset, session);
 								// No columnNullness handling: the element is the entity key and should not contain null
 								// values.
-								await (WriteElementToWhereAsync(st, collection.GetSnapshotElement(entry, i), null, loc, session, cancellationToken)).ConfigureAwait(false);
+								WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), null, loc, session);
 								if (useBatch)
 								{
 									await (session.Batcher.AddToBatchAsync(deleteExpectation, cancellationToken)).ConfigureAwait(false);
@@ -117,7 +117,7 @@ namespace NHibernate.Persister.Collection
 					IEnumerable entries = collection.Entries(this);
 					foreach (object entry in entries)
 					{
-						if (await (collection.NeedsUpdatingAsync(entry, i, ElementType, cancellationToken)).ConfigureAwait(false))
+						if (collection.NeedsUpdating(entry, i, ElementType))
 						{
 							DbCommand st;
 							if (useBatch)
@@ -134,14 +134,14 @@ namespace NHibernate.Persister.Collection
 							try
 							{
 								//offset += insertExpectation.Prepare(st, Factory.ConnectionProvider.Driver);
-								int loc = await (WriteKeyAsync(st, id, offset, session, cancellationToken)).ConfigureAwait(false);
+								int loc = WriteKey(st, id, offset, session);
 								if (HasIndex && !indexContainsFormula)
 								{
-									loc = await (WriteIndexToWhereAsync(st, collection.GetIndex(entry, i, this), loc, session, cancellationToken)).ConfigureAwait(false);
+									loc = WriteIndexToWhere(st, collection.GetIndex(entry, i, this), loc, session);
 								}
 								// No columnNullness handling: the element is the entity key and should not contain null
 								// values.
-								await (WriteElementToWhereAsync(st, collection.GetElement(entry), null, loc, session, cancellationToken)).ConfigureAwait(false);
+								WriteElementToWhere(st, collection.GetElement(entry), null, loc, session);
 								if (useBatch)
 								{
 									await (session.Batcher.AddToBatchAsync(insertExpectation, cancellationToken)).ConfigureAwait(false);

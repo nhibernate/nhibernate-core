@@ -99,7 +99,7 @@ namespace NHibernate.Loader.Hql
 				stopWath.Start();
 			}
 
-			var cmd = await (PrepareQueryCommandAsync(queryParameters, false, session, cancellationToken)).ConfigureAwait(false);
+			var cmd = PrepareQueryCommand(queryParameters, false, session);
 
 			// This DbDataReader is disposed of in EnumerableImpl.Dispose
 			var rs = await (GetResultSetAsync(cmd, queryParameters, session, null, cancellationToken)).ConfigureAwait(false);

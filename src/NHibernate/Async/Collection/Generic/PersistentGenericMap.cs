@@ -47,27 +47,6 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			IType elementType = persister.ElementType;
-			var xmap = (IDictionary<TKey, TValue>)GetSnapshot();
-			if (xmap.Count != WrappedMap.Count)
-			{
-				return false;
-			}
-			foreach (KeyValuePair<TKey, TValue> entry in WrappedMap)
-			{
-				// This method is not currently called if a key has been removed/added, but better be on the safe side.
-				if (!xmap.TryGetValue(entry.Key, out var value) ||
-					await (elementType.IsDirtyAsync(value, entry.Value, Session, cancellationToken)).ConfigureAwait(false))
-				{
-					return false;
-				}
-			}
-			return true;
-		}
-
 		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -109,49 +88,6 @@ namespace NHibernate.Collection.Generic
 				result[i++] = await (persister.ElementType.DisassembleAsync(e.Value, Session, null, cancellationToken)).ConfigureAwait(false);
 			}
 			return result;
-		}
-
-		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IEnumerable>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<IEnumerable>(GetDeletes(persister, indexIsFormula));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IEnumerable>(ex);
-			}
-		}
-
-		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<bool>(NeedsInserting(entry, i, elemType));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<bool>(ex);
-			}
-		}
-
-		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			var sn = (IDictionary)GetSnapshot();
-			var e = (KeyValuePair<TKey, TValue>)entry;
-			var snValue = sn[e.Key];
-			var isNew = !sn.Contains(e.Key);
-			return e.Value != null && snValue != null && await (elemType.IsDirtyAsync(snValue, e.Value, Session, cancellationToken)).ConfigureAwait(false)
-				|| (!isNew && ((e.Value == null) != (snValue == null)));
 		}
 	}
 }

@@ -136,7 +136,7 @@ namespace NHibernate.Event.Default
 
 			// NH Different behavior : we are ignoring transient entities without throw any kind of exception
 			// because a transient entity is "self refreshed"
-			if (!(await (ForeignKeys.IsTransientFastAsync(persister.EntityName, obj, @event.Session, cancellationToken)).ConfigureAwait(false)).GetValueOrDefault(result == null))
+			if (!ForeignKeys.IsTransientFast(persister.EntityName, obj, @event.Session).GetValueOrDefault(result == null))
 				UnresolvableObjectException.ThrowIfNull(result, id, persister.EntityName);
 		}
 

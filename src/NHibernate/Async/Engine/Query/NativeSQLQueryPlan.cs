@@ -70,7 +70,7 @@ namespace NHibernate.Engine.Query
 
 					foreach (IParameterSpecification parameterSpecification in parametersSpecifications)
 					{
-						await (parameterSpecification.BindAsync(ps, sqlParametersList, queryParameters, session, cancellationToken)).ConfigureAwait(false);
+						parameterSpecification.Bind(ps, sqlParametersList, queryParameters, session);
 					}
 					
 					result = await (session.Batcher.ExecuteNonQueryAsync(ps, cancellationToken)).ConfigureAwait(false);

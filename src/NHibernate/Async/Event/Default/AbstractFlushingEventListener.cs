@@ -49,7 +49,7 @@ namespace NHibernate.Event.Default
 			// we could move this inside if we wanted to
 			// tolerate collection initializations during
 			// collection dirty checking:
-			await (PrepareCollectionFlushesAsync(session, cancellationToken)).ConfigureAwait(false);
+			PrepareCollectionFlushes(session);
 			// now, any collections that are initialized
 			// inside this block do not get updated - they
 			// are ignored until the next flush
@@ -166,21 +166,6 @@ namespace NHibernate.Event.Default
 				}
 			}
 			source.ActionQueue.SortActions();
-		}
-
-		// Initialize the flags of the CollectionEntry, including the dirty check.
-		protected virtual async Task PrepareCollectionFlushesAsync(ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			// Initialize dirty flags for arrays + collections with composite elements
-			// and reset reached, doupdate, etc.
-			log.Debug("dirty checking collections");
-
-			ICollection list = IdentityMap.Entries(session.PersistenceContext.CollectionEntries);
-			foreach (DictionaryEntry entry in list)
-			{
-				await (((CollectionEntry) entry.Value).PreFlushAsync((IPersistentCollection) entry.Key, cancellationToken)).ConfigureAwait(false);
-			}
 		}
 
 		//process cascade save/update at the start of a flush to discover

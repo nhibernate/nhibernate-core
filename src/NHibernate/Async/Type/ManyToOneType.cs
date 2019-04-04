@@ -22,20 +22,6 @@ namespace NHibernate.Type
 	public partial class ManyToOneType : EntityType
 	{
 
-		public override async Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			await (GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSetAsync(st, await (GetReferenceValueAsync(value, session, cancellationToken)).ConfigureAwait(false), index, settable, session, cancellationToken)).ConfigureAwait(false);
-		}
-
-		public override async Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			await (GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSetAsync(cmd, await (GetReferenceValueAsync(value, session, cancellationToken)).ConfigureAwait(false), index, session, cancellationToken)).ConfigureAwait(false);
-		}
-
 		/// <summary>
 		/// Hydrates the Identifier from <see cref="DbDataReader"/>.
 		/// </summary>
@@ -59,40 +45,33 @@ namespace NHibernate.Type
 			return id;
 		}
 
-		public override async Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
+		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (current == null)
+			if (cancellationToken.IsCancellationRequested)
 			{
-				return old != null;
+				return Task.FromCanceled<object>(cancellationToken);
 			}
-			if (old == null)
+			try
 			{
-				return true;
-			}
-			var oldIdentifier = IsIdentifier(old, session) ? old : await (GetIdentifierAsync(old, session, cancellationToken)).ConfigureAwait(false);
-			var currentIdentifier = await (GetIdentifierAsync(current, session, cancellationToken)).ConfigureAwait(false);
-			// the ids are fully resolved, so compare them with isDirty(), not isModified()
-			return await (GetIdentifierOrUniqueKeyType(session.Factory).IsDirtyAsync(oldIdentifier, currentIdentifier, session, cancellationToken)).ConfigureAwait(false);
-		}
-
-		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (value == null)
-			{
-				return null;
-			}
-			else
-			{
-				// cache the actual id of the object, not the value of the
-				// property-ref, which might not be initialized
-				object id = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(GetAssociatedEntityName(), value, session, cancellationToken)).ConfigureAwait(false);
-				if (id == null)
+				if (value == null)
 				{
-					throw new AssertionFailure("cannot cache a reference to an object with a null id: " + GetAssociatedEntityName());
+					return Task.FromResult<object>(null);
 				}
-				return await (GetIdentifierType(session).DisassembleAsync(id, session, owner, cancellationToken)).ConfigureAwait(false);
+				else
+				{
+					// cache the actual id of the object, not the value of the
+					// property-ref, which might not be initialized
+					object id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session);
+					if (id == null)
+					{
+						return Task.FromException<object>(new AssertionFailure("cannot cache a reference to an object with a null id: " + GetAssociatedEntityName()));
+					}
+					return GetIdentifierType(session).DisassembleAsync(id, session, owner, cancellationToken);
+				}
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
 			}
 		}
 
@@ -135,51 +114,6 @@ namespace NHibernate.Type
 			{
 				return Task.FromException<object>(ex);
 			}
-		}
-
-		public override Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
-			return IsDirtyManyToOneAsync(old, current, null, session, cancellationToken);
-		}
-
-		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
-			return IsDirtyManyToOneAsync(old, current, IsAlwaysDirtyChecked ? null : checkable, session, cancellationToken);
-		}
-
-		private async Task<bool> IsDirtyManyToOneAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (IsSame(old, current))
-			{
-				return false;
-			}
-
-			if (old == null || current == null)
-			{
-				return true;
-			}
-
-			if ((await (ForeignKeys.IsTransientFastAsync(GetAssociatedEntityName(), current, session, cancellationToken)).ConfigureAwait(false)).GetValueOrDefault())
-			{
-				return true;
-			}
-
-			object oldid = await (GetIdentifierAsync(old, session, cancellationToken)).ConfigureAwait(false);
-			object newid = await (GetIdentifierAsync(current, session, cancellationToken)).ConfigureAwait(false);
-			IType identifierType = GetIdentifierType(session);
-
-			return checkable == null
-				? await (identifierType.IsDirtyAsync(oldid, newid, session, cancellationToken)).ConfigureAwait(false)
-				: await (identifierType.IsDirtyAsync(oldid, newid, checkable, session, cancellationToken)).ConfigureAwait(false);
 		}
 	}
 }

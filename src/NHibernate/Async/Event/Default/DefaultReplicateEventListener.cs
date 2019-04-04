@@ -146,22 +146,6 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected override Task<bool> SubstituteValuesIfNecessaryAsync(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<bool>(SubstituteValuesIfNecessary(entity, id, values, persister, source));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<bool>(ex);
-			}
-		}
-
 		protected override async Task<bool> VisitCollectionsBeforeSaveAsync(object entity, object id, object[] values, Type.IType[] types, IEventSource source, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();

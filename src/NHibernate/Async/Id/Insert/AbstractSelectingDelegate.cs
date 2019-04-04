@@ -40,7 +40,7 @@ namespace NHibernate.Id.Insert
 					var insert = await (session.Batcher.PrepareCommandAsync(insertSql.CommandType, insertSql.Text, insertSql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 					try
 					{
-						await (binder.BindValuesAsync(insert, cancellationToken)).ConfigureAwait(false);
+						binder.BindValues(insert);
 						await (session.Batcher.ExecuteNonQueryAsync(insert, cancellationToken)).ConfigureAwait(false);
 					}
 					finally
@@ -63,7 +63,7 @@ namespace NHibernate.Id.Insert
 						var idSelect = await (session.Batcher.PrepareCommandAsync(CommandType.Text, selectSql, ParametersTypes, cancellationToken)).ConfigureAwait(false);
 						try
 						{
-							await (BindParametersAsync(session, idSelect, binder, cancellationToken)).ConfigureAwait(false);
+							BindParameters(session, idSelect, binder);
 							var rs = await (session.Batcher.ExecuteReaderAsync(idSelect, cancellationToken)).ConfigureAwait(false);
 							try
 							{
@@ -102,46 +102,5 @@ namespace NHibernate.Id.Insert
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The generated identifier </returns>
 		protected internal abstract Task<object> GetResultAsync(ISessionImplementor session, DbDataReader rs, object entity, CancellationToken cancellationToken);
-
-		/// <summary> Bind any required parameter values into the SQL command <see cref="SelectSQL"/>. </summary>
-		/// <param name="session">The session </param>
-		/// <param name="ps">The prepared <see cref="SelectSQL"/> command </param>
-		/// <param name="entity">The entity being saved. </param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		// Since 5.2
-		[Obsolete("Use or override BindParameters(ISessionImplementor session, DbCommand ps, IBinder binder) instead.")]
-		protected internal virtual Task BindParametersAsync(ISessionImplementor session, DbCommand ps, object entity, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				BindParameters(session, ps, entity);
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
-
-		/// <summary>Bind any required parameter values into the SQL command <see cref="SelectSQL"/>.</summary>
-		/// <param name="session">The session.</param>
-		/// <param name="ps">The prepared <see cref="SelectSQL"/> command.</param>
-		/// <param name="binder">The binder for the entity or collection being saved.</param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		protected internal virtual Task BindParametersAsync(ISessionImplementor session, DbCommand ps, IBinder binder, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			// 6.0 TODO: remove the call to the obsoleted method.
-#pragma warning disable 618
-			return BindParametersAsync(session, ps, binder.Entity, cancellationToken);
-#pragma warning restore 618
-		}
 	}
 }

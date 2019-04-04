@@ -35,51 +35,6 @@ namespace NHibernate.Type
 			return NullSafeGetAsync(rs, new string[] {name}, session, owner, cancellationToken);
 		}
 
-		protected internal Task<object> GetIdentifierAsync(object value, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				return ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(GetAssociatedEntityName(), value, session, cancellationToken); //tolerates nulls
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
-
-		protected internal async Task<object> GetReferenceValueAsync(object value, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (value == null)
-			{
-				return null;
-			}
-			else if (IsReferenceToPrimaryKey)
-			{
-				return await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(GetAssociatedEntityName(), value, session, cancellationToken)).ConfigureAwait(false); //tolerates nulls
-			}
-			else
-			{
-				IEntityPersister entityPersister = session.Factory.GetEntityPersister(GetAssociatedEntityName());
-				object propertyValue = entityPersister.GetPropertyValue(value, uniqueKeyPropertyName);
-
-				// We now have the value of the property-ref we reference.  However,
-				// we need to dig a little deeper, as that property might also be
-				// an entity type, in which case we need to resolve its identitifier
-				IType type = entityPersister.GetPropertyType(uniqueKeyPropertyName);
-				if (type.IsEntityType)
-				{
-					propertyValue = await (((EntityType) type).GetReferenceValueAsync(propertyValue, session, cancellationToken)).ConfigureAwait(false);
-				}
-
-				return propertyValue;
-			}
-		}
-
 		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -98,7 +53,7 @@ namespace NHibernate.Type
 				{
 					return target;
 				}
-				if (session.GetContextEntityIdentifier(original) == null && (await (ForeignKeys.IsTransientFastAsync(associatedEntityName, original, session, cancellationToken)).ConfigureAwait(false)).GetValueOrDefault())
+				if (session.GetContextEntityIdentifier(original) == null && ForeignKeys.IsTransientFast(associatedEntityName, original, session).GetValueOrDefault())
 				{
 					object copy = session.Factory.GetEntityPersister(associatedEntityName).Instantiate(null);
 					//TODO: should this be Session.instantiate(Persister, ...)?
@@ -107,7 +62,7 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					object id = await (GetReferenceValueAsync(original, session, cancellationToken)).ConfigureAwait(false);
+					object id = GetReferenceValue(original, session);
 					if (id == null)
 					{
 						throw new AssertionFailure("non-transient entity has a null id");

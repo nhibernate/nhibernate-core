@@ -22,31 +22,6 @@ namespace NHibernate.Type
 	{
 
 		/// <summary>
-		/// When implemented by a class, should the parent be considered dirty,
-		/// given both the old and current field or element value?
-		/// </summary>
-		/// <param name="old">The old value</param>
-		/// <param name="current">The current value</param>
-		/// <param name="session">The <see cref="ISessionImplementor"/> </param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns>true if the field is dirty</returns>
-		Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken);
-
-		/// <summary>
-		/// When implemented by a class, should the parent be considered dirty,
-		/// given both the old and current field or element value?
-		/// </summary>
-		/// <param name="old">The old value</param>
-		/// <param name="current">The current value</param>
-		/// <param name="checkable">Indicates which columns are to be checked.</param>
-		/// <param name="session">The <see cref="ISessionImplementor"/> </param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns>true if the field is dirty</returns>
-		Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken);
-
-		Task<bool> IsModifiedAsync(object oldHydratedState, object currentState, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken);
-
-		/// <summary>
 		/// When implemented by a class, gets an instance of the object mapped by
 		/// this IType from the <see cref="DbDataReader"/>.
 		/// </summary>
@@ -80,41 +55,6 @@ namespace NHibernate.Type
 		/// This method might be called if the IType is known to be a single-column type.
 		/// </remarks>
 		Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken);
-
-		/// <summary>
-		/// When implemented by a class, puts the value/values from the mapped
-		/// class into the <see cref="DbCommand"/>.
-		/// </summary>
-		/// <param name="st">The <see cref="DbCommand"/> to put the values into.</param>
-		/// <param name="value">The object that contains the values.</param>
-		/// <param name="index">The index of the <see cref="DbParameter"/> to start writing the values to.</param>
-		/// <param name="settable">Indicates which columns are to be set.</param>
-		/// <param name="session"></param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <remarks>
-		/// Implementors should handle possibility of null values.
-		/// A multi-column type should be written to parameters starting from <paramref name="index"/>.
-		/// </remarks>
-		Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken);
-
-		/// <summary>
-		/// 	When implemented by a class, puts the value/values from the mapped
-		/// 	class into the <see cref="DbCommand"/>.
-		/// </summary>
-		/// <param name="st">
-		/// 	The <see cref="DbCommand"/> to put the values into.
-		/// </param>
-		/// <param name="value">The object that contains the values.</param>
-		/// <param name="index">
-		/// 	The index of the <see cref="DbParameter"/> to start writing the values to.
-		/// </param>
-		/// <param name="session"></param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <remarks>
-		/// 	Implementors should handle possibility of null values.
-		/// 	A multi-column type should be written to parameters starting from <paramref name="index"/>.
-		/// </remarks>
-		Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// When implemented by a class, retrieves an instance of the mapped class,

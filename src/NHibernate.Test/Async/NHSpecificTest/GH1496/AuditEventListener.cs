@@ -18,20 +18,28 @@ namespace NHibernate.Test.NHSpecificTest.GH1496
 	public partial class AuditEventListener : IPostUpdateEventListener
 	{
 
-		public async Task OnPostUpdateAsync(PostUpdateEvent @event, CancellationToken cancellationToken)
+		public Task OnPostUpdateAsync(PostUpdateEvent @event, CancellationToken cancellationToken)
 		{
-			if (isActive == false)
-			{ return; }
-
-			var modifiedItems = await (@event.Persister.FindModifiedAsync(@event.OldState, @event.State, @event.Entity, @event.Session, cancellationToken));
-			foreach (int index in modifiedItems)
+			try
 			{
-				ModifiedItems.Add(new Item
+				if (isActive == false)
+				{ return Task.CompletedTask; }
+
+				var modifiedItems = @event.Persister.FindModified(@event.OldState, @event.State, @event.Entity, @event.Session);
+				foreach (int index in modifiedItems)
+				{
+					ModifiedItems.Add(new Item
 				{
 					Index = index,
 					OldState = @event.OldState[index],
 					State = @event.State[index]
 				});
+				}
+				return Task.CompletedTask;
+			}
+			catch (System.Exception ex)
+			{
+				return Task.FromException<object>(ex);
 			}
 		}
 	}

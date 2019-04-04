@@ -53,7 +53,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sqlString, parameterTypes, cancellationToken)).ConfigureAwait(false);
 					foreach (var parameterSpecification in Parameters)
 					{
-						await (parameterSpecification.BindAsync(st, sqlQueryParametersList, parameters, session, cancellationToken)).ConfigureAwait(false);
+						parameterSpecification.Bind(st, sqlQueryParametersList, parameters, session);
 					}
 
 					if (selection != null)

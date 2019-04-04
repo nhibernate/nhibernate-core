@@ -28,7 +28,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public abstract class AbstractDateTimeTypeFixtureAsync : TypeFixtureBase
 	{
@@ -83,33 +82,6 @@ namespace NHibernate.Test.TypesTest
 		{
 			(Sfi.ConnectionProvider.Driver as ClientDriverWithParamsStats)?.CleanUp();
 			base.DropSchema();
-		}
-
-		[Test]
-		public async Task NextAsync()
-		{
-			// Take some margin, as DbTimestampType takes its next value from the database, which
-			// may have its clock a bit shifted even if running on the same server. (Seen with PostgreSQL,
-			// off by a few seconds, and with SAP HANA running in a vm, off by twenty seconds.)
-			var current = Now.Subtract(TimeSpan.FromMinutes(2));
-			var next = await (Type.NextAsync(current, null, CancellationToken.None));
-
-			Assert.That(next, Is.TypeOf<DateTime>(), "next should be DateTime");
-			Assert.That(next, Is.GreaterThan(current), "next should be greater than current");
-		}
-
-		[Test]
-		public async Task SeedAsync()
-		{
-			Assert.That(await (Type.SeedAsync(null, CancellationToken.None)), Is.TypeOf<DateTime>(), "seed should be DateTime");
-		}
-
-		[Test]
-		public async Task ComparerAsync()
-		{
-			var v1 = await (Type.SeedAsync(null, CancellationToken.None));
-			var v2 = Now.Subtract(TimeSpan.FromTicks(DateAccuracyInTicks));
-			Assert.That(() => Type.Comparator.Compare(v1, v2), Throws.Nothing);
 		}
 
 		[Test]

@@ -33,50 +33,6 @@ namespace NHibernate.Type
 			return GetValueForKey(await (_baseType.NullSafeGetAsync(rs, name, session, owner, cancellationToken)).ConfigureAwait(false));
 		}
 
-		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				if (settable[0]) return NullSafeSetAsync(st, value, index, session, cancellationToken);
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
-
-		public override Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				// "_keys?[(string) value]" is valid code provided "_keys[(string) value]" can never yield null. It is the
-				// case because we use a dictionary interface which throws in case of missing key, and because it is not
-				// possible to have a value associated to a null key since generic dictionaries do not support null keys.
-				var key = value == null ? null : _keys?[(string) value] ?? value;
-
-				return _baseType.NullSafeSetAsync(st, key, index, session, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
-
-		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			return checkable[0] && await (IsDirtyAsync(old, current, session, cancellationToken)).ConfigureAwait(false);
-		}
-
 		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)

@@ -205,7 +205,7 @@ namespace NHibernate.Event.Default
 			object[] values = persister.GetPropertyValuesToInsert(entity, GetMergeMap(anything), source);
 			IType[] types = persister.PropertyTypes;
 
-			bool substitute = await (SubstituteValuesIfNecessaryAsync(entity, id, values, persister, source, cancellationToken)).ConfigureAwait(false);
+			bool substitute = SubstituteValuesIfNecessary(entity, id, values, persister, source);
 
 			if (persister.HasCollections)
 			{
@@ -275,35 +275,6 @@ namespace NHibernate.Event.Default
 			// substitutes into values by side-effect
 			await (visitor.ProcessEntityPropertyValuesAsync(values, types, cancellationToken)).ConfigureAwait(false);
 			return visitor.SubstitutionRequired;
-		}
-
-		/// <summary> 
-		/// Perform any property value substitution that is necessary
-		/// (interceptor callback, version initialization...) 
-		/// </summary>
-		/// <param name="entity">The entity </param>
-		/// <param name="id">The entity identifier </param>
-		/// <param name="values">The snapshot entity state </param>
-		/// <param name="persister">The entity persister </param>
-		/// <param name="source">The originating session </param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns> 
-		/// True if the snapshot state changed such that
-		/// reinjection of the values into the entity is required.
-		/// </returns>
-		protected virtual async Task<bool> SubstituteValuesIfNecessaryAsync(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			bool substitute = source.Interceptor.OnSave(entity, id, values, persister.PropertyNames, persister.PropertyTypes);
-
-			//keep the existing version number in the case of replicate!
-			if (persister.IsVersioned)
-			{
-				// NH Specific feature (H3.2 use null value for versionProperty; NH ask to persister to know if a valueType mean unversioned)
-				object versionValue = values[persister.VersionProperty];
-				substitute |= await (Versioning.SeedVersionAsync(values, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(versionValue), source, cancellationToken)).ConfigureAwait(false);
-			}
-			return substitute;
 		}
 
 		/// <summary> Handles the calls needed to perform pre-save cascades for the given entity. </summary>
@@ -390,7 +361,7 @@ namespace NHibernate.Event.Default
 				//try interceptor and unsaved-value
 				var assumed = AssumedUnsaved;
 				if (assumed.HasValue
-					? (await (ForeignKeys.IsTransientFastAsync(entityName, entity, source, cancellationToken)).ConfigureAwait(false)).GetValueOrDefault(assumed.Value)
+					? ForeignKeys.IsTransientFast(entityName, entity, source).GetValueOrDefault(assumed.Value)
 					: await (ForeignKeys.IsTransientSlowAsync(entityName, entity, source, cancellationToken)).ConfigureAwait(false))
 				{
 					if (log.IsDebugEnabled())

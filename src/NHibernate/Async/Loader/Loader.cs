@@ -267,7 +267,7 @@ namespace NHibernate.Loader
 
 				List<object> hydratedObjects = entitySpan == 0 ? null : new List<object>(entitySpan*10);
 
-				var st = await (PrepareQueryCommandAsync(queryParameters, false, session, cancellationToken)).ConfigureAwait(false);
+				var st = PrepareQueryCommand(queryParameters, false, session);
 
 				var rs = await (GetResultSetAsync(st, queryParameters, session, forcedResultTransformer, cancellationToken)).ConfigureAwait(false);
 				// would be great to move all this below here into another method that could also be used
@@ -952,57 +952,6 @@ namespace NHibernate.Loader
 					await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false);
 				}
 			}
-		}
-
-		/// <summary>
-		/// Obtain an <c>DbCommand</c> with all parameters pre-bound. Bind positional parameters,
-		/// named parameters, and limit parameters.
-		/// </summary>
-		/// <remarks>
-		/// Creates an DbCommand object and populates it with the values necessary to execute it against the 
-		/// database to Load an Entity.
-		/// </remarks>
-		/// <param name="queryParameters">The <see cref="QueryParameters"/> to use for the DbCommand.</param>
-		/// <param name="scroll">TODO: find out where this is used...</param>
-		/// <param name="session">The SessionImpl this Command is being prepared in.</param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns>A CommandWrapper wrapping an DbCommand that is ready to be executed.</returns>
-		protected internal virtual async Task<DbCommand> PrepareQueryCommandAsync(QueryParameters queryParameters, bool scroll, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			ISqlCommand sqlCommand = CreateSqlCommand(queryParameters, session);
-			SqlString sqlString = sqlCommand.Query;
-
-			sqlCommand.ResetParametersIndexesForTheCommand(0);
-			var command = session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, sqlCommand.ParameterTypes);
-
-			try
-			{
-				RowSelection selection = queryParameters.RowSelection;
-				if (selection != null && selection.Timeout != RowSelection.NoValue)
-				{
-					command.CommandTimeout = selection.Timeout;
-				}
-
-				await (sqlCommand.BindAsync(command, session, cancellationToken)).ConfigureAwait(false);
-
-				IDriver driver = _factory.ConnectionProvider.Driver;
-				driver.RemoveUnusedCommandParameters(command, sqlString);
-				driver.ExpandQueryParameters(command, sqlString, sqlCommand.ParameterTypes);
-			}
-			catch (OperationCanceledException) { throw; }
-			catch (HibernateException)
-			{
-				session.Batcher.CloseCommand(command, null);
-				throw;
-			}
-			catch (Exception sqle)
-			{
-				session.Batcher.CloseCommand(command, null);
-				ADOExceptionReporter.LogExceptions(sqle);
-				throw;
-			}
-			return command;
 		}
 
 		/// <summary>
