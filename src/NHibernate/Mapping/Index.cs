@@ -68,7 +68,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
 		{
-			var indexName = (dialect.UniqueIndexNameForDatabase && IsInherited) ? Table.Name + Name : Name;
+			var indexName = IsInherited ? Table.Name + Name : Name;
 			return BuildSqlCreateIndexString(dialect, indexName, Table, ColumnIterator, false, defaultCatalog, defaultSchema);
 		}
 

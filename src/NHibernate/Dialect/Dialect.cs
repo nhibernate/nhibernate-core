@@ -352,11 +352,6 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Does this dialect requires unique index name for database 
-		/// </summary>
-		public virtual bool UniqueIndexNameForDatabase => false;
-
-		/// <summary>
 		/// Does this dialect support the <c>UNIQUE</c> column syntax?
 		/// </summary>
 		public virtual bool SupportsUnique

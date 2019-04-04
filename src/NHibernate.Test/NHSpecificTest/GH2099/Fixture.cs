@@ -14,7 +14,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2099
 		{
 		}
 
-		//Note: If this test is failed on DB creation you need to adjust Dialect.UniqueIndexNameForDatabase
 		[Test]
 		public void BaseClassCanShareIndexNameWithSubclass()
 		{
