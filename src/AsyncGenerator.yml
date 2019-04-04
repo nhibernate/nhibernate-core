@@ -6,6 +6,9 @@
   analyzation:
     methodConversion:
     - conversion: Ignore
+      name: UnproxyForInitialized
+      containingTypeName: ForeignKeys
+    - conversion: Ignore
       name: UsePreparedStatement
       containingTypeName: DbTimestampType
     - conversion: Ignore

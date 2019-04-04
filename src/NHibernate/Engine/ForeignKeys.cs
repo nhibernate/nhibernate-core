@@ -1,7 +1,4 @@
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using NHibernate.Id;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -193,17 +190,21 @@ namespace NHibernate.Engine
 				return interceptorResult;
 
 			// let the persister inspect the instance to decide
-			if (proxy != null)
-			{
-				// The persister only deals with unproxied entities.
-				entity = proxy.HibernateLazyInitializer.GetImplementation();
-			}
-
+			// The persister only deals with unproxied entities.
+			entity = UnproxyForInitialized(proxy) ?? entity;
 			return session
 				.GetEntityPersister(
 					entityName,
 					entity)
-				.IsTransient(entity, session);
+				.IsTransient(entity);
+		}
+
+		private static object UnproxyForInitialized(INHibernateProxy proxy)
+		{
+			return
+				proxy?.HibernateLazyInitializer.IsUninitialized == false
+					? proxy.HibernateLazyInitializer.GetImplementation()
+					: null;
 		}
 
 		/// <summary> 
