@@ -10,8 +10,12 @@ namespace NHibernate.Test.NHSpecificTest.GH2099
 
 	class WorkflowInstance : PersistentObject
 	{
-		public virtual bool IsActive { get; set; }
 		public virtual bool IsWaiting { get; set; }
+	}
+	
+	class Level3 : WorkflowInstance
+	{
+		public virtual bool IsActive { get; set; }
 	}
 	
 	class WorkflowInstance2 : PersistentObject

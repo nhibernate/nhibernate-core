@@ -14,10 +14,11 @@ namespace NHibernate.Test.NHSpecificTest.GH2099
 		{
 		}
 
+		//Note: If this test is failed on DB creation you need to adjust Dialect.UniqueIndexNameForDatabase
 		[Test]
 		public void BaseClassCanShareIndexNameWithSubclass()
 		{
-			var table = cfg.CreateMappings().IterateTables.FirstOrDefault(t => t.Name == "WInstance");
+			var table = cfg.CreateMappings().IterateTables.FirstOrDefault(t => t.Name == "Level3");
 
 			var index = table.GetIndex("CF_BASE_IDX");
 			Assert.That(index?.ColumnSpan, Is.EqualTo(3));

@@ -312,6 +312,8 @@ namespace NHibernate.Dialect
 			get { return "SELECT CURRENT_TIMESTAMP"; }
 		}
 
+		public override bool UniqueIndexNameForDatabase => true;
+
 		#region Overridden informational metadata
 
 		public override bool SupportsEmptyInList => false;

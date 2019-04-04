@@ -8,7 +8,6 @@
   </class>
   
   <union-subclass name="WorkflowInstance" table="WInstance" abstract="false" dynamic-update="true" lazy="true" extends="PersistentObject">
-    <property name="IsActive" column="IsActive" index="CF_BASE_IDX" />
     <property name="IsWaiting" column="IsWaiting" index="CF_BASE_IDX" />
   </union-subclass>
 
@@ -17,4 +16,7 @@
     <property name="IsWaiting" column="IsWaiting" index="CF_BASE_IDX" />
   </union-subclass>
 
+  <union-subclass name="Level3" table="Level3" abstract="false" dynamic-update="true" lazy="true" extends="WorkflowInstance">
+    <property name="IsActive" column="IsActive" index="CF_BASE_IDX" />
+  </union-subclass>
 </hibernate-mapping>
