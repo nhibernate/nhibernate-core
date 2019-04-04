@@ -2,6 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -680,6 +683,13 @@ namespace NHibernate.Collection
 
 			return CollectionHelper.EmptyCollection;
 		}
+		
+		// Since 5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken)
+		{
+			return Task.FromResult(GetQueuedOrphans(entityName));
+		}
 
 		/// <summary>
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
@@ -716,29 +726,37 @@ namespace NHibernate.Collection
 				return oldElements;
 			}
 
-			IType idType = session.Factory.GetEntityPersister(entityName).IdentifierType;
+			if (currentElements.Count == oldElements.Count && currentElements.Cast<object>().SequenceEqual(oldElements.Cast<object>()))
+				return Array.Empty<object>();
 
-			// create the collection holding the orphans
-			List<object> res = new List<object>();
+			var persister = session.Factory.GetEntityPersister(entityName);
+			IType idType = persister.IdentifierType;
 
-			// collect EntityIdentifier(s) of the *current* elements - add them into a HashSet for fast access
-			var currentIds = new HashSet<TypedValue>();
+			var currentObjects = new HashSet<object>(idType.GetComparer());
 			foreach (object current in currentElements)
 			{
-				if (current != null && ForeignKeys.IsNotTransientSlow(entityName, current, session))
+				if (current != null)
 				{
-					object currentId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session);
-					currentIds.Add(new TypedValue(idType, currentId, false));
+					var id = ForeignKeys.GetIdentifier(persister, current);
+					if (id != null)
+						currentObjects.Add(id);
 				}
 			}
 
-			// iterate over the *old* list
+			List<object> res = new List<object>();
+			// oldElements may contain new elements (one case when session.Save is called on new object with collection filled with new objects)
 			foreach (object old in oldElements)
 			{
-				object oldId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, old, session);
-				if (!currentIds.Contains(new TypedValue(idType, oldId, false)))
+				if (old != null)
 				{
-					res.Add(old);
+					var id = ForeignKeys.GetIdentifier(persister, old);
+					if (id != null)
+					{
+						if (!currentObjects.Contains(id))
+						{
+							res.Add(old);
+						}
+					}
 				}
 			}
 
@@ -747,27 +765,24 @@ namespace NHibernate.Collection
 
 		public void IdentityRemove(IList list, object obj, string entityName, ISessionImplementor session)
 		{
-			if (obj != null && ForeignKeys.IsNotTransientSlow(entityName, obj, session))
-			{
-				IType idType = session.Factory.GetEntityPersister(entityName).IdentifierType;
+			if (obj == null || ForeignKeys.IsTransientSlow(entityName, obj, session))
+				return;
 
-				object idOfCurrent = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, obj, session);
-				List<object> toRemove = new List<object>(list.Count);
-				foreach (object current in list)
+			var persister = session.Factory.GetEntityPersister(entityName);
+			IType idType = persister.IdentifierType;
+			object idToRemove = ForeignKeys.GetIdentifier(persister, obj);
+
+			for (var index = list.Count - 1; index >= 0; index--)
+			{
+				object current = list[index];
+				if (current == null)
 				{
-					if (current == null)
-					{
-						continue;
-					}
-					object idOfOld = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session);
-					if (idType.IsEqual(idOfCurrent, idOfOld, session.Factory))
-					{
-						toRemove.Add(current);
-					}
+					continue;
 				}
-				foreach (object ro in toRemove)
+
+				if (obj == current || idType.IsEqual(idToRemove, ForeignKeys.GetIdentifier(persister, current), session.Factory))
 				{
-					list.Remove(ro);
+					list.RemoveAt(index);
 				}
 			}
 		}

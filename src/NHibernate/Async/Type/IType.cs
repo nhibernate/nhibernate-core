@@ -9,6 +9,7 @@
 
 
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -17,7 +18,7 @@ namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	
+
 	public partial interface IType : ICacheAssembler
 	{
 

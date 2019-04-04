@@ -38,8 +38,7 @@ namespace NHibernate.Collection.Generic
 			}
 			try
 			{
-				var sn = (IDictionary<TKey, TValue>) snapshot;
-				return GetOrphansAsync((ICollection)sn.Values, (ICollection)WrappedMap.Values, entityName, Session, cancellationToken);
+				return Task.FromResult<ICollection>(GetOrphans(snapshot, entityName));
 			}
 			catch (Exception ex)
 			{

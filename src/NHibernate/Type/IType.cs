@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -7,6 +8,31 @@ namespace NHibernate.Type
 {
 	internal static class TypeExtensions
 	{
+		class TypeComparer : IEqualityComparer<object>
+		{
+			private readonly IType _type;
+
+			public TypeComparer(IType type)
+			{
+				_type = type;
+			}
+
+			public new bool Equals(object x, object y)
+			{
+				return _type.IsEqual(x, y);
+			}
+
+			public int GetHashCode(object obj)
+			{
+				return _type.GetHashCode(obj);
+			}
+		}
+
+		public static IEqualityComparer<object> GetComparer(this IType type)
+		{
+			return new TypeComparer(type);
+		}
+
 		public static int GetOwnerColumnSpan(this IType type, IMapping sessionFactory)
 		{
 			return type.IsEntityType
@@ -14,7 +40,7 @@ namespace NHibernate.Type
 				: type.GetColumnSpan(sessionFactory);
 		}
 	}
-	
+
 	/// <summary>
 	/// Defines a mapping from a .NET <see cref="System.Type"/> to a SQL data-type.
 	/// This interface is intended to be implemented by applications that need custom types.

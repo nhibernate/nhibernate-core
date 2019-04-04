@@ -39,12 +39,7 @@ namespace NHibernate.Collection.Generic
 			}
 			try
 			{
-				var sn = new SetSnapShot<T>((IEnumerable<T>)snapshot);
-
-				// TODO: Avoid duplicating shortcuts and array copy, by making base class GetOrphans() more flexible
-				if (WrappedSet.Count == 0) return Task.FromResult<ICollection>(sn);
-				if (((ICollection)sn).Count == 0) return Task.FromResult<ICollection>(sn);
-				return GetOrphansAsync(sn, WrappedSet.ToArray(), entityName, Session, cancellationToken);
+				return Task.FromResult<ICollection>(GetOrphans(snapshot, entityName));
 			}
 			catch (Exception ex)
 			{

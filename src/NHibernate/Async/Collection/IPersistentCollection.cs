@@ -11,6 +11,8 @@
 using System;
 using System.Collections;
 using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Loader;
@@ -19,8 +21,6 @@ using NHibernate.Type;
 
 namespace NHibernate.Collection
 {
-	using System.Threading.Tasks;
-	using System.Threading;
 	public partial interface IPersistentCollection
 	{
 
@@ -91,9 +91,6 @@ namespace NHibernate.Collection
 		/// Get all the elements that need deleting
 		/// </summary>
 		Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula, CancellationToken cancellationToken);
-
-		/// <summary> Get the "queued" orphans</summary>
-		Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated

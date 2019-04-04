@@ -288,7 +288,7 @@ namespace NHibernate.Engine
 			}
 			else
 			{
-				orphans = await (pc.GetQueuedOrphansAsync(entityName, cancellationToken)).ConfigureAwait(false);
+				orphans = pc.GetQueuedOrphans(entityName);
 			}
 
 			foreach (object orphan in orphans)

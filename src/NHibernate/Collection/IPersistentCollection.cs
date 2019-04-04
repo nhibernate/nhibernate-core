@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Loader;
@@ -304,6 +306,11 @@ namespace NHibernate.Collection
 		/// <summary> Get the "queued" orphans</summary>
 		ICollection GetQueuedOrphans(string entityName);
 
+		// Since 5.3
+		/// <summary> Get the "queued" orphans</summary>
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken);
+		
 		/// <summary>
 		/// Clear the dirty flag, after flushing changes
 		/// to the database.
