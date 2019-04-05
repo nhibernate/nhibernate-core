@@ -148,11 +148,10 @@ namespace NHibernate.Event.Default
 			// It is safe because of how IdentityMap implements entrySet()
 			IEventSource source = @event.Session;
 
-			ICollection list = IdentityMap.ConcurrentEntries(source.PersistenceContext.EntityEntries);
-			foreach (DictionaryEntry me in list)
+			foreach (var me in source.PersistenceContext.IterateEntityEntries())
 			{
 				// Update the status of the object and if necessary, schedule an update
-				EntityEntry entry = (EntityEntry) me.Value;
+				EntityEntry entry = me.Value;
 				Status status = entry.Status;
 
 				if (status != Status.Loading && status != Status.Gone)
@@ -191,11 +190,9 @@ namespace NHibernate.Event.Default
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("processing flush-time cascades");
 
-			ICollection list = IdentityMap.ConcurrentEntries(session.PersistenceContext.EntityEntries);
-			//safe from concurrent modification because of how entryList() is implemented on IdentityMap
-			foreach (DictionaryEntry me in list)
+			foreach (var me in session.PersistenceContext.IterateEntityEntries())
 			{
-				EntityEntry entry = (EntityEntry) me.Value;
+				EntityEntry entry = me.Value;
 				Status status = entry.Status;
 				if (status == Status.Loaded || status == Status.Saving || status == Status.ReadOnly)
 				{

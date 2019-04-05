@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2919">
+
+  <class name="Parent" table="LF_Parent">
+    <id name="ID">
+      <generator class="guid"/>
+    </id>
+    <property name="Name"/>
+    <many-to-one name="Summary" class="ParentSummary" cascade="all" column="summaryID"/>
+    <set name="Children" cascade="all" inverse="false">
+      <key column="parentID"></key>
+      <one-to-many class="Child"/>
+    </set>
+  </class>
+
+  <class name="Child" table="LF_Child">
+    <id name="ID">
+      <generator class="guid"/>
+    </id>
+    <many-to-one name="Parent" class="Parent" column="parentID" cascade="save-update"/>
+    <many-to-one name="DynamicToy" class="Toy" cascade="all" column="dynamicToyID" access="readonly"/>
+  </class>
+
+  <class name="ParentSummary" table="LF_Summary">
+    <id name="ID">
+      <generator class="guid"/>
+    </id>
+    <many-to-one name="FirstChild" class="Child" cascade="all" column="firstChildID"/>
+  </class>
+
+  <class name="Toy" table="LF_Toy">
+    <id name="ID">
+      <generator class="guid"/>
+    </id>
+    <property name="Name"/>
+  </class>
+</hibernate-mapping>
