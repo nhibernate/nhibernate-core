@@ -533,12 +533,12 @@ caseExpression
 	;
 
 simpleCaseStatement
-	: CASE unaryExpression (simpleCaseWhenClause)+ (elseClause)? END
-		-> ^(CASE2 unaryExpression simpleCaseWhenClause+ elseClause?)
+	: CASE expression (simpleCaseWhenClause)+ (elseClause)? END
+		-> ^(CASE2 expression simpleCaseWhenClause+ elseClause?)
 	;
 
 simpleCaseWhenClause
-	: (WHEN^ unaryExpression THEN! unaryExpression)
+	: (WHEN^ expression THEN! expression)
 	;
 	
 elseClause
@@ -551,7 +551,7 @@ searchedCaseStatement
 	;
 
 searchedCaseWhenClause
-	: (WHEN^ logicalExpression THEN! unaryExpression)
+	: (WHEN^ logicalExpression THEN! expression)
 	;
 	
 quantifiedExpression
