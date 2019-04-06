@@ -527,22 +527,31 @@ unaryExpression
 	;
 	
 caseExpression
-	: CASE (whenClause)+ (elseClause)? END
-		-> ^(CASE whenClause+ elseClause?) 
-	| CASE unaryExpression (altWhenClause)+ (elseClause)? END
-		-> ^(CASE2 unaryExpression altWhenClause+ elseClause?)
+	// NOTE : the unaryExpression rule contains the subQuery rule
+	: simpleCaseStatement
+	| searchedCaseStatement
 	;
-	
-whenClause
-	: (WHEN^ logicalExpression THEN! expression)
+
+simpleCaseStatement
+	: CASE unaryExpression (simpleCaseWhenClause)+ (elseClause)? END
+		-> ^(CASE2 unaryExpression simpleCaseWhenClause+ elseClause?)
 	;
-	
-altWhenClause
-	: (WHEN^ unaryExpression THEN! expression)
+
+simpleCaseWhenClause
+	: (WHEN^ unaryExpression THEN! unaryExpression)
 	;
 	
 elseClause
 	: (ELSE^ expression)
+	;
+
+searchedCaseStatement
+	: CASE (searchedCaseWhenClause)+ (elseClause)? END
+		-> ^(CASE searchedCaseWhenClause+ elseClause?)
+	;
+
+searchedCaseWhenClause
+	: (WHEN^ logicalExpression THEN! unaryExpression)
 	;
 	
 quantifiedExpression
