@@ -603,13 +603,17 @@ identPrimary
 //## aggregateFunction:
 //##     COUNT | 'sum' | 'avg' | 'max' | 'min';
 aggregate
-	: ( op=SUM | op=AVG | op=MAX | op=MIN ) OPEN additiveExpression CLOSE
-		-> ^(AGGREGATE[$op] additiveExpression)
+	: ( op=SUM | op=AVG | op=MAX | op=MIN ) OPEN aggregateArgument CLOSE
+		-> ^(AGGREGATE[$op] aggregateArgument)
 	// Special case for count - It's 'parameters' can be keywords.
 	|  COUNT OPEN ( s=STAR | p=aggregateDistinctAll ) CLOSE
 		-> {s == null}? ^(COUNT $p)
 		-> ^(COUNT ^(ROW_STAR["*"]))
 	|  collectionExpr
+	;
+
+aggregateArgument
+	: ( additiveExpression | selectStatement )
 	;
 
 aggregateDistinctAll
