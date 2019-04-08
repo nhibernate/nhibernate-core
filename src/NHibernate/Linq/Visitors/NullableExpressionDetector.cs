@@ -5,6 +5,7 @@ using NHibernate.Engine;
 using NHibernate.Linq.Clauses;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Functions;
+using NHibernate.Persister.Entity;
 using NHibernate.Util;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
@@ -162,17 +163,22 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			// We have to check the member mapping to determine if is nullable
-			var entityName = TryGetEntityName(memberExpression);
+			var entityName = ExpressionsHelper.TryGetEntityName(_sessionFactory, memberExpression, out var memberPath);
 			if (entityName == null)
 			{
-				return true; // not mapped
+				return true; // Not mapped
 			}
 
 			var persister = _sessionFactory.GetEntityPersister(entityName);
-			var index = persister.EntityMetamodel.GetPropertyIndexOrNull(memberExpression.Member.Name);
+			if (persister.IsIdentifierMember(memberPath))
+			{
+				return false; // Identifier is always not null
+			}
+
+			var index = persister.EntityMetamodel.GetPropertyIndexOrNull(memberPath);
 			if (!index.HasValue || persister.EntityMetamodel.PropertyNullability[index.Value])
 			{
-				return true; // not mapped or nullable
+				return true; // Not mapped or nullable
 			}
 
 			return IsNullable(memberExpression.Expression, equalityExpression);
@@ -208,23 +214,6 @@ namespace NHibernate.Linq.Visitors
 				default:
 					return true; // a query can return null and we cannot calculate it as it is not yet executed
 			}
-		}
-
-		private string TryGetEntityName(MemberExpression memberExpression)
-		{
-			System.Type entityType;
-			// Try to get the actual entity type from the query source if possbile as member can be declared
-			// in a base type
-			if (memberExpression.Expression is QuerySourceReferenceExpression querySourceReferenceExpression)
-			{
-				entityType = querySourceReferenceExpression.Type;
-			}
-			else
-			{
-				entityType = memberExpression.Member.ReflectedType;
-			}
-
-			return _sessionFactory.TryGetGuessEntityName(entityType);
 		}
 
 		private static bool IsMemberAccess(Expression expression)

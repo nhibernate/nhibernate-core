@@ -143,6 +143,18 @@ namespace NHibernate.Test.Linq
 
 			q = session.Query<AnotherEntityRequired>().Where(o => o.Address.Street != null && o.Address.Street != o.NullableOutput);
 			await (ExpectAsync(q, Does.Contain("Output is null").IgnoreCase, InputSet, BothDifferent));
+
+			await (ExpectAsync(session.Query<Customer>().Where(o => o.CustomerId != null), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<Customer>().Where(o => null != o.CustomerId), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<Customer>().Where(o => o.CustomerId != "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<Customer>().Where(o => "test" != o.CustomerId), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.CustomerId != "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => "test" != o.Order.Customer.CustomerId), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.CompanyName != "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => "test" != o.Order.Customer.CompanyName), Does.Not.Contain("is null").IgnoreCase));
 		}
 
 		[Test]
@@ -173,10 +185,10 @@ namespace NHibernate.Test.Linq
 		public async Task NullEqualityWithNotNullAsync()
 		{
 			var q = session.Query<AnotherEntityRequired>().Where(o => o.Input == null);
-			await (ExpectAsync(q, Does.Not.Contain("or is null").IgnoreCase, OutputSet, BothNull));
+			await (ExpectAsync(q, Does.Contain("is null").IgnoreCase, OutputSet, BothNull));
 
 			q = session.Query<AnotherEntityRequired>().Where(o => null == o.Input);
-			await (ExpectAsync(q, Does.Not.Contain("or is null").IgnoreCase, OutputSet, BothNull));
+			await (ExpectAsync(q, Does.Contain("is null").IgnoreCase, OutputSet, BothNull));
 
 			q = session.Query<AnotherEntityRequired>().Where(o => o.InputNullability == AnotherEntityNullability.True);
 			await (ExpectAsync(q, Does.Not.Contain("end is null").IgnoreCase, BothNull, OutputSet));
@@ -291,6 +303,15 @@ namespace NHibernate.Test.Linq
 
 			q = session.Query<AnotherEntityRequired>().Where(o => o.Address.Street != null && o.Address.Street == o.NullableOutput);
 			await (ExpectAsync(q, Does.Not.Contain("Output is null").IgnoreCase, BothSame));
+
+			await (ExpectAsync(session.Query<Customer>().Where(o => o.CustomerId == null), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<Customer>().Where(o => null == o.CustomerId), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<Customer>().Where(o => o.CustomerId == "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<Customer>().Where(o => "test" == o.CustomerId), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.CustomerId == "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => "test" == o.Order.Customer.CustomerId), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.CompanyName == "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => "test" == o.Order.Customer.CompanyName), Does.Not.Contain("is null").IgnoreCase));
 		}
 
 		[Test]
@@ -377,6 +398,24 @@ namespace NHibernate.Test.Linq
 			// Columns against columns
 			q = from x in session.Query<AnotherEntity>() where x.Input == x.Output select x;
 			await (ExpectAsync(q, BothSame, BothNull));
+
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.ContactName == null), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => null == o.Order.Customer.ContactName), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.ContactName == "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => "test" == o.Order.Customer.ContactName), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => null == o.Component.Property1), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => o.Component.Property1 == null), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => "test" == o.Component.Property1), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => o.Component.Property1 == "test"), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => null == o.Component.OtherComponent.OtherProperty1), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => o.Component.OtherComponent.OtherProperty1 == null), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => "test" == o.Component.OtherComponent.OtherProperty1), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => o.Component.OtherComponent.OtherProperty1 == "test"), Does.Not.Contain("is null").IgnoreCase));
 		}
 
 		[Test]
@@ -435,6 +474,24 @@ namespace NHibernate.Test.Linq
 			// Columns against columns
 			q = from x in session.Query<AnotherEntity>() where x.Input != x.Output select x;
 			await (ExpectAsync(q, BothDifferent, InputSet, OutputSet));
+
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.ContactName != null), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => null != o.Order.Customer.ContactName), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.ContactName != "test"), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => "test" != o.Order.Customer.ContactName), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => null != o.Component.Property1), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => o.Component.Property1 != null), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => "test" != o.Component.Property1), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => o.Component.Property1 != "test"), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => null != o.Component.OtherComponent.OtherProperty1), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => o.Component.OtherComponent.OtherProperty1 != null), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => "test" != o.Component.OtherComponent.OtherProperty1), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => o.Component.OtherComponent.OtherProperty1 != "test"), Does.Contain("is null").IgnoreCase));
 		}
 
 		[Test]
@@ -631,6 +688,15 @@ namespace NHibernate.Test.Linq
 		private async Task<IList<AnotherEntityRequired>> GetResultsAsync(IQueryable<AnotherEntityRequired> q, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return (await (q.ToListAsync(cancellationToken))).OrderBy(Key).ToList();
+		}
+
+		private static async Task ExpectAsync<T>(IQueryable<T> query, IResolveConstraint sqlConstraint, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			using (var sqlLog = new SqlLogSpy())
+			{
+				var list = await (query.ToListAsync(cancellationToken));
+				Assert.That(sqlLog.GetWholeLog(), sqlConstraint);
+			}
 		}
 
 		private static string Key(AnotherEntityRequired e)

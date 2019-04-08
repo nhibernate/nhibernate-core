@@ -131,6 +131,18 @@ namespace NHibernate.Test.Linq
 
 			q = session.Query<AnotherEntityRequired>().Where(o => o.Address.Street != null && o.Address.Street != o.NullableOutput);
 			Expect(q, Does.Contain("Output is null").IgnoreCase, InputSet, BothDifferent);
+
+			Expect(session.Query<Customer>().Where(o => o.CustomerId != null), Does.Not.Contain("is null").IgnoreCase);
+			Expect(session.Query<Customer>().Where(o => null != o.CustomerId), Does.Not.Contain("is null").IgnoreCase);
+
+			Expect(session.Query<Customer>().Where(o => o.CustomerId != "test"), Does.Not.Contain("is null").IgnoreCase);
+			Expect(session.Query<Customer>().Where(o => "test" != o.CustomerId), Does.Not.Contain("is null").IgnoreCase);
+
+			Expect(session.Query<OrderLine>().Where(o => o.Order.Customer.CustomerId != "test"), Does.Not.Contain("is null").IgnoreCase);
+			Expect(session.Query<OrderLine>().Where(o => "test" != o.Order.Customer.CustomerId), Does.Not.Contain("is null").IgnoreCase);
+
+			Expect(session.Query<OrderLine>().Where(o => o.Order.Customer.CompanyName != "test"), Does.Not.Contain("is null").IgnoreCase);
+			Expect(session.Query<OrderLine>().Where(o => "test" != o.Order.Customer.CompanyName), Does.Not.Contain("is null").IgnoreCase);
 		}
 
 		[Test]
@@ -161,10 +173,10 @@ namespace NHibernate.Test.Linq
 		public void NullEqualityWithNotNull()
 		{
 			var q = session.Query<AnotherEntityRequired>().Where(o => o.Input == null);
-			Expect(q, Does.Not.Contain("or is null").IgnoreCase, OutputSet, BothNull);
+			Expect(q, Does.Contain("is null").IgnoreCase, OutputSet, BothNull);
 
 			q = session.Query<AnotherEntityRequired>().Where(o => null == o.Input);
-			Expect(q, Does.Not.Contain("or is null").IgnoreCase, OutputSet, BothNull);
+			Expect(q, Does.Contain("is null").IgnoreCase, OutputSet, BothNull);
 
 			q = session.Query<AnotherEntityRequired>().Where(o => o.InputNullability == AnotherEntityNullability.True);
 			Expect(q, Does.Not.Contain("end is null").IgnoreCase, BothNull, OutputSet);
@@ -279,6 +291,15 @@ namespace NHibernate.Test.Linq
 
 			q = session.Query<AnotherEntityRequired>().Where(o => o.Address.Street != null && o.Address.Street == o.NullableOutput);
 			Expect(q, Does.Not.Contain("Output is null").IgnoreCase, BothSame);
+
+			Expect(session.Query<Customer>().Where(o => o.CustomerId == null), Does.Contain("is null").IgnoreCase);
+			Expect(session.Query<Customer>().Where(o => null == o.CustomerId), Does.Contain("is null").IgnoreCase);
+			Expect(session.Query<Customer>().Where(o => o.CustomerId == "test"), Does.Not.Contain("is null").IgnoreCase);
+			Expect(session.Query<Customer>().Where(o => "test" == o.CustomerId), Does.Not.Contain("is null").IgnoreCase);
+			Expect(session.Query<OrderLine>().Where(o => o.Order.Customer.CustomerId == "test"), Does.Not.Contain("is null").IgnoreCase);
+			Expect(session.Query<OrderLine>().Where(o => "test" == o.Order.Customer.CustomerId), Does.Not.Contain("is null").IgnoreCase);
+			Expect(session.Query<OrderLine>().Where(o => o.Order.Customer.CompanyName == "test"), Does.Not.Contain("is null").IgnoreCase);
+			Expect(session.Query<OrderLine>().Where(o => "test" == o.Order.Customer.CompanyName), Does.Not.Contain("is null").IgnoreCase);
 		}
 
 		[Test]
@@ -365,6 +386,24 @@ namespace NHibernate.Test.Linq
 			// Columns against columns
 			q = from x in session.Query<AnotherEntity>() where x.Input == x.Output select x;
 			Expect(q, BothSame, BothNull);
+
+			Expect(session.Query<OrderLine>().Where(o => o.Order.Customer.ContactName == null), Does.Contain("is null").IgnoreCase);
+			Expect(session.Query<OrderLine>().Where(o => null == o.Order.Customer.ContactName), Does.Contain("is null").IgnoreCase);
+
+			Expect(session.Query<OrderLine>().Where(o => o.Order.Customer.ContactName == "test"), Does.Not.Contain("is null").IgnoreCase);
+			Expect(session.Query<OrderLine>().Where(o => "test" == o.Order.Customer.ContactName), Does.Not.Contain("is null").IgnoreCase);
+
+			Expect(session.Query<User>().Where(o => null == o.Component.Property1), Does.Contain("is null").IgnoreCase);
+			Expect(session.Query<User>().Where(o => o.Component.Property1 == null), Does.Contain("is null").IgnoreCase);
+
+			Expect(session.Query<User>().Where(o => "test" == o.Component.Property1), Does.Not.Contain("is null").IgnoreCase);
+			Expect(session.Query<User>().Where(o => o.Component.Property1 == "test"), Does.Not.Contain("is null").IgnoreCase);
+
+			Expect(session.Query<User>().Where(o => null == o.Component.OtherComponent.OtherProperty1), Does.Contain("is null").IgnoreCase);
+			Expect(session.Query<User>().Where(o => o.Component.OtherComponent.OtherProperty1 == null), Does.Contain("is null").IgnoreCase);
+
+			Expect(session.Query<User>().Where(o => "test" == o.Component.OtherComponent.OtherProperty1), Does.Not.Contain("is null").IgnoreCase);
+			Expect(session.Query<User>().Where(o => o.Component.OtherComponent.OtherProperty1 == "test"), Does.Not.Contain("is null").IgnoreCase);
 		}
 
 		[Test]
@@ -423,6 +462,24 @@ namespace NHibernate.Test.Linq
 			// Columns against columns
 			q = from x in session.Query<AnotherEntity>() where x.Input != x.Output select x;
 			Expect(q, BothDifferent, InputSet, OutputSet);
+
+			Expect(session.Query<OrderLine>().Where(o => o.Order.Customer.ContactName != null), Does.Not.Contain("is null").IgnoreCase);
+			Expect(session.Query<OrderLine>().Where(o => null != o.Order.Customer.ContactName), Does.Not.Contain("is null").IgnoreCase);
+
+			Expect(session.Query<OrderLine>().Where(o => o.Order.Customer.ContactName != "test"), Does.Contain("is null").IgnoreCase);
+			Expect(session.Query<OrderLine>().Where(o => "test" != o.Order.Customer.ContactName), Does.Contain("is null").IgnoreCase);
+
+			Expect(session.Query<User>().Where(o => null != o.Component.Property1), Does.Not.Contain("is null").IgnoreCase);
+			Expect(session.Query<User>().Where(o => o.Component.Property1 != null), Does.Not.Contain("is null").IgnoreCase);
+
+			Expect(session.Query<User>().Where(o => "test" != o.Component.Property1), Does.Contain("is null").IgnoreCase);
+			Expect(session.Query<User>().Where(o => o.Component.Property1 != "test"), Does.Contain("is null").IgnoreCase);
+
+			Expect(session.Query<User>().Where(o => null != o.Component.OtherComponent.OtherProperty1), Does.Not.Contain("is null").IgnoreCase);
+			Expect(session.Query<User>().Where(o => o.Component.OtherComponent.OtherProperty1 != null), Does.Not.Contain("is null").IgnoreCase);
+
+			Expect(session.Query<User>().Where(o => "test" != o.Component.OtherComponent.OtherProperty1), Does.Contain("is null").IgnoreCase);
+			Expect(session.Query<User>().Where(o => o.Component.OtherComponent.OtherProperty1 != "test"), Does.Contain("is null").IgnoreCase);
 		}
 
 		[Test]
@@ -619,6 +676,15 @@ namespace NHibernate.Test.Linq
 		private IList<AnotherEntityRequired> GetResults(IQueryable<AnotherEntityRequired> q)
 		{
 			return q.ToList().OrderBy(Key).ToList();
+		}
+
+		private static void Expect<T>(IQueryable<T> query, IResolveConstraint sqlConstraint)
+		{
+			using (var sqlLog = new SqlLogSpy())
+			{
+				var list = query.ToList();
+				Assert.That(sqlLog.GetWholeLog(), sqlConstraint);
+			}
 		}
 
 		private static string Key(AnotherEntityRequired e)

@@ -14,10 +14,5 @@ namespace NHibernate.Linq.Functions
 		public abstract HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor);
 
 		public virtual bool AllowsNullableReturnType(MethodInfo method) => true;
-
-		bool IHqlGeneratorForMethodExtended.AllowsNullableReturnType(MethodInfo method)
-		{
-			return AllowsNullableReturnType(method);
-		}
 	}
 }
