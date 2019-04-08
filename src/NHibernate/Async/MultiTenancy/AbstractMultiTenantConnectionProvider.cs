@@ -11,6 +11,7 @@
 using System;
 using System.Data.Common;
 using NHibernate.Connection;
+using NHibernate.Engine;
 using NHibernate.Util;
 
 namespace NHibernate.MultiTenancy
@@ -19,7 +20,6 @@ namespace NHibernate.MultiTenancy
 	using System.Threading;
 	public abstract partial class AbstractMultiTenantConnectionProvider : IMultiTenantConnectionProvider
 	{
-
 		partial class ContextualConnectionAccess : IConnectionAccess
 		{
 
@@ -29,7 +29,7 @@ namespace NHibernate.MultiTenancy
 				{
 					return Task.FromCanceled<DbConnection>(cancellationToken);
 				}
-				return _connectionProvider.GetConnectionAsync(ConnectionString, cancellationToken);
+				return _factory.ConnectionProvider.GetConnectionAsync(ConnectionString, cancellationToken);
 			}
 		}  
 	}

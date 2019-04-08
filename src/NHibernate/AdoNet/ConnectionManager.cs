@@ -86,7 +86,7 @@ namespace NHibernate.AdoNet
 #pragma warning restore 618
 
 		{
-			_connectionAccess = connectionAccess;
+			_connectionAccess = connectionAccess ?? throw new ArgumentNullException(nameof(connectionAccess));
 		}
 
 		//Since 5.3
@@ -380,6 +380,7 @@ namespace NHibernate.AdoNet
 			_connectionReleaseMode =
 				(ConnectionReleaseMode)info.GetValue("connectionReleaseMode", typeof(ConnectionReleaseMode));
 			_interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
+			_connectionAccess = (IConnectionAccess) info.GetValue("connectionAccess", typeof(IConnectionAccess));
 		}
 
 		[SecurityCritical]
@@ -389,6 +390,7 @@ namespace NHibernate.AdoNet
 			info.AddValue("session", Session, typeof(ISessionImplementor));
 			info.AddValue("connectionReleaseMode", _connectionReleaseMode, typeof(ConnectionReleaseMode));
 			info.AddValue("interceptor", _interceptor, typeof(IInterceptor));
+			info.AddValue("connectionAccess", _connectionAccess, typeof(IConnectionAccess));
 		}
 
 		#endregion

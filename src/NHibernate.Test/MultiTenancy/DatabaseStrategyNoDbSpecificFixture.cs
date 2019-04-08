@@ -1,6 +1,8 @@
 using System;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Connection;
@@ -9,6 +11,7 @@ using NHibernate.Engine;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NHibernate.MultiTenancy;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.MultiTenancy
@@ -44,18 +47,22 @@ namespace NHibernate.Test.MultiTenancy
 		[Test]
 		public void DifferentConnectionStringForDifferentTenants()
 		{
-			if (!(Sfi.Dialect is MsSql2005Dialect))
+			if (!IsSqlServerDialect)
 				Assert.Ignore("MSSqlServer specific test");
 
 			using(var session1 = OpenTenantSession("tenant1"))
 			using (var session2 = OpenTenantSession("tenant2"))
 			{
 				Assert.That(session1.Connection.ConnectionString, Is.Not.EqualTo(session2.Connection.ConnectionString));
-				var builder1 = new SqlConnectionStringBuilder(session1.Connection.ConnectionString);
-				var builder2 = new SqlConnectionStringBuilder(session2.Connection.ConnectionString);
-				Assert.That(builder1.ApplicationName, Is.EqualTo("tenant1"));
-				Assert.That(builder2.ApplicationName, Is.EqualTo("tenant2"));
+				ValidateSqlServerConnectionAppName(session1, "tenant1");
+				ValidateSqlServerConnectionAppName(session2, "tenant2");
 			}
+		}
+
+		private static void ValidateSqlServerConnectionAppName(ISession s, string tenantId)
+		{
+			var builder = new SqlConnectionStringBuilder(s.Connection.ConnectionString);
+			Assert.That(builder.ApplicationName, Is.EqualTo(tenantId));
 		}
 
 		[Test]
@@ -129,6 +136,46 @@ namespace NHibernate.Test.MultiTenancy
 			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0));
 		}
+		
+		[Test]
+		public void TenantSessionIsSerializableAndCanBeReconnected()
+		{
+			ISession deserializedSession = null; 
+			using (var sesTen1 = OpenTenantSession("tenant1"))
+			{
+				var entity = sesTen1.Query<Entity>().WithOptions(x => x.SetCacheable(true)).Where(e => e.Id == _id).SingleOrDefault();
+				sesTen1.Disconnect();
+				deserializedSession = SpoofSerialization(sesTen1);
+			}
+
+			Sfi.Statistics.Clear();
+			using (deserializedSession)
+			{
+				deserializedSession.Reconnect();
+				var entity = deserializedSession.Get<Entity>(_id);
+				if (IsSqlServerDialect)
+					ValidateSqlServerConnectionAppName(deserializedSession, "tenant1");
+			}
+
+			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
+			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0));
+		}
+
+		private ISession SpoofSerialization(ISession session)
+		{
+			var formatter = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
+			MemoryStream stream = new MemoryStream();
+			formatter.Serialize(stream, session);
+
+			stream.Position = 0;
+
+			return (ISession) formatter.Deserialize(stream);
+		}
 
 		private ISession OpenTenantSession(string tenantId)
 		{
@@ -139,6 +186,8 @@ namespace NHibernate.Test.MultiTenancy
 		{
 			return new TenantConfiguration(new TestTenantConnectionProvider(Sfi, tenantId));
 		}
+
+		private bool IsSqlServerDialect => Sfi.Dialect is MsSql2005Dialect;
 
 		#region Test Setup
 
@@ -193,6 +242,8 @@ namespace NHibernate.Test.MultiTenancy
 
 		#endregion Test Setup
 	}
+
+	[Serializable]
 	class Entity
 	{
 		public virtual Guid Id { get; set; }
@@ -216,16 +267,17 @@ namespace NHibernate.Test.MultiTenancy
 		}
 	}
 
+	[Serializable]
 	public class TestTenantConnectionProvider : AbstractMultiTenantConnectionProvider
 	{
 		public TestTenantConnectionProvider(ISessionFactoryImplementor sfi, string tenantId)
 		{
 			TenantIdentifier = tenantId;
-			ConnectionProvider = sfi.ConnectionProvider;
+			SessionFactory = sfi;
 			TenantConnectionString = sfi.ConnectionProvider.GetConnectionString();
 			if (sfi.Dialect is MsSql2005Dialect)
 			{
-				var stringBuilder = new SqlConnectionStringBuilder(ConnectionProvider.GetConnectionString());
+				var stringBuilder = new SqlConnectionStringBuilder(sfi.ConnectionProvider.GetConnectionString());
 				stringBuilder.ApplicationName = tenantId;
 				TenantConnectionString = stringBuilder.ToString();
 			}
@@ -235,6 +287,6 @@ namespace NHibernate.Test.MultiTenancy
 
 		public override string TenantIdentifier { get; }
 
-		protected override IConnectionProvider ConnectionProvider { get; }
+		protected override ISessionFactoryImplementor SessionFactory { get; }
 	}
 }

@@ -220,8 +220,7 @@ namespace NHibernate.Impl
 
 		public abstract Task<int> ExecuteUpdateAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
 	}
-
-	partial 	class NonContextualConnectionAccess : IConnectionAccess
+	partial class NonContextualConnectionAccess : IConnectionAccess
 	{
 
 		public Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
@@ -230,7 +229,7 @@ namespace NHibernate.Impl
 			{
 				return Task.FromCanceled<DbConnection>(cancellationToken);
 			}
-			return _connectionProvider.GetConnectionAsync(cancellationToken);
+			return _factory.ConnectionProvider.GetConnectionAsync(cancellationToken);
 		}
 	}
 }

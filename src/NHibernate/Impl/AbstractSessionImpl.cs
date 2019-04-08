@@ -37,8 +37,6 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private IQueryBatch _futureMultiBatch;
 
-		private readonly TenantConfiguration _tenantConfiguration;
-
 		private bool closed;
 
 		/// <summary>Get the current NHibernate transaction.</summary>
@@ -87,11 +85,9 @@ namespace NHibernate.Impl
 				_flushMode = options.InitialSessionFlushMode;
 				Interceptor = options.SessionInterceptor ?? EmptyInterceptor.Instance;
 
-				if (options is ISessionCreationOptionsWithMultiTenancy multiTenancy)
-				{
-					_tenantConfiguration = multiTenancy.TenantConfiguration;
-					ValidateTenantConfiguration(factory, _tenantConfiguration);
-				}
+				TenantConfiguration tenantConfiguration = options is ISessionCreationOptionsWithMultiTenancy multiTenancy ? multiTenancy.TenantConfiguration : null;
+				ValidateTenantConfiguration(factory, tenantConfiguration);
+				TenantIdentifier = tenantConfiguration?.TenantIdentifier;
 
 				if (options is ISharedSessionCreationOptions sharedOptions && sharedOptions.IsTransactionCoordinatorShared)
 				{
@@ -110,7 +106,7 @@ namespace NHibernate.Impl
 						options.UserSuppliedConnection,
 						options.SessionConnectionReleaseMode,
 						Interceptor,
-						_tenantConfiguration?.ConnectionAccess ?? new NonContextualConnectionAccess(_factory.ConnectionProvider),
+						tenantConfiguration?.ConnectionAccess ?? new NonContextualConnectionAccess(_factory),
 						options.ShouldAutoJoinTransaction);
 				}
 			}
@@ -492,7 +488,7 @@ namespace NHibernate.Impl
 		/// <inheritdoc />
 		public virtual bool TransactionInProgress => ConnectionManager.IsInActiveTransaction;
 
-		public string TenantIdentifier => _tenantConfiguration?.TenantIdentifier;
+		public string TenantIdentifier { get; }
 
 		#endregion
 
@@ -698,27 +694,27 @@ namespace NHibernate.Impl
 			return new QueryBatch(this, false);
 		}
 	}
-[Serializable]
 
-	partial 	class NonContextualConnectionAccess : IConnectionAccess
+	[Serializable]
+	partial class NonContextualConnectionAccess : IConnectionAccess
 	{
-		private readonly IConnectionProvider _connectionProvider;
+		private readonly ISessionFactoryImplementor _factory;
 
-		public NonContextualConnectionAccess(IConnectionProvider connectionProvider)
+		public NonContextualConnectionAccess(ISessionFactoryImplementor factory)
 		{
-			_connectionProvider = connectionProvider;
+			_factory = factory;
 		}
 
 		public DbConnection GetConnection()
 		{
-			return _connectionProvider.GetConnection();
+			return _factory.ConnectionProvider.GetConnection();
 		}
 
 		public void CloseConnection(DbConnection connection)
 		{
-			_connectionProvider.CloseConnection(connection);
+			_factory.ConnectionProvider.CloseConnection(connection);
 		}
 
-		public string ConnectionString => _connectionProvider.GetConnectionString();
+		public string ConnectionString => _factory.ConnectionProvider.GetConnectionString();
 	}
 }
