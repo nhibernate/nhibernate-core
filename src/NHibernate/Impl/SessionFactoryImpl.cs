@@ -21,6 +21,7 @@ using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
+using NHibernate.MultiTenancy;
 using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -1021,7 +1022,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private CacheKey GenerateCacheKeyForEvict(object id, IType type, string entityOrRoleName)
+		private CacheKey GenerateCacheKeyForEvict(object id, IType type, string entityOrRoleName, string tenantIdentifier = null)
 		{
 			// if there is a session context, use that to generate the key.
 			if (CurrentSessionContext != null)
@@ -1032,7 +1033,12 @@ namespace NHibernate.Impl
 					.GenerateCacheKey(id, type, entityOrRoleName);
 			}
 
-			return new CacheKey(id, type, entityOrRoleName, this);
+			if (settings.MultiTenancyStrategy != MultiTenancyStrategy.None && tenantIdentifier == null)
+			{
+				throw new NotImplementedException("Eviction is not implemented for multi-tenancy. Please initialize CurrentSessionContext.");
+			}
+
+			return new CacheKey(id, type, entityOrRoleName, this, null);
 		}
 
 		public void EvictCollection(string roleName)
@@ -1423,7 +1429,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		internal class SessionBuilderImpl<T> : ISessionBuilder<T>, ISessionCreationOptions where T : ISessionBuilder<T>
+		internal class SessionBuilderImpl<T> : ISessionBuilder<T>, ISessionCreationOptions, ISessionCreationOptionsWithMultiTenancy where T : ISessionBuilder<T>
 		{
 			// NH specific: implementing return type covariance with interface is a mess in .Net.
 			private T _this;
@@ -1532,6 +1538,10 @@ namespace NHibernate.Impl
 				_flushMode = flushMode;
 				return _this;
 			}
+
+			public TenantConfiguration TenantConfiguration { get;
+				//TODO 6.0: Make protected
+				set; }
 		}
 
 		// NH specific: implementing return type covariance with interface is a mess in .Net.

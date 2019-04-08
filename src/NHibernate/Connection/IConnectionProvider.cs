@@ -2,9 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.Driver;
+using NHibernate.Util;
 
 namespace NHibernate.Connection
 {
+	//TODO: Merge into IConnectionProvider
+	public static partial class ConnectionProviderExtensions
+	{
+		internal static DbConnection GetConnection(this IConnectionProvider connectionProvider, string connectionString)
+		{
+			return ReflectHelper.CastOrThrow<ConnectionProvider>(connectionProvider, "open connection by connectionString").GetConnection(connectionString);
+		}
+
+		//TODO: Expose as ConnectionString property
+		public static string GetConnectionString(this IConnectionProvider connectionProvider)
+		{
+			return ReflectHelper.CastOrThrow<ConnectionProvider>(connectionProvider, "retrieve connectionString").ConnectionString;
+		}
+	}
+
 	/// <summary>
 	/// A strategy for obtaining ADO.NET <see cref="DbConnection"/>.
 	/// </summary>

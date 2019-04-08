@@ -7,6 +7,7 @@ using NHibernate.Cfg.ConfigurationSchema;
 using NHibernate.Engine;
 using NHibernate.Linq;
 using NHibernate.Linq.Visitors;
+using NHibernate.MultiTenancy;
 using NHibernate.Util;
 
 namespace NHibernate.Cfg
@@ -384,6 +385,11 @@ namespace NHibernate.Cfg
 		public const string TrackSessionId = "track_session_id";
 
 		private static readonly Dictionary<string, string> GlobalProperties = new Dictionary<string, string>();
+
+		/// <summary>
+		/// Strategy for multi-tenancy. </summary>
+		/// <seealso cref="MultiTenancyStrategy"/>
+		public const string MultiTenant = "multiTenancy";
 
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;

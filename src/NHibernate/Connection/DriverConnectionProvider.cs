@@ -32,11 +32,16 @@ namespace NHibernate.Connection
 		/// </exception>
 		public override DbConnection GetConnection()
 		{
+			return GetConnection(ConnectionString);
+		}
+
+		public override DbConnection GetConnection(string connectionString)
+		{
 			log.Debug("Obtaining DbConnection from Driver");
 			var conn = Driver.CreateConnection();
 			try
 			{
-				conn.ConnectionString = ConnectionString;
+				conn.ConnectionString = connectionString;
 				conn.Open();
 			}
 			catch (Exception)

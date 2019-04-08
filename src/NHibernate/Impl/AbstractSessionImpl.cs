@@ -7,6 +7,7 @@ using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
+using NHibernate.Connection;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
@@ -17,6 +18,7 @@ using NHibernate.Linq;
 using NHibernate.Loader.Custom;
 using NHibernate.Loader.Custom.Sql;
 using NHibernate.Multi;
+using NHibernate.MultiTenancy;
 using NHibernate.Persister.Entity;
 using NHibernate.Transaction;
 using NHibernate.Type;
@@ -34,6 +36,8 @@ namespace NHibernate.Impl
 
 		[NonSerialized]
 		private IQueryBatch _futureMultiBatch;
+
+		private readonly TenantConfiguration _tenantConfiguration;
 
 		private bool closed;
 
@@ -57,6 +61,22 @@ namespace NHibernate.Impl
 
 		internal AbstractSessionImpl() { }
 
+		private void ValidateTenantConfiguration(ISessionFactoryImplementor factory, TenantConfiguration tenantConfiguration)
+		{
+			if (factory.Settings.MultiTenancyStrategy == MultiTenancyStrategy.None)
+				return;
+
+			if (string.IsNullOrEmpty(tenantConfiguration?.TenantIdentifier))
+			{
+				throw  new ArgumentException("Tenant configuration with TenantIdentifier defined is required for multi-tenancy.", nameof(tenantConfiguration));
+			}
+
+			if (factory.Settings.MultiTenancyStrategy == MultiTenancyStrategy.Database && tenantConfiguration.ConnectionAccess == null)
+			{
+				throw new ArgumentException($"Tenant configuration with ConnectionAccess defined is required for {factory.Settings.MultiTenancyStrategy} multi-tenancy strategy.");
+			}
+		}
+
 		protected internal AbstractSessionImpl(ISessionFactoryImplementor factory, ISessionCreationOptions options)
 		{
 			SessionId = factory.Settings.TrackSessionId ? Guid.NewGuid() : Guid.Empty;
@@ -66,6 +86,12 @@ namespace NHibernate.Impl
 				Timestamp = factory.Settings.CacheProvider.NextTimestamp();
 				_flushMode = options.InitialSessionFlushMode;
 				Interceptor = options.SessionInterceptor ?? EmptyInterceptor.Instance;
+
+				if (options is ISessionCreationOptionsWithMultiTenancy multiTenancy)
+				{
+					_tenantConfiguration = multiTenancy.TenantConfiguration;
+					ValidateTenantConfiguration(factory, _tenantConfiguration);
+				}
 
 				if (options is ISharedSessionCreationOptions sharedOptions && sharedOptions.IsTransactionCoordinatorShared)
 				{
@@ -84,6 +110,7 @@ namespace NHibernate.Impl
 						options.UserSuppliedConnection,
 						options.SessionConnectionReleaseMode,
 						Interceptor,
+						_tenantConfiguration?.ConnectionAccess ?? new NonContextualConnectionAccess(_factory.ConnectionProvider),
 						options.ShouldAutoJoinTransaction);
 				}
 			}
@@ -109,7 +136,7 @@ namespace NHibernate.Impl
 
 		public CacheKey GenerateCacheKey(object id, IType type, string entityOrRoleName)
 		{
-			return new CacheKey(id, type, entityOrRoleName, Factory);
+			return new CacheKey(id, type, entityOrRoleName, Factory, TenantIdentifier);
 		}
 
 		public ISessionFactoryImplementor Factory
@@ -465,6 +492,8 @@ namespace NHibernate.Impl
 		/// <inheritdoc />
 		public virtual bool TransactionInProgress => ConnectionManager.IsInActiveTransaction;
 
+		public string TenantIdentifier => _tenantConfiguration?.TenantIdentifier;
+
 		#endregion
 
 		protected internal void SetClosed()
@@ -668,5 +697,28 @@ namespace NHibernate.Impl
 		{
 			return new QueryBatch(this, false);
 		}
+	}
+[Serializable]
+
+	partial 	class NonContextualConnectionAccess : IConnectionAccess
+	{
+		private readonly IConnectionProvider _connectionProvider;
+
+		public NonContextualConnectionAccess(IConnectionProvider connectionProvider)
+		{
+			_connectionProvider = connectionProvider;
+		}
+
+		public DbConnection GetConnection()
+		{
+			return _connectionProvider.GetConnection();
+		}
+
+		public void CloseConnection(DbConnection connection)
+		{
+			_connectionProvider.CloseConnection(connection);
+		}
+
+		public string ConnectionString => _connectionProvider.GetConnectionString();
 	}
 }

@@ -12,6 +12,7 @@ using NHibernate.Hql;
 using NHibernate.Linq;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
+using NHibernate.MultiTenancy;
 using NHibernate.Transaction;
 using NHibernate.Util;
 
@@ -324,6 +325,11 @@ namespace NHibernate.Cfg
 			bool trackSessionId = PropertiesHelper.GetBoolean(Environment.TrackSessionId, properties, true);
 			log.Debug("Track session id: " + EnabledDisabled(trackSessionId));
 			settings.TrackSessionId = trackSessionId;
+
+			var multiTenancyStrategy = PropertiesHelper.GetEnum(Environment.MultiTenant, properties, MultiTenancyStrategy.None);
+			if(multiTenancyStrategy != MultiTenancyStrategy.None)
+				log.Debug("multi-tenancy strategy : " + multiTenancyStrategy);
+			settings.MultiTenancyStrategy = multiTenancyStrategy;
 
 			return settings;
 		}

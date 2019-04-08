@@ -29,14 +29,23 @@ namespace NHibernate.Connection
 		/// <exception cref="Exception">
 		/// If there is any problem creating or opening the <see cref="DbConnection"/>.
 		/// </exception>
-		public override async Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
+		public override Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<DbConnection>(cancellationToken);
+			}
+			return GetConnectionAsync(ConnectionString, cancellationToken);
+		}
+
+		public override async Task<DbConnection> GetConnectionAsync(string connectionString, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("Obtaining DbConnection from Driver");
 			var conn = Driver.CreateConnection();
 			try
 			{
-				conn.ConnectionString = ConnectionString;
+				conn.ConnectionString = connectionString;
 				await (conn.OpenAsync(cancellationToken)).ConfigureAwait(false);
 			}
 			catch (OperationCanceledException) { throw; }

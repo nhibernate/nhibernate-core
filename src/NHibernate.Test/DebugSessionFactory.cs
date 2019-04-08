@@ -16,6 +16,7 @@ using NHibernate.Exceptions;
 using NHibernate.Id;
 using NHibernate.Impl;
 using NHibernate.Metadata;
+using NHibernate.MultiTenancy;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -400,7 +401,7 @@ namespace NHibernate.Test
 				(ISessionCreationOptions)sessionBuilder;
 		}
 
-		internal class SessionBuilder : ISessionBuilder
+		internal class SessionBuilder : ISessionBuilder, ISessionCreationOptionsWithMultiTenancy
 		{
 			private readonly ISessionBuilder _actualBuilder;
 			private readonly DebugSessionFactory _debugFactory;
@@ -465,6 +466,12 @@ namespace NHibernate.Test
 			}
 
 			#endregion
+
+			TenantConfiguration ISessionCreationOptionsWithMultiTenancy.TenantConfiguration
+			{
+				get => (_actualBuilder as ISessionCreationOptionsWithMultiTenancy)?.TenantConfiguration;
+				set => _actualBuilder.TenantConfiguration(value);
+			}
 		}
 
 		internal class StatelessSessionBuilder : IStatelessSessionBuilder

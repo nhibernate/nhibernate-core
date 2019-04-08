@@ -30,5 +30,11 @@ namespace NHibernate.Connection
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>An open <see cref="DbConnection"/>.</returns>
 		public abstract Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken);
+
+		//TODO 6.0: Make abstract
+		public virtual Task<DbConnection> GetConnectionAsync(string connectionString, CancellationToken cancellationToken)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

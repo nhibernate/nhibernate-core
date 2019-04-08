@@ -31,6 +31,7 @@ using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
+using NHibernate.MultiTenancy;
 using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;

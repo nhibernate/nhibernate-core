@@ -237,7 +237,7 @@ namespace NHibernate.Test
 			}
 
 			bool empty;
-			using (ISession s = Sfi.OpenSession())
+			using (ISession s = OpenSession())
 			{
 				IList objects = s.CreateQuery("from System.Object o").List();
 				empty = objects.Count == 0;

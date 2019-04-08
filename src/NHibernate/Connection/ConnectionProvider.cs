@@ -118,7 +118,8 @@ namespace NHibernate.Connection
 		/// The <see cref="String"/> for the <see cref="DbConnection"/>
 		/// to connect to the database.
 		/// </value>
-		protected virtual string ConnectionString
+		//TODO 6.0: Make public
+		protected internal virtual string ConnectionString
 		{
 			get { return connString; }
 		}
@@ -203,5 +204,11 @@ namespace NHibernate.Connection
 		}
 
 		#endregion
+
+		//TODO 6.0: Make abstract
+		public virtual DbConnection GetConnection(string connectionString)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

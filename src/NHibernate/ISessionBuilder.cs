@@ -1,14 +1,28 @@
 using System.Data.Common;
 using NHibernate.Connection;
+using NHibernate.Impl;
+using NHibernate.MultiTenancy;
+using NHibernate.Util;
 
 namespace NHibernate
 {
+	//TODO 6.0: Merge into ISessionBuilder<T>
+	public static class SessionBuilderExtensions
+	{
+		public static T TenantConfiguration<T>(this T builder, TenantConfiguration tenantConfig) where T: ISessionBuilder
+		{
+			ReflectHelper.CastOrThrow<ISessionCreationOptionsWithMultiTenancy>(builder, "multi tenancy").TenantConfiguration = tenantConfig;
+			return builder;
+		}
+	}
+
 	// NH specific: Java does not require this, it looks as still having a better covariance support.
 	/// <summary>
 	/// Represents a consolidation of all session creation options into a builder style delegate.
 	/// </summary>
 	public interface ISessionBuilder : ISessionBuilder<ISessionBuilder> { }
 
+	//TODO 6.0: Make T covariant ISessionBuilder<T> -> ISessionBuilder<out T> 
 	/// <summary>
 	/// Represents a consolidation of all session creation options into a builder style delegate.
 	/// </summary>
