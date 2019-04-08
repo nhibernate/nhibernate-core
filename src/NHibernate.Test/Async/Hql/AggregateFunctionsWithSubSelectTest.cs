@@ -79,19 +79,15 @@ namespace NHibernate.Test.Hql
 			}
 		}
 
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return !(dialect is MsSql2000Dialect) &&
-			       !(dialect is MsSqlCeDialect) &&
-			       !(dialect is FirebirdDialect);
-		}
-
 		[TestCase("SUM", 4)]
 		[TestCase("MIN", 2)]
 		[TestCase("MAX", 2)]
 		[TestCase("AVG", 2d)]
 		public async Task TestAggregateFunctionAsync(string functionName, object result, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (!TestDialect.SupportsAggregateInSubSelect)
+				Assert.Ignore("Dialect does not support an aggregate in a sub-select");
+
 			var query = "SELECT " +
 			            "	d.Id, " +
 						$"	{functionName}(" +
