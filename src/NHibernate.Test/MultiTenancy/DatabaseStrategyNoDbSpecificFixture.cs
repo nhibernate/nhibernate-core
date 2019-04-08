@@ -7,6 +7,7 @@ using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Connection;
 using NHibernate.Dialect;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
@@ -187,7 +188,7 @@ namespace NHibernate.Test.MultiTenancy
 			return new TenantConfiguration(new TestTenantConnectionProvider(Sfi, tenantId));
 		}
 
-		private bool IsSqlServerDialect => Sfi.Dialect is MsSql2005Dialect;
+		private bool IsSqlServerDialect => Sfi.Dialect is MsSql2000Dialect && !(Sfi.ConnectionProvider.Driver is OdbcDriver);
 
 		#region Test Setup
 
