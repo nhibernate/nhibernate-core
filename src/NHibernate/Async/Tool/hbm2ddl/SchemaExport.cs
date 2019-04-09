@@ -71,6 +71,7 @@ namespace NHibernate.Tool.hbm2ddl
 			return CreateAsync(useStdOut, execute, null, cancellationToken);
 		}
 
+		//TODO 6.0: Make connection parameter optional: DbConnection connection = null
 		/// <summary>
 		/// Run the schema creation script
 		/// </summary>
@@ -83,7 +84,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// This is a convenience method that calls <see cref="ExecuteAsync(bool, bool, bool,CancellationToken)"/> and sets
 		/// the justDrop parameter to false.
 		/// </remarks>
-		public Task CreateAsync(bool useStdOut, bool execute, DbConnection connection = null, CancellationToken cancellationToken = default(CancellationToken))
+		public Task CreateAsync(bool useStdOut, bool execute, DbConnection connection, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -119,6 +120,7 @@ namespace NHibernate.Tool.hbm2ddl
 			return CreateAsync(scriptAction, execute, null, cancellationToken);
 		}
 
+		//TODO 6.0: Make connection parameter optional: DbConnection connection = null
 		/// <summary>
 		/// Run the schema creation script
 		/// </summary>
@@ -131,7 +133,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// This is a convenience method that calls <see cref="ExecuteAsync(bool, bool, bool,CancellationToken)"/> and sets
 		/// the justDrop parameter to false.
 		/// </remarks>
-		public Task CreateAsync(Action<string> scriptAction, bool execute, DbConnection connection = null, CancellationToken cancellationToken = default(CancellationToken))
+		public Task CreateAsync(Action<string> scriptAction, bool execute, DbConnection connection, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -160,6 +162,7 @@ namespace NHibernate.Tool.hbm2ddl
 			return CreateAsync(exportOutput, execute, null, cancellationToken);
 		}
 
+		//TODO 6.0: Make connection parameter optional: DbConnection connection = null
 		/// <summary>
 		/// Run the schema creation script
 		/// </summary>
@@ -172,7 +175,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// This is a convenience method that calls <see cref="ExecuteAsync(bool, bool, bool,CancellationToken)"/> and sets
 		/// the justDrop parameter to false.
 		/// </remarks>
-		public Task CreateAsync(TextWriter exportOutput, bool execute, DbConnection connection = null, CancellationToken cancellationToken = default(CancellationToken))
+		public Task CreateAsync(TextWriter exportOutput, bool execute, DbConnection connection, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -201,6 +204,7 @@ namespace NHibernate.Tool.hbm2ddl
 			return DropAsync(useStdOut, execute, null, cancellationToken);
 		}
 
+		//TODO 6.0: Make connection parameter optional: DbConnection connection = null
 		/// <summary>
 		/// Run the drop schema script
 		/// </summary>
@@ -213,7 +217,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// This is a convenience method that calls <see cref="ExecuteAsync(bool, bool, bool,CancellationToken)"/> and sets
 		/// the justDrop parameter to true.
 		/// </remarks>
-		public Task DropAsync(bool useStdOut, bool execute, DbConnection connection = null, CancellationToken cancellationToken = default(CancellationToken))
+		public Task DropAsync(bool useStdOut, bool execute, DbConnection connection, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -249,6 +253,7 @@ namespace NHibernate.Tool.hbm2ddl
 			return DropAsync(exportOutput, execute, null, cancellationToken);
 		}
 
+		//TODO 6.0: Make connection parameter optional: DbConnection connection = null
 		/// <summary>
 		/// Run the drop schema script
 		/// </summary>
@@ -261,7 +266,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// This is a convenience method that calls <see cref="ExecuteAsync(Action&lt;string&gt;, bool, bool, TextWriter,CancellationToken)"/> and sets
 		/// the justDrop parameter to true.
 		/// </remarks>
-		public Task DropAsync(TextWriter exportOutput, bool execute, DbConnection connection = null, CancellationToken cancellationToken = default(CancellationToken))
+		public Task DropAsync(TextWriter exportOutput, bool execute, DbConnection connection, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

@@ -111,6 +111,7 @@ namespace NHibernate.Tool.hbm2ddl
 			Create(useStdOut, execute, null);
 		}
 
+		//TODO 6.0: Make connection parameter optional: DbConnection connection = null
 		/// <summary>
 		/// Run the schema creation script
 		/// </summary>
@@ -122,7 +123,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool)"/> and sets
 		/// the justDrop parameter to false.
 		/// </remarks>
-		public void Create(bool useStdOut, bool execute, DbConnection connection = null)
+		public void Create(bool useStdOut, bool execute, DbConnection connection)
 		{
 			InitConnectionAndExecute(GetAction(useStdOut), execute, false, connection, null);
 		}
@@ -142,6 +143,7 @@ namespace NHibernate.Tool.hbm2ddl
 			Create(scriptAction, execute, null);
 		}
 
+		//TODO 6.0: Make connection parameter optional: DbConnection connection = null
 		/// <summary>
 		/// Run the schema creation script
 		/// </summary>
@@ -153,7 +155,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool)"/> and sets
 		/// the justDrop parameter to false.
 		/// </remarks>
-		public void Create(Action<string> scriptAction, bool execute, DbConnection connection = null)
+		public void Create(Action<string> scriptAction, bool execute, DbConnection connection)
 		{
 			InitConnectionAndExecute(scriptAction, execute, false, connection, null);
 		}
@@ -173,6 +175,7 @@ namespace NHibernate.Tool.hbm2ddl
 			Create(exportOutput, execute, null);
 		}
 
+		//TODO 6.0: Make connection parameter optional: DbConnection connection = null
 		/// <summary>
 		/// Run the schema creation script
 		/// </summary>
@@ -184,7 +187,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool)"/> and sets
 		/// the justDrop parameter to false.
 		/// </remarks>
-		public void Create(TextWriter exportOutput, bool execute, DbConnection connection = null)
+		public void Create(TextWriter exportOutput, bool execute, DbConnection connection)
 		{
 			InitConnectionAndExecute(null, execute, false, connection, exportOutput);
 		}
@@ -204,6 +207,7 @@ namespace NHibernate.Tool.hbm2ddl
 			Drop(useStdOut, execute, null);
 		}
 
+		//TODO 6.0: Make connection parameter optional: DbConnection connection = null
 		/// <summary>
 		/// Run the drop schema script
 		/// </summary>
@@ -215,7 +219,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool)"/> and sets
 		/// the justDrop parameter to true.
 		/// </remarks>
-		public void Drop(bool useStdOut, bool execute, DbConnection connection = null)
+		public void Drop(bool useStdOut, bool execute, DbConnection connection)
 		{
 			InitConnectionAndExecute(GetAction(useStdOut), execute, true, connection, null);
 		}
@@ -235,6 +239,7 @@ namespace NHibernate.Tool.hbm2ddl
 			Drop(exportOutput, execute, null);
 		}
 
+		//TODO 6.0: Make connection parameter optional: DbConnection connection = null
 		/// <summary>
 		/// Run the drop schema script
 		/// </summary>
@@ -246,7 +251,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// This is a convenience method that calls <see cref="Execute(Action&lt;string&gt;, bool, bool, TextWriter)"/> and sets
 		/// the justDrop parameter to true.
 		/// </remarks>
-		public void Drop(TextWriter exportOutput, bool execute, DbConnection connection = null)
+		public void Drop(TextWriter exportOutput, bool execute, DbConnection connection)
 		{
 			InitConnectionAndExecute(null, execute, true, connection, exportOutput);
 		}
