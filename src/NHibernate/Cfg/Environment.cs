@@ -281,6 +281,18 @@ namespace NHibernate.Cfg
 		public const string FirebirdDisableParameterCasting = "firebird.disable_parameter_casting";
 
 		/// <summary>
+		/// <para>
+		/// SQLite can store GUIDs in binary or text form, controlled by the BinaryGuid
+		/// connection string parameter (default is 'true'). The BinaryGuid setting will affect
+		/// how to cast GUID to string in SQL. NHibernate will attempt to detect this
+		/// setting automatically from the connection string, but if the connection
+		/// or connection string is being handled by the application instead of by NHibernate,
+		/// you can use the 'sqlite.binaryguid' NHibernate setting to override the behavior.
+		/// </para>
+		/// </summary>
+		public const string SqliteBinaryGuid = "sqlite.binaryguid";
+
+		/// <summary>
 		/// <para>Set whether tracking the session id or not. When <see langword="true"/>, each session 
 		/// will have an unique <see cref="Guid"/> that can be retrieved by <see cref="ISessionImplementor.SessionId"/>,
 		/// otherwise <see cref="ISessionImplementor.SessionId"/> will always be <see cref="Guid.Empty"/>. Session id 
