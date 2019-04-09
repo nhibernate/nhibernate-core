@@ -298,11 +298,10 @@ namespace NHibernate.Test
 
 		protected virtual void DropSchema()
 		{
-			using (var optionalConnection = OpenConnectionForSchemaExport())
-				DropSchema(OutputDdl, SchemaExport, Sfi, optionalConnection);
+			DropSchema(OutputDdl, SchemaExport, Sfi, OpenConnectionForSchemaExport);
 		}
 
-		public static void DropSchema(bool useStdOut, SchemaExport export, ISessionFactoryImplementor sfi, DbConnection optionalConnection = null)
+		public static void DropSchema(bool useStdOut, SchemaExport export, ISessionFactoryImplementor sfi, Func<DbConnection> getConnection = null)
 		{
 			if (sfi?.ConnectionProvider.Driver is FirebirdClientDriver fbDriver)
 			{
@@ -315,7 +314,8 @@ namespace NHibernate.Test
 				fbDriver.ClearPool(null);
 			}
 
-			export.Drop(useStdOut, true, optionalConnection);
+			using(var optionalConnection = getConnection?.Invoke())
+				export.Drop(useStdOut, true, optionalConnection);
 		}
 
 		/// <summary>
