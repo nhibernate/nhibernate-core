@@ -43,6 +43,7 @@ namespace NHibernate.Cache
 			_hashCode = GenerateHashCode();
 		}
 
+		//Since 5.3
 		[Obsolete("Use constructor with tenantIdentifier")]
 		public CacheKey(object id, IType type, string entityOrRoleName, ISessionFactoryImplementor factory)
 		{

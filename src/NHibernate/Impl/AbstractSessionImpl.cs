@@ -59,10 +59,12 @@ namespace NHibernate.Impl
 
 		internal AbstractSessionImpl() { }
 
-		private void ValidateTenantConfiguration(ISessionFactoryImplementor factory, TenantConfiguration tenantConfiguration)
+		private TenantConfiguration ValidateTenantConfiguration(ISessionFactoryImplementor factory, ISessionCreationOptions options)
 		{
 			if (factory.Settings.MultiTenancyStrategy == MultiTenancyStrategy.None)
-				return;
+				return null;
+
+			var tenantConfiguration = ReflectHelper.CastOrThrow<ISessionCreationOptionsWithMultiTenancy>(options, "multi-tenancy").TenantConfiguration;
 
 			if (string.IsNullOrEmpty(tenantConfiguration?.TenantIdentifier))
 			{
@@ -73,6 +75,8 @@ namespace NHibernate.Impl
 			{
 				throw new ArgumentException($"Tenant configuration with ConnectionAccess defined is required for {factory.Settings.MultiTenancyStrategy} multi-tenancy strategy.");
 			}
+
+			return tenantConfiguration;
 		}
 
 		protected internal AbstractSessionImpl(ISessionFactoryImplementor factory, ISessionCreationOptions options)
@@ -85,8 +89,8 @@ namespace NHibernate.Impl
 				_flushMode = options.InitialSessionFlushMode;
 				Interceptor = options.SessionInterceptor ?? EmptyInterceptor.Instance;
 
-				TenantConfiguration tenantConfiguration = options is ISessionCreationOptionsWithMultiTenancy multiTenancy ? multiTenancy.TenantConfiguration : null;
-				ValidateTenantConfiguration(factory, tenantConfiguration);
+				TenantConfiguration tenantConfiguration = ValidateTenantConfiguration(factory, options);
+
 				TenantIdentifier = tenantConfiguration?.TenantIdentifier;
 
 				if (options is ISharedSessionCreationOptions sharedOptions && sharedOptions.IsTransactionCoordinatorShared)

@@ -165,7 +165,7 @@ namespace NHibernate.Test.MultiTenancy
 
 		private TenantConfiguration GetTenantConfig(string tenantId)
 		{
-			return new TenantConfiguration(new TestTenantConnectionProvider(Sfi, tenantId));
+			return new TenantConfiguration(new TestTenantConnectionProvider(Sfi, tenantId, IsSqlServerDialect));
 		}
 
 		private bool IsSqlServerDialect => Sfi.Dialect is MsSql2000Dialect && !(Sfi.ConnectionProvider.Driver is OdbcDriver);

@@ -185,7 +185,7 @@ namespace NHibernate.Test.MultiTenancy
 
 		private TenantConfiguration GetTenantConfig(string tenantId)
 		{
-			return new TenantConfiguration(new TestTenantConnectionProvider(Sfi, tenantId));
+			return new TenantConfiguration(new TestTenantConnectionProvider(Sfi, tenantId, IsSqlServerDialect));
 		}
 
 		private bool IsSqlServerDialect => Sfi.Dialect is MsSql2000Dialect && !(Sfi.ConnectionProvider.Driver is OdbcDriver);
@@ -271,12 +271,12 @@ namespace NHibernate.Test.MultiTenancy
 	[Serializable]
 	public class TestTenantConnectionProvider : AbstractMultiTenantConnectionProvider
 	{
-		public TestTenantConnectionProvider(ISessionFactoryImplementor sfi, string tenantId)
+		public TestTenantConnectionProvider(ISessionFactoryImplementor sfi, string tenantId, bool isSqlServerDialect)
 		{
 			TenantIdentifier = tenantId;
 			SessionFactory = sfi;
 			TenantConnectionString = sfi.ConnectionProvider.GetConnectionString();
-			if (sfi.Dialect is MsSql2005Dialect)
+			if (isSqlServerDialect)
 			{
 				var stringBuilder = new SqlConnectionStringBuilder(sfi.ConnectionProvider.GetConnectionString());
 				stringBuilder.ApplicationName = tenantId;

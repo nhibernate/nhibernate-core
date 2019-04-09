@@ -12,7 +12,7 @@ namespace NHibernate.Connection
 		//ObtainConnection in hibernate
 		DbConnection GetConnection();
 
-		//Note: ReleaseConnection in hibernate
+		//ReleaseConnection in hibernate
 		void CloseConnection(DbConnection conn);
 
 		string ConnectionString { get; }
