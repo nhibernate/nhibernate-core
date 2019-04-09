@@ -9,6 +9,7 @@
 
 
 using System;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -185,6 +186,11 @@ namespace NHibernate.Test.MultiTenancy
 				});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+
+		protected override DbConnection OpenConnectionForSchemaExport()
+		{
+			return GetTenantConfig("defaultTenant").ConnectionAccess.GetConnection();
 		}
 
 		protected override ISession OpenSession()

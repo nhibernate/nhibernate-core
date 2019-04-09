@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Reflection;
 using log4net;
 using NHibernate.Cfg;
@@ -291,15 +292,17 @@ namespace NHibernate.Test
 
 		protected virtual void CreateSchema()
 		{
-			SchemaExport.Create(OutputDdl, true);
+			using (var optionalConnection = OpenConnectionForSchemaExport())
+				SchemaExport.Create(OutputDdl, true, optionalConnection);
 		}
 
 		protected virtual void DropSchema()
 		{
-			DropSchema(OutputDdl, SchemaExport, Sfi);
+			using (var optionalConnection = OpenConnectionForSchemaExport())
+				DropSchema(OutputDdl, SchemaExport, Sfi, optionalConnection);
 		}
 
-		public static void DropSchema(bool useStdOut, SchemaExport export, ISessionFactoryImplementor sfi)
+		public static void DropSchema(bool useStdOut, SchemaExport export, ISessionFactoryImplementor sfi, DbConnection optionalConnection = null)
 		{
 			if (sfi?.ConnectionProvider.Driver is FirebirdClientDriver fbDriver)
 			{
@@ -312,7 +315,15 @@ namespace NHibernate.Test
 				fbDriver.ClearPool(null);
 			}
 
-			export.Drop(useStdOut, true);
+			export.Drop(useStdOut, true, optionalConnection);
+		}
+
+		/// <summary>
+		/// Specific connection is required only for Database multi-tenancy. In other cases can be null 
+		/// </summary>
+		protected virtual DbConnection OpenConnectionForSchemaExport()
+		{
+			return null;
 		}
 
 		protected virtual DebugSessionFactory BuildSessionFactory()
