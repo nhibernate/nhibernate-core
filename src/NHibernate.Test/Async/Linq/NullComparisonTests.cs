@@ -155,6 +155,12 @@ namespace NHibernate.Test.Linq
 
 			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.CompanyName != "test"), Does.Not.Contain("is null").IgnoreCase));
 			await (ExpectAsync(session.Query<OrderLine>().Where(o => "test" != o.Order.Customer.CompanyName), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.CreatedBy.CreatedBy.Name != "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => "test" != o.CreatedBy.CreatedBy.CreatedBy.Name), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.CreatedBy.Id != 5), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => 5 != o.CreatedBy.CreatedBy.Id), Does.Not.Contain("is null").IgnoreCase));
 		}
 
 		[Test]
@@ -306,12 +312,21 @@ namespace NHibernate.Test.Linq
 
 			await (ExpectAsync(session.Query<Customer>().Where(o => o.CustomerId == null), Does.Contain("is null").IgnoreCase));
 			await (ExpectAsync(session.Query<Customer>().Where(o => null == o.CustomerId), Does.Contain("is null").IgnoreCase));
+
 			await (ExpectAsync(session.Query<Customer>().Where(o => o.CustomerId == "test"), Does.Not.Contain("is null").IgnoreCase));
 			await (ExpectAsync(session.Query<Customer>().Where(o => "test" == o.CustomerId), Does.Not.Contain("is null").IgnoreCase));
+
 			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.CustomerId == "test"), Does.Not.Contain("is null").IgnoreCase));
 			await (ExpectAsync(session.Query<OrderLine>().Where(o => "test" == o.Order.Customer.CustomerId), Does.Not.Contain("is null").IgnoreCase));
+
 			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.CompanyName == "test"), Does.Not.Contain("is null").IgnoreCase));
 			await (ExpectAsync(session.Query<OrderLine>().Where(o => "test" == o.Order.Customer.CompanyName), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.CreatedBy.CreatedBy.Name == "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => "test" == o.CreatedBy.CreatedBy.CreatedBy.Name), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.CreatedBy.Id == 5), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => 5 == o.CreatedBy.CreatedBy.Id), Does.Not.Contain("is null").IgnoreCase));
 		}
 
 		[Test]
@@ -416,6 +431,18 @@ namespace NHibernate.Test.Linq
 
 			await (ExpectAsync(session.Query<User>().Where(o => "test" == o.Component.OtherComponent.OtherProperty1), Does.Not.Contain("is null").IgnoreCase));
 			await (ExpectAsync(session.Query<User>().Where(o => o.Component.OtherComponent.OtherProperty1 == "test"), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.CreatedBy.Name == "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => "test" == o.CreatedBy.ModifiedBy.CreatedBy.Name), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.CreatedBy.Component.OtherComponent.OtherProperty1 == "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => "test" == o.CreatedBy.CreatedBy.Component.OtherComponent.OtherProperty1), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.ModifiedBy.CreatedBy.Id == 5), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => 5 == o.ModifiedBy.CreatedBy.Id), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.Id == 5), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => 5 == o.CreatedBy.ModifiedBy.Id), Does.Not.Contain("is null").IgnoreCase));
 		}
 
 		[Test]
@@ -492,6 +519,18 @@ namespace NHibernate.Test.Linq
 
 			await (ExpectAsync(session.Query<User>().Where(o => "test" != o.Component.OtherComponent.OtherProperty1), Does.Contain("is null").IgnoreCase));
 			await (ExpectAsync(session.Query<User>().Where(o => o.Component.OtherComponent.OtherProperty1 != "test"), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.CreatedBy.Name != "test"), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => "test" != o.CreatedBy.ModifiedBy.CreatedBy.Name), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.CreatedBy.Component.OtherComponent.OtherProperty1 != "test"), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => "test" != o.CreatedBy.CreatedBy.Component.OtherComponent.OtherProperty1), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.ModifiedBy.CreatedBy.Id != 5), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => 5 != o.ModifiedBy.CreatedBy.Id), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.Id != 5), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => 5 != o.CreatedBy.ModifiedBy.Id), Does.Contain("is null").IgnoreCase));
 		}
 
 		[Test]

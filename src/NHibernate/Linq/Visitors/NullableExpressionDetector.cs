@@ -170,7 +170,7 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			var persister = _sessionFactory.GetEntityPersister(entityName);
-			if (persister.IsIdentifierMember(memberPath))
+			if (persister.EntityMetamodel.GetIdentifierPropertyType(memberPath) != null)
 			{
 				return false; // Identifier is always not null
 			}
