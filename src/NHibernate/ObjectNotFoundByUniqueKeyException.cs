@@ -1,4 +1,6 @@
 using System;
+using System.Runtime.Serialization;
+using System.Security;
 using NHibernate.Impl;
 
 namespace NHibernate
@@ -13,7 +15,7 @@ namespace NHibernate
 		/// Property name
 		/// </summary>
 		public string PropertyName { get; }
-		
+
 		/// <summary>
 		/// Key
 		/// </summary>
@@ -31,5 +33,24 @@ namespace NHibernate
 			Key = key;
 			PropertyName = propertyName;
 		}
+
+		#region Serialization
+
+		protected ObjectNotFoundByUniqueKeyException(SerializationInfo info, StreamingContext context)
+			: base(info, context)
+		{
+			Key = info.GetValue(nameof(Key), typeof(object));
+			PropertyName = info.GetString(nameof(PropertyName));
+		}
+
+		[SecurityCritical]
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+			info.AddValue(nameof(Key), Key);
+			info.AddValue(nameof(PropertyName), PropertyName);
+		}
+
+		#endregion Serialization
 	}
 }

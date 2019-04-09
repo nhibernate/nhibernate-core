@@ -86,7 +86,7 @@ namespace NHibernate.Impl
 				throw new ObjectNotFoundException(id, entityName);
 			}
 
-			public void HandleEntityNotFound(string entityName,string propertyName, object key)
+			public void HandleEntityNotFound(string entityName, string propertyName, object key)
 			{
 				throw new ObjectNotFoundByUniqueKeyException(entityName, propertyName, key);
 			}
