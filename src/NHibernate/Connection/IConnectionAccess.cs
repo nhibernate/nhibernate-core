@@ -6,6 +6,7 @@ namespace NHibernate.Connection
 	/// <summary>
 	/// Provides centralized access to connections.  Centralized to hide the complexity of accounting for contextual
 	/// (multi-tenant) versus non-contextual access.
+	/// Implementation must be serializable
 	/// </summary>
 	public partial interface IConnectionAccess
 	{

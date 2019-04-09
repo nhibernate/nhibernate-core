@@ -12,9 +12,15 @@ namespace NHibernate.MultiTenancy
 	[Serializable]
 	public abstract partial class AbstractMultiTenantConnectionProvider : IMultiTenantConnectionProvider
 	{
+		/// <summary>
+		/// Tenant connection string
+		/// </summary>
 		protected abstract string TenantConnectionString { get; }
+
+		/// <inheritdoc />
 		public abstract string TenantIdentifier { get; }
 
+		/// <inheritdoc />
 		public IConnectionAccess GetConnectionAccess()
 		{
 			//TODO 6.0: Remove check
