@@ -67,15 +67,17 @@ namespace NHibernate.Test.Hql
 			}
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsAggregateInSubSelect;
+		}
+
 		[TestCase("SUM", 4)]
 		[TestCase("MIN", 2)]
 		[TestCase("MAX", 2)]
 		[TestCase("AVG", 2d)]
 		public void TestAggregateFunction(string functionName, object result)
 		{
-			if (!TestDialect.SupportsAggregateInSubSelect)
-				Assert.Ignore("Dialect does not support an aggregate in a sub-select");
-
 			var query = "SELECT " +
 			            "	d.Id, " +
 						$"	{functionName}(" +
