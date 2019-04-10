@@ -257,6 +257,30 @@ namespace NHibernate.Hql.Ast
 					throw new NotSupportedException(string.Format("Don't currently support idents of type {0}", type.Name));
 			}
 		}
+
+		internal static bool SupportsType(System.Type type)
+		{
+			type = type.UnwrapIfNullable();
+			switch (System.Type.GetTypeCode(type))
+			{
+				case TypeCode.Boolean:
+				case TypeCode.Int16:
+				case TypeCode.Int32:
+				case TypeCode.Int64:
+				case TypeCode.Decimal:
+				case TypeCode.Single:
+				case TypeCode.DateTime:
+				case TypeCode.String:
+				case TypeCode.Double:
+					return true;
+				default:
+					return new[]
+					{
+						typeof(Guid),
+						typeof(DateTimeOffset)
+					}.Contains(type);
+			}
+		}
 	}
 
 	public class HqlRange : HqlStatement

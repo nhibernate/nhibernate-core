@@ -11,7 +11,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NHibernate.DomainModel.NHSpecific;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Type;
 using NUnit.Framework;
 using NHibernate.Linq;
 
@@ -451,6 +453,23 @@ namespace NHibernate.Test.Linq
 		{
 			var fatherIsKnown = await (db.Animals.Select(a => new { a.SerialNumber, Superior = a.Father.SerialNumber, FatherIsKnown = a.Father.SerialNumber == "5678" ? (object)true : (object)false }).ToListAsync());
 			Assert.That(fatherIsKnown, Has.Exactly(1).With.Property("FatherIsKnown").True);
+		}
+
+		[Test]
+		public async Task CanCastToDerivedTypeAsync()
+		{
+			var dogs = await (db.Animals
+			                      .Where(a => ((Dog) a).Pregnant)
+			                      .Select(a => new {a.SerialNumber})
+			                      .ToListAsync());
+			Assert.That(dogs, Has.Exactly(1).With.Property("SerialNumber").Not.Null);
+		}
+
+		[Test]
+		public async Task CanCastToCustomRegisteredTypeAsync()
+		{
+			TypeFactory.RegisterType(typeof(NullableInt32), new NullableInt32Type(), Enumerable.Empty<string>());
+			Assert.That(await (db.Users.Where(o => (NullableInt32) o.Id == 1).ToListAsync()), Has.Count.EqualTo(1));
 		}
 
 		public class Wrapper<T>

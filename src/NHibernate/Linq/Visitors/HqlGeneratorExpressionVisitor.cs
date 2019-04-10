@@ -486,7 +486,7 @@ possible solutions:
 					return IsCastRequired(expression.Operand, expression.Type, out var existType)
 						? _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), expression.Type)
 						// Make a transparent cast when an IType exists, so that it can be used to retrieve the value from the data reader
-						: existType
+						: existType && HqlIdent.SupportsType(expression.Type)
 							? _hqlTreeBuilder.TransparentCast(VisitExpression(expression.Operand).AsExpression(), expression.Type)
 							: VisitExpression(expression.Operand);
 			}
