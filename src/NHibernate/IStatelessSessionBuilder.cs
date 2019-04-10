@@ -13,7 +13,7 @@ namespace NHibernate
 		/// Provides tenant configuration required for multi-tenancy
 		/// <seealso cref="Cfg.Environment.MultiTenancy"/>
 		/// </summary>
-		public static T TenantConfiguration<T>(this T builder, TenantConfiguration tenantConfig) where T: IStatelessSessionBuilder
+		public static IStatelessSessionBuilder TenantConfiguration(this IStatelessSessionBuilder builder, TenantConfiguration tenantConfig)
 		{
 			ReflectHelper.CastOrThrow<ISessionCreationOptionsWithMultiTenancy>(builder, "multi tenancy").TenantConfiguration = tenantConfig;
 			return builder;
