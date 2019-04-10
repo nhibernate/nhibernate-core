@@ -9,7 +9,6 @@ using NHibernate.AdoNet;
 using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
-using NHibernate.Type;
 
 namespace NHibernate.Driver
 {
@@ -88,7 +87,7 @@ namespace NHibernate.Driver
 			return new SqlConnection();
 		}
 
-		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
+		public override void AddNotificationHandler(DbConnection con, Delegate handler)
 		{
 			//NH-3724
 			(con as SqlConnection).InfoMessage += (SqlInfoMessageEventHandler) handler;

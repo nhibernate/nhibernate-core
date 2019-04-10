@@ -42,7 +42,7 @@ namespace NHibernate.Driver
 		{
 		}
 
-		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
+		public override void AddNotificationHandler(DbConnection con, Delegate handler)
 		{
 			//NH-3724
 			con.GetType().GetEvent("Notification").AddEventHandler(con, handler);

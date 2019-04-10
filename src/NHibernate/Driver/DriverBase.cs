@@ -21,7 +21,7 @@ namespace NHibernate.Driver
 		private int commandTimeout;
 		private bool prepareSql;
 
-		public virtual void AddNotificationHandler(IDbConnection con, Delegate handler)
+		public virtual void AddNotificationHandler(DbConnection con, Delegate handler)
 		{
 			//NH-3724
 			if (handler != null)

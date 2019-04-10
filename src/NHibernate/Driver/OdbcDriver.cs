@@ -50,7 +50,7 @@ namespace NHibernate.Driver
 			return new System.Data.Odbc.OdbcConnection();
 		}
 
-		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
+		public override void AddNotificationHandler(DbConnection con, Delegate handler)
 		{
 			//NH-3724
 			(con as System.Data.Odbc.OdbcConnection).InfoMessage += (System.Data.Odbc.OdbcInfoMessageEventHandler) handler;
