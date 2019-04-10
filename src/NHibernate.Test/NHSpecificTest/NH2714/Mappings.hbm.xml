@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH2714">
+    <class name="Information" table="info" lazy="false">
+        <id name="Id" column="id">
+            <generator class="native" />
+        </id>
+        <properties name="pref">
+            <property name="Name" column="aname" />
+            <property name="ExtraId" column="extraid" />
+        </properties>
+        <set name="Items" lazy="true">
+            <key property-ref="pref">
+                <column name="informationName" />
+                <column name="informationExtraId" />
+            </key>
+            <one-to-many class="Item" />
+        </set>
+    </class>
+
+    <class name="Item" table="itens">
+        <id name="Id" column="id">
+            <generator class="assigned" />
+        </id>
+        <property name="Name" column="aname" />
+        <property name="ExtraId" column="aExtraId" />
+    </class>
+</hibernate-mapping>
