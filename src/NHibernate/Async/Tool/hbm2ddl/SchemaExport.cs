@@ -47,7 +47,7 @@ namespace NHibernate.Tool.hbm2ddl
 			dropSQL = cfg.GenerateDropSchemaScript(dialect);
 			createSQL = cfg.GenerateSchemaCreationScript(dialect);
 			formatter = (PropertiesHelper.GetBoolean(Environment.FormatSql, configProperties, true) ? FormatStyle.Ddl : FormatStyle.None).Formatter;
-			_requireTenantConnection = PropertiesHelper.GetEnum(Environment.MultiTenant, configProperties, MultiTenancyStrategy.None) == MultiTenancyStrategy.Database;
+			_requireTenantConnection = PropertiesHelper.GetEnum(Environment.MultiTenancy, configProperties, MultiTenancyStrategy.None) == MultiTenancyStrategy.Database;
 			wasInitialized = true;
 		}
 

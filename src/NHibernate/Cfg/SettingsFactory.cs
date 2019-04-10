@@ -326,7 +326,7 @@ namespace NHibernate.Cfg
 			log.Debug("Track session id: " + EnabledDisabled(trackSessionId));
 			settings.TrackSessionId = trackSessionId;
 
-			var multiTenancyStrategy = PropertiesHelper.GetEnum(Environment.MultiTenant, properties, MultiTenancyStrategy.None);
+			var multiTenancyStrategy = PropertiesHelper.GetEnum(Environment.MultiTenancy, properties, MultiTenancyStrategy.None);
 			if(multiTenancyStrategy != MultiTenancyStrategy.None)
 				log.Debug("multi-tenancy strategy : " + multiTenancyStrategy);
 			settings.MultiTenancyStrategy = multiTenancyStrategy;

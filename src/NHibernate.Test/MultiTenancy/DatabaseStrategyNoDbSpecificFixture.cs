@@ -25,8 +25,8 @@ namespace NHibernate.Test.MultiTenancy
 
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.Properties[Cfg.Environment.MultiTenant] = MultiTenancyStrategy.Database.ToString();
-			configuration.Properties[Cfg.Environment.GenerateStatistics] = true.ToString();
+			configuration.Properties[Cfg.Environment.MultiTenancy] = MultiTenancyStrategy.Database.ToString();
+			configuration.Properties[Cfg.Environment.GenerateStatistics] = "true";
 			base.Configure(configuration);
 		}
 
@@ -37,11 +37,11 @@ namespace NHibernate.Test.MultiTenancy
 
 			Assert.That(() => sessionBuilder.OpenSession(), Throws.ArgumentException);
 		}
-		
+
 		[Test]
 		public void ShouldThrowWithNoConnectionAccess()
 		{
-			var sessionBuilder = Sfi.WithOptions().TenantConfiguration(new TenantConfiguration(new MockConnectionProvider("tenant1", null)));	
+			var sessionBuilder = Sfi.WithOptions().TenantConfiguration(new TenantConfiguration(new MockConnectionProvider("tenant1", null)));
 
 			Assert.That(() => sessionBuilder.OpenSession(), Throws.ArgumentException);
 		}
@@ -58,10 +58,85 @@ namespace NHibernate.Test.MultiTenancy
 				Assert.That(session1.Connection.ConnectionString, Is.Not.EqualTo(session2.Connection.ConnectionString));
 				ValidateSqlServerConnectionAppName(session1, "tenant1");
 				ValidateSqlServerConnectionAppName(session2, "tenant2");
+				Assert.That(GetTenantId(session1), Is.EqualTo("tenant1"));
+				Assert.That(GetTenantId(session2), Is.EqualTo("tenant2"));
+			}
+		}
+
+		[Test]
+		public void StatelessSessionShouldThrowWithNoTenantIdentifier()
+		{
+			var sessionBuilder = Sfi.WithStatelessOptions().TenantConfiguration(new TenantConfiguration(new MockConnectionProvider(null, null)));
+
+			Assert.That(() => sessionBuilder.OpenStatelessSession(), Throws.ArgumentException);
+		}
+
+		[Test]
+		public void StatelessSessionShouldThrowWithNoConnectionAccess()
+		{
+			var sessionBuilder = Sfi.WithStatelessOptions().TenantConfiguration(new TenantConfiguration(new MockConnectionProvider("tenant1", null)));
+			
+			Assert.That(() => sessionBuilder.OpenStatelessSession(), Throws.ArgumentException);
+		}
+
+		[Test]
+		public void StatelessSessionDifferentConnectionStringForDifferentTenants()
+		{
+			if (!IsSqlServerDialect)
+				Assert.Ignore("MSSqlServer specific test");
+
+			using(var session1 = OpenTenantStatelessSession("tenant1"))
+			using (var session2 = OpenTenantStatelessSession("tenant2"))
+			{
+				Assert.That(session1.Connection.ConnectionString, Is.Not.EqualTo(session2.Connection.ConnectionString));
+				ValidateSqlServerConnectionAppName(session1, "tenant1");
+				ValidateSqlServerConnectionAppName(session2, "tenant2");
+				Assert.That(GetTenantId(session1), Is.EqualTo("tenant1"));
+				Assert.That(GetTenantId(session2), Is.EqualTo("tenant2"));
+			}
+		}
+
+		[Test]
+		public void SharedSessionSameConnectionString()
+		{
+			using (var session1 = OpenTenantSession("tenant1"))
+			using (var session2 = session1.SessionWithOptions().OpenSession())
+			{
+				Assert.That(session1.Connection, Is.Not.EqualTo(session2.Connection));
+				Assert.That(session1.Connection.ConnectionString, Is.EqualTo(session2.Connection.ConnectionString));
+				Assert.That(session2.GetSessionImplementation().GetTenantIdentifier(), Is.EqualTo("tenant1"));
+			}
+		}
+
+		[Test]
+		public void SharedSessionSameConnection()
+		{
+			using (var session1 = OpenTenantSession("tenant1"))
+			using (var session2 = session1.SessionWithOptions().Connection().OpenSession())
+			{
+				Assert.That(session1.Connection, Is.EqualTo(session2.Connection));
+				Assert.That(GetTenantId(session2), Is.EqualTo("tenant1"));
+			}
+		}
+
+		[Test]
+		public void SharedStatelessSessionSameConnectionString()
+		{
+			using (var session1 = OpenTenantSession("tenant1"))
+			using (var session2 = session1.StatelessSessionWithOptions().OpenStatelessSession())
+			{
+				Assert.That(session1.Connection.ConnectionString, Is.EqualTo(session2.Connection.ConnectionString));
+				Assert.That(GetTenantId(session2), Is.EqualTo("tenant1"));
 			}
 		}
 
 		private static void ValidateSqlServerConnectionAppName(ISession s, string tenantId)
+		{
+			var builder = new SqlConnectionStringBuilder(s.Connection.ConnectionString);
+			Assert.That(builder.ApplicationName, Is.EqualTo(tenantId));
+		}
+
+		private static void ValidateSqlServerConnectionAppName(IStatelessSession s, string tenantId)
 		{
 			var builder = new SqlConnectionStringBuilder(s.Connection.ConnectionString);
 			Assert.That(builder.ApplicationName, Is.EqualTo(tenantId));
@@ -138,7 +213,7 @@ namespace NHibernate.Test.MultiTenancy
 			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0));
 		}
-		
+
 		[Test]
 		public void TenantSessionIsSerializableAndCanBeReconnected()
 		{
@@ -154,21 +229,38 @@ namespace NHibernate.Test.MultiTenancy
 			using (deserializedSession)
 			{
 				deserializedSession.Reconnect();
+
+				//Expect session cache hit
 				var entity = deserializedSession.Get<Entity>(_id);
 				if (IsSqlServerDialect)
 					ValidateSqlServerConnectionAppName(deserializedSession, "tenant1");
+				deserializedSession.Clear();
+
+				//Expect second level cache hit
+				deserializedSession.Get<Entity>(_id);
+				Assert.That(GetTenantId(deserializedSession), Is.EqualTo("tenant1"));
 			}
 
 			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0));
+			Assert.That(Sfi.Statistics.SecondLevelCacheHitCount, Is.EqualTo(1));
 		}
 
-		private ISession SpoofSerialization(ISession session)
+		private static string GetTenantId(ISession deserializedSession)
+		{
+			return deserializedSession.GetSessionImplementation().GetTenantIdentifier();
+		}
+		
+		private static string GetTenantId(IStatelessSession deserializedSession)
+		{
+			return deserializedSession.GetSessionImplementation().GetTenantIdentifier();
+		}
+
+		private T SpoofSerialization<T>(T session)
 		{
 			var formatter = new BinaryFormatter
 			{
 #if !NETFX
-				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()
 #endif
 			};
 			MemoryStream stream = new MemoryStream();
@@ -176,12 +268,17 @@ namespace NHibernate.Test.MultiTenancy
 
 			stream.Position = 0;
 
-			return (ISession) formatter.Deserialize(stream);
+			return (T) formatter.Deserialize(stream);
 		}
 
 		private ISession OpenTenantSession(string tenantId)
 		{
 			return Sfi.WithOptions().TenantConfiguration(GetTenantConfig(tenantId)).OpenSession();
+		}
+		
+		private IStatelessSession OpenTenantStatelessSession(string tenantId)
+		{
+			return Sfi.WithStatelessOptions().TenantConfiguration(GetTenantConfig(tenantId)).OpenStatelessSession();
 		}
 
 		private TenantConfiguration GetTenantConfig(string tenantId)

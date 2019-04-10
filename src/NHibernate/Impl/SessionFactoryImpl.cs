@@ -1539,9 +1539,12 @@ namespace NHibernate.Impl
 				return _this;
 			}
 
-			public TenantConfiguration TenantConfiguration { get;
+			public TenantConfiguration TenantConfiguration
+			{
+				get;
 				//TODO 6.0: Make protected
-				set; }
+				set;
+			}
 		}
 
 		// NH specific: implementing return type covariance with interface is a mess in .Net.
@@ -1553,7 +1556,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		internal class StatelessSessionBuilderImpl<T> : IStatelessSessionBuilder, ISessionCreationOptions where T : IStatelessSessionBuilder
+		internal class StatelessSessionBuilderImpl<T> : IStatelessSessionBuilder, ISessionCreationOptionsWithMultiTenancy, ISessionCreationOptions where T : IStatelessSessionBuilder
 		{
 			// NH specific: implementing return type covariance with interface is a mess in .Net.
 			private T _this;
@@ -1594,6 +1597,13 @@ namespace NHibernate.Impl
 			public IInterceptor SessionInterceptor => EmptyInterceptor.Instance;
 
 			public ConnectionReleaseMode SessionConnectionReleaseMode => ConnectionReleaseMode.AfterTransaction;
+
+			public TenantConfiguration TenantConfiguration
+			{
+				get;
+				//TODO 6.0: Make protected
+				set;
+			}
 		}
 	}
 }

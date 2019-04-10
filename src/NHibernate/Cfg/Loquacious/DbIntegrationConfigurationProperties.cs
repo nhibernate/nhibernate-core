@@ -153,6 +153,11 @@ namespace NHibernate.Cfg.Loquacious
 			configuration.SetProperty(Environment.PreTransformerRegistrar, typeof(TRegistrar).AssemblyQualifiedName);
 		}
 
+		public MultiTenancy.MultiTenancyStrategy MultiTenancy
+		{
+			set { configuration.SetProperty(Environment.MultiTenancy,  value.ToString()); }
+		}
+
 		#endregion
 	}
 }

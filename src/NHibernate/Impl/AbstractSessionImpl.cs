@@ -89,9 +89,7 @@ namespace NHibernate.Impl
 				_flushMode = options.InitialSessionFlushMode;
 				Interceptor = options.SessionInterceptor ?? EmptyInterceptor.Instance;
 
-				TenantConfiguration tenantConfiguration = ValidateTenantConfiguration(factory, options);
-
-				TenantIdentifier = tenantConfiguration?.TenantIdentifier;
+				_tenantConfiguration = ValidateTenantConfiguration(factory, options);
 
 				if (options is ISharedSessionCreationOptions sharedOptions && sharedOptions.IsTransactionCoordinatorShared)
 				{
@@ -110,7 +108,7 @@ namespace NHibernate.Impl
 						options.UserSuppliedConnection,
 						options.SessionConnectionReleaseMode,
 						Interceptor,
-						tenantConfiguration?.ConnectionAccess ?? new NonContextualConnectionAccess(_factory),
+						_tenantConfiguration?.ConnectionAccess ?? new NonContextualConnectionAccess(_factory),
 						options.ShouldAutoJoinTransaction);
 				}
 			}
@@ -415,6 +413,7 @@ namespace NHibernate.Impl
 		}
 
 		private ProcessHelper _processHelper = new ProcessHelper();
+		private TenantConfiguration _tenantConfiguration;
 
 		[Serializable]
 		private sealed class ProcessHelper : IDisposable
@@ -492,7 +491,13 @@ namespace NHibernate.Impl
 		/// <inheritdoc />
 		public virtual bool TransactionInProgress => ConnectionManager.IsInActiveTransaction;
 
-		public string TenantIdentifier { get; }
+		protected internal TenantConfiguration TenantConfiguration
+		{
+			get => _tenantConfiguration;
+			protected set => _tenantConfiguration = value;
+		}
+
+		public string TenantIdentifier => _tenantConfiguration?.TenantIdentifier;
 
 		#endregion
 

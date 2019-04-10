@@ -36,12 +36,18 @@ namespace NHibernate.Test.MultiTenancy
 
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.Properties[Cfg.Environment.MultiTenant] = MultiTenancyStrategy.Database.ToString();
-			configuration.Properties[Cfg.Environment.GenerateStatistics] = true.ToString();
+			configuration.Properties[Cfg.Environment.MultiTenancy] = MultiTenancyStrategy.Database.ToString();
+			configuration.Properties[Cfg.Environment.GenerateStatistics] = "true";
 			base.Configure(configuration);
 		}
 
 		private static void ValidateSqlServerConnectionAppName(ISession s, string tenantId)
+		{
+			var builder = new SqlConnectionStringBuilder(s.Connection.ConnectionString);
+			Assert.That(builder.ApplicationName, Is.EqualTo(tenantId));
+		}
+
+		private static void ValidateSqlServerConnectionAppName(IStatelessSession s, string tenantId)
 		{
 			var builder = new SqlConnectionStringBuilder(s.Connection.ConnectionString);
 			Assert.That(builder.ApplicationName, Is.EqualTo(tenantId));
@@ -118,7 +124,7 @@ namespace NHibernate.Test.MultiTenancy
 			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0));
 		}
-		
+
 		[Test]
 		public async Task TenantSessionIsSerializableAndCanBeReconnectedAsync()
 		{
@@ -134,21 +140,38 @@ namespace NHibernate.Test.MultiTenancy
 			using (deserializedSession)
 			{
 				deserializedSession.Reconnect();
+
+				//Expect session cache hit
 				var entity = await (deserializedSession.GetAsync<Entity>(_id));
 				if (IsSqlServerDialect)
 					ValidateSqlServerConnectionAppName(deserializedSession, "tenant1");
+				deserializedSession.Clear();
+
+				//Expect second level cache hit
+				await (deserializedSession.GetAsync<Entity>(_id));
+				Assert.That(GetTenantId(deserializedSession), Is.EqualTo("tenant1"));
 			}
 
 			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0));
+			Assert.That(Sfi.Statistics.SecondLevelCacheHitCount, Is.EqualTo(1));
 		}
 
-		private ISession SpoofSerialization(ISession session)
+		private static string GetTenantId(ISession deserializedSession)
+		{
+			return deserializedSession.GetSessionImplementation().GetTenantIdentifier();
+		}
+		
+		private static string GetTenantId(IStatelessSession deserializedSession)
+		{
+			return deserializedSession.GetSessionImplementation().GetTenantIdentifier();
+		}
+
+		private T SpoofSerialization<T>(T session)
 		{
 			var formatter = new BinaryFormatter
 			{
 #if !NETFX
-				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()
 #endif
 			};
 			MemoryStream stream = new MemoryStream();
@@ -156,12 +179,17 @@ namespace NHibernate.Test.MultiTenancy
 
 			stream.Position = 0;
 
-			return (ISession) formatter.Deserialize(stream);
+			return (T) formatter.Deserialize(stream);
 		}
 
 		private ISession OpenTenantSession(string tenantId)
 		{
 			return Sfi.WithOptions().TenantConfiguration(GetTenantConfig(tenantId)).OpenSession();
+		}
+		
+		private IStatelessSession OpenTenantStatelessSession(string tenantId)
+		{
+			return Sfi.WithStatelessOptions().TenantConfiguration(GetTenantConfig(tenantId)).OpenStatelessSession();
 		}
 
 		private TenantConfiguration GetTenantConfig(string tenantId)

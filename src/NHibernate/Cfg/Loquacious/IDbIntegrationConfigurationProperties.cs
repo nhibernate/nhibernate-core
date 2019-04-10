@@ -44,5 +44,8 @@ namespace NHibernate.Cfg.Loquacious
 		SchemaAutoAction SchemaAction { set; }
 
 		void QueryModelRewriterFactory<TFactory>() where TFactory : IQueryModelRewriterFactory;
+
+		//TODO 6.0: Uncomment. Or even better consider dropping all configuration interfaces and use classes directly 
+		//MultiTenancy.MultiTenancyStrategy MultiTenancy { set; }
 	}
 }

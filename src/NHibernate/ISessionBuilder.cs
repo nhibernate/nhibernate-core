@@ -9,6 +9,10 @@ namespace NHibernate
 	//TODO 6.0: Merge into ISessionBuilder<T>
 	public static class SessionBuilderExtensions
 	{
+		/// <summary>
+		/// Provides tenant configuration required for multi-tenancy
+		/// <seealso cref="Cfg.Environment.MultiTenancy"/>
+		/// </summary>
 		public static T TenantConfiguration<T>(this T builder, TenantConfiguration tenantConfig) where T: ISessionBuilder
 		{
 			ReflectHelper.CastOrThrow<ISessionCreationOptionsWithMultiTenancy>(builder, "multi tenancy").TenantConfiguration = tenantConfig;

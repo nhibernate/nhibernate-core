@@ -401,7 +401,9 @@ namespace NHibernate.Test
 				(ISessionCreationOptions)sessionBuilder;
 		}
 
-		internal class SessionBuilder : ISessionBuilder, ISessionCreationOptionsWithMultiTenancy
+		internal class SessionBuilder : ISessionBuilder,
+			//TODO 6.0: Remove interface with implementation (will be replaced TenantConfiguration ISessionBuilder method)
+			ISessionCreationOptionsWithMultiTenancy
 		{
 			private readonly ISessionBuilder _actualBuilder;
 			private readonly DebugSessionFactory _debugFactory;
@@ -474,7 +476,9 @@ namespace NHibernate.Test
 			}
 		}
 
-		internal class StatelessSessionBuilder : IStatelessSessionBuilder
+		internal class StatelessSessionBuilder : IStatelessSessionBuilder,
+			//TODO 6.0: Remove interface with implementation (will be replaced TenantConfiguration IStatelessSessionBuilder method)
+			ISessionCreationOptionsWithMultiTenancy
 		{
 			private readonly IStatelessSessionBuilder _actualBuilder;
 			private readonly DebugSessionFactory _debugFactory;
@@ -506,6 +510,12 @@ namespace NHibernate.Test
 			{
 				_actualBuilder.AutoJoinTransaction(autoJoinTransaction);
 				return this;
+			}
+
+			TenantConfiguration ISessionCreationOptionsWithMultiTenancy.TenantConfiguration
+			{
+				get => (_actualBuilder as ISessionCreationOptionsWithMultiTenancy)?.TenantConfiguration;
+				set => _actualBuilder.TenantConfiguration(value);
 			}
 
 			#endregion

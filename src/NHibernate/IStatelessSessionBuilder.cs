@@ -1,8 +1,25 @@
 using System.Data.Common;
 using NHibernate.Connection;
+using NHibernate.Impl;
+using NHibernate.MultiTenancy;
+using NHibernate.Util;
 
 namespace NHibernate
 {
+	//TODO 6.0: Merge into IStatelessSessionBuilder
+	public static class StatelessSessionBuilderExtensions
+	{
+		/// <summary>
+		/// Provides tenant configuration required for multi-tenancy
+		/// <seealso cref="Cfg.Environment.MultiTenancy"/>
+		/// </summary>
+		public static T TenantConfiguration<T>(this T builder, TenantConfiguration tenantConfig) where T: IStatelessSessionBuilder
+		{
+			ReflectHelper.CastOrThrow<ISessionCreationOptionsWithMultiTenancy>(builder, "multi tenancy").TenantConfiguration = tenantConfig;
+			return builder;
+		}
+	}
+
 	// NH different implementation: will not try to support covariant return type for specializations
 	// until it is needed.
 	/// <summary>
@@ -38,7 +55,5 @@ namespace NHibernate
 		/// enlisted in ambient transaction.</param>
 		/// <returns><see langword="this" />, for method chaining.</returns>
 		IStatelessSessionBuilder AutoJoinTransaction(bool autoJoinTransaction);
-
-		// NH remark: seems a bit overkill for now. On Hibernate side, they have at least another option: the tenant.
 	}
 }

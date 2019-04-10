@@ -389,7 +389,7 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// Strategy for multi-tenancy. </summary>
 		/// <seealso cref="MultiTenancyStrategy"/>
-		public const string MultiTenant = "multiTenancy";
+		public const string MultiTenancy = "multiTenancy";
 
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;

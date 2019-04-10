@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Connection;
 
 namespace NHibernate.MultiTenancy
@@ -5,6 +6,7 @@ namespace NHibernate.MultiTenancy
 	/// <summary>
 	/// Tenant specific configuration
 	/// </summary>
+	[Serializable]
 	public class TenantConfiguration
 	{
 		/// <summary>

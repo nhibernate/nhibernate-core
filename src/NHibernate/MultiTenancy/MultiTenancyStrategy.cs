@@ -2,7 +2,7 @@ namespace NHibernate.MultiTenancy
 {
 	/// <summary>
 	/// Strategy for multi-tenancy
-	/// <seealso cref="NHibernate.Cfg.Environment.MultiTenant"/>
+	/// <seealso cref="Cfg.Environment.MultiTenancy"/>
 	/// </summary>
 	public enum MultiTenancyStrategy
 	{
