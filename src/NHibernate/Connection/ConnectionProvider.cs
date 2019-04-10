@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Configuration;
 using System.Data.Common;
 
 using NHibernate.Driver;
@@ -77,10 +76,9 @@ namespace NHibernate.Connection
 			if(!settings.TryGetValue(Environment.ConnectionStringName, out connStringName))
 				return null;
 
-			ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings[connStringName];
-			if (connectionStringSettings == null)
-				throw new HibernateException(string.Format("Could not find named connection string {0}", connStringName));
-			return connectionStringSettings.ConnectionString;
+			var connectionString = Cfg.Settings.ConfigurationManager.GetNamedConnectionString(connStringName)
+									?? throw new HibernateException(string.Format("Could not find named connection string {0}", connStringName));
+			return connectionString;
 		}
 
 		/// <summary>

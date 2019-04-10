@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Reflection;
 
 using NHibernate.Bytecode;
@@ -370,19 +369,10 @@ namespace NHibernate.Cfg
 
 		private static IHibernateConfiguration GetHibernateConfiguration()
 		{
-			object config = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName);
-			if (config == null)
+			var nhConfig = Settings.ConfigurationManager.GetConfiguration();;
+			if (log.IsInfoEnabled() && nhConfig == null)
 			{
 				log.Info("{0} section not found in application configuration file", CfgXmlHelper.CfgSectionName);
-				return null;
-			}
-
-			var nhConfig = config as IHibernateConfiguration;
-			if (nhConfig == null)
-			{
-				log.Info(
-					"{0} section handler, in application configuration file, is not IHibernateConfiguration, section ignored",
-					CfgXmlHelper.CfgSectionName);
 			}
 
 			return nhConfig;

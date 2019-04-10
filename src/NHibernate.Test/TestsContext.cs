@@ -3,7 +3,6 @@
 #if NETCOREAPP2_0
 using System.Configuration;
 using System.IO;
-using log4net.Repository.Hierarchy;
 using NHibernate.Cfg;
 using NHibernate.Cfg.ConfigurationSchema;
 #endif
@@ -15,7 +14,7 @@ namespace NHibernate.Test
 #endif
 	public class TestsContext
 	{
-		public static bool ExecutingWithVsTest { get; } =
+		private static bool ExecutingWithVsTest { get; } =
 			System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name == "testhost";
 
 #if NETCOREAPP2_0
@@ -26,37 +25,37 @@ namespace NHibernate.Test
 			//so we need to explicitly load the configuration
 			if (ExecutingWithVsTest)
 			{
-				Environment.InitializeGlobalProperties(GetTestAssemblyHibernateConfiguration());
+				Settings.ConfigurationManager = new NetCoreConfigurationManager();
+			}
+		}
+
+		class NetCoreConfigurationManager : IConfigurationManager
+		{
+			private readonly System.Configuration.Configuration _configuration;
+
+			public NetCoreConfigurationManager()
+			{
+				var assemblyPath =
+					Path.Combine(TestContext.CurrentContext.TestDirectory, Path.GetFileName(typeof(TestsContext).Assembly.Location));
+				_configuration = ConfigurationManager.OpenExeConfiguration(assemblyPath);
+			}
+			
+			public IHibernateConfiguration GetConfiguration()
+			{
+				ConfigurationSection configurationSection = _configuration.GetSection(CfgXmlHelper.CfgSectionName);
+				var xml = configurationSection?.SectionInformation.GetRawXml();
+				return xml == null ? null : HibernateConfiguration.FromAppConfig(xml);
 			}
 
-			ConfigureLog4Net();
-		}
-
-		public static IHibernateConfiguration GetTestAssemblyHibernateConfiguration()
-		{
-			var assemblyPath =
- Path.Combine(TestContext.CurrentContext.TestDirectory, Path.GetFileName(typeof(TestsContext).Assembly.Location));
-			var configuration = ConfigurationManager.OpenExeConfiguration(assemblyPath);
-			var section = configuration.GetSection(CfgXmlHelper.CfgSectionName);
-			return HibernateConfiguration.FromAppConfig(section.SectionInformation.GetRawXml());
-		}
-
-		private static void ConfigureLog4Net()
-		{
-			var hierarchy = (Hierarchy)log4net.LogManager.GetRepository(typeof(TestsContext).Assembly);
-
-			var consoleAppender = new log4net.Appender.ConsoleAppender
+			public string GetNamedConnectionString(string name)
 			{
-				Layout = new log4net.Layout.PatternLayout("%d{ABSOLUTE} %-5p %c{1}:%L - %m%n"),
-			};
+				return _configuration.ConnectionStrings.ConnectionStrings[name]?.ConnectionString;
+			}
 
-			((Logger)hierarchy.GetLogger("NHibernate.Hql.Ast.ANTLR")).Level = log4net.Core.Level.Off;
-			((Logger)hierarchy.GetLogger("NHibernate.SQL")).Level = log4net.Core.Level.Off;
-			((Logger)hierarchy.GetLogger("NHibernate.AdoNet.AbstractBatcher")).Level = log4net.Core.Level.Off;
-			((Logger)hierarchy.GetLogger("NHibernate.Tool.hbm2ddl.SchemaExport")).Level = log4net.Core.Level.Error;
-			hierarchy.Root.Level = log4net.Core.Level.Warn;
-			hierarchy.Root.AddAppender(consoleAppender);
-			hierarchy.Configured = true;
+			public string GetAppSetting(string name)
+			{
+				return _configuration.AppSettings.Settings[name]?.Value;
+			}
 		}
 #endif
 	}

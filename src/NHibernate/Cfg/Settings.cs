@@ -18,6 +18,11 @@ namespace NHibernate.Cfg
 	/// </summary>
 	public sealed class Settings
 	{
+		/// <summary>
+		/// Provides ability to override default <see cref="System.Configuration.ConfigurationManager"/> with custom implementation.  
+		/// </summary>
+		public static IConfigurationManager ConfigurationManager { get; set; } = new SystemConfigurationManager();
+
 		public Settings()
 		{
 			MaximumFetchDepth = -1;
