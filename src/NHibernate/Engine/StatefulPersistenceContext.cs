@@ -194,6 +194,7 @@ namespace NHibernate.Engine
 			get { return entityEntries; }
 		}
 
+		[NonSerialized]
 		private List<KeyValuePair<object,EntityEntry>> _tempEntityEntries;
 
 		/// <summary>
