@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -47,8 +48,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentNullException("property");
 			}
-			var toAdd = new[] {property};
-			id.Items = id.Items == null ? toAdd : id.Items.Concat(toAdd).ToArray();
+			id.Items = ArrayHelper.Append(id.Items, property);
 		}
 	}
 }
