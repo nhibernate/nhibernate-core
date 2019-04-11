@@ -1,6 +1,7 @@
 using System;
 using System.Configuration;
 using System.Linq;
+using NHibernate.Cfg.ConfigurationSchema;
 
 namespace NHibernate.Cfg
 {
@@ -9,7 +10,7 @@ namespace NHibernate.Cfg
 		//TODO 6.0:  Replace with GetAppSetting and document as possible breaking change all usages. 
 		internal static string GetAppSettingIgnoringCase(this IConfigurationManager config, string name)
 		{
-			if (!(config is SystemConfigurationManager))
+			if (!(config is StaticSystemConfigurationManager))
 				return config.GetAppSetting(name);
 
 			var key = ConfigurationManager.AppSettings.Keys.Cast<string>().FirstOrDefault(k => name.Equals(k, StringComparison.OrdinalIgnoreCase));
@@ -26,7 +27,34 @@ namespace NHibernate.Cfg
 		string GetAppSetting(string name);
 	}
 
-	class SystemConfigurationManager : IConfigurationManager
+	public class SystemConfigurationManager : IConfigurationManager
+	{
+		private readonly System.Configuration.Configuration _configuration;
+
+		public SystemConfigurationManager(System.Configuration.Configuration configuration)
+		{
+			_configuration = configuration;
+		}
+
+		public IHibernateConfiguration GetConfiguration()
+		{
+			ConfigurationSection configurationSection = _configuration.GetSection(CfgXmlHelper.CfgSectionName);
+			var xml = configurationSection?.SectionInformation.GetRawXml();
+			return xml == null ? null : HibernateConfiguration.FromAppConfig(xml);
+		}
+
+		public string GetNamedConnectionString(string name)
+		{
+			return _configuration.ConnectionStrings.ConnectionStrings[name]?.ConnectionString;
+		}
+
+		public string GetAppSetting(string name)
+		{
+			return _configuration.AppSettings.Settings[name]?.Value;
+		}
+	}
+
+	class StaticSystemConfigurationManager : IConfigurationManager
 	{
 		public IHibernateConfiguration GetConfiguration()
 		{
