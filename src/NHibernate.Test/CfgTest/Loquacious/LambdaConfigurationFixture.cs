@@ -1,9 +1,7 @@
 using System.Data;
-using NHibernate.AdoNet;
 using NHibernate.Bytecode;
 using NHibernate.Cache;
 using NHibernate.Cfg;
-using NHibernate.Cfg.Loquacious;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Hql.Ast.ANTLR;
@@ -21,50 +19,57 @@ namespace NHibernate.Test.CfgTest.Loquacious
 		public void FullConfiguration()
 		{
 			var configure = new Configuration();
-			configure.SessionFactoryName("SomeName");
-			configure.Cache(c =>
-												{
-													c.UseMinimalPuts = true;
-													c.DefaultExpiration = 15;
-													c.RegionsPrefix = "xyz";
-													c.Provider<HashtableCacheProvider>();
-													c.QueryCacheFactory<StandardQueryCacheFactory>();
-												});
-			configure.CollectionTypeFactory<DefaultCollectionTypeFactory>();
-			configure.HqlQueryTranslator<ASTQueryTranslatorFactory>();
-			configure.LinqToHqlGeneratorsRegistry<DefaultLinqToHqlGeneratorsRegistry>();
-			configure.Proxy(p =>
-												{
-													p.Validation = false;
-													p.ProxyFactoryFactory<StaticProxyFactoryFactory>();
-												});
-			configure.Mappings(m=>
-								{
-									m.DefaultCatalog = "MyCatalog";
-									m.DefaultSchema = "MySche";
-								});
-			configure.DataBaseIntegration(db =>
-											{
-												db.Dialect<MsSql2000Dialect>();
-												db.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote;
+			configure.ByCode(
+				x =>
+				{
+					x.SessionFactoryName("SomeName");
+					x.Cache(
+						c =>
+						{
+							c.UseMinimalPuts = true;
+							c.DefaultExpiration = 15;
+							c.RegionsPrefix = "xyz";
+							c.Provider<HashtableCacheProvider>();
+							c.QueryCacheFactory<StandardQueryCacheFactory>();
+						});
+					x.CollectionTypeFactory<DefaultCollectionTypeFactory>();
+					x.HqlQueryTranslator<ASTQueryTranslatorFactory>();
+					x.LinqToHqlGeneratorsRegistry<DefaultLinqToHqlGeneratorsRegistry>();
+					x.Proxy(
+						p =>
+						{
+							p.Validation = false;
+							p.ProxyFactoryFactory<StaticProxyFactoryFactory>();
+						});
+					x.Mappings(
+						m =>
+						{
+							m.DefaultCatalog = "MyCatalog";
+							m.DefaultSchema = "MySche";
+						});
+					x.DataBaseIntegration(
+						db =>
+						{
+							db.Dialect<MsSql2000Dialect>();
+							db.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote;
 #if NETFX
-												db.Batcher<SqlClientBatchingBatcherFactory>();
+							db.Batcher<SqlClientBatchingBatcherFactory>();
 #endif
-												db.BatchSize = 15;
-												db.ConnectionProvider<DebugConnectionProvider>();
-												db.Driver<SqlClientDriver>();
-												db.ConnectionReleaseMode = ConnectionReleaseMode.AfterTransaction;
-												db.IsolationLevel = IsolationLevel.ReadCommitted;
-												db.ConnectionString = "The connection string";
-												db.AutoCommentSql = true;
-												db.ExceptionConverter<SQLStateConverter>();
-												db.PrepareCommands = true;
-												db.Timeout = 10;
-												db.MaximumDepthOfOuterJoinFetching = 11;
-												db.HqlToSqlSubstitutions = "true 1, false 0, yes 'Y', no 'N'";
-												db.SchemaAction = SchemaAutoAction.Validate;
-											});
-
+							db.BatchSize = 15;
+							db.ConnectionProvider<DebugConnectionProvider>();
+							db.Driver<SqlClientDriver>();
+							db.ConnectionReleaseMode = ConnectionReleaseMode.AfterTransaction;
+							db.IsolationLevel = IsolationLevel.ReadCommitted;
+							db.ConnectionString = "The connection string";
+							db.AutoCommentSql = true;
+							db.ExceptionConverter<SQLStateConverter>();
+							db.PrepareCommands = true;
+							db.Timeout = 10;
+							db.MaximumDepthOfOuterJoinFetching = 11;
+							db.HqlToSqlSubstitutions = "true 1, false 0, yes 'Y', no 'N'";
+							db.SchemaAction = SchemaAutoAction.Validate;
+						});
+				});
 			Assert.That(configure.Properties[Environment.SessionFactoryName], Is.EqualTo("SomeName"));
 			Assert.That(configure.Properties[Environment.CacheProvider],
 									Is.EqualTo(typeof(HashtableCacheProvider).AssemblyQualifiedName));

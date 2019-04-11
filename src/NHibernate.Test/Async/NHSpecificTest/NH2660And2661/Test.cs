@@ -50,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2660And2661
 				{
 					// to be sure we are using the new drive
 					base.Configure(configuration);
-					configuration.DataBaseIntegration(x=> x.Driver<Sql2008ClientDriver>());
+					configuration.ByCode().DataBaseIntegration(x=> x.Driver<Sql2008ClientDriver>());
 				}
 
 		[Test]

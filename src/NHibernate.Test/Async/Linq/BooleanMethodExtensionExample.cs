@@ -41,7 +41,7 @@ namespace NHibernate.Test.Linq
 
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.LinqToHqlGeneratorsRegistry<MyLinqToHqlGeneratorsRegistry>();
+			configuration.ByCode().LinqToHqlGeneratorsRegistry<MyLinqToHqlGeneratorsRegistry>();
 		}
 
 		[Test, Ignore("It work only with full-text indexes enabled.")]

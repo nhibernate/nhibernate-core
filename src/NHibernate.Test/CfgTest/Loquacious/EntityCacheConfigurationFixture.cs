@@ -1,6 +1,5 @@
 using System;
 using NHibernate.Cfg;
-using NHibernate.Cfg.Loquacious;
 using NHibernate.Mapping;
 using NUnit.Framework;
 
@@ -15,7 +14,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Configuration configure = new Configuration().Configure();
 			configure.AddResource("NHibernate.Test.CfgTest.Loquacious.EntityToCache.hbm.xml", GetType().Assembly);
 
-			configure.EntityCache<EntityToCache>(ce =>
+			configure.ByCode().EntityCache<EntityToCache>(ce =>
 			                                     	{
 			                                     		ce.Strategy = EntityCacheUsage.NonStrictReadWrite;
 			                                     		ce.RegionName = "MyRegion";
@@ -33,7 +32,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Configuration configure = new Configuration().Configure();
 			configure.AddResource("NHibernate.Test.CfgTest.Loquacious.EntityToCache.hbm.xml", GetType().Assembly);
 
-			configure.EntityCache<EntityToCache>(ce =>
+			configure.ByCode().EntityCache<EntityToCache>(ce =>
 			                                     	{
 			                                     		ce.Strategy = EntityCacheUsage.NonStrictReadWrite;
 			                                     		ce.RegionName = "MyRegion";
@@ -57,7 +56,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Configuration configure = new Configuration().Configure();
 			configure.AddResource("NHibernate.Test.CfgTest.Loquacious.EntityToCache.hbm.xml", GetType().Assembly);
 
-			configure.EntityCache<EntityToCache>(ce => ce.Collection(e => e.Elements, cc =>
+			configure.ByCode().EntityCache<EntityToCache>(ce => ce.Collection(e => e.Elements, cc =>
 			                                                                          	{
 			                                                                          		cc.RegionName = "MyCollectionRegion";
 			                                                                          		cc.Strategy =
@@ -76,7 +75,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 
 			var exception =
 				Assert.Throws<ArgumentOutOfRangeException>(
-					() => configure.EntityCache<EntityToCache>(ce => ce.Collection(e => e.Relation.Elements, cc => { })));
+					() => configure.ByCode().EntityCache<EntityToCache>(ce => ce.Collection(e => e.Relation.Elements, cc => { })));
 			Assert.That(exception.Message, Does.Contain("Collection not owned by"));
 		}
 	}

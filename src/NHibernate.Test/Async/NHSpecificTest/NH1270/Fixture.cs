@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1270
 		public async Task WhenMapCustomFkNamesThenUseItAsync()
 		{
 			var conf = TestConfigurationHelper.GetDefaultConfiguration();
-			conf.DataBaseIntegration(i=> i.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote);
+			conf.ByCode().DataBaseIntegration(i=> i.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote);
 			conf.AddMapping(GetMappings());
 			var sb = new StringBuilder();
 			await ((new SchemaExport(conf)).CreateAsync(s => sb.AppendLine(s), true));

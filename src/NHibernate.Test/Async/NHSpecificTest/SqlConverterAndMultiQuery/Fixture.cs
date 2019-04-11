@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.DataBaseIntegration(x => x.ExceptionConverter<SqlConverter>());
+			configuration.ByCode().DataBaseIntegration(x => x.ExceptionConverter<SqlConverter>());
 		}
 
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)

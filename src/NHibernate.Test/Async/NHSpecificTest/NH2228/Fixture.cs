@@ -11,7 +11,6 @@
 using System;
 using NHibernate.Cfg;
 using NUnit.Framework;
-using NHibernate.Cfg.Loquacious;
 
 namespace NHibernate.Test.NHSpecificTest.NH2228
 {
@@ -56,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2228
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
 			// needed to be sure of StaleStateException that the user has reported in the issue
-			configuration.DataBaseIntegration(x => x.BatchSize = 1);
+			configuration.ByCode().DataBaseIntegration(x => x.BatchSize = 1);
 		}
 
 		[Test]

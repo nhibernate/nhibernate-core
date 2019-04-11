@@ -44,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.LinqToHqlGeneratorsRegistry<TestLinqToHqlGeneratorsRegistry>();
+			configuration.ByCode().LinqToHqlGeneratorsRegistry<TestLinqToHqlGeneratorsRegistry>();
 		}
 
 		private class TestLinqToHqlGeneratorsRegistry : DefaultLinqToHqlGeneratorsRegistry

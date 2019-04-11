@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2869
 	{
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.LinqToHqlGeneratorsRegistry<MyLinqToHqlGeneratorsRegistry>();
+			configuration.ByCode().LinqToHqlGeneratorsRegistry<MyLinqToHqlGeneratorsRegistry>();
 			base.Configure(configuration);
 		}
 

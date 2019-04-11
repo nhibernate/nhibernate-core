@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3010
 	{
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.DataBaseIntegration(x =>
+			configuration.ByCode().DataBaseIntegration(x =>
 			{
 				x.BatchSize = 0;
 				x.Batcher<NonBatchingBatcherFactory>();

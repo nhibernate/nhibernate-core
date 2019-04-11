@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2569
 																																	  })));
 								  });
 			var conf = new Configuration();
-			conf.DataBaseIntegration(x=> x.Dialect<MsSql2008Dialect>());
+			conf.ByCode().DataBaseIntegration(x => x.Dialect<MsSql2008Dialect>());
 			conf.AddDeserializedMapping(mapper.CompileMappingForAllExplicitlyAddedEntities(), "wholeDomain");
 
 			var mappings = conf.CreateMappings();

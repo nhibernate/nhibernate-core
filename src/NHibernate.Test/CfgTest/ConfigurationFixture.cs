@@ -433,7 +433,7 @@ namespace NHibernate.Test.CfgTest
 		{
 			var cfg = new Configuration();
 			cfg.Configure(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEmbeddedConfig.cfg.xml"))
-				.LinqQueryProvider<SampleQueryProvider>()
+				.ByCode(x => x.LinqQueryProvider<SampleQueryProvider>())
 				.SetDefaultAssembly("NHibernate.DomainModel")
 				.SetDefaultNamespace("NHibernate.DomainModel");
 

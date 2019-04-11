@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2510
 
 		protected override void Configure(Cfg.Configuration configuration)
 		{
-			configuration.Cache(x=> x.Provider<HashtableCacheProvider>());
+			configuration.ByCode().Cache(x=> x.Provider<HashtableCacheProvider>());
 		}
 
 		private class Scenario: IDisposable
