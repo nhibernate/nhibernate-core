@@ -19,12 +19,6 @@ namespace NHibernate
 		/// Fetch the entity and its lazy properties.
 		/// </summary>
 		FetchLazyProperties,
-		
-		/// <summary>
-		/// Fetch lazy property group
-		/// Note: To fetch single property it must be mapped with unique fetch group (lazy-group)
-		/// </summary>
-		FetchProperty,
 
 		/// <summary>
 		/// Only identifier columns are added to select statement. Use it for fetching child objects for already loaded
@@ -42,5 +36,11 @@ namespace NHibernate
 		/// Skips fetching for eagerly mapped association (no-op for lazy association).
 		/// </summary>
 		Skip,
+
+		/// <summary>
+		/// Fetch lazy property group
+		/// Note: To fetch single property it must be mapped with unique fetch group (lazy-group)
+		/// </summary>
+		FetchProperty,
 	}
 }
