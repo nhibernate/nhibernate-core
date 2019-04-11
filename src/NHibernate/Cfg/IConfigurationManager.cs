@@ -44,4 +44,22 @@ namespace NHibernate.Cfg
 			return ConfigurationManager.AppSettings[name];
 		}
 	}
+
+	class NullConfigurationManager : IConfigurationManager
+	{
+		public IHibernateConfiguration GetConfiguration()
+		{
+			return null;
+		}
+
+		public string GetNamedConnectionString(string name)
+		{
+			return null;
+		}
+
+		public string GetAppSetting(string name)
+		{
+			return null;
+		}
+	}
 }

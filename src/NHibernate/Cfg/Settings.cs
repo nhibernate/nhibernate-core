@@ -18,10 +18,17 @@ namespace NHibernate.Cfg
 	/// </summary>
 	public sealed class Settings
 	{
+		private static IConfigurationManager _configurationManager = new SystemConfigurationManager();
+
 		/// <summary>
-		/// Provides ability to override default <see cref="System.Configuration.ConfigurationManager"/> with custom implementation.  
+		/// Provides ability to override default <see cref="System.Configuration.ConfigurationManager"/> with custom implementation.
+		/// Can be set to null if all configuration is specified by code 
 		/// </summary>
-		public static IConfigurationManager ConfigurationManager { get; set; } = new SystemConfigurationManager();
+		public static IConfigurationManager ConfigurationManager
+		{
+			get => _configurationManager;
+			set => _configurationManager = value ?? new NullConfigurationManager();
+		}
 
 		public Settings()
 		{
