@@ -196,10 +196,10 @@ namespace NHibernate.Mapping
 				result.Append(GetType().FullName)
 					.Append('(')
 					.Append(Table.Name)
-					.Append(StringHelper.Join(", ", Columns))
+					.Append(string.Join(", ", Columns))
 					.Append(" ref-columns:")
 					.Append('(')
-					.Append(StringHelper.Join(", ", ReferencedColumns))
+					.Append(string.Join(", ", ReferencedColumns))
 					.Append(") as ")
 					.Append(Name);
 				return result.ToString();

@@ -35,7 +35,7 @@ namespace NHibernate.Engine.Loading
 		/// <param name="persister">The persister for which to complete loading.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		// Since v5.2
-		[Obsolete("Please use overload with skipCache parameter instead.")]
+		[Obsolete("Please use overload with skipCache and cacheBatcher parameter instead.")]
 		public Task EndLoadingCollectionsAsync(ICollectionPersister persister, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -53,7 +53,27 @@ namespace NHibernate.Engine.Loading
 		/// <param name="persister">The persister for which to complete loading.</param>
 		/// <param name="skipCache">Indicates if collection must not be put in cache.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public async Task EndLoadingCollectionsAsync(ICollectionPersister persister, bool skipCache, CancellationToken cancellationToken)
+		// Since v5.3
+		[Obsolete("Please use overload with cacheBatcher parameter instead.")]
+		public Task EndLoadingCollectionsAsync(ICollectionPersister persister, bool skipCache, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return EndLoadingCollectionsAsync(persister, skipCache, null, cancellationToken);
+		}
+
+		/// <summary>
+		/// Finish the process of collection-loading for this bound result set. Mainly this
+		/// involves cleaning up resources and notifying the collections that loading is
+		/// complete.
+		/// </summary>
+		/// <param name="persister">The persister for which to complete loading.</param>
+		/// <param name="skipCache">Indicates if collection must not be put in cache.</param>
+		/// <param name="cacheBatcher">The cache batcher used to batch put the collections into the cache.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public async Task EndLoadingCollectionsAsync(ICollectionPersister persister, bool skipCache, CacheBatcher cacheBatcher, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!loadContexts.HasLoadingCollectionEntries && (localLoadingCollectionKeys.Count == 0))
@@ -99,7 +119,7 @@ namespace NHibernate.Engine.Loading
 			}
 			localLoadingCollectionKeys.ExceptWith(toRemove);
 
-			await (EndLoadingCollectionsAsync(persister, matches, skipCache, cancellationToken)).ConfigureAwait(false);
+			await (EndLoadingCollectionsAsync(persister, matches, skipCache, cacheBatcher, cancellationToken)).ConfigureAwait(false);
 			if ((localLoadingCollectionKeys.Count == 0))
 			{
 				// todo : hack!!!
@@ -112,7 +132,8 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		private async Task EndLoadingCollectionsAsync(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, bool skipCache, CancellationToken cancellationToken)
+		private async Task EndLoadingCollectionsAsync(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, bool skipCache,
+		                                   CacheBatcher cacheBatcher = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (matchedCollectionEntries == null || matchedCollectionEntries.Count == 0)
@@ -130,7 +151,9 @@ namespace NHibernate.Engine.Loading
 				log.Debug("{0} collections were found in result set for role: {1}", count, persister.Role);
 			}
 
-			var cacheBatcher = new CacheBatcher(LoadContext.PersistenceContext.Session);
+			var ownCacheBatcher = cacheBatcher == null;
+			if (ownCacheBatcher)
+				cacheBatcher = new CacheBatcher(LoadContext.PersistenceContext.Session);
 			for (int i = 0; i < count; i++)
 			{
 				await (EndLoadingCollectionAsync(
@@ -139,7 +162,8 @@ namespace NHibernate.Engine.Loading
 					data => cacheBatcher.AddToBatch(persister, data),
 					skipCache, cancellationToken)).ConfigureAwait(false);
 			}
-			await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
+			if (ownCacheBatcher)
+				await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 
 			if (log.IsDebugEnabled())
 			{

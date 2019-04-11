@@ -83,14 +83,11 @@ namespace NHibernate.Loader.Custom
 				+ "], suffixedElementAliases=[" + Join(elementAliases) + "], suffixedIdentifierAlias=[" + identifierAlias + "]]";
 		}
 
-		private static string Join(IEnumerable aliases)
+		private static string Join(string[] aliases)
 		{
-			if (aliases == null)
-			{
-				return null;
-			}
-
-			return StringHelper.Join(", ", aliases);
+			return aliases == null
+				? null
+				: string.Join(", ", aliases);
 		}
 
 		private string[] GetUserProvidedAliases(string propertyPath, string[] defaultAliases)

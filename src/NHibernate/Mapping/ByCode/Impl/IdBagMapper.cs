@@ -145,6 +145,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			mapping.collectiontype = collectionType.AssemblyQualifiedName;
 		}
 
+		public void Type(string collectionType)
+		{
+			mapping.collectiontype = collectionType ?? throw new ArgumentNullException(nameof(collectionType));
+		}
+
 		public void Table(string tableName)
 		{
 			mapping.table = tableName;

@@ -111,7 +111,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 					await (session.Query<Item>()
 					       .UpdateBuilder()
 					       .Set(x => x.Name, "Test")
-					       .UpdateAsync(CancellationToken.None));
+					       .UpdateAsync());
 
 					await (tx.CommitAsync());
 				}

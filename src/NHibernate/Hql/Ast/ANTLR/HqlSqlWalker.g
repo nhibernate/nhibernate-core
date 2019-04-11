@@ -13,6 +13,7 @@ tokens
 	FROM_FRAGMENT;	// A fragment of SQL that represents a table reference in a FROM clause.
 	IMPLIED_FROM;	// An implied FROM element.
 	JOIN_FRAGMENT;	// A JOIN fragment.
+	ENTITY_JOIN; 	// An "ad-hoc" join to an entity
 	SELECT_CLAUSE;
 	LEFT_OUTER;
 	RIGHT_OUTER;
@@ -249,7 +250,7 @@ propertyFetch
 fromClause 
 	: ^(f=FROM { PushFromClause($f.tree); HandleClauseStart( FROM ); } fromElementList )
 	;
-	finally {HandleClauseEnd( FROM );}
+	finally { HandleClauseEnd( FROM ); FinishFromClause(); }
 
 fromElementList @init{
 		bool oldInFrom = _inFrom;

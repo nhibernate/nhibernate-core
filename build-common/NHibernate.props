@@ -5,7 +5,7 @@
   <PropertyGroup>
     <VersionMajor Condition="'$(VersionMajor)' == ''">5</VersionMajor>
     <VersionMinor Condition="'$(VersionMinor)' == ''">2</VersionMinor>
-    <VersionPatch Condition="'$(VersionPatch)' == ''">3</VersionPatch>
+    <VersionPatch Condition="'$(VersionPatch)' == ''">5</VersionPatch>
     <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
 
     <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>
@@ -14,6 +14,9 @@
 
     <NhAppTargetFrameworks Condition ="$(NhAppTargetFrameworks) == ''">net461;netcoreapp2.0</NhAppTargetFrameworks>
     <NhLibTargetFrameworks Condition ="$(NhLibTargetFrameworks) == ''">net461;netcoreapp2.0;netstandard2.0</NhLibTargetFrameworks>
+    <NhNetFx>false</NhNetFx>
+    <NhNetFx Condition="$(TargetFramework.StartsWith('net4'))">true</NhNetFx>
+    <DefineConstants Condition="$(NhNetFx) AND $(NhVbNet) == ''" >NETFX;$(DefineConstants)</DefineConstants>
 
     <Product>NHibernate</Product>
     <Company>NHibernate.info</Company>
@@ -26,8 +29,9 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>LGPL-2.1-only</PackageLicenseExpression>
     <PackageReleaseNotes>https://github.com/nhibernate/nhibernate-core/blob/$(VersionPrefix)/releasenotes.txt</PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/nhibernate/nhibernate-core.git</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <TreatSpecificWarningsAsErrors />

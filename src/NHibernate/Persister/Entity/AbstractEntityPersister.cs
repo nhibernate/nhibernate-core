@@ -1395,7 +1395,7 @@ namespace NHibernate.Persister.Entity
 		}
 
 		public void InitializeLazyProperties(
-			DbDataReader rs, object id, object entity, ILoadable rootPersister, string[][] suffixedPropertyColumns,
+			DbDataReader rs, object id, object entity, string[][] suffixedPropertyColumns,
 			string[] uninitializedLazyProperties, bool allLazyProperties, ISessionImplementor session)
 		{
 			if (!HasLazyProperties)
@@ -1872,7 +1872,7 @@ namespace NHibernate.Persister.Entity
 			}
 
 			string[] aliasedIdColumns = StringHelper.Qualify(RootAlias, IdentifierColumnNames);
-			string selectClause = StringHelper.Join(StringHelper.CommaSpace, aliasedIdColumns)
+			string selectClause = string.Join(StringHelper.CommaSpace, aliasedIdColumns)
 														+ ConcretePropertySelectFragment(RootAlias, PropertyUpdateability);
 
 			SqlString fromClause = new SqlString(
@@ -2169,7 +2169,7 @@ namespace NHibernate.Persister.Entity
 			{
 				if (cols[j] == null)
 				{
-					result[j] = templates[j]?.Replace(Template.Placeholder, alias);
+					result[j] = Template.ReplacePlaceholder(templates[j], alias);
 				}
 				else
 				{
@@ -2432,7 +2432,7 @@ namespace NHibernate.Persister.Entity
 
 		protected string GetSQLWhereString(string alias)
 		{
-			return sqlWhereStringTemplate?.Replace(Template.Placeholder, alias);
+			return Template.ReplacePlaceholder(sqlWhereStringTemplate, alias);
 		}
 
 		protected bool HasWhere
@@ -3840,7 +3840,7 @@ namespace NHibernate.Persister.Entity
 		protected SqlString CreateWhereByKey(int tableNumber, string alias)
 		{
 			//TODO: move to .sql package, and refactor with similar things!
-			//return new SqlString(StringHelper.Join("= ? and ",
+			//return new SqlString(string.Join("= ? and ",
 			//        StringHelper.Qualify(alias, GetSubclassTableKeyColumns(tableNumber))) + "= ?");
 			string[] subclauses = StringHelper.Qualify(alias, GetSubclassTableKeyColumns(tableNumber));
 			SqlStringBuilder builder = new SqlStringBuilder(subclauses.Length * 4);

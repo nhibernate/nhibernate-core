@@ -324,7 +324,7 @@ namespace NHibernate.Mapping
 
 		public virtual bool IsValid(IMapping mapping)
 		{
-			return ColumnSpan == Type.GetColumnSpan(mapping);
+			return ColumnSpan == Type.GetOwnerColumnSpan(mapping);
 		}
 
 		public virtual void CreateForeignKey()

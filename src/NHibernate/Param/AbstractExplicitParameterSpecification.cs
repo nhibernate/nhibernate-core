@@ -70,9 +70,7 @@ namespace NHibernate.Param
 			if (ExpectedType != null)
 			{
 				// TODO: we have to find a way to set all expected types during the query parsing
-				var paremeterSpan = ExpectedType.GetColumnSpan(sessionFactory);
-				// NOTE: the OneToOneType does not return the real ColumnSpan
-				return paremeterSpan == 0 ? 1 : paremeterSpan;
+				return ExpectedType.GetColumnSpan(sessionFactory);
 			}
 			// TODO: (see above) when the ExpectedType is null we will set the BackTrackId just for the first position (not a big problem because IType does not support something different... so far)
 			return 1;

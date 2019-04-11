@@ -179,6 +179,7 @@ namespace NHibernate.Loader.Custom
 			transformerAliases = specifiedAliases.ToArray();
 			rowProcessor = new ResultRowProcessor(hasScalars, resultColumnProcessors.ToArray());
 			includeInResultRow = includeInResultRowList.ToArray();
+			ResultRowAliases = transformerAliases.Where((a, i) => includeInResultRowList[i]).ToArray();
 		}
 
 		public ISet<string> QuerySpaces
@@ -297,7 +298,7 @@ namespace NHibernate.Loader.Custom
 			return rowProcessor.BuildResultRow(row, rs, session);
 		}
 
-		protected override string[] ResultRowAliases => transformerAliases;
+		protected override string[] ResultRowAliases { get; }
 
 		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
 		{

@@ -143,7 +143,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 		protected string GenerateIdSubselect(IQueryable persister)
 		{
-			return "select " + StringHelper.Join(", ", persister.IdentifierColumnNames) + " from " + persister.TemporaryIdTableName;
+			return "select " + string.Join(", ", persister.IdentifierColumnNames) + " from " + persister.TemporaryIdTableName;
 		}
 
 		protected virtual void CreateTemporaryTableIfNecessary(IQueryable persister, ISessionImplementor session)

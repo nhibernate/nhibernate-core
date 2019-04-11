@@ -206,8 +206,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				return;
 			}
-
-			if (right.RealOrigin == left || (right.RealOrigin != null && right.RealOrigin == left.RealOrigin))
+			if (right.Type == ENTITY_JOIN)
+			{
+				Out(" ");
+			}
+			else if (right.RealOrigin == left || (right.RealOrigin != null && right.RealOrigin == left.RealOrigin))
 			{
 				// right represents a joins originating from left; or
 				// both right and left reprersent joins originating from the same FromElement

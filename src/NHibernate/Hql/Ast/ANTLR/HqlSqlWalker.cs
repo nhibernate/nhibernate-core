@@ -390,7 +390,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			statement.FromClause.Resolve();
 
-			var fromElement = (FromElement)statement.FromClause.GetFromElements()[0];
+			var fromElement = statement.FromClause.GetFromElementsTyped()[0];
 			IQueryable persister = fromElement.Queryable;
 			// Make #@%$^#^&# sure no alias is applied to the table name
 			fromElement.Text = persister.TableName;
@@ -422,6 +422,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 				throw new SemanticException("Mismatched clause parsing");
 			}
 			_currentClauseType=clauseStack.Pop();
+		}
+
+		void FinishFromClause()
+		{
+			_currentFromClause.FinishInit();
 		}
 
 		IASTNode CreateIntoClause(string path, IASTNode propertySpec)
@@ -490,7 +495,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				joinProcessor.ProcessJoins(rs);
 
 				// Attach any mapping-defined "ORDER BY" fragments
-				foreach (FromElement fromElement in qn.FromClause.GetProjectionList())
+				foreach (FromElement fromElement in qn.FromClause.GetProjectionListTyped())
 				{
 					if ( fromElement.IsFetch && fromElement.QueryableCollection != null ) 
 					{
@@ -583,7 +588,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			// Turn off includeSubclasses on all FromElements.
 			FromClause from = CurrentFromClause;
 
-			foreach (FromElement fromElement in from.GetFromElements())
+			foreach (FromElement fromElement in from.GetFromElementsTyped())
 			{
 				fromElement.IncludeSubclasses = false;
 			}
@@ -676,6 +681,20 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				throw new QueryException( "fetch not allowed in subquery from-elements" );
 			}
+
+			// the incoming "path" can be either:
+			//		1) an implicit join path (join p.address.city)
+			// 		2) an entity-join (join com.acme.User)
+			//
+			// so make the proper interpretation here...
+			var entityJoinReferencedPersister = ResolveEntityJoinReferencedPersister(path);
+			if (entityJoinReferencedPersister != null)
+			{
+				var entityJoin = CreateEntityJoin(entityJoinReferencedPersister, alias, joinType, with);
+				((FromReferenceNode) path).FromElement = entityJoin;
+				SetPropertyFetch(entityJoin, propertyFetch, alias);
+				return;
+			}
 			// The path AST should be a DotNode, and it should have been evaluated already.
 			if ( path.Type != DOT ) 
 			{
@@ -723,6 +742,48 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				log.Debug("createFromJoinElement() : {0}", _printer.ShowAsString( fromElement, "-- join tree --" ));
 			}
+		}
+
+		private EntityJoinFromElement CreateEntityJoin(
+			IQueryable entityPersister,
+			IASTNode aliasNode,
+			int joinType,
+			IASTNode with)
+		{
+			if (log.IsDebugEnabled())
+			{
+				log.Debug($"Creating entity-join FromElement [{aliasNode?.Text} -> {entityPersister.Name}]");
+			}
+
+			EntityJoinFromElement join = new EntityJoinFromElement(
+					CurrentFromClause,
+					entityPersister,
+					JoinProcessor.ToHibernateJoinType(joinType),
+					aliasNode?.Text
+			);
+
+			if (with != null)
+			{
+				HandleWithFragment(join, with);
+			}
+
+			return join;
+		}
+
+		private IQueryable ResolveEntityJoinReferencedPersister(IASTNode path)
+		{
+			if (path.Type == IDENT)
+			{
+				var pathIdentNode = (IdentNode) path;
+				string name = path.Text ?? pathIdentNode.OriginalText;
+				return SessionFactoryHelper.FindQueryableUsingImports(name);
+			}
+			else if (path.Type == DOT)
+			{
+				var pathText = ASTUtil.GetPathText(path);
+				return SessionFactoryHelper.FindQueryableUsingImports(pathText);
+			}
+			return null;
 		}
 
 		private static string GetPropertyPath(DotNode dotNode, IASTNode alias)
@@ -905,10 +966,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 				return false;
 			}
 
-			IList<IASTNode> fromElements = _currentFromClause.GetExplicitFromElements();
-			if ( fromElements.Count == 1 ) 
+			var fromElements = _currentFromClause.GetExplicitFromElementsTyped();
+			if ( fromElements.Count == 1 )
 			{
-				FromElement fromElement = (FromElement) fromElements[0];
+				FromElement fromElement = fromElements[0];
 
 				log.Info("attempting to resolve property [{0}] as a non-qualified ref", identText);
 
@@ -921,7 +982,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		IASTNode LookupNonQualifiedProperty(IASTNode property)
 		{
-			FromElement fromElement = (FromElement) _currentFromClause.GetExplicitFromElements()[0];
+			FromElement fromElement = _currentFromClause.GetExplicitFromElementsTyped()[0];
 			IASTNode syntheticDotNode = GenerateSyntheticDotNodeForNonQualifiedPropertyRef( property, fromElement );
 			return LookupProperty( syntheticDotNode, false, _currentClauseType == SELECT );
 		}
@@ -1043,8 +1104,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			get
 			{
-				// Note: once we add support for "JOIN ... ON ...",
-				// the ON clause needs to get included here
+				//Note: "JOIN ... ON ..." case is treated as "JOIN ... WITH ..." by parser 
 				return CurrentClauseType == WHERE ||
 						CurrentClauseType == WITH ||
 						IsInCase;
@@ -1143,8 +1203,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 				FromElement referencedFromElement = visitor.GetReferencedFromElement();
 				if (referencedFromElement != fromElement)
 				{
-					throw new InvalidWithClauseException(
-						"with-clause expressions did not reference from-clause element to which the with-clause was associated");
+					if (!referencedFromElement.IsEntityJoin() && !fromElement.IsEntityJoin())
+						throw new InvalidWithClauseException(
+							"with-clause expressions did not reference from-clause element to which the with-clause was associated");
 				}
 				SqlGenerator sql = new SqlGenerator(_sessionFactoryHelper.Factory, new CommonTreeNodeStream(adaptor, hqlSqlWithNode.GetChild(0)));
 
@@ -1195,14 +1256,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				DotNode dotNode = ( DotNode ) node;
 				FromElement fromElement = dotNode.FromElement;
-				if ( _referencedFromElement != null )
-				{
-					if ( fromElement != _referencedFromElement ) 
-					{
-						throw new HibernateException( "with-clause referenced two different from-clause elements" );
-					}
-				}
-				else
+				if ( _referencedFromElement == null )
 				{
 					_referencedFromElement = fromElement;
 					_joinAlias = ExtractAppliedAlias( dotNode );

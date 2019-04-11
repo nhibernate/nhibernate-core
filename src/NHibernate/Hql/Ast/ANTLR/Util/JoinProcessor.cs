@@ -1,16 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
-using NHibernate.Impl;
-using NHibernate.Param;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Util
 {
@@ -74,7 +66,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			FromClause fromClause = query.FromClause;
 			var supportRootAlias = !(query is DeleteStatement || query is UpdateStatement);
 
-			IList<IASTNode> fromElements;
+			IList<FromElement> fromElements;
 			if ( DotNode.UseThetaStyleImplicitJoins ) 
 			{
 				// for regression testing against output from the old parser...
@@ -83,8 +75,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				// expected by the old parser; this is definitely another of those "only needed
 				// for regression purposes".  The SyntheticAndFactory, then, simply injects them as it
 				// encounters them.
-				fromElements = new List<IASTNode>();
-				IList<IASTNode> t = fromClause.GetFromElements();
+				fromElements = new List<FromElement>();
+				var t = fromClause.GetFromElementsTyped();
 
 				for (int i = t.Count - 1; i >= 0; i--)
 				{
@@ -93,7 +85,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			}
 			else 
 			{
-				fromElements = fromClause.GetFromElements();
+				fromElements = fromClause.GetFromElementsTyped();
 			}
 
 			// Iterate through the alias,JoinSequence pairs and generate SQL token nodes.

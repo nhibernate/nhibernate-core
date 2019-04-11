@@ -291,12 +291,8 @@ namespace NHibernate.Loader.Hql
 					}
 					else if (element.DataType.IsEntityType)
 					{
-						var entityType = (EntityType) element.DataType;
-						if (entityType.IsOneToOne)
-						{
-							_owners[i] = fromElementList.IndexOf(element.Origin);
-						}
-						_ownerAssociationTypes[i] = entityType;
+						_owners[i] = fromElementList.IndexOf(element.Origin);
+						_ownerAssociationTypes[i] = (EntityType) element.DataType;
 					}
 				}
 			}
