@@ -2,7 +2,10 @@ using System;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	internal class MappingsConfiguration : IMappingsConfiguration
+	public class MappingsConfiguration 
+#pragma warning disable 618
+		: IMappingsConfiguration
+#pragma warning restore 618
 	{
 		private readonly FluentSessionFactoryConfiguration fc;
 
@@ -11,24 +14,42 @@ namespace NHibernate.Cfg.Loquacious
 			fc = parent;
 		}
 
-		#region Implementation of IMappingsConfiguration
-
-		public IMappingsConfiguration UsingDefaultCatalog(string defaultCatalogName)
+		public MappingsConfiguration UsingDefaultCatalog(string defaultCatalogName)
 		{
 			fc.Configuration.SetProperty(Environment.DefaultCatalog, defaultCatalogName);
 			return this;
 		}
 
-		public IFluentSessionFactoryConfiguration UsingDefaultSchema(string defaultSchemaName)
+		public FluentSessionFactoryConfiguration UsingDefaultSchema(string defaultSchemaName)
+		{
+			fc.Configuration.SetProperty(Environment.DefaultSchema, defaultSchemaName);
+			return fc;
+		}
+
+#pragma warning disable 618
+		#region Implementation of IMappingsConfiguration
+
+		IMappingsConfiguration IMappingsConfiguration.UsingDefaultCatalog(string defaultCatalogName)
+
+		{
+			fc.Configuration.SetProperty(Environment.DefaultCatalog, defaultCatalogName);
+			return this;
+		}
+
+		IFluentSessionFactoryConfiguration IMappingsConfiguration.UsingDefaultSchema(string defaultSchemaName)
 		{
 			fc.Configuration.SetProperty(Environment.DefaultSchema, defaultSchemaName);
 			return fc;
 		}
 
 		#endregion
+#pragma warning restore 618
 	}
 
-	internal class MappingsConfigurationProperties:IMappingsConfigurationProperties
+	public class MappingsConfigurationProperties
+#pragma warning disable 618
+		:IMappingsConfigurationProperties
+#pragma warning restore 618
 	{
 		private readonly Configuration configuration;
 

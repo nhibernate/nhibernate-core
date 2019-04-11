@@ -4,13 +4,16 @@ using NHibernate.Linq;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	internal class FluentSessionFactoryConfiguration : IFluentSessionFactoryConfiguration
+	public class FluentSessionFactoryConfiguration 
+#pragma warning disable 618
+		: IFluentSessionFactoryConfiguration
+#pragma warning restore 618
 	{
-		private readonly Configuration configuration;
+		private readonly Configuration _configuration;
 
 		public FluentSessionFactoryConfiguration(Configuration configuration)
 		{
-			this.configuration = configuration;
+			_configuration = configuration;
 			Integrate = new DbIntegrationConfiguration(configuration);
 			Caching = new CacheConfiguration(this);
 			Proxy = new ProxyConfiguration(this);
@@ -20,55 +23,130 @@ namespace NHibernate.Cfg.Loquacious
 
 		internal Configuration Configuration
 		{
-			get { return configuration; }
+			get { return _configuration; }
 		}
 
-		#region Implementation of IFluentSessionFactoryConfiguration
-
-		public IFluentSessionFactoryConfiguration Named(string sessionFactoryName)
+		/// <summary>
+		/// Set the SessionFactory mnemonic name.
+		/// </summary>
+		/// <param name="sessionFactoryName">The mnemonic name.</param>
+		/// <returns>The fluent configuration itself.</returns>
+		/// <remarks>
+		/// The SessionFactory mnemonic name can be used as a surrogate key in a multi-DB application. 
+		/// </remarks>
+		public FluentSessionFactoryConfiguration Named(string sessionFactoryName)
 		{
-			configuration.SetProperty(Environment.SessionFactoryName, sessionFactoryName);
+			_configuration.SetProperty(Environment.SessionFactoryName, sessionFactoryName);
 			return this;
 		}
 
-		public IDbIntegrationConfiguration Integrate { get; private set; }
+		/// <summary>
+		/// DataBase integration configuration.
+		/// </summary>
+		public DbIntegrationConfiguration Integrate { get; }
 
-		public ICacheConfiguration Caching { get; private set; }
+		/// <summary>
+		/// Cache configuration.
+		/// </summary>
+		public CacheConfiguration Caching { get; }
 
-		public IFluentSessionFactoryConfiguration GenerateStatistics()
+		public FluentSessionFactoryConfiguration GenerateStatistics()
 		{
-			configuration.SetProperty(Environment.GenerateStatistics, "true");
+			_configuration.SetProperty(Environment.GenerateStatistics, "true");
 			return this;
 		}
 
-		public IFluentSessionFactoryConfiguration DefaultFlushMode(FlushMode flushMode)
+		public FluentSessionFactoryConfiguration DefaultFlushMode(FlushMode flushMode)
 		{
-			configuration.SetProperty(Environment.DefaultFlushMode, flushMode.ToString());
+			_configuration.SetProperty(Environment.DefaultFlushMode, flushMode.ToString());
 			return this;
 		}
 
-		public IFluentSessionFactoryConfiguration ParsingHqlThrough<TQueryTranslator>()
+		public FluentSessionFactoryConfiguration ParsingHqlThrough<TQueryTranslator>()
 			where TQueryTranslator : IQueryTranslatorFactory
 		{
-			configuration.SetProperty(Environment.QueryTranslator, typeof (TQueryTranslator).AssemblyQualifiedName);
+			_configuration.SetProperty(Environment.QueryTranslator, typeof (TQueryTranslator).AssemblyQualifiedName);
 			return this;
 		}
 
-		public IFluentSessionFactoryConfiguration ParsingLinqThrough<TQueryProvider>()
+		public FluentSessionFactoryConfiguration ParsingLinqThrough<TQueryProvider>()
 			where TQueryProvider : INhQueryProvider
 		{
-			configuration.SetProperty(Environment.QueryLinqProvider, typeof(TQueryProvider).AssemblyQualifiedName);
+			_configuration.SetProperty(Environment.QueryLinqProvider, typeof(TQueryProvider).AssemblyQualifiedName);
 			return this;
 		}
 
-		public IProxyConfiguration Proxy { get; private set; }
-		public ICollectionFactoryConfiguration GeneratingCollections { get; private set; }
-		public IMappingsConfiguration Mapping { get; private set; }
+		public ProxyConfiguration Proxy { get; }
+		public CollectionFactoryConfiguration GeneratingCollections { get; }
+		public MappingsConfiguration Mapping { get; }
+#pragma warning disable 618
+		#region Implementation of IFluentSessionFactoryConfiguration
+
+		IFluentSessionFactoryConfiguration IFluentSessionFactoryConfiguration.Named(string sessionFactoryName)
+
+		{
+			_configuration.SetProperty(Environment.SessionFactoryName, sessionFactoryName);
+			return this;
+		}
+
+		IDbIntegrationConfiguration IFluentSessionFactoryConfiguration.Integrate
+		{
+			get { return Integrate; }
+		}
+
+		ICacheConfiguration IFluentSessionFactoryConfiguration.Caching
+		{
+			get { return Caching; }
+		}
+
+		IFluentSessionFactoryConfiguration IFluentSessionFactoryConfiguration.GenerateStatistics()
+		{
+			_configuration.SetProperty(Environment.GenerateStatistics, "true");
+			return this;
+		}
+
+		IFluentSessionFactoryConfiguration IFluentSessionFactoryConfiguration.DefaultFlushMode(FlushMode flushMode)
+		{
+			_configuration.SetProperty(Environment.DefaultFlushMode, flushMode.ToString());
+			return this;
+		}
+
+		IFluentSessionFactoryConfiguration IFluentSessionFactoryConfiguration.ParsingHqlThrough<TQueryTranslator>()
+		{
+			_configuration.SetProperty(Environment.QueryTranslator, typeof (TQueryTranslator).AssemblyQualifiedName);
+			return this;
+		}
+
+		IFluentSessionFactoryConfiguration IFluentSessionFactoryConfiguration.ParsingLinqThrough<TQueryProvider>()
+		{
+			_configuration.SetProperty(Environment.QueryLinqProvider, typeof(TQueryProvider).AssemblyQualifiedName);
+			return this;
+		}
+
+		IProxyConfiguration IFluentSessionFactoryConfiguration.Proxy
+		{
+			get { return Proxy; }
+		}
+
+		ICollectionFactoryConfiguration IFluentSessionFactoryConfiguration.GeneratingCollections
+		{
+			get { return GeneratingCollections; }
+		}
+
+		IMappingsConfiguration IFluentSessionFactoryConfiguration.Mapping
+		{
+			get { return Mapping; }
+		}
 
 		#endregion
+#pragma warning restore 618
+
 	}
 
-	internal class CollectionFactoryConfiguration : ICollectionFactoryConfiguration
+	public class CollectionFactoryConfiguration 
+#pragma warning disable 618
+		: ICollectionFactoryConfiguration
+#pragma warning restore 618
 	{
 		private readonly FluentSessionFactoryConfiguration fc;
 
@@ -77,10 +155,18 @@ namespace NHibernate.Cfg.Loquacious
 			fc = parent;
 		}
 
+		public FluentSessionFactoryConfiguration Through<TCollectionsFactory>()
+			where TCollectionsFactory : ICollectionTypeFactory
+		{
+			fc.Configuration.SetProperty(Environment.CollectionTypeFactoryClass,
+										typeof (TCollectionsFactory).AssemblyQualifiedName);
+			return fc;
+		}
+
+#pragma warning disable 618
 		#region Implementation of ICollectionFactoryConfiguration
 
-		public IFluentSessionFactoryConfiguration Through<TCollecionsFactory>()
-			where TCollecionsFactory : ICollectionTypeFactory
+		IFluentSessionFactoryConfiguration ICollectionFactoryConfiguration.Through<TCollecionsFactory>()
 		{
 			fc.Configuration.SetProperty(Environment.CollectionTypeFactoryClass,
 			                             typeof (TCollecionsFactory).AssemblyQualifiedName);
@@ -88,5 +174,6 @@ namespace NHibernate.Cfg.Loquacious
 		}
 
 		#endregion
+#pragma warning restore 618
 	}
 }
