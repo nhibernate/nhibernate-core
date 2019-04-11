@@ -551,7 +551,7 @@ namespace NHibernate.Cache
 
 		protected virtual bool IsUpToDate(ISet<string> spaces, long timestamp)
 		{
-			return _updateTimestampsCache.IsUpToDate(spaces, timestamp);
+			return spaces.Count == 0 || _updateTimestampsCache.IsUpToDate(spaces, timestamp);
 		}
 	}
 }
