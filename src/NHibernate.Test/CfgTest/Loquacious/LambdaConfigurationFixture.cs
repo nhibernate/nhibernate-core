@@ -1,4 +1,5 @@
 using System.Data;
+using NHibernate.AdoNet;
 using NHibernate.Bytecode;
 using NHibernate.Cache;
 using NHibernate.Cfg;
