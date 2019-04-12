@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-
+using System.Threading;
 using NHibernate.Cfg;
 using NHibernate.Util;
 
@@ -17,6 +16,7 @@ namespace NHibernate.Cache
 	/// </summary>
 	public partial class UpdateTimestampsCache
 	{
+		private static readonly ReaderWriterLockSlim Lock = new ReaderWriterLockSlim();
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(UpdateTimestampsCache));
 		private readonly CacheBase _updateTimestamps;
 
@@ -54,14 +54,23 @@ namespace NHibernate.Cache
 			PreInvalidate(spaces.OfType<string>().ToList());
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual void PreInvalidate(IReadOnlyCollection<string> spaces)
 		{
-			//TODO: to handle concurrent writes correctly, this should return a Lock to the client
-			var ts = _updateTimestamps.NextTimestamp() + _updateTimestamps.Timeout;
-			SetSpacesTimestamp(spaces, ts);
+			if (spaces.Count == 0)
+				return;
 
-			//TODO: return new Lock(ts);
+			Lock.EnterUpgradeableReadLock();
+			try
+			{
+				//TODO: to handle concurrent writes correctly, this should return a Lock to the client
+				var timestamp = _updateTimestamps.NextTimestamp() + _updateTimestamps.Timeout;
+				SetSpacesTimestamp(spaces, timestamp);
+				//TODO: return new Lock(ts);
+			}
+			finally
+			{
+				Lock.ExitUpgradeableReadLock();
+			}
 		}
 
 		//Since v5.1
@@ -72,45 +81,63 @@ namespace NHibernate.Cache
 			Invalidate(spaces.OfType<string>().ToList());
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual void Invalidate(IReadOnlyCollection<string> spaces)
-		{
-			//TODO: to handle concurrent writes correctly, the client should pass in a Lock
-			long ts = _updateTimestamps.NextTimestamp();
-			//TODO: if lock.getTimestamp().equals(ts)
-			if (log.IsDebugEnabled())
-				log.Debug("Invalidating spaces [{0}]", StringHelper.CollectionToString(spaces));
-			SetSpacesTimestamp(spaces, ts);
-		}
-
-		private void SetSpacesTimestamp(IReadOnlyCollection<string> spaces, long ts)
 		{
 			if (spaces.Count == 0)
 				return;
 
-			var timestamps = new object[spaces.Count];
-			for (var i = 0; i < timestamps.Length; i++)
+			Lock.EnterUpgradeableReadLock();
+			try
 			{
-				timestamps[i] = ts;
+				//TODO: to handle concurrent writes correctly, the client should pass in a Lock
+				long ts = _updateTimestamps.NextTimestamp();
+				//TODO: if lock.getTimestamp().equals(ts)
+				if (log.IsDebugEnabled())
+					log.Debug("Invalidating spaces [{0}]", StringHelper.CollectionToString(spaces));
+				SetSpacesTimestamp(spaces, ts);
 			}
-
-			_updateTimestamps.PutMany(spaces.ToArray(), timestamps);
+			finally
+			{
+				Lock.ExitUpgradeableReadLock();
+			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
+		private void SetSpacesTimestamp(IReadOnlyCollection<string> spaces, long ts)
+		{
+			Lock.EnterWriteLock();
+			try
+			{
+				var timestamps = ArrayHelper.Fill<object>(ts, spaces.Count);
+				_updateTimestamps.PutMany(spaces.ToArray<object>(), timestamps);
+			}
+			finally
+			{
+				Lock.ExitWriteLock();
+			}
+		}
+
 		public virtual bool IsUpToDate(ISet<string> spaces, long timestamp /* H2.1 has Long here */)
 		{
 			if (spaces.Count == 0)
 				return true;
 
-			var lastUpdates = _updateTimestamps.GetMany(spaces.ToArray());
-			return lastUpdates.All(lastUpdate => !IsOutdated(lastUpdate as long?, timestamp));
+			Lock.EnterReadLock();
+			try
+			{
+				var lastUpdates = _updateTimestamps.GetMany(spaces.ToArray<object>());
+				return lastUpdates.All(lastUpdate => !IsOutdated(lastUpdate as long?, timestamp));
+			}
+			finally
+			{
+				Lock.ExitReadLock();
+			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual bool[] AreUpToDate(ISet<string>[] spaces, long[] timestamps)
 		{
-			var results = new bool[spaces.Length];
+			if (spaces.Length == 0)
+				return Array.Empty<bool>();
+
 			var allSpaces = new HashSet<string>();
 			foreach (var sp in spaces)
 			{
@@ -119,34 +146,38 @@ namespace NHibernate.Cache
 
 			if (allSpaces.Count == 0)
 			{
+				return ArrayHelper.Fill(true, spaces.Length);
+			}
+
+			Lock.EnterReadLock();
+			try
+			{
+				var keys = new object[allSpaces.Count];
+				var index = 0;
+				foreach (var space in allSpaces)
+				{
+					keys[index++] = space;
+				}
+
+				index = 0;
+				var lastUpdatesBySpace =
+					_updateTimestamps
+						.GetMany(keys)
+						.ToDictionary(u => keys[index++], u => u as long?);
+
+				var results = new bool[spaces.Length];
 				for (var i = 0; i < spaces.Length; i++)
 				{
-					results[i] = true;
+					var timestamp = timestamps[i];
+					results[i] = spaces[i].All(space => !IsOutdated(lastUpdatesBySpace[space], timestamp));
 				}
 
 				return results;
 			}
-
-			var keys = new object[allSpaces.Count];
-			var index = 0;
-			foreach (var space in allSpaces)
+			finally
 			{
-				keys[index++] = space;
+				Lock.ExitReadLock();
 			}
-
-			index = 0;
-			var lastUpdatesBySpace =
-				_updateTimestamps
-					.GetMany(keys)
-					.ToDictionary(u => keys[index++], u => u as long?);
-
-			for (var i = 0; i < spaces.Length; i++)
-			{
-				var timestamp = timestamps[i];
-				results[i] = spaces[i].All(space => !IsOutdated(lastUpdatesBySpace[space], timestamp));
-			}
-
-			return results;
 		}
 
 		// Since v5.3
@@ -157,7 +188,7 @@ namespace NHibernate.Cache
 			// not the responsibility of this class.
 		}
 
-		private bool IsOutdated(long? lastUpdate, long timestamp)
+		private static bool IsOutdated(long? lastUpdate, long timestamp)
 		{
 			if (!lastUpdate.HasValue)
 			{
