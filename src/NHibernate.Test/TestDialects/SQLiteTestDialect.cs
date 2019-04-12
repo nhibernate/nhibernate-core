@@ -51,5 +51,7 @@ namespace NHibernate.Test.TestDialects
 		/// Does not support update locks
 		/// </summary>
 		public override bool SupportsSelectForUpdate => false;
+
+		public override bool SupportsAggregateInSubSelect => true;
 	}
 }

@@ -82,7 +82,7 @@ namespace NHibernate.Test
 
 		public virtual bool SupportsDuplicatedColumnAliases => true;
 
-		public virtual bool SupportsAggregateInSubSelect => true;
+		public virtual bool SupportsAggregateInSubSelect => false;
 
 		/// <summary>
 		/// Supports inserting in a table without any column specified in the insert.

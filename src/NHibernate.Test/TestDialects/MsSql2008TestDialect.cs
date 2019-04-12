@@ -11,7 +11,5 @@
 		/// Does not support SELECT FOR UPDATE with paging
 		/// </summary>
 		public override bool SupportsSelectForUpdateWithPaging => false;
-
-		public override bool SupportsAggregateInSubSelect => false;
 	}
 }
