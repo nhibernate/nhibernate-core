@@ -56,7 +56,7 @@ namespace NHibernate.Test.Hql
 			args.Clear();
 			args.Add("'123'");
 			args.Add("NO_TYPE");
-			Assert.Throws<QueryException>(() => cf.Render(args, factoryImpl));
+			Assert.Throws<QueryException>(() => cf.Render(args, factoryImpl), "Invalid type accepted");
 		}
 
 		[Test]
@@ -115,7 +115,7 @@ namespace NHibernate.Test.Hql
 		{
 			//ANSI-SQL92 definition
 			//<general set function> ::=
-			//<set function type> <leftparen> [ <setquantifier> ] <value expression> <right paren>
+			//<set function type> <left paren> [ <setquantifier> ] <value expression> <right paren>
 			//<set function type> : := AVG | MAX | MIN | SUM | COUNT
 			//<setquantifier> ::= DISTINCT | ALL
 			IList args = new ArrayList();
@@ -153,7 +153,7 @@ namespace NHibernate.Test.Hql
 			args.Clear();
 			args.Add("va1");
 			args.Add("va2");
-			Assert.Throws<QueryException>(() => ccf.Render(args, factoryImpl));
+			Assert.Throws<QueryException>(() => ccf.Render(args, factoryImpl), "No exception 2 argument without <setquantifier>");
 		}
 
 		[Test]
@@ -178,7 +178,7 @@ namespace NHibernate.Test.Hql
 			args.Clear();
 			args.Add("va1");
 			args.Add("va2");
-			Assert.Throws<QueryException>(() => caf.Render(args, factoryImpl));
+			Assert.Throws<QueryException>(() => caf.Render(args, factoryImpl), "No exception 2 argument without <setquantifier>");
 		}
 
 		[Test]
@@ -198,7 +198,7 @@ namespace NHibernate.Test.Hql
 			args.Clear();
 			args.Add("va1");
 			args.Add("va2");
-			Assert.Throws<QueryException>(() => caf.Render(args, factoryImpl));
+			Assert.Throws<QueryException>(() => caf.Render(args, factoryImpl), "No exception 2 argument without <setquantifier>");
 
 			args.Clear();
 			args.Add("*");
@@ -223,13 +223,13 @@ namespace NHibernate.Test.Hql
 			Assert.AreEqual("substring(var1 from 3 for 4)", asf.Render(args, factoryImpl).ToString());
 
 			args.Clear();
-			Assert.Throws<QueryException>(() => asf.Render(args, factoryImpl));
+			Assert.Throws<QueryException>(() => asf.Render(args, factoryImpl), "Expected 'Not enough parameters' exception");
 			args.Clear();
 			args.Add("1");
 			args.Add("2");
 			args.Add("3");
 			args.Add("4");
-			Assert.Throws<QueryException>(() => asf.Render(args, factoryImpl));
+			Assert.Throws<QueryException>(() => asf.Render(args, factoryImpl), "Expected 'Not enough parameters' exception");
 		}
 	}
 }
