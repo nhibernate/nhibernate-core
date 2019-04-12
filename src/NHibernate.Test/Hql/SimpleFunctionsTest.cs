@@ -23,15 +23,7 @@ namespace NHibernate.Test.Hql
 			Assert.AreEqual("noArgs", nf.Render(args, factoryImpl).ToString());
 
 			args.Add("aparam");
-			try
-			{
-				SqlString t = nf.Render(args, factoryImpl);
-				Assert.Fail("No exception if has argument");
-			}
-			catch (QueryException)
-			{
-				//correct
-			}
+			Assert.Throws<QueryException>(() => nf.Render(args, factoryImpl));
 		}
 
 		[Test]
@@ -53,15 +45,7 @@ namespace NHibernate.Test.Hql
 			IList args = new ArrayList();
 
 			CastFunction cf = new CastFunction();
-			try
-			{
-				SqlString t = cf.Render(args, factoryImpl);
-				Assert.Fail("No exception if no argument");
-			}
-			catch (QueryException)
-			{
-				//correct
-			}
+			Assert.Throws<QueryException>(() => cf.Render(args, factoryImpl));
 
 			args.Add("'123'");
 			args.Add("long");
@@ -72,15 +56,7 @@ namespace NHibernate.Test.Hql
 			args.Clear();
 			args.Add("'123'");
 			args.Add("NO_TYPE");
-			try
-			{
-				SqlString t = cf.Render(args, factoryImpl);
-				Assert.Fail("Ivalid type accepted");
-			}
-			catch (QueryException)
-			{
-				//correct
-			}
+			Assert.Throws<QueryException>(() => cf.Render(args, factoryImpl));
 		}
 
 		[Test]
@@ -156,15 +132,7 @@ namespace NHibernate.Test.Hql
 			args.Clear();
 			args.Add("va1");
 			args.Add("va2");
-			try
-			{
-				SqlString t = csf.Render(args, factoryImpl);
-				Assert.Fail("No exception 2 argument without <setquantifier>:" + t);
-			}
-			catch (QueryException)
-			{
-				//correct
-			}
+			Assert.Throws<QueryException>(() => csf.Render(args, factoryImpl));
 		}
 
 		[Test]
@@ -185,15 +153,7 @@ namespace NHibernate.Test.Hql
 			args.Clear();
 			args.Add("va1");
 			args.Add("va2");
-			try
-			{
-				SqlString t = ccf.Render(args, factoryImpl);
-				Assert.Fail("No exception 2 argument without <setquantifier>:" + t);
-			}
-			catch (QueryException)
-			{
-				//correct
-			}
+			Assert.Throws<QueryException>(() => ccf.Render(args, factoryImpl));
 		}
 
 		[Test]
@@ -218,15 +178,7 @@ namespace NHibernate.Test.Hql
 			args.Clear();
 			args.Add("va1");
 			args.Add("va2");
-			try
-			{
-				SqlString t = caf.Render(args, factoryImpl);
-				Assert.Fail("No exception 2 argument without <setquantifier>:" + t);
-			}
-			catch (QueryException)
-			{
-				//correct
-			}
+			Assert.Throws<QueryException>(() => caf.Render(args, factoryImpl));
 		}
 
 		[Test]
@@ -246,27 +198,11 @@ namespace NHibernate.Test.Hql
 			args.Clear();
 			args.Add("va1");
 			args.Add("va2");
-			try
-			{
-				SqlString t = caf.Render(args, factoryImpl);
-				Assert.Fail("No exception 2 argument without <setquantifier>:" + t);
-			}
-			catch (QueryException)
-			{
-				//correct
-			}
+			Assert.Throws<QueryException>(() => caf.Render(args, factoryImpl));
 
 			args.Clear();
 			args.Add("*");
-			try
-			{
-				SqlString t = caf.Render(args, factoryImpl);
-				Assert.Fail("No exception '*' :" + t);
-			}
-			catch (QueryException)
-			{
-				//correct
-			}
+			Assert.Throws<QueryException>(() => caf.Render(args, factoryImpl));
 		}
 
 		[Test]
@@ -287,29 +223,13 @@ namespace NHibernate.Test.Hql
 			Assert.AreEqual("substring(var1 from 3 for 4)", asf.Render(args, factoryImpl).ToString());
 
 			args.Clear();
-			try
-			{
-				SqlString t = asf.Render(args, factoryImpl);
-				Assert.Fail("Not threw 'Not enough parameters' exception:" + t);
-			}
-			catch (QueryException)
-			{
-				//correct
-			}
+			Assert.Throws<QueryException>(() => asf.Render(args, factoryImpl));
 			args.Clear();
 			args.Add("1");
 			args.Add("2");
 			args.Add("3");
 			args.Add("4");
-			try
-			{
-				SqlString t = asf.Render(args, factoryImpl);
-				Assert.Fail("Not threw 'Not enough parameters' exception:" + t);
-			}
-			catch (QueryException)
-			{
-				//correct
-			}
+			Assert.Throws<QueryException>(() => asf.Render(args, factoryImpl));
 		}
 	}
 }
