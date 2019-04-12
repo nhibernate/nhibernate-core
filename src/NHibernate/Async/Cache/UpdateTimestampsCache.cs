@@ -139,13 +139,7 @@ namespace NHibernate.Cache
 				if (spaces.Count == 0)
 					return true;
 
-				var keys = new object[spaces.Count];
-				var index = 0;
-				foreach (var space in spaces)
-				{
-					keys[index++] = space;
-				}
-				var lastUpdates = await (_updateTimestamps.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
+				var lastUpdates = await (_updateTimestamps.GetManyAsync(spaces.ToArray(), cancellationToken)).ConfigureAwait(false);
 				return lastUpdates.All(lastUpdate => !IsOutdated(lastUpdate as long?, timestamp));
 			}
 		}
