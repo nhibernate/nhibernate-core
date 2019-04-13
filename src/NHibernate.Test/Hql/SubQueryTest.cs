@@ -35,6 +35,11 @@ namespace NHibernate.Test.Hql
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect.SupportsScalarSubSelects;
+		}
+
 		[TestCase("SELECT CASE WHEN l.id IS NOT NULL THEN (SELECT COUNT(r.id) FROM Root r) ELSE 0 END FROM Leaf l")]
 		[TestCase("SELECT CASE WHEN (SELECT COUNT(r.id) FROM Root r) > 1 THEN 1 ELSE 0 END FROM Leaf l")]
 		[TestCase("SELECT CASE WHEN  l.id > 1 THEN 1 ELSE (SELECT COUNT(r.id) FROM Root r) END FROM Leaf l")]
@@ -42,11 +47,6 @@ namespace NHibernate.Test.Hql
 		[TestCase("SELECT CASE l.id WHEN (SELECT COUNT(r.id) FROM Root r) THEN 1 ELSE 0 END FROM Leaf l")]
 		public void TestSubQuery(string query)
 		{
-			if (!Dialect.SupportsScalarSubSelects)
-			{
-				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
-			}
-
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{

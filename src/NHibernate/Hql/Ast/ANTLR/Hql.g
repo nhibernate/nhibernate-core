@@ -527,7 +527,6 @@ unaryExpression
 	;
 	
 caseExpression
-	// NOTE : the unaryExpression rule contains the subQuery rule
 	: simpleCaseStatement
 	| searchedCaseStatement
 	;
