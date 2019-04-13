@@ -55,11 +55,20 @@ namespace NHibernate
 		internal static ILoggerFactory LegacyLoggerFactory { get; private set; }
 #pragma warning restore 618
 
-		static NHibernateLogger()
+		private static class LogWrapper
 		{
-			var nhibernateLoggerClass = GetNhibernateLoggerClass();
-			var loggerFactory = string.IsNullOrEmpty(nhibernateLoggerClass) ? null : GetLoggerFactory(nhibernateLoggerClass);
-			SetLoggersFactory(loggerFactory);
+			static LogWrapper()
+			{
+				var userLoggerFactory = _loggerFactory;
+				if (userLoggerFactory == null)
+				{
+					var nhibernateLoggerClass = GetNhibernateLoggerClass();
+					var loggerFactory = string.IsNullOrEmpty(nhibernateLoggerClass) ? null : GetLoggerFactory(nhibernateLoggerClass);
+					SetLoggersFactory(loggerFactory);
+				}
+			}
+
+			public static INHibernateLoggerFactory LoggerFactory => _loggerFactory;
 		}
 
 		/// <summary>
@@ -97,7 +106,7 @@ namespace NHibernate
 		/// <returns>A NHibernate logger.</returns>
 		public static INHibernateLogger For(string keyName)
 		{
-			return _loggerFactory.LoggerFor(keyName);
+			return LogWrapper.LoggerFactory.LoggerFor(keyName);
 		}
 
 		/// <summary>
@@ -107,7 +116,7 @@ namespace NHibernate
 		/// <returns>A NHibernate logger.</returns>
 		public static INHibernateLogger For(System.Type type)
 		{
-			return _loggerFactory.LoggerFor(type);
+			return LogWrapper.LoggerFactory.LoggerFor(type);
 		}
 
 		private static string GetNhibernateLoggerClass()
