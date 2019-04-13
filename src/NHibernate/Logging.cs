@@ -52,7 +52,8 @@ namespace NHibernate
 		private static INHibernateLoggerFactory _loggerFactory;
 
 #pragma warning disable 618
-		internal static ILoggerFactory LegacyLoggerFactory { get; private set; }
+		private static ILoggerFactory _legacyLoggerFactory;
+		internal static ILoggerFactory LegacyLoggerFactory => LogWrapper.LegacyLoggerFactory; 
 #pragma warning restore 618
 
 		private static class LogWrapper
@@ -69,6 +70,10 @@ namespace NHibernate
 			}
 
 			public static INHibernateLoggerFactory LoggerFactory => _loggerFactory;
+
+#pragma warning disable 618
+			internal static ILoggerFactory LegacyLoggerFactory => _legacyLoggerFactory;
+#pragma warning restore 618
 		}
 
 		/// <summary>
@@ -83,17 +88,17 @@ namespace NHibernate
 			// Also keep global state for obsolete logger
 			if (loggerFactory == null)
 			{
-				LegacyLoggerFactory = new NoLoggingLoggerFactory();
+				_legacyLoggerFactory = new NoLoggingLoggerFactory();
 			}
 			else
 			{
 				if (loggerFactory is LoggerProvider.LegacyLoggerFactoryAdaptor legacyAdaptor)
 				{
-					LegacyLoggerFactory = legacyAdaptor.Factory;
+					_legacyLoggerFactory = legacyAdaptor.Factory;
 				}
 				else
 				{
-					LegacyLoggerFactory = new LoggerProvider.ReverseLegacyLoggerFactoryAdaptor(loggerFactory);
+					_legacyLoggerFactory = new LoggerProvider.ReverseLegacyLoggerFactoryAdaptor(loggerFactory);
 				}
 			}
 #pragma warning restore 618
