@@ -1407,8 +1407,12 @@ namespace NHibernate.Cfg
 		}
 
 		//NH-3724
-		[field: NonSerialized]
-		public Delegate NotificationHandler { get; set; }
+		
+		public Delegate NotificationHandler
+		{
+			get => _notificationHandler;
+			set => _notificationHandler = value;
+		}
 
 		/// <summary>
 		/// Sets the default interceptor for use by all sessions.
@@ -1935,6 +1939,9 @@ namespace NHibernate.Cfg
 		#endregion
 
 		private XmlSchemas schemas;
+		
+		[NonSerialized]
+		private Delegate _notificationHandler;
 
 		private XmlSchemas Schemas
 		{
