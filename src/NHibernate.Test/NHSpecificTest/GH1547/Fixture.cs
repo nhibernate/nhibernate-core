@@ -179,6 +179,11 @@ namespace NHibernate.Test.NHSpecificTest.GH1547
 			_driverImplementation.Configure(settings);
 		}
 
+		public void AddNotificationHandler(DbConnection con, Delegate handler)
+		{
+			_driverImplementation.AddNotificationHandler(con, handler);
+		}
+
 		DbConnection IDriver.CreateConnection()
 		{
 			return _driverImplementation.CreateConnection();
