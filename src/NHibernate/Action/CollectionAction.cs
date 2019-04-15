@@ -14,7 +14,12 @@ namespace NHibernate.Action
 	/// Any action relating to insert/update/delete of a collection
 	/// </summary>
 	[Serializable]
-	public abstract partial class CollectionAction : IAsyncExecutable, IComparable<CollectionAction>, IDeserializationCallback, IAfterTransactionCompletionProcess
+	public abstract partial class CollectionAction: 
+		IAsyncExecutable, 
+		IComparable<CollectionAction>,
+		IDeserializationCallback,
+		IAfterTransactionCompletionProcess,
+		ICacheableExecutable
 	{
 		private readonly object key;
 		[NonSerialized] private ICollectionPersister persister;
@@ -76,6 +81,8 @@ namespace NHibernate.Action
 		{
 			get { return session; }
 		}
+
+		public bool HasCache => persister.HasCache;
 
 		#region IExecutable Members
 

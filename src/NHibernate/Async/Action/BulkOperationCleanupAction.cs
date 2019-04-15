@@ -20,7 +20,10 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Action
 {
-	public partial class BulkOperationCleanupAction : IAsyncExecutable, IAfterTransactionCompletionProcess
+	public partial class BulkOperationCleanupAction :
+		IAsyncExecutable,
+		IAfterTransactionCompletionProcess,
+		ICacheableExecutable
 	{
 
 		#region IExecutable Members

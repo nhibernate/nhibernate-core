@@ -14,12 +14,16 @@ namespace NHibernate.Action
 	/// Implementation of BulkOperationCleanupAction.
 	/// </summary>
 	[Serializable]
-	public partial class BulkOperationCleanupAction : IAsyncExecutable, IAfterTransactionCompletionProcess
+	public partial class BulkOperationCleanupAction :
+		IAsyncExecutable,
+		IAfterTransactionCompletionProcess,
+		ICacheableExecutable
 	{
 		private readonly ISessionImplementor session;
 		private readonly HashSet<string> affectedEntityNames = new HashSet<string>();
 		private readonly HashSet<string> affectedCollectionRoles = new HashSet<string>();
 		private readonly List<string> spaces;
+		private readonly bool _hasCache;
 
 		public BulkOperationCleanupAction(ISessionImplementor session, IQueryable[] affectedQueryables)
 		{
@@ -29,6 +33,7 @@ namespace NHibernate.Action
 			{
 				if (affectedQueryables[i].HasCache)
 				{
+					_hasCache = true;
 					affectedEntityNames.Add(affectedQueryables[i].EntityName);
 				}
 				ISet<string> roles = session.Factory.GetCollectionRolesByEntityParticipant(affectedQueryables[i].EntityName);
@@ -65,6 +70,7 @@ namespace NHibernate.Action
 				{
 					if (persister.HasCache)
 					{
+						_hasCache = true;
 						affectedEntityNames.Add(persister.EntityName);
 					}
 					ISet<string> roles = session.Factory.GetCollectionRolesByEntityParticipant(persister.EntityName);
@@ -90,6 +96,8 @@ namespace NHibernate.Action
 
 			return entitySpaces.Any(querySpaces.Contains);
 		}
+
+		public bool HasCache => _hasCache;
 
 		#region IExecutable Members
 

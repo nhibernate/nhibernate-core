@@ -216,7 +216,8 @@ namespace NHibernate.Engine
 				RegisterProcess(executable.AfterTransactionCompletionProcess);
 #pragma warning restore 618,619
 			}
-			if (executable.PropertySpaces != null)
+
+			if (executable.PropertySpaces != null && (!(executable is ICacheableExecutable ce) || ce.HasCache))
 			{
 				executedSpaces.UnionWith(executable.PropertySpaces);
 			}
