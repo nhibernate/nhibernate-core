@@ -139,12 +139,10 @@ namespace NHibernate.Multi
 			var resultSetsCommand = Session.Factory.ConnectionProvider.Driver.GetResultSetsCommand(Session);
 			CombineQueries(resultSetsCommand);
 
-			var statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
 			Stopwatch stopWatch = null;
-			if (statsEnabled)
+			if (Session.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWatch = new Stopwatch();
-				stopWatch.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 
 			if (Log.IsDebugEnabled())
@@ -195,14 +193,9 @@ namespace NHibernate.Multi
 					resultSetsCommand.Sql);
 			}
 
-			if (!statsEnabled)
+			if (stopWatch != null && resultSetsCommand.HasQueries)
 			{
-				return;
-			}
-
-			stopWatch.Stop();
-			if (resultSetsCommand.HasQueries)
-			{
+				stopWatch.Stop();
 				Session.Factory.StatisticsImplementor.QueryExecuted(
 					resultSetsCommand.Sql.ToString(),
 					rowCount,
