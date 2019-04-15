@@ -49,7 +49,7 @@ namespace NHibernate.Cache
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
 
-			var results = await (_cache.GetManyAsync(keys.ToArray<object>(), cancellationToken)).ConfigureAwait(false);
+			var results = await (_cache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache hit: {0}", string.Join(",", keys.Where((k, i) => results != null)));

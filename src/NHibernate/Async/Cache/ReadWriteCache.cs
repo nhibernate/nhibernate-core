@@ -73,7 +73,7 @@ namespace NHibernate.Cache
 			var result = new object[keys.Length];
 			using (await _lockObjectAsync.LockAsync())
 			{
-				var lockables = await (_cache.GetManyAsync(keys.ToArray<object>(), cancellationToken)).ConfigureAwait(false);
+				var lockables = await (_cache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
 				for (var i = 0; i < lockables.Length; i++)
 				{
 					var o = (ILockable) lockables[i];
@@ -143,12 +143,12 @@ namespace NHibernate.Cache
 				{
 					log.Debug("Caching: {0}", string.Join(",", keys.AsEnumerable()));
 				}
-				var keysArr = keys.ToArray<object>();
-				var lockValue = await (_cache.LockManyAsync(keysArr, cancellationToken)).ConfigureAwait(false);
+
+				var lockValue = await (_cache.LockManyAsync(keys, cancellationToken)).ConfigureAwait(false);
 				try
 				{
 					var putBatch = new Dictionary<object, object>();
-					var lockables = await (_cache.GetManyAsync(keysArr, cancellationToken)).ConfigureAwait(false);
+					var lockables = await (_cache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
 					for (var i = 0; i < keys.Length; i++)
 					{
 						var key = keys[i];
@@ -184,7 +184,7 @@ namespace NHibernate.Cache
 				}
 				finally
 				{
-					await (_cache.UnlockManyAsync(keysArr, lockValue, cancellationToken)).ConfigureAwait(false);
+					await (_cache.UnlockManyAsync(keys, lockValue, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			return result;
@@ -235,14 +235,7 @@ namespace NHibernate.Cache
 					{
 						if (log.IsDebugEnabled())
 						{
-							if (lockable.IsLock)
-							{
-								log.Debug("Item was locked: {0}", key);
-							}
-							else
-							{
-								log.Debug("Item was already cached: {0}", key);
-							}
+							log.Debug(lockable.IsLock ? "Item was locked: {0}" : "Item was already cached: {0}", key);
 						}
 						return false;
 					}
