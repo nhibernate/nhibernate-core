@@ -53,35 +53,8 @@ namespace NHibernate.Cache
 				/*try
 				{
 					cache.Lock( key );*/
-
-				ILockable lockable = (ILockable) await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
-
-				bool gettable = lockable != null && lockable.IsGettable(txTimestamp);
-
-				if (gettable)
-				{
-					if (log.IsDebugEnabled())
-					{
-						log.Debug("Cache hit: {0}", key);
-					}
-
-					return ((CachedItem) lockable).Value;
-				}
-				else
-				{
-					if (log.IsDebugEnabled())
-					{
-						if (lockable == null)
-						{
-							log.Debug("Cache miss: {0}", key);
-						}
-						else
-						{
-							log.Debug("Cached item was locked: {0}", key);
-						}
-					}
-					return null;
-				}
+				var lockable = (ILockable) await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
+				return GetValue(txTimestamp, key, lockable);
 				/*}
 				finally
 				{
@@ -100,27 +73,11 @@ namespace NHibernate.Cache
 			var result = new object[keys.Length];
 			using (await _lockObjectAsync.LockAsync())
 			{
-				var lockables = await (_cache.GetManyAsync(keys.Select(o => (object) o).ToArray(), cancellationToken)).ConfigureAwait(false);
+				var lockables = await (_cache.GetManyAsync(keys.ToArray<object>(), cancellationToken)).ConfigureAwait(false);
 				for (var i = 0; i < lockables.Length; i++)
 				{
-					var lockable = (ILockable) lockables[i];
-					var gettable = lockable != null && lockable.IsGettable(timestamp);
-
-					if (gettable)
-					{
-						if (log.IsDebugEnabled())
-						{
-							log.Debug("Cache hit: {0}", keys[i]);
-						}
-						result[i] = ((CachedItem) lockable).Value;
-					}
-
-					if (log.IsDebugEnabled())
-					{
-						log.Debug(lockable == null ? "Cache miss: {0}" : "Cached item was locked: {0}", keys[i]);
-					}
-
-					result[i] = null;
+					var o = (ILockable) lockables[i];
+					result[i] = GetValue(timestamp, keys[i], o);
 				}
 			}
 			return result;
@@ -186,7 +143,7 @@ namespace NHibernate.Cache
 				{
 					log.Debug("Caching: {0}", string.Join(",", keys.AsEnumerable()));
 				}
-				var keysArr = keys.Cast<object>().ToArray();
+				var keysArr = keys.ToArray<object>();
 				var lockValue = await (_cache.LockManyAsync(keysArr, cancellationToken)).ConfigureAwait(false);
 				try
 				{
@@ -212,14 +169,9 @@ namespace NHibernate.Cache
 						{
 							if (log.IsDebugEnabled())
 							{
-								if (lockable.IsLock)
-								{
-									log.Debug("Item was locked: {0}", key);
-								}
-								else
-								{
-									log.Debug("Item was already cached: {0}", key);
-								}
+								log.Debug(
+									lockable.IsLock ? "Item was locked: {0}" : "Item was already cached: {0}",
+									key);
 							}
 							result[i] = false;
 						}
