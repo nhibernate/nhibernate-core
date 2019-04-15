@@ -173,14 +173,14 @@ namespace NHibernate.Cache
 			if (Log.IsDebugEnabled())
 				Log.Debug("checking cached query results in region: '{0}'; {1}", _regionName, StringHelper.CollectionToString(keys));
 
-			var cacheables = (await (_cache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false)).Cast<IList>().ToArray();
+			var cacheables = await (_cache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
 
 			var spacesToCheck = new List<ISet<string>>();
 			var checkedSpacesIndexes = new HashSet<int>();
 			var checkedSpacesTimestamp = new List<long>();
 			for (var i = 0; i < keys.Length; i++)
 			{
-				var cacheable = cacheables[i];
+				var cacheable = (IList) cacheables[i];
 				if (cacheable == null)
 				{
 					Log.Debug("query results were not found in cache: {0}", keys[i]);
@@ -209,7 +209,7 @@ namespace NHibernate.Cache
 			var results = new IList[keys.Length];
 			for (var i = 0; i < keys.Length; i++)
 			{
-				var cacheable = cacheables[i];
+				var cacheable = (IList) cacheables[i];
 				if (cacheable == null)
 					continue;
 
