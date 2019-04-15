@@ -19,34 +19,34 @@ namespace NHibernate.Action
 		IAfterTransactionCompletionProcess,
 		ICacheableExecutable
 	{
-		private readonly ISessionImplementor session;
+		private readonly ISessionFactoryImplementor _factory;
 		private readonly HashSet<string> affectedEntityNames = new HashSet<string>();
 		private readonly HashSet<string> affectedCollectionRoles = new HashSet<string>();
-		private readonly List<string> spaces;
+		private readonly string[] spaces;
 		private readonly bool _hasCache;
 
 		public BulkOperationCleanupAction(ISessionImplementor session, IQueryable[] affectedQueryables)
 		{
-			this.session = session;
-			List<string> tmpSpaces = new List<string>();
-			for (int i = 0; i < affectedQueryables.Length; i++)
+			_factory = session.Factory;
+			var tmpSpaces = new HashSet<string>();
+			foreach (var queryables in affectedQueryables)
 			{
-				if (affectedQueryables[i].HasCache)
+				if (queryables.HasCache)
 				{
 					_hasCache = true;
-					affectedEntityNames.Add(affectedQueryables[i].EntityName);
+					affectedEntityNames.Add(queryables.EntityName);
 				}
-				ISet<string> roles = session.Factory.GetCollectionRolesByEntityParticipant(affectedQueryables[i].EntityName);
+
+				var roles = _factory.GetCollectionRolesByEntityParticipant(queryables.EntityName);
 				if (roles != null)
 				{
 					affectedCollectionRoles.UnionWith(roles);
 				}
-				for (int y = 0; y < affectedQueryables[i].QuerySpaces.Length; y++)
-				{
-					tmpSpaces.Add(affectedQueryables[i].QuerySpaces[y]);
-				}
+
+				tmpSpaces.UnionWith(queryables.QuerySpaces);
 			}
-			spaces = new List<string>(tmpSpaces);
+
+			spaces = tmpSpaces.ToArray();
 		}
 
 		/// <summary>
@@ -55,16 +55,15 @@ namespace NHibernate.Action
 		public BulkOperationCleanupAction(ISessionImplementor session, ISet<string> querySpaces)
 		{
 			//from H3.2 TODO: cache the autodetected information and pass it in instead.
-			this.session = session;
+			_factory = session.Factory;
 
-			ISet<string> tmpSpaces = new HashSet<string>(querySpaces);
-			ISessionFactoryImplementor factory = session.Factory;
-			IDictionary<string, IClassMetadata> acmd = factory.GetAllClassMetadata();
+			var tmpSpaces = new HashSet<string>(querySpaces);
+			var acmd = _factory.GetAllClassMetadata();
 			foreach (KeyValuePair<string, IClassMetadata> entry in acmd)
 			{
-				string entityName = entry.Key;
-				IEntityPersister persister = factory.GetEntityPersister(entityName);
-				string[] entitySpaces = persister.QuerySpaces;
+				var entityName = entry.Key;
+				var persister = _factory.GetEntityPersister(entityName);
+				var entitySpaces = persister.QuerySpaces;
 
 				if (AffectedEntity(querySpaces, entitySpaces))
 				{
@@ -73,18 +72,17 @@ namespace NHibernate.Action
 						_hasCache = true;
 						affectedEntityNames.Add(persister.EntityName);
 					}
-					ISet<string> roles = session.Factory.GetCollectionRolesByEntityParticipant(persister.EntityName);
+
+					var roles = session.Factory.GetCollectionRolesByEntityParticipant(persister.EntityName);
 					if (roles != null)
 					{
 						affectedCollectionRoles.UnionWith(roles);
 					}
-					for (int y = 0; y < entitySpaces.Length; y++)
-					{
-						tmpSpaces.Add(entitySpaces[y]);
-					}
+
+					tmpSpaces.UnionWith(entitySpaces);
 				}
 			}
-			spaces = new List<string>(tmpSpaces);
+			spaces = tmpSpaces.ToArray();
 		}
 
 		private bool AffectedEntity(ISet<string> querySpaces, string[] entitySpaces)
@@ -101,10 +99,7 @@ namespace NHibernate.Action
 
 		#region IExecutable Members
 
-		public string[] PropertySpaces
-		{
-			get { return spaces.ToArray(); }
-		}
+		public string[] PropertySpaces => spaces;
 
 		public void BeforeExecutions()
 		{
@@ -142,7 +137,7 @@ namespace NHibernate.Action
 		{
 			if (affectedCollectionRoles != null && affectedCollectionRoles.Any())
 			{
-				session.Factory.EvictCollection(affectedCollectionRoles);
+				_factory.EvictCollection(affectedCollectionRoles);
 			}
 		}
 
@@ -150,7 +145,7 @@ namespace NHibernate.Action
 		{
 			if (affectedEntityNames != null && affectedEntityNames.Any())
 			{
-				session.Factory.EvictEntity(affectedEntityNames);
+				_factory.EvictEntity(affectedEntityNames);
 			}
 		}
 
