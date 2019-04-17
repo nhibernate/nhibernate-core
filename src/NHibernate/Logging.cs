@@ -1,6 +1,7 @@
 using System;
 using System.Configuration;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace NHibernate
 {
@@ -69,10 +70,18 @@ namespace NHibernate
 				}
 			}
 
-			public static INHibernateLoggerFactory LoggerFactory => _loggerFactory;
+			public static INHibernateLoggerFactory LoggerFactory
+			{
+				[MethodImpl(MethodImplOptions.NoInlining)]
+				get => _loggerFactory;
+			}
 
 #pragma warning disable 618
-			internal static ILoggerFactory LegacyLoggerFactory => _legacyLoggerFactory;
+			internal static ILoggerFactory LegacyLoggerFactory
+			{
+				[MethodImpl(MethodImplOptions.NoInlining)]
+				get => _legacyLoggerFactory;
+			}
 #pragma warning restore 618
 		}
 
