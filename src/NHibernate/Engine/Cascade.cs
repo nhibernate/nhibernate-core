@@ -175,7 +175,9 @@ namespace NHibernate.Engine
 							if (componentPathStack.Count == 0)
 							{
 								// association defined on entity
-								loadedValue = entry.GetLoadedValue(propertyName);
+								loadedValue = entry.LoadedState != null
+									? entry.GetLoadedValue(propertyName)
+									: entry.Persister.GetPropertyValue(parent, propertyName);
 
 								// Check this is not a null carrying proxy. The no-proxy load is currently handled by
 								// putting a proxy (!) flagged for unwrapping (even for non-constrained one-to-one,
