@@ -31,9 +31,9 @@ before_install:
     if [[ "$DB" == "Firebird" ]]
     then
       sudo apt-get install -y libicu-dev libtommath-dev curl
-      curl -L -O https://github.com/FirebirdSQL/firebird/releases/download/R3_0_3/Firebird-3.0.3.32900-0.amd64.tar.gz
-      tar xzvf Firebird-3.0.3.32900-0.amd64.tar.gz
-      pushd Firebird-3.0.3.32900-0.amd64
+      curl -L -o firebird.tar.gz https://github.com/FirebirdSQL/firebird/releases/download/R3_0_4/Firebird-3.0.4.33054-0.amd64.tar.gz
+      tar xzvf firebird.tar.gz
+      pushd firebird
         sudo ./install.sh -silent   
       popd
       export $(sudo cat /opt/firebird/SYSDBA.password | grep -v ^# | xargs)
