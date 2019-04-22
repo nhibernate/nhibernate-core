@@ -540,5 +540,40 @@ namespace NHibernate.Cfg
 			}
 		}
 
+
+		/// <summary>
+		/// Get a named connection string, if configured.
+		/// </summary>
+		/// <exception cref="HibernateException">
+		/// Thrown when a <see cref="ConnectionStringName"/> was found 
+		/// in the <c>settings</c> parameter but could not be found in the app.config.
+		/// </exception>
+		internal static string GetNamedConnectionString(IDictionary<string, string> settings)
+		{
+			string connStringName;
+			if (!settings.TryGetValue(ConnectionStringName, out connStringName))
+				return null;
+
+			ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings[connStringName];
+			if (connectionStringSettings == null)
+				throw new HibernateException($"Could not find named connection string '{connStringName}'.");
+
+			return connectionStringSettings.ConnectionString;
+		}
+
+
+		/// <summary>
+		/// Get the configured connection string, from <see cref="ConnectionString"/> if that
+		/// is set, otherwise from <see cref="ConnectionStringName"/>, or null if that isn't
+		/// set either.
+		/// </summary>
+		internal static string GetConfiguredConnectionString(IDictionary<string, string> settings)
+		{ 
+			// Connection string in the configuration overrides named connection string.
+			if (!settings.TryGetValue(ConnectionString, out string connString))
+				connString = GetNamedConnectionString(settings);
+
+			return connString;
+		}
 	}
 }
