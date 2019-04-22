@@ -33,7 +33,7 @@ before_install:
       sudo apt-get install -y libicu-dev libtommath-dev curl
       curl -L -o firebird.tar.gz https://github.com/FirebirdSQL/firebird/releases/download/R3_0_4/Firebird-3.0.4.33054-0.amd64.tar.gz
       tar xzvf firebird.tar.gz
-      pushd firebird
+      pushd Firebird-*
         sudo ./install.sh -silent   
       popd
       export $(sudo cat /opt/firebird/SYSDBA.password | grep -v ^# | xargs)
