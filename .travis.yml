@@ -18,7 +18,7 @@ matrix:
     - env: DB=MySQL CONNECTION_STRING="Server=127.0.0.1;Uid=root;Database=nhibernate;Old Guids=True;"
 before_install:
   - curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-  - curl https://packages.microsoft.com/config/ubuntu/14.04/prod.list | sudo tee /etc/apt/sources.list.d/microsoft.list
+  - curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list | sudo tee /etc/apt/sources.list.d/microsoft.list
   - sudo apt-get update -qq
   - sudo apt-get install -y powershell 
   - |-
