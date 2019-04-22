@@ -1,6 +1,7 @@
+dist: xenial
 language: csharp
 mono: latest
-dotnet: 2.1.300
+dotnet: 2.1.506
 sudo: required
 services:
   - mysql
