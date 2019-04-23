@@ -41,7 +41,7 @@ before_install:
       echo -e "nhibernate = /tmp/firebird/nhibernate.fdb" | sudo tee -a /opt/firebird/databases.conf
       echo -e "AuthServer = Srp\nAuthClient = Srp\nUserManager = Srp\nWireCrypt = Enabled" | sudo tee -a /opt/firebird/firebird.conf
       sudo /opt/firebird/bin/gsec -modify SYSDBA -pw masterkey -admin yes
-      /opt/firebird/bin/fbguard -forever -daemon
+      sudo /opt/firebird/bin/fbguard -forever -daemon
     fi
 before_script:
   - if [[ "$DB" == "SqlServer2008" ]]; then docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=P@ssw0rd" -e "MSSQL_PID=Express" -p 1433:1433 -d --name sqlexpress microsoft/mssql-server-linux:latest; fi
