@@ -35,7 +35,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2714
 			using (ISession session = OpenSession())
 			{
 				var otherInformation = session.Get<Information>(information.Id);
-
 				Assert.That(otherInformation.Items.Count, Is.EqualTo(1));
 			}
 		}
