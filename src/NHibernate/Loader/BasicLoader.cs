@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -27,7 +28,7 @@ namespace NHibernate.Loader
 
 		protected abstract string[] Suffixes { get; }
 		protected abstract string[] CollectionSuffixes { get; }
-
+		protected virtual Dictionary<string, string[]>[] CollectionUserProvidedAliases => null;
 		protected override void PostInstantiate()
 		{
 			ILoadable[] persisters = EntityPersisters;
@@ -50,7 +51,7 @@ namespace NHibernate.Loader
 					{
 						bagCount++;
 					}
-					collectionDescriptors[i] = new GeneratedCollectionAliases(collectionPersisters[i], collectionSuffixes[i]);
+					collectionDescriptors[i] = new GeneratedCollectionAliases(CollectionUserProvidedAliases?[i] ?? CollectionHelper.EmptyDictionary<string, string[]>(), collectionPersisters[i], collectionSuffixes[i]);
 				}
 			}
 			else

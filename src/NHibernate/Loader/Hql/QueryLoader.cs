@@ -46,6 +46,7 @@ namespace NHibernate.Loader.Hql
 		private LockMode[] _defaultLockModes;
 		private IType[] _cacheTypes;
 		private ISet<ICollectionPersister> _uncacheableCollectionPersisters;
+		private Dictionary<string, string[]>[] _collectionUserProvidedAliases;
 
 		public QueryLoader(QueryTranslatorImpl queryTranslator, ISessionFactoryImplementor factory, SelectClause selectClause)
 			: base(factory)
@@ -205,6 +206,11 @@ namespace NHibernate.Loader.Hql
 
 		public override IType[] CacheTypes => _cacheTypes;
 
+		protected override Dictionary<string, string[]>[] CollectionUserProvidedAliases
+		{
+			get { return _collectionUserProvidedAliases; }
+		}
+
 		private void Initialize(SelectClause selectClause)
 		{
 			IList<FromElement> fromElementList = selectClause.FromElementsForLoad;
@@ -225,6 +231,8 @@ namespace NHibernate.Loader.Hql
 				_collectionOwners = new int[length];
 				_collectionSuffixes = new string[length];
 				CollectionFetches = new bool[length];
+				if (collectionFromElements.Any(qc => qc.QueryableCollection.IsManyToMany))
+					_collectionUserProvidedAliases = new Dictionary<string, string[]>[length];
 
 				for (int i = 0; i < length; i++)
 				{
@@ -271,6 +279,7 @@ namespace NHibernate.Loader.Hql
 				// TODO should we just collect these like with the collections above?
 				_sqlAliasSuffixes[i] = (size == 1) ? "" : i + "_";
 				//			sqlAliasSuffixes[i] = element.getColumnAliasSuffix();
+
 				_includeInSelect[i] = !element.IsFetch;
 				EntityFetches[i] = element.IsFetch;
 				if (element.IsFetch)
@@ -280,6 +289,20 @@ namespace NHibernate.Loader.Hql
 				if (_includeInSelect[i])
 				{
 					_selectLength++;
+				}
+
+				if (element.IsFetch && element.QueryableCollection?.IsManyToMany == true && element.QueryableCollection.IsAffectedByEnabledFilters(_queryTranslator.EnabledFilters))
+				{
+					var collectionIndex = collectionFromElements.IndexOf(element);
+
+					if (collectionIndex >= 0)
+					{
+						// See test TestFilteredLinqQuery to see why this replacement is needed
+						CollectionUserProvidedAliases[collectionIndex] = new Dictionary<string, string[]>
+						{
+							{CollectionPersister.PropElement, _entityPersisters[i].GetIdentifierAliases(Suffixes[i]) }
+						};
+					}
 				}
 
 				_owners[i] = -1; //by default
