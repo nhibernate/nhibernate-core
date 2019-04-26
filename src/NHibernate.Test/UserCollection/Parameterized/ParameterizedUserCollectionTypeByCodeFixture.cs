@@ -12,7 +12,7 @@ namespace NHibernate.Test.UserCollection.Parameterized
 
 		protected override void AddMappings(Configuration configuration)
 		{
-			configuration.ByCode().TypeDefinition<DefaultableListType>(
+			configuration.TypeDefinition<DefaultableListType>(
 				c =>
 				{
 					c.Alias = "DefaultableList";

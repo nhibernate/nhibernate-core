@@ -24,7 +24,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			// Here I'm configuring near all properties outside the scope of Configuration class
 			// Using the Configuration class the user can add mappings and configure listeners
 			var cfg = new Configuration();
-			cfg.ByCode().SessionFactory().Named("SomeName")
+			cfg.SessionFactory().Named("SomeName")
 				.Caching
 					.Through<HashtableCacheProvider>()
 					.PrefixingRegionsWith("xyz")
@@ -112,7 +112,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			// in this case we must define best default properties for each dialect
 			// The place where put default properties values is the Dialect itself.
 			var cfg = new Configuration();
-			cfg.ByCode().SessionFactory()
+			cfg.SessionFactory()
 				.Proxy.Through<StaticProxyFactoryFactory>()
 				.Integrate
 					.Using<MsSql2005Dialect>()
@@ -128,7 +128,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 		public void UseConnectionStringName()
 		{
 			var cfg = new Configuration();
-			cfg.ByCode().SessionFactory()
+			cfg.SessionFactory()
 				.Integrate
 					.Connected
 						.ByAppConfing("MyName");
@@ -143,7 +143,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			cfg.Configure(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEmbeddedConfig.cfg.xml"))
 				.SetDefaultAssembly("NHibernate.DomainModel")
 				.SetDefaultNamespace("NHibernate.DomainModel")
-				.ByCode().SessionFactory()
+				.SessionFactory()
 				.ParsingLinqThrough<NHibernate.Test.CfgTest.ConfigurationFixture.SampleQueryProvider>();
 
 			using (var sessionFactory = cfg.BuildSessionFactory())

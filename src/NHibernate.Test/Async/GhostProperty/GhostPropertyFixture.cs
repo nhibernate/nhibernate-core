@@ -10,6 +10,7 @@
 
 using System.Collections;
 using NHibernate.Cfg;
+using NHibernate.Cfg.Loquacious;
 using NHibernate.Tuple.Entity;
 using NUnit.Framework;
 
@@ -33,7 +34,7 @@ namespace NHibernate.Test.GhostProperty
 
 		protected override void Configure(Cfg.Configuration configuration)
 		{
-			configuration.ByCode().DataBaseIntegration(x=> x.LogFormattedSql = false);
+			configuration.DataBaseIntegration(x=> x.LogFormattedSql = false);
 		}
 
 		protected override void OnSetUp()

@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 
 		protected override void Configure(Cfg.Configuration configuration)
 		{
-			configuration.ByCode().Cache(x =>
+			configuration.Cache(x =>
 								{
 									x.Provider<HashtableCacheProvider>();
 									x.UseQueryCache = true;

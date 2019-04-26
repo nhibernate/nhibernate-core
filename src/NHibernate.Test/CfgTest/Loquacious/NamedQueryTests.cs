@@ -11,7 +11,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 		public void AddSimpleNamedQuery()
 		{
 			var configure = new Configuration();
-			configure.ByCode().AddNamedQuery("aQuery", b =>
+			configure.AddNamedQuery("aQuery", b =>
 			{
 				b.Query = "from System.Object o";
 			});
@@ -25,7 +25,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 		public void WhenSetInvalidFetchSizeThenLeaveDefault()
 		{
 			var configure = new Configuration();
-			configure.ByCode().AddNamedQuery("aQuery", b =>
+			configure.AddNamedQuery("aQuery", b =>
 			{
 				b.Query = "from System.Object o";
 				b.FetchSize = 0;
@@ -38,7 +38,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 		public void WhenSetValidFetchSizeThenSetValue()
 		{
 			var configure = new Configuration();
-			configure.ByCode().AddNamedQuery("aQuery", b =>
+			configure.AddNamedQuery("aQuery", b =>
 			{
 				b.Query = "from System.Object o";
 				b.FetchSize = 15;
@@ -51,7 +51,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 		public void WhenSetInvalidTimeoutThenLeaveDefault()
 		{
 			var configure = new Configuration();
-			configure.ByCode().AddNamedQuery("aQuery", b =>
+			configure.AddNamedQuery("aQuery", b =>
 			{
 				b.Query = "from System.Object o";
 				b.Timeout = 0;
@@ -64,7 +64,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 		public void WhenSetValidTimeoutThenSetValue()
 		{
 			var configure = new Configuration();
-			configure.ByCode().AddNamedQuery("aQuery", b =>
+			configure.AddNamedQuery("aQuery", b =>
 			{
 				b.Query = "from System.Object o";
 				b.Timeout = 123;

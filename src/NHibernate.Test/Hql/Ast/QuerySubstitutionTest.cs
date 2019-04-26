@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NHibernate.Cfg;
 using NUnit.Framework;
+using NHibernate.Cfg.Loquacious;
 
 namespace NHibernate.Test.Hql.Ast
 {
@@ -10,7 +11,7 @@ namespace NHibernate.Test.Hql.Ast
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
 			base.Configure(configuration);
-			configuration.ByCode().SessionFactory().Integrate.CreateCommands.WithHqlToSqlSubstitutions("pizza 1, calda 'bobrock'");
+			configuration.SessionFactory().Integrate.CreateCommands.WithHqlToSqlSubstitutions("pizza 1, calda 'bobrock'");
 		}
 
 		[Test]

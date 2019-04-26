@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Cfg;
+using NHibernate.Cfg.Loquacious;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
@@ -42,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2632
 
 		protected override void Configure(Cfg.Configuration configuration)
 		{
-			configuration.ByCode().DataBaseIntegration(di => di.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote);
+			configuration.DataBaseIntegration(di => di.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote);
 		}
 
 		private class Scenario : IDisposable

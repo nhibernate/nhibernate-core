@@ -50,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1270
 		public void WhenMapCustomFkNamesThenUseIt()
 		{
 			var conf = TestConfigurationHelper.GetDefaultConfiguration();
-			conf.ByCode().DataBaseIntegration(i=> i.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote);
+			conf.DataBaseIntegration(i=> i.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote);
 			conf.AddMapping(GetMappings());
 			var sb = new StringBuilder();
 			(new SchemaExport(conf)).Create(s => sb.AppendLine(s), true);

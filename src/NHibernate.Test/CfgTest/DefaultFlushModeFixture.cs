@@ -63,7 +63,7 @@ namespace NHibernate.Test.CfgTest
 				.Configure();
 
 			cfg
-				.ByCode().SessionFactory()
+				.SessionFactory()
 				.DefaultFlushMode(FlushMode.Always);
 
 			using (var sessionFactory = cfg.BuildSessionFactory())
@@ -75,7 +75,7 @@ namespace NHibernate.Test.CfgTest
 			}
 
 			cfg.Configure()
-				.ByCode().SessionFactory()
+				.SessionFactory()
 				.DefaultFlushMode(FlushMode.Commit);
 
 			using (var sessionFactory = cfg.BuildSessionFactory())

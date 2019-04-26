@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2869
 	{
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.ByCode().LinqToHqlGeneratorsRegistry<MyLinqToHqlGeneratorsRegistry>();
+			configuration.LinqToHqlGeneratorsRegistry<MyLinqToHqlGeneratorsRegistry>();
 			base.Configure(configuration);
 		}
 

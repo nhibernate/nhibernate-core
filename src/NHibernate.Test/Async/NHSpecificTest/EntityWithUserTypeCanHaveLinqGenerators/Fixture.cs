@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 		protected override void Configure(Configuration configuration)
 		{
 			base.Configure(configuration);
-			configuration.ByCode().LinqToHqlGeneratorsRegistry<EntityWithUserTypePropertyGeneratorsRegistry>();
+			configuration.LinqToHqlGeneratorsRegistry<EntityWithUserTypePropertyGeneratorsRegistry>();
 		}
 
 		protected override void OnSetUp()

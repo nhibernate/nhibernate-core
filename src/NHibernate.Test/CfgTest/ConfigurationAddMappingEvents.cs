@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg;
+using NHibernate.Cfg.Loquacious;
 using NHibernate.Dialect;
 using NUnit.Framework;
 
@@ -43,7 +44,7 @@ namespace NHibernate.Test.CfgTest
 		{
 			var listOfCalls = new List<BindMappingEventArgs>();
 			var configuration = new Configuration();
-			configuration.ByCode().DataBaseIntegration(x => x.Dialect<MsSql2008Dialect>());
+			configuration.DataBaseIntegration(x => x.Dialect<MsSql2008Dialect>());
 			configuration.BeforeBindMapping += (sender, args) => { Assert.That(sender, Is.SameAs(configuration)); listOfCalls.Add(args); };
 
 			configuration.AddXmlString(ProductLineMapping);
@@ -59,7 +60,7 @@ namespace NHibernate.Test.CfgTest
 		{
 			var listOfCalls = new List<BindMappingEventArgs>();
 			var configuration = new Configuration();
-			configuration.ByCode().DataBaseIntegration(x => x.Dialect<MsSql2008Dialect>());
+			configuration.DataBaseIntegration(x => x.Dialect<MsSql2008Dialect>());
 			configuration.AfterBindMapping += (sender, args) => { Assert.That(sender, Is.SameAs(configuration)); listOfCalls.Add(args); };
 
 			configuration.AddXmlString(ProductLineMapping);

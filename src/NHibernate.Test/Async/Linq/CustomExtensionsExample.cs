@@ -30,7 +30,7 @@ namespace NHibernate.Test.Linq
 	{
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
-			configuration.ByCode().LinqToHqlGeneratorsRegistry<MyLinqToHqlGeneratorsRegistry>();
+			configuration.LinqToHqlGeneratorsRegistry<MyLinqToHqlGeneratorsRegistry>();
 		}
 
 		[Test]
