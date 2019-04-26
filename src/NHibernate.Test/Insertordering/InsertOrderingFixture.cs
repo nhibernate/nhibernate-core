@@ -47,7 +47,7 @@ namespace NHibernate.Test.Insertordering
 
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.ByCode().DataBaseIntegration(x =>
+			configuration.DataBaseIntegration(x =>
 			{
 				x.BatchSize = batchSize;
 				x.OrderInserts = true;

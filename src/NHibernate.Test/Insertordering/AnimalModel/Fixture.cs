@@ -19,7 +19,7 @@ namespace NHibernate.Test.Insertordering.AnimalModel
 
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.ByCode().DataBaseIntegration(x =>
+			configuration.DataBaseIntegration(x =>
 			{
 				x.BatchSize = 10;
 				x.OrderInserts = true;
