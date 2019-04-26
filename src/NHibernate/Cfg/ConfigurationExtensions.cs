@@ -8,20 +8,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg
 {
-	public static class ConfigurationByCodeExtensions
-	{
-		public static Configuration ByCode(this Configuration configuration, Action<ConfigurationByCode> byCode)
-		{
-			byCode(new ConfigurationByCode(configuration));
-			return configuration;
-		}
-
-		public static ConfigurationByCode ByCode(this Configuration configuration)
-		{
-			return new ConfigurationByCode(configuration);
-		}
-	}
-
 	//Since 5.3
 	[Obsolete]
 	public static class ConfigurationExtensions
