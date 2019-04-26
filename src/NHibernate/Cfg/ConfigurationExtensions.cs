@@ -13,14 +13,14 @@ namespace NHibernate.Cfg
 	public static class ConfigurationExtensions
 	{
 		//Since 5.3
-		[Obsolete("Please call this method from configuration.ByCode extension")]
+		[Obsolete("Please use Configuration instance method instead")]
 		public static IFluentSessionFactoryConfiguration SessionFactory(this Configuration configuration)
 		{
 			return new FluentSessionFactoryConfiguration(configuration);
 		}
 
 		//Since 5.3
-		[Obsolete("Please call this method from configuration.ByCode extension")]
+		[Obsolete("Please use Configuration instance method instead")]
 		public static Configuration SessionFactoryName(this Configuration configuration, string sessionFactoryName)
 		{
 			configuration.SetProperty(Environment.SessionFactoryName, sessionFactoryName);
@@ -28,7 +28,7 @@ namespace NHibernate.Cfg
 		}
 
 		//Since 5.3
-		[Obsolete("Please call this method from configuration.ByCode extension")]
+		[Obsolete("Please use Configuration instance method instead")]
 		public static Configuration Cache(this Configuration configuration, Action<ICacheConfigurationProperties> cacheProperties)
 		{
 			cacheProperties(new CacheConfigurationProperties(configuration));
@@ -36,7 +36,7 @@ namespace NHibernate.Cfg
 		}
 
 		//Since 5.3
-		[Obsolete("Please call this method from configuration.ByCode extension")]
+		[Obsolete("Please use Configuration instance method instead")]
 		public static Configuration CollectionTypeFactory<TCollecionsFactory>(this Configuration configuration)
 		{
 			configuration.SetProperty(Environment.CollectionTypeFactoryClass,
@@ -45,7 +45,7 @@ namespace NHibernate.Cfg
 		}
 
 		//Since 5.3
-		[Obsolete("Please call this method from configuration.ByCode extension")]
+		[Obsolete("Please use Configuration instance method instead")]
 		public static Configuration Proxy(this Configuration configuration, Action<IProxyConfigurationProperties> proxyProperties)
 		{
 			proxyProperties(new ProxyConfigurationProperties(configuration));
@@ -53,7 +53,7 @@ namespace NHibernate.Cfg
 		}
 
 		//Since 5.3
-		[Obsolete("Please call this method from configuration.ByCode extension")]
+		[Obsolete("Please use Configuration instance method instead")]
 		public static Configuration HqlQueryTranslator<TQueryTranslator>(this Configuration configuration) where TQueryTranslator : IQueryTranslatorFactory
 		{
 			configuration.SetProperty(Environment.QueryTranslator, typeof(TQueryTranslator).AssemblyQualifiedName);
@@ -61,7 +61,7 @@ namespace NHibernate.Cfg
 		}
 
 		//Since 5.3
-		[Obsolete("Please call this method from configuration.ByCode extension")]
+		[Obsolete("Please use Configuration instance method instead")]
 		public static Configuration LinqQueryProvider<TQueryProvider>(this Configuration configuration) where TQueryProvider : INhQueryProvider
 		{
 			configuration.SetProperty(Environment.QueryLinqProvider, typeof(TQueryProvider).AssemblyQualifiedName);
@@ -69,7 +69,7 @@ namespace NHibernate.Cfg
 		}
 
 		//Since 5.3
-		[Obsolete("Please call this method from configuration.ByCode extension")]
+		[Obsolete("Please use Configuration instance method instead")]
 		public static Configuration LinqToHqlGeneratorsRegistry<TLinqToHqlGeneratorsRegistry>(this Configuration configuration) where TLinqToHqlGeneratorsRegistry : ILinqToHqlGeneratorsRegistry
 		{
 			configuration.SetProperty(Environment.LinqToHqlGeneratorsRegistry, typeof(TLinqToHqlGeneratorsRegistry).AssemblyQualifiedName);
@@ -77,7 +77,7 @@ namespace NHibernate.Cfg
 		}
 
 		//Since 5.3
-		[Obsolete("Please call this method from configuration.ByCode extension")]
+		[Obsolete("Please use Configuration instance method instead")]
 		public static Configuration CurrentSessionContext<TCurrentSessionContext>(this Configuration configuration) where TCurrentSessionContext : ICurrentSessionContext
 		{
 			configuration.SetProperty(Environment.CurrentSessionContextClass, typeof(TCurrentSessionContext).AssemblyQualifiedName);
@@ -85,7 +85,7 @@ namespace NHibernate.Cfg
 		}
 
 		//Since 5.3
-		[Obsolete("Please call this method from configuration.ByCode extension")]
+		[Obsolete("Please use Configuration instance method instead")]
 		public static Configuration Mappings(this Configuration configuration, Action<IMappingsConfigurationProperties> mappingsProperties)
 		{
 			mappingsProperties(new MappingsConfigurationProperties(configuration));
@@ -93,7 +93,7 @@ namespace NHibernate.Cfg
 		}
 
 		//Since 5.3
-		[Obsolete("Please call this method from configuration.ByCode extension")]
+		[Obsolete("Please use Configuration instance method instead")]
 		public static Configuration DataBaseIntegration(this Configuration configuration, Action<IDbIntegrationConfigurationProperties> dataBaseIntegration)
 		{
 			dataBaseIntegration(new DbIntegrationConfigurationProperties(configuration));
@@ -101,7 +101,7 @@ namespace NHibernate.Cfg
 		}
 
 		//Since 5.3
-		[Obsolete("Please call this method from configuration.ByCode extension")]
+		[Obsolete("Please use Configuration instance method instead")]
 		public static Configuration EntityCache<TEntity>(this Configuration configuration, Action<IEntityCacheConfigurationProperties<TEntity>> entityCacheConfiguration)
 			where TEntity : class
 		{
@@ -152,7 +152,7 @@ namespace NHibernate.Cfg
 		/// </para>
 		/// </remarks>
 		//Since 5.3
-		[Obsolete("Please call this method from configuration.ByCode extension")]
+		[Obsolete("Please use Configuration instance method instead")]
 		public static Configuration TypeDefinition<TDef>(this Configuration configuration, Action<ITypeDefConfigurationProperties> typeDefConfiguration)
 			where TDef : class
 		{
@@ -173,7 +173,7 @@ namespace NHibernate.Cfg
 		}
 
 		//Since 5.3
-		[Obsolete("Please call this method from configuration.ByCode extension")]
+		[Obsolete("Please use Configuration instance method instead")]
 		public static Configuration AddNamedQuery(this Configuration configuration, string queryIdentifier, Action<INamedQueryDefinitionBuilder> namedQueryDefinition)
 		{
 			if (configuration == null)
