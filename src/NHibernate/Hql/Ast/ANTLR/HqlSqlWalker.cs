@@ -736,6 +736,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 					HandleWithFragment(fromElement, with);
 				}
+
+				if (fromElement.Parent == null)
+				{
+					fromElement.FromClause.AddChild(fromElement);
+				}
 			}
 
 			if ( log.IsDebugEnabled() )
