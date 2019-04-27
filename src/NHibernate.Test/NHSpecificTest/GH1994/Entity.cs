@@ -13,6 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 	public class Asset : Base
 	{
 		public virtual ISet<Document> Documents { get; set; } = new HashSet<Document>();
+		public virtual ISet<Document> DocumentsFiltered { get; set; } = new HashSet<Document>();
 	}
 
 	public class Document : Base

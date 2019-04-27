@@ -291,16 +291,20 @@ namespace NHibernate.Loader.Hql
 					_selectLength++;
 				}
 
-				if (element.IsFetch && element.QueryableCollection?.IsManyToMany == true && element.QueryableCollection.IsAffectedByEnabledFilters(_queryTranslator.EnabledFilters))
+				if (collectionFromElements != null && element.IsFetch && element.QueryableCollection?.IsManyToMany == true
+					&& element.QueryableCollection.IsManyToManyFiltered(_queryTranslator.EnabledFilters))
 				{
 					var collectionIndex = collectionFromElements.IndexOf(element);
 
 					if (collectionIndex >= 0)
 					{
-						// See test TestFilteredLinqQuery to see why this replacement is needed
+						// When many-to-many is filtered we need to populate collection from element persister and not from bridge table.
+						// As bridge table will contain not-null values for filtered elements
+						// So do alias substitution for collection persister with element persister
+						// See test TestFilteredLinqQuery for details
 						CollectionUserProvidedAliases[collectionIndex] = new Dictionary<string, string[]>
 						{
-							{CollectionPersister.PropElement, _entityPersisters[i].GetIdentifierAliases(Suffixes[i]) }
+							{CollectionPersister.PropElement, _entityPersisters[i].GetIdentifierAliases(Suffixes[i])}
 						};
 					}
 				}

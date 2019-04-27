@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 				// The HQL delete does all the job inside the database without loading the entities, but it does
 				// not handle delete order for avoiding violating constraints if any. Use
 				// session.Delete("from System.Object");
-				// instead if in need of having NHbernate ordering the deletes, but this will cause
+				// instead if in need of having NHibernate ordering the deletes, but this will cause
 				// loading the entities in the session.
 
 				session.Delete("from System.Object");
@@ -50,6 +50,20 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 				
 				Assert.That(query.Count, Is.EqualTo(1), "unfiltered assets");
 				Assert.That(query[0].Documents.Count, Is.EqualTo(2), "unfiltered asset documents");
+			}
+		}
+
+		[Test]
+		public void TestFilteredByWhereCollectionLinqQuery()
+		{
+			using (var s = OpenSession())
+			{
+				var query = s.Query<Asset>()
+				             .FetchMany(x => x.DocumentsFiltered)
+				             .ToList();
+				
+				Assert.That(query.Count, Is.EqualTo(1), "unfiltered assets");
+				Assert.That(query[0].DocumentsFiltered.Count, Is.EqualTo(1), "unfiltered asset documents");
 			}
 		}
 

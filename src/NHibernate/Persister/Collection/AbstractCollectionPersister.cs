@@ -1389,6 +1389,11 @@ namespace NHibernate.Persister.Collection
 
 			return buffer.ToString();
 		}
+		
+		public bool IsManyToManyFiltered(IDictionary<string, IFilter> enabledFilters)
+		{
+			return IsManyToMany && (manyToManyWhereString != null || manyToManyFilterHelper.IsAffectedBy(enabledFilters));
+		}
 
 		public string[] ToColumns(string alias, string propertyName)
 		{
@@ -1497,13 +1502,9 @@ namespace NHibernate.Persister.Collection
 
 		public bool IsAffectedByEnabledFilters(ISessionImplementor session)
 		{
-			return IsAffectedByEnabledFilters(session.EnabledFilters);
-		}
-		public bool IsAffectedByEnabledFilters(IDictionary<string, IFilter> enabledFilters)
-		{
 			return
-filterHelper.IsAffectedBy(enabledFilters)
-				|| (IsManyToMany && manyToManyFilterHelper.IsAffectedBy(enabledFilters));
+				filterHelper.IsAffectedBy(session.EnabledFilters)
+				|| (IsManyToMany && manyToManyFilterHelper.IsAffectedBy(session.EnabledFilters));
 		}
 
 		public string[] GetCollectionPropertyColumnAliases(string propertyName, string suffix)
