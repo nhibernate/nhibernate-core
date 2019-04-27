@@ -279,7 +279,6 @@ namespace NHibernate.Loader.Hql
 				// TODO should we just collect these like with the collections above?
 				_sqlAliasSuffixes[i] = (size == 1) ? "" : i + "_";
 				//			sqlAliasSuffixes[i] = element.getColumnAliasSuffix();
-
 				_includeInSelect[i] = !element.IsFetch;
 				EntityFetches[i] = element.IsFetch;
 				if (element.IsFetch)
