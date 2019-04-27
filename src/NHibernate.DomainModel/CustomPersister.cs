@@ -29,11 +29,19 @@ namespace NHibernate.DomainModel
 		private static readonly bool[] Nullability = new bool[] { true };
 		private readonly ISessionFactoryImplementor factory;
 
+		[Obsolete]
 		public CustomPersister(PersistentClass model, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory,
 													 IMapping mapping)
 		{
 			this.factory = factory;
 		}
+
+		//TODO 6.0: Uncomment
+		//public CustomPersister(PersistentClass model, Func<string, ICacheConcurrencyStrategy> cache, ISessionFactoryImplementor factory,
+		//											 IMapping mapping)
+		//{
+		//	this.factory = factory;
+		//}
 
 		#region IEntityPersister Members
 

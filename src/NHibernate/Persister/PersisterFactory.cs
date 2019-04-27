@@ -118,6 +118,14 @@ namespace NHibernate.Persister
 					TypeOf(factory),
 					TypeOf(cfg)
 				});
+
+#pragma warning disable CS0618 // Type or member is obsolete
+				//To support legacy custom persisters
+				if (pc == null)
+				{
+					return Create(persisterClass, model, cache(null), factory, cfg);
+				}
+#pragma warning restore CS0618 // Type or member is obsolete
 			}
 			catch (Exception e)
 			{
@@ -201,7 +209,7 @@ namespace NHibernate.Persister
 			}
 			catch (Exception e)
 			{
-				throw new MappingException("Could not get constructor for " + persisterClass.Name, e);
+				throw new MappingException("Could not get constructor for " + persisterClass.Name, e);				
 			}
 			if(pc == null)
 			{
@@ -246,6 +254,14 @@ namespace NHibernate.Persister
 			try
 			{
 				pc = persisterClass.GetConstructor(ctorArgs);
+
+#pragma warning disable CS0618 // Type or member is obsolete
+				//To support legacy custom persisters
+				if (pc == null)
+				{
+					return Create(persisterClass, model, cacheByTenant(null), factory);
+				}
+#pragma warning restore CS0618 // Type or member is obsolete
 			}
 			catch (Exception e)
 			{
