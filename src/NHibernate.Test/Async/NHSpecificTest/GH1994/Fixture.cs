@@ -9,6 +9,7 @@
 
 
 using System.Linq;
+using NHibernate.Dialect;
 using NHibernate.Linq;
 using NHibernate.Transform;
 using NUnit.Framework;
@@ -67,6 +68,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 		[Test]
 		public async Task TestFilteredByWhereCollectionLinqQueryAsync()
 		{
+			if(Dialect is PostgreSQLDialect)
+				Assert.Ignore("Dialect doesn't support 0/1 to bool implicit cast");
+
 			using (var s = OpenSession())
 			{
 				var query = await (s.Query<Asset>()
