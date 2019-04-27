@@ -57,11 +57,8 @@ namespace NHibernate.Action
 			// earlier entity actions which actually updates
 			// the database (this action is responsible for
 			// second-level cache invalidation only)
-			if (persister.HasCache)
-			{
-				CacheKey ck = session.GenerateCacheKey(key, persister.KeyType, persister.Role);
-				softLock = await (persister.Cache.LockAsync(ck, null, cancellationToken)).ConfigureAwait(false);
-			}
+			var ck = session.GetCacheAndKey(key, persister, out var cache);
+			softLock = (cache == null ? null : await (cache.LockAsync(ck, null, cancellationToken)).ConfigureAwait(false));
 		}
 
 		/// <summary>Execute this action</summary>
@@ -74,30 +71,27 @@ namespace NHibernate.Action
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			var ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
-			return persister.Cache.ReleaseAsync(ck, softLock, cancellationToken);
-		}
-
-		#endregion
-
-		protected internal Task EvictAsync(CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
 			try
 			{
-				if (persister.HasCache)
-				{
-					CacheKey ck = session.GenerateCacheKey(key, persister.KeyType, persister.Role);
-					return persister.Cache.EvictAsync(ck, cancellationToken);
-				}
-				return Task.CompletedTask;
+				var ck = Session.GetCacheAndKey(key, persister, out var cache);
+				return cache.ReleaseAsync(ck, softLock, cancellationToken);
 			}
 			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
+			}
+		}
+
+		#endregion
+
+		protected internal async Task EvictAsync(CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			CacheKey ck = session.GetCacheAndKey(key, persister, out var cache);
+			var evictTask = cache?.EvictAsync(ck, cancellationToken);
+			if (evictTask != null)
+			{
+				await (evictTask).ConfigureAwait(false);
 			}
 		}
 	}

@@ -82,7 +82,8 @@ namespace NHibernate.Event.Default
 			CollectionEntry[] collectionEntries = null;
 			var collectionBatch = source.PersistenceContext.BatchFetchQueue.QueryCacheQueue
 			                            ?.GetCollectionBatch(persister, collectionKey, out collectionEntries);
-			if (collectionBatch != null || batchSize > 1 && persister.Cache.PreferMultipleGet())
+			var cache = persister.GetCache(source.GetTenantIdentifier());
+			if (collectionBatch != null || batchSize > 1 && cache.PreferMultipleGet())
 			{
 				// The first item in the array is the item that we want to load
 				if (collectionBatch != null)
@@ -98,8 +99,9 @@ namespace NHibernate.Event.Default
 				if (collectionBatch == null)
 				{
 					collectionEntries = new CollectionEntry[batchSize];
+					//Do not check cache, so provide null
 					collectionBatch = source.PersistenceContext.BatchFetchQueue
-					                        .GetCollectionBatch(persister, collectionKey, batchSize, false, collectionEntries);
+											.GetCollectionBatch(persister, collectionKey, batchSize, collectionEntries, null);
 				}
 
 				// Ignore null values as the retrieved batch may contains them when there are not enough
@@ -114,34 +116,34 @@ namespace NHibernate.Event.Default
 					}
 					keys.Add(source.GenerateCacheKey(key, persister.KeyType, persister.Role));
 				}
-				var cachedObjects = persister.Cache.GetMany(keys.ToArray(), source.Timestamp);
+				var cachedObjects = cache.GetMany(keys.ToArray(), source.Timestamp);
 				for (var i = 1; i < cachedObjects.Length; i++)
 				{
 					var coll = source.PersistenceContext.BatchFetchQueue.GetBatchLoadableCollection(persister, collectionEntries[i]);
-					Assemble(keys[i], cachedObjects[i], persister, source, coll, collectionBatch[i], false);
+					Assemble(keys[i], cachedObjects[i], persister, source, coll, collectionBatch[i], false, cache.RegionName);
 				}
-				return Assemble(keys[0], cachedObjects[0], persister, source, collection, collectionKey, true);
+				return Assemble(keys[0], cachedObjects[0], persister, source, collection, collectionKey, true, cache.RegionName);
 			}
 
 			var cacheKey = source.GenerateCacheKey(collectionKey, persister.KeyType, persister.Role);
-			var cachedObject = persister.Cache.Get(cacheKey, source.Timestamp);
-			return Assemble(cacheKey, cachedObject, persister, source, collection, collectionKey, true);
+			var cachedObject = cache.Get(cacheKey, source.Timestamp);
+			return Assemble(cacheKey, cachedObject, persister, source, collection, collectionKey, true, cache.RegionName);
 		}
 
 		private bool Assemble(
 			CacheKey ck, object ce, ICollectionPersister persister, ISessionImplementor source,
-			IPersistentCollection collection, object collectionKey, bool alterStatistics)
+			IPersistentCollection collection, object collectionKey, bool alterStatistics, string regionName)
 		{
 			ISessionFactoryImplementor factory = source.Factory;
 			if (factory.Statistics.IsStatisticsEnabled && alterStatistics)
 			{
 				if (ce == null)
 				{
-					factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
+					factory.StatisticsImplementor.SecondLevelCacheMiss(regionName);
 				}
 				else
 				{
-					factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
+					factory.StatisticsImplementor.SecondLevelCacheHit(regionName);
 				}
 			}
 

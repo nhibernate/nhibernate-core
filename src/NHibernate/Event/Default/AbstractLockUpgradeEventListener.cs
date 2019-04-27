@@ -43,18 +43,8 @@ namespace NHibernate.Event.Default
 					log.Debug("locking {0} in mode: {1}", MessageHelper.InfoString(persister, entry.Id, source.Factory), requestedLockMode);
 				}
 
-				ISoftLock slock;
-				CacheKey ck;
-				if (persister.HasCache)
-				{
-					ck = source.GenerateCacheKey(entry.Id, persister.IdentifierType, persister.RootEntityName);
-					slock = persister.Cache.Lock(ck, entry.Version);
-				}
-				else
-				{
-					ck = null;
-					slock = null;
-				}
+				CacheKey ck = source.GetCacheAndKey(entry.Id, persister, out var cache);
+				var slock = cache?.Lock(ck, entry.Version);
 
 				try
 				{
@@ -74,10 +64,7 @@ namespace NHibernate.Event.Default
 				{
 					// the database now holds a lock + the object is flushed from the cache,
 					// so release the soft lock
-					if (persister.HasCache)
-					{
-						persister.Cache.Release(ck, slock);
-					}
+					cache?.Release(ck, slock);
 				}
 			}
 		}

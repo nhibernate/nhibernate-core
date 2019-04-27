@@ -23,8 +23,15 @@ namespace NHibernate.Persister.Collection
 		private readonly bool _keyIsNullable;
 		private readonly bool _keyIsUpdateable;
 
+		//Since 5.3
+		[Obsolete("Use constructor with cacheByTenant delegate")]
 		public OneToManyPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
-			: base(collection, cache, factory)
+			: base(collection, tenantId => cache, factory)
+		{
+		}
+
+		public OneToManyPersister(Mapping.Collection collection, Func<string, ICacheConcurrencyStrategy> cacheByTenant, ISessionFactoryImplementor factory)
+			: base(collection, cacheByTenant, factory)
 		{
 			_cascadeDeleteEnabled = collection.Key.IsCascadeDeleteEnabled && factory.Dialect.SupportsCascadeDelete;
 			_keyIsNullable = collection.Key.IsNullable;

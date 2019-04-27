@@ -118,8 +118,7 @@ namespace NHibernate.Action
 		{
 			// NH Different behavior: to support unlocking collections from the cache.(r3260)
 
-			CacheKey ck = Session.GenerateCacheKey(GetKey(), Persister.KeyType, Persister.Role);
-
+			CacheKey ck = Session.GetCacheAndKey(GetKey(), Persister, out var cache); 
 			if (success)
 			{
 				// we can't disassemble a collection if it was uninitialized 
@@ -127,17 +126,17 @@ namespace NHibernate.Action
 				if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
 				{
 					CollectionCacheEntry entry = CollectionCacheEntry.Create(Collection, Persister);
-					bool put = Persister.Cache.AfterUpdate(ck, entry, null, Lock);
+					bool put = cache.AfterUpdate(ck, entry, null, Lock);
 
 					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
 					{
-						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+						Session.Factory.StatisticsImplementor.SecondLevelCachePut(cache.RegionName);
 					}
 				}
 			}
 			else
 			{
-				Persister.Cache.Release(ck, Lock);
+				cache.Release(ck, Lock);
 			}
 		}
 	}

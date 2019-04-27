@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NHibernate.Cache;
 using NHibernate.Cfg;
+using NHibernate.Persister.Entity;
 using NUnit.Framework;
 
 namespace NHibernate.Test.LazyGroup
@@ -135,7 +136,7 @@ namespace NHibernate.Test.LazyGroup
 		public async Task TestCacheAsync()
 		{
 			var persister = Sfi.GetEntityPersister(typeof(Person).FullName);
-			var cache = (HashtableCache) persister.Cache.Cache;
+			var cache = (HashtableCache) persister.GetCache(null).Cache;
 			await (cache.ClearAsync(CancellationToken.None));
 
 			using (var s = OpenSession())
@@ -171,7 +172,7 @@ namespace NHibernate.Test.LazyGroup
 		public async Task TestInitializeFromCacheAsync()
 		{
 			var persister = Sfi.GetEntityPersister(typeof(Person).FullName);
-			var cache = (HashtableCache) persister.Cache.Cache;
+			var cache = (HashtableCache) persister.GetCache(null).Cache;
 			await (cache.ClearAsync(CancellationToken.None));
 			Sfi.Statistics.Clear();
 

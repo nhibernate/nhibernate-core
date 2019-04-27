@@ -571,10 +571,11 @@ namespace NHibernate.Impl
 				//			);
 				//		}
 
-				if (persister.HasCache)
+				CacheKey ck = this.GetCacheAndKey(id, persister, out var cache);
+				var removeTask = cache?.RemoveAsync(ck, cancellationToken);
+				if (removeTask != null)
 				{
-					CacheKey ck = GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
-					await (persister.Cache.RemoveAsync(ck, cancellationToken)).ConfigureAwait(false);
+					await (removeTask).ConfigureAwait(false);
 				}
 
 				string previousFetchProfile = FetchProfile;

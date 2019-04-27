@@ -247,17 +247,8 @@ namespace NHibernate.Event.Default
 		/// <returns> The loaded entity </returns>
 		protected virtual object LockAndLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, ISessionImplementor source)
 		{
-			ISoftLock sLock = null;
-			CacheKey ck;
-			if (persister.HasCache)
-			{
-				ck = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
-				sLock = persister.Cache.Lock(ck, null);
-			}
-			else
-			{
-				ck = null;
-			}
+			CacheKey ck = source.GetCacheAndKey(@event.EntityId, persister, out var cache);
+			var sLock = cache?.Lock(ck, null);
 
 			object entity;
 			try
@@ -266,10 +257,7 @@ namespace NHibernate.Event.Default
 			}
 			finally
 			{
-				if (persister.HasCache)
-				{
-					persister.Cache.Release(ck, sLock);
-				}
+				cache?.Release(ck, sLock);
 			}
 
 			object proxy = @event.Session.PersistenceContext.ProxyFor(persister, keyToLoad, entity);
@@ -426,7 +414,8 @@ namespace NHibernate.Event.Default
 			var batchSize = persister.GetBatchSize();
 			var entityBatch = source.PersistenceContext.BatchFetchQueue.QueryCacheQueue
 			                        ?.GetEntityBatch(persister, @event.EntityId);
-			if (entityBatch != null || batchSize > 1 && persister.Cache.PreferMultipleGet())
+			var cache = persister.GetCache(source.GetTenantIdentifier());
+			if (entityBatch != null || batchSize > 1 && cache.PreferMultipleGet())
 			{
 				// The first item in the array is the item that we want to load
 				if (entityBatch != null)
@@ -441,7 +430,7 @@ namespace NHibernate.Event.Default
 
 				if (entityBatch == null)
 				{
-					entityBatch = source.PersistenceContext.BatchFetchQueue.GetEntityBatch(persister, @event.EntityId, batchSize, false);
+					entityBatch = source.PersistenceContext.BatchFetchQueue.GetEntityBatch(persister, @event.EntityId, batchSize, null);
 				}
 
 				// Ignore null values as the retrieved batch may contains them when there are not enough
@@ -456,7 +445,7 @@ namespace NHibernate.Event.Default
 					}
 					keys.Add(source.GenerateCacheKey(key, persister.IdentifierType, persister.RootEntityName));
 				}
-				var cachedObjects = persister.Cache.GetMany(keys.ToArray(), source.Timestamp);
+				var cachedObjects = cache.GetMany(keys.ToArray(), source.Timestamp);
 				for (var i = 1; i < cachedObjects.Length; i++)
 				{
 					Assemble(
@@ -468,7 +457,7 @@ namespace NHibernate.Event.Default
 				return Assemble(keys[0], cachedObjects[0], @event, true);
 			}
 			var cacheKey = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
-			var cachedObject = persister.Cache.Get(cacheKey, source.Timestamp);
+			var cachedObject = cache.Get(cacheKey, source.Timestamp);
 			return Assemble(cacheKey, cachedObject, @event, true);
 
 			object Assemble(CacheKey ck, object ce, LoadEvent evt, bool alterStatistics)
@@ -477,12 +466,12 @@ namespace NHibernate.Event.Default
 				{
 					if (ce == null)
 					{
-						factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
+						factory.StatisticsImplementor.SecondLevelCacheMiss(cache.RegionName);
 						log.Debug("Entity cache miss: {0}", ck);
 					}
 					else
 					{
-						factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
+						factory.StatisticsImplementor.SecondLevelCacheHit(cache.RegionName);
 						log.Debug("Entity cache hit: {0}", ck);
 					}
 				}

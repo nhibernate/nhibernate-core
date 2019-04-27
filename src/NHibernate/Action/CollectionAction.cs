@@ -96,11 +96,8 @@ namespace NHibernate.Action
 			// earlier entity actions which actually updates
 			// the database (this action is responsible for
 			// second-level cache invalidation only)
-			if (persister.HasCache)
-			{
-				CacheKey ck = session.GenerateCacheKey(key, persister.KeyType, persister.Role);
-				softLock = persister.Cache.Lock(ck, null);
-			}
+			var ck = session.GetCacheAndKey(key, persister, out var cache);
+			softLock = cache?.Lock(ck, null);
 		}
 
 		/// <summary>Execute this action</summary>
@@ -124,8 +121,8 @@ namespace NHibernate.Action
 
 		public virtual void ExecuteAfterTransactionCompletion(bool success)
 		{
-			var ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
-			persister.Cache.Release(ck, softLock);
+			var ck = Session.GetCacheAndKey(key, persister, out var cache);
+			cache.Release(ck, softLock);
 		}
 
 		#endregion
@@ -137,11 +134,8 @@ namespace NHibernate.Action
 
 		protected internal void Evict()
 		{
-			if (persister.HasCache)
-			{
-				CacheKey ck = session.GenerateCacheKey(key, persister.KeyType, persister.Role);
-				persister.Cache.Evict(ck);
-			}
+			CacheKey ck = session.GetCacheAndKey(key, persister, out var cache);
+			cache?.Evict(ck);
 		}
 
 		#region IComparable<CollectionAction> Members

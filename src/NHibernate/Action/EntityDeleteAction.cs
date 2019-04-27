@@ -54,16 +54,8 @@ namespace NHibernate.Action
 				tmpVersion = persister.GetVersion(instance);
 			}
 
-			CacheKey ck;
-			if (persister.HasCache)
-			{
-				ck = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
-				sLock = persister.Cache.Lock(ck, version);
-			}
-			else
-			{
-				ck = null;
-			}
+			CacheKey ck = session.GetCacheAndKey(id, persister, out var cache);
+			sLock = cache?.Lock(ck, version);
 
 			if (!isCascadeDeleteEnabled && !veto)
 			{
@@ -87,8 +79,7 @@ namespace NHibernate.Action
 			persistenceContext.RemoveEntity(key);
 			persistenceContext.RemoveProxy(key);
 
-			if (persister.HasCache)
-				persister.Cache.Evict(ck);
+			cache?.Evict(ck);
 
 			PostDelete();
 
@@ -129,11 +120,8 @@ namespace NHibernate.Action
 		
 		protected override void AfterTransactionCompletionProcessImpl(bool success)
 		{
-			if (Persister.HasCache)
-			{
-				CacheKey ck = Session.GenerateCacheKey(Id, Persister.IdentifierType, Persister.RootEntityName);
-				Persister.Cache.Release(ck, sLock);
-			}
+			var ck = Session.GetCacheAndKey(Id, Persister, out var cache);
+			cache?.Release(ck, sLock);
 			if (success)
 			{
 				PostCommitDelete();

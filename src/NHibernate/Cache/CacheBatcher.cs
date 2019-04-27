@@ -34,7 +34,7 @@ namespace NHibernate.Cache
 			{
 				Log.Debug("Adding a put operation to batch for entity {0} and key {1}", persister.EntityName, data.Key);
 			}
-			AddToBatch(persister.Cache, data);
+			AddToBatch(persister.GetCache(_session.GetTenantIdentifier()), data);
 		}
 
 		/// <summary>
@@ -48,7 +48,7 @@ namespace NHibernate.Cache
 			{
 				Log.Debug("Adding a put operation to batch for collection role {0} and key {1}", persister.Role, data.Key);
 			}
-			AddToBatch(persister.Cache, data);
+			AddToBatch(persister.GetCache(_session.GetTenantIdentifier()), data);
 		}
 
 		private void AddToBatch(ICacheConcurrencyStrategy cache, CachePutData data)

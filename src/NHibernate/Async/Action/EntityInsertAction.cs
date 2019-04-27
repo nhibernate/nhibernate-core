@@ -73,12 +73,13 @@ namespace NHibernate.Action
 				CacheEntry ce = await (CacheEntry.CreateAsync(State, persister, version, session, instance, cancellationToken)).ConfigureAwait(false);
 				cacheEntry = persister.CacheEntryStructure.Structure(ce);
 
-				CacheKey ck = Session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
-				bool put = persister.Cache.Insert(ck, cacheEntry, version);
+
+				CacheKey ck = Session.GetCacheAndKey(id, persister, out var cache);
+				bool put = cache.Insert(ck, cacheEntry, version);
 
 				if (put && factory.Statistics.IsStatisticsEnabled)
 				{
-					factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+					factory.StatisticsImplementor.SecondLevelCachePut(cache.RegionName);
 				}
 			}
 
@@ -98,12 +99,13 @@ namespace NHibernate.Action
 			IEntityPersister persister = Persister;
 			if (success && IsCachePutEnabled(persister))
 			{
-				CacheKey ck = Session.GenerateCacheKey(Id, persister.IdentifierType, persister.RootEntityName);
-				bool put = await (persister.Cache.AfterInsertAsync(ck, cacheEntry, version, cancellationToken)).ConfigureAwait(false);
+				
+				CacheKey ck = Session.GetCacheAndKey(Id, persister, out var cache);
+				bool put = await (cache.AfterInsertAsync(ck, cacheEntry, version, cancellationToken)).ConfigureAwait(false);
 
 				if (put && Session.Factory.Statistics.IsStatisticsEnabled)
 				{
-					Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+					Session.Factory.StatisticsImplementor.SecondLevelCachePut(cache.RegionName);
 				}
 			}
 			if (success)

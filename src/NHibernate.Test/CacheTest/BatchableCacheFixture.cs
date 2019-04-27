@@ -6,6 +6,8 @@ using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Linq;
 using NHibernate.Multi;
+using NHibernate.Persister.Collection;
+using NHibernate.Persister.Entity;
 using NHibernate.Test.CacheTest.Caches;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
@@ -96,8 +98,8 @@ namespace NHibernate.Test.CacheTest
 		public void MultipleGetReadOnlyCollectionTest()
 		{
 			var persister = Sfi.GetCollectionPersister($"{typeof(ReadOnly).FullName}.Items");
-			Assert.That(persister.Cache.Cache, Is.Not.Null);
-			Assert.That(persister.Cache.Cache, Is.TypeOf<BatchableCache>());
+			Assert.That(persister.GetCache(null).Cache, Is.Not.Null);
+			Assert.That(persister.GetCache(null).Cache, Is.TypeOf<BatchableCache>());
 			var ids = new List<int>();
 			
 			using (var s = Sfi.OpenSession())
@@ -206,8 +208,8 @@ namespace NHibernate.Test.CacheTest
 		public void MultipleGetReadOnlyTest()
 		{
 			var persister = Sfi.GetEntityPersister(typeof(ReadOnly).FullName);
-			Assert.That(persister.Cache.Cache, Is.Not.Null);
-			Assert.That(persister.Cache.Cache, Is.TypeOf<BatchableCache>());
+			Assert.That(persister.GetCache(null).Cache, Is.Not.Null);
+			Assert.That(persister.GetCache(null).Cache, Is.TypeOf<BatchableCache>());
 			int[] getIds;
 			int[] loadIds;
 
@@ -368,8 +370,8 @@ namespace NHibernate.Test.CacheTest
 		public void MultipleGetReadOnlyItemTest()
 		{
 			var persister = Sfi.GetEntityPersister(typeof(ReadOnlyItem).FullName);
-			Assert.That(persister.Cache.Cache, Is.Not.Null);
-			Assert.That(persister.Cache.Cache, Is.TypeOf<BatchableCache>());
+			Assert.That(persister.GetCache(null).Cache, Is.Not.Null);
+			Assert.That(persister.GetCache(null).Cache, Is.TypeOf<BatchableCache>());
 			int[] getIds;
 			int[] loadIds;
 
@@ -530,9 +532,9 @@ namespace NHibernate.Test.CacheTest
 		public void MultiplePutReadWriteTest()
 		{
 			var persister = Sfi.GetEntityPersister(typeof(ReadWrite).FullName);
-			Assert.That(persister.Cache.Cache, Is.Not.Null);
-			Assert.That(persister.Cache.Cache, Is.TypeOf<BatchableCache>());
-			var cache = (BatchableCache) persister.Cache.Cache;
+			Assert.That(persister.GetCache(null).Cache, Is.Not.Null);
+			Assert.That(persister.GetCache(null).Cache, Is.TypeOf<BatchableCache>());
+			var cache = (BatchableCache) persister.GetCache(null).Cache;
 			var ids = new List<int>();
 
 			cache.Clear();
@@ -580,9 +582,9 @@ namespace NHibernate.Test.CacheTest
 		public void MultiplePutReadWriteItemTest()
 		{
 			var persister = Sfi.GetCollectionPersister($"{typeof(ReadWrite).FullName}.Items");
-			Assert.That(persister.Cache.Cache, Is.Not.Null);
-			Assert.That(persister.Cache.Cache, Is.TypeOf<BatchableCache>());
-			var cache = (BatchableCache) persister.Cache.Cache;
+			Assert.That(persister.GetCache(null).Cache, Is.Not.Null);
+			Assert.That(persister.GetCache(null).Cache, Is.TypeOf<BatchableCache>());
+			var cache = (BatchableCache) persister.GetCache(null).Cache;
 			var ids = new List<int>();
 
 			cache.Clear();
@@ -857,7 +859,7 @@ namespace NHibernate.Test.CacheTest
 		public void QueryEntityBatchCacheTest(bool clearEntityCacheAfterQuery)
 		{
 			var persister = Sfi.GetEntityPersister(typeof(ReadOnlyItem).FullName);
-			var cache = (BatchableCache) persister.Cache.Cache;
+			var cache = (BatchableCache) persister.GetCache(null).Cache;
 			var queryCache = GetDefaultQueryCache();
 
 			Sfi.Statistics.Clear();
@@ -933,9 +935,9 @@ namespace NHibernate.Test.CacheTest
 			var persister = Sfi.GetEntityPersister(typeof(ReadOnly).FullName);
 			var itemPersister = Sfi.GetEntityPersister(typeof(ReadOnlyItem).FullName);
 			var collectionPersister = Sfi.GetCollectionPersister($"{typeof(ReadOnly).FullName}.Items");
-			var cache = (BatchableCache) persister.Cache.Cache;
-			var itemCache = (BatchableCache) itemPersister.Cache.Cache;
-			var collectionCache = (BatchableCache) collectionPersister.Cache.Cache;
+			var cache = (BatchableCache) persister.GetCache(null).Cache;
+			var itemCache = (BatchableCache) itemPersister.GetCache(null).Cache;
+			var collectionCache = (BatchableCache) collectionPersister.GetCache(null).Cache;
 			var queryCache = GetDefaultQueryCache();
 
 			int middleId;
@@ -1077,8 +1079,8 @@ namespace NHibernate.Test.CacheTest
 
 			var persister = Sfi.GetEntityPersister(typeof(ReadOnlyItem).FullName);
 			var parentPersister = Sfi.GetEntityPersister(typeof(ReadOnly).FullName);
-			var cache = (BatchableCache) persister.Cache.Cache;
-			var parentCache = (BatchableCache) parentPersister.Cache.Cache;
+			var cache = (BatchableCache) persister.GetCache(null).Cache;
+			var parentCache = (BatchableCache) parentPersister.GetCache(null).Cache;
 			var queryCache = GetDefaultQueryCache();
 
 			int middleId;
@@ -1205,7 +1207,7 @@ namespace NHibernate.Test.CacheTest
 			where TEntity : CacheEntity
 		{
 			var persister = Sfi.GetEntityPersister(typeof(TEntity).FullName);
-			var cache = (BatchableCache) persister.Cache.Cache;
+			var cache = (BatchableCache) persister.GetCache(null).Cache;
 			cache.Clear();
 
 			if (cacheBeforeLoadFn != null)
@@ -1271,7 +1273,7 @@ namespace NHibernate.Test.CacheTest
 		private void AssertMultipleCacheCollectionCalls(List<int> ids, int idIndex, int[][] fetchedIdIndexes, int[] putIdIndexes, Func<int, bool> cacheBeforeLoadFn = null)
 		{
 			var persister = Sfi.GetCollectionPersister($"{typeof(ReadOnly).FullName}.Items");
-			var cache = (BatchableCache) persister.Cache.Cache;
+			var cache = (BatchableCache) persister.GetCache(null).Cache;
 			cache.Clear();
 
 			if (cacheBeforeLoadFn != null)

@@ -135,7 +135,7 @@ namespace NHibernate.Action
 		{
 			if (affectedCollectionRoles != null && affectedCollectionRoles.Any())
 			{
-				session.Factory.EvictCollection(affectedCollectionRoles);
+				session.Factory.EvictCollection(affectedCollectionRoles, session.GetTenantIdentifier());
 			}
 		}
 
@@ -143,7 +143,7 @@ namespace NHibernate.Action
 		{
 			if (affectedEntityNames != null && affectedEntityNames.Any())
 			{
-				session.Factory.EvictEntity(affectedEntityNames);
+				session.Factory.EvictEntity(affectedEntityNames, session.GetTenantIdentifier());
 			}
 		}
 

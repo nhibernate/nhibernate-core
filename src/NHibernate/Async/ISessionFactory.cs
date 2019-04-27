@@ -17,6 +17,7 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Metadata;
 using NHibernate.Stat;
+using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -99,6 +100,49 @@ namespace NHibernate
 				{
 					await (factory.EvictCollectionAsync(role, cancellationToken)).ConfigureAwait(false);
 				}
+			}
+		}
+
+		public static async Task EvictEntityAsync(this ISessionFactory factory, string entityName, object id, string tenantIdentifier, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (tenantIdentifier == null)
+				await (factory.EvictEntityAsync(entityName, id, cancellationToken)).ConfigureAwait(false);
+
+			await (ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictEntityAsync(entityName, id, tenantIdentifier, cancellationToken)).ConfigureAwait(false);
+		}
+
+		public static Task EvictCollectionAsync(this ISessionFactory factory, IEnumerable<string> roleNames, string tenantIdentifier, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (roleNames == null)
+				throw new ArgumentNullException(nameof(roleNames));
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return InternalEvictCollectionAsync();
+			async Task InternalEvictCollectionAsync()
+			{
+
+				if (tenantIdentifier == null)
+				{
+					await (EvictCollectionAsync(factory, roleNames, cancellationToken)).ConfigureAwait(false);
+					return;
+				}
+
+				foreach (var roleName in roleNames)
+				{
+					await (ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictCollectionAsync(roleName, null, tenantIdentifier, cancellationToken)).ConfigureAwait(false);
+				}
+			}
+		}
+
+		public static async Task EvictEntityAsync(this ISessionFactory factory, IEnumerable<string> entityNames, string tenantIdentifier, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			foreach (var entityName in entityNames)
+			{
+				await (EvictEntityAsync(factory, entityName, null, tenantIdentifier, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 	}

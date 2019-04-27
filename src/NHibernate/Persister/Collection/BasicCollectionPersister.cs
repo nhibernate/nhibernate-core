@@ -22,8 +22,13 @@ namespace NHibernate.Persister.Collection
 	/// </summary>
 	public partial class BasicCollectionPersister : AbstractCollectionPersister
 	{
+		//Since 5.3
+		[Obsolete("Use constructor with cacheByTenant delegate")]
 		public BasicCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory) 
-			: base(collection, cache, factory) { }
+			: this(collection, tenantId => cache, factory) { }
+
+		public BasicCollectionPersister(Mapping.Collection collection, Func<string, ICacheConcurrencyStrategy> cacheByTenant, ISessionFactoryImplementor factory) 
+			: base(collection, cacheByTenant, factory) { }
 
 		public override bool CascadeDeleteEnabled
 		{

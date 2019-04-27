@@ -51,20 +51,20 @@ namespace NHibernate.Test.BulkManipulation
 
 			if (expectedEntityEvictionCount > 0)
 			{
-				_factory.Received(1).EvictEntity(Arg.Is<IEnumerable<string>>(x => x.Count() == expectedEntityEvictionCount));
+				_factory.Received(1).EvictEntity(Arg.Is<IEnumerable<string>>(x => x.Count() == expectedEntityEvictionCount), null);
 			}
 			else
 			{
-				_factory.DidNotReceive().EvictEntity(Arg.Any<IEnumerable<string>>());
+				_factory.DidNotReceive().EvictEntity(Arg.Any<IEnumerable<string>>(), null);
 			}
 
 			if (expectedCollectionEvictionCount > 0)
 			{
-				_factory.Received(1).EvictCollection(Arg.Is<IEnumerable<string>>(x => x.Count() == expectedCollectionEvictionCount));
+				_factory.Received(1).EvictCollection(Arg.Is<IEnumerable<string>>(x => x.Count() == expectedCollectionEvictionCount), null);
 			}
 			else
 			{
-				_factory.DidNotReceive().EvictCollection(Arg.Any<IEnumerable<string>>());
+				_factory.DidNotReceive().EvictCollection(Arg.Any<IEnumerable<string>>(), null);
 			}
 		}
 	}

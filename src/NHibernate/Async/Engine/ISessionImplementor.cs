@@ -21,6 +21,7 @@ using NHibernate.Hql;
 using NHibernate.Impl;
 using NHibernate.Loader.Custom;
 using NHibernate.Multi;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Transaction;
 using NHibernate.Type;

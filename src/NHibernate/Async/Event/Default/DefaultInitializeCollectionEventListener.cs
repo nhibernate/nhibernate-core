@@ -94,7 +94,8 @@ namespace NHibernate.Event.Default
 			CollectionEntry[] collectionEntries = null;
 			var collectionBatch = source.PersistenceContext.BatchFetchQueue.QueryCacheQueue
 			                            ?.GetCollectionBatch(persister, collectionKey, out collectionEntries);
-			if (collectionBatch != null || batchSize > 1 && persister.Cache.PreferMultipleGet())
+			var cache = persister.GetCache(source.GetTenantIdentifier());
+			if (collectionBatch != null || batchSize > 1 && cache.PreferMultipleGet())
 			{
 				// The first item in the array is the item that we want to load
 				if (collectionBatch != null)
@@ -110,8 +111,9 @@ namespace NHibernate.Event.Default
 				if (collectionBatch == null)
 				{
 					collectionEntries = new CollectionEntry[batchSize];
+					//Do not check cache, so provide null
 					collectionBatch = await (source.PersistenceContext.BatchFetchQueue
-					                        .GetCollectionBatchAsync(persister, collectionKey, batchSize, false, collectionEntries, cancellationToken)).ConfigureAwait(false);
+											.GetCollectionBatchAsync(persister, collectionKey, batchSize, collectionEntries, null, cancellationToken)).ConfigureAwait(false);
 				}
 
 				// Ignore null values as the retrieved batch may contains them when there are not enough
@@ -126,23 +128,23 @@ namespace NHibernate.Event.Default
 					}
 					keys.Add(source.GenerateCacheKey(key, persister.KeyType, persister.Role));
 				}
-				var cachedObjects = await (persister.Cache.GetManyAsync(keys.ToArray(), source.Timestamp, cancellationToken)).ConfigureAwait(false);
+				var cachedObjects = await (cache.GetManyAsync(keys.ToArray(), source.Timestamp, cancellationToken)).ConfigureAwait(false);
 				for (var i = 1; i < cachedObjects.Length; i++)
 				{
 					var coll = source.PersistenceContext.BatchFetchQueue.GetBatchLoadableCollection(persister, collectionEntries[i]);
-					await (AssembleAsync(keys[i], cachedObjects[i], persister, source, coll, collectionBatch[i], false, cancellationToken)).ConfigureAwait(false);
+					await (AssembleAsync(keys[i], cachedObjects[i], persister, source, coll, collectionBatch[i], false, cache.RegionName, cancellationToken)).ConfigureAwait(false);
 				}
-				return await (AssembleAsync(keys[0], cachedObjects[0], persister, source, collection, collectionKey, true, cancellationToken)).ConfigureAwait(false);
+				return await (AssembleAsync(keys[0], cachedObjects[0], persister, source, collection, collectionKey, true, cache.RegionName, cancellationToken)).ConfigureAwait(false);
 			}
 
 			var cacheKey = source.GenerateCacheKey(collectionKey, persister.KeyType, persister.Role);
-			var cachedObject = await (persister.Cache.GetAsync(cacheKey, source.Timestamp, cancellationToken)).ConfigureAwait(false);
-			return await (AssembleAsync(cacheKey, cachedObject, persister, source, collection, collectionKey, true, cancellationToken)).ConfigureAwait(false);
+			var cachedObject = await (cache.GetAsync(cacheKey, source.Timestamp, cancellationToken)).ConfigureAwait(false);
+			return await (AssembleAsync(cacheKey, cachedObject, persister, source, collection, collectionKey, true, cache.RegionName, cancellationToken)).ConfigureAwait(false);
 		}
 
 		private async Task<bool> AssembleAsync(
 			CacheKey ck, object ce, ICollectionPersister persister, ISessionImplementor source,
-			IPersistentCollection collection, object collectionKey, bool alterStatistics, CancellationToken cancellationToken)
+			IPersistentCollection collection, object collectionKey, bool alterStatistics, string regionName, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISessionFactoryImplementor factory = source.Factory;
@@ -150,11 +152,11 @@ namespace NHibernate.Event.Default
 			{
 				if (ce == null)
 				{
-					factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
+					factory.StatisticsImplementor.SecondLevelCacheMiss(regionName);
 				}
 				else
 				{
-					factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
+					factory.StatisticsImplementor.SecondLevelCacheHit(regionName);
 				}
 			}
 

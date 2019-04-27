@@ -13,6 +13,29 @@ using NHibernate.Util;
 
 namespace NHibernate.Persister.Entity
 {
+
+	//TODO 6.0: Make base for ICollectionPersister and IPersister
+	/// <summary>
+	/// Base interface for cacheable persisters
+	/// </summary>
+	public interface ICacheablePersister
+	{
+		/// <summary>
+		/// Get the cache
+		/// </summary>
+		/// <param name="tenantIdentifier">tenantIdentifier or null if multi-tenancy is disabled</param>
+		/// <returns></returns>
+		ICacheConcurrencyStrategy GetCache(string tenantIdentifier);
+		
+		/// <summary> Get the cache structure</summary>
+		ICacheEntryStructure CacheEntryStructure { get;}
+
+		/// <summary>
+		/// Is this persister cacheable
+		/// </summary>
+		bool HasCache { get; }
+	}
+
 	public struct EntityPersister
 	{
 		/// <summary> The property name of the "special" identifier property in HQL</summary>
@@ -27,6 +50,8 @@ namespace NHibernate.Persister.Entity
 	/// matching the signature of: (PersistentClass, SessionFactoryImplementor)
 	/// </remarks>
 	public partial interface IEntityPersister : IOptimisticCacheSource
+		//TODO 6.0: Uncomment
+		//,ICacheablePersister
 	{
 		/// <summary>
 		/// The ISessionFactory to which this persister "belongs".
@@ -195,9 +220,11 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		bool IsLazyPropertiesCacheable { get; }
 
+		//Since 5.3
 		/// <summary>
 		/// Get the cache (optional operation)
 		/// </summary>
+		[Obsolete("Implement and use ICacheablePersister.GetCache instead")]
 		ICacheConcurrencyStrategy Cache { get; }
 
 		/// <summary> Get the cache structure</summary>
@@ -606,13 +633,14 @@ namespace NHibernate.Persister.Entity
 		IEntityTuplizer EntityTuplizer { get; }
 	}
 
-	internal static class EntityPersisterExtensions
+	//6.0 TODO: Merge into IEntityPersister.
+	public static class EntityPersisterExtensions
 	{
 		/// <summary>
 		/// Get the batch size of a entity persister.
 		/// </summary>
 		//6.0 TODO: Merge into IEntityPersister.
-		public static int GetBatchSize(this IEntityPersister persister)
+		internal static int GetBatchSize(this IEntityPersister persister)
 		{
 			if (persister is AbstractEntityPersister acp)
 			{
@@ -628,7 +656,7 @@ namespace NHibernate.Persister.Entity
 
 		/// <summary> Called just after the entities properties have been initialized</summary>
 		//6.0 TODO: Merge into IEntityPersister.
-		public static void AfterInitialize(this IEntityPersister persister, object entity, ISessionImplementor session)
+		internal static void AfterInitialize(this IEntityPersister persister, object entity, ISessionImplementor session)
 		{
 			if (persister is AbstractEntityPersister abstractEntityPersister)
 			{
@@ -639,6 +667,16 @@ namespace NHibernate.Persister.Entity
 #pragma warning disable 618
 			persister.AfterInitialize(entity, true, session);
 #pragma warning restore 618
+		}
+
+		public static ICacheConcurrencyStrategy GetCache(this IEntityPersister persister, string tenantIdentifier)
+		{
+#pragma warning disable 618
+			if (tenantIdentifier == null)
+				return persister.Cache;
+#pragma warning restore 618
+
+			return ReflectHelper.CastOrThrow<ICacheablePersister>(persister, "multi-tenancy").GetCache(tenantIdentifier);
 		}
 	}
 }

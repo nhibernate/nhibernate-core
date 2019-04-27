@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using NHibernate.Cache;
@@ -25,8 +26,18 @@ namespace NHibernate.Persister.Entity
 		private readonly string[] constraintOrderedTableNames;
 		private readonly string[][] constraintOrderedKeyColumnNames;
 
-		public UnionSubclassEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache, 
-			ISessionFactoryImplementor factory, IMapping mapping):base(persistentClass, cache, factory)
+		[Obsolete("Use constructor with cacheByTenant delegate")]
+		public UnionSubclassEntityPersister(
+			PersistentClass persistentClass,
+			ICacheConcurrencyStrategy cache,
+			ISessionFactoryImplementor factory,
+			IMapping mapping) : this(persistentClass, tenantId => cache, factory, mapping)
+		{
+		}
+
+		public UnionSubclassEntityPersister(PersistentClass persistentClass,
+											Func<string, ICacheConcurrencyStrategy> cacheByTenant, 
+			ISessionFactoryImplementor factory, IMapping mapping):base(persistentClass, cacheByTenant, factory)
 		{
 			if (IdentifierGenerator is IdentityGenerator)
 			{

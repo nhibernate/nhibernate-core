@@ -90,11 +90,8 @@ namespace NHibernate.Event.Default
 					new EvictVisitor(source).Process(obj, persister);
 			}
 
-			if (persister.HasCache)
-			{
-				CacheKey ck = source.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
-				persister.Cache.Remove(ck);
-			}
+			var ck = source.GetCacheAndKey(id, persister, out var cache);
+			cache?.Remove(ck);
 
 			EvictCachedCollections(persister, id, source.Factory);
 

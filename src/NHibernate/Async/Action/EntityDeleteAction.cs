@@ -49,16 +49,8 @@ namespace NHibernate.Action
 				tmpVersion = persister.GetVersion(instance);
 			}
 
-			CacheKey ck;
-			if (persister.HasCache)
-			{
-				ck = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
-				sLock = await (persister.Cache.LockAsync(ck, version, cancellationToken)).ConfigureAwait(false);
-			}
-			else
-			{
-				ck = null;
-			}
+			CacheKey ck = session.GetCacheAndKey(id, persister, out var cache);
+			sLock = (cache == null ? null : await (cache.LockAsync(ck, version, cancellationToken)).ConfigureAwait(false));
 
 			if (!isCascadeDeleteEnabled && !veto)
 			{
@@ -82,8 +74,15 @@ namespace NHibernate.Action
 			persistenceContext.RemoveEntity(key);
 			persistenceContext.RemoveProxy(key);
 
-			if (persister.HasCache)
-				await (persister.Cache.EvictAsync(ck, cancellationToken)).ConfigureAwait(false);
+			var evictTask = cache?.EvictAsync(ck, cancellationToken);
+
+			if (evictTask != null)
+
+			{
+
+				await (evictTask).ConfigureAwait(false);
+
+			}
 
 			await (PostDeleteAsync(cancellationToken)).ConfigureAwait(false);
 
@@ -127,10 +126,11 @@ namespace NHibernate.Action
 		protected override async Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (Persister.HasCache)
+			var ck = Session.GetCacheAndKey(Id, Persister, out var cache);
+			var releaseTask = cache?.ReleaseAsync(ck, sLock, cancellationToken);
+			if (releaseTask != null)
 			{
-				CacheKey ck = Session.GenerateCacheKey(Id, Persister.IdentifierType, Persister.RootEntityName);
-				await (Persister.Cache.ReleaseAsync(ck, sLock, cancellationToken)).ConfigureAwait(false);
+				await (releaseTask).ConfigureAwait(false);
 			}
 			if (success)
 			{

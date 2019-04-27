@@ -31,7 +31,7 @@ namespace NHibernate.Persister.Collection
 	/// Summary description for AbstractCollectionPersister.
 	/// </summary>
 	public abstract partial class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
-		IPostInsertIdentityPersister, ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister
+		IPostInsertIdentityPersister, ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ICacheablePersister
 	{
 		protected static readonly object NotFoundPlaceHolder = new object();
 		private readonly string role;
@@ -124,7 +124,7 @@ namespace NHibernate.Persister.Collection
 		private readonly IIdentifierGenerator identifierGenerator;
 		private readonly IPropertyMapping elementPropertyMapping;
 		private readonly IEntityPersister elementPersister;
-		private readonly ICacheConcurrencyStrategy cache;
+		private readonly Func<string, ICacheConcurrencyStrategy> _cacheByTenant;
 		private readonly CollectionType collectionType;
 		private ICollectionInitializer initializer;
 
@@ -163,10 +163,17 @@ namespace NHibernate.Persister.Collection
 
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (ICollectionPersister));
 
-		public AbstractCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
+		//Since 5.3
+		[Obsolete("Use constructor with cacheByTenant delegate")]
+		public AbstractCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory):this(collection, tenantId => cache, factory)
+		{
+			//TODO: Throw if multitenancy is enabled
+		}
+
+		public AbstractCollectionPersister(Mapping.Collection collection, Func<string, ICacheConcurrencyStrategy> cacheByTenant, ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
-			this.cache = cache;
+			_cacheByTenant = cacheByTenant;
 			if (factory.Settings.IsStructuredCacheEntriesEnabled)
 			{
 				cacheEntryStructure = collection.IsMap
@@ -633,7 +640,7 @@ namespace NHibernate.Persister.Collection
 
 		public bool HasCache
 		{
-			get { return cache != null; }
+			get { return _cacheByTenant != null; }
 		}
 
 		public string GetSQLWhereString(string alias)
@@ -1771,9 +1778,10 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
+		
 		public ICacheConcurrencyStrategy Cache
 		{
-			get { return cache; }
+			get { return _cacheByTenant?.Invoke(null); }
 		}
 
 		public CollectionType CollectionType
@@ -2019,6 +2027,11 @@ namespace NHibernate.Persister.Collection
 		protected virtual ISQLExceptionConverter SQLExceptionConverter
 		{
 			get { return sqlExceptionConverter; }
+		}
+
+		public ICacheConcurrencyStrategy GetCache(string tenantIdentifier)
+		{
+			return _cacheByTenant?.Invoke(tenantIdentifier);
 		}
 
 		public ICacheEntryStructure CacheEntryStructure

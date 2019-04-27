@@ -39,7 +39,14 @@ namespace NHibernate.Engine
 			{
 				return Task.FromCanceled<object[]>(cancellationToken);
 			}
-			return GetCollectionBatchAsync(collectionPersister, id, batchSize, true, null, cancellationToken);
+			try
+			{
+				return GetCollectionBatchAsync(collectionPersister, id, batchSize, null, collectionPersister.GetCache(null), cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object[]>(ex);
+			}
 		}
 
 		/// <summary>
@@ -48,12 +55,12 @@ namespace NHibernate.Engine
 		/// <param name="collectionPersister">The persister for the collection role.</param>
 		/// <param name="key">A key that must be included in the batch fetch</param>
 		/// <param name="batchSize">the maximum number of keys to return</param>
-		/// <param name="checkCache">Whether to check the cache for uninitialized collection keys.</param>
 		/// <param name="collectionEntries">An array that will be filled with collection entries if set.</param>
+		/// <param name="cache">Will check cache if not null is provided</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>An array of collection keys, of length <paramref name="batchSize"/> (padded with nulls)</returns>
-		internal async Task<object[]> GetCollectionBatchAsync(ICollectionPersister collectionPersister, object key, int batchSize, bool checkCache,
-		                                     CollectionEntry[] collectionEntries, CancellationToken cancellationToken)
+		internal async Task<object[]> GetCollectionBatchAsync(ICollectionPersister collectionPersister, object key, int batchSize,
+		                                     CollectionEntry[] collectionEntries, ICacheConcurrencyStrategy cache, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var keys = new object[batchSize];
@@ -65,8 +72,9 @@ namespace NHibernate.Engine
 			// List of collection entries that haven't been checked for their existance in the cache. Besides the collection entry,
 			// the index where the entry was found is also stored in order to correctly order the returning keys.
 			var collectionKeys = new List<KeyValuePair<KeyValuePair<CollectionEntry, IPersistentCollection>, int>>(batchSize);
-			var batchableCache = collectionPersister.Cache?.GetCacheBase();
-
+			var batchableCache = cache?.GetCacheBase();
+			bool checkCache = batchableCache != null;
+			
 			if (!batchLoadableCollections.TryGetValue(collectionPersister.Role, out var map))
 			{
 				return keys;
@@ -165,7 +173,7 @@ namespace NHibernate.Engine
 					}
 					keyIndex = index;
 				}
-				else if (!checkCache || batchableCache == null)
+				else if (!checkCache)
 				{
 					if (index < map.Count && (!keyIndex.HasValue || index < keyIndex.Value))
 					{
@@ -230,7 +238,14 @@ namespace NHibernate.Engine
 			{
 				return Task.FromCanceled<object[]>(cancellationToken);
 			}
-			return GetEntityBatchAsync(persister, id, batchSize, true, cancellationToken);
+			try
+			{
+				return GetEntityBatchAsync(persister, id, batchSize, persister.GetCache(null), cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object[]>(ex);
+			}
 		}
 
 		/// <summary>
@@ -241,10 +256,10 @@ namespace NHibernate.Engine
 		/// <param name="persister">The persister for the entities being loaded.</param>
 		/// <param name="id">The identifier of the entity currently demanding load.</param>
 		/// <param name="batchSize">The maximum number of keys to return</param>
-		/// <param name="checkCache">Whether to check the cache for uninitialized keys.</param>
+		/// <param name="cache">Cache to check or null to skip cache check</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>An array of identifiers, of length <paramref name="batchSize"/> (possibly padded with nulls)</returns>
-		internal async Task<object[]> GetEntityBatchAsync(IEntityPersister persister, object id, int batchSize, bool checkCache, CancellationToken cancellationToken)
+		internal async Task<object[]> GetEntityBatchAsync(IEntityPersister persister, object id, int batchSize, ICacheConcurrencyStrategy cache, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var ids = new object[batchSize];
@@ -257,7 +272,8 @@ namespace NHibernate.Engine
 			// the index where the key was found is also stored in order to correctly order the returning keys.
 			var entityKeys = new List<KeyValuePair<EntityKey, int>>(batchSize);
 			// If there is a cache, obsolete or not, batchableCache will not be null.
-			var batchableCache = persister.Cache?.GetCacheBase();
+			var batchableCache = cache?.GetCacheBase();
+			var checkCache = batchableCache != null;
 
 			if (!batchLoadableEntityKeys.TryGetValue(persister.EntityName, out var set))
 			{
@@ -336,7 +352,7 @@ namespace NHibernate.Engine
 				{
 					idIndex = index;
 				}
-				else if (!checkCache || batchableCache == null)
+				else if (!checkCache)
 				{
 					if (index < set.Count && (!idIndex.HasValue || index < idIndex.Value))
 					{

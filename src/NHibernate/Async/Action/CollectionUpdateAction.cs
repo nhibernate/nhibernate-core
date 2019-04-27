@@ -125,8 +125,7 @@ namespace NHibernate.Action
 			cancellationToken.ThrowIfCancellationRequested();
 			// NH Different behavior: to support unlocking collections from the cache.(r3260)
 
-			CacheKey ck = Session.GenerateCacheKey(await (GetKeyAsync(cancellationToken)).ConfigureAwait(false), Persister.KeyType, Persister.Role);
-
+			CacheKey ck = Session.GetCacheAndKey(await (GetKeyAsync(cancellationToken)).ConfigureAwait(false), Persister, out var cache); 
 			if (success)
 			{
 				// we can't disassemble a collection if it was uninitialized 
@@ -134,17 +133,17 @@ namespace NHibernate.Action
 				if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
 				{
 					CollectionCacheEntry entry = await (CollectionCacheEntry.CreateAsync(Collection, Persister, cancellationToken)).ConfigureAwait(false);
-					bool put = await (Persister.Cache.AfterUpdateAsync(ck, entry, null, Lock, cancellationToken)).ConfigureAwait(false);
+					bool put = await (cache.AfterUpdateAsync(ck, entry, null, Lock, cancellationToken)).ConfigureAwait(false);
 
 					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
 					{
-						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+						Session.Factory.StatisticsImplementor.SecondLevelCachePut(cache.RegionName);
 					}
 				}
 			}
 			else
 			{
-				await (Persister.Cache.ReleaseAsync(ck, Lock, cancellationToken)).ConfigureAwait(false);
+				await (cache.ReleaseAsync(ck, Lock, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 	}

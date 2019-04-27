@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Metadata;
 using NHibernate.Stat;
+using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -82,6 +83,39 @@ namespace NHibernate
 				{
 					factory.EvictCollection(role);
 				}
+			}
+		}
+
+		public static void EvictEntity(this ISessionFactory factory, string entityName, object id, string tenantIdentifier)
+		{
+			if (tenantIdentifier == null)
+				factory.EvictEntity(entityName, id);
+
+			ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictEntity(entityName, id, tenantIdentifier);
+		}
+
+		public static void EvictCollection(this ISessionFactory factory, IEnumerable<string> roleNames, string tenantIdentifier)
+		{
+			if (roleNames == null)
+				throw new ArgumentNullException(nameof(roleNames));
+
+			if (tenantIdentifier == null)
+			{
+				EvictCollection(factory, roleNames);
+				return;
+			}
+
+			foreach (var roleName in roleNames)
+			{
+				ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictCollection(roleName, null, tenantIdentifier);
+			}
+		}
+
+		public static void EvictEntity(this ISessionFactory factory, IEnumerable<string> entityNames, string tenantIdentifier)
+		{
+			foreach (var entityName in entityNames)
+			{
+				EvictEntity(factory, entityName, null, tenantIdentifier);
 			}
 		}
 	}
