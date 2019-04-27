@@ -96,27 +96,24 @@ namespace NHibernate
 
 		public static void EvictCollection(this ISessionFactory factory, IEnumerable<string> roleNames, string tenantIdentifier)
 		{
-			if (roleNames == null)
-				throw new ArgumentNullException(nameof(roleNames));
-
 			if (tenantIdentifier == null)
 			{
 				EvictCollection(factory, roleNames);
 				return;
 			}
 
-			foreach (var roleName in roleNames)
-			{
-				ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictCollection(roleName, null, tenantIdentifier);
-			}
+			ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictCollection(roleNames, tenantIdentifier);
 		}
 
 		public static void EvictEntity(this ISessionFactory factory, IEnumerable<string> entityNames, string tenantIdentifier)
 		{
-			foreach (var entityName in entityNames)
+			if (tenantIdentifier == null)
 			{
-				EvictEntity(factory, entityName, null, tenantIdentifier);
+				EvictEntity(factory, entityNames);
+				return;
 			}
+
+			ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictEntity(entityNames, tenantIdentifier);
 		}
 	}
 

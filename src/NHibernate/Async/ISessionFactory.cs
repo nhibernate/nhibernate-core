@@ -112,38 +112,28 @@ namespace NHibernate
 			await (ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictEntityAsync(entityName, id, tenantIdentifier, cancellationToken)).ConfigureAwait(false);
 		}
 
-		public static Task EvictCollectionAsync(this ISessionFactory factory, IEnumerable<string> roleNames, string tenantIdentifier, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task EvictCollectionAsync(this ISessionFactory factory, IEnumerable<string> roleNames, string tenantIdentifier, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (roleNames == null)
-				throw new ArgumentNullException(nameof(roleNames));
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			if (tenantIdentifier == null)
 			{
-				return Task.FromCanceled<object>(cancellationToken);
+				await (EvictCollectionAsync(factory, roleNames, cancellationToken)).ConfigureAwait(false);
+				return;
 			}
-			return InternalEvictCollectionAsync();
-			async Task InternalEvictCollectionAsync()
-			{
 
-				if (tenantIdentifier == null)
-				{
-					await (EvictCollectionAsync(factory, roleNames, cancellationToken)).ConfigureAwait(false);
-					return;
-				}
-
-				foreach (var roleName in roleNames)
-				{
-					await (ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictCollectionAsync(roleName, null, tenantIdentifier, cancellationToken)).ConfigureAwait(false);
-				}
-			}
+			await (ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictCollectionAsync(roleNames, tenantIdentifier, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public static async Task EvictEntityAsync(this ISessionFactory factory, IEnumerable<string> entityNames, string tenantIdentifier, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			foreach (var entityName in entityNames)
+			if (tenantIdentifier == null)
 			{
-				await (EvictEntityAsync(factory, entityName, null, tenantIdentifier, cancellationToken)).ConfigureAwait(false);
+				await (EvictEntityAsync(factory, entityNames, cancellationToken)).ConfigureAwait(false);
+				return;
 			}
+
+			await (ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictEntityAsync(entityNames, tenantIdentifier, cancellationToken)).ConfigureAwait(false);
 		}
 	}
 

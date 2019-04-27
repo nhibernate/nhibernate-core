@@ -146,21 +146,11 @@ namespace NHibernate.Impl
 
 		public Task EvictEntityAsync(IEnumerable<string> entityNames, CancellationToken cancellationToken)
 		{
-			if (entityNames == null)
-				throw new ArgumentNullException(nameof(entityNames));
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return InternalEvictEntityAsync();
-			async Task InternalEvictEntityAsync()
-			{
-
-				foreach (var entityName in entityNames)
-				{
-					await (EvictEntityAsync(entityName, cancellationToken)).ConfigureAwait(false);
-				}
-			}
+			return EvictEntityAsync(entityNames, null, cancellationToken);
 		}
 
 		public Task EvictEntityAsync(string entityName, object id, CancellationToken cancellationToken = default(CancellationToken))
@@ -172,28 +162,60 @@ namespace NHibernate.Impl
 			return EvictEntityAsync(entityName, id, null, cancellationToken);
 		}
 
-		public async Task EvictEntityAsync(string entityName, object id, string tenantIdentifier, CancellationToken cancellationToken)
+		public Task EvictEntityAsync(string entityName, object id, string tenantIdentifier, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return EvictEntityAsync(entityName, id, tenantIdentifier, null, cancellationToken);
+		}
+
+		public Task EvictEntityAsync(IEnumerable<string> entityNames, string tenantIdentifier, CancellationToken cancellationToken)
+		{
+			if (entityNames == null)
+				throw new ArgumentNullException(nameof(entityNames));
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return InternalEvictEntityAsync();
+			async Task InternalEvictEntityAsync()
+			{
+
+				var processedCaches = new HashSet<object>();
+				foreach (var entityName in entityNames)
+				{
+					await (EvictEntityAsync(entityName, null, tenantIdentifier, processedCaches, cancellationToken)).ConfigureAwait(false);
+				}
+			}
+		}
+
+		private async Task EvictEntityAsync(string entityName, object id, string tenantIdentifier, HashSet<object> processedCaches, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var p = GetEntityPersister(entityName);
-			if(!p.HasCache)
+			if (!p.HasCache)
 				return;
 
 			var cache = p.GetCache(CurrentSessionContext?.CurrentSession().GetSessionImplementation().GetTenantIdentifier() ?? tenantIdentifier);
 			if (id == null)
 			{
-
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("evicting second-level cache: {0}", entityName);
 				}
 
-				await (cache.ClearAsync(cancellationToken)).ConfigureAwait(false);
+				if (processedCaches == null || processedCaches.Add(cache))
+				{
+					await (cache.ClearAsync(cancellationToken)).ConfigureAwait(false);
+				}
+
 				return;
 			}
 
 			var ck = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
-			
+
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("evicting second-level cache: {0}", MessageHelper.InfoString(p, id));
@@ -222,6 +244,15 @@ namespace NHibernate.Impl
 
 		public Task EvictCollectionAsync(IEnumerable<string> roleNames, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return EvictCollectionAsync(roleNames, null, cancellationToken);
+		}
+
+		public Task EvictCollectionAsync(IEnumerable<string> roleNames, string tenantIdentifier, CancellationToken cancellationToken)
+		{
 			if (roleNames == null)
 				throw new ArgumentNullException(nameof(roleNames));
 			if (cancellationToken.IsCancellationRequested)
@@ -232,14 +263,24 @@ namespace NHibernate.Impl
 			async Task InternalEvictCollectionAsync()
 			{
 
+				HashSet<object> processedCaches = new HashSet<object>();
 				foreach (var roleName in roleNames)
 				{
-					await (EvictCollectionAsync(roleName, cancellationToken)).ConfigureAwait(false);
+					await (EvictCollectionAsync(roleName, null, tenantIdentifier, processedCaches, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
-		public async Task EvictCollectionAsync(string roleName, object id, string tenantIdentifier, CancellationToken cancellationToken)
+		public Task EvictCollectionAsync(string roleName, object id, string tenantIdentifier, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return EvictCollectionAsync(roleName, id, tenantIdentifier, null, cancellationToken);
+		}
+
+		private async Task EvictCollectionAsync(string roleName, object id, string tenantIdentifier, HashSet<object> processedCaches, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ICollectionPersister p = GetCollectionPersister(roleName);
@@ -247,21 +288,28 @@ namespace NHibernate.Impl
 				return;
 
 			var cache = p.GetCache(CurrentSessionContext?.CurrentSession().GetSessionImplementation().GetTenantIdentifier() ?? tenantIdentifier);
-			if (id != null)
+			if (id == null)
 			{
-				CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role);
 				if (log.IsDebugEnabled())
 				{
-					log.Debug("evicting second-level cache: {0}", MessageHelper.CollectionInfoString(p, id));
+					log.Debug("evicting second-level cache: {0}", p.Role);
 				}
-				await (cache.RemoveAsync(ck, cancellationToken)).ConfigureAwait(false);
+
+				if (processedCaches == null || processedCaches.Add(cache))
+				{
+					await (cache.ClearAsync(cancellationToken)).ConfigureAwait(false);
+				}
+
+				return;
 			}
 
+			CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role);
 			if (log.IsDebugEnabled())
 			{
-				log.Debug("evicting second-level cache: {0}", p.Role);
+				log.Debug("evicting second-level cache: {0}", MessageHelper.CollectionInfoString(p, id));
 			}
-			await (cache.ClearAsync(cancellationToken)).ConfigureAwait(false);
+
+			await (cache.RemoveAsync(ck, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public async Task EvictQueriesAsync(CancellationToken cancellationToken = default(CancellationToken))

@@ -232,7 +232,7 @@ namespace NHibernate.Impl
 
 			#region Persisters
 
-			var caches = new Dictionary<Tuple<string, string>, ICacheConcurrencyStrategy>();
+			var caches = new ConcurrentDictionary<Tuple<string, string>, ICacheConcurrencyStrategy>();
 			entityPersisters = new Dictionary<string, IEntityPersister>();
 			implementorToEntityName = new Dictionary<System.Type, string>();
 
@@ -430,28 +430,28 @@ namespace NHibernate.Impl
 			string cacheRegion,
 			string strategy,
 			bool isMutable,
-			Dictionary<Tuple<string, string>, ICacheConcurrencyStrategy> caches)
+			ConcurrentDictionary<Tuple<string, string>, ICacheConcurrencyStrategy> caches)
 		{
 			if (strategy == null || !settings.IsSecondLevelCacheEnabled)
 				return null;
 
 			return tenantIdentifier =>
-			{
-				var cacheKey = new Tuple<string, string>(GetCacheRegion(cacheRegion, tenantIdentifier), strategy);
-				if (caches.TryGetValue(cacheKey, out var cache)) 
-					return cache;
-
-				cache = CacheFactory.CreateCache(strategy, GetCache(cacheRegion));
-				caches.Add(cacheKey, cache);
-				if (isMutable && strategy == CacheFactory.ReadOnly)
-					log.Warn("read-only cache configured for mutable: {0}", name);
-				return cache;
-			};
+			caches.GetOrAdd(
+					new Tuple<string, string>(GetCacheRegion(cacheRegion, tenantIdentifier), strategy),
+					cacheKey =>
+					{
+						if (isMutable && strategy == CacheFactory.ReadOnly)
+							log.Warn("read-only cache configured for mutable: {0}", name);
+						return
+						CacheFactory.CreateCache(strategy, GetCache(cacheKey.Item1));
+					});
 		}
 
 		private static string GetCacheRegion(string cacheRegion, string tenantIdentifier)
 		{
-			return string.Join("|", tenantIdentifier, cacheRegion);
+			if (tenantIdentifier == null)
+				return cacheRegion;
+			return tenantIdentifier + "|" + cacheRegion;
 		}
 
 		public EventListeners EventListeners
@@ -919,13 +919,7 @@ namespace NHibernate.Impl
 
 		public void EvictEntity(IEnumerable<string> entityNames)
 		{
-			if (entityNames == null)
-				throw new ArgumentNullException(nameof(entityNames));
-
-			foreach (var entityName in entityNames)
-			{
-				EvictEntity(entityName);
-			}
+			EvictEntity(entityNames, null);
 		}
 
 		public void EvictEntity(string entityName, object id)
@@ -935,25 +929,45 @@ namespace NHibernate.Impl
 
 		public void EvictEntity(string entityName, object id, string tenantIdentifier)
 		{
+			EvictEntity(entityName, id, tenantIdentifier, null);
+		}
+
+		public void EvictEntity(IEnumerable<string> entityNames, string tenantIdentifier)
+		{
+			if (entityNames == null)
+				throw new ArgumentNullException(nameof(entityNames));
+
+			var processedCaches = new HashSet<object>();
+			foreach (var entityName in entityNames)
+			{
+				EvictEntity(entityName, null, tenantIdentifier, processedCaches);
+			}
+		}
+
+		private void EvictEntity(string entityName, object id, string tenantIdentifier, HashSet<object> processedCaches)
+		{
 			var p = GetEntityPersister(entityName);
-			if(!p.HasCache)
+			if (!p.HasCache)
 				return;
 
 			var cache = p.GetCache(CurrentSessionContext?.CurrentSession().GetSessionImplementation().GetTenantIdentifier() ?? tenantIdentifier);
 			if (id == null)
 			{
-
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("evicting second-level cache: {0}", entityName);
 				}
 
-				cache.Clear();
+				if (processedCaches == null || processedCaches.Add(cache))
+				{
+					cache.Clear();
+				}
+
 				return;
 			}
 
 			var ck = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
-			
+
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("evicting second-level cache: {0}", MessageHelper.InfoString(p, id));
@@ -988,38 +1002,57 @@ namespace NHibernate.Impl
 
 		public void EvictCollection(IEnumerable<string> roleNames)
 		{
+			EvictCollection(roleNames, null);
+		}
+
+		public void EvictCollection(IEnumerable<string> roleNames, string tenantIdentifier)
+		{
 			if (roleNames == null)
 				throw new ArgumentNullException(nameof(roleNames));
 
+			HashSet<object> processedCaches = new HashSet<object>();
 			foreach (var roleName in roleNames)
 			{
-				EvictCollection(roleName);
+				EvictCollection(roleName, null, tenantIdentifier, processedCaches);
 			}
 		}
 
 		public void EvictCollection(string roleName, object id, string tenantIdentifier)
+		{
+			EvictCollection(roleName, id, tenantIdentifier, null);
+		}
+
+		private void EvictCollection(string roleName, object id, string tenantIdentifier, HashSet<object> processedCaches)
 		{
 			ICollectionPersister p = GetCollectionPersister(roleName);
 			if (!p.HasCache)
 				return;
 
 			var cache = p.GetCache(CurrentSessionContext?.CurrentSession().GetSessionImplementation().GetTenantIdentifier() ?? tenantIdentifier);
-			if (id != null)
+			if (id == null)
 			{
-				CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role);
 				if (log.IsDebugEnabled())
 				{
-					log.Debug("evicting second-level cache: {0}", MessageHelper.CollectionInfoString(p, id));
+					log.Debug("evicting second-level cache: {0}", p.Role);
 				}
-				cache.Remove(ck);
+
+				if (processedCaches == null || processedCaches.Add(cache))
+				{
+					cache.Clear();
+				}
+
+				return;
 			}
 
+			CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role);
 			if (log.IsDebugEnabled())
 			{
-				log.Debug("evicting second-level cache: {0}", p.Role);
+				log.Debug("evicting second-level cache: {0}", MessageHelper.CollectionInfoString(p, id));
 			}
-			cache.Clear();
+
+			cache.Remove(ck);
 		}
+
 		public IType GetReferencedPropertyType(string className, string propertyName)
 		{
 			return GetEntityPersister(className).GetPropertyType(propertyName);
