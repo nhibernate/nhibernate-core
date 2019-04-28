@@ -435,16 +435,25 @@ namespace NHibernate.Impl
 			if (strategy == null || !settings.IsSecondLevelCacheEnabled)
 				return null;
 
-			return tenantIdentifier =>
-			caches.GetOrAdd(
-					new Tuple<string, string>(GetCacheRegion(cacheRegion, tenantIdentifier), strategy),
-					cacheKey =>
-					{
-						if (isMutable && strategy == CacheFactory.ReadOnly)
-							log.Warn("read-only cache configured for mutable: {0}", name);
-						return
-						CacheFactory.CreateCache(strategy, GetCache(cacheKey.Item1));
-					});
+			//TODO: This immediate cache creation is added to avoid breaking change when user expects that caches are created right after session factory
+			//so cache can be retrieved via GetSecondLevelCacheRegion
+			//Consider to remove it in 6.0
+			if (!Settings.IsMultiTenancyEnabled)
+			{
+				CreateCache(null);
+			}
+
+			return CreateCache;
+			ICacheConcurrencyStrategy CreateCache(string tenantIdentifier) =>
+				caches.GetOrAdd(
+						new Tuple<string, string>(GetCacheRegion(cacheRegion, tenantIdentifier), strategy),
+						cacheKey =>
+						{
+							if (isMutable && strategy == CacheFactory.ReadOnly)
+								log.Warn("read-only cache configured for mutable: {0}", name);
+							return
+							CacheFactory.CreateCache(strategy, GetCache(cacheKey.Item1));
+						});
 		}
 
 		private static string GetCacheRegion(string cacheRegion, string tenantIdentifier)
@@ -953,16 +962,15 @@ namespace NHibernate.Impl
 			var cache = p.GetCache(CurrentSessionContext?.CurrentSession().GetSessionImplementation().GetTenantIdentifier() ?? tenantIdentifier);
 			if (id == null)
 			{
+				if (processedCaches?.Add(cache) == false)
+					return;
+
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("evicting second-level cache: {0}", entityName);
 				}
 
-				if (processedCaches == null || processedCaches.Add(cache))
-				{
-					cache.Clear();
-				}
-
+				cache.Clear();
 				return;
 			}
 
@@ -1031,16 +1039,15 @@ namespace NHibernate.Impl
 			var cache = p.GetCache(CurrentSessionContext?.CurrentSession().GetSessionImplementation().GetTenantIdentifier() ?? tenantIdentifier);
 			if (id == null)
 			{
+				if (processedCaches?.Add(cache) == false)
+					return;
+
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("evicting second-level cache: {0}", p.Role);
 				}
 
-				if (processedCaches == null || processedCaches.Add(cache))
-				{
-					cache.Clear();
-				}
-
+				cache.Clear();
 				return;
 			}
 
@@ -1078,11 +1085,13 @@ namespace NHibernate.Impl
 			get { return updateTimestampsCache; }
 		}
 
-		// 6.0 TODO: type as CacheBase instead
+		// 6.0 TODO: return as ICollection<CacheBase> instead
 #pragma warning disable 618
 		public IDictionary<string, ICache> GetAllSecondLevelCacheRegions()
 #pragma warning restore 618
 		{
+			//TODO 6.0: uncomment
+			//return _allCacheRegions.Values;
 			return
 				_allCacheRegions
 					// ToArray creates a moment in time snapshot
