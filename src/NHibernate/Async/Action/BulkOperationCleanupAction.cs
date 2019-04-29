@@ -75,18 +75,11 @@ namespace NHibernate.Action
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
+			if (affectedCollectionRoles != null)
 			{
-				if (affectedCollectionRoles != null && affectedCollectionRoles.Any())
-				{
-					return _factory.EvictCollectionAsync(affectedCollectionRoles, cancellationToken);
-				}
-				return Task.CompletedTask;
+				return _factory.EvictCollectionAsync(affectedCollectionRoles, cancellationToken);
 			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return Task.CompletedTask;
 		}
 
 		private Task EvictEntityRegionsAsync(CancellationToken cancellationToken)
@@ -95,18 +88,11 @@ namespace NHibernate.Action
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
+			if (affectedEntityNames != null)
 			{
-				if (affectedEntityNames != null && affectedEntityNames.Any())
-				{
-					return _factory.EvictEntityAsync(affectedEntityNames, cancellationToken);
-				}
-				return Task.CompletedTask;
+				return _factory.EvictEntityAsync(affectedEntityNames, cancellationToken);
 			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return Task.CompletedTask;
 		}
 
 		#endregion

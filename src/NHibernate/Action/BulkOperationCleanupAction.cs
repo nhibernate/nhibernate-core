@@ -20,8 +20,8 @@ namespace NHibernate.Action
 		ICacheableExecutable
 	{
 		private readonly ISessionFactoryImplementor _factory;
-		private readonly HashSet<string> affectedEntityNames = new HashSet<string>();
-		private readonly HashSet<string> affectedCollectionRoles = new HashSet<string>();
+		private readonly HashSet<string> affectedEntityNames;
+		private readonly HashSet<string> affectedCollectionRoles;
 		private readonly string[] spaces;
 		private readonly bool _hasCache;
 
@@ -34,12 +34,22 @@ namespace NHibernate.Action
 				if (queryables.HasCache)
 				{
 					_hasCache = true;
+					if (affectedEntityNames == null)
+					{
+						affectedEntityNames = new HashSet<string>();
+					}
+
 					affectedEntityNames.Add(queryables.EntityName);
 				}
 
 				var roles = _factory.GetCollectionRolesByEntityParticipant(queryables.EntityName);
 				if (roles != null)
 				{
+					if (affectedCollectionRoles == null)
+					{
+						affectedCollectionRoles = new HashSet<string>();
+					}
+
 					affectedCollectionRoles.UnionWith(roles);
 				}
 
@@ -70,12 +80,22 @@ namespace NHibernate.Action
 					if (persister.HasCache)
 					{
 						_hasCache = true;
+						if (affectedEntityNames == null)
+						{
+							affectedEntityNames = new HashSet<string>();
+						}
+
 						affectedEntityNames.Add(persister.EntityName);
 					}
 
 					var roles = session.Factory.GetCollectionRolesByEntityParticipant(persister.EntityName);
 					if (roles != null)
 					{
+						if (affectedCollectionRoles == null)
+						{
+							affectedCollectionRoles = new HashSet<string>();
+						}
+
 						affectedCollectionRoles.UnionWith(roles);
 					}
 
@@ -135,7 +155,7 @@ namespace NHibernate.Action
 
 		private void EvictCollectionRegions()
 		{
-			if (affectedCollectionRoles != null && affectedCollectionRoles.Any())
+			if (affectedCollectionRoles != null)
 			{
 				_factory.EvictCollection(affectedCollectionRoles);
 			}
@@ -143,7 +163,7 @@ namespace NHibernate.Action
 
 		private void EvictEntityRegions()
 		{
-			if (affectedEntityNames != null && affectedEntityNames.Any())
+			if (affectedEntityNames != null)
 			{
 				_factory.EvictEntity(affectedEntityNames);
 			}
