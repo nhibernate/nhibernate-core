@@ -1,6 +1,8 @@
 ﻿using System.Linq;
+using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.Linq;
+using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NUnit.Framework;
 
@@ -71,6 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 			}
 		}
 
+		//GH-1994
 		[Test]
 		public void TestFilteredLinqQuery()
 		{
@@ -97,6 +100,23 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 				             .Fetch(SelectMode.Fetch, x => x.Documents)
 				             .TransformUsing(Transformers.DistinctRootEntity)
 				             .List<Asset>();
+
+				Assert.That(query.Count, Is.EqualTo(1), "filtered assets");
+				Assert.That(query[0].Documents.Count, Is.EqualTo(1), "filtered asset documents");
+			}
+		}
+
+		//NH-2991
+		[Test]
+		public void TestQueryOverRestrictionWithClause()
+		{
+			using (var s = OpenSession())
+			{
+				Document docs = null;
+				var query = s.QueryOver<Asset>()
+							 .JoinQueryOver(a => a.Documents, () => docs, JoinType.LeftOuterJoin, Restrictions.Where(() => docs.IsDeleted != true))
+							 .TransformUsing(Transformers.DistinctRootEntity)
+							 .List<Asset>();
 
 				Assert.That(query.Count, Is.EqualTo(1), "filtered assets");
 				Assert.That(query[0].Documents.Count, Is.EqualTo(1), "filtered asset documents");
