@@ -135,6 +135,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 		}
 
 		#endregion
+
+		public void Fetch(FetchKind fetchMode)
+		{
+			_oneToOne.fetch = fetchMode.ToHbm();
+			_oneToOne.fetchSpecified = true;
+		}
 	}
 
 	public class OneToOneMapper<T> : OneToOneMapper, IOneToOneMapper<T>
