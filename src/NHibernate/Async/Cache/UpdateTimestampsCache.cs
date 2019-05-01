@@ -11,15 +11,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+using System.Runtime.CompilerServices;
+
 using NHibernate.Cfg;
 using NHibernate.Util;
 
 namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	public partial class UpdateTimestampsCache
 	{
+		private readonly NHibernate.Util.AsyncLock _preInvalidate = new NHibernate.Util.AsyncLock();
+		private readonly NHibernate.Util.AsyncLock _invalidate = new NHibernate.Util.AsyncLock();
+		private readonly NHibernate.Util.AsyncLock _isUpToDate = new NHibernate.Util.AsyncLock();
+		private readonly NHibernate.Util.AsyncLock _areUpToDate = new NHibernate.Util.AsyncLock();
 
 		public virtual Task ClearAsync(CancellationToken cancellationToken)
 		{
@@ -49,24 +55,20 @@ namespace NHibernate.Cache
 			}
 		}
 
+		[MethodImpl()]
 		public virtual async Task PreInvalidateAsync(IReadOnlyCollection<string> spaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (spaces.Count == 0)
-				return;
-
-			Lock.EnterUpgradeableReadLock();
-			try
+			using (await _preInvalidate.LockAsync())
 			{
 				//TODO: to handle concurrent writes correctly, this should return a Lock to the client
-				var timestamp = _updateTimestamps.NextTimestamp() + _updateTimestamps.Timeout;
-				await (SetSpacesTimestampAsync(spaces, timestamp, cancellationToken)).ConfigureAwait(false);
+				var ts = _updateTimestamps.NextTimestamp() + _updateTimestamps.Timeout;
+				await (SetSpacesTimestampAsync(spaces, ts, cancellationToken)).ConfigureAwait(false);
+
 				//TODO: return new Lock(ts);
 			}
-			finally
-			{
-				Lock.ExitUpgradeableReadLock();
-			}
+
+			//TODO: return new Lock(ts);
 		}
 
 		//Since v5.1
@@ -88,14 +90,11 @@ namespace NHibernate.Cache
 			}
 		}
 
+		[MethodImpl()]
 		public virtual async Task InvalidateAsync(IReadOnlyCollection<string> spaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (spaces.Count == 0)
-				return;
-
-			Lock.EnterUpgradeableReadLock();
-			try
+			using (await _invalidate.LockAsync())
 			{
 				//TODO: to handle concurrent writes correctly, the client should pass in a Lock
 				long ts = _updateTimestamps.NextTimestamp();
@@ -104,65 +103,70 @@ namespace NHibernate.Cache
 					log.Debug("Invalidating spaces [{0}]", StringHelper.CollectionToString(spaces));
 				await (SetSpacesTimestampAsync(spaces, ts, cancellationToken)).ConfigureAwait(false);
 			}
-			finally
-			{
-				Lock.ExitUpgradeableReadLock();
-			}
 		}
 
-		private async Task SetSpacesTimestampAsync(IReadOnlyCollection<string> spaces, long ts, CancellationToken cancellationToken)
+		private Task SetSpacesTimestampAsync(IReadOnlyCollection<string> spaces, long ts, CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			Lock.EnterWriteLock();
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
-				var timestamps = ArrayHelper.Fill<object>(ts, spaces.Count);
-				await (_updateTimestamps.PutManyAsync(spaces.ToArray<object>(), timestamps, cancellationToken)).ConfigureAwait(false);
+				if (spaces.Count == 0)
+					return Task.CompletedTask;
+
+				var timestamps = new object[spaces.Count];
+				for (var i = 0; i < timestamps.Length; i++)
+				{
+					timestamps[i] = ts;
+				}
+
+				return _updateTimestamps.PutManyAsync(spaces.ToArray(), timestamps, cancellationToken);
 			}
-			finally
+			catch (Exception ex)
 			{
-				Lock.ExitWriteLock();
+				return Task.FromException<object>(ex);
 			}
 		}
 
+		[MethodImpl()]
 		public virtual async Task<bool> IsUpToDateAsync(ISet<string> spaces, long timestamp /* H2.1 has Long here */, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (spaces.Count == 0)
-				return true;
+			using (await _isUpToDate.LockAsync())
+			{
+				if (spaces.Count == 0)
+					return true;
 
-			Lock.EnterReadLock();
-			try
-			{
-				var lastUpdates = await (_updateTimestamps.GetManyAsync(spaces.ToArray<object>(), cancellationToken)).ConfigureAwait(false);
+				var lastUpdates = await (_updateTimestamps.GetManyAsync(spaces.ToArray(), cancellationToken)).ConfigureAwait(false);
 				return lastUpdates.All(lastUpdate => !IsOutdated(lastUpdate as long?, timestamp));
-			}
-			finally
-			{
-				Lock.ExitReadLock();
 			}
 		}
 
+		[MethodImpl()]
 		public virtual async Task<bool[]> AreUpToDateAsync(ISet<string>[] spaces, long[] timestamps, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (spaces.Length == 0)
-				return Array.Empty<bool>();
-
-			var allSpaces = new HashSet<string>();
-			foreach (var sp in spaces)
+			using (await _areUpToDate.LockAsync())
 			{
-				allSpaces.UnionWith(sp);
-			}
+				var results = new bool[spaces.Length];
+				var allSpaces = new HashSet<string>();
+				foreach (var sp in spaces)
+				{
+					allSpaces.UnionWith(sp);
+				}
 
-			if (allSpaces.Count == 0)
-			{
-				return ArrayHelper.Fill(true, spaces.Length);
-			}
+				if (allSpaces.Count == 0)
+				{
+					for (var i = 0; i < spaces.Length; i++)
+					{
+						results[i] = true;
+					}
 
-			Lock.EnterReadLock();
-			try
-			{
+					return results;
+				}
+
 				var keys = new object[allSpaces.Count];
 				var index = 0;
 				foreach (var space in allSpaces)
@@ -172,11 +176,10 @@ namespace NHibernate.Cache
 
 				index = 0;
 				var lastUpdatesBySpace =
-					(await (_updateTimestamps
-						.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false))
-						.ToDictionary(u => keys[index++], u => u as long?);
+				(await (_updateTimestamps
+					.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false))
+					.ToDictionary(u => keys[index++], u => u as long?);
 
-				var results = new bool[spaces.Length];
 				for (var i = 0; i < spaces.Length; i++)
 				{
 					var timestamp = timestamps[i];
@@ -184,10 +187,6 @@ namespace NHibernate.Cache
 				}
 
 				return results;
-			}
-			finally
-			{
-				Lock.ExitReadLock();
 			}
 		}
 	}
