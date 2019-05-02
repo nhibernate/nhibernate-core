@@ -8,7 +8,7 @@ namespace NHibernate.Test.UtilityTest
 {
 	public partial class AsyncReaderWriterLockFixture
 	{
-		private readonly int _delay = 10;
+		private readonly int _delay = 50;
 
 		[Test]
 		public void TestBlocking()
