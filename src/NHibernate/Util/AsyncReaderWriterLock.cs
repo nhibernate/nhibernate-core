@@ -26,6 +26,16 @@ namespace NHibernate.Util
 			_readerReleaserTask = Task.FromResult(_readerReleaser);
 		}
 
+		internal int CurrentReaders => _currentReaders;
+
+		internal int WritersWaiting => _writersWaiting;
+
+		internal int ReadersWaiting => _readersWaiting;
+
+		internal bool Writing => _currentReaders == 0 && _writeLockSemaphore.CurrentCount == 0;
+
+		internal bool AcquiredWriteLock => _writeLockSemaphore.CurrentCount == 0;
+
 		public IDisposable WriteLock()
 		{
 			if (!CanEnterWriteLock(out var waitForReadLocks))
