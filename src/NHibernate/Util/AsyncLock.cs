@@ -34,7 +34,7 @@ namespace NHibernate.Util
 			return _releaser;
 		}
 
-		private struct Releaser : IDisposable
+		private sealed class Releaser : IDisposable
 		{
 			private readonly AsyncLock _toRelease;
 			internal Releaser(AsyncLock toRelease) { _toRelease = toRelease; }

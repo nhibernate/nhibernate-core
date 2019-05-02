@@ -187,7 +187,7 @@ namespace NHibernate.Util
 			}
 		}
 
-		private struct Releaser : IDisposable
+		private sealed class Releaser : IDisposable
 		{
 			private readonly AsyncReaderWriterLock _toRelease;
 			private readonly bool _writer;
