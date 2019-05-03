@@ -8,8 +8,6 @@ namespace NHibernate.Test.UtilityTest
 {
 	public partial class AsyncReaderWriterLockFixture
 	{
-		private readonly int _delay = 50;
-
 		[Test]
 		public void TestBlocking()
 		{
@@ -21,41 +19,41 @@ namespace NHibernate.Test.UtilityTest
 
 				var readReleaserTask = Task.Run(() => l.ReadLock());
 				AssertEqualValue(() => l.CurrentReaders, 2, readReleaserTask);
-				Assert.That(readReleaserTask.Wait(_delay), Is.True);
+				AssertTaskCompleted(readReleaserTask);
 
 				var writeReleaserTask = Task.Run(() => l.WriteLock());
 				AssertEqualValue(() => l.AcquiredWriteLock, true, writeReleaserTask);
 				AssertEqualValue(() => l.Writing, false, writeReleaserTask);
-				Assert.That(writeReleaserTask.Wait(_delay), Is.False);
+				Assert.That(writeReleaserTask.IsCompleted, Is.False);
 
 				readReleaser.Dispose();
 				Assert.That(l.CurrentReaders, Is.EqualTo(1));
-				Assert.That(writeReleaserTask.Wait(_delay), Is.False);
+				Assert.That(writeReleaserTask.IsCompleted, Is.False);
 
 				readReleaserTask.Result.Dispose();
 				Assert.That(l.CurrentReaders, Is.EqualTo(0));
 				AssertEqualValue(() => l.Writing, true, writeReleaserTask);
-				Assert.That(writeReleaserTask.Wait(_delay), Is.True);
+				AssertTaskCompleted(writeReleaserTask);
 
 				readReleaserTask = Task.Run(() => l.ReadLock());
 				AssertEqualValue(() => l.ReadersWaiting, 1, readReleaserTask);
-				Assert.That(readReleaserTask.Wait(_delay), Is.False);
+				Assert.That(readReleaserTask.IsCompleted, Is.False);
 
 				var writeReleaserTask2 = Task.Run(() => l.WriteLock());
 				AssertEqualValue(() => l.WritersWaiting, 1, writeReleaserTask2);
-				Assert.That(writeReleaserTask2.Wait(_delay), Is.False);
+				Assert.That(writeReleaserTask2.IsCompleted, Is.False);
 
 				writeReleaserTask.Result.Dispose();
 				AssertEqualValue(() => l.WritersWaiting, 0, writeReleaserTask2);
 				AssertEqualValue(() => l.Writing, true, writeReleaserTask2);
-				Assert.That(readReleaserTask.Wait(_delay), Is.False);
-				Assert.That(writeReleaserTask2.Wait(_delay), Is.True);
+				Assert.That(readReleaserTask.IsCompleted, Is.False);
+				AssertTaskCompleted(writeReleaserTask2);
 
 				writeReleaserTask2.Result.Dispose();
 				AssertEqualValue(() => l.Writing, false, writeReleaserTask2);
 				AssertEqualValue(() => l.ReadersWaiting, 0, readReleaserTask);
 				AssertEqualValue(() => l.CurrentReaders, 1, readReleaserTask);
-				Assert.That(readReleaserTask.Wait(_delay), Is.True);
+				AssertTaskCompleted(readReleaserTask);
 
 				readReleaserTask.Result.Dispose();
 				Assert.That(l.ReadersWaiting, Is.EqualTo(0));
@@ -73,45 +71,45 @@ namespace NHibernate.Test.UtilityTest
 			{
 				var readReleaserTask = l.ReadLockAsync();
 				AssertEqualValue(() => l.CurrentReaders, 1, readReleaserTask);
-				Assert.That(readReleaserTask.Wait(_delay), Is.True);
+				AssertTaskCompleted(readReleaserTask);
 
 				var readReleaserTask2 = l.ReadLockAsync();
 				AssertEqualValue(() => l.CurrentReaders, 2, readReleaserTask2);
-				Assert.That(readReleaserTask2.Wait(_delay), Is.True);
+				AssertTaskCompleted(readReleaserTask2);
 
 				var writeReleaserTask = l.WriteLockAsync();
 				AssertEqualValue(() => l.AcquiredWriteLock, true, writeReleaserTask);
 				AssertEqualValue(() => l.Writing, false, writeReleaserTask);
-				Assert.That(writeReleaserTask.Wait(_delay), Is.False);
+				Assert.That(writeReleaserTask.IsCompleted, Is.False);
 
 				readReleaserTask.Result.Dispose();
 				Assert.That(l.CurrentReaders, Is.EqualTo(1));
-				Assert.That(writeReleaserTask.Wait(_delay), Is.False);
+				Assert.That(writeReleaserTask.IsCompleted, Is.False);
 
 				readReleaserTask2.Result.Dispose();
 				Assert.That(l.CurrentReaders, Is.EqualTo(0));
 				AssertEqualValue(() => l.Writing, true, writeReleaserTask);
-				Assert.That(writeReleaserTask.Wait(_delay), Is.True);
+				AssertTaskCompleted(writeReleaserTask);
 
 				readReleaserTask = l.ReadLockAsync();
 				AssertEqualValue(() => l.ReadersWaiting, 1, readReleaserTask);
-				Assert.That(readReleaserTask.Wait(_delay), Is.False);
+				Assert.That(readReleaserTask.IsCompleted, Is.False);
 
 				var writeReleaserTask2 = l.WriteLockAsync();
 				AssertEqualValue(() => l.WritersWaiting, 1, writeReleaserTask2);
-				Assert.That(writeReleaserTask2.Wait(_delay), Is.False);
+				Assert.That(writeReleaserTask2.IsCompleted, Is.False);
 
 				writeReleaserTask.Result.Dispose();
 				AssertEqualValue(() => l.WritersWaiting, 0, writeReleaserTask2);
 				AssertEqualValue(() => l.Writing, true, writeReleaserTask2);
-				Assert.That(readReleaserTask.Wait(_delay), Is.False);
-				Assert.That(writeReleaserTask2.Wait(_delay), Is.True);
+				Assert.That(readReleaserTask.IsCompleted, Is.False);
+				AssertTaskCompleted(writeReleaserTask2);
 
 				writeReleaserTask2.Result.Dispose();
 				AssertEqualValue(() => l.Writing, false, writeReleaserTask2);
 				AssertEqualValue(() => l.ReadersWaiting, 0, readReleaserTask);
 				AssertEqualValue(() => l.CurrentReaders, 1, readReleaserTask);
-				Assert.That(readReleaserTask.Wait(_delay), Is.True);
+				AssertTaskCompleted(readReleaserTask);
 
 				readReleaserTask.Result.Dispose();
 				Assert.That(l.ReadersWaiting, Is.EqualTo(0));
@@ -153,7 +151,7 @@ namespace NHibernate.Test.UtilityTest
 
 			var readReleaserTask = l.ReadLockAsync();
 			AssertEqualValue(() => l.CurrentReaders, 2, readReleaserTask);
-			Assert.That(readReleaserTask.Wait(_delay), Is.True);
+			AssertTaskCompleted(readReleaserTask);
 
 			readReleaser.Dispose();
 			Assert.That(l.CurrentReaders, Is.EqualTo(1));
@@ -166,28 +164,28 @@ namespace NHibernate.Test.UtilityTest
 
 			var writeReleaserTask = l.WriteLockAsync();
 			AssertEqualValue(() => l.WritersWaiting, 1, writeReleaserTask);
-			Assert.That(writeReleaserTask.Wait(_delay), Is.False);
+			Assert.That(writeReleaserTask.IsCompleted, Is.False);
 
 			readReleaserTask = Task.Run(() => l.ReadLock());
 			AssertEqualValue(() => l.ReadersWaiting, 1, readReleaserTask);
-			Assert.That(readReleaserTask.Wait(_delay), Is.False);
+			Assert.That(readReleaserTask.IsCompleted, Is.False);
 
 			var readReleaserTask2 = l.ReadLockAsync();
 			AssertEqualValue(() => l.ReadersWaiting, 2, readReleaserTask2);
-			Assert.That(readReleaserTask2.Wait(_delay), Is.False);
+			Assert.That(readReleaserTask2.IsCompleted, Is.False);
 
 			writeReleaser.Dispose();
 			AssertEqualValue(() => l.WritersWaiting, 0, writeReleaserTask);
 			AssertEqualValue(() => l.Writing, true, writeReleaserTask);
-			Assert.That(writeReleaserTask.Wait(_delay), Is.True);
-			Assert.That(readReleaserTask.Wait(_delay), Is.False);
-			Assert.That(readReleaserTask2.Wait(_delay), Is.False);
+			AssertTaskCompleted(writeReleaserTask);
+			Assert.That(readReleaserTask.IsCompleted, Is.False);
+			Assert.That(readReleaserTask2.IsCompleted, Is.False);
 
 			writeReleaserTask.Result.Dispose();
 			AssertEqualValue(() => l.CurrentReaders, 2, readReleaserTask);
 			AssertEqualValue(() => l.ReadersWaiting, 0, readReleaserTask2);
-			Assert.That(readReleaserTask.Wait(_delay), Is.True);
-			Assert.That(readReleaserTask2.Wait(_delay), Is.True);
+			AssertTaskCompleted(readReleaserTask);
+			AssertTaskCompleted(readReleaserTask2);
 		}
 
 		[Test]
@@ -208,11 +206,11 @@ namespace NHibernate.Test.UtilityTest
 				writeReleaser.Dispose();
 				AssertEqualValue(() => l.WritersWaiting, 0, writeReleaserTask);
 				AssertEqualValue(() => l.ReadersWaiting, 1, readReleaserTask);
-				Assert.That(writeReleaserTask.Wait(_delay), Is.True);
+				AssertTaskCompleted(writeReleaserTask);
 
 				writeReleaserTask.Result.Dispose();
 				AssertEqualValue(() => l.ReadersWaiting, 0, readReleaserTask);
-				Assert.That(readReleaserTask.Wait(_delay), Is.True);
+				AssertTaskCompleted(readReleaserTask);
 
 				readReleaserTask.Result.Dispose();
 			}
@@ -224,34 +222,34 @@ namespace NHibernate.Test.UtilityTest
 			var l = new AsyncReaderWriterLock();
 			var readReleaserTask = l.ReadLockAsync();
 			AssertEqualValue(() => l.CurrentReaders, 1, readReleaserTask);
-			Assert.That(readReleaserTask.Wait(_delay), Is.True);
+			AssertTaskCompleted(readReleaserTask);
 
 			var readReleaserTask2 = l.ReadLockAsync();
 			AssertEqualValue(() => l.CurrentReaders, 2, readReleaserTask);
-			Assert.That(readReleaserTask2.Wait(_delay), Is.True);
+			AssertTaskCompleted(readReleaserTask2);
 
 			var writeReleaserTask = l.WriteLockAsync();
 			AssertEqualValue(() => l.AcquiredWriteLock, true, writeReleaserTask);
 			AssertEqualValue(() => l.Writing, false, writeReleaserTask);
-			Assert.That(writeReleaserTask.Wait(_delay), Is.False);
+			Assert.That(writeReleaserTask.IsCompleted, Is.False);
 
 			var readReleaserTask3 = l.ReadLockAsync();
 			AssertEqualValue(() => l.ReadersWaiting, 1, readReleaserTask3);
-			Assert.That(readReleaserTask3.Wait(_delay), Is.False);
+			Assert.That(readReleaserTask3.IsCompleted, Is.False);
 
 			readReleaserTask.Result.Dispose();
-			Assert.That(writeReleaserTask.Wait(_delay), Is.False);
-			Assert.That(readReleaserTask3.Wait(_delay), Is.False);
+			Assert.That(writeReleaserTask.IsCompleted, Is.False);
+			Assert.That(readReleaserTask3.IsCompleted, Is.False);
 
 			readReleaserTask2.Result.Dispose();
 			AssertEqualValue(() => l.Writing, true, writeReleaserTask);
 			AssertEqualValue(() => l.ReadersWaiting, 1, readReleaserTask3);
-			Assert.That(writeReleaserTask.Wait(_delay), Is.True);
-			Assert.That(readReleaserTask3.Wait(_delay), Is.False);
+			AssertTaskCompleted(writeReleaserTask);
+			Assert.That(readReleaserTask3.IsCompleted, Is.False);
 
 			writeReleaserTask.Result.Dispose();
 			AssertEqualValue(() => l.ReadersWaiting, 0, readReleaserTask3);
-			Assert.That(readReleaserTask3.Wait(_delay), Is.True);
+			AssertTaskCompleted(readReleaserTask3);
 		}
 
 		[Test, Explicit]
@@ -260,32 +258,20 @@ namespace NHibernate.Test.UtilityTest
 			var l = new AsyncReaderWriterLock();
 			int readLockCount = 0, writeLockCount = 0;
 			var incorrectLockCount = false;
-			var threads = new Thread[10];
-			var tasks = new Task[10];
+			var tasks = new Task[20];
 			var masterRandom = new Random();
 			var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-
-			for (var i = 0; i < threads.Length; i++)
-			{
-				// Ensure that each random has its own unique seed
-				var random = new Random(masterRandom.Next());
-				threads[i] = new Thread(() => SyncLock(random, cancellationTokenSource.Token));
-				threads[i].Start();
-			}
 
 			for (var i = 0; i < tasks.Length; i++)
 			{
 				// Ensure that each random has its own unique seed
 				var random = new Random(masterRandom.Next());
-				tasks[i] = Task.Run(() => AsyncLock(random, cancellationTokenSource.Token));
+				tasks[i] = i % 2 == 0
+					? Task.Run(() => SyncLock(random, cancellationTokenSource.Token))
+					: AsyncLock(random, cancellationTokenSource.Token);
 			}
 
-			foreach (var thread in threads)
-			{
-				thread.Join();
-			}
-
-			await Task.WhenAll(tasks).ConfigureAwait(false);
+			await Task.WhenAll(tasks);
 			Assert.That(incorrectLockCount, Is.False);
 
 
@@ -341,7 +327,7 @@ namespace NHibernate.Test.UtilityTest
 				while (!cancellationToken.IsCancellationRequested)
 				{
 					var isRead = random.Next(100) < 80;
-					var releaser = isRead 
+					var releaser = isRead
 						? await l.ReadLockAsync().ConfigureAwait(false)
 						: await l.WriteLockAsync().ConfigureAwait(false);
 					lock (l)
@@ -378,10 +364,10 @@ namespace NHibernate.Test.UtilityTest
 			}
 		}
 
-		private static void AssertEqualValue<T>(Func<T> getValueFunc, T value, Task task, int waitDelay = 500)
+		private static void AssertEqualValue<T>(Func<T> getValueFunc, T value, Task task, int waitDelay = 5000)
 		{
 			var currentTime = 0;
-			const int step = 5;
+			var step = 5;
 			while (currentTime < waitDelay)
 			{
 				task.Wait(step);
@@ -390,9 +376,16 @@ namespace NHibernate.Test.UtilityTest
 				{
 					return;
 				}
+
+				step *= 2;
 			}
 
 			Assert.That(getValueFunc(), Is.EqualTo(value));
+		}
+
+		private static void AssertTaskCompleted(Task task)
+		{
+			AssertEqualValue(() => task.IsCompleted, true, task);
 		}
 	}
 }
