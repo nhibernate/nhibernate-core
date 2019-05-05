@@ -3,6 +3,7 @@ using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NHibernate.Tool.hbm2ddl
 {
@@ -58,9 +59,18 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				QuoteTable(cm.Table, dialect);
 			}
+
 			foreach (var cm in configuration.CollectionMappings)
 			{
 				QuoteTable(cm.Table, dialect);
+
+				foreach (Column column  in cm.Key.ColumnIterator)
+				{
+					if (!column.IsQuoted && dialect.IsKeyword(column.Name))
+					{
+						column.IsQuoted = true;
+					}	
+				}
 			}
 		}
 
@@ -70,6 +80,7 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				table.IsQuoted = true;
 			}
+
 			foreach (var column in table.ColumnIterator)
 			{
 				if (!column.IsQuoted && dialect.IsKeyword(column.Name))
