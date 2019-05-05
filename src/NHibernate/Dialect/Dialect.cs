@@ -2598,7 +2598,7 @@ namespace NHibernate.Dialect
 
 		public bool IsKeyword(string str)
 		{
-			return Keywords.Contains(str.ToLower());
+			return Keywords.Contains(str);
 		}
 
 		protected void RegisterFunction(string name, ISQLFunction function)
