@@ -37,8 +37,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2892
 		{
 			using (ISession session = OpenSession())
 			{
-				session.CreateQuery($"delete from {nameof(OrderLine)}").ExecuteUpdate();
-				session.CreateSQLQuery($"delete from \"{nameof(Order)}\"").ExecuteUpdate();
+				session.Delete($"from {nameof(OrderLine)}");
+				session.Delete($"from {nameof(Order)}");
+				session.Flush();
 			}
 		}
 
