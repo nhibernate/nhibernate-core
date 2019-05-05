@@ -63,12 +63,15 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				QuoteTable(cm.Table, dialect);
 
-				foreach (Column column  in cm.Key.ColumnIterator)
-				{
-					if (!column.IsQuoted && dialect.IsKeyword(column.Name))
+				if(cm.Key?.ColumnIterator != null)
+				{	
+					foreach (Column column  in cm.Key.ColumnIterator)
 					{
-						column.IsQuoted = true;
-					}	
+						if (!column.IsQuoted && dialect.IsKeyword(column.Name))
+						{
+							column.IsQuoted = true;
+						}
+					}
 				}
 			}
 		}
