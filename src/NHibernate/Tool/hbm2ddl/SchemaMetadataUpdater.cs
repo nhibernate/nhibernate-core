@@ -3,7 +3,6 @@ using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NHibernate.Tool.hbm2ddl
 {
