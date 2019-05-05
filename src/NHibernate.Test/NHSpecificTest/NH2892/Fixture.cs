@@ -54,7 +54,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2892
 				That(order.OrderLines, Is.Not.Null);
 				NotZero(order.OrderLines.Count);
 				NotZero(order.OrderLines.First().Id);
-				AreEqual(order.Id, order.OrderLines.First().Id);
 			}
 		}
 	}
