@@ -213,6 +213,7 @@ namespace NHibernate.Test.Hql
 			}
 		}
 
+
 		[Test]
 		public async Task WithClauseOnOtherAssociationAsync()
 		{
