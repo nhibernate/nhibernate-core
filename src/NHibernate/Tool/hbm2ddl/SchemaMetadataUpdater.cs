@@ -57,24 +57,20 @@ namespace NHibernate.Tool.hbm2ddl
 		{
 			foreach (var cm in configuration.ClassMappings)
 			{
-				QuoteTable(cm.Table, dialect);
-				
-				QuoteColumns(cm.Key, dialect);
+				QuoteTable(cm.Table,cm.Key?.ColumnIterator?.OfType<Column>(), dialect);
 			}
 
 			foreach (var cm in configuration.CollectionMappings)
 			{
-				QuoteTable(cm.Table, dialect);
-
-				QuoteColumns(cm.Key, dialect);
+				QuoteTable(cm.Table, cm.Key?.ColumnIterator?.OfType<Column>(), dialect);
 			}
 		}
 
-		private static void QuoteColumns(IKeyValue key, Dialect.Dialect dialect)
+		private static void QuoteColumns(IEnumerable<Column> columns, Dialect.Dialect dialect)
 		{
-			if (key?.ColumnIterator != null)
+			if (columns != null)
 			{
-				foreach (Column column in key.ColumnIterator.OfType<Column>())
+				foreach (Column column in columns)
 				{
 					if (!column.IsQuoted && dialect.IsKeyword(column.Name))
 					{
@@ -84,7 +80,7 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
-		private static void QuoteTable(Table table, Dialect.Dialect dialect)
+		private static void QuoteTable(Table table, IEnumerable<Column> columns, Dialect.Dialect dialect)
 		{
 			if (!table.IsQuoted && dialect.IsKeyword(table.Name))
 			{
@@ -98,6 +94,8 @@ namespace NHibernate.Tool.hbm2ddl
 					column.IsQuoted = true;
 				}
 			}
+			
+			QuoteColumns(columns, dialect);
 		}
 	}
 }
