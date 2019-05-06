@@ -464,10 +464,16 @@ namespace NHibernate.Cache
 			}
 		}
 
-		protected virtual async Task<bool> IsUpToDateAsync(ISet<string> spaces, long timestamp, CancellationToken cancellationToken)
+		protected virtual Task<bool> IsUpToDateAsync(ISet<string> spaces, long timestamp, CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			return spaces.Count == 0 || await (_updateTimestampsCache.IsUpToDateAsync(spaces, timestamp, cancellationToken)).ConfigureAwait(false);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
+			if (spaces.Count == 0)
+				return Task.FromResult<bool>(true);
+
+			return _updateTimestampsCache.IsUpToDateAsync(spaces, timestamp, cancellationToken);
 		}
 	}
 }
