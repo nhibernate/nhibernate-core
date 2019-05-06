@@ -11,9 +11,9 @@ namespace NHibernate.Util
 	{
 		private readonly SemaphoreSlim _writeLockSemaphore = new SemaphoreSlim(1, 1);
 		private readonly SemaphoreSlim _readLockSemaphore = new SemaphoreSlim(0, 1);
-		private readonly IDisposable _writerReleaser;
-		private readonly IDisposable _readerReleaser;
-		private readonly Task<IDisposable> _readerReleaserTask;
+		private readonly Releaser _writerReleaser;
+		private readonly Releaser _readerReleaser;
+		private readonly Task<Releaser> _readerReleaserTask;
 		private SemaphoreSlim _waitingReadLockSemaphore;
 		private int _readersWaiting;
 		private int _currentReaders;
@@ -36,7 +36,7 @@ namespace NHibernate.Util
 
 		internal bool AcquiredWriteLock => _writeLockSemaphore.CurrentCount == 0;
 
-		public IDisposable WriteLock()
+		public Releaser WriteLock()
 		{
 			if (!CanEnterWriteLock(out var waitForReadLocks))
 			{
@@ -55,7 +55,7 @@ namespace NHibernate.Util
 			return _writerReleaser;
 		}
 
-		public async Task<IDisposable> WriteLockAsync()
+		public async Task<Releaser> WriteLockAsync()
 		{
 			if (!CanEnterWriteLock(out var waitForReadLocks))
 			{
@@ -74,7 +74,7 @@ namespace NHibernate.Util
 			return _writerReleaser;
 		}
 
-		public IDisposable ReadLock()
+		public Releaser ReadLock()
 		{
 			if (CanEnterReadLock())
 			{
@@ -87,11 +87,11 @@ namespace NHibernate.Util
 			return _readerReleaser;
 		}
 
-		public Task<IDisposable> ReadLockAsync()
+		public Task<Releaser> ReadLockAsync()
 		{
 			return CanEnterReadLock() ? _readerReleaserTask : ReadLockInternalAsync();
 
-			async Task<IDisposable> ReadLockInternalAsync()
+			async Task<Releaser> ReadLockInternalAsync()
 			{
 				await _waitingReadLockSemaphore.WaitAsync().ConfigureAwait(false);
 				ReleaseWaitingReader();
@@ -197,7 +197,7 @@ namespace NHibernate.Util
 			}
 		}
 
-		private sealed class Releaser : IDisposable
+		public struct Releaser : IDisposable
 		{
 			private readonly AsyncReaderWriterLock _toRelease;
 			private readonly bool _writer;
