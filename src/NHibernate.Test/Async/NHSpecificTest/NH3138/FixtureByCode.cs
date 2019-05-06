@@ -45,20 +45,5 @@ namespace NHibernate.Test.NHSpecificTest.NH3138
 						.ListAsync<Entity>());
 			}
 		}
-
-		[Test]
-		[Ignore("Failing")]
-		public void PageQueryWithDistinctAndOrderByContainingAliasedFunctionAsync()
-		{
-			using (var session = OpenSession())
-			{
-				Assert.DoesNotThrowAsync(() =>
-					session
-						.CreateQuery("select distinct e.Id, coalesce(e.EnglishName, e.GermanName) as LocalizedName from Entity e order by LocalizedName asc")
-						.SetFirstResult(10)
-						.SetMaxResults(20)
-						.ListAsync<Entity>());
-			}
-		}
 	}
 }

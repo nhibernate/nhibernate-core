@@ -114,34 +114,6 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		[Ignore("Need to coalesce the subquery - timesheet with no entries should return average of 0, not null")]
-		public async Task TimeSheetsWithAverageSubqueryComparedToPropertyAsync()
-		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
-
-			var query = await ((from timesheet in db.Timesheets
-						 where timesheet.Entries.Average(e => e.NumberOfHours) < timesheet.Id
-						 select timesheet).ToListAsync());
-
-			Assert.That(query.Count, Is.EqualTo(1));
-		}
-
-		[Test]
-		[Ignore("Need to coalesce the subquery - timesheet with no entries should return average of 0, not null")]
-		public async Task TimeSheetsWithAverageSubqueryComparedToPropertyReversedAsync()
-		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
-
-			var query = await ((from timesheet in db.Timesheets
-						 where timesheet.Id > timesheet.Entries.Average(e => e.NumberOfHours)
-						 select timesheet).ToListAsync());
-
-			Assert.That(query.Count, Is.EqualTo(1));
-		}
-
-		[Test]
 		public async Task TimeSheetsWithMaxSubqueryAsync()
 		{
 			if (!Dialect.SupportsScalarSubSelects)
@@ -266,34 +238,6 @@ namespace NHibernate.Test.Linq
 
 			var query = await ((from timesheet in db.Timesheets
 						 where 20 >= timesheet.Entries.Sum(e => e.NumberOfHours)
-						 select timesheet).ToListAsync());
-
-			Assert.That(query.Count, Is.EqualTo(1));
-		}
-
-		[Test]
-		[Ignore("Need to coalesce the subquery - timesheet with no entries should return sum of 0, not null")]
-		public async Task TimeSheetsWithSumSubqueryComparedToPropertyAsync()
-		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
-
-			var query = await ((from timesheet in db.Timesheets
-						 where timesheet.Entries.Sum(e => e.NumberOfHours) <= timesheet.Id
-						 select timesheet).ToListAsync());
-
-			Assert.That(query.Count, Is.EqualTo(1));
-		}
-
-		[Test]
-		[Ignore("Need to coalesce the subquery - timesheet with no entries should return sum of 0, not null")]
-		public async Task TimeSheetsWithSumSubqueryComparedToPropertyReversedAsync()
-		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
-
-			var query = await ((from timesheet in db.Timesheets
-						 where timesheet.Id >= timesheet.Entries.Sum(e => e.NumberOfHours)
 						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
@@ -592,21 +536,6 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
 
-		[Test(Description = "NH-3155"), Ignore("Not fixed yet.")]
-		public async Task SubqueryWithGroupByAsync()
-		{
-			var sq = db.Orders
-				.GroupBy(x => x.ShippingDate)
-				.Select(x => x.Max(o => o.OrderId));
-
-			var result = await (db.Orders
-				.Where(x => sq.Contains(x.OrderId))
-				.Select(x => x.OrderId)
-				.ToListAsync());
-
-			Assert.That(result.Count, Is.EqualTo(388));
-		}
-
 		[Test(Description = "NH-3111")]
 		public async Task SubqueryWhereFailingTestAsync()
 		{
@@ -707,28 +636,6 @@ where c.Order.Customer.CustomerId = 'VINET'
 						  select c).ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(7));
-		}
-
-		[Test(Description = "NH-3190")]
-		[Ignore("Not fixed yet.")]
-		public async Task ProductsWithSubqueryReturningProjectionBoolFirstOrDefaultEqAsync()
-		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
-
-			if (!TestDialect.SupportsOrderByAndLimitInSubQueries)
-				Assert.Ignore("Dialect does not support sub-selects with order by or limit/top");
-
-			//NH-3190
-			var result = await ((from p in db.Products
-						  where (from c in db.Categories
-								 where c.Name == "Confections"
-								 && c == p.Category
-								 select new{R=p.Discontinued}).FirstOrDefault().R == false
-						  select p)
-				.ToListAsync());
-
-			Assert.That(result.Count, Is.EqualTo(13));
 		}
 
 		[Test(Description = "NH-3190")]
