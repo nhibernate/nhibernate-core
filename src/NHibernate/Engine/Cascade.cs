@@ -169,15 +169,14 @@ namespace NHibernate.Engine
 						// value is orphaned if loaded state for this property shows not null
 						// because it is currently null.
 						EntityEntry entry = eventSource.PersistenceContext.GetEntry(parent);
-						if (entry != null && entry.Status != Status.Saving)
+						//LoadedState is null when detached entity is cascaded from session.Update context
+						if (entry?.LoadedState != null && entry.Status != Status.Saving)
 						{
 							object loadedValue;
 							if (componentPathStack.Count == 0)
 							{
 								// association defined on entity
-								loadedValue = entry.LoadedState != null
-									? entry.GetLoadedValue(propertyName)
-									: entry.Persister.GetPropertyValue(parent, propertyName);
+								loadedValue = entry.GetLoadedValue(propertyName);
 
 								// Check this is not a null carrying proxy. The no-proxy load is currently handled by
 								// putting a proxy (!) flagged for unwrapping (even for non-constrained one-to-one,
