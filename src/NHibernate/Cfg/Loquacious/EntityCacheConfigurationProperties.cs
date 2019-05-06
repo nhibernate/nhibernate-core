@@ -44,33 +44,10 @@ namespace NHibernate.Cfg.Loquacious
 #pragma warning disable 618
 		#region Implementation of IEntityCacheConfigurationProperties
 
-		EntityCacheUsage? IEntityCacheConfigurationProperties<TEntity>.Strategy
-		{
-			set => Strategy = value;
-			get => Strategy;
-		}
-
-		string IEntityCacheConfigurationProperties<TEntity>.RegionName
-		{
-			set => RegionName = value;
-			get => RegionName;
-		}
-
 		void IEntityCacheConfigurationProperties<TEntity>.Collection<TCollection>(Expression<Func<TEntity, TCollection>> collectionProperty,
 																				Action<IEntityCollectionCacheConfigurationProperties> collectionCacheConfiguration)
 		{
-			if (collectionProperty == null)
-			{
-				throw new ArgumentNullException("collectionProperty");
-			}
-			var mi = ExpressionsHelper.DecodeMemberAccessExpression(collectionProperty);
-			if(mi.DeclaringType != typeof(TEntity))
-			{
-				throw new ArgumentOutOfRangeException("collectionProperty", "Collection not owned by " + typeof (TEntity).FullName);
-			}
-			var ecc = new EntityCollectionCacheConfigurationProperties();
-			collectionCacheConfiguration(ecc);
-			collections.Add(typeof (TEntity).FullName + "." + mi.Name, ecc);
+			Collection(collectionProperty, collectionCacheConfiguration);
 		}
 
 		#endregion

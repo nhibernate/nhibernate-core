@@ -49,6 +49,8 @@ namespace NHibernate.Cfg.Loquacious
 			throw new InvalidOperationException("This method is invalid and should not be used. Use QueryCacheFactory method instead.");
 		}
 
+		#endregion
+
 		public void QueryCacheFactory<TFactory>() where TFactory : IQueryCacheFactory
 		{
 			UseSecondLevelCache = true;
@@ -60,7 +62,6 @@ namespace NHibernate.Cfg.Loquacious
 		{
 			set { cfg.SetProperty(Environment.UseSecondLevelCache, value.ToString().ToLowerInvariant()); }
 		}
-		#endregion
 	}
 
 	public class CacheConfiguration 
@@ -112,33 +113,26 @@ namespace NHibernate.Cfg.Loquacious
 
 		ICacheConfiguration ICacheConfiguration.Through<TProvider>()
 		{
-			fc.Configuration.SetProperty(Environment.UseSecondLevelCache, "true");
-			fc.Configuration.SetProperty(Environment.CacheProvider, typeof(TProvider).AssemblyQualifiedName);
-			return this;
+			return Through<TProvider>();
 		}
 
 		ICacheConfiguration ICacheConfiguration.PrefixingRegionsWith(string regionPrefix)
 		{
-			fc.Configuration.SetProperty(Environment.CacheRegionPrefix, regionPrefix);
-			return this;
+			return PrefixingRegionsWith(regionPrefix);
 		}
 
 		ICacheConfiguration ICacheConfiguration.UsingMinimalPuts()
 		{
-			fc.Configuration.SetProperty(Environment.UseMinimalPuts, true.ToString().ToLowerInvariant());
-			return this;
+			return UsingMinimalPuts();
 		}
 
 		IFluentSessionFactoryConfiguration ICacheConfiguration.WithDefaultExpiration(int seconds)
 		{
-			fc.Configuration.SetProperty(Environment.CacheDefaultExpiration, seconds.ToString());
-			return fc;
+			return WithDefaultExpiration(seconds);
 		}
 
-		IQueryCacheConfiguration ICacheConfiguration.Queries
-		{
-			get { return Queries; }
-		}
+		IQueryCacheConfiguration ICacheConfiguration.Queries => Queries;
+
 		#endregion
 #pragma warning restore 618
 	}
@@ -154,22 +148,32 @@ namespace NHibernate.Cfg.Loquacious
 		{
 			this.cc = cc;
 		}
-#pragma warning disable 618
-		#region Implementation of IQueryCacheConfiguration
 
-		// 6.0 TODO: enable constraint and remove runtime type check
-		public ICacheConfiguration Through<TFactory>() // where TFactory : IQueryCacheFactory
+		#region Implementation of IQueryCacheConfiguration
+#pragma warning disable 618
+
+		ICacheConfiguration IQueryCacheConfiguration.Through<TFactory>()
 		{
-			if (!typeof(IQueryCacheFactory).IsAssignableFrom(typeof(TFactory)))
-				throw new ArgumentException($"{nameof(TFactory)} must be an {nameof(IQueryCacheFactory)}", nameof(TFactory));
+			return Through(typeof(TFactory));
+		}
+
+#pragma warning restore 618
+		#endregion
+
+		public CacheConfiguration Through<TFactory>() where TFactory : IQueryCacheFactory
+		{
+			return Through(typeof(TFactory));
+		}
+
+		public CacheConfiguration Through(System.Type factory)
+		{
+			if (!typeof(IQueryCacheFactory).IsAssignableFrom(factory))
+				throw new ArgumentException($"{nameof(factory)} must be an {nameof(IQueryCacheFactory)}", nameof(factory));
 
 			cc.Configuration.SetProperty(Environment.UseSecondLevelCache, "true");
 			cc.Configuration.SetProperty(Environment.UseQueryCache, "true");
-			cc.Configuration.SetProperty(Environment.QueryCacheFactory, typeof(TFactory).AssemblyQualifiedName);
+			cc.Configuration.SetProperty(Environment.QueryCacheFactory, factory.AssemblyQualifiedName);
 			return cc;
 		}
-
-		#endregion
-#pragma warning restore 618
 	}
 }

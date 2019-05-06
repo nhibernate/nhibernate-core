@@ -6,6 +6,7 @@ using NHibernate.Linq;
 using NHibernate.Linq.Functions;
 using NHibernate.Util;
 
+// ReSharper disable once CheckNamespace
 namespace NHibernate.Cfg
 {
 	// "Loquacious" part of Configuration
@@ -24,7 +25,7 @@ namespace NHibernate.Cfg
 
 		public Configuration SessionFactoryName(string sessionFactoryName)
 		{
-			this.SetProperty(Environment.SessionFactoryName, sessionFactoryName);
+			SetProperty(Environment.SessionFactoryName, sessionFactoryName);
 			return this;
 		}
 
@@ -36,7 +37,7 @@ namespace NHibernate.Cfg
 
 		public Configuration CollectionTypeFactory<TCollectionsFactory>()
 		{
-			this.SetProperty(
+			SetProperty(
 				Environment.CollectionTypeFactoryClass,
 				typeof(TCollectionsFactory).AssemblyQualifiedName);
 			return this;
@@ -50,25 +51,25 @@ namespace NHibernate.Cfg
 
 		public Configuration HqlQueryTranslator<TQueryTranslator>() where TQueryTranslator : IQueryTranslatorFactory
 		{
-			this.SetProperty(Environment.QueryTranslator, typeof(TQueryTranslator).AssemblyQualifiedName);
+			SetProperty(Environment.QueryTranslator, typeof(TQueryTranslator).AssemblyQualifiedName);
 			return this;
 		}
 
 		public Configuration LinqQueryProvider<TQueryProvider>() where TQueryProvider : INhQueryProvider
 		{
-			this.SetProperty(Environment.QueryLinqProvider, typeof(TQueryProvider).AssemblyQualifiedName);
+			SetProperty(Environment.QueryLinqProvider, typeof(TQueryProvider).AssemblyQualifiedName);
 			return this;
 		}
 
 		public Configuration LinqToHqlGeneratorsRegistry<TLinqToHqlGeneratorsRegistry>() where TLinqToHqlGeneratorsRegistry : ILinqToHqlGeneratorsRegistry
 		{
-			this.SetProperty(Environment.LinqToHqlGeneratorsRegistry, typeof(TLinqToHqlGeneratorsRegistry).AssemblyQualifiedName);
+			SetProperty(Environment.LinqToHqlGeneratorsRegistry, typeof(TLinqToHqlGeneratorsRegistry).AssemblyQualifiedName);
 			return this;
 		}
 
 		public Configuration CurrentSessionContext<TCurrentSessionContext>() where TCurrentSessionContext : ICurrentSessionContext
 		{
-			this.SetProperty(Environment.CurrentSessionContextClass, typeof(TCurrentSessionContext).AssemblyQualifiedName);
+			SetProperty(Environment.CurrentSessionContextClass, typeof(TCurrentSessionContext).AssemblyQualifiedName);
 			return this;
 		}
 
@@ -91,7 +92,7 @@ namespace NHibernate.Cfg
 			entityCacheConfiguration(ecc);
 			if (ecc.Strategy.HasValue)
 			{
-				this.SetCacheConcurrencyStrategy(
+				SetCacheConcurrencyStrategy(
 					typeof(TEntity).FullName,
 					EntityCacheUsageParser.ToString(ecc.Strategy.Value),
 					ecc.RegionName);
@@ -99,7 +100,7 @@ namespace NHibernate.Cfg
 
 			foreach (var collection in ecc.Collections)
 			{
-				this.SetCollectionCacheConcurrencyStrategy(
+				SetCollectionCacheConcurrencyStrategy(
 					collection.Key,
 					EntityCacheUsageParser.ToString(collection.Value.Strategy),
 					collection.Value.RegionName);
@@ -152,8 +153,8 @@ namespace NHibernate.Cfg
 				return this;
 			}
 
-			var mappings = this.CreateMappings();
-			mappings.LazyDialect = new Lazy<Dialect.Dialect>(() => Dialect.Dialect.GetDialect(this.Properties));
+			var mappings = CreateMappings();
+			mappings.LazyDialect = new Lazy<Dialect.Dialect>(() => Dialect.Dialect.GetDialect(Properties));
 			mappings.AddTypeDef(tdConfiguration.Alias, typeof(TDef).AssemblyQualifiedName, tdConfiguration.Properties.ToTypeParameters());
 			return this;
 		}
@@ -172,7 +173,7 @@ namespace NHibernate.Cfg
 
 			var builder = new NamedQueryDefinitionBuilder();
 			namedQueryDefinition(builder);
-			this.NamedQueries.Add(queryIdentifier, builder.Build());
+			NamedQueries.Add(queryIdentifier, builder.Build());
 			return this;
 		}
 	}

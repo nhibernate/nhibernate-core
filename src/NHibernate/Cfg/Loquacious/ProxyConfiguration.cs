@@ -28,24 +28,21 @@ namespace NHibernate.Cfg.Loquacious
 			return fc;
 		}
 
-#pragma warning disable 618
 		#region Implementation of IProxyConfiguration
+#pragma warning disable 618
 
 		IProxyConfiguration IProxyConfiguration.DisableValidation()
 		{
-			fc.Configuration.SetProperty(Environment.UseProxyValidator, "false");
-			return this;
+			return DisableValidation();
 		}
 
 		IFluentSessionFactoryConfiguration IProxyConfiguration.Through<TProxyFactoryFactory>()
 		{
-			fc.Configuration.SetProperty(Environment.ProxyFactoryFactoryClass,
-																	 typeof(TProxyFactoryFactory).AssemblyQualifiedName);
-			return fc;
+			return Through<TProxyFactoryFactory>();
 		}
 
-		#endregion
 #pragma warning restore 618
+		#endregion
 	}
 
 	public class ProxyConfigurationProperties
