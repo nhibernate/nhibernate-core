@@ -11,7 +11,7 @@
 
   <class name="ExtendedProperties">
     <id name="Id" generator="guid.comb"/>
-    <property name="Value"/>
+    <property name="Value" column="`Value`"/>
   </class>
 
 </hibernate-mapping>
