@@ -81,17 +81,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2705
 				}
 			}
 		}
-
-		[Test, Ignore("Locked by re-linq")]
-		public void LinqQueryWithFetch_WhenDerivedClassesUseComponentAndEagerFetchManyToOne_DoesNotGenerateInvalidSqlAsync()
-		{
-			using (ISession s = OpenSession())
-			{
-				using (var log = new SqlLogSpy())
-				{
-					Assert.That(() => s.Query<ItemWithComponentSubItem>().Fetch(p => p.SubItem.Details).ToListAsync(), Throws.Nothing);
-				}
-			}
-		}
 	}
 }

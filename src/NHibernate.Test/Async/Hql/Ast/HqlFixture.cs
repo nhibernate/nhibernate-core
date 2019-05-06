@@ -234,31 +234,6 @@ namespace NHibernate.Test.Hql.Ast
 			}
 		}
 
-		[Test, Ignore("Not fixed yet.")]
-		public async Task SumShouldReturnDoubleAsync()
-		{
-			// NH-1734
-			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
-			{
-				await (s.SaveAsync(new Human{ IntValue = 11, BodyWeight = 12.5f, Description = "Polliwog" }));
-				await (s.Transaction.CommitAsync());
-			}
-
-			using (ISession s = OpenSession())
-			{
-				var l = await (s.CreateQuery("select sum(a.intValue * a.bodyWeight) from Animal a group by a.id").ListAsync());
-				Assert.That(l[0], Is.InstanceOf<Double>());
-			}
-
-			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
-			{
-				await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
-				await (s.Transaction.CommitAsync());
-			}
-		}
-
 		[Test]
 		public async Task CanParseMaxLongAsync()
 		{
