@@ -106,6 +106,7 @@ namespace NHibernate.Cfg.Loquacious
 			fc.Configuration.SetProperty(Environment.CacheDefaultExpiration, seconds.ToString());
 			return fc;
 		}
+
 		public QueryCacheConfiguration Queries { get; }
 
 #pragma warning disable 618
@@ -149,31 +150,27 @@ namespace NHibernate.Cfg.Loquacious
 			this.cc = cc;
 		}
 
+		// 6.0 TODO: enable constraint and remove runtime type check
+		public CacheConfiguration Through<TFactory>() //where TFactory : IQueryCacheFactory
+		{
+			if (!typeof(IQueryCacheFactory).IsAssignableFrom(typeof(TFactory)))
+				throw new ArgumentException($"{nameof(TFactory)} must be an {nameof(IQueryCacheFactory)}", nameof(TFactory));
+
+			cc.Configuration.SetProperty(Environment.UseSecondLevelCache, "true");
+			cc.Configuration.SetProperty(Environment.UseQueryCache, "true");
+			cc.Configuration.SetProperty(Environment.QueryCacheFactory, typeof(TFactory).AssemblyQualifiedName);
+			return cc;
+		}
+
 		#region Implementation of IQueryCacheConfiguration
 #pragma warning disable 618
 
 		ICacheConfiguration IQueryCacheConfiguration.Through<TFactory>()
 		{
-			return Through(typeof(TFactory));
+			return Through<TFactory>();
 		}
 
 #pragma warning restore 618
 		#endregion
-
-		public CacheConfiguration Through<TFactory>() where TFactory : IQueryCacheFactory
-		{
-			return Through(typeof(TFactory));
-		}
-
-		public CacheConfiguration Through(System.Type factory)
-		{
-			if (!typeof(IQueryCacheFactory).IsAssignableFrom(factory))
-				throw new ArgumentException($"{nameof(factory)} must be an {nameof(IQueryCacheFactory)}", nameof(factory));
-
-			cc.Configuration.SetProperty(Environment.UseSecondLevelCache, "true");
-			cc.Configuration.SetProperty(Environment.UseQueryCache, "true");
-			cc.Configuration.SetProperty(Environment.QueryCacheFactory, factory.AssemblyQualifiedName);
-			return cc;
-		}
 	}
 }
