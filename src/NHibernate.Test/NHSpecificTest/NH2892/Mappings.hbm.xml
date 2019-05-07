@@ -9,6 +9,10 @@
             <key column="Order"/>
             <one-to-many class="OrderLine"/>
         </set>
+        <bag name="Elements" cascade="none">
+          <key column="id"/>
+          <element column="Order" type="int"/>
+        </bag>
     </class>
     <class name="OrderLine" table="OrderOrderLine" lazy="false">
         <id name="Id" column="id">

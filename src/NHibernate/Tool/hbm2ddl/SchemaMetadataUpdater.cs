@@ -57,45 +57,42 @@ namespace NHibernate.Tool.hbm2ddl
 		{
 			foreach (var cm in configuration.ClassMappings)
 			{
-				QuoteTable(cm.Table,cm.Key?.ColumnIterator?.OfType<Column>(), dialect);
+				QuoteTable(cm.Table, dialect);
 			}
-
 			foreach (var cm in configuration.CollectionMappings)
 			{
-				QuoteTable(cm.Table, cm.Key?.ColumnIterator?.OfType<Column>(), dialect);
+				QuoteTable(cm.Table, dialect);
+				QuoteColumns(cm.Key, dialect);
+				QuoteColumns(cm.Element, dialect);
 			}
+		}
+
+		private static void QuoteColumns(IValue value, Dialect.Dialect dialect)
+		{
+			if (value == null)
+				return;
+			QuoteColumns(value.ColumnIterator.OfType<Column>(), dialect);
 		}
 
 		private static void QuoteColumns(IEnumerable<Column> columns, Dialect.Dialect dialect)
 		{
-			if (columns != null)
-			{
-				foreach (Column column in columns)
-				{
-					if (!column.IsQuoted && dialect.IsKeyword(column.Name))
-					{
-						column.IsQuoted = true;
-					}
-				}
-			}
-		}
-
-		private static void QuoteTable(Table table, IEnumerable<Column> columns, Dialect.Dialect dialect)
-		{
-			if (!table.IsQuoted && dialect.IsKeyword(table.Name))
-			{
-				table.IsQuoted = true;
-			}
-
-			foreach (var column in table.ColumnIterator)
+			foreach (var column in columns)
 			{
 				if (!column.IsQuoted && dialect.IsKeyword(column.Name))
 				{
 					column.IsQuoted = true;
 				}
 			}
-			
-			QuoteColumns(columns, dialect);
+		}
+
+		private static void QuoteTable(Table table, Dialect.Dialect dialect)
+		{
+			if (!table.IsQuoted && dialect.IsKeyword(table.Name))
+			{
+				table.IsQuoted = true;
+			}
+
+			QuoteColumns(table.ColumnIterator, dialect);
 		}
 	}
 }
