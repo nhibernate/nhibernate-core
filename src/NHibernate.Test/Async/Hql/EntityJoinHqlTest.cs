@@ -275,22 +275,6 @@ namespace NHibernate.Test.Hql
 			}
 		}
 
-		[Test, Ignore("Failing for unrelated reasons")]
-		public async Task CrossJoinAndWithClauseAsync()
-		{
-			//This is about complex theta style join fix that was implemented in hibernate along with entity join functionality
-			//https://hibernate.atlassian.net/browse/HHH-7321
-			using (var sqlLog = new SqlLogSpy())
-			using (var session = OpenSession())
-			{
-				await (session.CreateQuery(
-				"SELECT s " +
-				"FROM EntityComplex s, EntityComplex q " +
-				"LEFT JOIN s.SameTypeChild AS sa WITH sa.SameTypeChild.Id = q.SameTypeChild.Id"
-				).ListAsync());
-			}
-		}
-
 		#region Test Setup
 
 		protected override HbmMapping GetMappings()
