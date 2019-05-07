@@ -67,6 +67,16 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
+		private static void QuoteTable(Table table, Dialect.Dialect dialect)
+		{
+			if (!table.IsQuoted && dialect.IsKeyword(table.Name))
+			{
+				table.IsQuoted = true;
+			}
+
+			QuoteColumns(table.ColumnIterator, dialect);
+		}
+
 		private static void QuoteColumns(IValue value, Dialect.Dialect dialect)
 		{
 			if (value == null)
@@ -83,16 +93,6 @@ namespace NHibernate.Tool.hbm2ddl
 					column.IsQuoted = true;
 				}
 			}
-		}
-
-		private static void QuoteTable(Table table, Dialect.Dialect dialect)
-		{
-			if (!table.IsQuoted && dialect.IsKeyword(table.Name))
-			{
-				table.IsQuoted = true;
-			}
-
-			QuoteColumns(table.ColumnIterator, dialect);
 		}
 	}
 }
