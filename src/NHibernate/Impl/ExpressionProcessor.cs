@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using NHibernate.Criterion;
+using NHibernate.Dialect.Function;
+using NHibernate.Type;
 using NHibernate.Util;
 using Expression = System.Linq.Expressions.Expression;
 
@@ -104,6 +106,8 @@ namespace NHibernate.Impl
 		private static readonly Dictionary<LambdaSubqueryType, IDictionary<ExpressionType, Func<string, DetachedCriteria, AbstractCriterion>>> _subqueryExpressionCreatorTypes;
 		private static readonly Dictionary<string, Func<MethodCallExpression, ICriterion>> _customMethodCallProcessors;
 		private static readonly Dictionary<string, Func<Expression, IProjection>> _customProjectionProcessors;
+		private static readonly Dictionary<ExpressionType, ISQLFunction> _binaryArithmethicTemplates = new Dictionary<ExpressionType, ISQLFunction>();
+		private static readonly ISQLFunction _unaryNegateTemplate;
 
 		static ExpressionProcessor()
 		{
@@ -198,6 +202,17 @@ namespace NHibernate.Impl
 			RegisterCustomProjection(() => Math.Round(default(double), default(int)), ProjectionsExtensions.ProcessRound);
 			RegisterCustomProjection(() => Math.Round(default(decimal), default(int)), ProjectionsExtensions.ProcessRound);
 			RegisterCustomProjection(() => ProjectionsExtensions.AsEntity(default(object)), ProjectionsExtensions.ProcessAsEntity);
+
+			RegisterBinaryArithmeticExpression(ExpressionType.Add, "+");
+			RegisterBinaryArithmeticExpression(ExpressionType.Subtract, "-");
+			RegisterBinaryArithmeticExpression(ExpressionType.Multiply, "*");
+			RegisterBinaryArithmeticExpression(ExpressionType.Divide, "/");
+			_unaryNegateTemplate = new VarArgsSQLFunction("(-", string.Empty, ")");
+		}
+
+		private static void RegisterBinaryArithmeticExpression(ExpressionType type, string sqlOperand)
+		{
+			_binaryArithmethicTemplates[type] = new VarArgsSQLFunction("(", sqlOperand, ")");
 		}
 
 		private static ICriterion Eq(ProjectionInfo property, object value)
@@ -248,15 +263,12 @@ namespace NHibernate.Impl
 		public static ProjectionInfo FindMemberProjection(Expression expression)
 		{
 			if (!IsMemberExpression(expression))
-				return ProjectionInfo.ForProjection(Projections.Constant(FindValue(expression)));
+				return AsArithmeticExpression(expression) ?? ProjectionInfo.ForProjection(Projections.Constant(FindValue(expression)));
 
-			var unaryExpression = expression as UnaryExpression;
-			if (unaryExpression != null)
+			var unwrapExpression = UnwrapConvertExpression(expression);
+			if (unwrapExpression != null)
 			{
-				if (!IsConversion(unaryExpression.NodeType))
-					throw new ArgumentException("Cannot interpret member from " + expression, nameof(expression));
-
-				return FindMemberProjection(unaryExpression.Operand);
+				return FindMemberProjection(unwrapExpression);
 			}
 
 			var methodCallExpression = expression as MethodCallExpression;
@@ -281,6 +293,55 @@ namespace NHibernate.Impl
 			}
 
 			return ProjectionInfo.ForProperty(FindMemberExpression(expression));
+		}
+
+		private static Expression UnwrapConvertExpression(Expression expression)
+		{
+			if (expression is UnaryExpression unaryExpression)
+			{
+				if (!IsConversion(unaryExpression.NodeType))
+				{
+					if (IsSupportedUnaryExpression(unaryExpression))
+						return null;
+
+					throw new ArgumentException("Cannot interpret member from " + expression, nameof(expression));
+				}
+				return unaryExpression.Operand;
+			}
+
+			return null;
+		}
+
+		private static bool IsSupportedUnaryExpression(UnaryExpression expression)
+		{
+			return expression.NodeType == ExpressionType.Negate;
+		}
+
+		private static ProjectionInfo AsArithmeticExpression(Expression expression)
+		{
+			if (!(expression is BinaryExpression be))
+			{
+				if (expression is UnaryExpression unary && unary.NodeType == ExpressionType.Negate)
+				{
+					return ProjectionInfo.ForProjection(
+						new SqlFunctionProjection(_unaryNegateTemplate, TypeFactory.HeuristicType(unary.Type), FindMemberProjection(unary.Operand).AsProjection()));
+				}
+
+				var unwrapExpression = UnwrapConvertExpression(expression);
+				return unwrapExpression != null ? AsArithmeticExpression(unwrapExpression) : null;
+			}
+
+			if (!_binaryArithmethicTemplates.TryGetValue(be.NodeType, out var template))
+			{
+				return null;
+			}
+
+			return ProjectionInfo.ForProjection(
+				new SqlFunctionProjection(
+					template,
+					TypeFactory.HeuristicType(be.Type),
+					FindMemberProjection(be.Left).AsProjection(),
+					FindMemberProjection(be.Right).AsProjection()));
 		}
 
 		//http://stackoverflow.com/a/2509524/259946
@@ -410,13 +471,10 @@ namespace NHibernate.Impl
 				return memberExpression.Type;
 			}
 
-			var unaryExpression = expression as UnaryExpression;
-			if (unaryExpression != null)
+			var unwrapExpression = UnwrapConvertExpression(expression);
+			if (unwrapExpression != null)
 			{
-				if (!IsConversion(unaryExpression.NodeType))
-					throw new ArgumentException("Cannot interpret member from " + expression, nameof(expression));
-
-				return FindMemberType(unaryExpression.Operand);
+				return FindMemberType(unwrapExpression);
 			}
 
 			var methodCallExpression = expression as MethodCallExpression;
@@ -424,6 +482,9 @@ namespace NHibernate.Impl
 			{
 				return methodCallExpression.Method.ReturnType;
 			}
+
+			if (expression is BinaryExpression || expression is UnaryExpression)
+				return expression.Type;
 
 			throw new ArgumentException("Could not determine member type from " + expression, nameof(expression));
 		}
@@ -446,13 +507,10 @@ namespace NHibernate.Impl
 				return EvaluatesToNull(memberExpression.Expression);
 			}
 
-			var unaryExpression = expression as UnaryExpression;
-			if (unaryExpression != null)
+			var unwrapExpression = UnwrapConvertExpression(expression);
+			if (unwrapExpression != null)
 			{
-				if (!IsConversion(unaryExpression.NodeType))
-					throw new ArgumentException("Cannot interpret member from " + expression, nameof(expression));
-
-				return IsMemberExpression(unaryExpression.Operand);
+				return IsMemberExpression(unwrapExpression);
 			}
 
 			var methodCallExpression = expression as MethodCallExpression;

@@ -498,5 +498,31 @@ namespace NHibernate.Test.Criteria.Lambda
 				Assert.That(statelessPerson2.Id, Is.EqualTo(personId));
 			}
 		}
+
+		[Test]
+		public void QueryOverArithmetic()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new Person() {Name = "test person 1", Age = 20});
+				s.Save(new Person() {Name = "test person 2", Age = 50});
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			{
+				var persons1 = s.QueryOver<Person>().Where(p => (p.Age * 2) / 2 + 20 - 20 == 20).List();
+				var persons2 = s.QueryOver<Person>().Where(p => (-(-p.Age)) > 20).List();
+				var persons3 = s.QueryOver<Person>().WhereRestrictionOn(p => (p.Age * 2) / 2 + 20 - 20).IsBetween(19).And(21).List();
+				var persons4 = s.QueryOver<Person>().WhereRestrictionOn(p => -(-p.Age)).IsBetween(19).And(21).List();
+				var persons5 = s.QueryOver<Person>().WhereRestrictionOn(p => (p.Age * 2) / 2 + 20 - 20).IsBetween(19).And(51).List();
+				Assert.That(persons1.Count, Is.EqualTo(1));
+				Assert.That(persons2.Count, Is.EqualTo(1));
+				Assert.That(persons3.Count, Is.EqualTo(1));
+				Assert.That(persons4.Count, Is.EqualTo(1));
+				Assert.That(persons5.Count, Is.EqualTo(2));
+			}
+		}
 	}
 }
