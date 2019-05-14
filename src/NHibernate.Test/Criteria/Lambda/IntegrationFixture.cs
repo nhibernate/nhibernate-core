@@ -521,7 +521,7 @@ namespace NHibernate.Test.Criteria.Lambda
 #pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 				var persons7 = s.QueryOver<Person>().Where(p => (p.Age * 2) / 2 + 20 - 20 == null || p.Age * 2 == 20 * 1).List();
 #pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
-				var val1 = s.QueryOver<Person>().Select(p => p.Age *2).Where( p => p.Age == 20).SingleOrDefault<int>();
+				var val1 = s.QueryOver<Person>().Select(p => p.Age * 2).Where(p => p.Age == 20).SingleOrDefault<int>();
 
 				Assert.That(persons1.Count, Is.EqualTo(1));
 				Assert.That(persons2.Count, Is.EqualTo(1));

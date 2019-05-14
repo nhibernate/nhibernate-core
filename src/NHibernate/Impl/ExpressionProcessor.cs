@@ -613,7 +613,6 @@ namespace NHibernate.Impl
 
 		private static ICriterion ProcessMemberExpression(Expression left, Expression right, ExpressionType nodeType)
 		{
-			ProjectionInfo leftProperty = FindMemberProjection(left);
 			ProjectionInfo rightProperty = FindMemberProjection(right);
 			if (rightProperty.IsConstant(out var constProjection))
 			{
@@ -621,6 +620,7 @@ namespace NHibernate.Impl
 						?? ProcessSimpleExpression(left, constProjection.TypedValue, nodeType);
 			}
 
+			ProjectionInfo leftProperty = FindMemberProjection(left);
 			Func<ProjectionInfo, ProjectionInfo, ICriterion> propertyExpressionCreator;
 			if (!_propertyExpressionCreators.TryGetValue(nodeType, out propertyExpressionCreator))
 				throw new InvalidOperationException("Unhandled property expression type: " + nodeType);
