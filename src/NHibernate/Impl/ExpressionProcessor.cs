@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using NHibernate.Criterion;
 using NHibernate.Dialect.Function;
+using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
 using Expression = System.Linq.Expressions.Expression;
@@ -89,16 +90,18 @@ namespace NHibernate.Impl
 
 			/// <summary>
 			/// Retrieve the property name from a supplied PropertyProjection
-			/// Note:  throws if the supplied IProjection is not a PropertyProjection
+			/// Note:  throws if the supplied IProjection is not a IPropertyProjection
 			/// </summary>
 			public string AsProperty()
 			{
 				if (_property != null) return _property;
 
-				var propertyProjection = _projection as PropertyProjection;
+				var propertyProjection = _projection as IPropertyProjection;
 				if (propertyProjection == null) throw new InvalidOperationException("Cannot determine property for " + _projection);
 				return propertyProjection.PropertyName;
 			}
+
+			internal bool IsConstant(out ConstantProjection value) => (value = _projection as ConstantProjection) != null;
 		}
 
 		private static readonly Dictionary<ExpressionType, Func<ProjectionInfo, object, ICriterion>> _simpleExpressionCreators;
@@ -263,7 +266,8 @@ namespace NHibernate.Impl
 		public static ProjectionInfo FindMemberProjection(Expression expression)
 		{
 			if (!IsMemberExpression(expression))
-				return AsArithmeticExpression(expression) ?? ProjectionInfo.ForProjection(Projections.Constant(FindValue(expression)));
+				return AsArithmeticProjection(expression)
+					?? ProjectionInfo.ForProjection(Projections.Constant(FindValue(expression), NHibernateUtil.GuessType(expression.Type)));
 
 			var unwrapExpression = UnwrapConvertExpression(expression);
 			if (unwrapExpression != null)
@@ -281,14 +285,14 @@ namespace NHibernate.Impl
 					return ProjectionInfo.ForProjection(processor(methodCallExpression));
 				}
 			}
-		    var memberExpression = expression as MemberExpression;
-            if (memberExpression != null)
+			var memberExpression = expression as MemberExpression;
+			if (memberExpression != null)
 			{
-                var signature = Signature(memberExpression.Member);
+				var signature = Signature(memberExpression.Member);
 				Func<Expression, IProjection> processor;
 				if (_customProjectionProcessors.TryGetValue(signature, out processor))
 				{
-                    return ProjectionInfo.ForProjection(processor(memberExpression));
+					return ProjectionInfo.ForProjection(processor(memberExpression));
 				}
 			}
 
@@ -317,7 +321,7 @@ namespace NHibernate.Impl
 			return expression.NodeType == ExpressionType.Negate;
 		}
 
-		private static ProjectionInfo AsArithmeticExpression(Expression expression)
+		private static ProjectionInfo AsArithmeticProjection(Expression expression)
 		{
 			if (!(expression is BinaryExpression be))
 			{
@@ -328,7 +332,7 @@ namespace NHibernate.Impl
 				}
 
 				var unwrapExpression = UnwrapConvertExpression(expression);
-				return unwrapExpression != null ? AsArithmeticExpression(unwrapExpression) : null;
+				return unwrapExpression != null ? AsArithmeticProjection(unwrapExpression) : null;
 			}
 
 			if (!_binaryArithmethicTemplates.TryGetValue(be.NodeType, out var template))
@@ -565,21 +569,12 @@ namespace NHibernate.Impl
 			throw new ArgumentException(string.Format("Cannot convert '{0}' to {1}", value, type));
 		}
 
-		private static ICriterion ProcessSimpleExpression(BinaryExpression be)
-		{
-			if (be.Left.NodeType == ExpressionType.Call && ((MethodCallExpression)be.Left).Method.Name == "CompareString")
-				return ProcessVisualBasicStringComparison(be);
-
-			return ProcessSimpleExpression(be.Left, be.Right, be.NodeType);
-		}
-
-		private static ICriterion ProcessSimpleExpression(Expression left, Expression right, ExpressionType nodeType)
+		private static ICriterion ProcessSimpleExpression(Expression left, TypedValue rightValue, ExpressionType nodeType)
 		{
 			ProjectionInfo property = FindMemberProjection(left);
 			System.Type propertyType = FindMemberType(left);
 
-			object value = FindValue(right);
-			value = ConvertType(value, propertyType);
+			var value = ConvertType(rightValue.Value, propertyType);
 
 			if (value == null)
 				return ProcessSimpleNullExpression(property, nodeType);
@@ -591,14 +586,17 @@ namespace NHibernate.Impl
 			return simpleExpressionCreator(property, value);
 		}
 
-		private static ICriterion ProcessVisualBasicStringComparison(BinaryExpression be)
+		private static ICriterion ProcessAsVisualBasicStringComparison(Expression left, ExpressionType nodeType)
 		{
-			var methodCall = (MethodCallExpression)be.Left;
+			if (left.NodeType != ExpressionType.Call)
+			{
+				return null;
+			}
 
-			if (IsMemberExpression(methodCall.Arguments[1]))
-				return ProcessMemberExpression(methodCall.Arguments[0], methodCall.Arguments[1], be.NodeType);
-			else
-				return ProcessSimpleExpression(methodCall.Arguments[0], methodCall.Arguments[1], be.NodeType);
+			var methodCall = (MethodCallExpression) left;
+			return methodCall.Method.Name == "CompareString"
+				? ProcessMemberExpression(methodCall.Arguments[0], methodCall.Arguments[1], nodeType)
+				: null;
 		}
 
 		private static ICriterion ProcessSimpleNullExpression(ProjectionInfo property, ExpressionType expressionType)
@@ -613,15 +611,15 @@ namespace NHibernate.Impl
 			throw new ArgumentException("Cannot supply null value to operator " + expressionType, nameof(expressionType));
 		}
 
-		private static ICriterion ProcessMemberExpression(BinaryExpression be)
-		{
-			return ProcessMemberExpression(be.Left, be.Right, be.NodeType);
-		}
-
 		private static ICriterion ProcessMemberExpression(Expression left, Expression right, ExpressionType nodeType)
 		{
 			ProjectionInfo leftProperty = FindMemberProjection(left);
 			ProjectionInfo rightProperty = FindMemberProjection(right);
+			if (rightProperty.IsConstant(out var constProjection))
+			{
+				return ProcessAsVisualBasicStringComparison(left, nodeType)
+						?? ProcessSimpleExpression(left, constProjection.TypedValue, nodeType);
+			}
 
 			Func<ProjectionInfo, ProjectionInfo, ICriterion> propertyExpressionCreator;
 			if (!_propertyExpressionCreators.TryGetValue(nodeType, out propertyExpressionCreator))
@@ -660,11 +658,7 @@ namespace NHibernate.Impl
 				case ExpressionType.GreaterThanOrEqual:
 				case ExpressionType.LessThan:
 				case ExpressionType.LessThanOrEqual:
-					if (IsMemberExpression(expression.Right))
-						return ProcessMemberExpression(expression);
-					else
-						return ProcessSimpleExpression(expression);
-
+					return ProcessMemberExpression(expression.Left, expression.Right, expression.NodeType);
 				default:
 					throw new NotImplementedException("Unhandled binary expression: " + expression.NodeType + ", " + expression);
 			}
