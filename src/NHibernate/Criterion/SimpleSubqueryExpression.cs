@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 
 namespace NHibernate.Criterion
 {
@@ -23,20 +23,43 @@ namespace NHibernate.Criterion
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			TypedValue[] superTv = base.GetTypedValues(criteria, criteriaQuery);
-			TypedValue[] result = new TypedValue[superTv.Length + 1];
-			superTv.CopyTo(result, 1);
-			result[0] = FirstTypedValue();
-			return result;
-		}
+			var typedValues = GetTypedValues(GetTypes()[0], value);
+			TypedValue[] result = new TypedValue[superTv.Length + typedValues.Length];
+			superTv.CopyTo(result, 0);
+			typedValues.CopyTo(result, superTv.Length);
 
-		private TypedValue FirstTypedValue()
-		{
-			return new TypedValue(GetTypes()[0], value);
+			return result;
 		}
 
 		protected override SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new SqlString(criteriaQuery.NewQueryParameter(FirstTypedValue()).First());
+			var typedValues = GetTypedValues(GetTypes()[0], value);
+			return new SqlStringBuilder()
+					.AddParameters(typedValues.Select(tv => criteriaQuery.NewQueryParameter(tv)).SelectMany(x => x).ToList())
+					.ToSqlString();
+		}
+
+		private static TypedValue[] GetTypedValues(IType type, object value)
+		{
+			if (type.IsComponentType)
+			{
+				IAbstractComponentType actype = (IAbstractComponentType) type;
+				IType[] types = actype.Subtypes;
+				var list = new TypedValue[types.Length];
+				for (int ti = 0; ti < types.Length; ti++)
+				{
+					object subval = value == null
+						? null
+						: actype.GetPropertyValues(value)[ti];
+					list[ti] = new TypedValue(types[ti], subval, false);
+				}
+
+				return list;
+			}
+			else
+			{
+				return new[] { new TypedValue(type, value) };
+			}
 		}
 	}
 }

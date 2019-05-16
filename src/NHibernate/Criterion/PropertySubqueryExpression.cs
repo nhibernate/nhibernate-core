@@ -20,7 +20,10 @@ namespace NHibernate.Criterion
 
 		protected override SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new SqlString(criteriaQuery.GetColumn(criteria, propertyName));
+			var columns = criteriaQuery.GetColumns(criteria, propertyName);
+			if(columns.Length <= 1)
+				return new SqlString(columns);
+			return new SqlString("(", string.Join(", ", columns), ")");
 		}
 	}
 }

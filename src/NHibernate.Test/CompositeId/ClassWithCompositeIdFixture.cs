@@ -228,5 +228,110 @@ namespace NHibernate.Test.CompositeId
 				Assert.AreEqual(1, results.Count);
 			}
 		}
+
+		[Test]
+		public void HqlInClause()
+		{
+			//Need to port changes from InLogicOperatorNode.mutateRowValueConstructorSyntaxInInListSyntax
+			if (!Dialect.SupportsRowValueConstructorSyntaxInInList)
+				Assert.Ignore();
+
+			// insert the new objects
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new ClassWithCompositeId(id) {OneProperty = 5});
+				s.Save(new ClassWithCompositeId(secondId) {OneProperty = 10});
+				s.Save(new ClassWithCompositeId(new Id(id.KeyString, id.GetKeyShort(), secondId.KeyDateTime)));
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			{
+				var results = s.CreateQuery("from ClassWithCompositeId x where  x.Id in (:id1, :id2)")
+								.SetParameter("id1", id)
+								.SetParameter("id2", secondId)
+								.List<ClassWithCompositeId>();
+				Assert.That(results.Count, Is.EqualTo(2));
+			}
+		}
+
+		[Test]
+		public void QueryOverInClauseSubquery()
+		{
+			if (!TestDialect.SupportsRowValueConstructorSyntax)
+			{
+					Assert.Ignore();
+			}
+
+			// insert the new objects
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new ClassWithCompositeId(id) {OneProperty = 5});
+				s.Save(new ClassWithCompositeId(secondId) {OneProperty = 10});
+				s.Save(new ClassWithCompositeId(new Id(id.KeyString, id.GetKeyShort(), secondId.KeyDateTime)));
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			{
+				var results = s.QueryOver<ClassWithCompositeId>().WithSubquery.WhereProperty(p => p.Id).In(QueryOver.Of<ClassWithCompositeId>().Where(p => p.Id.KeyString == id.KeyString).Select(p => p.Id)).List();
+				Assert.That(results.Count, Is.EqualTo(2));
+			}
+		}
+
+		[Test]
+		public void HqlInClauseSubquery()
+		{
+			if (!TestDialect.SupportsRowValueConstructorSyntax)
+				Assert.Ignore();
+
+			// insert the new objects
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new ClassWithCompositeId(id) {OneProperty = 5});
+				s.Save(new ClassWithCompositeId(secondId) {OneProperty = 10});
+				s.Save(new ClassWithCompositeId(new Id(id.KeyString, id.GetKeyShort(), secondId.KeyDateTime)));
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			{
+				var results = s.CreateQuery("from ClassWithCompositeId x where  x.Id in (select s.Id from ClassWithCompositeId s where s.Id.KeyString = :keyString)")
+								.SetParameter("keyString", id.KeyString).List();
+				Assert.That(results.Count, Is.EqualTo(2));
+			}
+		}
+
+		//GH-1376
+		[Test]
+		public void HqlInClauseSubquery_ForEntity()
+		{
+			if (!TestDialect.SupportsRowValueConstructorSyntax)
+				Assert.Ignore();
+
+			// insert the new objects
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new ClassWithCompositeId(id) {OneProperty = 5});
+				s.Save(new ClassWithCompositeId(secondId) {OneProperty = 10});
+				s.Save(new ClassWithCompositeId(new Id(id.KeyString, id.GetKeyShort(), secondId.KeyDateTime)));
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			{
+				var results = s.CreateQuery("from ClassWithCompositeId x where x in (select s from ClassWithCompositeId s where s.Id.KeyString = :keyString)")
+								.SetParameter("keyString", id.KeyString).List();
+				Assert.That(results.Count, Is.EqualTo(2));
+			}
+		}
 	}
 }

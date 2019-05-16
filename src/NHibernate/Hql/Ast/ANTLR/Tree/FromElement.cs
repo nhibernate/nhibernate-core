@@ -515,9 +515,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			string result = string.Join(", ", cols);
 
-			// There used to be code here that added parentheses if the number of columns was greater than one.
-			// This was causing invalid queries like select (c1, c2) from x.  I couldn't think of a reason that
-			// parentheses would be wanted around a list of columns, so I removed them.
+			if(cols.Length > 1 && Walker.IsComparativeExpressionClause)
+			{
+				result = "(" + result + ")";
+			}
 			return result;
 		}
 
