@@ -27,11 +27,6 @@ namespace NHibernate.Test.CompositeId
 			get { return new string[] {"CompositeId.ClassWithCompositeId.hbm.xml"}; }
 		}
 
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return !(dialect is Dialect.FirebirdDialect); // Firebird has no CommandTimeout, and locks up during the tear-down of this fixture
-		}
-
 		protected override void OnSetUp()
 		{
 			id = new Id("stringKey", 3, firstDateTime);
@@ -41,9 +36,11 @@ namespace NHibernate.Test.CompositeId
 		protected override void OnTearDown()
 		{
 			using (ISession s = Sfi.OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				s.Delete("from ClassWithCompositeId");
 				s.Flush();
+				t.Commit();
 			}
 		}
 
@@ -384,6 +381,27 @@ namespace NHibernate.Test.CompositeId
 								.Where(Restrictions.Eq(Projections.Id(), id))
 								.OrderBy(Projections.Id()).Desc.List<Id>();
 				Assert.That(results.Count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public void QueryOverInClause()
+		{
+			// insert the new objects
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new ClassWithCompositeId(id) {OneProperty = 5});
+				s.Save(new ClassWithCompositeId(secondId) {OneProperty = 10});
+				s.Save(new ClassWithCompositeId(new Id(id.KeyString, id.GetKeyShort(), secondId.KeyDateTime)));
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			{
+				var results = s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] {id, secondId}).List();
+				Assert.That(results.Count, Is.EqualTo(2));
 			}
 		}
 	}
