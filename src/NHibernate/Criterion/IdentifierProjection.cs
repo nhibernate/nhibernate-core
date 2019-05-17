@@ -1,12 +1,12 @@
 using System;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
 	[Serializable]
-	public class IdentifierProjection : SimpleProjection
+	public class IdentifierProjection : SimpleProjection, IPropertyProjection
 	{
 		private bool grouped;
 
@@ -21,7 +21,7 @@ namespace NHibernate.Criterion
 
 		public override string ToString()
 		{
-			return "id";
+			return PropertyName;
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
@@ -66,5 +66,7 @@ namespace NHibernate.Criterion
 			}
 			return new SqlString(string.Join(",", criteriaQuery.GetIdentifierColumns(criteria)));
 		}
+
+		public string PropertyName => EntityPersister.EntityID;
 	}
 }

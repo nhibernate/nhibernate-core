@@ -1,6 +1,4 @@
 using System;
-using System.Text;
-using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
@@ -38,43 +36,55 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public virtual SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			if (projection != null)
-			{
-				SqlString produced = projection.ToSqlString(criteria, 0, criteriaQuery);
-				SqlString truncated = SqlStringHelper.RemoveAsAliasesFromSql(produced);
-				return new SqlString(truncated, ascending ? " asc" : " desc");
-			}
+			SqlString[] columns = GetColumnsOrAliases(criteria, criteriaQuery);
+			bool[] toLowerColumns = ignoreCase ? FindStringColumns(criteria, criteriaQuery) : null;
 
-			string[] columns = criteriaQuery.GetColumnAliasesUsingProjection(criteria, propertyName);
-			Type.IType type = criteriaQuery.GetTypeUsingProjection(criteria, propertyName);
-
-			StringBuilder fragment = new StringBuilder();
-			ISessionFactoryImplementor factory = criteriaQuery.Factory;
+			var fragment = new SqlStringBuilder();
+			var factory = criteriaQuery.Factory;
 			for (int i = 0; i < columns.Length; i++)
 			{
-				bool lower = ignoreCase && IsStringType(type.SqlTypes(factory)[i]);
+				bool lower = toLowerColumns?[i] == true;
 
 				if (lower)
 				{
-					fragment.Append(factory.Dialect.LowercaseFunction)
-						.Append("(");
+					fragment
+						.Add(factory.Dialect.LowercaseFunction)
+						.Add("(");
 				}
-				fragment.Append(columns[i]);
+
+				fragment.Add(columns[i]);
 
 				if (lower)
 				{
-					fragment.Append(")");
+					fragment.Add(")");
 				}
 
-				fragment.Append(ascending ? " asc" : " desc");
+				fragment.Add(ascending ? " asc" : " desc");
 
 				if (i < columns.Length - 1)
 				{
-					fragment.Append(", ");
+					fragment.Add(", ");
 				}
 			}
 
-			return new SqlString(fragment.ToString());
+			return fragment.ToSqlString();
+		}
+
+		private SqlString[] GetColumnsOrAliases(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			var propName = propertyName ?? (projection as IPropertyProjection)?.PropertyName;
+			return propName != null
+				? Array.ConvertAll(criteriaQuery.GetColumnAliasesUsingProjection(criteria, propName), x => new SqlString(x))
+				: CriterionUtil.GetColumnNamesUsingProjection(projection, criteriaQuery, criteria);
+		}
+
+		private bool[] FindStringColumns(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			var type = projection == null
+				? criteriaQuery.GetTypeUsingProjection(criteria, propertyName)
+				: projection.GetTypes(criteria, criteriaQuery)[0];
+
+			return Array.ConvertAll(type.SqlTypes(criteriaQuery.Factory), t => IsStringType(t));
 		}
 
 		public override string ToString()
