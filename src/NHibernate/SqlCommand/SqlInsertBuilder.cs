@@ -220,7 +220,7 @@ namespace NHibernate.SqlCommand
 
 		public SqlType[] GetParametersTypeArray()
 		{
-			return columns.Values.OfType<SqlType>().ToArray();
+			return new SafetyEnumerable<SqlType>(columns.Values).ToArray();
 		}
 	}
 }
