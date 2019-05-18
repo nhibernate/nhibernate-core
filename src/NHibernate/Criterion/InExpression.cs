@@ -143,7 +143,7 @@ namespace NHibernate.Criterion
 			}
 			else
 			{
-				return _values.Select(v => new TypedValue(type, v, false)).ToList();
+				return _values.ToList(v => new TypedValue(type, v, false));
 			}
 		}
 
