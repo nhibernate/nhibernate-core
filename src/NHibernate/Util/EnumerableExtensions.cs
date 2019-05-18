@@ -54,11 +54,12 @@ namespace NHibernate.Util
 
 		internal static TOutput[] ToArray<TInput, TOutput>(this List<TInput> input, Func<TInput, TOutput> converter)
 		{
-			var results = new TOutput[input.Count];
-			int i = 0;
-			foreach (var value in input)
+			var count = input.Count;
+			var results = new TOutput[count];
+
+			for (var i = 0; i < count; i++)
 			{
-				results[i++] = converter(value);
+				results[i] = converter(input[i]);
 			}
 
 			return results;
@@ -68,7 +69,6 @@ namespace NHibernate.Util
 		{
 			return Array.ConvertAll(input, converter);
 		}
-
 
 		internal static List<TOutput> ToList<TInput, TOutput>(this ICollection<TInput> input, Func<TInput, TOutput> converter)
 		{
@@ -92,6 +92,11 @@ namespace NHibernate.Util
 			}
 
 			return results;
+		}
+
+		internal static List<TOutput> ToList<TInput, TOutput>(this List<TInput> input, Converter<TInput, TOutput> converter)
+		{
+			return input.ConvertAll(converter);
 		}
 	}
 }

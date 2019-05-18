@@ -135,8 +135,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Synchronize(params string[] table)
 		{
 			if (table == null)
-				if (table == null)
-					return;
+				return;
 
 			var existingSyncs = classMapping.synchronize != null
 				? new HashSet<string>(classMapping.synchronize.Select(x => x.table))
