@@ -52,9 +52,39 @@ namespace NHibernate.Util
 			return results;
 		}
 
+		internal static TOutput[] ToArray<TInput, TOutput>(this List<TInput> input, Func<TInput, TOutput> converter)
+		{
+			var results = new TOutput[input.Count];
+			int i = 0;
+			foreach (var value in input)
+			{
+				results[i++] = converter(value);
+			}
+
+			return results;
+		}
+
+		internal static TOutput[] ToArray<TInput, TOutput>(this TInput[] input, Converter<TInput, TOutput> converter)
+		{
+			return Array.ConvertAll(input, converter);
+		}
+
+
 		internal static List<TOutput> ToList<TInput, TOutput>(this ICollection<TInput> input, Func<TInput, TOutput> converter)
 		{
 			var results = new List<TOutput>(input.Count);
+
+			foreach (var value in input)
+			{
+				results.Add(converter(value));
+			}
+
+			return results;
+		}
+
+		internal static List<TOutput> ToList<TInput, TOutput>(this TInput[] input, Func<TInput, TOutput> converter)
+		{
+			var results = new List<TOutput>(input.Length);
 
 			foreach (var value in input)
 			{
