@@ -54,10 +54,9 @@ namespace NHibernate.Util
 
 		internal static TOutput[] ToArray<TInput, TOutput>(this List<TInput> input, Func<TInput, TOutput> converter)
 		{
-			var count = input.Count;
-			var results = new TOutput[count];
+			var results = new TOutput[input.Count];
 
-			for (var i = 0; i < count; i++)
+			for (var i = 0; i < input.Count; i++)
 			{
 				results[i] = converter(input[i]);
 			}
