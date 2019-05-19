@@ -17,7 +17,7 @@ namespace NHibernate.AdoNet
 		private int _countOfCommands;
 		private int _totalExpectedRowsAffected;
 		private DbCommand _currentBatch;
-		private readonly IList<DbCommand> _currentBatchCommands = new List<DbCommand>();
+		private readonly List<DbCommand> _currentBatchCommands = new List<DbCommand>();
 		private StringBuilder _currentBatchCommandsLog;
 
 		public HanaBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor)

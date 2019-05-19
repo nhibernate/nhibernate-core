@@ -1,7 +1,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -100,11 +99,11 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private readonly static IDictionary<ExpressionType, Func<ProjectionInfo, object, ICriterion>> _simpleExpressionCreators;
-		private readonly static IDictionary<ExpressionType, Func<ProjectionInfo, ProjectionInfo, ICriterion>> _propertyExpressionCreators;
-		private readonly static IDictionary<LambdaSubqueryType, IDictionary<ExpressionType, Func<string, DetachedCriteria, AbstractCriterion>>> _subqueryExpressionCreatorTypes;
-		private readonly static IDictionary<string, Func<MethodCallExpression, ICriterion>> _customMethodCallProcessors;
-		private readonly static IDictionary<string, Func<Expression, IProjection>> _customProjectionProcessors;
+		private static readonly Dictionary<ExpressionType, Func<ProjectionInfo, object, ICriterion>> _simpleExpressionCreators;
+		private static readonly Dictionary<ExpressionType, Func<ProjectionInfo, ProjectionInfo, ICriterion>> _propertyExpressionCreators;
+		private static readonly Dictionary<LambdaSubqueryType, IDictionary<ExpressionType, Func<string, DetachedCriteria, AbstractCriterion>>> _subqueryExpressionCreatorTypes;
+		private static readonly Dictionary<string, Func<MethodCallExpression, ICriterion>> _customMethodCallProcessors;
+		private static readonly Dictionary<string, Func<Expression, IProjection>> _customProjectionProcessors;
 
 		static ExpressionProcessor()
 		{

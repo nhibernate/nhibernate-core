@@ -24,7 +24,7 @@ namespace NHibernate.Linq.ExpressionTransformers
 		// a.CompareTo(b) op 0         =>    a op b
 
 
-		private static readonly IDictionary<ExpressionType, ExpressionType> ActingOperators = new Dictionary
+		private static readonly Dictionary<ExpressionType, ExpressionType> ActingOperators = new Dictionary
 			<ExpressionType, ExpressionType>
 			{
 				{ExpressionType.LessThan, ExpressionType.GreaterThan},
@@ -103,7 +103,7 @@ namespace NHibernate.Linq.ExpressionTransformers
 		}
 
 
-		private static readonly IDictionary<System.Type, MethodInfo> dummies = new Dictionary<System.Type, MethodInfo>
+		private static readonly Dictionary<System.Type, MethodInfo> dummies = new Dictionary<System.Type, MethodInfo>
 			{
 				// Corresponds to string.Compare(a, b).
 				{typeof (string), ReflectHelper.GetMethod(() => DummyComparison<string>(null, null))},
