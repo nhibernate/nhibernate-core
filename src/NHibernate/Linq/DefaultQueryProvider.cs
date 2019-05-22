@@ -70,7 +70,7 @@ namespace NHibernate.Linq
 			Collection = collection;
 		}
 
-		private DefaultQueryProvider(ISessionImplementor session, object collection, NhQueryableOptions options)
+		protected DefaultQueryProvider(ISessionImplementor session, object collection, NhQueryableOptions options)
 			: this(session, collection)
 		{
 			_options = options;
