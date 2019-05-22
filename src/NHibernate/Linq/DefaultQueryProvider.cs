@@ -108,6 +108,11 @@ namespace NHibernate.Linq
 				? _options.Clone()
 				: new NhQueryableOptions();
 			setOptions(options);
+			return CreateWithOptions(options);
+		}
+
+		protected virtual IQueryProvider CreateWithOptions(NhQueryableOptions options)
+		{
 			return new DefaultQueryProvider(Session, Collection, options);
 		}
 
