@@ -11,6 +11,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using NHibernate.Cfg;
 using NHibernate.DomainModel;
@@ -106,6 +107,15 @@ namespace NHibernate.Test.CfgTest
 			public SampleQueryProvider(ISessionImplementor session) : base(session)
 			{
 
+			}
+
+			protected SampleQueryProvider(ISessionImplementor session, object collection,  NhQueryableOptions options) : base(session, collection, options)
+			{
+			}
+
+			protected override IQueryProvider CreateWithOptions(NhQueryableOptions options)
+			{
+				return new SampleQueryProvider(Session, Collection, options);
 			}
 		}
 

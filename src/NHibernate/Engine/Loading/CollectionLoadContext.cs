@@ -25,7 +25,7 @@ namespace NHibernate.Engine.Loading
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(CollectionLoadContext));
 		private readonly LoadContexts loadContexts;
 		private readonly DbDataReader resultSet;
-		private readonly ISet<CollectionKey> localLoadingCollectionKeys = new HashSet<CollectionKey>();
+		private readonly HashSet<CollectionKey> localLoadingCollectionKeys = new HashSet<CollectionKey>();
 
 		/// <summary> 
 		/// Creates a collection load context for the given result set. 

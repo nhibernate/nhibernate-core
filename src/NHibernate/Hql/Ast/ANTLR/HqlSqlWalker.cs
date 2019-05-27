@@ -47,9 +47,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 		//Maps each top-level result variable to its SelectExpression;
 		//(excludes result variables defined in subqueries)
 		//
-		private readonly IDictionary<String, ISelectExpression> selectExpressionsByResultVariable = new Dictionary<string, ISelectExpression>();
+		private readonly Dictionary<String, ISelectExpression> selectExpressionsByResultVariable = new Dictionary<string, ISelectExpression>();
 
-		private readonly ISet<string> _querySpaces = new HashSet<string>();
+		private readonly HashSet<string> _querySpaces = new HashSet<string>();
 
 		private readonly LiteralProcessor _literalProcessor;
 

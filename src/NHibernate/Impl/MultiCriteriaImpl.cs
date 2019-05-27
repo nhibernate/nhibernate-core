@@ -21,8 +21,8 @@ namespace NHibernate.Impl
 	public partial class MultiCriteriaImpl : IMultiCriteria
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(MultiCriteriaImpl));
-		private readonly IList<ICriteria> criteriaQueries = new List<ICriteria>();
-		private readonly IList<System.Type> resultCollectionGenericType = new List<System.Type>();
+		private readonly List<ICriteria> criteriaQueries = new List<ICriteria>();
+		private readonly List<System.Type> resultCollectionGenericType = new List<System.Type>();
 
 		private readonly SessionImpl session;
 		private readonly ISessionFactoryImplementor factory;
