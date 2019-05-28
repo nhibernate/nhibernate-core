@@ -435,7 +435,7 @@ namespace NHibernate.Dialect
 
 		public override SqlString AddIdentifierOutParameterToInsert(SqlString insertString, string identifierColumnName, string parameterName)
 		{
-			return insertString.Append(string.Concat(" returning ", identifierColumnName, " into :", parameterName));
+			return insertString.Append(" returning " + identifierColumnName + " into :" + parameterName);
 		}
 
 		public override string GetCreateSequenceString(string sequenceName)
