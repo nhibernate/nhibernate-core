@@ -181,13 +181,13 @@ namespace NHibernate.Transaction
 						// Assume we are rolled back
 						await (AfterTransactionCompletionAsync(false, cancellationToken)).ConfigureAwait(false);
 					}
+					// nothing for Finalizer to do - so tell the GC to ignore it
+					GC.SuppressFinalize(this);
 				}
 
 				// free unmanaged resources here
 
 				_isAlreadyDisposed = true;
-				// nothing for Finalizer to do - so tell the GC to ignore it
-				GC.SuppressFinalize(this);
 			}
 		}
 
