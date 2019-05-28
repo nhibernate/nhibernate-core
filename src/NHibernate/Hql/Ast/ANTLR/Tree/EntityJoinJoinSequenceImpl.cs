@@ -30,12 +30,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			var joinFragment = new ANSIJoinFragment();
 
-			var on = withClauseFragment ?? new SqlString();
-			var filters = _entityType.GetOnCondition(_tableAlias, Factory, enabledFilters);
-			if (!string.IsNullOrEmpty(filters))
-			{
-				on.Append(" and ").Append(filters);
-			}
+			var on = withClauseFragment ?? SqlString.Empty;
+			//Note: filters logic commented as GetOnCondition always returns empty string for entity join (as IsReferenceToPrimaryKey is always true)
+			//TODO: If filters for entity join really make sense we need to inline GetOnCondition part that retrieves filters
+//			var filters = _entityType.GetOnCondition(_tableAlias, Factory, enabledFilters);
+//			if (!string.IsNullOrEmpty(filters))
+//			{
+//				on = on.Append(filters);
+//			}
 			joinFragment.AddJoin(_tableName, _tableAlias, Array.Empty<string>(), Array.Empty<string>(), _joinType, on);
 			return joinFragment;
 		}

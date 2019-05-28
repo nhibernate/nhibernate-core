@@ -32,7 +32,7 @@ namespace NHibernate.Driver
 		public virtual void Append(ISqlCommand command)
 		{
 			Commands.Add(command);
-			sqlString = sqlString.Append(command.Query).Append(_statementTerminator).Append(Environment.NewLine);
+			sqlString = sqlString.Append(command.Query, _statementTerminator, Environment.NewLine);
 		}
 
 		public bool HasQueries
