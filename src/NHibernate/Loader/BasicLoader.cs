@@ -28,7 +28,7 @@ namespace NHibernate.Loader
 
 		protected abstract string[] Suffixes { get; }
 		protected abstract string[] CollectionSuffixes { get; }
-		protected virtual Dictionary<string, string[]>[] CollectionUserProvidedAliases => null;
+
 		protected override void PostInstantiate()
 		{
 			ILoadable[] persisters = EntityPersisters;
@@ -51,7 +51,7 @@ namespace NHibernate.Loader
 					{
 						bagCount++;
 					}
-					collectionDescriptors[i] = new GeneratedCollectionAliases(CollectionUserProvidedAliases?[i] ?? CollectionHelper.EmptyDictionary<string, string[]>(), collectionPersisters[i], collectionSuffixes[i]);
+					collectionDescriptors[i] = new GeneratedCollectionAliases(GetCollectionUserProvidedAlias(i), collectionPersisters[i], collectionSuffixes[i]);
 				}
 			}
 			else
@@ -65,6 +65,11 @@ namespace NHibernate.Loader
 			{
 				throw new QueryException($"Cannot simultaneously fetch multiple bags: {this}");
 			}
+		}
+
+		protected virtual IDictionary<string, string[]> GetCollectionUserProvidedAlias(int index)
+		{
+			return null;
 		}
 
 		private static bool IsBag(ICollectionPersister collectionPersister)

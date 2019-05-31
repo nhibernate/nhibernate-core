@@ -206,9 +206,9 @@ namespace NHibernate.Loader.Hql
 
 		public override IType[] CacheTypes => _cacheTypes;
 
-		protected override Dictionary<string, string[]>[] CollectionUserProvidedAliases
+		protected override IDictionary<string, string[]> GetCollectionUserProvidedAlias(int index)
 		{
-			get { return _collectionUserProvidedAliases; }
+			return _collectionUserProvidedAliases?[index];
 		}
 
 		private void Initialize(SelectClause selectClause)
@@ -301,7 +301,7 @@ namespace NHibernate.Loader.Hql
 						// As bridge table will contain not-null values for filtered elements
 						// So do alias substitution for collection persister with element persister
 						// See test TestFilteredLinqQuery for details
-						CollectionUserProvidedAliases[collectionIndex] = new Dictionary<string, string[]>
+						_collectionUserProvidedAliases[collectionIndex] = new Dictionary<string, string[]>
 						{
 							{CollectionPersister.PropElement, _entityPersisters[i].GetIdentifierAliases(Suffixes[i])}
 						};
