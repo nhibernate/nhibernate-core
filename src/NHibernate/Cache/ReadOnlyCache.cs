@@ -55,7 +55,7 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
-			var results = _cache.GetMany(keys.Select(o => (object) o).ToArray());
+			var results = _cache.GetMany(keys);
 			if (!log.IsDebugEnabled())
 			{
 				return results;
@@ -100,7 +100,7 @@ namespace NHibernate.Cache
 			var skipKeyIndexes = new HashSet<int>();
 			if (checkKeys.Any())
 			{
-				var objects = _cache.GetMany(checkKeys.Select(o => (object) o).ToArray());
+				var objects = _cache.GetMany(checkKeys.ToArray());
 				for (var i = 0; i < objects.Length; i++)
 				{
 					if (objects[i] != null)

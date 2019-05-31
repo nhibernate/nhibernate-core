@@ -133,7 +133,7 @@ namespace NHibernate.Persister.Entity
 		private readonly bool hasSubselectLoadableCollections;
 		protected internal string rowIdName;
 
-		private readonly ISet<string> lazyProperties;
+		private readonly HashSet<string> lazyProperties;
 
 		private readonly string sqlWhereString;
 		private readonly string sqlWhereStringTemplate;
@@ -2983,7 +2983,7 @@ namespace NHibernate.Persister.Entity
 		public virtual SqlString GetSelectByUniqueKeyString(string[] suppliedPropertyNames, out IType[] parameterTypes)
 		{
 			var propertyNames = GetUniqueKeyPropertyNames(suppliedPropertyNames);
-			parameterTypes = propertyNames.Select(GetPropertyType).ToArray();
+			parameterTypes = propertyNames.ToArray(p => GetPropertyType(p));
 
 			// 6.0 TODO: remove the next if block
 			if (propertyNames.Length == 1)
@@ -3014,7 +3014,7 @@ namespace NHibernate.Persister.Entity
 			string[] suppliedPropertyNames)
 		{
 			var propertyNames = GetUniqueKeyPropertyNames(suppliedPropertyNames);
-			var parameterTypes = propertyNames.Select(GetPropertyType).ToArray();
+			var parameterTypes = propertyNames.ToArray(p => GetPropertyType(p));
 			var entity = binder.Entity;
 			for (var i = 0; i < propertyNames.Length; i++)
 			{

@@ -14,8 +14,8 @@ namespace NHibernate.Tool.hbm2ddl
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (DatabaseMetadata));
 
-		private readonly IDictionary<string, ITableMetadata> tables = new Dictionary<string, ITableMetadata>();
-		private readonly ISet<string> sequences = new HashSet<string>();
+		private readonly Dictionary<string, ITableMetadata> tables = new Dictionary<string, ITableMetadata>();
+		private readonly HashSet<string> sequences = new HashSet<string>();
 		private readonly bool extras;
 		private readonly Dialect.Dialect dialect;
 		private readonly IDataBaseSchema meta;

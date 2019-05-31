@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -221,7 +220,7 @@ namespace NHibernate.SqlCommand
 
 		public SqlType[] GetParametersTypeArray()
 		{
-			return (new List<SqlType>(new SafetyEnumerable<SqlType>(columns.Values))).ToArray();
+			return new SafetyEnumerable<SqlType>(columns.Values).ToArray();
 		}
 	}
 }
