@@ -9,6 +9,7 @@ using NHibernate.Id;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Persister.Collection
 {
@@ -29,10 +30,14 @@ namespace NHibernate.Persister.Collection
 	/// May be considered an immutable view of the mapping object
 	/// </remarks>
 	public partial interface ICollectionPersister
+		//TODO 6.0: Uncomment
+		//,ICacheablePersister
 	{
+		//Since 5.3
 		/// <summary>
 		/// Get the cache
 		/// </summary>
+		[Obsolete("Use ICacheablePersister.GetCache instead")]
 		ICacheConcurrencyStrategy Cache { get; }
 
 		/// <summary> Get the cache structure</summary>
@@ -285,6 +290,7 @@ namespace NHibernate.Persister.Collection
 		object NotFoundObject { get; }
 	}
 
+	//6.0 TODO: Merge into ICollectionPersister
 	public static class CollectionPersisterExtensions
 	{
 		/// <summary>
@@ -303,6 +309,16 @@ namespace NHibernate.Persister.Collection
 				.Warn("Collection persister of {0} type is not supported, returning 1 as a batch size.", persister?.GetType());
 
 			return 1;
+		}
+
+		public static ICacheConcurrencyStrategy GetCache(this ICollectionPersister persister, string tenantIdentifier)
+		{
+#pragma warning disable 618
+			if (tenantIdentifier == null)
+				return persister.Cache;
+#pragma warning restore 618
+
+			return ReflectHelper.CastOrThrow<ICacheablePersister>(persister, "multi-tenancy").GetCache(tenantIdentifier);
 		}
 	}
 }

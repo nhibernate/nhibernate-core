@@ -40,7 +40,7 @@ namespace NHibernate.Persister.Entity
 	/// </remarks>
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
 		IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable,
-		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister
+		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ICacheablePersister
 	{
 		#region InclusionChecker
 
@@ -118,7 +118,7 @@ namespace NHibernate.Persister.Entity
 
 		private readonly ISessionFactoryImplementor factory;
 
-		private readonly ICacheConcurrencyStrategy cache;
+		private readonly Func<string, ICacheConcurrencyStrategy> _cacheByTenant;
 		private readonly bool isLazyPropertiesCacheable;
 		private readonly ICacheEntryStructure cacheEntryStructure;
 		private readonly EntityMetamodel entityMetamodel;
@@ -262,11 +262,20 @@ namespace NHibernate.Persister.Entity
 		private readonly Lazy<string[]> defaultUniqueKeyPropertyNamesForSelectId;
 		private readonly Dictionary<string, int> propertyTableNumbersByNameAndSubclass = new Dictionary<string, int>();
 
-		protected AbstractEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
+		[Obsolete("Use constructor with cacheByTenant delegate")]
+		protected AbstractEntityPersister(
+			PersistentClass persistentClass,
+			ICacheConcurrencyStrategy cache,
+			ISessionFactoryImplementor factory) : this(persistentClass, tenantIdentifier => cache, factory)
+		{
+			//TODO: Throw if multitenancy is enabled
+		}
+
+		protected AbstractEntityPersister(PersistentClass persistentClass, Func<string, ICacheConcurrencyStrategy> cacheByTenant,
 																			ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
-			this.cache = cache;
+			_cacheByTenant = cacheByTenant;
 			isLazyPropertiesCacheable = persistentClass.IsLazyPropertiesCacheable;
 			cacheEntryStructure = factory.Settings.IsStructuredCacheEntriesEnabled
 															? (ICacheEntryStructure)new StructuredCacheEntry(this)
@@ -825,10 +834,10 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel; }
 		}
 
-		public ICacheConcurrencyStrategy Cache
-		{
-			get { return cache; }
-		}
+		[Obsolete("Use GetCache mehtod instead")]
+		public ICacheConcurrencyStrategy Cache => _cacheByTenant(null);
+
+		public ICacheConcurrencyStrategy GetCache(string tenantIdentifier) => _cacheByTenant?.Invoke(tenantIdentifier);
 
 		public ICacheEntryStructure CacheEntryStructure
 		{
@@ -1373,8 +1382,9 @@ namespace NHibernate.Persister.Entity
 			var uninitializedLazyProperties = InstrumentationMetadata.GetUninitializedLazyProperties(entity);
 			if (HasCache && session.CacheMode.HasFlag(CacheMode.Get) && IsLazyPropertiesCacheable)
 			{
-				CacheKey cacheKey = session.GenerateCacheKey(id, IdentifierType, EntityName);
-				object ce = Cache.Get(cacheKey, session.Timestamp);
+
+				CacheKey cacheKey = session.GetCacheAndKey(id, this, out var cache);
+				object ce = cache.Get(cacheKey, session.Timestamp);
 				if (ce != null)
 				{
 					CacheEntry cacheEntry = (CacheEntry)CacheEntryStructure.Destructure(ce, factory);
@@ -4146,7 +4156,7 @@ namespace NHibernate.Persister.Entity
 
 		public virtual bool HasCache
 		{
-			get { return cache != null; }
+			get { return _cacheByTenant != null; }
 		}
 
 		private string GetSubclassEntityName(System.Type clazz)
@@ -4233,8 +4243,8 @@ namespace NHibernate.Persister.Entity
 			// check to see if it is in the second-level cache
 			if (HasCache && session.CacheMode.HasFlag(CacheMode.Get))
 			{
-				CacheKey ck = session.GenerateCacheKey(id, IdentifierType, RootEntityName);
-				if (Cache.Get(ck, session.Timestamp) != null)
+				CacheKey ck = session.GetCacheAndKey(id, this, out var cache);
+				if (cache.Get(ck, session.Timestamp) != null)
 					return false;
 			}
 

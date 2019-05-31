@@ -25,7 +25,7 @@ namespace NHibernate.Loader.Collection
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] batch =
-				await (session.PersistenceContext.BatchFetchQueue.GetCollectionBatchAsync(collectionPersister, id, batchSizes[0], cancellationToken)).ConfigureAwait(false);
+				await (session.PersistenceContext.BatchFetchQueue.GetCollectionBatchAsync(collectionPersister, id, batchSizes[0], null, collectionPersister.GetCache(session.GetTenantIdentifier()), cancellationToken)).ConfigureAwait(false);
 
 			for (int i = 0; i < batchSizes.Length; i++)
 			{

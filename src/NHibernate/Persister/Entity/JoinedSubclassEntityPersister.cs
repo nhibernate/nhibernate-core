@@ -88,6 +88,14 @@ namespace NHibernate.Persister.Entity
 		private readonly string discriminatorSQLString;
 		private readonly object discriminatorValue;
 
+		public JoinedSubclassEntityPersister(
+			PersistentClass persistentClass,
+			ICacheConcurrencyStrategy cache,
+			ISessionFactoryImplementor factory,
+			IMapping mapping): this(persistentClass, tenantId => cache, factory, mapping)
+		{
+		}
+
 		/// <summary>
 		/// Constructs the NormalizedEntityPerister for the PersistentClass.
 		/// </summary>
@@ -95,7 +103,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="cache">The configured <see cref="ICacheConcurrencyStrategy" />.</param>
 		/// <param name="factory">The SessionFactory that this EntityPersister will be stored in.</param>
 		/// <param name="mapping">The mapping used to retrieve type information.</param>
-		public JoinedSubclassEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
+		public JoinedSubclassEntityPersister(PersistentClass persistentClass, Func<string, ICacheConcurrencyStrategy> cache,
 											 ISessionFactoryImplementor factory, IMapping mapping)
 			: base(persistentClass, cache, factory)
 		{

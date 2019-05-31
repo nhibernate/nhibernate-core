@@ -15,6 +15,7 @@ using log4net;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Criterion;
+using NHibernate.Persister.Collection;
 using NHibernate.Transform;
 using NUnit.Framework;
 
@@ -54,7 +55,7 @@ namespace NHibernate.Test.FilterTest
 				var sp = (Salesperson) await (session.LoadAsync(typeof(Salesperson), testData.steveId));
 				await (NHibernateUtil.InitializeAsync(sp.Orders));
 				Assert.IsTrue(persister.HasCache, "No cache for collection");
-				cachedData = (CollectionCacheEntry) await (persister.Cache.Cache.GetAsync(cacheKey, CancellationToken.None));
+				cachedData = (CollectionCacheEntry) await (persister.GetCache(null).Cache.GetAsync(cacheKey, CancellationToken.None));
 				Assert.IsNotNull(cachedData, "collection was not in cache");
 			}
 
@@ -66,7 +67,7 @@ namespace NHibernate.Test.FilterTest
 				                          .UniqueResultAsync());
 				Assert.AreEqual(1, sp.Orders.Count, "Filtered-collection not bypassing 2L-cache");
 
-				CollectionCacheEntry cachedData2 = (CollectionCacheEntry) await (persister.Cache.Cache.GetAsync(cacheKey, CancellationToken.None));
+				CollectionCacheEntry cachedData2 = (CollectionCacheEntry) await (persister.GetCache(null).Cache.GetAsync(cacheKey, CancellationToken.None));
 				Assert.IsNotNull(cachedData2, "collection no longer in cache!");
 				Assert.AreSame(cachedData, cachedData2, "Different cache values!");
 			}

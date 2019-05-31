@@ -135,7 +135,10 @@ namespace NHibernate.Cfg
 		public ILinqToHqlGeneratorsRegistry LinqToHqlGeneratorsRegistry { get; internal set; }
 
 		public IQueryModelRewriterFactory QueryModelRewriterFactory { get; internal set; }
-		
+
+		//TODO: Implement
+		public bool IsMultiTenancyEnabled => false;
+
 		#endregion
 
 		internal string GetFullCacheRegionName(string name)

@@ -650,11 +650,8 @@ namespace NHibernate.Impl
 				//			);
 				//		}
 
-				if (persister.HasCache)
-				{
-					CacheKey ck = GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
-					persister.Cache.Remove(ck);
-				}
+				CacheKey ck = this.GetCacheAndKey(id, persister, out var cache);
+				cache?.Remove(ck);
 
 				string previousFetchProfile = FetchProfile;
 				object result;

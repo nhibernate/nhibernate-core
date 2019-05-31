@@ -5,6 +5,8 @@ using System.Threading;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Engine;
+using NHibernate.Persister.Collection;
+using NHibernate.Persister.Entity;
 using NHibernate.Util;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
@@ -41,16 +43,16 @@ namespace NHibernate.Test.CacheTest
 				sfi = withPrefix ? BuildSessionFactory() : Sfi;
 				var commonRegionCache = sfi.GetSecondLevelCacheRegion(fullRegion);
 				var entityAName = typeof(EntityA).FullName;
-				var entityAConcurrencyCache = sfi.GetEntityPersister(entityAName).Cache;
+				var entityAConcurrencyCache = sfi.GetEntityPersister(entityAName).GetCache(null);
 				var entityACache = entityAConcurrencyCache.Cache;
 				var entityBName = typeof(EntityB).FullName;
-				var entityBConcurrencyCache = sfi.GetEntityPersister(entityBName).Cache;
+				var entityBConcurrencyCache = sfi.GetEntityPersister(entityBName).GetCache(null);
 				var entityBCache = entityBConcurrencyCache.Cache;
 				var relatedAConcurrencyCache =
-					sfi.GetCollectionPersister(StringHelper.Qualify(entityAName, nameof(EntityA.Related))).Cache;
+					sfi.GetCollectionPersister(StringHelper.Qualify(entityAName, nameof(EntityA.Related))).GetCache(null);
 				var relatedACache = relatedAConcurrencyCache.Cache;
 				var relatedBConcurrencyCache =
-					sfi.GetCollectionPersister(StringHelper.Qualify(entityBName, nameof(EntityB.Related))).Cache;
+					sfi.GetCollectionPersister(StringHelper.Qualify(entityBName, nameof(EntityB.Related))).GetCache(null);
 				var relatedBCache = relatedBConcurrencyCache.Cache;
 				var queryCache = sfi.GetQueryCache(region).Cache;
 				Assert.Multiple(

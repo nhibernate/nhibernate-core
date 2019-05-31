@@ -76,7 +76,7 @@ namespace NHibernate.Action
 			{
 				if (affectedCollectionRoles != null && affectedCollectionRoles.Any())
 				{
-					return session.Factory.EvictCollectionAsync(affectedCollectionRoles, cancellationToken);
+					return session.Factory.EvictCollectionAsync(affectedCollectionRoles, session.GetTenantIdentifier(), cancellationToken);
 				}
 				return Task.CompletedTask;
 			}
@@ -96,7 +96,7 @@ namespace NHibernate.Action
 			{
 				if (affectedEntityNames != null && affectedEntityNames.Any())
 				{
-					return session.Factory.EvictEntityAsync(affectedEntityNames, cancellationToken);
+					return session.Factory.EvictEntityAsync(affectedEntityNames, session.GetTenantIdentifier(), cancellationToken);
 				}
 				return Task.CompletedTask;
 			}

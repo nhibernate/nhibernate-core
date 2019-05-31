@@ -17,6 +17,7 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Metadata;
 using NHibernate.Stat;
+using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -100,6 +101,39 @@ namespace NHibernate
 					await (factory.EvictCollectionAsync(role, cancellationToken)).ConfigureAwait(false);
 				}
 			}
+		}
+
+		public static async Task EvictEntityAsync(this ISessionFactory factory, string entityName, object id, string tenantIdentifier, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (tenantIdentifier == null)
+				await (factory.EvictEntityAsync(entityName, id, cancellationToken)).ConfigureAwait(false);
+
+			await (ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictEntityAsync(entityName, id, tenantIdentifier, cancellationToken)).ConfigureAwait(false);
+		}
+
+		public static async Task EvictCollectionAsync(this ISessionFactory factory, IEnumerable<string> roleNames, string tenantIdentifier, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (tenantIdentifier == null)
+			{
+				await (EvictCollectionAsync(factory, roleNames, cancellationToken)).ConfigureAwait(false);
+				return;
+			}
+
+			await (ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictCollectionAsync(roleNames, tenantIdentifier, cancellationToken)).ConfigureAwait(false);
+		}
+
+		public static async Task EvictEntityAsync(this ISessionFactory factory, IEnumerable<string> entityNames, string tenantIdentifier, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (tenantIdentifier == null)
+			{
+				await (EvictEntityAsync(factory, entityNames, cancellationToken)).ConfigureAwait(false);
+				return;
+			}
+
+			await (ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictEntityAsync(entityNames, tenantIdentifier, cancellationToken)).ConfigureAwait(false);
 		}
 	}
 

@@ -108,10 +108,11 @@ namespace NHibernate.Event.Default
 					await (new EvictVisitor(source).ProcessAsync(obj, persister, cancellationToken)).ConfigureAwait(false);
 			}
 
-			if (persister.HasCache)
+			var ck = source.GetCacheAndKey(id, persister, out var cache);
+			var removeTask = cache?.RemoveAsync(ck, cancellationToken);
+			if (removeTask != null)
 			{
-				CacheKey ck = source.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
-				await (persister.Cache.RemoveAsync(ck, cancellationToken)).ConfigureAwait(false);
+				await (removeTask).ConfigureAwait(false);
 			}
 
 			await (EvictCachedCollectionsAsync(persister, id, source.Factory, cancellationToken)).ConfigureAwait(false);

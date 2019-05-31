@@ -5,6 +5,7 @@ using log4net;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Criterion;
+using NHibernate.Persister.Collection;
 using NHibernate.Transform;
 using NUnit.Framework;
 
@@ -42,7 +43,7 @@ namespace NHibernate.Test.FilterTest
 				var sp = (Salesperson) session.Load(typeof(Salesperson), testData.steveId);
 				NHibernateUtil.Initialize(sp.Orders);
 				Assert.IsTrue(persister.HasCache, "No cache for collection");
-				cachedData = (CollectionCacheEntry) persister.Cache.Cache.Get(cacheKey);
+				cachedData = (CollectionCacheEntry) persister.GetCache(null).Cache.Get(cacheKey);
 				Assert.IsNotNull(cachedData, "collection was not in cache");
 			}
 
@@ -54,7 +55,7 @@ namespace NHibernate.Test.FilterTest
 				                          .UniqueResult();
 				Assert.AreEqual(1, sp.Orders.Count, "Filtered-collection not bypassing 2L-cache");
 
-				CollectionCacheEntry cachedData2 = (CollectionCacheEntry) persister.Cache.Cache.Get(cacheKey);
+				CollectionCacheEntry cachedData2 = (CollectionCacheEntry) persister.GetCache(null).Cache.Get(cacheKey);
 				Assert.IsNotNull(cachedData2, "collection no longer in cache!");
 				Assert.AreSame(cachedData, cachedData2, "Different cache values!");
 			}

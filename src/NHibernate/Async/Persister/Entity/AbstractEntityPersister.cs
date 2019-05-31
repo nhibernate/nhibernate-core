@@ -45,7 +45,7 @@ namespace NHibernate.Persister.Entity
 	using System.Threading;
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
 		IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable,
-		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister
+		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ICacheablePersister
 	{
 
 		private partial class GeneratedIdentifierBinder : IBinder
@@ -1201,8 +1201,8 @@ namespace NHibernate.Persister.Entity
 			// check to see if it is in the second-level cache
 			if (HasCache && session.CacheMode.HasFlag(CacheMode.Get))
 			{
-				CacheKey ck = session.GenerateCacheKey(id, IdentifierType, RootEntityName);
-				if (await (Cache.GetAsync(ck, session.Timestamp, cancellationToken)).ConfigureAwait(false) != null)
+				CacheKey ck = session.GetCacheAndKey(id, this, out var cache);
+				if (await (cache.GetAsync(ck, session.Timestamp, cancellationToken)).ConfigureAwait(false) != null)
 					return false;
 			}
 

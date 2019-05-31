@@ -27,6 +27,8 @@ namespace NHibernate.Persister.Entity
 	using System.Threading;
 
 	public partial interface IEntityPersister : IOptimisticCacheSource
+		//TODO 6.0: Uncomment
+		//,ICacheablePersister
 	{
 
 		#region stuff that is persister-centric and/or EntityInfo-centric

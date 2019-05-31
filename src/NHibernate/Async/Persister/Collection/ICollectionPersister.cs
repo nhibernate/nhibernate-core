@@ -19,12 +19,15 @@ using NHibernate.Id;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Persister.Collection
 {
 	using System.Threading.Tasks;
 	using System.Threading;
 	public partial interface ICollectionPersister
+		//TODO 6.0: Uncomment
+		//,ICacheablePersister
 	{
 
 		/// <summary>

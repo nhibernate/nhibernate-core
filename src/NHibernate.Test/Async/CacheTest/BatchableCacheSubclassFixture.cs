@@ -8,13 +8,12 @@
 //------------------------------------------------------------------------------
 
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.DomainModel;
+using NHibernate.Persister.Entity;
 using NHibernate.Test.CacheTest.Caches;
 using NUnit.Framework;
 
@@ -91,14 +90,14 @@ namespace NHibernate.Test.CacheTest
 		public async Task BatchableRootEntityTestAsync()
 		{
 			var persister = Sfi.GetEntityPersister(typeof(Foo).FullName);
-			Assert.That(persister.Cache.Cache, Is.Not.Null);
-			Assert.That(persister.Cache.Cache, Is.TypeOf<BatchableCache>());
-			var fooCache = (BatchableCache) persister.Cache.Cache;
+			Assert.That(persister.GetCache(null).Cache, Is.Not.Null);
+			Assert.That(persister.GetCache(null).Cache, Is.TypeOf<BatchableCache>());
+			var fooCache = (BatchableCache) persister.GetCache(null).Cache;
 
 			persister = Sfi.GetEntityPersister(typeof(Bar).FullName);
-			Assert.That(persister.Cache.Cache, Is.Not.Null);
-			Assert.That(persister.Cache.Cache, Is.TypeOf<BatchableCache>());
-			var barCache = (BatchableCache) persister.Cache.Cache;
+			Assert.That(persister.GetCache(null).Cache, Is.Not.Null);
+			Assert.That(persister.GetCache(null).Cache, Is.TypeOf<BatchableCache>());
+			var barCache = (BatchableCache) persister.GetCache(null).Cache;
 
 			Assert.That(barCache, Is.EqualTo(fooCache));
 

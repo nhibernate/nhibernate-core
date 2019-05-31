@@ -124,7 +124,8 @@ namespace NHibernate.Engine
 				object version = Versioning.GetVersion(hydratedState, persister);
 				CacheEntry entry =
 					await (CacheEntry.CreateAsync(hydratedState, persister, version, session, entity, cancellationToken)).ConfigureAwait(false);
-				CacheKey cacheKey = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
+				
+				CacheKey cacheKey = session.GetCacheAndKey(id, persister, out var cache);
 
 				if (cacheBatchingHandler != null && persister.IsBatchLoadable)
 				{
@@ -140,13 +141,13 @@ namespace NHibernate.Engine
 				else
 				{
 					bool put =
-						await (persister.Cache.PutAsync(cacheKey, persister.CacheEntryStructure.Structure(entry), session.Timestamp, version,
+						await (cache.PutAsync(cacheKey, persister.CacheEntryStructure.Structure(entry), session.Timestamp, version,
 						                    persister.IsVersioned ? persister.VersionType.Comparator : null,
 						                    UseMinimalPuts(session, entityEntry), cancellationToken)).ConfigureAwait(false);
 
 					if (put && factory.Statistics.IsStatisticsEnabled)
 					{
-						factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+						factory.StatisticsImplementor.SecondLevelCachePut(cache.RegionName);
 					}
 				}
 			}

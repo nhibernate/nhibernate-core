@@ -67,12 +67,8 @@ namespace NHibernate.Action
 				previousVersion = persister.GetVersion(instance);
 			}
 
-			CacheKey ck = null;
-			if (persister.HasCache)
-			{
-				ck = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
-				slock = persister.Cache.Lock(ck, previousVersion);
-			}
+			CacheKey ck = session.GetCacheAndKey(id, persister, out var cache);
+			slock = cache?.Lock(ck, previousVersion);
 
 			if (!veto)
 			{
@@ -106,22 +102,22 @@ namespace NHibernate.Action
 				entry.PostUpdate(instance, state, nextVersion);
 			}
 
-			if (persister.HasCache)
+			if (cache != null)
 			{
 				if (persister.IsCacheInvalidationRequired || entry.Status != Status.Loaded)
 				{
-					persister.Cache.Evict(ck);
+					cache.Evict(ck);
 				}
 				else
 				{
 					CacheEntry ce = CacheEntry.Create(state, persister, nextVersion, Session, instance);
 					cacheEntry = persister.CacheEntryStructure.Structure(ce);
 
-					bool put = persister.Cache.Update(ck, cacheEntry, nextVersion, previousVersion);
+					bool put = cache.Update(ck, cacheEntry, nextVersion, previousVersion);
 
 					if (put && factory.Statistics.IsStatisticsEnabled)
 					{
-						factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+						factory.StatisticsImplementor.SecondLevelCachePut(cache.RegionName);
 					}
 				}
 			}
@@ -138,22 +134,22 @@ namespace NHibernate.Action
 		protected override void AfterTransactionCompletionProcessImpl(bool success)
 		{
 			IEntityPersister persister = Persister;
-			if (persister.HasCache)
+			
+			CacheKey ck = Session.GetCacheAndKey(Id, persister, out var cache);
+			if (cache != null)
 			{
-				CacheKey ck = Session.GenerateCacheKey(Id, persister.IdentifierType, persister.RootEntityName);
-
 				if (success && cacheEntry != null)
 				{
-					bool put = persister.Cache.AfterUpdate(ck, cacheEntry, nextVersion, slock);
+					bool put = cache.AfterUpdate(ck, cacheEntry, nextVersion, slock);
 
 					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
 					{
-						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+						Session.Factory.StatisticsImplementor.SecondLevelCachePut(cache.RegionName);
 					}
 				}
 				else
 				{
-					persister.Cache.Release(ck, slock);
+					cache.Release(ck, slock);
 				}
 			}
 			if (success)

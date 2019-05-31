@@ -15,6 +15,8 @@ using System.Threading;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Engine;
+using NHibernate.Persister.Collection;
+using NHibernate.Persister.Entity;
 using NHibernate.Util;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;

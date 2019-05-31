@@ -228,17 +228,8 @@ namespace NHibernate.Event.Default
 		protected virtual async Task<object> LockAndLoadAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, ISessionImplementor source, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			ISoftLock sLock = null;
-			CacheKey ck;
-			if (persister.HasCache)
-			{
-				ck = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
-				sLock = await (persister.Cache.LockAsync(ck, null, cancellationToken)).ConfigureAwait(false);
-			}
-			else
-			{
-				ck = null;
-			}
+			CacheKey ck = source.GetCacheAndKey(@event.EntityId, persister, out var cache);
+			var sLock = (cache == null ? null : await (cache.LockAsync(ck, null, cancellationToken)).ConfigureAwait(false));
 
 			object entity;
 			try
@@ -247,9 +238,10 @@ namespace NHibernate.Event.Default
 			}
 			finally
 			{
-				if (persister.HasCache)
+				var releaseTask = cache?.ReleaseAsync(ck, sLock, cancellationToken);
+				if (releaseTask != null)
 				{
-					await (persister.Cache.ReleaseAsync(ck, sLock, cancellationToken)).ConfigureAwait(false);
+					await (releaseTask).ConfigureAwait(false);
 				}
 			}
 
@@ -415,7 +407,8 @@ namespace NHibernate.Event.Default
 			var batchSize = persister.GetBatchSize();
 			var entityBatch = source.PersistenceContext.BatchFetchQueue.QueryCacheQueue
 			                        ?.GetEntityBatch(persister, @event.EntityId);
-			if (entityBatch != null || batchSize > 1 && persister.Cache.PreferMultipleGet())
+			var cache = persister.GetCache(source.GetTenantIdentifier());
+			if (entityBatch != null || batchSize > 1 && cache.PreferMultipleGet())
 			{
 				// The first item in the array is the item that we want to load
 				if (entityBatch != null)
@@ -430,7 +423,7 @@ namespace NHibernate.Event.Default
 
 				if (entityBatch == null)
 				{
-					entityBatch = await (source.PersistenceContext.BatchFetchQueue.GetEntityBatchAsync(persister, @event.EntityId, batchSize, false, cancellationToken)).ConfigureAwait(false);
+					entityBatch = await (source.PersistenceContext.BatchFetchQueue.GetEntityBatchAsync(persister, @event.EntityId, batchSize, null, cancellationToken)).ConfigureAwait(false);
 				}
 
 				// Ignore null values as the retrieved batch may contains them when there are not enough
@@ -445,7 +438,7 @@ namespace NHibernate.Event.Default
 					}
 					keys.Add(source.GenerateCacheKey(key, persister.IdentifierType, persister.RootEntityName));
 				}
-				var cachedObjects = await (persister.Cache.GetManyAsync(keys.ToArray(), source.Timestamp, cancellationToken)).ConfigureAwait(false);
+				var cachedObjects = await (cache.GetManyAsync(keys.ToArray(), source.Timestamp, cancellationToken)).ConfigureAwait(false);
 				for (var i = 1; i < cachedObjects.Length; i++)
 				{
 					cancellationToken.ThrowIfCancellationRequested();
@@ -459,7 +452,7 @@ namespace NHibernate.Event.Default
 				return await (AssembleAsync(keys[0], cachedObjects[0], @event, true)).ConfigureAwait(false);
 			}
 			var cacheKey = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
-			var cachedObject = await (persister.Cache.GetAsync(cacheKey, source.Timestamp, cancellationToken)).ConfigureAwait(false);
+			var cachedObject = await (cache.GetAsync(cacheKey, source.Timestamp, cancellationToken)).ConfigureAwait(false);
 			cancellationToken.ThrowIfCancellationRequested();
 			return await (AssembleAsync(cacheKey, cachedObject, @event, true)).ConfigureAwait(false);
 
@@ -471,12 +464,12 @@ namespace NHibernate.Event.Default
 					{
 						if (ce == null)
 						{
-							factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
+							factory.StatisticsImplementor.SecondLevelCacheMiss(cache.RegionName);
 							log.Debug("Entity cache miss: {0}", ck);
 						}
 						else
 						{
-							factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
+							factory.StatisticsImplementor.SecondLevelCacheHit(cache.RegionName);
 							log.Debug("Entity cache hit: {0}", ck);
 						}
 					}

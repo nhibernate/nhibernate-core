@@ -52,12 +52,8 @@ namespace NHibernate.Action
 				previousVersion = persister.GetVersion(instance);
 			}
 
-			CacheKey ck = null;
-			if (persister.HasCache)
-			{
-				ck = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
-				slock = await (persister.Cache.LockAsync(ck, previousVersion, cancellationToken)).ConfigureAwait(false);
-			}
+			CacheKey ck = session.GetCacheAndKey(id, persister, out var cache);
+			slock = (cache == null ? null : await (cache.LockAsync(ck, previousVersion, cancellationToken)).ConfigureAwait(false));
 
 			if (!veto)
 			{
@@ -91,22 +87,22 @@ namespace NHibernate.Action
 				entry.PostUpdate(instance, state, nextVersion);
 			}
 
-			if (persister.HasCache)
+			if (cache != null)
 			{
 				if (persister.IsCacheInvalidationRequired || entry.Status != Status.Loaded)
 				{
-					await (persister.Cache.EvictAsync(ck, cancellationToken)).ConfigureAwait(false);
+					await (cache.EvictAsync(ck, cancellationToken)).ConfigureAwait(false);
 				}
 				else
 				{
 					CacheEntry ce = await (CacheEntry.CreateAsync(state, persister, nextVersion, Session, instance, cancellationToken)).ConfigureAwait(false);
 					cacheEntry = persister.CacheEntryStructure.Structure(ce);
 
-					bool put = await (persister.Cache.UpdateAsync(ck, cacheEntry, nextVersion, previousVersion, cancellationToken)).ConfigureAwait(false);
+					bool put = await (cache.UpdateAsync(ck, cacheEntry, nextVersion, previousVersion, cancellationToken)).ConfigureAwait(false);
 
 					if (put && factory.Statistics.IsStatisticsEnabled)
 					{
-						factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+						factory.StatisticsImplementor.SecondLevelCachePut(cache.RegionName);
 					}
 				}
 			}
@@ -124,22 +120,22 @@ namespace NHibernate.Action
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IEntityPersister persister = Persister;
-			if (persister.HasCache)
+			
+			CacheKey ck = Session.GetCacheAndKey(Id, persister, out var cache);
+			if (cache != null)
 			{
-				CacheKey ck = Session.GenerateCacheKey(Id, persister.IdentifierType, persister.RootEntityName);
-
 				if (success && cacheEntry != null)
 				{
-					bool put = await (persister.Cache.AfterUpdateAsync(ck, cacheEntry, nextVersion, slock, cancellationToken)).ConfigureAwait(false);
+					bool put = await (cache.AfterUpdateAsync(ck, cacheEntry, nextVersion, slock, cancellationToken)).ConfigureAwait(false);
 
 					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
 					{
-						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+						Session.Factory.StatisticsImplementor.SecondLevelCachePut(cache.RegionName);
 					}
 				}
 				else
 				{
-					await (persister.Cache.ReleaseAsync(ck, slock, cancellationToken)).ConfigureAwait(false);
+					await (cache.ReleaseAsync(ck, slock, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			if (success)

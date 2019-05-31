@@ -11,6 +11,7 @@ using NHibernate.Hql;
 using NHibernate.Impl;
 using NHibernate.Loader.Custom;
 using NHibernate.Multi;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Transaction;
 using NHibernate.Type;
@@ -21,6 +22,32 @@ namespace NHibernate.Engine
 	// 6.0 TODO: Convert to interface methods, excepted SwitchCacheMode
 	internal static partial class SessionImplementorExtensions
 	{
+		//TODO: REMOVE
+		internal static string GetTenantIdentifier(this ISessionImplementor session)
+		{
+			return null;
+		}
+
+		//NOTE: DO NOT merge (keep as internal extension)
+		internal  static CacheKey GetCacheAndKey(this ISessionImplementor session, object id,  IEntityPersister persister, out ICacheConcurrencyStrategy cache)
+		{
+			cache = null;
+			if (!persister.HasCache)
+				return null;
+			cache = persister.GetCache(session.GetTenantIdentifier());
+			return session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
+		}
+
+		//NOTE: DO NOT merge (keep as internal extension)
+		internal  static CacheKey GetCacheAndKey(this ISessionImplementor session, object id,  ICollectionPersister persister, out ICacheConcurrencyStrategy cache)
+		{
+			cache = null;
+			if (!persister.HasCache)
+				return null;
+			cache = persister.GetCache(session.GetTenantIdentifier());
+			return session.GenerateCacheKey(id, persister.KeyType, persister.Role);
+		}
+
 		/// <summary>
 		/// Instantiate the entity class, initializing with the given identifier
 		/// </summary>
