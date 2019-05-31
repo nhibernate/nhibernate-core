@@ -1257,40 +1257,6 @@ group by mr.Description";
 			}
 		}
 
-		[Test, Ignore("Not supported yet!")]
-		public async Task ParameterLikeArgumentAsync()
-		{
-			using (ISession s = OpenSession())
-			{
-				Animal a1 = new Animal("abcdef", 1.3f);
-				await (s.SaveAsync(a1));
-				await (s.FlushAsync());
-			}
-
-			using (ISession s = OpenSession())
-			{
-				string hql;
-				IList l;
-				Animal result;
-
-				// Render in WHERE
-				hql = "from Animal a where cast(:aParam as Double)>0";
-				result = (Animal)await (s.CreateQuery(hql).SetDouble("aParam", 2D).UniqueResultAsync());
-				Assert.IsNotNull(result);
-
-				// Render in WHERE with math operation
-				hql = "from Animal a where cast(:aParam+a.BodyWeight as Double)>3";
-				result = (Animal) await (s.CreateQuery(hql).SetDouble("aParam", 2D).UniqueResultAsync());
-				Assert.IsNotNull(result);
-
-				// Render in all clauses
-				hql =
-					"select cast(:aParam+a.BodyWeight as int) from Animal a group by cast(:aParam+a.BodyWeight as int) having cast(:aParam+a.BodyWeight as Double)>0";
-				l = await (s.CreateQuery(hql).SetInt32("aParam", 10).ListAsync());
-				Assert.AreEqual(1, l.Count);
-			}
-		}
-
 		[Test]
 		public async Task BitwiseAndAsync()
 		{

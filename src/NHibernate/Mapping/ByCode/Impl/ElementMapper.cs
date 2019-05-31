@@ -147,9 +147,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 			ResetColumnPlainValues();
 			elementMapping.Items =
 				formulas
-					.Select(
-						f => (object) new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) })
-					.ToArray();
+					.ToArray(
+						f => (object) new HbmFormula {Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None)});
 		}
 
 		#endregion
@@ -195,15 +194,16 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				elementMapping.type1 = null;
 				var hbmType = new HbmType
-				              {
-				              	name = persistentType.AssemblyQualifiedName,
-				              	param = (from pi in parameters.GetType().GetProperties()
-				              	         let pname = pi.Name
-				              	         let pvalue = pi.GetValue(parameters, null)
-				              	         select
-				              	         	new HbmParam {name = pname, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}})
-				              		.ToArray()
-				              };
+				{
+					name = persistentType.AssemblyQualifiedName,
+					param = parameters.GetType().GetProperties().ToArray(
+						pi =>
+						{
+							var pvalue = pi.GetValue(parameters, null);
+							return
+								new HbmParam {name = pi.Name, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}};
+						})
+				};
 				elementMapping.type = hbmType;
 			}
 			else

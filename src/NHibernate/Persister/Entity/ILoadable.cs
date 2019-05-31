@@ -107,7 +107,7 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		//6.0 TODO: Change to void and merge into ILoadable
 		internal static bool InitializeLazyProperties(
-			this ILoadable loadable, DbDataReader rs, object id, object entity, ILoadable rootPersister, string[][] suffixedPropertyColumns,
+			this ILoadable loadable, DbDataReader rs, object id, object entity, string[][] suffixedPropertyColumns,
 			string[] uninitializedLazyProperties, bool allLazyProperties, ISessionImplementor session)
 		{
 			if (loadable is AbstractEntityPersister abstractEntityPersister)
@@ -116,7 +116,6 @@ namespace NHibernate.Persister.Entity
 					rs,
 					id,
 					entity,
-					rootPersister,
 					suffixedPropertyColumns,
 					uninitializedLazyProperties,
 					allLazyProperties,

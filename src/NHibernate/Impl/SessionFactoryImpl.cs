@@ -167,7 +167,7 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly UpdateTimestampsCache updateTimestampsCache;
 		[NonSerialized]
-		private readonly IDictionary<string, string[]> entityNameImplementorsMap = new ConcurrentDictionary<string, string[]>(4 * System.Environment.ProcessorCount, 100);
+		private readonly ConcurrentDictionary<string, string[]> entityNameImplementorsMap = new ConcurrentDictionary<string, string[]>(4 * System.Environment.ProcessorCount, 100);
 		private readonly string uuid;
 		private bool disposed;
 

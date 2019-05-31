@@ -41,12 +41,10 @@ namespace NHibernate.Test.DialectTest.FunctionTests
 				case SybaseASE15Dialect _:
 					Assert.That(substringFunction, Is.TypeOf<EmulatedLengthSubstringFunction>());
 					break;
-				case DB2Dialect _:
-					Assert.That(substringFunction, Is.TypeOf<SQLFunctionTemplate>());
-					break;
 				case SybaseSQLAnywhere10Dialect _:
 					Assert.That(substringFunction, Is.TypeOf<VarArgsSQLFunction>());
 					break;
+				case DB2Dialect _:
 				case Oracle8iDialect _:
 				case SQLiteDialect _:
 				case HanaDialectBase _:
@@ -56,7 +54,6 @@ namespace NHibernate.Test.DialectTest.FunctionTests
 					Assert.That(substringFunction, Is.TypeOf<AnsiSubstringFunction>());
 					break;
 			}
-
 		}
 	}
 }

@@ -38,7 +38,7 @@ namespace NHibernate.Collection.Generic
 		/// process.
 		/// </remarks>
 		[NonSerialized]
-		private IList<T> _tempList;
+		private List<T> _tempList;
 
 		// needed for serialization
 		public PersistentGenericSet()

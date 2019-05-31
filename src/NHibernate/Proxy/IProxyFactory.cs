@@ -38,6 +38,8 @@ namespace NHibernate.Proxy
 		/// Essentially equivalent to constructor injection, but contracted
 		/// here via interface.
 		/// </remarks>
+		//Since v5.3
+		[Obsolete("Use ProxyFactoryExtensions.PostInstantiate extension method instead.")]
 		void PostInstantiate(string entityName, System.Type persistentClass, ISet<System.Type> interfaces,
 			MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, IAbstractComponentType componentIdType);
 
@@ -50,7 +52,7 @@ namespace NHibernate.Proxy
 		/// <exception cref="HibernateException">Indicates problems generating requested proxy.</exception>
 		INHibernateProxy GetProxy(object id, ISessionImplementor session);
 
-		// Since 5.3
+		// Since v5.3
 		[Obsolete("Use ProxyFactoryExtensions.GetFieldInterceptionProxy extension method instead.")]
 		object GetFieldInterceptionProxy(object instanceToWrap);
 	}
@@ -81,6 +83,42 @@ namespace NHibernate.Proxy
 #pragma warning disable 618
 			return proxyFactory.GetFieldInterceptionProxy(null);
 #pragma warning restore 618
+		}
+
+		// 6.0 TODO: Move to IProxyFactory
+		public static void PostInstantiate(
+			this IProxyFactory pf,
+			string entityName,
+			System.Type persistentClass,
+			HashSet<System.Type> interfaces,
+			MethodInfo getIdentifierMethod,
+			MethodInfo setIdentifierMethod,
+			IAbstractComponentType componentIdType,
+			bool isClassProxy)
+		{
+			if (pf is AbstractProxyFactory apf)
+			{
+				apf.PostInstantiate(
+					entityName,
+					persistentClass,
+					interfaces,
+					getIdentifierMethod,
+					setIdentifierMethod,
+					componentIdType,
+					isClassProxy);
+			}
+			else
+			{
+#pragma warning disable 618
+				pf.PostInstantiate(
+					entityName,
+					persistentClass,
+					interfaces,
+					getIdentifierMethod,
+					setIdentifierMethod,
+					componentIdType);
+#pragma warning restore 618
+			}
 		}
 	}
 }

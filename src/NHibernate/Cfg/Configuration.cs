@@ -818,7 +818,7 @@ namespace NHibernate.Cfg
 			return this;
 		}
 
-		private static IList<string> GetAllHbmXmlResourceNames(Assembly assembly)
+		private static List<string> GetAllHbmXmlResourceNames(Assembly assembly)
 		{
 			var result = new List<string>();
 
@@ -1290,6 +1290,7 @@ namespace NHibernate.Cfg
 
 			#endregion
 		}
+
 		/// <summary>
 		/// Instantiate a new <see cref="ISessionFactory" />, using the properties and mappings in this
 		/// configuration. The <see cref="ISessionFactory" /> will be immutable, so changes made to the
@@ -1298,17 +1299,33 @@ namespace NHibernate.Cfg
 		/// <returns>An <see cref="ISessionFactory" /> instance.</returns>
 		public ISessionFactory BuildSessionFactory()
 		{
+			var dynamicDialectMapping = mapping;
+			// Use a mapping which does store the dialect instead of instantiating a new one
+			// at each access. The dialect does not change while building a session factory.
+			// It furthermore allows some hack on NHibernate.Spatial side to go on working,
+			// See nhibernate/NHibernate.Spatial#104
+			mapping = new StaticDialectMappingWrapper(mapping);
+			try
+			{
+				ConfigureProxyFactoryFactory();
+				SecondPassCompile();
+				Validate();
+				Environment.VerifyProperties(properties);
+				Settings settings = BuildSettings();
 
-			ConfigureProxyFactoryFactory();
-			SecondPassCompile();
-			Validate();
-			Environment.VerifyProperties(properties);
-			Settings settings = BuildSettings();
+				// Ok, don't need schemas anymore, so free them
+				Schemas = null;
 
-			// Ok, don't need schemas anymore, so free them
-			Schemas = null;
-
-			return new SessionFactoryImpl(this, new StaticDialectMappingWrapper(mapping), settings, GetInitializedEventListeners());
+				return new SessionFactoryImpl(
+					this,
+					mapping,
+					settings,
+					GetInitializedEventListeners());
+			}
+			finally
+			{
+				mapping = dynamicDialectMapping;
+			}
 		}
 
 		/// <summary>

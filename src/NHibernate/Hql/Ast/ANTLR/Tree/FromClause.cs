@@ -72,15 +72,27 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get { return _parentFromClause; }
 		}
-
+		
+		//6.0 TODO: Replace with Typed version below
 		public IList<IASTNode> GetExplicitFromElements()
 		{
-			return ASTUtil.CollectChildren(this, ExplicitFromPredicate);
+			return ASTUtil.CollectChildren<IASTNode>(this, ExplicitFromPredicate);
 		}
-
+		
+		internal IList<FromElement> GetExplicitFromElementsTyped()
+		{
+			return ASTUtil.CollectChildren<FromElement>(this, ExplicitFromPredicate);
+		}
+		
+		//6.0 TODO: Replace with Typed version below
 		public IList<IASTNode> GetCollectionFetches()
 		{
-			return ASTUtil.CollectChildren(this, CollectionFetchPredicate);
+			return ASTUtil.CollectChildren<IASTNode>(this, CollectionFetchPredicate);
+		}
+
+		internal IList<FromElement> GetCollectionFetchesTyped()
+		{
+			return ASTUtil.CollectChildren<FromElement>(this, CollectionFetchPredicate);
 		}
 
 		public FromElement FindCollectionJoin(String path)
@@ -198,27 +210,39 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return fromElement;
 		}
 
+		//6.0 TODO: Replace with Typed version below
 		/// <summary>
 		/// Returns the list of from elements in order.
 		/// </summary>
 		/// <returns>The list of from elements (instances of FromElement).</returns>
 		public IList<IASTNode> GetFromElements()
 		{
-			return ASTUtil.CollectChildren(this, FromElementPredicate);
+			return ASTUtil.CollectChildren<IASTNode>(this, FromElementPredicate);
 		}
 
+		internal IList<FromElement> GetFromElementsTyped()
+		{
+			return ASTUtil.CollectChildren<FromElement>(this, FromElementPredicate);
+		}
+
+		//6.0 TODO: Replace with Typed version below
 		/// <summary>
 		/// Returns the list of from elements that will be part of the result set.
 		/// </summary>
 		/// <returns>the list of from elements that will be part of the result set.</returns>
 		public IList<IASTNode> GetProjectionList()
 		{
-			return ASTUtil.CollectChildren(this, ProjectionListPredicate);
+			return ASTUtil.CollectChildren<IASTNode>(this, ProjectionListPredicate);
+		}
+
+		internal IList<FromElement> GetProjectionListTyped()
+		{
+			return ASTUtil.CollectChildren<FromElement>(this, ProjectionListPredicate);
 		}
 
 		public FromElement GetFromElement()
 		{
-			return (FromElement)GetFromElements()[0];
+			return GetFromElementsTyped()[0];
 		}
 
 		public void AddDuplicateAlias(string alias, FromElement element)

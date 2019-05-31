@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System.Text.RegularExpressions;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Test.Hql.EntityJoinHqlTestEntities;
@@ -152,19 +153,125 @@ namespace NHibernate.Test.Hql
 			}
 		}
 
-		[Test, Ignore("Failing for unrelated reasons")]
-		public async Task CrossJoinAndWithClauseAsync()
+		[Test]
+		public async Task EntityJoinWithEntityComparisonInWithClausShouldNotAddJoinAsync()
 		{
-			//This is about complex theta style join fix that was implemented in hibernate along with entity join functionality
-			//https://hibernate.atlassian.net/browse/HHH-7321
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
-				await (session.CreateQuery(
-				"SELECT s " +
-				"FROM EntityComplex s, EntityComplex q " +
-				"LEFT JOIN s.SameTypeChild AS sa WITH sa.SameTypeChild.Id = q.SameTypeChild.Id"
-				).ListAsync());
+				EntityComplex entityComplex =
+					await (session
+						.CreateQuery(
+							"select ex "
+							+ "from EntityComplex ex "
+							+ "inner join EntityComplex st with st = ex.SameTypeChild "
+						).SetMaxResults(1)
+						.UniqueResultAsync<EntityComplex>());
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "EntityComplex").Count, Is.EqualTo(2));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public async Task EntityJoinWithEntityAssociationComparisonShouldAddJoinAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex =
+					await (session
+						.CreateQuery(
+							"select ex "
+							+ "from EntityComplex ex "
+							+ "inner join EntityComplex st with st = ex.SameTypeChild.SameTypeChild "
+						).SetMaxResults(1)
+						.UniqueResultAsync<EntityComplex>());
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "EntityComplex").Count, Is.EqualTo(3));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public async Task EntityJoinWithEntityAssociationComparison2ShouldAddJoinAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex =
+					await (session
+						.CreateQuery(
+							"select ex "
+							+ "from EntityComplex ex "
+							+ "inner join EntityComplex st with st.Version = ex.SameTypeChild.Version "
+						).SetMaxResults(1)
+						.UniqueResultAsync<EntityComplex>());
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "EntityComplex").Count, Is.EqualTo(3));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+
+		[Test]
+		public async Task WithClauseOnOtherAssociationAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex = 
+				await (session
+					.CreateQuery("select ex " +
+						"from EntityComplex ex join fetch ex.SameTypeChild stc " +
+						"join ex.SameTypeChild2 stc2 with stc.Version != stc2.Version ")
+						.SetMaxResults(1)
+					.UniqueResultAsync<EntityComplex>());
+
+				Assert.That(entityComplex, Is.Null);
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public async Task EntityJoinNoTablesInWithClauseAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex = 
+				await (session
+					.CreateQuery("select ex " +
+						"from EntityWithNoAssociation root " +
+						"left join EntityComplex ex with 1 = 2")
+						.SetMaxResults(1)
+					.UniqueResultAsync<EntityComplex>());
+
+				Assert.That(entityComplex, Is.Null);
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public async Task EntityJoinWithFetchesAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex = 
+				await (session
+					.CreateQuery("select ex " +
+						"from EntityWithNoAssociation root " +
+						"left join EntityComplex ex with root.Complex1Id = ex.Id " +
+						"inner join fetch ex.SameTypeChild st")
+						.SetMaxResults(1)
+					.UniqueResultAsync<EntityComplex>());
+
+				Assert.That(entityComplex, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(entityComplex), Is.True);
+				Assert.That(entityComplex.SameTypeChild, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(entityComplex.SameTypeChild), Is.True);
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
 
@@ -186,6 +293,7 @@ namespace NHibernate.Test.Hql
 
 					rc.ManyToOne(ep => ep.SameTypeChild, m => m.Column("SameTypeChildId"));
 
+					rc.ManyToOne(ep => ep.SameTypeChild2, m => m.Column("SameTypeChild2Id"));
 
 				});
 
@@ -269,7 +377,12 @@ namespace NHibernate.Test.Hql
 					SameTypeChild = new EntityComplex()
 					{
 						Name = "ComplexEntityChild"
+					},
+					SameTypeChild2 = new EntityComplex()
+					{
+						Name = "ComplexEntityChild2"
 					}
+
 				};
 
 				_entityWithCompositeId = new EntityWithCompositeId
@@ -283,6 +396,7 @@ namespace NHibernate.Test.Hql
 				};
 
 				session.Save(parent.SameTypeChild);
+				session.Save(parent.SameTypeChild2);
 				session.Save(parent);
 				session.Save(_entityWithCompositeId);
 

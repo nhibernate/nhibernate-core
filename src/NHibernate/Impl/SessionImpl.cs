@@ -761,6 +761,8 @@ namespace NHibernate.Impl
 				: Factory.QueryPlanCache.GetFilterQueryPlan(filter, role, shallow, EnabledFilters);
 		}
 
+		//Since 5.3
+		[Obsolete("Use override with persister parameter")]
 		public override object Instantiate(string clazz, object id)
 		{
 			using (BeginProcess())
@@ -785,7 +787,7 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		public object Instantiate(IEntityPersister persister, object id)
+		public override object Instantiate(IEntityPersister persister, object id)
 		{
 			using (BeginProcess())
 			{
@@ -1541,17 +1543,18 @@ namespace NHibernate.Impl
 
 				// free managed resources that are being managed by the session if we
 				// know this call came through Dispose()
-				if (isDisposing && !IsClosed)
+				if (isDisposing)
 				{
-					Close();
+					if (!IsClosed)
+					{
+						Close();
+					}
+					// nothing for Finalizer to do - so tell the GC to ignore it
+					GC.SuppressFinalize(this);
 				}
 
 				// free unmanaged resources here
-
 				IsAlreadyDisposed = true;
-
-				// nothing for Finalizer to do - so tell the GC to ignore it
-				GC.SuppressFinalize(this);
 			}
 		}
 

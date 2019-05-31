@@ -146,6 +146,11 @@ namespace NHibernate.Type
 				return persister.GetIdentifier(obj);
 			}
 		}
+		
+		public virtual int GetOwnerColumnSpan(IMapping session)
+		{
+			return GetColumnSpan(session);
+		}
 
 		protected internal object GetIdentifier(object value, ISessionImplementor session)
 		{

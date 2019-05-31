@@ -66,6 +66,8 @@ namespace NHibernate.Dialect
 			// SQL Anywhere locate arguments are inverted compared to other databases. As fixing this is likely
 			// a breaking change for users of older versions, changing it only in the new dialect.
 			RegisterFunction("locate", new SQLFunctionTemplateWithRequiredParameters(NHibernateUtil.Int32, "locate(?2, ?1, ?3)", new object[] { null, null, "1" }));
+
+			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char(36))"));
 		}
 
 		protected override void RegisterMathFunctions()

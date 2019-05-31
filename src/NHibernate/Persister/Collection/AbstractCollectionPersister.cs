@@ -158,8 +158,8 @@ namespace NHibernate.Persister.Collection
 
 		private readonly string[] spaces;
 
-		private readonly IDictionary<string, object> collectionPropertyColumnAliases = new Dictionary<string, object>();
-		private readonly IDictionary<string, object> collectionPropertyColumnNames = new Dictionary<string, object>();
+		private readonly Dictionary<string, object> collectionPropertyColumnAliases = new Dictionary<string, object>();
+		private readonly Dictionary<string, object> collectionPropertyColumnNames = new Dictionary<string, object>();
 
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (ICollectionPersister));
 
@@ -638,19 +638,19 @@ namespace NHibernate.Persister.Collection
 
 		public string GetSQLWhereString(string alias)
 		{
-			return sqlWhereStringTemplate?.Replace(Template.Placeholder, alias);
+			return Template.ReplacePlaceholder(sqlWhereStringTemplate, alias);
 		}
 
 		public string GetSQLOrderByString(string alias)
 		{
-			return HasOrdering ? sqlOrderByStringTemplate?.Replace(Template.Placeholder, alias) : string.Empty;
+			return HasOrdering ? Template.ReplacePlaceholder(sqlOrderByStringTemplate, alias) : string.Empty;
 		}
 
 		public string GetManyToManyOrderByString(string alias)
 		{
 			if (IsManyToMany && manyToManyOrderByString != null)
 			{
-				return manyToManyOrderByTemplate?.Replace(Template.Placeholder, alias);
+				return Template.ReplacePlaceholder(manyToManyOrderByTemplate, alias);
 			}
 			else
 			{
@@ -1020,7 +1020,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (columnNames[i] == null)
 				{
-					result[i] = formulaTemplates[i]?.Replace(Template.Placeholder, alias);
+					result[i] = Template.ReplacePlaceholder(formulaTemplates[i], alias);
 				}
 				else
 				{
@@ -1375,7 +1375,7 @@ namespace NHibernate.Persister.Collection
 
 			if (manyToManyWhereString != null)
 			{
-				buffer.Append(" and ").Append(manyToManyWhereTemplate?.Replace(Template.Placeholder, alias));
+				buffer.Append(" and ").Append(Template.ReplacePlaceholder(manyToManyWhereTemplate, alias));
 			}
 
 			return buffer.ToString();

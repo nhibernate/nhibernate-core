@@ -329,19 +329,18 @@ namespace NHibernate.Event.Default
 			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor source = @event.Session;
 
-			bool statsEnabled = source.Factory.Statistics.IsStatisticsEnabled;
-			var stopWath = new Stopwatch();
-			if (statsEnabled)
+			Stopwatch stopWatch = null;
+			if (source.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWath.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 
 			object entity = await (persister.LoadAsync(@event.EntityId, @event.InstanceToLoad, @event.LockMode, source, cancellationToken)).ConfigureAwait(false);
 
-			if (@event.IsAssociationFetch && statsEnabled)
+			if (stopWatch != null && @event.IsAssociationFetch)
 			{
-				stopWath.Stop();
-				source.Factory.StatisticsImplementor.FetchEntity(@event.EntityClassName, stopWath.Elapsed);
+				stopWatch.Stop();
+				source.Factory.StatisticsImplementor.FetchEntity(@event.EntityClassName, stopWatch.Elapsed);
 			}
 
 			return entity;
@@ -416,7 +415,7 @@ namespace NHibernate.Event.Default
 			var batchSize = persister.GetBatchSize();
 			var entityBatch = source.PersistenceContext.BatchFetchQueue.QueryCacheQueue
 			                        ?.GetEntityBatch(persister, @event.EntityId);
-			if ((entityBatch != null || batchSize > 1) && persister.Cache.PreferMultipleGet())
+			if (entityBatch != null || batchSize > 1 && persister.Cache.PreferMultipleGet())
 			{
 				// The first item in the array is the item that we want to load
 				if (entityBatch != null)
