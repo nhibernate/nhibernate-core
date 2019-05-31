@@ -5,6 +5,7 @@ using System.Text;
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Util;
+using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
@@ -41,7 +42,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 
 			_map.Add(querySource,
-					 implementors.Select(implementor => MakeIdent(querySource, implementor)).ToArray());
+					implementors.ToArray(implementor => MakeIdent(querySource, implementor)));
 		}
 
 		private static string GetClassName(IASTNode querySource)

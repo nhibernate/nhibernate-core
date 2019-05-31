@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 using System.Collections.Generic;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -179,7 +180,7 @@ namespace NHibernate.Type
 
 		public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			bool[] settable = Enumerable.Repeat(true, GetColumnSpan(session.Factory)).ToArray();
+			bool[] settable = ArrayHelper.Fill(true, GetColumnSpan(session.Factory));
 			userType.NullSafeSet(cmd, value, index, settable, session);
 		}
 

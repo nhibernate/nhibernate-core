@@ -212,9 +212,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private static string[] ExtractMutationTexts(IASTNode operand, int count) 
 		{
-			if ( operand is ParameterNode ) 
+			if ( operand is ParameterNode )
 			{
-				return Enumerable.Repeat("?", count).ToArray();
+				return ArrayHelper.Fill("?", count);
 			}
 			if (operand is SqlNode)
 			{

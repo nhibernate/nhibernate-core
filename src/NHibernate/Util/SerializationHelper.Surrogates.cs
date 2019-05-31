@@ -84,8 +84,8 @@ namespace NHibernate.Util
 				_bindingFlags = GetBindingFlags(member);
 				if (member is MethodBase method)
 				{
-					_genericArguments = method.IsGenericMethod ? method.GetGenericArguments().ToArray() : System.Type.EmptyTypes;
-					_parameterTypes = method.GetParameters().Select(p => p.ParameterType).ToArray();
+					_genericArguments = method.IsGenericMethod ? method.GetGenericArguments() : System.Type.EmptyTypes;
+					_parameterTypes = method.GetParameters().ToArray(p => p.ParameterType);
 				}
 			}
 
