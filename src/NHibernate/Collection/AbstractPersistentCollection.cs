@@ -765,7 +765,7 @@ namespace NHibernate.Collection
 
 		public void IdentityRemove(IList list, object obj, string entityName, ISessionImplementor session)
 		{
-			if (obj != null && !ForeignKeys.IsTransientSlow(entityName, obj, session))
+			if (obj != null && ForeignKeys.IsNotTransientSlow(entityName, obj, session))
 			{
 				IdentityRemove(list, obj, entityName, session.Factory);
 			}

@@ -123,7 +123,7 @@ namespace NHibernate.Collection
 		public async Task IdentityRemoveAsync(IList list, object obj, string entityName, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (obj != null && !await (ForeignKeys.IsTransientSlowAsync(entityName, obj, session, cancellationToken)).ConfigureAwait(false))
+			if (obj != null && await (ForeignKeys.IsNotTransientSlowAsync(entityName, obj, session, cancellationToken)).ConfigureAwait(false))
 			{
 				IdentityRemove(list, obj, entityName, session.Factory);
 			}
