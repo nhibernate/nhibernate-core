@@ -49,7 +49,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			get { return type; }
 		}
 
-		private IList<ListenerConfiguration> listeners = new List<ListenerConfiguration>();
+		private List<ListenerConfiguration> listeners = new List<ListenerConfiguration>();
 		/// <summary>
 		/// Listeners for this event.
 		/// </summary>
