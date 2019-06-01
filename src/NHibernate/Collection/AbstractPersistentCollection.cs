@@ -765,10 +765,15 @@ namespace NHibernate.Collection
 
 		public void IdentityRemove(IList list, object obj, string entityName, ISessionImplementor session)
 		{
-			if (obj == null || ForeignKeys.IsTransientSlow(entityName, obj, session))
-				return;
+			if (obj != null && !ForeignKeys.IsTransientSlow(entityName, obj, session))
+			{
+				IdentityRemove(list, obj, entityName, session.Factory);
+			}
+		}
 
-			var persister = session.Factory.GetEntityPersister(entityName);
+		private static void IdentityRemove(IList list, object obj, string entityName, ISessionFactoryImplementor factory)
+		{
+			var persister = factory.GetEntityPersister(entityName);
 			IType idType = persister.IdentifierType;
 			object idToRemove = ForeignKeys.GetIdentifier(persister, obj);
 
@@ -780,7 +785,7 @@ namespace NHibernate.Collection
 					continue;
 				}
 
-				if (obj == current || idType.IsEqual(idToRemove, ForeignKeys.GetIdentifier(persister, current), session.Factory))
+				if (obj == current || idType.IsEqual(idToRemove,ForeignKeys.GetIdentifier(persister, current), factory))
 				{
 					list.RemoveAt(index);
 				}
