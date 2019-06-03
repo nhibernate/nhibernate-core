@@ -177,7 +177,7 @@ namespace NHibernate.Dialect
 
 		public override SqlString AddIdentifierOutParameterToInsert(SqlString insertString, string identifierColumnName, string parameterName)
 		{
-			return insertString.Append(" returning " +  identifierColumnName);
+			return insertString.Append(" returning ",  identifierColumnName);
 		}
 
 		public override InsertGeneratedIdentifierRetrievalMethod InsertGeneratedIdentifierRetrievalMethod
