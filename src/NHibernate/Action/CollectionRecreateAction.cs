@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using NHibernate.Cache;
+using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Event;
@@ -60,6 +62,20 @@ namespace NHibernate.Action
 				{
 					preListeners[i].OnPreRecreateCollection(preEvent);
 				}
+			}
+		}
+
+		public override void ExecuteAfterTransactionCompletion(bool success)
+		{
+			base.ExecuteAfterTransactionCompletion(success);
+			
+			if (success)
+			{
+				CollectionCacheEntry entry = CollectionCacheEntry.Create(Collection, Persister);
+				var cacheKey = Session.GenerateCacheKey(GetKey(), Persister.KeyType, Persister.Role);
+				Persister.Cache.Put(cacheKey, Persister.CacheEntryStructure.Structure(entry),
+				                    Session.Timestamp + Persister.Cache.Cache.NextTimestamp(), null, Persister.OwnerEntityPersister.VersionType.Comparator,
+				                    Session.Factory.Settings.IsMinimalPutsEnabled && Session.CacheMode != CacheMode.Refresh);
 			}
 		}
 
