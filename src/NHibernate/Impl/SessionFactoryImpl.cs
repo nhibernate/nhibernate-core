@@ -77,13 +77,18 @@ namespace NHibernate.Impl
 	{
 		#region Default entity not found delegate
 
-		private class DefaultEntityNotFoundDelegate : IEntityNotFoundDelegate
+		internal class DefaultEntityNotFoundDelegate : IEntityNotFoundDelegate
 		{
 			#region IEntityNotFoundDelegate Members
 
 			public void HandleEntityNotFound(string entityName, object id)
 			{
 				throw new ObjectNotFoundException(id, entityName);
+			}
+
+			public void HandleEntityNotFound(string entityName, string propertyName, object key)
+			{
+				throw new ObjectNotFoundByUniqueKeyException(entityName, propertyName, key);
 			}
 
 			#endregion
