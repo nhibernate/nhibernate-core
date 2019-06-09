@@ -67,15 +67,32 @@ namespace NHibernate.Action
 
 		public override void ExecuteAfterTransactionCompletion(bool success)
 		{
-			base.ExecuteAfterTransactionCompletion(success);
+			var cacheKey = new CacheKey(GetKey(), Persister.KeyType, Persister.Role, Session.Factory);
 			
-			if (success)
+			base.ExecuteAfterTransactionCompletion(success);
+			if (success && Persister.HasCache)
 			{
-				CollectionCacheEntry entry = CollectionCacheEntry.Create(Collection, Persister);
-				var cacheKey = Session.GenerateCacheKey(GetKey(), Persister.KeyType, Persister.Role);
-				Persister.Cache.Put(cacheKey, Persister.CacheEntryStructure.Structure(entry),
-				                    Session.Timestamp + Persister.Cache.Cache.NextTimestamp(), null, Persister.OwnerEntityPersister.VersionType.Comparator,
-				                    Session.Factory.Settings.IsMinimalPutsEnabled && Session.CacheMode != CacheMode.Refresh);
+				if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
+				{
+					CollectionCacheEntry entry = CollectionCacheEntry.Create(Collection, Persister);
+					bool put = Persister.Cache.Put(
+						cacheKey,
+						Persister.CacheEntryStructure.Structure(entry),
+						Session.Timestamp + Persister.Cache.Cache.NextTimestamp(),
+						null,
+						Persister.OwnerEntityPersister.VersionType.Comparator,
+						Session.Factory.Settings.IsMinimalPutsEnabled &&
+						Session.CacheMode != CacheMode.Refresh);
+
+					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
+					{
+						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+					}
+				}
+			}
+			else
+			{
+				Persister.Cache.Release(cacheKey, Lock);
 			}
 		}
 
