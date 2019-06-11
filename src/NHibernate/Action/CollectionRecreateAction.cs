@@ -68,8 +68,6 @@ namespace NHibernate.Action
 		public override void ExecuteAfterTransactionCompletion(bool success)
 		{
 			var cacheKey = new CacheKey(GetKey(), Persister.KeyType, Persister.Role, Session.Factory);
-			
-			base.ExecuteAfterTransactionCompletion(success);
 			if (success)
 			{
 				if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
@@ -80,7 +78,7 @@ namespace NHibernate.Action
 						Persister.CacheEntryStructure.Structure(entry),
 						Session.Timestamp + Persister.Cache.Cache.NextTimestamp(),
 						null,
-						Persister.OwnerEntityPersister.VersionType.Comparator,
+						Persister.OwnerEntityPersister.VersionType?.Comparator,
 						Session.Factory.Settings.IsMinimalPutsEnabled &&
 						Session.CacheMode != CacheMode.Refresh);
 
