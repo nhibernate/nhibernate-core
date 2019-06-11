@@ -70,7 +70,7 @@ namespace NHibernate.Action
 			var cacheKey = new CacheKey(GetKey(), Persister.KeyType, Persister.Role, Session.Factory);
 			
 			base.ExecuteAfterTransactionCompletion(success);
-			if (success && Persister.HasCache)
+			if (success)
 			{
 				if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
 				{
