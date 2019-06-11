@@ -16,7 +16,7 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public abstract class Junction : AbstractCriterion
 	{
-		private readonly IList<ICriterion> criteria = new List<ICriterion>();
+		private readonly List<ICriterion> criteria = new List<ICriterion>();
 
 		/// <summary>
 		/// Adds an <see cref="ICriterion"/> to the list of <see cref="ICriterion"/>s

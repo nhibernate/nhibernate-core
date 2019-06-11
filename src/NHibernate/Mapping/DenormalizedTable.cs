@@ -43,8 +43,16 @@ namespace NHibernate.Mapping
 				IEnumerable<Index> includedIdxs = includedTable.IndexIterator;
 				foreach (Index parentIndex in includedIdxs)
 				{
+					var sharedIndex = GetIndex(parentIndex.Name);
+					if (sharedIndex != null)
+					{
+						sharedIndex.AddColumns(parentIndex.ColumnIterator);
+						sharedIndex.IsInherited = true;
+						continue;
+					}
 					Index index = new Index();
-					index.Name = Name + parentIndex.Name;
+					index.Name = parentIndex.Name;
+					index.IsInherited = true;
 					index.Table = this;
 					index.AddColumns(parentIndex.ColumnIterator);
 					indexes.Add(index);

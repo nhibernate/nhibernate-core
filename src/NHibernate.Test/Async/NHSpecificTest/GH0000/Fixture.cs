@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.GH0000
 				// The HQL delete does all the job inside the database without loading the entities, but it does
 				// not handle delete order for avoiding violating constraints if any. Use
 				// session.Delete("from System.Object");
-				// instead if in need of having NHbernate ordering the deletes, but this will cause
+				// instead if in need of having NHibernate ordering the deletes, but this will cause
 				// loading the entities in the session.
 				session.CreateQuery("delete from System.Object").ExecuteUpdate();
 

@@ -22,6 +22,7 @@ using NHibernate.Linq;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Collection.Generic
 {
@@ -164,7 +165,7 @@ namespace NHibernate.Collection.Generic
 			try
 			{
 				var sn = (ISet<SnapshotElement>)GetSnapshot();
-				return GetOrphansAsync(sn.Select(x => x.Value).ToArray(), (ICollection) _values, entityName, Session, cancellationToken);
+				return GetOrphansAsync(sn.ToArray(x => x.Value), (ICollection) _values, entityName, Session, cancellationToken);
 			}
 			catch (Exception ex)
 			{

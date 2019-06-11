@@ -8,6 +8,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Id
 {
@@ -58,7 +59,7 @@ namespace NHibernate.Id
 				this.persister = persister;
 				this.factory = factory;
 
-				uniqueKeySuppliedPropertyNames = suppliedUniqueKeyPropertyNames?.Split(',').Select(p => p.Trim()).ToArray();
+				uniqueKeySuppliedPropertyNames = suppliedUniqueKeyPropertyNames?.Split(',').ToArray(p => p.Trim());
 
 				idSelectString = persister.GetSelectByUniqueKeyString(uniqueKeySuppliedPropertyNames, out uniqueKeyTypes);
 				idType = persister.IdentifierType;
