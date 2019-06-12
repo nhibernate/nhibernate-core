@@ -182,7 +182,11 @@ namespace NHibernate.Multi
 
 				foreach (var query in _queries)
 				{
-					query.ProcessResults();
+					//TODO 6.0: Replace with query.ProcessResults();
+					if (query is IQueryBatchItemWithAsyncProcessResults q)
+						q.ProcessResults();
+					else
+						query.ProcessResults();
 				}
 			}
 			catch (Exception sqle)

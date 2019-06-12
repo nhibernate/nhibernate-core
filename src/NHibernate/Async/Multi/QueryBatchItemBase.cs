@@ -23,7 +23,7 @@ namespace NHibernate.Multi
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public abstract partial class QueryBatchItemBase<TResult> : IQueryBatchItem<TResult>
+	public abstract partial class QueryBatchItemBase<TResult> : IQueryBatchItem<TResult>, IQueryBatchItemWithAsyncProcessResults
 	{
 
 		/// <inheritdoc />
@@ -115,6 +115,32 @@ namespace NHibernate.Multi
 			}
 		}
 
+		/// <inheritdoc cref="IQueryBatchItem.ProcessResults" />
+		public async Task ProcessResultsAsync(CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			ThrowIfNotInitialized();
+
+			await (InitializeEntitiesAndCollectionsAsync(_reader, _hydratedObjects, cancellationToken)).ConfigureAwait(false);
+			for (var i = 0; i < _queryInfos.Count; i++)
+			{
+				var queryInfo = _queryInfos[i];
+				if (_subselectResultKeys[i] != null)
+				{
+					queryInfo.Loader.CreateSubselects(_subselectResultKeys[i], queryInfo.Parameters, Session);
+				}
+
+				if (queryInfo.IsCacheable)
+				{
+					// This transformation must not be applied to ResultToCache.
+					queryInfo.Result =
+						queryInfo.Loader.TransformCacheableResults(
+							queryInfo.Parameters, queryInfo.CacheKey.ResultTransformer, queryInfo.Result);
+				}
+			}
+			AfterLoadCallback?.Invoke(GetResults());
+		}
+
 		/// <inheritdoc />
 		public async Task ExecuteNonBatchedAsync(CancellationToken cancellationToken)
 		{
@@ -124,5 +150,19 @@ namespace NHibernate.Multi
 		}
 
 		protected abstract Task<IList<TResult>> GetResultsNonBatchedAsync(CancellationToken cancellationToken);
+
+		private async Task InitializeEntitiesAndCollectionsAsync(DbDataReader reader, List<object>[] hydratedObjects, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			for (var i = 0; i < _queryInfos.Count; i++)
+			{
+				var queryInfo = _queryInfos[i];
+				if (queryInfo.IsResultFromCache)
+					continue;
+				await (queryInfo.Loader.InitializeEntitiesAndCollectionsAsync(
+					hydratedObjects[i], reader, Session, queryInfo.Parameters.IsReadOnly(Session),
+					queryInfo.CacheBatcher, cancellationToken)).ConfigureAwait(false);
+			}
+		}
 	}
 }

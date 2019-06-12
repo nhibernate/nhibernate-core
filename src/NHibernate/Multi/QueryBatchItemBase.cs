@@ -14,7 +14,7 @@ namespace NHibernate.Multi
 	/// <summary>
 	/// Base class for both ICriteria and IQuery queries
 	/// </summary>
-	public abstract partial class QueryBatchItemBase<TResult> : IQueryBatchItem<TResult>
+	public abstract partial class QueryBatchItemBase<TResult> : IQueryBatchItem<TResult>, IQueryBatchItemWithAsyncProcessResults
 	{
 		protected ISessionImplementor Session;
 		private List<EntityKey[]>[] _subselectResultKeys;
@@ -256,7 +256,7 @@ namespace NHibernate.Multi
 			}
 		}
 
-		/// <inheritdoc />
+		/// <inheritdoc cref="IQueryBatchItem.ProcessResults" />
 		public void ProcessResults()
 		{
 			ThrowIfNotInitialized();

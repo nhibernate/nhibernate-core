@@ -156,7 +156,11 @@ namespace NHibernate.Multi
 
 				foreach (var query in _queries)
 				{
-					query.ProcessResults();
+					//TODO 6.0: Replace with query.ProcessResults();
+					if (query is IQueryBatchItemWithAsyncProcessResults q)
+						await (q.ProcessResultsAsync(cancellationToken)).ConfigureAwait(false);
+					else
+						query.ProcessResults();
 				}
 			}
 			catch (OperationCanceledException) { throw; }
