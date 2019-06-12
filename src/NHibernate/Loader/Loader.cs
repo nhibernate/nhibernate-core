@@ -672,6 +672,9 @@ namespace NHibernate.Loader
 			}
 		}
 
+		/// <summary>
+		/// Stops further collection population without actual collection initialization.
+		/// </summary>
 		internal void StopLoadingCollections(ISessionImplementor session, DbDataReader reader)
 		{
 			var collectionPersisters = CollectionPersisters;

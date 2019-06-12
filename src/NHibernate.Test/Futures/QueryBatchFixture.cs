@@ -508,8 +508,10 @@ namespace NHibernate.Test.Futures
 				Sfi.Statistics.Clear();
 				//EntityEager.EagerEntity is lazy initialized instead of being loaded by the second query 
 				s.QueryOver<EntityEager>().Fetch(SelectMode.Skip, x => x.EagerEntity).Future();
-				s.QueryOver<EntityEager>().Fetch(SelectMode.Fetch, x => x.EagerEntity).Future().ToList();
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
+				s.QueryOver<EntityEager>().Fetch(SelectMode.Fetch, x => x.EagerEntity).Future().GetEnumerable();
+
+				if(SupportsMultipleQueries)
+					Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			}
 		}
 
