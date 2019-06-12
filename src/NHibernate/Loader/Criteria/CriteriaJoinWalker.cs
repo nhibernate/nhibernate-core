@@ -81,9 +81,9 @@ namespace NHibernate.Loader.Criteria
 			{
 				var tableAlias = translator.GetSQLAlias(entityJoinInfo.Criteria);
 				var criteriaPath = entityJoinInfo.Criteria.Alias; //path for entity join is equal to alias
-				var criteriaAlias = entityJoinInfo.Criteria.Alias;
+				var criteriaPathAlias = entityJoinInfo.Criteria.Alias;
 				var persister = entityJoinInfo.Persister as IOuterJoinLoadable;
-				AddExplicitEntityJoinAssociation(persister, tableAlias, translator.GetJoinType(criteriaPath, criteriaAlias), criteriaPath, criteriaAlias);
+				AddExplicitEntityJoinAssociation(persister, tableAlias, translator.GetJoinType(criteriaPath, criteriaPathAlias), criteriaPath, criteriaPathAlias);
 				IncludeInResultIfNeeded(persister, entityJoinInfo.Criteria, tableAlias, criteriaPath);
 				//collect mapped associations for entity join
 				WalkEntityTree(persister, tableAlias, criteriaPath, 1);
