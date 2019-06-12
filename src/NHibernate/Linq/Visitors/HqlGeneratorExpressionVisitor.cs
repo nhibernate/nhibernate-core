@@ -581,7 +581,7 @@ possible solutions:
 
 		protected HqlTreeNode VisitNewArrayExpression(NewArrayExpression expression)
 		{
-			var expressionSubTree = expression.Expressions.Select(exp => VisitExpression(exp)).ToArray();
+			var expressionSubTree = expression.Expressions.ToArray(exp => VisitExpression(exp));
 			return _hqlTreeBuilder.ExpressionSubTreeHolder(expressionSubTree);
 		}
 	}

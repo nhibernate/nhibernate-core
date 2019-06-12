@@ -15,7 +15,7 @@ namespace NHibernate.Engine.Query
 		public ParameterMetadata(IEnumerable<OrdinalParameterDescriptor> ordinalDescriptors,
 		                         IDictionary<string, NamedParameterDescriptor> namedDescriptorMap)
 		{
-			this.ordinalDescriptors = ordinalDescriptors == null ? Enumerable.Empty<OrdinalParameterDescriptor>().ToArray() : ordinalDescriptors.ToArray();
+			this.ordinalDescriptors = ordinalDescriptors == null ? Array.Empty<OrdinalParameterDescriptor>() : ordinalDescriptors.ToArray();
 
 			this.namedDescriptorMap = namedDescriptorMap == null ? new Dictionary<string, NamedParameterDescriptor>(1) : new Dictionary<string, NamedParameterDescriptor>(namedDescriptorMap);
 		}

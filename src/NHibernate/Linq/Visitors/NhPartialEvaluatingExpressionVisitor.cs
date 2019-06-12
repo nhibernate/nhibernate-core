@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Collection;
+using NHibernate.Util;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
 using Remotion.Linq.Parsing.ExpressionVisitors;
@@ -54,7 +55,7 @@ namespace NHibernate.Linq.Visitors
 
 			var attributes = node.Method
 				.GetCustomAttributes(typeof(LinqExtensionMethodAttributeBase), false)
-				.Cast<LinqExtensionMethodAttributeBase>().ToArray();
+				.ToArray(x => (LinqExtensionMethodAttributeBase) x);
 			return attributes.Length == 0 ||
 				attributes.Any(a => a.PreEvaluation == LinqExtensionPreEvaluation.AllowPreEvaluation);
 		}

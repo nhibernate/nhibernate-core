@@ -89,13 +89,22 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Synchronize(params string[] table)
 		{
 			if (table == null)
-			{
 				return;
+
+			var existingSyncs = classMapping.synchronize != null
+				? new HashSet<string>(classMapping.synchronize.Select(x => x.table))
+				: new HashSet<string>();
+
+			foreach (var t in table)
+			{
+				var cleanedName = t?.Trim();
+				if (!string.IsNullOrEmpty(cleanedName))
+				{
+					existingSyncs.Add(cleanedName);
+				}
 			}
-			var existingSyncs = new HashSet<string>(classMapping.synchronize != null ? classMapping.synchronize.Select(x => x.table) : Enumerable.Empty<string>());
-			System.Array.ForEach(table.Where(x => x != null).Select(tableName => tableName.Trim()).Where(cleanedName => !"".Equals(cleanedName)).ToArray(),
-													 x => existingSyncs.Add(x.Trim()));
-			classMapping.synchronize = existingSyncs.Select(x => new HbmSynchronize { table = x }).ToArray();
+
+			classMapping.synchronize = existingSyncs.ToArray(x => new HbmSynchronize { table = x });
 		}
 
 		#endregion

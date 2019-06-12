@@ -8,11 +8,13 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Linq;
+using NHibernate.UserTypes;
 using NUnit.Framework;
 using NHibernate.Linq;
 
-namespace NHibernate.Test.NHSpecificTest.GH0000
+namespace NHibernate.Test.NHSpecificTest.GH1963
 {
 	using System.Threading.Tasks;
 	[TestFixture]
@@ -23,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.GH0000
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity {Name = "Bob"};
+				var e1 = new Entity {Name = "Bob", Flag = true};
 				session.Save(e1);
 
 				var e2 = new Entity {Name = "Sally"};
@@ -38,11 +40,6 @@ namespace NHibernate.Test.NHSpecificTest.GH0000
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				// The HQL delete does all the job inside the database without loading the entities, but it does
-				// not handle delete order for avoiding violating constraints if any. Use
-				// session.Delete("from System.Object");
-				// instead if in need of having NHibernate ordering the deletes, but this will cause
-				// loading the entities in the session.
 				session.CreateQuery("delete from System.Object").ExecuteUpdate();
 
 				transaction.Commit();
@@ -50,16 +47,20 @@ namespace NHibernate.Test.NHSpecificTest.GH0000
 		}
 
 		[Test]
-		public async Task YourTestNameAsync()
+		public void LinqFilterOnNonLiteralCustomTypeAsync()
 		{
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
 				var result = from e in session.Query<Entity>()
-							 where e.Name == "Bob"
+							 where e.Flag
 							 select e;
 
-				Assert.That(await (result.ToListAsync()), Has.Count.EqualTo(1));
+				Assert.That(
+					() => result.ToListAsync(),
+					Throws
+						.InnerException.TypeOf<InvalidOperationException>()
+						.And.InnerException.Message.Contains(nameof(IEnhancedUserType)));
 			}
 		}
 	}
