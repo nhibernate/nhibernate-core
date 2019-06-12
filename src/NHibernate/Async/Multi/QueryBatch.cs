@@ -127,18 +127,19 @@ namespace NHibernate.Multi
 			}
 
 			var rowCount = 0;
+			CacheBatcher cacheBatcher = null;
 			try
 			{
 				if (resultSetsCommand.HasQueries)
 				{
+					cacheBatcher = new CacheBatcher(Session);
 					using (var reader = await (resultSetsCommand.GetReaderAsync(Timeout, cancellationToken)).ConfigureAwait(false))
 					{
-						var cacheBatcher = new CacheBatcher(Session);
 						foreach (var query in _queries)
 						{
 							if (query.CachingInformation != null)
 							{
-								foreach (var cachingInfo in query.CachingInformation.Where(ci => ci.IsCacheable))
+								foreach (var cachingInfo in query.CachingInformation)
 								{
 									cachingInfo.SetCacheBatcher(cacheBatcher);
 								}
@@ -146,13 +147,8 @@ namespace NHibernate.Multi
 
 							rowCount += await (query.ProcessResultsSetAsync(reader, cancellationToken)).ConfigureAwait(false);
 						}
-						await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 					}
 				}
-
-				// Query cacheable results must be cached untransformed: the put does not need to wait for
-				// the ProcessResults.
-				await (PutCacheableResultsAsync(cancellationToken)).ConfigureAwait(false);
 
 				foreach (var query in _queries)
 				{
@@ -162,6 +158,17 @@ namespace NHibernate.Multi
 					else
 						query.ProcessResults();
 				}
+
+				var executeBatchTask = cacheBatcher?.ExecuteBatchAsync(cancellationToken);
+
+				if (executeBatchTask != null)
+
+				{
+
+					await (executeBatchTask).ConfigureAwait(false);
+
+				}
+				await (PutCacheableResultsAsync(cancellationToken)).ConfigureAwait(false);
 			}
 			catch (OperationCanceledException) { throw; }
 			catch (Exception sqle)

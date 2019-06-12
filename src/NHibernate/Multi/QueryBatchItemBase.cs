@@ -261,7 +261,9 @@ namespace NHibernate.Multi
 		{
 			ThrowIfNotInitialized();
 
-			InitializeEntitiesAndCollections(_reader, _hydratedObjects);
+			using (Session.SwitchCacheMode(_cacheMode))
+				InitializeEntitiesAndCollections(_reader, _hydratedObjects);
+
 			for (var i = 0; i < _queryInfos.Count; i++)
 			{
 				var queryInfo = _queryInfos[i];

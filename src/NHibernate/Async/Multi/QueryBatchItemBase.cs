@@ -121,7 +121,9 @@ namespace NHibernate.Multi
 			cancellationToken.ThrowIfCancellationRequested();
 			ThrowIfNotInitialized();
 
-			await (InitializeEntitiesAndCollectionsAsync(_reader, _hydratedObjects, cancellationToken)).ConfigureAwait(false);
+			using (Session.SwitchCacheMode(_cacheMode))
+				await (InitializeEntitiesAndCollectionsAsync(_reader, _hydratedObjects, cancellationToken)).ConfigureAwait(false);
+
 			for (var i = 0; i < _queryInfos.Count; i++)
 			{
 				var queryInfo = _queryInfos[i];

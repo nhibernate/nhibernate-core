@@ -153,18 +153,19 @@ namespace NHibernate.Multi
 			}
 
 			var rowCount = 0;
+			CacheBatcher cacheBatcher = null;
 			try
 			{
 				if (resultSetsCommand.HasQueries)
 				{
+					cacheBatcher = new CacheBatcher(Session);
 					using (var reader = resultSetsCommand.GetReader(Timeout))
 					{
-						var cacheBatcher = new CacheBatcher(Session);
 						foreach (var query in _queries)
 						{
 							if (query.CachingInformation != null)
 							{
-								foreach (var cachingInfo in query.CachingInformation.Where(ci => ci.IsCacheable))
+								foreach (var cachingInfo in query.CachingInformation)
 								{
 									cachingInfo.SetCacheBatcher(cacheBatcher);
 								}
@@ -172,13 +173,8 @@ namespace NHibernate.Multi
 
 							rowCount += query.ProcessResultsSet(reader);
 						}
-						cacheBatcher.ExecuteBatch();
 					}
 				}
-
-				// Query cacheable results must be cached untransformed: the put does not need to wait for
-				// the ProcessResults.
-				PutCacheableResults();
 
 				foreach (var query in _queries)
 				{
@@ -188,6 +184,9 @@ namespace NHibernate.Multi
 					else
 						query.ProcessResults();
 				}
+
+				cacheBatcher?.ExecuteBatch();
+				PutCacheableResults();
 			}
 			catch (Exception sqle)
 			{
