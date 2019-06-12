@@ -486,6 +486,33 @@ namespace NHibernate.Test.Futures
 			}
 		}
 
+		//GH-2173
+		[Test]
+		public void CanFetchNonLazyEntitiesInSubsequentQuery()
+		{
+			Sfi.Statistics.IsStatisticsEnabled = true;
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.Save(
+					new EntityEager
+					{
+						Name = "EagerManyToOneAssociation",
+						EagerEntity = new EntityEagerChild {Name = "association"}
+					});
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			{
+				Sfi.Statistics.Clear();
+				//EntityEager.EagerEntity is lazy initialized instead of being loaded by the second query 
+				s.QueryOver<EntityEager>().Fetch(SelectMode.Skip, x => x.EagerEntity).Future();
+				s.QueryOver<EntityEager>().Fetch(SelectMode.Fetch, x => x.EagerEntity).Future().ToList();
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			}
+		}
+
 		#region Test Setup
 
 		protected override HbmMapping GetMappings()
@@ -531,6 +558,10 @@ namespace NHibernate.Test.Futures
 					rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 					rc.Property(x => x.Name);
 
+					rc.ManyToOne(x => x.EagerEntity, m =>
+					{
+						m.Cascade(Mapping.ByCode.Cascade.Persist);
+					});
 					rc.Bag(ep => ep.ChildrenListSubselect,
 							m =>
 							{
@@ -547,6 +578,14 @@ namespace NHibernate.Test.Futures
 								m.Lazy(CollectionLazy.NoLazy);
 							},
 							a => a.OneToMany());
+				});
+			mapper.Class<EntityEagerChild>(
+				rc =>
+				{
+					rc.Lazy(false);
+
+					rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+					rc.Property(x => x.Name);
 				});
 			mapper.Class<EntitySubselectChild>(
 				rc =>
