@@ -108,8 +108,9 @@ namespace NHibernate.Multi
 					await (reader.NextResultAsync(cancellationToken)).ConfigureAwait(false);
 				}
 
-				await (InitializeEntitiesAndCollectionsAsync(reader, hydratedObjects, cancellationToken)).ConfigureAwait(false);
-
+				StopLoadingCollections(reader);
+				_reader = reader;
+				_hydratedObjects = hydratedObjects;
 				return rowCount;
 			}
 		}
@@ -123,19 +124,5 @@ namespace NHibernate.Multi
 		}
 
 		protected abstract Task<IList<TResult>> GetResultsNonBatchedAsync(CancellationToken cancellationToken);
-
-		private async Task InitializeEntitiesAndCollectionsAsync(DbDataReader reader, List<object>[] hydratedObjects, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			for (var i = 0; i < _queryInfos.Count; i++)
-			{
-				var queryInfo = _queryInfos[i];
-				if (queryInfo.IsResultFromCache)
-					continue;
-				await (queryInfo.Loader.InitializeEntitiesAndCollectionsAsync(
-					hydratedObjects[i], reader, Session, queryInfo.Parameters.IsReadOnly(Session),
-					queryInfo.CacheBatcher, cancellationToken)).ConfigureAwait(false);
-			}
-		}
 	}
 }

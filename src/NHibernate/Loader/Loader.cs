@@ -672,6 +672,15 @@ namespace NHibernate.Loader
 			}
 		}
 
+		internal void StopLoadingCollections(ISessionImplementor session, DbDataReader reader)
+		{
+			var collectionPersisters = CollectionPersisters;
+			if (collectionPersisters == null || collectionPersisters.Length == 0)
+				return;
+
+			session.PersistenceContext.LoadContexts.GetCollectionLoadContext(reader).StopLoadingCollections(collectionPersisters);
+		}
+
 		private void EndCollectionLoad(DbDataReader reader, ISessionImplementor session, ICollectionPersister collectionPersister)
 		{
 			//this is a query and we are loading multiple instances of the same collection role

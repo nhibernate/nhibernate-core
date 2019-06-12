@@ -21,6 +21,8 @@ namespace NHibernate.Multi
 		private List<QueryInfo> _queryInfos;
 		private CacheMode? _cacheMode;
 		private IList<TResult> _finalResults;
+		private DbDataReader _reader;
+		private List<object>[] _hydratedObjects;
 
 		protected class QueryInfo : ICachingInformation
 		{
@@ -247,8 +249,9 @@ namespace NHibernate.Multi
 					reader.NextResult();
 				}
 
-				InitializeEntitiesAndCollections(reader, hydratedObjects);
-
+				StopLoadingCollections(reader);
+				_reader = reader;
+				_hydratedObjects = hydratedObjects;
 				return rowCount;
 			}
 		}
@@ -258,6 +261,7 @@ namespace NHibernate.Multi
 		{
 			ThrowIfNotInitialized();
 
+			InitializeEntitiesAndCollections(_reader, _hydratedObjects);
 			for (var i = 0; i < _queryInfos.Count; i++)
 			{
 				var queryInfo = _queryInfos[i];
@@ -326,6 +330,17 @@ namespace NHibernate.Multi
 				queryInfo.Loader.InitializeEntitiesAndCollections(
 					hydratedObjects[i], reader, Session, queryInfo.Parameters.IsReadOnly(Session),
 					queryInfo.CacheBatcher);
+			}
+		}
+
+		private void StopLoadingCollections(DbDataReader reader)
+		{
+			for (var i = 0; i < _queryInfos.Count; i++)
+			{
+				var queryInfo = _queryInfos[i];
+				if (queryInfo.IsResultFromCache)
+					continue;
+				queryInfo.Loader.StopLoadingCollections(Session, reader);
 			}
 		}
 
