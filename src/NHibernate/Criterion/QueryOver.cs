@@ -1012,7 +1012,12 @@ namespace NHibernate.Criterion
 		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Full
 		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.FullJoin); } }
 
-		public IQueryOver<TRoot, TSubType> Fetch(SelectMode mode, Expression<Func<TSubType, object>> path)
+		IQueryOver<TRoot, TSubType> ISupportSelectModeQueryOver<TRoot, TSubType>.Fetch(SelectMode mode, Expression<Func<TSubType, object>> path)
+		{
+			return Fetch(mode, path);
+		}
+
+		public QueryOver<TRoot, TSubType> Fetch(SelectMode mode, Expression<Func<TSubType, object>> path)
 		{
 			UnderlyingCriteria.Fetch(mode, ExpressionProcessor.FindMemberExpression(path.Body), null);
 			return this;
