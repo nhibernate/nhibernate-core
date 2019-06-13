@@ -244,7 +244,7 @@ namespace NHibernate.Multi
 
 					queryInfo.Result = tmpResults;
 					if (queryInfo.CanPutToCache)
-						queryInfo.ResultToCache = tmpResults;
+						queryInfo.ResultToCache = new List<object>(tmpResults);
 
 					reader.NextResult();
 				}
