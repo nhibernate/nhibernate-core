@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR;
@@ -43,6 +44,7 @@ namespace NHibernate.Loader.Hql
 		private readonly NullableDictionary<string, string> _sqlAliasByEntityAlias = new NullableDictionary<string, string>();
 		private int _selectLength;
 		private LockMode[] _defaultLockModes;
+		private IType[] _cacheTypes;
 		private ISet<ICollectionPersister> _uncacheableCollectionPersisters;
 
 		public QueryLoader(QueryTranslatorImpl queryTranslator, ISessionFactoryImplementor factory, SelectClause selectClause)
@@ -201,6 +203,8 @@ namespace NHibernate.Loader.Hql
 			get { return _collectionPersisters; }
 		}
 
+		public override IType[] CacheTypes => _cacheTypes;
+
 		private void Initialize(SelectClause selectClause)
 		{
 			IList<FromElement> fromElementList = selectClause.FromElementsForLoad;
@@ -220,6 +224,7 @@ namespace NHibernate.Loader.Hql
 				_collectionPersisters = new IQueryableCollection[length];
 				_collectionOwners = new int[length];
 				_collectionSuffixes = new string[length];
+				CollectionFetches = new bool[length];
 
 				for (int i = 0; i < length; i++)
 				{
@@ -229,6 +234,7 @@ namespace NHibernate.Loader.Hql
 					//				collectionSuffixes[i] = collectionFromElement.getColumnAliasSuffix();
 					//				collectionSuffixes[i] = Integer.toString( i ) + "_";
 					_collectionSuffixes[i] = collectionFromElement.CollectionSuffix;
+					CollectionFetches[i] = collectionFromElement.IsFetch;
 				}
 			}
 
@@ -242,6 +248,8 @@ namespace NHibernate.Loader.Hql
 			_includeInSelect = new bool[size];
 			_owners = new int[size];
 			_ownerAssociationTypes = new EntityType[size];
+			EntityFetches = new bool[size];
+			var cacheTypes = new List<IType>(ResultTypes);
 
 			for (int i = 0; i < size; i++)
 			{
@@ -264,6 +272,11 @@ namespace NHibernate.Loader.Hql
 				_sqlAliasSuffixes[i] = (size == 1) ? "" : i + "_";
 				//			sqlAliasSuffixes[i] = element.getColumnAliasSuffix();
 				_includeInSelect[i] = !element.IsFetch;
+				EntityFetches[i] = element.IsFetch;
+				if (element.IsFetch)
+				{
+					cacheTypes.Add(_entityPersisters[i].Type);
+				}
 				if (_includeInSelect[i])
 				{
 					_selectLength++;
@@ -278,15 +291,18 @@ namespace NHibernate.Loader.Hql
 					}
 					else if (element.DataType.IsEntityType)
 					{
-						var entityType = (EntityType) element.DataType;
-						if (entityType.IsOneToOne)
-						{
-							_owners[i] = fromElementList.IndexOf(element.Origin);
-						}
-						_ownerAssociationTypes[i] = entityType;
+						_owners[i] = fromElementList.IndexOf(element.Origin);
+						_ownerAssociationTypes[i] = (EntityType) element.DataType;
 					}
 				}
 			}
+
+			if (_collectionPersisters != null)
+			{
+				cacheTypes.AddRange(_collectionPersisters.Where((t, i) => CollectionFetches[i]).Select(t => t.CollectionType));
+			}
+
+			_cacheTypes = cacheTypes.ToArray();
 
 			//NONE, because its the requested lock mode, not the actual! 
 			_defaultLockModes = ArrayHelper.Fill(LockMode.None, size);
@@ -427,12 +443,10 @@ namespace NHibernate.Loader.Hql
 		internal IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session)
 		{
 			CheckQuery(queryParameters);
-			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
-
-			var stopWath = new Stopwatch();
-			if (statsEnabled)
+			Stopwatch stopWatch = null;
+			if (session.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWath.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 
 			var cmd = PrepareQueryCommand(queryParameters, false, session);
@@ -444,13 +458,13 @@ namespace NHibernate.Loader.Hql
 			IEnumerable result = 
 				new EnumerableImpl(rs, cmd, session, queryParameters.IsReadOnly(session), _queryTranslator.ReturnTypes, _queryTranslator.GetColumnNames(), queryParameters.RowSelection, resultTransformer, _queryReturnAliases);
 
-			if (statsEnabled)
+			if (stopWatch != null)
 			{
-				stopWath.Stop();
-				session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + _queryTranslator.QueryString, 0, stopWath.Elapsed);
+				stopWatch.Stop();
+				session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + _queryTranslator.QueryString, 0, stopWatch.Elapsed);
 				// NH: Different behavior (H3.2 use QueryLoader in AST parser) we need statistic for orginal query too.
 				// probably we have a bug some where else for statistic RowCount
-				session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWath.Elapsed);
+				session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWatch.Elapsed);
 			}
 			return result;
 		}

@@ -106,7 +106,7 @@ namespace NHibernate.Criterion
 
 		public override string ToString()
 		{
-			return '(' + StringHelper.Join(Op, criteria) + ')';
+			return '(' + string.Join(Op, criteria) + ')';
 		}
 
 		public override IProjection[] GetProjections()

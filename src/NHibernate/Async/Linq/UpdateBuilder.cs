@@ -24,7 +24,7 @@ namespace NHibernate.Linq
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The number of updated entities.</returns>
-		public Task<int> UpdateAsync(CancellationToken cancellationToken)
+		public Task<int> UpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -45,7 +45,7 @@ namespace NHibernate.Linq
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The number of updated entities.</returns>
-		public Task<int> UpdateVersionedAsync(CancellationToken cancellationToken)
+		public Task<int> UpdateVersionedAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

@@ -520,11 +520,10 @@ namespace NHibernate.Impl
 
 		protected List<object> DoList()
 		{
-			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
-			var stopWatch = new Stopwatch();
-			if (statsEnabled)
+			Stopwatch stopWatch = null;
+			if (session.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWatch.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 			int rowCount = 0;
 
@@ -587,7 +586,7 @@ namespace NHibernate.Impl
 
 							rowCount++;
 							object result = translator.Loader.GetRowFromResultSet(
-								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true,
+								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true, null, null,
 								(persister, data) => cacheBatcher.AddToBatch(persister, data));
 							tempResults.Add(result);
 
@@ -635,7 +634,7 @@ namespace NHibernate.Impl
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi query", resultSetsCommand.Sql);
 			}
 
-			if (statsEnabled)
+			if (stopWatch != null)
 			{
 				stopWatch.Stop();
 				session.Factory.StatisticsImplementor.QueryExecuted(string.Format("{0} queries (MultiQuery)", translators.Count), rowCount, stopWatch.Elapsed);

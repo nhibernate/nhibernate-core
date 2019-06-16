@@ -145,11 +145,10 @@ namespace NHibernate.Impl
 		private async Task GetResultsFromDatabaseAsync(IList results, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
-			var stopWatch = new Stopwatch();
-			if (statsEnabled)
+			Stopwatch stopWatch = null;
+			if (session.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWatch.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 			int rowCount = 0;
 			var cacheBatcher = new CacheBatcher(session);
@@ -185,8 +184,8 @@ namespace NHibernate.Impl
 
 							object o =
 								await (loader.GetRowFromResultSetAsync(reader, session, queryParameters, loader.GetLockModes(queryParameters.LockModes),
-																					 null, hydratedObjects[i], keys, true,
-																					(persister, data) => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
+								                           null, hydratedObjects[i], keys, true, null, null,
+								                           (persister, data) => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
 							if (createSubselects[i])
 							{
 								subselectResultKeys[i].Add(keys);
@@ -219,7 +218,7 @@ namespace NHibernate.Impl
 				log.Error(sqle, "Failed to execute multi criteria: [{0}]", resultSetsCommand.Sql);
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi criteria", resultSetsCommand.Sql);
 			}
-			if (statsEnabled)
+			if (stopWatch != null)
 			{
 				stopWatch.Stop();
 				session.Factory.StatisticsImplementor.QueryExecuted(string.Format("{0} queries (MultiCriteria)", loaders.Count), rowCount, stopWatch.Elapsed);

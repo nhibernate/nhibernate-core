@@ -79,61 +79,130 @@ namespace NHibernate.Test.SqlTest.Query
 		[Test]
 		public void SQLQueryInterface()
 		{
-			ISession s = OpenSession();
-			ITransaction t = s.BeginTransaction();
 			Organization ifa = new Organization("IFA");
 			Organization jboss = new Organization("JBoss");
 			Person gavin = new Person("Gavin");
 			Employment emp = new Employment(gavin, jboss, "AU");
 
-			s.Save(ifa);
-			s.Save(jboss);
-			s.Save(gavin);
-			s.Save(emp);
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(ifa);
+				s.Save(jboss);
+				s.Save(gavin);
+				s.Save(emp);
 
-			IList l = s.CreateSQLQuery(OrgEmpRegionSQL)
-			           .AddEntity("org", typeof(Organization))
-			           .AddJoin("emp", "org.employments")
-			           .AddScalar("regionCode", NHibernateUtil.String)
-			           .List();
-			Assert.AreEqual(2, l.Count);
+				IList l = s.CreateSQLQuery(OrgEmpRegionSQL)
+							.AddEntity("org", typeof(Organization))
+							.AddJoin("emp", "org.employments")
+							.AddScalar("regionCode", NHibernateUtil.String)
+							.List();
+				Assert.AreEqual(2, l.Count);
 
-			l = s.CreateSQLQuery(OrgEmpPersonSQL)
-			     .AddEntity("org", typeof(Organization))
-			     .AddJoin("emp", "org.employments")
-			     .AddJoin("pers", "emp.employee")
-			     .List();
-			Assert.AreEqual(l.Count, 1);
+				l = s.CreateSQLQuery(OrgEmpPersonSQL)
+					.AddEntity("org", typeof(Organization))
+					.AddJoin("emp", "org.employments")
+					.AddJoin("pers", "emp.employee")
+					.List();
+				Assert.AreEqual(l.Count, 1);
 
-			t.Commit();
-			s.Close();
+				t.Commit();
+			}
 
-			s = OpenSession();
-			t = s.BeginTransaction();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var l = s.CreateSQLQuery(
+							"select {org.*}, {emp.*} " +
+							"from ORGANIZATION org " +
+							"     left outer join EMPLOYMENT emp on org.ORGID = emp.EMPLOYER, ORGANIZATION org2")
+						.AddEntity("org", typeof(Organization))
+						.AddJoin("emp", "org.employments")
+						.SetResultTransformer(new DistinctRootEntityResultTransformer())
+						.List();
+				Assert.AreEqual(l.Count, 2);
 
-			l = s.CreateSQLQuery(
-				     "select {org.*}, {emp.*} " +
-				     "from ORGANIZATION org " +
-				     "     left outer join EMPLOYMENT emp on org.ORGID = emp.EMPLOYER, ORGANIZATION org2")
-			     .AddEntity("org", typeof(Organization))
-			     .AddJoin("emp", "org.employments")
-			     .SetResultTransformer(new DistinctRootEntityResultTransformer())
-			     .List();
-			Assert.AreEqual(l.Count, 2);
+				t.Commit();
+				s.Close();
+			}
 
-			t.Commit();
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.Delete(emp);
+				s.Delete(gavin);
+				s.Delete(ifa);
+				s.Delete(jboss);
 
-			s = OpenSession();
-			t = s.BeginTransaction();
+				t.Commit();
+				s.Close();
+			}
+		}
 
-			s.Delete(emp);
-			s.Delete(gavin);
-			s.Delete(ifa);
-			s.Delete(jboss);
+		[Test]
+		public void SQLQueryInterfaceCacheable()
+		{
+			Organization ifa = new Organization("IFA");
+			Organization jboss = new Organization("JBoss");
+			Person gavin = new Person("Gavin");
+			Employment emp = new Employment(gavin, jboss, "AU");
 
-			t.Commit();
-			s.Close();
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(ifa);
+				s.Save(jboss);
+				s.Save(gavin);
+				s.Save(emp);
+
+				IList l = s.CreateSQLQuery(OrgEmpRegionSQL)
+							.AddEntity("org", typeof(Organization))
+							.AddJoin("emp", "org.employments")
+							.AddScalar("regionCode", NHibernateUtil.String)
+							.SetCacheable(true)
+							.List();
+				Assert.AreEqual(2, l.Count);
+
+				l = s.CreateSQLQuery(OrgEmpPersonSQL)
+					.AddEntity("org", typeof(Organization))
+					.AddJoin("emp", "org.employments")
+					.AddJoin("pers", "emp.employee")
+					.SetCacheable(true)
+					.List();
+				Assert.AreEqual(l.Count, 1);
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var l = s.CreateSQLQuery(
+							"select {org.*}, {emp.*} " +
+							"from ORGANIZATION org " +
+							"     left outer join EMPLOYMENT emp on org.ORGID = emp.EMPLOYER, ORGANIZATION org2")
+						.AddEntity("org", typeof(Organization))
+						.AddJoin("emp", "org.employments")
+						.SetCacheable(true)
+						.SetResultTransformer(new DistinctRootEntityResultTransformer())
+						.List();
+				Assert.AreEqual(l.Count, 2);
+
+				t.Commit();
+				s.Close();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.Delete(emp);
+				s.Delete(gavin);
+				s.Delete(ifa);
+				s.Delete(jboss);
+
+				t.Commit();
+				s.Close();
+			}
 		}
 
 		[Test]

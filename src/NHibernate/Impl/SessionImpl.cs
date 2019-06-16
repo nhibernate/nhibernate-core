@@ -761,6 +761,8 @@ namespace NHibernate.Impl
 				: Factory.QueryPlanCache.GetFilterQueryPlan(filter, role, shallow, EnabledFilters);
 		}
 
+		//Since 5.3
+		[Obsolete("Use override with persister parameter")]
 		public override object Instantiate(string clazz, object id)
 		{
 			using (BeginProcess())
@@ -785,7 +787,7 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		public object Instantiate(IEntityPersister persister, object id)
+		public override object Instantiate(IEntityPersister persister, object id)
 		{
 			using (BeginProcess())
 			{

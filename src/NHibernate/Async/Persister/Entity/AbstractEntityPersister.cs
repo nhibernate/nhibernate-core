@@ -62,7 +62,7 @@ namespace NHibernate.Persister.Entity
 		}
 
 		public Task InitializeLazyPropertiesAsync(
-			DbDataReader rs, object id, object entity, ILoadable rootPersister, string[][] suffixedPropertyColumns,
+			DbDataReader rs, object id, object entity, string[][] suffixedPropertyColumns,
 			string[] uninitializedLazyProperties, bool allLazyProperties, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (!HasLazyProperties)

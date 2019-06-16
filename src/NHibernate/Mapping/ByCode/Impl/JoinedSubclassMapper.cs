@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Persister.Entity;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -13,7 +14,6 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public JoinedSubclassMapper(System.Type subClass, HbmMapping mapDoc) : base(subClass, mapDoc)
 		{
-			var toAdd = new[] {classMapping};
 			classMapping.name = subClass.GetShortClassName(mapDoc);
 			classMapping.extends = subClass.BaseType.GetShortClassName(mapDoc);
 			if (classMapping.key == null)
@@ -21,7 +21,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				classMapping.key = new HbmKey {column1 = subClass.BaseType.Name.ToLowerInvariant() + "_key"};
 			}
 			keyMapper = new KeyMapper(subClass, classMapping.key);
-			mapDoc.Items = mapDoc.Items == null ? toAdd : mapDoc.Items.Concat(toAdd).ToArray();
+			mapDoc.Items = ArrayHelper.Append(mapDoc.Items, classMapping);
 		}
 
 		#region Overrides of AbstractPropertyContainerMapper
@@ -32,8 +32,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentNullException("property");
 			}
-			var toAdd = new[] {property};
-			classMapping.Items = classMapping.Items == null ? toAdd : classMapping.Items.Concat(toAdd).ToArray();
+			classMapping.Items = ArrayHelper.Append(classMapping.Items, property);
 		}
 
 		#endregion
@@ -189,6 +188,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			classMapping.extends = baseType.GetShortClassName(MapDoc);
 		}
 
+		public void Extends(string entityOrClassName)
+		{
+			classMapping.extends = entityOrClassName ?? throw new ArgumentNullException(nameof(entityOrClassName));
+		}
+		
 		public void SchemaAction(SchemaAction action)
 		{
 			classMapping.schemaaction = action.ToSchemaActionString();

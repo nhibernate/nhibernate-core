@@ -288,6 +288,9 @@ methodRules:
   - containingType: NHibernate.Tool.hbm2ddl.SchemaUpdate
   - containingType: NHibernate.Tool.hbm2ddl.SchemaValidator
   - containingType: NHibernate.Tool.hbm2ddl.SchemaExport
+  - containingType: NHibernate.Linq.DmlExtensionMethods
+  - containingType: NHibernate.Linq.InsertBuilder<TSource, TTarget>
+  - containingType: NHibernate.Linq.UpdateBuilder<TSource>
   name: PubliclyExposedType
 - filters:
   - hasAttributeName: ObsoleteAttribute

@@ -110,7 +110,7 @@ namespace NHibernate.Loader
 				return null;
 			}
 
-			return StringHelper.Join(", ", aliases);
+			return string.Join(", ", aliases);
 		}
 
 		private string[] GetUserProvidedAliases(string propertyPath, string[] defaultAliases)

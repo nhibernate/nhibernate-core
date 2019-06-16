@@ -73,8 +73,8 @@ namespace NHibernate.Criterion
 			if(areEqual == false)
 			{
 				string msg = "Both true and false projections must return the same types."+ Environment.NewLine +
-				             "But True projection returns: ["+StringHelper.Join(", ", trueTypes) +"] "+ Environment.NewLine+
-				             "And False projection returns: ["+StringHelper.Join(", ", falseTypes)+ "]";
+				             "But True projection returns: ["+string.Join<IType>(", ", trueTypes) +"] "+ Environment.NewLine+
+				             "And False projection returns: ["+string.Join<IType>(", ", falseTypes)+ "]";
 
 				throw new HibernateException(msg);
 			}

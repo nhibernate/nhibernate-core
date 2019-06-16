@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +34,6 @@ namespace NHibernate.Cache
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ReadWriteCache));
 
 		private readonly object _lockObject = new object();
-		// 6.0 TODO: remove
 		private CacheBase _cache;
 		private int _nextLockId;
 
@@ -53,10 +51,7 @@ namespace NHibernate.Cache
 #pragma warning restore 618
 		{
 			get { return _cache; }
-			set
-			{
-				_cache = value as CacheBase ?? new ObsoleteCacheWrapper(value);
-			}
+			set { _cache = value?.AsCacheBase(); }
 		}
 
 		// 6.0 TODO: make implicit and switch to auto-property
@@ -417,14 +412,9 @@ namespace NHibernate.Cache
 
 		public void Destroy()
 		{
-			try
-			{
-				Cache.Destroy();
-			}
-			catch (Exception e)
-			{
-				log.Warn(e, "Could not destroy cache");
-			}
+			// The cache is externally provided and may be shared. Destroying the cache is
+			// not the responsibility of this class.
+			Cache = null;
 		}
 
 		/// <summary>

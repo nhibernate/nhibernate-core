@@ -1,4 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <NhVbNet>true</NhVbNet>
+  </PropertyGroup>
   <Import Project="../../build-common/NHibernate.props" />
   <PropertyGroup>
     <Description>The Visual Basic Unit Tests for NHibernate.</Description>
@@ -13,8 +16,8 @@
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
-    <DefineConstants>NET461,$(DefineConstants)</DefineConstants>
+  <PropertyGroup Condition="$(NhNetFx)">
+    <DefineConstants>NETFX,$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="**\*.hbm.xml" />

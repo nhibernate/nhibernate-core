@@ -121,7 +121,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var hbm = new HbmIdbag();
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
-			Assert.That(() => mapper.Type(null), Throws.TypeOf<ArgumentNullException>());
+			Assert.That(() => mapper.Type(default(System.Type)), Throws.TypeOf<ArgumentNullException>());
 			Assert.That(() => mapper.Type(typeof(object)), Throws.TypeOf<ArgumentOutOfRangeException>());
 		}
 

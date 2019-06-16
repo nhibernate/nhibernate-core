@@ -44,8 +44,11 @@ namespace NHibernate.Cache
 		IList Get(QueryKey key, ICacheAssembler[] returnTypes, bool isNaturalKeyLookup, ISet<string> spaces, ISessionImplementor session);
 
 		/// <summary>
-		/// Clean up all resources.
+		/// Clean up resources.
 		/// </summary>
+		/// <remarks>
+		/// This method should not destroy <see cref="Cache" />. The session factory is responsible for it.
+		/// </remarks>
 		void Destroy();
 	}
 

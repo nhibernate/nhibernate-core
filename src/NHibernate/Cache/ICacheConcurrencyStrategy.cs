@@ -124,9 +124,12 @@ namespace NHibernate.Cache
 		void Clear();
 
 		/// <summary>
-		/// Clean up all resources.
+		/// Clean up resources.
 		/// </summary>
 		/// <exception cref="CacheException"></exception>
+		/// <remarks>
+		/// This method should not destroy <see cref="Cache" />. The session factory is responsible for it.
+		/// </remarks>
 		void Destroy();
 
 		/// <summary>
@@ -206,10 +209,7 @@ namespace NHibernate.Cache
 		{
 			if (cache is IBatchableCacheConcurrencyStrategy batchableCache)
 				return batchableCache.Cache;
-			var concreteCache = cache.Cache;
-			if (concreteCache == null)
-				return null;
-			return concreteCache as CacheBase ?? new ObsoleteCacheWrapper(concreteCache);
+			return cache.Cache?.AsCacheBase();
 		}
 	}
 }
