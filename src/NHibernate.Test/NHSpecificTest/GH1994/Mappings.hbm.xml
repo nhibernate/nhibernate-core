@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.GH1994">
+
+	<class name="Base" abstract="true" dynamic-update="true" lazy="true">
+		<id name="Key" column="pdoid" generator="guid.comb"/>
+
+		<property name="IsDeleted" column="IsDeleted" />
+
+		<filter name="deletedFilter" condition="IsDeleted = :deletedParam"/>
+
+	</class>
+
+	<union-subclass name="Asset" table="Asset" lazy="true" extends="Base">
+		<set name="Documents" table="asset_to_document" lazy="true" cascade="all-delete-orphan">
+			<key column="AssetId"/>
+			<many-to-many class="Document" column="DocumentId">
+				<filter name="deletedFilter" condition="IsDeleted = :deletedParam"/>
+			</many-to-many>
+		</set>
+		<set name="DocumentsFiltered" table="asset_to_document" lazy="true" cascade="none">
+			<key column="AssetId"/>
+			<many-to-many class="Document" column="DocumentId" where="IsDeleted = 0"/>
+		</set>
+	</union-subclass>
+
+	<union-subclass name="Document" table="Document" lazy="true" extends="Base">
+
+		<set name="Assets" table="asset_to_document" lazy="true" cascade="all-delete-orphan">
+			<key column="DocumentId"/>
+			<many-to-many class="Asset" column="AssetId"/>
+		</set>
+	</union-subclass>
+
+	<filter-def name="deletedFilter">
+		<filter-param name="deletedParam" type="bool"/>
+	</filter-def>
+
+</hibernate-mapping>

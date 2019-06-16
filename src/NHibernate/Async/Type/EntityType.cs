@@ -235,6 +235,10 @@ namespace NHibernate.Type
 				if (result == null)
 				{
 					result = await (persister.LoadByUniqueKeyAsync(uniqueKeyPropertyName, key, session, cancellationToken)).ConfigureAwait(false);
+					if (result == null && !IsNullable)
+					{
+						factory.EntityNotFoundDelegate.HandleEntityNotFound(entityName, uniqueKeyPropertyName, key);
+					}
 				}
 				return result == null ? null : persistenceContext.ProxyFor(result);
 			}

@@ -492,10 +492,10 @@ namespace NHibernate.Driver
 
 			// key = field name
 			// index = field index
-			private readonly IDictionary<string, int> fieldNameToIndex = new Dictionary<string, int>();
-			private readonly IList<string> fieldIndexToName = new List<string>();
-			private readonly IList<System.Type> fieldTypes = new List<System.Type>();
-			private readonly IList<string> fieldDataTypeNames = new List<string>();
+			private readonly Dictionary<string, int> fieldNameToIndex = new Dictionary<string, int>();
+			private readonly List<string> fieldIndexToName = new List<string>();
+			private readonly List<System.Type> fieldTypes = new List<System.Type>();
+			private readonly List<string> fieldDataTypeNames = new List<string>();
 
 			private NResult() { }
 

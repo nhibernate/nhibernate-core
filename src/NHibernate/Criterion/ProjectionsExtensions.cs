@@ -272,9 +272,9 @@ namespace NHibernate.Criterion
 		internal static IProjection ProcessSubstr(MethodCallExpression methodCallExpression)
 		{
 			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]).AsProjection();
-			object startIndex = ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
-			object length = ExpressionProcessor.FindValue(methodCallExpression.Arguments[2]);
-			return Projections.SqlFunction("substring", NHibernateUtil.String, property, Projections.Constant(startIndex), Projections.Constant(length));
+			var startIndex = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[1]);
+			var length = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[2]);
+			return Projections.SqlFunction("substring", NHibernateUtil.String, property, startIndex.AsProjection(), length.AsProjection());
 		}
 
 		/// <summary>
@@ -289,9 +289,9 @@ namespace NHibernate.Criterion
 		internal static IProjection ProcessCharIndex(MethodCallExpression methodCallExpression)
 		{
 			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]).AsProjection();
-			object theChar = ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
-			object startLocation = ExpressionProcessor.FindValue(methodCallExpression.Arguments[2]);
-			return Projections.SqlFunction("locate", NHibernateUtil.String, Projections.Constant(theChar), property, Projections.Constant(startLocation));
+			var theChar = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[1]);
+			var startLocation = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[2]);
+			return Projections.SqlFunction("locate", NHibernateUtil.String, theChar.AsProjection(), property, startLocation.AsProjection());
 		}
 
 		/// <summary>
@@ -315,8 +315,8 @@ namespace NHibernate.Criterion
 		internal static IProjection ProcessCoalesce(MethodCallExpression methodCallExpression)
 		{
 			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]).AsProjection();
-			object replaceValueIfIsNull = ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
-			return Projections.SqlFunction("coalesce", NHibernateUtil.Object, property, Projections.Constant(replaceValueIfIsNull));
+			var replaceValueIfIsNull = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[1]);
+			return Projections.SqlFunction("coalesce", NHibernateUtil.Object, property, replaceValueIfIsNull.AsProjection());
 		}
 
 		/// <summary>
@@ -331,8 +331,8 @@ namespace NHibernate.Criterion
 		internal static IProjection ProcessMod(MethodCallExpression methodCallExpression)
 		{
 			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]).AsProjection();
-			object divisor = ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
-			return Projections.SqlFunction("mod", NHibernateUtil.Int32, property, Projections.Constant(divisor));
+			var divisor = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[1]);
+			return Projections.SqlFunction("mod", NHibernateUtil.Int32, property, divisor.AsProjection());
 		}
 
 		/// <summary>
