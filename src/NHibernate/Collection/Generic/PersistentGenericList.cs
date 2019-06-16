@@ -260,7 +260,7 @@ namespace NHibernate.Collection.Generic
 
 		int IList.Add(object value)
 		{
-			if (!IsOperationQueueEnabled || !ReadSize())
+			if (!IsOperationQueueEnabled)
 			{
 				Write();
 				return ((IList)WrappedList).Add(value);
@@ -279,7 +279,10 @@ namespace NHibernate.Collection.Generic
 #pragma warning restore 618
 			}
 
-			return CachedSize;
+			//TODO: take a look at this - I don't like it because it changes the 
+			// meaning of Add - instead of returning the index it was added at 
+			// returns a "fake" index - not consistent with IList interface...
+			return -1;
 		}
 
 		bool IList.Contains(object value)

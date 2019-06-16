@@ -93,8 +93,8 @@ namespace NHibernate.Test.Extralazy
 				for (var i = 10; i < 15; i++)
 				{
 					var item = new Company($"c{i}", i, gavin);
-					Assert.That(((IList)addedItems).Add(item), Is.EqualTo(i));
-					gavin.Companies.Add(item);
+					addedItems.Add(item);
+					Assert.That(((IList) gavin.Companies).Add(item), Is.EqualTo(-1));
 				}
 
 				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
@@ -819,7 +819,7 @@ namespace NHibernate.Test.Extralazy
 				{
 					var item = new Company($"c{i}", i, gavin);
 					addedItems[i] = item;
-					Assert.That(((IList)gavin.Companies).Add(item), Is.EqualTo(i));
+					Assert.That(((IList)gavin.Companies).Add(item), Is.EqualTo(-1));
 				}
 
 				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
