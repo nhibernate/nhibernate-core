@@ -19,7 +19,6 @@ using NUnit.Framework.Constraints;
 namespace NHibernate.Test.Extralazy
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ExtraLazyFixtureAsync : TestCase
 	{
@@ -55,7 +54,7 @@ namespace NHibernate.Test.Extralazy
 
 		[TestCase(false)]
 		[TestCase(true)]
-		public async Task ListAddAsync(bool initialize, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ListAddAsync(bool initialize)
 		{
 			User gavin;
 			var addedItems = new List<Company>();
@@ -64,7 +63,7 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = new User("gavin", "secret");
-				await (s.PersistAsync(gavin, cancellationToken));
+				await (s.PersistAsync(gavin));
 
 				for (var i = 0; i < 5; i++)
 				{
@@ -73,13 +72,13 @@ namespace NHibernate.Test.Extralazy
 					gavin.Companies.Add(item);
 				}
 				
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 
 				Sfi.Statistics.Clear();
 				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
@@ -154,17 +153,17 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(gavin.Companies.Count, Is.EqualTo(15));
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -172,7 +171,7 @@ namespace NHibernate.Test.Extralazy
 		[TestCase(false, true)]
 		[TestCase(true, false)]
 		[TestCase(true, true)]
-		public async Task ListAddDuplicatedAsync(bool initialize, bool flush, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ListAddDuplicatedAsync(bool initialize, bool flush)
 		{
 			User gavin;
 			var addedItems = new List<Company>();
@@ -181,7 +180,7 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = new User("gavin", "secret");
-				await (s.PersistAsync(gavin, cancellationToken));
+				await (s.PersistAsync(gavin));
 
 				for (var i = 0; i < 5; i++)
 				{
@@ -193,17 +192,17 @@ namespace NHibernate.Test.Extralazy
 
 				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				// Refresh added items
 				for (var i = 0; i < 5; i++)
 				{
-					addedItems[i] = await (s.GetAsync<Company>(addedItems[i].Id, cancellationToken));
+					addedItems[i] = await (s.GetAsync<Company>(addedItems[i].Id));
 				}
 
 				Sfi.Statistics.Clear();
@@ -224,7 +223,7 @@ namespace NHibernate.Test.Extralazy
 
 				if (flush)
 				{
-					await (s.FlushAsync(cancellationToken));
+					await (s.FlushAsync());
 					Assert.That(gavin.Companies.Count, Is.EqualTo(5));
 					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
 				}
@@ -240,23 +239,23 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(gavin.Companies.Count, Is.EqualTo(flush ? 5 : 10));
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 		}
 
 		[TestCase(false)]
 		[TestCase(true)]
-		public async Task ListInsertAsync(bool initialize, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ListInsertAsync(bool initialize)
 		{
 			User gavin;
 			var addedItems = new List<Company>();
@@ -265,7 +264,7 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = new User("gavin", "secret");
-				await (s.PersistAsync(gavin, cancellationToken));
+				await (s.PersistAsync(gavin));
 
 				for (var i = 0; i < 5; i++)
 				{
@@ -274,13 +273,13 @@ namespace NHibernate.Test.Extralazy
 					gavin.Companies.Add(item);
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 
 				Sfi.Statistics.Clear();
 				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
@@ -358,17 +357,17 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(gavin.Companies.Count, Is.EqualTo(15));
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -376,7 +375,7 @@ namespace NHibernate.Test.Extralazy
 		[TestCase(false, true)]
 		[TestCase(true, false)]
 		[TestCase(true, true)]
-		public async Task ListInsertDuplicatedAsync(bool initialize, bool flush, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ListInsertDuplicatedAsync(bool initialize, bool flush)
 		{
 			User gavin;
 			var addedItems = new List<Company>();
@@ -385,7 +384,7 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = new User("gavin", "secret");
-				await (s.PersistAsync(gavin, cancellationToken));
+				await (s.PersistAsync(gavin));
 
 				for (var i = 0; i < 5; i++)
 				{
@@ -397,17 +396,17 @@ namespace NHibernate.Test.Extralazy
 
 				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				// Refresh added items
 				for (var i = 0; i < 5; i++)
 				{
-					addedItems[i] = await (s.GetAsync<Company>(addedItems[i].Id, cancellationToken));
+					addedItems[i] = await (s.GetAsync<Company>(addedItems[i].Id));
 				}
 
 				Sfi.Statistics.Clear();
@@ -429,7 +428,7 @@ namespace NHibernate.Test.Extralazy
 
 				if (flush)
 				{
-					await (s.FlushAsync(cancellationToken));
+					await (s.FlushAsync());
 					Assert.That(gavin.Companies.Count, Is.EqualTo(5));
 					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
 				}
@@ -445,23 +444,23 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(gavin.Companies.Count, Is.EqualTo(flush ? 5 : 10));
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 		}
 
 		[TestCase(false)]
 		[TestCase(true)]
-		public async Task ListRemoveAtAsync(bool initialize, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ListRemoveAtAsync(bool initialize)
 		{
 			User gavin;
 			var addedItems = new List<Company>();
@@ -471,7 +470,7 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = new User("gavin", "secret");
-				await (s.PersistAsync(gavin, cancellationToken));
+				await (s.PersistAsync(gavin));
 
 				for (var i = 0; i < 5; i++)
 				{
@@ -480,17 +479,17 @@ namespace NHibernate.Test.Extralazy
 					gavin.Companies.Add(item);
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				// Refresh added items
 				for (var i = 0; i < 5; i++)
 				{
-					addedItems[i] = await (s.GetAsync<Company>(addedItems[i].Id, cancellationToken));
+					addedItems[i] = await (s.GetAsync<Company>(addedItems[i].Id));
 				}
 
 				// Add transient companies
@@ -569,24 +568,24 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder));
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.That(gavin.Companies.Count, Is.EqualTo(6));
 				Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 		}
 
 		[TestCase(false)]
 		[TestCase(true)]
-		public async Task ListGetSetAsync(bool initialize, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ListGetSetAsync(bool initialize)
 		{
 			User gavin;
 			var addedItems = new List<Company>();
@@ -596,7 +595,7 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = new User("gavin", "secret");
-				await (s.PersistAsync(gavin, cancellationToken));
+				await (s.PersistAsync(gavin));
 
 				for (var i = 0; i < 5; i++)
 				{
@@ -605,17 +604,17 @@ namespace NHibernate.Test.Extralazy
 					gavin.Companies.Add(item);
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				// Refresh added items
 				for (var i = 0; i < 5; i++)
 				{
-					addedItems[i] = await (s.GetAsync<Company>(addedItems[i].Id, cancellationToken));
+					addedItems[i] = await (s.GetAsync<Company>(addedItems[i].Id));
 				}
 
 				// Add transient companies
@@ -697,24 +696,24 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder));
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
 				Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 		}
 
 		[TestCase(false)]
 		[TestCase(true)]
-		public async Task ListFlushAsync(bool initialize, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ListFlushAsync(bool initialize)
 		{
 			User gavin;
 			var addedItems = new List<Company>();
@@ -724,7 +723,7 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = new User("gavin", "secret");
-				await (s.PersistAsync(gavin, cancellationToken));
+				await (s.PersistAsync(gavin));
 
 				for (var i = 0; i < 5; i++)
 				{
@@ -733,17 +732,17 @@ namespace NHibernate.Test.Extralazy
 					gavin.Companies.Add(item);
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				// Refresh added items
 				for (var i = 0; i < 5; i++)
 				{
-					addedItems[i] = await (s.GetAsync<Company>(addedItems[i].Id, cancellationToken));
+					addedItems[i] = await (s.GetAsync<Company>(addedItems[i].Id));
 				}
 
 				// Add transient companies with Add
@@ -885,7 +884,7 @@ namespace NHibernate.Test.Extralazy
 				gavin.Companies.RemoveAt(12);
 				using (var sqlLog = new SqlLogSpy())
 				{
-					await (s.FlushAsync(cancellationToken));
+					await (s.FlushAsync());
 					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "DELETE \n    FROM"), Is.EqualTo(1));
 				}
 
@@ -898,7 +897,7 @@ namespace NHibernate.Test.Extralazy
 				gavin.Companies.Add(new Company($"c{12}", 12, gavin));
 				using (var sqlLog = new SqlLogSpy())
 				{
-					await (s.FlushAsync(cancellationToken));
+					await (s.FlushAsync());
 					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "INSERT \n    INTO"), Is.EqualTo(1));
 				}
 
@@ -923,24 +922,24 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(gavin.Companies.Select(o => o.ListIndex), Is.EquivalentTo(finalIndexOrder));
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.That(gavin.Companies.Count, Is.EqualTo(13));
 				Assert.That(gavin.Companies.Select(o => o.ListIndex), Is.EquivalentTo(finalIndexOrder));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 		}
 
 		[TestCase(false)]
 		[TestCase(true)]
-		public async Task ListClearAsync(bool initialize, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ListClearAsync(bool initialize)
 		{
 			User gavin;
 			var addedItems = new List<CreditCard>();
@@ -949,7 +948,7 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = new User("gavin", "secret");
-				await (s.PersistAsync(gavin, cancellationToken));
+				await (s.PersistAsync(gavin));
 
 				for (var i = 0; i < 5; i++)
 				{
@@ -958,7 +957,7 @@ namespace NHibernate.Test.Extralazy
 					gavin.CreditCards.Add(item);
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
@@ -966,11 +965,11 @@ namespace NHibernate.Test.Extralazy
 			{
 				s.FlushMode = FlushMode.Commit;
 
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				// Refresh added items
 				for (var i = 0; i < 5; i++)
 				{
-					addedItems[i] = await (s.GetAsync<CreditCard>(addedItems[i].Id, cancellationToken));
+					addedItems[i] = await (s.GetAsync<CreditCard>(addedItems[i].Id));
 				}
 
 				var collection = gavin.CreditCards;
@@ -1036,13 +1035,13 @@ namespace NHibernate.Test.Extralazy
 				}
 
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				var collection = gavin.CreditCards;
 				// As the cascade option is set to all, the clear operation will only work on
 				// transient permissions
@@ -1054,13 +1053,13 @@ namespace NHibernate.Test.Extralazy
 
 				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False);
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 		}
 
 		[TestCase(false)]
 		[TestCase(true)]
-		public async Task ListIndexOperationsAsync(bool initialize, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ListIndexOperationsAsync(bool initialize)
 		{
 			User gavin;
 			var finalIndexOrder = new List<int> {6, 0, 4};
@@ -1069,7 +1068,7 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = new User("gavin", "secret");
-				await (s.PersistAsync(gavin, cancellationToken));
+				await (s.PersistAsync(gavin));
 
 				for (var i = 0; i < 5; i++)
 				{
@@ -1077,13 +1076,13 @@ namespace NHibernate.Test.Extralazy
 					gavin.Companies.Add(item);
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				// Current tracker state:
 				// Indexes: 0,1,2,3,4
 				// Queue: /
@@ -1155,24 +1154,24 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder));
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.That(gavin.Companies.Count, Is.EqualTo(3));
 				Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 		}
 
 		[TestCase(false)]
 		[TestCase(true)]
-		public async Task SetAddAsync(bool initialize, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task SetAddAsync(bool initialize)
 		{
 			User gavin;
 			Document hia;
@@ -1187,14 +1186,14 @@ namespace NHibernate.Test.Extralazy
 				hia2 = new Document("HiA2", "blah blah blah blah", gavin);
 				gavin.Documents.Add(hia);
 				gavin.Documents.Add(hia2);
-				await (s.PersistAsync(gavin, cancellationToken));
-				await (t.CommitAsync(cancellationToken));
+				await (s.PersistAsync(gavin));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 
 				Sfi.Statistics.Clear();
 				Assert.That(gavin.Documents.Count, Is.EqualTo(2));
@@ -1305,19 +1304,19 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(gavin.Documents.Count, Is.EqualTo(12));
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.That(gavin.Documents.Count, Is.EqualTo(12));
 				Assert.That(gavin.Documents.Contains(hia2), Is.True);
 				Assert.That(gavin.Documents.Contains(hia), Is.True);
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -1325,7 +1324,7 @@ namespace NHibernate.Test.Extralazy
 		[TestCase(false, true)]
 		[TestCase(true, false)]
 		[TestCase(true, true)]
-		public async Task SetAddDuplicatedAsync(bool initialize, bool flush, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task SetAddDuplicatedAsync(bool initialize, bool flush)
 		{
 			User gavin;
 			var addedItems = new List<Document>();
@@ -1334,7 +1333,7 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = new User("gavin", "secret");
-				await (s.PersistAsync(gavin, cancellationToken));
+				await (s.PersistAsync(gavin));
 
 				for (var i = 0; i < 5; i++)
 				{
@@ -1346,17 +1345,17 @@ namespace NHibernate.Test.Extralazy
 
 				Assert.That(gavin.Documents.Count, Is.EqualTo(5));
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				// Refresh added items
 				for (var i = 0; i < 5; i++)
 				{
-					addedItems[i] = await (s.GetAsync<Document>(addedItems[i].Title, cancellationToken));
+					addedItems[i] = await (s.GetAsync<Document>(addedItems[i].Title));
 				}
 
 				Sfi.Statistics.Clear();
@@ -1377,7 +1376,7 @@ namespace NHibernate.Test.Extralazy
 
 				if (flush)
 				{
-					await (s.FlushAsync(cancellationToken));
+					await (s.FlushAsync());
 					Assert.That(gavin.Documents.Count, Is.EqualTo(5));
 					Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
 				}
@@ -1393,23 +1392,23 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(gavin.Documents.Count, Is.EqualTo(5));
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.That(gavin.Documents.Count, Is.EqualTo(5));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 		}
 
 		[TestCase(false)]
 		[TestCase(true)]
-		public async Task SetAddTransientAsync(bool initialize, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task SetAddTransientAsync(bool initialize)
 		{
 			User gavin;
 			var addedItems = new List<UserPermission>();
@@ -1418,7 +1417,7 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = new User("gavin", "secret");
-				await (s.PersistAsync(gavin, cancellationToken));
+				await (s.PersistAsync(gavin));
 
 				for (var i = 0; i < 5; i++)
 				{
@@ -1427,7 +1426,7 @@ namespace NHibernate.Test.Extralazy
 					gavin.Permissions.Add(item);
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
@@ -1435,7 +1434,7 @@ namespace NHibernate.Test.Extralazy
 			{
 				s.FlushMode = FlushMode.Commit;
 
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 
 				Sfi.Statistics.Clear();
 				Assert.That(gavin.Permissions.Count, Is.EqualTo(5));
@@ -1555,23 +1554,23 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(gavin.Permissions.Count, Is.EqualTo(15));
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.That(gavin.Permissions.Count, Is.EqualTo(15));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False);
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 		}
 
 		[TestCase(false)]
 		[TestCase(true)]
-		public async Task SetRemoveAsync(bool initialize, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task SetRemoveAsync(bool initialize)
 		{
 			User gavin;
 			var addedDocuments = new List<Document>();
@@ -1587,18 +1586,18 @@ namespace NHibernate.Test.Extralazy
 					gavin.Documents.Add(document);
 				}
 
-				await (s.PersistAsync(gavin, cancellationToken));
-				await (t.CommitAsync(cancellationToken));
+				await (s.PersistAsync(gavin));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				// Refresh added items
 				for (var i = 0; i < 5; i++)
 				{
-					addedDocuments[i] = await (s.GetAsync<Document>(addedDocuments[i].Title, cancellationToken));
+					addedDocuments[i] = await (s.GetAsync<Document>(addedDocuments[i].Title));
 				}
 
 				Sfi.Statistics.Clear();
@@ -1708,23 +1707,23 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(gavin.Documents.Count, Is.EqualTo(0));
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.That(gavin.Documents.Count, Is.EqualTo(0));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 		}
 
 		[TestCase(false)]
 		[TestCase(true)]
-		public async Task SetClearAsync(bool initialize, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task SetClearAsync(bool initialize)
 		{
 			User gavin;
 			var addedItems = new List<UserPermission>();
@@ -1733,7 +1732,7 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = new User("gavin", "secret");
-				await (s.PersistAsync(gavin, cancellationToken));
+				await (s.PersistAsync(gavin));
 
 				for (var i = 0; i < 5; i++)
 				{
@@ -1742,7 +1741,7 @@ namespace NHibernate.Test.Extralazy
 					gavin.Permissions.Add(item);
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
@@ -1750,11 +1749,11 @@ namespace NHibernate.Test.Extralazy
 			{
 				s.FlushMode = FlushMode.Commit;
 
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				// Refresh added items
 				for (var i = 0; i < 5; i++)
 				{
-					addedItems[i] = await (s.GetAsync<UserPermission>(addedItems[i].Id, cancellationToken));
+					addedItems[i] = await (s.GetAsync<UserPermission>(addedItems[i].Id));
 				}
 
 				var collection = gavin.Permissions;
@@ -1825,13 +1824,13 @@ namespace NHibernate.Test.Extralazy
 				}
 
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				var collection = gavin.Permissions;
 				// As the cascade option is set to all, the clear operation will only work on
 				// transient permissions
@@ -1843,13 +1842,13 @@ namespace NHibernate.Test.Extralazy
 
 				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False);
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 		}
 
 		[TestCase(false)]
 		[TestCase(true)]
-		public async Task MapAddAsync(bool initialize, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task MapAddAsync(bool initialize)
 		{
 			User gavin;
 			UserSetting setting;
@@ -1859,7 +1858,7 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = new User("gavin", "secret");
-				await (s.PersistAsync(gavin, cancellationToken));
+				await (s.PersistAsync(gavin));
 
 				for (var i = 0; i < 5; i++)
 				{
@@ -1868,13 +1867,13 @@ namespace NHibernate.Test.Extralazy
 					gavin.Settings.Add(setting.Name, setting);
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 
 				Sfi.Statistics.Clear();
 				Assert.That(gavin.Settings.Count, Is.EqualTo(5));
@@ -1996,26 +1995,26 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(gavin.Settings.Count, Is.EqualTo(15));
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.That(gavin.Settings.Count, Is.EqualTo(15));
 				Assert.That(gavin.Settings.ContainsKey(addedSettings[0].Name), Is.True);
 				Assert.That(gavin.Settings.ContainsKey(addedSettings[5].Name), Is.True);
 				Assert.That(gavin.Settings.ContainsKey(addedSettings[10].Name), Is.True);
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 		}
 
 		[TestCase(false)]
 		[TestCase(true)]
-		public async Task MapSetAsync(bool initialize, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task MapSetAsync(bool initialize)
 		{
 			User gavin;
 			UserSetting setting;
@@ -2024,7 +2023,7 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = new User("gavin", "secret");
-				await (s.PersistAsync(gavin, cancellationToken));
+				await (s.PersistAsync(gavin));
 
 				for (var i = 0; i < 5; i++)
 				{
@@ -2032,13 +2031,13 @@ namespace NHibernate.Test.Extralazy
 					gavin.Settings.Add(setting.Name, setting);
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 
 				Sfi.Statistics.Clear();
 				Assert.That(gavin.Settings.Count, Is.EqualTo(5));
@@ -2110,23 +2109,23 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(gavin.Settings.Count, Is.EqualTo(10));
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.That(gavin.Settings.Count, Is.EqualTo(10));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 		}
 
 		[TestCase(false)]
 		[TestCase(true)]
-		public async Task MapRemoveAsync(bool initialize, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task MapRemoveAsync(bool initialize)
 		{
 			User gavin;
 			UserSetting setting;
@@ -2135,7 +2134,7 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = new User("gavin", "secret");
-				await (s.PersistAsync(gavin, cancellationToken));
+				await (s.PersistAsync(gavin));
 
 				for (var i = 0; i < 5; i++)
 				{
@@ -2143,13 +2142,13 @@ namespace NHibernate.Test.Extralazy
 					gavin.Settings.Add(setting.Name, setting);
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 
 				Sfi.Statistics.Clear();
 				Assert.That(gavin.Settings.Count, Is.EqualTo(5));
@@ -2228,17 +2227,17 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(gavin.Settings.Count, Is.EqualTo(6));
 				}
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", cancellationToken));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.That(gavin.Settings.Count, Is.EqualTo(6));
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
 
-				await (t.CommitAsync(cancellationToken));
+				await (t.CommitAsync());
 			}
 		}
 
