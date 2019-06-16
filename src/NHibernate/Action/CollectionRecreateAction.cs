@@ -86,12 +86,12 @@ namespace NHibernate.Action
 					{
 						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
 					}
+					
+					return;
 				}
 			}
-			else
-			{
-				Persister.Cache.Release(cacheKey, Lock);
-			}
+			
+			Persister.Cache.Release(cacheKey, Lock);
 		}
 
 		private void PostRecreate()
