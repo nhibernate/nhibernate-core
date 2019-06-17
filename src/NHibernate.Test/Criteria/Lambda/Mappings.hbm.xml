@@ -9,6 +9,7 @@
 		</id>
 		<discriminator type="string" />
 		<property name="Name" />
+		<property name="Nickname" />
 		<property name="Age" />
 		<property name="BirthDate" />
 		<property name="BirthDateAsDateTimeOffset" type="NHibernate.Test.DateTimeOffsetUserType, NHibernate.Test" />

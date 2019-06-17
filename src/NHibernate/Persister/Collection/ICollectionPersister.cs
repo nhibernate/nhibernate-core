@@ -285,6 +285,7 @@ namespace NHibernate.Persister.Collection
 		object NotFoundObject { get; }
 	}
 
+	//6.0 TODO: Merge into ICollectionPersister
 	public static class CollectionPersisterExtensions
 	{
 		/// <summary>
@@ -303,6 +304,19 @@ namespace NHibernate.Persister.Collection
 				.Warn("Collection persister of {0} type is not supported, returning 1 as a batch size.", persister?.GetType());
 
 			return 1;
+		}
+
+		/// <summary>
+		/// Is this persister has enabled many-to-many filter or has many-to-many where clause
+		/// </summary>
+		internal static bool IsManyToManyFiltered(this ICollectionPersister persister, IDictionary<string, IFilter> enabledFilters)
+		{
+			if (persister is AbstractCollectionPersister acp)
+			{
+				return acp.IsManyToManyFiltered(enabledFilters);
+			}
+
+			return persister.IsManyToMany && !string.IsNullOrEmpty(persister.GetManyToManyFilterFragment("x", enabledFilters));
 		}
 	}
 }

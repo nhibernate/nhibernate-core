@@ -21,7 +21,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.LazyProperty
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class LazyPropertyFixtureAsync : TestCase
 	{
@@ -152,25 +151,25 @@ namespace NHibernate.Test.LazyProperty
 
 		[TestCase(false)]
 		[TestCase(true)]
-		public async Task CanUpdateValueForLazyPropertyAsync(bool initializeAfterSet, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task CanUpdateValueForLazyPropertyAsync(bool initializeAfterSet)
 		{
 			Book book;
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				book = await (s.GetAsync<Book>(1, cancellationToken));
+				book = await (s.GetAsync<Book>(1));
 				book.ALotOfText = "update-text";
 				if (initializeAfterSet)
 				{
 					var image = book.Image;
 				}
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			{
-				book = await (s.GetAsync<Book>(1, cancellationToken));
+				book = await (s.GetAsync<Book>(1));
 				var text = book.ALotOfText;
 			}
 
@@ -182,14 +181,14 @@ namespace NHibernate.Test.LazyProperty
 
 		[TestCase(false)]
 		[TestCase(true)]
-		public async Task UpdateValueForLazyPropertyToSameValueAsync(bool initializeAfterSet, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task UpdateValueForLazyPropertyToSameValueAsync(bool initializeAfterSet)
 		{
 			Book book;
 			string text;
 
 			using (var s = OpenSession())
 			{
-				book = await (s.GetAsync<Book>(1, cancellationToken));
+				book = await (s.GetAsync<Book>(1));
 				text = book.ALotOfText;
 			}
 
@@ -198,14 +197,14 @@ namespace NHibernate.Test.LazyProperty
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				book = await (s.GetAsync<Book>(1, cancellationToken));
+				book = await (s.GetAsync<Book>(1));
 				book.ALotOfText = text;
 				if (initializeAfterSet)
 				{
 					var image = book.Image;
 				}
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(initializeAfterSet ? 0 : 1));
@@ -215,7 +214,7 @@ namespace NHibernate.Test.LazyProperty
 
 			using (var s = OpenSession())
 			{
-				book = await (s.GetAsync<Book>(1, cancellationToken));
+				book = await (s.GetAsync<Book>(1));
 				text = book.ALotOfText;
 			}
 

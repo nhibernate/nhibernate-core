@@ -7,6 +7,7 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Id
 {
@@ -32,7 +33,7 @@ namespace NHibernate.Id
 			{
 				var uniqueKeyPropertyNames = suppliedPropertyNames ?? DetermineNameOfPropertiesToUse(entityPersister);
 
-				parameterTypes = uniqueKeyPropertyNames.Select(p => entityPersister.GetPropertyType(p)).ToArray();
+				parameterTypes = uniqueKeyPropertyNames.ToArray(p => entityPersister.GetPropertyType(p));
 			}
 			else if (persister is IQueryableCollection collectionPersister)
 			{

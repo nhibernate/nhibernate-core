@@ -214,44 +214,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
             }
         }
 
-        [Test, Ignore("Pure Outer Join semantics has projection anomaly!")]
-        public async Task ProjectionDoesNotChangeResultAsync()
-        {
-            // This tests against the "projection anomaly" of (||-4) semantics.
-            using (var session = OpenSession())
-            {
-                using (var tx = session.BeginTransaction())
-                {
-                    var i1001 = new MyRef1 { Id = 1001, I1 = null, I2 = 101 };
-                    var i1101 = new MyRef1 { Id = 1101, I1 = null, I2 = 111 };
-                    await (session.SaveAsync(i1001));
-                    await (session.SaveAsync(i1101));
-
-                    var b1 = new MyBO { Id = 1, Name = "1:1001", BO1 = i1001 };
-                    var b2 = new MyBO { Id = 2, Name = "2:1101", BO1 = i1101 };
-                    var b3 = new MyBO { Id = 3, Name = "3:1101", BO1 = i1101 };
-                    var b4 = new MyBO { Id = 4, Name = "4:NULL", BO1 = null };
-                    await (session.SaveAsync(b1));
-                    await (session.SaveAsync(b2));
-                    await (session.SaveAsync(b3));
-                    await (session.SaveAsync(b4));
-                    await (tx.CommitAsync());
-                }
-            }
-
-            using (var session = OpenSession())
-            {
-                var directResult = (await (session.Query<MyRef1>()
-                    .Where(bo => bo.I1 == null).ToListAsync())).Select(bo => bo.Id);
-                var resultViaProjection = (await ((from bo in session.Query<MyBO>()
-                                           where bo.BO1.I1 == null || bo.BO2.J2 == 999
-                                           select bo.BO1).Distinct().ToListAsync())).Select(bo => bo.Id);
-                // With "projection anomaly", the previous Select will fail, as one "bo" is null,
-                // and hence bo.Id throws a NRE.
-                Assert.That(() => resultViaProjection.ToList(), Is.EquivalentTo(directResult.ToList()));
-            }
-        }
-
         [Test, Explicit("Exploratory Test")]
         public async Task NHibernateLinqExploratoryTestWhichProvesNothingAsync()
         {

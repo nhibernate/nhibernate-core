@@ -159,13 +159,13 @@ namespace NHibernate.Util
 							currentDisposable.Dispose();
 						}
 					}
+					// nothing for Finalizer to do - so tell the GC to ignore it
+					GC.SuppressFinalize(this);
 				}
 
 				// free unmanaged resources here
 
 				_isAlreadyDisposed = true;
-				// nothing for Finalizer to do - so tell the GC to ignore it
-				GC.SuppressFinalize(this);
 			}
 
 			#endregion
@@ -241,7 +241,6 @@ namespace NHibernate.Util
 			public void Dispose()
 			{
 				Dispose(true);
-				GC.SuppressFinalize(this);
 			}
 
 			private void Dispose(bool disposing)
@@ -249,9 +248,11 @@ namespace NHibernate.Util
 				if (!disposed)
 				{
 					if (disposing)
+					{
 						for (; currentEnumIdx < enumerators.Length; currentEnumIdx++)
 							enumerators[currentEnumIdx].Dispose();
-					GC.SuppressFinalize(this);
+						GC.SuppressFinalize(this);
+					}
 					disposed = true;
 				}
 			}

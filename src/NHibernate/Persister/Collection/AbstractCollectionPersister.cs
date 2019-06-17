@@ -27,6 +27,15 @@ using Array = NHibernate.Mapping.Array;
 
 namespace NHibernate.Persister.Collection
 {
+	internal static class CollectionPersister
+	{
+		/// <summary> The property name of the "special" identifier property</summary>
+		public const string PropId = "id";
+		public const string PropElement = "element";
+		public const string PropKey = "key";
+		public const string PropIndex = "index";
+	}
+
 	/// <summary>
 	/// Summary description for AbstractCollectionPersister.
 	/// </summary>
@@ -158,8 +167,8 @@ namespace NHibernate.Persister.Collection
 
 		private readonly string[] spaces;
 
-		private readonly IDictionary<string, object> collectionPropertyColumnAliases = new Dictionary<string, object>();
-		private readonly IDictionary<string, object> collectionPropertyColumnNames = new Dictionary<string, object>();
+		private readonly Dictionary<string, object> collectionPropertyColumnAliases = new Dictionary<string, object>();
+		private readonly Dictionary<string, object> collectionPropertyColumnNames = new Dictionary<string, object>();
 
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (ICollectionPersister));
 
@@ -1380,6 +1389,11 @@ namespace NHibernate.Persister.Collection
 
 			return buffer.ToString();
 		}
+		
+		public bool IsManyToManyFiltered(IDictionary<string, IFilter> enabledFilters)
+		{
+			return IsManyToMany && (manyToManyWhereString != null || manyToManyFilterHelper.IsAffectedBy(enabledFilters));
+		}
 
 		public string[] ToColumns(string alias, string propertyName)
 		{
@@ -1512,17 +1526,17 @@ namespace NHibernate.Persister.Collection
 
 		public void InitCollectionPropertyMap()
 		{
-			InitCollectionPropertyMap("key", keyType, keyColumnAliases, keyColumnNames);
-			InitCollectionPropertyMap("element", elementType, elementColumnAliases, elementColumnNames);
+			InitCollectionPropertyMap(CollectionPersister.PropKey, keyType, keyColumnAliases, keyColumnNames);
+			InitCollectionPropertyMap(CollectionPersister.PropElement, elementType, elementColumnAliases, elementColumnNames);
 
 			if (hasIndex)
 			{
-				InitCollectionPropertyMap("index", indexType, indexColumnAliases, indexColumnNames);
+				InitCollectionPropertyMap(CollectionPersister.PropIndex, indexType, indexColumnAliases, indexColumnNames);
 			}
 
 			if (hasIdentifier)
 			{
-				InitCollectionPropertyMap("id", identifierType, new string[] {identifierColumnAlias},
+				InitCollectionPropertyMap(CollectionPersister.PropId, identifierType, new string[] {identifierColumnAlias},
 										  new string[] {identifierColumnName});
 			}
 		}

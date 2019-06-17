@@ -6,7 +6,7 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
-namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
+namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
 {
 	[TestFixture]
 	public class DynamicComponentMappingTests
@@ -31,6 +31,141 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 				get { return info; }
 				set { info = value; }
 			}
+		}
+
+		private class PersonWithDynamicInfo
+		{
+			public int Id { get; set; }
+			public dynamic Info { get; set; }
+		}
+
+		[Test]
+		public void WhenMapDynCompoByDictionaryThenMapItAndItsProperties()
+		{
+			//NH-3704
+			var mapper = new ModelMapper();
+			mapper.Class<Person>(
+				map =>
+				{
+					map.Id(x => x.Id, idmap => { });
+					map.Component(
+						x => x.Info,
+						new Dictionary<string, System.Type>
+							{{"MyInt", typeof(int)}, {"MyDate", typeof(DateTime)}},
+						z => { z.Property("MyInt", pm => pm.Column("MY_COLUMN")); });
+				});
+
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(Person) });
+			var hbmClass = hbmMapping.RootClasses[0];
+			var hbmDynamicComponent = hbmClass.Properties.OfType<HbmDynamicComponent>().SingleOrDefault();
+			Assert.That(hbmDynamicComponent, Is.Not.Null);
+			Assert.That(
+				hbmDynamicComponent.Properties.Select(x => x.Name),
+				Is.EquivalentTo(new[] { "MyInt", "MyDate" }));
+		}
+
+		[Test]
+		public void WhenMapDynCompoByDictionaryThenMapItAndItsPropertiesGeneric()
+		{
+			//NH-3704
+			var mapper = new ModelMapper();
+			mapper.Class<PersonWithGenericInfo>(
+				map =>
+				{
+					map.Id(x => x.Id, idmap => { });
+					map.Component(
+						x => x.Info,
+						new Dictionary<string, System.Type>
+							{{"MyInt", typeof(int)}, {"MyDate", typeof(DateTime)}},
+						z => { z.Property("MyInt", pm => pm.Column("MY_COLUMN")); });
+				});
+
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(PersonWithGenericInfo) });
+			var hbmClass = hbmMapping.RootClasses[0];
+			var hbmDynamicComponent = hbmClass.Properties.OfType<HbmDynamicComponent>().SingleOrDefault();
+			Assert.That(hbmDynamicComponent, Is.Not.Null);
+			Assert.That(
+				hbmDynamicComponent.Properties.Select(x => x.Name),
+				Is.EquivalentTo(new[] { "MyInt", "MyDate" }));
+		}
+
+		[Test]
+		public void WhenMapDynCompoByDictionaryThenMapItAndItsPropertiesDynamic()
+		{
+			//NH-3704
+			var mapper = new ModelMapper();
+			mapper.Class<PersonWithDynamicInfo>(
+				map =>
+				{
+					map.Id(x => x.Id, idmap => { });
+					map.Component(
+						nameof(PersonWithDynamicInfo.Info),
+						new Dictionary<string, System.Type>
+							{{"MyInt", typeof(int)}, {"MyDate", typeof(DateTime)}},
+						z =>
+						{
+							z.Property("MyInt", pm => pm.Column("MY_COLUMN"));
+							z.Component<DateTime>("MyDate");
+						});
+				});
+
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(PersonWithDynamicInfo) });
+			var hbmClass = hbmMapping.RootClasses[0];
+			var hbmDynamicComponent = hbmClass.Properties.OfType<HbmDynamicComponent>().SingleOrDefault();
+			Assert.That(hbmDynamicComponent, Is.Not.Null);
+			Assert.That(
+				hbmDynamicComponent.Properties.Select(x => x.Name),
+				Is.EquivalentTo(new[] { "MyInt", "MyDate" }));
+		}
+
+		[Test]
+		public void WhenMapPrivateDynCompoByDictionaryThenMapItAndItsProperties()
+		{
+			//NH-3704
+			var mapper = new ModelMapper();
+			mapper.Class<Person>(
+				map =>
+				{
+					map.Id(x => x.Id, idmap => { });
+					map.Component(
+						"Info",
+						new Dictionary<string, System.Type>
+							{{"MyInt", typeof(int)}, {"MyDate", typeof(DateTime)}},
+						z => { z.Property("MyInt", pm => pm.Column("MY_COLUMN")); });
+				});
+
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(Person) });
+			var hbmClass = hbmMapping.RootClasses[0];
+			var hbmDynamicComponent = hbmClass.Properties.OfType<HbmDynamicComponent>().SingleOrDefault();
+			Assert.That(hbmDynamicComponent, Is.Not.Null);
+			Assert.That(
+				hbmDynamicComponent.Properties.Select(x => x.Name),
+				Is.EquivalentTo(new[] { "MyInt", "MyDate" }));
+		}
+
+		[Test]
+		public void WhenMapPrivateDynCompoByDictionaryThenMapItAndItsPropertiesGeneric()
+		{
+			//NH-3704
+			var mapper = new ModelMapper();
+			mapper.Class<PersonWithGenericInfo>(
+				map =>
+				{
+					map.Id(x => x.Id, idmap => { });
+					map.Component(
+						"Info",
+						new Dictionary<string, System.Type>
+							{{"MyInt", typeof(int)}, {"MyDate", typeof(DateTime)}},
+						z => { z.Property("MyInt", pm => pm.Column("MY_COLUMN")); });
+				});
+
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(PersonWithGenericInfo) });
+			var hbmClass = hbmMapping.RootClasses[0];
+			var hbmDynamicComponent = hbmClass.Properties.OfType<HbmDynamicComponent>().SingleOrDefault();
+			Assert.That(hbmDynamicComponent, Is.Not.Null);
+			Assert.That(
+				hbmDynamicComponent.Properties.Select(x => x.Name),
+				Is.EquivalentTo(new[] { "MyInt", "MyDate" }));
 		}
 
 		[Test]
