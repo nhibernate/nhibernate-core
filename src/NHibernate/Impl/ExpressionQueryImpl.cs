@@ -327,7 +327,7 @@ namespace NHibernate.Impl
 			return detector.LocateParameters();
 		}
 
-		private IList<IASTNode> LocateParameters()
+		private List<IASTNode> LocateParameters()
 		{
 			var nodeTraverser = new NodeTraverser(this);
 			nodeTraverser.TraverseDepthFirst(_tree);

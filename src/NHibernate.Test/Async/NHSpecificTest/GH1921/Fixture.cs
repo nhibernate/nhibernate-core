@@ -15,7 +15,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.NHSpecificTest.GH1921
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -105,7 +104,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 		[TestCase(null)]
 		[TestCase("NameFilter")]
 		[TestCase("OtherNameFilter")]
-		public async Task MultiTableDmlInsertAsync(string filter, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task MultiTableDmlInsertAsync(string filter)
 		{
 			var isFiltered = !string.IsNullOrEmpty(filter);
 
@@ -119,8 +118,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 						.CreateQuery(
 							// No insert of OtherName: not supported (INSERT statements cannot refer to superclass/joined properties)
 							"insert into MultiTableEntity (Name) select e.Name from MultiTableEntity e")
-						.ExecuteUpdateAsync(cancellationToken));
-				await (transaction.CommitAsync(cancellationToken));
+						.ExecuteUpdateAsync());
+				await (transaction.CommitAsync());
 
 				Assert.That(rowCount, Is.EqualTo(isFiltered ? 1 : 2), "ResultCount");
 			}
@@ -129,19 +128,19 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 			using (var transaction = session.BeginTransaction())
 			{
 				Assert.That(
-					await (session.Query<MultiTableEntity>().CountAsync(e => e.Name != "Bob", cancellationToken)),
+					await (session.Query<MultiTableEntity>().CountAsync(e => e.Name != "Bob")),
 					Is.EqualTo(isFiltered ? 1 : 2), "Name != \"Bob\"");
 				Assert.That(
-					await (session.Query<MultiTableEntity>().CountAsync(e => e.OtherName == null, cancellationToken)),
+					await (session.Query<MultiTableEntity>().CountAsync(e => e.OtherName == null)),
 					Is.EqualTo(isFiltered ? 1 : 2), "OtherName is null");
-				await (transaction.CommitAsync(cancellationToken));
+				await (transaction.CommitAsync());
 			}
 		}
 
 		[TestCase(null)]
 		[TestCase("NameFilter")]
 		[TestCase("OtherNameFilter")]
-		public async Task MultiTableDmlUpdateAsync(string filter, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task MultiTableDmlUpdateAsync(string filter)
 		{
 			var isFiltered = !string.IsNullOrEmpty(filter);
 
@@ -157,8 +156,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 							" set Name = 'newName', OtherName = 'newOtherName'" +
 							// Check referencing columns is supported
 							" where e.Name is not null and e.OtherName is not null")
-						.ExecuteUpdateAsync(cancellationToken));
-				await (transaction.CommitAsync(cancellationToken));
+						.ExecuteUpdateAsync());
+				await (transaction.CommitAsync());
 
 				Assert.That(rowCount, Is.EqualTo(isFiltered ? 1 : 2), "ResultCount");
 			}
@@ -167,19 +166,19 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 			using (var transaction = session.BeginTransaction())
 			{
 				Assert.That(
-					await (session.Query<MultiTableEntity>().CountAsync(e => e.Name == "newName", cancellationToken)),
+					await (session.Query<MultiTableEntity>().CountAsync(e => e.Name == "newName")),
 					Is.EqualTo(isFiltered ? 1 : 2), "Name == \"newName\"");
 				Assert.That(
-					await (session.Query<MultiTableEntity>().CountAsync(e => e.OtherName == "newOtherName", cancellationToken)),
+					await (session.Query<MultiTableEntity>().CountAsync(e => e.OtherName == "newOtherName")),
 					Is.EqualTo(isFiltered ? 1 : 2), "Name == \"newOtherName\"");
-				await (transaction.CommitAsync(cancellationToken));
+				await (transaction.CommitAsync());
 			}
 		}
 
 		[TestCase(null)]
 		[TestCase("NameFilter")]
 		[TestCase("OtherNameFilter")]
-		public async Task MultiTableDmlDeleteAsync(string filter, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task MultiTableDmlDeleteAsync(string filter)
 		{
 			var isFiltered = !string.IsNullOrEmpty(filter);
 
@@ -194,8 +193,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 							"delete MultiTableEntity e" +
 							// Check referencing columns is supported
 							" where e.Name is not null and e.OtherName is not null")
-						.ExecuteUpdateAsync(cancellationToken));
-				await (transaction.CommitAsync(cancellationToken));
+						.ExecuteUpdateAsync());
+				await (transaction.CommitAsync());
 
 				Assert.That(rowCount, Is.EqualTo(isFiltered ? 1 : 2), "ResultCount");
 			}
@@ -204,12 +203,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 			using (var transaction = session.BeginTransaction())
 			{
 				Assert.That(
-					await (session.Query<MultiTableEntity>().CountAsync(e => e.Name != "Bob", cancellationToken)),
+					await (session.Query<MultiTableEntity>().CountAsync(e => e.Name != "Bob")),
 					Is.EqualTo(isFiltered ? 1 : 0), "Name != \"Bob\"");
 				Assert.That(
-					await (session.Query<MultiTableEntity>().CountAsync(e => e.OtherName != "Bob", cancellationToken)),
+					await (session.Query<MultiTableEntity>().CountAsync(e => e.OtherName != "Bob")),
 					Is.EqualTo(isFiltered ? 1 : 0), "OtherName != \"Bob\"");
-				await (transaction.CommitAsync(cancellationToken));
+				await (transaction.CommitAsync());
 			}
 		}
 	}
