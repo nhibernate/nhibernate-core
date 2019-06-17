@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Cfg;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH750
@@ -14,6 +15,17 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 				s.Delete("from Drive");
 				s.Flush();
 			}
+		}
+
+		protected override string CacheConcurrencyStrategy
+		{
+			get { return null; }
+		}
+
+		protected override void Configure(Configuration configuration)
+		{
+			configuration.SetProperty(Cfg.Environment.UseSecondLevelCache, "false");
+			base.Configure(configuration);
 		}
 
 		[Test]
@@ -64,6 +76,46 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			// Verify dv2
 			Assert.IsTrue(dv2.Drives.Contains(dr1));
 			Assert.IsFalse(dv2.Drives.Contains(dr3));
+
+			//Make sure that flush didn't touch not-found="ignore" records for not modified collection
+			using (var s = Sfi.OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				dv2 = s.Get<Device>(dv2.Id);
+				s.Flush();
+				t.Commit();
+			}
+
+			using (var s = Sfi.OpenSession())
+			{
+				var realCound = s.CreateSQLQuery("select count(*) from DriveOfDevice where DeviceId = :id ")
+								.SetParameter("id", dv2.Id)
+								.UniqueResult<int>();
+				dv2 = s.Get<Device>(dv2.Id);
+
+				Assert.That(dv2.Drives.Count, Is.EqualTo(1), "not modified collection");
+				Assert.That(realCound, Is.EqualTo(2), "not modified collection");
+			}
+
+			//Many-to-many clears collection and recreates it so not-found ignore records are lost
+			using (var s = Sfi.OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				dv2 = s.Get<Device>(dv2.Id);
+				dv2.Drives.Add(dr2);
+				t.Commit();
+			}
+
+			using (var s = Sfi.OpenSession())
+			{
+				var realCound = s.CreateSQLQuery("select count(*) from DriveOfDevice where DeviceId = :id ")
+								.SetParameter("id", dv2.Id)
+								.UniqueResult<int>();
+				dv2 = s.Get<Device>(dv2.Id);
+
+				Assert.That(dv2.Drives.Count, Is.EqualTo(2), "modified collection");
+				Assert.That(realCound, Is.EqualTo(2), "modified collection");
+			}
 		}
 	}
 }
