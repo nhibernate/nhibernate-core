@@ -25,8 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2919
 			}
 			set
 			{
-				if ( _dynamicToy != null )
-					_dynamicToy = value;
+				_dynamicToy = value;
 			}
 		}
 	}
