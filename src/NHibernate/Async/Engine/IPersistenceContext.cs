@@ -18,7 +18,6 @@ using NHibernate.Intercept;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
-using NHibernate.Util;
 
 namespace NHibernate.Engine
 {

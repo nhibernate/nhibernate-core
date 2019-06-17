@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Security.Permissions;
@@ -192,30 +191,6 @@ namespace NHibernate.Engine
 		public IDictionary EntityEntries
 		{
 			get { return entityEntries; }
-		}
-
-		[NonSerialized]
-		private List<KeyValuePair<object,EntityEntry>> _tempEntityEntries;
-
-		/// <summary>
-		/// Iterates entity entries allowing modifications of underlying collection during enumeration;
-		/// NOTE: also iterates entities that were added during enumeration
-		/// </summary>
-		public IEnumerable<KeyValuePair<object, EntityEntry>> IterateEntityEntries()
-		{
-			_tempEntityEntries = new List<KeyValuePair<object, EntityEntry>>(entityEntries.Count);
-			try
-			{
-				_tempEntityEntries.AddRange(EntityEntries.Cast<DictionaryEntry>().Select(de => new KeyValuePair<object, EntityEntry>(de.Key, (EntityEntry) de.Value)));
-				for (int i = 0; i < _tempEntityEntries.Count; ++i)
-				{
-					yield return _tempEntityEntries[i];
-				}
-			}
-			finally
-			{
-				_tempEntityEntries = null;
-			}
 		}
 
 		/// <summary> Get the mapping from collection instance to collection entry</summary>
@@ -573,7 +548,6 @@ namespace NHibernate.Engine
 				new EntityEntry(status, loadedState, rowId, id, version, lockMode, existsInDatabase, persister,
 								disableVersionIncrement, lazyPropertiesAreUnfetched);
 			entityEntries[entity] = e;
-			_tempEntityEntries?.Add(new KeyValuePair<object, EntityEntry>(entity, e));
 
 			SetHasNonReadOnlyEnties(status);
 			return e;
@@ -591,7 +565,6 @@ namespace NHibernate.Engine
 				new EntityEntry(status, loadedState, rowId, id, version, lockMode, existsInDatabase, persister,
 				                disableVersionIncrement);
 			entityEntries[entity] = e;
-			_tempEntityEntries?.Add(new KeyValuePair<object, EntityEntry>(entity, e));
 
 			SetHasNonReadOnlyEnties(status);
 			return e;

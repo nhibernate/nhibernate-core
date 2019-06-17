@@ -8,7 +8,6 @@ using NHibernate.Intercept;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
-using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
@@ -418,7 +417,6 @@ namespace NHibernate.Engine
 		void RemoveChildParent(object child);
 	}
 
-	//TODO 6.0 Merge to IPersistenceContext
 	public static class PersistenceContextExtensions
 	{
 		/// <summary> Adds an entity to the internal caches.</summary>
@@ -509,21 +507,6 @@ namespace NHibernate.Engine
 				disableVersionIncrement,
 				loadedState?.Any(o => o == LazyPropertyInitializer.UnfetchedProperty) == true);
 #pragma warning restore 618
-		}
-
-		/// <summary>
-		/// Iterates entity entries allowing modifications of underlying collection during enumeration
-		/// </summary>
-		public static IEnumerable<KeyValuePair<object, EntityEntry>> IterateEntityEntries(this IPersistenceContext context)
-		{
-			if (context is StatefulPersistenceContext statefulPersistence)
-			{
-				return statefulPersistence.IterateEntityEntries();
-			}
-
-			return IdentityMap.ConcurrentEntries(context.EntityEntries)
-							.Cast<DictionaryEntry>()
-							.Select(de => new KeyValuePair<object, EntityEntry>(de.Key, (EntityEntry) de.Value));
 		}
 	}
 }
