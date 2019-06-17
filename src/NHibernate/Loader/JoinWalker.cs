@@ -1162,7 +1162,7 @@ namespace NHibernate.Loader
 							true);
 #pragma warning restore 618
 
-				case SelectMode.FetchProperty:
+				case SelectMode.FetchLazyPropertyGroup:
 					return ReflectHelper.CastOrThrow<ISupportLazyPropsJoinable>(join.Joinable, "fetch lazy property")
 										.SelectFragment(
 											next?.Joinable,

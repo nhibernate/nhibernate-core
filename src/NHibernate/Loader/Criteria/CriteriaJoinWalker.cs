@@ -205,7 +205,7 @@ namespace NHibernate.Loader.Criteria
 
 				case SelectMode.Fetch:
 				case SelectMode.FetchLazyProperties:
-				case SelectMode.FetchProperty:
+				case SelectMode.FetchLazyPropertyGroup:
 				case SelectMode.ChildFetch:
 				case SelectMode.JoinOnly:
 					IsDuplicateAssociation(lhsTable, lhsColumns, type); //deliberately ignore return value!

@@ -378,7 +378,7 @@ namespace NHibernate.Impl
 				return this;
 			}
 
-			if (selectMode == SelectMode.FetchProperty)
+			if (selectMode == SelectMode.FetchLazyPropertyGroup)
 			{
 				StringHelper.ParsePathAndPropertyName(associationPath, out associationPath, out var propertyName);
 				if (_entityFetchLazyProperties.TryGetValue(associationPath, out var propertyNames))

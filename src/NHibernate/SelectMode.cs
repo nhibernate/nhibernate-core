@@ -41,6 +41,6 @@ namespace NHibernate
 		/// Fetch lazy property group
 		/// Note: To fetch single property it must be mapped with unique fetch group (lazy-group)
 		/// </summary>
-		FetchProperty,
+		FetchLazyPropertyGroup,
 	}
 }

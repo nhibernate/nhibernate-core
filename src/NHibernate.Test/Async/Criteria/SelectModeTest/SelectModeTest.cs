@@ -187,7 +187,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 			using (var session = OpenSession())
 			{
 				var root = await (session.QueryOver<EntityComplex>()
-								.Fetch(SelectMode.FetchProperty, ec => ec.LazyProp, ec => ec.LazyProp2, ec => ec.SameTypeChild.LazyProp2)
+								.Fetch(SelectMode.FetchLazyPropertyGroup, ec => ec.LazyProp, ec => ec.LazyProp2, ec => ec.SameTypeChild.LazyProp2)
 								.Where(ec => ec.Id == _parentEntityComplexId)
 								.SingleOrDefaultAsync());
 
