@@ -92,7 +92,7 @@ namespace NHibernate.Collection
 			}
 			return Task.CompletedTask;
 		}
-
+		
 		/// <summary>
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
 		/// </summary>
@@ -114,22 +114,6 @@ namespace NHibernate.Collection
 				return Task.FromException<object>(ex);
 			}
 		}
-
-		//Since 5.3
-		/// <summary>
-		/// Get all "orphaned" elements
-		/// </summary>
-		/// <param name="snapshot">The snapshot of the collection.</param>
-		/// <param name="entityName">The persistent class whose objects
-		/// the collection is expected to contain.</param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns>
-		/// An <see cref="ICollection"/> that contains all of the elements
-		/// that have been orphaned.
-		/// </returns>
-		[Obsolete("This method has no more usages and will be removed in a future version")]
-		public abstract Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken);
 
 		public async Task IdentityRemoveAsync(IList list, object obj, string entityName, ISessionImplementor session, CancellationToken cancellationToken)
 		{

@@ -684,13 +684,6 @@ namespace NHibernate.Collection
 			return CollectionHelper.EmptyCollection;
 		}
 		
-		// Since 5.3
-		[Obsolete("This method has no more usages and will be removed in a future version")]
-		public Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken)
-		{
-			return Task.FromResult(GetQueuedOrphans(entityName));
-		}
-
 		/// <summary>
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
 		/// </summary>
@@ -885,6 +878,29 @@ namespace NHibernate.Collection
 		/// <param name="persister">The underlying collection persister. </param>
 		/// <param name="anticipatedSize">The anticipated size of the collection after initialization is complete. </param>
 		public abstract void BeforeInitialize(ICollectionPersister persister, int anticipatedSize);
+
+		// Since 5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<ICollection>(cancellationToken);
+			}
+
+			try
+			{
+				return Task.FromResult(GetQueuedOrphans(entityName));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<ICollection>(ex);
+			}
+		}
+		
+		// Since 5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public abstract Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken);
 
 		#region - Hibernate Collection Proxy Classes
 
