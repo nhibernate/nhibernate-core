@@ -285,7 +285,7 @@ namespace NHibernate.Engine
 			if (pc.WasInitialized)
 			{
 				CollectionEntry ce = eventSource.PersistenceContext.GetCollectionEntry(pc);
-				orphans = ce == null ? CollectionHelper.EmptyCollection : await (ce.GetOrphansAsync(entityName, pc, cancellationToken)).ConfigureAwait(false);
+				orphans = ce == null ? CollectionHelper.EmptyCollection : ce.GetOrphans(entityName, pc);
 			}
 			else
 			{

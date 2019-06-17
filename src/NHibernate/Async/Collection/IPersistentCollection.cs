@@ -98,18 +98,5 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		Task PreInsertAsync(ICollectionPersister persister, CancellationToken cancellationToken);
-
-		/// <summary>
-		/// Get all "orphaned" elements
-		/// </summary>
-		/// <param name="snapshot">The snapshot of the collection.</param>
-		/// <param name="entityName">The persistent class whose objects
-		/// the collection is expected to contain.</param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns>
-		/// An <see cref="ICollection"/> that contains all of the elements
-		/// that have been orphaned.
-		/// </returns>
-		Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken);
 	}
 }

@@ -70,18 +70,5 @@ namespace NHibernate.Engine
 			reached = false;
 			processed = false;
 		}
-
-		public Task<ICollection> GetOrphansAsync(string entityName, IPersistentCollection collection, CancellationToken cancellationToken)
-		{
-			if (snapshot == null)
-			{
-				throw new AssertionFailure("no collection snapshot for orphan delete");
-			}
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<ICollection>(cancellationToken);
-			}
-			return collection.GetOrphansAsync(snapshot, entityName, cancellationToken);
-		}
 	}
 }
