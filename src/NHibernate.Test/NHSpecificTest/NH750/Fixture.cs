@@ -86,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 				t.Commit();
 			}
 
-			VerifyResult( expectedInCollection:1, expectedInDb: 2, "not modified collection");
+			VerifyResult(expectedInCollection: 1, expectedInDb: 2, msg: "not modified collection");
 
 			//Many-to-many clears collection and recreates it so not-found ignore records are lost
 			using (var s = Sfi.OpenSession())
@@ -97,7 +97,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 				t.Commit();
 			}
 
-			VerifyResult(2,2, "modified collection");
+			VerifyResult(2, 2, msg: "modified collection");
 
 			void VerifyResult(int expectedInCollection, int expectedInDb, string msg)
 			{

@@ -97,7 +97,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 				await (t.CommitAsync());
 			}
 
-			await (VerifyResultAsync( expectedInCollection:1, expectedInDb: 2, "not modified collection"));
+			await (VerifyResultAsync(expectedInCollection: 1, expectedInDb: 2, msg: "not modified collection"));
 
 			//Many-to-many clears collection and recreates it so not-found ignore records are lost
 			using (var s = Sfi.OpenSession())
@@ -108,7 +108,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 				await (t.CommitAsync());
 			}
 
-			await (VerifyResultAsync(2,2, "modified collection"));
+			await (VerifyResultAsync(2,2,  msg: "modified collection"));
 
 			async Task VerifyResultAsync(int expectedInCollection, int expectedInDb, string msg)
 			{
