@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2919
 		public Child()
 		{
 			if ( CREATE_WITH_TOY )
-				_dynamicToy = new Toy();
+				DynamicToy = new Toy();
 		}
 
 		public virtual Guid ID { get; set; }
