@@ -150,41 +150,6 @@ namespace NHibernate.Test.Operations
 			}
 		}
 
-		[Test, Ignore("Need some more investigation about id sync.")]
-		public async Task MergeBidiPrimayKeyOneToOneAsync()
-		{
-			Person p;
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
-			{
-				p = new Person {Name = "steve"};
-				new PersonalDetails {SomePersonalDetail = "I have big feet", Person = p};
-				await (s.PersistAsync(p));
-				await (tx.CommitAsync());
-			}
-
-			ClearCounts();
-
-			p.Details.SomePersonalDetail = p.Details.SomePersonalDetail + " and big hands too";
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
-			{
-				p = (Person) await (s.MergeAsync(p));
-				await (tx.CommitAsync());
-			}
-
-			AssertInsertCount(0);
-			AssertUpdateCount(1);
-			AssertDeleteCount(0);
-
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
-			{
-				await (s.DeleteAsync(p));
-				await (tx.CommitAsync());
-			}
-		}
-
 		[Test]
 		public async Task MergeDeepTreeAsync()
 		{

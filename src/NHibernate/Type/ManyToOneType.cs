@@ -236,7 +236,7 @@ namespace NHibernate.Type
 			return IsDirtyManyToOne(old, current, IsAlwaysDirtyChecked ? null : checkable, session);
 		}
 
-
+		/// <inheritdoc />
 		public override bool IsNullable
 		{
 			get { return ignoreNotFound; }

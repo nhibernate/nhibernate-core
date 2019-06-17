@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Security;
 using NHibernate.Properties;
+using NHibernate.Util;
 
 namespace NHibernate.Bytecode.Lightweight
 {
@@ -26,8 +27,8 @@ namespace NHibernate.Bytecode.Lightweight
 			: this(
 				getDelegate,
 				setDelegate,
-				getters.Select(o => (GetPropertyValueInvoker) o.Get).ToArray(),
-				setters.Select(o => (SetPropertyValueInvoker) o.Set).ToArray(),
+				getters.ToArray(o => (GetPropertyValueInvoker) o.Get),
+				setters.ToArray(o => (SetPropertyValueInvoker) o.Set),
 				null,
 				null)
 		{

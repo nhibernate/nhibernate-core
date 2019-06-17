@@ -149,7 +149,7 @@ namespace NHibernate.Proxy
 				methodAttributes,
 				CallingConventions.HasThis,
 				method.ReturnType,
-				parameters.Select(param => param.ParameterType).ToArray());
+				parameters.ToArray(param => param.ParameterType));
 
 			var typeArgs = method.GetGenericArguments();
 
@@ -169,8 +169,7 @@ namespace NHibernate.Proxy
 
 					// Copy generic parameter constraints (class and interfaces).
 					var typeConstraints = typeArg.GetGenericParameterConstraints()
-					                             .Select(x => ResolveTypeConstraint(method, x))
-					                             .ToArray();
+												.ToArray(x => ResolveTypeConstraint(method, x));
 
 					var baseTypeConstraint = typeConstraints.SingleOrDefault(x => x.IsClass);
 					typeArgBuilder.SetBaseTypeConstraint(baseTypeConstraint);

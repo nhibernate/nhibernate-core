@@ -66,10 +66,10 @@ namespace NHibernate.Engine
 		private readonly Dictionary<CollectionKey, IPersistentCollection> collectionsByKey;
 
 		// Set of EntityKeys of deleted objects
-		private readonly ISet<EntityKey> nullifiableEntityKeys;
+		private readonly HashSet<EntityKey> nullifiableEntityKeys;
 
 		// properties that we have tried to load, and not found in the database
-		private ISet<AssociationKey> nullAssociations;
+		private HashSet<AssociationKey> nullAssociations;
 
 		// A list of collection wrappers that were instantiating during result set
 		// processing, that we will need to initialize at the end of the query
