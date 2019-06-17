@@ -726,7 +726,7 @@ namespace NHibernate.Collection
 				return oldElements;
 			}
 
-			if (currentElements.Count == oldElements.Count && currentElements.Cast<object>().SequenceEqual(oldElements.Cast<object>()))
+			if (currentElements.Count == oldElements.Count && currentElements.Cast<object>().SequenceEqual(oldElements.Cast<object>(), ReferenceComparer<object>.Instance))
 				return Array.Empty<object>();
 
 			var persister = session.Factory.GetEntityPersister(entityName);
