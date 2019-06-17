@@ -86,16 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 				t.Commit();
 			}
 
-			using (var s = Sfi.OpenSession())
-			{
-				var realCound = s.CreateSQLQuery("select count(*) from DriveOfDevice where DeviceId = :id ")
-								.SetParameter("id", dv2.Id)
-								.UniqueResult<int>();
-				dv2 = s.Get<Device>(dv2.Id);
-
-				Assert.That(dv2.Drives.Count, Is.EqualTo(1), "not modified collection");
-				Assert.That(realCound, Is.EqualTo(2), "not modified collection");
-			}
+			VerifyResult( expectedInCollection:1, expectedInDb: 2, "not modified collection");
 
 			//Many-to-many clears collection and recreates it so not-found ignore records are lost
 			using (var s = Sfi.OpenSession())
@@ -106,15 +97,21 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 				t.Commit();
 			}
 
-			using (var s = Sfi.OpenSession())
-			{
-				var realCound = s.CreateSQLQuery("select count(*) from DriveOfDevice where DeviceId = :id ")
-								.SetParameter("id", dv2.Id)
-								.UniqueResult<int>();
-				dv2 = s.Get<Device>(dv2.Id);
+			VerifyResult(2,2, "modified collection");
 
-				Assert.That(dv2.Drives.Count, Is.EqualTo(2), "modified collection");
-				Assert.That(realCound, Is.EqualTo(2), "modified collection");
+			void VerifyResult(int expectedInCollection, int expectedInDb, string msg)
+			{
+				using (var s = Sfi.OpenSession())
+				{
+					var realCound = Convert.ToInt32(
+						s.CreateSQLQuery("select count(*) from DriveOfDevice where DeviceId = :id ")
+						.SetParameter("id", dv2.Id)
+						.UniqueResult<object>());
+					dv2 = s.Get<Device>(dv2.Id);
+
+					Assert.That(dv2.Drives.Count, Is.EqualTo(expectedInCollection), msg);
+					Assert.That(realCound, Is.EqualTo(expectedInDb), msg);
+				}
 			}
 		}
 	}

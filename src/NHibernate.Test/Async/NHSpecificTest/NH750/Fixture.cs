@@ -97,16 +97,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 				await (t.CommitAsync());
 			}
 
-			using (var s = Sfi.OpenSession())
-			{
-				var realCound = await (s.CreateSQLQuery("select count(*) from DriveOfDevice where DeviceId = :id ")
-								.SetParameter("id", dv2.Id)
-								.UniqueResultAsync<int>());
-				dv2 = await (s.GetAsync<Device>(dv2.Id));
-
-				Assert.That(dv2.Drives.Count, Is.EqualTo(1), "not modified collection");
-				Assert.That(realCound, Is.EqualTo(2), "not modified collection");
-			}
+			await (VerifyResultAsync( expectedInCollection:1, expectedInDb: 2, "not modified collection"));
 
 			//Many-to-many clears collection and recreates it so not-found ignore records are lost
 			using (var s = Sfi.OpenSession())
@@ -117,15 +108,21 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 				await (t.CommitAsync());
 			}
 
-			using (var s = Sfi.OpenSession())
-			{
-				var realCound = await (s.CreateSQLQuery("select count(*) from DriveOfDevice where DeviceId = :id ")
-								.SetParameter("id", dv2.Id)
-								.UniqueResultAsync<int>());
-				dv2 = await (s.GetAsync<Device>(dv2.Id));
+			await (VerifyResultAsync(2,2, "modified collection"));
 
-				Assert.That(dv2.Drives.Count, Is.EqualTo(2), "modified collection");
-				Assert.That(realCound, Is.EqualTo(2), "modified collection");
+			async Task VerifyResultAsync(int expectedInCollection, int expectedInDb, string msg)
+			{
+				using (var s = Sfi.OpenSession())
+				{
+					var realCound = Convert.ToInt32(
+						await (s.CreateSQLQuery("select count(*) from DriveOfDevice where DeviceId = :id ")
+						.SetParameter("id", dv2.Id)
+						.UniqueResultAsync<object>()));
+					dv2 = await (s.GetAsync<Device>(dv2.Id));
+
+					Assert.That(dv2.Drives.Count, Is.EqualTo(expectedInCollection), msg);
+					Assert.That(realCound, Is.EqualTo(expectedInDb), msg);
+				}
 			}
 		}
 	}
