@@ -683,7 +683,7 @@ namespace NHibernate.Collection
 
 			return CollectionHelper.EmptyCollection;
 		}
-		
+
 		/// <summary>
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
 		/// </summary>
