@@ -65,7 +65,7 @@
 	<target name="find-async-generator-console">
 		<property name="nuget-package-id" value="CSharpAsyncGenerator.CommandLine" />
 		<call target="get-nuget-package-path" />
-		<property name="async-generator-console"  value="${nuget-package-path}/tools/AsyncGenerator.CommandLine.exe" />
+		<property name="async-generator-console"  value="${nuget-package-path}/tools/net461/AsyncGenerator.CommandLine.exe" />
 	</target>
 
 	<target name="generate-async" depends="common.nuget-restore solution-restore find-async-generator-console">

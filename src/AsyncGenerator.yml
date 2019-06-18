@@ -3,6 +3,8 @@
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
+  suppressDiagnosticFailures:
+  - pattern: ^.*(Hql\.g).*$
   analyzation:
     methodConversion:
     - conversion: Ignore
@@ -169,6 +171,8 @@
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
+  suppressDiagnosticFailures:
+  - pattern: ^.*(Hql\.g).*$
   analyzation:
     scanMethodBody: true
     scanForMissingAsyncMembers:
@@ -177,6 +181,8 @@
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
+  suppressDiagnosticFailures:
+  - pattern: ^.*(Hql\.g).*$
   analyzation:
     methodConversion:
     - conversion: Copy
