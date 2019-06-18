@@ -10,6 +10,8 @@
 
 using System;
 using System.Collections;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Action;
 using NHibernate.Collection;
 using NHibernate.Impl;
@@ -17,8 +19,6 @@ using NHibernate.Persister.Collection;
 
 namespace NHibernate.Engine
 {
-	using System.Threading.Tasks;
-	using System.Threading;
 	public partial class CollectionEntry
 	{
 
