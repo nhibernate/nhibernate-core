@@ -37,7 +37,7 @@ namespace NHibernate.Collection
 			}
 			try
 			{
-				return Task.FromResult<ICollection>(GetOrphans(snapshot, entityName));
+				return Task.FromResult<ICollection>(GetOrphans((object[]) snapshot, (object[]) array, entityName, Session));
 			}
 			catch (Exception ex)
 			{

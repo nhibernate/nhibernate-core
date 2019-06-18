@@ -115,12 +115,33 @@ namespace NHibernate.Collection
 			}
 		}
 
+		// Since 5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public async Task IdentityRemoveAsync(IList list, object obj, string entityName, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (obj != null && await (ForeignKeys.IsNotTransientSlowAsync(entityName, obj, session, cancellationToken)).ConfigureAwait(false))
 			{
-				IdentityRemove(list, obj, entityName, session.Factory);
+				IType idType = session.Factory.GetEntityPersister(entityName).IdentifierType;
+
+				object idOfCurrent = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, obj, session, cancellationToken)).ConfigureAwait(false);
+				List<object> toRemove = new List<object>(list.Count);
+				foreach (object current in list)
+				{
+					if (current == null)
+					{
+						continue;
+					}
+					object idOfOld = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, current, session, cancellationToken)).ConfigureAwait(false);
+					if (idType.IsEqual(idOfCurrent, idOfOld, session.Factory))
+					{
+						toRemove.Add(current);
+					}
+				}
+				foreach (object ro in toRemove)
+				{
+					list.Remove(ro);
+				}
 			}
 		}
 

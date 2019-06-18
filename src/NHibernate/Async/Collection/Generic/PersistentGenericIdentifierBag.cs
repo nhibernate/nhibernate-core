@@ -166,7 +166,8 @@ namespace NHibernate.Collection.Generic
 			}
 			try
 			{
-				return Task.FromResult<ICollection>(GetOrphans(snapshot, entityName));
+				var sn = (ISet<SnapshotElement>)GetSnapshot();
+				return Task.FromResult<ICollection>(GetOrphans(sn.ToArray(x => x.Value), (ICollection) _values, entityName, Session));
 			}
 			catch (Exception ex)
 			{

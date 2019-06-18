@@ -756,31 +756,48 @@ namespace NHibernate.Collection
 			return res;
 		}
 
+		// Since 5.3
+		/// <summary> 
+		/// Given a collection of entity instances that used to
+		/// belong to the collection, and a collection of instances
+		/// that currently belong, return a collection of orphans
+		/// </summary>
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		protected virtual Task<ICollection> GetOrphansAsync(ICollection oldElements, ICollection currentElements, string entityName, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<ICollection>(cancellationToken);
+			}
+
+			return Task.FromResult(GetOrphans(oldElements, currentElements, entityName, session));
+		}
+
+		// Since 5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public void IdentityRemove(IList list, object obj, string entityName, ISessionImplementor session)
 		{
 			if (obj != null && ForeignKeys.IsNotTransientSlow(entityName, obj, session))
 			{
-				IdentityRemove(list, obj, entityName, session.Factory);
-			}
-		}
+				IType idType = session.Factory.GetEntityPersister(entityName).IdentifierType;
 
-		private static void IdentityRemove(IList list, object obj, string entityName, ISessionFactoryImplementor factory)
-		{
-			var persister = factory.GetEntityPersister(entityName);
-			IType idType = persister.IdentifierType;
-			object idToRemove = ForeignKeys.GetIdentifier(persister, obj);
-
-			for (var index = list.Count - 1; index >= 0; index--)
-			{
-				object current = list[index];
-				if (current == null)
+				object idOfCurrent = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, obj, session);
+				List<object> toRemove = new List<object>(list.Count);
+				foreach (object current in list)
 				{
-					continue;
+					if (current == null)
+					{
+						continue;
+					}
+					object idOfOld = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session);
+					if (idType.IsEqual(idOfCurrent, idOfOld, session.Factory))
+					{
+						toRemove.Add(current);
+					}
 				}
-
-				if (obj == current || idType.IsEqual(idToRemove,ForeignKeys.GetIdentifier(persister, current), factory))
+				foreach (object ro in toRemove)
 				{
-					list.RemoveAt(index);
+					list.Remove(ro);
 				}
 			}
 		}
