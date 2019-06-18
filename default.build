@@ -65,13 +65,13 @@
 	<target name="find-async-generator-console">
 		<property name="nuget-package-id" value="CSharpAsyncGenerator.CommandLine" />
 		<call target="get-nuget-package-path" />
-		<property name="async-generator-console"  value="${nuget-package-path}/tools/net461/AsyncGenerator.CommandLine.exe" />
+		<property name="async-generator-console"  value="${nuget-package-path}/tools/netcoreapp2.1/AsyncGenerator.CommandLine.dll" />
 	</target>
 
 	<target name="generate-async" depends="common.nuget-restore solution-restore find-async-generator-console">
-		<exec
-			workingdir="${root.dir}/src"
-			program="${async-generator-console}" />
+		<exec workingdir="${root.dir}/src" program="dotnet" verbose="true">
+			<arg line=".${async-generator-console}" />
+		</exec> 
 	</target>
 
 	<target name="put-connection-settings-into-defined-app-config">
