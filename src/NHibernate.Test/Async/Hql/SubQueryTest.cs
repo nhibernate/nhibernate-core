@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Hql
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SubQueryTestAsync : TestCaseMappingByCode
 	{
@@ -57,14 +56,14 @@ namespace NHibernate.Test.Hql
 		[TestCase("SELECT CASE WHEN  l.id > 1 THEN 1 ELSE (SELECT COUNT(r.id) FROM Root r) END FROM Leaf l")]
 		[TestCase("SELECT CASE (SELECT COUNT(r.id) FROM Root r) WHEN  1 THEN 1 ELSE 0 END FROM Leaf l")]
 		[TestCase("SELECT CASE l.id WHEN (SELECT COUNT(r.id) FROM Root r) THEN 1 ELSE 0 END FROM Leaf l")]
-		public async Task TestSubQueryAsync(string query, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task TestSubQueryAsync(string query)
 		{
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
 				// Simple syntax check
-				await (session.CreateQuery(query).ListAsync(cancellationToken));
-				await (transaction.CommitAsync(cancellationToken));
+				await (session.CreateQuery(query).ListAsync());
+				await (transaction.CommitAsync());
 			}
 		}
 	}
