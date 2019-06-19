@@ -39,7 +39,7 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
-			var results = await (_cache.GetManyAsync(keys.Select(o => (object) o).ToArray(), cancellationToken)).ConfigureAwait(false);
+			var results = await (_cache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
 			if (!log.IsDebugEnabled())
 			{
 				return results;
@@ -95,7 +95,7 @@ namespace NHibernate.Cache
 			var skipKeyIndexes = new HashSet<int>();
 			if (checkKeys.Any())
 			{
-				var objects = await (_cache.GetManyAsync(checkKeys.Select(o => (object) o).ToArray(), cancellationToken)).ConfigureAwait(false);
+				var objects = await (_cache.GetManyAsync(checkKeys.ToArray(), cancellationToken)).ConfigureAwait(false);
 				for (var i = 0; i < objects.Length; i++)
 				{
 					if (objects[i] != null)

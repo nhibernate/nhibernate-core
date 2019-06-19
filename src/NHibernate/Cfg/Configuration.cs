@@ -47,7 +47,7 @@ namespace NHibernate.Cfg
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public class Configuration : ISerializable
+	public partial class Configuration : ISerializable
 	{
 		/// <summary>Default name for hibernate configuration file.</summary>
 		public const string DefaultHibernateCfgFileName = "hibernate.cfg.xml";
@@ -818,7 +818,7 @@ namespace NHibernate.Cfg
 			return this;
 		}
 
-		private static IList<string> GetAllHbmXmlResourceNames(Assembly assembly)
+		private static List<string> GetAllHbmXmlResourceNames(Assembly assembly)
 		{
 			var result = new List<string>();
 

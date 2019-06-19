@@ -37,7 +37,7 @@ namespace NHibernate.AdoNet
 		private SqlType[] _batchCommandParameterTypes;
 		private readonly HashSet<DbCommand> _commandsToClose = new HashSet<DbCommand>();
 		private readonly HashSet<DbDataReader> _readersToClose = new HashSet<DbDataReader>();
-		private readonly IDictionary<DbDataReader, Stopwatch> _readersDuration = new Dictionary<DbDataReader, Stopwatch>();
+		private readonly Dictionary<DbDataReader, Stopwatch> _readersDuration = new Dictionary<DbDataReader, Stopwatch>();
 		private DbCommand _lastQuery;
 		private bool _releasing;
 
@@ -616,13 +616,13 @@ namespace NHibernate.AdoNet
 			if (isDisposing)
 			{
 				CloseCommands();
+				// nothing for Finalizer to do - so tell the GC to ignore it
+				GC.SuppressFinalize(this);
 			}
 
 			// free unmanaged resources here
 
 			_isAlreadyDisposed = true;
-			// nothing for Finalizer to do - so tell the GC to ignore it
-			GC.SuppressFinalize(this);
 		}
 
 		#endregion

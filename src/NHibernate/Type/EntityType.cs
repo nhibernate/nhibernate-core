@@ -291,6 +291,10 @@ namespace NHibernate.Type
 			get { return uniqueKeyPropertyName != null; }
 		}
 
+		/// <summary>
+		/// True if not null entity key can represent null entity
+		/// (e.g. entity mapped with not-found="ignore" or not constrained one-to-one mapping)
+		/// </summary>
 		public abstract bool IsNullable { get; }
 
 		/// <summary> Retrieves the {@link Joinable} defining the associated entity. </summary>
@@ -530,6 +534,10 @@ namespace NHibernate.Type
 				if (result == null)
 				{
 					result = persister.LoadByUniqueKey(uniqueKeyPropertyName, key, session);
+					if (result == null && !IsNullable)
+					{
+						factory.EntityNotFoundDelegate.HandleEntityNotFound(entityName, uniqueKeyPropertyName, key);
+					}
 				}
 				return result == null ? null : persistenceContext.ProxyFor(result);
 			}

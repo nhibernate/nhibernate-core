@@ -13,7 +13,7 @@ namespace NHibernate.Engine
 	{
 		private readonly string filterName;
 		private readonly string defaultFilterCondition;
-		private readonly IDictionary<string, IType> parameterTypes= new Dictionary<string, IType>();
+		private readonly IDictionary<string, IType> parameterTypes;
 		private readonly bool useInManyToOne;
 
 		/// <summary>

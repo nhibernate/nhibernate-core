@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -156,14 +155,13 @@ namespace NHibernate.Engine
 			RegisterProcess(new AfterTransactionCompletionDelegatedProcess(process));
 		}
 
-		private void ExecuteActions(IList list)
+		private void ExecuteActions<T>(List<T> list) where T: IExecutable
 		{
 			// Actions may raise events to which user code can react and cause changes to action list.
 			// It will then fail here due to list being modified. (Some previous code was dodging the
 			// trouble with a for loop which was not failing provided the list was not getting smaller.
 			// But then it was clearing it without having executed added actions (if any), ...)
-			
-			foreach (IExecutable executable in list)
+			foreach (var executable in list)
 			{
 				InnerExecute(executable);
 			}
@@ -258,9 +256,9 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private static void PrepareActions(IList queue)
+		private static void PrepareActions<T>(List<T> queue) where T: IExecutable
 		{
-			foreach (IExecutable executable in queue)
+			foreach (var executable in queue)
 				executable.BeforeExecutions();
 		}
 
@@ -329,9 +327,9 @@ namespace NHibernate.Engine
 			get { return (insertions.Count > 0 || deletions.Count > 0); }
 		}
 
-		private static bool AreTablesToUpdated(IList executables, ICollection<string> tablespaces)
+		private static bool AreTablesToUpdated<T>(List<T> executables, ISet<string> tablespaces) where T: IExecutable
 		{
-			foreach (IExecutable exec in executables)
+			foreach (var exec in executables)
 			{
 				var spaces = exec.PropertySpaces;
 				foreach (string o in spaces)
