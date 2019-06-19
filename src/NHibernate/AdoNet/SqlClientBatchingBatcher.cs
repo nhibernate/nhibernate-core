@@ -70,6 +70,47 @@ namespace NHibernate.AdoNet
 			}
 		}
 
+		public override Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				_totalExpectedRowsAffected += expectation.ExpectedRowCount;
+				var batchUpdate = CurrentCommand;
+				Driver.AdjustCommand(batchUpdate);
+				string lineWithParameters = null;
+				var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
+				if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled())
+				{
+					lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
+					var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
+					lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
+					_currentBatchCommandsLog.Append("command ")
+											.Append(_currentBatch.CountOfCommands)
+											.Append(":")
+											.AppendLine(lineWithParameters);
+				}
+				if (Log.IsDebugEnabled())
+				{
+					Log.Debug("Adding to batch:{0}", lineWithParameters);
+				}
+				_currentBatch.Append((System.Data.SqlClient.SqlCommand) batchUpdate);
+
+				if (_currentBatch.CountOfCommands >= _batchSize)
+				{
+					return ExecuteBatchWithTimingAsync(batchUpdate, cancellationToken);
+				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
 		protected override void DoExecuteBatch(DbCommand ps)
 		{
 			try
@@ -77,6 +118,36 @@ namespace NHibernate.AdoNet
 				Log.Debug("Executing batch");
 				CheckReaders();
 				Prepare(_currentBatch.BatchCommand);
+				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+				{
+					Factory.Settings.SqlStatementLogger.LogBatchCommand(_currentBatchCommandsLog.ToString());
+				}
+				int rowsAffected;
+				try
+				{
+					rowsAffected = _currentBatch.ExecuteNonQuery();
+				}
+				catch (DbException e)
+				{
+					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+				}
+
+				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected, ps);
+			}
+			finally
+			{
+				ClearCurrentBatch();
+			}
+		}
+
+		protected override async Task DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			try
+			{
+				Log.Debug("Executing batch");
+				await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
+				await (PrepareAsync(_currentBatch.BatchCommand, cancellationToken)).ConfigureAwait(false);
 				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 				{
 					Factory.Settings.SqlStatementLogger.LogBatchCommand(_currentBatchCommandsLog.ToString());

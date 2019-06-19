@@ -177,11 +177,11 @@ testRun(){
 }
 
 generateAsync(){
-	dotnet msbuild /t:Restore ./src/NHibernate.sln
+	dotnet restore ./src/NHibernate.sln
 
 	getAsyncGeneratorPath
 	cd src
-	mono ../"$async_generator_path"
+	dotnet ../"$async_generator_path"
 	cd ..
 
 	mainMenu
@@ -194,28 +194,7 @@ getAsyncGeneratorPath(){
 	fi
 
 	cd Tools
-
-	if [ ! -f nuget.exe ]
-	then
-		wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-	fi
-
-	async_generator_path="CSharpAsyncGenerator.CommandLine.$(cat packages.config | grep id=\"CSharpAsyncGenerator.CommandLine | cut -d\" -f4)/tools"
-
-	if [ ! -d $async_generator_path ]
-	then
-		mono nuget.exe install
-	fi
-
-	if [ ! -f $async_generator_path/SQLitePCLRaw.core.dll ]
-	then
-		# This "hidden" dependency causes a failure under some Mono setup, add it explicitly
-		mono nuget.exe install SQLitePCLRaw.core -Version 1.0.0
-		cp SQLitePCLRaw.core.1.0.0/lib/net45/SQLitePCLRaw.core.dll $async_generator_path/
-	fi
-
-	async_generator_path="Tools/$async_generator_path/AsyncGenerator.CommandLine.exe"
-
+	async_generator_path="Tools/CSharpAsyncGenerator.CommandLine.$(cat packages.config | grep id=\"CSharpAsyncGenerator.CommandLine | cut -d\" -f4)/tools/netcoreapp2.1/AsyncGenerator.CommandLine.dll"
 	cd ..
 }
 

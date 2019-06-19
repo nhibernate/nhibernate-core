@@ -102,23 +102,60 @@ namespace NHibernate.Test.Ado
 			await (CleanupAsync());
 		}
 
-		#if NETFX
+#if NETFX
+		[Test, Ignore("Not fixed yet.")]
+		[Description("SqlClient: The batcher should run all different INSERT queries in only one roundtrip.")]
+		public void SqlClientOneRoundTripForUpdateAndInsert()
+		{
+			if (Sfi.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
+				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
+
+			FillDb();
+
+			using (var sqlLog = new SqlLogSpy())
+			using (ISession s = Sfi.OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				s.Save(new VerySimple
+				{
+					Name = "test441",
+					Weight = 894
+				});
+
+				s.Save(new AlmostSimple
+				{
+					Name = "test441",
+					Weight = 894
+				});
+
+				tx.Commit();
+
+				var log = sqlLog.GetWholeLog();
+				//log should only contain NHibernate.SQL once, because that means 
+				//that we ony generated a single batch (NHibernate.SQL log will output
+				//once per batch)
+				Assert.AreEqual(0, log.IndexOf("NHibernate.SQL"), "log should start with NHibernate.SQL");
+				Assert.AreEqual(-1, log.IndexOf("NHibernate.SQL", "NHibernate.SQL".Length), "NHibernate.SQL should only appear once in the log");
+			}
+
+			Cleanup();
+		}
 
 		[Test]
 		[Description("SqlClient: The batcher log output should be formatted")]
-		public async Task BatchedoutputShouldBeFormattedAsync()
+		public void BatchedoutputShouldBeFormatted()
 		{
 			if (Sfi.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
 				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
 
 			using (var sqlLog = new SqlLogSpy())
 			{
-				await (FillDbAsync());
+				FillDb();
 				var log = sqlLog.GetWholeLog();
 				Assert.IsTrue(log.Contains("INSERT \n    INTO"));
 			}
 
-			await (CleanupAsync());
+			Cleanup();
 		}
 #endif
 

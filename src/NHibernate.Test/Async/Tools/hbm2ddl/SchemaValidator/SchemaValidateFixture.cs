@@ -54,7 +54,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 
 #if NETFX
 		[Test, SetCulture("tr-TR"), SetUICulture("tr-TR")]
-		public async Task ShouldVerifySameTableTurkishAsync()
+		public void ShouldVerifySameTableTurkish()
 		{
 			//NH-3063
 
@@ -70,15 +70,15 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 			var cfg = BuildConfiguration(_version1Resource);
 
 			var export = new SchemaExport(cfg);
-			await (export.CreateAsync(true, true));
+			export.Create(true, true);
 			try
 			{
 				var validator = new Tool.hbm2ddl.SchemaValidator(cfg);
-				await (validator.ValidateAsync());
+				validator.Validate();
 			}
 			finally
 			{
-				await (export.DropAsync(true, true));
+				export.Drop(true, true);
 			}
 		}
 #endif
