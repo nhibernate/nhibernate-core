@@ -292,57 +292,6 @@ namespace NHibernate.Test.Legacy
 		}
 
 		[Test]
-		[Ignore("Escaping not implemented. Need to test with ODBC/OLEDB when implemented.")]
-		public async Task EscapedODBCAsync()
-		{
-			if (Dialect is MySQLDialect || Dialect is PostgreSQLDialect) return;
-
-			ISession session = OpenSession();
-
-			A savedA = new A();
-			savedA.Name = "Max";
-			await (session.SaveAsync(savedA));
-
-			B savedB = new B();
-			await (session.SaveAsync(savedB));
-			await (session.FlushAsync());
-
-			session.Close();
-
-			session = OpenSession();
-
-			IQuery query;
-
-			query =
-				session.CreateSQLQuery(
-					"select identifier_column as {a.id}, clazz_discriminata as {a.class}, count_ as {a.Count}, name as {a.Name} from A where {fn ucase(Name)} like {fn ucase('max')}")
-					.AddEntity("a", typeof(A));
-
-			// NH: Replaced the whole if by the line above
-			/*
-			if( dialect is Dialect.TimesTenDialect) 
-			{
-				// TimesTen does not permit general expressions (like UPPER) in the second part of a LIKE expression,
-				// so we execute a similar test 
-				query = session.CreateSQLQuery("select identifier_column as {a.id}, clazz_discriminata as {a.class}, count_ as {a.Count}, name as {a.Name} from A where {fn ucase(name)} like 'MAX'", "a", typeof( A ));
-			}
-			else 
-			{
-				query = session.CreateSQLQuery("select identifier_column as {a.id}, clazz_discriminata as {a.class}, count_ as {a.Count}, name as {a.Name} from A where {fn ucase(name)} like {fn ucase('max')}", "a", typeof( A ));
-			}
-			*/
-
-			IList list = await (query.ListAsync());
-
-			Assert.IsNotNull(list);
-			Assert.AreEqual(1, list.Count);
-
-			await (session.DeleteAsync("from A"));
-			await (session.FlushAsync());
-			session.Close();
-		}
-
-		[Test]
 		public async Task DoubleAliasingAsync()
 		{
 			if (!Dialect.SupportsScalarSubSelects)

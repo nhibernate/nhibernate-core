@@ -28,9 +28,9 @@ namespace NHibernate.Loader.Criteria
 		//the user visible aliases, which are unknown to the superclass,
 		//these are not the actual "physical" SQL aliases
 		private readonly string[] userAliases;
-		private readonly IList<string> userAliasList = new List<string>();
-		private readonly IList<IType> resultTypeList = new List<IType>();
-		private readonly IList<bool> includeInResultRowList = new List<bool>();
+		private readonly List<string> userAliasList = new List<string>();
+		private readonly List<IType> resultTypeList = new List<IType>();
+		private readonly List<bool> includeInResultRowList = new List<bool>();
 
 		private static readonly INHibernateLogger logger = NHibernateLogger.For(typeof(CriteriaJoinWalker));
 

@@ -188,7 +188,7 @@ fromTable
 	// Write the table node (from fragment) and all the join fragments associated with it.
 	: ^( a=FROM_FRAGMENT  { Out(a); } (tableJoin [ a ])* )
 	| ^( a=JOIN_FRAGMENT  { Out(a); } (tableJoin [ a ])* )
-	| ^( a=ENTITY_JOIN    { Out(a); } )
+	| ^( a=ENTITY_JOIN    { Out(a); } (tableJoin [ a ])* )
 	;
 
 tableJoin [ IASTNode parent ]

@@ -72,5 +72,31 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 				Assert.That(list, Has.Count.EqualTo(1));
 			}
 		}
+
+		[Test]
+		public void CompareStringColumnWithGuidToString()
+		{
+			using (var session = OpenSession())
+			{
+				var list = session.Query<Entity>()
+				                  .Where(x => x.Id.ToString() == x.Name)
+				                  .ToList();
+
+				Assert.That(list, Has.Count.EqualTo(0));
+			}
+		}
+
+		[Test]
+		public void CompareStringColumnWithNullableGuidToString()
+		{
+			using (var session = OpenSession())
+			{
+				var list = session.Query<Entity>()
+				                  .Where(x => ((Guid?) x.Id).ToString() == x.Id.ToString())
+				                  .ToList();
+
+				Assert.That(list, Has.Count.EqualTo(1));
+			}
+		}
 	}
 }

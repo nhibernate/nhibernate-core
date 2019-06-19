@@ -352,6 +352,7 @@ namespace NHibernate.Dialect
 			// Casting to CHAR (without specified length) truncates to 30 characters. 
 			// A longer version would be safer, but 50 is enough to prevent errors when casting uniqueidentifer to a string representation (NH-2858)
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar(50))"));
+			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char(36))"));
 
 			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
 
@@ -788,7 +789,7 @@ namespace NHibernate.Dialect
 
 				// Regex matching any alias out of those given. Aliases should contain
 				// no dangerous characters (they are identifiers) so they are not escaped.
-				var aliasesPattern = StringHelper.Join("|", aliasedLockModes.Keys);
+				var aliasesPattern = string.Join("|", aliasedLockModes.Keys);
 
 				// Match < alias >, < alias,>, or < alias$>, the intent is to capture alias names
 				// in various kinds of "FROM table1 alias1, table2 alias2".

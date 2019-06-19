@@ -133,7 +133,7 @@ namespace NHibernate.Persister.Entity
 		private readonly bool hasSubselectLoadableCollections;
 		protected internal string rowIdName;
 
-		private readonly ISet<string> lazyProperties;
+		private readonly HashSet<string> lazyProperties;
 
 		private readonly string sqlWhereString;
 		private readonly string sqlWhereStringTemplate;
@@ -1872,7 +1872,7 @@ namespace NHibernate.Persister.Entity
 			}
 
 			string[] aliasedIdColumns = StringHelper.Qualify(RootAlias, IdentifierColumnNames);
-			string selectClause = StringHelper.Join(StringHelper.CommaSpace, aliasedIdColumns)
+			string selectClause = string.Join(StringHelper.CommaSpace, aliasedIdColumns)
 														+ ConcretePropertySelectFragment(RootAlias, PropertyUpdateability);
 
 			SqlString fromClause = new SqlString(
@@ -2983,7 +2983,7 @@ namespace NHibernate.Persister.Entity
 		public virtual SqlString GetSelectByUniqueKeyString(string[] suppliedPropertyNames, out IType[] parameterTypes)
 		{
 			var propertyNames = GetUniqueKeyPropertyNames(suppliedPropertyNames);
-			parameterTypes = propertyNames.Select(GetPropertyType).ToArray();
+			parameterTypes = propertyNames.ToArray(p => GetPropertyType(p));
 
 			// 6.0 TODO: remove the next if block
 			if (propertyNames.Length == 1)
@@ -3014,7 +3014,7 @@ namespace NHibernate.Persister.Entity
 			string[] suppliedPropertyNames)
 		{
 			var propertyNames = GetUniqueKeyPropertyNames(suppliedPropertyNames);
-			var parameterTypes = propertyNames.Select(GetPropertyType).ToArray();
+			var parameterTypes = propertyNames.ToArray(p => GetPropertyType(p));
 			var entity = binder.Entity;
 			for (var i = 0; i < propertyNames.Length; i++)
 			{
@@ -3840,7 +3840,7 @@ namespace NHibernate.Persister.Entity
 		protected SqlString CreateWhereByKey(int tableNumber, string alias)
 		{
 			//TODO: move to .sql package, and refactor with similar things!
-			//return new SqlString(StringHelper.Join("= ? and ",
+			//return new SqlString(string.Join("= ? and ",
 			//        StringHelper.Qualify(alias, GetSubclassTableKeyColumns(tableNumber))) + "= ?");
 			string[] subclauses = StringHelper.Qualify(alias, GetSubclassTableKeyColumns(tableNumber));
 			SqlStringBuilder builder = new SqlStringBuilder(subclauses.Length * 4);

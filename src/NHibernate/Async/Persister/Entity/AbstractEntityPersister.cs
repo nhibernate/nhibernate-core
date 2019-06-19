@@ -566,7 +566,7 @@ namespace NHibernate.Persister.Entity
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var propertyNames = GetUniqueKeyPropertyNames(suppliedPropertyNames);
-			var parameterTypes = propertyNames.Select(GetPropertyType).ToArray();
+			var parameterTypes = propertyNames.ToArray(p => GetPropertyType(p));
 			var entity = binder.Entity;
 			for (var i = 0; i < propertyNames.Length; i++)
 			{

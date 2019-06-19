@@ -168,6 +168,7 @@ namespace NHibernate.Loader
 			IJoinable joinable = type.GetAssociatedJoinable(Factory);
 
 			string subalias = GenerateTableAlias(associations.Count + 1, path, subPathAlias, joinable);
+			var qc = joinable.IsCollection ? (IQueryableCollection) joinable : null;
 
 			var assoc =
 				new OuterJoinableAssociation(
@@ -176,7 +177,8 @@ namespace NHibernate.Loader
 					aliasedLhsColumns,
 					subalias,
 					joinType,
-					GetWithClause(path, subPathAlias),
+					//for many-to-many with clause is applied with OuterJoinableAssociation created for entity persister so simply skip it here
+					qc?.IsManyToMany == true ? null : GetWithClause(path, subPathAlias),
 					Factory,
 					enabledFilters,
 					GetSelectMode(path));
@@ -185,7 +187,7 @@ namespace NHibernate.Loader
 
 			int nextDepth = currentDepth + 1;
 
-			if (!joinable.IsCollection)
+			if (qc == null)
 			{
 				IOuterJoinLoadable pjl = joinable as IOuterJoinLoadable;
 				if (pjl != null)
@@ -193,9 +195,7 @@ namespace NHibernate.Loader
 			}
 			else
 			{
-				IQueryableCollection qc = joinable as IQueryableCollection;
-				if (qc != null)
-					WalkCollectionTree(qc, subalias, path, subPathAlias, nextDepth);
+				WalkCollectionTree(qc, subalias, path, subPathAlias, nextDepth);
 			}
 		}
 

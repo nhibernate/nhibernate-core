@@ -511,19 +511,6 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		[Ignore("Inline empty list expression does not evaluate correctly")]
-		public async Task UsersWithEmptyInlineEnumerableAsync()
-		{
-			var allNames = new List<string> { "ayende", "rahien" };
-
-			var query = await ((from user in db.Users
-						 where allNames.Where(n => n == "does not exist").Contains(user.Name)
-						 select user).ToListAsync());
-
-			Assert.That(query.Count, Is.EqualTo(0));
-		}
-
-		[Test]
 		public void WhenTheSourceOfConstantIsICollectionThenNoThrowsAsync()
 		{
 			ICollection<string> names = new List<string> { "ayende", "rahien" };

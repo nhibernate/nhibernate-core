@@ -103,7 +103,7 @@ namespace NHibernate.Persister.Entity
 
 		protected internal void InitPropertyPaths( string path, IType type, string[] columns, string[] formulaTemplates, IMapping factory )
 		{
-			if (columns.Length != type.GetColumnSpan(factory))
+			if (columns.Length != type.GetOwnerColumnSpan(factory))
 			{
 				throw new MappingException(
 					string.Format("broken column mapping for: {0} of: {1}, type {2} expects {3} columns, but {4} were mapped",

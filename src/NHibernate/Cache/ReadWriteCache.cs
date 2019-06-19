@@ -152,7 +152,7 @@ namespace NHibernate.Cache
 			var result = new object[keys.Length];
 			lock (_lockObject)
 			{
-				var lockables = _cache.GetMany(keys.Select(o => (object) o).ToArray());
+				var lockables = _cache.GetMany(keys);
 				for (var i = 0; i < lockables.Length; i++)
 				{
 					var lockable = (ILockable) lockables[i];
@@ -236,12 +236,12 @@ namespace NHibernate.Cache
 				{
 					log.Debug("Caching: {0}", string.Join(",", keys.AsEnumerable()));
 				}
-				var keysArr = keys.Cast<object>().ToArray();
-				var lockValue = _cache.LockMany(keysArr);
+
+				var lockValue = _cache.LockMany(keys);
 				try
 				{
 					var putBatch = new Dictionary<object, object>();
-					var lockables = _cache.GetMany(keysArr);
+					var lockables = _cache.GetMany(keys);
 					for (var i = 0; i < keys.Length; i++)
 					{
 						var key = keys[i];
@@ -282,7 +282,7 @@ namespace NHibernate.Cache
 				}
 				finally
 				{
-					_cache.UnlockMany(keysArr, lockValue);
+					_cache.UnlockMany(keys, lockValue);
 				}
 			}
 			return result;

@@ -164,5 +164,31 @@ Line2";
 			Assert.That(hbmFormula.Text[1], Is.EqualTo("Line2"));
 			Assert.That(mapping.formula1, Is.Null);
 		}
+		
+		[Test]
+		public void WhenSetFetchModeToJoinThenSetFetch()
+		{
+			var member = For<MyClass>.Property(c => c.Relation);
+			var mapping = new HbmOneToOne();
+			var mapper = new OneToOneMapper(member, mapping);
+
+			mapper.Fetch(FetchKind.Join);
+
+			Assert.That(mapping.fetch, Is.EqualTo(HbmFetchMode.Join));
+			Assert.That(mapping.fetchSpecified, Is.True);
+		}
+
+		[Test]
+		public void WhenSetFetchModeToSelectThenSetFetch()
+		{
+			var member = For<MyClass>.Property(c => c.Relation);
+			var mapping = new HbmOneToOne();
+			var mapper = new OneToOneMapper(member, mapping);
+
+			mapper.Fetch(FetchKind.Select);
+
+			Assert.That(mapping.fetch, Is.EqualTo(HbmFetchMode.Select));
+			Assert.That(mapping.fetchSpecified, Is.True);
+		}
 	}
 }
