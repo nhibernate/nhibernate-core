@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace NHibernate.Test.NHSpecificTest.BirefList
+namespace NHibernate.Test.NHSpecificTest.GH2089
 {
 	public class Parent
 	{

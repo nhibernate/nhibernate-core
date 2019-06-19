@@ -1,7 +1,8 @@
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.BirefList
+namespace NHibernate.Test.NHSpecificTest.GH2089
 {
+	[KnownBug("gh-2089")]
 	public class Fixture : BugTestCase
 	{
 		private Parent _parent;
@@ -9,14 +10,12 @@ namespace NHibernate.Test.NHSpecificTest.BirefList
 		protected override void OnSetUp()
 		{
 			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
-				using (var tx = s.BeginTransaction())
-				{
-					_parent = new Parent();
-					_parent.AddChild(new Child());
-					s.Save(_parent);
-					tx.Commit();
-				}
+				_parent = new Parent();
+				_parent.AddChild(new Child());
+				s.Save(_parent);
+				tx.Commit();
 			}
 		}
 		
@@ -42,12 +41,10 @@ namespace NHibernate.Test.NHSpecificTest.BirefList
 		protected override void OnTearDown()
 		{
 			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
-				using (var tx = s.BeginTransaction())
-				{
-					s.Delete(s.Load<Parent>(_parent.Id));
-					tx.Commit();
-				}
+				s.Delete(s.Load<Parent>(_parent.Id));
+				tx.Commit();
 			}
 		}
 	}
