@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using NHibernate.Cfg;
 using NHibernate.DomainModel;
@@ -426,6 +427,15 @@ namespace NHibernate.Test.CfgTest
 			{
 
 			}
+
+			protected SampleQueryProvider(ISessionImplementor session, object collection,  NhQueryableOptions options) : base(session, collection, options)
+			{
+			}
+
+			protected override IQueryProvider CreateWithOptions(NhQueryableOptions options)
+			{
+				return new SampleQueryProvider(Session, Collection, options);
+			}
 		}
 
 		[Test]
@@ -442,6 +452,12 @@ namespace NHibernate.Test.CfgTest
 				using (var session = sessionFactory.OpenSession())
 				{
 					var query = session.Query<NHibernate.DomainModel.A>();
+					Assert.IsInstanceOf(typeof(SampleQueryProvider), query.Provider);
+				}
+
+				using (var session = sessionFactory.OpenSession())
+				{
+					var query = session.Query<NHibernate.DomainModel.A>().WithOptions(x => x.SetReadOnly(true));
 					Assert.IsInstanceOf(typeof(SampleQueryProvider), query.Provider);
 				}
 			}

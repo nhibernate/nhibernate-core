@@ -20,7 +20,6 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Test.FetchLazyProperties
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FetchLazyPropertiesFixtureAsync : TestCase
 	{
@@ -201,16 +200,16 @@ namespace NHibernate.Test.FetchLazyProperties
 
 		[TestCase(true)]
 		[TestCase(false)]
-		public async Task TestHqlFetchComponentAndFormulaTwoQueryReadOnlyAsync(bool readOnly, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task TestHqlFetchComponentAndFormulaTwoQueryReadOnlyAsync(bool readOnly)
 		{
 			Person person;
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				person = await (s.CreateQuery("from Person fetch Address where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>(cancellationToken));
-				person = await (s.CreateQuery("from Person fetch Formula where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>(cancellationToken));
+				person = await (s.CreateQuery("from Person fetch Address where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>());
+				person = await (s.CreateQuery("from Person fetch Formula where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>());
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			AssertFetchComponentAndFormulaTwoQuery(person);
@@ -218,16 +217,16 @@ namespace NHibernate.Test.FetchLazyProperties
 
 		[TestCase(true)]
 		[TestCase(false)]
-		public async Task TestLinqFetchComponentAndFormulaTwoQueryAsync(bool readOnly, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task TestLinqFetchComponentAndFormulaTwoQueryAsync(bool readOnly)
 		{
 			Person person;
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				person = await (s.Query<Person>().Fetch(o => o.Address).WithOptions(o => o.SetReadOnly(readOnly)).FirstOrDefaultAsync(o => o.Id == 1, cancellationToken));
-				person = await (s.Query<Person>().Fetch(o => o.Formula).WithOptions(o => o.SetReadOnly(readOnly)).FirstOrDefaultAsync(o => o.Id == 1, cancellationToken));
+				person = await (s.Query<Person>().Fetch(o => o.Address).WithOptions(o => o.SetReadOnly(readOnly)).FirstOrDefaultAsync(o => o.Id == 1));
+				person = await (s.Query<Person>().Fetch(o => o.Formula).WithOptions(o => o.SetReadOnly(readOnly)).FirstOrDefaultAsync(o => o.Id == 1));
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			AssertFetchComponentAndFormulaTwoQuery(person);
@@ -373,13 +372,13 @@ namespace NHibernate.Test.FetchLazyProperties
 
 		[TestCase(true)]
 		[TestCase(false)]
-		public async Task TestHqlFetchFormulaAndManyToOneComponentListAsync(bool descending, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task TestHqlFetchFormulaAndManyToOneComponentListAsync(bool descending)
 		{
 			Person person;
 			using (var s = OpenSession())
 			{
 				person = (await (s.CreateQuery("from Person p fetch p.Formula left join fetch p.BestFriend bf fetch bf.Address order by p.Id" + (descending ? " desc" : ""))
-							.ListAsync<Person>(cancellationToken))).FirstOrDefault(o => o.Id == 1);
+							.ListAsync<Person>())).FirstOrDefault(o => o.Id == 1);
 			}
 
 			AssertFetchFormulaAndManyToOneComponentList(person);
@@ -387,7 +386,7 @@ namespace NHibernate.Test.FetchLazyProperties
 
 		[TestCase(true)]
 		[TestCase(false)]
-		public async Task TestLinqFetchFormulaAndManyToOneComponentListAsync(bool descending, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task TestLinqFetchFormulaAndManyToOneComponentListAsync(bool descending)
 		{
 			Person person;
 			using (var s = OpenSession())
@@ -397,7 +396,7 @@ namespace NHibernate.Test.FetchLazyProperties
 							.Fetch(o => o.BestFriend).ThenFetch(o => o.Address);
 				query = descending ? query.OrderByDescending(o => o.Id) : query.OrderBy(o => o.Id);
 				person = (await (query
-						.ToListAsync(cancellationToken)))
+						.ToListAsync()))
 						.FirstOrDefault(o => o.Id == 1);
 			}
 
@@ -838,17 +837,17 @@ namespace NHibernate.Test.FetchLazyProperties
 
 		[TestCase(true)]
 		[TestCase(false)]
-		public async Task TestFetchComponentAndFormulaTwoQueryCacheAsync(bool readOnly, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task TestFetchComponentAndFormulaTwoQueryCacheAsync(bool readOnly)
 		{
-			await (TestLinqFetchComponentAndFormulaTwoQueryAsync(readOnly, cancellationToken));
+			await (TestLinqFetchComponentAndFormulaTwoQueryAsync(readOnly));
 
 			Person person;
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				person = await (s.GetAsync<Person>(1, cancellationToken));
+				person = await (s.GetAsync<Person>(1));
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			AssertFetchComponentAndFormulaTwoQuery(person);
@@ -893,17 +892,17 @@ namespace NHibernate.Test.FetchLazyProperties
 
 		[TestCase(true)]
 		[TestCase(false)]
-		public async Task TestFetchAfterPropertyIsInitializedAsync(bool readOnly, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task TestFetchAfterPropertyIsInitializedAsync(bool readOnly)
 		{
 			Person person;
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				person = await (s.CreateQuery("from Person fetch Address where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>(cancellationToken));
+				person = await (s.CreateQuery("from Person fetch Address where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>());
 				person.Image = new byte[10];
-				person = await (s.CreateQuery("from Person fetch Image where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>(cancellationToken));
+				person = await (s.CreateQuery("from Person fetch Image where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>());
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Image"), Is.True);
@@ -915,10 +914,10 @@ namespace NHibernate.Test.FetchLazyProperties
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				person = await (s.CreateQuery("from Person where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>(cancellationToken));
+				person = await (s.CreateQuery("from Person where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>());
 				person.Image = new byte[1];
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Image"), Is.True);
@@ -928,17 +927,17 @@ namespace NHibernate.Test.FetchLazyProperties
 
 		[TestCase(true)]
 		[TestCase(false)]
-		public async Task TestFetchAfterEntityIsInitializedAsync(bool readOnly, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task TestFetchAfterEntityIsInitializedAsync(bool readOnly)
 		{
 			Person person;
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				person = await (s.CreateQuery("from Person where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>(cancellationToken));
+				person = await (s.CreateQuery("from Person where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>());
 				var image = person.Image;
-				person = await (s.CreateQuery("from Person fetch Image where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>(cancellationToken));
+				person = await (s.CreateQuery("from Person fetch Image where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>());
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Image"), Is.True);

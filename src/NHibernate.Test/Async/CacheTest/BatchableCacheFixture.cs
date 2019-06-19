@@ -866,14 +866,14 @@ namespace NHibernate.Test.CacheTest
 
 		[TestCase(true)]
 		[TestCase(false)]
-		public async Task QueryEntityBatchCacheTestAsync(bool clearEntityCacheAfterQuery, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task QueryEntityBatchCacheTestAsync(bool clearEntityCacheAfterQuery)
 		{
 			var persister = Sfi.GetEntityPersister(typeof(ReadOnlyItem).FullName);
 			var cache = (BatchableCache) persister.Cache.Cache;
 			var queryCache = GetDefaultQueryCache();
 
 			Sfi.Statistics.Clear();
-			await (Sfi.EvictQueriesAsync(cancellationToken));
+			await (Sfi.EvictQueriesAsync());
 			cache.ClearStatistics();
 			queryCache.ClearStatistics();
 
@@ -884,9 +884,9 @@ namespace NHibernate.Test.CacheTest
 			{
 				items = await (s.Query<ReadOnlyItem>()
 				         .WithOptions(o => o.SetCacheable(true))
-				         .ToListAsync(cancellationToken));
+				         .ToListAsync());
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(queryCache.GetCalls, Has.Count.EqualTo(1), "Unexpected query cache GetCalls");
@@ -903,7 +903,7 @@ namespace NHibernate.Test.CacheTest
 
 			if (clearEntityCacheAfterQuery)
 			{
-				await (cache.ClearAsync(cancellationToken));
+				await (cache.ClearAsync(CancellationToken.None));
 			}
 
 			Sfi.Statistics.Clear();
@@ -913,9 +913,9 @@ namespace NHibernate.Test.CacheTest
 			{
 				items = await (s.Query<ReadOnlyItem>()
 				         .WithOptions(o => o.SetCacheable(true))
-				         .ToListAsync(cancellationToken));
+				         .ToListAsync());
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(queryCache.GetCalls, Has.Count.EqualTo(1), "Unexpected query cache GetCalls");
@@ -935,7 +935,7 @@ namespace NHibernate.Test.CacheTest
 		[TestCase(false, false)]
 		[TestCase(true, true)]
 		[TestCase(false, true)]
-		public async Task QueryFetchCollectionBatchCacheTestAsync(bool clearEntityCacheAfterQuery, bool future, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task QueryFetchCollectionBatchCacheTestAsync(bool clearEntityCacheAfterQuery, bool future)
 		{
 			if (future && !Sfi.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
@@ -954,19 +954,19 @@ namespace NHibernate.Test.CacheTest
 
 			using (var s = OpenSession())
 			{
-				var ids = await (s.Query<ReadOnly>().Select(o => o.Id).OrderBy(o => o).ToListAsync(cancellationToken));
+				var ids = await (s.Query<ReadOnly>().Select(o => o.Id).OrderBy(o => o).ToListAsync());
 				middleId = ids[2];
 			}
 
 			Sfi.Statistics.Clear();
-			await (Sfi.EvictQueriesAsync(cancellationToken));
+			await (Sfi.EvictQueriesAsync());
 			queryCache.ClearStatistics();
 			cache.ClearStatistics();
-			await (cache.ClearAsync(cancellationToken));
+			await (cache.ClearAsync(CancellationToken.None));
 			itemCache.ClearStatistics();
-			await (itemCache.ClearAsync(cancellationToken));
+			await (itemCache.ClearAsync(CancellationToken.None));
 			collectionCache.ClearStatistics();
-			await (collectionCache.ClearAsync(cancellationToken));
+			await (collectionCache.ClearAsync(CancellationToken.None));
 
 			List<ReadOnly> items;
 			using (var s = OpenSession())
@@ -992,10 +992,10 @@ namespace NHibernate.Test.CacheTest
 					items = await (s.Query<ReadOnly>()
 					         .WithOptions(o => o.SetCacheable(true))
 					         .FetchMany(o => o.Items)
-					         .ToListAsync(cancellationToken));
+					         .ToListAsync());
 				}
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(queryCache.GetCalls, Has.Count.EqualTo(future ? 0 : 1), "Unexpected query cache GetCalls");
@@ -1018,9 +1018,9 @@ namespace NHibernate.Test.CacheTest
 
 			if (clearEntityCacheAfterQuery)
 			{
-				await (cache.ClearAsync(cancellationToken));
-				await (collectionCache.ClearAsync(cancellationToken));
-				await (itemCache.ClearAsync(cancellationToken));
+				await (cache.ClearAsync(CancellationToken.None));
+				await (collectionCache.ClearAsync(CancellationToken.None));
+				await (itemCache.ClearAsync(CancellationToken.None));
 			}
 
 			Sfi.Statistics.Clear();
@@ -1048,10 +1048,10 @@ namespace NHibernate.Test.CacheTest
 					items = await (s.Query<ReadOnly>()
 					         .WithOptions(o => o.SetCacheable(true))
 					         .FetchMany(o => o.Items)
-					         .ToListAsync(cancellationToken));
+					         .ToListAsync());
 				}
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(queryCache.GetCalls, Has.Count.EqualTo(future ? 0 : 1), "Unexpected query cache GetCalls");
@@ -1080,7 +1080,7 @@ namespace NHibernate.Test.CacheTest
 		[TestCase(false, false)]
 		[TestCase(true, true)]
 		[TestCase(false, true)]
-		public async Task QueryFetchEntityBatchCacheTestAsync(bool clearEntityCacheAfterQuery, bool future, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task QueryFetchEntityBatchCacheTestAsync(bool clearEntityCacheAfterQuery, bool future)
 		{
 			if (future && !Sfi.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
@@ -1097,17 +1097,17 @@ namespace NHibernate.Test.CacheTest
 
 			using (var s = OpenSession())
 			{
-				var ids = await (s.Query<ReadOnlyItem>().Select(o => o.Id).OrderBy(o => o).ToListAsync(cancellationToken));
+				var ids = await (s.Query<ReadOnlyItem>().Select(o => o.Id).OrderBy(o => o).ToListAsync());
 				middleId = ids[17];
 			}
 
 			Sfi.Statistics.Clear();
-			await (Sfi.EvictQueriesAsync(cancellationToken));
+			await (Sfi.EvictQueriesAsync());
 			queryCache.ClearStatistics();
 			cache.ClearStatistics();
-			await (cache.ClearAsync(cancellationToken));
+			await (cache.ClearAsync(CancellationToken.None));
 			parentCache.ClearStatistics();
-			await (parentCache.ClearAsync(cancellationToken));
+			await (parentCache.ClearAsync(CancellationToken.None));
 
 			List<ReadOnlyItem> items;
 			using (var s = OpenSession())
@@ -1133,10 +1133,10 @@ namespace NHibernate.Test.CacheTest
 					items = await (s.Query<ReadOnlyItem>()
 							 .WithOptions(o => o.SetCacheable(true))
 							 .Fetch(o => o.Parent)
-							 .ToListAsync(cancellationToken));
+							 .ToListAsync());
 				}
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(queryCache.GetCalls, Has.Count.EqualTo(future ? 0 : 1), "Unexpected query cache GetCalls");
@@ -1158,8 +1158,8 @@ namespace NHibernate.Test.CacheTest
 
 			if (clearEntityCacheAfterQuery)
 			{
-				await (cache.ClearAsync(cancellationToken));
-				await (parentCache.ClearAsync(cancellationToken));
+				await (cache.ClearAsync(CancellationToken.None));
+				await (parentCache.ClearAsync(CancellationToken.None));
 			}
 
 			Sfi.Statistics.Clear();
@@ -1187,10 +1187,10 @@ namespace NHibernate.Test.CacheTest
 					items = await (s.Query<ReadOnlyItem>()
 							 .WithOptions(o => o.SetCacheable(true))
 							 .Fetch(o => o.Parent)
-							 .ToListAsync(cancellationToken));
+							 .ToListAsync());
 				}
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(queryCache.GetCalls, Has.Count.EqualTo(future ? 0 : 1), "Unexpected query cache GetCalls");
