@@ -101,8 +101,7 @@ namespace NHibernate.Action
 			if (success && IsCachePutEnabled(persister))
 			{
 				CacheKey ck = Session.GenerateCacheKey(Id, persister.IdentifierType, persister.RootEntityName);
-				bool put = persister.Cache.Put(ck, cacheEntry, Session.Timestamp, version, 
-						Persister.VersionComparator, Session.Factory.Settings.IsMinimalPutsEnabled && Session.CacheMode != CacheMode.Refresh);
+				bool put = persister.Cache.AfterInsert(ck, cacheEntry, version);
 
 				if (put && Session.Factory.Statistics.IsStatisticsEnabled)
 				{

@@ -28,6 +28,7 @@ namespace NHibernate.Action
 			{
 				stopwatch = Stopwatch.StartNew();
 			}
+
 			IPersistentCollection collection = Collection;
 
 			PreRecreate();
@@ -57,7 +58,7 @@ namespace NHibernate.Action
 			IPreCollectionRecreateEventListener[] preListeners = Session.Listeners.PreCollectionRecreateEventListeners;
 			if (preListeners.Length > 0)
 			{
-				PreCollectionRecreateEvent preEvent = new PreCollectionRecreateEvent(Persister, Collection, (IEventSource)Session);
+				PreCollectionRecreateEvent preEvent = new PreCollectionRecreateEvent(Persister, Collection, (IEventSource) Session);
 				for (int i = 0; i < preListeners.Length; i++)
 				{
 					preListeners[i].OnPreRecreateCollection(preEvent);
@@ -73,24 +74,17 @@ namespace NHibernate.Action
 				if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
 				{
 					CollectionCacheEntry entry = CollectionCacheEntry.Create(Collection, Persister);
-					bool put = Persister.Cache.Put(
-						cacheKey,
-						Persister.CacheEntryStructure.Structure(entry),
-						Session.Timestamp + Persister.Cache.Cache.NextTimestamp(),
-						null,
-						Persister.OwnerEntityPersister.VersionType?.Comparator,
-						Session.Factory.Settings.IsMinimalPutsEnabled &&
-						Session.CacheMode != CacheMode.Refresh);
-
+					bool put = Persister.Cache.AfterInsert(cacheKey, Persister.CacheEntryStructure.Structure(entry), null);
+					
 					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
 					{
 						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
 					}
-					
+
 					return;
 				}
 			}
-			
+
 			Persister.Cache.Release(cacheKey, Lock);
 		}
 
@@ -99,7 +93,7 @@ namespace NHibernate.Action
 			IPostCollectionRecreateEventListener[] postListeners = Session.Listeners.PostCollectionRecreateEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostCollectionRecreateEvent postEvent = new PostCollectionRecreateEvent(Persister, Collection, (IEventSource)Session);
+				PostCollectionRecreateEvent postEvent = new PostCollectionRecreateEvent(Persister, Collection, (IEventSource) Session);
 				for (int i = 0; i < postListeners.Length; i++)
 				{
 					postListeners[i].OnPostRecreateCollection(postEvent);

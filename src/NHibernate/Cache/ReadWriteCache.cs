@@ -449,7 +449,7 @@ namespace NHibernate.Cache
 				try
 				{
 					ILockable lockable = (ILockable) Cache.Get(key);
-					if (lockable == null)
+					if (lockable == null || (lockable is CacheLock @lock && !@lock.WasLockedConcurrently))
 					{
 						Cache.Put(key, CachedItem.Create(value, Cache.NextTimestamp(), version));
 						if (log.IsDebugEnabled())

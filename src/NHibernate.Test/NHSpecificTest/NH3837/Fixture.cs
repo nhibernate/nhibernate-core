@@ -12,6 +12,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3837
 			cfg.SetProperty("cache.use_second_level_cache", "true");
 		}
 
+		protected override string CacheConcurrencyStrategy => null;
+
 		[Test]
 		public void AfterInsertingEntitiesAndCollectionNoSQLSelectShouldHaveBeenIssued()
 		{
