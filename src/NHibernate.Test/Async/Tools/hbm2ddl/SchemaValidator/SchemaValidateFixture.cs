@@ -53,34 +53,6 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 		}
 
 #if NETFX
-		[Test, SetCulture("tr-TR"), SetUICulture("tr-TR")]
-		public void ShouldVerifySameTableTurkish()
-		{
-			//NH-3063
-
-			// Turkish have unusual casing rules for the letter 'i'. This test verifies that
-			// code paths executed by the SchemaValidator correctly handles case insensitive
-			// comparisons for this.
-
-			// Just make sure that we have an int property in the mapped class. This is
-			// the 'i' we rely on for the test.
-			var v = new Version();
-			Assert.That(v.Id, Is.TypeOf<int>());
-
-			var cfg = BuildConfiguration(_version1Resource);
-
-			var export = new SchemaExport(cfg);
-			export.Create(true, true);
-			try
-			{
-				var validator = new Tool.hbm2ddl.SchemaValidator(cfg);
-				validator.Validate();
-			}
-			finally
-			{
-				export.Drop(true, true);
-			}
-		}
 #endif
 
 		[Test]

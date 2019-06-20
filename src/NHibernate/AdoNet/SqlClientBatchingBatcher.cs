@@ -2,6 +2,8 @@
 using System;
 using System.Data.Common;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.AdoNet.Util;
 using NHibernate.Driver;
 using NHibernate.Exceptions;
