@@ -240,6 +240,7 @@ constructor
 aggregateExpr
 	: expr //p:propertyRef { resolve(#p); }
 	| collectionFunction
+	| selectStatement
 	;
 
 propertyFetch
