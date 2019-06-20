@@ -194,7 +194,20 @@ getAsyncGeneratorPath(){
 	fi
 
 	cd Tools
-	async_generator_path="Tools/CSharpAsyncGenerator.CommandLine.$(cat packages.config | grep id=\"CSharpAsyncGenerator.CommandLine | cut -d\" -f4)/tools/netcoreapp2.1/AsyncGenerator.CommandLine.dll"
+
+	if [ ! -f nuget.exe ]
+	then
+		wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+	fi
+
+	async_generator_path="CSharpAsyncGenerator.CommandLine.$(cat packages.config | grep id=\"CSharpAsyncGenerator.CommandLine | cut -d\" -f4)/tools"
+
+	if [ ! -d $async_generator_path ]
+	then
+		mono nuget.exe install
+	fi
+
+	async_generator_path="Tools/$async_generator_path/netcoreapp2.1/AsyncGenerator.CommandLine.dll"
 	cd ..
 }
 
