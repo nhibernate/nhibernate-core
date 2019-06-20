@@ -31,6 +31,24 @@ namespace NHibernate.Cache.Entry
 			};
 		}
 
+		public static bool TryCreate(IPersistentCollection collection, ICollectionPersister persister, out CollectionCacheEntry entry)
+		{
+			entry = null;
+			try
+			{
+				entry = new CollectionCacheEntry
+				{
+					state = collection.Disassemble(persister)
+				};
+
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
 		// 6.0 TODO convert to auto-property
 		[DataMember]
 		public virtual object[] State

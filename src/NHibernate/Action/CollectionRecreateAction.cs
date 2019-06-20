@@ -71,17 +71,17 @@ namespace NHibernate.Action
 			var cacheKey = new CacheKey(GetKey(), Persister.KeyType, Persister.Role, Session.Factory);
 			if (success)
 			{
-				if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
+				if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection)
+				    && CollectionCacheEntry.TryCreate(Collection, Persister, out CollectionCacheEntry entry ))
 				{
-					CollectionCacheEntry entry = CollectionCacheEntry.Create(Collection, Persister);
 					bool put = Persister.Cache.AfterInsert(cacheKey, Persister.CacheEntryStructure.Structure(entry), null);
-					
+
 					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
 					{
 						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
 					}
 
-					return;
+					return; 
 				}
 			}
 
