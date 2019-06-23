@@ -81,9 +81,9 @@ namespace NHibernate.Test.Extralazy
 				gavin = await (s.GetAsync<User>("gavin"));
 
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5), "Gavin's companies count after get");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after companies count");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after count");
 
 				// Test adding companies with ICollection interface
 				Sfi.Statistics.Clear();
@@ -94,10 +94,10 @@ namespace NHibernate.Test.Extralazy
 					gavin.Companies.Add(item);
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10), "Gavin's companies count after adding 5");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding companies");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after adding companies");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after adding");
 
 				// Test adding companies with IList interface
 				Sfi.Statistics.Clear();
@@ -105,42 +105,44 @@ namespace NHibernate.Test.Extralazy
 				{
 					var item = new Company($"c{i}", i, gavin);
 					addedItems.Add(item);
-					Assert.That(((IList) gavin.Companies).Add(item), Is.EqualTo(-1));
+					// Returned value is not valid with lazy list, no check for it.
+					((IList) gavin.Companies).Add(item);
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(15), "Gavin's companies count after adding through IList");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding through IList");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after adding through IList");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after adding through IList");
 
 
-				// Check existance of added companies
+				// Check existence of added companies
 				Sfi.Statistics.Clear();
+				// Have to skip unloaded (non-queued indeed) elements to avoid triggering existence queries on them.
 				foreach (var item in addedItems.Skip(5))
 				{
-					Assert.That(gavin.Companies.Contains(item), Is.True);
+					Assert.That(gavin.Companies.Contains(item), Is.True, "Company '{0}' existence", item.Name);
 				}
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after checking existence of non-flushed");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after checking existence of non-flushed");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after checking existence of non-flushed");
 
-				// Check existance of not loaded companies
-				Assert.That(gavin.Companies.Contains(addedItems[0]), Is.True);
-				Assert.That(gavin.Companies.Contains(addedItems[1]), Is.True);
+				// Check existence of not loaded companies
+				Assert.That(gavin.Companies.Contains(addedItems[0]), Is.True, "First company existence");
+				Assert.That(gavin.Companies.Contains(addedItems[1]), Is.True, "Second company existence");
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after checking existence of unloaded");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2), "Statements count after checking existence of unloaded");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after checking existence of unloaded");
 
-				// Check existance of not existing companies
+				// Check existence of not existing companies
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Companies.Contains(new Company("test1", 15, gavin)), Is.False);
-				Assert.That(gavin.Companies.Contains(new Company("test2", 16, gavin)), Is.False);
+				Assert.That(gavin.Companies.Contains(new Company("test1", 15, gavin)), Is.False, "First non-existent test");
+				Assert.That(gavin.Companies.Contains(new Company("test2", 16, gavin)), Is.False, "Second non-existent test");
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after checking non-existence");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2), "Statements count after checking non-existence");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after checking non-existence");
 
 				if (initialize)
 				{
@@ -149,8 +151,8 @@ namespace NHibernate.Test.Extralazy
 						e.MoveNext();
 					}
 
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
-					Assert.That(gavin.Companies.Count, Is.EqualTo(15));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True, "Companies initialization status after enumerating");
+					Assert.That(gavin.Companies.Count, Is.EqualTo(15), "Companies count after enumerating");
 				}
 
 				await (t.CommitAsync());
@@ -160,8 +162,8 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = await (s.GetAsync<User>("gavin"));
-				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(15), "Companies count after loading again Gavin");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after loading again");
 
 				await (t.CommitAsync());
 			}
@@ -190,7 +192,7 @@ namespace NHibernate.Test.Extralazy
 					gavin.Companies.Add(item);
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10), "Companies count before flush");
 
 				await (t.CommitAsync());
 			}
@@ -206,26 +208,26 @@ namespace NHibernate.Test.Extralazy
 				}
 
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5), "Companies count after get");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statement count after count");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after get");
 
-				// Readd items
+				// Re-add items
 				Sfi.Statistics.Clear();
 				for (var i = 0; i < 5; i++)
 				{
 					gavin.Companies.Add(addedItems[i]);
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10), "Companies count after re-adding");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statement count after re-adding");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after re-adding");
 
 				if (flush)
 				{
 					await (s.FlushAsync());
-					Assert.That(gavin.Companies.Count, Is.EqualTo(5));
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+					Assert.That(gavin.Companies.Count, Is.EqualTo(5), "Companies count after second flush");
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after second flush");
 				}
 
 				if (initialize)
@@ -235,8 +237,8 @@ namespace NHibernate.Test.Extralazy
 						e.MoveNext();
 					}
 
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
-					Assert.That(gavin.Companies.Count, Is.EqualTo(flush ? 5 : 10));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True, "Companies initialization status after enumeration");
+					Assert.That(gavin.Companies.Count, Is.EqualTo(flush ? 5 : 10), "Companies count after enumeration");
 				}
 
 				await (t.CommitAsync());
@@ -246,8 +248,8 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = await (s.GetAsync<User>("gavin"));
-				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5), "Companies count after loading Gavin again");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after loading Gavin again");
 
 				await (t.CommitAsync());
 			}
@@ -282,9 +284,9 @@ namespace NHibernate.Test.Extralazy
 				gavin = await (s.GetAsync<User>("gavin"));
 
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5), "Companies count after get");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after get");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after get");
 
 				// Test inserting companies at the start
 				Sfi.Statistics.Clear();
@@ -295,10 +297,10 @@ namespace NHibernate.Test.Extralazy
 					gavin.Companies.Insert(0, item);
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10), "Companies count after insert");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after insert");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after insert");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after insert");
 
 				// Test inserting companies at the end
 				Sfi.Statistics.Clear();
@@ -309,42 +311,45 @@ namespace NHibernate.Test.Extralazy
 					gavin.Companies.Insert(i, item);
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(15), "Companies count after tail insert");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after tail insert");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after tail insert");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after tail insert");
 
 				// Try insert invalid indexes
-				Assert.Throws<ArgumentOutOfRangeException>(() => gavin.Companies.RemoveAt(-1));
-				Assert.Throws<ArgumentOutOfRangeException>(() => gavin.Companies.RemoveAt(20));
+				Assert.Throws<ArgumentOutOfRangeException>(
+					() => gavin.Companies.Insert(-1, new Company("c-1", -1, gavin)), "inserting at -1");
+				Assert.Throws<ArgumentOutOfRangeException>(
+					() => gavin.Companies.Insert(20, new Company("c20", 20, gavin)), "inserting too far");
 
-				// Check existance of added companies
+				// Check existence of added companies
 				Sfi.Statistics.Clear();
+				// Have to skip unloaded (non-queued indeed) elements to avoid triggering existence queries on them.
 				foreach (var item in addedItems.Skip(5))
 				{
-					Assert.That(gavin.Companies.Contains(item), Is.True);
+					Assert.That(gavin.Companies.Contains(item), Is.True, "Company '{0}' existence", item.Name);
 				}
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after existence check");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after existence check");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after existence check");
 
-				// Check existance of not loaded companies
-				Assert.That(gavin.Companies.Contains(addedItems[0]), Is.True);
-				Assert.That(gavin.Companies.Contains(addedItems[1]), Is.True);
+				// Check existence of not loaded companies
+				Assert.That(gavin.Companies.Contains(addedItems[0]), Is.True, "First company existence");
+				Assert.That(gavin.Companies.Contains(addedItems[1]), Is.True, "Second company existence");
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after unloaded existence check");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2), "Statements count after unloaded existence check");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after unloaded existence check");
 
-				// Check existance of not existing companies
+				// Check existence of not existing companies
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Companies.Contains(new Company("test1", 15, gavin)), Is.False);
-				Assert.That(gavin.Companies.Contains(new Company("test2", 16, gavin)), Is.False);
+				Assert.That(gavin.Companies.Contains(new Company("test1", 15, gavin)), Is.False, "First non-existence test");
+				Assert.That(gavin.Companies.Contains(new Company("test2", 16, gavin)), Is.False, "Second non-existence test");
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after non-existence check");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2), "Statements count after non-existence check");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after non-existence check");
 
 				if (initialize)
 				{
@@ -353,8 +358,8 @@ namespace NHibernate.Test.Extralazy
 						e.MoveNext();
 					}
 
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
-					Assert.That(gavin.Companies.Count, Is.EqualTo(15));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True, "Companies initialization status after enumeration");
+					Assert.That(gavin.Companies.Count, Is.EqualTo(15), "Companies count after enumeration");
 				}
 
 				await (t.CommitAsync());
@@ -364,8 +369,8 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = await (s.GetAsync<User>("gavin"));
-				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(15), "Companies count after loading again");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after loading again");
 
 				await (t.CommitAsync());
 			}
@@ -394,7 +399,7 @@ namespace NHibernate.Test.Extralazy
 					gavin.Companies.Insert(i, item);
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10), "Companies count before flush");
 
 				await (t.CommitAsync());
 			}
@@ -410,27 +415,27 @@ namespace NHibernate.Test.Extralazy
 				}
 
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5), "Companies count after get");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after count");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after count");
 
-				// Readd items
+				// Re-add items
 				Sfi.Statistics.Clear();
 				for (var i = 0; i < 5; i++)
 				{
 					gavin.Companies.Insert(4 - i, addedItems[i]);
 				}
 
-				Assert.That(gavin.Companies[0].ListIndex, Is.EqualTo(4));
-				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies[0].ListIndex, Is.EqualTo(4), "Company at 0");
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10), "Companies count after re-insert");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after re-insert");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after re-insert");
 
 				if (flush)
 				{
 					await (s.FlushAsync());
-					Assert.That(gavin.Companies.Count, Is.EqualTo(5));
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+					Assert.That(gavin.Companies.Count, Is.EqualTo(5), "Companies count after flush");
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after flush");
 				}
 
 				if (initialize)
@@ -440,8 +445,8 @@ namespace NHibernate.Test.Extralazy
 						e.MoveNext();
 					}
 
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
-					Assert.That(gavin.Companies.Count, Is.EqualTo(flush ? 5 : 10));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True, "Companies initialization status after enumeration");
+					Assert.That(gavin.Companies.Count, Is.EqualTo(flush ? 5 : 10), "Companies count after enumeration");
 				}
 
 				await (t.CommitAsync());
@@ -451,8 +456,8 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = await (s.GetAsync<User>("gavin"));
-				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5), "Companies count after loading again");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after loading again");
 
 				await (t.CommitAsync());
 			}
