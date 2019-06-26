@@ -46,7 +46,7 @@ namespace NHibernate.Test.TypesTest
 				_replacedType,
 				_testDefaultType,
 				new[] {"currency"},
-				configurator => configurator.SetTypeByPrecision((precision, scale) => new CustomCurrencyType(precision, scale)));
+				(precision, scale) => new CustomCurrencyType(precision, scale));
 			base.Configure(configuration);
 		}
 

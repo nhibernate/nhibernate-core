@@ -45,7 +45,7 @@ namespace NHibernate.Test.TypesTest
 				_replacedType,
 				_testDefaultStringType,
 				new[] {"string"},
-				configurator => configurator.SetTypeByLengthOrScale(length => new CustomStringType(length)));
+				length => new CustomStringType(length));
 			base.Configure(configuration);
 		}
 
