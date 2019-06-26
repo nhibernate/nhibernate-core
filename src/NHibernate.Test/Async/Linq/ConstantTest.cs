@@ -25,19 +25,6 @@ namespace NHibernate.Test.Linq
 	[TestFixture]
 	public class ConstantTestAsync : LinqTestCase
 	{
-		[Test]
-		[Ignore("Linq query not supported yet")]
-		public async Task ConstantNonCachedAsync()
-		{
-			var c1 = await ((from c in db.Customers
-			          select "customer1").FirstAsync());
-
-			var c2 = await ((from c in db.Customers
-			          select "customer2").FirstAsync());
-
-			Assert.That(c1, Is.EqualTo("customer1"));
-			Assert.That(c2, Is.EqualTo("customer2"));
-		}
 
 		[Test]
 		public async Task ConstantNonCachedInAnonymousNewExpressionAsync()

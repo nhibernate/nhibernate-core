@@ -14,7 +14,7 @@ namespace NHibernate.Hql.Util
 	public class SessionFactoryHelper
 	{
 		private readonly ISessionFactoryImplementor sfi;
-		private readonly IDictionary<string,CollectionPropertyMapping> collectionPropertyMappingByRole = 
+		private readonly Dictionary<string,CollectionPropertyMapping> collectionPropertyMappingByRole = 
 			new Dictionary<string,CollectionPropertyMapping>();
 
 		public SessionFactoryHelper(ISessionFactoryImplementor sfi)

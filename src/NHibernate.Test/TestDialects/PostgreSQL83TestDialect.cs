@@ -16,5 +16,7 @@
 		/// Npgsql 3.2.4.1.
 		/// </summary>
 		public override bool SupportsUsingConnectionOnSystemTransactionPrepare => false;
+
+		public override bool SupportsAggregateInSubSelect => true;
 	}
 }

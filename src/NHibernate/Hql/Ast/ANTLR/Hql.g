@@ -527,22 +527,30 @@ unaryExpression
 	;
 	
 caseExpression
-	: CASE (whenClause)+ (elseClause)? END
-		-> ^(CASE whenClause+ elseClause?) 
-	| CASE unaryExpression (altWhenClause)+ (elseClause)? END
-		-> ^(CASE2 unaryExpression altWhenClause+ elseClause?)
+	: simpleCaseStatement
+	| searchedCaseStatement
 	;
-	
-whenClause
-	: (WHEN^ logicalExpression THEN! expression)
+
+simpleCaseStatement
+	: CASE expression (simpleCaseWhenClause)+ (elseClause)? END
+		-> ^(CASE2 expression simpleCaseWhenClause+ elseClause?)
 	;
-	
-altWhenClause
-	: (WHEN^ unaryExpression THEN! expression)
+
+simpleCaseWhenClause
+	: (WHEN^ expression THEN! expression)
 	;
 	
 elseClause
 	: (ELSE^ expression)
+	;
+
+searchedCaseStatement
+	: CASE (searchedCaseWhenClause)+ (elseClause)? END
+		-> ^(CASE searchedCaseWhenClause+ elseClause?)
+	;
+
+searchedCaseWhenClause
+	: (WHEN^ logicalExpression THEN! expression)
 	;
 	
 quantifiedExpression
@@ -603,13 +611,17 @@ identPrimary
 //## aggregateFunction:
 //##     COUNT | 'sum' | 'avg' | 'max' | 'min';
 aggregate
-	: ( op=SUM | op=AVG | op=MAX | op=MIN ) OPEN additiveExpression CLOSE
-		-> ^(AGGREGATE[$op] additiveExpression)
+	: ( op=SUM | op=AVG | op=MAX | op=MIN ) OPEN aggregateArgument CLOSE
+		-> ^(AGGREGATE[$op] aggregateArgument)
 	// Special case for count - It's 'parameters' can be keywords.
 	|  COUNT OPEN ( s=STAR | p=aggregateDistinctAll ) CLOSE
 		-> {s == null}? ^(COUNT $p)
 		-> ^(COUNT ^(ROW_STAR["*"]))
 	|  collectionExpr
+	;
+
+aggregateArgument
+	: ( additiveExpression | selectStatement )
 	;
 
 aggregateDistinctAll

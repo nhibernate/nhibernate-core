@@ -6,49 +6,63 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	internal class EntityCacheConfigurationProperties<TEntity> : IEntityCacheConfigurationProperties<TEntity>
+	public class EntityCacheConfigurationProperties<TEntity>
+#pragma warning disable 618
+		: IEntityCacheConfigurationProperties<TEntity>
+#pragma warning restore 618
 		where TEntity : class
 	{
-		private readonly Dictionary<string, IEntityCollectionCacheConfigurationProperties> collections;
+		private readonly Dictionary<string, EntityCollectionCacheConfigurationProperties> collections;
 
 		public EntityCacheConfigurationProperties()
 		{
-			collections = new Dictionary<string, IEntityCollectionCacheConfigurationProperties>(10);
+			collections = new Dictionary<string, EntityCollectionCacheConfigurationProperties>(10);
 			Strategy = null;
 		}
-
-		#region Implementation of IEntityCacheConfigurationProperties
 
 		public EntityCacheUsage? Strategy { set; get; }
 		public string RegionName { set; get; }
 
 		public void Collection<TCollection>(Expression<Func<TEntity, TCollection>> collectionProperty,
-																				Action<IEntityCollectionCacheConfigurationProperties> collectionCacheConfiguration)
+											Action<EntityCollectionCacheConfigurationProperties> collectionCacheConfiguration)
 			where TCollection : IEnumerable
 		{
 			if (collectionProperty == null)
 			{
-				throw new ArgumentNullException("collectionProperty");
+				throw new ArgumentNullException(nameof(collectionProperty));
 			}
 			var mi = ExpressionsHelper.DecodeMemberAccessExpression(collectionProperty);
 			if(mi.DeclaringType != typeof(TEntity))
 			{
-				throw new ArgumentOutOfRangeException("collectionProperty", "Collection not owned by " + typeof (TEntity).FullName);
+				throw new ArgumentOutOfRangeException(nameof(collectionProperty), "Collection not owned by " + typeof (TEntity).FullName);
 			}
 			var ecc = new EntityCollectionCacheConfigurationProperties();
 			collectionCacheConfiguration(ecc);
 			collections.Add(typeof (TEntity).FullName + "." + mi.Name, ecc);
 		}
 
-		#endregion
+#pragma warning disable 618
+		#region Implementation of IEntityCacheConfigurationProperties
 
-		public IDictionary<string, IEntityCollectionCacheConfigurationProperties> Collections
+		void IEntityCacheConfigurationProperties<TEntity>.Collection<TCollection>(Expression<Func<TEntity, TCollection>> collectionProperty,
+																				Action<IEntityCollectionCacheConfigurationProperties> collectionCacheConfiguration)
+		{
+			Collection(collectionProperty, collectionCacheConfiguration);
+		}
+
+		#endregion
+#pragma warning restore 618
+
+		internal IDictionary<string, EntityCollectionCacheConfigurationProperties> Collections
 		{
 			get { return collections; }
 		}
 	}
 
-	internal class EntityCollectionCacheConfigurationProperties : IEntityCollectionCacheConfigurationProperties
+	public class EntityCollectionCacheConfigurationProperties 
+#pragma warning disable 618
+		: IEntityCollectionCacheConfigurationProperties
+#pragma warning restore 618
 	{
 		public EntityCollectionCacheConfigurationProperties()
 		{

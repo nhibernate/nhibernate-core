@@ -116,23 +116,6 @@ namespace NHibernate.Test.Legacy
 		}
 
 		[Test]
-		[Ignore("NH-3893 is not fixed")]
-		public async Task LeftAndRightAsync()
-		{
-			// As of NH-3893, left and right functions are broken. Seemed confused with join keyword, and not
-			// supported on Hibernate side.
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				var rset = await (s.CreateQuery("select left('abc', 2), right('abc', 2) from s in class Simple").ListAsync<object[]>());
-				var row = rset[0];
-				Assert.AreEqual("ab", row[0], "Left function is broken.");
-				Assert.AreEqual("bc", row[1], "Right function is broken.");
-				await (t.CommitAsync());
-			}
-		}
-
-		[Test]
 		public async Task SetPropertiesAsync()
 		{
 			ISession s = OpenSession();

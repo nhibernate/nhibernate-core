@@ -71,7 +71,7 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
-			var results = _cache.GetMany(keys.Select(o => (object) o).ToArray());
+			var results = _cache.GetMany(keys);
 			if (!log.IsDebugEnabled())
 			{
 				return results;

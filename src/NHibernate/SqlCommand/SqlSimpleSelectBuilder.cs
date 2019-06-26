@@ -13,8 +13,8 @@ namespace NHibernate.SqlCommand
 	{
 		private string tableName;
 
-		private readonly IList<string> columnNames = new List<string>();
-		private readonly IDictionary<string, string> aliases = new Dictionary<string, string>(); //key=column Name, value=column Alias
+		private readonly List<string> columnNames = new List<string>();
+		private readonly Dictionary<string, string> aliases = new Dictionary<string, string>(); //key=column Name, value=column Alias
 		private LockMode lockMode = LockMode.Read;
 		private string comment;
 
