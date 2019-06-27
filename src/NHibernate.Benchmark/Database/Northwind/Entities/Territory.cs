@@ -7,7 +7,6 @@ namespace NHibernate.DomainModel.Northwind.Entities
     {
         private readonly ISet<Employee> _employees;
         private string _description;
-        private Region _region;
 
         public Territory() : this(null)
         {
@@ -22,20 +21,13 @@ namespace NHibernate.DomainModel.Northwind.Entities
 
         public virtual string Description
         {
-            get { return _description.Trim(); }
-            set { _description = value; }
+            get => _description.Trim();
+            set => _description = value;
         }
 
-        public virtual Region Region
-        {
-            get { return _region; }
-            set { _region = value; }
-        }
+        public virtual Region Region { get; set; }
 
-        public virtual ReadOnlyCollection<Employee> Employees
-        {
-            get { return new ReadOnlyCollection<Employee>(new List<Employee>(_employees).AsReadOnly()); }
-        }
+        public virtual ReadOnlyCollection<Employee> Employees => new ReadOnlyCollection<Employee>(new List<Employee>(_employees).AsReadOnly());
 
         public virtual void AddEmployee(Employee employee)
         {

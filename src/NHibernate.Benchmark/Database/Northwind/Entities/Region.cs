@@ -20,14 +20,11 @@ namespace NHibernate.DomainModel.Northwind.Entities
 
         public virtual string Description
         {
-            get { return _description.Trim(); }
-            set { _description = value; }
+            get => _description.Trim();
+            set => _description = value;
         }
 
-        public virtual ReadOnlyCollection<Territory> Territories
-        {
-            get { return new List<Territory>(_territories).AsReadOnly(); }
-        }
+        public virtual ReadOnlyCollection<Territory> Territories => new List<Territory>(_territories).AsReadOnly();
 
         public virtual void AddTerritory(Territory territory)
         {

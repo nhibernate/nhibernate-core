@@ -25,20 +25,20 @@ namespace NHibernate.DomainModel.Northwind.Entities
 
 		public virtual bool Active
 		{
-			get { return active; }
-			set { active = value; }
+			get => active;
+			set => active = value;
 		}
 
 		public virtual IList<PatientRecord> PatientRecords
 		{
-			get { return patientRecords; }
-			set { patientRecords = value; }
+			get => patientRecords;
+			set => patientRecords = value;
 		}
 
 		public virtual Physician Physician
 		{
-			get { return physician; }
-			set { physician = value; }
+			get => physician;
+			set => physician = value;
 		}
 	}
 

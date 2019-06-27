@@ -6,37 +6,19 @@ namespace NHibernate.DomainModel.Northwind.Entities
     public class ProductCategory
     {
         private readonly ISet<Product> _products;
-        private string _description;
-        private string _name;
-        private int _categoryId;
 
         public ProductCategory() 
         {
             _products = new HashSet<Product>();
         }
 
-        public virtual int CategoryId
-        {
-            get { return _categoryId; }
-            set { _categoryId = value; }
-        }
+        public virtual int CategoryId { get; set; }
 
-        public virtual string Name
-        {
-            get { return _name; }
-            set { _name = value; }
-        }
+        public virtual string Name { get; set; }
 
-        public virtual string Description
-        {
-            get { return _description; }
-            set { _description = value; }
-        }
+        public virtual string Description { get; set; }
 
-        public virtual ReadOnlyCollection<Product> Products
-        {
-            get { return new ReadOnlyCollection<Product>(new List<Product>(_products)); }
-        }
+        public virtual ReadOnlyCollection<Product> Products => new ReadOnlyCollection<Product>(new List<Product>(_products));
 
         public virtual void AddProduct(Product product)
         {
