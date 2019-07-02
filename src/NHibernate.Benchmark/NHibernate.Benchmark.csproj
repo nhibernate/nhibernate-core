@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="../../build-common/NHibernate.props" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
@@ -7,10 +7,26 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.11.5" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.111" />
+    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.3.0" />
+    <PackageReference Include="Npgsql" Version="4.0.3" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.2" />
+    <PackageReference Include="System.Data.OracleClient" Version="1.0.8" />
+    <PackageReference Include="System.Data.Odbc" Version="4.5.0" />
+    <PackageReference Include="MySql.Data" Version="6.10.6" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\NHibernate\NHibernate.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Database" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Database\AdventureWorks\Mappings\BusinessEntity.hbm.xml" />
+    <EmbeddedResource Include="Database\AdventureWorks\Mappings\BusinessEntity.hbm.xml" />
   </ItemGroup>
 
 </Project>
