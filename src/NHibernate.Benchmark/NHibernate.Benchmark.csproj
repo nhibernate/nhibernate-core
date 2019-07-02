@@ -21,12 +21,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Database" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Database\AdventureWorks\Mappings\BusinessEntity.hbm.xml" />
-    <EmbeddedResource Include="Database\AdventureWorks\Mappings\BusinessEntity.hbm.xml" />
+    <EmbeddedResource Include="Database\Northwind\Mappings\Animal.hbm.xml" />
+    <EmbeddedResource Include="Database\Northwind\Mappings\AnotherEntity.hbm.xml" />
+    <EmbeddedResource Include="Database\Northwind\Mappings\Customer.hbm.xml" />
+    <EmbeddedResource Include="Database\Northwind\Mappings\Employee.hbm.xml" />
+    <EmbeddedResource Include="Database\Northwind\Mappings\Order.hbm.xml" />
+    <EmbeddedResource Include="Database\Northwind\Mappings\OrderLine.hbm.xml" />
+    <EmbeddedResource Include="Database\Northwind\Mappings\Patient.hbm.xml" />
+    <EmbeddedResource Include="Database\Northwind\Mappings\Product.hbm.xml" />
+    <EmbeddedResource Include="Database\Northwind\Mappings\ProductCategory.hbm.xml" />
+    <EmbeddedResource Include="Database\Northwind\Mappings\Region.hbm.xml" />
+    <EmbeddedResource Include="Database\Northwind\Mappings\Role.hbm.xml" />
+    <EmbeddedResource Include="Database\Northwind\Mappings\Shipper.hbm.xml" />
+    <EmbeddedResource Include="Database\Northwind\Mappings\Supplier.hbm.xml" />
+    <EmbeddedResource Include="Database\Northwind\Mappings\Territory.hbm.xml" />
+    <EmbeddedResource Include="Database\Northwind\Mappings\TimeSheet.hbm.xml" />
+    <EmbeddedResource Include="Database\Northwind\Mappings\User.hbm.xml" />
   </ItemGroup>
 
 </Project>

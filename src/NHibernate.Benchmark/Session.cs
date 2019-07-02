@@ -3,7 +3,7 @@ using BenchmarkDotNet.Attributes;
 namespace NHibernate.Benchmark
 {
 	[MemoryDiagnoser]
-	public class Session : AdventureWorksBenchmarkCase
+	public class Session : NorthwindBenchmarkCase
 	{
 		[Benchmark]
 		public ISessionFactory BuildSessionFactory()
