@@ -2,7 +2,6 @@ using BenchmarkDotNet.Attributes;
 
 namespace NHibernate.Benchmark
 {
-	[MemoryDiagnoser]
 	public class Session : NorthwindBenchmarkCase
 	{
 		[Benchmark]

@@ -7,6 +7,7 @@ using NHibernate.Tool.hbm2ddl;
 
 namespace NHibernate.Benchmark
 {
+	[MemoryDiagnoser]
 	public class BenchmarkCase
 	{
 		protected ISessionFactory SessionFactory { get; set; }
@@ -38,7 +39,7 @@ namespace NHibernate.Benchmark
 		}
 
 		[GlobalSetup]
-		public void Setup()
+		public void GlobalSetup()
 		{
 			try
 			{
@@ -48,6 +49,7 @@ namespace NHibernate.Benchmark
 				SessionFactory = Configuration.BuildSessionFactory();
 				SchemaExport = new SchemaExport(Configuration);
 				CreateSchema();
+				OnGlobalSetup();
 			}
 			catch (Exception e)
 			{
@@ -55,6 +57,11 @@ namespace NHibernate.Benchmark
 				OnClean();
 				throw;
 			}
+		}
+
+		protected virtual void OnGlobalSetup()
+		{
+			
 		}
 
 		[GlobalCleanup]
@@ -65,6 +72,18 @@ namespace NHibernate.Benchmark
 				DropSchema();
 				OnClean();
 			}
+		}
+
+
+		[IterationSetup]
+		public void Setup()
+		{
+			OnSetup();
+		}
+
+		protected virtual void OnSetup()
+		{
+			
 		}
 
 		[IterationCleanup]
