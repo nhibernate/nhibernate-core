@@ -294,7 +294,7 @@ namespace NHibernate.Type
 			// NOTE: each .NET type should appear only one time
 			RegisterType(typeof (Byte[]), NHibernateUtil.Binary, new[] {"binary"},
 						 l => GetType(NHibernateUtil.Binary, l, len => new BinaryType(SqlTypeFactory.GetBinary(len))),
-						 true);
+						 false);
 
 			RegisterType(typeof (Boolean), NHibernateUtil.Boolean, new[] { "boolean", "bool" });
 			RegisterType(typeof (Byte), NHibernateUtil.Byte, new[]{ "byte"});
