@@ -8,6 +8,7 @@ using NHibernate.Tool.hbm2ddl;
 namespace NHibernate.Benchmark
 {
 	[MemoryDiagnoser]
+	[HtmlExporter]
 	public class BenchmarkCase
 	{
 		protected ISessionFactory SessionFactory { get; set; }
