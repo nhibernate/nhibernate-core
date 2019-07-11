@@ -741,7 +741,7 @@ var _DoLists = function(text) {
 
 			// Turn double returns into triple returns, so that we can make a
 			// paragraph for the last item in a list, if necessary:
-			list = list.replace(/\n{2,}/g,"\n\n\n");;
+			list = list.replace(/\n{2,}/g,"\n\n\n");
 			var result = _ProcessListItems(list);
 	
 			// Trim any trailing whitespace, to put the closing `</$list_type>`
@@ -761,7 +761,7 @@ var _DoLists = function(text) {
 			var list_type = (m3.search(/[*+-]/g)>-1) ? "ul" : "ol";
 			// Turn double returns into triple returns, so that we can make a
 			// paragraph for the last item in a list, if necessary:
-			var list = list.replace(/\n{2,}/g,"\n\n\n");;
+			var list = list.replace(/\n{2,}/g,"\n\n\n");
 			var result = _ProcessListItems(list);
 			result = runup + "<"+list_type+">\n" + result + "</"+list_type+">\n";	
 			return result;
@@ -1028,7 +1028,7 @@ var _DoBlockQuotes = function(text) {
 				function(wholeMatch,m1) {
 					var pre = m1;
 					// attacklab: hack around Konqueror 3.5.4 bug:
-					pre = pre.replace(/^  /mg,"~0");
+					pre = pre.replace(/^ {2}/mg,"~0");
 					pre = pre.replace(/~0/g,"");
 					return pre;
 				});
