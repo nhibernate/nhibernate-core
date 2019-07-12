@@ -805,7 +805,7 @@ namespace NHibernate.Loader
 			else if (orderBy.Length == 0)
 				return ass;
 			else
-				return ass.Append(StringHelper.CommaSpace).Append(orderBy);
+				return ass.Append(StringHelper.CommaSpace, orderBy);
 		}
 
 		protected SqlString MergeOrderings(string ass, SqlString orderBy) {

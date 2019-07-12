@@ -204,7 +204,7 @@ namespace NHibernate.Engine
 				{
 					if (join.Alias.Equals(withClauseJoinAlias))
 					{
-						condition = condition.Append(" and ").Append(withClauseFragment);
+						condition = condition.Append(" and ", withClauseFragment);
 					}
 				}
 

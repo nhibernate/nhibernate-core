@@ -134,7 +134,7 @@ namespace NHibernate.SqlCommand
 		public SqlUpdateBuilder AppendAssignmentFragment(SqlString fragment)
 		{
 			// SqlString is immutable
-			assignments = assignments == null ? fragment : assignments.Append(", ").Append(fragment);
+			assignments = assignments == null ? fragment : assignments.Append(", ", fragment);
 			return this;
 		}
 
