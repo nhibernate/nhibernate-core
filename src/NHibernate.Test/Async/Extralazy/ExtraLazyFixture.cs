@@ -114,7 +114,6 @@ namespace NHibernate.Test.Extralazy
 				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after adding through IList");
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after adding through IList");
 
-
 				// Check existence of added companies
 				Sfi.Statistics.Clear();
 				// Have to skip unloaded (non-queued indeed) elements to avoid triggering existence queries on them.
@@ -982,7 +981,7 @@ namespace NHibernate.Test.Extralazy
 
 				var collection = gavin.CreditCards;
 
-				// Add transient permissions
+				// Add transient credit cards
 				Sfi.Statistics.Clear();
 				for (var i = 5; i < 10; i++)
 				{
@@ -1004,7 +1003,7 @@ namespace NHibernate.Test.Extralazy
 				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after clearing");
 				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False, "Credit cards initialization status after clearing");
 
-				// Re-add two not loaded and two transient permissions
+				// Re-add two not loaded and two transient credit cards
 				collection.Add(addedItems[0]);
 				collection.Add(addedItems[1]);
 				collection.Add(addedItems[5]);
@@ -1014,7 +1013,7 @@ namespace NHibernate.Test.Extralazy
 				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after re-adding");
 				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False, "Credit cards initialization status after re-adding");
 
-				// Remove one not loaded and one transient permissions
+				// Remove one not loaded and one transient credit cards
 				Assert.That(collection.Remove(addedItems[1]), Is.True, "Removing not loaded credit card");
 				Assert.That(collection.Remove(addedItems[6]), Is.True, "Removing transient credit card");
 
@@ -1042,7 +1041,6 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(collection.Count, Is.EqualTo(2), "Credit cards count after enumerating");
 				}
 
-
 				await (t.CommitAsync());
 			}
 
@@ -1052,7 +1050,7 @@ namespace NHibernate.Test.Extralazy
 				gavin = await (s.GetAsync<User>("gavin"));
 				var collection = gavin.CreditCards;
 				// As the cascade option is set to all, the clear operation will only work on
-				// transient permissions
+				// transient credit cards
 				Assert.That(collection.Count, Is.EqualTo(6), "Credit cards count after loading again Gavin");
 				for (var i = 0; i < 10; i++)
 				{
@@ -1500,7 +1498,6 @@ namespace NHibernate.Test.Extralazy
 				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(6), "Statements count after re-adding loaded elements");
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False, "Permissions initialization status after re-adding loaded elements");
 
-
 				// Test adding permissions with ISet interface
 				Sfi.Statistics.Clear();
 				for (var i = 0; i < 5; i++)
@@ -1830,7 +1827,6 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(NHibernateUtil.IsInitialized(collection), Is.True, "Permissions initialization status after enumerating");
 					Assert.That(collection.Count, Is.EqualTo(2), "Permissions count after enumerating");
 				}
-
 
 				await (t.CommitAsync());
 			}
