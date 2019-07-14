@@ -103,7 +103,6 @@ namespace NHibernate.Test.Extralazy
 				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after adding through IList");
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after adding through IList");
 
-
 				// Check existence of added companies
 				Sfi.Statistics.Clear();
 				// Have to skip unloaded (non-queued indeed) elements to avoid triggering existence queries on them.
@@ -1031,7 +1030,6 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(collection.Count, Is.EqualTo(2), "Credit cards count after enumerating");
 				}
 
-
 				t.Commit();
 			}
 
@@ -1489,7 +1487,6 @@ namespace NHibernate.Test.Extralazy
 				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(6), "Statements count after re-adding loaded elements");
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False, "Permissions initialization status after re-adding loaded elements");
 
-
 				// Test adding permissions with ISet interface
 				Sfi.Statistics.Clear();
 				for (var i = 0; i < 5; i++)
@@ -1819,7 +1816,6 @@ namespace NHibernate.Test.Extralazy
 					Assert.That(NHibernateUtil.IsInitialized(collection), Is.True, "Permissions initialization status after enumerating");
 					Assert.That(collection.Count, Is.EqualTo(2), "Permissions count after enumerating");
 				}
-
 
 				t.Commit();
 			}

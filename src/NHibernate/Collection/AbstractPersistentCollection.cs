@@ -1024,7 +1024,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary> Does this instance have any "queued" additions?</summary>
-		public bool HasQueuedOperations => operationQueue != null && operationQueue.Count > 0 || _queueOperationTracker?.HasChanges() == true;
+		public bool HasQueuedOperations => (operationQueue != null && operationQueue.Count > 0) || _queueOperationTracker?.HasChanges() == true;
 
 		/// <summary></summary>
 		public IEnumerable QueuedAdditionIterator
