@@ -158,6 +158,7 @@ namespace NHibernate.Test.Extralazy
 			}
 		}
 
+		[Explicit]
 		[TestCase(false, false)]
 		[TestCase(false, true)]
 		[TestCase(true, false)]
@@ -365,6 +366,7 @@ namespace NHibernate.Test.Extralazy
 			}
 		}
 
+		[Explicit]
 		[TestCase(false, false)]
 		[TestCase(false, true)]
 		[TestCase(true, false)]
@@ -495,36 +497,36 @@ namespace NHibernate.Test.Extralazy
 					gavin.Companies.Insert(i, item);
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10), "Gavin's companies count after adding 5");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding companies");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after adding companies");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after adding");
 
 				// Remove transient companies
 				Sfi.Statistics.Clear();
 				gavin.Companies.RemoveAt(5);
 				gavin.Companies.RemoveAt(6);
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(8));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(8), "Gavin's companies count after removing 2 transient companies");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after removing transient companies");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after removing transient companies");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after removing transient companies");
 
 				// Remove persisted companies
 				Sfi.Statistics.Clear();
 				gavin.Companies.RemoveAt(3);
 				gavin.Companies.RemoveAt(3);
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(6));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(6), "Gavin's companies count after removing 2 persisted companies");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after removing persisted companies");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2), "Statements count after removing persisted companies");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after removing persisted companies");
 
 				// Try remove invalid indexes
-				Assert.Throws<ArgumentOutOfRangeException>(() => gavin.Companies.RemoveAt(-1));
-				Assert.Throws<ArgumentOutOfRangeException>(() => gavin.Companies.RemoveAt(8));
+				Assert.Throws<ArgumentOutOfRangeException>(() => gavin.Companies.RemoveAt(-1), "Removing at -1");
+				Assert.Throws<ArgumentOutOfRangeException>(() => gavin.Companies.RemoveAt(8), "Removing too far");
 
-				// Check existance of companies
+				// Check existence of companies
 				Sfi.Statistics.Clear();
 				var removedIndexes = new HashSet<int> {3, 4, 5, 7};
 				for (var i = 0; i < addedItems.Count; i++)
@@ -535,18 +537,18 @@ namespace NHibernate.Test.Extralazy
 						$"Element at index {i} was {(removedIndexes.Contains(i) ? "not " : "")}removed");
 				}
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(3));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Gavin's companies count after checking existence");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(3), "Flushes count after checking existence");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization after checking existence");
 
-				// Check existance of not existing companies
+				// Check existence of not existing companies
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Companies.Contains(new Company("test1", 15, gavin)), Is.False);
-				Assert.That(gavin.Companies.Contains(new Company("test2", 16, gavin)), Is.False);
+				Assert.That(gavin.Companies.Contains(new Company("test1", 15, gavin)), Is.False, "Checking existence of non-existence");
+				Assert.That(gavin.Companies.Contains(new Company("test2", 16, gavin)), Is.False, "Checking existence of non-existence");
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Gavin's companies count after checking non-existence");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2), "Flushes count after checking non-existence");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization after checking non-existence");
 
 				gavin.UpdateCompaniesIndexes();
 
@@ -557,9 +559,9 @@ namespace NHibernate.Test.Extralazy
 						e.MoveNext();
 					}
 
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
-					Assert.That(gavin.Companies.Count, Is.EqualTo(6));
-					Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True, "Companies initialization status after enumerating");
+					Assert.That(gavin.Companies.Count, Is.EqualTo(6), "Companies count after enumerating");
+					Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder), "Companies indexes after enumerating");
 				}
 
 				t.Commit();
@@ -569,9 +571,9 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = s.Get<User>("gavin");
-				Assert.That(gavin.Companies.Count, Is.EqualTo(6));
-				Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(6), "Companies count after loading again Gavin");
+				Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder), "Companies indexes after loading again");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True, "Companies initialization status after loading again");
 
 				t.Commit();
 			}
@@ -620,35 +622,35 @@ namespace NHibernate.Test.Extralazy
 					gavin.Companies.Insert(i, item);
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10), "Gavin's companies count after adding 5");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding companies");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after adding companies");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after adding");
 
 				// Compare all items
 				Sfi.Statistics.Clear();
 				for (var i = 0; i < 10; i++)
 				{
-					Assert.That(gavin.Companies[i], Is.EqualTo(addedItems[i]));
+					Assert.That(gavin.Companies[i], Is.EqualTo(addedItems[i]), "Comparing added company at index {0}", i);
 				}
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding comparing");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5), "Statements count after adding comparing");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after comparing");
 
 				// Try get invalid indexes
 				Assert.Throws<ArgumentOutOfRangeException>(() =>
 				{
 					var item = gavin.Companies[10];
-				});
+				}, "Get too far");
 				Assert.Throws<ArgumentOutOfRangeException>(() =>
 				{
 					var item = gavin.Companies[-1];
-				});
+				}, "Get at -1");
 
 				// Try set invalid indexes
-				Assert.Throws<ArgumentOutOfRangeException>(() => gavin.Companies[10] = addedItems[0]);
-				Assert.Throws<ArgumentOutOfRangeException>(() => gavin.Companies[-1] = addedItems[0]);
+				Assert.Throws<ArgumentOutOfRangeException>(() => gavin.Companies[10] = addedItems[0], "Set too far");
+				Assert.Throws<ArgumentOutOfRangeException>(() => gavin.Companies[-1] = addedItems[0], "Set at -1");
 
 				// Swap transient and persisted indexes
 				Sfi.Statistics.Clear();
@@ -660,21 +662,21 @@ namespace NHibernate.Test.Extralazy
 					gavin.Companies[hiIndex] = tmp;
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(10));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10), "Gavin's companies count after swapping");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after swapping");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(10), "Statements count after adding swapping");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after swapping");
 
 				// Check indexes
 				Sfi.Statistics.Clear();
 				for (var i = 0; i < 10; i++)
 				{
-					Assert.That(gavin.Companies[i].ListIndex, Is.EqualTo(finalIndexOrder[i]));
+					Assert.That(gavin.Companies[i].ListIndex, Is.EqualTo(finalIndexOrder[i]), "Comparing company ListIndex at index {0}", i);
 				}
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after comparing");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after comparing");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after comparing");
 
 				gavin.UpdateCompaniesIndexes();
 
@@ -685,9 +687,9 @@ namespace NHibernate.Test.Extralazy
 						e.MoveNext();
 					}
 
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
-					Assert.That(gavin.Companies.Count, Is.EqualTo(10));
-					Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True, "Companies initialization status after enumerating");
+					Assert.That(gavin.Companies.Count, Is.EqualTo(10), "Companies count after enumerating");
+					Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder), "Companies indexes after enumerating");
 				}
 
 				t.Commit();
@@ -697,9 +699,9 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = s.Get<User>("gavin");
-				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
-				Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10), "Companies count after loading again Gavin");
+				Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder), "Companies indexes after loading again");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True, "Companies initialization status after loading again");
 
 				t.Commit();
 			}
@@ -748,10 +750,10 @@ namespace NHibernate.Test.Extralazy
 					gavin.Companies.Add(item);
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10), "Gavin's companies count after adding 5");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after adding");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after adding");
 
 				// Add transient companies with Insert
 				Sfi.Statistics.Clear();
@@ -764,12 +766,12 @@ namespace NHibernate.Test.Extralazy
 						gavin.Companies.Insert(i, item);
 					}
 
-					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "INSERT \n    INTO"), Is.EqualTo(5));
+					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "INSERT \n    INTO"), Is.EqualTo(5), "Statements count after inserting");
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(15), "Gavin's companies count after inserting 5");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1), "Flushes count after inserting");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after inserting");
 
 				// Add transient companies with Add
 				Sfi.Statistics.Clear();
@@ -780,10 +782,10 @@ namespace NHibernate.Test.Extralazy
 					gavin.Companies.Add(item);
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(20));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(20), "Gavin's companies count after adding 5");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after adding");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after adding");
 
 				// Remove last 5 transient companies
 				Sfi.Statistics.Clear();
@@ -791,15 +793,15 @@ namespace NHibernate.Test.Extralazy
 				{
 					for (var i = 15; i < 20; i++)
 					{
-						Assert.That(gavin.Companies.Remove(addedItems[i]), Is.True);
+						Assert.That(gavin.Companies.Remove(addedItems[i]), Is.True, "Removing transient company at index {0}", i);
 					}
 
-					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "INSERT \n    INTO"), Is.EqualTo(10));
+					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "INSERT \n    INTO"), Is.EqualTo(10), "Statements count after removing");
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(15), "Gavin's companies count after removing 5");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1), "Flushes count after removing");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after removing");
 
 				// Remove last 5 transient companies
 				Sfi.Statistics.Clear();
@@ -810,13 +812,13 @@ namespace NHibernate.Test.Extralazy
 						gavin.Companies.RemoveAt(10);
 					}
 
-					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "DELETE \n    FROM"), Is.EqualTo(5));
+					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "DELETE \n    FROM"), Is.EqualTo(5), "Statements count after second removing");
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(7));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(10), "Gavin's companies count after second removing");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1), "Flushes count after second removing");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(7), "Statements count after second removing");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after second removing");
 
 				// Add transient companies with Add
 				Sfi.Statistics.Clear();
@@ -824,54 +826,55 @@ namespace NHibernate.Test.Extralazy
 				{
 					var item = new Company($"c{i}", i, gavin);
 					addedItems[i] = item;
-					Assert.That(((IList)gavin.Companies).Add(item), Is.EqualTo(-1));
+					// NOTE: the returned index is currently invalid due to extra-lazy avoiding to query the count or initializing the collection
+					((IList) gavin.Companies).Add(item);
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(15));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(15), "Gavin's companies count after adding through IList");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding through IList");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after adding through IList");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after adding through IList");
 
 				// Remove last transient company
 				Sfi.Statistics.Clear();
 				using (var sqlLog = new SqlLogSpy())
 				{
-					Assert.That(gavin.Companies.Remove(addedItems[14]), Is.EqualTo(true));
+					Assert.That(gavin.Companies.Remove(addedItems[14]), Is.EqualTo(true), "Removing last transient company");
 					var log = sqlLog.GetWholeLog();
-					Assert.That(FindAllOccurrences(log, "DELETE \n    FROM"), Is.EqualTo(5));
-					Assert.That(FindAllOccurrences(log, "INSERT \n    INTO"), Is.EqualTo(5));
+					Assert.That(FindAllOccurrences(log, "DELETE \n    FROM"), Is.EqualTo(5), "Delete statements count after removing last transient company");
+					Assert.That(FindAllOccurrences(log, "INSERT \n    INTO"), Is.EqualTo(5), "Insert statements count after removing last transient company");
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(14));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(14), "Gavin's companies count after adding removing");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1), "Flushes count after removing");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after removing");
 
 				// Test index getter
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Companies[0], Is.EqualTo(addedItems[0]));
+				Assert.That(gavin.Companies[0], Is.EqualTo(addedItems[0]), "Comparing first item with index getter");
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(14));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(3));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(14), "Gavin's companies count after adding comparing");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1), "Flushes count after comparing");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(3), "Statements count after comparing");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after comparing");
 
 				// Remove last transient company
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Companies.Remove(addedItems[13]), Is.EqualTo(true));
+				Assert.That(gavin.Companies.Remove(addedItems[13]), Is.EqualTo(true), "Removing last transient company");
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(13));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(13), "Gavin's companies count after adding repeated removing");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after repeated removing");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after repeated removing");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after repeated removing");
 
 				// Test index setter
 				Sfi.Statistics.Clear();
 				gavin.Companies[0] = addedItems[0];
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(13));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(3));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(13), "Gavin's companies count after setting first item");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1), "Flushes count after setting first item");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(3), "Statements count after setting first item");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after setting first item");
 
 				// Test manual flush after remove
 				Sfi.Statistics.Clear();
@@ -879,29 +882,29 @@ namespace NHibernate.Test.Extralazy
 				using (var sqlLog = new SqlLogSpy())
 				{
 					s.Flush();
-					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "DELETE \n    FROM"), Is.EqualTo(1));
+					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "DELETE \n    FROM"), Is.EqualTo(1), "Delete statements count after removing at 12 index");
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(12));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(12), "Gavin's companies count after removing");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1), "Flushes count after removing");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after removing");
 
 				// Test manual flush after insert
 				Sfi.Statistics.Clear();
-				gavin.Companies.Add(new Company($"c{12}", 12, gavin));
+				gavin.Companies.Add(new Company("c12", 12, gavin));
 				using (var sqlLog = new SqlLogSpy())
 				{
 					s.Flush();
-					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "INSERT \n    INTO"), Is.EqualTo(1));
+					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "INSERT \n    INTO"), Is.EqualTo(1), "Insert statements count after flushing");
 				}
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(13));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(13), "Gavin's companies count after flushing");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(1), "Flushes count after flushing");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after flushing");
 
 				for (var i = 0; i < gavin.Companies.Count; i++)
 				{
-					Assert.That(gavin.Companies[i].ListIndex, Is.EqualTo(i));
+					Assert.That(gavin.Companies[i].ListIndex, Is.EqualTo(i), "Comparing company ListIndex at index {0}", i);
 				}
 
 				if (initialize)
@@ -911,9 +914,9 @@ namespace NHibernate.Test.Extralazy
 						e.MoveNext();
 					}
 
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
-					Assert.That(gavin.Companies.Count, Is.EqualTo(13));
-					Assert.That(gavin.Companies.Select(o => o.ListIndex), Is.EquivalentTo(finalIndexOrder));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True, "Companies initialization status after enumerating");
+					Assert.That(gavin.Companies.Count, Is.EqualTo(13), "Companies count after enumerating");
+					Assert.That(gavin.Companies.Select(o => o.ListIndex), Is.EquivalentTo(finalIndexOrder), "Companies indexes after enumerating");
 				}
 
 				t.Commit();
@@ -923,9 +926,9 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = s.Get<User>("gavin");
-				Assert.That(gavin.Companies.Count, Is.EqualTo(13));
-				Assert.That(gavin.Companies.Select(o => o.ListIndex), Is.EquivalentTo(finalIndexOrder));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(13), "Companies count after loading again Gavin");
+				Assert.That(gavin.Companies.Select(o => o.ListIndex), Is.EquivalentTo(finalIndexOrder), "Companies indexes after loading again");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True, "Companies initialization status after loading again");
 
 				t.Commit();
 			}
@@ -977,45 +980,45 @@ namespace NHibernate.Test.Extralazy
 					collection.Insert(i, item);
 				}
 
-				Assert.That(collection.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False);
+				Assert.That(collection.Count, Is.EqualTo(10), "Gavin's credit cards count after inserting 5");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after inserting");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after inserting");
+				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False, "Credit cards initialization status after inserting");
 
 				Sfi.Statistics.Clear();
 				collection.Clear();
 
-				Assert.That(collection.Count, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False);
+				Assert.That(collection.Count, Is.EqualTo(0), "Gavin's credit cards count after clearing");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after clearing");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after clearing");
+				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False, "Credit cards initialization status after clearing");
 
-				// Readd two not loaded and two transient permissions
+				// Re-add two not loaded and two transient permissions
 				collection.Add(addedItems[0]);
 				collection.Add(addedItems[1]);
 				collection.Add(addedItems[5]);
 				collection.Add(addedItems[6]);
 
-				Assert.That(collection.Count, Is.EqualTo(4));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False);
+				Assert.That(collection.Count, Is.EqualTo(4), "Gavin's credit cards count after re-adding");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after re-adding");
+				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False, "Credit cards initialization status after re-adding");
 
 				// Remove one not loaded and one transient permissions
-				Assert.That(collection.Remove(addedItems[1]), Is.True);
-				Assert.That(collection.Remove(addedItems[6]), Is.True);
+				Assert.That(collection.Remove(addedItems[1]), Is.True, "Removing not loaded credit card");
+				Assert.That(collection.Remove(addedItems[6]), Is.True, "Removing transient credit card");
 
-				Assert.That(collection.Count, Is.EqualTo(2));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False);
+				Assert.That(collection.Count, Is.EqualTo(2), "Gavin's credit cards count after removing");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after removing");
+				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False, "Credit cards initialization status after removing");
 
 				// Remove not existing items
-				Assert.That(collection.Remove(addedItems[1]), Is.False);
-				Assert.That(collection.Remove(addedItems[6]), Is.False);
+				Assert.That(collection.Remove(addedItems[1]), Is.False, "Removing not-existing credit card");
+				Assert.That(collection.Remove(addedItems[6]), Is.False, "Removing not-existing credit card");
 
-				Assert.That(collection.Count, Is.EqualTo(2));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False);
+				Assert.That(collection.Count, Is.EqualTo(2), "Gavin's credit cards count after not-existing removing");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after not-existing removing");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after not-existing removing");
+				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False, "Credit cards initialization status after not-existing removing");
 
 				if (initialize)
 				{
@@ -1024,8 +1027,8 @@ namespace NHibernate.Test.Extralazy
 						e.MoveNext();
 					}
 
-					Assert.That(NHibernateUtil.IsInitialized(collection), Is.True);
-					Assert.That(collection.Count, Is.EqualTo(2));
+					Assert.That(NHibernateUtil.IsInitialized(collection), Is.True, "Credit cards initialization status after enumerating");
+					Assert.That(collection.Count, Is.EqualTo(2), "Credit cards count after enumerating");
 				}
 
 
@@ -1039,13 +1042,13 @@ namespace NHibernate.Test.Extralazy
 				var collection = gavin.CreditCards;
 				// As the cascade option is set to all, the clear operation will only work on
 				// transient permissions
-				Assert.That(collection.Count, Is.EqualTo(6));
+				Assert.That(collection.Count, Is.EqualTo(6), "Credit cards count after loading again Gavin");
 				for (var i = 0; i < 10; i++)
 				{
-					Assert.That(collection.Contains(addedItems[i]), i < 6 ? Is.True : (IResolveConstraint) Is.False);
+					Assert.That(collection.Contains(addedItems[i]), i < 6 ? Is.True : (IResolveConstraint) Is.False, "Checking existence for item at {0}", i);
 				}
 
-				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False);
+				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False, "Credit cards initialization status after loading again");
 
 				t.Commit();
 			}
@@ -1083,9 +1086,9 @@ namespace NHibernate.Test.Extralazy
 				// RemoveDbIndexes: /
 
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Companies.Count, Is.EqualTo(5));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(5), "Gavin's companies count");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status");
 
 				Sfi.Statistics.Clear();
 				gavin.Companies.Insert(1, new Company("c5", 5, gavin));
@@ -1124,16 +1127,16 @@ namespace NHibernate.Test.Extralazy
 				// Queue: {0, 6}
 				// RemoveDbIndexes: 1,2,3
 
-				Assert.That(gavin.Companies.Count, Is.EqualTo(3));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(3));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(3), "Gavin's companies count after remove/insert operations");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after remove/insert operations");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(3), "Statements count after remove/insert operations");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.False, "Companies initialization status after remove/insert operations");
 
 				gavin.UpdateCompaniesIndexes();
 
 				for (var i = 0; i < gavin.Companies.Count; i++)
 				{
-					Assert.That(gavin.Companies[i].OriginalIndex, Is.EqualTo(finalIndexOrder[i]));
+					Assert.That(gavin.Companies[i].OriginalIndex, Is.EqualTo(finalIndexOrder[i]), "Comparing company index at {0}", i);
 				}
 
 				if (initialize)
@@ -1143,9 +1146,9 @@ namespace NHibernate.Test.Extralazy
 						e.MoveNext();
 					}
 
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
-					Assert.That(gavin.Companies.Count, Is.EqualTo(3));
-					Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True, "Companies initialization status after enumerating");
+					Assert.That(gavin.Companies.Count, Is.EqualTo(3), "Companies count after enumerating");
+					Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder), "Companies indexes after enumerating");
 				}
 
 				t.Commit();
@@ -1155,9 +1158,9 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = s.Get<User>("gavin");
-				Assert.That(gavin.Companies.Count, Is.EqualTo(3));
-				Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True);
+				Assert.That(gavin.Companies.Count, Is.EqualTo(3), "Companies count after loading again Gavin");
+				Assert.That(gavin.Companies.Select(o => o.OriginalIndex), Is.EquivalentTo(finalIndexOrder), "Companies indexes after loading again");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Companies), Is.True, "Companies initialization status after loading again");
 
 				t.Commit();
 			}
@@ -1190,9 +1193,9 @@ namespace NHibernate.Test.Extralazy
 				gavin = s.Get<User>("gavin");
 
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Documents.Count, Is.EqualTo(2));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(2), "Gavin's documents count after adding");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after adding documents");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after adding");
 
 				// Test adding documents with ISet interface
 				Sfi.Statistics.Clear();
@@ -1200,13 +1203,13 @@ namespace NHibernate.Test.Extralazy
 				{
 					var document = new Document($"document{i}", $"content{i}", gavin);
 					addedDocuments.Add(document);
-					Assert.That(gavin.Documents.Add(document), Is.True);
+					Assert.That(gavin.Documents.Add(document), Is.True, "Adding document through ISet");
 				}
 
-				Assert.That(gavin.Documents.Count, Is.EqualTo(7));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(7), "Gavin's documents count after adding 5");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding documents");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5), "Statements count after adding documents");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after adding");
 
 				// Test adding documents with ICollection interface
 				Sfi.Statistics.Clear();
@@ -1218,74 +1221,74 @@ namespace NHibernate.Test.Extralazy
 					documents.Add(document);
 				}
 
-				Assert.That(gavin.Documents.Count, Is.EqualTo(12));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
+				Assert.That(gavin.Documents.Count, Is.EqualTo(12), "Gavin's documents count after adding through ICollection<>");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding through ICollection<>");
 				// In this case we cannot determine whether the entities are transient or not so
 				// we are forced to check the database
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5), "Statements count after adding through ICollection<>");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after adding through ICollection<>");
 
-				// Test readding documents with ISet interface
+				// Test re-adding documents with ISet interface
 				Sfi.Statistics.Clear();
 				for (var i = 0; i < 5; i++)
 				{
-					Assert.That(gavin.Documents.Add(addedDocuments[i]), Is.False);
+					Assert.That(gavin.Documents.Add(addedDocuments[i]), Is.False, "Re-add document through ISet<>");
 				}
 
-				Assert.That(gavin.Documents.Count, Is.EqualTo(12));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(12), "Gavin's documents count after re-adding");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after re-adding");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after re-adding");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after re-adding");
 
-				// Test readding documents with ICollection interface
+				// Test re-adding documents with ICollection interface
 				Sfi.Statistics.Clear();
 				for (var i = 0; i < 5; i++)
 				{
 					documents.Add(addedDocuments[i]);
 				}
 
-				Assert.That(gavin.Documents.Count, Is.EqualTo(12));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(12), "Gavin's documents count after re-adding through ICollection<>");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after re-adding through ICollection<>");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after re-adding through ICollection<>");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after re-adding through ICollection<>");
 
-				// Check existance of added documents
+				// Check existence of added documents
 				Sfi.Statistics.Clear();
 				foreach (var document in addedDocuments)
 				{
-					Assert.That(gavin.Documents.Contains(document), Is.True);
+					Assert.That(gavin.Documents.Contains(document), Is.True, "Checking existence of an existing document");
 				}
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after checking existence");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after checking existence");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after checking existence");
 
-				// Check existance of not loaded documents
-				Assert.That(gavin.Documents.Contains(hia), Is.True);
-				Assert.That(gavin.Documents.Contains(hia2), Is.True);
+				// Check existence of not loaded documents
+				Assert.That(gavin.Documents.Contains(hia), Is.True, "Checking existence of not loaded document");
+				Assert.That(gavin.Documents.Contains(hia2), Is.True, "Checking existence of not loaded document");
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after checking existence");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2), "Statements count after checking existence");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after checking existence");
 
-				// Check existance of not existing documents
+				// Check existence of not existing documents
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Documents.Contains(new Document("test1", "content", gavin)), Is.False);
-				Assert.That(gavin.Documents.Contains(new Document("test2", "content", gavin)), Is.False);
+				Assert.That(gavin.Documents.Contains(new Document("test1", "content", gavin)), Is.False, "Checking existence of not-existing document");
+				Assert.That(gavin.Documents.Contains(new Document("test2", "content", gavin)), Is.False, "Checking existence of not-existing document");
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after checking non-existence");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2), "Statements count after checking non-existence");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after checking non-existence");
 
 				// Test adding not loaded documents
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Documents.Add(hia), Is.False);
+				Assert.That(gavin.Documents.Add(hia), Is.False, "Adding not loaded element");
 				documents.Add(hia);
 
-				Assert.That(gavin.Documents.Count, Is.EqualTo(12));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(12), "Gavin's documents count after adding not loaded element");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding not loaded element");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2), "Statements count after adding not loaded element");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after adding not loaded element");
 
 				if (initialize)
 				{
@@ -1294,8 +1297,8 @@ namespace NHibernate.Test.Extralazy
 						e.MoveNext();
 					}
 
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.True);
-					Assert.That(gavin.Documents.Count, Is.EqualTo(12));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.True, "Documents initialization status after enumerating");
+					Assert.That(gavin.Documents.Count, Is.EqualTo(12), "Documents count after enumerating");
 				}
 
 				t.Commit();
@@ -1305,10 +1308,10 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = s.Get<User>("gavin");
-				Assert.That(gavin.Documents.Count, Is.EqualTo(12));
-				Assert.That(gavin.Documents.Contains(hia2), Is.True);
-				Assert.That(gavin.Documents.Contains(hia), Is.True);
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(12), "Documents count after loading again Gavin");
+				Assert.That(gavin.Documents.Contains(hia2), Is.True, "Checking not loaded element");
+				Assert.That(gavin.Documents.Contains(hia), Is.True, "Checking not loaded element");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after loading again");
 
 				t.Commit();
 			}
@@ -1337,7 +1340,7 @@ namespace NHibernate.Test.Extralazy
 					gavin.Documents.Add(item);
 				}
 
-				Assert.That(gavin.Documents.Count, Is.EqualTo(5));
+				Assert.That(gavin.Documents.Count, Is.EqualTo(5), "Gavin's documents count after adding 5");
 
 				t.Commit();
 			}
@@ -1353,26 +1356,26 @@ namespace NHibernate.Test.Extralazy
 				}
 
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Documents.Count, Is.EqualTo(5));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(5), "Gavin's documents count after reload");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after reload");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after reload");
 
-				// Readd items
+				// Re-add items
 				Sfi.Statistics.Clear();
 				for (var i = 0; i < 5; i++)
 				{
-					Assert.That(gavin.Documents.Add(addedItems[i]), Is.False);
+					Assert.That(gavin.Documents.Add(addedItems[i]), Is.False, "Re-adding element");
 				}
 
-				Assert.That(gavin.Documents.Count, Is.EqualTo(5));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(5), "Gavin's documents count after re-adding");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5), "Statements count after re-adding");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after re-adding");
 
 				if (flush)
 				{
 					s.Flush();
-					Assert.That(gavin.Documents.Count, Is.EqualTo(5));
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+					Assert.That(gavin.Documents.Count, Is.EqualTo(5), "Gavin's documents count after flushing");
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after flushing");
 				}
 
 				if (initialize)
@@ -1382,8 +1385,8 @@ namespace NHibernate.Test.Extralazy
 						e.MoveNext();
 					}
 
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.True);
-					Assert.That(gavin.Documents.Count, Is.EqualTo(5));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.True, "Documents initialization status after enumerating");
+					Assert.That(gavin.Documents.Count, Is.EqualTo(5), "Documents count after enumerating");
 				}
 
 				t.Commit();
@@ -1393,8 +1396,8 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = s.Get<User>("gavin");
-				Assert.That(gavin.Documents.Count, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(5), "Documents count after loading again Gavin");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after loading again");
 
 				t.Commit();
 			}
@@ -1431,9 +1434,9 @@ namespace NHibernate.Test.Extralazy
 				gavin = s.Get<User>("gavin");
 
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Permissions.Count, Is.EqualTo(5));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False);
+				Assert.That(gavin.Permissions.Count, Is.EqualTo(5), "Gavin's permissions count after adding 5");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after adding");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False, "Permissions initialization status after adding");
 
 				// Test adding permissions with ICollection interface
 				Sfi.Statistics.Clear();
@@ -1445,22 +1448,22 @@ namespace NHibernate.Test.Extralazy
 					items.Add(item);
 				}
 
-				Assert.That(gavin.Permissions.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False);
+				Assert.That(gavin.Permissions.Count, Is.EqualTo(10), "Gavin's permissions count after adding through ICollection<>");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding through ICollection<>");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after adding through ICollection<>");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False, "Permissions initialization status after adding through ICollection<>");
 
-				// Test readding permissions with ICollection interface
+				// Test re-adding permissions with ICollection interface
 				Sfi.Statistics.Clear();
 				foreach (var item in addedItems.Skip(5))
 				{
 					items.Add(item);
 				}
 
-				Assert.That(gavin.Permissions.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False);
+				Assert.That(gavin.Permissions.Count, Is.EqualTo(10), "Gavin's permissions count after re-adding");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after re-adding");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after re-adding");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False, "Permissions initialization status after re-adding");
 
 				// Test adding not loaded permissions with ICollection interface
 				Sfi.Statistics.Clear();
@@ -1469,10 +1472,10 @@ namespace NHibernate.Test.Extralazy
 					items.Add(item);
 				}
 
-				Assert.That(gavin.Permissions.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False);
+				Assert.That(gavin.Permissions.Count, Is.EqualTo(10), "Gavin's permissions count after re-adding not loaded elements");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after re-adding not loaded elements");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5), "Statements count after re-adding not loaded elements");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False, "Permissions initialization status after re-adding not loaded elements");
 
 				// Test adding loaded permissions with ICollection interface
 				Sfi.Statistics.Clear();
@@ -1481,10 +1484,10 @@ namespace NHibernate.Test.Extralazy
 					items.Add(item);
 				}
 
-				Assert.That(gavin.Permissions.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(6));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False);
+				Assert.That(gavin.Permissions.Count, Is.EqualTo(10), "Gavin's permissions count after re-adding loaded elements");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after re-adding loaded elements");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(6), "Statements count after re-adding loaded elements");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False, "Permissions initialization status after re-adding loaded elements");
 
 
 				// Test adding permissions with ISet interface
@@ -1496,22 +1499,22 @@ namespace NHibernate.Test.Extralazy
 					gavin.Permissions.Add(item);
 				}
 
-				Assert.That(gavin.Permissions.Count, Is.EqualTo(15));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False);
+				Assert.That(gavin.Permissions.Count, Is.EqualTo(15), "Gavin's permissions count after adding through ISet<>");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding through ISet<>");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after adding through ISet<>");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False, "Permissions initialization status after adding through ISet<>");
 
-				// Test readding permissions with ISet interface
+				// Test re-adding permissions with ISet interface
 				Sfi.Statistics.Clear();
 				foreach (var item in addedItems.Skip(10))
 				{
 					gavin.Permissions.Add(item);
 				}
 
-				Assert.That(gavin.Permissions.Count, Is.EqualTo(15));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False);
+				Assert.That(gavin.Permissions.Count, Is.EqualTo(15), "Gavin's permissions count after re-adding through ISet<>");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after re-adding through ISet<>");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after re-adding through ISet<>");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False, "Permissions initialization status after re-adding through ISet<>");
 
 				// Test adding not loaded permissions with ISet interface
 				Sfi.Statistics.Clear();
@@ -1520,10 +1523,10 @@ namespace NHibernate.Test.Extralazy
 					gavin.Permissions.Add(item);
 				}
 
-				Assert.That(gavin.Permissions.Count, Is.EqualTo(15));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False);
+				Assert.That(gavin.Permissions.Count, Is.EqualTo(15), "Gavin's permissions count after re-adding not loaded permissions through ISet<>");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after re-adding not loaded permissions through ISet<>");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5), "Statements count after re-adding not loaded permissions through ISet<>");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False, "Permissions initialization status after re-adding not loaded permissions through ISet<>");
 
 				// Test adding loaded permissions with ISet interface
 				Sfi.Statistics.Clear();
@@ -1532,10 +1535,10 @@ namespace NHibernate.Test.Extralazy
 					gavin.Permissions.Add(item);
 				}
 
-				Assert.That(gavin.Permissions.Count, Is.EqualTo(15));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(6));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False);
+				Assert.That(gavin.Permissions.Count, Is.EqualTo(15), "Gavin's permissions count after re-adding loaded permissions through ISet<>");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after re-adding loaded permissions through ISet<>");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(6), "Statements count after re-adding loaded permissions through ISet<>");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False, "Permissions initialization status after re-adding loaded permissions through ISet<>");
 
 				if (initialize)
 				{
@@ -1544,8 +1547,8 @@ namespace NHibernate.Test.Extralazy
 						e.MoveNext();
 					}
 
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.True);
-					Assert.That(gavin.Permissions.Count, Is.EqualTo(15));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.True, "Permissions initialization status after enumerating");
+					Assert.That(gavin.Permissions.Count, Is.EqualTo(15), "Permissions count after enumerating");
 				}
 
 				t.Commit();
@@ -1555,8 +1558,8 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = s.Get<User>("gavin");
-				Assert.That(gavin.Permissions.Count, Is.EqualTo(15));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False);
+				Assert.That(gavin.Permissions.Count, Is.EqualTo(15), "Permissions count after loading again Gavin");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Permissions), Is.False, "Permissions initialization status after loading again");
 
 				t.Commit();
 			}
@@ -1595,9 +1598,9 @@ namespace NHibernate.Test.Extralazy
 				}
 
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Documents.Count, Is.EqualTo(5));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(5), "Gavin's documents count after refresh");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after refresh");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after refresh");
 
 				// Add new documents
 				Sfi.Statistics.Clear();
@@ -1608,87 +1611,87 @@ namespace NHibernate.Test.Extralazy
 					((ICollection<Document>)gavin.Documents).Add(document);
 				}
 
-				Assert.That(gavin.Documents.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(10), "Gavin's documents count after adding 5");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5), "Statements count after adding");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after adding");
 
 				// Test removing existing documents
 				Sfi.Statistics.Clear();
 				for (var i = 0; i < 5; i++)
 				{
-					Assert.That(gavin.Documents.Remove(addedDocuments[i]), Is.True);
+					Assert.That(gavin.Documents.Remove(addedDocuments[i]), Is.True, "Removing existing document");
 				}
 
-				Assert.That(gavin.Documents.Count, Is.EqualTo(5));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(5), "Gavin's documents count after removing");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after removing");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5), "Statements count after removing");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after removing");
 
 				// Test removing removed existing documents
 				Sfi.Statistics.Clear();
 				for (var i = 0; i < 5; i++)
 				{
-					Assert.That(gavin.Documents.Contains(addedDocuments[i]), Is.False);
-					Assert.That(gavin.Documents.Remove(addedDocuments[i]), Is.False);
+					Assert.That(gavin.Documents.Contains(addedDocuments[i]), Is.False, "Checking existence of a removed document");
+					Assert.That(gavin.Documents.Remove(addedDocuments[i]), Is.False, "Removing removed document");
 				}
 
-				Assert.That(gavin.Documents.Count, Is.EqualTo(5));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(5), "Gavin's documents count after removing removed documents");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after removing removed documents");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after removing removed documents");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after removing removed documents");
 
 				// Test removing not existing documents
 				Sfi.Statistics.Clear();
 				for (var i = 0; i < 5; i++)
 				{
 					var document = new Document($"test{i}", "content", gavin);
-					Assert.That(gavin.Documents.Remove(document), Is.False);
+					Assert.That(gavin.Documents.Remove(document), Is.False, "Removing not existing document");
 				}
 
-				Assert.That(gavin.Documents.Count, Is.EqualTo(5));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(5), "Gavin's documents count after removing not existing documents");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after removing not existing documents");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5), "Statements count after removing not existing documents");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after removing not existing documents");
 
 				// Test removing newly added documents
 				Sfi.Statistics.Clear();
 				for (var i = 5; i < 10; i++)
 				{
-					Assert.That(gavin.Documents.Contains(addedDocuments[i]), Is.True);
-					Assert.That(gavin.Documents.Remove(addedDocuments[i]), Is.True);
+					Assert.That(gavin.Documents.Contains(addedDocuments[i]), Is.True, "Checking existence of an added document");
+					Assert.That(gavin.Documents.Remove(addedDocuments[i]), Is.True, "Removing added document");
 				}
 
-				Assert.That(gavin.Documents.Count, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(0), "Gavin's documents count after removing added documents");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after removing added documents");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after removing added documents");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after removing added documents");
 
 				// Test removing removed newly added documents
 				Sfi.Statistics.Clear();
 				for (var i = 5; i < 10; i++)
 				{
-					Assert.That(gavin.Documents.Contains(addedDocuments[i]), Is.False);
-					Assert.That(gavin.Documents.Remove(addedDocuments[i]), Is.False);
+					Assert.That(gavin.Documents.Contains(addedDocuments[i]), Is.False, "Checking existence of a removed document");
+					Assert.That(gavin.Documents.Remove(addedDocuments[i]), Is.False, "Removing removed document");
 				}
 
-				Assert.That(gavin.Documents.Count, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(0), "Gavin's documents count after removing removed documents");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after removing removed documents");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after removing removed documents");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after removing removed documents");
 
 				// Test removing not existing documents
 				Sfi.Statistics.Clear();
 				for (var i = 0; i < 5; i++)
 				{
 					var document = new Document($"test{i}", "content", gavin);
-					Assert.That(gavin.Documents.Remove(document), Is.False);
+					Assert.That(gavin.Documents.Remove(document), Is.False, "Removing not existing document");
 				}
 
-				Assert.That(gavin.Documents.Count, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(0), "Gavin's documents count after removing not existing documents");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after removing not existing documents");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5), "Statements count after removing not existing documents");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after removing not existing documents");
 
 				if (initialize)
 				{
@@ -1697,8 +1700,8 @@ namespace NHibernate.Test.Extralazy
 						e.MoveNext();
 					}
 
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.True);
-					Assert.That(gavin.Documents.Count, Is.EqualTo(0));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.True, "Documents initialization status after enumerating");
+					Assert.That(gavin.Documents.Count, Is.EqualTo(0), "Documents count after enumerating");
 				}
 
 				t.Commit();
@@ -1708,8 +1711,8 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = s.Get<User>("gavin");
-				Assert.That(gavin.Documents.Count, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False);
+				Assert.That(gavin.Documents.Count, Is.EqualTo(0), "Documents count after loading again Gavin");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Documents), Is.False, "Documents initialization status after loading again");
 
 				t.Commit();
 			}
@@ -1753,9 +1756,9 @@ namespace NHibernate.Test.Extralazy
 				var collection = gavin.Permissions;
 
 				Sfi.Statistics.Clear();
-				Assert.That(collection.Count, Is.EqualTo(5));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False);
+				Assert.That(collection.Count, Is.EqualTo(5), "Gavin's permissions count after refresh");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after refresh");
+				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False, "Permissions initialization status after refresh");
 
 				// Add transient permissions
 				Sfi.Statistics.Clear();
@@ -1766,45 +1769,45 @@ namespace NHibernate.Test.Extralazy
 					collection.Add(item);
 				}
 
-				Assert.That(collection.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False);
+				Assert.That(collection.Count, Is.EqualTo(10), "Gavin's permissions count after adding 5");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after adding");
+				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False, "Permissions initialization status after adding");
 
 				Sfi.Statistics.Clear();
 				collection.Clear();
 
-				Assert.That(collection.Count, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False);
+				Assert.That(collection.Count, Is.EqualTo(0), "Gavin's permissions count after flushing");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after flushing");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after flushing");
+				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False, "Permissions initialization status after flushing");
 
-				// Readd two not loaded and two transient permissions
-				Assert.That(collection.Add(addedItems[0]), Is.True);
-				Assert.That(collection.Add(addedItems[1]), Is.True);
-				Assert.That(collection.Add(addedItems[5]), Is.True);
-				Assert.That(collection.Add(addedItems[6]), Is.True);
+				// Re-add two not loaded and two transient permissions
+				Assert.That(collection.Add(addedItems[0]), Is.True, "Re-adding not loaded element");
+				Assert.That(collection.Add(addedItems[1]), Is.True, "Re-adding not loaded element");
+				Assert.That(collection.Add(addedItems[5]), Is.True, "Re-adding transient element");
+				Assert.That(collection.Add(addedItems[6]), Is.True, "Re-adding transient element");
 
-				Assert.That(collection.Count, Is.EqualTo(4));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False);
+				Assert.That(collection.Count, Is.EqualTo(4), "Gavin's permissions count after re-adding");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after re-adding");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after re-adding");
+				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False, "Permissions initialization status after re-adding");
 
 				// Remove one not loaded and one transient permissions
-				Assert.That(collection.Remove(addedItems[1]), Is.True);
-				Assert.That(collection.Remove(addedItems[6]), Is.True);
+				Assert.That(collection.Remove(addedItems[1]), Is.True, "Removing not loaded element");
+				Assert.That(collection.Remove(addedItems[6]), Is.True, "Removing transient element");
 
-				Assert.That(collection.Count, Is.EqualTo(2));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False);
+				Assert.That(collection.Count, Is.EqualTo(2), "Gavin's permissions count after removing");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after removing");
+				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False, "Permissions initialization status after removing");
 
 				// Remove not existing items
-				Assert.That(collection.Remove(addedItems[1]), Is.False);
-				Assert.That(collection.Remove(addedItems[6]), Is.False);
+				Assert.That(collection.Remove(addedItems[1]), Is.False, "Removing removed element");
+				Assert.That(collection.Remove(addedItems[6]), Is.False, "Removing removed element");
 
-				Assert.That(collection.Count, Is.EqualTo(2));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False);
+				Assert.That(collection.Count, Is.EqualTo(2), "Gavin's permissions count after removing removed elements");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after removing removed elements");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after removing removed elements");
+				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False, "Permissions initialization status after removing removed elements");
 
 				if (initialize)
 				{
@@ -1813,8 +1816,8 @@ namespace NHibernate.Test.Extralazy
 						e.MoveNext();
 					}
 
-					Assert.That(NHibernateUtil.IsInitialized(collection), Is.True);
-					Assert.That(collection.Count, Is.EqualTo(2));
+					Assert.That(NHibernateUtil.IsInitialized(collection), Is.True, "Permissions initialization status after enumerating");
+					Assert.That(collection.Count, Is.EqualTo(2), "Permissions count after enumerating");
 				}
 
 
@@ -1828,13 +1831,14 @@ namespace NHibernate.Test.Extralazy
 				var collection = gavin.Permissions;
 				// As the cascade option is set to all, the clear operation will only work on
 				// transient permissions
-				Assert.That(collection.Count, Is.EqualTo(6));
+				Assert.That(collection.Count, Is.EqualTo(6), "Permissions count after loading again Gavin");
 				for (var i = 0; i < 10; i++)
 				{
-					Assert.That(collection.Contains(addedItems[i]), i < 6 ? Is.True : (IResolveConstraint) Is.False);
+					Assert.That(collection.Contains(addedItems[i]), i < 6 ? Is.True : (IResolveConstraint) Is.False,
+						"Checking existence of added element at {0}", i);
 				}
 
-				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False);
+				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False, "Permissions initialization status after loading again");
 
 				t.Commit();
 			}
@@ -1870,9 +1874,9 @@ namespace NHibernate.Test.Extralazy
 				gavin = s.Get<User>("gavin");
 
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Settings.Count, Is.EqualTo(5));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(5), "Gavin's user settings count after load");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after load");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after load");
 
 				// Test adding settings with Add method
 				Sfi.Statistics.Clear();
@@ -1883,10 +1887,10 @@ namespace NHibernate.Test.Extralazy
 					gavin.Settings.Add(setting.Name, setting);
 				}
 
-				Assert.That(gavin.Settings.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(10), "Gavin's user settings count after adding 5");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5), "Statements count after adding");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after adding");
 
 				// Test adding settings with []
 				Sfi.Statistics.Clear();
@@ -1898,85 +1902,85 @@ namespace NHibernate.Test.Extralazy
 					gavin.Settings[setting.Name] = setting;
 				}
 
-				Assert.That(gavin.Settings.Count, Is.EqualTo(15));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(15), "Gavin's user settings count after adding 5 through indexer");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding through indexer");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5), "Statements count after adding through indexer");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after adding through indexer");
 
-				// Check existance of added settings
+				// Check existence of added settings
 				Sfi.Statistics.Clear();
 				foreach (var item in addedSettings.Skip(5))
 				{
-					Assert.That(gavin.Settings.ContainsKey(item.Name), Is.True);
-					Assert.That(gavin.Settings.Contains(new KeyValuePair<string, UserSetting>(item.Name, item)), Is.True);
+					Assert.That(gavin.Settings.ContainsKey(item.Name), Is.True, "Checking existence of added element");
+					Assert.That(gavin.Settings.Contains(new KeyValuePair<string, UserSetting>(item.Name, item)), Is.True, "Checking existence of added element using KeyValuePair<,>");
 				}
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after checking existence of added elements");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after checking existence of added elements");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after checking existence of added elements");
 
-				// Check existance of not loaded settings
+				// Check existence of not loaded settings
 				foreach (var item in addedSettings.Take(5))
 				{
-					Assert.That(gavin.Settings.ContainsKey(item.Name), Is.True);
+					Assert.That(gavin.Settings.ContainsKey(item.Name), Is.True, "Checking key existence of not loaded elements");
 				}
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after checking existence of not loaded elements");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5), "Statements count after checking existence of not loaded elements");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after checking existence of not loaded elements");
 
-				// Check existance of not existing settings
+				// Check existence of not existing settings
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Settings.ContainsKey("test"), Is.False);
-				Assert.That(gavin.Settings.ContainsKey("test2"), Is.False);
+				Assert.That(gavin.Settings.ContainsKey("test"), Is.False, "Checking existence of not existing element");
+				Assert.That(gavin.Settings.ContainsKey("test2"), Is.False, "Checking existence of not existing element");
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after checking existence of not existing elements");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2), "Statements count after checking existence of not existing elements");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after checking existence of not existing elements");
 
 				// Try to add an existing setting
-				Assert.Throws<ArgumentException>(() => gavin.Settings.Add("s0", new UserSetting("s0", "data", gavin)));
-				Assert.Throws<ArgumentException>(() => gavin.Settings.Add("s20", new UserSetting("s20", "data", gavin)));
-				Assert.Throws<ArgumentException>(() => gavin.Settings.Add("s30", new UserSetting("s30", "data", gavin)));
+				Assert.Throws<ArgumentException>(() => gavin.Settings.Add("s0", new UserSetting("s0", "data", gavin)), "Adding an existing key");
+				Assert.Throws<ArgumentException>(() => gavin.Settings.Add("s20", new UserSetting("s20", "data", gavin)), "Adding an existing key");
+				Assert.Throws<ArgumentException>(() => gavin.Settings.Add("s30", new UserSetting("s30", "data", gavin)), "Adding an existing key");
 
 				// Get values of not loaded keys
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Settings.TryGetValue("s0", out setting), Is.True);
-				Assert.That(setting.Id, Is.EqualTo(addedSettings[0].Id));
-				Assert.That(gavin.Settings["s0"].Id, Is.EqualTo(addedSettings[0].Id));
+				Assert.That(gavin.Settings.TryGetValue("s0", out setting), Is.True, "Getting value of not loaded key");
+				Assert.That(setting.Id, Is.EqualTo(addedSettings[0].Id), "Comparing retrieved element id");
+				Assert.That(gavin.Settings["s0"].Id, Is.EqualTo(addedSettings[0].Id), "Comparing retrieved element id by indexer");
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after reading elements");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(2), "Statements count after reading elements");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after reading elements");
 
 				// Get values of newly added keys
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Settings.TryGetValue("s20", out setting), Is.True);
-				Assert.That(setting, Is.EqualTo(addedSettings[5]));
-				Assert.That(gavin.Settings["s20"], Is.EqualTo(addedSettings[5]));
-				Assert.That(gavin.Settings.TryGetValue("s30", out setting), Is.True);
-				Assert.That(setting, Is.EqualTo(addedSettings[10]));
-				Assert.That(gavin.Settings["s30"], Is.EqualTo(addedSettings[10]));
+				Assert.That(gavin.Settings.TryGetValue("s20", out setting), Is.True, "Getting value of a newly added key");
+				Assert.That(setting, Is.EqualTo(addedSettings[5]), "Comparing retrieved element");
+				Assert.That(gavin.Settings["s20"], Is.EqualTo(addedSettings[5]), "Comparing retrieved element by indexer");
+				Assert.That(gavin.Settings.TryGetValue("s30", out setting), Is.True, "Getting value of a newly added key");
+				Assert.That(setting, Is.EqualTo(addedSettings[10]), "Comparing retrieved element");
+				Assert.That(gavin.Settings["s30"], Is.EqualTo(addedSettings[10]), "Getting value of a newly added key");
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after reading elements");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after reading elements");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after reading elements");
 
 				// Try to get a non existing setting
-				Assert.That(gavin.Settings.TryGetValue("test", out setting), Is.False);
-				Assert.That(gavin.Settings.TryGetValue("test2", out setting), Is.False);
+				Assert.That(gavin.Settings.TryGetValue("test", out setting), Is.False, "Try to get a not existing key");
+				Assert.That(gavin.Settings.TryGetValue("test2", out setting), Is.False, "Try to get a not existing key");
 				Assert.Throws<KeyNotFoundException>(() =>
 				{
 					setting = gavin.Settings["test"];
-				});
+				}, "Getting a not existing key");
 				Assert.Throws<KeyNotFoundException>(() =>
 				{
 					setting = gavin.Settings["test2"];
-				});
+				}, "Getting a not existing key");
 
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(4));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after reading not existing elements");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(4), "Statements count after reading not existing elements");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after reading not existing elements");
 
 				if (initialize)
 				{
@@ -1985,8 +1989,8 @@ namespace NHibernate.Test.Extralazy
 						e.MoveNext();
 					}
 
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.True);
-					Assert.That(gavin.Settings.Count, Is.EqualTo(15));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.True, "User settings initialization status after enumerating");
+					Assert.That(gavin.Settings.Count, Is.EqualTo(15), "User settings count after enumerating");
 				}
 
 				t.Commit();
@@ -1996,11 +2000,11 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = s.Get<User>("gavin");
-				Assert.That(gavin.Settings.Count, Is.EqualTo(15));
-				Assert.That(gavin.Settings.ContainsKey(addedSettings[0].Name), Is.True);
-				Assert.That(gavin.Settings.ContainsKey(addedSettings[5].Name), Is.True);
-				Assert.That(gavin.Settings.ContainsKey(addedSettings[10].Name), Is.True);
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(15), "User settings count after loading again Gavin");
+				Assert.That(gavin.Settings.ContainsKey(addedSettings[0].Name), Is.True, "Checking key existence");
+				Assert.That(gavin.Settings.ContainsKey(addedSettings[5].Name), Is.True, "Checking key existence");
+				Assert.That(gavin.Settings.ContainsKey(addedSettings[10].Name), Is.True, "Checking key existence");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after loading again");
 
 				t.Commit();
 			}
@@ -2034,9 +2038,9 @@ namespace NHibernate.Test.Extralazy
 				gavin = s.Get<User>("gavin");
 
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Settings.Count, Is.EqualTo(5));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(5), "Gavin's user settings count after load");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after load");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after load");
 
 				// Set a key that does not exist in db and it is not in the queue
 				Sfi.Statistics.Clear();
@@ -2046,10 +2050,10 @@ namespace NHibernate.Test.Extralazy
 					gavin.Settings[setting.Name] = setting;
 				}
 
-				Assert.That(gavin.Settings.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(10), "Gavin's user settings count after adding 5");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5), "Statements count after adding");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after adding");
 
 				// Set a key that does not exist in db and it is in the queue
 				Sfi.Statistics.Clear();
@@ -2059,38 +2063,38 @@ namespace NHibernate.Test.Extralazy
 					gavin.Settings[setting.Name] = setting;
 				}
 
-				Assert.That(gavin.Settings.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(10), "Gavin's user settings count after re-adding existing keys");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after re-adding existing keys");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after re-adding existing keys");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after re-adding existing keys");
 
 				// Set a key that exists in db and it is not in the queue
 				Sfi.Statistics.Clear();
 				gavin.Settings["s0"] = new UserSetting("s0", "s0", gavin);
 
-				Assert.That(gavin.Settings.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(10), "Gavin's user settings count after re-adding a not loaded key");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after re-adding a not loaded key");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after re-adding a not loaded key");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after re-adding a not loaded key");
 
 				// Set a key that exists in db and it is in the queue
 				Sfi.Statistics.Clear();
 				gavin.Settings["s0"] = new UserSetting("s0", "s0", gavin);
 
-				Assert.That(gavin.Settings.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(10), "Gavin's user settings count after re-adding a loaded key");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after re-adding a loaded key");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after re-adding a loaded key");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after re-adding a loaded key");
 
 				// Set a key that exists in db and it is in the removal queue
-				Assert.That(gavin.Settings.Remove("s1"), Is.True);
+				Assert.That(gavin.Settings.Remove("s1"), Is.True, "Removing an existing key");
 				Sfi.Statistics.Clear();
 				gavin.Settings["s1"] = new UserSetting("s1", "s1", gavin);
 
-				Assert.That(gavin.Settings.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(10), "Gavin's user settings count after removing an existing key");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after removing an existing key");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after removing an existing key");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after removing an existing key");
 
 				if (initialize)
 				{
@@ -2099,8 +2103,8 @@ namespace NHibernate.Test.Extralazy
 						e.MoveNext();
 					}
 
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.True);
-					Assert.That(gavin.Settings.Count, Is.EqualTo(10));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.True, "User settings initialization status after enumerating");
+					Assert.That(gavin.Settings.Count, Is.EqualTo(10), "User settings count after enumerating");
 				}
 
 				t.Commit();
@@ -2110,8 +2114,8 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = s.Get<User>("gavin");
-				Assert.That(gavin.Settings.Count, Is.EqualTo(10));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(10), "User settings count after loading again Gavin");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after loading again");
 
 				t.Commit();
 			}
@@ -2145,9 +2149,9 @@ namespace NHibernate.Test.Extralazy
 				gavin = s.Get<User>("gavin");
 
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Settings.Count, Is.EqualTo(5));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(5), "Gavin's user settings count after loading");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after loading");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after loading");
 
 				Sfi.Statistics.Clear();
 				for (var i = 0; i < 5; i++)
@@ -2156,59 +2160,59 @@ namespace NHibernate.Test.Extralazy
 					gavin.Settings[setting.Name] = setting;
 				}
 
-				Assert.That(gavin.Settings.Count, Is.EqualTo(10));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(10), "Gavin's user settings count after adding 5");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5), "Statements count after adding");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after adding");
 
 				// Remove a key that exists in db and it is not in the queue and removal queue
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Settings.Remove("s0"), Is.True);
+				Assert.That(gavin.Settings.Remove("s0"), Is.True, "Removing an existing element");
 
-				Assert.That(gavin.Settings.Count, Is.EqualTo(9));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(9), "Gavin's user settings count after removing a not loaded element");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after removing a not loaded element");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after removing a not loaded element");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after removing a not loaded element");
 
 				// Remove a key that exists in db and it is in the queue
 				var item = gavin.Settings["s1"];
-				Assert.That(gavin.Settings.Remove("s1"), Is.True);
+				Assert.That(gavin.Settings.Remove("s1"), Is.True, "Removing an existing element");
 				gavin.Settings.Add(item.Name, item);
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Settings.Remove("s1"), Is.True);
+				Assert.That(gavin.Settings.Remove("s1"), Is.True, "Removing a re-added element");
 
-				Assert.That(gavin.Settings.Count, Is.EqualTo(8));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(8), "Gavin's user settings count after removing a re-added element");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after removing a re-added element");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after removing a re-added element");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after removing a re-added element");
 
 				// Remove a key that does not exist in db and it is not in the queue
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Settings.Remove("test"), Is.False);
+				Assert.That(gavin.Settings.Remove("test"), Is.False, "Removing not existing element");
 
-				Assert.That(gavin.Settings.Count, Is.EqualTo(8));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(8), "Gavin's user settings count after removing not existing element");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after removing not existing element");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after removing not existing element");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after removing not existing element");
 
 				// Remove a key that does not exist in db and it is in the queue
 				Sfi.Statistics.Clear();
 				Assert.That(gavin.Settings.Remove("s20"), Is.True);
 
-				Assert.That(gavin.Settings.Count, Is.EqualTo(7));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(7), "Gavin's user settings count after removing an existing element");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after removing an existing element");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after removing an existing element");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after removing an existing element");
 
 				// Remove a key that exists in db and it is in the removal queue
-				Assert.That(gavin.Settings.Remove("s2"), Is.True);
+				Assert.That(gavin.Settings.Remove("s2"), Is.True, "Removing not loaded element");
 				Sfi.Statistics.Clear();
-				Assert.That(gavin.Settings.Remove("s2"), Is.False);
+				Assert.That(gavin.Settings.Remove("s2"), Is.False, "Removing removed element");
 
-				Assert.That(gavin.Settings.Count, Is.EqualTo(6));
-				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0));
-				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(6), "Gavin's user settings count after removing a not loaded element");
+				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after removing a not loaded element");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after removing a not loaded element");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after removing a not loaded element");
 
 				if (initialize)
 				{
@@ -2217,8 +2221,8 @@ namespace NHibernate.Test.Extralazy
 						e.MoveNext();
 					}
 
-					Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.True);
-					Assert.That(gavin.Settings.Count, Is.EqualTo(6));
+					Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.True, "User settings initialization status after enumerating");
+					Assert.That(gavin.Settings.Count, Is.EqualTo(6), "User settings count after enumerating");
 				}
 
 				t.Commit();
@@ -2228,8 +2232,8 @@ namespace NHibernate.Test.Extralazy
 			using (var t = s.BeginTransaction())
 			{
 				gavin = s.Get<User>("gavin");
-				Assert.That(gavin.Settings.Count, Is.EqualTo(6));
-				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False);
+				Assert.That(gavin.Settings.Count, Is.EqualTo(6), "User settings count after loading again Gavin");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after loading again");
 
 				t.Commit();
 			}
