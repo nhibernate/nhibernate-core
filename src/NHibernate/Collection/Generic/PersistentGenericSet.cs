@@ -316,7 +316,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool Add(T o)
 		{
-			// Skip checking the element existance in the database if we know that the element
+			// Skip checking the element existence in the database if we know that the element
 			// is transient and the operation queue is enabled
 			if (WasInitialized || !IsOperationQueueEnabled || !IsTransient(o))
 			{
