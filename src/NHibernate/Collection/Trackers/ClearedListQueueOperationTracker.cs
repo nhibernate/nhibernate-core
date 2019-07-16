@@ -86,9 +86,9 @@ namespace NHibernate.Collection.Trackers
 		}
 
 		/// <inheritdoc />
-		public override int CalculateDatabaseElementIndex(int index)
+		public override int? GetDatabaseElementIndex(int index)
 		{
-			return -1;
+			return null;
 		}
 
 		/// <inheritdoc />

@@ -2038,7 +2038,7 @@ namespace NHibernate.Test.Extralazy
 				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1), "Statements count after load");
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after load");
 
-				// Set a key that does not exist in db and it is not in the queue
+				// Set a key that does not exist in db and is not in the queue
 				Sfi.Statistics.Clear();
 				for (var i = 0; i < 5; i++)
 				{
@@ -2064,7 +2064,7 @@ namespace NHibernate.Test.Extralazy
 				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after re-adding existing keys");
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after re-adding existing keys");
 
-				// Set a key that exists in db and it is not in the queue
+				// Set a key that exists in db and is not in the queue
 				Sfi.Statistics.Clear();
 				gavin.Settings["s0"] = new UserSetting("s0", "s0", gavin);
 
@@ -2161,7 +2161,7 @@ namespace NHibernate.Test.Extralazy
 				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(5), "Statements count after adding");
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after adding");
 
-				// Remove a key that exists in db and it is not in the queue and removal queue
+				// Remove a key that exists in db and is not in the queue and removal queue
 				Sfi.Statistics.Clear();
 				Assert.That(gavin.Settings.Remove("s0"), Is.True, "Removing an existing element");
 
@@ -2182,7 +2182,7 @@ namespace NHibernate.Test.Extralazy
 				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Statements count after removing a re-added element");
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Settings), Is.False, "User settings initialization status after removing a re-added element");
 
-				// Remove a key that does not exist in db and it is not in the queue
+				// Remove a key that does not exist in db and is not in the queue
 				Sfi.Statistics.Clear();
 				Assert.That(gavin.Settings.Remove("test"), Is.False, "Removing not existing element");
 

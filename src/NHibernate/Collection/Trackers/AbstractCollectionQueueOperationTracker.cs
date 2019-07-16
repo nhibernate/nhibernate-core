@@ -66,11 +66,11 @@ namespace NHibernate.Collection.Trackers
 		public abstract bool TryGetElementAtIndex(int index, out T element);
 
 		/// <summary>
-		/// Calculates the element index where it currently lies in the database by taking into the consideration the queued operations.
+		/// Gets the element index where it currently lies in the database by taking into the consideration the queued operations.
 		/// </summary>
 		/// <param name="index">The effective index that will be when all operations would be flushed.</param>
 		/// <returns>The element index in the database or -1 if the index represents a transient element.</returns>
-		public abstract int CalculateDatabaseElementIndex(int index);
+		public abstract int? GetDatabaseElementIndex(int index);
 
 		#endregion
 	}

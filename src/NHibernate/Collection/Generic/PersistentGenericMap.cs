@@ -117,7 +117,7 @@ namespace NHibernate.Collection.Generic
 
 		public override void ApplyQueuedOperations()
 		{
-			var queueOperation = (MapQueueOperationTracker<TKey, TValue>) QueueOperationTracker;
+			var queueOperation = (AbstractMapQueueOperationTracker<TKey, TValue>) QueueOperationTracker;
 			queueOperation?.ApplyChanges(WrappedMap);
 			QueueOperationTracker = null;
 		}
@@ -276,17 +276,7 @@ namespace NHibernate.Collection.Generic
 						throw new ArgumentException("An item with the same key has already been added."); // Mimic dictionary behavior
 					}
 
-					var queueOperationTracker = GetOrCreateQueueOperationTracker();
-					if (queueOperationTracker != null)
-					{
-						QueueAddElementByKey(key, value);
-					}
-					else
-					{
-#pragma warning disable 618
-						QueueOperation(new PutDelayedOperation(this, key, value, default(TValue)));
-#pragma warning restore 618
-					}
+					QueueAddElementByKey(key, value);
 
 					return;
 				}
@@ -313,16 +303,7 @@ namespace NHibernate.Collection.Generic
 				return contained;
 			}
 
-			var queueOperationTracker = GetOrCreateQueueOperationTracker();
-			if (queueOperationTracker != null)
-			{
-				return QueueRemoveElementByKey(key, oldValue, existsInDb);
-			}
-
-#pragma warning disable 618
-			QueueOperation(new RemoveDelayedOperation(this, key, oldValue));
-#pragma warning restore 618
-			return true;
+			return QueueRemoveElementByKey(key, oldValue, existsInDb);
 		}
 
 
@@ -368,17 +349,7 @@ namespace NHibernate.Collection.Generic
 					var found = TryReadElementByKey<TKey, TValue>(key, out var oldValue, out var existsInDb);
 					if (found.HasValue)
 					{
-						var queueOperationTracker = GetOrCreateQueueOperationTracker();
-						if (queueOperationTracker != null)
-						{
-							QueueSetElementByKey(key, value, oldValue, existsInDb);
-						}
-						else
-						{
-#pragma warning disable 618
-							QueueOperation(new PutDelayedOperation(this, key, value, oldValue));
-#pragma warning restore 618
-						}
+						QueueSetElementByKey(key, value, oldValue, existsInDb);
 
 						return;
 					}
@@ -431,17 +402,7 @@ namespace NHibernate.Collection.Generic
 		{
 			if (ClearQueueEnabled)
 			{
-				var queueOperationTracker = GetOrCreateQueueOperationTracker();
-				if (queueOperationTracker != null)
-				{
-					QueueClearCollection();
-				}
-				else
-				{
-#pragma warning disable 618
-					QueueOperation(new ClearDelayedOperation(this));
-#pragma warning restore 618
-				}
+				QueueClearCollection();
 			}
 			else
 			{

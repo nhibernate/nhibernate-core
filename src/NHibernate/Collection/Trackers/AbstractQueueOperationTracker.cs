@@ -20,7 +20,7 @@ namespace NHibernate.Collection.Trackers
 		/// <summary>
 		/// The number of elements that the collection have in the database.
 		/// </summary>
-		public virtual int DatabaseCollectionSize { get; protected internal set; } = -1;
+		public virtual int? DatabaseCollectionSize { get; protected internal set; }
 
 		/// <summary>
 		/// Whether the Clear operation was performed on the uninitialized collection.
@@ -28,7 +28,7 @@ namespace NHibernate.Collection.Trackers
 		public virtual bool Cleared { get; protected set; }
 
 		/// <summary>
-		/// Retruns the current size of the queue that can be negative when there are more removed than added elements.
+		/// Returns the current size of the queue that can be negative when there are more removed than added elements.
 		/// </summary>
 		/// <returns>The queue size.</returns>
 		public abstract int GetQueueSize();
@@ -44,12 +44,12 @@ namespace NHibernate.Collection.Trackers
 				return GetQueueSize();
 			}
 
-			if (DatabaseCollectionSize < 0)
+			if (!DatabaseCollectionSize.HasValue)
 			{
 				throw new InvalidOperationException($"{nameof(DatabaseCollectionSize)} is not set");
 			}
 
-			return DatabaseCollectionSize + GetQueueSize();
+			return DatabaseCollectionSize.Value + GetQueueSize();
 		}
 
 		/// <summary>

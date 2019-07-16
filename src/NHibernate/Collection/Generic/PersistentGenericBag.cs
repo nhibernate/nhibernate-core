@@ -140,17 +140,7 @@ namespace NHibernate.Collection.Generic
 			}
 
 			var val = (T) value;
-			var queueOperationTracker = GetOrCreateQueueOperationTracker();
-			if (queueOperationTracker != null)
-			{
-				QueueAddElement(val);
-			}
-			else
-			{
-#pragma warning disable 618
-				QueueOperation(new SimpleAddDelayedOperation(this, val));
-#pragma warning restore 618
-			}
+			QueueAddElement(val);
 
 			return CachedSize;
 		}
@@ -206,17 +196,7 @@ namespace NHibernate.Collection.Generic
 			}
 			else
 			{
-				var queueOperationTracker = GetOrCreateQueueOperationTracker();
-				if (queueOperationTracker != null)
-				{
-					QueueAddElement(item);
-				}
-				else
-				{
-#pragma warning disable 618
-					QueueOperation(new SimpleAddDelayedOperation(this, item));
-#pragma warning restore 618
-				}
+				QueueAddElement(item);
 			}
 		}
 
@@ -224,17 +204,7 @@ namespace NHibernate.Collection.Generic
 		{
 			if (ClearQueueEnabled)
 			{
-				var queueOperationTracker = GetOrCreateQueueOperationTracker();
-				if (queueOperationTracker != null)
-				{
-					QueueClearCollection();
-				}
-				else
-				{
-#pragma warning disable 618
-					QueueOperation(new ClearDelayedOperation(this));
-#pragma warning restore 618
-				}
+				QueueClearCollection();
 			}
 			else
 			{
@@ -544,83 +514,6 @@ namespace NHibernate.Collection.Generic
 			}
 
 			return result;
-		}
-
-		// Since v5.3
-		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
-		private sealed class ClearDelayedOperation : IDelayedOperation
-		{
-			private readonly PersistentGenericBag<T> _enclosingInstance;
-
-			public ClearDelayedOperation(PersistentGenericBag<T> enclosingInstance)
-			{
-				_enclosingInstance = enclosingInstance;
-			}
-
-			public object AddedInstance
-			{
-				get { return null; }
-			}
-
-			public object Orphan
-			{
-				get { throw new NotSupportedException("queued clear cannot be used with orphan delete"); }
-			}
-
-			public void Operate()
-			{
-				_enclosingInstance._gbag.Clear();
-			}
-		}
-
-		// Since v5.3
-		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
-		private sealed class SimpleAddDelayedOperation : IDelayedOperation
-		{
-			private readonly PersistentGenericBag<T> _enclosingInstance;
-			private readonly T _value;
-
-			public SimpleAddDelayedOperation(PersistentGenericBag<T> enclosingInstance, T value)
-			{
-				_enclosingInstance = enclosingInstance;
-				_value = value;
-			}
-
-			public object AddedInstance
-			{
-				get { return _value; }
-			}
-
-			public object Orphan
-			{
-				get { return null; }
-			}
-
-			public void Operate()
-			{
-				// NH Different behavior for NH-739. A "bag" mapped as a bidirectional one-to-many of an entity with an
-				// id generator causing it to be inserted on flush must not replay the addition after initialization,
-				// if the entity was previously saved. In that case, the entity save has inserted it in database with
-				// its association to the bag, without causing a full flush. So for the bag, the operation is still
-				// pending, but in database it is already done. On initialization, the bag thus already receives the
-				// entity in its loaded list, and it should not be added again.
-				// Since a one-to-many bag is actually a set, we can simply check if the entity is already in the loaded
-				// state, and discard it if yes. (It also relies on the bag not having pending removes, which is the
-				// case, since it only handles delayed additions and clears.)
-				// Since this condition happens with transient instances added in the bag then saved, ReferenceEquals
-				// is enough to match them.
-				// This solution is a workaround, the root cause is not fixed. The root cause is the insertion on save
-				// done without caring for pending operations of one-to-many collections. This root cause could be fixed
-				// by triggering a full flush there before the insert (currently it just flushes pending inserts), or
-				// maybe by flushing just the dirty one-to-many non-initialized collections (but this can be tricky).
-				// (It is also likely one-to-many lists have a similar issue, but nothing is done yet for them. And
-				// their case is more complex due to having to care for the indexes and to handle many more delayed
-				// operation kinds.)
-				if (_enclosingInstance._isOneToMany && _enclosingInstance._gbag.Any(l => ReferenceEquals(l, _value)))
-					return;
-
-				_enclosingInstance._gbag.Add(_value);
-			}
 		}
 	}
 }

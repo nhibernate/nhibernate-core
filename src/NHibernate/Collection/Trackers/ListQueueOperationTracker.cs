@@ -17,7 +17,7 @@ namespace NHibernate.Collection.Trackers
 		}
 
 		/// <inheritdoc />
-		public override int DatabaseCollectionSize
+		public override int? DatabaseCollectionSize
 		{
 			get => _tracker?.DatabaseCollectionSize ?? base.DatabaseCollectionSize;
 			protected internal set
@@ -72,7 +72,7 @@ namespace NHibernate.Collection.Trackers
 		{
 			// We have to reset the current database collection size in case an element
 			// was added multiple times
-			DatabaseCollectionSize = -1;
+			DatabaseCollectionSize = null;
 			_tracker = null;
 		}
 
@@ -149,9 +149,9 @@ namespace NHibernate.Collection.Trackers
 		}
 
 		/// <inheritdoc />
-		public override int CalculateDatabaseElementIndex(int index)
+		public override int? GetDatabaseElementIndex(int index)
 		{
-			return _tracker?.CalculateDatabaseElementIndex(index) ?? index;
+			return _tracker?.GetDatabaseElementIndex(index) ?? index;
 		}
 
 		/// <inheritdoc />

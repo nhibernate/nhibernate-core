@@ -148,8 +148,13 @@ namespace NHibernate.Collection.Trackers
 		}
 
 		/// <inheritdoc />
-		public override int CalculateDatabaseElementIndex(int index)
+		public override int? GetDatabaseElementIndex(int index)
 		{
+			if (!DatabaseCollectionSize.HasValue)
+			{
+				throw new InvalidOperationException($"{nameof(DatabaseCollectionSize)} is not set");
+			}
+
 			var dbIndex = index;
 
 			if (_queue != null)
@@ -158,7 +163,7 @@ namespace NHibernate.Collection.Trackers
 				{
 					if (pair.Key == index)
 					{
-						return -1; // The given index represents a queued value
+						return null; // The given index represents a queued value
 					}
 
 					if (pair.Key > index)
@@ -196,7 +201,7 @@ namespace NHibernate.Collection.Trackers
 			}
 
 			return dbIndex >= DatabaseCollectionSize
-				? -1
+				? (int?) null
 				: dbIndex;
 		}
 
@@ -231,8 +236,13 @@ namespace NHibernate.Collection.Trackers
 			if (i < 0)
 			{
 				i = Math.Abs(i) - 1;
-				var dbIndex = CalculateDatabaseElementIndex(index);
-				var removedPair = new KeyValuePair<int, T>(dbIndex, element);
+				var dbIndex = GetDatabaseElementIndex(index);
+				if (!dbIndex.HasValue)
+				{
+					throw new InvalidOperationException($"Invalid {nameof(index)} parameter.");
+				}
+
+				var removedPair = new KeyValuePair<int, T>(dbIndex.Value, element);
 				var j = GetQueueIndex(ref _removedDbIndexes, removedPair, true);
 				if (j < 0)
 				{
@@ -293,7 +303,7 @@ namespace NHibernate.Collection.Trackers
 			var pair = new KeyValuePair<int, T>(index, element);
 
 			// NOTE: If we would need to have only items that are removed in the removal queue we would need
-			// to check the _queue if the item already exists as the item can be readded to a different index.
+			// to check the _queue if the item already exists as the item can be re-added to a different index.
 			// As this scenario should rarely happen and we also know that ContainsElement will be called before
 			// IsElementQueuedForDelete, we skip the check here to have a better performance.
 			GetOrCreateRemovalQueue().Add(oldElement);
@@ -302,8 +312,13 @@ namespace NHibernate.Collection.Trackers
 			var i = GetQueueIndex(ref _queue, pair, true);
 			if (i < 0)
 			{
-				var dbIndex = CalculateDatabaseElementIndex(index);
-				var removedPair = new KeyValuePair<int, T>(dbIndex, oldElement);
+				var dbIndex = GetDatabaseElementIndex(index);
+				if (!dbIndex.HasValue)
+				{
+					throw new InvalidOperationException($"Invalid {nameof(index)} parameter.");
+				}
+
+				var removedPair = new KeyValuePair<int, T>(dbIndex.Value, oldElement);
 				var j = GetQueueIndex(ref _removedDbIndexes, removedPair, true);
 				if (j < 0)
 				{

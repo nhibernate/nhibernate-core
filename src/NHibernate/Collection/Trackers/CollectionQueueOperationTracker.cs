@@ -164,7 +164,7 @@ namespace NHibernate.Collection.Trackers
 		}
 
 		/// <inheritdoc />
-		public override int CalculateDatabaseElementIndex(int index)
+		public override int? GetDatabaseElementIndex(int index)
 		{
 			throw new NotSupportedException();
 		}

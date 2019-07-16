@@ -15,7 +15,7 @@ namespace NHibernate.Collection.Trackers
 		{
 			// We have to reset the current database collection size in case an element
 			// was added multiple times
-			DatabaseCollectionSize = -1;
+			DatabaseCollectionSize = null;
 			base.AfterFlushing();
 		}
 

@@ -4,7 +4,7 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Collection.Trackers
 {
 	/// <summary>
-	/// A tracker that is able to track changes that are done to an uninitialized map.
+	/// A tracker that is able to track changes that are done to an uninitialized set.
 	/// </summary>
 	internal class SetQueueOperationTracker<T> : CollectionQueueOperationTracker<T, ISet<T>>
 	{

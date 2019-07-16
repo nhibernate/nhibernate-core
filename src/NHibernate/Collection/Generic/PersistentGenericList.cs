@@ -267,17 +267,7 @@ namespace NHibernate.Collection.Generic
 			}
 
 			var val = (T) value;
-			var queueOperationTracker = GetOrCreateQueueOperationTracker();
-			if (queueOperationTracker != null)
-			{
-				QueueAddElement(val);
-			}
-			else
-			{
-#pragma warning disable 618
-				QueueOperation(new SimpleAddDelayedOperation(this, val));
-#pragma warning restore 618
-			}
+			QueueAddElement(val);
 
 			//TODO: take a look at this - I don't like it because it changes the 
 			// meaning of Add - instead of returning the index it was added at 
@@ -294,17 +284,7 @@ namespace NHibernate.Collection.Generic
 		{
 			if (ClearQueueEnabled)
 			{
-				var queueOperationTracker = GetOrCreateQueueOperationTracker();
-				if (queueOperationTracker != null)
-				{
-					QueueClearCollection();
-				}
-				else
-				{
-#pragma warning disable 618
-					QueueOperation(new ClearDelayedOperation(this));
-#pragma warning restore 618
-				}
+				QueueClearCollection();
 			}
 			else
 			{
@@ -349,17 +329,7 @@ namespace NHibernate.Collection.Generic
 			}
 			else
 			{
-				var queueOperationTracker = GetOrCreateQueueOperationTracker();
-				if (queueOperationTracker != null)
-				{
-					QueueRemoveElementAtIndex<T>(index, element);
-				}
-				else
-				{
-#pragma warning disable 618
-					QueueOperation(new RemoveDelayedOperation(this, index, element));
-#pragma warning restore 618
-				}
+				QueueRemoveElementAtIndex<T>(index, element);
 			}
 		}
 
@@ -403,17 +373,7 @@ namespace NHibernate.Collection.Generic
 			}
 			else
 			{
-				var queueOperationTracker = GetOrCreateQueueOperationTracker();
-				if (queueOperationTracker != null)
-				{
-					QueueAddElementAtIndex(index, item);
-				}
-				else
-				{
-#pragma warning disable 618
-					QueueOperation(new AddDelayedOperation(this, index, item));
-#pragma warning restore 618
-				}
+				QueueAddElementAtIndex(index, item);
 			}
 		}
 
@@ -469,17 +429,7 @@ namespace NHibernate.Collection.Generic
 						return;
 					}
 
-					var queueOperationTracker = GetOrCreateQueueOperationTracker();
-					if (queueOperationTracker != null)
-					{
-						QueueSetElementAtIndex(index, value, old);
-					}
-					else
-					{
-#pragma warning disable 618
-						QueueOperation(new SetDelayedOperation(this, index, value, old));
-#pragma warning restore 618
-					}
+					QueueSetElementAtIndex(index, value, old);
 				}
 			}
 		}
@@ -532,17 +482,7 @@ namespace NHibernate.Collection.Generic
 			}
 			else
 			{
-				var queueOperationTracker = GetOrCreateQueueOperationTracker();
-				if (queueOperationTracker != null)
-				{
-					QueueAddElement(item);
-				}
-				else
-				{
-#pragma warning disable 618
-					QueueOperation(new SimpleAddDelayedOperation(this, item));
-#pragma warning restore 618
-				}
+				QueueAddElement(item);
 			}
 		}
 
@@ -577,17 +517,7 @@ namespace NHibernate.Collection.Generic
 			}
 			else if (exists.Value)
 			{
-				var queueOperationTracker = GetOrCreateQueueOperationTracker();
-				if (queueOperationTracker != null)
-				{
-					QueueRemoveExistingElement(item, existsInDb);
-				}
-				else
-				{
-#pragma warning disable 618
-					QueueOperation(new SimpleRemoveDelayedOperation(this, item));
-#pragma warning restore 618
-				}
+				QueueRemoveExistingElement(item, existsInDb);
 
 				return true;
 			}

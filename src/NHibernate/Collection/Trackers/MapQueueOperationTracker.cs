@@ -49,7 +49,7 @@ namespace NHibernate.Collection.Trackers
 		/// <inheritdoc />
 		public override void AddElementByKey(TKey elementKey, TValue element)
 		{
-			_removalQueue?.Remove(elementKey); // We have to remove the key from the removal list when the element is readded
+			_removalQueue?.Remove(elementKey); // We have to remove the key from the removal list when the element is re-added
 			GetOrCreateQueue().Add(elementKey, element);
 			if (!Cleared)
 			{
@@ -84,11 +84,11 @@ namespace NHibernate.Collection.Trackers
 			}
 
 			// We can have the following scenarios:
-			// 1. remove a key that exists in db and it is not in the queue and removal queue (decrease queue size)
-			// 2. remove a key that exists in db and it is in the queue (decrease queue size)
-			// 3. remove a key that does not exist in db and it is not in the queue (don't decrease queue size)
-			// 4. remove a key that does not exist in db and it is in the queue (decrease queue size)
-			// 5. remove a key that exists in db and it is in the removal queue (don't decrease queue size)
+			// 1. remove a key that exists in db and is not in the queue and removal queue (decrease queue size)
+			// 2. remove a key that exists in db and is in the queue (decrease queue size)
+			// 3. remove a key that does not exist in db and is not in the queue (don't decrease queue size)
+			// 4. remove a key that does not exist in db and is in the queue (decrease queue size)
+			// 5. remove a key that exists in db and is in the removal queue (don't decrease queue size)
 
 			// If the key is not present in the database and in the queue, do nothing
 			if (existsInDb == false && _queue?.ContainsKey(elementKey) != true)
@@ -122,11 +122,11 @@ namespace NHibernate.Collection.Trackers
 			}
 
 			// We can have the following scenarios:
-			// 1. set a key that exists in db and it is not in the queue (don't increase queue size)
-			// 2. set a key that exists in db and it is in the queue (don't increase queue size)
-			// 3. set a key that does not exist in db and it is not in the queue (increase queue size)
-			// 4. set a key that does not exist in db and it is in the queue (don't increase queue size)
-			// 5. set a key that exists in db and it is in the removal queue (increase queue size)
+			// 1. set a key that exists in db and is not in the queue (don't increase queue size)
+			// 2. set a key that exists in db and is in the queue (don't increase queue size)
+			// 3. set a key that does not exist in db and is not in the queue (increase queue size)
+			// 4. set a key that does not exist in db and is in the queue (don't increase queue size)
+			// 5. set a key that exists in db and is in the removal queue (increase queue size)
 			if ((existsInDb == false && _queue?.ContainsKey(elementKey) != true) || _removalQueue?.Remove(elementKey) == true)
 			{
 				_queueSize++;
@@ -150,18 +150,6 @@ namespace NHibernate.Collection.Trackers
 			}
 
 			return _queue.TryGetValue(elementKey, out element);
-		}
-
-		/// <inheritdoc />
-		public override bool TryGetDatabaseElementByKey(TKey elementKey, out TValue element)
-		{
-			if (_orphanMap == null)
-			{
-				element = default(TValue);
-				return false;
-			}
-
-			return _orphanMap.TryGetValue(elementKey, out element);
 		}
 
 		/// <inheritdoc />

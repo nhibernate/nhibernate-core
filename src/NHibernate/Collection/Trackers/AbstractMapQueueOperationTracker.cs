@@ -14,14 +14,6 @@ namespace NHibernate.Collection.Trackers
 		public abstract bool TryGetElementByKey(TKey elementKey, out TValue element);
 
 		/// <summary>
-		/// Tries to retrieve a element that exists in the database by its key.
-		/// </summary>
-		/// <param name="elementKey">The element key.</param>
-		/// <param name="element">The output variable for the element.</param>
-		/// <returns>True whether the element was found, false otherwise.</returns>
-		public abstract bool TryGetDatabaseElementByKey(TKey elementKey, out TValue element);
-
-		/// <summary>
 		/// Checks whether the key exist in the queue.
 		/// </summary>
 		/// <param name="key">The key to check.</param>

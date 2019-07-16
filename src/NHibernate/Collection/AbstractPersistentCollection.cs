@@ -307,7 +307,7 @@ namespace NHibernate.Collection
 						return true;
 					}
 
-					if (!queueOperationTracker.Cleared && queueOperationTracker.DatabaseCollectionSize < 0)
+					if (!queueOperationTracker.Cleared && !queueOperationTracker.DatabaseCollectionSize.HasValue)
 					{
 						queueOperationTracker.DatabaseCollectionSize = persister.GetSize(entry.LoadedKey, session);
 					}
@@ -517,12 +517,6 @@ namespace NHibernate.Collection
 							existsInDb = null;
 							return false;
 						}
-
-						if (queueOperationTracker.TryGetDatabaseElementByKey(elementKey, out element))
-						{
-							existsInDb = true;
-							return true;
-						}
 					}
 
 					var elementByKey = persister.GetElementByIndex(entry.LoadedKey, elementKey, session, owner);
@@ -570,7 +564,7 @@ namespace NHibernate.Collection
 						}
 						else
 						{
-							if (queueOperationTracker.DatabaseCollectionSize < 0 && 
+							if (!queueOperationTracker.DatabaseCollectionSize.HasValue && 
 								queueOperationTracker.RequiresDatabaseCollectionSize(nameof(queueOperationTracker.TryGetElementAtIndex)) &&
 								!ReadSize())
 							{
@@ -589,12 +583,14 @@ namespace NHibernate.Collection
 							}
 
 							// We have to calculate the database index based on the changes in the queue
-							index = queueOperationTracker.CalculateDatabaseElementIndex(index);
-							if (index < 0)
+							var dbIndex = queueOperationTracker.GetDatabaseElementIndex(index);
+							if (!dbIndex.HasValue)
 							{
 								element = default(T);
 								return false;
 							}
+
+							index = dbIndex.Value;
 						}
 					}
 
@@ -746,7 +742,7 @@ namespace NHibernate.Collection
 			}
 
 			queueOperationTracker.BeforeOperation(operationName);
-			if (queueOperationTracker.DatabaseCollectionSize < 0 && queueOperationTracker.RequiresDatabaseCollectionSize(operationName) && !ReadSize())
+			if (!queueOperationTracker.DatabaseCollectionSize.HasValue && queueOperationTracker.RequiresDatabaseCollectionSize(operationName) && !ReadSize())
 			{
 				throw new InvalidOperationException($"The collection role {Role} must be mapped as extra lazy.");
 			}

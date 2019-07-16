@@ -338,16 +338,7 @@ namespace NHibernate.Collection.Generic
 				}
 			}
 
-			var queueOperationTracker = GetOrCreateQueueOperationTracker();
-			if (queueOperationTracker != null)
-			{
-				return QueueAddElement(o);
-			}
-
-#pragma warning disable 618
-			QueueOperation(new SimpleAddDelayedOperation(this, o));
-#pragma warning restore 618
-			return true;
+			return QueueAddElement(o);
 		}
 
 		public void UnionWith(IEnumerable<T> other)
@@ -465,17 +456,7 @@ namespace NHibernate.Collection.Generic
 
 			if (exists.Value)
 			{
-				var queueOperationTracker = GetOrCreateQueueOperationTracker();
-				if (queueOperationTracker != null)
-				{
-					QueueRemoveExistingElement(o, existsInDb);
-				}
-				else
-				{
-#pragma warning disable 618
-					QueueOperation(new SimpleRemoveDelayedOperation(this, o));
-#pragma warning restore 618
-				}
+				QueueRemoveExistingElement(o, existsInDb);
 
 				return true;
 			}
@@ -487,17 +468,7 @@ namespace NHibernate.Collection.Generic
 		{
 			if (ClearQueueEnabled)
 			{
-				var queueOperationTracker = GetOrCreateQueueOperationTracker();
-				if (queueOperationTracker != null)
-				{
-					QueueClearCollection();
-				}
-				else
-				{
-#pragma warning disable 618
-					QueueOperation(new ClearDelayedOperation(this));
-#pragma warning restore 618
-				}
+				QueueClearCollection();
 			}
 			else
 			{
