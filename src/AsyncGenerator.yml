@@ -5,6 +5,10 @@
   applyChanges: true
   analyzation:
     methodConversion:
+#TODO 6.0: Remove ignore rule for IQueryBatchItem.ProcessResults  
+    - conversion: Ignore
+      name: ProcessResults
+      containingTypeName: IQueryBatchItem
     - conversion: Ignore
       name: PostProcessInsert
       containingTypeName: HqlSqlWalker

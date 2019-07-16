@@ -124,6 +124,8 @@ namespace NHibernate.Engine.Loading
 			}
 			else
 			{
+				if (loadingCollectionEntry.StopLoading)
+					return null;
 				if (loadingCollectionEntry.ResultSet == resultSet)
 				{
 					log.Debug("found loading collection bound to current result set processing; reading row");
@@ -397,6 +399,18 @@ namespace NHibernate.Engine.Loading
 		public override string ToString()
 		{
 			return base.ToString() + "<rs=" + ResultSet + ">";
+		}
+
+		internal void StopLoadingCollections(ICollectionPersister[] collectionPersisters)
+		{
+			foreach (var collectionKey in localLoadingCollectionKeys)
+			{
+				var loadingCollectionEntry = LoadContext.LocateLoadingCollectionEntry(collectionKey);
+				if (loadingCollectionEntry != null && Array.IndexOf(collectionPersisters, loadingCollectionEntry.Persister) >= 0)
+				{
+					loadingCollectionEntry.StopLoading = true;
+				}
+			}
 		}
 	}
 }
