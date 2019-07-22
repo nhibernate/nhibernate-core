@@ -62,7 +62,7 @@ namespace NHibernate.Persister.Entity
 		}
 
 		public Task InitializeLazyPropertiesAsync(
-			DbDataReader rs, object id, object entity, ILoadable rootPersister, string[][] suffixedPropertyColumns,
+			DbDataReader rs, object id, object entity, string[][] suffixedPropertyColumns,
 			string[] uninitializedLazyProperties, bool allLazyProperties, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (!HasLazyProperties)
@@ -566,7 +566,7 @@ namespace NHibernate.Persister.Entity
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var propertyNames = GetUniqueKeyPropertyNames(suppliedPropertyNames);
-			var parameterTypes = propertyNames.Select(GetPropertyType).ToArray();
+			var parameterTypes = propertyNames.ToArray(p => GetPropertyType(p));
 			var entity = binder.Entity;
 			for (var i = 0; i < propertyNames.Length; i++)
 			{

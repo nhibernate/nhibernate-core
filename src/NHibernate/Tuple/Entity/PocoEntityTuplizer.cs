@@ -5,7 +5,6 @@ using System.Reflection;
 using NHibernate.Bytecode;
 using NHibernate.Classic;
 using NHibernate.Engine;
-using NHibernate.Intercept;
 using NHibernate.Mapping;
 using NHibernate.Properties;
 using NHibernate.Proxy;
@@ -108,10 +107,9 @@ namespace NHibernate.Tuple.Entity
 			}
 		}
 
-		protected override IProxyFactory BuildProxyFactory(PersistentClass persistentClass, IGetter idGetter,
-		                                                            ISetter idSetter)
+		protected override IProxyFactory BuildProxyFactory(PersistentClass persistentClass, IGetter idGetter, ISetter idSetter)
 		{
-			bool needAccesorCheck = true; // NH specific (look the comment below)
+			bool isInterface = false;
 
 			// determine the id getter and setter methods from the proxy interface (if any)
 			// determine all interfaces needed by the resulting proxy
@@ -120,19 +118,19 @@ namespace NHibernate.Tuple.Entity
 			System.Type _mappedClass = persistentClass.MappedClass;
 			System.Type _proxyInterface = persistentClass.ProxyInterface;
 
-			if (_proxyInterface != null && !_mappedClass.Equals(_proxyInterface))
+			if (_proxyInterface != null && _mappedClass != _proxyInterface)
 			{
 				if (!_proxyInterface.IsInterface)
 				{
 					throw new MappingException("proxy must be either an interface, or the class itself: " + EntityName);
 				}
-				needAccesorCheck = false; // NH (the proxy is an interface all properties can be overridden)
+				isInterface = true;
 				proxyInterfaces.Add(_proxyInterface);
 			}
 
 			if (_mappedClass.IsInterface)
 			{
-				needAccesorCheck = false; // NH (the mapped class is an interface all properties can be overridden)
+				isInterface = true;
 				proxyInterfaces.Add(_mappedClass);
 			}
 
@@ -140,7 +138,7 @@ namespace NHibernate.Tuple.Entity
 			{
 				System.Type subclassProxy = subclass.ProxyInterface;
 				System.Type subclassClass = subclass.MappedClass;
-				if (subclassProxy != null && !subclassClass.Equals(subclassProxy))
+				if (subclassProxy != null && subclassClass != subclassProxy)
 				{
 					if (!subclassProxy.IsInterface)
 					{
@@ -155,7 +153,7 @@ namespace NHibernate.Tuple.Entity
 			 * - Check if the logger is enabled
 			 * - Don't need nothing to check if the mapped-class or proxy is an interface
 			 */
-			if (log.IsErrorEnabled() && needAccesorCheck)
+			if (!isInterface && log.IsErrorEnabled())
 			{
 				LogPropertyAccessorsErrors(persistentClass);
 			}
@@ -173,8 +171,16 @@ namespace NHibernate.Tuple.Entity
 			IProxyFactory pf = BuildProxyFactoryInternal(persistentClass, idGetter, idSetter);
 			try
 			{
-				pf.PostInstantiate(EntityName, _mappedClass, proxyInterfaces, proxyGetIdentifierMethod, proxySetIdentifierMethod,
-				                   persistentClass.HasEmbeddedIdentifier ? (IAbstractComponentType) persistentClass.Identifier.Type: null);
+				pf.PostInstantiate(
+					EntityName,
+					_mappedClass,
+					proxyInterfaces,
+					proxyGetIdentifierMethod,
+					proxySetIdentifierMethod,
+					persistentClass.HasEmbeddedIdentifier
+						? (IAbstractComponentType) persistentClass.Identifier.Type
+						: null,
+					!isInterface);
 			}
 			catch (HibernateException he)
 			{

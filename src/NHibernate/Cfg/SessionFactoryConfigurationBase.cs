@@ -6,12 +6,12 @@ namespace NHibernate.Cfg
 	public class SessionFactoryConfigurationBase : ISessionFactoryConfiguration
 	{
 		private string name = string.Empty;
-		private readonly IDictionary<string, string> properties = new Dictionary<string, string>();
-		private readonly IList<MappingConfiguration> mappings = new List<MappingConfiguration>();
-		private readonly IList<ClassCacheConfiguration> classesCache= new List<ClassCacheConfiguration>();
-		private readonly IList<CollectionCacheConfiguration> collectionsCache= new List<CollectionCacheConfiguration>();
-		private readonly IList<EventConfiguration> events= new List<EventConfiguration>();
-		private readonly IList<ListenerConfiguration> listeners= new List<ListenerConfiguration>();
+		private readonly Dictionary<string, string> properties = new Dictionary<string, string>();
+		private readonly List<MappingConfiguration> mappings = new List<MappingConfiguration>();
+		private readonly List<ClassCacheConfiguration> classesCache= new List<ClassCacheConfiguration>();
+		private readonly List<CollectionCacheConfiguration> collectionsCache= new List<CollectionCacheConfiguration>();
+		private readonly List<EventConfiguration> events= new List<EventConfiguration>();
+		private readonly List<ListenerConfiguration> listeners= new List<ListenerConfiguration>();
 
 		/// <summary>
 		/// The session factory name.

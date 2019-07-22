@@ -180,18 +180,6 @@ namespace NHibernate.Test.GhostProperty
 			}
 		}
 
-		[Test, Ignore("This shows an expected edge case")]
-		public async Task GhostPropertyMaintainIdentityMapUsingGetAsync()
-		{
-			using (ISession s = OpenSession())
-			{
-				var payment = await (s.LoadAsync<Payment>(1));
-				var order = await (s.GetAsync<Order>(1));
-
-				Assert.AreSame(order.Payment, payment);
-			}
-		}
-
 		[Test]
 		public async Task WillLoadGhostAssociationOnAccessAsync()
 		{

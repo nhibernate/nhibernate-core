@@ -1,8 +1,11 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Mapping.ByCode.Impl;
+using NHibernate.Mapping.ByCode.Impl.CustomizersImpl;
 using NHibernate.Persister.Collection;
 using NHibernate.UserTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode
 {
@@ -53,5 +56,47 @@ namespace NHibernate.Mapping.ByCode
 		void Filter(string filterName, Action<IFilterMapper> filterMapping);
 		void Fetch(CollectionFetchMode fetchMode);
 		void Persister<TPersister>() where TPersister : ICollectionPersister;
+	}
+
+	public static class CollectionPropertiesMapperExtensions
+	{
+		//6.0 TODO: Merge into ICollectionPropertiesMapper<TEntity, TElement>
+		public static void Type<TEntity, TElement>(
+			this ICollectionPropertiesMapper<TEntity, TElement> mapper,
+			string collectionType)
+		{
+			ReflectHelper
+				.CastOrThrow<CollectionPropertiesCustomizer<TEntity, TElement>>(mapper, "Type(string)")
+				.Type(collectionType);
+		}
+
+		//6.0 TODO: Merge into ICollectionPropertiesMapper
+		public static void Type(
+			this ICollectionPropertiesMapper mapper,
+			string collectionType)
+		{
+			if (mapper == null) throw new ArgumentNullException(nameof(mapper));
+
+			switch (mapper)
+			{
+				case BagMapper bagMapper:
+					bagMapper.Type(collectionType);
+					break;
+				case IdBagMapper idBagMapper:
+					idBagMapper.Type(collectionType);
+					break;
+				case ListMapper listMapper:
+					listMapper.Type(collectionType);
+					break;
+				case MapMapper mapMapper:
+					mapMapper.Type(collectionType);
+					break;
+				case SetMapper setMapper:
+					setMapper.Type(collectionType);
+					break;
+				default:
+					throw new NotSupportedException($"{mapper.GetType().FullName} does not support Type(string)");
+			}
+		}
 	}
 }

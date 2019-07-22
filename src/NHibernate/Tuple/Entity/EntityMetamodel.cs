@@ -49,7 +49,7 @@ namespace NHibernate.Tuple.Entity
 		private readonly bool[] propertyVersionability;
 		private readonly CascadeStyle[] cascadeStyles;
 
-		private readonly IDictionary<string, int?> propertyIndexes = new Dictionary<string, int?>();
+		private readonly Dictionary<string, int?> propertyIndexes = new Dictionary<string, int?>();
 		private readonly bool hasCollections;
 		private readonly bool hasMutableProperties;
 		private readonly bool hasLazyProperties;

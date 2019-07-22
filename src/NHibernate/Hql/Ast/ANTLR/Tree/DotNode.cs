@@ -661,7 +661,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private void InitText()
 		{
 			string[] cols = GetColumns();
-			string text = StringHelper.Join(", ", cols);
+			string text = string.Join(", ", cols);
 			if (cols.Length > 1 && Walker.IsComparativeExpressionClause)
 			{
 				text = "(" + text + ")";

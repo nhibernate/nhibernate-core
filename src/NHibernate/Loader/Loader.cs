@@ -569,7 +569,7 @@ namespace NHibernate.Loader
 			return false;
 		}
 
-		private static ISet<EntityKey>[] Transpose(IList<EntityKey[]> keys)
+		private static ISet<EntityKey>[] Transpose(List<EntityKey[]> keys)
 		{
 			ISet<EntityKey>[] result = new ISet<EntityKey>[keys[0].Length];
 			for (int j = 0; j < result.Length; j++)
@@ -587,7 +587,7 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		internal void CreateSubselects(IList<EntityKey[]> keys, QueryParameters queryParameters, ISessionImplementor session)
+		internal void CreateSubselects(List<EntityKey[]> keys, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			if (keys.Count > 1)
 			{
@@ -607,7 +607,7 @@ namespace NHibernate.Loader
 			}
 		}
 
-		private IEnumerable<SubselectFetch> CreateSubselects(IList<EntityKey[]> keys, QueryParameters queryParameters)
+		private IEnumerable<SubselectFetch> CreateSubselects(List<EntityKey[]> keys, QueryParameters queryParameters)
 		{
 			// see NH-2123 NH-2125
 			ISet<EntityKey>[] keySets = Transpose(keys);
@@ -1070,9 +1070,7 @@ namespace NHibernate.Loader
 				return;
 			}
 
-			var instanceClass = GetInstanceClass(rs, i, persister, key.Identifier, session);
-			entry = entry ?? session.PersistenceContext.GetEntry(obj);
-			UpdateLazyPropertiesFromResultSet(rs, i, obj, instanceClass, key, entry, persister, session, cacheBatchingHandler);
+			UpdateLazyPropertiesFromResultSet(rs, i, obj, key, entry, persister, session, cacheBatchingHandler);
 		}
 
 		private void CacheByUniqueKey(int i, IEntityPersister persister, object obj, ISessionImplementor session, bool alreadyLoaded)
@@ -1116,7 +1114,7 @@ namespace NHibernate.Loader
 		{
 			object obj;
 
-			string instanceClass = GetInstanceClass(dr, i, persister, key.Identifier, session);
+			ILoadable concretePersister = GetConcretePersister(dr, i, persister, key.Identifier, session);
 
 			if (optionalObjectKey != null && key.Equals(optionalObjectKey))
 			{
@@ -1125,7 +1123,7 @@ namespace NHibernate.Loader
 			}
 			else
 			{
-				obj = session.Instantiate(instanceClass, key.Identifier);
+				obj = session.Instantiate(concretePersister, key.Identifier);
 			}
 
 			// need to hydrate it
@@ -1134,7 +1132,7 @@ namespace NHibernate.Loader
 			// (but don't yet initialize the object itself)
 			// note that we acquired LockMode.READ even if it was not requested
 			LockMode acquiredLockMode = lockMode == LockMode.None ? LockMode.Read : lockMode;
-			LoadFromResultSet(dr, i, obj, instanceClass, key, acquiredLockMode, persister, session);
+			LoadFromResultSet(dr, i, obj, concretePersister, key, acquiredLockMode, persister, session);
 
 			// materialize associations (and initialize the object) later
 			hydratedObjects.Add(obj);
@@ -1159,8 +1157,8 @@ namespace NHibernate.Loader
 			return array?[i];
 		}
 
-		private void UpdateLazyPropertiesFromResultSet(DbDataReader rs, int i, object obj, string instanceClass, EntityKey key,
-		                                               EntityEntry entry, ILoadable rootPersister, ISessionImplementor session,
+		private void UpdateLazyPropertiesFromResultSet(DbDataReader rs, int i, object obj, EntityKey key,
+		                                               EntityEntry optionalEntry, ILoadable rootPersister, ISessionImplementor session,
 		                                               Action<IEntityPersister, CachePutData> cacheBatchingHandler)
 		{
 			var fetchAllProperties = IsEagerPropertyFetchEnabled(i);
@@ -1171,11 +1169,8 @@ namespace NHibernate.Loader
 				return; // No lazy properties were loaded
 			}
 
-			// Get the persister for the _subclass_
-			var persister = instanceClass == rootPersister.EntityName
-				? rootPersister
-				: (ILoadable) Factory.GetEntityPersister(instanceClass);
-
+			var persister = GetConcretePersister(rs, i, rootPersister, key.Identifier, session);
+			var entry = optionalEntry ?? session.PersistenceContext.GetEntry(obj);
 			// The property values will not be set when the entry status is Loading so in that case we have to get
 			// the uninitialized lazy properties from the loaded state
 			var uninitializedProperties = entry.Status == Status.Loading
@@ -1199,7 +1194,7 @@ namespace NHibernate.Loader
 				? EntityAliases[i].SuffixedPropertyAliases
 				: GetSubclassEntityAliases(i, persister);
 
-			if (!persister.InitializeLazyProperties(rs, id, obj, rootPersister, cols, updateLazyProperties, fetchAllProperties, session))
+			if (!persister.InitializeLazyProperties(rs, id, obj, cols, updateLazyProperties, fetchAllProperties, session))
 			{
 				return;
 			}
@@ -1258,16 +1253,11 @@ namespace NHibernate.Loader
 		/// an array of "hydrated" values (do not resolve associations yet),
 		/// and pass the hydrated state to the session.
 		/// </summary>
-		private void LoadFromResultSet(DbDataReader rs, int i, object obj, string instanceClass, EntityKey key,
+		private void LoadFromResultSet(DbDataReader rs, int i, object obj, ILoadable persister, EntityKey key,
 									   LockMode lockMode, ILoadable rootPersister,
 									   ISessionImplementor session)
 		{
 			object id = key.Identifier;
-
-			// Get the persister for the _subclass_
-			ILoadable persister = instanceClass == rootPersister.EntityName
-				? rootPersister
-				: (ILoadable) Factory.GetEntityPersister(instanceClass);
 
 			if (Log.IsDebugEnabled())
 			{
@@ -1304,7 +1294,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Determine the concrete class of an instance for the <c>DbDataReader</c>
 		/// </summary>
-		private string GetInstanceClass(DbDataReader rs, int i, ILoadable persister, object id, ISessionImplementor session)
+		private ILoadable GetConcretePersister(DbDataReader rs, int i, ILoadable persister, object id, ISessionImplementor session)
 		{
 			if (persister.HasSubclasses)
 			{
@@ -1321,9 +1311,11 @@ namespace NHibernate.Loader
 												  persister.EntityName);
 				}
 
-				return result;
+				return persister.EntityName == result
+					? persister
+					: (ILoadable) Factory.GetEntityPersister(result);
 			}
-			return persister.EntityName;
+			return persister;
 		}
 
 		/// <summary>
@@ -1940,11 +1932,10 @@ namespace NHibernate.Loader
 		protected IList DoList(ISessionImplementor session, QueryParameters queryParameters, IResultTransformer forcedResultTransformer,
 		                       QueryCacheResultBuilder queryCacheResultBuilder)
 		{
-			bool statsEnabled = Factory.Statistics.IsStatisticsEnabled;
-			var stopWatch = new Stopwatch();
-			if (statsEnabled)
+			Stopwatch stopWatch = null;
+			if (session.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWatch.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 
 			IList result;
@@ -1962,7 +1953,7 @@ namespace NHibernate.Loader
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not execute query", SqlString,
 												 queryParameters.PositionalParameterValues, queryParameters.NamedParameters);
 			}
-			if (statsEnabled)
+			if (stopWatch != null)
 			{
 				stopWatch.Stop();
 				Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, result.Count, stopWatch.Elapsed);

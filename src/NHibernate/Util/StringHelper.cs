@@ -43,6 +43,8 @@ namespace NHibernate.Util
 
 		public const int AliasTruncateLength = 10;
 
+		//Since 5.3
+		[Obsolete("Please use string.Join instead")]
 		public static string Join(string separator, IEnumerable objects)
 		{
 			StringBuilder buf = new StringBuilder();
@@ -60,11 +62,6 @@ namespace NHibernate.Util
 			}
 
 			return buf.ToString();
-		}
-
-		internal static string Join<T>(string separator, IEnumerable<T> objects)
-		{
-			return string.Join(separator, objects);
 		}
 
 		/// <summary>

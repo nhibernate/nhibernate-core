@@ -389,7 +389,7 @@ namespace NHibernate.Dialect
 			Dictionary<SqlString, SqlString> columnToAlias;
 			ExtractColumnOrAliasNames(select, out columnsOrAliases, out aliasToColumn, out columnToAlias);
 
-			return StringHelper.Join(",", columnsOrAliases);
+			return string.Join(",", columnsOrAliases);
 		}
 
 		/// <summary> 

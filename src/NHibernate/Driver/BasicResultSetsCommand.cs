@@ -22,7 +22,7 @@ namespace NHibernate.Driver
 		{
 			Commands = new List<ISqlCommand>();
 			Session = session;
-			_statementTerminator = session.Factory.Dialect.StatementTerminator.ToString();
+			_statementTerminator = session.Factory.Dialect.StatementTerminator.ToString() + Environment.NewLine;
 		}
 
 		protected List<ISqlCommand> Commands { get; private set; }
@@ -32,7 +32,7 @@ namespace NHibernate.Driver
 		public virtual void Append(ISqlCommand command)
 		{
 			Commands.Add(command);
-			sqlString = sqlString.Append(command.Query).Append(_statementTerminator).Append(Environment.NewLine);
+			sqlString = sqlString.Append(command.Query, _statementTerminator);
 		}
 
 		public bool HasQueries

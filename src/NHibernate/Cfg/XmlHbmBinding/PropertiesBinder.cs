@@ -372,12 +372,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			HbmTuplizer[] tuplizers = componentMapping.tuplizer;
 			if (tuplizers != null)
 			{
-				Array.ForEach(tuplizers.Select(tuplizer => new
-				                                           	{
-				                                           		TuplizerClassName = FullQualifiedClassName(tuplizer.@class, mappings),
-				                                           		Mode = tuplizer.entitymode.ToEntityMode()
-				                                           	}).ToArray(),
-				              x => model.AddTuplizer(x.Mode, x.TuplizerClassName));
+				foreach (var tuplizer in tuplizers)
+				{
+					var mode = tuplizer.entitymode.ToEntityMode();
+					var tuplizerClassName = FullQualifiedClassName(tuplizer.@class, mappings);
+					model.AddTuplizer(mode, tuplizerClassName);
+				}
 			}
 		}
 

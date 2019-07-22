@@ -40,12 +40,9 @@ namespace NHibernate.Criterion
 		{
 			if (projection != null)
 			{
-				SqlString sb = SqlString.Empty;
-				SqlString produced = this.projection.ToSqlString(criteria, 0, criteriaQuery);
+				SqlString produced = projection.ToSqlString(criteria, 0, criteriaQuery);
 				SqlString truncated = SqlStringHelper.RemoveAsAliasesFromSql(produced);
-				sb = sb.Append(truncated);
-				sb = sb.Append(ascending ? " asc" : " desc");
-				return sb;
+				return new SqlString(truncated, ascending ? " asc" : " desc");
 			}
 
 			string[] columns = criteriaQuery.GetColumnAliasesUsingProjection(criteria, propertyName);

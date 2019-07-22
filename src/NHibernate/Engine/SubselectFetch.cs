@@ -40,7 +40,7 @@ namespace NHibernate.Engine
 			                       	? StringHelper.Qualify(alias, loadable.IdentifierColumnNames)
 			                       	: ((IPropertyMapping) loadable).ToColumns(alias, ukname);
 
-			return new SqlString("select ", StringHelper.Join(", ", joinColumns), queryString);
+			return new SqlString("select ", string.Join(", ", joinColumns), queryString);
 		}
 
 		public override string ToString()
