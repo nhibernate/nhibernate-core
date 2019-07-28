@@ -14,6 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 	{
 		public virtual ISet<Document> Documents { get; set; } = new HashSet<Document>();
 		public virtual ISet<Document> DocumentsFiltered { get; set; } = new HashSet<Document>();
+		public virtual IList<Document> DocumentsBag { get; set; } = new List<Document>();
 	}
 
 	public class Document : Base

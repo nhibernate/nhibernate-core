@@ -9,8 +9,10 @@
 
 
 using System.Linq;
+using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.Linq;
+using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NUnit.Framework;
 
@@ -82,6 +84,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 			}
 		}
 
+		//GH-1994
 		[Test]
 		public async Task TestFilteredLinqQueryAsync()
 		{
@@ -108,6 +111,40 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 				             .Fetch(SelectMode.Fetch, x => x.Documents)
 				             .TransformUsing(Transformers.DistinctRootEntity)
 				             .ListAsync<Asset>());
+
+				Assert.That(query.Count, Is.EqualTo(1), "filtered assets");
+				Assert.That(query[0].Documents.Count, Is.EqualTo(1), "filtered asset documents");
+			}
+		}
+
+		[Test]
+		public async Task TestFilteredBagQueryOverAsync()
+		{
+			using (var s = OpenSession())
+			{
+				s.EnableFilter("deletedFilter").SetParameter("deletedParam", false);
+
+				var query = await (s.QueryOver<Asset>()
+				             .Fetch(SelectMode.Fetch, x => x.DocumentsBag)
+				             .TransformUsing(Transformers.DistinctRootEntity)
+				             .ListAsync<Asset>());
+
+				Assert.That(query.Count, Is.EqualTo(1), "filtered assets");
+				Assert.That(query[0].DocumentsBag.Count, Is.EqualTo(1), "filtered asset documents");
+			}
+		}
+
+		//NH-2991
+		[Test]
+		public async Task TestQueryOverRestrictionWithClauseAsync()
+		{
+			using (var s = OpenSession())
+			{
+				Document docs = null;
+				var query = await (s.QueryOver<Asset>()
+							 .JoinQueryOver(a => a.Documents, () => docs, JoinType.LeftOuterJoin, Restrictions.Where(() => docs.IsDeleted != true))
+							 .TransformUsing(Transformers.DistinctRootEntity)
+							 .ListAsync<Asset>());
 
 				Assert.That(query.Count, Is.EqualTo(1), "filtered assets");
 				Assert.That(query[0].Documents.Count, Is.EqualTo(1), "filtered asset documents");
