@@ -148,12 +148,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 						if (IsReturnableEntity(se))
 						{
-							AddEntityToProjection(queryReturnTypeList.Count + j, se);
+							AddEntityToProjection(queryReturnTypeList.Count, se);
 						}
-					}
 
-					IList<IType> constructorArgumentTypeList = ConstructorNode.ToArgumentTypes(ctorSelectExpressions);
-					queryReturnTypeList.AddRange(constructorArgumentTypeList);
+						queryReturnTypeList.Add(se.DataType);
+					}
 				}
 				else
 				{
