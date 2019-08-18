@@ -214,6 +214,22 @@ namespace NHibernate.Impl
 				log.Warn(ex, "Dialect does not provide DataBaseSchema, but keywords import or auto quoting is enabled.");
 			}
 
+			#region Serialization info
+
+			name = settings.SessionFactoryName;
+			try
+			{
+				uuid = (string)UuidGenerator.Generate(null, null);
+			}
+			catch (Exception ex)
+			{
+				throw new AssertionFailure("Could not generate UUID", ex);
+			}
+
+			SessionFactoryObjectFactory.AddInstance(uuid, name, this, properties);
+
+			#endregion
+
 			#region Caches
 			settings.CacheProvider.Start(properties);
 			#endregion
@@ -334,22 +350,6 @@ namespace NHibernate.Impl
 			{
 				persister.PostInstantiate();
 			}
-			#endregion
-
-			#region Serialization info
-
-			name = settings.SessionFactoryName;
-			try
-			{
-				uuid = (string)UuidGenerator.Generate(null, null);
-			}
-			catch (Exception ex)
-			{
-				throw new AssertionFailure("Could not generate UUID", ex);
-			}
-
-			SessionFactoryObjectFactory.AddInstance(uuid, name, this, properties);
-
 			#endregion
 
 			log.Debug("Instantiated session factory");
