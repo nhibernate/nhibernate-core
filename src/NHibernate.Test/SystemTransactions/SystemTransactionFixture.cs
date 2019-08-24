@@ -6,9 +6,9 @@ using System.Transactions;
 using NHibernate.Cfg;
 using NHibernate.Driver;
 using NHibernate.Engine;
-using NHibernate.Linq;
 using NHibernate.Test.TransactionTest;
 using NUnit.Framework;
+using sysTran = System.Transactions;
 
 namespace NHibernate.Test.SystemTransactions
 {
@@ -520,6 +520,44 @@ namespace NHibernate.Test.SystemTransactions
 			using (var s = OpenSession())
 			{
 				Assert.DoesNotThrow(() => s.JoinTransaction());
+			}
+		}
+
+		[Theory]
+		public void CanUseDependentTransaction(bool explicitFlush)
+		{
+			if (!TestDialect.SupportsDependentTransaction)
+				Assert.Ignore("Dialect does not support dependent transactions");
+			IgnoreIfUnsupported(explicitFlush);
+
+			try
+			{
+				using (var committable = new CommittableTransaction())
+				{
+					sysTran.Transaction.Current = committable;
+					using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
+					{
+						sysTran.Transaction.Current = clone;
+
+						using (var s = OpenSession())
+						{
+							if (!AutoJoinTransaction)
+								s.JoinTransaction();
+							s.Save(new Person());
+
+							if (explicitFlush)
+								s.Flush();
+							clone.Complete();
+						}
+					}
+
+					sysTran.Transaction.Current = committable;
+					committable.Commit();
+				}
+			}
+			finally
+			{
+				sysTran.Transaction.Current = null;
 			}
 		}
 	}

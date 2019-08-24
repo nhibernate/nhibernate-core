@@ -13,12 +13,13 @@ using System.Linq;
 using System.Threading;
 using System.Transactions;
 using log4net;
-using log4net.Repository.Hierarchy;
 using NHibernate.Cfg;
 using NHibernate.Engine;
-using NHibernate.Linq;
 using NHibernate.Test.TransactionTest;
 using NUnit.Framework;
+
+using sysTran = System.Transactions;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.SystemTransactions
 {
@@ -48,7 +49,7 @@ namespace NHibernate.Test.SystemTransactions
 
 				Assert.AreNotEqual(
 					Guid.Empty,
-					System.Transactions.Transaction.Current.TransactionInformation.DistributedIdentifier,
+					sysTran.Transaction.Current.TransactionInformation.DistributedIdentifier,
 					"Transaction lacks a distributed identifier");
 
 				using (var s = OpenSession())
@@ -75,7 +76,7 @@ namespace NHibernate.Test.SystemTransactions
 					"Failure promoting the transaction to distributed while already having enlisted a connection.");
 				Assert.AreNotEqual(
 					Guid.Empty,
-					System.Transactions.Transaction.Current.TransactionInformation.DistributedIdentifier,
+					sysTran.Transaction.Current.TransactionInformation.DistributedIdentifier,
 					"Transaction lacks a distributed identifier");
 			}
 		}
@@ -688,6 +689,39 @@ namespace NHibernate.Test.SystemTransactions
 			Assert.That(interceptor.AfterException, Is.TypeOf<HibernateException>());
 		}
 
+		[Theory]
+		public async Task CanUseDependentTransactionAsync(bool explicitFlush)
+		{
+			if (!TestDialect.SupportsDependentTransaction)
+				Assert.Ignore("Dialect does not support dependent transactions");
+			IgnoreIfUnsupported(explicitFlush);
+
+			using (var committable = new CommittableTransaction())
+			{
+				sysTran.Transaction.Current = committable;
+				using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
+				{
+					sysTran.Transaction.Current = clone;
+
+					using (var s = OpenSession())
+					{
+						if (!AutoJoinTransaction)
+							s.JoinTransaction();
+						await (s.SaveAsync(new Person()));
+
+						if (explicitFlush)
+							await (s.FlushAsync());
+						clone.Complete();
+					}
+				}
+
+				sysTran.Transaction.Current = committable;
+				committable.Commit();
+			}
+
+			sysTran.Transaction.Current = null;
+		}
+
 		private Task DodgeTransactionCompletionDelayIfRequiredAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			try
@@ -716,7 +750,7 @@ namespace NHibernate.Test.SystemTransactions
 			public static void Escalate(bool shouldRollBack = false)
 			{
 				var force = new ForceEscalationToDistributedTx(shouldRollBack);
-				System.Transactions.Transaction.Current.EnlistDurable(Guid.NewGuid(), force, EnlistmentOptions.None);
+				sysTran.Transaction.Current.EnlistDurable(Guid.NewGuid(), force, EnlistmentOptions.None);
 			}
 
 			private ForceEscalationToDistributedTx(bool shouldRollBack)
