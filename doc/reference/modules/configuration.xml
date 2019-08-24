@@ -1083,6 +1083,20 @@ in the parameter binding.</programlisting>
                     </row>
                     <row>
                         <entry>
+                            <literal>sqlite.binaryguid</literal>
+                        </entry>
+                        <entry>
+                            SQLite can store GUIDs in binary or text form, controlled by the BinaryGuid
+                            connection string parameter (default is 'true'). The BinaryGuid setting will affect
+                            how to cast GUID to string in SQL. NHibernate will attempt to detect this
+                            setting automatically from the connection string, but if the connection
+                            or connection string is being handled by the application instead of by NHibernate,
+                            you can use the <literal>sqlite.binaryguid</literal> NHibernate setting to override the behavior.
+                            The value can be <literal>true</literal> or <literal>false</literal>.
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>nhibernate-logger</literal>
                         </entry>
                         <entry>
