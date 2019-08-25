@@ -696,30 +696,35 @@ namespace NHibernate.Test.SystemTransactions
 				Assert.Ignore("Dialect does not support dependent transactions");
 			IgnoreIfUnsupported(explicitFlush);
 
-			using (var committable = new CommittableTransaction())
+			try
 			{
-				sysTran.Transaction.Current = committable;
-				using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
+				using (var committable = new CommittableTransaction())
 				{
-					sysTran.Transaction.Current = clone;
-
-					using (var s = OpenSession())
+					sysTran.Transaction.Current = committable;
+					using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
 					{
-						if (!AutoJoinTransaction)
-							s.JoinTransaction();
-						await (s.SaveAsync(new Person()));
+						sysTran.Transaction.Current = clone;
 
-						if (explicitFlush)
-							await (s.FlushAsync());
-						clone.Complete();
+						using (var s = OpenSession())
+						{
+							if (!AutoJoinTransaction)
+								s.JoinTransaction();
+							await (s.SaveAsync(new Person()));
+
+							if (explicitFlush)
+								await (s.FlushAsync());
+							clone.Complete();
+						}
 					}
+
+					sysTran.Transaction.Current = committable;
+					committable.Commit();
 				}
-
-				sysTran.Transaction.Current = committable;
-				committable.Commit();
 			}
-
-			sysTran.Transaction.Current = null;
+			finally
+			{
+				sysTran.Transaction.Current = null;
+			}
 		}
 
 		[Theory]
