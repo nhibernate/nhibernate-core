@@ -1,3 +1,30 @@
+Build 5.2.6
+=============================
+
+Release notes - NHibernate - Version 5.2.6
+
+11 issues were resolved in this release.
+
+** Bug
+
+   * #2190 Cannot instantiate a SessionFactory using Prevalence cache
+   * #2177 New Fetch() method in QueryOver returns IQueryOver<> instead of QueryOver<>
+   * #2172 Using DependentTransaction fails
+   * #2175 Subcriteria on component collection generates incorrect join alias 
+   * #2173 Futures not batching correctly in NH 5.2.x
+   * #2141 Undefined call to Equals object in collection during flush just before commit 
+   * #2127 StackExchangeRedisCache with PreferMultipleGet = true calls GetMany multiple times
+   * #2110 Wrong GUID to string conversion with SQLite  BinaryGuid=False
+
+** Task
+
+   * #2200 Release 5.2.6
+   * #2199 Upgrade AsyncGenerator to 0.8.2.12
+
+** Tests
+
+   * #2132 Add GetMany for ReadWriteCache tests
+
 Build 5.2.5
 =============================
 
