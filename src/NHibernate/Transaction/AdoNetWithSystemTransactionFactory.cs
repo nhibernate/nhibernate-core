@@ -236,7 +236,9 @@ namespace NHibernate.Transaction
 					// Remove the block then throw.
 					Unlock();
 					throw new HibernateException(
-						$"Synchronization timeout for transaction completion. Either raise {Cfg.Environment.SystemTransactionCompletionLockTimeout}, or this may be a bug in NHibernate.");
+						$"Synchronization timeout for transaction completion. Either raise" +
+						$"{Cfg.Environment.SystemTransactionCompletionLockTimeout}, or check all scopes are properly" +
+						$"disposed and/or all direct System.Transaction.Current changes are properly managed.");
 				}
 				catch (HibernateException)
 				{
@@ -288,14 +290,41 @@ namespace NHibernate.Transaction
 					if (status != TransactionStatus.Active || _preparing)
 						return status;
 
-					// The clone status can be out of date when active and not in prepare phase, in case of rollback.
+					// The clone status can be out of date when active and not in prepare phase, in case of rollback or
+					// dependent clone usage.
 					// In such case the original transaction is already disposed, and trying to check its status will
 					// trigger a dispose exception.
 					return _originalTransaction.TransactionInformation.Status;
 				}
 				catch (ObjectDisposedException ode)
 				{
-					_logger.Warn(ode, "Enlisted transaction status is maybe wrongly active, original transaction being already disposed. Will assume neither active nor committed.");
+					// For ruling out the dependent clone case when possible, we check if the current transaction is
+					// equal to the context one (System.Transactions.Transaction does override equality for this), and
+					// in such case, we check the state of the current transaction instead. (The state of the current
+					// transaction if equal can only be the same, but it will be inaccessible in case of rollback, due
+					// to the current transaction being already disposed.)
+					// The current transaction may not be reachable during 2PC phases and transaction completion events,
+					// but in such cases the context transaction is either no more active or in prepare phase, which is
+					// already covered by _preparing test.
+					try
+					{
+						var currentTransaction = System.Transactions.Transaction.Current;
+						if (!ReferenceEquals(currentTransaction, _originalTransaction) &&
+							currentTransaction == EnlistedTransaction)
+							return currentTransaction.TransactionInformation.Status;
+					}
+					catch (ObjectDisposedException)
+					{
+						// Just ignore that one, no use to log two dispose exceptions which are indeed the same.
+					}
+					catch (InvalidOperationException ioe)
+					{
+						_logger.Warn(ioe, "Attempting to dodge a disposed transaction trouble, current" +
+						             "transaction was unreachable.");
+					}
+
+					_logger.Warn(ode, "Enlisted transaction status is maybe wrongly active, original " +
+					             "transaction being already disposed. Will assume neither active nor committed.");
 					return null;
 				}
 			}

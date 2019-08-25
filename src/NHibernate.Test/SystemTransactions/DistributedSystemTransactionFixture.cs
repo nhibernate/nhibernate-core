@@ -744,6 +744,79 @@ namespace NHibernate.Test.SystemTransactions
 			sysTran.Transaction.Current = null;
 		}
 
+		[Theory]
+		public void CanUseSessionWithManyDependentTransaction(bool explicitFlush)
+		{
+			if (!TestDialect.SupportsDependentTransaction)
+				Assert.Ignore("Dialect does not support dependent transactions");
+			IgnoreIfUnsupported(explicitFlush);
+
+			try
+			{
+				using (var s = Sfi.WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
+				{
+					using (var committable = new CommittableTransaction())
+					{
+						sysTran.Transaction.Current = committable;
+						using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
+						{
+							sysTran.Transaction.Current = clone;
+							if (!AutoJoinTransaction)
+								s.JoinTransaction();
+							// Acquire the connection
+							var count = s.Query<Person>().Count();
+							Assert.That(count, Is.EqualTo(0), "Unexpected initial entity count.");
+							clone.Complete();
+						}
+
+						using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
+						{
+							sysTran.Transaction.Current = clone;
+							if (!AutoJoinTransaction)
+								s.JoinTransaction();
+							s.Save(new Person());
+
+							if (explicitFlush)
+								s.Flush();
+
+							clone.Complete();
+						}
+
+						using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
+						{
+							sysTran.Transaction.Current = clone;
+							if (!AutoJoinTransaction)
+								s.JoinTransaction();
+							var count = s.Query<Person>().Count();
+							Assert.That(count, Is.EqualTo(1), "Unexpected entity count after committed insert.");
+							clone.Complete();
+						}
+
+						sysTran.Transaction.Current = committable;
+						committable.Commit();
+					}
+				}
+			}
+			finally
+			{
+				sysTran.Transaction.Current = null;
+			}
+
+			DodgeTransactionCompletionDelayIfRequired();
+
+			using (var s = OpenSession())
+			{
+				using (var tx = new TransactionScope())
+				{
+					if (!AutoJoinTransaction)
+						s.JoinTransaction();
+					var count = s.Query<Person>().Count();
+					Assert.That(count, Is.EqualTo(1), "Unexpected entity count after global commit.");
+					tx.Complete();
+				}
+			}
+		}
+
 		private void DodgeTransactionCompletionDelayIfRequired()
 		{
 			if (Sfi.ConnectionProvider.Driver.HasDelayedDistributedTransactionCompletion)
