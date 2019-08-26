@@ -4,3 +4,4 @@ vswhere.*
 CSharpAsyncGenerator.CommandLine.*
 gitreleasemanager.*
 SQLitePCLRaw.core.*
+obj/

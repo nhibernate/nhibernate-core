@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="**\*" />
+    <EmbeddedResource Remove="**\*" />
+    <None Remove="**\*" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="CSharpAsyncGenerator.CommandLine" Version="0.16.2" />
+  </ItemGroup>
+  
+</Project>

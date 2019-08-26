@@ -54,6 +54,14 @@
 		</exec> 
 	</target>
 
+	<target name="get-tool-path" depends="common.tools-restore">
+		<xmlpeek 
+			file="${tools.dir}/packages.csproj" 
+			xpath="/Project/ItemGroup/PackageReference[@Include = '${tool-id}']/@Version"
+			property="tool-version" />
+		<property name="tool-path" value="${environment::get-folder-path('UserProfile')}/.nuget/packages/${tool-id}/${tool-version}/" />
+	</target>
+
 	<target name="get-nuget-package-path" depends="common.nuget-restore">
 		<xmlpeek 
 			file="${tools.dir}/packages.config" 
@@ -63,14 +71,14 @@
 	</target>
 
 	<target name="find-async-generator-console">
-		<property name="nuget-package-id" value="CSharpAsyncGenerator.CommandLine" />
-		<call target="get-nuget-package-path" />
-		<property name="async-generator-console"  value="${nuget-package-path}/tools/netcoreapp2.1/AsyncGenerator.CommandLine.dll" />
+		<property name="tool-id" value="CSharpAsyncGenerator.CommandLine" />
+		<call target="get-tool-path" />
+		<property name="async-generator-console"  value="${tool-path}/tools/netcoreapp2.1/AsyncGenerator.CommandLine.dll" />
 	</target>
 
-	<target name="generate-async" depends="common.nuget-restore solution-restore find-async-generator-console">
+	<target name="generate-async" depends="solution-restore find-async-generator-console">
 		<exec workingdir="${root.dir}/src" program="dotnet" verbose="true">
-			<arg line=".${async-generator-console}" />
+			<arg line="${async-generator-console}" />
 		</exec> 
 	</target>
 
