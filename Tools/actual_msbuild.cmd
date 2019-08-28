@@ -1,6 +1,6 @@
 @echo off
 
-for /f "usebackq tokens=*" %%i in (`%userprofile%\.nuget\pacakges\vswhere2\2.1.4\tools\vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`) do (
+for /f "usebackq tokens=*" %%i in (`%~dp0\vswhere\2.1.4\tools\vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`) do (
   set InstallDir=%%i
 )
 

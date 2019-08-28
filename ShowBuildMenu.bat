@@ -10,7 +10,7 @@ set BUILD_TOOL_PATH=%~dp0Tools\BuildTool\bin\BuildTool.dll
 set BUILDTOOL=dotnet %BUILD_TOOL_PATH%
 set AVAILABLE_CONFIGURATIONS=%~dp0available-test-configurations
 set CURRENT_CONFIGURATION=%~dp0current-test-configuration
-set NUNIT="%userprofile%\.nuget\packages\NUnit.ConsoleRunner\%NUNIT_VERSION%\tools\nunit3-console.exe"
+set NUNIT="%~dp0Tools\NUnit.ConsoleRunner\%NUNIT_VERSION%\tools\nunit3-console.exe"
 
 if not exist %BUILD_TOOL_PATH% (
     pushd %~dp0Tools\BuildTool

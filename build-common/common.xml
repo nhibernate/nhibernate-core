@@ -41,7 +41,7 @@
 
 	<target name="common.tools-restore" depends="common.init">
 		<exec workingdir="${root.dir}/Tools" program="dotnet" verbose="true">
-			<arg line="restore ./packages.csproj" />
+			<arg line="restore ./packages.csproj --packages ." />
 		</exec> 
 	</target>
 

@@ -182,7 +182,7 @@ generateAsync(){
 
 	getAsyncGeneratorPath
 	cd src
-	dotnet "$async_generator_path"
+	dotnet ../"$async_generator_path"
 	cd ..
 
 	mainMenu
@@ -197,7 +197,7 @@ getAsyncGeneratorPath(){
 	cd Tools
 
 	async_generator_version="$(cat packages.csproj | grep Include=\"CSharpAsyncGenerator.CommandLine | cut -d\" -f4)"
-	async_generator_path="$HOME/.nuget/packages/csharpasyncgenerator.commandline/$async_generator_version/tools"
+	async_generator_path="Tools/csharpasyncgenerator.commandline/$async_generator_version/tools"
 
 	if [ ! -d $async_generator_path ]
 	then

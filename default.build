@@ -59,7 +59,7 @@
 			file="${tools.dir}/packages.csproj" 
 			xpath="/Project/ItemGroup/PackageReference[@Include = '${tool-id}']/@Version"
 			property="tool-version" />
-		<property name="tool-path" value="${environment::get-folder-path('UserProfile')}/.nuget/packages/${tool-id}/${tool-version}/" />
+		<property name="tool-path" value="${tools.dir}/${tool-id}/${tool-version}/" />
 	</target>
 
 	<target name="find-async-generator-console">
@@ -70,7 +70,7 @@
 
 	<target name="generate-async" depends="solution-restore find-async-generator-console">
 		<exec workingdir="${root.dir}/src" program="dotnet" verbose="true">
-			<arg line="${async-generator-console}" />
+			<arg line=".${async-generator-console}" />
 		</exec> 
 	</target>
 
