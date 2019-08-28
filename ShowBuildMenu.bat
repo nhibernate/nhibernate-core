@@ -1,8 +1,8 @@
 @echo off
 pushd %~dp0
 
-for /f "tokens=* USEBACKQ delims= " %%i in (`findstr /c:"NUnit.ConsoleRunner" "Tools\packages.csproj"`) do set NUNIT_VERSION=%%i
-set NUNIT_VERSION=%NUNIT_VERSION:~57%
+for /f "tokens=* USEBACKQ delims= " %%i in (`findstr /c:"NUnit.Console" "Tools\packages.csproj"`) do set NUNIT_VERSION=%%i
+set NUNIT_VERSION=%NUNIT_VERSION:~51%
 set NUNIT_VERSION=%NUNIT_VERSION:" />=%
 
 set NANT="%~dp0Tools\nant\bin\NAnt.exe" -t:net-4.0
