@@ -4,11 +4,11 @@ These are the tasks typically needed to create an official NHibernate release.
     that is about to happen (as these will show in the milestone).
 
   * Create a draft release in Github with GitReleaseManager. If you have used
-    the NHibernate build menu, it should be available in Tools\gitreleasemanage.x.x.x\
+    the NHibernate build menu, it should be available in %userprofile%\.nuget\packages\gitreleasemanager\x.x.x\
     (change x.x.x by its current version in tools).
     By example:
 
-Tools\gitreleasemanager.0.7.0\tools\GitReleaseManager.exe create -o nhibernate -r nhibernate-core -m 5.1 -u username -p password
+%userprofile%\.nuget\packages\gitreleasemanager\0.7.0\tools\GitReleaseManager.exe create -o nhibernate -r nhibernate-core -m 5.1 -u username -p password
 
     (Adjust the -m milestone parameter above, and add "-c branchname" if
     releasing another branch than master)

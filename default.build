@@ -46,7 +46,7 @@
 		</exec> 
 	</target>
 
-	<target name="solution-restore" depends="common.nuget-restore">
+	<target name="solution-restore" depends="common.tools-restore">
 		<exec program="dotnet" verbose="true">
 			<arg value="msbuild" />
 			<arg value="/t:Restore" />
@@ -60,14 +60,6 @@
 			xpath="/Project/ItemGroup/PackageReference[@Include = '${tool-id}']/@Version"
 			property="tool-version" />
 		<property name="tool-path" value="${environment::get-folder-path('UserProfile')}/.nuget/packages/${tool-id}/${tool-version}/" />
-	</target>
-
-	<target name="get-nuget-package-path" depends="common.nuget-restore">
-		<xmlpeek 
-			file="${tools.dir}/packages.config" 
-			xpath="/packages/package[@id = '${nuget-package-id}']/@version"
-			property="nuget-package-version" />
-		<property name="nuget-package-path" value="${tools.dir}/${nuget-package-id}.${nuget-package-version}/" />
 	</target>
 
 	<target name="find-async-generator-console">
@@ -158,9 +150,9 @@
 	</target>
 
 	<target name="find-nunit">
-		<property name="nuget-package-id" value="NUnit.ConsoleRunner" />
-		<call target="get-nuget-package-path" />
-		<property name="nunit-console" value="${nuget-package-path}/tools/nunit3-console.exe" />
+		<property name="tool-id" value="NUnit.ConsoleRunner" />
+		<call target="get-tool-path" />
+		<property name="nunit-console" value="${tool-path}/tools/nunit3-console.exe" />
 	</target>
 
 	<target name="run-tests" depends="find-nunit" description="Run NUnit tests">

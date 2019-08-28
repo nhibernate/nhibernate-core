@@ -39,12 +39,6 @@
 		/>
 	</target>
 
-	<target name="common.nuget-restore" depends="common.init common.download-nuget">
-		<exec basedir="${tools.dir}" workingdir="${root.dir}/Tools" program="NuGet.exe">
-			<arg value="install" />
-		</exec>
-	</target>
-
 	<target name="common.tools-restore" depends="common.init">
 		<exec workingdir="${root.dir}/Tools" program="dotnet" verbose="true">
 			<arg line="restore ./packages.csproj" />
