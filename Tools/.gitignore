@@ -5,3 +5,4 @@ csharpasyncgenerator.commandline/
 gitreleasemanager/
 SQLitePCLRaw.core.*
 obj/
+microsoft.*
