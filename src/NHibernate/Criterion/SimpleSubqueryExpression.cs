@@ -41,25 +41,21 @@ namespace NHibernate.Criterion
 
 		private static TypedValue[] GetTypedValues(IType type, object value)
 		{
-			if (type.IsComponentType)
-			{
-				IAbstractComponentType actype = (IAbstractComponentType) type;
-				IType[] types = actype.Subtypes;
-				var list = new TypedValue[types.Length];
-				for (int ti = 0; ti < types.Length; ti++)
-				{
-					object subval = value == null
-						? null
-						: actype.GetPropertyValues(value)[ti];
-					list[ti] = new TypedValue(types[ti], subval, false);
-				}
+			if (!type.IsComponentType)
+				return new[] {new TypedValue(type, value)};
 
-				return list;
-			}
-			else
+			IAbstractComponentType actype = (IAbstractComponentType) type;
+			IType[] types = actype.Subtypes;
+			var list = new TypedValue[types.Length];
+			var propertyValues = value == null
+				? null
+				: actype.GetPropertyValues(value);
+			for (int ti = 0; ti < types.Length; ti++)
 			{
-				return new[] { new TypedValue(type, value) };
+				list[ti] = new TypedValue(types[ti], propertyValues?[ti], false);
 			}
+
+			return list;
 		}
 	}
 }
