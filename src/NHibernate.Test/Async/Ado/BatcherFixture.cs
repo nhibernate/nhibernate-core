@@ -102,8 +102,24 @@ namespace NHibernate.Test.Ado
 			await (CleanupAsync());
 		}
 
+		[Test, NetFxOnly]
+		[Description("SqlClient: The batcher log output should be formatted")]
+		public async Task BatchedoutputShouldBeFormattedAsync()
+		{
 #if NETFX
+			if (Sfi.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
+				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
 #endif
+
+			using (var sqlLog = new SqlLogSpy())
+			{
+				await (FillDbAsync());
+				var log = sqlLog.GetWholeLog();
+				Assert.IsTrue(log.Contains("INSERT \n    INTO"));
+			}
+
+			await (CleanupAsync());
+		}
 
 		[Test]
 		[Description("The batcher should run all DELETE queries in only one roundtrip.")]
