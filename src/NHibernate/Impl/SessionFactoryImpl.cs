@@ -1426,6 +1426,7 @@ namespace NHibernate.Impl
 				_autoClose = sessionFactory.Settings.IsAutoCloseSessionEnabled;
 				// NH different implementation: not using Settings.IsFlushBeforeCompletionEnabled
 				_flushMode = sessionFactory.Settings.DefaultFlushMode;
+				_interceptor = sessionFactory.Interceptor;
 			}
 
 			protected void SetSelf(T self)
@@ -1446,7 +1447,7 @@ namespace NHibernate.Impl
 
 			// NH different implementation: Hibernate here ignore EmptyInterceptor.Instance too, resulting
 			// in the "NoInterceptor" being unable to override a session factory interceptor.
-			public virtual IInterceptor SessionInterceptor => _interceptor ?? _sessionFactory.Interceptor;
+			public virtual IInterceptor SessionInterceptor => _interceptor;
 
 			public virtual ConnectionReleaseMode SessionConnectionReleaseMode => _connectionReleaseMode;
 
@@ -1460,7 +1461,7 @@ namespace NHibernate.Impl
 				if (_interceptor != null)
 				{
 					// NH specific feature
-					// _interceptor may be the shared accros threads EmptyInterceptor.Instance, but that is
+					// _interceptor may be the shared across threads EmptyInterceptor.Instance, but that is
 					// not an issue, SetSession is no-op on it.
 					_interceptor.SetSession(session);
 				}
