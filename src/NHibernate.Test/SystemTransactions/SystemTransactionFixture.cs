@@ -8,7 +8,6 @@ using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Test.TransactionTest;
 using NUnit.Framework;
-using sysTran = System.Transactions;
 
 namespace NHibernate.Test.SystemTransactions
 {
@@ -534,10 +533,10 @@ namespace NHibernate.Test.SystemTransactions
 			{
 				using (var committable = new CommittableTransaction())
 				{
-					sysTran.Transaction.Current = committable;
+					System.Transactions.Transaction.Current = committable;
 					using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
 					{
-						sysTran.Transaction.Current = clone;
+						System.Transactions.Transaction.Current = clone;
 
 						using (var s = OpenSession())
 						{
@@ -551,13 +550,13 @@ namespace NHibernate.Test.SystemTransactions
 						}
 					}
 
-					sysTran.Transaction.Current = committable;
+					System.Transactions.Transaction.Current = committable;
 					committable.Commit();
 				}
 			}
 			finally
 			{
-				sysTran.Transaction.Current = null;
+				System.Transactions.Transaction.Current = null;
 			}
 		}
 
@@ -585,10 +584,10 @@ namespace NHibernate.Test.SystemTransactions
 				{
 					using (var committable = new CommittableTransaction())
 					{
-						sysTran.Transaction.Current = committable;
+						System.Transactions.Transaction.Current = committable;
 						using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
 						{
-							sysTran.Transaction.Current = clone;
+							System.Transactions.Transaction.Current = clone;
 							if (!AutoJoinTransaction)
 								s.JoinTransaction();
 							// Acquire the connection
@@ -599,7 +598,7 @@ namespace NHibernate.Test.SystemTransactions
 
 						using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
 						{
-							sysTran.Transaction.Current = clone;
+							System.Transactions.Transaction.Current = clone;
 							if (!AutoJoinTransaction)
 								s.JoinTransaction();
 							s.Save(new Person());
@@ -612,7 +611,7 @@ namespace NHibernate.Test.SystemTransactions
 
 						using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
 						{
-							sysTran.Transaction.Current = clone;
+							System.Transactions.Transaction.Current = clone;
 							if (!AutoJoinTransaction)
 								s.JoinTransaction();
 							var count = s.Query<Person>().Count();
@@ -620,14 +619,14 @@ namespace NHibernate.Test.SystemTransactions
 							clone.Complete();
 						}
 
-						sysTran.Transaction.Current = committable;
+						System.Transactions.Transaction.Current = committable;
 						committable.Commit();
 					}
 				}
 			}
 			finally
 			{
-				sysTran.Transaction.Current = null;
+				System.Transactions.Transaction.Current = null;
 			}
 
 			using (var s = OpenSession())

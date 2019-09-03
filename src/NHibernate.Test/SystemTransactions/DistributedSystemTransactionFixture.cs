@@ -8,8 +8,6 @@ using NHibernate.Engine;
 using NHibernate.Test.TransactionTest;
 using NUnit.Framework;
 
-using sysTran = System.Transactions;
-
 namespace NHibernate.Test.SystemTransactions
 {
 	[TestFixture]
@@ -37,7 +35,7 @@ namespace NHibernate.Test.SystemTransactions
 
 				Assert.AreNotEqual(
 					Guid.Empty,
-					sysTran.Transaction.Current.TransactionInformation.DistributedIdentifier,
+					System.Transactions.Transaction.Current.TransactionInformation.DistributedIdentifier,
 					"Transaction lacks a distributed identifier");
 
 				using (var s = OpenSession())
@@ -64,7 +62,7 @@ namespace NHibernate.Test.SystemTransactions
 					"Failure promoting the transaction to distributed while already having enlisted a connection.");
 				Assert.AreNotEqual(
 					Guid.Empty,
-					sysTran.Transaction.Current.TransactionInformation.DistributedIdentifier,
+					System.Transactions.Transaction.Current.TransactionInformation.DistributedIdentifier,
 					"Transaction lacks a distributed identifier");
 			}
 		}
@@ -722,10 +720,10 @@ namespace NHibernate.Test.SystemTransactions
 			{
 				using (var committable = new CommittableTransaction())
 				{
-					sysTran.Transaction.Current = committable;
+					System.Transactions.Transaction.Current = committable;
 					using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
 					{
-						sysTran.Transaction.Current = clone;
+						System.Transactions.Transaction.Current = clone;
 
 						using (var s = OpenSession())
 						{
@@ -739,13 +737,13 @@ namespace NHibernate.Test.SystemTransactions
 						}
 					}
 
-					sysTran.Transaction.Current = committable;
+					System.Transactions.Transaction.Current = committable;
 					committable.Commit();
 				}
 			}
 			finally
 			{
-				sysTran.Transaction.Current = null;
+				System.Transactions.Transaction.Current = null;
 			}
 		}
 
@@ -762,10 +760,10 @@ namespace NHibernate.Test.SystemTransactions
 				{
 					using (var committable = new CommittableTransaction())
 					{
-						sysTran.Transaction.Current = committable;
+						System.Transactions.Transaction.Current = committable;
 						using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
 						{
-							sysTran.Transaction.Current = clone;
+							System.Transactions.Transaction.Current = clone;
 							if (!AutoJoinTransaction)
 								s.JoinTransaction();
 							// Acquire the connection
@@ -776,7 +774,7 @@ namespace NHibernate.Test.SystemTransactions
 
 						using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
 						{
-							sysTran.Transaction.Current = clone;
+							System.Transactions.Transaction.Current = clone;
 							if (!AutoJoinTransaction)
 								s.JoinTransaction();
 							s.Save(new Person());
@@ -789,7 +787,7 @@ namespace NHibernate.Test.SystemTransactions
 
 						using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
 						{
-							sysTran.Transaction.Current = clone;
+							System.Transactions.Transaction.Current = clone;
 							if (!AutoJoinTransaction)
 								s.JoinTransaction();
 							var count = s.Query<Person>().Count();
@@ -797,14 +795,14 @@ namespace NHibernate.Test.SystemTransactions
 							clone.Complete();
 						}
 
-						sysTran.Transaction.Current = committable;
+						System.Transactions.Transaction.Current = committable;
 						committable.Commit();
 					}
 				}
 			}
 			finally
 			{
-				sysTran.Transaction.Current = null;
+				System.Transactions.Transaction.Current = null;
 			}
 
 			DodgeTransactionCompletionDelayIfRequired();
@@ -836,7 +834,7 @@ namespace NHibernate.Test.SystemTransactions
 			public static void Escalate(bool shouldRollBack = false)
 			{
 				var force = new ForceEscalationToDistributedTx(shouldRollBack);
-				sysTran.Transaction.Current.EnlistDurable(Guid.NewGuid(), force, EnlistmentOptions.None);
+				System.Transactions.Transaction.Current.EnlistDurable(Guid.NewGuid(), force, EnlistmentOptions.None);
 			}
 
 			private ForceEscalationToDistributedTx(bool shouldRollBack)

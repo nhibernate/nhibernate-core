@@ -17,8 +17,6 @@ using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Test.TransactionTest;
 using NUnit.Framework;
-
-using sysTran = System.Transactions;
 using NHibernate.Linq;
 
 namespace NHibernate.Test.SystemTransactions
@@ -49,7 +47,7 @@ namespace NHibernate.Test.SystemTransactions
 
 				Assert.AreNotEqual(
 					Guid.Empty,
-					sysTran.Transaction.Current.TransactionInformation.DistributedIdentifier,
+					System.Transactions.Transaction.Current.TransactionInformation.DistributedIdentifier,
 					"Transaction lacks a distributed identifier");
 
 				using (var s = OpenSession())
@@ -76,7 +74,7 @@ namespace NHibernate.Test.SystemTransactions
 					"Failure promoting the transaction to distributed while already having enlisted a connection.");
 				Assert.AreNotEqual(
 					Guid.Empty,
-					sysTran.Transaction.Current.TransactionInformation.DistributedIdentifier,
+					System.Transactions.Transaction.Current.TransactionInformation.DistributedIdentifier,
 					"Transaction lacks a distributed identifier");
 			}
 		}
@@ -717,7 +715,7 @@ namespace NHibernate.Test.SystemTransactions
 			public static void Escalate(bool shouldRollBack = false)
 			{
 				var force = new ForceEscalationToDistributedTx(shouldRollBack);
-				sysTran.Transaction.Current.EnlistDurable(Guid.NewGuid(), force, EnlistmentOptions.None);
+				System.Transactions.Transaction.Current.EnlistDurable(Guid.NewGuid(), force, EnlistmentOptions.None);
 			}
 
 			private ForceEscalationToDistributedTx(bool shouldRollBack)

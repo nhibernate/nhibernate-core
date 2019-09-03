@@ -18,7 +18,6 @@ using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Test.TransactionTest;
 using NUnit.Framework;
-using sysTran = System.Transactions;
 using NHibernate.Linq;
 
 namespace NHibernate.Test.SystemTransactions
