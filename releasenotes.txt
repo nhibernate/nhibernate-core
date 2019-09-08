@@ -1,3 +1,11 @@
+Build 5.1.6
+=============================
+
+Release notes - NHibernate - Version 5.1.6
+
+** Bug
+    * #2172 Using DependentTransaction fails
+
 Build 5.1.5
 =============================
 
