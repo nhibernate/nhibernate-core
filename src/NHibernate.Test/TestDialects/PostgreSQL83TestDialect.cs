@@ -16,5 +16,11 @@
         {
             get { return false; }
         }
+
+		/// <summary>
+		/// Npgsql does not clone the transaction in its context, and uses it in its prepare phase. When that was a
+		/// dependent transaction, it is then usually already disposed of, causing Npgsql to crash.
+		/// </summary>
+		public override bool SupportsDependentTransaction => false;
 	}
 }

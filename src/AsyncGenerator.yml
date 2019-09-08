@@ -170,6 +170,18 @@
   applyChanges: true
   analyzation:
     methodConversion:
+    - conversion: Ignore
+      name: CanUseDependentTransaction
+      containingTypeName: DistributedSystemTransactionFixture
+    - conversion: Ignore
+      name: CanUseSessionWithManyDependentTransaction
+      containingTypeName: DistributedSystemTransactionFixture
+    - conversion: Ignore
+      name: CanUseDependentTransaction
+      containingTypeName: SystemTransactionFixture
+    - conversion: Ignore
+      name: CanUseSessionWithManyDependentTransaction
+      containingTypeName: SystemTransactionFixture
     - conversion: Copy
       hasAttributeName: OneTimeSetUpAttribute
     - conversion: Copy
