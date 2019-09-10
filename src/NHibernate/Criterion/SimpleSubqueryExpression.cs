@@ -34,9 +34,8 @@ namespace NHibernate.Criterion
 		protected override SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			var typedValues = GetTypedValues(GetTypes()[0], value);
-			return new SqlStringBuilder()
-					.AddParameters(typedValues.Select(tv => criteriaQuery.NewQueryParameter(tv)).SelectMany(x => x).ToList())
-					.ToSqlString();
+			var parameters = typedValues.Select(tv => criteriaQuery.NewQueryParameter(tv)).SelectMany(x => x).ToList();
+			return SqlStringHelper.ParametersList(parameters);
 		}
 
 		private static TypedValue[] GetTypedValues(IType type, object value)

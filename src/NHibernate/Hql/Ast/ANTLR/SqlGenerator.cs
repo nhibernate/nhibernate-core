@@ -135,7 +135,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 						parameter.BackTrack = backTrack;
 						return parameter;
 					}).ToList();
-				Out(new SqlStringBuilder().AddParameters(list).ToSqlString());
+				Out(SqlStringHelper.ParametersList(list));
 			}
 			else if (n is SqlNode)
 			{

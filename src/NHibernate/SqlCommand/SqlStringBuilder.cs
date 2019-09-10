@@ -249,32 +249,6 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
-		public SqlStringBuilder AddParameters(IReadOnlyList<Parameter> parameters)
-		{
-			if (parameters.Count == 0)
-				return this;
-
-			if (parameters.Count > 1)
-			{
-				Add("(");
-			}
-
-			Add(parameters[0]);
-
-			for (var index = 1; index < parameters.Count; index++)
-			{
-				Add(", ");
-				Add(parameters[index]);
-			}
-
-			if (parameters.Count > 1)
-			{
-				Add(")");
-			}
-
-			return this;
-		}
-
 		/// <summary>
 		/// Gets the number of SqlParts in this SqlStringBuilder.
 		/// </summary>
