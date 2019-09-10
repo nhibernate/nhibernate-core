@@ -204,6 +204,7 @@
       rule: IsTestCase
     - conversion: Ignore
       anyBaseTypeRule: IsTestCase
+      executionPhase: PostProviders
     ignoreDocuments:
     - filePathEndsWith: Linq/MathTests.cs
     - filePathEndsWith: Linq/ExpressionSessionLeakTest.cs
