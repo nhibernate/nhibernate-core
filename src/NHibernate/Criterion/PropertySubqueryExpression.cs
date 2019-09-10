@@ -21,7 +21,7 @@ namespace NHibernate.Criterion
 		protected override SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			var columns = criteriaQuery.GetColumns(criteria, propertyName);
-			if(columns.Length <= 1)
+			if (columns.Length <= 1)
 				return new SqlString(columns);
 			return new SqlString("(", string.Join(", ", columns), ")");
 		}
