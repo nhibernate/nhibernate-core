@@ -515,10 +515,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			string result = string.Join(", ", cols);
 
-			if(cols.Length > 1 && Walker.IsComparativeExpressionClause)
+			if (cols.Length > 1 && Walker.IsComparativeExpressionClause)
 			{
-				result = "(" + result + ")";
+				return "(" + result + ")";
 			}
+
 			return result;
 		}
 
