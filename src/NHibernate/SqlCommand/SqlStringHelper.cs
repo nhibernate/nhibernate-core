@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -59,6 +60,35 @@ namespace NHibernate.SqlCommand
 		public static bool IsEmpty(SqlString str)
 		{
 			return str == null || str.Count == 0;
+		}
+
+		internal static SqlString ParametersList(List<Parameter> parameters)
+		{
+			var parametersCount = parameters.Count;
+			if (parametersCount == 0)
+			{
+				return SqlString.Empty;
+			}
+
+			if (parametersCount == 1)
+			{
+				return new SqlString(parameters[0]);
+			}
+
+			var builder = new SqlStringBuilder();
+			builder.Add("(");
+
+			builder.Add(parameters[0]);
+
+			for (var index = 1; index < parametersCount; index++)
+			{
+				builder.Add(", ");
+				builder.Add(parameters[index]);
+			}
+
+			builder.Add(")");
+
+			return builder.ToSqlString();
 		}
 	}
 }

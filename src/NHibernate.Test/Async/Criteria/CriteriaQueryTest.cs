@@ -288,122 +288,56 @@ namespace NHibernate.Test.Criteria
 				await (t.CommitAsync());
 			}
 
-			if (TestDialect.SupportsOperatorAll)
+			//Note: It might require separate test dialect flag like SupportsRowValueConstructorWithOperatorAll
+			if (TestDialect.SupportsOperatorAll && TestDialect.SupportsRowValueConstructorSyntax)
 			{
 				using (ISession session = OpenSession())
-				using (ITransaction t = session.BeginTransaction())
-				{
-					try
-					{
-						await (session.CreateCriteria<Student>()
-							.Add(Subqueries.PropertyEqAll("CityState", dc))
-							.ListAsync());
-
-						Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
-					}
-					catch (QueryException)
-					{
-						// expected
-					}
-					await (t.RollbackAsync());
-				}
-			}
-
-			if (TestDialect.SupportsOperatorAll)
-			{
-				using (ISession session = OpenSession())
-				using (ITransaction t = session.BeginTransaction())
-				{
-					try
-					{
-						await (session.CreateCriteria<Student>()
-							.Add(Property.ForName("CityState").EqAll(dc))
-							.ListAsync());
-
-						Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
-					}
-					catch (QueryException)
-					{
-						// expected
-					}
-					finally
-					{
-						await (t.RollbackAsync());
-					}
-				}
-			}
-
-			using (ISession session = OpenSession())
-			using (ITransaction t = session.BeginTransaction())
-			{
-				try
 				{
 					await (session.CreateCriteria<Student>()
-						.Add(Subqueries.In(odessaWa, dc))
-						.ListAsync());
-					
-					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
+							.Add(Subqueries.PropertyEqAll("CityState", dc))
+							.ListAsync());
 				}
-				catch (NHibernate.Exceptions.GenericADOException)
+
+				using (ISession session = OpenSession())
 				{
-					// expected
-				}
-				finally
-				{
-					await (t.RollbackAsync());
+					await (session.CreateCriteria<Student>()
+							.Add(Property.ForName("CityState").EqAll(dc))
+							.ListAsync());
 				}
 			}
-	
-			using (ISession session = OpenSession())
-			using (ITransaction t = session.BeginTransaction())
+
+			if (TestDialect.SupportsRowValueConstructorSyntax)
 			{
-				DetachedCriteria dc2 = DetachedCriteria.For<Student>("st1")
-					.Add(Property.ForName("st1.CityState").EqProperty("st2.CityState"))
-					.SetProjection(Property.ForName("CityState"));
-				
-				try 
+				using (ISession session = OpenSession())
 				{
+					await (session.CreateCriteria<Student>()
+							.Add(Subqueries.In(odessaWa, dc))
+							.ListAsync());
+				}
+
+				using (ISession session = OpenSession())
+				{
+					DetachedCriteria dc2 = DetachedCriteria.For<Student>("st1")
+															.Add(Property.ForName("st1.CityState").EqProperty("st2.CityState"))
+															.SetProjection(Property.ForName("CityState"));
 					await (session.CreateCriteria<Student>("st2")
-						.Add( Subqueries.Eq(odessaWa, dc2))
-						.ListAsync());
-					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
+							.Add( Subqueries.Eq(odessaWa, dc2))
+							.ListAsync());
 				}
-				catch (NHibernate.Exceptions.GenericADOException)
+
+				using (ISession session = OpenSession())
 				{
-					// expected
-				}
-				finally
-				{
-					await (t.RollbackAsync());
-				}
-			}
-	
-			using (ISession session = OpenSession())
-			using (ITransaction t = session.BeginTransaction())
-			{
-				DetachedCriteria dc3 = DetachedCriteria.For<Student>("st")
-					.CreateCriteria("Enrolments")
-						.CreateCriteria("Course")
-							.Add(Property.ForName("Description").Eq("Hibernate Training"))
-							.SetProjection(Property.ForName("st.CityState"));
-				try
-				{
+					DetachedCriteria dc3 = DetachedCriteria.For<Student>("st")
+															.CreateCriteria("Enrolments")
+															.CreateCriteria("Course")
+															.Add(Property.ForName("Description").Eq("Hibernate Training"))
+															.SetProjection(Property.ForName("st.CityState"));
 					await (session.CreateCriteria<Enrolment>("e")
-						.Add(Subqueries.Eq(odessaWa, dc3))
-						.ListAsync());
-					
-					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
-				}
-				catch (NHibernate.Exceptions.GenericADOException)
-				{
-					// expected
-				}
-				finally
-				{
-					await (t.RollbackAsync());
+							.Add(Subqueries.Eq(odessaWa, dc3))
+							.ListAsync());
 				}
 			}
-	
+
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{

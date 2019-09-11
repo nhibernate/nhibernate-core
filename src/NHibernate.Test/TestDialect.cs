@@ -178,5 +178,11 @@ namespace NHibernate.Test
 		/// their type in the query.
 		/// </remarks>
 		public virtual bool HasBrokenTypeInferenceOnSelectedParameters => false;
+
+		/// <summary>
+		/// Note: Dialect.SupportsRawValueConstructorSyntax is currently disabled for all Dialects (even for ones that support this feature).
+		/// This flag is added to be able to test this feature selectively
+		/// </summary>
+		public virtual bool SupportsRowValueConstructorSyntax => _dialect.SupportsRowValueConstructorSyntax;
 	}
 }

@@ -18,5 +18,8 @@
 		public override bool SupportsUsingConnectionOnSystemTransactionPrepare => false;
 
 		public override bool SupportsAggregateInSubSelect => true;
+
+		/// <inheritdoc />
+		public override bool SupportsRowValueConstructorSyntax => true;
 	}
 }
