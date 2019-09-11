@@ -13,7 +13,7 @@ async_generator_path=""
 
 if [ ! -f $BUILD_TOOL_PATH ]
 then
-	dotnet build ./Tools/BuildTool/BuildTool.sln -c Release -o bin
+	dotnet build ./Tools/BuildTool/BuildTool.sln -c Release -o ./Tools/BuildTool/bin
 fi
 
 buildDebug(){
