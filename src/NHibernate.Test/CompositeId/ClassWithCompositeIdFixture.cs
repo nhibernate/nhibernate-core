@@ -400,8 +400,10 @@ namespace NHibernate.Test.CompositeId
 
 			using (var s = OpenSession())
 			{
-				var results = s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] {id, secondId}).List();
-				Assert.That(results.Count, Is.EqualTo(2));
+				var results1 = s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] {id, secondId}).List();
+				var results2 = s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] {id}).List();
+				Assert.That(results1.Count, Is.EqualTo(2));
+				Assert.That(results2.Count, Is.EqualTo(1));
 			}
 		}
 	}

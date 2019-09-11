@@ -56,6 +56,7 @@ namespace NHibernate.SqlCommand
 			return !IsEmpty(str);
 		}
 
+
 		public static bool IsEmpty(SqlString str)
 		{
 			return str == null || str.Count == 0;
@@ -90,49 +91,35 @@ namespace NHibernate.SqlCommand
 			return builder.ToSqlString();
 		}
 
-		internal static SqlString Repeat(SqlString placeholder, int count, string separator, string[] wrapResult)
+		internal static SqlString Repeat(SqlString placeholder, int count, SqlString separator, bool wrapInParens)
 		{
-			return Repeat(
-				placeholder,
-				count,
-				new SqlString(separator),
-				wrapResult == null
-					? null
-					: new[]
-					{
-						new SqlString(wrapResult[0]),
-						new SqlString(wrapResult[1]),
-					});
-		}
+			if (count == 0)
+				return SqlString.Empty;
 
-		internal static SqlString Repeat(SqlString placeholder, int count, SqlString separator, SqlString[] wrapResult)
-		{
-			if (wrapResult == null)
+			if (count == 1)
+				return wrapInParens
+					? new SqlString("(", placeholder, ")")
+					: placeholder;
+
+			var builder = new SqlStringBuilder((placeholder.Count + separator.Count) * count + 1);
+
+			if (wrapInParens)
 			{
-				if (count == 0)
-					return SqlString.Empty;
-				if (count == 1)
-					return placeholder;
+				builder.Add("(");
 			}
 
-			var builder = new SqlStringBuilder(count * 2 + 1);
-			if (wrapResult != null)
-			{
-				builder.Add(wrapResult[0]);
-			}
-
-			if (count > 0)
-				builder.Add(placeholder);
+			builder.Add(placeholder);
 
 			for (int i = 1; i < count; i++)
 			{
 				builder.Add(separator).Add(placeholder);
 			}
 
-			if (wrapResult != null)
+			if (wrapInParens)
 			{
-				builder.Add(wrapResult[1]);
+				builder.Add(")");
 			}
+
 			return builder.ToSqlString();
 		}
 	}
