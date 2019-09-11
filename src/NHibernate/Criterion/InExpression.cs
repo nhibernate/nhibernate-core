@@ -127,26 +127,24 @@ namespace NHibernate.Criterion
 		{
 			IType type = GetElementType(criteria, criteriaQuery);
 
-			if (type.IsComponentType)
+			if (!type.IsComponentType)
 			{
-				List<TypedValue> list = new List<TypedValue>();
-				IAbstractComponentType actype = (IAbstractComponentType) type;
-				IType[] types = actype.Subtypes;
-				for (int vi = 0; vi < _values.Length; vi++)
+				return _values.Select(v => new TypedValue(type, v, false)).ToList();
+			}
+
+			List<TypedValue> list = new List<TypedValue>();
+			IAbstractComponentType actype = (IAbstractComponentType) type;
+			var types = actype.Subtypes;
+			foreach (var value in _values)
+			{
+				var propertyValues = value != null ? actype.GetPropertyValues(value) : null;
 				for (int ti = 0; ti < types.Length; ti++)
 				{
-					object subval = _values[vi] == null
-						? null
-						: actype.GetPropertyValues(_values[vi])[ti];
-					list.Add(new TypedValue(types[ti], subval, false));
+					list.Add(new TypedValue(types[ti], propertyValues?[ti], false));
 				}
+			}
 
-				return list;
-			}
-			else
-			{
-				return _values.ToList(v => new TypedValue(type, v, false));
-			}
+			return list;
 		}
 
 		/// <summary>
