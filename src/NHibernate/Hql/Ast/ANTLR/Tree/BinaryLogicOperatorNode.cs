@@ -200,8 +200,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return embeddedParameters.ToArray();
 		}
 
-		//TODO 6.0: Change to private protected (C#7.2 feature)
-		internal string Translate(int valueElements, string comparisonText, string[] lhsElementTexts, string[] rhsElementTexts)
+		private protected string Translate(int valueElements, string comparisonText, string[] lhsElementTexts, string[] rhsElementTexts)
 		{
 			var multicolumnComparisonClauses = new string[valueElements];
 			for (int i = 0; i < valueElements; i++)
@@ -211,8 +210,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return string.Concat("(", string.Join(" and ", multicolumnComparisonClauses), ")");
 		}
 
-		//TODO 6.0: Change to private protected (C#7.2 feature)
-		internal static string[] ExtractMutationTexts(IASTNode operand, int count) 
+		private protected static string[] ExtractMutationTexts(IASTNode operand, int count) 
 		{
 			if ( operand is ParameterNode )
 			{
