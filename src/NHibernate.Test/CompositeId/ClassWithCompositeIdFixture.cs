@@ -233,14 +233,16 @@ namespace NHibernate.Test.CompositeId
 		[Test]
 		public void HqlInClause()
 		{
-			var id3 = new Id(id.KeyString, id.GetKeyShort(), secondId.KeyDateTime);
+			var id1 = id;
+			var id2 = secondId;
+			var id3 = new Id(id.KeyString, id.GetKeyShort(), id2.KeyDateTime);
 
 			// insert the new objects
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				s.Save(new ClassWithCompositeId(id) {OneProperty = 5});
-				s.Save(new ClassWithCompositeId(secondId) {OneProperty = 10});
+				s.Save(new ClassWithCompositeId(id1) {OneProperty = 5});
+				s.Save(new ClassWithCompositeId(id2) {OneProperty = 10});
 				s.Save(new ClassWithCompositeId(id3));
 
 				t.Commit();
@@ -249,27 +251,29 @@ namespace NHibernate.Test.CompositeId
 			using (var s = OpenSession())
 			{
 				var results1 = s.CreateQuery("from ClassWithCompositeId x where x.Id in (:id1, :id2)")
-								.SetParameter("id1", id)
-								.SetParameter("id2", secondId)
+								.SetParameter("id1", id1)
+								.SetParameter("id2", id2)
 								.List<ClassWithCompositeId>();
 				var results2 = s.CreateQuery("from ClassWithCompositeId x where  x.Id in (:id1)")
-								.SetParameter("id1", id)
+								.SetParameter("id1", id1)
 								.List<ClassWithCompositeId>();
 				var results3 = s.CreateQuery("from ClassWithCompositeId x where  x.Id not in (:id1)")
-								.SetParameter("id1", id)
+								.SetParameter("id1", id1)
 								.List<ClassWithCompositeId>();
 				var results4 = s.CreateQuery("from ClassWithCompositeId x where x.Id not in (:id1, :id2)")
-								.SetParameter("id1", id)
-								.SetParameter("id2", secondId)
+								.SetParameter("id1", id1)
+								.SetParameter("id2", id2)
 								.List<ClassWithCompositeId>();
 
 				Assert.Multiple(
 					() =>
 					{
-						Assert.That(results1.Count, Is.EqualTo(2), "in multiple ids"); 
+						Assert.That(results1.Count, Is.EqualTo(2), "in multiple ids");
+						Assert.That(results1.Select(x => x.Id), Is.EquivalentTo(new[] {id1, id2}), "in multiple ids");
 						Assert.That(results2.Count, Is.EqualTo(1), "in single id");
+						Assert.That(results2.Single().Id, Is.EqualTo(id1), "in single id");
 						Assert.That(results3.Count, Is.EqualTo(2), "not in single id");
-						Assert.That(results3.First().Id, Is.EqualTo(id).Or.EqualTo(id3), "not in single id");
+						Assert.That(results3.Select(x => x.Id), Is.EquivalentTo(new[] {id2, id3}), "not in single id");
 						Assert.That(results4.Count, Is.EqualTo(1), "not in multiple ids");
 						Assert.That(results4.Single().Id, Is.EqualTo(id3), "not in multiple ids");
 					});
