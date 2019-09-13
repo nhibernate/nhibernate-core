@@ -129,7 +129,7 @@ namespace NHibernate.Criterion
 
 			if (!type.IsComponentType)
 			{
-				return _values.Select(v => new TypedValue(type, v, false)).ToList();
+				return _values.ToList(v => new TypedValue(type, v, false));
 			}
 
 			List<TypedValue> list = new List<TypedValue>();
