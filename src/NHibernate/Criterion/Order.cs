@@ -36,12 +36,12 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public virtual SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			SqlString[] columns = GetColumnsOrAliases(criteria, criteriaQuery);
+			var columnsOrAliases = GetColumnsOrAliases(criteria, criteriaQuery);
 			bool[] toLowerColumns = ignoreCase ? FindStringColumns(criteria, criteriaQuery) : null;
 
 			var fragment = new SqlStringBuilder();
 			var factory = criteriaQuery.Factory;
-			for (int i = 0; i < columns.Length; i++)
+			for (int i = 0; i < columnsOrAliases.Length; i++)
 			{
 				bool lower = toLowerColumns?[i] == true;
 
@@ -52,7 +52,7 @@ namespace NHibernate.Criterion
 						.Add("(");
 				}
 
-				fragment.Add(columns[i]);
+				fragment.AddObject(columnsOrAliases[i]);
 
 				if (lower)
 				{
@@ -61,7 +61,7 @@ namespace NHibernate.Criterion
 
 				fragment.Add(ascending ? " asc" : " desc");
 
-				if (i < columns.Length - 1)
+				if (i < columnsOrAliases.Length - 1)
 				{
 					fragment.Add(", ");
 				}
@@ -70,12 +70,12 @@ namespace NHibernate.Criterion
 			return fragment.ToSqlString();
 		}
 
-		private SqlString[] GetColumnsOrAliases(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		private object[] GetColumnsOrAliases(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			var propName = propertyName ?? (projection as IPropertyProjection)?.PropertyName;
 			return propName != null
-				? Array.ConvertAll(criteriaQuery.GetColumnAliasesUsingProjection(criteria, propName), x => new SqlString(x))
-				: CriterionUtil.GetColumnNamesUsingProjection(projection, criteriaQuery, criteria);
+				? criteriaQuery.GetColumnAliasesUsingProjection(criteria, propName)
+				: (object[]) CriterionUtil.GetColumnNamesUsingProjection(projection, criteriaQuery, criteria);
 		}
 
 		private bool[] FindStringColumns(ICriteria criteria, ICriteriaQuery criteriaQuery)
