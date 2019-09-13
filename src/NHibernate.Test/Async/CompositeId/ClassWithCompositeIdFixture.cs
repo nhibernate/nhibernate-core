@@ -399,22 +399,39 @@ namespace NHibernate.Test.CompositeId
 		public async Task QueryOverInClauseAsync()
 		{
 			// insert the new objects
+			var id1 = id;
+			var id2 = secondId;
+			var id3 = new Id(id1.KeyString, id1.GetKeyShort(), id2.KeyDateTime);
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new ClassWithCompositeId(id) {OneProperty = 5}));
-				await (s.SaveAsync(new ClassWithCompositeId(secondId) {OneProperty = 10}));
-				await (s.SaveAsync(new ClassWithCompositeId(new Id(id.KeyString, id.GetKeyShort(), secondId.KeyDateTime))));
+				await (s.SaveAsync(new ClassWithCompositeId(id1) {OneProperty = 5}));
+				await (s.SaveAsync(new ClassWithCompositeId(id2) {OneProperty = 10}));
+				await (s.SaveAsync(new ClassWithCompositeId(id3)));
 
 				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			{
-				var results1 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] {id, secondId}).ListAsync());
-				var results2 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] {id}).ListAsync());
-				Assert.That(results1.Count, Is.EqualTo(2));
-				Assert.That(results2.Count, Is.EqualTo(1));
+				var results1 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] {id1, id2}).ListAsync());
+				var results2 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] {id1}).ListAsync());
+				var results3 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).Not.IsIn(new[] {id1, id2}).ListAsync());
+				var results4 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).Not.IsIn(new[] {id1}).ListAsync());
+
+				Assert.Multiple(
+					() =>
+					{
+						Assert.That(results1.Count, Is.EqualTo(2), "in multiple ids");
+						Assert.That(results1.Select(r => r.Id), Is.EquivalentTo(new[] {id1, id2}), "in multiple ids");
+						Assert.That(results2.Count, Is.EqualTo(1), "in single id");
+						Assert.That(results2.Select(r => r.Id), Is.EquivalentTo(new[] {id1}), "in single id");
+						Assert.That(results3.Count, Is.EqualTo(1), "not in multiple ids");
+						Assert.That(results3.Select(r => r.Id), Is.EquivalentTo(new[] {id3}), "not in multiple ids");
+						Assert.That(results4.Count, Is.EqualTo(2), "not in single id");
+						Assert.That(results4.Select(r => r.Id), Is.EquivalentTo(new[] {id2, id3}), "not in single id");
+					});
 			}
 		}
 	}
