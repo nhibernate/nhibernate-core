@@ -82,10 +82,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <summary>
 		/// this is possible for parameter lists and explicit lists. It is completely unreasonable for sub-queries.
 		/// </summary>
-		private static bool IsNodeAcceptable(IASTNode rhsNode) =>
-			rhsNode == null /* empty IN list */ || rhsNode is LiteralNode
-												|| rhsNode is ParameterNode
-												|| rhsNode.Type == HqlSqlWalker.VECTOR_EXPR;
+		private static bool IsNodeAcceptable(IASTNode rhsNode)
+		{
+			return rhsNode == null /* empty IN list */
+				|| rhsNode is LiteralNode
+				|| rhsNode is ParameterNode
+				|| rhsNode.Type == HqlSqlWalker.VECTOR_EXPR;
+		}
 
 		/// <summary>
 		///  Mutate the subtree relating to a row-value-constructor in "in" list to instead use
