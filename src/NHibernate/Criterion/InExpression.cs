@@ -79,7 +79,7 @@ namespace NHibernate.Criterion
 			if (columns.Length <= 1 || criteriaQuery.Factory.Dialect.SupportsRowValueConstructorSyntaxInInList)
 			{
 				var wrapInParens = columns.Length > 1;
-				SqlString comaSeparator = new SqlString(", ");
+				const string comaSeparator = ", ";
 				var singleValueParam = SqlStringHelper.Repeat(new SqlString(bogusParam), columns.Length, comaSeparator, wrapInParens);
 
 				var parameters = SqlStringHelper.Repeat(singleValueParam, Values.Length, comaSeparator,  wrapInParens: false);
@@ -99,8 +99,10 @@ namespace NHibernate.Criterion
 			var cols = new SqlString(
 				" ( ",
 				SqlStringHelper.Join(new SqlString(" = ", bogusParam, " and "), columns),
-				new SqlString("= ", bogusParam, " ) "));
-			cols = SqlStringHelper.Repeat(cols, Values.Length, new SqlString(" or "), wrapInParens: Values.Length > 1);
+				"= ",
+				bogusParam,
+				" ) ");
+			cols = SqlStringHelper.Repeat(cols, Values.Length, " or ", wrapInParens: Values.Length > 1);
 			return cols;
 		}
 

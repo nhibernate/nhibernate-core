@@ -31,6 +31,24 @@ namespace NHibernate.SqlCommand
 			return buf.ToSqlString();
 		}
 
+		internal static SqlString Join(string separator, IList<SqlString> strings)
+		{
+			if (strings.Count == 0)
+				return SqlString.Empty;
+
+			if (strings.Count == 1)
+				return strings[0];
+
+			var buf = new SqlStringBuilder();
+
+			buf.Add(strings[0]);
+			for (var index = 1; index < strings.Count; index++)
+			{
+				buf.Add(separator).Add(strings[index]);
+			}
+
+			return buf.ToSqlString();
+		}
 
 		public static SqlString[] Add(SqlString[] x, string sep, SqlString[] y)
 		{
@@ -91,7 +109,7 @@ namespace NHibernate.SqlCommand
 			return builder.ToSqlString();
 		}
 
-		internal static SqlString Repeat(SqlString placeholder, int count, SqlString separator, bool wrapInParens)
+		internal static SqlString Repeat(SqlString placeholder, int count, string separator, bool wrapInParens)
 		{
 			if (count == 0)
 				return SqlString.Empty;
@@ -101,7 +119,7 @@ namespace NHibernate.SqlCommand
 					? new SqlString("(", placeholder, ")")
 					: placeholder;
 
-			var builder = new SqlStringBuilder((placeholder.Count + separator.Count) * count + 1);
+			var builder = new SqlStringBuilder((placeholder.Count + 1) * count + 1);
 
 			if (wrapInParens)
 			{
