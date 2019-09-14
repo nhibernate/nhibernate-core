@@ -6,7 +6,6 @@ using System.Transactions;
 using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
-using NHibernate.Impl;
 using NHibernate.Util;
 
 namespace NHibernate.Transaction
@@ -186,6 +185,7 @@ namespace NHibernate.Transaction
 			private readonly System.Transactions.Transaction _originalTransaction;
 			private readonly ManualResetEventSlim _lock = new ManualResetEventSlim(true);
 			private volatile bool _needCompletionLocking = true;
+			private bool _preparing;
 			// Required for not locking the completion phase itself when locking session usages from concurrent threads.
 			private readonly AsyncLocal<bool> _bypassLock = new AsyncLocal<bool>();
 			private readonly int _systemTransactionCompletionLockTimeout;
@@ -236,7 +236,9 @@ namespace NHibernate.Transaction
 					// Remove the block then throw.
 					Unlock();
 					throw new HibernateException(
-						"Synchronization timeout for transaction completion. Either raise {Cfg.Environment.SystemTransactionCompletionLockTimeout}, or this may be a bug in NHibernate.");
+						$"Synchronization timeout for transaction completion. Either raise" +
+						$"{Cfg.Environment.SystemTransactionCompletionLockTimeout}, or check all scopes are properly" +
+						$"disposed and/or all direct System.Transaction.Current changes are properly managed.");
 				}
 				catch (HibernateException)
 				{
@@ -284,16 +286,44 @@ namespace NHibernate.Transaction
 				{
 					// Cloned transaction is not disposed "unexpectedly", its status is accessible till context disposal.
 					var status = EnlistedTransaction.TransactionInformation.Status;
-					if (status != TransactionStatus.Active)
+					if (status != TransactionStatus.Active || _preparing)
 						return status;
 
-					// The clone status can be out of date when active, check the original one (which could be disposed if
-					// the clone is out of date).
+					// The clone status can be out of date when active and not in prepare phase, in case of rollback or
+					// dependent clone usage.
+					// In such case the original transaction is already disposed, and trying to check its status will
+					// trigger a dispose exception.
 					return _originalTransaction.TransactionInformation.Status;
 				}
 				catch (ObjectDisposedException ode)
 				{
-					_logger.Warn("Enlisted transaction status was wrongly active, original transaction being already disposed. Will assume neither active nor committed.", ode);
+					// For ruling out the dependent clone case when possible, we check if the current transaction is
+					// equal to the context one (System.Transactions.Transaction does override equality for this), and
+					// in such case, we check the state of the current transaction instead. (The state of the current
+					// transaction if equal can only be the same, but it will be inaccessible in case of rollback, due
+					// to the current transaction being already disposed.)
+					// The current transaction may not be reachable during 2PC phases and transaction completion events,
+					// but in such cases the context transaction is either no more active or in prepare phase, which is
+					// already covered by _preparing test.
+					try
+					{
+						var currentTransaction = System.Transactions.Transaction.Current;
+						if (!ReferenceEquals(currentTransaction, _originalTransaction) &&
+							currentTransaction == EnlistedTransaction)
+							return currentTransaction.TransactionInformation.Status;
+					}
+					catch (ObjectDisposedException)
+					{
+						// Just ignore that one, no use to log two dispose exceptions which are indeed the same.
+					}
+					catch (InvalidOperationException ioe)
+					{
+						_logger.Warn("Attempting to dodge a disposed transaction trouble, current" +
+						             "transaction was unreachable.", ioe);
+					}
+
+					_logger.Warn("Enlisted transaction status is maybe wrongly active, original " +
+					             "transaction being already disposed. Will assume neither active nor committed.", ode);
 					return null;
 				}
 			}
@@ -309,6 +339,7 @@ namespace NHibernate.Transaction
 			/// <param name="preparingEnlistment">The object for notifying the prepare phase outcome.</param>
 			public virtual void Prepare(PreparingEnlistment preparingEnlistment)
 			{
+				_preparing = true;
 				using (_session.BeginContext())
 				{
 					try
@@ -342,10 +373,12 @@ namespace NHibernate.Transaction
 						Lock();
 
 						_logger.Debug("Prepared for system transaction");
+						_preparing = false;
 						preparingEnlistment.Prepared();
 					}
 					catch (Exception exception)
 					{
+						_preparing = false;
 						_logger.Error("System transaction prepare phase failed", exception);
 						try
 						{
@@ -403,7 +436,7 @@ namespace NHibernate.Transaction
 			/// <summary>
 			/// Handle the transaction completion. Notify <see cref="ConnectionManager"/> of the end of the
 			/// transaction. Notify end of transaction to the session and to <see cref="ConnectionManager.DependentSessions"/>
-			/// if any. Close sessions requiring it then cleanup transaction contextes and then <see cref="Unlock"/> blocked
+			/// if any. Close sessions requiring it then cleanup transaction contexts and then <see cref="Unlock"/> blocked
 			/// threads.
 			/// </summary>
 			/// <param name="isCommitted"><see langword="true"/> if the transaction is committed, <see langword="false"/>

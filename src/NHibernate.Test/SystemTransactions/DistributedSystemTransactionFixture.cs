@@ -6,7 +6,6 @@ using log4net;
 using log4net.Repository.Hierarchy;
 using NHibernate.Cfg;
 using NHibernate.Engine;
-using NHibernate.Linq;
 using NHibernate.Test.TransactionTest;
 using NUnit.Framework;
 
@@ -725,6 +724,117 @@ namespace NHibernate.Test.SystemTransactions
 			{
 				ForceEscalationToDistributedTx.Escalate();
 				Assert.DoesNotThrow(() => s.JoinTransaction());
+			}
+		}
+
+		[Theory]
+		public void CanUseDependentTransaction(bool explicitFlush)
+		{
+			if (!TestDialect.SupportsDependentTransaction)
+				Assert.Ignore("Dialect does not support dependent transactions");
+			IgnoreIfUnsupported(explicitFlush);
+
+			try
+			{
+				using (var committable = new CommittableTransaction())
+				{
+					System.Transactions.Transaction.Current = committable;
+					using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
+					{
+						System.Transactions.Transaction.Current = clone;
+
+						using (var s = OpenSession())
+						{
+							if (!AutoJoinTransaction)
+								s.JoinTransaction();
+							s.Save(new Person());
+
+							if (explicitFlush)
+								s.Flush();
+							clone.Complete();
+						}
+					}
+
+					System.Transactions.Transaction.Current = committable;
+					committable.Commit();
+				}
+			}
+			finally
+			{
+				System.Transactions.Transaction.Current = null;
+			}
+		}
+
+		[Theory]
+		public void CanUseSessionWithManyDependentTransaction(bool explicitFlush)
+		{
+			if (!TestDialect.SupportsDependentTransaction)
+				Assert.Ignore("Dialect does not support dependent transactions");
+			IgnoreIfUnsupported(explicitFlush);
+
+			try
+			{
+				using (var s = Sfi.WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
+				{
+					using (var committable = new CommittableTransaction())
+					{
+						System.Transactions.Transaction.Current = committable;
+						using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
+						{
+							System.Transactions.Transaction.Current = clone;
+							if (!AutoJoinTransaction)
+								s.JoinTransaction();
+							// Acquire the connection
+							var count = s.Query<Person>().Count();
+							Assert.That(count, Is.EqualTo(0), "Unexpected initial entity count.");
+							clone.Complete();
+						}
+
+						using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
+						{
+							System.Transactions.Transaction.Current = clone;
+							if (!AutoJoinTransaction)
+								s.JoinTransaction();
+							s.Save(new Person());
+
+							if (explicitFlush)
+								s.Flush();
+
+							clone.Complete();
+						}
+
+						using (var clone = committable.DependentClone(DependentCloneOption.RollbackIfNotComplete))
+						{
+							System.Transactions.Transaction.Current = clone;
+							if (!AutoJoinTransaction)
+								s.JoinTransaction();
+							var count = s.Query<Person>().Count();
+							Assert.That(count, Is.EqualTo(1), "Unexpected entity count after committed insert.");
+							clone.Complete();
+						}
+
+						System.Transactions.Transaction.Current = committable;
+						committable.Commit();
+					}
+				}
+			}
+			finally
+			{
+				System.Transactions.Transaction.Current = null;
+			}
+
+			DodgeTransactionCompletionDelayIfRequired();
+
+			using (var s = OpenSession())
+			{
+				using (var tx = new TransactionScope())
+				{
+					if (!AutoJoinTransaction)
+						s.JoinTransaction();
+					var count = s.Query<Person>().Count();
+					Assert.That(count, Is.EqualTo(1), "Unexpected entity count after global commit.");
+					tx.Complete();
+				}
 			}
 		}
 
