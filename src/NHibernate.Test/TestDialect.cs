@@ -80,5 +80,13 @@ namespace NHibernate.Test
 		/// Supports the modulo operator on decimal types
 		/// </summary>
 		public virtual bool SupportsModuloOnDecimal => true;
+
+		/// <summary>
+		/// Some databases fail with dependent transaction, typically when their driver tries to access the transaction
+		/// state from its two PC: the dependent transaction is meant to be disposed of before completing the actual
+		/// transaction, so it is usually disposed at this point, and its state cannot be read. (Drivers should always
+		/// clone transactions for avoiding this trouble.)
+		/// </summary>
+		public virtual bool SupportsDependentTransaction => true;
 	}
 }
