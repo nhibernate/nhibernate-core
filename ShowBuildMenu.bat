@@ -6,7 +6,7 @@ set BUILD_TOOL_PATH=%~dp0Tools\BuildTool\bin\BuildTool.dll
 set BUILDTOOL=dotnet %BUILD_TOOL_PATH%
 set AVAILABLE_CONFIGURATIONS=%~dp0available-test-configurations
 set CURRENT_CONFIGURATION=%~dp0current-test-configuration
-set NUNIT="%~dp0Tools\NUnit.ConsoleRunner.3.7.0\tools\nunit3-console.exe"
+set NUNIT="%~dp0Tools\NUnit.ConsoleRunner.3.10.0\tools\nunit3-console.exe"
 
 if not exist %BUILD_TOOL_PATH% (
     dotnet build %~dp0Tools\BuildTool\BuildTool.sln -c Release -o bin
@@ -182,7 +182,7 @@ SET NUNITPLATFORM=
 goto test-run
 
 :test-run
-start "nunit3-console" cmd /K %NUNIT% %NUNITPLATFORM% --agents=1 --process=separate NHibernate.nunit
+start "nunit3-console" cmd /K %NUNIT% %NUNITPLATFORM% --agents=1 NHibernate.nunit
 goto main-menu
 
 rem :build-test
