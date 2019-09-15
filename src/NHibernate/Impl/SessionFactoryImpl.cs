@@ -1415,7 +1415,7 @@ namespace NHibernate.Impl
 			private ConnectionReleaseMode _connectionReleaseMode;
 			private FlushMode _flushMode;
 			private bool _autoClose;
-			private bool _autoJoinTransaction = true;
+			private bool _autoJoinTransaction;
 
 			public SessionBuilderImpl(SessionFactoryImpl sessionFactory)
 			{
@@ -1424,6 +1424,7 @@ namespace NHibernate.Impl
 				// set up default builder values...
 				_connectionReleaseMode = sessionFactory.Settings.ConnectionReleaseMode;
 				_autoClose = sessionFactory.Settings.IsAutoCloseSessionEnabled;
+				_autoJoinTransaction = sessionFactory.Settings.AutoJoinTransaction;
 				// NH different implementation: not using Settings.IsFlushBeforeCompletionEnabled
 				_flushMode = sessionFactory.Settings.DefaultFlushMode;
 			}

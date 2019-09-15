@@ -123,6 +123,10 @@ namespace NHibernate.Cfg
 		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string OutputStylesheet = "xml.output_stylesheet";
 
+		/// <summary>
+		/// The class name of a custom <see cref="Transaction.ITransactionFactory"/> implementation. Defaults to the
+		/// built-in <see cref="Transaction.AdoNetWithSystemTransactionFactory" />.
+		/// </summary>
 		public const string TransactionStrategy = "transaction.factory_class";
 		/// <summary>
 		/// <para>Timeout duration in milliseconds for the system transaction completion lock.</para>
@@ -144,6 +148,14 @@ namespace NHibernate.Cfg
 		/// transaction preparation, while still benefiting from <see cref="FlushMode.Auto"/> on querying.
 		/// </summary>
 		public const string UseConnectionOnSystemTransactionPrepare = "transaction.use_connection_on_system_prepare";
+		/// <summary>
+		/// Should sessions check on every operation whether there is an ongoing system transaction or not, and enlist
+		/// into it if any? Default is <see langword="true"/>. It can also be controlled at session opening, see
+		/// <see cref="ISessionFactory.WithOptions" />. A session can also be instructed to explicitly join the current
+		/// transaction by calling <see cref="ISession.JoinTransaction" />. This setting has no effect when using a
+		/// transaction factory that is not system transactions aware.
+		/// </summary>
+		public const string AutoJoinTransaction = "transaction.auto_join";
 
 		// Since v5.0.1
 		[Obsolete("This setting has no usages and will be removed in a future version")]

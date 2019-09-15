@@ -907,6 +907,25 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>transaction.auto_join</literal>
+                        </entry>
+                        <entry>
+                            Should sessions check on every operation whether there is an ongoing system transaction or not, and enlist
+                            into it if any?
+                            <para>
+                                Default is <literal>true</literal>. It can also be controlled at session opening, with
+                                <literal>ISessionFactory.WithOptions</literal>. A session can also be instructed to explicitly join the current
+                                transaction by calling <literal>ISession.JoinTransaction</literal>. This setting has no effect when using a
+                                transaction factory that is not system transactions aware.
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>default_flush_mode</literal>
                         </entry>
                         <entry>
