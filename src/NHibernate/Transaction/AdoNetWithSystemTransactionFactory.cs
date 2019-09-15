@@ -6,7 +6,6 @@ using System.Transactions;
 using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
-using NHibernate.Impl;
 using NHibernate.Util;
 
 namespace NHibernate.Transaction
@@ -47,7 +46,10 @@ namespace NHibernate.Transaction
 			if (session == null)
 				throw new ArgumentNullException(nameof(session));
 
-			if (!session.ConnectionManager.ShouldAutoJoinTransaction)
+			var connectionManager = session.ConnectionManager;
+			if (!connectionManager.ShouldAutoJoinTransaction ||
+				// Shortcut for avoiding accessing Transaction.Current, which is costly.
+				session.TransactionContext != null && !connectionManager.ProcessingFromSystemTransaction)
 			{
 				return;
 			}
