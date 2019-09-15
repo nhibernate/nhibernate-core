@@ -36,7 +36,7 @@ namespace NHibernate.Test.SystemTransactions
 			{
 				Assert.That(
 					s.GetSessionImplementation().TransactionContext,
-					_autoJoinTransaction != false ? Is.Not.Null : Is.Null);
+					_autoJoinTransaction == false ? Is.Null : Is.Not.Null);
 			}
 		}
 
