@@ -46,15 +46,18 @@ namespace NHibernate.Transaction
 			if (session == null)
 				throw new ArgumentNullException(nameof(session));
 
-			var connectionManager = session.ConnectionManager;
-			if (!connectionManager.ShouldAutoJoinTransaction ||
-				// Shortcut for avoiding accessing Transaction.Current, which is costly.
-				session.TransactionContext != null && !connectionManager.ProcessingFromSystemTransaction)
-			{
+			if (!ShouldAutoJoinSystemTransaction(session))
 				return;
-			}
 
 			JoinSystemTransaction(session, System.Transactions.Transaction.Current);
+		}
+
+		private static bool ShouldAutoJoinSystemTransaction(ISessionImplementor session)
+		{
+			var connectionManager = session.ConnectionManager;
+			return connectionManager.ShouldAutoJoinTransaction &&
+				// Shortcut for avoiding accessing Transaction.Current, which is costly.
+				(session.TransactionContext == null || connectionManager.ProcessingFromSystemTransaction);
 		}
 
 		/// <inheritdoc />
