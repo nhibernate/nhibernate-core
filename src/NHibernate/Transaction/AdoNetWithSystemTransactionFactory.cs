@@ -6,7 +6,6 @@ using System.Transactions;
 using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
-using NHibernate.Impl;
 using NHibernate.Util;
 
 namespace NHibernate.Transaction
@@ -47,12 +46,18 @@ namespace NHibernate.Transaction
 			if (session == null)
 				throw new ArgumentNullException(nameof(session));
 
-			if (!session.ConnectionManager.ShouldAutoJoinTransaction)
-			{
+			if (!ShouldAutoJoinSystemTransaction(session))
 				return;
-			}
 
 			JoinSystemTransaction(session, System.Transactions.Transaction.Current);
+		}
+
+		private static bool ShouldAutoJoinSystemTransaction(ISessionImplementor session)
+		{
+			var connectionManager = session.ConnectionManager;
+			return connectionManager.ShouldAutoJoinTransaction &&
+				// Shortcut for avoiding accessing Transaction.Current, which is costly.
+				(session.TransactionContext == null || connectionManager.ProcessingFromSystemTransaction);
 		}
 
 		/// <inheritdoc />
