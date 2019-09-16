@@ -485,7 +485,7 @@ namespace NHibernate.Test.Hql
 				{
 					rc.Id(e => e.Id, m => m.Generator(Generators.GuidComb));
 					rc.Property(e => e.Name);
-					rc.Property(e => e.PropertyRef);
+					rc.Property(e => e.PropertyRef, m => m.Column("EntityPropertyRef"));
 				});
 
 			mapper.Class<NullableOwner>(
@@ -498,6 +498,7 @@ namespace NHibernate.Test.Hql
 						e => e.PropRef,
 						m =>
 						{
+							m.Column("OwnerPropertyRef");
 							m.PropertyRef(nameof(PropRefEntity.PropertyRef));
 							m.ForeignKey("none");
 							m.NotFound(NotFoundMode.Ignore);
