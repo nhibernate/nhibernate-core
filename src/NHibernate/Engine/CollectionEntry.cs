@@ -395,12 +395,17 @@ namespace NHibernate.Engine
 		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public Task<ICollection> GetOrphansAsync(string entityName, IPersistentCollection collection, CancellationToken cancellationToken)
 		{
+			if (snapshot == null)
+			{
+				throw new AssertionFailure("no collection snapshot for orphan delete");
+			}
+			
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<ICollection>(cancellationToken);
 			}
 
-			return Task.FromResult(GetOrphans(entityName, collection));
+			return collection.GetOrphansAsync(snapshot, entityName, cancellationToken);
 		}
 
 		public bool IsSnapshotEmpty(IPersistentCollection collection)
