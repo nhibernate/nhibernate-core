@@ -1,5 +1,6 @@
 #!/bin/sh
 
+cd "$(dirname "$0")"
 BUILD_TOOL_PATH="./Tools/BuildTool/bin/BuildTool.dll"
 BUILD_TOOL="dotnet $BUILD_TOOL_PATH"
 AVAILABLE_CONFIGURATIONS="available-test-configurations"
