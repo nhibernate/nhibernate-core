@@ -128,10 +128,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 			var parameterNode = n as ParameterNode;
 			if (parameterNode != null)
 			{
-				var parameter = Parameter.Placeholder;
-				// supposed to be simplevalue
-				parameter.BackTrack = parameterNode.HqlParameterSpecification.GetIdsForBackTrack(sessionFactory).Single();
-				writer.PushParameter(parameter);
+				var list = parameterNode.HqlParameterSpecification.GetIdsForBackTrack(sessionFactory).Select(
+					backTrack =>
+					{
+						var parameter = Parameter.Placeholder;
+						parameter.BackTrack = backTrack;
+						return parameter;
+					}).ToList();
+				Out(SqlStringHelper.ParametersList(list));
 			}
 			else if (n is SqlNode)
 			{

@@ -239,5 +239,110 @@ namespace NHibernate.Test.CompositeId
 				Assert.AreEqual(1, results.Count);
 			}
 		}
+
+		[Test]
+		public async Task HqlInClauseAsync()
+		{
+			//Need to port changes from InLogicOperatorNode.mutateRowValueConstructorSyntaxInInListSyntax
+			if (!Dialect.SupportsRowValueConstructorSyntaxInInList)
+				Assert.Ignore();
+
+			// insert the new objects
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(new ClassWithCompositeId(id) {OneProperty = 5}));
+				await (s.SaveAsync(new ClassWithCompositeId(secondId) {OneProperty = 10}));
+				await (s.SaveAsync(new ClassWithCompositeId(new Id(id.KeyString, id.GetKeyShort(), secondId.KeyDateTime))));
+
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			{
+				var results = await (s.CreateQuery("from ClassWithCompositeId x where  x.Id in (:id1, :id2)")
+								.SetParameter("id1", id)
+								.SetParameter("id2", secondId)
+								.ListAsync<ClassWithCompositeId>());
+				Assert.That(results.Count, Is.EqualTo(2));
+			}
+		}
+
+		[Test]
+		public async Task QueryOverInClauseSubqueryAsync()
+		{
+			if (!TestDialect.SupportsRowValueConstructorSyntax)
+			{
+					Assert.Ignore();
+			}
+
+			// insert the new objects
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(new ClassWithCompositeId(id) {OneProperty = 5}));
+				await (s.SaveAsync(new ClassWithCompositeId(secondId) {OneProperty = 10}));
+				await (s.SaveAsync(new ClassWithCompositeId(new Id(id.KeyString, id.GetKeyShort(), secondId.KeyDateTime))));
+
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			{
+				var results = await (s.QueryOver<ClassWithCompositeId>().WithSubquery.WhereProperty(p => p.Id).In(QueryOver.Of<ClassWithCompositeId>().Where(p => p.Id.KeyString == id.KeyString).Select(p => p.Id)).ListAsync());
+				Assert.That(results.Count, Is.EqualTo(2));
+			}
+		}
+
+		[Test]
+		public async Task HqlInClauseSubqueryAsync()
+		{
+			if (!TestDialect.SupportsRowValueConstructorSyntax)
+				Assert.Ignore();
+
+			// insert the new objects
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(new ClassWithCompositeId(id) {OneProperty = 5}));
+				await (s.SaveAsync(new ClassWithCompositeId(secondId) {OneProperty = 10}));
+				await (s.SaveAsync(new ClassWithCompositeId(new Id(id.KeyString, id.GetKeyShort(), secondId.KeyDateTime))));
+
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			{
+				var results = await (s.CreateQuery("from ClassWithCompositeId x where  x.Id in (select s.Id from ClassWithCompositeId s where s.Id.KeyString = :keyString)")
+								.SetParameter("keyString", id.KeyString).ListAsync());
+				Assert.That(results.Count, Is.EqualTo(2));
+			}
+		}
+
+		//GH-1376
+		[Test]
+		public async Task HqlInClauseSubquery_ForEntityAsync()
+		{
+			if (!TestDialect.SupportsRowValueConstructorSyntax)
+				Assert.Ignore();
+
+			// insert the new objects
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(new ClassWithCompositeId(id) {OneProperty = 5}));
+				await (s.SaveAsync(new ClassWithCompositeId(secondId) {OneProperty = 10}));
+				await (s.SaveAsync(new ClassWithCompositeId(new Id(id.KeyString, id.GetKeyShort(), secondId.KeyDateTime))));
+
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			{
+				var results = await (s.CreateQuery("from ClassWithCompositeId x where x in (select s from ClassWithCompositeId s where s.Id.KeyString = :keyString)")
+								.SetParameter("keyString", id.KeyString).ListAsync());
+				Assert.That(results.Count, Is.EqualTo(2));
+			}
+		}
 	}
 }

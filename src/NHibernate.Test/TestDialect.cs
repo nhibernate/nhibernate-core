@@ -82,6 +82,8 @@ namespace NHibernate.Test
 
 		public virtual bool SupportsDuplicatedColumnAliases => true;
 
+		public virtual bool SupportsAggregateInSubSelect => false;
+
 		/// <summary>
 		/// Supports inserting in a table without any column specified in the insert.
 		/// </summary>
@@ -176,5 +178,11 @@ namespace NHibernate.Test
 		/// their type in the query.
 		/// </remarks>
 		public virtual bool HasBrokenTypeInferenceOnSelectedParameters => false;
+
+		/// <summary>
+		/// Note: Dialect.SupportsRawValueConstructorSyntax is currently disabled for all Dialects (even for ones that support this feature).
+		/// This flag is added to be able to test this feature selectively
+		/// </summary>
+		public virtual bool SupportsRowValueConstructorSyntax => _dialect.SupportsRowValueConstructorSyntax;
 	}
 }

@@ -28,11 +28,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1963
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				// The HQL delete does all the job inside the database without loading the entities, but it does
-				// not handle delete order for avoiding violating constraints if any. Use
-				// session.Delete("from System.Object");
-				// instead if in need of having NHibernate ordering the deletes, but this will cause
-				// loading the entities in the session.
 				session.CreateQuery("delete from System.Object").ExecuteUpdate();
 
 				transaction.Commit();
@@ -50,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1963
 							 select e;
 
 				Assert.That(
-					result.ToList,
+					() => result.ToList(),
 					Throws
 						.InnerException.TypeOf<InvalidOperationException>()
 						.And.InnerException.Message.Contains(nameof(IEnhancedUserType)));

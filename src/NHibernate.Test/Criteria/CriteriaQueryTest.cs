@@ -300,122 +300,56 @@ namespace NHibernate.Test.Criteria
 				t.Commit();
 			}
 
-			if (TestDialect.SupportsOperatorAll)
+			//Note: It might require separate test dialect flag like SupportsRowValueConstructorWithOperatorAll
+			if (TestDialect.SupportsOperatorAll && TestDialect.SupportsRowValueConstructorSyntax)
 			{
 				using (ISession session = OpenSession())
-				using (ITransaction t = session.BeginTransaction())
-				{
-					try
-					{
-						session.CreateCriteria<Student>()
-							.Add(Subqueries.PropertyEqAll("CityState", dc))
-							.List();
-
-						Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
-					}
-					catch (QueryException)
-					{
-						// expected
-					}
-					t.Rollback();
-				}
-			}
-
-			if (TestDialect.SupportsOperatorAll)
-			{
-				using (ISession session = OpenSession())
-				using (ITransaction t = session.BeginTransaction())
-				{
-					try
-					{
-						session.CreateCriteria<Student>()
-							.Add(Property.ForName("CityState").EqAll(dc))
-							.List();
-
-						Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
-					}
-					catch (QueryException)
-					{
-						// expected
-					}
-					finally
-					{
-						t.Rollback();
-					}
-				}
-			}
-
-			using (ISession session = OpenSession())
-			using (ITransaction t = session.BeginTransaction())
-			{
-				try
 				{
 					session.CreateCriteria<Student>()
-						.Add(Subqueries.In(odessaWa, dc))
-						.List();
-					
-					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
+							.Add(Subqueries.PropertyEqAll("CityState", dc))
+							.List();
 				}
-				catch (NHibernate.Exceptions.GenericADOException)
+
+				using (ISession session = OpenSession())
 				{
-					// expected
-				}
-				finally
-				{
-					t.Rollback();
+					session.CreateCriteria<Student>()
+							.Add(Property.ForName("CityState").EqAll(dc))
+							.List();
 				}
 			}
-	
-			using (ISession session = OpenSession())
-			using (ITransaction t = session.BeginTransaction())
+
+			if (TestDialect.SupportsRowValueConstructorSyntax)
 			{
-				DetachedCriteria dc2 = DetachedCriteria.For<Student>("st1")
-					.Add(Property.ForName("st1.CityState").EqProperty("st2.CityState"))
-					.SetProjection(Property.ForName("CityState"));
-				
-				try 
+				using (ISession session = OpenSession())
 				{
+					session.CreateCriteria<Student>()
+							.Add(Subqueries.In(odessaWa, dc))
+							.List();
+				}
+
+				using (ISession session = OpenSession())
+				{
+					DetachedCriteria dc2 = DetachedCriteria.For<Student>("st1")
+															.Add(Property.ForName("st1.CityState").EqProperty("st2.CityState"))
+															.SetProjection(Property.ForName("CityState"));
 					session.CreateCriteria<Student>("st2")
-						.Add( Subqueries.Eq(odessaWa, dc2))
-						.List();
-					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
+							.Add( Subqueries.Eq(odessaWa, dc2))
+							.List();
 				}
-				catch (NHibernate.Exceptions.GenericADOException)
+
+				using (ISession session = OpenSession())
 				{
-					// expected
-				}
-				finally
-				{
-					t.Rollback();
-				}
-			}
-	
-			using (ISession session = OpenSession())
-			using (ITransaction t = session.BeginTransaction())
-			{
-				DetachedCriteria dc3 = DetachedCriteria.For<Student>("st")
-					.CreateCriteria("Enrolments")
-						.CreateCriteria("Course")
-							.Add(Property.ForName("Description").Eq("Hibernate Training"))
-							.SetProjection(Property.ForName("st.CityState"));
-				try
-				{
+					DetachedCriteria dc3 = DetachedCriteria.For<Student>("st")
+															.CreateCriteria("Enrolments")
+															.CreateCriteria("Course")
+															.Add(Property.ForName("Description").Eq("Hibernate Training"))
+															.SetProjection(Property.ForName("st.CityState"));
 					session.CreateCriteria<Enrolment>("e")
-						.Add(Subqueries.Eq(odessaWa, dc3))
-						.List();
-					
-					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
-				}
-				catch (NHibernate.Exceptions.GenericADOException)
-				{
-					// expected
-				}
-				finally
-				{
-					t.Rollback();
+							.Add(Subqueries.Eq(odessaWa, dc3))
+							.List();
 				}
 			}
-	
+
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
