@@ -32,6 +32,28 @@ namespace NHibernate.Collection
 			void Operate();
 		}
 
+		class TypeComparer : IEqualityComparer<object>
+		{
+			private readonly IType _type;
+			private readonly ISessionFactoryImplementor _sessionFactory;
+
+			public TypeComparer(IType type, ISessionFactoryImplementor sessionFactory)
+			{
+				_type = type;
+				_sessionFactory = sessionFactory;
+			}
+
+			public new bool Equals(object x, object y)
+			{
+				return _type.IsEqual(x, y, _sessionFactory);
+			}
+
+			public int GetHashCode(object obj)
+			{
+				return _type.GetHashCode(obj, _sessionFactory);
+			}
+		}
+
 		private class AdditionEnumerable : IEnumerable
 		{
 			private readonly AbstractPersistentCollection enclosingInstance;
@@ -725,7 +747,7 @@ namespace NHibernate.Collection
 			var persister = session.Factory.GetEntityPersister(entityName);
 			IType idType = persister.IdentifierType;
 
-			var currentObjects = new HashSet<object>(idType.GetComparer());
+			var currentObjects = new HashSet<object>(new TypeComparer(idType, session.Factory));
 			foreach (object current in currentElements)
 			{
 				if (current != null)

@@ -8,31 +8,6 @@ namespace NHibernate.Type
 {
 	internal static class TypeExtensions
 	{
-		class TypeComparer : IEqualityComparer<object>
-		{
-			private readonly IType _type;
-
-			public TypeComparer(IType type)
-			{
-				_type = type;
-			}
-
-			public new bool Equals(object x, object y)
-			{
-				return _type.IsEqual(x, y);
-			}
-
-			public int GetHashCode(object obj)
-			{
-				return _type.GetHashCode(obj);
-			}
-		}
-
-		public static IEqualityComparer<object> GetComparer(this IType type)
-		{
-			return new TypeComparer(type);
-		}
-
 		public static int GetOwnerColumnSpan(this IType type, IMapping sessionFactory)
 		{
 			return type.IsEntityType
