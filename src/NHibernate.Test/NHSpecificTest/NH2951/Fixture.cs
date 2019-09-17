@@ -20,7 +20,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2951
 		}
 
 		[Test]
-        [Ignore("Not working.")]
 		public void UpdateWithSubqueryToJoinedSubclass()
 		{
             using (ISession session = OpenSession())
