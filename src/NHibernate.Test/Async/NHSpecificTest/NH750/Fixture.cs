@@ -108,7 +108,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 				await (t.CommitAsync());
 			}
 
-			await (VerifyResultAsync(2,2,  msg: "modified collection"));
+			await (VerifyResultAsync(2, 2, msg: "modified collection"));
 
 			async Task VerifyResultAsync(int expectedInCollection, int expectedInDb, string msg)
 			{
