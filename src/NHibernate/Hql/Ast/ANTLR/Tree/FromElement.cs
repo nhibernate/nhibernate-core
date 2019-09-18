@@ -505,7 +505,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				propertyName = NHibernate.Persister.Entity.EntityPersister.EntityID;
 			}
-			if (Walker.StatementType == HqlSqlWalker.SELECT)
+			if (Walker.StatementType == HqlSqlWalker.SELECT || Walker.IsSubQuery)
 			{
 				cols = GetPropertyMapping(propertyName).ToColumns(table, propertyName);
 			}
