@@ -65,7 +65,7 @@
 	<target name="find-async-generator-console">
 		<property name="tool.id" value="CSharpAsyncGenerator.CommandLine" />
 		<call target="get-tool-info" />
-		<property name="async-generator-console"  value="${tool.path}/tools/netcoreapp2.1/AsyncGenerator.CommandLine.dll" />
+		<property name="async-generator-console"  value="${tool.path}tools/netcoreapp2.1/AsyncGenerator.CommandLine.dll" />
 	</target>
 
 	<target name="generate-async" depends="solution-restore find-async-generator-console">
