@@ -857,6 +857,16 @@ namespace NHibernate.Impl
 		/// </summary>
 		public void Close()
 		{
+			if (isClosed)
+			{
+				if (log.IsDebugEnabled())
+				{
+					log.Debug("Already closed");
+				}
+
+				return;
+			}
+
 			log.Info("Closing");
 
 			isClosed = true;
