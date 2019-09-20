@@ -1,6 +1,7 @@
 #!/bin/sh
 
 cd "$(dirname "$0")"
+SCRIPT_PATH="$(pwd)"
 BUILD_TOOL_PATH="./Tools/BuildTool/bin/BuildTool.dll"
 BUILD_TOOL="dotnet $BUILD_TOOL_PATH"
 AVAILABLE_CONFIGURATIONS="available-test-configurations"
@@ -14,8 +15,10 @@ async_generator_path=""
 
 if [ ! -f $BUILD_TOOL_PATH ]
 then
-	dotnet build ./Tools/BuildTool/BuildTool.sln -c Release -o bin
+	cd ./Tools/BuildTool
+	dotnet build BuildTool.sln -c Release -o bin 
 fi
+cd "$SCRIPT_PATH"
 
 buildDebug(){
 	dotnet build ./src/NHibernate.sln
