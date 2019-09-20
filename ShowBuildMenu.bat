@@ -9,7 +9,9 @@ set CURRENT_CONFIGURATION=%~dp0current-test-configuration
 set NUNIT="%~dp0Tools\NUnit.ConsoleRunner.3.10.0\tools\nunit3-console.exe"
 
 if not exist %BUILD_TOOL_PATH% (
-    dotnet build %~dp0Tools\BuildTool\BuildTool.sln -c Release -o bin
+    pushd %~dp0Tools\BuildTool
+    dotnet build BuildTool.sln -c Release -o bin
+    popd
 )
 
 :main-menu
