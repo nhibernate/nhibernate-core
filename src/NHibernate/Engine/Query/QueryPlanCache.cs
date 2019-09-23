@@ -51,6 +51,13 @@ namespace NHibernate.Engine.Query
 
 		public IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
+			// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
+			if (queryExpression is NhLinqExpression linqExpression && !linqExpression.CanCachePlan)
+			{
+				log.Debug("Query plan not cacheable");
+				return new QueryExpressionPlan(queryExpression, shallow, enabledFilters, factory);
+			}
+
 			var key = new HQLQueryPlanKey(queryExpression, shallow, enabledFilters);
 			var plan = (QueryExpressionPlan)planCache[key];
 
@@ -61,11 +68,7 @@ namespace NHibernate.Engine.Query
 					log.Debug("unable to locate HQL query plan in cache; generating ({0})", queryExpression.Key);
 				}
 				plan = new QueryExpressionPlan(queryExpression, shallow, enabledFilters, factory);
-				// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
-				if (!(queryExpression is NhLinqExpression linqExpression) || linqExpression.CanCachePlan)
-					planCache.Put(key, plan);
-				else
-					log.Debug("Query plan not cacheable");
+				planCache.Put(key, plan);
 			}
 			else
 			{
@@ -109,6 +112,13 @@ namespace NHibernate.Engine.Query
 
 		public IQueryExpressionPlan GetFilterQueryPlan(IQueryExpression queryExpression, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
+			// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
+			if (queryExpression is NhLinqExpression linqExpression && !linqExpression.CanCachePlan)
+			{
+				log.Debug("Query plan not cacheable");
+				return new FilterQueryPlan(queryExpression, collectionRole, shallow, enabledFilters, factory);
+			}
+
 			var key = new FilterQueryPlanKey(queryExpression.Key, collectionRole, shallow, enabledFilters);
 			var plan = (QueryExpressionPlan) planCache[key];
 
@@ -116,11 +126,7 @@ namespace NHibernate.Engine.Query
 			{
 				log.Debug("unable to locate collection-filter query plan in cache; generating ({0} : {1})", collectionRole, queryExpression.Key);
 				plan = new FilterQueryPlan(queryExpression, collectionRole, shallow, enabledFilters, factory);
-				// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
-				if (!(queryExpression is NhLinqExpression linqExpression) || linqExpression.CanCachePlan)
-					planCache.Put(key, plan);
-				else
-					log.Debug("Query plan not cacheable");
+				planCache.Put(key, plan);
 			}
 			else
 			{
