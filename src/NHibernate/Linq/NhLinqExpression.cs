@@ -15,8 +15,6 @@ namespace NHibernate.Linq
 	{
 		public string Key { get; protected set; }
 
-		public bool CanCachePlan { get; private set; } = true;
-
 		public System.Type Type { get; private set; }
 
 		/// <summary>
@@ -36,6 +34,11 @@ namespace NHibernate.Linq
 
 		private readonly Expression _expression;
 		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
+		private bool _canCachePlan = true;
+
+		//Since 5.3
+		[Obsolete("Use IsPlanCacheable method instead")]
+		public bool CanCachePlan => _canCachePlan;
 
 		public NhLinqExpression(Expression expression, ISessionFactoryImplementor sessionFactory)
 		{
@@ -68,13 +71,16 @@ namespace NHibernate.Linq
 
 		public IASTNode Translate(ISessionFactoryImplementor sessionFactory, bool filter)
 		{
+			InitParams(sessionFactory);
+
+			// The ast node may be altered by caller, duplicate it for preserving the original one.
+			return DuplicateTree(ExpressionToHqlTranslationResults.Statement.AstNode);
+		}
+
+		private void InitParams(ISessionFactoryImplementor sessionFactory)
+		{
 			if (ExpressionToHqlTranslationResults != null)
-			{
-				// Query has already been translated. Arguments do not really matter, because queries are anyway tied
-				// to a single session factory and cannot switch from being a filter query (query on a mapped collection)
-				// or not.
-				return DuplicateTree(ExpressionToHqlTranslationResults.Statement.AstNode);
-			}
+				return;
 
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
 			var queryModel = NhRelinqQueryParser.Parse(_expression);
@@ -88,16 +94,13 @@ namespace NHibernate.Linq
 
 			ParameterDescriptors = requiredHqlParameters.AsReadOnly();
 
-			CanCachePlan = CanCachePlan &&
+			_canCachePlan = 
 				// If some constants do not have matching HQL parameters, their values from first query will
 				// be embedded in the plan and reused for subsequent queries: do not cache the plan.
 				!ParameterValuesByName
 					.Keys
 					.Except(requiredHqlParameters.Select(p => p.Name))
 					.Any();
-
-			// The ast node may be altered by caller, duplicate it for preserving the original one.
-			return DuplicateTree(ExpressionToHqlTranslationResults.Statement.AstNode);
 		}
 
 		internal void CopyExpressionTranslation(NhLinqExpression other)
@@ -116,6 +119,12 @@ namespace NHibernate.Linq
 				thisNode.AddChild(DuplicateTree(child));
 			}
 			return thisNode;
+		}
+
+		public bool IsPlanCacheable(ISessionFactoryImplementor factory)
+		{
+			InitParams(factory);
+			return _canCachePlan;
 		}
 	}
 }

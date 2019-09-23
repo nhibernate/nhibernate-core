@@ -51,8 +51,7 @@ namespace NHibernate.Engine.Query
 
 		public IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
-			// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
-			if (queryExpression is NhLinqExpression linqExpression && !linqExpression.CanCachePlan)
+			if (IsPlanNotCacheable(queryExpression))
 			{
 				log.Debug("Query plan not cacheable");
 				return new QueryExpressionPlan(queryExpression, shallow, enabledFilters, factory);
@@ -80,6 +79,12 @@ namespace NHibernate.Engine.Query
 			}
 
 			return plan;
+		}
+
+		private bool IsPlanNotCacheable(IQueryExpression queryExpression)
+		{
+			// 6.0 TODO: add IsPlanCacheable to IQueryExpression interface
+			return queryExpression is NhLinqExpression linqExpression && !linqExpression.IsPlanCacheable(factory);
 		}
 
 		private static QueryExpressionPlan CopyIfRequired(QueryExpressionPlan plan, IQueryExpression queryExpression)
@@ -112,10 +117,9 @@ namespace NHibernate.Engine.Query
 
 		public IQueryExpressionPlan GetFilterQueryPlan(IQueryExpression queryExpression, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
-			// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
-			if (queryExpression is NhLinqExpression linqExpression && !linqExpression.CanCachePlan)
+			if (IsPlanNotCacheable(queryExpression))
 			{
-				log.Debug("Query plan not cacheable");
+				log.Debug("Collection-filter query plan not cacheable");
 				return new FilterQueryPlan(queryExpression, collectionRole, shallow, enabledFilters, factory);
 			}
 
