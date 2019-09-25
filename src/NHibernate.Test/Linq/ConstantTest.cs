@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Engine.Query;
+using NHibernate.Linq;
 using NHibernate.Linq.Visitors;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -248,6 +249,36 @@ namespace NHibernate.Test.Linq
 				(from c in db.Customers
 				 where c.CustomerId == "ANATR"
 				 select new { c.CustomerId, c.ContactName }).First();
+				Assert.That(cache, Has.Count.EqualTo(1), "Second query should not cause a plan to be cache.");
+				Assert.That(
+					spy.GetWholeLog(),
+					Does
+						.Contain("located HQL query plan in cache")
+						.And.Not.Contain("unable to locate HQL query plan in cache"));
+			}
+		}
+
+		[Test]
+		public void DmlPlansAreCached()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+
+			var cache = (SoftLimitMRUCache)
+				queryPlanCacheType
+					.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
+					.GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			db.Customers.Where(c => c.CustomerId == "ALFKI").Update(x => new Customer {CompanyName = x.CompanyName});
+			Assert.That(
+				cache,
+				Has.Count.EqualTo(1),
+				"First query plan should be cached.");
+
+			using (var spy = new LogSpy(queryPlanCacheType))
+			{
+				// Should hit plan cache.
+				db.Customers.Where(c => c.CustomerId == "ALFKI").Update(x => new Customer {CompanyName = x.CompanyName});
 				Assert.That(cache, Has.Count.EqualTo(1), "Second query should not cause a plan to be cache.");
 				Assert.That(
 					spy.GetWholeLog(),
