@@ -269,22 +269,28 @@ namespace NHibernate.Test.Linq
 					.GetValue(Sfi.QueryPlanCache);
 			cache.Clear();
 
-			db.Customers.Where(c => c.CustomerId == "ALFKI").Update(x => new Customer {CompanyName = x.CompanyName});
-			Assert.That(
-				cache,
-				Has.Count.EqualTo(1),
-				"First query plan should be cached.");
-
-			using (var spy = new LogSpy(queryPlanCacheType))
+			using (session.BeginTransaction())
 			{
-				// Should hit plan cache.
 				db.Customers.Where(c => c.CustomerId == "ALFKI").Update(x => new Customer {CompanyName = x.CompanyName});
-				Assert.That(cache, Has.Count.EqualTo(1), "Second query should not cause a plan to be cache.");
 				Assert.That(
-					spy.GetWholeLog(),
-					Does
-						.Contain("located HQL query plan in cache")
-						.And.Not.Contain("unable to locate HQL query plan in cache"));
+					cache,
+					Has.Count.EqualTo(1),
+					"First query plan should be cached.");
+
+				using (var spy = new LogSpy(queryPlanCacheType))
+				{
+					// Should hit plan cache.
+					db.Customers.Where(c => c.CustomerId == "ANATR").Update(x => new Customer {CompanyName = x.CompanyName});
+					Assert.That(cache, Has.Count.EqualTo(1), "Second query should not cause a plan to be cached.");
+					Assert.That(
+						spy.GetWholeLog(),
+						Does
+							.Contain("located HQL query plan in cache")
+							.And.Not.Contain("unable to locate HQL query plan in cache"));
+
+					db.Customers.Where(c => c.CustomerId == "ANATR").Update(x => new Customer {ContactName = x.ContactName});
+					Assert.That(cache, Has.Count.EqualTo(2), "Third query should be cached");
+				}
 			}
 		}
 
