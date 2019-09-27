@@ -10,7 +10,7 @@ using NHibernate.Exceptions;
 
 namespace NHibernate.AdoNet
 {
-	public partial class SqlClientBatchingBatcher : AbstractBatcher
+	public class SqlClientBatchingBatcher : AbstractBatcher
 	{
 		private int _batchSize;
 		private int _totalExpectedRowsAffected;
