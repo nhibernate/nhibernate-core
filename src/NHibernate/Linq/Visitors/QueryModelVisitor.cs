@@ -365,7 +365,7 @@ namespace NHibernate.Linq.Visitors
 		public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
 		{
 			PreviousEvaluationType = CurrentEvaluationType;
-			CurrentEvaluationType = resultOperator.GetOutputDataInfo(PreviousEvaluationType);
+			CurrentEvaluationType = GetOutputDataInfo(resultOperator, PreviousEvaluationType);
 
 			if (resultOperator is ClientSideTransformOperator)
 			{
@@ -380,6 +380,26 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			ResultOperatorMap.Process(resultOperator, this, _hqlTree);
+		}
+
+		private static IStreamedDataInfo GetOutputDataInfo(ResultOperatorBase resultOperator, IStreamedDataInfo evaluationType)
+		{
+			//ContainsResultOperator contains data integrity check so for `values.Contains(x)` it checks that  'x' is proper type to be used inside 'values.Contains()'
+			//Due to some reasons (possibly NH expression rewritings) those types might be incompatible (known case NH-3155 - group by subquery). So resultOperator.GetOutputDataInfo throws something like: 
+			//System.ArgumentException : The items of the input sequence of type 'System.Linq.IGrouping`2[System.Object[],EntityType]' are not compatible with the item expression of type 'System.Int32'.
+			//Parameter name: inputInfo
+			//at Remotion.Linq.Clauses.ResultOperators.ContainsResultOperator.GetOutputDataInfo(StreamedSequenceInfo inputInfo)
+			//But in this place we don't really care about types involving inside expression, all we need to know is operation result which is bool for Contains
+			//So let's skip possible type exception mismatch if it allows to generate proper SQL
+			switch (resultOperator)
+			{
+				case ContainsResultOperator _:
+				case AnyResultOperator _:
+				case AllResultOperator _:
+					return new StreamedScalarValueInfo(typeof(bool));
+			}
+
+			return resultOperator.GetOutputDataInfo(evaluationType);
 		}
 
 		public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
