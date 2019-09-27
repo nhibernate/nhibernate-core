@@ -519,13 +519,14 @@ namespace NHibernate.Linq.Visitors
 		{
 			var equalityVisitor = new EqualityHqlGenerator(VisitorParameters);
 			var whereClause = equalityVisitor.Visit(joinClause.InnerKeySelector, joinClause.OuterKeySelector);
+			var querySourceName = VisitorParameters.QuerySourceNamer.GetName(joinClause);
 
 			_hqlTree.AddWhereClause(whereClause);
 
 			_hqlTree.AddFromClause(
 				_hqlTree.TreeBuilder.Range(
 					HqlGeneratorExpressionVisitor.Visit(joinClause.InnerSequence, VisitorParameters),
-					_hqlTree.TreeBuilder.Alias(joinClause.ItemName)));
+					_hqlTree.TreeBuilder.Alias(querySourceName)));
 		}
 
 		public override void VisitGroupJoinClause(GroupJoinClause groupJoinClause, QueryModel queryModel, int index)
