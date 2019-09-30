@@ -6,6 +6,7 @@ using NHibernate.AdoNet;
 using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Driver
 {
@@ -14,6 +15,10 @@ namespace NHibernate.Driver
 	/// </summary>
 	public class MicrosoftDataSqlClientDriver : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider, IParameterAdjuster
 	{
+		const byte MaxTime = 5;
+
+		private static readonly Action<object, SqlDbType> SetSqlDbType = DelegateHelper.BuildPropertySetter<SqlDbType>(System.Type.GetType("Microsoft.Data.SqlClient.SqlParameter, Microsoft.Data.SqlClient", true), "SqlDbType");
+
 		private Dialect.Dialect _dialect;
 
 		public MicrosoftDataSqlClientDriver()
@@ -48,17 +53,8 @@ namespace NHibernate.Driver
 		/// </value>
 		public override string NamedPrefix => "@";
 
-		/// <summary>
-		///     The SqlClient driver does NOT support more than 1 open DbDataReader
-		///     with only 1 DbConnection.
-		/// </summary>
-		/// <value><see langword="false" /> - it is not supported.</value>
-		/// <remarks>
-		///     MS SQL Server 2000 (and 7) throws an exception when multiple DbDataReaders are
-		///     attempted to be opened.  When SQL Server 2005 comes out a new driver will be
-		///     created for it because SQL Server 2005 is supposed to support it.
-		/// </remarks>
-		public override bool SupportsMultipleOpenReaders => false;
+		/// <inheritdoc/>
+		public override bool SupportsMultipleOpenReaders => true;
 
 		/// <inheritdoc />
 		public override bool SupportsMultipleQueries => true;
@@ -69,8 +65,10 @@ namespace NHibernate.Driver
 		/// </summary>
 		public override bool HasDelayedDistributedTransactionCompletion => true;
 
+		public override bool RequiresTimeSpanForTime => true;
+
 		/// <inheritdoc />
-		public override DateTime MinDate => new DateTime(1753, 1, 1);
+		public override DateTime MinDate => DateTime.MinValue;
 
 		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass => typeof(GenericBatchingBatcherFactory);
 
@@ -142,6 +140,13 @@ namespace NHibernate.Driver
 					break;
 				case DbType.Xml:
 					dbParam.Size = MsSql2005Dialect.MaxSizeForXml;
+					break;
+				case DbType.Time:
+					SetSqlDbType(dbParam, SqlDbType.Time);
+					dbParam.Size = MaxTime;
+					break;
+				case DbType.Date:
+					SetSqlDbType(dbParam, SqlDbType.Date);
 					break;
 			}
 
