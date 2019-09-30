@@ -199,7 +199,7 @@ namespace NHibernate.SqlCommand
 			: this((IEnumerable<object>)parts)
 		{ }
 
-		private SqlString(IEnumerable<object> parts)
+		internal SqlString(IEnumerable<object> parts)
 		{
 			_parts = new List<Part>();
 			_parameters = new SortedList<int, Parameter>();
