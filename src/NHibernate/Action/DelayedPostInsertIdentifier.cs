@@ -15,19 +15,21 @@ namespace NHibernate.Action
 	[Serializable]
 	public class DelayedPostInsertIdentifier
 	{
-		[ThreadStatic]
-		private static long _Sequence = 0;
+		private static long GloablSequence = 0;
+		private static readonly object SyncRoot = new object();
+
 		private readonly long sequence;
 
 		public DelayedPostInsertIdentifier()
 		{
-			lock (typeof(DelayedPostInsertIdentifier))
+			lock (SyncRoot)
 			{
-				if (_Sequence == long.MaxValue)
+				if (GloablSequence == long.MaxValue)
 				{
-					_Sequence = 0;
+					GloablSequence = 0;
 				}
-				sequence = _Sequence++;
+
+				sequence = GloablSequence++;
 			}
 		}
 
