@@ -15,7 +15,7 @@ namespace NHibernate.Driver
 	public partial class BasicResultSetsCommand: IResultSetsCommand
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(BasicResultSetsCommand));
-		private SqlString sqlString = SqlString.Empty;
+		private SqlString _sqlString = SqlString.Empty;
 
 		public BasicResultSetsCommand(ISessionImplementor session)
 		{
@@ -30,7 +30,7 @@ namespace NHibernate.Driver
 		public virtual void Append(ISqlCommand command)
 		{
 			Commands.Add(command);
-			sqlString = null;
+			_sqlString = null;
 		}
 
 		public bool HasQueries
@@ -38,7 +38,7 @@ namespace NHibernate.Driver
 			get { return Commands.Count > 0; }
 		}
 
-		public virtual SqlString Sql => sqlString ?? (sqlString = GetSqlString());
+		public virtual SqlString Sql => _sqlString ?? (_sqlString = GetSqlString());
 
 		private SqlString GetSqlString()
 		{
