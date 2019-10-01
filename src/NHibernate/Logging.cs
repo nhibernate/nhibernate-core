@@ -48,7 +48,6 @@ namespace NHibernate
 	/// </remarks>
 	public static class NHibernateLogger
 	{
-		private const string nhibernateLoggerConfKey = "nhibernate-logger";
 		private static INHibernateLoggerFactory _loggerFactory;
 
 #pragma warning disable 618
@@ -134,7 +133,7 @@ namespace NHibernate
 
 		private static string GetNhibernateLoggerClass()
 		{
-			var nhibernateLoggerClass = Settings.ConfigurationManager.GetAppSettingIgnoringCase(nhibernateLoggerConfKey);
+			var nhibernateLoggerClass = Settings.ConfigurationManager.GetLoggerFactoryClassName();
 			if (nhibernateLoggerClass == null)
 			{
 				// look for log4net
