@@ -25,6 +25,7 @@
     <None Remove="NHSpecificTest\NH3023\db-teardown.sql" />
     <EmbeddedResource Include="NHSpecificTest\NH3023\db-seed.sql" />
     <EmbeddedResource Include="NHSpecificTest\NH3023\db-teardown.sql" />
+    <EmbeddedResource Include="log4net.xml" />
     <EmbeddedResource Include="TestEmbeddedConfig.cfg.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
