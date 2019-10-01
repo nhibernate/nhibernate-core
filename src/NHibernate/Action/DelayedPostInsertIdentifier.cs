@@ -21,22 +21,7 @@ namespace NHibernate.Action
 
 		public DelayedPostInsertIdentifier()
 		{
-			sequence = GetNextSequence();
-		}
-
-		private static long GetNextSequence()
-		{
-			long initialValue, computedValue;
-			do
-			{
-				initialValue = GlobalSequence;
-				computedValue =
-					initialValue == long.MaxValue
-						? 1
-						: initialValue + 1;
-			} while (Interlocked.CompareExchange(ref GlobalSequence, computedValue, initialValue) != initialValue);
-
-			return computedValue;
+			sequence = Interlocked.Increment(ref GlobalSequence);
 		}
 
 		public override bool Equals(object obj)
