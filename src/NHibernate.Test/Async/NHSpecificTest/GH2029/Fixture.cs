@@ -19,7 +19,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.NHSpecificTest.GH2029
 {
 	using System.Threading.Tasks;
-
 	[TestFixture]
 	public class FixtureAsync : TestCaseMappingByCode
 	{
