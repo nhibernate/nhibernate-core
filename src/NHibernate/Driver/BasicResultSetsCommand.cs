@@ -15,14 +15,12 @@ namespace NHibernate.Driver
 	public partial class BasicResultSetsCommand: IResultSetsCommand
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(BasicResultSetsCommand));
-		private SqlString sqlString = SqlString.Empty;
-		private readonly string _statementTerminator;
+		private SqlString _sqlString = SqlString.Empty;
 
 		public BasicResultSetsCommand(ISessionImplementor session)
 		{
 			Commands = new List<ISqlCommand>();
 			Session = session;
-			_statementTerminator = session.Factory.Dialect.StatementTerminator.ToString() + Environment.NewLine;
 		}
 
 		protected List<ISqlCommand> Commands { get; private set; }
@@ -32,7 +30,7 @@ namespace NHibernate.Driver
 		public virtual void Append(ISqlCommand command)
 		{
 			Commands.Add(command);
-			sqlString = sqlString.Append(command.Query, _statementTerminator);
+			_sqlString = null;
 		}
 
 		public bool HasQueries
@@ -40,9 +38,26 @@ namespace NHibernate.Driver
 			get { return Commands.Count > 0; }
 		}
 
-		public virtual SqlString Sql
+		public virtual SqlString Sql => _sqlString ?? (_sqlString = GetSqlString());
+
+		private SqlString GetSqlString()
 		{
-			get { return sqlString; }
+			switch (Commands.Count)
+			{
+				case 0:
+					return SqlString.Empty;
+				case 1:
+					return Commands[0].Query;
+			}
+
+			var statementTerminator = Session.Factory.Dialect.StatementTerminator.ToString() + Environment.NewLine;
+			var builder = new SqlStringBuilder(Commands.Sum(c => c.Query.Count) + Commands.Count);
+			foreach (var command in Commands)
+			{
+				builder.Add(command.Query).Add(statementTerminator);
+			}
+
+			return builder.ToSqlString();
 		}
 
 		public virtual DbDataReader GetReader(int? commandTimeout)
@@ -50,7 +65,7 @@ namespace NHibernate.Driver
 			var batcher = Session.Batcher;
 			SqlType[] sqlTypes = Commands.SelectMany(c => c.ParameterTypes).ToArray();
 			ForEachSqlCommand((sqlLoaderCommand, offset) => sqlLoaderCommand.ResetParametersIndexesForTheCommand(offset));
-			var command = batcher.PrepareQueryCommand(CommandType.Text, sqlString, sqlTypes);
+			var command = batcher.PrepareQueryCommand(CommandType.Text, Sql, sqlTypes);
 			if (commandTimeout.HasValue)
 			{
 				command.CommandTimeout = commandTimeout.Value;
