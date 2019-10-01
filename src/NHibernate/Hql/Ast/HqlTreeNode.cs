@@ -274,11 +274,9 @@ namespace NHibernate.Hql.Ast
 				case TypeCode.Double:
 					return true;
 				default:
-					return new[]
-					{
-						typeof(Guid),
-						typeof(DateTimeOffset)
-					}.Contains(type);
+					return
+						type == typeof(Guid) ||
+						type == typeof(DateTimeOffset);
 			}
 		}
 	}
