@@ -671,34 +671,23 @@ possible solutions:
 			}
 
 			// Try to get the mapped type for the member as it may be a non default one
-			var entityName = TryGetEntityName(memberExpression);
+			var entityName = ExpressionsHelper.TryGetEntityName(_parameters.SessionFactory, memberExpression, out var memberPath);
 			if (entityName == null)
 			{
 				return TypeFactory.GetDefaultTypeFor(expression.Type); // Not mapped
 			}
 
 			var persister = _parameters.SessionFactory.GetEntityPersister(entityName);
-			var index = persister.EntityMetamodel.GetPropertyIndexOrNull(memberExpression.Member.Name);
+			var type = persister.EntityMetamodel.GetIdentifierPropertyType(memberPath);
+			if (type != null)
+			{
+				return type;
+			}
+
+			var index = persister.EntityMetamodel.GetPropertyIndexOrNull(memberPath);
 			return !index.HasValue
 				? TypeFactory.GetDefaultTypeFor(expression.Type) // Not mapped
 				: persister.EntityMetamodel.PropertyTypes[index.Value];
-		}
-
-		private string TryGetEntityName(MemberExpression memberExpression)
-		{
-			System.Type entityType;
-			// Try to get the actual entity type from the query source if possbile as member can be declared
-			// in a base type
-			if (memberExpression.Expression is QuerySourceReferenceExpression querySourceReferenceExpression)
-			{
-				entityType = querySourceReferenceExpression.Type;
-			}
-			else
-			{
-				entityType = memberExpression.Member.ReflectedType;
-			}
-
-			return _parameters.SessionFactory.TryGetGuessEntityName(entityType);
 		}
 	}
 }

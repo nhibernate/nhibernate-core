@@ -348,6 +348,10 @@ namespace NHibernate.Test.Linq
 
 			var names5 = db.Users.Select(p => new { p1 = (p as IUser).Name }).ToList();
 			Assert.AreEqual(3, names5.Count);
+
+			var names6 = db.Users.Select(p => new { p1 = (long) p.Id }).ToList();
+			Assert.AreEqual(3, names6.Count);
+
 			// ReSharper restore RedundantCast
 		}
 

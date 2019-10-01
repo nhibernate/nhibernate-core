@@ -309,6 +309,10 @@ namespace NHibernate.Test.Linq
 
 			var names5 = await (db.Users.Select(p => new { p1 = (p as IUser).Name }).ToListAsync());
 			Assert.AreEqual(3, names5.Count);
+
+			var names6 = await (db.Users.Select(p => new { p1 = (long) p.Id }).ToListAsync());
+			Assert.AreEqual(3, names6.Count);
+
 			// ReSharper restore RedundantCast
 		}
 

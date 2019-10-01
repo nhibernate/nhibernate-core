@@ -50,6 +50,7 @@ namespace NHibernate.Tuple.Entity
 		private readonly CascadeStyle[] cascadeStyles;
 
 		private readonly Dictionary<string, int?> propertyIndexes = new Dictionary<string, int?>();
+		private readonly IDictionary<string, IType> _identifierPropertyTypes = new Dictionary<string, IType>();
 		private readonly bool hasCollections;
 		private readonly bool hasMutableProperties;
 		private readonly bool hasLazyProperties;
@@ -91,6 +92,7 @@ namespace NHibernate.Tuple.Entity
 
 			identifierProperty = PropertyFactory.BuildIdentifierProperty(persistentClass,
 			                                                             sessionFactory.GetIdentifierGenerator(rootName));
+			MapIdentifierPropertyTypes(identifierProperty);
 
 			versioned = persistentClass.IsVersioned;
 
@@ -409,13 +411,42 @@ namespace NHibernate.Tuple.Entity
 
 		private void MapPropertyToIndex(Mapping.Property prop, int i)
 		{
-			propertyIndexes[prop.Name] = i;
-			Mapping.Component comp = prop.Value as Mapping.Component;
-			if (comp != null)
+			MapPropertyToIndex(null, prop, i);
+		}
+
+		private void MapPropertyToIndex(string path, Mapping.Property prop, int i)
+		{
+			propertyIndexes[!string.IsNullOrEmpty(path) ? $"{path}.{prop.Name}" : prop.Name] = i;
+			if (!(prop.Value is Mapping.Component comp))
 			{
-				foreach (Mapping.Property subprop in comp.PropertyIterator)
+				return;
+			}
+
+			foreach (var subprop in comp.PropertyIterator)
+			{
+				MapPropertyToIndex(!string.IsNullOrEmpty(path) ? $"{path}.{prop.Name}" : prop.Name, subprop, i);
+			}
+		}
+
+		private void MapIdentifierPropertyTypes(IdentifierProperty identifier)
+		{
+			MapIdentifierPropertyTypes(identifier.Name, identifier.Type);
+		}
+
+		private void MapIdentifierPropertyTypes(string path, IType propertyType)
+		{
+			if (!string.IsNullOrEmpty(path))
+			{
+				_identifierPropertyTypes[path] = propertyType;
+			}
+
+			if (propertyType is IAbstractComponentType componentType)
+			{
+				for (var i = 0; i < componentType.PropertyNames.Length; i++)
 				{
-					propertyIndexes[prop.Name + '.' + subprop.Name] = i;
+					MapIdentifierPropertyTypes(
+						!string.IsNullOrEmpty(path) ? $"{path}.{componentType.PropertyNames[i]}" : componentType.PropertyNames[i],
+						componentType.Subtypes[i]);
 				}
 			}
 		}
@@ -532,6 +563,11 @@ namespace NHibernate.Tuple.Entity
 				return result;
 			else
 				return null;
+		}
+
+		internal IType GetIdentifierPropertyType(string memberPath)
+		{
+			return _identifierPropertyTypes.TryGetValue(memberPath, out var propertyType) ? propertyType : null;
 		}
 
 		public bool HasCollections
