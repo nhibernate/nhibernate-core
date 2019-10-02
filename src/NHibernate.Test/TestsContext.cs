@@ -22,7 +22,7 @@ namespace NHibernate.Test
 			if (ExecutingWithVsTest)
 			{
 				var assemblyPath = Path.Combine(TestContext.CurrentContext.TestDirectory, Path.GetFileName(typeof(TestsContext).Assembly.Location));
-				Settings.ConfigurationManager = new SystemConfigurationManager(ConfigurationManager.OpenExeConfiguration(assemblyPath));
+				Settings.ConfigurationProvider = new SystemConfigurationProvider(ConfigurationManager.OpenExeConfiguration(assemblyPath));
 			}
 
 			ConfigureLog4Net();

@@ -25,7 +25,7 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void FromAppConfigTest()
 		{
-			IHibernateConfiguration hc = Cfg.Settings.ConfigurationManager.GetConfiguration();
+			IHibernateConfiguration hc = Cfg.Settings.ConfigurationProvider.GetConfiguration();
 			Assert.That(hc.ByteCodeProviderType, Is.EqualTo("lcg"));
 			Assert.IsTrue(hc.UseReflectionOptimizer);
 			Assert.AreEqual("NHibernate.Test", hc.SessionFactory.Name);
@@ -49,7 +49,7 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void IgnoreSystemOutOfAppConfig()
 		{
-			IHibernateConfiguration hc = Cfg.Settings.ConfigurationManager.GetConfiguration();
+			IHibernateConfiguration hc = Cfg.Settings.ConfigurationProvider.GetConfiguration();
 			string xml =
 			@"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>

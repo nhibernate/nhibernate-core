@@ -1,6 +1,6 @@
 namespace NHibernate.Cfg
 {
-	class NullConfigurationManager : ConfigurationProvider
+	class NullConfigurationProvider : ConfigurationProvider
 	{
 		public override IHibernateConfiguration GetConfiguration()
 		{

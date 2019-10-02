@@ -5,7 +5,7 @@ using NHibernate.Cfg.ConfigurationSchema;
 
 namespace NHibernate.Cfg
 {
-	class StaticSystemConfigurationManager : ConfigurationProvider
+	class StaticConfigurationManagerProvider : ConfigurationProvider
 	{
 		public override IHibernateConfiguration GetConfiguration()
 		{

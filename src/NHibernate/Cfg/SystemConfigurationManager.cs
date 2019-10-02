@@ -6,11 +6,11 @@ namespace NHibernate.Cfg
 	/// <summary>
 	/// Configuration manager that supports user provided configuration
 	/// </summary>
-	public class SystemConfigurationManager : ConfigurationProvider
+	public class SystemConfigurationProvider : ConfigurationProvider
 	{
 		private readonly System.Configuration.Configuration _configuration;
 
-		public SystemConfigurationManager(System.Configuration.Configuration configuration)
+		public SystemConfigurationProvider(System.Configuration.Configuration configuration)
 		{
 			_configuration = configuration;
 		}

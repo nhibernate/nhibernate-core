@@ -76,7 +76,7 @@ namespace NHibernate.Connection
 			if(!settings.TryGetValue(Environment.ConnectionStringName, out connStringName))
 				return null;
 
-			var connectionString = Cfg.Settings.ConfigurationManager.GetNamedConnectionString(connStringName)
+			var connectionString = Cfg.Settings.ConfigurationProvider.GetNamedConnectionString(connStringName)
 									?? throw new HibernateException(string.Format("Could not find named connection string {0}", connStringName));
 			return connectionString;
 		}

@@ -369,7 +369,7 @@ namespace NHibernate.Cfg
 
 		private static IHibernateConfiguration GetHibernateConfiguration()
 		{
-			var nhConfig = Settings.ConfigurationManager.GetConfiguration();
+			var nhConfig = Settings.ConfigurationProvider.GetConfiguration();
 			if (nhConfig == null && log.IsInfoEnabled())
 			{
 				log.Info("{0} section not found in application configuration file", CfgXmlHelper.CfgSectionName);
