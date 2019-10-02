@@ -1,23 +1,19 @@
-﻿using NUnit.Framework;
+﻿#if NETCOREAPP2_0
+using NUnit.Framework;
 
-#if NETCOREAPP2_0
 using System.Configuration;
 using System.IO;
 using log4net.Repository.Hierarchy;
 using NHibernate.Cfg;
-#endif
 
 namespace NHibernate.Test
 {
-#if NETCOREAPP2_0
 	[SetUpFixture]
-#endif
 	public class TestsContext
 	{
 		private static bool ExecutingWithVsTest { get; } =
 			System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name == "testhost";
 
-#if NETCOREAPP2_0
 		[OneTimeSetUp]
 		public void RunBeforeAnyTests()
 		{
@@ -49,6 +45,6 @@ namespace NHibernate.Test
 			hierarchy.Root.AddAppender(consoleAppender);
 			hierarchy.Configured = true;
 		}
-#endif
 	}
 }
+#endif
