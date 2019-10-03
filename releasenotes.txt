@@ -369,6 +369,14 @@ Release notes - NHibernate - Version 5.2.0
 As part of releasing 5.2.0, a misnamed setting in 5.0.0 release notes has been fixed:
 transaction.use_connection_on_system_events correct name is transaction.use_connection_on_system_prepare
 
+Build 5.1.6
+=============================
+
+Release notes - NHibernate - Version 5.1.6
+
+** Bug
+    * #2172 Using DependentTransaction fails
+
 Build 5.1.5
 =============================
 
@@ -631,6 +639,14 @@ Release notes - NHibernate - Version 5.1.0
 
 As part of releasing 5.1.0, a missing 5.0.0 possible breaking change has been added about inequality semantic in LINQ
 queries. See 5.0.0 possible breaking changes.
+
+Build 5.0.8
+=============================
+
+Release notes - NHibernate - Version 5.0.8
+
+** Bug
+    * #2172 Using DependentTransaction fails
 
 ﻿Build 5.0.7
 =============================
