@@ -7,6 +7,10 @@
   - pattern: ^.*(Hql\.g).*$
   analyzation:
     methodConversion:
+#TODO 6.0: Remove ignore rule for IQueryBatchItem.ProcessResults  
+    - conversion: Ignore
+      name: ProcessResults
+      containingTypeName: IQueryBatchItem
     - conversion: Ignore
       name: PostProcessInsert
       containingTypeName: HqlSqlWalker
@@ -185,6 +189,18 @@
   - pattern: ^.*(Hql\.g).*$
   analyzation:
     methodConversion:
+    - conversion: Ignore
+      name: CanUseDependentTransaction
+      containingTypeName: DistributedSystemTransactionFixture
+    - conversion: Ignore
+      name: CanUseSessionWithManyDependentTransaction
+      containingTypeName: DistributedSystemTransactionFixture
+    - conversion: Ignore
+      name: CanUseDependentTransaction
+      containingTypeName: SystemTransactionFixture
+    - conversion: Ignore
+      name: CanUseSessionWithManyDependentTransaction
+      containingTypeName: SystemTransactionFixture
     - conversion: Copy
       name: AfterTransactionCompletionProcess_EvictsFromCache
     asyncExtensionMethods:

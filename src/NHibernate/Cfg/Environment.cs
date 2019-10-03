@@ -293,6 +293,18 @@ namespace NHibernate.Cfg
 		public const string FirebirdDisableParameterCasting = "firebird.disable_parameter_casting";
 
 		/// <summary>
+		/// <para>
+		/// SQLite can store GUIDs in binary or text form, controlled by the BinaryGuid
+		/// connection string parameter (default is 'true'). The BinaryGuid setting will affect
+		/// how to cast GUID to string in SQL. NHibernate will attempt to detect this
+		/// setting automatically from the connection string, but if the connection
+		/// or connection string is being handled by the application instead of by NHibernate,
+		/// you can use the 'sqlite.binaryguid' NHibernate setting to override the behavior.
+		/// </para>
+		/// </summary>
+		public const string SqliteBinaryGuid = "sqlite.binaryguid";
+
+		/// <summary>
 		/// <para>Set whether tracking the session id or not. When <see langword="true"/>, each session 
 		/// will have an unique <see cref="Guid"/> that can be retrieved by <see cref="ISessionImplementor.SessionId"/>,
 		/// otherwise <see cref="ISessionImplementor.SessionId"/> will always be <see cref="Guid.Empty"/>. Session id 
@@ -554,5 +566,40 @@ namespace NHibernate.Cfg
 			}
 		}
 
+
+		/// <summary>
+		/// Get a named connection string, if configured.
+		/// </summary>
+		/// <exception cref="HibernateException">
+		/// Thrown when a <see cref="ConnectionStringName"/> was found 
+		/// in the <c>settings</c> parameter but could not be found in the app.config.
+		/// </exception>
+		internal static string GetNamedConnectionString(IDictionary<string, string> settings)
+		{
+			string connStringName;
+			if (!settings.TryGetValue(ConnectionStringName, out connStringName))
+				return null;
+
+			ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings[connStringName];
+			if (connectionStringSettings == null)
+				throw new HibernateException($"Could not find named connection string '{connStringName}'.");
+
+			return connectionStringSettings.ConnectionString;
+		}
+
+
+		/// <summary>
+		/// Get the configured connection string, from <see cref="ConnectionString"/> if that
+		/// is set, otherwise from <see cref="ConnectionStringName"/>, or null if that isn't
+		/// set either.
+		/// </summary>
+		internal static string GetConfiguredConnectionString(IDictionary<string, string> settings)
+		{ 
+			// Connection string in the configuration overrides named connection string.
+			if (!settings.TryGetValue(ConnectionString, out string connString))
+				connString = GetNamedConnectionString(settings);
+
+			return connString;
+		}
 	}
 }
