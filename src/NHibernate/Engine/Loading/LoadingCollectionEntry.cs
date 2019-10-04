@@ -44,6 +44,8 @@ namespace NHibernate.Engine.Loading
 			get { return collection; }
 		}
 
+		public bool StopLoading { get; set; }
+
 		public override string ToString()
 		{
 			return GetType().FullName + "<rs=" + ResultSet + ", coll=" + MessageHelper.InfoString(Persister.Role, Key) + ">@" + Convert.ToString(GetHashCode(), 16);
