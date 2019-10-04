@@ -91,7 +91,7 @@
 		<property name="db-service" value="FirebirdServerDefaultInstance" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
-		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;charset=utf8;" />
+		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;charset=utf8;Pooling=False" />
 	</target>
 
 	<target name="setup-teamcity-firebird64">
@@ -99,7 +99,7 @@
 		<property name="nunit-x64" value="true" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
-		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;charset=utf8;" />
+		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;charset=utf8;Pooling=False" />
 	</target>
 
 	<target name="setup-teamcity-sqlite32">

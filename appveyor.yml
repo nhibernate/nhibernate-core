@@ -7,6 +7,7 @@ environment:
   - DB: PostgreSQL
     CONNECTION_STRING: Host=localhost;Port=5432;Username=postgres;Password=Password12!;Database=nhibernate;Enlist=true;
   - DB: Firebird
+    CONNECTION_STRING: Pooling=False;
   - DB: MySQL
     CONNECTION_STRING: Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;
   - DB: SQLite
