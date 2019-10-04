@@ -163,8 +163,8 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			// We have to check the member mapping to determine if is nullable
-			var entityName = ExpressionsHelper.TryGetEntityName(_sessionFactory, memberExpression, out var memberPath);
-			if (entityName == null)
+			var entityName = ExpressionsHelper.TryGetEntityName(_sessionFactory, memberExpression, out var memberPath, out _);
+			if (entityName == null || memberPath == null)
 			{
 				return true; // Not mapped
 			}
