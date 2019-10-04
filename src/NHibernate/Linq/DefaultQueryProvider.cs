@@ -100,6 +100,22 @@ namespace NHibernate.Linq
 			return (TResult)Execute(expression);
 		}
 
+		//TODO 6.0: Add to INhQueryProvider interface 
+		internal IList<TResult> ExecuteList<TResult>(Expression expression)
+		{
+			var linqExpression = PrepareQuery(expression, out var query);
+			var resultTransformer = linqExpression.ExpressionToHqlTranslationResults?.PostExecuteTransformer;
+			if (resultTransformer == null)
+			{
+				return query.List<TResult>();
+			}
+
+			return new List<TResult>
+			{
+				(TResult) resultTransformer.DynamicInvoke(query.List().AsQueryable())
+			};
+		}
+
 		public IQueryProvider WithOptions(Action<NhQueryableOptions> setOptions)
 		{
 			if (setOptions == null) throw new ArgumentNullException(nameof(setOptions));

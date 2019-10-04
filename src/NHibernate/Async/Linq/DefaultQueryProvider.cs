@@ -32,6 +32,23 @@ namespace NHibernate.Linq
 	public partial class DefaultQueryProvider : INhQueryProvider, IQueryProviderWithOptions, ISupportFutureBatchNhQueryProvider
 	{
 
+		//TODO 6.0: Add to INhQueryProvider interface 
+		internal async Task<IList<TResult>> ExecuteListAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var linqExpression = PrepareQuery(expression, out var query);
+			var resultTransformer = linqExpression.ExpressionToHqlTranslationResults?.PostExecuteTransformer;
+			if (resultTransformer == null)
+			{
+				return await (query.ListAsync<TResult>(cancellationToken)).ConfigureAwait(false);
+			}
+
+			return new List<TResult>
+			{
+				(TResult) resultTransformer.DynamicInvoke((await (query.ListAsync(cancellationToken)).ConfigureAwait(false)).AsQueryable())
+			};
+		}
+
 		// Since v5.1
 		[Obsolete("Use ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query) instead")]
 		protected virtual async Task<object> ExecuteQueryAsync(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery, CancellationToken cancellationToken)
