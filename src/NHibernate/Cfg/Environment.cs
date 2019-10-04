@@ -556,7 +556,6 @@ namespace NHibernate.Cfg
 			}
 		}
 
-
 		/// <summary>
 		/// Get a named connection string, if configured.
 		/// </summary>
@@ -572,7 +571,6 @@ namespace NHibernate.Cfg
 			return Settings.ConfigurationProvider.GetNamedConnectionString(connStringName)
 			       ?? throw new HibernateException($"Could not find named connection string '{connStringName}'.");
 		}
-
 
 		/// <summary>
 		/// Get the configured connection string, from <see cref="ConnectionString"/> if that
