@@ -20,10 +20,24 @@ namespace NHibernate.Linq
 	/// </summary>
 	public class NhQueryable<T> : QueryableBase<T>, IEntityNameProvider, IEnumerable<T>
 	{
-		public NhQueryable(IQueryProvider provider, string entityName)
-			: base(provider)
+		// This constructor is called by our users, create a new IQueryExecutor.
+		public NhQueryable(ISessionImplementor session)
+			: this(session, typeof(T).FullName)
+		{
+		}
+
+		// This constructor is called by our users, create a new IQueryExecutor.
+		public NhQueryable(ISessionImplementor session, string entityName)
+			: base(QueryProviderFactory.CreateQueryProvider(session, null))
 		{
 			EntityName = entityName;
+		}
+
+
+		// This constructor is called indirectly by LINQ's query methods, just pass to base.
+		public NhQueryable(IQueryProvider provider, Expression expression)
+			: this(provider, expression, typeof(T).FullName)
+		{
 		}
 
 		// This constructor is called indirectly by LINQ's query methods, just pass to base.
@@ -33,27 +47,10 @@ namespace NHibernate.Linq
 			EntityName = entityName;
 		}
 
-		// This constructor is called by our users, create a new IQueryExecutor.
-		public NhQueryable(ISessionImplementor session)
-			: this(session, typeof(T).FullName)
-		{
-		}
-
-		// This constructor is called by our users, create a new IQueryExecutor.
-		public NhQueryable(ISessionImplementor session, string entityName)
-			: this(QueryProviderFactory.CreateQueryProvider(session, null), entityName)
-		{
-		}
-
-		// This constructor is called indirectly by LINQ's query methods, just pass to base.
-		public NhQueryable(IQueryProvider provider, Expression expression)
-			: this(provider, expression, typeof(T).FullName)
-		{
-		}
-
 		public NhQueryable(ISessionImplementor session, object collection)
-			: this(QueryProviderFactory.CreateQueryProvider(session, collection), typeof(T).FullName)
+			: base(QueryProviderFactory.CreateQueryProvider(session, collection))
 		{
+			EntityName = typeof(T).FullName;
 		}
 
 		public string EntityName { get; private set; }

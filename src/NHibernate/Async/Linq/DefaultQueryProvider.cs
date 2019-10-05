@@ -33,7 +33,7 @@ namespace NHibernate.Linq
 	{
 
 		//TODO 6.0: Add to INhQueryProvider interface 
-		internal async Task<IList<TResult>> ExecuteListAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+		public virtual async Task<IList<TResult>> ExecuteListAsync<TResult>(Expression expression, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var linqExpression = PrepareQuery(expression, out var query);

@@ -101,7 +101,7 @@ namespace NHibernate.Linq
 		}
 
 		//TODO 6.0: Add to INhQueryProvider interface 
-		internal IList<TResult> ExecuteList<TResult>(Expression expression)
+		public virtual IList<TResult> ExecuteList<TResult>(Expression expression)
 		{
 			var linqExpression = PrepareQuery(expression, out var query);
 			var resultTransformer = linqExpression.ExpressionToHqlTranslationResults?.PostExecuteTransformer;
