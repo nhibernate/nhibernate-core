@@ -41,11 +41,16 @@ namespace NHibernate.Linq.Visitors
 			// Example: o.Status != null && o.Status != "New"
 			// Example: (o.Status != null && o.OldStatus != null) && (o.Status != o.OldStatus)
 			// Example: (o.Status != null && o.OldStatus != null) && (o.Status == o.OldStatus)
-			if (expression.NodeType != ExpressionType.AndAlso ||
-			    expression.Right.NodeType != ExpressionType.NotEqual &&
-			    expression.Right.NodeType != ExpressionType.Equal ||
-			    expression.Left.NodeType != ExpressionType.AndAlso &&
-			    expression.Left.NodeType != ExpressionType.NotEqual)
+			if (
+				expression.NodeType != ExpressionType.AndAlso ||
+				(
+					expression.Right.NodeType != ExpressionType.NotEqual &&
+					expression.Right.NodeType != ExpressionType.Equal
+				) ||
+				(
+					expression.Left.NodeType != ExpressionType.AndAlso &&
+					expression.Left.NodeType != ExpressionType.NotEqual
+				))
 			{
 				return;
 			}

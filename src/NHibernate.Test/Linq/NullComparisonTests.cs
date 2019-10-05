@@ -332,7 +332,6 @@ namespace NHibernate.Test.Linq
 			Expect(q, Does.Not.Contain("is null").IgnoreCase);
 		}
 
-
 		[Test]
 		public void NullEquality()
 		{
