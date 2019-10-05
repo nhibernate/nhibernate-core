@@ -33,7 +33,7 @@ namespace NHibernate.Util
 			out string memberPath,
 			out IType memberType)
 		{
-			var memberPaths = TryGetAllMemberMetadata(sessionFactory, expression, out var entityName, out var convertType);
+			var memberPaths = TryGetAllMemberMetadata(expression, out var entityName, out var convertType);
 			if (memberPaths == null)
 			{
 				memberPath = null;
@@ -154,7 +154,6 @@ namespace NHibernate.Util
 		}
 
 		private static Stack<MemberMetadata> TryGetAllMemberMetadata(
-			ISessionFactoryImplementor sessionFactory,
 			Expression expression,
 			out string entityName,
 			out System.Type convertType)
