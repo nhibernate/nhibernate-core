@@ -344,7 +344,6 @@ namespace NHibernate.Test.Linq
 			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
 		}
 
-
 		[Test]
 		public async Task NullEqualityAsync()
 		{
