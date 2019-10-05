@@ -122,15 +122,15 @@ namespace NHibernate.Util
 					// q.OneToMany[0].CompositeElement.Prop
 					if (entityName == null)
 					{
-						var index = GetComponentPropertyIndex(componentType, member.Path);
-						if (!index.HasValue)
+						var index = Array.IndexOf(componentType.PropertyNames, member.Path);
+						if (index < 0)
 						{
 							memberPath = null;
 							memberType = null;
 							return null;
 						}
 
-						type = componentType.Subtypes[index.Value];
+						type = componentType.Subtypes[index];
 						continue;
 					}
 
@@ -283,20 +283,6 @@ namespace NHibernate.Util
 			return entityName;
 		}
 
-		private static int? GetComponentPropertyIndex(IAbstractComponentType componentType, string name)
-		{
-			var names = componentType.PropertyNames;
-			for (var i = 0; i < names.Length; i++)
-			{
-				if (names[i].Equals(name))
-				{
-					return i;
-				}
-			}
-
-			return null;
-		}
-
 		private static IType GetType(
 			string entityName,
 			IType currentType,
@@ -314,10 +300,11 @@ namespace NHibernate.Util
 				// q.OneToMany[0].CompositeElement.Prop
 				if (currentType is IAbstractComponentType componentType)
 				{
-					var index = GetComponentPropertyIndex(componentType, memberPath);
-					return index.HasValue
-						? componentType.Subtypes[index.Value]
-						: null;
+					var names = componentType.PropertyNames;
+					var index = Array.IndexOf(names, memberPath);
+					return index < 0
+						? null
+						: componentType.Subtypes[index];
 				}
 
 				return null;
@@ -336,8 +323,7 @@ namespace NHibernate.Util
 			// q.OneToMany[0]
 			if (currentType is IAssociationType associationType)
 			{
-				var queryableCollection =
-					(IQueryableCollection) associationType.GetAssociatedJoinable(sessionFactory);
+				var queryableCollection = (IQueryableCollection) associationType.GetAssociatedJoinable(sessionFactory);
 				return queryableCollection.ElementType;
 			}
 
