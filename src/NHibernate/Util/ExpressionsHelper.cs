@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.Linq;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Functions;
+using NHibernate.Linq.Visitors;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
@@ -33,7 +34,7 @@ namespace NHibernate.Util
 			out string memberPath,
 			out IType memberType)
 		{
-			var memberPaths = TryGetAllMemberMetadata(expression, out var entityName, out var convertType);
+			var memberPaths = MemberMetadataExtractor.TryGetAllMemberMetadata(expression, out var entityName, out var convertType);
 			if (memberPaths == null)
 			{
 				memberPath = null;
@@ -153,81 +154,6 @@ namespace NHibernate.Util
 			}
 		}
 
-		private static Stack<MemberMetadata> TryGetAllMemberMetadata(
-			Expression expression,
-			out string entityName,
-			out System.Type convertType)
-		{
-			var memberPaths = new Stack<MemberMetadata>();
-			var currentExpression = expression;
-			convertType = null;
-			bool hasIndexer = false;
-			while (true)
-			{
-				if (currentExpression is MemberExpression subMemberExpression)
-				{
-					memberPaths.Push(new MemberMetadata(subMemberExpression.Member.Name, convertType, hasIndexer));
-					convertType = null;
-					hasIndexer = false;
-					currentExpression = subMemberExpression.Expression;
-				}
-				else if (currentExpression is QuerySourceReferenceExpression querySourceReferenceExpression)
-				{
-					if (querySourceReferenceExpression.ReferencedQuerySource is IFromClause fromClause)
-					{
-						currentExpression = fromClause.FromExpression;
-					}
-					else if (querySourceReferenceExpression.ReferencedQuerySource is JoinClause joinClause)
-					{
-						currentExpression = joinClause.InnerSequence;
-					}
-					else
-					{
-						// Unknown ReferencedQuerySource
-						entityName = null;
-						return null;
-					}
-				}
-				else if (currentExpression is UnaryExpression unaryExpression) // ((BaseEntity)q.Entity).Prop
-				{
-					currentExpression = unaryExpression.Operand;
-					convertType = unaryExpression.Type;
-				}
-				else if (currentExpression is NhNominatedExpression nominatedExpression) // ((BaseEntity)q.Entity).Prop
-				{
-					currentExpression = nominatedExpression.Expression;
-				}
-				else if (currentExpression is ConstantExpression constantExpression)
-				{
-					if (!(constantExpression.Value is IEntityNameProvider entityNameProvider))
-					{
-						// Not a NhQueryable<T>
-						entityName = null;
-						return null;
-					}
-
-					entityName = entityNameProvider.EntityName;
-					break;
-				}
-				else if (currentExpression is MethodCallExpression methodCallExpression &&
-						ListIndexerGenerator.IsMethodSupported(methodCallExpression.Method))
-				{
-					currentExpression = methodCallExpression.Object == null
-						? Enumerable.First(methodCallExpression.Arguments) // q.Children.ElementAt(0)
-						: methodCallExpression.Object; // q.Children[0]
-					hasIndexer = true;
-				}
-				else
-				{
-					// Not supported expressions
-					entityName = null;
-					return null;
-				}
-			}
-
-			return memberPaths;
-		}
-
 		private static string GetEntityName(
 			string currentEntityName,
 			System.Type convertedType,
@@ -328,6 +254,100 @@ namespace NHibernate.Util
 
 			// q.Prop[0]
 			return null;
+		}
+
+		private class MemberMetadataExtractor : NhExpressionVisitor
+		{
+			private readonly Stack<MemberMetadata> _memberPaths = new Stack<MemberMetadata>();
+			private System.Type _convertType;
+			private bool _hasIndexer;
+			private string _entityName;
+
+			public static Stack<MemberMetadata> TryGetAllMemberMetadata(
+				Expression expression,
+				out string entityName,
+				out System.Type convertType)
+			{
+				var extractor = new MemberMetadataExtractor();
+				extractor.Accept(expression);
+				entityName = extractor._entityName;
+				convertType = entityName != null ? extractor._convertType : null;
+				return entityName != null ? extractor._memberPaths : null;
+			}
+
+			private void Accept(Expression expression)
+			{
+				base.Visit(expression);
+			}
+
+			protected override Expression VisitMember(MemberExpression node)
+			{
+				_memberPaths.Push(new MemberMetadata(node.Member.Name, _convertType, _hasIndexer));
+				_convertType = null;
+				_hasIndexer = false;
+				return base.Visit(node.Expression);
+			}
+
+			protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression node)
+			{
+				if (node.ReferencedQuerySource is IFromClause fromClause)
+				{
+					return base.Visit(fromClause.FromExpression);
+				}
+
+				if (node.ReferencedQuerySource is JoinClause joinClause)
+				{
+					return base.Visit(joinClause.InnerSequence);
+				}
+
+				// Not supported expression
+				_entityName = null;
+				return node;
+			}
+
+			protected override Expression VisitUnary(UnaryExpression node)
+			{
+				_convertType = node.Type;
+				return base.Visit(node.Operand);
+			}
+
+			protected internal override Expression VisitNhNominated(NhNominatedExpression node)
+			{
+				return base.Visit(node);
+			}
+
+			protected override Expression VisitConstant(ConstantExpression node)
+			{
+				_entityName = node.Value is IEntityNameProvider entityNameProvider
+					? entityNameProvider.EntityName
+					: null; // Not a NhQueryable<T>
+
+				return node;
+			}
+
+			protected override Expression VisitMethodCall(MethodCallExpression node)
+			{
+				if (ListIndexerGenerator.IsMethodSupported(node.Method))
+				{
+					_hasIndexer = true;
+					return base.Visit(
+						node.Object == null
+							? Enumerable.First(node.Arguments) // q.Children.ElementAt(0)
+							: node.Object // q.Children[0]
+					);
+				}
+
+				// Not supported expression
+				_entityName = null;
+				return node;
+			}
+
+			public override Expression Visit(Expression node)
+			{
+				// Not supported expression
+				_entityName = null;
+				return node;
+			}
 		}
 
 		private struct MemberMetadata
