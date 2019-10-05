@@ -240,6 +240,9 @@ possible solutions:
 
 		protected HqlTreeNode VisitNhAverage(NhAverageExpression expression)
 		{
+			// We need to cast the argument when its type is different from Average method return type,
+			// otherwise the result may be incorrect. In SQL Server avg always returns int
+			// when the argument is int.
 			var hqlExpression = VisitExpression(expression.Expression).AsExpression();
 			hqlExpression = IsCastRequired(expression.Expression, expression.Type, out _)
 				? (HqlExpression) _hqlTreeBuilder.Cast(hqlExpression, expression.Type)
@@ -267,7 +270,7 @@ possible solutions:
 
 		protected HqlTreeNode VisitNhSum(NhSumExpression expression)
 		{
-			return IsCastRequired(expression.Type, "sum", out _)
+			return IsCastRequired("sum", expression.Expression, expression.Type)
 				? (HqlTreeNode) _hqlTreeBuilder.Cast(_hqlTreeBuilder.Sum(VisitExpression(expression.Expression).AsExpression()), expression.Type)
 				: _hqlTreeBuilder.TransparentCast(_hqlTreeBuilder.Sum(VisitExpression(expression.Expression).AsExpression()), expression.Type);
 		}
@@ -593,7 +596,8 @@ possible solutions:
 		private bool IsCastRequired(Expression expression, System.Type toType, out bool existType)
 		{
 			existType = false;
-			return toType != typeof(object) && IsCastRequired(GetType(expression), TypeFactory.GetDefaultTypeFor(toType), out existType);
+			return toType != typeof(object) &&
+					IsCastRequired(GetType(expression), TypeFactory.GetDefaultTypeFor(toType), out existType);
 		}
 
 		private bool IsCastRequired(IType type, IType toType, out bool existType)
@@ -635,59 +639,38 @@ possible solutions:
 			return castTypeName != toCastTypeName;
 		}
 
-		private bool IsCastRequired(System.Type type, string sqlFunctionName, out bool existType)
+		private bool IsCastRequired(string sqlFunctionName, Expression argumentExpression, System.Type returnType)
 		{
-			if (type == typeof(object))
+			var argumentType = GetType(argumentExpression);
+			if (argumentType == null || returnType == typeof(object))
 			{
-				existType = false;
 				return false;
 			}
 
-			var toType = TypeFactory.GetDefaultTypeFor(type);
-			if (toType == null)
+			var returnNhType = TypeFactory.GetDefaultTypeFor(returnType);
+			if (returnNhType == null)
 			{
-				existType = false;
 				return true; // Fallback to the old behavior
 			}
 
-			existType = true;
 			var sqlFunction = _parameters.SessionFactory.SQLFunctionRegistry.FindSQLFunction(sqlFunctionName);
 			if (sqlFunction == null)
 			{
 				return true; // Fallback to the old behavior
 			}
 
-			var fnReturnType = sqlFunction.ReturnType(toType, _parameters.SessionFactory);
-			return fnReturnType == null || IsCastRequired(fnReturnType, toType, out existType);
+			var fnReturnType = sqlFunction.ReturnType(argumentType, _parameters.SessionFactory);
+			return fnReturnType == null || IsCastRequired(fnReturnType, returnNhType, out _);
 		}
 
 		private IType GetType(Expression expression)
 		{
-			if (!(expression is MemberExpression memberExpression))
-			{
-				return expression.Type != typeof(object)
-					? TypeFactory.GetDefaultTypeFor(expression.Type)
-					: null;
-			}
-
 			// Try to get the mapped type for the member as it may be a non default one
-			var entityName = ExpressionsHelper.TryGetEntityName(_parameters.SessionFactory, memberExpression, out var memberPath);
-			if (entityName == null)
-			{
-				return TypeFactory.GetDefaultTypeFor(expression.Type); // Not mapped
-			}
-
-			var persister = _parameters.SessionFactory.GetEntityPersister(entityName);
-			var type = persister.EntityMetamodel.GetIdentifierPropertyType(memberPath);
-			if (type != null)
-			{
-				return type;
-			}
-
-			var index = persister.EntityMetamodel.GetPropertyIndexOrNull(memberPath);
-			return !index.HasValue
-				? TypeFactory.GetDefaultTypeFor(expression.Type) // Not mapped
-				: persister.EntityMetamodel.PropertyTypes[index.Value];
+			ExpressionsHelper.TryGetEntityName(_parameters.SessionFactory, expression, out _, out var type);
+			return type ??
+						(expression.Type != typeof(object)
+							? TypeFactory.GetDefaultTypeFor(expression.Type)
+							: null);
 		}
 	}
 }

@@ -51,6 +51,7 @@ namespace NHibernate.Tuple.Entity
 
 		private readonly Dictionary<string, int?> propertyIndexes = new Dictionary<string, int?>();
 		private readonly IDictionary<string, IType> _identifierPropertyTypes = new Dictionary<string, IType>();
+		private readonly IDictionary<string, IType> _propertyTypes = new Dictionary<string, IType>();
 		private readonly bool hasCollections;
 		private readonly bool hasMutableProperties;
 		private readonly bool hasLazyProperties;
@@ -416,7 +417,9 @@ namespace NHibernate.Tuple.Entity
 
 		private void MapPropertyToIndex(string path, Mapping.Property prop, int i)
 		{
-			propertyIndexes[!string.IsNullOrEmpty(path) ? $"{path}.{prop.Name}" : prop.Name] = i;
+			var propPath = !string.IsNullOrEmpty(path) ? $"{path}.{prop.Name}" : prop.Name;
+			propertyIndexes[propPath] = i;
+			_propertyTypes[propPath] = prop.Type;
 			if (!(prop.Value is Mapping.Component comp))
 			{
 				return;
@@ -424,7 +427,7 @@ namespace NHibernate.Tuple.Entity
 
 			foreach (var subprop in comp.PropertyIterator)
 			{
-				MapPropertyToIndex(!string.IsNullOrEmpty(path) ? $"{path}.{prop.Name}" : prop.Name, subprop, i);
+				MapPropertyToIndex(propPath, subprop, i);
 			}
 		}
 
@@ -568,6 +571,13 @@ namespace NHibernate.Tuple.Entity
 		internal IType GetIdentifierPropertyType(string memberPath)
 		{
 			return _identifierPropertyTypes.TryGetValue(memberPath, out var propertyType) ? propertyType : null;
+		}
+
+		internal IType GetPropertyType(string memberPath)
+		{
+			return _propertyTypes.TryGetValue(memberPath, out var propertyType)
+				? propertyType
+				: GetIdentifierPropertyType(memberPath);
 		}
 
 		public bool HasCollections
