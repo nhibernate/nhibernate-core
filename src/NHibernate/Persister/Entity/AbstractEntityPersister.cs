@@ -1639,8 +1639,8 @@ namespace NHibernate.Persister.Entity
 		public string PropertySelectFragment(string name, string suffix, bool fetch)
 		{
 			var select = new SelectFragment(Factory.Dialect)
-			              .SetSuffix(suffix)
-			              .SetUsedAliases(IdentifierAliases);
+				.SetSuffix(suffix)
+				.SetUsedAliases(IdentifierAliases);
 
 			int[] columnTableNumbers = SubclassColumnTableNumberClosure;
 			string[] columnAliases = SubclassColumnAliasClosure;
@@ -1649,8 +1649,8 @@ namespace NHibernate.Persister.Entity
 			for (int i = 0; i < columns.Length; i++)
 			{
 				bool selectable = (fetch || subclassColumnLazyClosure[i]) &&
-				                  !IsSubclassTableSequentialSelect(columnTableNumbers[i]) &&
-				                  subclassColumnSelectableClosure[i];
+					!IsSubclassTableSequentialSelect(columnTableNumbers[i]) &&
+					subclassColumnSelectableClosure[i];
 				if (selectable)
 				{
 					string subalias = GenerateTableAlias(name, columnTableNumbers[i]);
@@ -1663,7 +1663,8 @@ namespace NHibernate.Persister.Entity
 			string[] formulaAliases = SubclassFormulaAliasClosure;
 			for (int i = 0; i < formulaTemplates.Length; i++)
 			{
-				bool selectable = (fetch || subclassFormulaLazyClosure[i]) && !IsSubclassTableSequentialSelect(formulaTableNumbers[i]);
+				bool selectable = (fetch || subclassFormulaLazyClosure[i]) &&
+					!IsSubclassTableSequentialSelect(formulaTableNumbers[i]);
 				if (selectable)
 				{
 					string subalias = GenerateTableAlias(name, formulaTableNumbers[i]);
