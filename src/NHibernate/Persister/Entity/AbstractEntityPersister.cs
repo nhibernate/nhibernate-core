@@ -1648,7 +1648,7 @@ namespace NHibernate.Persister.Entity
 
 			for (int i = 0; i < columns.Length; i++)
 			{
-				bool selectable = (fetch || subclassColumnLazyClosure[i]) &&
+				bool selectable = (fetch || !subclassColumnLazyClosure[i]) &&
 					!IsSubclassTableSequentialSelect(columnTableNumbers[i]) &&
 					subclassColumnSelectableClosure[i];
 				if (selectable)
@@ -1663,7 +1663,7 @@ namespace NHibernate.Persister.Entity
 			string[] formulaAliases = SubclassFormulaAliasClosure;
 			for (int i = 0; i < formulaTemplates.Length; i++)
 			{
-				bool selectable = (fetch || subclassFormulaLazyClosure[i]) &&
+				bool selectable = (fetch || !subclassFormulaLazyClosure[i]) &&
 					!IsSubclassTableSequentialSelect(formulaTableNumbers[i]);
 				if (selectable)
 				{
