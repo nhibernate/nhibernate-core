@@ -702,6 +702,18 @@ namespace NHibernate.Loader
 				cacheBatcher.ExecuteBatch();
 		}
 
+		/// <summary>
+		/// Stops further collection population without actual collection initialization.
+		/// </summary>
+		internal void StopLoadingCollections(ISessionImplementor session, DbDataReader reader)
+		{
+			var collectionPersisters = CollectionPersisters;
+			if (collectionPersisters == null || collectionPersisters.Length == 0)
+				return;
+
+			session.PersistenceContext.LoadContexts.GetCollectionLoadContext(reader).StopLoadingCollections(collectionPersisters);
+		}
+
 		private void EndCollectionLoad(DbDataReader reader, ISessionImplementor session, ICollectionPersister collectionPersister,
 		                               CacheBatcher cacheBatcher)
 		{

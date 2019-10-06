@@ -291,6 +291,7 @@ namespace NHibernate.Cfg
 			settings.TransactionFactory = transactionFactory;
 			// Not ported - TransactionManagerLookup
 			settings.SessionFactoryName = sessionFactoryName;
+			settings.AutoJoinTransaction = PropertiesHelper.GetBoolean(Environment.AutoJoinTransaction, properties, true);
 			settings.MaximumFetchDepth = maxFetchDepth;
 			settings.IsQueryCacheEnabled = useQueryCache;
 			settings.IsSecondLevelCacheEnabled = useSecondLevelCache;

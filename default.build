@@ -46,7 +46,7 @@
 		</exec> 
 	</target>
 
-	<target name="solution-restore" depends="common.nuget-restore">
+	<target name="solution-restore" depends="common.tools-restore">
 		<exec program="dotnet" verbose="true">
 			<arg value="msbuild" />
 			<arg value="/t:Restore" />
@@ -54,24 +54,24 @@
 		</exec> 
 	</target>
 
-	<target name="get-nuget-package-path" depends="common.nuget-restore">
+	<target name="get-tool-info" depends="common.tools-restore">
 		<xmlpeek 
-			file="${tools.dir}/packages.config" 
-			xpath="/packages/package[@id = '${nuget-package-id}']/@version"
-			property="nuget-package-version" />
-		<property name="nuget-package-path" value="${tools.dir}/${nuget-package-id}.${nuget-package-version}/" />
+			file="${tools.dir}/packages.csproj" 
+			xpath="/Project/ItemGroup/PackageReference[@Include = '${tool.id}']/@Version"
+			property="tool.version" />
+		<property name="tool.path" value="${tools.dir}/${tool.id}/${tool.version}/" />
 	</target>
 
 	<target name="find-async-generator-console">
-		<property name="nuget-package-id" value="CSharpAsyncGenerator.CommandLine" />
-		<call target="get-nuget-package-path" />
-		<property name="async-generator-console"  value="${nuget-package-path}/tools/AsyncGenerator.CommandLine.exe" />
+		<property name="tool.id" value="CSharpAsyncGenerator.CommandLine" />
+		<call target="get-tool-info" />
+		<property name="async-generator-console"  value="${tool.path}tools/netcoreapp2.1/AsyncGenerator.CommandLine.dll" />
 	</target>
 
-	<target name="generate-async" depends="common.nuget-restore solution-restore find-async-generator-console">
-		<exec
-			workingdir="${root.dir}/src"
-			program="${async-generator-console}" />
+	<target name="generate-async" depends="solution-restore find-async-generator-console">
+		<exec workingdir="${root.dir}/src" program="dotnet" verbose="true">
+			<arg line=".${async-generator-console}" />
+		</exec> 
 	</target>
 
 	<target name="put-connection-settings-into-defined-app-config">
@@ -150,9 +150,9 @@
 	</target>
 
 	<target name="find-nunit">
-		<property name="nuget-package-id" value="NUnit.ConsoleRunner" />
-		<call target="get-nuget-package-path" />
-		<property name="nunit-console" value="${nuget-package-path}/tools/nunit3-console.exe" />
+		<property name="tool.id" value="NUnit.Console" />
+		<call target="get-tool-info" />
+		<property name="nunit-console" value="${tools.dir}/NUnit.ConsoleRunner/${tool.version}/tools/nunit3-console.exe" />
 	</target>
 
 	<target name="run-tests" depends="find-nunit" description="Run NUnit tests">
@@ -323,7 +323,7 @@
 				</items>
 			</in>
 			<do>
-				<echo message="nuget push -source https://nuget.org/ ${path::get-file-name(filename)} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
+				<echo message="nuget push -source https://api.nuget.org/v3/index.json ${path::get-file-name(filename)} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
 			</do>
 		</foreach>
 	</target>

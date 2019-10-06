@@ -199,7 +199,7 @@ namespace NHibernate.SqlCommand
 			: this((IEnumerable<object>)parts)
 		{ }
 
-		private SqlString(IEnumerable<object> parts)
+		internal SqlString(IEnumerable<object> parts)
 		{
 			_parts = new List<Part>();
 			_parameters = new SortedList<int, Parameter>();
@@ -347,7 +347,23 @@ namespace NHibernate.SqlCommand
 		{
 			if (string.IsNullOrEmpty(text)) return this;
 			if (_length == 0) return new SqlString(text);
-			return new SqlString(new object[] { this, text });
+			return new SqlString(this, text);
+		}
+
+		public SqlString Append(params object[] parts)
+		{
+			return _length == 0
+				? new SqlString(parts)
+				: new SqlString(GetAppendParts(parts));
+		}
+
+		private IEnumerable<object> GetAppendParts(object[] parts)
+		{
+			yield return this;
+			foreach (var part in parts)
+			{
+				yield return part;
+			}
 		}
 
 		/// <summary>
