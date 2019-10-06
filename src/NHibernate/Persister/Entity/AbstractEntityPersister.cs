@@ -177,7 +177,6 @@ namespace NHibernate.Persister.Entity
 		private readonly string[][] subclassPropertyColumnNameClosure;
 		private readonly FetchMode[] subclassPropertyFetchModeClosure;
 		private readonly bool[] subclassPropertyNullabilityClosure;
-		private readonly bool[] subclassPropertyLazyClosure;
 		protected bool[] propertyDefinedOnSubclass;
 		private readonly int[][] subclassPropertyColumnNumberClosure;
 		private readonly int[][] subclassPropertyFormulaNumberClosure;
