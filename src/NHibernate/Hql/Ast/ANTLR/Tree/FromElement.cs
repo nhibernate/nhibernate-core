@@ -337,9 +337,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <returns>the property select SQL fragment.</returns>
 		public string RenderPropertySelect(int size, int k)
 		{
-			return IsAllPropertyFetch
-				? _elementType.RenderPropertySelect(size, k, IsAllPropertyFetch)
-				: _elementType.RenderPropertySelect(size, k, _fetchLazyProperties);
+			return _elementType.RenderPropertySelect(
+				size,
+				k,
+				IsAllPropertyFetch || _fetchLazyProperties?.Contains(TableAlias) == true);
 		}
 
 		public override SqlString RenderText(Engine.ISessionFactoryImplementor sessionFactory)

@@ -177,6 +177,7 @@ namespace NHibernate.Persister.Entity
 		private readonly string[][] subclassPropertyColumnNameClosure;
 		private readonly FetchMode[] subclassPropertyFetchModeClosure;
 		private readonly bool[] subclassPropertyNullabilityClosure;
+		private readonly bool[] subclassPropertyLazyClosure;
 		protected bool[] propertyDefinedOnSubclass;
 		private readonly int[][] subclassPropertyColumnNumberClosure;
 		private readonly int[][] subclassPropertyFormulaNumberClosure;
@@ -1636,56 +1637,21 @@ namespace NHibernate.Persister.Entity
 				.ToSqlStringFragment(false);
 		}
 
-		public string PropertySelectFragment(string name, string suffix, bool allProperties)
+		public string PropertySelectFragment(string name, string suffix, bool fetch)
 		{
-			return PropertySelectFragment(name, suffix, null, allProperties);
-		}
-
-		public string PropertySelectFragment(string name, string suffix, string[] fetchProperties)
-		{
-			return PropertySelectFragment(name, suffix, fetchProperties, false);
-		}
-
-		private string PropertySelectFragment(string name, string suffix, string[] fetchProperties, bool allProperties)
-		{
-			SelectFragment select = new SelectFragment(Factory.Dialect)
-				.SetSuffix(suffix)
-				.SetUsedAliases(IdentifierAliases);
+			var select = new SelectFragment(Factory.Dialect)
+			              .SetSuffix(suffix)
+			              .SetUsedAliases(IdentifierAliases);
 
 			int[] columnTableNumbers = SubclassColumnTableNumberClosure;
 			string[] columnAliases = SubclassColumnAliasClosure;
 			string[] columns = SubclassColumnClosure;
-			HashSet<string> fetchColumnsAndFormulas = null;
-			if (fetchProperties != null)
-			{
-				fetchColumnsAndFormulas = new HashSet<string>();
-				foreach (var fetchProperty in fetchProperties)
-				{
-					var index = GetSubclassPropertyIndex(fetchProperty);
-					if (index < 0)
-					{
-						throw new InvalidOperationException($"Property {fetchProperty} does not exist on entity {EntityName}");
-					}
-					
-					var columnNames = SubclassPropertyColumnNameClosure[index];
-					// Formulas will have all null values
-					if (columnNames.All(o => o == null))
-					{
-						columnNames = SubclassPropertyFormulaTemplateClosure[index];
-					}
-
-					foreach (var columnName in columnNames)
-					{
-						fetchColumnsAndFormulas.Add(columnName);
-					}
-				}
-			}
 
 			for (int i = 0; i < columns.Length; i++)
 			{
-				bool selectable = (allProperties || !subclassColumnLazyClosure[i] || fetchColumnsAndFormulas?.Contains(columns[i]) == true) &&
-					!IsSubclassTableSequentialSelect(columnTableNumbers[i]) &&
-					subclassColumnSelectableClosure[i];
+				bool selectable = (fetch || subclassColumnLazyClosure[i]) &&
+				                  !IsSubclassTableSequentialSelect(columnTableNumbers[i]) &&
+				                  subclassColumnSelectableClosure[i];
 				if (selectable)
 				{
 					string subalias = GenerateTableAlias(name, columnTableNumbers[i]);
@@ -1698,8 +1664,7 @@ namespace NHibernate.Persister.Entity
 			string[] formulaAliases = SubclassFormulaAliasClosure;
 			for (int i = 0; i < formulaTemplates.Length; i++)
 			{
-				bool selectable = (allProperties || !subclassFormulaLazyClosure[i] || fetchColumnsAndFormulas?.Contains(formulaTemplates[i]) == true) &&
-					!IsSubclassTableSequentialSelect(formulaTableNumbers[i]);
+				bool selectable = (fetch || subclassFormulaLazyClosure[i]) && !IsSubclassTableSequentialSelect(formulaTableNumbers[i]);
 				if (selectable)
 				{
 					string subalias = GenerateTableAlias(name, formulaTableNumbers[i]);

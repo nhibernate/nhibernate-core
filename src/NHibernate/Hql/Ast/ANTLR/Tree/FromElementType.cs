@@ -195,31 +195,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// </summary>
 		/// <param name="size">The total number of returned types.</param>
 		/// <param name="k">The sequence of the current returned type.</param>
-		/// <param name="allProperties"></param>
+		/// <param name="fetch"></param>
 		/// <returns>the property select SQL fragment.</returns>
-		public string RenderPropertySelect(int size, int k, bool allProperties)
-		{
-			return RenderPropertySelect(size, k, null, allProperties);
-		}
-
-		public string RenderPropertySelect(int size, int k, string[] fetchLazyProperties)
-		{
-			return RenderPropertySelect(size, k, fetchLazyProperties, false);
-		}
-
-		private string RenderPropertySelect(int size, int k, string[] fetchLazyProperties, bool allProperties)
+		public string RenderPropertySelect(int size, int k, bool fetch)
 		{
 			CheckInitialized();
 
 			var queryable = Queryable;
 			if (queryable == null)
-				return "";
+				return string.Empty;
 
-			// Use the old method when fetchProperties is null to prevent any breaking changes
-			// 6.0 TODO: simplify condition by removing the fetchProperties part
-			string fragment = fetchLazyProperties == null || allProperties
-				? queryable.PropertySelectFragment(TableAlias, GetSuffix(size, k), allProperties)
-				: queryable.PropertySelectFragment(TableAlias, GetSuffix(size, k), fetchLazyProperties);
+			var fragment = queryable.PropertySelectFragment(TableAlias, GetSuffix(size, k), fetch);
 
 			return TrimLeadingCommaAndSpaces(fragment);
 		}

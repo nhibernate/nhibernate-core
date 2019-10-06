@@ -10,19 +10,6 @@ namespace NHibernate.Persister.Entity
 		SuperClass
 	}
 
-	internal static class AbstractEntityPersisterExtensions
-	{
-		/// <summary>
-		/// Given a query alias and an identifying suffix, render the property select fragment.
-		/// </summary>
-		//6.0 TODO: Merge into IQueryable
-		public static string PropertySelectFragment(this IQueryable query, string alias, string suffix, string[] fetchProperties)
-		{
-			return ReflectHelper.CastOrThrow<AbstractEntityPersister>(query, "individual lazy property fetches")
-			                    .PropertySelectFragment(alias, suffix, fetchProperties);
-		}
-	}
-
 	/// <summary>
 	/// Extends the generic <c>ILoadable</c> contract to add operations required by HQL
 	/// </summary>
