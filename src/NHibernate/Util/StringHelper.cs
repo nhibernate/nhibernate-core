@@ -851,7 +851,6 @@ namespace NHibernate.Util
 			return matchStartIdx;
 		}
 
-
 		/// <summary>
 		/// Check if the given index points to a line separator in the string. Both CRLF and LF
 		/// line separators are handled. When returning, newLineLength will be set to the number

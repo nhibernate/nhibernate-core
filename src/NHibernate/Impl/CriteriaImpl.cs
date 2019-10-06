@@ -178,7 +178,6 @@ namespace NHibernate.Impl
 			return null;
 		}
 
-
 		public IResultTransformer ResultTransformer
 		{
 			get { return resultTransformer; }
