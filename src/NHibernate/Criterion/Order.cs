@@ -1,6 +1,7 @@
 using System;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Criterion
 {
@@ -37,14 +38,13 @@ namespace NHibernate.Criterion
 		public virtual SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			var columnsOrAliases = GetColumnsOrAliases(criteria, criteriaQuery);
-			bool[] toLowerColumns = ignoreCase ? FindStringColumns(criteria, criteriaQuery) : null;
+			var sqlTypes = ignoreCase ? SqlTypes(criteria, criteriaQuery) : null;
 
 			var fragment = new SqlStringBuilder();
 			var factory = criteriaQuery.Factory;
-			for (int i = 0; i < columnsOrAliases.Length; i++)
+			for (var i = 0; i < columnsOrAliases.Length; i++)
 			{
-				bool lower = toLowerColumns?[i] == true;
-
+				var lower = sqlTypes != null && IsStringType(sqlTypes[i]);
 				if (lower)
 				{
 					fragment
@@ -78,13 +78,13 @@ namespace NHibernate.Criterion
 				: (object[]) CriterionUtil.GetColumnNamesUsingProjection(projection, criteriaQuery, criteria);
 		}
 
-		private bool[] FindStringColumns(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		private SqlType[] SqlTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			var type = projection == null
 				? criteriaQuery.GetTypeUsingProjection(criteria, propertyName)
 				: projection.GetTypes(criteria, criteriaQuery)[0];
 
-			return Array.ConvertAll(type.SqlTypes(criteriaQuery.Factory), t => IsStringType(t));
+			return type.SqlTypes(criteriaQuery.Factory);
 		}
 
 		public override string ToString()
