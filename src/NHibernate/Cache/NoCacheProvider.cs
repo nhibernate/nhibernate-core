@@ -41,7 +41,7 @@ namespace NHibernate.Cache
 			// This is used by SessionFactoryImpl to hand to the generated SessionImpl;
 			// was the only reason I could see that we cannot just use null as
 			// Settings.CacheProvider
-			return DateTime.Now.Ticks / (100 * TimeSpan.TicksPerMillisecond);
+			return DateTime.UtcNow.Ticks / (100 * TimeSpan.TicksPerMillisecond);
 		}
 
 		/// <summary>

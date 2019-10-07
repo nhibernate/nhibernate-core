@@ -24,12 +24,13 @@ namespace NHibernate.Cache
 		public async Task<object> GetAsync(CacheKey key, long timestamp, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			object result = await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
-			if (result != null && log.IsDebugEnabled())
+			var result = await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Cache hit: {0}", key);
+				log.Debug(result != null ? "Cache hit: {0}" : "Cache miss: {0}", key);
 			}
-			return result;	
+
+			return result;
 		}
 
 		public async Task<object[]> GetManyAsync(CacheKey[] keys, long timestamp, CancellationToken cancellationToken)
@@ -39,15 +40,14 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
+
 			var results = await (_cache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
-			if (!log.IsDebugEnabled())
+			if (log.IsDebugEnabled())
 			{
-				return results;
+				log.Debug("Cache hit: {0}", string.Join(",", keys.Where((k, i) => results[i] != null)));
+				log.Debug("Cache miss: {0}", string.Join(",", keys.Where((k, i) => results[i] == null)));
 			}
-			for (var i = 0; i < keys.Length; i++)
-			{
-				log.Debug(results[i] != null ? $"Cache hit: {keys[i]}" : $"Cache miss: {keys[i]}");
-			}
+
 			return results;
 		}
 

@@ -64,20 +64,19 @@ namespace NHibernate.Test.DriverTest
 			}
 		}
 
-#if NETFX
-		[Test]
+		[Test, NetFxOnly]
 		public void WhenCreatedWithGoodDbProviderThenNotThrows()
 		{
 			Assert.That(() => new MyDriverWithWrongClassesAndGoodDbProviderFactory(), Throws.Nothing);
 		}
 
-		[Test]
+		[Test, NetFxOnly]
 		public void WhenCreatedWithNullAssemblyAndGoodDbProviderThenNotThrows()
 		{
 			Assert.That(() => new MyDriverWithWrongClassesAndGoodDbProviderFactory(null), Throws.Nothing);
 		}
 
-		[Test]
+		[Test, NetFxOnly]
 		public void WhenCreatedWithDbFactoryThenCanReturnConnection()
 		{
 			var provider = new MyDriverWithWrongClassesAndGoodDbProviderFactory();
@@ -87,7 +86,7 @@ namespace NHibernate.Test.DriverTest
 			}
 		}
 
-		[Test]
+		[Test, NetFxOnly]
 		public void WhenCreatedWithDbFactoryThenCanReturnCommand()
 		{
 			var provider = new MyDriverWithWrongClassesAndGoodDbProviderFactory();
@@ -96,7 +95,6 @@ namespace NHibernate.Test.DriverTest
 				Assert.That(command, Is.Not.Null);
 			}
 		}
-#endif
 
 		[Test]
 		public void WhenCreatedWithNoDbProviderThenNotThrows()

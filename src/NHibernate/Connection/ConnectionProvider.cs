@@ -65,22 +65,15 @@ namespace NHibernate.Connection
 		}
 
 		/// <summary>
-		/// Get the .NET 2.0 named connection string 
+		///  Get a named connection string, if configured.
 		/// </summary>
 		/// <exception cref="HibernateException">
 		/// Thrown when a <see cref="Environment.ConnectionStringName"/> was found 
-		/// in the <c>settings</c> parameter but could not be found in the app.config
+		/// in the <c>settings</c> parameter but could not be found in the app.config.
 		/// </exception>
 		protected virtual string GetNamedConnectionString(IDictionary<string, string> settings)
 		{
-			string connStringName;
-			if(!settings.TryGetValue(Environment.ConnectionStringName, out connStringName))
-				return null;
-
-			ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings[connStringName];
-			if (connectionStringSettings == null)
-				throw new HibernateException(string.Format("Could not find named connection string {0}", connStringName));
-			return connectionStringSettings.ConnectionString;
+			return Environment.GetNamedConnectionString(settings);
 		}
 
 		/// <summary>
