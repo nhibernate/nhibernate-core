@@ -121,20 +121,12 @@ namespace NHibernate.Util
 
 			// Try to retrive the starting entity name with all members that were traversed in that process
 			var memberPaths = MemberMetadataExtractor.TryGetAllMemberMetadata(expression, out var entityName, out var convertType);
-			if (memberPaths == null)
+			if (memberPaths == null || !TryGetEntityPersister(entityName, null, sessionFactory, out var currentEntityPersister))
 			{
-				// Failed to find the starting entity name, due to an unsupported expression or the expression didn't contain
-				// the IEntityNameProvider instance
-				memberPath = null;
-				mappedType = null;
-				entityPersister = null;
-				component = null;
-				return false;
-			}
-
-			if (!TryGetEntityPersister(entityName, null, sessionFactory, out var currentEntityPersister))
-			{
-				// Querying an unmapped type e.g. s.Query<IEntity>().Where(a => a.Type == "A")
+				// Failed to find the starting entity name, due to:
+				// - Unsupported expression
+				// - The expression didn't contain the IEntityNameProvider instance
+				// - Querying an unmapped type e.g. s.Query<IEntity>().Where(a => a.Type == "A")
 				memberPath = null;
 				mappedType = null;
 				entityPersister = null;
