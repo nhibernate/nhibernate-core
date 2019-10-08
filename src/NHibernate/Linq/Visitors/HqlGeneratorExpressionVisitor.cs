@@ -666,11 +666,11 @@ possible solutions:
 		private IType GetType(Expression expression)
 		{
 			// Try to get the mapped type for the member as it may be a non default one
-			ExpressionsHelper.TryGetEntityName(_parameters.SessionFactory, expression, out _, out var type);
-			return type ??
-						(expression.Type != typeof(object)
-							? TypeFactory.GetDefaultTypeFor(expression.Type)
-							: null);
+			return expression.Type == typeof(object)
+				? null
+				: (ExpressionsHelper.TryGetMappedType(_parameters.SessionFactory, expression, out var type, out _, out _, out _)
+					? type
+					: TypeFactory.GetDefaultTypeFor(expression.Type));
 		}
 	}
 }

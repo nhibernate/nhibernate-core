@@ -28,165 +28,348 @@ namespace NHibernate.Util
 			return ((MemberExpression)expression.Body).Member;
 		}
 
-		internal static string TryGetEntityName(
+		/// <summary>
+		/// Try to get the mapped nullability from the given expression.
+		/// </summary>
+		/// <param name="sessionFactory">The session factory.</param>
+		/// <param name="expression">The expression to evaluate.</param>
+		/// <param name="nullable">Output parameter that represents whether the <paramref name="expression"/> is nullable.</param>
+		/// <returns>Whether the mapped nullability was found.</returns>
+		internal static bool TryGetMappedNullability(
 			ISessionFactoryImplementor sessionFactory,
 			Expression expression,
-			out string memberPath,
-			out IType memberType)
+			out bool nullable)
 		{
+			if (!TryGetMappedType(
+				sessionFactory,
+				expression,
+				out _,
+				out var entityPersister,
+				out var componentType,
+				out var memberPath))
+			{
+				nullable = false;
+				return false;
+			}
+
+			// The source entity is always not null, as it gets translated to the entity identifier
+			if (memberPath == null)
+			{
+				nullable = false;
+				return true;
+			}
+
+			int index;
+			if (componentType != null)
+			{
+				index = Array.IndexOf(
+					componentType.PropertyNames,
+					memberPath.Substring(memberPath.LastIndexOf('.') + 1));
+				nullable = componentType.PropertyNullability[index];
+				return true;
+			}
+
+			if (entityPersister.EntityMetamodel.GetIdentifierPropertyType(memberPath) != null)
+			{
+				nullable = false; // Identifier is always not-null
+				return true;
+			}
+
+			index = entityPersister.EntityMetamodel.GetPropertyIndex(memberPath);
+			nullable = entityPersister.PropertyNullability[index];
+			return true;
+		}
+
+		/// <summary>
+		/// Try to get the mapped type from the given expression. When the <paramref name="expression"/> type is
+		/// <see cref="ExpressionType.Convert"/>, the <paramref name="mappedType"/> will be set based on the expression type
+		/// only when the mapping for <see cref="UnaryExpression.Operand"/> was found, otherwise <see langword="null"/>
+		/// will be returned.
+		/// </summary>
+		/// <param name="sessionFactory">The session factory to retrieve <see cref="IEntityPersister"/> types.</param>
+		/// <param name="expression">The expression to evaluate.</param>
+		/// <param name="mappedType">Output parameter that represents the mapped type of <paramref name="memberPath"/>.</param>
+		/// <param name="entityPersister">
+		/// Output parameter that represents the entity persister of the entity where <paramref name="memberPath"/> is defined.
+		/// This parameter will not be set when <paramref name="memberPath"/> represents a property in a collection composite element.
+		/// </param>
+		/// <param name="component">
+		/// Output parameter that represents the component type where <paramref name="memberPath"/> is defined.
+		/// This parameter will not be set when <paramref name="memberPath"/> does not represent a property in a component.
+		/// </param>
+		/// <param name="memberPath">
+		/// Output parameter that represents the path of the mapped member, which in most cases is the member name. In case
+		/// when the mapped member is defined inside a component the path will be prefixed with the name of the component member and a dot.
+		/// (e.g. Component.Property).</param>
+		/// <returns>Whether the mapped type was found.</returns>
+		/// <remarks>
+		/// When the <paramref name="expression"/> contains an expression of type <see cref="ExpressionType.Convert"/>, the
+		/// result may not be correct when casting to an entity that is mapped with multiple entity names.
+		/// </remarks>
+		internal static bool TryGetMappedType(
+			ISessionFactoryImplementor sessionFactory,
+			Expression expression,
+			out IType mappedType,
+			out IEntityPersister entityPersister,
+			out IAbstractComponentType component,
+			out string memberPath)
+		{
+			// In order to get the correct entity name from the expression we first have to find the constant expression that contains the
+			// IEntityNameProvider instance, from which we can retrive the starting entity name. Once we have it, we have to traverse all
+			// expressions that we had to travese in order to find the IEntityNameProvider instance, but in reverse order (bottom to top)
+			// and keep tracking the entity name until we reach to top.
+
+			// Try to retrive the starting entity name with all members that were traversed in that process
 			var memberPaths = MemberMetadataExtractor.TryGetAllMemberMetadata(expression, out var entityName, out var convertType);
 			if (memberPaths == null)
 			{
+				// Failed to find the starting entity name, due to an unsupported expression or the expression didn't contain
+				// the IEntityNameProvider instance
 				memberPath = null;
-				memberType = null;
-				return null;
+				mappedType = null;
+				entityPersister = null;
+				component = null;
+				return false;
 			}
 
-			entityName = GetEntityName(entityName, convertType, sessionFactory, out var persister);
-			if (entityName == null || memberPaths.Count == 0) // ((NotMapped)q).Prop || q
+			if (!TryGetEntityPersister(entityName, null, sessionFactory, out var currentEntityPersister))
 			{
+				// Querying an unmapped type e.g. s.Query<IEntity>().Where(a => a.Type == "A")
 				memberPath = null;
-				memberType = null;
-				return entityName;
+				mappedType = null;
+				entityPersister = null;
+				component = null;
+				return false;
 			}
 
-			var member = memberPaths.Pop();
-			var type = persister.EntityMetamodel.GetPropertyType(member.Path);
-			while (true)
+			if (memberPaths.Count == 0) // The expression do not contain any member expressions
 			{
-				if (type == null) // q.NotMappedProp
+				if (convertType != null)
 				{
-					memberPath = null;
-					memberType = null;
-					return entityName;
-				}
-
-				if (memberPaths.Count == 0) // q.ManyToOne || q.OneToMany || q.OneToMany[0] || q.Component || q.Prop || q.AnyType
-				{
-					memberPath = member.Path;
-					memberType = GetType(entityName, type, memberPath, member.HasIndexer, sessionFactory);
-					return entityName;
-				}
-
-				if (type is IAssociationType associationType)
-				{
-					if (associationType.IsCollectionType) 
-					{
-						// Check manually for entity association as GetAssociatedEntityName throws when there is none.
-						var queryableCollection =
-							(IQueryableCollection) associationType.GetAssociatedJoinable(sessionFactory);
-						if (!queryableCollection.ElementType.IsEntityType) // q.OneToMany[0].CompositeElement
-						{
-							entityName = null;
-							persister = null;
-							// Ignore if the type is casted as composite elements cannot be casted to entities
-							type = queryableCollection.ElementType;
-							member = memberPaths.Pop();
-							continue;
-						}
-
-						// q.OneToMany[0].Prop
-						entityName = GetEntityName(
-							associationType.GetAssociatedEntityName(sessionFactory),
-							member.ConvertType,
-							sessionFactory,
-							out persister);
-					}
-					else if (associationType.IsAnyType) 
-					{
-						// ((Address)q.AnyType).Prop || q.AnyType.Prop
-						// Unfortunately we cannot detect the exact entity name as cast does not provide it,
-						// so the only option is to guess it.
-						entityName = GetEntityName(member.ConvertType, sessionFactory, out persister);
-					}
-					else // q.ManyToOne.Prop
-					{
-						entityName = GetEntityName(
-							associationType.GetAssociatedEntityName(sessionFactory),
-							member.ConvertType,
-							sessionFactory,
-							out persister);
-					}
-
-					if (entityName == null) // q.AnyType.Prop || ((NotMappedClass)q.ManyToOne).Prop
-					{
-						memberPath = null;
-						memberType = null;
-						return null;
-					}
-
-					member = memberPaths.Pop();
-					type = persister.EntityMetamodel.GetPropertyType(member.Path);
-				}
-				else if (type is IAbstractComponentType componentType)
-				{
-					// q.OneToMany[0].CompositeElement.Prop
-					if (entityName == null)
-					{
-						var index = Array.IndexOf(componentType.PropertyNames, member.Path);
-						if (index < 0)
-						{
-							memberPath = null;
-							memberType = null;
-							return null;
-						}
-
-						type = componentType.Subtypes[index];
-						continue;
-					}
-
-					// q.Component.Prop
-					// Ignore if the type is casted as components cannot be casted to entities
-					var componentMember = memberPaths.Pop();
-					member = new MemberMetadata(
-						$"{member.Path}.{componentMember.Path}",
-						componentMember.ConvertType,
-						componentMember.HasIndexer);
-					type = persister.EntityMetamodel.GetPropertyType(member.Path);
+					mappedType = TryGetEntityPersister(currentEntityPersister, convertType, sessionFactory, out var convertPersister)
+						? convertPersister.EntityMetamodel.EntityType // ((Subclass)q)
+						: TypeFactory.GetDefaultTypeFor(convertType); // ((NotMapped)q)
 				}
 				else
 				{
-					// q.Prop.NotMappedProp
+					mappedType = currentEntityPersister.EntityMetamodel.EntityType; // q
+				}
+
+				memberPath = null;
+				component = null;
+				entityPersister = currentEntityPersister;
+				return mappedType != null;
+			}
+
+			// If there was a cast right after the constant expression that contains the IEntityNameProvider instance, we have
+			// to update the entity persister according to it, otherwise use the value returned by TryGetAllMemberMetadata method.
+			if (convertType != null)
+			{
+				if (!TryGetEntityPersister(currentEntityPersister, convertType, sessionFactory, out var convertPersister)) // ((NotMapped)q).Id
+				{
 					memberPath = null;
-					memberType = null;
-					return entityName;
+					mappedType = null;
+					entityPersister = null;
+					component = null;
+					return false;
+				}
+				else
+				{
+					currentEntityPersister = convertPersister; // ((Subclass)q).Id
+				}
+			}
+
+			// Traverse the members that were traversed by the TryGetAllMemberMetadata method in the reverse order and try to keep
+			// tracking the entity persister until all members are traversed.
+			var member = memberPaths.Pop();
+			var currentType = currentEntityPersister.EntityMetamodel.GetPropertyType(member.Path);
+			IAbstractComponentType currentComponentType = null;
+			while (true)
+			{
+				// When traversed to the top of the expression, return the current tracking values
+				if (memberPaths.Count == 0)
+				{
+					memberPath = currentEntityPersister != null || currentComponentType != null ? member.Path : null;
+					mappedType = GetType(currentEntityPersister, currentType, member, sessionFactory, out _);
+					entityPersister = currentEntityPersister;
+					component = currentComponentType;
+					return mappedType != null;
+				}
+
+				if (currentType == null) // Member not mapped
+				{
+					memberPath = null;
+					mappedType = null;
+					entityPersister = null;
+					component = null;
+					return false;
+				}
+
+				convertType = member.ConvertType;
+				// Concatenate the component property path in order to be able to use EntityMetamodel.GetPropertyType to retrieve the type.
+				// As GetPropertyType supports only components, do not concatenate when dealing with collection composite elements or elements.
+				if (!currentType.IsAnyType && currentType is IAbstractComponentType)
+				{
+					var nextMember = memberPaths.Pop();
+					member = currentEntityPersister == null // Collection with composite element or element
+						? nextMember
+						: new MemberMetadata($"{member.Path}.{nextMember.Path}", nextMember.ConvertType, nextMember.HasIndexer);
+				}
+				else
+				{
+					member = memberPaths.Pop();
+				}
+
+				switch (currentType)
+				{
+					case IAssociationType associationType:
+						ProcessAssociationType(
+							associationType,
+							sessionFactory,
+							member,
+							convertType,
+							out currentType,
+							out currentEntityPersister,
+							out currentComponentType);
+						break;
+					case IAbstractComponentType componentType:
+						currentComponentType = componentType;
+						ProcessComponentType(componentType, currentEntityPersister, member, out currentType);
+						break;
+					default:
+						// q.Prop.NotMappedProp
+						currentType = null;
+						currentEntityPersister = null;
+						currentComponentType = null;
+						break;
 				}
 			}
 		}
 
-		private static string GetEntityName(
+		private static void ProcessComponentType(
+			IAbstractComponentType componentType,
+			IEntityPersister persister,
+			MemberMetadata member,
+			out IType memberType)
+		{
+			// When persister is not available (q.OneToManyCompositeElement[0].Prop), try to get the type from the component
+			if (persister == null)
+			{
+				var index = Array.IndexOf(componentType.PropertyNames, member.Path);
+				memberType = index < 0
+					? null // q.OneToManyCompositeElement[0].NotMappedProp
+					: componentType.Subtypes[index]; // q.OneToManyCompositeElement[0].Prop
+				return;
+			}
+
+			// q.Component.Prop
+			memberType = persister.EntityMetamodel.GetPropertyType(member.Path);
+		}
+
+		private static void ProcessAssociationType(
+			IAssociationType associationType,
+			ISessionFactoryImplementor sessionFactory,
+			MemberMetadata member,
+			System.Type convertType,
+			out IType memberType,
+			out IEntityPersister memberPersister,
+			out IAbstractComponentType memberComponent)
+		{
+			if (associationType.IsCollectionType)
+			{
+				// Check manually for entity association as GetAssociatedEntityName throws when there is none.
+				var queryableCollection =
+					(IQueryableCollection) associationType.GetAssociatedJoinable(sessionFactory);
+				if (!queryableCollection.ElementType.IsEntityType) // q.OneToManyCompositeElement[0].Member, q.OneToManyElement[0].Member
+				{
+					memberPersister = null;
+					// Can be <composite-element> or <element>
+					switch (queryableCollection.ElementType)
+					{
+						case IAbstractComponentType componentType: // q.OneToManyCompositeElement[0].Member
+							memberComponent = componentType;
+							ProcessComponentType(componentType, null, member, out memberType);
+							return;
+						default: // q.OneToManyElement[0].Member
+							memberType = null;
+							memberComponent = null;
+							return;
+					}
+				}
+
+				// q.OneToMany[0].Member
+				TryGetEntityPersister(
+					associationType.GetAssociatedEntityName(sessionFactory),
+					convertType,
+					sessionFactory,
+					out memberPersister);
+			}
+			else if (associationType.IsAnyType)
+			{
+				// ((Address)q.AnyType).Member, q.AnyType.Member
+				// Unfortunately we cannot detect the exact entity name as cast does not provide it,
+				// so the only option is to guess it.
+				TryGetEntityPersister(convertType, sessionFactory, out memberPersister);
+			}
+			else // q.ManyToOne.Member
+			{
+				TryGetEntityPersister(
+					associationType.GetAssociatedEntityName(sessionFactory),
+					convertType,
+					sessionFactory,
+					out memberPersister);
+			}
+
+			memberComponent = null;
+			memberType = memberPersister != null
+				? memberPersister.EntityMetamodel.GetPropertyType(member.Path)
+				: null; // q.AnyType.Member, ((NotMappedClass)q.ManyToOne)
+		}
+
+		private static bool TryGetEntityPersister(
 			string currentEntityName,
 			System.Type convertedType,
 			ISessionFactoryImplementor sessionFactory,
 			out IEntityPersister persister)
 		{
-			persister = sessionFactory.TryGetEntityPersister(currentEntityName);
-			if (persister == null)
+			var currentEntityPersister = sessionFactory.TryGetEntityPersister(currentEntityName);
+			if (currentEntityPersister == null)
 			{
-				return null; // Querying an unmapped interface e.g. s.Query<IEntity>().Where(a => a.Type == "A")
+				persister = null;
+				return false; // Querying an unmapped interface e.g. s.Query<IEntity>().Where(a => a.Type == "A")
 			}
 
+			return TryGetEntityPersister(currentEntityPersister, convertedType, sessionFactory, out persister);
+		}
+
+		private static bool TryGetEntityPersister(
+			IEntityPersister currentEntityPersister,
+			System.Type convertedType,
+			ISessionFactoryImplementor sessionFactory,
+			out IEntityPersister persister)
+		{
 			if (convertedType == null)
 			{
-				return currentEntityName;
+				persister = currentEntityPersister;
+				return true;
 			}
 
-			if (persister.EntityMetamodel.HasSubclasses)
+			if (currentEntityPersister.EntityMetamodel.HasSubclasses)
 			{
 				// When a class is casted to a subclass e.g. ((PizzaOrder)c.Order).PizzaName, we
 				// can only guess the entity name of it, as there can be many entity names mapped
 				// to the same subclass.
-				persister = persister.EntityMetamodel.SubclassEntityNames
+				persister = currentEntityPersister.EntityMetamodel.SubclassEntityNames
 									.Select(sessionFactory.GetEntityPersister)
 									.FirstOrDefault(p => p.MappedClass == convertedType);
 
-				return persister?.EntityName;
+				return persister != null;
 			}
 
-			return GetEntityName(convertedType, sessionFactory, out persister);
+			return TryGetEntityPersister(convertedType, sessionFactory, out persister);
 		}
 
-		private static string GetEntityName(
+		private static bool TryGetEntityPersister(
 			System.Type convertedType,
 			ISessionFactoryImplementor sessionFactory,
 			out IEntityPersister persister)
@@ -194,65 +377,84 @@ namespace NHibernate.Util
 			if (convertedType == null)
 			{
 				persister = null;
-				return null;
+				return false;
 			}
 
 			var entityName = sessionFactory.TryGetGuessEntityName(convertedType);
 			if (entityName == null)
 			{
 				persister = null;
-				return null;
+				return false;
 			}
 
 			persister = sessionFactory.GetEntityPersister(entityName);
-			return entityName;
+			return true;
 		}
 
 		private static IType GetType(
-			string entityName,
+			IEntityPersister currentEntityPersister,
 			IType currentType,
-			string memberPath,
-			bool hasIndexer,
-			ISessionFactoryImplementor sessionFactory)
+			MemberMetadata member,
+			ISessionFactoryImplementor sessionFactory,
+			out IEntityPersister persister)
 		{
-			if (entityName == null && memberPath == null)
+			// Not mapped
+			if (currentType == null)
 			{
+				persister = null;
 				return null;
 			}
 
-			if (entityName == null)
+			// Collection composite elements
+			if (currentEntityPersister == null)
 			{
-				// q.OneToMany[0].CompositeElement.Prop
-				if (currentType is IAbstractComponentType componentType)
+				if (member.ConvertType != null)
 				{
-					var names = componentType.PropertyNames;
-					var index = Array.IndexOf(names, memberPath);
-					return index < 0
-						? null
-						: componentType.Subtypes[index];
+					return TryGetEntityPersister(member.ConvertType, sessionFactory, out persister)
+						? persister.EntityMetamodel.EntityType // (Entity)q.OneToManyCompositeElement[0].Prop
+						: TypeFactory.GetDefaultTypeFor(member.ConvertType); // (long)q.OneToManyCompositeElement[0].Prop
 				}
 
-				return null;
-			}
-
-			if (memberPath == null) // q.NotMappedProp
-			{
-				return null;
-			}
-
-			if (!hasIndexer) // q.Prop
-			{
+				persister = null;
 				return currentType;
+			}
+
+			if (!member.HasIndexer)
+			{
+				if (member.ConvertType != null)
+				{
+					persister = TryGetEntityPersister(member.ConvertType, sessionFactory, out var newPersister)
+						? newPersister
+						: currentEntityPersister;
+					return newPersister != null
+						? persister.EntityMetamodel.EntityType // (Entity)q.Prop
+						: TypeFactory.GetDefaultTypeFor(member.ConvertType); // (long)q.Prop
+				}
+
+				persister = currentEntityPersister;
+				return currentType; // q.Prop
 			}
 
 			// q.OneToMany[0]
 			if (currentType is IAssociationType associationType)
 			{
 				var queryableCollection = (IQueryableCollection) associationType.GetAssociatedJoinable(sessionFactory);
+				if (member.ConvertType != null)
+				{
+					return TryGetEntityPersister(member.ConvertType, sessionFactory, out persister)
+						? persister.EntityMetamodel.EntityType // (Entity)q.Prop
+						: TypeFactory.GetDefaultTypeFor(member.ConvertType); // (long)q.Prop
+				}
+
+				persister = queryableCollection.ElementType.IsEntityType
+					? queryableCollection.ElementPersister
+					: null;
+
 				return queryableCollection.ElementType;
 			}
 
 			// q.Prop[0]
+			persister = null;
 			return null;
 		}
 
@@ -263,6 +465,15 @@ namespace NHibernate.Util
 			private bool _hasIndexer;
 			private string _entityName;
 
+			/// <summary>
+			/// Traverses the expression from top to bottom until the first <see cref="ConstantExpression"/> containing an IEntityNameProvider instance is found.
+			/// </summary>
+			/// <param name="expression">The expression to travese.</param>
+			/// <param name="entityName">An output parameter that will be populated by the first <see cref="IEntityNameProvider.EntityName"/> that is found or null otherwise.</param>
+			/// <param name="convertType">An output parameter that will be populated only when <see cref="ConstantExpression"/> containing an IEntityNameProvider 
+			/// is followed by an <see cref="UnaryExpression"/>.</param>
+			/// <returns>A stack of information about all <see cref="MemberExpression"/> that were traversed until the first <see cref="ConstantExpression"/> containing an 
+			/// IEntityNameProvider instance is found or null when it was not found or if one of the expressions is not supported.</returns>
 			public static Stack<MemberMetadata> TryGetAllMemberMetadata(
 				Expression expression,
 				out string entityName,
@@ -307,13 +518,18 @@ namespace NHibernate.Util
 
 			protected override Expression VisitUnary(UnaryExpression node)
 			{
-				_convertType = node.Type;
+				// Store only the outermost cast, when there are multiple casts for the same member
+				if (_convertType == null)
+				{
+					_convertType = node.Type;
+				}
+
 				return base.Visit(node.Operand);
 			}
 
 			protected internal override Expression VisitNhNominated(NhNominatedExpression node)
 			{
-				return base.Visit(node);
+				return base.Visit(node.Expression);
 			}
 
 			protected override Expression VisitConstant(ConstantExpression node)
@@ -323,6 +539,17 @@ namespace NHibernate.Util
 					: null; // Not a NhQueryable<T>
 
 				return node;
+			}
+
+			protected override Expression VisitBinary(BinaryExpression node)
+			{
+				if (node.NodeType == ExpressionType.ArrayIndex)
+				{
+					_hasIndexer = true;
+					return base.Visit(node.Left);
+				}
+
+				return base.VisitBinary(node);
 			}
 
 			protected override Expression VisitMethodCall(MethodCallExpression node)

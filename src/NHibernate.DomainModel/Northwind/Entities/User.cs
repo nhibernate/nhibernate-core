@@ -28,7 +28,7 @@ namespace NHibernate.DomainModel.Northwind.Entities
 		EnumStoredAsInt32 Enum2 { get; set; }
 	}
 
-	public class User : IUser
+	public class User : IUser, IEntity
 	{
 		public virtual int Id { get; set; }
 
@@ -49,6 +49,10 @@ namespace NHibernate.DomainModel.Northwind.Entities
 		public virtual EnumStoredAsString Enum1 { get; set; }
 
 		public virtual EnumStoredAsInt32 Enum2 { get; set; }
+
+		public virtual int NotMapped { get; set; }
+
+		public virtual Role NotMappedRole { get; set; }
 
 		public User() { }
 
