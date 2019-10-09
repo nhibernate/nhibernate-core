@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3972">
+
+  <class name="DataRecord" table="DataRecords" abstract="false"
+         discriminator-value="not null">
+    <id name="Id" generator="guid.comb" />
+    <discriminator column="Type" insert="false" type="int" />
+    <version name="Version" column="Version" />
+
+    <property name="Type" column="Type" not-null="false" />
+    <property name="Subject" column="Subject" not-null="false" />
+
+    <joined-subclass name="NHibernate.Test.NHSpecificTest.NH3972.Incident" table="Incidents">
+      <key column="DataRecordId" />
+      <many-to-one name="State" column="StateDataIncidentStateId" fetch="select" cascade="none"
+                   class="NHibernate.Test.NHSpecificTest.NH3972.DataIncidentState" not-null="false" />
+      <property name="ReportedBy" column="ReportedBy" not-null="false" />
+    </joined-subclass>
+
+    <joined-subclass name="NHibernate.Test.NHSpecificTest.NH3972.Problem" table="Problems">
+      <key column="DataRecordId" />
+      <many-to-one name="State" column="StateDataProblemStateId" fetch="select"
+                   cascade="none" class="NHibernate.Test.NHSpecificTest.NH3972.DataProblemState"
+                   not-null="false" />
+    </joined-subclass>
+
+    <joined-subclass name="NHibernate.Test.NHSpecificTest.NH3972.RequestForChange" table="RequestForChanges">
+      <key column="DataRecordId" />
+      <many-to-one name="State" column="StateDataRequestForChangeStateId" fetch="select"
+                   cascade="none" class="NHibernate.Test.NHSpecificTest.NH3972.DataRequestForChangeState"
+                   not-null="false" />
+    </joined-subclass>
+
+    <joined-subclass name="NHibernate.Test.NHSpecificTest.NH3972.Change" table="Changes">
+      <key column="DataRecordId" />
+      <many-to-one name="State" column="StateDataChangeStateId" fetch="select"
+                   cascade="none" class="NHibernate.Test.NHSpecificTest.NH3972.DataChangeState"
+                   not-null="false" />
+      <property name="ExecutedBy" column="ExecutedBy" not-null="false" />
+    </joined-subclass>
+  </class>
+
+  <class name="DataState" table="DataStates" abstract="false" discriminator-value="not null">
+    <id name="Id" generator="guid.comb" />
+    <discriminator column="Type" insert="false" type="int" />
+    <version name="Version" column="Version" />
+
+    <property name="Type" column="Type" not-null="false" />
+    <property name="Description" column="Description" not-null="false" />
+
+    <subclass name="NHibernate.Test.NHSpecificTest.NH3972.DataIncidentState" discriminator-value="0">
+      <property name="State" column="State" not-null="false" />
+    </subclass>
+
+    <subclass name="NHibernate.Test.NHSpecificTest.NH3972.DataProblemState" discriminator-value="1">
+      <property name="State" column="State" not-null="false" />
+    </subclass>
+
+    <subclass name="NHibernate.Test.NHSpecificTest.NH3972.DataRequestForChangeState"
+              discriminator-value="2">
+      <property name="State" column="State" not-null="false" />
+    </subclass>
+
+    <subclass name="NHibernate.Test.NHSpecificTest.NH3972.DataChangeState" discriminator-value="3">
+      <property name="State" column="State" not-null="false" />
+    </subclass>
+  </class>
+</hibernate-mapping>
