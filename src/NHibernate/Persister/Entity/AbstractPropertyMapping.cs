@@ -32,8 +32,7 @@ namespace NHibernate.Persister.Entity
 
 		public IType ToType(string propertyName)
 		{
-			IType type;
-			if (!typesByPropertyPath.TryGetValue(propertyName, out type))
+			if (!typesByPropertyPath.TryGetValue(propertyName, out var type))
 				throw PropertyException(propertyName);
 			
 			return type;
@@ -94,11 +93,16 @@ namespace NHibernate.Persister.Entity
 
 		protected void AddPropertyPath(string path, IType type, string[] columns, string[] formulaTemplates)
 		{
-			typesByPropertyPath[path] = type;
-			columnsByPropertyPath[path] = columns;
+			if (!typesByPropertyPath.ContainsKey(path))
+			{
+				typesByPropertyPath[path] = type;
+				columnsByPropertyPath[path] = columns;
 
-			if (formulaTemplates != null)
-				formulaTemplatesByPropertyPath[path] = formulaTemplates;
+				if (formulaTemplates != null)
+				{
+					formulaTemplatesByPropertyPath[path] = formulaTemplates;
+				}
+			}
 		}
 
 		protected internal void InitPropertyPaths( string path, IType type, string[] columns, string[] formulaTemplates, IMapping factory )
