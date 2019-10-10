@@ -171,8 +171,28 @@ namespace NHibernate.Util
 				}
 			}
 
+			return TraverseMembers(
+				sessionFactory,
+				memberPaths,
+				currentEntityPersister,
+				out mappedType,
+				out entityPersister,
+				out component,
+				out memberPath);
+		}
+
+		private static bool TraverseMembers(
+			ISessionFactoryImplementor sessionFactory,
+			Stack<MemberMetadata> memberPaths,
+			IEntityPersister currentEntityPersister,
+			out IType mappedType,
+			out IEntityPersister entityPersister,
+			out IAbstractComponentType component,
+			out string memberPath)
+		{
 			// Traverse the members that were traversed by the TryGetAllMemberMetadata method in the reverse order and try to keep
 			// tracking the entity persister until all members are traversed.
+			System.Type convertType;
 			var member = memberPaths.Pop();
 			var currentType = currentEntityPersister.EntityMetamodel.GetPropertyType(member.Path);
 			IAbstractComponentType currentComponentType = null;
