@@ -196,5 +196,57 @@ namespace NHibernate.Loader
 
 			throw new ArgumentOutOfRangeException(nameof(SelectMode), SelectMode.ToString());
 		}
+
+		internal string GetSelectFragment(string entitySuffix, string collectionSuffix, OuterJoinableAssociation next)
+		{
+			switch (SelectMode)
+			{
+				case SelectMode.Undefined:
+				case SelectMode.Fetch:
+#pragma warning disable 618
+					return Joinable.SelectFragment(
+						next?.Joinable,
+						next?.RHSAlias,
+						RHSAlias,
+						entitySuffix,
+						collectionSuffix,
+						ShouldFetchCollectionPersister());
+#pragma warning restore 618
+
+				case SelectMode.FetchLazyProperties:
+#pragma warning disable 618
+					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(Joinable, "fetch lazy properties")
+					                    .SelectFragment(
+						                    next?.Joinable,
+						                    next?.RHSAlias,
+						                    RHSAlias,
+						                    entitySuffix,
+						                    collectionSuffix,
+						                    ShouldFetchCollectionPersister(),
+						                    true);
+#pragma warning restore 618
+
+				case SelectMode.FetchLazyPropertyGroup:
+					return ReflectHelper.CastOrThrow<ISupportLazyPropsJoinable>(Joinable, "fetch lazy property")
+					                    .SelectFragment(
+						                    next?.Joinable,
+						                    next?.RHSAlias,
+						                    RHSAlias,
+						                    collectionSuffix,
+						                    ShouldFetchCollectionPersister(),
+						                    new EntityLoadInfo(entitySuffix)
+						                    {
+							                    LazyProperties = EntityFetchLazyProperties
+						                    });
+				case SelectMode.ChildFetch:
+					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(Joinable, "child fetch select mode")
+					                    .IdentifierSelectFragment(RHSAlias, entitySuffix);
+
+				case SelectMode.JoinOnly:
+					return string.Empty;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(SelectMode), $"{SelectMode} is unexpected.");
+			}
+		}
 	}
 }

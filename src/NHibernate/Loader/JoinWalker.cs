@@ -1116,8 +1116,7 @@ namespace NHibernate.Loader
 																			? null
 																			: collectionSuffixes[collectionAliasCount];
 
-					string selectFragment = 
-						GetSelectFragment(join, entitySuffix, collectionSuffix, next);
+					string selectFragment = join.GetSelectFragment(entitySuffix, collectionSuffix, next);
 
 					if (!string.IsNullOrWhiteSpace(selectFragment))
 					{
@@ -1135,55 +1134,11 @@ namespace NHibernate.Loader
 			}
 		}
 
+		//Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		protected static string GetSelectFragment(OuterJoinableAssociation join, string entitySuffix, string collectionSuffix, OuterJoinableAssociation next = null)
 		{
-			switch (join.SelectMode)
-			{
-				case SelectMode.Undefined:
-				case SelectMode.Fetch:
-#pragma warning disable 618
-					return join.Joinable.SelectFragment(
-						next?.Joinable,
-						next?.RHSAlias,
-						join.RHSAlias,
-						entitySuffix,
-						collectionSuffix,
-						join.ShouldFetchCollectionPersister());
-#pragma warning restore 618
-
-				case SelectMode.FetchLazyProperties:
-#pragma warning disable 618
-					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(join.Joinable, "fetch lazy properties")
-						.SelectFragment(
-							next?.Joinable,
-							next?.RHSAlias,
-							join.RHSAlias,
-							entitySuffix,
-							collectionSuffix,
-							join.ShouldFetchCollectionPersister(),
-							true);
-#pragma warning restore 618
-
-				case SelectMode.FetchLazyPropertyGroup:
-					return ReflectHelper.CastOrThrow<ISupportLazyPropsJoinable>(join.Joinable, "fetch lazy property")
-										.SelectFragment(
-											next?.Joinable,
-											next?.RHSAlias,
-											join.RHSAlias,
-											collectionSuffix,
-											join.ShouldFetchCollectionPersister(),
-											new EntityLoadInfo(entitySuffix)
-											{
-												LazyProperties = join.EntityFetchLazyProperties
-											});
-				case SelectMode.ChildFetch:
-					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(join.Joinable, "child fetch select mode").IdentifierSelectFragment(join.RHSAlias, entitySuffix);
-
-				case SelectMode.JoinOnly:
-					return string.Empty;
-				default:
-					throw new ArgumentOutOfRangeException(nameof(join.SelectMode), $"{join.SelectMode} is unexpected.");
-			}
+			return join.GetSelectFragment(entitySuffix, collectionSuffix, next);
 		}
 	}
 }
