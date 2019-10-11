@@ -198,23 +198,11 @@ namespace NHibernate.Util
 			while (memberPaths.Count > 0 && currentType != null)
 			{
 				var convertType = member.ConvertType;
-				// Concatenate the component property path in order to be able to use EntityMetamodel.GetPropertyType to retrieve the type.
-				// As GetPropertyType supports only components, do not concatenate when dealing with collection composite elements or elements.
-				if (!currentType.IsAnyType && currentType is IAbstractComponentType)
-				{
-					var nextMember = memberPaths.Pop();
-					member = currentEntityPersister == null // Collection with composite element or element
-						? nextMember
-						: new MemberMetadata($"{member.Path}.{nextMember.Path}", nextMember.ConvertType, nextMember.HasIndexer);
-				}
-				else
-				{
-					member = memberPaths.Pop();
-				}
 
 				switch (currentType)
 				{
 					case IAssociationType associationType:
+						member = memberPaths.Pop();
 						ProcessAssociationType(
 							associationType,
 							sessionFactory,
@@ -225,10 +213,24 @@ namespace NHibernate.Util
 							out currentComponentType);
 						break;
 					case IAbstractComponentType componentType:
+						// Concatenate the component property path in order to be able to use EntityMetamodel.GetPropertyType to retrieve the type.
+						// As GetPropertyType supports only components, do not concatenate when dealing with collection composite elements or elements.
+						if (!currentType.IsAnyType)
+						{
+							var nextMember = memberPaths.Pop();
+							member = currentEntityPersister == null // Collection with composite element or element
+								? nextMember
+								: new MemberMetadata($"{member.Path}.{nextMember.Path}", nextMember.ConvertType, nextMember.HasIndexer);
+						}
+						else
+						{
+							member = memberPaths.Pop();
+						}
 						currentComponentType = componentType;
 						ProcessComponentType(componentType, currentEntityPersister, member, out currentType);
 						break;
 					default:
+						member = memberPaths.Pop();
 						// q.Prop.NotMappedProp
 						currentType = null;
 						currentEntityPersister = null;
