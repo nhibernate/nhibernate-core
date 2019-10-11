@@ -197,12 +197,13 @@ namespace NHibernate.Util
 			IAbstractComponentType currentComponentType = null;
 			while (memberPaths.Count > 0 && currentType != null)
 			{
+				memberPath = member.Path;
 				var convertType = member.ConvertType;
+				member = memberPaths.Pop();
 
 				switch (currentType)
 				{
 					case IAssociationType associationType:
-						member = memberPaths.Pop();
 						ProcessAssociationType(
 							associationType,
 							sessionFactory,
@@ -213,24 +214,31 @@ namespace NHibernate.Util
 							out currentComponentType);
 						break;
 					case IAbstractComponentType componentType:
-						// Concatenate the component property path in order to be able to use EntityMetamodel.GetPropertyType to retrieve the type.
-						// As GetPropertyType supports only components, do not concatenate when dealing with collection composite elements or elements.
-						if (!currentType.IsAnyType)
+						currentComponentType = componentType;
+						if (currentEntityPersister == null)
 						{
-							var nextMember = memberPaths.Pop();
-							member = currentEntityPersister == null // Collection with composite element or element
-								? nextMember
-								: new MemberMetadata($"{member.Path}.{nextMember.Path}", nextMember.ConvertType, nextMember.HasIndexer);
+							// When persister is not available (q.OneToManyCompositeElement[0].Prop), try to get the type from the component
+							currentType = TryGetComponentPropertyType(componentType, member.Path);
 						}
 						else
 						{
-							member = memberPaths.Pop();
+							if (!currentType.IsAnyType)
+							{
+								// Concatenate the component property path in order to be able to use EntityMetamodel.GetPropertyType to retrieve the type.
+								// As GetPropertyType supports only components, do not concatenate when dealing with collection composite elements or elements.
+								// q.Component.Prop
+								member = new MemberMetadata(
+									$"{memberPath}.{member.Path}",
+									member.ConvertType,
+									member.HasIndexer);
+							}
+
+							// q.Component.Prop
+							currentType = currentEntityPersister.EntityMetamodel.GetPropertyType(member.Path);
 						}
-						currentComponentType = componentType;
-						ProcessComponentType(componentType, currentEntityPersister, member, out currentType);
+
 						break;
 					default:
-						member = memberPaths.Pop();
 						// q.Prop.NotMappedProp
 						currentType = null;
 						currentEntityPersister = null;
@@ -257,24 +265,12 @@ namespace NHibernate.Util
 			return false;
 		}
 
-		private static void ProcessComponentType(
-			IAbstractComponentType componentType,
-			IEntityPersister persister,
-			MemberMetadata member,
-			out IType memberType)
+		private static IType TryGetComponentPropertyType(IAbstractComponentType componentType, string memberPath)
 		{
-			// When persister is not available (q.OneToManyCompositeElement[0].Prop), try to get the type from the component
-			if (persister == null)
-			{
-				var index = Array.IndexOf(componentType.PropertyNames, member.Path);
-				memberType = index < 0
-					? null // q.OneToManyCompositeElement[0].NotMappedProp
-					: componentType.Subtypes[index]; // q.OneToManyCompositeElement[0].Prop
-				return;
-			}
-
-			// q.Component.Prop
-			memberType = persister.EntityMetamodel.GetPropertyType(member.Path);
+			var index = Array.IndexOf(componentType.PropertyNames, memberPath);
+			return index < 0
+				? null // q.OneToManyCompositeElement[0].NotMappedProp
+				: componentType.Subtypes[index]; // q.OneToManyCompositeElement[0].Prop
 		}
 
 		private static void ProcessAssociationType(
@@ -299,7 +295,7 @@ namespace NHibernate.Util
 					{
 						case IAbstractComponentType componentType: // q.OneToManyCompositeElement[0].Member
 							memberComponent = componentType;
-							ProcessComponentType(componentType, null, member, out memberType);
+							memberType = TryGetComponentPropertyType(componentType, member.Path);
 							return;
 						default: // q.OneToManyElement[0].Member
 							memberType = null;
