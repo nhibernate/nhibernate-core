@@ -115,11 +115,11 @@ namespace NHibernate.Util
 			out string memberPath)
 		{
 			// In order to get the correct entity name from the expression we first have to find the constant expression that contains the
-			// IEntityNameProvider instance, from which we can retrive the starting entity name. Once we have it, we have to traverse all
-			// expressions that we had to travese in order to find the IEntityNameProvider instance, but in reverse order (bottom to top)
+			// IEntityNameProvider instance, from which we can retrieve the starting entity name. Once we have it, we have to traverse all
+			// expressions that we had to traverse in order to find the IEntityNameProvider instance, but in reverse order (bottom to top)
 			// and keep tracking the entity name until we reach to top.
 
-			// Try to retrive the starting entity name with all members that were traversed in that process
+			// Try to retrieve the starting entity name with all members that were traversed in that process
 			var memberPaths = MemberMetadataExtractor.TryGetAllMemberMetadata(expression, out var entityName, out var convertType);
 			if (memberPaths == null || !TryGetEntityPersister(entityName, null, sessionFactory, out var currentEntityPersister))
 			{
