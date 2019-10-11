@@ -165,10 +165,8 @@ namespace NHibernate.Util
 					component = null;
 					return false;
 				}
-				else
-				{
-					currentEntityPersister = convertPersister; // ((Subclass)q).Id
-				}
+
+				currentEntityPersister = convertPersister; // ((Subclass)q).Id
 			}
 
 			return TraverseMembers(
@@ -222,16 +220,13 @@ namespace NHibernate.Util
 						}
 						else
 						{
-							if (!currentType.IsAnyType)
-							{
-								// Concatenate the component property path in order to be able to use EntityMetamodel.GetPropertyType to retrieve the type.
-								// As GetPropertyType supports only components, do not concatenate when dealing with collection composite elements or elements.
-								// q.Component.Prop
-								member = new MemberMetadata(
-									$"{memberPath}.{member.Path}",
-									member.ConvertType,
-									member.HasIndexer);
-							}
+							// Concatenate the component property path in order to be able to use EntityMetamodel.GetPropertyType to retrieve the type.
+							// As GetPropertyType supports only components, do not concatenate when dealing with collection composite elements or elements.
+							// q.Component.Prop
+							member = new MemberMetadata(
+								$"{memberPath}.{member.Path}",
+								member.ConvertType,
+								member.HasIndexer);
 
 							// q.Component.Prop
 							currentType = currentEntityPersister.EntityMetamodel.GetPropertyType(member.Path);
@@ -475,7 +470,7 @@ namespace NHibernate.Util
 			/// <summary>
 			/// Traverses the expression from top to bottom until the first <see cref="ConstantExpression"/> containing an IEntityNameProvider instance is found.
 			/// </summary>
-			/// <param name="expression">The expression to travese.</param>
+			/// <param name="expression">The expression to traverse.</param>
 			/// <param name="entityName">An output parameter that will be populated by the first <see cref="IEntityNameProvider.EntityName"/> that is found or null otherwise.</param>
 			/// <param name="convertType">An output parameter that will be populated only when <see cref="ConstantExpression"/> containing an IEntityNameProvider 
 			/// is followed by an <see cref="UnaryExpression"/>.</param>

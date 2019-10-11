@@ -23,8 +23,8 @@ namespace NHibernate.Test.Linq
 	/// </summary>
 	public class TryGetMappedTests : LinqTestCase
 	{
-		private readonly static TryGetMappedType _tryGetMappedType;
-		private readonly static TryGetMappedNullability _tryGetMappedNullability;
+		private static readonly TryGetMappedType _tryGetMappedType;
+		private static readonly TryGetMappedNullability _tryGetMappedNullability;
 
 		delegate bool TryGetMappedType(
 			ISessionFactoryImplementor sessionFactory,
