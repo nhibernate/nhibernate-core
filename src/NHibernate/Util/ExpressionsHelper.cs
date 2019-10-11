@@ -192,32 +192,12 @@ namespace NHibernate.Util
 		{
 			// Traverse the members that were traversed by the TryGetAllMemberMetadata method in the reverse order and try to keep
 			// tracking the entity persister until all members are traversed.
-			System.Type convertType;
 			var member = memberPaths.Pop();
 			var currentType = currentEntityPersister.EntityMetamodel.GetPropertyType(member.Path);
 			IAbstractComponentType currentComponentType = null;
-			while (true)
+			while (memberPaths.Count > 0 && currentType != null)
 			{
-				// When traversed to the top of the expression, return the current tracking values
-				if (memberPaths.Count == 0)
-				{
-					memberPath = currentEntityPersister != null || currentComponentType != null ? member.Path : null;
-					mappedType = GetType(currentEntityPersister, currentType, member, sessionFactory, out _);
-					entityPersister = currentEntityPersister;
-					component = currentComponentType;
-					return mappedType != null;
-				}
-
-				if (currentType == null) // Member not mapped
-				{
-					memberPath = null;
-					mappedType = null;
-					entityPersister = null;
-					component = null;
-					return false;
-				}
-
-				convertType = member.ConvertType;
+				var convertType = member.ConvertType;
 				// Concatenate the component property path in order to be able to use EntityMetamodel.GetPropertyType to retrieve the type.
 				// As GetPropertyType supports only components, do not concatenate when dealing with collection composite elements or elements.
 				if (!currentType.IsAnyType && currentType is IAbstractComponentType)
@@ -256,6 +236,23 @@ namespace NHibernate.Util
 						break;
 				}
 			}
+			
+			// When traversed to the top of the expression, return the current tracking values
+			if (memberPaths.Count == 0)
+			{
+				memberPath = currentEntityPersister != null || currentComponentType != null ? member.Path : null;
+				mappedType = GetType(currentEntityPersister, currentType, member, sessionFactory, out _);
+				entityPersister = currentEntityPersister;
+				component = currentComponentType;
+				return mappedType != null;
+			}
+
+			// Member not mapped
+			memberPath = null;
+			mappedType = null;
+			entityPersister = null;
+			component = null;
+			return false;
 		}
 
 		private static void ProcessComponentType(
