@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Collection.Trackers;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Linq;
@@ -48,7 +49,7 @@ namespace NHibernate.Collection.Generic
 		 * <one-to-many> <bag>!
 		 */
 		private IList<T> _gbag;
-		private bool _isOneToMany;
+		private bool _isOneToMany; // 6.0 TODO: Remove
 
 		public PersistentGenericBag()
 		{
@@ -65,6 +66,19 @@ namespace NHibernate.Collection.Generic
 			_gbag = coll as IList<T> ?? new List<T>(coll);
 			SetInitialized();
 			IsDirectlyAccessible = true;
+		}
+
+		internal override AbstractQueueOperationTracker CreateQueueOperationTracker()
+		{
+			var entry = Session.PersistenceContext.GetCollectionEntry(this);
+			return new BagQueueOperationTracker<T>(entry.LoadedPersister);
+		}
+
+		public override void ApplyQueuedOperations()
+		{
+			var queueOperation = (BagQueueOperationTracker<T>) QueueOperationTracker;
+			queueOperation?.ApplyChanges(_gbag);
+			QueueOperationTracker = null;
 		}
 
 		protected IList<T> InternalBag
@@ -119,15 +133,26 @@ namespace NHibernate.Collection.Generic
 
 		int IList.Add(object value)
 		{
-			Add((T) value);
+			if (!IsOperationQueueEnabled || !ReadSize())
+			{
+				Write();
+				return ((IList) _gbag).Add((T) value);
+			}
 
-			//TODO: take a look at this - I don't like it because it changes the 
-			// meaning of Add - instead of returning the index it was added at 
-			// returns a "fake" index - not consistent with IList interface...
-			var count = !IsOperationQueueEnabled
-							? _gbag.Count
-							: 0;
-			return count - 1;
+			var val = (T) value;
+			var queueOperationTracker = GetOrCreateQueueOperationTracker();
+			if (queueOperationTracker != null)
+			{
+				QueueAddElement(val);
+			}
+			else
+			{
+#pragma warning disable 618
+				QueueOperation(new SimpleAddDelayedOperation(this, val));
+#pragma warning restore 618
+			}
+
+			return CachedSize - 1;
 		}
 
 		void IList.Insert(int index, object value)
@@ -181,7 +206,17 @@ namespace NHibernate.Collection.Generic
 			}
 			else
 			{
-				QueueOperation(new SimpleAddDelayedOperation(this, item));
+				var queueOperationTracker = GetOrCreateQueueOperationTracker();
+				if (queueOperationTracker != null)
+				{
+					QueueAddElement(item);
+				}
+				else
+				{
+#pragma warning disable 618
+					QueueOperation(new SimpleAddDelayedOperation(this, item));
+#pragma warning restore 618
+				}
 			}
 		}
 
@@ -189,7 +224,17 @@ namespace NHibernate.Collection.Generic
 		{
 			if (ClearQueueEnabled)
 			{
-				QueueOperation(new ClearDelayedOperation(this));
+				var queueOperationTracker = GetOrCreateQueueOperationTracker();
+				if (queueOperationTracker != null)
+				{
+					QueueClearCollection();
+				}
+				else
+				{
+#pragma warning disable 618
+					QueueOperation(new ClearDelayedOperation(this));
+#pragma warning restore 618
+				}
 			}
 			else
 			{
@@ -204,7 +249,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(T item)
 		{
-			return ReadElementExistence(item) ?? _gbag.Contains(item);
+			return ReadElementExistence(item, out _) ?? _gbag.Contains(item);
 		}
 
 		public void CopyTo(T[] array, int arrayIndex)
@@ -499,6 +544,8 @@ namespace NHibernate.Collection.Generic
 			return result;
 		}
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		private sealed class ClearDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericBag<T> _enclosingInstance;
@@ -524,6 +571,8 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		private sealed class SimpleAddDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericBag<T> _enclosingInstance;

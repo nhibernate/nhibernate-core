@@ -12,11 +12,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Collection.Generic;
+using NHibernate.Collection.Trackers;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
+using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -26,6 +29,62 @@ namespace NHibernate.Collection
 	using System.Threading;
 	public abstract partial class AbstractPersistentCollection : IPersistentCollection, ILazyInitializedCollection
 	{
+
+		protected virtual async Task<bool?> ReadKeyExistenceAsync<TKey, TValue>(TKey elementKey, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (!initialized)
+			{
+				ThrowLazyInitializationExceptionIfNotConnected();
+				CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(this);
+				ICollectionPersister persister = entry.LoadedPersister;
+				if (persister.IsExtraLazy)
+				{
+					var queueOperationTracker = (AbstractMapQueueOperationTracker<TKey, TValue>) GetOrCreateQueueOperationTracker();
+					if (queueOperationTracker == null)
+					{
+						if (HasQueuedOperations)
+						{
+							await (session.FlushAsync(cancellationToken)).ConfigureAwait(false);
+						}
+
+						return persister.IndexExists(entry.LoadedKey, elementKey, session);
+					}
+
+					if (queueOperationTracker.ContainsKey(elementKey))
+					{
+						return true;
+					}
+
+					if (queueOperationTracker.Cleared)
+					{
+						return false;
+					}
+
+					if (queueOperationTracker.IsElementKeyQueuedForDelete(elementKey))
+					{
+						return false;
+					}
+
+					// As keys are unordered we don't have to calculate the current order of the key
+					return persister.IndexExists(entry.LoadedKey, elementKey, session);
+				}
+				Read();
+			}
+			return null;
+		}
+
+		internal async Task<bool> IsTransientAsync(object element, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var queryableCollection = (IQueryableCollection) Session.Factory.GetCollectionPersister(Role);
+			return
+				queryableCollection != null &&
+				queryableCollection.ElementType.IsEntityType &&
+				!element.IsProxy() &&
+				!Session.PersistenceContext.IsEntryFor(element) &&
+				await (ForeignKeys.IsTransientFastAsync(queryableCollection.ElementPersister.EntityName, element, Session, cancellationToken)).ConfigureAwait(false) == true;
+		}
 
 		/// <summary>
 		/// Initialize the collection, if possible, wrapping any exceptions
@@ -102,20 +161,35 @@ namespace NHibernate.Collection
 			{
 				if (HasQueuedOperations)
 				{
-					List<object> additions = new List<object>(operationQueue.Count);
-					List<object> removals = new List<object>(operationQueue.Count);
-					for (int i = 0; i < operationQueue.Count; i++)
+					List<object> additions;
+					List<object> removals;
+
+					// Use the queue operation tracker when available to get the orphans as the default logic
+					// does not work correctly when readding a transient entity. Removals list should
+					// contain only entities that are already in the database.
+					if (_queueOperationTracker != null)
 					{
-						IDelayedOperation op = operationQueue[i];
-						if (op.AddedInstance != null)
+						removals = new List<object>(_queueOperationTracker.GetOrphans().Cast<object>());
+						additions = new List<object>(_queueOperationTracker.GetAddedElements().Cast<object>());
+					}
+					else // 6.0 TODO: Remove whole else block
+					{
+						additions = new List<object>(operationQueue.Count);
+						removals = new List<object>(operationQueue.Count);
+						for (int i = 0; i < operationQueue.Count; i++)
 						{
-							additions.Add(op.AddedInstance);
-						}
-						if (op.Orphan != null)
-						{
-							removals.Add(op.Orphan);
+							var op = operationQueue[i];
+							if (op.AddedInstance != null)
+							{
+								additions.Add(op.AddedInstance);
+							}
+							if (op.Orphan != null)
+							{
+								removals.Add(op.Orphan);
+							}
 						}
 					}
+
 					return GetOrphansAsync(removals, additions, entityName, session, cancellationToken);
 				}
 
@@ -162,12 +236,7 @@ namespace NHibernate.Collection
 		protected virtual async Task<ICollection> GetOrphansAsync(ICollection oldElements, ICollection currentElements, string entityName, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			// short-circuit(s)
-			if (currentElements.Count == 0)
-			{
-				// no new elements, the old list contains only Orphans
-				return oldElements;
-			}
+			var collectionPersister = session.PersistenceContext.GetCollectionEntry(this).LoadedPersister as AbstractCollectionPersister;
 			if (oldElements.Count == 0)
 			{
 				// no old elements, so no Orphans neither
@@ -193,6 +262,11 @@ namespace NHibernate.Collection
 			// iterate over the *old* list
 			foreach (object old in oldElements)
 			{
+				if (!IsOrphan(old, collectionPersister))
+				{
+					continue;
+				}
+
 				object oldId = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, old, session, cancellationToken)).ConfigureAwait(false);
 				if (!currentIds.Contains(new TypedValue(idType, oldId, false)))
 				{

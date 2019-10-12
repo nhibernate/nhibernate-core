@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
-
 using NHibernate.Action;
 using NHibernate.Classic;
+using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Impl;
 using NHibernate.Intercept;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using Status=NHibernate.Engine.Status;
@@ -260,6 +261,13 @@ namespace NHibernate.Event.Default
 					key = source.GenerateEntityKey(id, persister);
 					source.PersistenceContext.CheckUniqueness(key, entity);
 					//source.getBatcher().executeBatch(); //found another way to ensure that all batched joined inserts have been executed
+
+					// Update uninitialized collections that contain the inserted child (NH-739). We don't need to update the collections
+					// when doing a full flush as they will execute all queued actions at once.
+					if (!source.PersistenceContext.Flushing)
+					{
+						UpdateCollectionsQueues(source, persister, entity);
+					}
 				}
 				else
 				{
@@ -291,6 +299,54 @@ namespace NHibernate.Event.Default
 			MarkInterceptorDirty(entity, persister, source);
 
 			return id;
+		}
+
+		private static void UpdateCollectionsQueues(ISessionImplementor source, IEntityPersister persister, object entity)
+		{
+			var roles = source.Factory.GetCollectionRolesByEntityParticipant(persister.EntityName);
+			if (roles == null)
+			{
+				return;
+			}
+
+			foreach (var role in roles)
+			{
+				if (!(source.Factory.GetCollectionPersister(role) is AbstractCollectionPersister collectionPersister))
+				{
+					continue;
+				}
+
+				var ownerKey = collectionPersister.GetElementOwnerKey(entity, source);
+				if (ownerKey == null)
+				{
+					continue;
+				}
+
+				var colKey = new CollectionKey(collectionPersister, ownerKey);
+				var collection = source.PersistenceContext.GetCollection(colKey);
+				if (collection == null ||
+					collection.WasInitialized ||
+					!(collection is AbstractPersistentCollection persistentCollection))
+				{
+					continue;
+				}
+
+				var queueTracker = persistentCollection.GetOrCreateQueueOperationTracker();
+				if (queueTracker == null)
+				{
+					continue;
+				}
+
+				// We have to reset the cached sizes in order to avoid having an incorrect value
+				// for ICollection.Count
+				persistentCollection.ResetCachedSize();
+				queueTracker.DatabaseCollectionSize = -1;
+				queueTracker.AfterElementFlushing(entity);
+				if (persistentCollection.IsDirty && !persistentCollection.HasQueuedOperations)
+				{
+					persistentCollection.ClearDirty();
+				}
+			}
 		}
 
 		private void MarkInterceptorDirty(object entity, IEntityPersister persister, IEventSource source)

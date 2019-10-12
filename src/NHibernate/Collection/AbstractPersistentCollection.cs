@@ -2,11 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Collection.Generic;
+using NHibernate.Collection.Trackers;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
+using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -19,9 +22,15 @@ namespace NHibernate.Collection
 	[Serializable]
 	public abstract partial class AbstractPersistentCollection : IPersistentCollection, ILazyInitializedCollection
 	{
+		// Since v5.3
+		[Obsolete("This field has no more usages in NHibernate and will be removed in a future version.")]
 		protected internal static readonly object Unknown = new object(); //place holder
+		// Since v5.3
+		[Obsolete("This field has no more usages in NHibernate and will be removed in a future version.")]
 		protected internal static readonly object NotFound = new object(); //place holder
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		protected interface IDelayedOperation
 		{
 			object AddedInstance { get; }
@@ -29,6 +38,7 @@ namespace NHibernate.Collection
 			void Operate();
 		}
 
+		// 6.0 TODO: Remove
 		private class AdditionEnumerable : IEnumerable
 		{
 			private readonly AbstractPersistentCollection enclosingInstance;
@@ -85,9 +95,12 @@ namespace NHibernate.Collection
 
 		[NonSerialized] private ISessionImplementor session;
 		private bool initialized;
-		[NonSerialized] private List<IDelayedOperation> operationQueue;
+#pragma warning disable 618
+		[NonSerialized] private List<IDelayedOperation> operationQueue; // 6.0 TODO: Remove
+#pragma warning restore 618
 		[NonSerialized] private bool directlyAccessible;
 		[NonSerialized] private bool initializing;
+		[NonSerialized] private AbstractQueueOperationTracker _queueOperationTracker;
 
 		private object owner;
 		private int cachedSize = -1;
@@ -213,6 +226,11 @@ namespace NHibernate.Collection
 			}
 		}
 
+		internal void ResetCachedSize()
+		{
+			cachedSize = -1;
+		}
+
 		/// <summary>
 		/// Return the user-visible collection (or array) instance
 		/// </summary>
@@ -276,26 +294,41 @@ namespace NHibernate.Collection
 				{
 					return true;
 				}
-				else
+
+				ThrowLazyInitializationExceptionIfNotConnected();
+				var entry = session.PersistenceContext.GetCollectionEntry(this);
+				var persister = entry.LoadedPersister;
+				if (persister.IsExtraLazy)
 				{
-					ThrowLazyInitializationExceptionIfNotConnected();
-					CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(this);
-					ICollectionPersister persister = entry.LoadedPersister;
-					if (persister.IsExtraLazy)
+					var queueOperationTracker = GetOrCreateQueueOperationTracker();
+					if (queueOperationTracker == null)
 					{
 						if (HasQueuedOperations)
 						{
 							session.Flush();
 						}
+
 						cachedSize = persister.GetSize(entry.LoadedKey, session);
 						return true;
 					}
+
+					if (!queueOperationTracker.Cleared && queueOperationTracker.DatabaseCollectionSize < 0)
+					{
+						queueOperationTracker.DatabaseCollectionSize = persister.GetSize(entry.LoadedKey, session);
+					}
+
+					cachedSize = queueOperationTracker.Cleared
+						? queueOperationTracker.GetQueueSize()
+						: queueOperationTracker.GetCollectionSize();
+					return true;
 				}
+				Read();
 			}
-			Read();
 			return false;
 		}
 
+		// Since v5.3
+		[Obsolete("This method has no more usages in NHibernate and will be removed in a future version.")]
 		protected virtual bool? ReadIndexExistence(object index)
 		{
 			if (!initialized)
@@ -316,6 +349,8 @@ namespace NHibernate.Collection
 			return null;
 		}
 
+		// Since v5.3
+		[Obsolete("This method has no more usages in NHibernate and will be removed in a future version.")]
 		protected virtual bool? ReadElementExistence(object element)
 		{
 			if (!initialized)
@@ -336,6 +371,8 @@ namespace NHibernate.Collection
 			return null;
 		}
 
+		// Since v5.3
+		[Obsolete("This method has no more usages in NHibernate and will be removed in a future version.")]
 		protected virtual object ReadElementByIndex(object index)
 		{
 			if (!initialized)
@@ -357,6 +394,232 @@ namespace NHibernate.Collection
 			return Unknown;
 		}
 
+		protected virtual bool? ReadKeyExistence<TKey, TValue>(TKey elementKey)
+		{
+			if (!initialized)
+			{
+				ThrowLazyInitializationExceptionIfNotConnected();
+				CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(this);
+				ICollectionPersister persister = entry.LoadedPersister;
+				if (persister.IsExtraLazy)
+				{
+					var queueOperationTracker = (AbstractMapQueueOperationTracker<TKey, TValue>) GetOrCreateQueueOperationTracker();
+					if (queueOperationTracker == null)
+					{
+						if (HasQueuedOperations)
+						{
+							session.Flush();
+						}
+
+						return persister.IndexExists(entry.LoadedKey, elementKey, session);
+					}
+
+					if (queueOperationTracker.ContainsKey(elementKey))
+					{
+						return true;
+					}
+
+					if (queueOperationTracker.Cleared)
+					{
+						return false;
+					}
+
+					if (queueOperationTracker.IsElementKeyQueuedForDelete(elementKey))
+					{
+						return false;
+					}
+
+					// As keys are unordered we don't have to calculate the current order of the key
+					return persister.IndexExists(entry.LoadedKey, elementKey, session);
+				}
+				Read();
+			}
+			return null;
+		}
+
+		protected virtual bool? ReadElementExistence<T>(T element, out bool? existsInDb)
+		{
+			if (!initialized)
+			{
+				ThrowLazyInitializationExceptionIfNotConnected();
+				CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(this);
+				ICollectionPersister persister = entry.LoadedPersister;
+				if (persister.IsExtraLazy)
+				{
+					var queueOperationTracker = (AbstractCollectionQueueOperationTracker<T>) GetOrCreateQueueOperationTracker();
+					if (queueOperationTracker == null)
+					{
+						if (HasQueuedOperations)
+						{
+							session.Flush();
+						}
+
+						existsInDb = persister.ElementExists(entry.LoadedKey, element, session);
+						return existsInDb;
+					}
+
+					if (queueOperationTracker.ContainsElement(element))
+					{
+						existsInDb = null;
+						return true;
+					}
+
+					if (queueOperationTracker.Cleared)
+					{
+						existsInDb = null;
+						return false;
+					}
+
+					if (queueOperationTracker.IsElementQueuedForDelete(element))
+					{
+						existsInDb = null;
+						return false;
+					}
+
+					existsInDb = persister.ElementExists(entry.LoadedKey, element, session);
+					return existsInDb;
+				}
+				Read();
+			}
+
+			existsInDb = null;
+			return null;
+		}
+
+		protected virtual bool? TryReadElementByKey<TKey, TValue>(TKey elementKey, out TValue element, out bool? existsInDb)
+		{
+			if (!initialized)
+			{
+				ThrowLazyInitializationExceptionIfNotConnected();
+				CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(this);
+				ICollectionPersister persister = entry.LoadedPersister;
+				if (persister.IsExtraLazy)
+				{
+					var queueOperationTracker = (AbstractMapQueueOperationTracker<TKey, TValue>) GetOrCreateQueueOperationTracker();
+					if (queueOperationTracker == null)
+					{
+						if (HasQueuedOperations)
+						{
+							session.Flush();
+						}
+					}
+					else
+					{
+						if (queueOperationTracker.TryGetElementByKey(elementKey, out element))
+						{
+							existsInDb = null;
+							return true;
+						}
+
+						if (queueOperationTracker.Cleared)
+						{
+							existsInDb = null;
+							return false;
+						}
+
+						if (queueOperationTracker.IsElementKeyQueuedForDelete(elementKey))
+						{
+							existsInDb = null;
+							return false;
+						}
+
+						if (queueOperationTracker.TryGetDatabaseElementByKey(elementKey, out element))
+						{
+							existsInDb = true;
+							return true;
+						}
+					}
+
+					var elementByKey = persister.GetElementByIndex(entry.LoadedKey, elementKey, session, owner);
+					if (persister.NotFoundObject == elementByKey)
+					{
+						element = default(TValue);
+						existsInDb = false;
+						return false;
+					}
+
+					element = (TValue) elementByKey;
+					existsInDb = true;
+					return true;
+				}
+				Read();
+			}
+
+			element = default(TValue);
+			existsInDb = null;
+			return null;
+		}
+
+		protected virtual bool? TryReadElementAtIndex<T>(int index, out T element)
+		{
+			if (!initialized)
+			{
+				ThrowLazyInitializationExceptionIfNotConnected();
+				CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(this);
+				ICollectionPersister persister = entry.LoadedPersister;
+				if (persister.IsExtraLazy)
+				{
+					var queueOperationTracker = (AbstractCollectionQueueOperationTracker<T>) GetOrCreateQueueOperationTracker();
+					if (queueOperationTracker == null)
+					{
+						if (HasQueuedOperations)
+						{
+							session.Flush();
+						}
+					}
+					else if (HasQueuedOperations)
+					{
+						if (queueOperationTracker.RequiresFlushing(nameof(queueOperationTracker.TryGetElementAtIndex)))
+						{
+							session.Flush();
+						}
+						else
+						{
+							if (queueOperationTracker.DatabaseCollectionSize < 0 && 
+								queueOperationTracker.RequiresDatabaseCollectionSize(nameof(queueOperationTracker.TryGetElementAtIndex)) &&
+								!ReadSize())
+							{
+								element = default(T);
+								return null; // The collection was loaded
+							}
+
+							if (queueOperationTracker.TryGetElementAtIndex(index, out element))
+							{
+								return true;
+							}
+
+							if (queueOperationTracker.Cleared)
+							{
+								return false;
+							}
+
+							// We have to calculate the database index based on the changes in the queue
+							index = queueOperationTracker.CalculateDatabaseElementIndex(index);
+							if (index < 0)
+							{
+								element = default(T);
+								return false;
+							}
+						}
+					}
+
+					var elementByIndex = persister.GetElementByIndex(entry.LoadedKey, index, session, owner);
+					if (persister.NotFoundObject == elementByIndex)
+					{
+						element = default(T);
+						return false;
+					}
+
+					element = (T) elementByIndex;
+					return true;
+				}
+				Read();
+			}
+
+			element = default(T);
+			return null;
+		}
+
 		/// <summary>
 		/// Called by any writer method of the collection interface
 		/// </summary>
@@ -366,9 +629,35 @@ namespace NHibernate.Collection
 			Dirty();
 		}
 
+		internal virtual AbstractQueueOperationTracker CreateQueueOperationTracker() => null;
+
+		internal AbstractQueueOperationTracker QueueOperationTracker
+		{
+			get => _queueOperationTracker;
+			set => _queueOperationTracker = value;
+		}
+
+		internal AbstractQueueOperationTracker GetOrCreateQueueOperationTracker()
+		{
+			if (!IsOperationQueueEnabled)
+			{
+				return null;
+			}
+
+			if (_queueOperationTracker != null)
+			{
+				return _queueOperationTracker;
+			}
+
+			_queueOperationTracker = CreateQueueOperationTracker();
+			return _queueOperationTracker;
+		}
+
 		/// <summary>
 		/// Queue an addition, delete etc. if the persistent collection supports it
 		/// </summary>
+		// Since v5.3
+		[Obsolete("This method has no more usages in NHibernate and will be removed in a future version.")]
 		protected virtual void QueueOperation(IDelayedOperation element)
 		{
 			if (operationQueue == null)
@@ -377,6 +666,136 @@ namespace NHibernate.Collection
 			}
 			operationQueue.Add(element);
 			dirty = true; //needed so that we remove this collection from the second-level cache
+		}
+
+		protected bool QueueAddElement<T>(T element)
+		{
+			var queueOperationTracker = TryFlushAndGetQueueOperationTracker<T>(nameof(AbstractCollectionQueueOperationTracker<T>.AddElement));
+			var result = queueOperationTracker.AddElement(element);
+			UpdateCachedFields(queueOperationTracker);
+			return result;
+		}
+
+		protected void QueueRemoveExistingElement<T>(T element, bool? existsInDb)
+		{
+			var queueOperationTracker = TryFlushAndGetQueueOperationTracker<T>(nameof(AbstractCollectionQueueOperationTracker<T>.RemoveExistingElement), out var wasFlushed);
+			queueOperationTracker.RemoveExistingElement(element, wasFlushed ? true : existsInDb);
+			UpdateCachedFields(queueOperationTracker);
+		}
+
+		protected void QueueRemoveElementAtIndex<T>(int index, T element)
+		{
+			var queueOperationTracker = TryFlushAndGetQueueOperationTracker<T>(nameof(AbstractCollectionQueueOperationTracker<T>.RemoveElementAtIndex));
+			queueOperationTracker.RemoveElementAtIndex(index, element);
+			UpdateCachedFields(queueOperationTracker);
+		}
+
+		protected void QueueAddElementAtIndex<T>(int index, T element)
+		{
+			var queueOperationTracker = TryFlushAndGetQueueOperationTracker<T>(nameof(AbstractCollectionQueueOperationTracker<T>.AddElementAtIndex));
+			queueOperationTracker.AddElementAtIndex(index, element);
+			UpdateCachedFields(queueOperationTracker);
+		}
+
+		protected void QueueSetElementAtIndex<T>(int index, T element, T oldElement)
+		{
+			var queueOperationTracker = TryFlushAndGetQueueOperationTracker<T>(nameof(AbstractCollectionQueueOperationTracker<T>.SetElementAtIndex));
+			queueOperationTracker.SetElementAtIndex(index, element, oldElement);
+			UpdateCachedFields(queueOperationTracker);
+		}
+
+		protected void QueueClearCollection()
+		{
+			var queueOperationTracker = TryFlushAndGetQueueOperationTracker(nameof(AbstractQueueOperationTracker.ClearCollection), out _);
+			queueOperationTracker.ClearCollection();
+			UpdateCachedFields(queueOperationTracker);
+		}
+
+		protected void QueueAddElementByKey<TKey, TValue>(TKey elementKey, TValue element, bool exists)
+		{
+			var queueOperationTracker = TryFlushAndGetQueueOperationTracker<TKey, TValue>(nameof(AbstractMapQueueOperationTracker<TKey, TValue>.AddElementByKey));
+			queueOperationTracker.AddElementByKey(elementKey, element, exists);
+			UpdateCachedFields(queueOperationTracker);
+		}
+
+		protected void QueueSetElementByKey<TKey, TValue>(TKey elementKey, TValue element, TValue oldElement, bool? existsInDb)
+		{
+			var queueOperationTracker = TryFlushAndGetQueueOperationTracker<TKey, TValue>(nameof(AbstractMapQueueOperationTracker<TKey, TValue>.SetElementByKey));
+			queueOperationTracker.SetElementByKey(elementKey, element, oldElement, existsInDb);
+			UpdateCachedFields(queueOperationTracker);
+		}
+
+		protected bool QueueRemoveElementByKey<TKey, TValue>(TKey elementKey, TValue oldElement, bool? existsInDb)
+		{
+			var queueOperationTracker = TryFlushAndGetQueueOperationTracker<TKey, TValue>(nameof(AbstractMapQueueOperationTracker<TKey, TValue>.RemoveElementByKey));
+			var result = queueOperationTracker.RemoveElementByKey(elementKey, oldElement, existsInDb);
+			UpdateCachedFields(queueOperationTracker);
+			return result;
+		}
+
+		private void UpdateCachedFields(AbstractQueueOperationTracker tracker)
+		{
+			dirty = tracker.HasChanges();
+			if (cachedSize < 0)
+			{
+				return;
+			}
+
+			cachedSize = tracker.Cleared ? tracker.GetQueueSize() : tracker.GetCollectionSize();
+		}
+
+		private AbstractMapQueueOperationTracker<TKey, TValue> TryFlushAndGetQueueOperationTracker<TKey, TValue>(string operationName)
+		{
+			return (AbstractMapQueueOperationTracker<TKey, TValue>) TryFlushAndGetQueueOperationTracker(operationName, out _);
+		}
+
+		private AbstractCollectionQueueOperationTracker<T> TryFlushAndGetQueueOperationTracker<T>(string operationName)
+		{
+			return (AbstractCollectionQueueOperationTracker<T>) TryFlushAndGetQueueOperationTracker(operationName, out _);
+		}
+
+		private AbstractCollectionQueueOperationTracker<T> TryFlushAndGetQueueOperationTracker<T>(string operationName, out bool wasFlushed)
+		{
+			return (AbstractCollectionQueueOperationTracker<T>) TryFlushAndGetQueueOperationTracker(operationName, out wasFlushed);
+		}
+
+		private AbstractQueueOperationTracker TryFlushAndGetQueueOperationTracker(string operationName, out bool wasFlushed)
+		{
+			var queueOperationTracker = GetOrCreateQueueOperationTracker();
+			if (queueOperationTracker == null)
+			{
+				throw new InvalidOperationException($"{nameof(CreateQueueOperationTracker)} must return a not null value.");
+			}
+
+			if (queueOperationTracker.RequiresFlushing(operationName))
+			{
+				session.Flush();
+				wasFlushed = true;
+			}
+			else
+			{
+				wasFlushed = false;
+			}
+
+			queueOperationTracker.BeforeOperation(operationName);
+			if (queueOperationTracker.DatabaseCollectionSize < 0 && queueOperationTracker.RequiresDatabaseCollectionSize(operationName) && !ReadSize())
+			{
+				throw new InvalidOperationException($"The collection role {Role} must be mapped as extra lazy.");
+			}
+
+			dirty = true;  // Needed so that we remove this collection from the second-level cache
+			return queueOperationTracker;
+		}
+
+		internal bool IsTransient(object element)
+		{
+			var queryableCollection = (IQueryableCollection) Session.Factory.GetCollectionPersister(Role);
+			return
+				queryableCollection != null &&
+				queryableCollection.ElementType.IsEntityType &&
+				!element.IsProxy() &&
+				!Session.PersistenceContext.IsEntryFor(element) &&
+				ForeignKeys.IsTransientFast(queryableCollection.ElementPersister.EntityName, element, Session) == true;
 		}
 
 		// Obsolete since v5.2
@@ -426,6 +845,7 @@ namespace NHibernate.Collection
 		public virtual void PostAction()
 		{
 			operationQueue = null;
+			_queueOperationTracker?.AfterFlushing();
 			cachedSize = -1;
 			ClearDirty();
 		}
@@ -456,7 +876,7 @@ namespace NHibernate.Collection
 		{
 			SetInitialized();
 			cachedSize = -1;
-			return operationQueue == null;
+			return operationQueue == null && _queueOperationTracker == null;
 		}
 
 		/// <summary>
@@ -636,10 +1056,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary> Does this instance have any "queued" additions?</summary>
-		public bool HasQueuedOperations
-		{
-			get { return operationQueue != null && operationQueue.Count > 0; }
-		}
+		public bool HasQueuedOperations => operationQueue != null && operationQueue.Count > 0 || _queueOperationTracker?.HasChanges() == true;
 
 		/// <summary></summary>
 		public IEnumerable QueuedAdditionIterator
@@ -648,6 +1065,13 @@ namespace NHibernate.Collection
 			{
 				if (HasQueuedOperations)
 				{
+					// Use the queue operation tracker when available to get the added elements as AdditionEnumerable
+					// does not work correctly when the item is added and then removed
+					if (_queueOperationTracker != null)
+					{
+						return _queueOperationTracker.GetAddedElements();
+					}
+
 					return new AdditionEnumerable(this);
 				}
 				else
@@ -661,20 +1085,35 @@ namespace NHibernate.Collection
 		{
 			if (HasQueuedOperations)
 			{
-				List<object> additions = new List<object>(operationQueue.Count);
-				List<object> removals = new List<object>(operationQueue.Count);
-				for (int i = 0; i < operationQueue.Count; i++)
+				List<object> additions;
+				List<object> removals;
+
+				// Use the queue operation tracker when available to get the orphans as the default logic
+				// does not work correctly when readding a transient entity. Removals list should
+				// contain only entities that are already in the database.
+				if (_queueOperationTracker != null)
 				{
-					IDelayedOperation op = operationQueue[i];
-					if (op.AddedInstance != null)
+					removals = new List<object>(_queueOperationTracker.GetOrphans().Cast<object>());
+					additions = new List<object>(_queueOperationTracker.GetAddedElements().Cast<object>());
+				}
+				else // 6.0 TODO: Remove whole else block
+				{
+					additions = new List<object>(operationQueue.Count);
+					removals = new List<object>(operationQueue.Count);
+					for (int i = 0; i < operationQueue.Count; i++)
 					{
-						additions.Add(op.AddedInstance);
-					}
-					if (op.Orphan != null)
-					{
-						removals.Add(op.Orphan);
+						var op = operationQueue[i];
+						if (op.AddedInstance != null)
+						{
+							additions.Add(op.AddedInstance);
+						}
+						if (op.Orphan != null)
+						{
+							removals.Add(op.Orphan);
+						}
 					}
 				}
+
 				return GetOrphans(removals, additions, entityName, session);
 			}
 
@@ -704,12 +1143,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		protected virtual ICollection GetOrphans(ICollection oldElements, ICollection currentElements, string entityName, ISessionImplementor session)
 		{
-			// short-circuit(s)
-			if (currentElements.Count == 0)
-			{
-				// no new elements, the old list contains only Orphans
-				return oldElements;
-			}
+			var collectionPersister = session.PersistenceContext.GetCollectionEntry(this).LoadedPersister as AbstractCollectionPersister;
 			if (oldElements.Count == 0)
 			{
 				// no old elements, so no Orphans neither
@@ -735,6 +1169,11 @@ namespace NHibernate.Collection
 			// iterate over the *old* list
 			foreach (object old in oldElements)
 			{
+				if (!IsOrphan(old, collectionPersister))
+				{
+					continue;
+				}
+
 				object oldId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, old, session);
 				if (!currentIds.Contains(new TypedValue(idType, oldId, false)))
 				{
@@ -876,5 +1315,39 @@ namespace NHibernate.Collection
 		 */
 
 		#endregion
+
+		/// <summary>
+		/// Checks whether the element is actual an orphan or it was moved to a new parent.
+		/// </summary>
+		/// <param name="element">The element to check</param>
+		/// <param name="collectionPersister">The collection persister</param>
+		/// <returns>Whether the element is an orphan or not.</returns>
+		private bool IsOrphan(object element, AbstractCollectionPersister collectionPersister)
+		{
+			if (collectionPersister?.ElementPersister == null)
+			{
+				return true; // Fallback to the old behavior if it is an unknown persister
+			}
+
+			var entry = session.PersistenceContext.GetEntry(element);
+			if (entry == null)
+			{
+				return true; // The entity may not be loaded yet, can happen when using an instance from an another session
+			}
+
+			if (!entry.ExistsInDatabase)
+			{
+				return false;
+			}
+
+			var elementOwner = collectionPersister.GetElementOwner(element, session);
+			var ownerPersister = collectionPersister.OwnerEntityPersister;
+			if (elementOwner == null || ownerPersister.IdentifierType.IsEqual(ownerPersister.GetIdentifier(elementOwner), ownerPersister.GetIdentifier(Owner)))
+			{
+				return true;
+			}
+
+			return false; // The element has moved to a new parent
+		}
 	}
 }

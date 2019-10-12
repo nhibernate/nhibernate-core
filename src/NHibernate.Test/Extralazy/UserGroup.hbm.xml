@@ -21,6 +21,11 @@
 			<map-key column="name" type="string"/>
 			<one-to-many class="SessionAttribute"/>
 		</map>
+    <map name="Settings" inverse="true" lazy="extra" cascade="all,delete-orphan">
+      <key column="owner"/>
+      <map-key column="name" type="string"/>
+      <one-to-many class="UserSetting"/>
+    </map>
 		<set name="Documents" inverse="true" lazy="extra" cascade="all,delete-orphan">
 			<key column="owner"/>
 			<one-to-many class="Document"/>
@@ -29,11 +34,58 @@
 			<key column="owner"/>
 			<one-to-many class="Photo"/>
 		</set>
+    <set name="Permissions" inverse="true" lazy="extra" cascade="all">
+      <key column="owner"/>
+      <one-to-many class="UserPermission"/>
+    </set>
+    <list name="Companies" inverse="true" lazy="extra" cascade="all,delete-orphan">
+      <key column="owner" not-null="true"/>
+      <list-index column="listIndex"/>
+      <one-to-many class="Company"/>
+    </list>
+    <list name="CreditCards" inverse="true" lazy="extra" cascade="all">
+      <key column="owner" not-null="true"/>
+      <list-index column="listIndex"/>
+      <one-to-many class="CreditCard"/>
+    </list>
 	</class>
 	<class name="Photo" table="photos">
 		<id name="Title"/>
 		<many-to-one name="Owner" not-null="true"/>
 	</class>
+  <class name="UserSetting" table="settings" >
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="Name" update="false"/>
+    <property name="Data" type="string" length="10000"/>
+    <many-to-one name="Owner" not-null="true"/>
+  </class>
+  <class name="UserPermission" table="permission">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="Name" />
+    <many-to-one name="Owner" not-null="true"/>
+  </class>
+  <class name="Company" table="company">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="Name" />
+    <property name="ListIndex" />
+    <property name="OriginalIndex" />
+    <many-to-one name="Owner" not-null="true"/>
+  </class>
+  <class name="CreditCard" table="credit_card">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="Name" />
+    <property name="ListIndex" />
+    <property name="OriginalIndex" />
+    <many-to-one name="Owner" not-null="true"/>
+  </class>
 	<class name="Document" table="documents">
 		<id name="Title"/>
 		<property name="Content" type="string" length="10000"/>

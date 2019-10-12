@@ -33,6 +33,9 @@
       name: InitializeLazyPropertiesFromCache
       containingTypeName: AbstractEntityPersister
     - conversion: Ignore
+      name: GetElementOwnerPropertyValue
+      containingTypeName: AbstractCollectionPersister
+    - conversion: Ignore
       name: Invoke
       containingTypeName: BasicLazyInitializer
     - conversion: Ignore
