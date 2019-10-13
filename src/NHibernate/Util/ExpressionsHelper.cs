@@ -418,7 +418,6 @@ namespace NHibernate.Util
 					: TypeFactory.GetDefaultTypeFor(member.ConvertType); // (long)q.Prop, (long)q.OneToManyCompositeElement[0].Prop
 			}
 
-			
 			if (!(currentType is IAssociationType associationType))
 			{
 				// q.Prop[0]
