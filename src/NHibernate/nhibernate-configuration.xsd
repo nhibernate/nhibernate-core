@@ -218,6 +218,18 @@
 												</xs:documentation>
 											</xs:annotation>
 										</xs:enumeration>
+										<xs:enumeration value="sqlite.binaryguid">
+											<xs:annotation>
+												<xs:documentation>
+													SQLite can store GUIDs in binary or text form, controlled by the BinaryGuid
+													connection string parameter (default is 'true'). The BinaryGuid setting will affect
+													how to cast GUID to string in SQL. NHibernate will attempt to detect this
+													setting automatically from the connection string, but if the connection
+													or connection string is being handled by the application instead of by NHibernate,
+													you can use the 'sqlite.binaryguid' NHibernate setting to override the behavior.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="sql_types.keep_datetime">
 											<xs:annotation>
 												<xs:documentation>
