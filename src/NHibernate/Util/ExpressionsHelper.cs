@@ -246,7 +246,7 @@ namespace NHibernate.Util
 			if (memberPaths.Count == 0)
 			{
 				memberPath = currentEntityPersister != null || currentComponentType != null ? member.Path : null;
-				mappedType = GetType(currentEntityPersister, currentType, member, sessionFactory, out _);
+				mappedType = GetType(currentEntityPersister, currentType, member, sessionFactory);
 				entityPersister = currentEntityPersister;
 				component = currentComponentType;
 				return mappedType != null;
@@ -397,67 +397,44 @@ namespace NHibernate.Util
 			IEntityPersister currentEntityPersister,
 			IType currentType,
 			MemberMetadata member,
-			ISessionFactoryImplementor sessionFactory,
-			out IEntityPersister persister)
+			ISessionFactoryImplementor sessionFactory)
 		{
 			// Not mapped
 			if (currentType == null)
 			{
-				persister = null;
 				return null;
 			}
 
-			// Collection composite elements
-			if (currentEntityPersister == null)
+			IEntityPersister persister;
+			if (!member.HasIndexer || currentEntityPersister == null)
 			{
-				if (member.ConvertType != null)
+				if (member.ConvertType == null)
 				{
-					return TryGetEntityPersister(member.ConvertType, sessionFactory, out persister)
-						? persister.EntityMetamodel.EntityType // (Entity)q.OneToManyCompositeElement[0].Prop
-						: TypeFactory.GetDefaultTypeFor(member.ConvertType); // (long)q.OneToManyCompositeElement[0].Prop
+					return currentType; // q.Prop, q.OneToManyCompositeElement[0].Prop
 				}
 
-				persister = null;
-				return currentType;
+				return TryGetEntityPersister(member.ConvertType, sessionFactory, out persister)
+					? persister.EntityMetamodel.EntityType // (Entity)q.Prop, (Entity)q.OneToManyCompositeElement[0].Prop
+					: TypeFactory.GetDefaultTypeFor(member.ConvertType); // (long)q.Prop, (long)q.OneToManyCompositeElement[0].Prop
 			}
 
-			if (!member.HasIndexer)
+			
+			if (!(currentType is IAssociationType associationType))
 			{
-				if (member.ConvertType != null)
-				{
-					persister = TryGetEntityPersister(member.ConvertType, sessionFactory, out var newPersister)
-						? newPersister
-						: currentEntityPersister;
-					return newPersister != null
-						? persister.EntityMetamodel.EntityType // (Entity)q.Prop
-						: TypeFactory.GetDefaultTypeFor(member.ConvertType); // (long)q.Prop
-				}
-
-				persister = currentEntityPersister;
-				return currentType; // q.Prop
+				// q.Prop[0]
+				return null;
 			}
 
-			// q.OneToMany[0]
-			if (currentType is IAssociationType associationType)
+			var queryableCollection = (IQueryableCollection) associationType.GetAssociatedJoinable(sessionFactory);
+			if (member.ConvertType == null)
 			{
-				var queryableCollection = (IQueryableCollection) associationType.GetAssociatedJoinable(sessionFactory);
-				if (member.ConvertType != null)
-				{
-					return TryGetEntityPersister(member.ConvertType, sessionFactory, out persister)
-						? persister.EntityMetamodel.EntityType // (Entity)q.Prop
-						: TypeFactory.GetDefaultTypeFor(member.ConvertType); // (long)q.Prop
-				}
-
-				persister = queryableCollection.ElementType.IsEntityType
-					? queryableCollection.ElementPersister
-					: null;
-
+				// q.OneToMany[0]
 				return queryableCollection.ElementType;
 			}
 
-			// q.Prop[0]
-			persister = null;
-			return null;
+			return TryGetEntityPersister(member.ConvertType, sessionFactory, out persister)
+				? persister.EntityMetamodel.EntityType // (Entity)q.OneToMany[0]
+				: TypeFactory.GetDefaultTypeFor(member.ConvertType); // (long)q.OneToMany[0]
 		}
 
 		private class MemberMetadataExtractor : NhExpressionVisitor
