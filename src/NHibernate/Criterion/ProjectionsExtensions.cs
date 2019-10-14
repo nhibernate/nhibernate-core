@@ -316,7 +316,7 @@ namespace NHibernate.Criterion
 		{
 			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]).AsProjection();
 			var replaceValueIfIsNull = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[1]);
-			return Projections.SqlFunction("coalesce", NHibernateUtil.Object, property, replaceValueIfIsNull.AsProjection());
+			return new SqlFunctionProjection("coalesce", returnTypeProjection: property, property, replaceValueIfIsNull.AsProjection());
 		}
 
 		/// <summary>
