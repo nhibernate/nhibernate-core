@@ -9,6 +9,7 @@ namespace NHibernate.Criterion
 	public class GroupedProjection : IProjection
 	{
 		private readonly IProjection projection;
+		private SqlString renderedProjection;
 
 		public GroupedProjection(IProjection projection)
 		{
@@ -17,12 +18,16 @@ namespace NHibernate.Criterion
 
 		public virtual SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
-			return projection.ToSqlString(criteria, position, criteriaQuery);
+			return renderedProjection = projection.ToSqlString(criteria, position, criteriaQuery);
 		}
 
 		public virtual SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return SqlStringHelper.Join(new SqlString(","), CriterionUtil.GetColumnNamesAsSqlStringParts(null, projection, criteriaQuery, criteria));
+			if (projection is IPropertyProjection propertyProjection)
+				return new SqlString(string.Join(", ", criteriaQuery.GetColumns(criteria, propertyProjection.PropertyName)));
+
+			//This is kind of a hack. The hack is based on the fact that ToGroupSqlString always called after ToSqlString.
+			return SqlStringHelper.RemoveAsAliasesFromSql(renderedProjection);
 		}
 
 		public virtual IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
