@@ -1,10 +1,16 @@
 ﻿projects:
 - filePath: NHibernate/NHibernate.csproj
-  targetFramework: net461
+  targetFramework: netcoreapp2.0
   concurrentRun: true
   applyChanges: true
+  suppressDiagnosticFailures:
+  - pattern: ^.*(Hql\.g).*$
   analyzation:
     methodConversion:
+#TODO 6.0: Remove ignore rule for IQueryBatchItem.ProcessResults  
+    - conversion: Ignore
+      name: ProcessResults
+      containingTypeName: IQueryBatchItem
     - conversion: Ignore
       name: PostProcessInsert
       containingTypeName: HqlSqlWalker
@@ -166,19 +172,35 @@
   - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
     assemblyName: AsyncGenerator.Core
 - filePath: NHibernate.DomainModel/NHibernate.DomainModel.csproj
-  targetFramework: net461
+  targetFramework: netcoreapp2.0
   concurrentRun: true
   applyChanges: true
+  suppressDiagnosticFailures:
+  - pattern: ^.*(Hql\.g).*$
   analyzation:
     scanMethodBody: true
     scanForMissingAsyncMembers:
     - all: true
 - filePath: NHibernate.Test/NHibernate.Test.csproj
-  targetFramework: net461
+  targetFramework: netcoreapp2.0
   concurrentRun: true
   applyChanges: true
+  suppressDiagnosticFailures:
+  - pattern: ^.*(Hql\.g).*$
   analyzation:
     methodConversion:
+    - conversion: Ignore
+      name: CanUseDependentTransaction
+      containingTypeName: DistributedSystemTransactionFixture
+    - conversion: Ignore
+      name: CanUseSessionWithManyDependentTransaction
+      containingTypeName: DistributedSystemTransactionFixture
+    - conversion: Ignore
+      name: CanUseDependentTransaction
+      containingTypeName: SystemTransactionFixture
+    - conversion: Ignore
+      name: CanUseSessionWithManyDependentTransaction
+      containingTypeName: SystemTransactionFixture
     - conversion: Copy
       name: AfterTransactionCompletionProcess_EvictsFromCache
     asyncExtensionMethods:
@@ -198,6 +220,7 @@
       rule: IsTestCase
     - conversion: Ignore
       anyBaseTypeRule: IsTestCase
+      executionPhase: PostProviders
     ignoreDocuments:
     - filePathEndsWith: Linq/MathTests.cs
     - filePathEndsWith: Linq/ExpressionSessionLeakTest.cs

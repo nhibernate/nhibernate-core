@@ -205,14 +205,14 @@ namespace NHibernate.Cache
 			if (Log.IsDebugEnabled())
 				Log.Debug("checking cached query results in region: '{0}'; {1}", _regionName, StringHelper.CollectionToString(keys));
 
-			var cacheables = _cache.GetMany(keys).Cast<IList>().ToArray();
+			var cacheables = _cache.GetMany(keys);
 
 			var spacesToCheck = new List<ISet<string>>();
 			var checkedSpacesIndexes = new HashSet<int>();
 			var checkedSpacesTimestamp = new List<long>();
 			for (var i = 0; i < keys.Length; i++)
 			{
-				var cacheable = cacheables[i];
+				var cacheable = (IList) cacheables[i];
 				if (cacheable == null)
 				{
 					Log.Debug("query results were not found in cache: {0}", keys[i]);
@@ -246,7 +246,7 @@ namespace NHibernate.Cache
 
 				for (var i = 0; i < keys.Length; i++)
 				{
-					var cacheable = cacheables[i];
+					var cacheable = (IList) cacheables[i];
 					if (cacheable == null)
 						continue;
 
@@ -283,7 +283,7 @@ namespace NHibernate.Cache
 					{
 						try
 						{
-							results[i] = PerformAssemble(keys[i], finalReturnTypes[i], queryParams.NaturalKeyLookup, session, cacheables[i]);
+							results[i] = PerformAssemble(keys[i], finalReturnTypes[i], queryParams.NaturalKeyLookup, session, (IList) cacheables[i]);
 						}
 						finally
 						{
@@ -306,7 +306,7 @@ namespace NHibernate.Cache
 					{
 						try
 						{
-							InitializeCollections(finalReturnTypes[i], session, results[i], cacheables[i]);
+							InitializeCollections(finalReturnTypes[i], session, results[i], (IList) cacheables[i]);
 						}
 						finally
 						{

@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Hql
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class AggregateFunctionsWithSubSelectTestAsync : TestCaseMappingByCode
 	{
@@ -88,7 +87,7 @@ namespace NHibernate.Test.Hql
 		[TestCase("MIN", 2)]
 		[TestCase("MAX", 2)]
 		[TestCase("AVG", 2d)]
-		public async Task TestAggregateFunctionAsync(string functionName, object result, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task TestAggregateFunctionAsync(string functionName, object result)
 		{
 			var query = "SELECT " +
 			            "	d.Id, " +
@@ -107,14 +106,14 @@ namespace NHibernate.Test.Hql
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var results = await (session.CreateQuery(query).ListAsync(cancellationToken));
+				var results = await (session.CreateQuery(query).ListAsync());
 
 				Assert.That(results, Has.Count.EqualTo(1));
 				var tuple = results[0] as object[];
 				Assert.That(tuple, Is.Not.Null);
 				Assert.That(tuple, Has.Length.EqualTo(2));
 				Assert.That(tuple[1], Is.EqualTo(result));
-				await (transaction.CommitAsync(cancellationToken));
+				await (transaction.CommitAsync());
 			}
 		}
 	}

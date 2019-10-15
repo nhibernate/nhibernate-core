@@ -63,6 +63,16 @@ namespace NHibernate.Impl
 		public async Task CloseAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			if (isClosed)
+			{
+				if (log.IsDebugEnabled())
+				{
+					log.Debug("Already closed");
+				}
+
+				return;
+			}
+
 			log.Info("Closing");
 
 			isClosed = true;

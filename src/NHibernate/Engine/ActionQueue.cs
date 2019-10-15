@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using NHibernate.Action;
 using NHibernate.Cache;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
@@ -603,7 +604,7 @@ namespace NHibernate.Engine
 			// The map of entities to their batch.
 			private readonly Dictionary<object, int> _entityBatchNumber;
 			// The map of entities to the latest batch (of another entities) they depend on.
-			private readonly Dictionary<object, int> _entityBatchDependency = new Dictionary<object, int>();
+			private readonly Dictionary<object, int> _entityBatchDependency = new Dictionary<object, int>(ReferenceComparer<object>.Instance);
 
 			// the map of batch numbers to EntityInsertAction lists
 			private readonly Dictionary<int, List<AbstractEntityInsertAction>> _actionBatches = new Dictionary<int, List<AbstractEntityInsertAction>>();
@@ -617,7 +618,7 @@ namespace NHibernate.Engine
 				_actionQueue = actionQueue;
 
 				//optimize the hash size to eliminate a rehash.
-				_entityBatchNumber = new Dictionary<object, int>(actionQueue.insertions.Count + 1);
+				_entityBatchNumber = new Dictionary<object, int>(actionQueue.insertions.Count + 1, ReferenceComparer<object>.Instance);
 			}
 
 			// This sorting does not actually optimize some features like mapped inheritance or joined-table,
