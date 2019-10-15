@@ -54,7 +54,7 @@ namespace NHibernate.Driver
 		public override string NamedPrefix => "@";
 
 		/// <inheritdoc/>
-		public override bool SupportsMultipleOpenReaders => true;
+		public override bool SupportsMultipleOpenReaders => false;
 
 		/// <inheritdoc />
 		public override bool SupportsMultipleQueries => true;
@@ -141,6 +141,9 @@ namespace NHibernate.Driver
 				case DbType.Xml:
 					dbParam.Size = MsSql2005Dialect.MaxSizeForXml;
 					break;
+			}
+			switch (sqlType.DbType)
+			{
 				case DbType.Time:
 					SetSqlDbType(dbParam, SqlDbType.Time);
 					dbParam.Size = MaxTime;
