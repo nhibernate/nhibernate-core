@@ -59,6 +59,8 @@ namespace NHibernate.SqlCommand
 			return result;
 		}
 
+
+		//Consider using CriterionUtil.GetColumn... methods instead
 		public static SqlString RemoveAsAliasesFromSql(SqlString sql)
 		{
 			int index = sql.LastIndexOfCaseInsensitive(" as ");

@@ -5,7 +5,6 @@ namespace NHibernate.Criterion
 	using Engine;
 	using SqlCommand;
 	using Type;
-	using Util;
 
 	public static class CriterionUtil
 	{
@@ -51,7 +50,36 @@ namespace NHibernate.Criterion
 				return GetColumnNamesUsingPropertyName(criteriaQuery, criteria, propertyProjection.PropertyName);
 			}
 
-			SqlString sqlString = projection.ToSqlString(criteria, 
+			return GetProjectionColumns(projection, criteriaQuery, criteria);
+		}
+
+		internal static object[] GetColumnNamesAsSqlStringParts(string propertyName, IProjection projection, ICriteriaQuery criteriaQuery, ICriteria criteria)
+		{
+			if (propertyName != null)
+				return criteriaQuery.GetColumnsUsingProjection(criteria, propertyName);
+
+			if (projection is IPropertyProjection propertyProjection)
+			{
+				return criteriaQuery.GetColumnsUsingProjection(criteria, propertyProjection.PropertyName);
+			}
+
+			return GetProjectionColumns(projection, criteriaQuery, criteria);
+		}
+
+		internal static object GetColumnNameAsSqlStringPart(string propertyName, IProjection projection, ICriteriaQuery criteriaQuery, ICriteria criteria)
+		{
+			var columnNames = GetColumnNamesAsSqlStringParts(propertyName, projection, criteriaQuery, criteria);
+			if (columnNames.Length != 1)
+			{
+				throw new QueryException("property or projection does not map to a single column: " + (propertyName ?? projection.ToString()));
+			}
+
+			return columnNames[0];
+		}
+
+		private static SqlString[] GetProjectionColumns(IProjection projection, ICriteriaQuery criteriaQuery, ICriteria criteria)
+		{
+			SqlString sqlString = projection.ToSqlString(criteria,
 				criteriaQuery.GetIndexForAlias(),
 				criteriaQuery);
 			return new SqlString[]

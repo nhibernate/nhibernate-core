@@ -59,7 +59,7 @@ namespace NHibernate.Criterion
 
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			SqlString[] columns = CriterionUtil.GetColumnNamesUsingProjection(projection, criteriaQuery, criteria);
+			var columns = CriterionUtil.GetColumnNamesAsSqlStringParts(null, projection, criteriaQuery, criteria);
 			if (columns.Length != 1)
 				throw new HibernateException("Like may only be used with single-column properties / projections.");
 
@@ -70,11 +70,11 @@ namespace NHibernate.Criterion
 				Dialect.Dialect dialect = criteriaQuery.Factory.Dialect;
 				lhs.Add(dialect.LowercaseFunction)
 					.Add(StringHelper.OpenParen)
-					.Add(columns[0])
+					.AddObject(columns[0])
 					.Add(StringHelper.ClosedParen);
 			}
 			else
-				lhs.Add(columns[0]);
+				lhs.AddObject(columns[0]);
 
 			if (ignoreCase)
 			{

@@ -70,10 +70,10 @@ namespace NHibernate.Criterion
 
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			SqlString[] columnNames =
-				CriterionUtil.GetColumnNames(_lhsPropertyName, _lhsProjection, criteriaQuery, criteria);
-			SqlString[] otherColumnNames =
-				CriterionUtil.GetColumnNames(_rhsPropertyName, _rhsProjection, criteriaQuery, criteria);
+			var columnNames =
+				CriterionUtil.GetColumnNamesAsSqlStringParts(_lhsPropertyName, _lhsProjection, criteriaQuery, criteria);
+			var otherColumnNames =
+				CriterionUtil.GetColumnNamesAsSqlStringParts(_rhsPropertyName, _rhsProjection, criteriaQuery, criteria);
 
 			SqlStringBuilder sb = new SqlStringBuilder();
 			if (columnNames.Length > 1)
@@ -81,14 +81,14 @@ namespace NHibernate.Criterion
 				sb.Add(StringHelper.OpenParen);
 			}
 			bool first = true;
-			foreach (SqlString sqlString in SqlStringHelper.Add(columnNames, Op, otherColumnNames))
+			for (var i = 0; i < columnNames.Length; i++)
 			{
 				if (first == false)
 				{
 					sb.Add(" and ");
 				}
 				first = false;
-				sb.Add(sqlString);
+				sb.AddObject(columnNames[i]).Add(Op).AddObject(otherColumnNames[i]);
 			}
 
 			if (columnNames.Length > 1)
