@@ -115,7 +115,8 @@ namespace NHibernate.Criterion
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new IType[] {GetReturnType(criteria, criteriaQuery)};
+			var type = GetReturnType(criteria, criteriaQuery);
+			return type != null ? new[] {type} : Array.Empty<IType>();
 		}
 
 		private IType GetReturnType(ICriteria criteria, ICriteriaQuery criteriaQuery)
