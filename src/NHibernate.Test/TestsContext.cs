@@ -1,24 +1,19 @@
-﻿using NUnit.Framework;
+﻿#if NETCOREAPP2_0
+using NUnit.Framework;
 
-#if NETCOREAPP2_0
 using System.Configuration;
 using System.IO;
 using log4net.Repository.Hierarchy;
 using NHibernate.Cfg;
-using NHibernate.Cfg.ConfigurationSchema;
-#endif
 
 namespace NHibernate.Test
 {
-#if NETCOREAPP2_0
 	[SetUpFixture]
-#endif
 	public class TestsContext
 	{
-		public static bool ExecutingWithVsTest { get; } =
+		private static bool ExecutingWithVsTest { get; } =
 			System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name == "testhost";
 
-#if NETCOREAPP2_0
 		[OneTimeSetUp]
 		public void RunBeforeAnyTests()
 		{
@@ -26,19 +21,11 @@ namespace NHibernate.Test
 			//so we need to explicitly load the configuration
 			if (ExecutingWithVsTest)
 			{
-				Environment.InitializeGlobalProperties(GetTestAssemblyHibernateConfiguration());
+				var assemblyPath = Path.Combine(TestContext.CurrentContext.TestDirectory, Path.GetFileName(typeof(TestsContext).Assembly.Location));
+				ConfigurationProvider.Current = new SystemConfigurationProvider(ConfigurationManager.OpenExeConfiguration(assemblyPath));
 			}
 
 			ConfigureLog4Net();
-		}
-
-		public static IHibernateConfiguration GetTestAssemblyHibernateConfiguration()
-		{
-			var assemblyPath =
- Path.Combine(TestContext.CurrentContext.TestDirectory, Path.GetFileName(typeof(TestsContext).Assembly.Location));
-			var configuration = ConfigurationManager.OpenExeConfiguration(assemblyPath);
-			var section = configuration.GetSection(CfgXmlHelper.CfgSectionName);
-			return HibernateConfiguration.FromAppConfig(section.SectionInformation.GetRawXml());
 		}
 
 		private static void ConfigureLog4Net()
@@ -58,6 +45,6 @@ namespace NHibernate.Test
 			hierarchy.Root.AddAppender(consoleAppender);
 			hierarchy.Configured = true;
 		}
-#endif
 	}
 }
+#endif
