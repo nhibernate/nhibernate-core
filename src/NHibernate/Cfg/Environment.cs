@@ -381,7 +381,7 @@ namespace NHibernate.Cfg
 
 		private static IHibernateConfiguration GetHibernateConfiguration()
 		{
-			var nhConfig = Settings.ConfigurationProvider.GetConfiguration();
+			var nhConfig = ConfigurationProvider.Current.GetConfiguration();
 			if (nhConfig == null && log.IsInfoEnabled())
 			{
 				log.Info("{0} section not found in application configuration file", CfgXmlHelper.CfgSectionName);
@@ -568,7 +568,7 @@ namespace NHibernate.Cfg
 			if (!settings.TryGetValue(ConnectionStringName, out var connStringName))
 				return null;
 
-			return Settings.ConfigurationProvider.GetNamedConnectionString(connStringName)
+			return ConfigurationProvider.Current.GetNamedConnectionString(connStringName)
 			       ?? throw new HibernateException($"Could not find named connection string '{connStringName}'.");
 		}
 

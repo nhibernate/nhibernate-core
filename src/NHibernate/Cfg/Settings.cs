@@ -18,18 +18,6 @@ namespace NHibernate.Cfg
 	/// </summary>
 	public sealed class Settings
 	{
-		private static ConfigurationProvider _configurationProvider = new StaticConfigurationManagerProvider();
-
-		/// <summary>
-		/// Provides ability to override default <see cref="System.Configuration.ConfigurationManager"/> with custom implementation.
-		/// Can be set to null if all configuration is specified by code 
-		/// </summary>
-		public static ConfigurationProvider ConfigurationProvider
-		{
-			get => _configurationProvider;
-			set => _configurationProvider = value ?? new NullConfigurationProvider();
-		}
-
 		public Settings()
 		{
 			MaximumFetchDepth = -1;

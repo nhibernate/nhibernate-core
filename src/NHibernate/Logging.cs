@@ -133,7 +133,7 @@ namespace NHibernate
 
 		private static string GetNhibernateLoggerClass()
 		{
-			var nhibernateLoggerClass = Settings.ConfigurationProvider.GetLoggerFactoryClassName();
+			var nhibernateLoggerClass = ConfigurationProvider.Current.GetLoggerFactoryClassName();
 			if (nhibernateLoggerClass == null)
 			{
 				// look for log4net

@@ -12,6 +12,7 @@ using System.Data.Common;
 using System.Data.Odbc;
 using System.Data.SqlClient;
 using System.Transactions;
+using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -42,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 			string connectionStringName;
 			if (cfg.Properties.TryGetValue(Environment.ConnectionStringName, out connectionStringName))
 			{
-				connectionString = Cfg.Settings.ConfigurationProvider.GetNamedConnectionString(connectionStringName);
+				connectionString = ConfigurationProvider.Current.GetNamedConnectionString(connectionStringName);
 				Assert.That(connectionString, Is.Not.Null.Or.Empty);
 				return connectionString;
 			}
