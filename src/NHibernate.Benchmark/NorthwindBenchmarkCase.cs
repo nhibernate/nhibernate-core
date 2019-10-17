@@ -1,5 +1,5 @@
-using NHibernate.Benchmark.Database.Northwind.Entities;
 using NHibernate.Cfg;
+using NHibernate.DomainModel.Northwind.Entities;
 
 namespace NHibernate.Benchmark
 {
@@ -7,27 +7,27 @@ namespace NHibernate.Benchmark
 	{
 		protected override string[] Mappings => new[]
 		{
-			"Database.Northwind.Mappings.Animal.hbm.xml",
-			"Database.Northwind.Mappings.AnotherEntity.hbm.xml",
-			"Database.Northwind.Mappings.Customer.hbm.xml",
-			"Database.Northwind.Mappings.Employee.hbm.xml",
-			"Database.Northwind.Mappings.Order.hbm.xml",
-			"Database.Northwind.Mappings.OrderLine.hbm.xml",
-			"Database.Northwind.Mappings.Patient.hbm.xml",
-			"Database.Northwind.Mappings.Product.hbm.xml",
-			"Database.Northwind.Mappings.Region.hbm.xml",
-			"Database.Northwind.Mappings.ProductCategory.hbm.xml",
-			"Database.Northwind.Mappings.Role.hbm.xml",
-			"Database.Northwind.Mappings.Shipper.hbm.xml",
-			"Database.Northwind.Mappings.Supplier.hbm.xml",
-			"Database.Northwind.Mappings.Territory.hbm.xml",
-			"Database.Northwind.Mappings.TimeSheet.hbm.xml",
-			"Database.Northwind.Mappings.User.hbm.xml",
+			"NHibernate.DomainModel.Northwind.Mappings.Animal.hbm.xml",
+			"NHibernate.DomainModel.Northwind.Mappings.AnotherEntity.hbm.xml",
+			"NHibernate.DomainModel.Northwind.Mappings.Customer.hbm.xml",
+			"NHibernate.DomainModel.Northwind.Mappings.Employee.hbm.xml",
+			"NHibernate.DomainModel.Northwind.Mappings.Order.hbm.xml",
+			"NHibernate.DomainModel.Northwind.Mappings.OrderLine.hbm.xml",
+			"NHibernate.DomainModel.Northwind.Mappings.Patient.hbm.xml",
+			"NHibernate.DomainModel.Northwind.Mappings.Product.hbm.xml",
+			"NHibernate.DomainModel.Northwind.Mappings.Region.hbm.xml",
+			"NHibernate.DomainModel.Northwind.Mappings.ProductCategory.hbm.xml",
+			"NHibernate.DomainModel.Northwind.Mappings.Role.hbm.xml",
+			"NHibernate.DomainModel.Northwind.Mappings.Shipper.hbm.xml",
+			"NHibernate.DomainModel.Northwind.Mappings.Supplier.hbm.xml",
+			"NHibernate.DomainModel.Northwind.Mappings.Territory.hbm.xml",
+			"NHibernate.DomainModel.Northwind.Mappings.TimeSheet.hbm.xml",
+			"NHibernate.DomainModel.Northwind.Mappings.User.hbm.xml",
 		};
 
 		protected override void AddConfigurationResource(Configuration configuration, string file)
 		{
-			configuration.AddResource(typeof(Program).Namespace + "." + file, typeof(Animal).Assembly);
+			configuration.AddResource(file, typeof(Animal).Assembly);
 		}
 	}
 }

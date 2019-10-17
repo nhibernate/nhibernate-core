@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
 using BenchmarkDotNet.Attributes;
-using NHibernate.Benchmark.Database.Northwind.Entities;
+using NHibernate.DomainModel.Northwind.Entities;
 
 namespace NHibernate.Benchmark
 {

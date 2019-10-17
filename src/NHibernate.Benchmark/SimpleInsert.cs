@@ -1,9 +1,8 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using AutoFixture;
 using BenchmarkDotNet.Attributes;
-using NHibernate.Benchmark.Database.Northwind.Entities;
+using NHibernate.DomainModel.Northwind.Entities;
 
 namespace NHibernate.Benchmark
 {
