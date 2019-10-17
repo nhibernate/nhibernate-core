@@ -103,10 +103,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3972
 				var result = session.Query<DataRecord>().Select(x => new
 				{
 					x.Subject,
-					State = ((Incident)x).State.Description,
+					IncidentState = ((Incident)x).State.Description,
+					ChangeState = ((Change)x).State.Description,
 				}).ToArray();
 				That(result.Length, Is.EqualTo(4));
-				That(result.Count(x => x.State == incidentState.Description) == 1, Is.True); // there is only one "Incident" entity
+				That(result.Count(x => x.IncidentState == incidentState.Description) == 1, Is.True); // there is only one "Incident" entity
+				That(result.Count(x => x.ChangeState == changeState.Description) == 1, Is.True); // there is only one "Change" entity
 			}
 		}
 	}
