@@ -13,7 +13,7 @@ namespace NHibernate.Driver
 	{
 		private static readonly Action<object, SqlDbType> SetSqlDbType =
 			DelegateHelper.BuildPropertySetter<SqlDbType>(
-				System.Type.GetType("System.Data.SqlServerCe.SqlCeParameter, System.Data.SqlServerCe", true),
+				ReflectHelper.TypeFromAssembly("System.Data.SqlServerCe.SqlCeParameter", "System.Data.SqlServerCe", true),
 				"SqlDbType");
 
 		/// <summary>
