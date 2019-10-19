@@ -41,7 +41,7 @@
 			<arg value="/p:IncludeSource=&quot;True&quot;" />
 			<arg value="/p:PackageOutputPath=&quot;${path::get-full-path(nuget.nupackages.dir)}&quot;" />
 			<!-- build.counter is not available by default. It needs to be exposed in Team City as system parameter system.build.counter with value %build.counter% -->
-			<arg value="/p:BuildNumber=&quot;${build.counter}&quot;" />
+			<arg value="/p:BuildNumber=&quot;${build.counter}&quot;" unless="${build.counter == ''}" />
 			<arg value="/t:Restore" />
 			<arg value="/t:Rebuild" />
 			<arg value="/v:q" />
