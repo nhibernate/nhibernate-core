@@ -14,15 +14,10 @@
   <!-- This is used only for build folder -->
   <target name="get-project-version">
     <xmlpeek
-      file="${root.dir}/src/NHibernate/NHibernate.csproj"
-    xpath="/Project/PropertyGroup/VersionPrefix"
-    property="version.prefix" />
-    <xmlpeek
-      file="${root.dir}/src/NHibernate/NHibernate.csproj"
-    xpath="/Project/PropertyGroup/VersionSuffix"
-    property="version.suffix" />
-    <property name="project.version" value="${version.prefix}" if="${version.suffix == ''}" />
-    <property name="project.version" value="${version.prefix}-${version.suffix}" unless="${version.suffix == ''}"/>
+      file="${root.dir}/build-common/NHibernate.props"
+      xpath="/Project/PropertyGroup/VersionPrefix"
+      property="version.prefix" />
+    <property name="project.version" value="${version.prefix}" />
   </target>
 
 	<!-- properties used to connect to database for testing -->
