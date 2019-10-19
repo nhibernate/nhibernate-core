@@ -11,15 +11,24 @@
 	<!-- Path to the folder that contain the external assemblies -->
 	<property name="lib.dir" value="lib" dynamic="true" />
 
-	<!-- This is used only for build folder -->
-	<!-- TODO: Either remove or refactor to use NHibernate.props -->
-	<property name="project.version" value="5.2.7" overwrite="false" />
-	<property name="project.version.numeric" value="5.2.7" overwrite="false" />
+  <!-- This is used only for build folder -->
+  <target name="get-project-version">
+    <xmlpeek
+      file="${root.dir}/src/NHibernate/NHibernate.csproj"
+    xpath="/Project/PropertyGroup/VersionPrefix"
+    property="version.prefix" />
+    <xmlpeek
+      file="${root.dir}/src/NHibernate/NHibernate.csproj"
+    xpath="/Project/PropertyGroup/VersionSuffix"
+    property="version.suffix" />
+    <property name="project.version" value="${version.prefix}" if="${version.suffix == ''}" />
+    <property name="project.version" value="${version.prefix}-${version.suffix}" unless="${version.suffix == ''}"/>
+  </target>
 
 	<!-- properties used to connect to database for testing -->
 	<include buildfile="nhibernate-properties.xml" />
 
-	<target name="common.init" description="Initializes build properties">
+	<target name="common.init" depends="get-project-version" description="Initializes build properties">
 		<property name="project.config" value="debug" overwrite="false" />
 		<property name="build.name" value="NHibernate-${project.version}" if="${project.config == 'release'}"/>
 		<property name="build.name" value="NHibernate-${project.version}-${project.config}" unless="${project.config == 'release'}" />
