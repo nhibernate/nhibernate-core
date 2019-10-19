@@ -11,7 +11,7 @@
 	<!-- Path to the folder that contain the external assemblies -->
 	<property name="lib.dir" value="lib" dynamic="true" />
 
-  <!-- This is used only for build folder -->
+  <!-- This is used for build folder and also for "API Reference" docs (not active task, see doc/NHibernate.shfbproj.template) -->
   <target name="get-project-version">
     <xmlpeek
       file="${root.dir}/build-common/NHibernate.props"
