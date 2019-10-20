@@ -26,18 +26,23 @@ namespace NHibernate.Collection
 	using System.Threading;
 	public partial class PersistentArrayHolder : AbstractPersistentCollection, ICollection
 	{
-
-		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
+		
+		// Since 5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			object[] sn = (object[]) snapshot;
-			object[] arr = (object[]) array;
-			List<object> result = new List<object>(sn);
-			for (int i = 0; i < sn.Length; i++)
+			if (cancellationToken.IsCancellationRequested)
 			{
-				await (IdentityRemoveAsync(result, arr[i], entityName, Session, cancellationToken)).ConfigureAwait(false);
+				return Task.FromCanceled<ICollection>(cancellationToken);
 			}
-			return result;
+			try
+			{
+				return Task.FromResult<ICollection>(GetOrphans((object[]) snapshot, (object[]) array, entityName, Session));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<ICollection>(ex);
+			}
 		}
 
 		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister, CancellationToken cancellationToken)

@@ -157,10 +157,6 @@ namespace NHibernate.Engine
 		public static async Task<bool> IsNotTransientSlowAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (entity.IsProxy())
-				return true;
-			if (session.PersistenceContext.IsEntryFor(entity))
-				return true;
 			return !await (IsTransientSlowAsync(entityName, entity, session, cancellationToken)).ConfigureAwait(false);
 		}
 
@@ -271,16 +267,6 @@ namespace NHibernate.Engine
 
 					if ((await (IsTransientFastAsync(entityName, entity, session, cancellationToken)).ConfigureAwait(false)).GetValueOrDefault())
 					{
-						/***********************************************/
-						// TODO NH verify the behavior of NH607 test
-						// these lines are only to pass test NH607 during PersistenceContext porting
-						// i'm not secure that NH607 is a test for a right behavior
-						EntityEntry entry = session.PersistenceContext.GetEntry(entity);
-						if (entry != null)
-							return entry.Id;
-						// the check was put here to have les possible impact
-						/**********************************************/
-
 						entityName = entityName ?? session.GuessEntityName(entity);
 						string entityString = entity.ToString();
 						throw new TransientObjectException(

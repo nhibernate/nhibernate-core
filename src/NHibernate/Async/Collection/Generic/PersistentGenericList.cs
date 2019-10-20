@@ -29,7 +29,9 @@ namespace NHibernate.Collection.Generic
 	using System.Threading;
 	public partial class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
 	{
-
+		
+		// Since 5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -39,7 +41,7 @@ namespace NHibernate.Collection.Generic
 			try
 			{
 				var sn = (IList<T>)snapshot;
-				return GetOrphansAsync((ICollection)sn, (ICollection) WrappedList, entityName, Session, cancellationToken);
+				return Task.FromResult<ICollection>(GetOrphans((ICollection)sn, (ICollection) WrappedList, entityName, Session));
 			}
 			catch (Exception ex)
 			{

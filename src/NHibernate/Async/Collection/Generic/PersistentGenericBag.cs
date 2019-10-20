@@ -75,7 +75,9 @@ namespace NHibernate.Collection.Generic
 				return Task.FromException<IEnumerable>(ex);
 			}
 		}
-
+		
+		// Since 5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -85,7 +87,7 @@ namespace NHibernate.Collection.Generic
 			try
 			{
 				var sn = (ICollection) snapshot;
-				return GetOrphansAsync(sn, (ICollection) _gbag, entityName, Session, cancellationToken);
+				return Task.FromResult<ICollection>(GetOrphans(sn, (ICollection) _gbag, entityName, Session));
 			}
 			catch (Exception ex)
 			{
