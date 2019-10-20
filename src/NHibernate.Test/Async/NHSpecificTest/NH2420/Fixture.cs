@@ -73,10 +73,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 						new DummyEnlistment(),
 						EnlistmentOptions.None);
 
-					if (Sfi.ConnectionProvider.Driver.GetType() == typeof(OdbcDriver))
-						connection = new OdbcConnection(connectionString);
-					else
-						connection = new SqlConnection(connectionString);
+					connection = Sfi.ConnectionProvider.Driver.CreateConnection();
+					connection.ConnectionString = connectionString;
 
 					await (connection.OpenAsync());
 					using (s = Sfi.WithOptions().Connection(connection).OpenSession())
