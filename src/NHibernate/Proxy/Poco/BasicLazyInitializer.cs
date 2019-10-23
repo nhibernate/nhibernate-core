@@ -14,7 +14,7 @@ namespace NHibernate.Proxy.Poco
 	[Obsolete("DynamicProxy has been obsoleted, use static proxies instead (see StaticProxyFactory)")]
 	public abstract class BasicLazyInitializer : AbstractLazyInitializer
 	{
-		private static readonly IEqualityComparer IdentityEqualityComparer = new IdentityEqualityComparer();
+		private static readonly IEqualityComparer IdentityEqualityComparer = ReferenceComparer<object>.Instance;
 
 		internal System.Type persistentClass;
 		protected internal MethodInfo getIdentifierMethod;
