@@ -580,14 +580,82 @@ namespace NHibernate.Test.Linq
 		public void QueryUnmppedEntityTest()
 		{
 			var query = session.Query<IEntity<int>>().Select(o => o.Id);
-			AssertFalse(query, null, null, o => o == null);
+			AssertTrueNotNull(query, typeof(User).FullName, "Id", o => o is Int32Type);
 		}
 
 		[Test]
-		public void NotSupportedConditionalExpressionTest()
+		public void ConditionalExpressionTest()
 		{
 			var query = db.Users.Select(o => (o.Name == "Test" ? o.RegisteredAt : o.LastLoginDate));
-			AssertFalse(query, false, null, null, o => o == null);
+			AssertTrue(query, false, typeof(User).FullName, "RegisteredAt", o => o is DateTimeType);
+		}
+
+		[Test]
+		public void ConditionalIfFalseExpressionTest()
+		{
+			var query = db.Users.Select(o => (o.Name == "Test" ? DateTime.Today : o.LastLoginDate));
+			AssertTrue(query, false, typeof(User).FullName, "LastLoginDate", o => o is DateTimeType);
+		}
+
+		[Test]
+		public void ConditionalMemberExpressionTest()
+		{
+			var query = db.Users.Select(o => (o.Name == "Test" ? o.NotMappedRole : o.Role).IsActive);
+			AssertTrue(query, false, typeof(Role).FullName, "IsActive", o => o is BooleanType);
+		}
+
+		[Test]
+		public void ConditionalNestedExpressionTest()
+		{
+			var query = db.Users.Select(o => (o.Name == "Test" ? o.Component.OtherComponent.OtherProperty1 : o.Component.Property1));
+			AssertTrue(
+				query,
+				false,
+				typeof(User).FullName,
+				"Component.OtherComponent.OtherProperty1",
+				o => o is AnsiStringType,
+				o => o?.Name == "component[OtherProperty1]");
+		}
+
+		[Test]
+		public void CoalesceExpressionTest()
+		{
+			var query = db.Users.Select(o => o.LastLoginDate ?? o.RegisteredAt);
+			AssertTrue(query, false, typeof(User).FullName, "LastLoginDate", o => o is DateTimeType);
+		}
+
+		[Test]
+		public void CoalesceRightExpressionTest()
+		{
+			var query = db.Users.Select(o => ((DateTime?) DateTime.Now) ?? o.RegisteredAt);
+			AssertTrue(query, false, typeof(User).FullName, "RegisteredAt", o => o is DateTimeType);
+		}
+
+		[Test]
+		public void CoalesceMemberExpressionTest()
+		{
+			var query = db.Users.Select(o => (o.NotMappedRole ?? o.Role).IsActive);
+			AssertTrue(query, false, typeof(Role).FullName, "IsActive", o => o is BooleanType);
+		}
+
+		[Test]
+		public void CoalesceNestedExpressionTest()
+		{
+			var query = db.Users.Select(o => o.Component.OtherComponent.OtherProperty1 ?? o.Component.Property1);
+			AssertTrue(
+				query,
+				false,
+				typeof(User).FullName,
+				"Component.OtherComponent.OtherProperty1",
+				o => o is AnsiStringType,
+				o => o?.Name == "component[OtherProperty1]");
+		}
+
+		[Test]
+		public void CoalesceConditionalMemberExpressionTest()
+		{
+			var query = db.Users.Select(o => (o.Name == "Test" ? o.NotMappedRole : (o.NotMappedRole ?? new Role() ?? o.Role)).IsActive);
+			AssertTrue(query, false, typeof(Role).FullName, "IsActive", o => o is BooleanType);
 		}
 
 		[Test]
@@ -613,6 +681,20 @@ namespace NHibernate.Test.Linq
 				"Name.FirstName",
 				o => o is StringType,
 				o => o?.Name == "component[FirstName,LastName]");
+		}
+
+		[Test]
+		public void NotRelatedTypeTest()
+		{
+			var query = session.Query<Expression>().Select(o => o.CanReduce);
+			AssertFalse(query, null, null, o => o == null);
+		}
+
+		[Test]
+		public void NotNhQueryableTest()
+		{
+			var query = new List<User>().AsQueryable().Select(o => o.Name);
+			AssertFalse(query, false, null, null, o => o == null);
 		}
 
 		private void AssertFalse(

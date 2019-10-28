@@ -105,6 +105,11 @@ namespace NHibernate.Util
 		/// <remarks>
 		/// When the <paramref name="expression"/> contains an expression of type <see cref="ExpressionType.Convert"/>, the
 		/// result may not be correct when casting to an entity that is mapped with multiple entity names.
+		/// When the <paramref name="expression"/> is polymorphic, the first implementor will be returned.
+		/// When the <paramref name="expression"/> contains a <see cref="ConditionalExpression"/>, the first found entity name
+		/// will be returned from <see cref="ConditionalExpression.IfTrue"/> or <see cref="ConditionalExpression.IfFalse"/>.
+		/// When the <paramref name="expression"/> contains a <see cref="ExpressionType.Coalesce"/> expression, the first found entity name
+		/// will be returned from <see cref="BinaryExpression.Left"/> or <see cref="BinaryExpression.Right"/>.
 		/// </remarks>
 		internal static bool TryGetMappedType(
 			ISessionFactoryImplementor sessionFactory,
@@ -119,14 +124,50 @@ namespace NHibernate.Util
 			// expressions that we had to traverse in order to find the IEntityNameProvider instance, but in reverse order (bottom to top)
 			// and keep tracking the entity name until we reach to top.
 
-			// Try to retrieve the starting entity name with all members that were traversed in that process
-			var memberPaths = MemberMetadataExtractor.TryGetAllMemberMetadata(expression, out var entityName, out var convertType);
-			if (memberPaths == null || !TryGetEntityPersister(entityName, null, sessionFactory, out var currentEntityPersister))
+			memberPath = null;
+			mappedType = null;
+			entityPersister = null;
+			component = null;
+			// Try to retrieve the starting entity name with all members that were traversed in that process.
+			if (!MemberMetadataExtractor.TryGetAllMemberMetadata(expression, out var metadataResults))
 			{
 				// Failed to find the starting entity name, due to:
 				// - Unsupported expression
 				// - The expression didn't contain the IEntityNameProvider instance
-				// - Querying an unmapped type e.g. s.Query<IEntity>().Where(a => a.Type == "A")
+				return false;
+			}
+
+			// Due to coalesce and conditional expressions we can have multiple paths to traverse, in that case find the first path
+			// for which we are able to determine the mapped type.
+			foreach (var metadataResult in metadataResults)
+			{
+				if (ProcessMembersMetadataResult(
+					metadataResult,
+					sessionFactory,
+					out mappedType,
+					out entityPersister,
+					out component,
+					out memberPath))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		private static bool ProcessMembersMetadataResult(
+			MemberMetadataResult metadataResult,
+			ISessionFactoryImplementor sessionFactory,
+			out IType mappedType,
+			out IEntityPersister entityPersister,
+			out IAbstractComponentType component,
+			out string memberPath)
+		{
+			if (!TryGetEntityPersister(metadataResult.EntityName, null, sessionFactory, out var currentEntityPersister))
+			{
+				// Failed to find the starting entity name, due to:
+				// - Querying a type that is not related to any entity e.g. s.Query<NotRelatedType>().Where(a => a.Type == "A")
 				memberPath = null;
 				mappedType = null;
 				entityPersister = null;
@@ -134,13 +175,17 @@ namespace NHibernate.Util
 				return false;
 			}
 
-			if (memberPaths.Count == 0) // The expression do not contain any member expressions
+			if (metadataResult.MemberPaths.Count == 0) // The expression do not contain any member expressions
 			{
-				if (convertType != null)
+				if (metadataResult.ConvertType != null)
 				{
-					mappedType = TryGetEntityPersister(currentEntityPersister, convertType, sessionFactory, out var convertPersister)
+					mappedType = TryGetEntityPersister(
+						currentEntityPersister,
+						metadataResult.ConvertType,
+						sessionFactory,
+						out var convertPersister)
 						? convertPersister.EntityMetamodel.EntityType // ((Subclass)q)
-						: TypeFactory.GetDefaultTypeFor(convertType); // ((NotMapped)q)
+						: TypeFactory.GetDefaultTypeFor(metadataResult.ConvertType); // ((NotMapped)q)
 				}
 				else
 				{
@@ -155,9 +200,13 @@ namespace NHibernate.Util
 
 			// If there was a cast right after the constant expression that contains the IEntityNameProvider instance, we have
 			// to update the entity persister according to it, otherwise use the value returned by TryGetAllMemberMetadata method.
-			if (convertType != null)
+			if (metadataResult.ConvertType != null)
 			{
-				if (!TryGetEntityPersister(currentEntityPersister, convertType, sessionFactory, out var convertPersister)) // ((NotMapped)q).Id
+				if (!TryGetEntityPersister(
+					currentEntityPersister,
+					metadataResult.ConvertType,
+					sessionFactory,
+					out var convertPersister)) // ((NotMapped)q).Id
 				{
 					memberPath = null;
 					mappedType = null;
@@ -171,7 +220,7 @@ namespace NHibernate.Util
 
 			return TraverseMembers(
 				sessionFactory,
-				memberPaths,
+				metadataResult.MemberPaths,
 				currentEntityPersister,
 				out mappedType,
 				out entityPersister,
@@ -337,8 +386,19 @@ namespace NHibernate.Util
 			var currentEntityPersister = sessionFactory.TryGetEntityPersister(currentEntityName);
 			if (currentEntityPersister == null)
 			{
-				persister = null;
-				return false; // Querying an unmapped interface e.g. s.Query<IEntity>().Where(a => a.Type == "A")
+				// When dealing with a polymorphic query it is not important which entity name we pick
+				// as they all need to have the same mapped types for members of the type that is queried.
+				// If one of the entites has a different type mapped (e.g. enum mapped as string instead of numeric),
+				// the query will fail to execute as currently the ParameterMetadata is bound to IQueryPlan and not to IQueryTranslator
+				// (e.g. s.Query<IEntity>().Where(a => a.MyEnum == MyEnum.Option)).
+				currentEntityName = sessionFactory.GetImplementors(currentEntityName).FirstOrDefault();
+				if (currentEntityName == null)
+				{
+					persister = null;
+					return false;
+				}
+
+				currentEntityPersister = sessionFactory.GetEntityPersister(currentEntityName);
 			}
 
 			return TryGetEntityPersister(currentEntityPersister, convertedType, sessionFactory, out persister);
@@ -438,30 +498,60 @@ namespace NHibernate.Util
 
 		private class MemberMetadataExtractor : NhExpressionVisitor
 		{
-			private readonly Stack<MemberMetadata> _memberPaths = new Stack<MemberMetadata>();
+			private readonly List<MemberMetadataResult> _childrenResults = new List<MemberMetadataResult>();
+			private readonly Stack<MemberMetadata> _memberPaths;
 			private System.Type _convertType;
 			private bool _hasIndexer;
 			private string _entityName;
 
+			private MemberMetadataExtractor(Stack<MemberMetadata> memberPaths, System.Type convertType, bool hasIndexer)
+			{
+				_memberPaths = memberPaths;
+				_convertType = convertType;
+				_hasIndexer = hasIndexer;
+			}
+
 			/// <summary>
-			/// Traverses the expression from top to bottom until the first <see cref="ConstantExpression"/> containing an IEntityNameProvider instance is found.
+			/// Traverses the expression from top to bottom until the first <see cref="ConstantExpression"/> containing an IEntityNameProvider
+			/// instance is found.
 			/// </summary>
 			/// <param name="expression">The expression to traverse.</param>
-			/// <param name="entityName">An output parameter that will be populated by the first <see cref="IEntityNameProvider.EntityName"/> that is found or null otherwise.</param>
-			/// <param name="convertType">An output parameter that will be populated only when <see cref="ConstantExpression"/> containing an IEntityNameProvider 
-			/// is followed by an <see cref="UnaryExpression"/>.</param>
-			/// <returns>A stack of information about all <see cref="MemberExpression"/> that were traversed until the first <see cref="ConstantExpression"/> containing an 
-			/// IEntityNameProvider instance is found or null when it was not found or if one of the expressions is not supported.</returns>
-			public static Stack<MemberMetadata> TryGetAllMemberMetadata(
-				Expression expression,
-				out string entityName,
-				out System.Type convertType)
+			/// <param name="results">Output parameter that represents a collection, where each item contains information about all
+			/// <see cref="MemberExpression"/> that were traversed until the first <see cref="ConstantExpression"/> containing an
+			/// <see cref="IEntityNameProvider"/> instance is found. The number of items depends on how many different paths exist
+			/// in the <paramref name="expression"/> that contains a <see cref="IEntityNameProvider"/> instance. When <see cref="IEntityNameProvider"/>
+			/// is not found or one of the expressions is not supported the parameter will be set to <see langword="null"/>.</param>
+			/// <returns>Whether <paramref name="results"/> was populated.</returns>
+			public static bool TryGetAllMemberMetadata(Expression expression, out List<MemberMetadataResult> results)
 			{
-				var extractor = new MemberMetadataExtractor();
+				if (TryGetAllMemberMetadata(expression, new Stack<MemberMetadata>(), null, false, out var result))
+				{
+					results = result.GetAllResults().ToList();
+					return true;
+				}
+
+				results = null;
+				return false;
+			}
+
+			private static bool TryGetAllMemberMetadata(
+				Expression expression,
+				Stack<MemberMetadata> memberPaths,
+				System.Type convertType,
+				bool hasIndexer,
+				out MemberMetadataResult results)
+			{
+				var extractor = new MemberMetadataExtractor(memberPaths, convertType, hasIndexer);
 				extractor.Accept(expression);
-				entityName = extractor._entityName;
-				convertType = entityName != null ? extractor._convertType : null;
-				return entityName != null ? extractor._memberPaths : null;
+				results = extractor._entityName != null || extractor._childrenResults.Count > 0
+					? new MemberMetadataResult(
+						extractor._childrenResults,
+						extractor._memberPaths,
+						extractor._entityName,
+						extractor._convertType)
+					: null;
+
+				return results != null;
 			}
 
 			private void Accept(Expression expression)
@@ -527,7 +617,23 @@ namespace NHibernate.Util
 					return base.Visit(node.Left);
 				}
 
-				return base.VisitBinary(node);
+				if (node.NodeType == ExpressionType.Coalesce &&
+				    (TryGetMembersMetadata(node.Left) | TryGetMembersMetadata(node.Right)))
+				{
+					return node;
+				}
+
+				return Visit(node);
+			}
+
+			protected override Expression VisitConditional(ConditionalExpression node)
+			{
+				if (TryGetMembersMetadata(node.IfTrue) | TryGetMembersMetadata(node.IfFalse))
+				{
+					return node;
+				}
+
+				return Visit(node);
 			}
 
 			protected override Expression VisitMethodCall(MethodCallExpression node)
@@ -542,9 +648,7 @@ namespace NHibernate.Util
 					);
 				}
 
-				// Not supported expression
-				_entityName = null;
-				return node;
+				return Visit(node);
 			}
 
 			public override Expression Visit(Expression node)
@@ -552,6 +656,25 @@ namespace NHibernate.Util
 				// Not supported expression
 				_entityName = null;
 				return node;
+			}
+
+			private bool TryGetMembersMetadata(Expression expression)
+			{
+				if (TryGetAllMemberMetadata(expression, Clone(_memberPaths), _convertType, _hasIndexer, out var result))
+				{
+					_childrenResults.Add(result);
+					return true;
+				}
+
+				return false;
+			}
+
+			private static Stack<T> Clone<T>(Stack<T> original)
+			{
+				var arr = new T[original.Count];
+				original.CopyTo(arr, 0);
+				Array.Reverse(arr);
+				return new Stack<T>(arr);
 			}
 		}
 
@@ -569,6 +692,69 @@ namespace NHibernate.Util
 			public System.Type ConvertType { get; }
 
 			public bool HasIndexer { get; }
+		}
+
+		private class MemberMetadataResult
+		{
+			public MemberMetadataResult(
+				List<MemberMetadataResult> childrenResults,
+				Stack<MemberMetadata> memberPaths,
+				string entityName,
+				System.Type convertType)
+			{
+				ChildrenResults = childrenResults;
+				MemberPaths = memberPaths;
+				EntityName = entityName;
+				ConvertType = convertType;
+			}
+
+			/// <summary>
+			/// Metadata about all <see cref="MemberExpression"/> that were traversed.
+			/// </summary>
+			public Stack<MemberMetadata> MemberPaths { get; }
+
+			/// <summary>
+			/// <see cref="UnaryExpression"/> type that was used on a <see cref="ConstantExpression"/> containing
+			/// an <see cref="IEntityNameProvider"/>.
+			/// </summary>
+			public System.Type ConvertType { get; }
+
+			/// <summary>
+			/// The entity name from <see cref="IEntityNameProvider.EntityName"/>.
+			/// </summary>
+			public string EntityName { get; }
+
+			/// <summary>
+			/// Direct children of the current metadata result.
+			/// </summary>
+			public List<MemberMetadataResult> ChildrenResults { get; }
+
+			/// <summary>
+			/// Gets all leaf (bottom) children that have the entity name set.
+			/// </summary>
+			/// <returns></returns>
+			public IEnumerable<MemberMetadataResult> GetAllResults()
+			{
+				return GetAllResults(this);
+			}
+
+			private static IEnumerable<MemberMetadataResult> GetAllResults(MemberMetadataResult result)
+			{
+				if (result.ChildrenResults.Count == 0)
+				{
+					yield return result;
+				}
+				else
+				{
+					foreach (var childResult in result.ChildrenResults)
+					{
+						foreach (var childChildrenResult in GetAllResults(childResult))
+						{
+							yield return childChildrenResult;
+						}
+					}
+				}
+			}
 		}
 	}
 }
