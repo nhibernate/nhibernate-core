@@ -92,7 +92,7 @@ namespace NHibernate.Collection
 			}
 			return Task.CompletedTask;
 		}
-		
+
 		/// <summary>
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
 		/// </summary>
