@@ -71,6 +71,30 @@ namespace NHibernate.Test.StaticProxyTest
 		}
 
 		[Serializable]
+		public class PublicExplicitInterfaceWithSameMembersTestClass : IPublic
+		{
+			public virtual int Id { get; set; }
+			public virtual string Name { get; set; }
+
+			int IPublic.Id { get; set; }
+			string IPublic.Name { get; set; }
+
+			public PublicExplicitInterfaceWithSameMembersTestClass()
+			{
+				// Check access to properties from the default constructor do not fail once proxified
+				Id = -1;
+				Assert.That(Id, Is.EqualTo(-1));
+				Name = "Unknown";
+				Assert.That(Name, Is.EqualTo("Unknown"));
+				IPublic pub = this;
+				pub.Id = -2;
+				Assert.That(pub.Id, Is.EqualTo(-2));
+				pub.Name = "Unknown2";
+				Assert.That(pub.Name, Is.EqualTo("Unknown2"));
+			}
+		}
+
+		[Serializable]
 		public abstract class AbstractTestClass : IPublic
 		{
 			protected AbstractTestClass()
@@ -241,8 +265,8 @@ namespace NHibernate.Test.StaticProxyTest
 					// Check interface and implicit implementations do both call the delegated state
 					var state = new PublicInterfaceTestClass { Id = 5, Name = "State" };
 					proxy.HibernateLazyInitializer.SetImplementation(state);
-					var pub = (IPublic) proxy;
 					var ent = (PublicInterfaceTestClass) proxy;
+					IPublic pub = ent;
 					Assert.That(pub.Id, Is.EqualTo(5), "IPublic.Id");
 					Assert.That(ent.Id, Is.EqualTo(5), "entity.Id");
 					Assert.That(pub.Name, Is.EqualTo("State"), "IPublic.Name");
@@ -276,8 +300,8 @@ namespace NHibernate.Test.StaticProxyTest
 					Assert.That(proxy, Is.Not.Null);
 					Assert.That(proxy, Is.InstanceOf<IPublic>());
 					Assert.That(proxy, Is.InstanceOf<PublicExplicitInterfaceTestClass>());
-					
-					// Check interface and implicit implementations do both call the delegated state
+
+					// Check explicit implementation
 					IPublic state = new PublicExplicitInterfaceTestClass();
 					state.Id = 5;
 					state.Name = "State";
@@ -285,13 +309,64 @@ namespace NHibernate.Test.StaticProxyTest
 					var entity = (IPublic) proxy;
 					Assert.That(entity.Id, Is.EqualTo(5), "Id");
 					Assert.That(entity.Name, Is.EqualTo("State"), "Name");
-					
+
 					entity.Id = 10;
 					entity.Name = "Test";
 					Assert.That(entity.Id, Is.EqualTo(10), "entity.Id");
 					Assert.That(state.Id, Is.EqualTo(10), "state.Id");
 					Assert.That(entity.Name, Is.EqualTo("Test"), "entity.Name");
 					Assert.That(state.Name, Is.EqualTo("Test"), "state.Name");
+#if NETFX
+				});
+#endif
+		}
+
+		[Test]
+		public void VerifyProxyForClassWithExplicitInterfaceWithSameMembers()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(
+				typeof(PublicExplicitInterfaceWithSameMembersTestClass).FullName,
+				typeof(PublicExplicitInterfaceWithSameMembersTestClass),
+				new HashSet<System.Type> {typeof(INHibernateProxy)},
+				null, null, null, true);
+#if NETFX
+			VerifyGeneratedAssembly(
+				() =>
+				{
+#endif
+					var proxy = factory.GetProxy(1, null);
+					Assert.That(proxy, Is.Not.Null);
+					Assert.That(proxy, Is.InstanceOf<IPublic>());
+					Assert.That(proxy, Is.InstanceOf<PublicExplicitInterfaceWithSameMembersTestClass>());
+
+					// Check interface and implicit implementations do both call the delegated state
+					var state = new PublicExplicitInterfaceWithSameMembersTestClass();
+					IPublic pubState = state;
+					state.Id = 5;
+					state.Name = "State";
+					pubState.Id = 10;
+					pubState.Name = "State2";
+					proxy.HibernateLazyInitializer.SetImplementation(state);
+					var entity = (PublicExplicitInterfaceWithSameMembersTestClass) proxy;
+					IPublic pubEntity = entity;
+					Assert.That(entity.Id, Is.EqualTo(5), "Id member");
+					Assert.That(entity.Name, Is.EqualTo("State"), "Name member");
+					Assert.That(pubEntity.Id, Is.EqualTo(10), "Id from interface");
+					Assert.That(pubEntity.Name, Is.EqualTo("State2"), "Name from interface");
+
+					entity.Id = 15;
+					entity.Name = "Test";
+					pubEntity.Id = 20;
+					pubEntity.Name = "Test2";
+					Assert.That(entity.Id, Is.EqualTo(15), "entity.Id");
+					Assert.That(state.Id, Is.EqualTo(15), "state.Id");
+					Assert.That(entity.Name, Is.EqualTo("Test"), "entity.Name");
+					Assert.That(state.Name, Is.EqualTo("Test"), "state.Name");
+					Assert.That(pubEntity.Id, Is.EqualTo(20), "pubEntity.Id");
+					Assert.That(pubState.Id, Is.EqualTo(20), "pubState.Id");
+					Assert.That(pubEntity.Name, Is.EqualTo("Test2"), "pubEntity.Name");
+					Assert.That(pubState.Name, Is.EqualTo("Test2"), "pubState.Name");
 #if NETFX
 				});
 #endif
