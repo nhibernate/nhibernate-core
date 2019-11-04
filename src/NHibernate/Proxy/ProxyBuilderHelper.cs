@@ -136,8 +136,6 @@ namespace NHibernate.Proxy
 			return methodBuilder;
 		}
 
-		private static readonly System.Type[] _equalsParametersTypes = { typeof(object) };
-
 		internal static MethodBuilder GenerateMethodSignature(string name, MethodInfo method, TypeBuilder typeBuilder)
 		{
 			var explicitImplementation = method.DeclaringType.IsInterface;
@@ -146,8 +144,7 @@ namespace NHibernate.Proxy
 #pragma warning disable 618
 					typeBuilder.BaseType == typeof(ProxyDummy)) &&
 #pragma warning restore 618
-				(method.Name == "Equals" && method.GetParameters().Select(p => p.ParameterType).SequenceEqual(_equalsParametersTypes) ||
-					method.Name == "GetHashCode" && method.GetParameters().Length == 0))
+				(IsEquals(method) || IsGetHashCode(method)))
 			{
 				// If we are building a proxy for an interface, and it defines an Equals or GetHashCode, they must
 				// be implicitly implemented for overriding object methods.
@@ -205,6 +202,18 @@ namespace NHibernate.Proxy
 			}
 
 			return methodBuilder;
+		}
+
+		private static bool IsGetHashCode(MethodBase method)
+		{
+			return method.Name == "GetHashCode" && method.GetParameters().Length == 0;
+		}
+
+		private static bool IsEquals(MethodBase method)
+		{
+			if (method.Name != "Equals") return false;
+			var parameters = method.GetParameters();
+			return parameters.Length == 1 && parameters[0].ParameterType == typeof(object);
 		}
 
 		internal static void GenerateInstanceOfIgnoresAccessChecksToAttribute(
