@@ -17,7 +17,6 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 			get { return "NHibernate.Test"; }
 		}
 
-
 		[Test]
 		public void TestNormalBoundary()
 		{

@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-
 using NHibernate.Action;
 using NHibernate.Engine;
 using NHibernate.Impl;

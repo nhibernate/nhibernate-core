@@ -1695,6 +1695,5 @@ namespace NHibernate.Test.CacheTest
 
 			return cache;
 		}
-
 	}
 }

@@ -142,7 +142,6 @@ namespace NHibernate.Test.Linq
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
-
 		[Test]
 		public async Task UsersRegisteredAtOrAfterY2K_And_Before2001Async()
 		{
@@ -361,7 +360,6 @@ namespace NHibernate.Test.Linq
 			await (query.ToListAsync());
 		}
 
-
 		[Test]
 		[Description("NH-3337")]
 		public async Task ProductWithDoubleStringContainsAndNotNullAsync()
@@ -411,7 +409,6 @@ namespace NHibernate.Test.Linq
 			var results = await (db.Products.Where(expr).ToListAsync());
 			Assert.That(results, Has.Count.EqualTo(1));
 		}
-		
 
 		[Test(Description = "NH-3261")]
 		public async Task UsersWithStringContainsAndNotNullNameAsync()
@@ -761,7 +758,6 @@ namespace NHibernate.Test.Linq
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
-
 		[Test(Description = "NH-3366")]
 		public async Task CanUseCompareInQueryWithNonConstantZeroAsync()
 		{
@@ -781,7 +777,6 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-
 		[Test(Description = "NH-3366")]
 		[TestCaseSource(typeof(WhereTestsAsync), nameof(CanUseCompareInQueryDataSource))]
 		public async Task CanUseCompareInQueryAsync(Expression<Func<Product, bool>> expression, int expectedCount, bool expectCase)
@@ -796,7 +791,6 @@ namespace NHibernate.Test.Linq
 				Assert.That(wholeLog, expectCase ? Does.Contain("case") : Does.Not.Contain("case"));
 			}
 		}
-
 
 		[Test(Description = "NH-3665")]
 		public async Task SelectOnCollectionReturnsResultAsync()

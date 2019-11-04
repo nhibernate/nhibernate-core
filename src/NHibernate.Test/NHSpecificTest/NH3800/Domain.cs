@@ -37,7 +37,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 		public virtual Project Project { get; set; }
 		public virtual IList<Component> Components { get; set; }
 		public virtual IList<Tag> Tags { get; set; }
-
 	}
 
 	public class Tag

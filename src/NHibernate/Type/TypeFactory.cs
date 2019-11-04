@@ -529,7 +529,6 @@ namespace NHibernate.Type
 
 				returnType = BuiltInType(typeName, length);
 			}
-
 			else
 			{
 				// it is not in the basicNameMap and typeByTypeOfName
@@ -976,7 +975,6 @@ namespace NHibernate.Type
 		{
 			return CollectionTypeFactory.Array(role, propertyRef, elementClass);
 		}
-
 
 		public static CollectionType GenericBag(string role, string propertyRef, System.Type elementClass)
 		{

@@ -11,7 +11,6 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public static class SqlStringHelper
 	{
-
 		public static SqlString Join(SqlString separator, IEnumerable objects)
 		{
 			SqlStringBuilder buf = new SqlStringBuilder();
@@ -31,7 +30,6 @@ namespace NHibernate.SqlCommand
 			return buf.ToSqlString();
 		}
 
-
 		public static SqlString[] Add(SqlString[] x, string sep, SqlString[] y)
 		{
 			SqlString[] result = new SqlString[x.Length];
@@ -42,7 +40,6 @@ namespace NHibernate.SqlCommand
 			return result;
 		}
 
-
 		public static SqlString RemoveAsAliasesFromSql(SqlString sql)
 		{
 			int index = sql.LastIndexOfCaseInsensitive(" as ");
@@ -50,12 +47,10 @@ namespace NHibernate.SqlCommand
 			return sql.Substring(0, index);
 		}
 
-
 		public static bool IsNotEmpty(SqlString str)
 		{
 			return !IsEmpty(str);
 		}
-
 
 		public static bool IsEmpty(SqlString str)
 		{

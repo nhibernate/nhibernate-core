@@ -18,7 +18,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2580
 	{
 		private class MyClass
 		{
-			
 		}
 
 		[Test]

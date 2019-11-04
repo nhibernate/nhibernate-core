@@ -59,7 +59,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 		{
 			base.OnTearDown();
 
-
 			using (ISession session = this.OpenSession()) {
 				IList<ArticleItem> list = session.CreateCriteria("Article").List<ArticleItem>();
 				foreach (ArticleItem item in list)
@@ -79,7 +78,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 				session.Delete(hql);
 				session.Flush();
 			}
-
 		}
 
 		[Test]
@@ -126,8 +124,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 			Assert.That(result.Count, Is.GreaterThan(0));
 		}
 
-
-
 		[Test]
 		public async Task Can_SetArticleFavoriteWithHQL_NamedParamAsync()
 		{
@@ -153,7 +149,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 				result = await (session.CreateQuery(HQL).ListAsync<ArticleItem>());
 			}
 			Assert.That(result.Count, Is.GreaterThan(0));
-
-		}
+}
 	}
 }

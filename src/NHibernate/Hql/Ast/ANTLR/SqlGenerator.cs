@@ -494,7 +494,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 				return builder.ToSqlString();
 			}
 
-
 			#endregion
 		}
 

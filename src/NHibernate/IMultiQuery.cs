@@ -161,7 +161,6 @@ namespace NHibernate
 		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetParameter(string name, object val, IType type);
 
-
 		/// <summary>
 		/// Bind a value to a named query parameter, guessing the NHibernate <see cref="IType"/>
 		/// from the class of the given object.

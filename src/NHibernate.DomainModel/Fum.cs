@@ -99,7 +99,6 @@ namespace NHibernate.DomainModel
 			set { this._friends = value; }
 		}
 
-
 		public LifecycleVeto OnDelete(ISession s)
 		{
 			if (_friends == null) return LifecycleVeto.NoVeto;
@@ -117,11 +116,9 @@ namespace NHibernate.DomainModel
 			return LifecycleVeto.NoVeto;
 		}
 
-
 		public void OnLoad(ISession s, object id)
 		{
 		}
-
 
 		public LifecycleVeto OnSave(ISession s)
 		{
@@ -139,7 +136,6 @@ namespace NHibernate.DomainModel
 			}
 			return LifecycleVeto.NoVeto;
 		}
-
 
 		public LifecycleVeto OnUpdate(ISession s)
 		{

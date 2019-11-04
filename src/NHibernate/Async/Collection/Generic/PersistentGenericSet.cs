@@ -75,7 +75,6 @@ namespace NHibernate.Collection.Generic
 				return false;
 			}
 
-
 			foreach (T obj in WrappedSet)
 			{
 				T oldValue;
@@ -142,7 +141,6 @@ namespace NHibernate.Collection.Generic
 			var deletes = new List<T>(((ICollection<T>)sn).Count);
 
 			deletes.AddRange(sn.Where(obj => !WrappedSet.Contains(obj)));
-
 
 			foreach (var obj in WrappedSet)
 			{

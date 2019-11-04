@@ -1140,7 +1140,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return top;
 		}
 
-
 		// Helper methods
 
 		public bool IsFilter()

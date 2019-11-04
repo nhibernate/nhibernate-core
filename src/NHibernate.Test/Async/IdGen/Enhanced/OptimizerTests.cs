@@ -67,7 +67,6 @@ namespace NHibernate.Test.IdGen.Enhanced
 			Assert.That(sequence.TimesCalled, Is.EqualTo(2));
 			Assert.That(sequence.CurrentValue, Is.EqualTo(2));
 
-
 			// test historic table behavior, where the initial values started at 0 (we now force 1 to be the first used id value)
 			sequence = new SourceMock(0);
 			optimizer = OptimizerFactory.BuildOptimizer(OptimizerFactory.HiLo, typeof(long), increment, -1);

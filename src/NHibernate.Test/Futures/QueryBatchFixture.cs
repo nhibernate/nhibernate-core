@@ -193,7 +193,6 @@ namespace NHibernate.Test.Futures
 				Assert.That(NHibernateUtil.IsInitialized(parent), Is.True);
 				Assert.That(NHibernateUtil.IsInitialized(parent.ChildrenList), Is.True);
 				Assert.That(parent.ChildrenList.Count, Is.EqualTo(2));
-				
 			}
 		}
 

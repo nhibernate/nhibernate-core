@@ -77,7 +77,6 @@ namespace NHibernate.Mapping
 
 				if (!HasFormula && !"none".Equals(ForeignKeyName, StringComparison.OrdinalIgnoreCase))
 				{
-
 					IEnumerable<Column> ce = new SafetyEnumerable<Column>(property.ColumnIterator);
 
 					// NH : Ensure that related columns have same length

@@ -53,7 +53,6 @@ namespace NHibernate.Collection.Generic
 			IsDirectlyAccessible = true;
 		}
 
-
 		public override object GetSnapshot(ICollectionPersister persister)
 		{
 			var clonedList = new List<T>(WrappedList.Count);
@@ -242,7 +241,6 @@ namespace NHibernate.Collection.Generic
 			return WrappedList.GetHashCode();
 		}
 
-
 		#region IList Members
 
 		int IList.Add(object value)
@@ -333,7 +331,6 @@ namespace NHibernate.Collection.Generic
 
 		#endregion
 
-
 		#region IList<T> Members
 
 		public int IndexOf(T item)
@@ -404,7 +401,6 @@ namespace NHibernate.Collection.Generic
 
 		#endregion
 
-
 		#region ICollection Members
 
 		void ICollection.CopyTo(Array array, int arrayIndex)
@@ -437,7 +433,6 @@ namespace NHibernate.Collection.Generic
 		}
 
 		#endregion
-
 
 		#region ICollection<T> Members
 
@@ -491,7 +486,6 @@ namespace NHibernate.Collection.Generic
 		}
 
 		#endregion
-
 
 		#region IEnumerable Members
 

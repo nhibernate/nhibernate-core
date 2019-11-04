@@ -20,7 +20,6 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 
 		private class Related
 		{
-
 		}
 
 		private class Bidirectional

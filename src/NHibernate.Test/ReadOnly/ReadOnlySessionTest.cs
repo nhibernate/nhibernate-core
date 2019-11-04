@@ -1079,7 +1079,6 @@ namespace NHibernate.Test.ReadOnly
 					t.Commit();
 				}
 			}
-	
 		}
 	
 		[Test]

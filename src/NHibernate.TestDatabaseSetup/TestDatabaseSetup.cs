@@ -295,5 +295,3 @@ namespace NHibernate.TestDatabaseSetup
 #endif
 	}
 }
-
-

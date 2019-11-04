@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +12,9 @@ using NHibernate.Transform;
 
 namespace NHibernate.Criterion
 {
-
 	[Serializable]
 	public abstract class QueryOver
 	{
-
 		protected ICriteria criteria;
 		protected CriteriaImpl impl;
 
@@ -219,7 +216,6 @@ namespace NHibernate.Criterion
 			throw new HibernateException("Incorrect syntax;  .As<T> method is for use in Lambda expressions only.");
 		}
 
-
 		IList<TRoot> IQueryOver<TRoot>.List()
 		{ return List(); }
 
@@ -279,7 +275,6 @@ namespace NHibernate.Criterion
 
 		IQueryOver<TRoot> IQueryOver<TRoot>.ReadOnly()
 		{ return ReadOnly(); }
-
 	}
 
 	/// <summary>
@@ -289,7 +284,6 @@ namespace NHibernate.Criterion
 	public class QueryOver<TRoot,TSubType> : QueryOver<TRoot>, IQueryOver<TRoot,TSubType>,
 		ISupportEntityJoinQueryOver<TRoot>, ISupportSelectModeQueryOver<TRoot, TSubType>
 	{
-
 		protected internal QueryOver()
 		{
 			impl = new CriteriaImpl(typeof(TRoot), null);
@@ -1023,5 +1017,4 @@ namespace NHibernate.Criterion
 			return this;
 		}
 	}
-
 }

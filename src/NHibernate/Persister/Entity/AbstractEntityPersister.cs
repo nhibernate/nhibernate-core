@@ -552,8 +552,8 @@ namespace NHibernate.Persister.Entity
 
 		protected abstract int[] SubclassColumnTableNumberClosure { get; }
 		protected abstract int[] SubclassFormulaTableNumberClosure { get; }
-		protected internal abstract int[] PropertyTableNumbersInSelect { get;}
-		protected internal abstract int[] PropertyTableNumbers { get;}
+		protected internal abstract int[] PropertyTableNumbersInSelect { get; }
+		protected internal abstract int[] PropertyTableNumbers { get; }
 
 		public virtual string DiscriminatorColumnName
 		{
@@ -1052,13 +1052,13 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.NaturalIdentifierProperties; }
 		}
 
-		public abstract string[][] ConstraintOrderedTableKeyColumnClosure { get;}
-		public abstract IType DiscriminatorType { get;}
-		public abstract string[] ConstraintOrderedTableNameClosure { get;}
-		public abstract string DiscriminatorSQLValue { get;}
-		public abstract object DiscriminatorValue { get;}
+		public abstract string[][] ConstraintOrderedTableKeyColumnClosure { get; }
+		public abstract IType DiscriminatorType { get; }
+		public abstract string[] ConstraintOrderedTableNameClosure { get; }
+		public abstract string DiscriminatorSQLValue { get; }
+		public abstract object DiscriminatorValue { get; }
 		public abstract string[] SubclassClosure { get; }
-		public abstract string[] PropertySpaces { get;}
+		public abstract string[] PropertySpaces { get; }
 
 		protected virtual void AddDiscriminatorToInsert(SqlInsertBuilder insert) { }
 
@@ -1858,7 +1858,6 @@ namespace NHibernate.Persister.Entity
 			}
 			return frag.ToFragmentString();
 		}
-
 
 		protected virtual SqlString GenerateSnapshotSelectString()
 		{
@@ -4142,7 +4141,6 @@ namespace NHibernate.Persister.Entity
 		{
 			return EntityTuplizer;
 		}
-
 
 		public virtual bool HasCache
 		{

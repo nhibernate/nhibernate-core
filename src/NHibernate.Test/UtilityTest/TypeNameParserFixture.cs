@@ -202,12 +202,10 @@ namespace NHibernate.Test.UtilityTest
 
 		public class MyGClass<T>
 		{
-			
 		}
 
 		public class MyComplexClass<T1, T2, T3>
 		{
-
 		}
 
 		[Test]

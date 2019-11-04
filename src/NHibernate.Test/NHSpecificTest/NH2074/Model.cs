@@ -8,5 +8,4 @@ namespace NHibernate.Test.NHSpecificTest.NH2074
 		public virtual string Name { get; set; }
 		public virtual int CalculatedProperty { get; set; }
 	} 
-
 }

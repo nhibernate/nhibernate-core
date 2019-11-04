@@ -5,7 +5,6 @@ using NHibernate.Dialect.Schema;
 
 namespace NHibernate.Test.DialectTest.SchemaTests
 {
-
 	[TestFixture]
 	public class ColumnMetaDataFixture
 	{

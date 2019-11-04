@@ -370,7 +370,6 @@ namespace NHibernate.Test.Legacy
 
 			Assert.IsTrue(list.Count == 1);
 
-
 			session.Clear();
 
 			query =

@@ -457,7 +457,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public bool UseWhereFragment
 		{
-			get { return _useWhereFragment;}
+			get { return _useWhereFragment; }
 			set { _useWhereFragment = value; }
 		}
 

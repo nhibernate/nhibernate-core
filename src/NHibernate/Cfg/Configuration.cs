@@ -2229,7 +2229,6 @@ namespace NHibernate.Cfg
 			}
 		}
 
-
 		/// <summary>
 		/// Append the listeners to the end of the currently configured
 		/// listeners

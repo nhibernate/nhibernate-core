@@ -171,7 +171,6 @@ namespace NHibernate.Criterion
 			return new SimpleExpression(propertyName, value, " < ");
 		}
 
-
 		/// <summary>
 		/// Apply a "less than" constraint to the projection
 		/// </summary>
@@ -221,7 +220,6 @@ namespace NHibernate.Criterion
 		{
 			return new SimpleExpression(projection, value, " >= ");
 		}
-
 
 		/// <summary>
 		/// Apply a "between" constraint to the named property
@@ -378,7 +376,6 @@ namespace NHibernate.Criterion
 			return new EqPropertyExpression(projection, otherPropertyName);
 		}
 
-
 		/// <summary>
 		/// Apply an "equal" constraint to lshProjection and rshProjection
 		/// </summary>
@@ -389,7 +386,6 @@ namespace NHibernate.Criterion
 		{
 			return new EqPropertyExpression(lshProjection, rshProjection);
 		}
-
 
 		/// <summary>
 		/// Apply an "equal" constraint to the property and rshProjection
@@ -523,7 +519,6 @@ namespace NHibernate.Criterion
 			return new GePropertyExpression(projection, otherPropertyName);
 		}
 
-
 		/// <summary>
 		/// Apply a "greater than or equal" constraint to two properties
 		/// </summary>
@@ -590,7 +585,6 @@ namespace NHibernate.Criterion
 			return new LePropertyExpression(propertyName, otherPropertyName);
 		}
 
-
 		/// <summary>
 		/// Apply a "less than or equal" constraint to two properties
 		/// </summary>
@@ -601,7 +595,6 @@ namespace NHibernate.Criterion
 		{
 			return new LePropertyExpression(projection, otherPropertyName);
 		}
-
 
 		/// <summary>
 		/// Apply a "less than or equal" constraint to two properties
@@ -614,7 +607,6 @@ namespace NHibernate.Criterion
 			return new LePropertyExpression(propertyName, projection);
 		}
 
-
 		/// <summary>
 		/// Apply a "less than or equal" constraint to two properties
 		/// </summary>
@@ -625,7 +617,6 @@ namespace NHibernate.Criterion
 		{
 			return new LePropertyExpression(lhsProjection, rhsProjection);
 		}
-
 
 		/// <summary>
 		/// Apply an "is not null" constraint to the named property
@@ -804,6 +795,5 @@ namespace NHibernate.Criterion
 			ExpressionProcessor.ProjectionInfo projection = ExpressionProcessor.FindMemberProjection(expression.Body);
 			return new LambdaRestrictionBuilder(projection);
 		}
-
 	}
 }

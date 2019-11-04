@@ -45,8 +45,8 @@ namespace NHibernate.Type
 		{
 			var dp = cmd.Parameters[index];
 			dp.Value = dp.DbType == DbType.Int16 ? Convert.ToInt16(value) : Convert.ToByte(value);
-
 		}
+		
 		public override string Name
 		{
 			get { return "Byte"; }

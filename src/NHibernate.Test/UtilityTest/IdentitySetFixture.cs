@@ -58,7 +58,6 @@ namespace NHibernate.Test.UtilityTest
 			Assert.AreEqual(1, set.Count, "The item was added succesfully");
 		}
 
-
 		/// <summary>
 		/// An IdentityMap can not use a ValueType as the Key because of the boxing/unboxing
 		/// that occurs with them.  This verifies that an Exception is thrown if a ValueType 
@@ -134,7 +133,6 @@ namespace NHibernate.Test.UtilityTest
 			Assert.IsFalse(map.Contains(item2), "Even though item1.Equals(item2) IdentitySet should not find by item2");
 		}
 
-
 		/// <summary>
 		/// Add the same MutableHashCode class twice and ensure there is only
 		/// one item in the IdentitySet.
@@ -178,6 +176,5 @@ namespace NHibernate.Test.UtilityTest
 
 			Assert.AreEqual(2, actualSet.Count, "The IdentityMap should have 2 elements");
 		}
-
 	}
 }

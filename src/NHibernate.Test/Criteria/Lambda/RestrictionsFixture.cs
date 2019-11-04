@@ -7,11 +7,9 @@ using NHibernate.Criterion;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
-
 	[TestFixture]
 	public class RestrictionsFixture : LambdaFixtureBase
 	{
-
 		[Test]
 		public void ArbitraryCriterion()
 		{

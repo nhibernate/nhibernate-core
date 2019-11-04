@@ -51,7 +51,6 @@ namespace NHibernate.Linq.Functions
 				   methodInfo.DeclaringType.FullName == "System.Data.Services.Providers.DataServiceProviderMethods";
 		}
 
-
 		public CompareGenerator()
 		{
 			SupportedMethods = ActingMethods.ToArray();
@@ -81,7 +80,6 @@ namespace NHibernate.Linq.Functions
 				treeBuilder.Constant(-1));
 		}
 
-
 		#region IRuntimeMethodHqlGenerator methods
 
 		public bool SupportsMethod(MethodInfo method)
@@ -94,7 +92,6 @@ namespace NHibernate.Linq.Functions
 			return IsCompareMethod(method);
 		}
 
-		
 		public IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)
 		{
 			return this;

@@ -397,7 +397,6 @@ namespace NHibernate.DomainModel
 				}
 			}
 
-
 			return (_bool == other.Bool)
 			       && ((_boolean == other.Boolean) || (_boolean.Equals(other.Boolean)))
 			       && ((_byte == other.Byte) || (_byte.Equals(other.Byte)))
@@ -428,7 +427,6 @@ namespace NHibernate.DomainModel
 //		{
 //			return key.GetHashCode() - _string.GetHashCode();
 //		}
-
 
 		private static int count = 0;
 	}

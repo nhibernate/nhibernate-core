@@ -1,6 +1,4 @@
 namespace NHibernate.Cfg.MappingSchema {
-    
-    
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("HbmXsd", "5.0.0-Alpha1")]
     [System.SerializableAttribute()]
@@ -9,7 +7,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("any", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmAny {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -90,7 +87,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("meta", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmMeta {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string attribute;
@@ -117,7 +113,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("meta-value", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmMetaValue {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string value;
@@ -135,7 +130,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("column", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmColumn {
-        
         /// <remarks/>
         public HbmComment comment;
         
@@ -200,7 +194,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("comment", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmComment {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlTextAttribute()]
         public string[] Text;
@@ -214,7 +207,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("array", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmArray {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -373,7 +365,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("subselect", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmSubselect {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlTextAttribute()]
         public string[] Text;
@@ -387,7 +378,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("cache", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmCache {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public HbmCacheUsage usage;
@@ -411,7 +401,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmCacheUsage {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("read-only")]
         ReadOnly,
@@ -434,7 +423,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmCacheInclude {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("all")]
         All,
@@ -452,7 +440,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("synchronize", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmSynchronize {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string table;
@@ -466,7 +453,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("key", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmKey {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("column")]
         public HbmColumn[] column;
@@ -522,7 +508,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmOndelete {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("cascade")]
         Cascade,
@@ -540,7 +525,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("index", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmIndex {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("column")]
         public HbmColumn[] column;
@@ -566,7 +550,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("list-index", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmListIndex {
-        
         /// <remarks/>
         public HbmColumn column;
         
@@ -587,7 +570,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("composite-element", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmCompositeElement {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -619,7 +601,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("parent", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmParent {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string name;
@@ -637,7 +618,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("many-to-one", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmManyToOne {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -769,7 +749,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("formula", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmFormula {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlTextAttribute()]
         public string[] Text;
@@ -780,7 +759,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmOuterJoinStrategy {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("auto")]
         Auto,
@@ -799,7 +777,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmFetchMode {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("select")]
         Select,
@@ -814,7 +791,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmLaziness {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("false")]
         False,
@@ -833,7 +809,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmNotFoundMode {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("ignore")]
         Ignore,
@@ -851,7 +826,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("nested-composite-element", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmNestedCompositeElement {
-        
         /// <remarks/>
         public HbmParent parent;
         
@@ -887,7 +861,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("property", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmProperty {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -1008,7 +981,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("type", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmType {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("param")]
         public HbmParam[] param;
@@ -1026,7 +998,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("param", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmParam {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string name;
@@ -1041,7 +1012,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmPropertyGeneration {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("never")]
         Never,
@@ -1063,7 +1033,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("element", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmElement {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("column", typeof(HbmColumn))]
         [System.Xml.Serialization.XmlElementAttribute("formula", typeof(HbmFormula))]
@@ -1124,7 +1093,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("many-to-any", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmManyToAny {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta-value")]
         public HbmMetaValue[] metavalue;
@@ -1154,7 +1122,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("many-to-many", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmManyToMany {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -1252,7 +1219,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("filter", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmFilter {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string name;
@@ -1271,7 +1237,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmRestrictedLaziness {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("false")]
         False,
@@ -1289,7 +1254,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("one-to-many", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmOneToMany {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string @class;
@@ -1320,7 +1284,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("loader", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmLoader {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute("query-ref")]
         public string queryref;
@@ -1334,7 +1297,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("sql-delete", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmCustomSQL {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool callable;
@@ -1361,7 +1323,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmCustomSQLCheck {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("none")]
         None,
@@ -1380,7 +1341,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmCollectionFetchMode {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("select")]
         Select,
@@ -1402,7 +1362,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("bag", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmBag {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -1573,7 +1532,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmCollectionLazy {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("true")]
         True,
@@ -1595,7 +1553,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("class", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmClass {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -1814,7 +1771,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("tuplizer", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmTuplizer {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute("entity-mode")]
         public HbmTuplizerEntitymode entitymode;
@@ -1833,7 +1789,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmTuplizerEntitymode {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("poco")]
         Poco,
@@ -1851,7 +1806,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("composite-id", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmCompositeId {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -1901,7 +1855,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("key-many-to-one", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmKeyManyToOne {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -1960,7 +1913,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("key-property", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmKeyProperty {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -2002,7 +1954,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmUnsavedValueType {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("undefined")]
         Undefined,
@@ -2024,7 +1975,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("id", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmId {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -2080,7 +2030,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("generator", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmGenerator {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("param")]
         public HbmParam[] param;
@@ -2098,7 +2047,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("discriminator", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmDiscriminator {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("column", typeof(HbmColumn))]
         [System.Xml.Serialization.XmlElementAttribute("formula", typeof(HbmFormula))]
@@ -2152,7 +2100,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("natural-id", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmNaturalId {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("any", typeof(HbmAny))]
         [System.Xml.Serialization.XmlElementAttribute("component", typeof(HbmComponent))]
@@ -2179,7 +2126,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("component", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmComponent {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -2269,7 +2215,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("dynamic-component", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmDynamicComponent {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("any", typeof(HbmAny))]
         [System.Xml.Serialization.XmlElementAttribute("array", typeof(HbmArray))]
@@ -2333,7 +2278,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("list", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmList {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -2512,7 +2456,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("map", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmMap {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -2700,7 +2643,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("composite-index", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmCompositeIndex {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("key-many-to-one", typeof(HbmKeyManyToOne))]
         [System.Xml.Serialization.XmlElementAttribute("key-property", typeof(HbmKeyProperty))]
@@ -2719,7 +2661,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("composite-map-key", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmCompositeMapKey {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("key-many-to-one", typeof(HbmKeyManyToOne))]
         [System.Xml.Serialization.XmlElementAttribute("key-property", typeof(HbmKeyProperty))]
@@ -2738,7 +2679,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("index-many-to-any", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmIndexManyToAny {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("column")]
         public HbmColumn[] column;
@@ -2764,7 +2704,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("index-many-to-many", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmIndexManyToMany {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("column")]
         public HbmColumn[] column;
@@ -2794,7 +2733,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("map-key", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmMapKey {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("column", typeof(HbmColumn))]
         [System.Xml.Serialization.XmlElementAttribute("formula", typeof(HbmFormula))]
@@ -2829,7 +2767,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("map-key-many-to-many", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmMapKeyManyToMany {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("column", typeof(HbmColumn))]
         [System.Xml.Serialization.XmlElementAttribute("formula", typeof(HbmFormula))]
@@ -2864,7 +2801,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("one-to-one", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmOneToOne {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -2951,7 +2887,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("primitive-array", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmPrimitiveArray {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -3084,7 +3019,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmPrimitivearrayOuterjoin {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("true")]
         True,
@@ -3103,7 +3037,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmPrimitivearrayFetch {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("join")]
         Join,
@@ -3125,7 +3058,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("set", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmSet {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -3303,7 +3235,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("idbag", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmIdbag {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -3480,7 +3411,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("collection-id", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmCollectionId {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -3513,7 +3443,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("timestamp", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmTimestamp {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -3563,7 +3492,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmTimestampUnsavedvalue {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("null")]
         Null,
@@ -3578,7 +3506,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmTimestampSource {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("vm")]
         Vm,
@@ -3593,7 +3520,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmVersionGeneration {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("never")]
         Never,
@@ -3611,7 +3537,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("version", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmVersion {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -3672,7 +3597,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("properties", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmProperties {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("component", typeof(HbmComponent))]
         [System.Xml.Serialization.XmlElementAttribute("dynamic-component", typeof(HbmDynamicComponent))]
@@ -3724,7 +3648,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("join", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmJoin {
-        
         /// <remarks/>
         public HbmSubselect subselect;
         
@@ -3804,7 +3727,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmJoinFetch {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("join")]
         Join,
@@ -3822,7 +3744,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("joined-subclass", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmJoinedSubclass {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -3991,7 +3912,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("resultset", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmResultSet {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("load-collection", typeof(HbmLoadCollection))]
         [System.Xml.Serialization.XmlElementAttribute("return", typeof(HbmReturn))]
@@ -4012,7 +3932,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("load-collection", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmLoadCollection {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("return-property")]
         public HbmReturnProperty[] returnproperty;
@@ -4043,7 +3962,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("return-property", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmReturnProperty {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("return-column")]
         public HbmReturnColumn[] returncolumn;
@@ -4065,7 +3983,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("return-column", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmReturnColumn {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string name;
@@ -4076,7 +3993,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmLockMode {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("none")]
         None,
@@ -4106,7 +4022,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("return", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmReturn {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("return-discriminator")]
         public HbmReturnDiscriminator returndiscriminator;
@@ -4145,7 +4060,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("return-discriminator", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmReturnDiscriminator {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string column;
@@ -4159,7 +4073,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("return-join", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmReturnJoin {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("return-property")]
         public HbmReturnProperty[] returnproperty;
@@ -4190,7 +4103,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("return-scalar", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmReturnScalar {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string column;
@@ -4208,7 +4120,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("query", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmQuery {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("query-param")]
         public HbmQueryParam[] Items;
@@ -4283,7 +4194,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("query-param", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmQueryParam {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string name;
@@ -4298,7 +4208,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmFlushMode {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("auto")]
         Auto,
@@ -4321,7 +4230,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmCacheMode {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("get")]
         Get,
@@ -4351,7 +4259,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("sql-query", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmSqlQuery {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("load-collection", typeof(HbmLoadCollection))]
         [System.Xml.Serialization.XmlElementAttribute("query-param", typeof(HbmQueryParam))]
@@ -4441,7 +4348,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("subclass", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmSubclass {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -4585,7 +4491,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("union-subclass", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmUnionSubclass {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -4740,7 +4645,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmPolymorphismType {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("implicit")]
         Implicit,
@@ -4755,7 +4659,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
     public enum HbmOptimisticLockMode {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("none")]
         None,
@@ -4781,7 +4684,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("create", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmCreate {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlTextAttribute()]
         public string[] Text;
@@ -4795,7 +4697,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("database-object", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmDatabaseObject {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("create", typeof(HbmCreate))]
         [System.Xml.Serialization.XmlElementAttribute("definition", typeof(HbmDefinition))]
@@ -4815,7 +4716,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("definition", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmDefinition {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("param")]
         public HbmParam[] param;
@@ -4833,7 +4733,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("drop", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmDrop {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlTextAttribute()]
         public string[] Text;
@@ -4847,7 +4746,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("dialect-scope", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmDialectScope {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string name;
@@ -4865,7 +4763,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("filter-def", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmFilterDef {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("filter-param")]
         public HbmFilterParam[] Items;
@@ -4900,7 +4797,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("filter-param", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmFilterParam {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string name;
@@ -4918,7 +4814,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("hibernate-mapping", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmMapping {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("meta")]
         public HbmMeta[] meta;
@@ -5007,7 +4902,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("typedef", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmTypedef {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("param")]
         public HbmParam[] param;
@@ -5029,7 +4923,6 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("import", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
     public partial class HbmImport {
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string @class;

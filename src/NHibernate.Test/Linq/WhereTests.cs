@@ -131,7 +131,6 @@ namespace NHibernate.Test.Linq
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
-
 		[Test]
 		public void UsersRegisteredAtOrAfterY2K_And_Before2001()
 		{
@@ -350,7 +349,6 @@ namespace NHibernate.Test.Linq
 			query.ToList();
 		}
 
-
 		[Test]
 		[Description("NH-3337")]
 		public void ProductWithDoubleStringContainsAndNotNull()
@@ -400,7 +398,6 @@ namespace NHibernate.Test.Linq
 			var results = db.Products.Where(expr).ToList();
 			Assert.That(results, Has.Count.EqualTo(1));
 		}
-		
 
 		[Test(Description = "NH-3261")]
 		public void UsersWithStringContainsAndNotNullName()
@@ -763,7 +760,6 @@ namespace NHibernate.Test.Linq
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
-
 		[Test(Description = "NH-3366")]
 		public void CanUseCompareInQueryWithNonConstantZero()
 		{
@@ -783,7 +779,6 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-
 		[Test(Description = "NH-3366")]
 		[TestCaseSource(typeof(WhereTests), nameof(CanUseCompareInQueryDataSource))]
 		public void CanUseCompareInQuery(Expression<Func<Product, bool>> expression, int expectedCount, bool expectCase)
@@ -798,7 +793,6 @@ namespace NHibernate.Test.Linq
 				Assert.That(wholeLog, expectCase ? Does.Contain("case") : Does.Not.Contain("case"));
 			}
 		}
-
 
 		[Test(Description = "NH-3665")]
 		public void SelectOnCollectionReturnsResult()

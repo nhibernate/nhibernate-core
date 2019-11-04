@@ -332,7 +332,6 @@ namespace NHibernate.Test.Linq
 									   DiscountedProducts = input.Batcher.GetData(index)
 								   });
 
-
 				foreach (var x in q3)
 				{
 					Console.WriteLine(x.OrderId);
@@ -739,7 +738,6 @@ namespace NHibernate.Test.Linq
 
 			ObjectDumper.Write(q);
 		}
-
 
 		[Category("ORDER BY")]
 		[Test(Description = "This sample uses Orderby, Max and Group By to find the Products that have " +
@@ -1627,7 +1625,6 @@ namespace NHibernate.Test.Linq
 				(from o in db.Orders
 				 where o.ShippingDate != null
 				 select o.OrderId).ToArray();
-
 
 			var withNullShippingDate =
 				new[]
