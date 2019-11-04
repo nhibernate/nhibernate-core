@@ -24,6 +24,12 @@ namespace NHibernate.Test.StaticProxyTest
 		{
 			int Id { get; }
 		}
+		
+		public interface IWithEqualsAndGetHashCode
+		{
+			bool Equals(object that);
+			int GetHashCode();
+		}
 
 		[Serializable]
 		public class InternalInterfaceTestClass : IInternal
@@ -243,6 +249,39 @@ namespace NHibernate.Test.StaticProxyTest
 		}
 
 		[Test]
+		public void VerifyProxyForInterfaceWithEqualsAndGetHashCode()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(
+				typeof(IWithEqualsAndGetHashCode).FullName,
+				typeof(object),
+				new HashSet<System.Type> {typeof(IWithEqualsAndGetHashCode), typeof(INHibernateProxy)},
+				null, null, null, false);
+
+#if NETFX
+			VerifyGeneratedAssembly(
+				() =>
+				{
+#endif
+					var proxy = factory.GetProxy(1, null);
+					Assert.That(proxy, Is.Not.Null);
+					Assert.That(proxy, Is.InstanceOf<IWithEqualsAndGetHashCode>());
+					var proxyType = proxy.GetType();
+					var proxyMap = proxyType.GetInterfaceMap(typeof(IWithEqualsAndGetHashCode));
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.One.Property("Name").EqualTo("Equals").And.Property("IsPublic").EqualTo(true),
+						"Equals is not implicitly implemented");
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.One.Property("Name").EqualTo("GetHashCode").And.Property("IsPublic").EqualTo(true),
+						"GetHashCode is not implicitly implemented");
+#if NETFX
+				});
+#endif
+		}
+
+		[Test]
 		public void VerifyProxyForClassWithInterface()
 		{
 			var factory = new StaticProxyFactory();
@@ -261,6 +300,24 @@ namespace NHibernate.Test.StaticProxyTest
 					Assert.That(proxy, Is.Not.Null);
 					Assert.That(proxy, Is.InstanceOf<IPublic>());
 					Assert.That(proxy, Is.InstanceOf<PublicInterfaceTestClass>());
+					var proxyType = proxy.GetType();
+					var proxyMap = proxyType.GetInterfaceMap(typeof(IPublic));
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.One.EqualTo(proxyType.GetProperty(nameof(PublicInterfaceTestClass.Name)).GetMethod),
+						"Name getter does not implement IPublic");
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.One.EqualTo(proxyType.GetProperty(nameof(PublicInterfaceTestClass.Name)).SetMethod),
+						"Name setter does not implement IPublic");
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.One.EqualTo(proxyType.GetProperty(nameof(PublicInterfaceTestClass.Id)).GetMethod),
+						"Id setter does not implement IPublic");
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.One.EqualTo(proxyType.GetProperty(nameof(PublicInterfaceTestClass.Id)).SetMethod),
+						"Id setter does not implement IPublic");
 
 					// Check interface and implicit implementations do both call the delegated state
 					var state = new PublicInterfaceTestClass { Id = 5, Name = "State" };
@@ -300,6 +357,11 @@ namespace NHibernate.Test.StaticProxyTest
 					Assert.That(proxy, Is.Not.Null);
 					Assert.That(proxy, Is.InstanceOf<IPublic>());
 					Assert.That(proxy, Is.InstanceOf<PublicExplicitInterfaceTestClass>());
+					var proxyType = proxy.GetType();
+					Assert.That(proxyType.GetMethod($"get_{nameof(IPublic.Name)}"), Is.Null, "get Name is implicitly implemented");
+					Assert.That(proxyType.GetMethod($"set_{nameof(IPublic.Name)}"), Is.Null, "set Name is implicitly implemented");
+					Assert.That(proxyType.GetMethod($"get_{nameof(IPublic.Id)}"), Is.Null, "get Id is implicitly implemented");
+					Assert.That(proxyType.GetMethod($"set_{nameof(IPublic.Id)}"), Is.Null, "set Id is implicitly implemented");
 
 					// Check explicit implementation
 					IPublic state = new PublicExplicitInterfaceTestClass();
@@ -339,6 +401,24 @@ namespace NHibernate.Test.StaticProxyTest
 					Assert.That(proxy, Is.Not.Null);
 					Assert.That(proxy, Is.InstanceOf<IPublic>());
 					Assert.That(proxy, Is.InstanceOf<PublicExplicitInterfaceWithSameMembersTestClass>());
+					var proxyType = proxy.GetType();
+					var proxyMap = proxyType.GetInterfaceMap(typeof(IPublic));
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.None.EqualTo(proxyType.GetProperty(nameof(PublicExplicitInterfaceWithSameMembersTestClass.Name)).GetMethod),
+						"class Name getter does implement IPublic");
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.None.EqualTo(proxyType.GetProperty(nameof(PublicExplicitInterfaceWithSameMembersTestClass.Name)).SetMethod),
+						"class Name setter does implement IPublic");
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.None.EqualTo(proxyType.GetProperty(nameof(PublicExplicitInterfaceWithSameMembersTestClass.Id)).GetMethod),
+						"class Id setter does implement IPublic");
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.None.EqualTo(proxyType.GetProperty(nameof(PublicExplicitInterfaceWithSameMembersTestClass.Id)).SetMethod),
+						"class Id setter does implement IPublic");
 
 					// Check interface and implicit implementations do both call the delegated state
 					var state = new PublicExplicitInterfaceWithSameMembersTestClass();
