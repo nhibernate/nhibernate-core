@@ -102,6 +102,13 @@ namespace NHibernate.Proxy
 
 		internal static IEnumerable<MethodInfo> GetProxiableMethods(System.Type type, IEnumerable<System.Type> interfaces)
 		{
+			if (type.IsInterface || type == typeof(object) || type.GetInterfaces().Length == 0)
+			{
+				return GetProxiableMethods(type)
+					.Concat(interfaces.SelectMany(i => i.GetMethods()))
+					.Distinct();
+			}
+
 			var proxiableMethods = new HashSet<MethodInfo>(GetProxiableMethods(type), new MethodInfoComparer(type));
 			foreach (var interfaceMethod in interfaces.SelectMany(i => i.GetMethods()))
 			{
@@ -295,24 +302,33 @@ namespace NHibernate.Proxy
 		/// </summary>
 		private class MethodInfoComparer : IEqualityComparer<MethodInfo>
 		{
-			private readonly System.Type _baseType;
-			private readonly HashSet<System.Type> _baseTypeInterfaces;
 			private readonly Dictionary<System.Type, Dictionary<MethodInfo, MethodInfo>> _interfacesMap;
-			private readonly bool _baseIsObjectOrInterface;
 
 			public MethodInfoComparer(System.Type baseType)
 			{
-				_baseType = baseType;
-				_baseIsObjectOrInterface = _baseType.IsInterface || _baseType == typeof(object);
-				_baseTypeInterfaces = new HashSet<System.Type>(baseType.GetInterfaces());
-				_interfacesMap = new Dictionary<System.Type, Dictionary<MethodInfo, MethodInfo>>(_baseTypeInterfaces.Count);
+				_interfacesMap = BuildInterfacesMap(baseType);
+			}
+
+			private static Dictionary<System.Type, Dictionary<MethodInfo, MethodInfo>> BuildInterfacesMap(System.Type type)
+			{
+				return type.GetInterfaces()
+					.Distinct()
+					.ToDictionary(i => i, i => ToDictionary(type.GetInterfaceMap(i)));
+			}
+
+			private static Dictionary<MethodInfo, MethodInfo> ToDictionary(InterfaceMapping interfaceMap)
+			{
+				var map = new Dictionary<MethodInfo, MethodInfo>(interfaceMap.InterfaceMethods.Length);
+				for (var i = 0; i < interfaceMap.InterfaceMethods.Length; i++)
+				{
+					map.Add(interfaceMap.InterfaceMethods[i], interfaceMap.TargetMethods[i]);
+				}
+
+				return map;
 			}
 
 			public bool Equals(MethodInfo x, MethodInfo y)
 			{
-				if (_baseIsObjectOrInterface)
-					return x == y;
-
 				if (x == y)
 					return true;
 				if (x == null || y == null)
@@ -327,22 +343,13 @@ namespace NHibernate.Proxy
 				// implementation of the other.
 				if (x.DeclaringType.IsInterface == y.DeclaringType.IsInterface)
 					return false;
+
 				var interfaceMethod = x.DeclaringType.IsInterface ? x : y;
 				// If the interface is not implemented by the base type, the method cannot be implemented by the
 				// base type method.
-				if (!_baseTypeInterfaces.Contains(interfaceMethod.DeclaringType))
+				if (!_interfacesMap.TryGetValue(interfaceMethod.DeclaringType, out var map))
 					return false;
 
-				if (!_interfacesMap.TryGetValue(interfaceMethod.DeclaringType, out var map))
-				{
-					var interfaceMap = _baseType.GetInterfaceMap(interfaceMethod.DeclaringType);
-					map = new Dictionary<MethodInfo, MethodInfo>(interfaceMap.InterfaceMethods.Length);
-					for (var i = 0; i < interfaceMap.InterfaceMethods.Length; i++)
-					{
-						map.Add(interfaceMap.InterfaceMethods[i], interfaceMap.TargetMethods[i]);
-					}
-					_interfacesMap.Add(interfaceMethod.DeclaringType, map);
-				}
 				var baseMethod = x.DeclaringType.IsInterface ? y : x;
 				return map[interfaceMethod] == baseMethod;
 			}
