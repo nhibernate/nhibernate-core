@@ -155,10 +155,6 @@ namespace NHibernate.Engine
 		/// </remarks>
 		public static bool IsNotTransientSlow(string entityName, object entity, ISessionImplementor session)
 		{
-			if (entity.IsProxy())
-				return true;
-			if (session.PersistenceContext.IsEntryFor(entity))
-				return true;
 			return !IsTransientSlow(entityName, entity, session);
 		}
 
@@ -233,6 +229,11 @@ namespace NHibernate.Engine
 			return snapshot == null;
 		}
 
+		internal static object GetIdentifier(IEntityPersister persister, object entity)
+		{
+			return entity is INHibernateProxy proxy ? proxy.HibernateLazyInitializer.Identifier : persister.GetIdentifier(entity);
+		}
+
 		/// <summary> 
 		/// Return the identifier of the persistent or transient object, or throw
 		/// an exception if the instance is "unsaved"
@@ -265,16 +266,6 @@ namespace NHibernate.Engine
 
 					if (IsTransientFast(entityName, entity, session).GetValueOrDefault())
 					{
-						/***********************************************/
-						// TODO NH verify the behavior of NH607 test
-						// these lines are only to pass test NH607 during PersistenceContext porting
-						// i'm not secure that NH607 is a test for a right behavior
-						EntityEntry entry = session.PersistenceContext.GetEntry(entity);
-						if (entry != null)
-							return entry.Id;
-						// the check was put here to have les possible impact
-						/**********************************************/
-
 						entityName = entityName ?? session.GuessEntityName(entity);
 						string entityString = entity.ToString();
 						throw new TransientObjectException(

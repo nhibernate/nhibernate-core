@@ -30,6 +30,19 @@ namespace NHibernate.Collection.Generic
 	public partial class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
 	{
 
+		//Since 5.3
+		/// <summary>
+		/// Get all "orphaned" elements
+		/// </summary>
+		/// <param name="snapshot">The snapshot of the collection.</param>
+		/// <param name="entityName">The persistent class whose objects
+		/// the collection is expected to contain.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>
+		/// An <see cref="ICollection"/> that contains all of the elements
+		/// that have been orphaned.
+		/// </returns>
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -39,7 +52,7 @@ namespace NHibernate.Collection.Generic
 			try
 			{
 				var sn = (IList<T>)snapshot;
-				return GetOrphansAsync((ICollection)sn, (ICollection) WrappedList, entityName, Session, cancellationToken);
+				return Task.FromResult<ICollection>(GetOrphans((ICollection)sn, (ICollection) WrappedList, entityName, Session));
 			}
 			catch (Exception ex)
 			{
