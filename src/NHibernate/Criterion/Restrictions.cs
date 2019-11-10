@@ -649,7 +649,7 @@ namespace NHibernate.Criterion
 		}
 
 		/// <summary>
-		/// Apply an "is not empty" constraint to the named property 
+		/// Apply an "is empty" constraint to the named property 
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <returns>A <see cref="IsEmptyExpression" />.</returns>
