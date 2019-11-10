@@ -238,7 +238,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				throw new QueryException("Property '" + OriginalText + "' is not a component.  Use an alias to reference associations or collections.");
 			}
 
-			IType propertyType;  // used to set the type of the parent dot node
+			IType propertyType; // used to set the type of the parent dot node
 			string propertyPath = Text + "." + NextSibling.Text;
 			try
 			{

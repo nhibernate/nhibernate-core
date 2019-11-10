@@ -121,7 +121,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public virtual bool IsImpliedInFromClause
 		{
-			get { return false; }  // Since this is an explicit FROM element, it can't be implied in the FROM clause.
+			get { return false; } // Since this is an explicit FROM element, it can't be implied in the FROM clause.
 		}
 
 		public bool IsFetch

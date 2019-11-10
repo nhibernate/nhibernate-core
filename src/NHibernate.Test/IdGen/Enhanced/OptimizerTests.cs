@@ -28,7 +28,7 @@ namespace NHibernate.Test.IdGen.Enhanced
 				long next = (long)optimizer.Generate(sequence);
 				Assert.That(next, Is.EqualTo(i));
 			}
-			Assert.That(sequence.TimesCalled, Is.EqualTo(11));  // an extra time to get to 1 initially
+			Assert.That(sequence.TimesCalled, Is.EqualTo(11)); // an extra time to get to 1 initially
 			Assert.That(sequence.CurrentValue, Is.EqualTo(10));
 		}
 

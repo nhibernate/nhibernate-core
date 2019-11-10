@@ -219,7 +219,7 @@ namespace NHibernate.Id.Enhanced
 					optimizationStrategy,
 					IdentifierType.ReturnedClass,
 					IncrementSize,
-					PropertiesHelper.GetInt32(InitialParam, parms, -1)  // Use -1 as default initial value here to signal that it's not set.
+					PropertiesHelper.GetInt32(InitialParam, parms, -1) // Use -1 as default initial value here to signal that it's not set.
 				);
 		}
 

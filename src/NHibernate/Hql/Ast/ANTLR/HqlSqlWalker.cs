@@ -934,7 +934,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		void ProcessBool(IASTNode constant)
 		{
-			_literalProcessor.ProcessBoolean(constant);  // Use the delegate.
+			_literalProcessor.ProcessBoolean(constant); // Use the delegate.
 		}
 
 		static void PrepareLogicOperator(IASTNode operatorNode)

@@ -50,7 +50,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 						entities[i] = new Entity("" + (i + 1));
 						await (s.SaveAsync(entities[i]));
 						Assert.That(generator.TableAccessCount, Is.EqualTo(1)); // initialization
-						Assert.That(optimizer.LastSourceValue, Is.EqualTo(1));  // initialization
+						Assert.That(optimizer.LastSourceValue, Is.EqualTo(1)); // initialization
 						Assert.That(optimizer.LastValue, Is.EqualTo(i + 1));
 					}
 

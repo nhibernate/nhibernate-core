@@ -21,7 +21,7 @@ namespace NHibernate.Test.DialectTest.SchemaTests
 		[TestCase(null, null, 0, 0)]  // No size and no precision.
 		[TestCase(null, "7", 0, 7)]   // No size, but with numerical precision.
 		[TestCase("13", null, 13, 0)] // Size, but no precision.
-		[TestCase("5000000000", null, int.MaxValue, 0)]  // Oversize column should be bounded to int.MaxValue.
+		[TestCase("5000000000", null, int.MaxValue, 0)] // Oversize column should be bounded to int.MaxValue.
 		[TestCase("13", "7", 13, 7)]  // Can handle both size and precision together.
 		public void SetColumnSizeAndNumericalPrecision(object columnSizeInput, object precisionInput,
 			int expectedColumnSize, int expectedPrecision)

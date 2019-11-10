@@ -434,7 +434,7 @@ namespace NHibernate.Impl
 			if (memberExpression != null)
 			{
 				if (memberExpression.Expression == null)
-					return false;  // it's a member of a static class
+					return false; // it's a member of a static class
 
 				if (IsMemberExpression(memberExpression.Expression))
 					return true;

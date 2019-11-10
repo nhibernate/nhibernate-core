@@ -289,7 +289,7 @@ namespace NHibernate.Test.Linq
 				var dbOrders3 = s.CreateQuery("select o.OrderId from Order o").List<int>();
 
 				//var q3 = dbOrders3.SubQueryBatcher(orderId => orderId,
-				//                                   ids => from subO in db.Orders.ToList()  // Note that ToList is just because current group by code is incorrent in our linq provider
+				//                                   ids => from subO in db.Orders.ToList() // Note that ToList is just because current group by code is incorrent in our linq provider
 				//                                          where ids.Contains(subO.OrderId)
 				//                                          from orderLine in subO.OrderLines
 				//                                          group new {orderLine, FreeShippingDiscount = subO.Freight}

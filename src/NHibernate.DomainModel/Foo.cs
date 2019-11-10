@@ -347,8 +347,8 @@ namespace NHibernate.DomainModel
 			_long = 696969696969696969L - count++;
 			_short = 42;
 			_float = 6666.66f;
-			//_double = new Double( 1.33e-69 );  // this double is too big for the sap db jdbc driver
-//			_double = 1.12e-36;
+			//_double = new Double( 1.33e-69 ); // this double is too big for the sap db jdbc driver
+			//_double = 1.12e-36;
 			_boolean = true;
 			_byte = 127;
 			_int = 2;
