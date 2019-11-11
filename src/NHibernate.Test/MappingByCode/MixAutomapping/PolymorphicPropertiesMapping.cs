@@ -23,7 +23,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 
 		private interface IProduct : IBaseEntity
 		{
-			string Description { get;}
+			string Description { get; }
 		}
 
 		private abstract class BaseProduct : BaseEntity, IProduct

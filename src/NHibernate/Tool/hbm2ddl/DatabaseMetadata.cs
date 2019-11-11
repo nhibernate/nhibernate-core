@@ -27,7 +27,6 @@ namespace NHibernate.Tool.hbm2ddl
 		{
 		}
 
-
 		public DatabaseMetadata(DbConnection connection, Dialect.Dialect dialect, bool extras)
 		{
 			meta = dialect.GetDataBaseSchema(connection);
@@ -73,7 +72,6 @@ namespace NHibernate.Tool.hbm2ddl
 							metaInfo = meta.GetTables(catalog, schema, name, Types);
 						}
 					}
-
 				}
 				DataRowCollection rows = metaInfo.Rows;
 

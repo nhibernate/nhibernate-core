@@ -7,7 +7,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-
 using System.Collections;
 using NHibernate.Cfg;
 using NUnit.Framework;

@@ -400,7 +400,6 @@ namespace NHibernate.Cache
 				var lockValue = await (_cache.LockAsync(key, cancellationToken)).ConfigureAwait(false);
 				try
 				{
-					
 					ILockable lockable = (ILockable) await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 					if (lockable == null)
 					{

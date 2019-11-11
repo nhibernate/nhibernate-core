@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 
-
 namespace NHibernate.Connection
 {
 	/// <summary>

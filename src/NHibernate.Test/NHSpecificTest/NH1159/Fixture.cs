@@ -9,7 +9,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 	[TestFixture]
 	public class Fixture:BugTestCase
 	{
-
 		protected override void  OnSetUp()
 		{
 			using (ISession session = OpenSession())
@@ -20,8 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 				tran.Commit();
 			}
 			HibernateInterceptor.CallCount = 0;
-
-        }
+		}
 
 		protected override void OnTearDown()
 		{

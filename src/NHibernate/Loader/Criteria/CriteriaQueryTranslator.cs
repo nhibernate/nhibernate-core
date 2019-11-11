@@ -237,7 +237,6 @@ namespace NHibernate.Loader.Criteria
 			//return Factory.getTypeResolver().getTypeFactory().manyToOne(getEntityName(criteria));
 		}
 
-
 		public IType[] ProjectedTypes
 		{
 			get { return rootCriteria.Projection.GetTypes(rootCriteria, this); }
@@ -506,7 +505,6 @@ namespace NHibernate.Loader.Criteria
 			ICriteriaInfoProvider rootProvider = new EntityCriteriaInfoProvider(rootPersister);
 			criteriaInfoMap.Add(rootCriteria, rootProvider);
 			nameCriteriaInfoMap.Add(rootProvider.Name, rootProvider);
-
 
 			foreach (var me in associationPathCriteriaMap)
 			{
@@ -846,8 +844,8 @@ namespace NHibernate.Loader.Criteria
 
 		private Persister.Entity.IPropertyMapping GetPropertyMapping(string entityName)
 		{
-			ICriteriaInfoProvider info ;
-			if (nameCriteriaInfoMap.TryGetValue(entityName, out info)==false)
+			ICriteriaInfoProvider info;
+			if (nameCriteriaInfoMap.TryGetValue(entityName, out info) == false)
 				throw new InvalidOperationException("Could not find criteria info provider for: " + entityName);
 			return info.PropertyMapping;
 		}
@@ -1033,7 +1031,6 @@ namespace NHibernate.Loader.Criteria
 		
 		private void CreateSubQuerySpaces()
 		{
-
 			var subQueries =
 				rootCriteria.IterateExpressionEntries()
 				            .Select(x => x.Criterion)
@@ -1047,8 +1044,7 @@ namespace NHibernate.Loader.Criteria
 				var translator = new CriteriaQueryTranslator(sessionFactory, criteriaImpl, criteriaImpl.EntityOrClassName, RootSqlAlias);
 				subQuerySpaces.UnionWith(translator.GetQuerySpaces());
 			}
-
-		}	
+		}
 
 		private IQueryable GetQueryablePersister(string entityName)
 		{
@@ -1075,4 +1071,3 @@ namespace NHibernate.Loader.Criteria
 		}
 	}
 }
-

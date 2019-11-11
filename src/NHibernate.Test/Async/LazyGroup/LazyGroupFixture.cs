@@ -224,7 +224,6 @@ namespace NHibernate.Test.LazyGroup
 				Image = new byte[i],
 				NickName = $"NickName{i}"
 			};
-
 		}
 	}
 }

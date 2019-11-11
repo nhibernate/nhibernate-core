@@ -280,7 +280,6 @@ namespace NHibernate.Cache
 				buf.Append("; ");
 			}
 
-
 			return buf.ToString();
 		}
 	}

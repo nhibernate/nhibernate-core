@@ -1,6 +1,4 @@
-﻿
-
-namespace NHibernate.Test.NHSpecificTest.NH1818
+﻿namespace NHibernate.Test.NHSpecificTest.NH1818
 {
 	public class DomainClass
 	{

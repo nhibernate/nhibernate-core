@@ -82,7 +82,6 @@ namespace NHibernate.Criterion
 			               false // not wrapping because the prefix and postfix params already take care of that	
 				);
 
-
 			return sqlBuilder.ToSqlString();
 		}
 

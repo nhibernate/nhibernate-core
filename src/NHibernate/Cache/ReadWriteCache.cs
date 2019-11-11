@@ -446,7 +446,6 @@ namespace NHibernate.Cache
 				var lockValue = _cache.Lock(key);
 				try
 				{
-					
 					ILockable lockable = (ILockable) Cache.Get(key);
 					if (lockable == null)
 					{

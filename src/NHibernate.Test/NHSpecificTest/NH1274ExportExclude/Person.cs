@@ -13,7 +13,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 
 		public Person()
 		{
-
 		}
 
 		public Person(string name, int iq, int shoeSize)
@@ -70,6 +69,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 			get { return home_update; }
 			set { home_update = value; }
 		}
-
 	}
 }

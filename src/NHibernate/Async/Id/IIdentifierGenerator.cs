@@ -15,7 +15,6 @@ namespace NHibernate.Id
 	using System.Threading.Tasks;
 	using System.Threading;
 
-
 	public partial interface IIdentifierGenerator
 	{
 		/// <summary>

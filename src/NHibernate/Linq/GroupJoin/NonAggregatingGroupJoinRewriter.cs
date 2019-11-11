@@ -83,7 +83,6 @@ namespace NHibernate.Linq.Visitors
 				}
 				else if (IsOuterJoin(nonAggregatingJoin))
 				{
-
 				}
 				else
 				{
@@ -151,7 +150,6 @@ namespace NHibernate.Linq.Visitors
 		{
 			return GroupJoinAggregateDetectionVisitor.Visit(clause, _model.SelectClause.Selector);
 		}
-
 	}
 
 	internal class QuerySourceUsageLocator : RelinqExpressionVisitor

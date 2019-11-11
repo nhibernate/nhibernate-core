@@ -15,7 +15,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
-
 		public override IType DataType
 		{
 			get

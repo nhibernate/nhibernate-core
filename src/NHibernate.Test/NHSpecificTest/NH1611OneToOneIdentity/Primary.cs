@@ -8,7 +8,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 
 		public Primary()
 		{
-
 		}
 
 		virtual public int ID
@@ -16,7 +15,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 			get { return id; }
 			set { id = value; }
 		}
-
 
 		virtual public string Description
 		{

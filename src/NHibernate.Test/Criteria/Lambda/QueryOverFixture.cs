@@ -11,11 +11,9 @@ using NHibernate.Util;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
-
 	[TestFixture]
 	public class QueryOverFixture : LambdaFixtureBase
 	{
-
 		[Test]
 		public void SimpleCriterion_NoAlias()
 		{
@@ -169,7 +167,6 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Add(Restrictions.Not(Restrictions.Eq("Name", "test name")))
 					.Add(Restrictions.Not(Restrictions.Eq("personAlias.Name", "test name")))
 					.Add(Restrictions.Not(Restrictions.Eq("Name", "not test name")));
-
 
 			Person personAlias = null;
 			IQueryOver<Person> actual =
@@ -1039,7 +1036,5 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			AssertCriteriaAreEqual(expected.UnderlyingCriteria, actual);
 		}
-
 	}
-
 }

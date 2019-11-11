@@ -43,7 +43,7 @@ namespace NHibernate.Tuple
 		/// Need to determine how to best handle this for the Tuplizers for EntityModes
 		/// other than POCO.
 		/// </remarks>
-		System.Type MappedClass { get;}
+		System.Type MappedClass { get; }
 
 		/// <summary> 
 		/// Extract the current values contained on the given entity. 

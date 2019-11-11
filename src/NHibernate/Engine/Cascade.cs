@@ -86,7 +86,6 @@ namespace NHibernate.Engine
 			this.action = action;
 		}
 
-
 		/// <summary> Cascade an action from the parent entity instance to all its children. </summary>
 		/// <param name="persister">The parent's entity persister </param>
 		/// <param name="parent">The parent reference. </param>

@@ -72,8 +72,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1927
                 Assert.That(queryFactoryFunc(session), Is.Not.Null, "failed with filter on");
                 await (tx.CommitAsync(cancellationToken));
             }
-
-        }
+		}
 
         [Test]
         public async Task CriteriaWithEagerFetchAsync()

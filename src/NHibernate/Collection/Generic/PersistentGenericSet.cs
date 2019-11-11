@@ -45,7 +45,6 @@ namespace NHibernate.Collection.Generic
 		{
 		}
 
-
 		/// <summary> 
 		/// Constructor matching super.
 		/// Instantiates a lazy set (the underlying set is un-initialized).
@@ -109,7 +108,6 @@ namespace NHibernate.Collection.Generic
 			{
 				return false;
 			}
-
 
 			foreach (T obj in WrappedSet)
 			{
@@ -224,7 +222,6 @@ namespace NHibernate.Collection.Generic
 
 			deletes.AddRange(sn.Where(obj => !WrappedSet.Contains(obj)));
 
-
 			foreach (var obj in WrappedSet)
 			{
 				T oldValue;
@@ -295,13 +292,11 @@ namespace NHibernate.Collection.Generic
 
 		#region ISet<T> Members
 
-
 		public bool Contains(T item)
 		{
 			bool? exists = ReadElementExistence(item);
 			return exists == null ? WrappedSet.Contains(item) : exists.Value;
 		}
-
 
 		public bool Add(T o)
 		{

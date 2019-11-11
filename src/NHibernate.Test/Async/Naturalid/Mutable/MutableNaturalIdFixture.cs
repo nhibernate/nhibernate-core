@@ -227,7 +227,6 @@ namespace NHibernate.Test.Naturalid.Mutable
 			await (t.CommitAsync());
 			s.Close();
 
-
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.DeleteAsync("from User"));

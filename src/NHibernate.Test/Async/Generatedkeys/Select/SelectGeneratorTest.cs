@@ -48,6 +48,5 @@ namespace NHibernate.Test.Generatedkeys.Select
 			await (session.Transaction.CommitAsync());
 			session.Close();
 		}
-
 	}
 }

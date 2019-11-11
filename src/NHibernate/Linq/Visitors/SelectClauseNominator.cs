@@ -130,7 +130,6 @@ namespace NHibernate.Linq.Visitors
 				return true;
 			}
 			return false;
-
 		}
 
 		private bool CanBeEvaluatedInHqlSelectStatement(Expression expression, bool projectConstantsInHql)

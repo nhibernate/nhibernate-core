@@ -15,7 +15,6 @@ namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-
 	public partial class SuppliedConnectionProviderConnectionHelper : IConnectionHelper
 	{
 

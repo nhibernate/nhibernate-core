@@ -7,7 +7,6 @@ namespace NHibernate
 	[Serializable]
 	public class DuplicateMappingException : MappingException
 	{
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MappingException"/> class.
 		/// </summary>

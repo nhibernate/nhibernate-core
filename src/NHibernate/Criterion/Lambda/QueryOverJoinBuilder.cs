@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -8,7 +7,6 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Criterion.Lambda
 {
-	
 	public class QueryOverJoinBuilder<TRoot,TSubType> : QueryOverJoinBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 		public QueryOverJoinBuilder(QueryOver<TRoot,TSubType> root, JoinType joinType) : base(root, joinType) { }
@@ -112,7 +110,6 @@ namespace NHibernate.Criterion.Lambda
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType, withClause);
 		}
-
 	}
 
 	public class IQueryOverJoinBuilder<TRoot,TSubType> : QueryOverJoinBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
@@ -218,12 +215,10 @@ namespace NHibernate.Criterion.Lambda
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType, withClause);
 		}
-
 	}
 
 	public class QueryOverJoinBuilderBase<TReturn, TRoot, TSubType> where TReturn : IQueryOver<TRoot,TSubType>
 	{
-
 		protected TReturn root;
 		protected JoinType joinType;
 
@@ -302,7 +297,5 @@ namespace NHibernate.Criterion.Lambda
 		{
 			return (TReturn)root.JoinAlias(path, alias, joinType, withClause);
 		}
-
 	}
-
 }

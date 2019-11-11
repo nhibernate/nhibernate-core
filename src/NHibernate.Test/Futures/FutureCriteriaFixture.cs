@@ -39,12 +39,10 @@ namespace NHibernate.Test.Futures
                 {
                     foreach (var person in persons5.GetEnumerable())
                     {
-
                     }
 
                     foreach (var person in persons10.GetEnumerable())
                     {
-
                     }
 
                     var events = logSpy.Appender.GetEvents();
@@ -101,7 +99,6 @@ namespace NHibernate.Test.Futures
 
 					foreach (var person in persons.GetEnumerable())
 					{
-
 					}
 
 					var events = logSpy.Appender.GetEvents();

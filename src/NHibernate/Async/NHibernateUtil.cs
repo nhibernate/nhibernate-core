@@ -25,7 +25,6 @@ namespace NHibernate
 	public static partial class NHibernateUtil
 	{
 
-
 		/// <summary>
 		/// Force initialization of a proxy or persistent collection.
 		/// </summary>
@@ -58,7 +57,6 @@ namespace NHibernate
 					return persistent.ForceInitializationAsync(cancellationToken);
 				}
 				return Task.CompletedTask;
-
 			}
 			catch (Exception ex)
 			{

@@ -17,7 +17,6 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 			get { return "NHibernate.Test"; }
 		}
 
-
 		[Test]
 		public void TestNormalBoundary()
 		{
@@ -40,7 +39,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 						entities[i] = new Entity("" + (i + 1));
 						s.Save(entities[i]);
 						Assert.That(generator.TableAccessCount, Is.EqualTo(2)); // initialization calls seq twice
-						Assert.That(optimizer.LastSourceValue, Is.EqualTo(increment + 1));  // initialization calls seq twice
+						Assert.That(optimizer.LastSourceValue, Is.EqualTo(increment + 1)); // initialization calls seq twice
 						Assert.That(optimizer.LastValue, Is.EqualTo(i + 1));
 					}
 

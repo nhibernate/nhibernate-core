@@ -53,7 +53,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1235
 				await (tx.CommitAsync());
 			}
 
-
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
@@ -67,6 +66,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1235
 				await (tx.CommitAsync());
 			}
 		}
-
 	}
 }
