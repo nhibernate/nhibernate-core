@@ -19,12 +19,12 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 		public virtual string AnotherName { get; set; }
 	}
 
-	public interface IAnotherSubEntityProxy : IEntity
+	public interface IAmbigiousSubEntityProxy : IEntity, IEntity2
 	{
 		string AnotherName { get; set; }
 	}
 
-	class AnotherSubEntityInterfaceProxy : EntityClassProxy, IAnotherSubEntityProxy
+	class AnotherSubEntityInterfaceProxy : EntityClassProxy, IAmbigiousSubEntityProxy
 	{
 		public virtual string AnotherName { get; set; }
 	}

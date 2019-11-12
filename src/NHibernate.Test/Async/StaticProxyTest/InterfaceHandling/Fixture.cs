@@ -9,7 +9,6 @@
 
 
 using System;
-using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
@@ -20,7 +19,7 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 	[TestFixture]
 	public class FixtureAsync : TestCaseMappingByCode
 	{
-		private Guid _id = Guid.NewGuid();
+		private readonly Guid _id = Guid.NewGuid();
 
 		protected override HbmMapping GetMappings()
 		{
@@ -46,7 +45,7 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 			mapper.UnionSubclass<AnotherSubEntityInterfaceProxy>(
 				rc =>
 				{
-					rc.Proxy(typeof(IAnotherSubEntityProxy));
+					rc.Proxy(typeof(IAmbigiousSubEntityProxy));
 
 					rc.Property(x => x.AnotherName);
 				});
@@ -105,65 +104,93 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 			}
 		}
 
+		//Id access via implicit interface should not lead to proxy initialization
 		[Test]
-		public async Task ProxyForBaseSubclassByInterfaceAsync()
-		{
-			using (var session = OpenSession())
-			{
-				var entity = (IEntity) await (session.LoadAsync(typeof(EntityClassProxy), _id));
-				ThrowOnIdAccess(entity);
-			}
-		}
-
-		[Test]
-		public async Task ProxyForEntityImplicitInterfaceAsync()
+		public async Task ProxyClassIdAccessByImplicitInterfaceAsync()
 		{
 			using (var session = OpenSession())
 			{
 				var entity = (IEntity) await (session.LoadAsync<EntitySimple>(_id));
-				ThrowOnIdAccess(entity);
-				ThrowOnNameAccess(entity);
+				CanAccessIEntityId(entity);
+				ThrowOnIEntityNameAccess(entity);
+				Assert.That(entity.Id, Is.EqualTo(_id));
 
 				var multiInterface = await (session.LoadAsync<EntityMultiInterfaces>(_id));
-				ThrowOnIdAccess(multiInterface);
-				ThrowOnIdAccessSecond(multiInterface);
+				CanAccessIEntityId(multiInterface);
+				CanAccessIEntity2Id(multiInterface);
+				Assert.That(multiInterface.Id, Is.EqualTo(_id));
 			}
 		}
 
 		[Test]
-		public async Task ProxyForEntityInitializeOnExplicitInterfaceAsync()
+		public async Task ProxyClassIdAccessExplicitInterfaceAsync()
 		{
 			using (var session = OpenSession())
 			{
 				var entity = await (session.LoadAsync<EntityExplicitInterface>(_id));
-				ThrowOnIdAccess(entity);
+
+				ThrowOnIEntityIdAccess(entity);
+				Assert.That(entity.Id, Is.EqualTo(_id));
 			}
 		}
 
 		[Test]
-		public async Task ProxyForEntityWithMixedImplicitExplicitInterfacesAreHandledCorrectlyAsync()
+		public async Task ProxyClassIdAccessBothImplicitExplicitInterfacesAsync()
 		{
 			using (var session = OpenSession())
 			{
 				var entity = await (session.LoadAsync<EntityMixExplicitImplicitInterface>(_id));
-				ThrowOnIdAccessSecond(entity);
-				ThrowOnIdAccess(entity);
+
+				//IEntity2 is implicit and should be accessible without proxy initialization
+				CanAccessIEntity2Id(entity);
+				ThrowOnIEntityIdAccess(entity);
 			}
 		}
 
-		private void ThrowOnNameAccess(IEntity entity)
+		[Test]
+		public async Task ProxyInterfaceAsync()
 		{
-			Assert.That(() => entity.Name, Throws.TypeOf<ObjectNotFoundException>(), "Non Id interface access should lead to proxy initialization");
+			using (var session = OpenSession())
+			{
+				var entity = await (session.LoadAsync<ISubEntityProxy>(_id));
+
+				CanAccessIEntityId(entity);
+			}
 		}
 
-		private void ThrowOnIdAccess(IEntity entity)
+		[KnownBug("GH-2271")]
+		[Test]
+		public async Task ProxyInterfaceCanAccessIdFromDifferentInterfacesAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var entity = await (session.LoadAsync<IAmbigiousSubEntityProxy>(_id));
+
+				CanAccessIEntityId(entity);
+				CanAccessIEntity2Id(entity);
+			}
+		}
+
+		private void ThrowOnIEntityNameAccess(IEntity entity)
+		{
+			Assert.That(() => entity.Name, Throws.TypeOf<ObjectNotFoundException>(), "IEntity.Name access should lead to proxy initialization");
+		}
+
+		private void ThrowOnIEntityIdAccess(IEntity entity)
 		{
 			Assert.That(() => entity.Id, Throws.TypeOf<ObjectNotFoundException>(), "IEntity.Id access should lead to proxy initialization");
 		}
 
-		private void ThrowOnIdAccessSecond(IEntityId entity)
+		private void CanAccessIEntityId(IEntity entity)
 		{
-			Assert.That(() => entity.Id, Throws.TypeOf<ObjectNotFoundException>(), "IEntityId.Id access should lead to proxy initialization");
+			Assert.That(() => entity.Id, Throws.Nothing, "Failed to access proxy IEntity.Id interface");
+			Assert.That(entity.Id, Is.EqualTo(_id));
+		}
+
+		private void CanAccessIEntity2Id(IEntity2 entity)
+		{
+			Assert.That(() => entity.Id, Throws.Nothing, "Failed to access proxy IEntity2.Id interface");
+			Assert.That(entity.Id, Is.EqualTo(_id));
 		}
 	}
 }

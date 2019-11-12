@@ -9,7 +9,7 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 		public virtual string Name { get; set; }
 	}
 
-	public class EntityMultiInterfaces : IEntity, IEntityId
+	public class EntityMultiInterfaces : IEntity, IEntity2
 	{
 		public virtual Guid Id { get; set; }
 
@@ -38,7 +38,7 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 		}
 	}
 
-	public class EntityMixExplicitImplicitInterface : IEntity, IEntityId
+	public class EntityMixExplicitImplicitInterface : IEntity, IEntity2
 	{
 		private Guid id;
 		private string name;

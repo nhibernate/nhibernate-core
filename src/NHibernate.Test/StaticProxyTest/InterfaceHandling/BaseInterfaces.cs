@@ -8,8 +8,8 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 
 		string Name { get; set; }
 	}
-	
-	public interface IEntityId
+
+	public interface IEntity2
 	{
 		Guid Id { get; set; }
 	}
