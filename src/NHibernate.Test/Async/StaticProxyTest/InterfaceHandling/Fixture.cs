@@ -53,6 +53,7 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 			mapper.Class<EntityWithSuperClassInterfaceLookup>(
 				rc =>
 				{
+					rc.Table("ClassWithInterfaceLookup");
 					rc.Id(x => x.Id);
 					rc.Property(x => x.Name);
 					rc.ManyToOne(x => x.EntityLookup, x => x.Class(typeof(EntityClassProxy)));
@@ -63,7 +64,6 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 			mapper.Class<EntitySimple>(
 				rc =>
 				{
-
 					rc.Id(x => x.Id);
 					rc.Property(x => x.Name);
 				});
@@ -71,7 +71,6 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 			mapper.Class<EntityExplicitInterface>(
 				rc =>
 				{
-
 					rc.Id(x => x.Id);
 					rc.Property(x => x.Name);
 				});
@@ -79,7 +78,6 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 			mapper.Class<EntityMultiInterfaces>(
 				rc =>
 				{
-
 					rc.Id(x => x.Id);
 					rc.Property(x => x.Name);
 				});
@@ -87,7 +85,6 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 			mapper.Class<EntityMixExplicitImplicitInterface>(
 				rc =>
 				{
-
 					rc.Id(x => x.Id);
 					rc.Property(x => x.Name);
 				});
