@@ -38,6 +38,17 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 		}
 	}
 
+	//Proxy contains IEntity.Id and IEntity2.Id
+	public interface IMultiIdProxy : IEntity, IEntity2
+	{
+	}
+
+	public class EntityMultiIdProxy : IMultiIdProxy
+	{
+		public virtual Guid Id { get; set; }
+		public virtual string Name { get; set; }
+	}
+
 	public class EntityMixExplicitImplicitInterface : IEntity, IEntity2
 	{
 		private Guid id;

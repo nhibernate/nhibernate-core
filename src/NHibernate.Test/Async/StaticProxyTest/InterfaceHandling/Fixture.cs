@@ -45,7 +45,7 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 			mapper.UnionSubclass<AnotherSubEntityInterfaceProxy>(
 				rc =>
 				{
-					rc.Proxy(typeof(IAmbigiousSubEntityProxy));
+					rc.Proxy(typeof(IAnotherEntityProxy));
 
 					rc.Property(x => x.AnotherName);
 				});
@@ -85,6 +85,15 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 			mapper.Class<EntityMixExplicitImplicitInterface>(
 				rc =>
 				{
+					rc.Table("multiInterface");
+					rc.Id(x => x.Id);
+					rc.Property(x => x.Name);
+				});
+
+			mapper.Class<EntityMultiIdProxy>(
+				rc =>
+				{
+					rc.Proxy(typeof(IMultiIdProxy));
 					rc.Id(x => x.Id);
 					rc.Property(x => x.Name);
 				});
@@ -145,7 +154,7 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 		}
 
 		[Test]
-		public async Task ProxyInterfaceAsync()
+		public async Task ProxyInterfaceIdAccessAsync()
 		{
 			using (var session = OpenSession())
 			{
@@ -157,11 +166,11 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 
 		[KnownBug("GH-2271")]
 		[Test]
-		public async Task ProxyInterfaceCanAccessIdFromDifferentInterfacesAsync()
+		public async Task ProxyInterfaceIdAccessFromDifferentInterfacesAsync()
 		{
 			using (var session = OpenSession())
 			{
-				var entity = await (session.LoadAsync<IAmbigiousSubEntityProxy>(_id));
+				var entity = await (session.LoadAsync<IMultiIdProxy>(_id));
 
 				CanAccessIEntityId(entity);
 				CanAccessIEntity2Id(entity);
