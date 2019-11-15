@@ -56,7 +56,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1179
 				s.Delete("from RelatedClass");
 				tx.Commit();
 			}
-
 		}
 	}
 }

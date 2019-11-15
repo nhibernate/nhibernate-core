@@ -10,15 +10,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Transactions;
 using NHibernate.Cfg;
 using NHibernate.Driver;
 using NHibernate.Engine;
-using NHibernate.Linq;
 using NHibernate.Test.TransactionTest;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.SystemTransactions
 {

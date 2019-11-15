@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 {
 	using System.Threading.Tasks;
-
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{

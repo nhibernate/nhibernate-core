@@ -18,7 +18,6 @@ namespace NHibernate.Test.NHSpecificTest.NH283
 			                Assembly.GetAssembly(typeof(Master))
 				);
 
-
 			string script = string.Join("\n",
 			                            cfg.GenerateSchemaCreationScript(new MsSql2008Dialect()));
 

@@ -44,7 +44,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 		/// </summary>
 		public static readonly int DECIMAL_LITERAL_FORMAT = EXACT;
 
-
 		public LiteralProcessor(HqlSqlWalker walker)
 		{
 			_walker = walker;
@@ -130,7 +129,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				constant.Text = dialect.ToBooleanValueString(value);
 			}
 		}
-
 
 		public void ProcessConstant(SqlNode constant, bool resolveIdent)
 		{
@@ -369,7 +367,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				try
 				{
 					return number.ToString(FORMAT_STRING);
-
 				}
 				catch (Exception t)
 				{

@@ -61,7 +61,6 @@ namespace NHibernate.Test.LazyProperty
 				});
 				tx.Commit();
 			}
-
 		}
 
 		protected override void OnTearDown()
@@ -319,7 +318,6 @@ namespace NHibernate.Test.LazyProperty
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-
 				book = s.CreateQuery("from Book b fetch all properties where b.Id = :id")
 				        .SetParameter("id", 1)
 				        .UniqueResult<Book>();
@@ -332,7 +330,6 @@ namespace NHibernate.Test.LazyProperty
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-
 				book = s.Get<Book>(1);
 				tx.Commit();
 			}
@@ -366,7 +363,6 @@ namespace NHibernate.Test.LazyProperty
 				Assert.That(book, Is.Not.Null);
 				Assert.That(book.Name, Is.EqualTo("some name two"));
 				Assert.That(book.ALotOfText, Is.EqualTo("a lot of text two..."));
-
 			}
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())

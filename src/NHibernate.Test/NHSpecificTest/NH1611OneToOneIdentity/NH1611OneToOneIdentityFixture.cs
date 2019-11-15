@@ -40,7 +40,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 			}
 		}
 
-
 		[Test]
 		public void CanQueryOneToOneWithCompositeId()
 		{
@@ -52,10 +51,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 					IList<Primary> list = criteria.List<Primary>();
 					Assert.AreEqual("blarg", list[0].Description);
 					Assert.AreEqual("nuts", list[0].Adjunct.AdjunctDescription);
-
 				}
 			}
 		}
-	
 	}
 }

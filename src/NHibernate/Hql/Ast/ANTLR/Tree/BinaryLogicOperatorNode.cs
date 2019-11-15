@@ -27,12 +27,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public IASTNode LeftHandOperand
 		{
-			get { return GetChild(0);}
+			get { return GetChild(0); }
 		}
 
 		public IASTNode RightHandOperand
 		{
-			get { return GetChild(1);}
+			get { return GetChild(1); }
 		}
 
 		/// <summary>
@@ -200,17 +200,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return embeddedParameters.ToArray();
 		}
 
-		private string Translate(int valueElements, string comparisonText, string[] lhsElementTexts, string[] rhsElementTexts)
+		private protected string Translate(int valueElements, string comparisonText, string[] lhsElementTexts, string[] rhsElementTexts)
 		{
-			var multicolumnComparisonClauses = new List<string>();
+			var multicolumnComparisonClauses = new string[valueElements];
 			for (int i = 0; i < valueElements; i++)
 			{
-				multicolumnComparisonClauses.Add(string.Format("{0} {1} {2}", lhsElementTexts[i], comparisonText, rhsElementTexts[i]));
+				multicolumnComparisonClauses[i] = string.Join(" ", lhsElementTexts[i], comparisonText, rhsElementTexts[i]);
 			}
-			return "(" + string.Join(" and ", multicolumnComparisonClauses.ToArray()) + ")";
+			return string.Concat("(", string.Join(" and ", multicolumnComparisonClauses), ")");
 		}
 
-		private static string[] ExtractMutationTexts(IASTNode operand, int count) 
+		private protected static string[] ExtractMutationTexts(IASTNode operand, int count) 
 		{
 			if ( operand is ParameterNode )
 			{

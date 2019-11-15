@@ -37,6 +37,5 @@ namespace NHibernate.Test.Generatedkeys.Select
 			session.Transaction.Commit();
 			session.Close();
 		}
-
 	}
 }

@@ -33,7 +33,6 @@ namespace NHibernate.Test.DialectTest
 		// be.
 		protected string[] tableThatNeedsToBeQuoted;
 
-
 		[SetUp]
 		public virtual void SetUp()
 		{
@@ -91,7 +90,6 @@ namespace NHibernate.Test.DialectTest
 				tableAlreadyQuoted[BeforeQuoteIndex],
 				d.QuoteForTableName(tableAlreadyQuoted[BeforeQuoteIndex]));
 		}
-
 
 		/// <summary>
 		/// Test that it does not matter if the name passed in has been quoted or not

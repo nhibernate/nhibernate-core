@@ -36,14 +36,13 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			}
 		}
 
-
 		[Test]
 		public void WhenAddThenHas()
 		{
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
-			var propertyInfo = For<Person>.Property(p => p.Info);//just as another dyn-compo
+			var propertyInfo = For<Person>.Property(p => p.Info); //just as another dyn-compo
 
 			mapper.Component(propertyInfo, (IDynamicComponentMapper x) => { });
 
@@ -56,7 +55,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<PersonWithGenericInfo>.Property(p => p.Info), mapdoc);
-			var propertyInfo = For<PersonWithGenericInfo>.Property(p => p.Info);//just as another dyn-compo
+			var propertyInfo = For<PersonWithGenericInfo>.Property(p => p.Info); //just as another dyn-compo
 
 			mapper.Component(propertyInfo, (IDynamicComponentMapper x) => { });
 
@@ -69,7 +68,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
-			var propertyInfo = For<Person>.Property(p => p.Info);//just as another dyn-compo
+			var propertyInfo = For<Person>.Property(p => p.Info); //just as another dyn-compo
 
 			var called = false;
 			mapper.Component(propertyInfo, (IDynamicComponentMapper x) => called = true);
@@ -83,7 +82,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<PersonWithGenericInfo>.Property(p => p.Info), mapdoc);
-			var propertyInfo = For<PersonWithGenericInfo>.Property(p => p.Info);//just as another dyn-compo
+			var propertyInfo = For<PersonWithGenericInfo>.Property(p => p.Info); //just as another dyn-compo
 
 			var called = false;
 			mapper.Component(propertyInfo, (IDynamicComponentMapper x) => called = true);
@@ -97,7 +96,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
-			var propertyInfo = For<Person>.Property(p => p.Info);//just as another dyn-compo
+			var propertyInfo = For<Person>.Property(p => p.Info); //just as another dyn-compo
 
 			mapper.Component(propertyInfo, (IDynamicComponentMapper x) => x.Access(Accessor.Field));
 
@@ -110,7 +109,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<PersonWithGenericInfo>.Property(p => p.Info), mapdoc);
-			var propertyInfo = For<PersonWithGenericInfo>.Property(p => p.Info);//just as another dyn-compo
+			var propertyInfo = For<PersonWithGenericInfo>.Property(p => p.Info); //just as another dyn-compo
 
 			mapper.Component(propertyInfo, (IDynamicComponentMapper x) => x.Access(Accessor.Field));
 

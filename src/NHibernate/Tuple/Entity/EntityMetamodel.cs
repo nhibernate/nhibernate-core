@@ -54,7 +54,6 @@ namespace NHibernate.Tuple.Entity
 		private readonly bool hasMutableProperties;
 		private readonly bool hasLazyProperties;
 
-
 		private readonly int[] naturalIdPropertyNumbers;
 
 		private bool lazy;
@@ -82,7 +81,6 @@ namespace NHibernate.Tuple.Entity
 		public EntityMetamodel(PersistentClass persistentClass, ISessionFactoryImplementor sessionFactory)
 		{
 			this.sessionFactory = sessionFactory;
-
 
 			name = persistentClass.EntityName;
 			rootName = persistentClass.RootClazz.EntityName;

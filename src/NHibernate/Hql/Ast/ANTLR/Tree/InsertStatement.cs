@@ -25,14 +25,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <returns> The into-clause </returns>
 		public IntoClause IntoClause
 		{
-			get{return (IntoClause)GetFirstChild();}
+			get{return (IntoClause)GetFirstChild(); }
 		}
 
 		/// <summary> Retrieve this insert statement's select-clause.</summary>
 		/// <returns> The select-clause. </returns>
 		public SelectClause SelectClause
 		{
-			get{return ((QueryNode)IntoClause.NextSibling).GetSelectClause();}
+			get{return ((QueryNode)IntoClause.NextSibling).GetSelectClause(); }
 		}
 
 		/// <summary> Performs detailed semantic validation on this insert statement tree. </summary>

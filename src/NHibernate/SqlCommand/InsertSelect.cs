@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 
-
 namespace NHibernate.SqlCommand
 {
 	public class InsertSelect : ISqlStringBuilder

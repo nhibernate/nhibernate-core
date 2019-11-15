@@ -14,13 +14,15 @@ namespace NHibernate.Multi
 	/// <summary>
 	/// Base class for both ICriteria and IQuery queries
 	/// </summary>
-	public abstract partial class QueryBatchItemBase<TResult> : IQueryBatchItem<TResult>
+	public abstract partial class QueryBatchItemBase<TResult> : IQueryBatchItem<TResult>, IQueryBatchItemWithAsyncProcessResults
 	{
 		protected ISessionImplementor Session;
 		private List<EntityKey[]>[] _subselectResultKeys;
 		private List<QueryInfo> _queryInfos;
 		private CacheMode? _cacheMode;
 		private IList<TResult> _finalResults;
+		private DbDataReader _reader;
+		private List<object>[] _hydratedObjects;
 
 		protected class QueryInfo : ICachingInformation, ICachingInformationWithFetches
 		{
@@ -46,7 +48,7 @@ namespace NHibernate.Multi
 			public bool IsCacheable { get; }
 
 			/// <inheritdoc />
-			public QueryKey CacheKey { get;}
+			public QueryKey CacheKey { get; }
 
 			/// <inheritdoc />
 			public bool CanGetFromCache { get; }
@@ -260,16 +262,20 @@ namespace NHibernate.Multi
 					reader.NextResult();
 				}
 
-				InitializeEntitiesAndCollections(reader, hydratedObjects);
-
+				StopLoadingCollections(reader);
+				_reader = reader;
+				_hydratedObjects = hydratedObjects;
 				return rowCount;
 			}
 		}
 
-		/// <inheritdoc />
+		/// <inheritdoc cref="IQueryBatchItem.ProcessResults" />
 		public void ProcessResults()
 		{
 			ThrowIfNotInitialized();
+
+			using (Session.SwitchCacheMode(_cacheMode))
+				InitializeEntitiesAndCollections(_reader, _hydratedObjects);
 
 			for (var i = 0; i < _queryInfos.Count; i++)
 			{
@@ -345,6 +351,17 @@ namespace NHibernate.Multi
 				queryInfo.Loader.InitializeEntitiesAndCollections(
 					hydratedObjects[i], reader, Session, queryInfo.Parameters.IsReadOnly(Session),
 					queryInfo.CacheBatcher);
+			}
+		}
+
+		private void StopLoadingCollections(DbDataReader reader)
+		{
+			for (var i = 0; i < _queryInfos.Count; i++)
+			{
+				var queryInfo = _queryInfos[i];
+				if (queryInfo.IsResultFromCache)
+					continue;
+				queryInfo.Loader.StopLoadingCollections(Session, reader);
 			}
 		}
 

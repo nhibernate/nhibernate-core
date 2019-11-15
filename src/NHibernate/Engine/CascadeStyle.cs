@@ -129,7 +129,6 @@ namespace NHibernate.Engine
 
 		#region The CascadeStyle implementations
 
-
 		[Serializable]
 		private class AllDeleteOrphanCascadeStyle : CascadeStyle
 		{

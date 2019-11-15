@@ -105,6 +105,5 @@ namespace NHibernate.Properties
 				return string.Format("EmbeddedSetter({0})", clazz.FullName);
 			}
 		}
-
 	}
 }

@@ -261,6 +261,5 @@ namespace NHibernate.Type
 			}
 			return result;
 		}
-
 	}
 }

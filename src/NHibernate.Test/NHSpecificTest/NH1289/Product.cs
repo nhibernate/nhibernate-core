@@ -30,7 +30,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1289
 			set;
 		}
 
-
 		public virtual Int32? Units
 		{
 			get;

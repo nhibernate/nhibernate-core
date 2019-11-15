@@ -42,8 +42,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1643
                 tx.Commit();
             }
 
-
-
 			using (ISession sess = OpenSession())
 			using (ITransaction tx = sess.BeginTransaction())
 			{

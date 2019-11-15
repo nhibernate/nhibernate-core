@@ -691,6 +691,5 @@ namespace NHibernate.Util
 
 			#endregion
 		}
-
 	}
 }

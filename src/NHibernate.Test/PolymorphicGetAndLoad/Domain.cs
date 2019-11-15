@@ -37,5 +37,4 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 	{
 		string Name { get; set; }
 	}
-
 }

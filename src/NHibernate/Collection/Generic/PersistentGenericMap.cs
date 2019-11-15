@@ -238,7 +238,6 @@ namespace NHibernate.Collection.Generic
 			return WrappedMap.ContainsKey(((KeyValuePair<TKey, TValue>)entry).Key);
 		}
 
-
 		#region IDictionary<TKey,TValue> Members
 
 		public bool ContainsKey(TKey key)
@@ -284,7 +283,6 @@ namespace NHibernate.Collection.Generic
 			QueueOperation(new RemoveDelayedOperation(this, key, old == NotFound ? null : old));
 			return true;
 		}
-
 
 		public bool TryGetValue(TKey key, out TValue value)
 		{

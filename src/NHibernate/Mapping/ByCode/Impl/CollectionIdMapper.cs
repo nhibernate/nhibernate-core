@@ -74,7 +74,6 @@ namespace NHibernate.Mapping.ByCode.Impl
 						return
 							new HbmParam {name = pi.Name, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}};
 					});
-
 			}
 			else
 			{

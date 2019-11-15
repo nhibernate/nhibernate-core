@@ -36,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2662
 						c => new {c.Id, c.Order.OrderDate, ((PizzaOrder)c.Order).PizzaName })
 									  .ToArray();
 
-					foreach (var item in temp) { Trace.WriteLine(item.PizzaName);}
+					foreach (var item in temp) { Trace.WriteLine(item.PizzaName); }
 				}, Throws.Nothing);
 
 				Assert.That(() =>
@@ -56,7 +56,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2662
 
 					Assert.That(results.Count, Is.EqualTo(2));
 					Assert.That(results[0][2], Is.EqualTo("Margarita"));
-
 				}, Throws.Nothing);
 			}
 		}

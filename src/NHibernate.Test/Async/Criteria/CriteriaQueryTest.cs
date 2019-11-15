@@ -377,7 +377,6 @@ namespace NHibernate.Test.Criteria
 				.AddOrder(Order.Asc("a.bodyWeight"));
 			ICriteria cloned = CriteriaTransformer.TransformToRowCount(c);
 
-
 			await (cloned.ListAsync());
 			await (t.RollbackAsync());
 			s.Close();
@@ -802,7 +801,6 @@ namespace NHibernate.Test.Criteria
 			Assert.AreEqual(101L, result[2]);
 			Assert.AreEqual(384.0D, (Double)result[3], 0.01D);
 
-
 			IList resultWithMaps = await (s.CreateCriteria(typeof(Enrolment))
 				.SetProjection(Projections.Distinct(Projections.ProjectionList()
 														.Add(Projections.Property("StudentNumber"), "stNumber")
@@ -832,7 +830,6 @@ namespace NHibernate.Test.Criteria
 
 			Assert.AreEqual(101L, m1["stNumber"]);
 			Assert.AreEqual(667L, m0["stNumber"]);
-
 
 			IList resultWithAliasedBean = await (s.CreateCriteria(typeof(Enrolment))
 				.CreateAlias("Student", "st")
@@ -889,7 +886,6 @@ namespace NHibernate.Test.Criteria
 			Assert.AreEqual(7, array.Length);
 
 			ProjectionList pp1 = Projections.ProjectionList().Add(Projections.RowCountInt64());
-
 
 			object r = await (s.CreateCriteria(typeof(Enrolment))
 											.SetProjection(pp1)
@@ -994,7 +990,6 @@ namespace NHibernate.Test.Criteria
 			Assert.AreEqual(101L, result[2]);
 			Assert.AreEqual(384.0D, (Double)result[3], 0.01D);
 
-
 			ICriteria criteriaToClone2 = s.CreateCriteria(typeof(Enrolment))
 				.SetProjection(Projections.Distinct(Projections.ProjectionList()
 														.Add(Projections.Property("StudentNumber"), "stNumber")
@@ -1026,7 +1021,6 @@ namespace NHibernate.Test.Criteria
 
 			Assert.AreEqual(101L, m1["stNumber"]);
 			Assert.AreEqual(667L, m0["stNumber"]);
-
 
 			ICriteria criteriaToClone3 = s.CreateCriteria(typeof(Enrolment))
 				.CreateAlias("Student", "st")
@@ -1778,7 +1772,6 @@ namespace NHibernate.Test.Criteria
 			Assert.AreEqual(101L, result[2]);
 			Assert.AreEqual(384.0D, (double)result[3], 0.01D);
 
-
 			await (CriteriaTransformer.Clone(
 				s.CreateCriteria(typeof(Enrolment))
 					.Add(Property.ForName("StudentNumber").Gt(665L))
@@ -1821,7 +1814,6 @@ namespace NHibernate.Test.Criteria
 
 			Assert.AreEqual(101L, m1["stNumber"]);
 			Assert.AreEqual(667L, m0["stNumber"]);
-
 
 			IList resultWithAliasedBean = await (CriteriaTransformer.Clone(s.CreateCriteria(typeof(Enrolment))
 																		.CreateAlias("Student", "st")
@@ -2344,7 +2336,6 @@ namespace NHibernate.Test.Criteria
 						.Add(Projections.Property("StudentNumber"), "StudentNumber")
 						.Add(Projections.Property("Name"), "Name"));
 
-
 			ISession session = OpenSession();
 			ITransaction t = session.BeginTransaction();
 
@@ -2380,7 +2371,6 @@ namespace NHibernate.Test.Criteria
 				.SetResultTransformer(new AliasToBeanResultTransformer(typeof(Student)))
 				.Add(Property.ForName("Name").Eq("Gavin King"))
 				.AddOrder(Order.Asc("StudentNumber"));
-
 
 			ISession session = OpenSession();
 			ITransaction t = session.BeginTransaction();
@@ -2513,7 +2503,6 @@ namespace NHibernate.Test.Criteria
 				ICriteria subCriterium = crit.CreateCriteria("PreferredCourse");
 				subCriterium.Add(Property.ForName("CourseCode").Eq("PREFFERED_CODE"));
 
-
 				ICriteria countCriteria = CriteriaTransformer.TransformToRowCount(crit);
 
 				await (countCriteria.ListAsync());
@@ -2549,7 +2538,6 @@ namespace NHibernate.Test.Criteria
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
-
 				Course courseA = new Course();
 				courseA.CourseCode = "HIB-A";
 				courseA.Description = "Hibernate Training A";

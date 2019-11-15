@@ -583,7 +583,6 @@ namespace NHibernate.Dialect
 			RegisterFunction("xmltable", new StandardSQLFunction("xmltable"));
 			RegisterFunction("year", new StandardSQLFunction("year", NHibernateUtil.Int32));
 			RegisterFunction("years_between", new StandardSQLFunction("years_between", NHibernateUtil.Int32));
-
 		}
 
 		#region DDL support

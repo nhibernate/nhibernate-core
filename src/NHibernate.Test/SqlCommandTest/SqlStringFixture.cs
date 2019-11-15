@@ -13,7 +13,6 @@ namespace NHibernate.Test.SqlCommandTest
 	[TestFixture]
 	public class SqlStringFixture
 	{
-
 		//[Test]
 		//public void StringPerf()
 		//{
@@ -35,7 +34,6 @@ namespace NHibernate.Test.SqlCommandTest
 		//    }
 		//    Console.WriteLine("Substring average per 10000 iters (ms): " + allSub.Average());
 
-
 		//    double[] allTrim = new double[5];
 		//    for (int a = 0; a < 5; ++a)
 		//    {
@@ -49,7 +47,6 @@ namespace NHibernate.Test.SqlCommandTest
 
 		//    Console.WriteLine("Trim average per 10000 iters (ms): " + allTrim.Average());
 		//}
-
 
 		[Test]
 		public void Append()
@@ -343,7 +340,6 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.AreEqual(SqlString.Empty, SqlString.Parse(""));
 		}
 
-
 		[Test]
 		public void GetSubselectStringSimple()
 		{
@@ -440,7 +436,6 @@ namespace NHibernate.Test.SqlCommandTest
 			// more simple version of the test
 			Assert.That(Parameter.Placeholder, Is.Not.SameAs(Parameter.Placeholder));
 		}
-
 
 		[Test]
 		public void HashcodeEqualForEqualStringsWithDifferentHistory()

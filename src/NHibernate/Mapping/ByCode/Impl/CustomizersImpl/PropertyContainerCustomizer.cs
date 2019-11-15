@@ -469,7 +469,6 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			RegisterSetMapping<TElement>(collectionMapping, mapping, member, memberOf);
 		}
 
-
 		private static void AssertCollectionElementType<TElement>(string propertyOrFieldName, MemberInfo memberInfo)
 		{
 			System.Type collectionElementType = memberInfo.GetPropertyOrFieldType().DetermineCollectionElementType();
@@ -483,7 +482,6 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 				throw new MappingException(message);
 			}
 		}
-
 
 		public void Set<TElement>(string notVisiblePropertyOrFieldName, Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping)
 		{

@@ -35,7 +35,6 @@ namespace NHibernate.Test.NHSpecificTest.Evicting
 			base.OnTearDown();
 		}
 
-
 		[Test]
 		public void Can_evict_entity_from_session()
 		{
@@ -56,7 +55,6 @@ namespace NHibernate.Test.NHSpecificTest.Evicting
 		[Test]
 		public void Can_evict_non_persistent_object()
 		{
-
 			using (var session = Sfi.OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
@@ -74,11 +72,9 @@ namespace NHibernate.Test.NHSpecificTest.Evicting
 		[Test]
 		public void Can_evict_when_trying_to_evict_entity_from_another_session()
 		{
-
 			using (var session1 = Sfi.OpenSession())
 			using (var tx1 = session1.BeginTransaction())
 			{
-
 				using (var session2 = Sfi.OpenSession())
 				using (var tx2 = session2.BeginTransaction())
 				{
@@ -98,6 +94,5 @@ namespace NHibernate.Test.NHSpecificTest.Evicting
 				tx1.Commit();
 			}
 		}
-	
 	}
 }

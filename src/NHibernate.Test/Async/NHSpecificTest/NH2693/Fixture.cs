@@ -43,7 +43,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2693
 					var fourthLevel2 = new FourthLevel { SomeString = "second", SpecificThirdLevel = thirdLevel1 };
 					thirdLevel1.FourthLevels.Add(fourthLevel2);
 
-
 					var firstLevel2 = new FirstLevel();
 
 					var secondLevel2 = new SecondLevelComponent { FirstLevel = firstLevel2 };
@@ -58,7 +57,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2693
 					var fourthLevel4 = new FourthLevel { SomeString = "fourth", SpecificThirdLevel = thirdLevel2 };
 					thirdLevel2.FourthLevels.Add(fourthLevel4);
 
-
 					var firstLevel3 = new FirstLevel();
 
 					var secondLevel3 = new SecondLevelComponent { FirstLevel = firstLevel3 };
@@ -67,7 +65,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2693
 					var thirdLevel3 = new SpecificThirdLevel();
 					secondLevel3.ThirdLevel = thirdLevel3;
 					secondLevel3.SpecificThirdLevel = thirdLevel3;
-
 
 					session.Save(thirdLevel1);
 					session.Save(thirdLevel2);

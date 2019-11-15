@@ -137,7 +137,6 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 		private class Entity : BaseEntity
 		{
-
 		}
 
 		[Test]

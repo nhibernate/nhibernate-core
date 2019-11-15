@@ -771,7 +771,8 @@ namespace NHibernate
 		/// <para>
 		/// Sessions auto-join current transaction by default on their first usage within a scope.
 		/// This can be disabled with <see cref="ISessionBuilder{T}.AutoJoinTransaction(bool)"/> from
-		/// a session builder obtained with <see cref="ISessionFactory.WithOptions()"/>.
+		/// a session builder obtained with <see cref="ISessionFactory.WithOptions()"/>, or with the
+		/// auto-join transaction configuration setting.
 		/// </para>
 		/// <para>
 		/// This method allows to explicitly join the current transaction. It does nothing if it is already

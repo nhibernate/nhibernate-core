@@ -54,7 +54,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2700
 		[Test]
 		public void TestProjection()
 		{
-            
             using (var s = OpenSession())
             {
                 var proj = new SqlFunctionProjection("AddDays", NHibernateUtil.DateTime,

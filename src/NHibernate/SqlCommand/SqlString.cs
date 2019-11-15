@@ -199,13 +199,13 @@ namespace NHibernate.SqlCommand
 			: this((IEnumerable<object>)parts)
 		{ }
 
-		private SqlString(IEnumerable<object> parts)
+		internal SqlString(IEnumerable<object> parts)
 		{
 			_parts = new List<Part>();
 			_parameters = new SortedList<int, Parameter>();
 
 			var sqlIndex = 0;
-			var pendingContent = new StringBuilder();  // Collect adjoining string parts (the compaction).
+			var pendingContent = new StringBuilder(); // Collect adjoining string parts (the compaction).
 			foreach (var part in parts)
 			{
 				Add(part, pendingContent, ref sqlIndex);

@@ -50,7 +50,6 @@ namespace NHibernate.Test.Events.Collections.Association.Bidirectional.OneToMany
 			if (!Children.Contains(child))
 			{
 				((ChildWithManyToOne)child).Parent = null;
-
 			}
 		}
 	}

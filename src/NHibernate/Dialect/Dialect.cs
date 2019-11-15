@@ -795,7 +795,6 @@ namespace NHibernate.Dialect
 			return " drop constraint " + constraintName;
 		}
 
-
 		/// <summary>
 		/// The syntax that is used to check if a constraint does not exists before creating it
 		/// </summary>

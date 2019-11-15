@@ -331,7 +331,6 @@ namespace NHibernate.Test.Hql
 			}
 		}
 
-
 		[Test]
 		public async Task WithClauseOnOtherAssociationAsync()
 		{
@@ -412,9 +411,7 @@ namespace NHibernate.Test.Hql
 					rc.ManyToOne(ep => ep.SameTypeChild, m => m.Column("SameTypeChildId"));
 
 					rc.ManyToOne(ep => ep.SameTypeChild2, m => m.Column("SameTypeChild2Id"));
-
 				});
-
 
 			mapper.Class<EntityWithCompositeId>(
 				rc =>
@@ -456,7 +453,6 @@ namespace NHibernate.Test.Hql
 					rc.Property(e => e.Composite1Key1);
 					rc.Property(e => e.Composite1Key2);
 					rc.Property(e => e.CustomEntityNameId);
-
 				});
 
 			mapper.Class<EntityCustomEntityName>(
@@ -532,7 +528,6 @@ namespace NHibernate.Test.Hql
 					{
 						Name = "ComplexEntityChild2"
 					}
-
 				};
 
 				_entityWithCompositeId = new EntityWithCompositeId

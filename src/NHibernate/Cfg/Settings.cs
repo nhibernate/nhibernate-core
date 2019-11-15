@@ -53,6 +53,15 @@ namespace NHibernate.Cfg
 
 		public string SessionFactoryName { get; internal set; }
 
+		/// <summary>
+		/// Should sessions check on every operation whether there is an ongoing system transaction or not, and enlist
+		/// into it if any? Default is <see langword="true"/>. It can also be controlled at session opening, see
+		/// <see cref="ISessionFactory.WithOptions" />. A session can also be instructed to explicitly join the current
+		/// transaction by calling <see cref="ISession.JoinTransaction" />. This setting has no effect if using a
+		/// transaction factory that is not system transactions aware.
+		/// </summary>
+		public bool AutoJoinTransaction { get; internal set; }
+
 		public bool IsAutoCreateSchema { get; internal set; }
 
 		public bool IsAutoDropSchema { get; internal set; }

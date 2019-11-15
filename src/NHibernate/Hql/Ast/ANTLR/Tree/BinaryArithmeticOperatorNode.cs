@@ -99,7 +99,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
-
 		private IType ResolveDataType()
 		{
 			// TODO : we may also want to check that the types here map to exactly one column/JDBC-type

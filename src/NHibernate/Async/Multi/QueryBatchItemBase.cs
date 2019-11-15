@@ -23,7 +23,7 @@ namespace NHibernate.Multi
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public abstract partial class QueryBatchItemBase<TResult> : IQueryBatchItem<TResult>
+	public abstract partial class QueryBatchItemBase<TResult> : IQueryBatchItem<TResult>, IQueryBatchItemWithAsyncProcessResults
 	{
 
 		/// <inheritdoc />
@@ -118,10 +118,45 @@ namespace NHibernate.Multi
 					await (reader.NextResultAsync(cancellationToken)).ConfigureAwait(false);
 				}
 
-				await (InitializeEntitiesAndCollectionsAsync(reader, hydratedObjects, cancellationToken)).ConfigureAwait(false);
-
+				StopLoadingCollections(reader);
+				_reader = reader;
+				_hydratedObjects = hydratedObjects;
 				return rowCount;
 			}
+		}
+
+		/// <inheritdoc cref="IQueryBatchItem.ProcessResults" />
+		public async Task ProcessResultsAsync(CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			ThrowIfNotInitialized();
+
+			using (Session.SwitchCacheMode(_cacheMode))
+				await (InitializeEntitiesAndCollectionsAsync(_reader, _hydratedObjects, cancellationToken)).ConfigureAwait(false);
+
+			for (var i = 0; i < _queryInfos.Count; i++)
+			{
+				var queryInfo = _queryInfos[i];
+				if (_subselectResultKeys[i] != null)
+				{
+					queryInfo.Loader.CreateSubselects(_subselectResultKeys[i], queryInfo.Parameters, Session);
+				}
+
+				if (queryInfo.IsCacheable)
+				{
+					if (queryInfo.IsResultFromCache)
+					{
+						var queryCacheBuilder = new QueryCacheResultBuilder(queryInfo.Loader);
+						queryInfo.Result = queryCacheBuilder.GetResultList(queryInfo.Result);
+					}
+
+					// This transformation must not be applied to ResultToCache.
+					queryInfo.Result =
+						queryInfo.Loader.TransformCacheableResults(
+							queryInfo.Parameters, queryInfo.CacheKey.ResultTransformer, queryInfo.Result);
+				}
+			}
+			AfterLoadCallback?.Invoke(GetResults());
 		}
 
 		/// <inheritdoc />

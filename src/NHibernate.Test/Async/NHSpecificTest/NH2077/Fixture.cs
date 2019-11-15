@@ -22,7 +22,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2077
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
 		{
 			return dialect is MsSql2000Dialect;
@@ -44,6 +43,5 @@ DELETE FROM Person WHERE Id = :userId;
             		.ExecuteUpdateAsync());
             }
 		} 
-
 	}
 }

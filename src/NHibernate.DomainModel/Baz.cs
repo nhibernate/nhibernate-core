@@ -260,7 +260,6 @@ namespace NHibernate.DomainModel
 			set { _stringArray = value; }
 		}
 
-
 		/// <summary>
 		/// Gets or sets the fooArray
 		/// </summary> 
@@ -269,7 +268,6 @@ namespace NHibernate.DomainModel
 			get { return _fooArray; }
 			set { _fooArray = value; }
 		}
-
 
 		/// <summary>
 		/// Get/set for fooSet
