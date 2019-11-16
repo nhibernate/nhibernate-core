@@ -39,12 +39,8 @@ namespace NHibernate.Linq
 		/// <param name="expression">The query expression.</param>
 		public static IAsyncEnumerable<T> GetAsyncEnumerable<T>(this INhQueryProvider nhQueryProvider, Expression expression)
 		{
-			if (nhQueryProvider is DefaultQueryProvider defaultQueryProvider)
-			{
-				return defaultQueryProvider.GetAsyncEnumerable<T>(expression);
-			}
-
-			throw new NotImplementedException();
+			return ReflectHelper.CastOrThrow<DefaultQueryProvider>(nhQueryProvider, "async enumerable")
+				.GetAsyncEnumerable<T>(expression);
 		}
 	}
 

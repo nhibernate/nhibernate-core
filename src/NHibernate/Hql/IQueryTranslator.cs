@@ -8,6 +8,7 @@ using NHibernate.Engine.Query;
 using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Hql
 {
@@ -140,12 +141,8 @@ namespace NHibernate.Hql
 		/// <param name="session">The session.</param>
 		public static IAsyncEnumerable<T> GetAsyncEnumerable<T>(this IQueryTranslator queryTranslator, QueryParameters queryParameters, IEventSource session)
 		{
-			if (queryTranslator is QueryTranslatorImpl queryTranslatorImpl)
-			{
-				return queryTranslatorImpl.GetAsyncEnumerable<T>(queryParameters, session);
-			}
-
-			throw new NotImplementedException();
+			return ReflectHelper.CastOrThrow<QueryTranslatorImpl>(queryTranslator, "async enumerable")
+				.GetAsyncEnumerable<T>(queryParameters, session);
 		}
 	}
 }

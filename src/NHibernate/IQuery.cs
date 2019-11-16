@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using NHibernate.Impl;
 using System.Threading.Tasks;
 using System.Threading;
+using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -711,12 +712,7 @@ namespace NHibernate
 		/// <param name="query">The query.</param>
 		public static IAsyncEnumerable<T> AsyncEnumerable<T>(this IQuery query)
 		{
-			if (query is AbstractQueryImpl abstractQuery)
-			{
-				return abstractQuery.AsyncEnumerable<T>();
-			}
-
-			throw new NotImplementedException();
+			return ReflectHelper.CastOrThrow<AbstractQueryImpl>(query, "async enumerable").AsyncEnumerable<T>();
 		}
 	}
 }

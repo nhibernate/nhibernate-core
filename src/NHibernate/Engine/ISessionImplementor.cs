@@ -73,12 +73,8 @@ namespace NHibernate.Engine
 		/// <param name="queryParameters">The query parameters.</param>
 		public static IAsyncEnumerable<T> AsyncEnumerable<T>(this ISessionImplementor session, IQueryExpression query, QueryParameters queryParameters)
 		{
-			if (session is AbstractSessionImpl abstractSession)
-			{
-				return abstractSession.AsyncEnumerable<T>(query, queryParameters);
-			}
-
-			throw new NotImplementedException();
+			return ReflectHelper.CastOrThrow<AbstractSessionImpl>(session, "async enumerable")
+				.AsyncEnumerable<T>(query, queryParameters);
 		}
 
 		/// <summary>
@@ -91,12 +87,8 @@ namespace NHibernate.Engine
 		/// <param name="parameters">The query parameters.</param>
 		public static IAsyncEnumerable<T> AsyncEnumerableFilter<T>(this ISessionImplementor session, object collection, string filter, QueryParameters parameters)
 		{
-			if (session is AbstractSessionImpl abstractSession)
-			{
-				return abstractSession.AsyncEnumerableFilter<T>(collection, filter, parameters);
-			}
-
-			throw new NotImplementedException();
+			return ReflectHelper.CastOrThrow<AbstractSessionImpl>(session, "async enumerable")
+				.AsyncEnumerableFilter<T>(collection, filter, parameters);
 		}
 
 		/// <summary>

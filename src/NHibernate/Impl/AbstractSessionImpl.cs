@@ -661,7 +661,6 @@ namespace NHibernate.Impl
 		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public abstract Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
 
-
 		// 6.0 TODO: make abstract
 		public virtual IAsyncEnumerable<T> AsyncEnumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
