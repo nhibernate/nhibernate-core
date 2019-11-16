@@ -92,6 +92,7 @@ namespace NHibernate.Test.ConnectionTest
 			// to resources, which should make aggresive-Release not Release
 			// the connection (and thus cause serialization to fail)
 			IEnumerable en = await (s.CreateQuery("from Silly").EnumerableAsync());
+			en.GetEnumerator().MoveNext();
 
 			try
 			{
