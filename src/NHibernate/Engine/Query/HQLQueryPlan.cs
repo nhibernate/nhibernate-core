@@ -22,6 +22,13 @@ namespace NHibernate.Engine.Query
         int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl);
         IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session);
         IEnumerable PerformIterate(QueryParameters queryParameters, IEventSource session);
+
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
     }
 
     public interface IQueryExpressionPlan : IQueryPlan
@@ -160,9 +167,6 @@ namespace NHibernate.Engine.Query
 				queryParameters.LogParameters(session.Factory);
 			}
 
-			if (Translators.Length == 1)
-				return Translators[0].GetEnumerable(queryParameters, session);
-
 			return GetEnumerable(queryParameters, session);
 		}
 
@@ -179,6 +183,7 @@ namespace NHibernate.Engine.Query
 
 		public IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session)
 		{
+			//TODO 6.0: Get rid of SafetyEnumerable and use Cast
 			return new SafetyEnumerable<T>(PerformIterate(queryParameters, session));
 		}
 

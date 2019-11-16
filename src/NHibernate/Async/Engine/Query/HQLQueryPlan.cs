@@ -26,8 +26,6 @@ namespace NHibernate.Engine.Query
     {
         Task PerformListAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, IList results, CancellationToken cancellationToken);
         Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, CancellationToken cancellationToken);
-        Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
-        Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
     }
 	public partial class HQLQueryPlan : IQueryPlan
 	{
@@ -99,7 +97,8 @@ namespace NHibernate.Engine.Query
 					ArrayHelper.AddAll(combinedResults, tmp);
 			}
 		}
-
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -108,16 +107,7 @@ namespace NHibernate.Engine.Query
 			}
 			try
 			{
-				if (Log.IsDebugEnabled())
-				{
-					Log.Debug("enumerable: {0}", _sourceQuery);
-					queryParameters.LogParameters(session.Factory);
-				}
-
-				if (Translators.Length == 1)
-					return Translators[0].GetEnumerableAsync(queryParameters, session, cancellationToken);
-
-				return Task.FromResult<IEnumerable>(GetEnumerable(queryParameters, session));
+				return Task.FromResult<IEnumerable>(PerformIterate(queryParameters, session));
 			}
 			catch (Exception ex)
 			{
@@ -125,9 +115,12 @@ namespace NHibernate.Engine.Query
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public async Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			//TODO 6.0: Get rid of SafetyEnumerable and use Cast
 			return new SafetyEnumerable<T>(await (PerformIterateAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false));
 		}
 
