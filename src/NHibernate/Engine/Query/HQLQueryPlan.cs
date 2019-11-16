@@ -247,7 +247,7 @@ namespace NHibernate.Engine.Query
 
 			if (Translators.Length == 0)
 			{
-				return new CollectionHelper.EmptyAsyncEnumerableClass<T>();
+				return new CollectionHelper.EmptyAsyncEnumerable<T>();
 			}
 
 			if (Translators.Length == 1)
