@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using NHibernate.Collection;
 using NHibernate.Intercept;
 using NHibernate.Proxy;
