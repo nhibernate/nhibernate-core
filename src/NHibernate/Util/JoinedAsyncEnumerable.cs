@@ -17,7 +17,7 @@ namespace NHibernate.Util
 		public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
 		{
 			return new JoinedAsyncEnumerator(
-				_asyncEnumerables.Select(o => o.GetAsyncEnumerator()).ToArray(),
+				_asyncEnumerables.ToArray(o => o.GetAsyncEnumerator()),
 				cancellationToken);
 		}
 
