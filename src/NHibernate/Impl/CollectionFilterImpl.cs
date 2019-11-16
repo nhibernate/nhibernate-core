@@ -36,6 +36,13 @@ namespace NHibernate.Impl
 			return Session.EnumerableFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 
+		public override IAsyncEnumerable<T> AsyncEnumerable<T>()
+		{
+			VerifyParameters();
+			IDictionary<string, TypedValue> namedParams = NamedParams;
+			return Session.AsyncEnumerableFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
+		}
+
 		protected internal override IEnumerable<ITranslator> GetTranslators(ISessionImplementor session, QueryParameters queryParameters)
 		{
 			// NOTE: updates queryParameters.NamedParameters as (desired) side effect

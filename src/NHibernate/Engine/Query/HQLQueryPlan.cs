@@ -1,7 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Event;
 using NHibernate.Hql;
 using NHibernate.Linq;
@@ -20,7 +21,34 @@ namespace NHibernate.Engine.Query
         int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl);
         IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session);
         IEnumerable PerformIterate(QueryParameters queryParameters, IEventSource session);
-    }
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
+	}
+
+	// 6.0 TODO: Move into IQueryPlan
+	internal static class QueryPlanExtensions
+	{
+		/// <summary>
+		/// Returns an <see cref="IAsyncEnumerable{T}" /> which can be enumerated asynchronously.
+		/// </summary>
+		/// <typeparam name="T">The element type.</typeparam>
+		/// <param name="queryPlan">The query plan.</param>
+		/// <param name="queryParameters">The query parameters.</param>
+		/// <param name="session">The session.</param>
+		public static IAsyncEnumerable<T> PerformAsyncIterate<T>(this IQueryPlan queryPlan, QueryParameters queryParameters, IEventSource session)
+		{
+			if (queryPlan is HQLQueryPlan hQLQueryPlan)
+			{
+				return hQLQueryPlan.PerformAsyncIterate<T>(queryParameters, session);
+			}
+
+			throw new NotImplementedException();
+		}
+	}
 
     public interface IQueryExpressionPlan : IQueryPlan
     {
@@ -172,6 +200,69 @@ namespace NHibernate.Engine.Query
 				results[i] = result;
 			}
 			return new JoinedEnumerable(results);
+		}
+
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public async Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (Log.IsDebugEnabled())
+			{
+				Log.Debug("enumerable: {0}", _sourceQuery);
+				queryParameters.LogParameters(session.Factory);
+			}
+			if (Translators.Length == 0)
+			{
+				return CollectionHelper.EmptyEnumerable;
+			}
+			if (Translators.Length == 1)
+			{
+				return await (Translators[0].GetEnumerableAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false);
+			}
+			var results = new IEnumerable[Translators.Length];
+			for (int i = 0; i < Translators.Length; i++)
+			{
+				var result = await (Translators[i].GetEnumerableAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false);
+				results[i] = result;
+			}
+			return new JoinedEnumerable(results);
+		}
+
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public async Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			return new SafetyEnumerable<T>(await (PerformIterateAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false));
+		}
+
+		public IAsyncEnumerable<T> PerformAsyncIterate<T>(QueryParameters queryParameters, IEventSource session)
+		{
+			if (Log.IsDebugEnabled())
+			{
+				Log.Debug("enumerable: {0}", _sourceQuery);
+				queryParameters.LogParameters(session.Factory);
+			}
+
+			if (Translators.Length == 0)
+			{
+				return new CollectionHelper.EmptyAsyncEnumerableClass<T>();
+			}
+
+			if (Translators.Length == 1)
+			{
+				return Translators[0].GetAsyncEnumerable<T>(queryParameters, session);
+			}
+
+			var results = new IAsyncEnumerable<T>[Translators.Length];
+			for (int i = 0; i < Translators.Length; i++)
+			{
+				var result = Translators[i].GetAsyncEnumerable<T>(queryParameters, session);
+				results[i] = result;
+			}
+
+			return new JoinedAsyncEnumerable<T>(results);
 		}
 
 		public IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session)

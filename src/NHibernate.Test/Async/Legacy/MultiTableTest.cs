@@ -107,7 +107,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual("FOO", sm.Derived, "should have uppercased the column in a formula");
 
 			IEnumerator enumer =
-				(await (s.CreateQuery("select distinct s from s in class SubMulti where s.MoreChildren[1].Amount < 1.0").EnumerableAsync())).
+				s.CreateQuery("select distinct s from s in class SubMulti where s.MoreChildren[1].Amount < 1.0").Enumerable().
 					GetEnumerator();
 			Assert.IsTrue(enumer.MoveNext());
 			Assert.AreSame(sm, enumer.Current);
@@ -171,8 +171,8 @@ namespace NHibernate.Test.Legacy
 			await (s.CreateQuery("from s in class Top where s.Count=1").ListAsync());
 			await (s.CreateQuery("select s.Count from s in class Top, ls in class Lower where ls.Another=s").ListAsync());
 			await (s.CreateQuery("select elements(ls.Bag), elements(ls.Set) from ls in class Lower").ListAsync());
-			await (s.CreateQuery("from s in class Lower").EnumerableAsync());
-			await (s.CreateQuery("from s in class Top").EnumerableAsync());
+			s.CreateQuery("from s in class Lower").Enumerable();
+			s.CreateQuery("from s in class Top").Enumerable();
 			await (s.DeleteAsync(tc));
 			await (s.FlushAsync());
 			s.Close();
@@ -280,7 +280,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IEnumerator enumer = (await (s.CreateQuery("select\n\ns from s in class Top where s.Count>0").EnumerableAsync())).GetEnumerator();
+			IEnumerator enumer = s.CreateQuery("select\n\ns from s in class Top where s.Count>0").Enumerable().GetEnumerator();
 			bool foundSimp = false;
 			bool foundMulti = false;
 			bool foundSubMulti = false;
@@ -394,7 +394,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IEnumerable enumer = await (s.CreateQuery("select\n\ns from s in class Top where s.Count>0").EnumerableAsync());
+			IEnumerable enumer = s.CreateQuery("select\n\ns from s in class Top where s.Count>0").Enumerable();
 			bool foundSimp = false;
 			bool foundMulti = false;
 			bool foundSubMulti = false;

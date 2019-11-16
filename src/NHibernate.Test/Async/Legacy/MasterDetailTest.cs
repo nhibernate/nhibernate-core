@@ -240,7 +240,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IEnumerator enumer = (await (s.CreateQuery("from m in class Master").EnumerableAsync())).GetEnumerator();
+			IEnumerator enumer = s.CreateQuery("from m in class Master").Enumerable().GetEnumerator();
 			enumer.MoveNext();
 			m = (Master) enumer.Current;
 			Assert.AreSame(m, m.OtherMaster);
@@ -375,11 +375,11 @@ namespace NHibernate.Test.Legacy
 
 			if (Dialect.SupportsSubSelects)
 			{
-				await (s.CreateQuery("FROM m IN CLASS Master WHERE NOT EXISTS ( FROM " + path + " d WHERE NOT d.I=5 )").EnumerableAsync());
-				await (s.CreateQuery("FROM m IN CLASS Master WHERE NOT 5 IN ( SELECT d.I FROM d IN  " + path + " )").EnumerableAsync());
+				s.CreateQuery("FROM m IN CLASS Master WHERE NOT EXISTS ( FROM " + path + " d WHERE NOT d.I=5 )").Enumerable();
+				s.CreateQuery("FROM m IN CLASS Master WHERE NOT 5 IN ( SELECT d.I FROM d IN  " + path + " )").Enumerable();
 			}
 
-			await (s.CreateQuery("SELECT m FROM m in CLASS NHibernate.DomainModel.Master join m.Details d WHERE d.I=5").EnumerableAsync());
+			s.CreateQuery("SELECT m FROM m in CLASS NHibernate.DomainModel.Master join m.Details d WHERE d.I=5").Enumerable();
 			await (s.CreateQuery("SELECT m FROM m in CLASS NHibernate.DomainModel.Master join m.Details d WHERE d.I=5").ListAsync());
 			await (s.CreateQuery("SELECT m.id FROM m IN CLASS NHibernate.DomainModel.Master join m.Details d WHERE d.I=5").ListAsync());
 			await (t.CommitAsync());
@@ -499,7 +499,7 @@ namespace NHibernate.Test.Legacy
 			q.SetParameterList("ids", new[] {did, (long) -1});
 
 			Assert.AreEqual(1, (await (q.ListAsync())).Count);
-			Assert.IsTrue((await (q.EnumerableAsync())).GetEnumerator().MoveNext());
+			Assert.IsTrue(q.Enumerable().GetEnumerator().MoveNext());
 
 			Assert.AreEqual(2, (await ((await (s.CreateFilterAsync(master.Details, "where this.id > -1"))).ListAsync())).Count);
 			Assert.AreEqual(2, (await ((await (s.CreateFilterAsync(master.Details, "select this.Master where this.id > -1"))).ListAsync())).Count);
@@ -509,17 +509,17 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(0, (await ((await (s.CreateFilterAsync(master.Incoming, "where this.id > -1 and this.Name is not null"))).ListAsync())).Count);
 
 			IQuery filter = await (s.CreateFilterAsync(master.Details, "select max(this.I)"));
-			enumer = (await (filter.EnumerableAsync())).GetEnumerator();
+			enumer = filter.Enumerable().GetEnumerator();
 			Assert.IsTrue(enumer.MoveNext());
 			Assert.IsTrue(enumer.Current is Int32);
 
 			filter = await (s.CreateFilterAsync(master.Details, "select max(this.I) group by this.id"));
-			enumer = (await (filter.EnumerableAsync())).GetEnumerator();
+			enumer = filter.Enumerable().GetEnumerator();
 			Assert.IsTrue(enumer.MoveNext());
 			Assert.IsTrue(enumer.Current is Int32);
 
 			filter = await (s.CreateFilterAsync(master.Details, "select count(*)"));
-			enumer = (await (filter.EnumerableAsync())).GetEnumerator();
+			enumer = filter.Enumerable().GetEnumerator();
 			Assert.IsTrue(enumer.MoveNext());
 			Assert.IsTrue(enumer.Current is Int64);
 
@@ -529,18 +529,18 @@ namespace NHibernate.Test.Legacy
 			f.SetInt32("top", 100);
 			f.SetInt32("bottom", 0);
 
-			enumer = (await (f.EnumerableAsync())).GetEnumerator();
+			enumer = f.Enumerable().GetEnumerator();
 			Assert.IsTrue(enumer.MoveNext());
 			Assert.AreEqual(12, enumer.Current);
 
 			f.SetInt32("top", 2);
-			enumer = (await (f.EnumerableAsync())).GetEnumerator();
+			enumer = f.Enumerable().GetEnumerator();
 			Assert.IsTrue(enumer.MoveNext());
 			Assert.AreEqual(0, enumer.Current);
 
 			f = await (s.CreateFilterAsync(master.Details, "select max(this.I) where this.I not in (:list)"));
 			f.SetParameterList("list", new List<int> {-666, 22, 0});
-			enumer = (await (f.EnumerableAsync())).GetEnumerator();
+			enumer = f.Enumerable().GetEnumerator();
 			Assert.IsTrue(enumer.MoveNext());
 			Assert.AreEqual(12, enumer.Current);
 
@@ -1016,7 +1016,7 @@ namespace NHibernate.Test.Legacy
 				Assert.IsNotNull(list[1]);
 
 				IEnumerator enumer =
-					(await (s.CreateQuery("from c in class Category where c.Name = NHibernate.DomainModel.Category.RootCategory").EnumerableAsync())).
+					s.CreateQuery("from c in class Category where c.Name = NHibernate.DomainModel.Category.RootCategory").Enumerable().
 						GetEnumerator();
 				Assert.IsTrue(enumer.MoveNext());
 			}

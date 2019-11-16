@@ -71,6 +71,21 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public override IAsyncEnumerable<T> AsyncEnumerable<T>()
+		{
+			VerifyParameters();
+			var namedParams = NamedParams;
+			Before();
+			try
+			{
+				return Session.AsyncEnumerable<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams));
+			}
+			finally
+			{
+				After();
+			}
+		}
+
 		public override IList List()
 		{
 			VerifyParameters();

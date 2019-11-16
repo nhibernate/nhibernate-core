@@ -8,17 +8,19 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Event;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Type;
 
 namespace NHibernate.Hql
 {
-	using System.Threading.Tasks;
-	using System.Threading;
 	public partial interface IQueryTranslator
 	{
 
@@ -31,8 +33,6 @@ namespace NHibernate.Hql
 		/// <returns>The query list results.</returns>
 		/// <exception cref="NHibernate.HibernateException"></exception>
 		Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken);
-
-		Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
 
 		// Not ported:
 		//IScrollableResults scroll(QueryParameters queryParameters, ISessionImplementor session);

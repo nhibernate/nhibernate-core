@@ -91,7 +91,7 @@ namespace NHibernate.Test.ConnectionTest
 			// both scroll() and iterate() cause the batcher to hold on
 			// to resources, which should make aggresive-Release not Release
 			// the connection (and thus cause serialization to fail)
-			IEnumerable en = await (s.CreateQuery("from Silly").EnumerableAsync());
+			IEnumerable en = s.CreateQuery("from Silly").Enumerable();
 
 			try
 			{
@@ -125,15 +125,15 @@ namespace NHibernate.Test.ConnectionTest
 			await (s.SaveAsync(silly));
 			await (s.FlushAsync());
 
-			IEnumerable en = await (s.CreateQuery("from Silly").EnumerableAsync());
+			IEnumerable en = s.CreateQuery("from Silly").Enumerable();
 			IEnumerator itr = en.GetEnumerator();
 			Assert.IsTrue(itr.MoveNext());
 			Silly silly2 = (Silly) itr.Current;
 			Assert.AreEqual(silly, silly2);
 			NHibernateUtil.Close(itr);
 
-			itr = (await (s.CreateQuery("from Silly").EnumerableAsync())).GetEnumerator();
-			IEnumerator itr2 = (await (s.CreateQuery("from Silly where name = 'silly'").EnumerableAsync())).GetEnumerator();
+			itr = s.CreateQuery("from Silly").Enumerable().GetEnumerator();
+			IEnumerator itr2 = s.CreateQuery("from Silly where name = 'silly'").Enumerable().GetEnumerator();
 
 			Assert.IsTrue(itr.MoveNext());
 			Assert.AreEqual(silly, itr.Current);

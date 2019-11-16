@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR;
@@ -30,8 +32,6 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Loader.Hql
 {
-	using System.Threading.Tasks;
-	using System.Threading;
 	public partial class QueryLoader : BasicLoader
 	{
 

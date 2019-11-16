@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NHibernate.Criterion;
 using NHibernate.DomainModel;
 using NUnit.Framework;
@@ -106,6 +107,20 @@ namespace NHibernate.Test.GenericTest.Methods
 		}
 
 		[Test]
+		public async Task QueryAsyncEnumerable()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var results = s.CreateQuery("from One").AsyncEnumerable<One>();
+				var enumerator = results.GetAsyncEnumerator();
+
+				Assert.That(await enumerator.MoveNextAsync(), Is.True);
+				Assert.That(await enumerator.MoveNextAsync(), Is.False);
+			}
+		}
+
+		[Test]
 		public void Filter()
 		{
 			using( ISession s = OpenSession() )
@@ -135,6 +150,23 @@ namespace NHibernate.Test.GenericTest.Methods
 				Assert.IsTrue( en.MoveNext() );
 				Assert.AreEqual( 10, en.Current.X );
 				Assert.IsFalse( en.MoveNext() );
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public async Task FilterAsyncEnumerable()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				One one2 = (One) s.CreateQuery("from One").UniqueResult();
+				var results = s.CreateFilter(one2.Manies, "where X = 10").AsyncEnumerable<Many>();
+				var en = results.GetAsyncEnumerator();
+
+				Assert.That(await en.MoveNextAsync(), Is.True);
+				Assert.That(en.Current.X, Is.EqualTo(10));
+				Assert.That(await en.MoveNextAsync(), Is.False);
 				t.Commit();
 			}
 		}

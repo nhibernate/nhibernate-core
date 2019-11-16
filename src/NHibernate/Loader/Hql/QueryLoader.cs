@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR;
@@ -493,6 +495,44 @@ namespace NHibernate.Loader.Hql
 				session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWatch.Elapsed);
 			}
 			return result;
+		}
+
+		internal IAsyncEnumerable<T> GetAsyncEnumerable<T>(QueryParameters queryParameters, IEventSource session)
+		{
+			CheckQuery(queryParameters);
+
+			return new AsyncEnumerableImpl<T>(
+				InitializeAsync,
+				queryParameters.IsReadOnly(session),
+				_queryTranslator.ReturnTypes,
+				_queryTranslator.GetColumnNames(),
+				queryParameters.RowSelection,
+				_selectNewTransformer ?? queryParameters.ResultTransformer,
+				_queryReturnAliases,
+				session);
+
+			async Task<InitializeResult> InitializeAsync(CancellationToken cancellationToken)
+			{
+				Stopwatch stopWatch = null;
+				if (session.Factory.Statistics.IsStatisticsEnabled)
+				{
+					stopWatch = Stopwatch.StartNew();
+				}
+
+				var command = await PrepareQueryCommandAsync(queryParameters, false, session, cancellationToken).ConfigureAwait(false);
+				var dataReader = await GetResultSetAsync(command, queryParameters, session, null, cancellationToken).ConfigureAwait(false);
+
+				if (stopWatch != null)
+				{
+					stopWatch.Stop();
+					session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + _queryTranslator.QueryString, 0, stopWatch.Elapsed);
+					// NH: Different behavior (H3.2 use QueryLoader in AST parser) we need statistic for orginal query too.
+					// probably we have a bug some where else for statistic RowCount
+					session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWatch.Elapsed);
+				}
+
+				return new InitializeResult(command, dataReader);
+			}
 		}
 
 		protected override void ResetEffectiveExpectedType(IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)

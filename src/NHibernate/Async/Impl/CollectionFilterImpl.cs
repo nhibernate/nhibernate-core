@@ -24,6 +24,23 @@ namespace NHibernate.Impl
 	public partial class CollectionFilterImpl : QueryImpl
 	{
 
+		/// <summary>
+		/// Return the query results as an <see cref="IEnumerable"/>. If the query contains multiple results
+		/// per row, the results are returned in an instance of <c>object[]</c>.
+		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <remarks>
+		/// <p>
+		/// Entities returned as results are initialized on demand. The first SQL query returns
+		/// identifiers only.
+		/// </p>
+		/// <p>
+		/// This is a good strategy to use if you expect a high number of the objects
+		/// returned to be already loaded in the <see cref="ISession"/> or in the 2nd level cache.
+		/// </p>
+		/// </remarks>
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public override Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -42,6 +59,14 @@ namespace NHibernate.Impl
 			}
 		}
 
+		/// <summary>
+		/// Strongly-typed version of <see cref="Enumerable()"/>.
+		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public override Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)

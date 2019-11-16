@@ -594,6 +594,21 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public override IAsyncEnumerable<T> AsyncEnumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters)
+		{
+			using (BeginProcess())
+			{
+				queryParameters.ValidateParameters();
+				var plan = GetHQLQueryPlan(queryExpression, true);
+				AutoFlushIfRequired(plan.QuerySpaces);
+
+				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
+				{
+					return plan.PerformAsyncIterate<T>(queryParameters, this);
+				}
+			}
+		}
+
 		public override IEnumerable Enumerable(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			using (BeginProcess())
@@ -1619,6 +1634,15 @@ namespace NHibernate.Impl
 			{
 				var plan = GetFilterQueryPlan(collection, filter, queryParameters, true);
 				return plan.PerformIterate<T>(queryParameters, this);
+			}
+		}
+
+		public override IAsyncEnumerable<T> AsyncEnumerableFilter<T>(object collection, string filter, QueryParameters queryParameters)
+		{
+			using (BeginProcess())
+			{
+				var plan = GetFilterQueryPlan(collection, filter, queryParameters, true);
+				return plan.PerformAsyncIterate<T>(queryParameters, this);
 			}
 		}
 

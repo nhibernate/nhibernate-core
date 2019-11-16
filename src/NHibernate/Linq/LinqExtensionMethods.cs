@@ -2397,6 +2397,16 @@ namespace NHibernate.Linq
 		#endregion
 
 		/// <summary>
+		/// Returns an <see cref="IAsyncEnumerable{T}" /> which can be enumerated asynchronously.
+		/// </summary>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to enumerate.</param>
+		public static IAsyncEnumerable<TSource> AsAsyncEnumerable<TSource>(this IQueryable<TSource> source)
+		{
+			return source.GetNhProvider().GetAsyncEnumerable<TSource>(source.Expression);
+		}
+
+		/// <summary>
 		/// Wraps the query in a deferred <see cref="IFutureEnumerable{T}"/> which enumeration will trigger a batch of all pending future queries.
 		/// </summary>
 		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to convert to a future query.</param>

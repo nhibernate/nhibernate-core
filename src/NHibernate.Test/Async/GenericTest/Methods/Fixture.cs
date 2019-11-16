@@ -10,13 +10,13 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NHibernate.Criterion;
 using NHibernate.DomainModel;
 using NUnit.Framework;
 
 namespace NHibernate.Test.GenericTest.Methods
 {
-	using System.Threading.Tasks;
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
@@ -103,16 +103,16 @@ namespace NHibernate.Test.GenericTest.Methods
 		}
 
 		[Test]
-		public async Task QueryEnumerableAsync()
+		public async Task QueryAsyncEnumerable()
 		{
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				IEnumerable<One> results = await (s.CreateQuery( "from One" ).EnumerableAsync<One>());
-				IEnumerator<One> en = results.GetEnumerator();
+				var results = s.CreateQuery("from One").AsyncEnumerable<One>();
+				var enumerator = results.GetAsyncEnumerator();
 
-				Assert.IsTrue( en.MoveNext() );
-				Assert.IsFalse( en.MoveNext() );
+				Assert.That(await enumerator.MoveNextAsync(), Is.True);
+				Assert.That(await enumerator.MoveNextAsync(), Is.False);
 			}
 		}
 
@@ -139,14 +139,31 @@ namespace NHibernate.Test.GenericTest.Methods
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				One one2 = ( One ) await (s.CreateQuery( "from One" ).UniqueResultAsync());
-				IEnumerable<Many> results = await ((await (s.CreateFilterAsync( one2.Manies, "where X = 10" )))
-					.EnumerableAsync<Many>());
+				IEnumerable<Many> results = (await (s.CreateFilterAsync( one2.Manies, "where X = 10" )))
+					.Enumerable<Many>();
 				IEnumerator<Many> en = results.GetEnumerator();
 
 				Assert.IsTrue( en.MoveNext() );
 				Assert.AreEqual( 10, en.Current.X );
 				Assert.IsFalse( en.MoveNext() );
 				await (t.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task FilterAsyncEnumerable()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				One one2 = (One) s.CreateQuery("from One").UniqueResult();
+				var results = s.CreateFilter(one2.Manies, "where X = 10").AsyncEnumerable<Many>();
+				var en = results.GetAsyncEnumerator();
+
+				Assert.That(await en.MoveNextAsync(), Is.True);
+				Assert.That(en.Current.X, Is.EqualTo(10));
+				Assert.That(await en.MoveNextAsync(), Is.False);
+				t.Commit();
 			}
 		}
 	}

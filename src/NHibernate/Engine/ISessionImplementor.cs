@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -60,6 +62,41 @@ namespace NHibernate.Engine
 		internal static void AutoFlushIfRequired(this ISessionImplementor implementor, ISet<string> querySpaces)
 		{
 			(implementor as AbstractSessionImpl)?.AutoFlushIfRequired(querySpaces);
+		}
+
+		/// <summary>
+		/// Returns an <see cref="IAsyncEnumerable{T}" /> which can be enumerated asynchronously.
+		/// </summary>
+		/// <typeparam name="T">The element type.</typeparam>
+		/// <param name="session">The session.</param>
+		/// <param name="query">The query to execute.</param>
+		/// <param name="queryParameters">The query parameters.</param>
+		public static IAsyncEnumerable<T> AsyncEnumerable<T>(this ISessionImplementor session, IQueryExpression query, QueryParameters queryParameters)
+		{
+			if (session is AbstractSessionImpl abstractSession)
+			{
+				return abstractSession.AsyncEnumerable<T>(query, queryParameters);
+			}
+
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Returns an <see cref="IAsyncEnumerable{T}" /> which can be enumerated asynchronously.
+		/// </summary>
+		/// <typeparam name="T">The element type.</typeparam>
+		/// <param name="session">The session.</param>
+		/// <param name="collection">The collection to filter.</param>
+		/// <param name="filter">The filter to apply.</param>
+		/// <param name="parameters">The query parameters.</param>
+		public static IAsyncEnumerable<T> AsyncEnumerableFilter<T>(this ISessionImplementor session, object collection, string filter, QueryParameters parameters)
+		{
+			if (session is AbstractSessionImpl abstractSession)
+			{
+				return abstractSession.AsyncEnumerableFilter<T>(collection, filter, parameters);
+			}
+
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -203,6 +240,24 @@ namespace NHibernate.Engine
 		IEnumerable<T> Enumerable<T>(IQueryExpression query, QueryParameters queryParameters);
 
 		/// <summary>
+		/// Execute an <c>Iterate()</c> query
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="parameters"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns></returns>
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		Task<IEnumerable> EnumerableAsync(IQueryExpression query, QueryParameters parameters, CancellationToken cancellationToken);
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="Enumerable(IQueryExpression, QueryParameters)" />
+		/// </summary>
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression query, QueryParameters queryParameters, CancellationToken cancellationToken);
+
+		/// <summary>
 		/// Execute a filter
 		/// </summary>
 		IList ListFilter(object collection, string filter, QueryParameters parameters);
@@ -226,6 +281,20 @@ namespace NHibernate.Engine
 		/// Strongly-typed version of <see cref="EnumerableFilter(object, string, QueryParameters)" />
 		/// </summary>
 		IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters parameters);
+
+		/// <summary>
+		/// Collection from a filter
+		/// </summary>
+		// Since v5.3
+		[Obsolete("Use AsyncEnumerableFilter method instead.")]
+		Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="EnumerableFilter(object, string, QueryParameters)" />
+		/// </summary>
+		// Since v5.3
+		[Obsolete("Use AsyncEnumerableFilter method instead.")]
+		Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
 
 		/// <summary> Get the <see cref="IEntityPersister"/> for any instance</summary>
 		/// <param name="entityName">optional entity name </param>

@@ -1,8 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Event;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Type;
 
 namespace NHibernate.Hql
@@ -38,6 +42,10 @@ namespace NHibernate.Hql
 		IList List(ISessionImplementor session, QueryParameters queryParameters);
 
 		IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session);
+
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
 
 		// Not ported:
 		//IScrollableResults scroll(QueryParameters queryParameters, ISessionImplementor session);
@@ -118,5 +126,26 @@ namespace NHibernate.Hql
 		IType[] ActualReturnTypes { get; }
 
         ParameterMetadata BuildParameterMetadata();
+	}
+
+	// 6.0 TODO: Move into IQueryTranslator
+	internal static class QueryTranslatorExtensions
+	{
+		/// <summary>
+		/// Returns an <see cref="IAsyncEnumerable{T}" /> which can be enumerated asynchronously.
+		/// </summary>
+		/// <typeparam name="T">The element type.</typeparam>
+		/// <param name="queryTranslator">The query translator.</param>
+		/// <param name="queryParameters">The query parameters.</param>
+		/// <param name="session">The session.</param>
+		public static IAsyncEnumerable<T> GetAsyncEnumerable<T>(this IQueryTranslator queryTranslator, QueryParameters queryParameters, IEventSource session)
+		{
+			if (queryTranslator is QueryTranslatorImpl queryTranslatorImpl)
+			{
+				return queryTranslatorImpl.GetAsyncEnumerable<T>(queryParameters, session);
+			}
+
+			throw new NotImplementedException();
+		}
 	}
 }

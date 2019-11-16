@@ -11,7 +11,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Event;
 using NHibernate.Hql;
 using NHibernate.Linq;
@@ -20,15 +21,11 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine.Query
 {
-    using System.Threading.Tasks;
-    using System.Threading;
     public partial interface IQueryPlan
     {
         Task PerformListAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, IList results, CancellationToken cancellationToken);
         Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, CancellationToken cancellationToken);
-        Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
-        Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
-    }
+	}
 	public partial class HQLQueryPlan : IQueryPlan
 	{
 
@@ -98,37 +95,6 @@ namespace NHibernate.Engine.Query
 				else
 					ArrayHelper.AddAll(combinedResults, tmp);
 			}
-		}
-
-		public async Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (Log.IsDebugEnabled())
-			{
-				Log.Debug("enumerable: {0}", _sourceQuery);
-				queryParameters.LogParameters(session.Factory);
-			}
-			if (Translators.Length == 0)
-			{
-				return CollectionHelper.EmptyEnumerable;
-			}
-			if (Translators.Length == 1)
-			{
-				return await (Translators[0].GetEnumerableAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false);
-			}
-			var results = new IEnumerable[Translators.Length];
-			for (int i = 0; i < Translators.Length; i++)
-			{
-				var result = await (Translators[i].GetEnumerableAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false);
-				results[i] = result;
-			}
-			return new JoinedEnumerable(results);
-		}
-
-		public async Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			return new SafetyEnumerable<T>(await (PerformIterateAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false));
 		}
 
         public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)

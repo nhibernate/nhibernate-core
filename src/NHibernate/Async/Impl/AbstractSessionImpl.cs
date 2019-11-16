@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -33,8 +35,6 @@ using NHibernate.Type;
 
 namespace NHibernate.Impl
 {
-	using System.Threading.Tasks;
-	using System.Threading;
 	public abstract partial class AbstractSessionImpl : ISessionImplementor
 	{
 
@@ -106,8 +106,6 @@ namespace NHibernate.Impl
 		protected abstract Task ListFilterAsync(object collection, IQueryExpression queryExpression, QueryParameters parameters, IList results, CancellationToken cancellationToken);
 
 		public abstract Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
-		public abstract Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
-		public abstract Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
 		public abstract Task BeforeTransactionCompletionAsync(ITransaction tx, CancellationToken cancellationToken);
 		public abstract Task FlushBeforeTransactionCompletionAsync(CancellationToken cancellationToken);
 		public abstract Task AfterTransactionCompletionAsync(bool successful, ITransaction tx, CancellationToken cancellationToken);
@@ -210,10 +208,6 @@ namespace NHibernate.Impl
 		}
 
 		public abstract Task<IQuery> CreateFilterAsync(object collection, IQueryExpression queryExpression, CancellationToken cancellationToken);
-
-		public abstract Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
-
-		public abstract Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
 
 		public abstract Task<int> ExecuteUpdateAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
 	}

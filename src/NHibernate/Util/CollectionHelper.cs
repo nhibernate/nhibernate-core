@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Iesi.Collections.Generic;
 
 namespace NHibernate.Util
@@ -41,11 +43,35 @@ namespace NHibernate.Util
 			}
 		}
 
+		[Serializable]
+		private class EmtpyAsyncEnumerator<T> : IAsyncEnumerator<T>
+		{
+			public T Current => throw new InvalidOperationException("EmtpyAsyncEnumerator.get_Current");
+
+			public ValueTask DisposeAsync()
+			{
+				return default;
+			}
+
+			public ValueTask<bool> MoveNextAsync()
+			{
+				return new ValueTask<bool>(false);
+			}
+		}
+
 		private class EmptyEnumerableClass : IEnumerable
 		{
 			public IEnumerator GetEnumerator()
 			{
 				return new EmptyEnumerator();
+			}
+		}
+
+		private class EmptyAsyncEnumerableClass : IAsyncEnumerable<object>
+		{
+			public IAsyncEnumerator<object> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+			{
+				return new EmtpyAsyncEnumerator<object>();
 			}
 		}
 
@@ -214,6 +240,7 @@ namespace NHibernate.Util
 		}
 
 		public static readonly IEnumerable EmptyEnumerable = new EmptyEnumerableClass();
+		public static readonly IAsyncEnumerable<object> EmptyAsyncEnumerable = new EmptyAsyncEnumerableClass();
 		public static readonly IDictionary EmptyMap = new EmptyMapClass();
 
 		public static IDictionary<TKey, TValue> EmptyDictionary<TKey, TValue>()
@@ -424,6 +451,15 @@ namespace NHibernate.Util
 			}
 
 			#endregion
+		}
+
+		[Serializable]
+		internal class EmptyAsyncEnumerableClass<T> : IAsyncEnumerable<T>
+		{
+			public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+			{
+				return new EmtpyAsyncEnumerator<T>();
+			}
 		}
 
 		[Serializable]

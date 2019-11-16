@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 
@@ -68,6 +69,21 @@ namespace NHibernate.Test.Linq
 		public static void AssertByIds<TEntity, TId>(IEnumerable<TEntity> entities, TId[] expectedIds, Converter<TEntity, TId> entityIdGetter)
 		{
 			Assert.That(entities.Select(x => entityIdGetter(x)), Is.EquivalentTo(expectedIds));
+		}
+
+		public static async Task AssertByIds<TEntity, TId>(IAsyncEnumerable<TEntity> entities, TId[] expectedIds, Converter<TEntity, TId> entityIdGetter)
+		{
+			var enumerator = entities.GetAsyncEnumerator();
+			bool hasNext;
+			for (var i = 0; i < expectedIds.Length; i++)
+			{
+				hasNext = await enumerator.MoveNextAsync();
+				Assert.That(hasNext, Is.True, $"The collection contains less entities than expected (Expected: {expectedIds.Length}, but was: {i})");
+				Assert.That(entityIdGetter(enumerator.Current), Is.EqualTo(expectedIds[i]), $"Not expected entity on index {i}.");
+			}
+
+			hasNext = await enumerator.MoveNextAsync();
+			Assert.That(hasNext, Is.False, $"The collection contains more entities than expected (Expected: {expectedIds.Length})");
 		}
 	}
 }

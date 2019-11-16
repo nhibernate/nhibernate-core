@@ -116,7 +116,7 @@ namespace NHibernate.Test.CompositeId
 				{
 					Assert.AreEqual(2, stuff.Length);
 				}
-				iter = await (s.CreateQuery("from Order o join o.LineItems li").EnumerableAsync());
+				iter = s.CreateQuery("from Order o join o.LineItems li").Enumerable();
 				foreach (object[] stuff in iter)
 				{
 					Assert.AreEqual(2, stuff.Length);
