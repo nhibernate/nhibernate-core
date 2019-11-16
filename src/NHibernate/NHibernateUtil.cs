@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using NHibernate.Collection;
-using NHibernate.Impl;
 using NHibernate.Intercept;
 using NHibernate.Proxy;
 using NHibernate.Type;
@@ -532,7 +530,7 @@ namespace NHibernate
 		/// </summary>
 		public static void Close(IEnumerator enumerator)
 		{
-			EnumerableImpl hibernateEnumerator = enumerator as EnumerableImpl;
+			var hibernateEnumerator = enumerator as IDisposable;
 			if (hibernateEnumerator == null)
 			{
 				throw new ArgumentException("Not a NHibernate enumerator", nameof(enumerator));
@@ -546,7 +544,7 @@ namespace NHibernate
 		/// </summary>
 		public static void Close(IEnumerable enumerable)
 		{
-			EnumerableImpl hibernateEnumerable = enumerable as EnumerableImpl;
+			var hibernateEnumerable = enumerable as IDisposable;
 			if (hibernateEnumerable == null)
 			{
 				throw new ArgumentException("Not a NHibernate enumerable", nameof(enumerable));
