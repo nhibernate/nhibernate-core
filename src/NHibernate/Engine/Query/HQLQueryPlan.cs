@@ -41,12 +41,8 @@ namespace NHibernate.Engine.Query
 		/// <param name="session">The session.</param>
 		public static IAsyncEnumerable<T> PerformAsyncIterate<T>(this IQueryPlan queryPlan, QueryParameters queryParameters, IEventSource session)
 		{
-			if (queryPlan is HQLQueryPlan hQLQueryPlan)
-			{
-				return hQLQueryPlan.PerformAsyncIterate<T>(queryParameters, session);
-			}
-
-			throw new NotImplementedException();
+			return ReflectHelper.CastOrThrow<HQLQueryPlan>(queryPlan, "async enumerable")
+				.PerformAsyncIterate<T>(queryParameters, session);
 		}
 	}
 
