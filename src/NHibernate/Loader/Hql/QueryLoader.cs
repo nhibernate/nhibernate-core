@@ -468,41 +468,13 @@ namespace NHibernate.Loader.Hql
 		[Obsolete("Please use ResultTypes instead")]
 		public IType[] ReturnTypes => ResultTypes;
 
-		internal IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session)
-		{
-			CheckQuery(queryParameters);
-			Stopwatch stopWatch = null;
-			if (session.Factory.Statistics.IsStatisticsEnabled)
-			{
-				stopWatch = Stopwatch.StartNew();
-			}
-
-			var cmd = PrepareQueryCommand(queryParameters, false, session);
-
-			// This DbDataReader is disposed of in EnumerableImpl.Dispose
-			var rs = GetResultSet(cmd, queryParameters, session, null);
-
-			var resultTransformer = _selectNewTransformer ?? queryParameters.ResultTransformer;
-			IEnumerable result = 
-				new EnumerableImpl(rs, cmd, session, queryParameters.IsReadOnly(session), _queryTranslator.ReturnTypes, _queryTranslator.GetColumnNames(), queryParameters.RowSelection, resultTransformer, _queryReturnAliases);
-
-			if (stopWatch != null)
-			{
-				stopWatch.Stop();
-				session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + _queryTranslator.QueryString, 0, stopWatch.Elapsed);
-				// NH: Different behavior (H3.2 use QueryLoader in AST parser) we need statistic for orginal query too.
-				// probably we have a bug some where else for statistic RowCount
-				session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWatch.Elapsed);
-			}
-			return result;
-		}
-
-		internal IAsyncEnumerable<T> GetAsyncEnumerable<T>(QueryParameters queryParameters, IEventSource session)
+		internal AsyncEnumerableImpl<T> GetAsyncEnumerable<T>(QueryParameters queryParameters, IEventSource session)
 		{
 			CheckQuery(queryParameters);
 
 			return new AsyncEnumerableImpl<T>(
-				InitializeAsync,
+				() => InitializeEnumerable(queryParameters, session),
+				cancellationToken => InitializeEnumerableAsync(queryParameters, session, cancellationToken),
 				queryParameters.IsReadOnly(session),
 				_queryTranslator.ReturnTypes,
 				_queryTranslator.GetColumnNames(),
@@ -510,29 +482,26 @@ namespace NHibernate.Loader.Hql
 				_selectNewTransformer ?? queryParameters.ResultTransformer,
 				_queryReturnAliases,
 				session);
+		}
 
-			async Task<InitializeResult> InitializeAsync(CancellationToken cancellationToken)
+		internal InitializeEnumerableResult InitializeEnumerable(QueryParameters queryParameters, IEventSource session)
+		{
+			Stopwatch stopWatch = null;
+			if (session.Factory.Statistics.IsStatisticsEnabled)
 			{
-				Stopwatch stopWatch = null;
-				if (session.Factory.Statistics.IsStatisticsEnabled)
-				{
-					stopWatch = Stopwatch.StartNew();
-				}
-
-				var command = await PrepareQueryCommandAsync(queryParameters, false, session, cancellationToken).ConfigureAwait(false);
-				var dataReader = await GetResultSetAsync(command, queryParameters, session, null, cancellationToken).ConfigureAwait(false);
-
-				if (stopWatch != null)
-				{
-					stopWatch.Stop();
-					session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + _queryTranslator.QueryString, 0, stopWatch.Elapsed);
-					// NH: Different behavior (H3.2 use QueryLoader in AST parser) we need statistic for orginal query too.
-					// probably we have a bug some where else for statistic RowCount
-					session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWatch.Elapsed);
-				}
-
-				return new InitializeResult(command, dataReader);
+				stopWatch = Stopwatch.StartNew();
 			}
+
+			var command = PrepareQueryCommand(queryParameters, false, session);
+			var dataReader = GetResultSet(command, queryParameters, session, null);
+			if (stopWatch != null)
+			{
+				stopWatch.Stop();
+				session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + _queryTranslator.QueryString, 0, stopWatch.Elapsed);
+				session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWatch.Elapsed);
+			}
+
+			return new InitializeEnumerableResult(command, dataReader);
 		}
 
 		protected override void ResetEffectiveExpectedType(IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)

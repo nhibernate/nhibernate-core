@@ -429,27 +429,6 @@ namespace NHibernate.Util
 		}
 
 		[Serializable]
-		internal class EmptyAsyncEnumerable<T> : IAsyncEnumerable<T>, IAsyncEnumerator<T>
-		{
-			public T Current => throw new InvalidOperationException("EmtpyAsyncEnumerator.get_Current");
-
-			public ValueTask DisposeAsync()
-			{
-				return default;
-			}
-
-			public ValueTask<bool> MoveNextAsync()
-			{
-				return new ValueTask<bool>(false);
-			}
-
-			public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
-			{
-				return this;
-			}
-		}
-
-		[Serializable]
 		private class EmptyEnumerator<T> : IEnumerator<T>
 		{
 			#region IEnumerator<T> Members

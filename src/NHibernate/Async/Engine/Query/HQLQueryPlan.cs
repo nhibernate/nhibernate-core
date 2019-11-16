@@ -96,6 +96,49 @@ namespace NHibernate.Engine.Query
 					ArrayHelper.AddAll(combinedResults, tmp);
 			}
 		}
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IEnumerable>(cancellationToken);
+			}
+			try
+			{
+				if (Log.IsDebugEnabled())
+				{
+					Log.Debug("enumerable: {0}", _sourceQuery);
+					queryParameters.LogParameters(session.Factory);
+				}
+				if (Translators.Length == 0)
+				{
+					return Task.FromResult<IEnumerable>(CollectionHelper.EmptyEnumerable);
+				}
+				if (Translators.Length == 1)
+				{
+					return Task.FromResult<IEnumerable>(Translators[0].GetEnumerable(queryParameters, session));
+				}
+				var results = new IEnumerable[Translators.Length];
+				for (int i = 0; i < Translators.Length; i++)
+				{
+					var result = Translators[i].GetEnumerable(queryParameters, session);
+					results[i] = result;
+				}
+				return Task.FromResult<IEnumerable>(new JoinedEnumerable(results));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<IEnumerable>(ex);
+			}
+		}
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public async Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			return new SafetyEnumerable<T>(await (PerformIterateAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false));
+		}
 
         public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
         {

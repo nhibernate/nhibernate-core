@@ -115,8 +115,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 			try
 			{
-				ErrorIfDML();
-				return _queryLoader.GetEnumerableAsync(queryParameters, session, cancellationToken);
+				return Task.FromResult<IEnumerable>(GetEnumerable(queryParameters, session));
 			}
 			catch (Exception ex)
 			{

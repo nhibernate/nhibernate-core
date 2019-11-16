@@ -97,7 +97,7 @@ namespace NHibernate.Impl
 		/// </p>
 		/// </remarks>
 		// Since v5.3
-		[Obsolete("This method has no more usages and will be removed in a future version")]
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
 		public override Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			throw new NotSupportedException("SQL queries do not currently support enumeration");
@@ -110,7 +110,7 @@ namespace NHibernate.Impl
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		// Since v5.3
-		[Obsolete("This method has no more usages and will be removed in a future version")]
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
 		public override Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			throw new NotSupportedException("SQL queries do not currently support enumeration");

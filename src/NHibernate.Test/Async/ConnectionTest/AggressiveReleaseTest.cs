@@ -91,7 +91,8 @@ namespace NHibernate.Test.ConnectionTest
 			// both scroll() and iterate() cause the batcher to hold on
 			// to resources, which should make aggresive-Release not Release
 			// the connection (and thus cause serialization to fail)
-			IEnumerable en = s.CreateQuery("from Silly").Enumerable();
+			var en = s.CreateQuery("from Silly").Enumerable().GetEnumerator();
+			en.MoveNext();
 
 			try
 			{

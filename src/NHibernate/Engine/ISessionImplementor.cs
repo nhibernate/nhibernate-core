@@ -21,7 +21,7 @@ using NHibernate.Util;
 namespace NHibernate.Engine
 {
 	// 6.0 TODO: Convert to interface methods, excepted SwitchCacheMode
-	internal static partial class SessionImplementorExtensions
+	public static partial class SessionImplementorExtensions
 	{
 		/// <summary>
 		/// Instantiate the entity class, initializing with the given identifier
@@ -239,14 +239,14 @@ namespace NHibernate.Engine
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
 		// Since v5.3
-		[Obsolete("This method has no more usages and will be removed in a future version")]
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
 		Task<IEnumerable> EnumerableAsync(IQueryExpression query, QueryParameters parameters, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="Enumerable(IQueryExpression, QueryParameters)" />
 		/// </summary>
 		// Since v5.3
-		[Obsolete("This method has no more usages and will be removed in a future version")]
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
 		Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression query, QueryParameters queryParameters, CancellationToken cancellationToken);
 
 		/// <summary>
@@ -278,14 +278,14 @@ namespace NHibernate.Engine
 		/// Collection from a filter
 		/// </summary>
 		// Since v5.3
-		[Obsolete("Use AsyncEnumerableFilter method instead.")]
+		[Obsolete("Use AsyncEnumerableFilter extension method instead.")]
 		Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="EnumerableFilter(object, string, QueryParameters)" />
 		/// </summary>
 		// Since v5.3
-		[Obsolete("Use AsyncEnumerableFilter method instead.")]
+		[Obsolete("Use AsyncEnumerableFilter extension method instead.")]
 		Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
 
 		/// <summary> Get the <see cref="IEntityPersister"/> for any instance</summary>

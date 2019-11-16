@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,9 +13,9 @@ using NHibernate.Type;
 
 namespace NHibernate.Impl
 {
-	internal struct InitializeResult
+	internal struct InitializeEnumerableResult
 	{
-		public InitializeResult(DbCommand command, DbDataReader dataReader)
+		public InitializeEnumerableResult(DbCommand command, DbDataReader dataReader)
 		{
 			Command = command;
 			DataReader = dataReader;
@@ -24,21 +26,25 @@ namespace NHibernate.Impl
 		public DbDataReader DataReader { get; }
 	}
 
-	internal delegate Task<InitializeResult> InitializeAsync(CancellationToken cancellationToken);
+	internal delegate Task<InitializeEnumerableResult> InitializeEnumerableAsync(CancellationToken cancellationToken);
 
-	internal class AsyncEnumerableImpl<T> : IAsyncEnumerable<T>
+	internal delegate InitializeEnumerableResult InitializeEnumerable();
+
+	internal partial class AsyncEnumerableImpl<T> : IAsyncEnumerable<T>, IEnumerable<T>
 	{
-		private readonly InitializeAsync _initializeAsync;
+		private readonly InitializeEnumerableAsync _initializeAsync;
+		private readonly InitializeEnumerable _initialize;
 		private readonly bool _readOnly;
 		private readonly IType[] _types;
-		private string[][] _columnNames;
+		private readonly string[][] _columnNames;
 		private readonly RowSelection _selection;
 		private readonly IResultTransformer _resultTransformer;
 		private readonly string[] _returnAliases;
 		private readonly IEventSource _session;
 
 		public AsyncEnumerableImpl(
-			InitializeAsync initializeAsync,
+			InitializeEnumerable initialize,
+			InitializeEnumerableAsync initializeAsync,
 			bool readOnly,
 			IType[] types,
 			string[][] columnNames,
@@ -47,6 +53,7 @@ namespace NHibernate.Impl
 			string[] returnAliases,
 			IEventSource session)
 		{
+			_initialize = initialize;
 			_initializeAsync = initializeAsync;
 			_readOnly = readOnly;
 			_types = types;
@@ -60,6 +67,7 @@ namespace NHibernate.Impl
 		public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
 		{
 			return new AsyncEnumeratorImpl(
+				_initialize,
 				_initializeAsync,
 				_readOnly,
 				_types,
@@ -71,14 +79,32 @@ namespace NHibernate.Impl
 				cancellationToken);
 		}
 
-		private sealed class AsyncEnumeratorImpl : IAsyncEnumerator<T>
+		public IEnumerator<T> GetEnumerator()
 		{
-			private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(AsyncEnumeratorImpl));
+			return new AsyncEnumeratorImpl(
+				_initialize,
+				_initializeAsync,
+				_readOnly,
+				_types,
+				_columnNames,
+				_selection,
+				_resultTransformer,
+				_returnAliases,
+				_session,
+				default);
+		}
 
-			private readonly InitializeAsync _initializeAsync;
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+		internal sealed partial class AsyncEnumeratorImpl : IAsyncEnumerator<T>, IEnumerator<T>
+		{
+			private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(AsyncEnumeratorImpl));
+
+			private readonly InitializeEnumerableAsync _initializeAsync;
+			private readonly InitializeEnumerable _initialize;
 			private readonly bool _readOnly;
 			private readonly IType[] _types;
-			private string[][] _columnNames;
+			private readonly string[][] _columnNames;
 			private readonly RowSelection _selection;
 			private readonly IResultTransformer _resultTransformer;
 			private readonly string[] _returnAliases;
@@ -96,7 +122,8 @@ namespace NHibernate.Impl
 			private bool _isAlreadyDisposed;
 
 			public AsyncEnumeratorImpl(
-				InitializeAsync initializeAsync,
+				InitializeEnumerable initialize,
+				InitializeEnumerableAsync initializeAsync,
 				bool readOnly,
 				IType[] types,
 				string[][] columnNames,
@@ -106,6 +133,7 @@ namespace NHibernate.Impl
 				IEventSource session,
 				CancellationToken cancellationToken)
 			{
+				_initialize = initialize;
 				_initializeAsync = initializeAsync;
 				_readOnly = readOnly;
 				_types = types;
@@ -120,6 +148,8 @@ namespace NHibernate.Impl
 
 			public T Current { get; private set; }
 
+			object IEnumerator.Current => Current;
+
 			public async ValueTask<bool> MoveNextAsync()
 			{
 				if (_reader == null)
@@ -127,9 +157,28 @@ namespace NHibernate.Impl
 					await InitializeAsync().ConfigureAwait(false);
 				}
 
+				await ReadAsync(_cancellationToken).ConfigureAwait(false);
+
+				return _hasNext;
+			}
+
+			public bool MoveNext()
+			{
+				if (_reader == null)
+				{
+					Initialize();
+				}
+
+				Read();
+
+				return _hasNext;
+			}
+
+			private void Read()
+			{
 				try
 				{
-					_hasNext = await _reader.ReadAsync(_cancellationToken).ConfigureAwait(false);
+					_hasNext = _reader.Read();
 					_startedReading = true;
 					_currentRow++;
 				}
@@ -139,6 +188,11 @@ namespace NHibernate.Impl
 													   new SqlString(_command.CommandText));
 				}
 
+				PostRead();
+			}
+
+			private void PostRead()
+			{
 				if (_selection != null && _selection.MaxRows != RowSelection.NoValue)
 				{
 					_hasNext = _hasNext && (_currentRow < _selection.MaxRows);
@@ -146,80 +200,20 @@ namespace NHibernate.Impl
 
 				bool sessionDefaultReadOnlyOrig = _session.DefaultReadOnly;
 				_session.DefaultReadOnly = _readOnly;
-				bool isCurrentValid;
 				try
 				{
-					isCurrentValid = await PostMoveNextAsync().ConfigureAwait(false);
+					MaterializeAndSetCurrent();
 				}
 				finally
 				{
 					_session.DefaultReadOnly = sessionDefaultReadOnlyOrig;
 				}
-
-				// In order to simulate what SafetyEnumerable does, we have to skip elements of different type
-				if (!isCurrentValid)
-				{
-					await MoveNextAsync().ConfigureAwait(false);
-				}
-
-				return _hasNext;
 			}
 
-			private async Task<bool> PostMoveNextAsync()
+			public void Reset()
 			{
-				if (!_hasNext)
-				{
-					// there are no more records in the DataReader so clean up
-					log.Debug("exhausted results");
-					Current = default;
-					_session.Batcher.CloseCommand(_command, _reader);
-					return true;
-				}
-
-				log.Debug("retrieving next results");
-				if (_single && _resultTransformer == null)
-				{
-					return TrySetCurrent(await _types[0].NullSafeGetAsync(_reader, _columnNames[0], _session, null, _cancellationToken).ConfigureAwait(false));
-				}
-
-				var currentResults = new object[_types.Length];
-				// move through each of the ITypes contained in the DbDataReader and convert them
-				// to their objects.  
-				for (int i = 0; i < _types.Length; i++)
-				{
-					// The IType knows how to extract its value out of the DbDataReader.  If the IType
-					// is a value type then the value will simply be pulled out of the DbDataReader.  If
-					// the IType is an Entity type then the IType will extract the id from the DbDataReader
-					// and use the ISession to load an instance of the object.
-					currentResults[i] = await _types[i].NullSafeGetAsync(_reader, _columnNames[i], _session, null, _cancellationToken).ConfigureAwait(false);
-				}
-
-				return TrySetCurrent(_resultTransformer != null
-						? _resultTransformer.TransformTuple(currentResults, _returnAliases)
-						: currentResults);
-			}
-
-			private bool TrySetCurrent(object value)
-			{
-				if (value is T element)
-				{
-					Current = element;
-					return true;
-				}
-				else if (value == null)
-				{
-					Current = default;
-					return true;
-				}
-
-				return false;
-			}
-
-			private async Task InitializeAsync()
-			{
-				var result = await _initializeAsync(_cancellationToken).ConfigureAwait(false);
-				_command = result.Command;
-				_reader = result.DataReader;
+				Dispose();
+				_isAlreadyDisposed = false;
 			}
 
 			/// <summary>
@@ -230,14 +224,14 @@ namespace NHibernate.Impl
 			/// related actions to occur without needing to move all the way through the
 			/// AsyncEnumeratorImpl.
 			/// </remarks>
-			public ValueTask DisposeAsync()
+			public void Dispose()
 			{
-				log.Debug($"running {nameof(AsyncEnumeratorImpl)}.{nameof(AsyncEnumeratorImpl.DisposeAsync)}()");
+				Log.Debug($"running {nameof(AsyncEnumeratorImpl)}.{nameof(AsyncEnumeratorImpl.Dispose)}()");
 
 				if (_isAlreadyDisposed)
 				{
 					// don't dispose of multiple times.
-					return default;
+					return;
 				}
 
 				// if there is still a possibility of moving next then we need to clean up
@@ -249,9 +243,84 @@ namespace NHibernate.Impl
 					_session.Batcher.CloseCommand(_command, _reader);
 				}
 
+				// Reset all fields
+				_reader = null;
+				_command = null;
+				_hasNext = false;
+				_startedReading = false;
+				_currentRow = -1;
 				_isAlreadyDisposed = true;
+			}
 
+			public ValueTask DisposeAsync()
+			{
+				Dispose();
 				return default;
+			}
+
+			private void MaterializeAndSetCurrent()
+			{
+				if (!_hasNext)
+				{
+					// there are no more records in the DataReader so clean up
+					Log.Debug("exhausted results");
+					Current = default;
+					_session.Batcher.CloseCommand(_command, _reader);
+					return;
+				}
+
+				Log.Debug("retrieving next results");
+				if (_single && _resultTransformer == null)
+				{
+					SetCurrent(_types[0].NullSafeGet(_reader, _columnNames[0], _session, null));
+					return;
+				}
+
+				var currentResults = new object[_types.Length];
+				// move through each of the ITypes contained in the DbDataReader and convert them
+				// to their objects.  
+				for (int i = 0; i < _types.Length; i++)
+				{
+					// The IType knows how to extract its value out of the DbDataReader.  If the IType
+					// is a value type then the value will simply be pulled out of the DbDataReader.  If
+					// the IType is an Entity type then the IType will extract the id from the DbDataReader
+					// and use the ISession to load an instance of the object.
+					currentResults[i] = _types[i].NullSafeGet(_reader, _columnNames[i], _session, null);
+				}
+
+				SetCurrent(_resultTransformer != null
+						? _resultTransformer.TransformTuple(currentResults, _returnAliases)
+						: currentResults);
+			}
+
+			private void SetCurrent(object value)
+			{
+				switch (value)
+				{
+					case T element:
+						Current = element;
+						break;
+					case null:
+						Current = default;
+						break;
+					default:
+						throw new InvalidOperationException(
+							$"An element of type {value.GetType()} was retrieved for an enumerable containing elements of type {typeof(T)}");
+				}
+			}
+
+			private async Task InitializeAsync()
+			{
+				var result = await _initializeAsync(_cancellationToken).ConfigureAwait(false);
+				_command = result.Command;
+				_reader = result.DataReader;
+			}
+
+			private void Initialize()
+			{
+				var result = _initialize();
+				_command = result.Command;
+				_reader = result.DataReader;
 			}
 		}
 	}

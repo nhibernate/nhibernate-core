@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using NHibernate.Impl;
 using System.Threading.Tasks;
 using System.Threading;
+using NHibernate.Util;
 
 namespace NHibernate
 {

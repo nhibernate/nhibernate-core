@@ -87,34 +87,25 @@ namespace NHibernate.Loader.Hql
 			return resultRow;
 		}
 
-		internal async Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
+		internal async Task<InitializeEnumerableResult> InitializeEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			CheckQuery(queryParameters);
 			Stopwatch stopWatch = null;
 			if (session.Factory.Statistics.IsStatisticsEnabled)
 			{
 				stopWatch = Stopwatch.StartNew();
 			}
 
-			var cmd = await (PrepareQueryCommandAsync(queryParameters, false, session, cancellationToken)).ConfigureAwait(false);
-
-			// This DbDataReader is disposed of in EnumerableImpl.Dispose
-			var rs = await (GetResultSetAsync(cmd, queryParameters, session, null, cancellationToken)).ConfigureAwait(false);
-
-			var resultTransformer = _selectNewTransformer ?? queryParameters.ResultTransformer;
-			IEnumerable result = 
-				new EnumerableImpl(rs, cmd, session, queryParameters.IsReadOnly(session), _queryTranslator.ReturnTypes, _queryTranslator.GetColumnNames(), queryParameters.RowSelection, resultTransformer, _queryReturnAliases);
-
+			var command = await (PrepareQueryCommandAsync(queryParameters, false, session, cancellationToken)).ConfigureAwait(false);
+			var dataReader = await (GetResultSetAsync(command, queryParameters, session, null, cancellationToken)).ConfigureAwait(false);
 			if (stopWatch != null)
 			{
 				stopWatch.Stop();
 				session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + _queryTranslator.QueryString, 0, stopWatch.Elapsed);
-				// NH: Different behavior (H3.2 use QueryLoader in AST parser) we need statistic for orginal query too.
-				// probably we have a bug some where else for statistic RowCount
 				session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWatch.Elapsed);
 			}
-			return result;
+
+			return new InitializeEnumerableResult(command, dataReader);
 		}
 	}
 }

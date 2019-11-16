@@ -154,7 +154,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		public IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session)
 		{
 			ErrorIfDML();
-			return _queryLoader.GetEnumerable(queryParameters, session);
+			return _queryLoader.GetAsyncEnumerable<object>(queryParameters, session);
 		}
 
 		public IAsyncEnumerable<T> GetAsyncEnumerable<T>(QueryParameters queryParameters, IEventSource session)

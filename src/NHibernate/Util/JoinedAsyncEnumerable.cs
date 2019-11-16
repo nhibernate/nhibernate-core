@@ -1,59 +1,91 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace NHibernate.Util
 {
+	// 6.0 TODO: remove in favor for await foreach
 	internal sealed class JoinedAsyncEnumerable<T> : IAsyncEnumerable<T>
 	{
-		private readonly IAsyncEnumerable<T>[] _asyncEnumerables;
+		private readonly IEnumerable<IAsyncEnumerable<T>> _asyncEnumerables;
 
-		public JoinedAsyncEnumerable(IAsyncEnumerable<T>[] asyncEnumerables)
+		public JoinedAsyncEnumerable(IEnumerable<IAsyncEnumerable<T>> asyncEnumerables)
 		{
 			_asyncEnumerables = asyncEnumerables;
 		}
 
 		public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
 		{
-			return new JoinedAsyncEnumerator(
-				_asyncEnumerables.ToArray(o => o.GetAsyncEnumerator()),
-				cancellationToken);
+			return new JoinedAsyncEnumerator(_asyncEnumerables, cancellationToken);
 		}
 
 		private class JoinedAsyncEnumerator : IAsyncEnumerator<T>
 		{
-			private readonly IAsyncEnumerator<T>[] _asyncEnumerators;
+			private readonly IEnumerable<IAsyncEnumerable<T>> _asyncEnumerables;
 			private readonly CancellationToken _cancellationToken;
-			private int _current;
+			private IEnumerator<IAsyncEnumerable<T>> _currentEnumerator;
+			private IAsyncEnumerator<T> _currentAsyncEnumerator;
 			private bool _isAlreadyDisposed;
 
-			public JoinedAsyncEnumerator(IAsyncEnumerator<T>[] asyncEnumerators, CancellationToken cancellationToken)
+			public JoinedAsyncEnumerator(IEnumerable<IAsyncEnumerable<T>> asyncEnumerables, CancellationToken cancellationToken)
 			{
-				_asyncEnumerators = asyncEnumerators;
+				_asyncEnumerables = asyncEnumerables;
 				_cancellationToken = cancellationToken;
 			}
 
-			public T Current => _asyncEnumerators[_current].Current;
+			public T Current { get; private set; }
 
 			public async ValueTask<bool> MoveNextAsync()
 			{
 				_cancellationToken.ThrowIfCancellationRequested();
-
-				for (; _current < _asyncEnumerators.Length; _current++)
+				if (_isAlreadyDisposed)
 				{
-					var enumerator = _asyncEnumerators[_current];
-					if (await enumerator.MoveNextAsync().ConfigureAwait(false))
+					throw new InvalidOperationException("The enumerator was disposed.");
+				}
+
+				if (_currentEnumerator == null)
+				{
+					_currentEnumerator = _asyncEnumerables.GetEnumerator();
+					if (!MoveNext())
 					{
+						return false;
+					}
+				}
+
+				if (_currentAsyncEnumerator == null)
+				{
+					return false; // MoveNextAsync called after we reached the end of the enumeration
+				}
+
+				while (true)
+				{
+					if (await _currentAsyncEnumerator.MoveNextAsync().ConfigureAwait(false))
+					{
+						Current = _currentAsyncEnumerator.Current;
 						return true;
 					}
 
 					// there are no items left to iterate over in the current
-					// enumerator so go ahead and dispose of it.
-					await enumerator.DisposeAsync().ConfigureAwait(false);
+					// async enumerator so go ahead and dispose of it.
+					await _currentAsyncEnumerator.DisposeAsync().ConfigureAwait(false);
+					if (!MoveNext())
+					{
+						return false;
+					}
+				}
+			}
+
+			private bool MoveNext()
+			{
+				if (!_currentEnumerator.MoveNext())
+				{
+					_currentAsyncEnumerator = null;
+					return false;
 				}
 
-				return false;
+				_currentAsyncEnumerator = _currentEnumerator.Current.GetAsyncEnumerator(_cancellationToken);
+				return true;
 			}
 
 			public async ValueTask DisposeAsync()
@@ -64,12 +96,16 @@ namespace NHibernate.Util
 					return;
 				}
 
-				// dispose each IAsyncEnumerator that still needs to be disposed of
-				for (; _current < _asyncEnumerators.Length; _current++)
+				// Dispose only the current async enumerator when DisposeAsync is called before the enumeration ended
+				if (_currentAsyncEnumerator != null)
 				{
-					await _asyncEnumerators[_current].DisposeAsync().ConfigureAwait(false);
+					await _currentAsyncEnumerator.DisposeAsync().ConfigureAwait(false);
+					_currentAsyncEnumerator = null;
 				}
 
+				Current = default;
+				_currentEnumerator.Dispose();
+				_currentEnumerator = null;
 				_isAlreadyDisposed = true;
 			}
 		}

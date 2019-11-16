@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq.ByMethod
@@ -7,12 +9,12 @@ namespace NHibernate.Test.Linq.ByMethod
 	public class AsAsyncEnumerableTests : LinqTestCase
 	{
 		[Test]
-		public void MultipleEnumerationTest()
+		public async Task MultipleEnumerationTest()
 		{
-			var enumerable = db.Customers.Where(c => c.Address.City == "London").OrderBy(c => c.CustomerId).AsEnumerable();
+			var asyncEnumerable = db.Customers.Where(c => c.Address.City == "London").OrderBy(c => c.CustomerId).AsAsyncEnumerable();
 			for (var i = 0; i < 3; i++)
 			{
-				AssertByIds(enumerable, new[]
+				await AssertByIds(asyncEnumerable, new[]
 							   {
 								   "AROUT",
 								   "BSBEV",

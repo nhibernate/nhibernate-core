@@ -139,7 +139,7 @@ namespace NHibernate
 		/// </p>
 		/// </remarks>
 		// Since v5.3
-		[Obsolete("This method has no more usages and will be removed in a future version")]
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
 		Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
@@ -149,7 +149,7 @@ namespace NHibernate
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		// Since v5.3
-		[Obsolete("This method has no more usages and will be removed in a future version")]
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
 		Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>

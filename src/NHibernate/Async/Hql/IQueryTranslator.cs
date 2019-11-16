@@ -18,6 +18,7 @@ using NHibernate.Engine.Query;
 using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Hql
 {
