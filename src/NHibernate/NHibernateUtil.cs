@@ -533,7 +533,7 @@ namespace NHibernate
 		public static void Close(IEnumerator enumerator)
 		{
 			var hibernateEnumerator = enumerator as IDisposable;
-			if (hibernateEnumerator != null)
+			if (hibernateEnumerator == null)
 			{
 				throw new ArgumentException("Not a NHibernate enumerator", nameof(enumerator));
 			}
