@@ -54,7 +54,6 @@ namespace NHibernate.Test.UtilityTest
 			Assert.That(joined.Current, Is.EqualTo(expected[0]), "First one was not what was expected.");
 			await joined.DisposeAsync();
 
-
 			// ensure that the first was disposed of even though we didn't enumerate
 			// all the way through
 			Assert.IsTrue(first.EnumeratorDisposed, "Should have been disposed of.");
@@ -139,53 +138,53 @@ namespace NHibernate.Test.UtilityTest
 				.First()
 				.Invoke(new object[] { asyncEnumerables });
 		}
-	}
 
-	/// <summary>
-	/// Simple class that wraps an array list for testing purposes.
-	/// </summary>
-	internal class AsyncEnumerableTester<T> : IAsyncEnumerable<T>
-	{
-		private readonly List<T> _list;
-		private AsyncEnumerableTesterEnumerator _enumerator;
-
-		public AsyncEnumerableTester(List<T> wrappedList)
+		/// <summary>
+		/// Simple class that wraps an array list for testing purposes.
+		/// </summary>
+		private class AsyncEnumerableTester<T> : IAsyncEnumerable<T>
 		{
-			_list = wrappedList;
-		}
+			private readonly List<T> _list;
+			private AsyncEnumerableTesterEnumerator _enumerator;
 
-		public bool EnumeratorCreated => _enumerator != null;
-
-		public bool EnumeratorDisposed => _enumerator?.IsDisposed == true;
-
-		public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
-		{
-			_enumerator = new AsyncEnumerableTesterEnumerator(_list.GetEnumerator());
-			return _enumerator;
-		}
-
-		private sealed class AsyncEnumerableTesterEnumerator : IAsyncEnumerator<T>
-		{
-			private readonly IEnumerator<T> _enumerator;
-
-			public AsyncEnumerableTesterEnumerator(IEnumerator<T> enumerator)
+			public AsyncEnumerableTester(List<T> wrappedList)
 			{
-				_enumerator = enumerator;
+				_list = wrappedList;
 			}
 
-			public bool IsDisposed { get; private set; }
+			public bool EnumeratorCreated => _enumerator != null;
 
-			public T Current => _enumerator.Current;
+			public bool EnumeratorDisposed => _enumerator?.IsDisposed == true;
 
-			public ValueTask<bool> MoveNextAsync()
+			public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
 			{
-				return new ValueTask<bool>(_enumerator.MoveNext());
+				_enumerator = new AsyncEnumerableTesterEnumerator(_list.GetEnumerator());
+				return _enumerator;
 			}
 
-			public ValueTask DisposeAsync()
+			private sealed class AsyncEnumerableTesterEnumerator : IAsyncEnumerator<T>
 			{
-				IsDisposed = true;
-				return default;
+				private readonly IEnumerator<T> _enumerator;
+
+				public AsyncEnumerableTesterEnumerator(IEnumerator<T> enumerator)
+				{
+					_enumerator = enumerator;
+				}
+
+				public bool IsDisposed { get; private set; }
+
+				public T Current => _enumerator.Current;
+
+				public ValueTask<bool> MoveNextAsync()
+				{
+					return new ValueTask<bool>(_enumerator.MoveNext());
+				}
+
+				public ValueTask DisposeAsync()
+				{
+					IsDisposed = true;
+					return default;
+				}
 			}
 		}
 	}
