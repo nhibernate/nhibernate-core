@@ -8,6 +8,8 @@ namespace NHibernate.Test.UtilityTest
 	/// <summary>
 	/// Test cases for the <see cref="JoinedEnumerable"/> class.
 	/// </summary>
+	// Since 5.3
+	[Obsolete]
 	[TestFixture]
 	public class JoinedEnumerableFixture
 	{

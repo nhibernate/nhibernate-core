@@ -315,7 +315,7 @@ namespace NHibernate.Impl
 
 				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
 				{
-					return await (plan.PerformIterateAsync<T>(queryParameters, this, cancellationToken)).ConfigureAwait(false);
+					return plan.PerformIterate<T>(queryParameters, this);
 				}
 			}
 		}
@@ -333,7 +333,7 @@ namespace NHibernate.Impl
 
 				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
 				{
-					return await (plan.PerformIterateAsync(queryParameters, this, cancellationToken)).ConfigureAwait(false);
+					return plan.PerformIterate(queryParameters, this);
 				}
 			}
 		}
@@ -1119,7 +1119,7 @@ namespace NHibernate.Impl
 			using (BeginProcess())
 			{
 				var plan = await (GetFilterQueryPlanAsync(collection, filter, queryParameters, true, cancellationToken)).ConfigureAwait(false);
-				return await (plan.PerformIterateAsync(queryParameters, this, cancellationToken)).ConfigureAwait(false);
+				return plan.PerformIterate(queryParameters, this);
 			}
 		}
 
@@ -1134,7 +1134,7 @@ namespace NHibernate.Impl
 			using (BeginProcess())
 			{
 				var plan = await (GetFilterQueryPlanAsync(collection, filter, queryParameters, true, cancellationToken)).ConfigureAwait(false);
-				return await (plan.PerformIterateAsync<T>(queryParameters, this, cancellationToken)).ConfigureAwait(false);
+				return plan.PerformIterate<T>(queryParameters, this);
 			}
 		}
 

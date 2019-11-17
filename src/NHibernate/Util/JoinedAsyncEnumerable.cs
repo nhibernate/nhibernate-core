@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Util
 {
-	// 6.0 TODO: remove in favor for await foreach
+	// 6.0 TODO: Remove it in favor of await foreach, also AsyncJoinedEnumerableFixture needs to be removed
 	internal sealed class JoinedAsyncEnumerable<T> : IAsyncEnumerable<T>
 	{
 		private readonly IEnumerable<IAsyncEnumerable<T>> _asyncEnumerables;

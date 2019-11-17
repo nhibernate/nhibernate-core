@@ -5,7 +5,6 @@ using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 using NHibernate.Engine;
-using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -40,7 +39,7 @@ namespace NHibernate.Impl
 		private readonly RowSelection _selection;
 		private readonly IResultTransformer _resultTransformer;
 		private readonly string[] _returnAliases;
-		private readonly IEventSource _session;
+		private readonly ISessionImplementor _session;
 
 		public AsyncEnumerableImpl(
 			InitializeEnumerable initialize,
@@ -51,7 +50,7 @@ namespace NHibernate.Impl
 			RowSelection selection,
 			IResultTransformer resultTransformer,
 			string[] returnAliases,
-			IEventSource session)
+			ISessionImplementor session)
 		{
 			_initialize = initialize;
 			_initializeAsync = initializeAsync;
@@ -108,7 +107,7 @@ namespace NHibernate.Impl
 			private readonly RowSelection _selection;
 			private readonly IResultTransformer _resultTransformer;
 			private readonly string[] _returnAliases;
-			private readonly IEventSource _session;
+			private readonly ISessionImplementor _session;
 			private readonly CancellationToken _cancellationToken;
 			private readonly bool _single;
 
@@ -130,7 +129,7 @@ namespace NHibernate.Impl
 				RowSelection selection,
 				IResultTransformer resultTransformer,
 				string[] returnAliases,
-				IEventSource session,
+				ISessionImplementor session,
 				CancellationToken cancellationToken)
 			{
 				_initialize = initialize;
@@ -198,15 +197,15 @@ namespace NHibernate.Impl
 					_hasNext = _hasNext && (_currentRow < _selection.MaxRows);
 				}
 
-				bool sessionDefaultReadOnlyOrig = _session.DefaultReadOnly;
-				_session.DefaultReadOnly = _readOnly;
+				bool sessionDefaultReadOnlyOrig = _session.PersistenceContext.DefaultReadOnly;
+				_session.PersistenceContext.DefaultReadOnly = _readOnly;
 				try
 				{
 					MaterializeAndSetCurrent();
 				}
 				finally
 				{
-					_session.DefaultReadOnly = sessionDefaultReadOnlyOrig;
+					_session.PersistenceContext.DefaultReadOnly = sessionDefaultReadOnlyOrig;
 				}
 			}
 

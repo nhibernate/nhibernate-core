@@ -106,26 +106,7 @@ namespace NHibernate.Engine.Query
 			}
 			try
 			{
-				if (Log.IsDebugEnabled())
-				{
-					Log.Debug("enumerable: {0}", _sourceQuery);
-					queryParameters.LogParameters(session.Factory);
-				}
-				if (Translators.Length == 0)
-				{
-					return Task.FromResult<IEnumerable>(CollectionHelper.EmptyEnumerable);
-				}
-				if (Translators.Length == 1)
-				{
-					return Task.FromResult<IEnumerable>(Translators[0].GetEnumerable(queryParameters, session));
-				}
-				var results = new IEnumerable[Translators.Length];
-				for (int i = 0; i < Translators.Length; i++)
-				{
-					var result = Translators[i].GetEnumerable(queryParameters, session);
-					results[i] = result;
-				}
-				return Task.FromResult<IEnumerable>(new JoinedEnumerable(results));
+				return Task.FromResult<IEnumerable>(PerformIterate(queryParameters, session));
 			}
 			catch (Exception ex)
 			{

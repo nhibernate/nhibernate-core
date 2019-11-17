@@ -54,20 +54,30 @@ namespace NHibernate.Impl
 		/// </p>
 		/// </remarks>
 		// Since v5.3
-		[Obsolete("This method has no more usages and will be removed in a future version")]
-		public override async Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
+		public override Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			VerifyParameters();
-			var namedParams = NamedParams;
-			Before();
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IEnumerable>(cancellationToken);
+			}
 			try
 			{
-				return await (Session.EnumerableAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken)).ConfigureAwait(false);
+				VerifyParameters();
+				var namedParams = NamedParams;
+				Before();
+				try
+				{
+					return Task.FromResult<IEnumerable>(Session.Enumerable(ExpandParameters(namedParams), GetQueryParameters(namedParams)));
+				}
+				finally
+				{
+					After();
+				}
 			}
-			finally
+			catch (System.Exception ex)
 			{
-				After();
+				return Task.FromException<IEnumerable>(ex);
 			}
 		}
 
@@ -78,20 +88,30 @@ namespace NHibernate.Impl
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		// Since v5.3
-		[Obsolete("This method has no more usages and will be removed in a future version")]
-		public override async Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
+		public override Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			VerifyParameters();
-			var namedParams = NamedParams;
-			Before();
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IEnumerable<T>>(cancellationToken);
+			}
 			try
 			{
-				return await (Session.EnumerableAsync<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken)).ConfigureAwait(false);
+				VerifyParameters();
+				var namedParams = NamedParams;
+				Before();
+				try
+				{
+					return Task.FromResult<IEnumerable<T>>(Session.Enumerable<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams)));
+				}
+				finally
+				{
+					After();
+				}
 			}
-			finally
+			catch (System.Exception ex)
 			{
-				After();
+				return Task.FromException<IEnumerable<T>>(ex);
 			}
 		}
 

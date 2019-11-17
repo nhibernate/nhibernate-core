@@ -71,7 +71,7 @@ namespace NHibernate.Test.Linq
 			Assert.That(entities.Select(x => entityIdGetter(x)), Is.EquivalentTo(expectedIds));
 		}
 
-		public static async Task AssertByIds<TEntity, TId>(IAsyncEnumerable<TEntity> entities, TId[] expectedIds, Converter<TEntity, TId> entityIdGetter)
+		public static async Task AssertByPropertyValueAsync<TEntity, TId>(IAsyncEnumerable<TEntity> entities, TId[] expectedIds, Converter<TEntity, TId> propertyValueGetter)
 		{
 			var enumerator = entities.GetAsyncEnumerator();
 			bool hasNext;
@@ -79,11 +79,13 @@ namespace NHibernate.Test.Linq
 			{
 				hasNext = await enumerator.MoveNextAsync();
 				Assert.That(hasNext, Is.True, $"The collection contains less entities than expected (Expected: {expectedIds.Length}, but was: {i})");
-				Assert.That(entityIdGetter(enumerator.Current), Is.EqualTo(expectedIds[i]), $"Not expected entity on index {i}.");
+				Assert.That(propertyValueGetter(enumerator.Current), Is.EqualTo(expectedIds[i]), $"Not expected entity on index {i}.");
 			}
 
 			hasNext = await enumerator.MoveNextAsync();
 			Assert.That(hasNext, Is.False, $"The collection contains more entities than expected (Expected: {expectedIds.Length})");
+
+			await enumerator.DisposeAsync();
 		}
 	}
 }

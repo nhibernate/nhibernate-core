@@ -22,6 +22,7 @@ namespace NHibernate.Impl
 	/// will cause it to be disposed, probably unexpectedly for the developer. (https://stackoverflow.com/a/11179175/1178314)
 	/// "Fortunately", it does not currently support multiple iterations anyway.</para>
 	/// </remarks>
+	// Since v5.3
 	[Obsolete("This class has no more usage in NHibernate and will be removed in a future version.")]
 	public class EnumerableImpl : IEnumerable, IEnumerator, IDisposable
 	{

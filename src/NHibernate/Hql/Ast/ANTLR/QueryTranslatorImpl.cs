@@ -151,13 +151,21 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return results;
 		}
 
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session)
 		{
 			ErrorIfDML();
 			return _queryLoader.GetAsyncEnumerable<object>(queryParameters, session);
 		}
 
-		public IAsyncEnumerable<T> GetAsyncEnumerable<T>(QueryParameters queryParameters, IEventSource session)
+		public IEnumerable<T> GetEnumerable<T>(QueryParameters queryParameters, IEventSource session)
+		{
+			ErrorIfDML();
+			return _queryLoader.GetAsyncEnumerable<T>(queryParameters, session);
+		}
+
+		public IAsyncEnumerable<T> GetAsyncEnumerable<T>(QueryParameters queryParameters, ISessionImplementor session)
 		{
 			ErrorIfDML();
 			return _queryLoader.GetAsyncEnumerable<T>(queryParameters, session);

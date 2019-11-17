@@ -42,10 +42,12 @@ namespace NHibernate.Hql
 		/// <exception cref="NHibernate.HibernateException"></exception>
 		IList List(ISessionImplementor session, QueryParameters queryParameters);
 
+		// Since v5.3
+		[Obsolete("Use the generic extension method instead.")]
 		IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session);
 
 		// Since v5.3
-		[Obsolete("This method has no more usages and will be removed in a future version")]
+		[Obsolete("Use GetAsyncEnumerable extension method instead.")]
 		Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
 
 		// Not ported:
@@ -139,10 +141,23 @@ namespace NHibernate.Hql
 		/// <param name="queryTranslator">The query translator.</param>
 		/// <param name="queryParameters">The query parameters.</param>
 		/// <param name="session">The session.</param>
-		public static IAsyncEnumerable<T> GetAsyncEnumerable<T>(this IQueryTranslator queryTranslator, QueryParameters queryParameters, IEventSource session)
+		public static IAsyncEnumerable<T> GetAsyncEnumerable<T>(this IQueryTranslator queryTranslator, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			return ReflectHelper.CastOrThrow<QueryTranslatorImpl>(queryTranslator, "async enumerable")
 				.GetAsyncEnumerable<T>(queryParameters, session);
+		}
+
+		/// <summary>
+		/// Returns an <see cref="IEnumerable{T}" /> which can be enumerated asynchronously.
+		/// </summary>
+		/// <typeparam name="T">The element type.</typeparam>
+		/// <param name="queryTranslator">The query translator.</param>
+		/// <param name="queryParameters">The query parameters.</param>
+		/// <param name="session">The session.</param>
+		public static IEnumerable<T> GetEnumerable<T>(this IQueryTranslator queryTranslator, QueryParameters queryParameters, ISessionImplementor session)
+		{
+			return ReflectHelper.CastOrThrow<QueryTranslatorImpl>(queryTranslator, "async enumerable")
+				.GetEnumerable<T>(queryParameters, session);
 		}
 	}
 }

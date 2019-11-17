@@ -532,12 +532,13 @@ namespace NHibernate
 		/// </summary>
 		public static void Close(IEnumerator enumerator)
 		{
-			if (enumerator?.GetType().GetGenericTypeDefinition() != typeof(AsyncEnumerableImpl<>.AsyncEnumeratorImpl))
+			var hibernateEnumerator = enumerator as IDisposable;
+			if (hibernateEnumerator != null)
 			{
 				throw new ArgumentException("Not a NHibernate enumerator", nameof(enumerator));
 			}
 
-			((IDisposable) enumerator).Dispose();
+			hibernateEnumerator.Dispose();
 		}
 
 		/// <summary>

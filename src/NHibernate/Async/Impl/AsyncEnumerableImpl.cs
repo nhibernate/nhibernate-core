@@ -15,7 +15,6 @@ using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 using NHibernate.Engine;
-using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -56,15 +55,15 @@ namespace NHibernate.Impl
 					_hasNext = _hasNext && (_currentRow < _selection.MaxRows);
 				}
 
-				bool sessionDefaultReadOnlyOrig = _session.DefaultReadOnly;
-				_session.DefaultReadOnly = _readOnly;
+				bool sessionDefaultReadOnlyOrig = _session.PersistenceContext.DefaultReadOnly;
+				_session.PersistenceContext.DefaultReadOnly = _readOnly;
 				try
 				{
 					await (MaterializeAndSetCurrentAsync(cancellationToken)).ConfigureAwait(false);
 				}
 				finally
 				{
-					_session.DefaultReadOnly = sessionDefaultReadOnlyOrig;
+					_session.PersistenceContext.DefaultReadOnly = sessionDefaultReadOnlyOrig;
 				}
 			}
 

@@ -51,7 +51,7 @@ namespace NHibernate.Impl
 			{
 				VerifyParameters();
 				IDictionary<string, TypedValue> namedParams = NamedParams;
-				return Session.EnumerableFilterAsync(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams), cancellationToken);
+				return Task.FromResult<IEnumerable>(Session.EnumerableFilter(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams)));
 			}
 			catch (Exception ex)
 			{
@@ -77,7 +77,7 @@ namespace NHibernate.Impl
 			{
 				VerifyParameters();
 				IDictionary<string, TypedValue> namedParams = NamedParams;
-				return Session.EnumerableFilterAsync<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams), cancellationToken);
+				return Task.FromResult<IEnumerable<T>>(Session.EnumerableFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams)));
 			}
 			catch (Exception ex)
 			{

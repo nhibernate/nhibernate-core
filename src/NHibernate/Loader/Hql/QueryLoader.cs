@@ -468,7 +468,7 @@ namespace NHibernate.Loader.Hql
 		[Obsolete("Please use ResultTypes instead")]
 		public IType[] ReturnTypes => ResultTypes;
 
-		internal AsyncEnumerableImpl<T> GetAsyncEnumerable<T>(QueryParameters queryParameters, IEventSource session)
+		internal AsyncEnumerableImpl<T> GetAsyncEnumerable<T>(QueryParameters queryParameters, ISessionImplementor session)
 		{
 			CheckQuery(queryParameters);
 
@@ -484,7 +484,7 @@ namespace NHibernate.Loader.Hql
 				session);
 		}
 
-		internal InitializeEnumerableResult InitializeEnumerable(QueryParameters queryParameters, IEventSource session)
+		internal InitializeEnumerableResult InitializeEnumerable(QueryParameters queryParameters, ISessionImplementor session)
 		{
 			Stopwatch stopWatch = null;
 			if (session.Factory.Statistics.IsStatisticsEnabled)

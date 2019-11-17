@@ -87,7 +87,7 @@ namespace NHibernate.Loader.Hql
 			return resultRow;
 		}
 
-		internal async Task<InitializeEnumerableResult> InitializeEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
+		internal async Task<InitializeEnumerableResult> InitializeEnumerableAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			Stopwatch stopWatch = null;
