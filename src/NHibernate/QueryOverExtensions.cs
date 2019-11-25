@@ -9,7 +9,7 @@ namespace NHibernate
 		/// <param name="queryOver">The query on which to set the timeout.</param>
 		/// <param name="timeout">The timeout in seconds.</param>
 		/// <returns><see langword="this" /> (for method chaining).</returns>
-		public static IQueryOver<TRoot> SetTimeout<TRoot>(this IQueryOver<TRoot> queryOver, int timeout)
+		public static TQueryOver SetTimeout<TQueryOver>(this TQueryOver queryOver, int timeout) where TQueryOver: IQueryOver
 		{
 			queryOver.RootCriteria.SetTimeout(timeout);
 			return queryOver;
@@ -21,7 +21,7 @@ namespace NHibernate
 		/// <param name="queryOver">The query on which to set the timeout.</param>
 		/// <param name="fetchSize">The fetch size.</param>
 		/// <returns><see langword="this" /> (for method chaining).</returns>
-		public static IQueryOver<TRoot> SetFetchSize<TRoot>(this IQueryOver<TRoot> queryOver, int fetchSize)
+		public static TQueryOver SetFetchSize<TQueryOver>(this TQueryOver queryOver, int fetchSize) where TQueryOver: IQueryOver
 		{
 			queryOver.RootCriteria.SetFetchSize(fetchSize);
 			return queryOver;
@@ -33,7 +33,7 @@ namespace NHibernate
 		/// <param name="queryOver">The query on which to set the timeout.</param>
 		/// <param name="comment">A human-readable string.</param>
 		/// <returns><see langword="this" /> (for method chaining).</returns>
-		public static IQueryOver<TRoot> SetComment<TRoot>(this IQueryOver<TRoot> queryOver, string comment)
+		public static TQueryOver SetComment<TQueryOver>(this TQueryOver queryOver, string comment) where TQueryOver: IQueryOver
 		{
 			queryOver.RootCriteria.SetComment(comment);
 			return queryOver;

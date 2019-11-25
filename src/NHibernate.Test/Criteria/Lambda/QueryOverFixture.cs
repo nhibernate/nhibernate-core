@@ -1,13 +1,8 @@
 using System;
-using System.Collections;
-
 using NUnit.Framework;
-
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
-using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
@@ -924,6 +919,48 @@ namespace NHibernate.Test.Criteria.Lambda
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
 					.ReadOnly();
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void SetTimeout()
+		{
+			var expected =
+				CreateTestCriteria(typeof(Person))
+					.SetTimeout(3);
+
+			var actual =
+				CreateTestQueryOver<Person>()
+					.SetTimeout(3);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void SetFetchSize()
+		{
+			var expected =
+				CreateTestCriteria(typeof(Person))
+					.SetFetchSize(3);
+
+			var actual =
+				CreateTestQueryOver<Person>()
+					.SetFetchSize(3);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void SetComment()
+		{
+			var expected =
+				CreateTestCriteria(typeof(Person))
+					.SetComment("blah");
+
+			var actual =
+				CreateTestQueryOver<Person>()
+					.SetComment("blah");
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
