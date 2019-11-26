@@ -372,6 +372,14 @@ namespace NHibernate.Test
 			return Sfi.OpenSession();
 		}
 
+		protected virtual ISession OpenSession(bool beginTransaction)
+		{
+			var result = Sfi.OpenSession();
+			if (beginTransaction)
+				result.BeginTransaction();
+			return result;
+		}
+
 		protected virtual ISession OpenSession(IInterceptor sessionLocalInterceptor)
 		{
 			return Sfi.WithOptions().Interceptor(sessionLocalInterceptor).OpenSession();
