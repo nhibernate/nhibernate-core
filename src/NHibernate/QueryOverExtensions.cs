@@ -1,6 +1,7 @@
 namespace NHibernate
 {
-	// 6.0 TODO: merge into IQueryOver<TRoot>
+	// 6.0 TODO: consider moving other criteria delegated methods to extension methods.
+	// It may allow better return typing for chaining, and it is slightly less code.
 	public static class QueryOverExtensions
 	{
 		/// <summary>
