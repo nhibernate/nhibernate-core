@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using NHibernate.Cfg;
 using NHibernate.Linq;
 using NUnit.Framework;
 using static NUnit.Framework.Assert;
@@ -95,6 +96,22 @@ namespace NHibernate.Test.NHSpecificTest.NH3972
 		}
 
 		[Test]
+		public void QueryingSubPropertyWithTheSameNames()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = session.Query<DataRecord>().Select(x => new
+				{
+					x.Subject,
+					IncidentState = ((Incident)x).State.Description
+				}).ToArray();
+				That(result.Length, Is.EqualTo(4));
+				That(result.Count(x => x.IncidentState == incidentState.Description) == 1, Is.True);
+			}
+		}
+		
+		[Test]
 		public void QueryingSubPropertiesWithTheSameNames()
 		{
 			using (var session = OpenSession())
@@ -104,7 +121,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3972
 				{
 					x.Subject,
 					IncidentState = ((Incident)x).State.Description,
-					ChangeState = ((Change)x).State.Description,
+					ChangeState = ((Change)x).State.Description
 				}).ToArray();
 				That(result.Length, Is.EqualTo(4));
 				That(result.Count(x => x.IncidentState == incidentState.Description) == 1, Is.True); // there is only one "Incident" entity
