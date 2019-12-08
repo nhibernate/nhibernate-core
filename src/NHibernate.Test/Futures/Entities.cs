@@ -19,7 +19,6 @@ namespace NHibernate.Test.Futures
 
 		public virtual IList<EntitySimpleChild> ChildrenList { get; set; } = new List<EntitySimpleChild>();
 		public virtual IList<EntityComplex> ChildrenListEmpty { get; set; } = new List<EntityComplex>();
-
 	}
 
 	public class EntitySimpleChild

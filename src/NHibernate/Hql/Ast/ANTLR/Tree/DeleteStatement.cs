@@ -1,7 +1,6 @@
 using System;
 using Antlr.Runtime;
 
-
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	/// <summary>

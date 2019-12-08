@@ -37,7 +37,6 @@ namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 					s.Delete(result);
 					t.Commit();
 				}
-				
 			}
 		}
 
@@ -58,7 +57,6 @@ namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 					var result = s.QueryOver<Party>().Where(p => p.Name == "Limited").SingleOrDefault();
 					Assert.NotNull(result);
 				}
-
 			}
 		}
 	}

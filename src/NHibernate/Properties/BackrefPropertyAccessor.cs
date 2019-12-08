@@ -66,7 +66,6 @@ namespace NHibernate.Properties
 			#endregion
 		}
 
-
 		/// <summary> The Getter implementation for id backrefs.</summary>
 		[Serializable]
 		private class BackrefGetter : IGetter

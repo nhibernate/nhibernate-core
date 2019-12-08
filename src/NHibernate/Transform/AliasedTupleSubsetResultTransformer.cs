@@ -11,7 +11,6 @@ namespace NHibernate.Transform
 	[Serializable]
 	public abstract class AliasedTupleSubsetResultTransformer : ITupleSubsetResultTransformer
 	{
-
 		public abstract bool IsTransformedValueATupleElement(string[] aliases, int tupleLength);
 
 		public bool[] IncludeInTransform(string[] aliases, int tupleLength)

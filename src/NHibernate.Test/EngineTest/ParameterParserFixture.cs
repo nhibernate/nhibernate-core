@@ -58,6 +58,5 @@ ORDER BY Name + :pizza";
 			Assert.DoesNotThrow(() => p = recognizer.NamedParameterDescriptionMap["name"]);
 			Assert.DoesNotThrow(() => p = recognizer.NamedParameterDescriptionMap["pizza"]);
 		}
-
 	}
 }

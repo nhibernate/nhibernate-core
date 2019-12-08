@@ -9,7 +9,6 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 	{
 		private class MyClassWithoutPoid
 		{
-			
 		}
 
 		private class MyClass

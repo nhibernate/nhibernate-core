@@ -63,7 +63,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
             await (SaveLoadAndRefreshProjectAsync());
         }
 
-
         /// <summary>
         /// Create and save a Project
         /// </summary>
@@ -85,7 +84,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
             await (RefreshProjectAsync(project, cancellationToken));
         }
 
-
         public async Task<Project> SaveProjectAsync( CancellationToken cancellationToken = default(CancellationToken))
         {
             Project project;
@@ -99,12 +97,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
                 Scenario scenario2 = new Scenario();
                 Scenario scenario3 = new Scenario();
 
-               
                 //Add the scenario to all lists 
                 project.ScenarioList1.Add(scenario1);
                 project.ScenarioList2.Add(scenario2);
                 project.ScenarioList3.Add(scenario3);
-
 
                 //Set the primary key on the project
                 project.Name = "Test";
@@ -116,7 +112,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
             }
             return project;
         }
-
 
         public async Task<Project> LoadProjectAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -136,7 +131,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
 
         public async Task RefreshProjectAsync(Project project, CancellationToken cancellationToken = default(CancellationToken))
         {
-
             using (ISession session = OpenSession())
             using (ITransaction tx = session.BeginTransaction())
             {

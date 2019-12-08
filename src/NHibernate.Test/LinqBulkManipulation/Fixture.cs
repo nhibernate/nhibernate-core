@@ -749,7 +749,6 @@ namespace NHibernate.Test.LinqBulkManipulation
 				}
 				using (var t = s.BeginTransaction())
 				{
-
 					var count = s.Query<Zoo>().UpdateBuilder().Set(y => y.Name, y => y.Name).Update();
 					Assert.That(count, Is.EqualTo(2), "Incorrect discrim subclass update count");
 
@@ -792,7 +791,6 @@ namespace NHibernate.Test.LinqBulkManipulation
 				count =
 					s.Query<Dragon>().UpdateBuilder().Set(y => y.FireTemperature, 300).Update();
 				Assert.That(count, Is.EqualTo(1), "Incorrect entity-updated count");
-
 
 				count =
 					s.Query<Animal>().UpdateBuilder().Set(y => y.BodyWeight, y => y.BodyWeight + 1 + 1).Update();
@@ -1006,7 +1004,6 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-
 				var count = s.Query<Animal>().Where(x => x.Id == _polliwog.Id).Delete();
 				Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
 

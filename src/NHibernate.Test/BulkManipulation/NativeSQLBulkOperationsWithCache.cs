@@ -39,7 +39,6 @@ namespace NHibernate.Test.BulkManipulation
 
 				using (var t = s.BeginTransaction())
 				{
-
 					s.CreateSQLQuery(ssql).ExecuteUpdate();
 					t.Commit();
 

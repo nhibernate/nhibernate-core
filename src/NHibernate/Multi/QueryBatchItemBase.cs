@@ -48,7 +48,7 @@ namespace NHibernate.Multi
 			public bool IsCacheable { get; }
 
 			/// <inheritdoc />
-			public QueryKey CacheKey { get;}
+			public QueryKey CacheKey { get; }
 
 			/// <inheritdoc />
 			public bool CanGetFromCache { get; }

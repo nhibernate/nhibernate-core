@@ -186,7 +186,6 @@ namespace NHibernate.Criterion
 			return Projections.SqlFunction("abs", NHibernateUtil.Int64, property);
 		}
 
-
 		internal static IProjection ProcessRound(MethodCallExpression methodCallExpression)
 		{
 			IProjection innerProjection =
@@ -198,7 +197,6 @@ namespace NHibernate.Criterion
 
 			return Projections.SqlFunction("round", NHibernateUtil.Double, innerProjection, digitsProjection);
 		}
-
 
 		/// <summary>
 		/// Project SQL function abs()

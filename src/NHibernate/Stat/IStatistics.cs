@@ -10,110 +10,110 @@ namespace NHibernate.Stat
 	public interface IStatistics
 	{
 		/// <summary> Global number of entity deletes</summary>
-		long EntityDeleteCount { get;}
+		long EntityDeleteCount { get; }
 
 		/// <summary> Global number of entity inserts</summary>
-		long EntityInsertCount { get;}
+		long EntityInsertCount { get; }
 
 		/// <summary> Global number of entity loads</summary>
-		long EntityLoadCount { get;}
+		long EntityLoadCount { get; }
 
 		/// <summary> Global number of entity fetchs</summary>
-		long EntityFetchCount { get;}
+		long EntityFetchCount { get; }
 
 		/// <summary> Global number of entity updates</summary>
-		long EntityUpdateCount { get;}
+		long EntityUpdateCount { get; }
 
 		/// <summary> Global number of executed queries</summary>
-		long QueryExecutionCount { get;}
+		long QueryExecutionCount { get; }
 
 		/// <summary> The <see cref="TimeSpan"/> of the slowest query.</summary>
 		TimeSpan QueryExecutionMaxTime { get; }
 
 		/// <summary> The query string for the slowest query.</summary>
-		string QueryExecutionMaxTimeQueryString { get;}
+		string QueryExecutionMaxTimeQueryString { get; }
 
 		/// <summary> The global number of cached queries successfully retrieved from cache</summary>
-		long QueryCacheHitCount { get;}
+		long QueryCacheHitCount { get; }
 
 		/// <summary> The global number of cached queries *not* found in cache</summary>
-		long QueryCacheMissCount { get;}
+		long QueryCacheMissCount { get; }
 
 		/// <summary> The global number of cacheable queries put in cache</summary>
-		long QueryCachePutCount { get;}
+		long QueryCachePutCount { get; }
 
 		/// <summary> Get the global number of flush executed by sessions (either implicit or explicit)</summary>
-		long FlushCount { get;}
+		long FlushCount { get; }
 
 		/// <summary> 
 		/// Get the global number of connections asked by the sessions
 		/// (the actual number of connections used may be much smaller depending
 		/// whether you use a connection pool or not)
 		/// </summary>
-		long ConnectCount { get;}
+		long ConnectCount { get; }
 
 		/// <summary> Global number of cacheable entities/collections successfully retrieved from the cache</summary>
-		long SecondLevelCacheHitCount { get;}
+		long SecondLevelCacheHitCount { get; }
 
 		/// <summary> Global number of cacheable entities/collections not found in the cache and loaded from the database.</summary>
-		long SecondLevelCacheMissCount { get;}
+		long SecondLevelCacheMissCount { get; }
 
 		/// <summary> Global number of cacheable entities/collections put in the cache</summary>
-		long SecondLevelCachePutCount { get;}
+		long SecondLevelCachePutCount { get; }
 
 		/// <summary> Global number of sessions closed</summary>
-		long SessionCloseCount { get;}
+		long SessionCloseCount { get; }
 
 		/// <summary> Global number of sessions opened</summary>
-		long SessionOpenCount { get;}
+		long SessionOpenCount { get; }
 
 		/// <summary> Global number of collections loaded</summary>
-		long CollectionLoadCount { get;}
+		long CollectionLoadCount { get; }
 
 		/// <summary> Global number of collections fetched</summary>
-		long CollectionFetchCount { get;}
+		long CollectionFetchCount { get; }
 
 		/// <summary> Global number of collections updated</summary>
-		long CollectionUpdateCount { get;}
+		long CollectionUpdateCount { get; }
 
 		/// <summary> Global number of collections removed</summary>
-		long CollectionRemoveCount { get;}
+		long CollectionRemoveCount { get; }
 
 		/// <summary> Global number of collections recreated</summary>
-		long CollectionRecreateCount { get;}
+		long CollectionRecreateCount { get; }
 
 		/// <summary> Start time </summary>
-		DateTime StartTime { get;}
+		DateTime StartTime { get; }
 
 		/// <summary> Enable/Disable statistics logs (this is a dynamic parameter)</summary>
-		bool IsStatisticsEnabled { get;set;}
+		bool IsStatisticsEnabled { get; set; }
 
 		/// <summary> All executed query strings</summary>
-		string[] Queries { get;}
+		string[] Queries { get; }
 
 		/// <summary> The names of all entities</summary>
-		string[] EntityNames { get;}
+		string[] EntityNames { get; }
 
 		/// <summary> The names of all collection roles</summary>
-		string[] CollectionRoleNames { get;}
+		string[] CollectionRoleNames { get; }
 
 		/// <summary> Get all second-level cache region names</summary>
-		string[] SecondLevelCacheRegionNames { get;}
+		string[] SecondLevelCacheRegionNames { get; }
 
 		/// <summary> The number of transactions we know to have been successful</summary>
-		long SuccessfulTransactionCount { get;}
+		long SuccessfulTransactionCount { get; }
 
 		/// <summary> The number of transactions we know to have completed</summary>
-		long TransactionCount { get;}
+		long TransactionCount { get; }
 
 		/// <summary> The number of prepared statements that were acquired</summary>
-		long PrepareStatementCount { get;}
+		long PrepareStatementCount { get; }
 
 		/// <summary> The number of prepared statements that were released</summary>
-		long CloseStatementCount { get;}
+		long CloseStatementCount { get; }
 
 		/// <summary> The number of <tt>StaleObjectStateException</tt>s  that occurred </summary>
-		long OptimisticFailureCount { get;}
+		long OptimisticFailureCount { get; }
 
 		/// <summary> Reset all statistics</summary>
 		void Clear();

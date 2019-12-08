@@ -7,7 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 	{
 		public void Attach(ILoggerRepository repository)
 		{
-			
 		}
 
 		public void Shutdown()

@@ -170,7 +170,6 @@ namespace NHibernate.Mapping
 				}
 				return tables;
 			}
-
 		}
 
 		internal override int NextSubclassId()

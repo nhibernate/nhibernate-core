@@ -25,7 +25,6 @@ namespace NHibernate.Driver
 
 		private byte? _dbDateTimeScale;
 
-
 		public override void Configure(IDictionary<string, string> settings)
 		{
 			base.Configure(settings);

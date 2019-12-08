@@ -151,7 +151,6 @@ namespace NHibernate.Linq.GroupBy
 				return base.VisitSubQuery(expression);
 			}
 
-
 			// TODO - is this safe?  All we are extracting is the select clause from the sub-query.  Assumes that everything
 			// else in the subquery has been removed.  If there were two subqueries, one aggregating & one not, this may not be a 
 			// valid assumption.  Should probably be passed a list of aggregating subqueries that we are flattening so that we can check...

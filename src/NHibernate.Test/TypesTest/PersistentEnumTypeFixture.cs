@@ -37,7 +37,6 @@ namespace NHibernate.Test.TypesTest
 			p = new PersistentEnumClass(1, A.One, B.Two);
 		}
 
-
 		[Test]
 		public void EqualsTrue()
 		{

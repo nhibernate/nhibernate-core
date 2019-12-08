@@ -57,7 +57,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 					// TODO
 					throw new NotSupportedException($"{querySource.ToString()} {querySource.ToStringTree()}");
 			}
-
 		}
 
 		private static IASTNode MakeIdent(IASTNode source, string text)
@@ -89,6 +88,5 @@ namespace NHibernate.Hql.Ast.ANTLR
 				sb.Append(node.Text);
 			}
 		}
-
 	}
 }

@@ -81,7 +81,6 @@ namespace NHibernate.Linq.Visitors
 			return IsDynamicComponentDictionaryGetter(expression, sessionFactory, out memberName);
 		}
 
-
 		public static bool IsNullConstant(Expression expression)
 		{
 			var constantExpression = expression as ConstantExpression;
@@ -90,7 +89,6 @@ namespace NHibernate.Linq.Visitors
 				constantExpression.Type.IsNullableOrReference() &&
 				constantExpression.Value == null;
 		}
-
 
 		public static bool IsBooleanConstant(Expression expression, out bool value)
 		{

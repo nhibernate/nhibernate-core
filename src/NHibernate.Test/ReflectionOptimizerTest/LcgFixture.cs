@@ -94,6 +94,5 @@ namespace NHibernate.Test.ReflectionOptimizerTest
 
 			Assert.AreEqual("str", values[0]);
 		}
-
 	}
 }
