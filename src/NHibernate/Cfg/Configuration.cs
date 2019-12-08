@@ -23,6 +23,7 @@ using NHibernate.Event;
 using NHibernate.Id;
 using NHibernate.Impl;
 using NHibernate.Mapping;
+using NHibernate.Persister.Collection;
 using NHibernate.Proxy;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
@@ -186,16 +187,18 @@ namespace NHibernate.Cfg
 		}
 
 		[Serializable]
-		private class Mapping : IMapping
+		private class Mapping : IMapping, IMetadata
 		{
+			private readonly IDictionary<string, NHibernate.Mapping.Collection> collections;
 			private readonly Configuration configuration;
 
-			public Mapping(Configuration configuration)
+			public Mapping(Configuration configuration, IDictionary<string, NHibernate.Mapping.Collection> collections)
 			{
 				this.configuration = configuration;
+				this.collections = collections;
 			}
 
-			private PersistentClass GetPersistentClass(string className)
+			public PersistentClass GetPersistentClass(string className)
 			{
 				PersistentClass pc;
 				if (!configuration.classes.TryGetValue(className, out pc))
@@ -203,6 +206,16 @@ namespace NHibernate.Cfg
 					throw new MappingException("persistent class not known: " + className);
 				}
 				return pc;
+			}
+
+			public NHibernate.Mapping.Collection GetCollection(string role)
+			{
+				if (collections.TryGetValue(role, out var collection))
+				{
+					return collection;
+				}
+
+				return null;
 			}
 
 			public IType GetIdentifierType(string className)
@@ -242,7 +255,7 @@ namespace NHibernate.Cfg
 		}
 
 		[Serializable]
-		private class StaticDialectMappingWrapper : IMapping
+		private class StaticDialectMappingWrapper : IMapping, IMetadata
 		{
 			private readonly IMapping _mapping;
 
@@ -273,6 +286,25 @@ namespace NHibernate.Cfg
 			}
 
 			public Dialect.Dialect Dialect { get; }
+			public PersistentClass GetPersistentClass(string entityName)
+			{
+				if (_mapping is IMetadata metadata)
+				{
+					return metadata.GetPersistentClass(entityName);
+				}
+
+				return null;
+			}
+
+			public NHibernate.Mapping.Collection GetCollection(string role)
+			{
+				if (_mapping is IMetadata metadata)
+				{
+					return metadata.GetCollection(role);
+				}
+
+				return null;
+			}
 		}
 
 		private IMapping mapping;
@@ -291,7 +323,7 @@ namespace NHibernate.Cfg
 
 		public virtual IMapping BuildMapping()
 		{
-			return new Mapping(this);
+			return new Mapping(this, collections);
 		}
 
 		/// <summary>
