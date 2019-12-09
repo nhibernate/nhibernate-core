@@ -96,7 +96,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3972
 		}
 
 		[Test]
-		public void QueryingSubPropertyWithTheSameNames()
+		public void QueryingSubPropertyWithTheSameName()
 		{
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
