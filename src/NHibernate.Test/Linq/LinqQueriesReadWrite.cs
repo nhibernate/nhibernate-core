@@ -38,10 +38,12 @@ namespace NHibernate.Test.Linq
 		{
 			using (var session = OpenSession(true))
 			{
-				session.Delete(productDefinition1);
-				session.Delete(productDefinition2);
 				session.Delete(material1);
 				session.Delete(material2);
+				session.Delete(productDefinition1);
+				session.Delete(productDefinition2);
+				session.Delete(productDefinition1.MaterialDefinition);
+				session.Delete(productDefinition2.MaterialDefinition);
 
 				session.Transaction.Commit();
 			}
