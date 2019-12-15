@@ -15,9 +15,10 @@ using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
+using NHibernate.Linq;
+using NHibernate.SqlCommand;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
-using NHibernate.Linq;
 
 namespace NHibernate.Test.Ado
 {
@@ -112,6 +113,64 @@ namespace NHibernate.Test.Ado
 			{
 				Configure(cfg);
 				RebuildSessionFactory();
+			}
+		}
+
+		[Test]
+		public async Task InterceptorOnPrepareStatementTestAsync()
+		{
+			var interceptor = new DatabaseInterceptor();
+			using (var sqlLog = new SqlLogSpy())
+			using (var s = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.SetBatchSize(5);
+				for (var i = 0; i < 20; i++)
+				{
+					await (s.SaveAsync(new VerySimple { Id = 1 + i, Name = $"Fabio{i}", Weight = 1.45 + i }));
+				}
+
+				await (tx.CommitAsync());
+
+				// Called for each batch and once for generating AbstractBatcher.CurrentCommand
+				Assert.That(interceptor.TotalCalls, Is.EqualTo(5));
+				var log = sqlLog.GetWholeLog();
+				// In reality only 4 comments are added (one for each batch), but because AbstractBatcher.CurrentCommand is logged for each added command
+				// 20 will be logged instead.
+				Assert.That(FindAllOccurrences(log, "/* TEST */"), Is.EqualTo(20));
+			}
+
+			interceptor = new DatabaseInterceptor();
+			using (var sqlLog = new SqlLogSpy())
+			using (var s = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var future = s.Query<VerySimple>().ToFuture();
+				s.Query<VerySimple>().Where(o => o.Weight > 0).ToFuture();
+
+				using (var enumerator = (await (future.GetEnumerableAsync())).GetEnumerator())
+				{
+					while (enumerator.MoveNext()) { }
+				}
+
+				await (tx.CommitAsync());
+
+				Assert.That(interceptor.TotalCalls, Is.EqualTo(1));
+				var log = sqlLog.GetWholeLog();
+				Assert.That(FindAllOccurrences(log, "/* TEST */"), Is.EqualTo(1));
+			}
+
+			await (CleanupAsync());
+		}
+
+		private class DatabaseInterceptor : EmptyInterceptor
+		{
+			public int TotalCalls { get; private set; }
+
+			public override SqlString OnPrepareStatement(SqlString sql)
+			{
+				TotalCalls++;
+				return sql.Append("/* TEST */");
 			}
 		}
 
