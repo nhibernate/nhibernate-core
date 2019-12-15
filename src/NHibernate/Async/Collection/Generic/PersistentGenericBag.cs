@@ -27,7 +27,7 @@ namespace NHibernate.Collection.Generic
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
+	public partial class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IReadOnlyList<T>, IList, IQueryable<T>
 	{
 
 		public override async Task<object> DisassembleAsync(ICollectionPersister persister, CancellationToken cancellationToken)

@@ -28,7 +28,7 @@ namespace NHibernate.Collection.Generic
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, IQueryable<T>
+	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, IReadOnlyCollection<T>, IQueryable<T>
 	{
 
 		//Since 5.3
