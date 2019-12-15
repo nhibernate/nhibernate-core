@@ -369,7 +369,6 @@ namespace NHibernate.Collection.Generic
 		{
 			get { return Values; }
 		}
-		
 
 		#endregion
 
