@@ -21,7 +21,7 @@ namespace NHibernate.Collection.Generic
 	/// </summary>
 	[Serializable]
 	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
-	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, IQueryable<T>
+	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, IReadOnlyCollection<T>, IQueryable<T>
 	{
 		/// <summary>
 		/// The <see cref="ISet{T}"/> that NHibernate is wrapping.

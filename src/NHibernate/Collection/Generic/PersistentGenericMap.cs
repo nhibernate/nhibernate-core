@@ -23,7 +23,7 @@ namespace NHibernate.Collection.Generic
 	/// <typeparam name="TValue">The type of the elements in the IDictionary.</typeparam>
 	[Serializable]
 	[DebuggerTypeProxy(typeof(DictionaryProxy<,>))]
-	public partial class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, ICollection
+	public partial class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>, ICollection
 	{
 		protected IDictionary<TKey, TValue> WrappedMap;
 		private readonly ICollection<TValue> _wrappedValues;
@@ -359,6 +359,17 @@ namespace NHibernate.Collection.Generic
 				return _wrappedValues;
 			}
 		}
+
+		IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
+		{
+			get { return Keys; }
+		}
+
+		IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values
+		{
+			get { return Values; }
+		}
+		
 
 		#endregion
 
