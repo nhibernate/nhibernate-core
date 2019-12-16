@@ -120,11 +120,9 @@ namespace NHibernate.Test.Ado
 
 				tx.Commit();
 
-				// Called for each batch and once for generating AbstractBatcher.CurrentCommand
-				Assert.That(interceptor.TotalCalls, Is.EqualTo(5));
+				// Called for each insert statement and once for generating AbstractBatcher.CurrentCommand
+				Assert.That(interceptor.TotalCalls, Is.EqualTo(21));
 				var log = sqlLog.GetWholeLog();
-				// In reality only 4 comments are added (one for each batch), but because AbstractBatcher.CurrentCommand is logged for each added command
-				// 20 will be logged instead.
 				Assert.That(FindAllOccurrences(log, "/* TEST */"), Is.EqualTo(20));
 			}
 
@@ -143,9 +141,10 @@ namespace NHibernate.Test.Ado
 
 				tx.Commit();
 
-				Assert.That(interceptor.TotalCalls, Is.EqualTo(1));
+				var totalCalls = Sfi.ConnectionProvider.Driver.SupportsMultipleQueries ? 1 : 2;
+				Assert.That(interceptor.TotalCalls, Is.EqualTo(totalCalls));
 				var log = sqlLog.GetWholeLog();
-				Assert.That(FindAllOccurrences(log, "/* TEST */"), Is.EqualTo(1));
+				Assert.That(FindAllOccurrences(log, "/* TEST */"), Is.EqualTo(totalCalls));
 			}
 
 			Cleanup();

@@ -183,7 +183,7 @@ namespace NHibernate.AdoNet
 					_commandType = _batcher.CurrentCommand.CommandType;
 				}
 				
-				_sql.Add(_batcher.CurrentCommandSql.Copy());
+				_sql.Add(_batcher.GetSQL(_batcher.CurrentCommandSql.Copy()));
 				_sqlTypes.AddRange(_batcher.CurrentCommandParameterTypes);
 
 				foreach (DbParameter parameter in parameters)
@@ -210,7 +210,7 @@ namespace NHibernate.AdoNet
 
 				var batcherCommand = _batcher.Driver.GenerateCommand(
 					_commandType,
-					_batcher.GetSQL(_sql.ToSqlString()),
+					_sql.ToSqlString(),
 					_sqlTypes.ToArray()
 				);
 				for (var i = 0; i < _parameters.Count; i++)
