@@ -60,22 +60,15 @@ namespace NHibernate.Util
 
 		public void Render(StringBuilder buffer, string defaultAlias, IDictionary<string, string> propMap, IDictionary<string, IFilter> enabledFilters)
 		{
-			if (filterNames != null)
+			for (int i = 0; i < filterNames.Length; i++)
 			{
-				int max = filterNames.Length;
-				if (max > 0)
+				if (enabledFilters.ContainsKey(filterNames[i]))
 				{
-					for (int i = 0; i < max; i++)
+					string condition = filterConditions[i];
+					if (!string.IsNullOrEmpty(condition))
 					{
-						if (enabledFilters.ContainsKey(filterNames[i]))
-						{
-							string condition = filterConditions[i];
-							if (StringHelper.IsNotEmpty(condition))
-							{
-								buffer.Append(" and ");
-								AddFilterString(buffer, defaultAlias, propMap, condition);
-							}
-						}
+						buffer.Append(" and ");
+						AddFilterString(buffer, defaultAlias, propMap, condition);
 					}
 				}
 			}
@@ -83,22 +76,23 @@ namespace NHibernate.Util
 
 		private static void AddFilterString(StringBuilder buffer, string defaultAlias, IDictionary<string, string> propMap, string condition)
 		{
-			int i = condition.IndexOf(FilterImpl.MARKER);
+			int i;
 			int upTo = 0;
-			while (i > -1 && upTo < condition.Length)
+			while ((i = condition.IndexOf(FilterImpl.MARKER, upTo, StringComparison.Ordinal)) >= 0 && upTo < condition.Length)
 			{
-				buffer.Append(condition.Substring(upTo, i - upTo));
+				buffer.Append(condition, upTo, i - upTo);
 				int startOfProperty = i + FilterImpl.MARKER.Length + 1;
 
-				upTo = condition.IndexOf(" ", startOfProperty);
+				upTo = condition.IndexOf(' ', startOfProperty);
 				upTo = upTo >= 0 ? upTo : condition.Length;
 				string property = condition.Substring(startOfProperty, upTo - startOfProperty);
 
-				string fullColumn = propMap.ContainsKey(property) ? propMap[property] : string.Format("{0}.{1}", defaultAlias, property);
+				if (!propMap.TryGetValue(property, out var fullColumn))
+					fullColumn = string.IsNullOrEmpty(defaultAlias)
+						? property
+						: defaultAlias + "." + property;
 
 				buffer.Append(fullColumn);
-
-				i = condition.IndexOf(FilterImpl.MARKER, upTo);
 			}
 			buffer.Append(condition.Substring(upTo));
 		}

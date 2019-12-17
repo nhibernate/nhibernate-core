@@ -2148,13 +2148,18 @@ namespace NHibernate.Persister.Entity
 			if (tableNumber == 0)
 				return rootAlias;
 
-			StringBuilder buf = new StringBuilder().Append(rootAlias);
-			if (!rootAlias.EndsWith("_"))
-			{
-				buf.Append('_');
-			}
+			string x = rootAlias.EndsWith('_')
+				? string.Empty
+				: "_";
+			return string.Concat(rootAlias, x, tableNumber.ToString(), "_");
+		}
 
-			return buf.Append(tableNumber).Append('_').ToString();
+		public string GetSubclassAliasedColumn(string rootAlias, int tableNumber, string columnName)
+		{
+			if (string.IsNullOrEmpty(rootAlias))
+				return columnName;
+
+			return GenerateTableAlias(rootAlias, tableNumber) + "." + columnName;
 		}
 
 		public string[] ToColumns(string name, int i)
@@ -3655,16 +3660,21 @@ namespace NHibernate.Persister.Entity
 
 		public virtual string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
 		{
-			StringBuilder sessionFilterFragment = new StringBuilder();
+			var filterFragment = FilterFragment(alias);
+			if (!filterHelper.IsAffectedBy(enabledFilters))
+				return filterFragment;
 
+			var sessionFilterFragment = new StringBuilder();
 			filterHelper.Render(sessionFilterFragment, GenerateFilterConditionAlias(alias), GetColumnsToTableAliasMap(alias), enabledFilters);
-
-			return sessionFilterFragment.Append(FilterFragment(alias)).ToString();
+			return sessionFilterFragment.Append(filterFragment).ToString();
 		}
 
 		private IDictionary<string, string> GetColumnsToTableAliasMap(string rootAlias)
 		{
-			IDictionary<PropertyKey, string> propDictionary = new Dictionary<PropertyKey, string>();
+			if (SubclassTableSpan < 2)
+				return CollectionHelper.EmptyDictionary<string, string>();
+
+			var propDictionary = new Dictionary<PropertyKey, string>();
 			for (int i =0; i < SubclassPropertyNameClosure.Length; i++)
 			{
 				string property = SubclassPropertyNameClosure[i];
@@ -3677,20 +3687,11 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 
-			IDictionary<string, string> dict = new Dictionary<string, string>();
+			var dict = new Dictionary<string, string>();
 			for (int i = 0; i < SubclassColumnTableNumberClosure.Length; i++ )
 			{
-				string fullColumn;
 				string col = SubclassColumnClosure[i];
-				if (!string.IsNullOrEmpty(rootAlias))
-				{
-					string alias = GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[i]);
-					fullColumn = string.Format("{0}.{1}", alias, col);
-				}
-				else
-				{
-					fullColumn = col;
-				}
+				var fullColumn = GetSubclassAliasedColumn(rootAlias, SubclassColumnTableNumberClosure[i], col);
 
 				PropertyKey key = new PropertyKey(col, SubclassColumnTableNumberClosure[i]);
 				if (propDictionary.ContainsKey(key))
@@ -3709,8 +3710,7 @@ namespace NHibernate.Persister.Entity
 			{
 				foreach (var key in GetSubclassTableKeyColumns(i))
 				{
-					var alias = i == 0 ? rootAlias : GenerateTableAlias(rootAlias, i);
-					dict[key] = $"{alias}.{key}";
+					dict[key] = GetSubclassAliasedColumn(rootAlias, i, key);
 				}
 			}
 
@@ -3753,7 +3753,7 @@ namespace NHibernate.Persister.Entity
 		public virtual SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
 		{
 			return SubclassTableSpan == 1
-				? new SqlString(string.Empty) // just a performance opt!
+				? SqlString.Empty // just a performance opt!
 				: CreateJoin(alias, innerJoin, includeSubclasses).ToFromFragmentString;
 		}
 
