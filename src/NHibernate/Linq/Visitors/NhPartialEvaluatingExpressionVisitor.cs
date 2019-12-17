@@ -12,6 +12,9 @@ namespace NHibernate.Linq.Visitors
 {
 	internal class NhPartialEvaluatingExpressionVisitor : RelinqExpressionVisitor, IPartialEvaluationExceptionExpressionVisitor
 	{
+		private readonly PartialEvaluationInfo _partialEvaluationInfo;
+		private static readonly NhEvaluatableExpressionFilter ExpressionFilter = new NhEvaluatableExpressionFilter();
+
 		protected override Expression VisitConstant(ConstantExpression expression)
 		{
 			if (expression.Value is Expression value)
@@ -24,8 +27,60 @@ namespace NHibernate.Linq.Visitors
 
 		public static Expression EvaluateIndependentSubtrees(Expression expression)
 		{
-			var evaluatedExpression = PartialEvaluatingExpressionVisitor.EvaluateIndependentSubtrees(expression, new NhEvaluatableExpressionFilter());
-			return new NhPartialEvaluatingExpressionVisitor().Visit(evaluatedExpression);
+			var partialEvaluationInfo = NhEvaluatableTreeFindingExpressionVisitor.Analyze(expression, ExpressionFilter);
+			var visitor = new NhPartialEvaluatingExpressionVisitor(partialEvaluationInfo);
+			var evaluatedExpression = visitor.Visit(expression);
+			return evaluatedExpression;
+		}
+
+		private NhPartialEvaluatingExpressionVisitor(PartialEvaluationInfo partialEvaluationInfo)
+		{
+			_partialEvaluationInfo = partialEvaluationInfo ?? throw new ArgumentNullException(nameof(partialEvaluationInfo));
+		}
+
+		public override Expression Visit(Expression expression)
+		{
+			if (expression == null)
+				return null;
+			if (expression.NodeType != ExpressionType.Lambda)
+			{
+				if (_partialEvaluationInfo.IsEvaluatableExpression(expression))
+				{
+					Expression subtree;
+					try
+					{
+						subtree = EvaluateSubtree(expression);
+					}
+					catch (Exception ex)
+					{
+						return new PartialEvaluationExceptionExpression(ex, base.Visit(expression));
+					}
+					if (subtree != expression)
+						return EvaluateIndependentSubtrees(subtree);
+					return subtree;
+				}
+			}
+			return base.Visit(expression);
+		}
+
+		/// <summary>
+		/// Evaluates an evaluatable <see cref="T:System.Linq.Expressions.Expression" /> subtree, i.e. an independent expression tree that is compilable and executable
+		/// without any data being passed in. The result of the evaluation is returned as a <see cref="T:System.Linq.Expressions.ConstantExpression" />; if the subtree
+		/// is already a <see cref="T:System.Linq.Expressions.ConstantExpression" />, no evaluation is performed.
+		/// </summary>
+		/// <param name="subtree">The subtree to be evaluated.</param>
+		/// <returns>A <see cref="T:System.Linq.Expressions.ConstantExpression" /> holding the result of the evaluation.</returns>
+		private Expression EvaluateSubtree(Expression subtree)
+		{
+			if (subtree == null) throw new ArgumentNullException(nameof(subtree));
+
+			if (subtree.NodeType != ExpressionType.Constant)
+				return Expression.Constant(Expression.Lambda<Func<object>>(Expression.Convert(subtree, typeof(object))).Compile()(), subtree.Type);
+			ConstantExpression constantExpression = (ConstantExpression) subtree;
+			IQueryable queryable = constantExpression.Value as IQueryable;
+			if (queryable != null && queryable.Expression != constantExpression)
+				return queryable.Expression;
+			return constantExpression;
 		}
 
 		public Expression VisitPartialEvaluationException(PartialEvaluationExceptionExpression partialEvaluationExceptionExpression)
@@ -40,7 +95,7 @@ namespace NHibernate.Linq.Visitors
 	{
 		public override bool IsEvaluatableConstant(ConstantExpression node)
 		{
-			if (node.Value is IPersistentCollection && node.Value is IQueryable)
+			if (node.Value is IPersistentCollection || node.Value is IQueryable)
 			{
 				return false;
 			}
