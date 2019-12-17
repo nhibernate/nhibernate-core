@@ -22,7 +22,7 @@ namespace NHibernate.Collection.Generic
 	/// <remarks>The underlying collection used is a <see cref="List{T}"/></remarks>
 	[Serializable]
 	[DebuggerTypeProxy(typeof (CollectionProxy<>))]
-	public partial class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
+	public partial class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IReadOnlyList<T>, IList, IQueryable<T>
 	{
 		protected IList<T> WrappedList;
 

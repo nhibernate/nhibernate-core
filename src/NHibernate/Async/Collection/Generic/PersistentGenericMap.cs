@@ -27,7 +27,7 @@ namespace NHibernate.Collection.Generic
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, ICollection
+	public partial class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>, ICollection
 	{
 
 		//Since 5.3

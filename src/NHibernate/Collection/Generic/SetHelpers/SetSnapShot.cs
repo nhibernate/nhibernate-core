@@ -83,6 +83,11 @@ namespace NHibernate.Collection.Generic.SetHelpers
 			get { return _elements.Count; }
 		}
 
+		int IReadOnlyCollection<T>.Count
+		{
+			get { return _elements.Count; }
+		}
+
 		public bool IsReadOnly
 		{
 			get { return ((ICollection<T>)_elements).IsReadOnly; }

@@ -28,7 +28,7 @@ namespace NHibernate.Collection.Generic
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class PersistentIdentifierBag<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
+	public partial class PersistentIdentifierBag<T> : AbstractPersistentCollection, IList<T>, IReadOnlyList<T>, IList, IQueryable<T>
 	{
 
 		/// <summary>
