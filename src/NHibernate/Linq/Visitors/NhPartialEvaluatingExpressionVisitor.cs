@@ -108,6 +108,9 @@ namespace NHibernate.Linq.Visitors
 			if (node == null)
 				throw new ArgumentNullException(nameof(node));
 
+			if (node.Arguments.Any(a => typeof(IQueryable).IsAssignableFrom(a.Type)))
+				return false;
+
 			var attributes = node.Method
 				.GetCustomAttributes(typeof(LinqExtensionMethodAttributeBase), false)
 				.ToArray(x => (LinqExtensionMethodAttributeBase) x);

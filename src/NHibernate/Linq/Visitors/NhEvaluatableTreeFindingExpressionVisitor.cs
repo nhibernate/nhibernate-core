@@ -62,6 +62,14 @@ namespace NHibernate.Linq.Visitors
 
 			_ancestors.Pop();
 
+			if (expression?.NodeType == ExpressionType.Lambda)
+			{
+				// defined parameters go out of scope; chained extension methods often use the same parameter names
+				var parameterNames = _parameters.Where(p => p.Value.OwningExpression == expression).Select(p => p.Key).ToArray();
+				foreach (var name in parameterNames)
+					_parameters.Remove(name);
+			}
+
 			return result;
 		}
 
@@ -83,7 +91,7 @@ namespace NHibernate.Linq.Visitors
 
 		private bool IsParameterEvaluatable(ParameterExpression expression)
 		{
-			if (_parameters.TryGetValue(expression.Name, out var status))
+			if (expression.Name != null && _parameters.TryGetValue(expression.Name, out var status))
 				return status.IsEvaluatable;
 
 			status = CalcParameterStatus(expression);
@@ -120,7 +128,11 @@ namespace NHibernate.Linq.Visitors
 
 						result.IsEvaluatable = result.MethodCallInvokingLambda.Object != null
 							? PartialEvaluationInfo.IsEvaluatableExpression(result.MethodCallInvokingLambda.Object)
-							: result.MethodCallInvokingLambda.Arguments.All(a => a == result.MethodArgumentAcceptingLambda || PartialEvaluationInfo.IsEvaluatableExpression(a));
+							: result.MethodCallInvokingLambda.Arguments.All(a => a == result.MethodArgumentAcceptingLambda || (
+								                                                     PartialEvaluationInfo.IsEvaluatableExpression(a)
+																					 // member expressions on e.g. repository creating query instances must be evaluated into constants
+																					 // but parameters accepting values from them are not evaluatable
+								                                                     && !typeof(IQueryable).IsAssignableFrom(a.Type) ));
 
 						return result;
 					}
