@@ -5,7 +5,6 @@ using NHibernate.Collection;
 using NHibernate.Util;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
-using Remotion.Linq.Parsing.ExpressionVisitors;
 using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
 
 namespace NHibernate.Linq.Visitors
@@ -28,9 +27,15 @@ namespace NHibernate.Linq.Visitors
 		public static Expression EvaluateIndependentSubtrees(Expression expression)
 		{
 			var partialEvaluationInfo = NhEvaluatableTreeFindingExpressionVisitor.Analyze(expression, ExpressionFilter);
+            
+            var firstPassVisitor = new PartialEvaluatingExpressionVisitor(partialEvaluationInfo, ExpressionFilter);
+
+			var evaluatedExpression = firstPassVisitor.Visit(expression);
+
 			var visitor = new NhPartialEvaluatingExpressionVisitor(partialEvaluationInfo);
-			var evaluatedExpression = visitor.Visit(expression);
-			return evaluatedExpression;
+			var reEvaluatedExpression = visitor.Visit(evaluatedExpression);
+
+			return reEvaluatedExpression;
 		}
 
 		private NhPartialEvaluatingExpressionVisitor(PartialEvaluationInfo partialEvaluationInfo)
@@ -38,6 +43,7 @@ namespace NHibernate.Linq.Visitors
 			_partialEvaluationInfo = partialEvaluationInfo ?? throw new ArgumentNullException(nameof(partialEvaluationInfo));
 		}
 
+        /*
 		public override Expression Visit(Expression expression)
 		{
 			if (expression == null)
@@ -62,28 +68,31 @@ namespace NHibernate.Linq.Visitors
 			}
 			return base.Visit(expression);
 		}
+        */
 
-		/// <summary>
-		/// Evaluates an evaluatable <see cref="T:System.Linq.Expressions.Expression" /> subtree, i.e. an independent expression tree that is compilable and executable
-		/// without any data being passed in. The result of the evaluation is returned as a <see cref="T:System.Linq.Expressions.ConstantExpression" />; if the subtree
-		/// is already a <see cref="T:System.Linq.Expressions.ConstantExpression" />, no evaluation is performed.
-		/// </summary>
-		/// <param name="subtree">The subtree to be evaluated.</param>
-		/// <returns>A <see cref="T:System.Linq.Expressions.ConstantExpression" /> holding the result of the evaluation.</returns>
-		private Expression EvaluateSubtree(Expression subtree)
-		{
-			if (subtree == null) throw new ArgumentNullException(nameof(subtree));
+        /*
+        /// <summary>
+        /// Evaluates an evaluatable <see cref="T:System.Linq.Expressions.Expression" /> subtree, i.e. an independent expression tree that is compilable and executable
+        /// without any data being passed in. The result of the evaluation is returned as a <see cref="T:System.Linq.Expressions.ConstantExpression" />; if the subtree
+        /// is already a <see cref="T:System.Linq.Expressions.ConstantExpression" />, no evaluation is performed.
+        /// </summary>
+        /// <param name="subtree">The subtree to be evaluated.</param>
+        /// <returns>A <see cref="T:System.Linq.Expressions.ConstantExpression" /> holding the result of the evaluation.</returns>
+        private Expression EvaluateSubtree(Expression subtree)
+        {
+	        if (subtree == null) throw new ArgumentNullException(nameof(subtree));
 
-			if (subtree.NodeType != ExpressionType.Constant)
-				return Expression.Constant(Expression.Lambda<Func<object>>(Expression.Convert(subtree, typeof(object))).Compile()(), subtree.Type);
-			
-			var constantExpression = (ConstantExpression) subtree;
+	        if (subtree.NodeType != ExpressionType.Constant)
+		        return Expression.Constant(Expression.Lambda<Func<object>>(Expression.Convert(subtree, typeof(object))).Compile()(), subtree.Type);
+	        
+	        var constantExpression = (ConstantExpression) subtree;
 
-			if (constantExpression.Value is IQueryable queryable && queryable.Expression != constantExpression)
-				return queryable.Expression;
-			
-			return constantExpression;
-		}
+	        if (constantExpression.Value is IQueryable queryable && queryable.Expression != constantExpression)
+		        return queryable.Expression;
+	        
+	        return constantExpression;
+        }
+        */
 
 		public Expression VisitPartialEvaluationException(PartialEvaluationExceptionExpression partialEvaluationExceptionExpression)
 		{
