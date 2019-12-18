@@ -76,10 +76,12 @@ namespace NHibernate.Linq.Visitors
 
 			if (subtree.NodeType != ExpressionType.Constant)
 				return Expression.Constant(Expression.Lambda<Func<object>>(Expression.Convert(subtree, typeof(object))).Compile()(), subtree.Type);
-			ConstantExpression constantExpression = (ConstantExpression) subtree;
-			IQueryable queryable = constantExpression.Value as IQueryable;
-			if (queryable != null && queryable.Expression != constantExpression)
+			
+			var constantExpression = (ConstantExpression) subtree;
+
+			if (constantExpression.Value is IQueryable queryable && queryable.Expression != constantExpression)
 				return queryable.Expression;
+			
 			return constantExpression;
 		}
 
