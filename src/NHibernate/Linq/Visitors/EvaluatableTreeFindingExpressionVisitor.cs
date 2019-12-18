@@ -237,20 +237,22 @@ namespace NHibernate.Linq.Visitors
 			return vistedNode;
 		}
 
-		protected override Expression VisitMethodCall (MethodCallExpression expression)
+		protected bool IsEvaluatableMethodCall(MethodCallExpression expression)
 		{
 			if (expression == null) throw new ArgumentNullException(nameof(expression));
 
 			// Method calls are only evaluatable if they do not involve IQueryable objects.
 
-			if (IsQueryableExpression (expression.Object))
-				IsCurrentSubtreeEvaluatable = false;
+			return !IsQueryableExpression (expression.Object)
+				&& expression.Arguments.All(a => !IsQueryableExpression(a));
+		}
 
-			for (int i = 0; i < expression.Arguments.Count && IsCurrentSubtreeEvaluatable; ++i)
-			{
-				if (IsQueryableExpression (expression.Arguments[i]))
-					IsCurrentSubtreeEvaluatable = false;
-			}
+		protected override Expression VisitMethodCall (MethodCallExpression expression)
+		{
+			if (expression == null) throw new ArgumentNullException(nameof(expression));
+
+			if (IsEvaluatableMethodCall(expression))
+				IsCurrentSubtreeEvaluatable = false;
 
 			var vistedExpression = base.VisitMethodCall (expression);
 
@@ -616,7 +618,7 @@ namespace NHibernate.Linq.Visitors
     }
 #endif
 
-		private bool IsQueryableExpression (Expression expression)
+		protected bool IsQueryableExpression (Expression expression)
 		{
 			return expression != null && typeof (IQueryable).GetTypeInfo().IsAssignableFrom (expression.Type.GetTypeInfo());
 		}

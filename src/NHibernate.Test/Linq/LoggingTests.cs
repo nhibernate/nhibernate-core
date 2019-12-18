@@ -13,8 +13,7 @@ namespace NHibernate.Test.Linq
 		{
 			using (var spy = new LogSpy("NHibernate.Linq"))
 			{
-                var productsQuery = db.Products;
-				var subquery = productsQuery.Where(p => p.ProductId > 5);
+				var subquery = db.Products.Where(p => p.ProductId > 5);
 
 				var list = db.Products.Where(p => subquery.Contains(p))
 				             .Skip(5).Take(10)

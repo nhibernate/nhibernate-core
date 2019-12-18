@@ -91,7 +91,11 @@ namespace NHibernate.Linq.Visitors
 
 		private bool IsParameterEvaluatable(ParameterExpression expression)
 		{
-			if (expression.Name != null && _parameters.TryGetValue(expression.Name, out var status))
+			// nameless parameters are generated when updating through linq, no need to handle them
+			if (expression.Name == null)
+				return false;
+
+			if (_parameters.TryGetValue(expression.Name, out var status))
 				return status.IsEvaluatable;
 
 			status = CalcParameterStatus(expression);
@@ -126,14 +130,20 @@ namespace NHibernate.Linq.Visitors
 					{
 						result.MethodCallInvokingLambda = (MethodCallExpression) ancestor;
 
-						result.IsEvaluatable = result.MethodCallInvokingLambda.Object != null
+						// member expressions on e.g. repository creating query instances must be evaluated into constants
+						// and queryable constants must be evaluated (e.g. for subqueries to be expanded properly)
+						// but parameters accepting values from them are not evaluatable
+						result.IsEvaluatable = IsEvaluatableMethodCall(result.MethodCallInvokingLambda);
+/*
+						result.MethodCallInvokingLambda.Object != null
 							? PartialEvaluationInfo.IsEvaluatableExpression(result.MethodCallInvokingLambda.Object)
 							: result.MethodCallInvokingLambda.Arguments.All(a => a == result.MethodArgumentAcceptingLambda || (
 								                                                     PartialEvaluationInfo.IsEvaluatableExpression(a)
 																					 // member expressions on e.g. repository creating query instances must be evaluated into constants
+																					 // and queryable constants must be evaluated (e.g. for subqueries to be expanded properly)
 																					 // but parameters accepting values from them are not evaluatable
-								                                                     && !typeof(IQueryable).IsAssignableFrom(a.Type) ));
-
+								                                                     && !IsQueryableExpression(a) ));
+*/
 						return result;
 					}
 
