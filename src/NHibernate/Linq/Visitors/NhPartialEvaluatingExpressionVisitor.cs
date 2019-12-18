@@ -97,7 +97,7 @@ namespace NHibernate.Linq.Visitors
 	{
 		public override bool IsEvaluatableConstant(ConstantExpression node)
 		{
-			if (node.Value is IPersistentCollection || node.Value is IQueryable)
+			if (node.Value is IPersistentCollection && node.Value is IQueryable)
 			{
 				return false;
 			}
