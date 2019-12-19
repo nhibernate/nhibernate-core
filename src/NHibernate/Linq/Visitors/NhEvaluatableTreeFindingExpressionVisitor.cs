@@ -51,6 +51,8 @@ namespace NHibernate.Linq.Visitors
 		/// </returns>
 		public Expression GetParentExpression(Expression currentExpression)
 		{
+			if (currentExpression == null) throw new ArgumentNullException(nameof(currentExpression));
+
 			return _ancestors.FirstOrDefault(x => x != currentExpression);
 		}
 
@@ -92,7 +94,7 @@ namespace NHibernate.Linq.Visitors
 		private bool IsParameterEvaluatable(ParameterExpression expression)
 		{
 			// nameless parameters are generated when updating through linq, no need to handle them yet
-			if (expression.Name == null)
+			if (expression?.Name == null)
 				return false;
 
 			if (_parameters.TryGetValue(expression.Name, out var status))
@@ -169,6 +171,9 @@ namespace NHibernate.Linq.Visitors
 		///  </remarks>
 		private bool IsMethodSupplyingEvaluatableParameterValues(MethodCallExpression methodExpression, Expression methodArgumentAcceptingLambda)
 		{
+			if (methodExpression == null) throw new ArgumentNullException(nameof(methodExpression));
+			if (methodArgumentAcceptingLambda == null) throw new ArgumentNullException(nameof(methodArgumentAcceptingLambda));
+
 			if (!IsEvaluatableMethodCall(methodExpression))
 				return false;
 
@@ -180,6 +185,9 @@ namespace NHibernate.Linq.Visitors
 
 		private bool IsParameterOwner(Expression expression, ParameterExpression parameterExpression)
 		{
+			if (expression == null) throw new ArgumentNullException(nameof(expression));
+			if (parameterExpression == null) throw new ArgumentNullException(nameof(parameterExpression));
+
 			return (expression is LambdaExpression result) && result.Parameters.Any(x => x.Name == parameterExpression.Name);
 		}
 	}
