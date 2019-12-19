@@ -24,8 +24,6 @@ namespace NHibernate.Linq.Visitors
 		private readonly Stack<Expression> _ancestors = new Stack<Expression>(20);
 		private readonly Dictionary<string, ParameterStatus> _parameters = new Dictionary<string, ParameterStatus>();
 
-		public Expression TopAncestor => _ancestors.FirstOrDefault();
-
 		public new static PartialEvaluationInfo Analyze(Expression expressionTree, IEvaluatableExpressionFilter evaluatableExpressionFilter)
 		{
 			if (expressionTree == null) throw new ArgumentNullException(nameof(expressionTree));
@@ -40,20 +38,6 @@ namespace NHibernate.Linq.Visitors
 		protected NhEvaluatableTreeFindingExpressionVisitor(IEvaluatableExpressionFilter evaluatableExpressionFilter)
 			: base(evaluatableExpressionFilter)
 		{
-		}
-
-		/// <param name="currentExpression">
-		///     If already added to <see cref="_ancestors"/>, it should be at the top.
-		/// </param>
-		/// <returns>
-		///     if <paramref name="currentExpression"/> is <see cref="TopAncestor"/>, then its parent;
-		///     otherwise the <see cref="TopAncestor"/>.
-		/// </returns>
-		public Expression GetParentExpression(Expression currentExpression)
-		{
-			if (currentExpression == null) throw new ArgumentNullException(nameof(currentExpression));
-
-			return _ancestors.FirstOrDefault(x => x != currentExpression);
 		}
 
 		public override Expression Visit (Expression expression)
@@ -142,7 +126,6 @@ namespace NHibernate.Linq.Visitors
 
 					result.MethodArgumentAcceptingLambda = ancestor;
 				}
-
 			}
 
 			return result;

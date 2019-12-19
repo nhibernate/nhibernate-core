@@ -15,7 +15,6 @@
 // under the License.
 //
 
-
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -75,7 +74,6 @@ namespace NHibernate.Linq.Visitors
 		{
 			EvaluatableExpressionFilter = evaluatableExpressionFilter;
 		}
-
 
 		public override Expression Visit (Expression expression)
 		{
@@ -633,7 +631,6 @@ namespace NHibernate.Linq.Visitors
 
 		public Expression VisitPartialEvaluationException (PartialEvaluationExceptionExpression partialEvaluationExceptionExpression)
 		{
-
 			// PartialEvaluationExceptionExpression is not evaluable, and its children aren't either (so we don't visit them).
 			IsCurrentSubtreeEvaluatable = false;
 			return partialEvaluationExceptionExpression;
