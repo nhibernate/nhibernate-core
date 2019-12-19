@@ -120,8 +120,7 @@ namespace NHibernate.Test.Ado
 
 				tx.Commit();
 
-				// Called for each insert statement and once for generating AbstractBatcher.CurrentCommand
-				Assert.That(interceptor.TotalCalls, Is.EqualTo(21));
+				Assert.That(interceptor.TotalCalls, Is.EqualTo(1));
 				var log = sqlLog.GetWholeLog();
 				Assert.That(FindAllOccurrences(log, "/* TEST */"), Is.EqualTo(20));
 			}
