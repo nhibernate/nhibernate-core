@@ -43,57 +43,6 @@ namespace NHibernate.Linq.Visitors
 			_partialEvaluationInfo = partialEvaluationInfo ?? throw new ArgumentNullException(nameof(partialEvaluationInfo));
 		}
 
-        /*
-		public override Expression Visit(Expression expression)
-		{
-			if (expression == null)
-				return null;
-			if (expression.NodeType != ExpressionType.Lambda)
-			{
-				if (_partialEvaluationInfo.IsEvaluatableExpression(expression))
-				{
-					Expression subtree;
-					try
-					{
-						subtree = EvaluateSubtree(expression);
-					}
-					catch (Exception ex)
-					{
-						return new PartialEvaluationExceptionExpression(ex, base.Visit(expression));
-					}
-					if (subtree != expression)
-						return EvaluateIndependentSubtrees(subtree);
-					return subtree;
-				}
-			}
-			return base.Visit(expression);
-		}
-        */
-
-        /*
-        /// <summary>
-        /// Evaluates an evaluatable <see cref="T:System.Linq.Expressions.Expression" /> subtree, i.e. an independent expression tree that is compilable and executable
-        /// without any data being passed in. The result of the evaluation is returned as a <see cref="T:System.Linq.Expressions.ConstantExpression" />; if the subtree
-        /// is already a <see cref="T:System.Linq.Expressions.ConstantExpression" />, no evaluation is performed.
-        /// </summary>
-        /// <param name="subtree">The subtree to be evaluated.</param>
-        /// <returns>A <see cref="T:System.Linq.Expressions.ConstantExpression" /> holding the result of the evaluation.</returns>
-        private Expression EvaluateSubtree(Expression subtree)
-        {
-	        if (subtree == null) throw new ArgumentNullException(nameof(subtree));
-
-	        if (subtree.NodeType != ExpressionType.Constant)
-		        return Expression.Constant(Expression.Lambda<Func<object>>(Expression.Convert(subtree, typeof(object))).Compile()(), subtree.Type);
-	        
-	        var constantExpression = (ConstantExpression) subtree;
-
-	        if (constantExpression.Value is IQueryable queryable && queryable.Expression != constantExpression)
-		        return queryable.Expression;
-	        
-	        return constantExpression;
-        }
-        */
-
 		public Expression VisitPartialEvaluationException(PartialEvaluationExceptionExpression partialEvaluationExceptionExpression)
 		{
 			throw new HibernateException(
@@ -119,8 +68,9 @@ namespace NHibernate.Linq.Visitors
 			if (node == null)
 				throw new ArgumentNullException(nameof(node));
 
-			if (node.Arguments.Any(a => typeof(IQueryable).IsAssignableFrom(a.Type)))
-				return false;
+			//below could be uncommented, but considering usage it is inconsequential
+            //if (!EvaluatableTreeFindingExpressionVisitor.IsEvaluatableMethodCall(node))
+            //    return false;
 
 			var attributes = node.Method
 				.GetCustomAttributes(typeof(LinqExtensionMethodAttributeBase), false)

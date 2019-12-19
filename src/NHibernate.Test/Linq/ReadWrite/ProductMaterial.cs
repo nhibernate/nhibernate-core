@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace NHibernate.DomainModel
+namespace NHibernate.Test.Linq.ReadWrite
 {
 	public class EntityVersioned<TKey>
 		where TKey: struct, IComparable<TKey>

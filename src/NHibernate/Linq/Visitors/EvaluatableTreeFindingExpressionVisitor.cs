@@ -608,7 +608,7 @@ namespace NHibernate.Linq.Visitors
     }
 #endif
 
-		protected bool IsQueryableExpression (Expression expression)
+		protected static bool IsQueryableExpression (Expression expression)
 		{
 			return expression != null && typeof (IQueryable).GetTypeInfo().IsAssignableFrom (expression.Type.GetTypeInfo());
 		}
@@ -627,7 +627,7 @@ namespace NHibernate.Linq.Visitors
 		/// <returns>
 		///		false if instance (on which method is invoked) or any of its arguments implements <see cref="IQueryable"/>.
 		/// </returns>
-		protected bool IsEvaluatableMethodCall(MethodCallExpression expression)
+		public static bool IsEvaluatableMethodCall(MethodCallExpression expression)
 		{
 			if (expression == null) throw new ArgumentNullException(nameof(expression));
 

@@ -1,14 +1,14 @@
 using System.Linq;
-using NHibernate.DomainModel;
+using System.Reflection;
 using NUnit.Framework;
 
-namespace NHibernate.Test.Linq
+namespace NHibernate.Test.Linq.ReadWrite
 {
     /// <summary>
 	///     Self-contained setup
 	/// </summary>
     [TestFixture]
-	public class LinqQueriesReadWrite : TestCase
+	public class LinqQueriesReadWriteTests : TestCase
 	{
 		private static readonly ProductDefinition productDefinition1 = new ProductDefinition() { Id = 1000, MaterialDefinition = new MaterialDefinition { Id = 1 } };
 		private static readonly ProductDefinition productDefinition2 = new ProductDefinition() { Id = 1001, MaterialDefinition = new MaterialDefinition { Id = 2 } };
@@ -17,8 +17,11 @@ namespace NHibernate.Test.Linq
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"ProductMaterial.hbm.xml"}; }
+			get { return new[] {"Linq.ReadWrite.ProductMaterial.hbm.xml"}; }
 		}
+
+		/// <inheritdoc />
+		protected override string MappingsAssembly => MethodBase.GetCurrentMethod().DeclaringType.Assembly.GetName().Name;
 
 		protected override void OnSetUp()
 		{
@@ -52,7 +55,7 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test(Description = "#2244")]
-		public void LinqExpressionOnParameterEvaluated()
+		public void ExpressionOnConstantEvaluated()
 		{
 			using (var session = OpenSession())
 			{
@@ -60,13 +63,6 @@ namespace NHibernate.Test.Linq
 
 				var query = session.Query<Material>()
 					.Where(x => selectedProducts.Contains(x.ProductDefinition) && selectedProducts.Select(y => y.MaterialDefinition).Contains(x.MaterialDefinition));
-
-				//var sessionImpl = session.GetSessionImplementation();
-				//var factoryImplementor = sessionImpl.Factory;
-
-				//var nhLinqExpression = new NhLinqExpression(query.Expression, factoryImplementor);
-				//var translatorFactory = new ASTQueryTranslatorFactory();
-				//var translator = translatorFactory.CreateQueryTranslators(nhLinqExpression, null, false, sessionImpl.EnabledFilters, factoryImplementor).First();
 
 				var result = query.ToList();
 
