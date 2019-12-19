@@ -473,11 +473,12 @@ namespace NHibernate.Test.Linq.ByMethod
 				Assert.Ignore("Dialect does not support scalar sub-selects");
 
 			//Not really an aggregate filter, but included to ensure that this kind of query still works
-			var result = await (db.Products
+			var query = db.Products
 				.GroupBy(x => x.Supplier.CompanyName)
 				.Where(x => db.Products.Count(y => y.Supplier.CompanyName==x.Key && y.UnitPrice == 12.75M) == 1)
-				.Select(x => new { x.Key, Count = x.Count() })
-				.FirstAsync());
+				.Select(x => new { x.Key, Count = x.Count() });
+
+			var result = await (query.FirstAsync());
 
 			Assert.That(result.Key, Is.EqualTo("Zaanse Snoepfabriek"));
 			Assert.That(result.Count, Is.EqualTo(2));
