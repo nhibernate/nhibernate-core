@@ -237,21 +237,11 @@ namespace NHibernate.Linq.Visitors
 			return vistedNode;
 		}
 
-		protected bool IsEvaluatableMethodCall(MethodCallExpression expression)
-		{
-			if (expression == null) throw new ArgumentNullException(nameof(expression));
-
-			// Method calls are only evaluatable if they do not involve IQueryable objects.
-
-			return !IsQueryableExpression (expression.Object)
-				&& expression.Arguments.All(a => !IsQueryableExpression(a));
-		}
-
 		protected override Expression VisitMethodCall (MethodCallExpression expression)
 		{
 			if (expression == null) throw new ArgumentNullException(nameof(expression));
 
-			if (IsEvaluatableMethodCall(expression))
+			if (!IsEvaluatableMethodCall(expression))
 				IsCurrentSubtreeEvaluatable = false;
 
 			var vistedExpression = base.VisitMethodCall (expression);
@@ -629,6 +619,22 @@ namespace NHibernate.Linq.Visitors
 			// PartialEvaluationExceptionExpression is not evaluable, and its children aren't either (so we don't visit them).
 			IsCurrentSubtreeEvaluatable = false;
 			return partialEvaluationExceptionExpression;
+		}
+
+		/// <summary>
+		///		Crude implementation, only direct checks of queryable instance and arguments.
+		/// </summary>
+		/// <returns>
+		///		false if instance (on which method is invoked) or any of its arguments implements <see cref="IQueryable"/>.
+		/// </returns>
+		protected bool IsEvaluatableMethodCall(MethodCallExpression expression)
+		{
+			if (expression == null) throw new ArgumentNullException(nameof(expression));
+
+			// Method calls are only evaluatable if they do not involve IQueryable objects.
+
+			return !IsQueryableExpression (expression.Object)
+			       && expression.Arguments.All(a => !IsQueryableExpression(a));
 		}
 	}
 }

@@ -51,7 +51,10 @@ namespace NHibernate.Linq.Visitors
 		{
 			if (expression == null)
 				return null;
-			if (expression.NodeType != ExpressionType.Lambda)
+			if (expression.NodeType != ExpressionType.Lambda
+			    // inserted after allowing some parameters to be evaluatable; parameters should not be evaluated separately, but
+			    // only as part of the method invoking lambda definining them
+				&& expression.NodeType != ExpressionType.Parameter)
 			{
 				if (_partialEvaluationInfo.IsEvaluatableExpression(expression))
 				{
@@ -85,9 +88,15 @@ namespace NHibernate.Linq.Visitors
 		{
 			if (subtree == null) throw new ArgumentNullException(nameof(subtree));
 
+			// inserted after allowing some parameters to be evaluatable; parameters should not be evaluated separately, but
+			// only as part of the method invoking lambda definining them
+			if (subtree.NodeType == ExpressionType.Parameter)
+				return subtree;
+
 			if (subtree.NodeType != ExpressionType.Constant)
 				return Expression.Constant(
 					Expression.Lambda<Func<object>>(Expression.Convert(subtree, typeof(object))).Compile()(), subtree.Type);
+
 			ConstantExpression constantExpression = (ConstantExpression) subtree;
 			IQueryable queryable = constantExpression.Value as IQueryable;
 			if (queryable != null && queryable.Expression != constantExpression)
