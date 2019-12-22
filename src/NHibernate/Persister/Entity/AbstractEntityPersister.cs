@@ -3704,6 +3704,16 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 
+			//Reversed loop to prefer root columns in case same key names for subclasses
+			for (int i = SubclassTableSpan - 1; i >= 0; i--)
+			{
+				foreach (var key in GetSubclassTableKeyColumns(i))
+				{
+					var alias = i == 0 ? rootAlias : GenerateTableAlias(rootAlias, i);
+					dict[key] = $"{alias}.{key}";
+				}
+			}
+
 			return dict;
 		}
 
