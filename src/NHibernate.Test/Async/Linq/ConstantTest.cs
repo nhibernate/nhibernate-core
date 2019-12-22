@@ -13,10 +13,10 @@ using System.Linq;
 using System.Reflection;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Engine.Query;
+using NHibernate.Linq;
 using NHibernate.Linq.Visitors;
 using NHibernate.Util;
 using NUnit.Framework;
-using NHibernate.Linq;
 
 namespace NHibernate.Test.Linq
 {
@@ -234,6 +234,58 @@ namespace NHibernate.Test.Linq
 					Does
 						.Contain("located HQL query plan in cache")
 						.And.Not.Contain("unable to locate HQL query plan in cache"));
+			}
+		}
+
+		[Test]
+		public async Task DmlPlansAreCachedAsync()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+
+			var cache = (SoftLimitMRUCache)
+				queryPlanCacheType
+					.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
+					.GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			using (session.BeginTransaction())
+			{
+				await (db.Customers.Where(c => c.CustomerId == "UNKNOWN").UpdateAsync(x => new Customer {CompanyName = "Constant1"}));
+				await (db.Customers.Where(c => c.CustomerId == "ALFKI").UpdateAsync(x => new Customer {CompanyName = x.CompanyName}));
+				Assert.That(
+					cache,
+					Has.Count.EqualTo(2),
+					"Query plans should be cached.");
+
+				using (var spy = new LogSpy(queryPlanCacheType))
+				{
+					//Queries below should hit plan cache.
+					using (var sqlSpy = new SqlLogSpy())
+					{
+						await (db.Customers.Where(c => c.CustomerId == "ANATR").UpdateAsync(x => new Customer {CompanyName = x.CompanyName}));
+						await (db.Customers.Where(c => c.CustomerId == "UNKNOWN").UpdateAsync(x => new Customer {CompanyName = "Constant2"}));
+
+						var sqlEvents = sqlSpy.Appender.GetEvents();
+						Assert.That(
+							sqlEvents[0].RenderedMessage,
+							Does.Contain("ANATR").And.Not.Contain("UNKNOWN").And.Not.Contain("Constant1"),
+							"Unexpected constant parameter value");
+						Assert.That(
+							sqlEvents[1].RenderedMessage,
+							Does.Contain("UNKNOWN").And.Contain("Constant2").And.Not.Contain("Constant1"),
+							"Unexpected constant parameter value");
+					}
+
+					Assert.That(cache, Has.Count.EqualTo(2), "Additional queries should not cause a plan to be cached.");
+					Assert.That(
+						spy.GetWholeLog(),
+						Does
+							.Contain("located HQL query plan in cache")
+							.And.Not.Contain("unable to locate HQL query plan in cache"));
+
+					await (db.Customers.Where(c => c.CustomerId == "ANATR").UpdateAsync(x => new Customer {ContactName = x.ContactName}));
+					Assert.That(cache, Has.Count.EqualTo(3), "Query should be cached");
+				}
 			}
 		}
 
