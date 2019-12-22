@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2286
 	{
 	}
 
-	class IndividualCustomer : Entity
+	class IndividualCustomer : Customer
 	{
 	}
 }
