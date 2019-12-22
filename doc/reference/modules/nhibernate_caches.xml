@@ -108,7 +108,7 @@
 					<listitem>
 						<para>
 							Uses <classname>System.Runtime.Caching.MemoryCache.Default</classname> as the cache provider. This provider
-							is available for the .Net Framework only. See <xref linkend="NHibernate.Caches.RtMemoryCache" />.
+							is available as a .Net Standard NuGet package. See <xref linkend="NHibernate.Caches.RtMemoryCache" />.
 						</para>
 					</listitem>
 				</varlistentry>
