@@ -2154,7 +2154,7 @@ namespace NHibernate.Persister.Entity
 			return string.Concat(rootAlias, x, tableNumber.ToString(), "_");
 		}
 
-		public string GetSubclassAliasedColumn(string rootAlias, int tableNumber, string columnName)
+		private string GetSubclassAliasedColumn(string rootAlias, int tableNumber, string columnName)
 		{
 			if (string.IsNullOrEmpty(rootAlias))
 				return columnName;
