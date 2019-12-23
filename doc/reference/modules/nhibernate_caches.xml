@@ -754,10 +754,10 @@
 					<listitem>
 						<literal>NHibernate.Caches.StackExchangeRedis.TwoLayerCacheRegionStrategy</literal>
 						<para>
-						A strategy that extends <literal>NHibernate.Caches.StackExchangeRedis.DefaultRegionStrategy</literal> and uses
-						an additional local memory cache for faster readings. The local caches are invalidated by using Redis pubsub mechanism.
+						Extends <literal>NHibernate.Caches.StackExchangeRedis.DefaultRegionStrategy</literal> and uses
+						an additional local memory cache for faster readings. The local caches are invalidated by using Redis pub/sub mechanism.
 						This strategy should be used only for regions that have few write operations and a high expiration time.
-						This strategy has additional settings:
+						This strategy inherits additional settings from <literal>DefaultRegionStrategy</literal> and also has its own settings:
 						<varlistentry>
 							<term><literal>cache.region_strategy.two_layer_cache.use_pipelining</literal></term>
 							<listitem>
@@ -784,8 +784,8 @@
 					<listitem>
 						<literal>NHibernate.Caches.StackExchangeRedis.FastTwoLayerCacheRegionStrategy</literal>
 						<para>
-						A strategy that extends <literal>NHibernate.Caches.StackExchangeRedis.FastRegionStrategy</literal> and uses
-						an additional local memory cache for faster readings. The local caches are invalidated by using Redis pubsub mechanism.
+						Extends <literal>NHibernate.Caches.StackExchangeRedis.FastRegionStrategy</literal> and uses
+						an additional local memory cache for faster readings. The local caches are invalidated by using Redis pub/sub mechanism.
 						This strategy does not support <literal>ICache.Clear</literal> operation and should be used only for regions that have
 						few write operations and a high expiration time. This strategy has additional settings:
 						<varlistentry>
@@ -814,7 +814,7 @@
 					<listitem>
 						<literal>NHibernate.Caches.StackExchangeRedis.DistributedLocalCacheRegionStrategy</literal>
 						<para>
-						Uses only a memory cache to store the values and uses Redis pubsub mechanism to synchronize data between other local caches.
+						Uses only a memory cache to store the values and uses Redis pub/sub mechanism to synchronize data between other local caches.
 						The synchronization between caches is done by comparing the UTC <literal>DateTime.Ticks</literal>, which represent when the
 						operation was performed. When two operations have the same <literal>DateTime.Ticks</literal>, then the client with the highest
 						id wins. This strategy should be used only for regions that have few write operations and a high expiration time. It is recommended
