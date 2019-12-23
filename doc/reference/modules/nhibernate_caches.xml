@@ -819,7 +819,7 @@
 						operation was performed. When two operations have the same <literal>DateTime.Ticks</literal>, then the client with the highest
 						id wins. This strategy should be used only for regions that have few write operations and a high expiration time. It is recommended
 						to use <literal>NHibernate.Caches.StackExchangeRedis.TwoLayerCacheRegionStrategy</literal>, when the instances where the strategy
-						would run are ofter restarted/recycled. In order to use this strategy a custom <literal>ICacheRegionStrategyFactory</literal>
+						would run are often restarted/recycled. In order to use this strategy a custom <literal>ICacheRegionStrategyFactory</literal>
 						has to be provided (see <literal>cache.region_strategy_factory</literal> setting), where the strategy is created with a custom
 						<literal>RegionMemoryCacheBase</literal> implementation. This strategy has additional settings:
 						<varlistentry>
@@ -884,13 +884,6 @@
 				<listitem>
 					The assembly qualified name of the region strategy factory.
 					Defaults to <literal>NHibernate.Caches.StackExchangeRedis.DefaultCacheRegionStrategyFactory</literal>.
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term><literal>cache.connection_multiplexer_provider</literal></term>
-				<listitem>
-					The assembly qualified name of the connection multiplexer provider.
-					Defaults to <literal>NHibernate.Caches.StackExchangeRedis.DefaultConnectionMultiplexerProvider</literal>.
 				</listitem>
 			</varlistentry>
 			<varlistentry>
