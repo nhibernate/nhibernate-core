@@ -2,6 +2,6 @@ namespace NHibernate.Test.DynamicEntity
 {
 	public interface Customer:Person
 	{
-		Company Company { get; set;}
+		Company Company { get; set; }
 	}
 }

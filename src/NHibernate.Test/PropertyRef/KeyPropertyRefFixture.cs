@@ -52,7 +52,6 @@ namespace NHibernate.Test.PropertyRef
 
 			Assert.AreEqual(1, newA.Items.Count);
 			s.Close();
-
 		}
 	}
 }

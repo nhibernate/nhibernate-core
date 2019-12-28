@@ -44,7 +44,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2234
 		public static readonly List<MyUsertype> _values =
 			new List<MyUsertype> { new MyUsertype(1, "Value 1"), new MyUsertype(2, "Value 2") };
 
-
 		public static MyUsertype Value1
 		{
 			get { return _values[0]; }
@@ -64,7 +63,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2234
 	public class SimpleCustomType : IUserType
 	{
 		private static readonly SqlType[] ReturnSqlTypes = { SqlTypeFactory.Int32 };
-
 
 		#region IUserType Members
 
@@ -129,5 +127,4 @@ namespace NHibernate.Test.NHSpecificTest.NH2234
 
 		#endregion
 	}
-
 }

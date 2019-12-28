@@ -131,7 +131,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task BrokenAsync()
 		{
@@ -193,7 +192,6 @@ namespace NHibernate.Test.Legacy
 			await (t.CommitAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task CachedQueryAsync()

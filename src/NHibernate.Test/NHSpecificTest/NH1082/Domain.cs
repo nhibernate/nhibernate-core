@@ -1,4 +1,3 @@
-
 namespace NHibernate.Test.NHSpecificTest.NH1082
 {
 	public class C

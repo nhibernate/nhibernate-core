@@ -25,7 +25,6 @@ namespace NHibernate.Linq.Visitors
 			return base.VisitConditional(expression);
 		}
 
-
 		protected override Expression VisitBinary(BinaryExpression expression)
 		{
 			// See NH-3423. Conditional expression where the test expression is a comparison
@@ -45,12 +44,10 @@ namespace NHibernate.Linq.Visitors
 			return base.VisitBinary(expression);
 		}
 
-
 		private static bool IsConstruction(Expression expression)
 		{
 			return expression is NewExpression || expression is MemberInitExpression;
 		}
-
 
 		private static bool IsConstructionToNullComparison(Expression expression)
 		{

@@ -8,7 +8,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Meta-Attribute collection.
 		/// </summary>
-		IDictionary<string, MetaAttribute> MetaAttributes { get;set;}
+		IDictionary<string, MetaAttribute> MetaAttributes { get; set; }
 
 		/// <summary>
 		/// Retrieve the <see cref="MetaAttribute"/>

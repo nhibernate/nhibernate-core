@@ -59,7 +59,6 @@ namespace NHibernate.Test.TypesTest
 			Assert.AreEqual( int64Type, TypeFactory.HeuristicType( reflectedType ), "using System.Type should return nh Int64Type" );
 			Assert.AreEqual( int64Type, TypeFactory.HeuristicType( reflectedType.AssemblyQualifiedName ), "using AQN should return nh Int64Type" );
 			Assert.AreEqual( int64Type, TypeFactory.HeuristicType( reflectedType.FullName ), "using FullName should return nh Int64Type" );
-
 		}
 
 		public class GenericPropertyClass

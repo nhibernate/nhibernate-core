@@ -44,7 +44,6 @@ namespace NHibernate.Test.CompositeId
 			}
 		}
 
-
 		/// <summary>
 		/// Test the basic CRUD operations for a class with a Composite Identifier
 		/// </summary>

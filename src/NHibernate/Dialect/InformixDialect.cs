@@ -68,7 +68,7 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("substr", new StandardSQLFunction("substr"));
 			//			RegisterFunction("trim", new AnsiTrimFunction()); // defined in base class
-			//			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));  // defined in base class
+			//			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32)); // defined in base class
 			RegisterFunction("coalesce", new NvlFunction()); // base class override
 			//			RegisterFunction("abs", new StandardSQLFunction("abs")); 
 			//			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));

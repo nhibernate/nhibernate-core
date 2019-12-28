@@ -89,6 +89,7 @@ namespace NHibernate.AdoNet
 				{
 					return 0;
 				}
+
 				var batcherCommand = _batcher.Driver.GenerateCommand(
 					_commandType,
 					_sql.ToSqlString(),

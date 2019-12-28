@@ -105,7 +105,6 @@ namespace NHibernate.Loader
 				CollectionHelper.EmptyDictionary<string, IFilter>());
 		}
 
-
 		private void InitStatementString(OuterJoinableAssociation rootAssociation, SqlString projection, SqlString condition, SqlString orderBy, SqlString groupBy, SqlString having, LockMode lockMode)
 		{
 			SqlString selectClause = projection;

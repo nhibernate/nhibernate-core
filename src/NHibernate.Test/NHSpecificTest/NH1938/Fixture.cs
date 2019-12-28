@@ -8,7 +8,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1938
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
 		{
 			// Database needs to be case-sensitive
@@ -48,6 +47,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1938
 				t.Rollback();
 			}
 		} 
-
 	}
 }

@@ -36,5 +36,22 @@ namespace NHibernate.Test.CollectionTest
 			
 			Assert.That(items, Is.EqualTo(new[] {"A", "B", "C", "D", "E"}));
 		}
+
+		[Test]
+		public void SelectManyWorksCorrectlyWithIReadOnlyCollection()
+		{
+			var bags = new IReadOnlyCollection<string>[]
+			{
+				new List<string> {"A"},
+				new PersistentGenericBag<string>(null, new[] {"B"}),
+				new PersistentIdentifierBag<string>(null, new[] {"C"}),
+				(IReadOnlyList<string>)new PersistentGenericList<string>(null, new[] {"D"}),
+				new PersistentGenericSet<string>(null, new HashSet<string> {"E"})
+			};
+			
+			var items = bags.SelectMany(b => b).ToArray();
+
+			Assert.That(items, Is.EqualTo(new[] {"A", "B", "C", "D", "E"}));
+		}
 	}
 }

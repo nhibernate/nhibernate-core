@@ -25,7 +25,6 @@ namespace NHibernate.Dialect
 		/// </summary>
 		private bool _binaryGuid = true;
 
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -108,7 +107,6 @@ namespace NHibernate.Dialect
 			else
 				RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
 		}
-
 
 		public override void Configure(IDictionary<string, string> settings)
 		{
@@ -376,7 +374,6 @@ namespace NHibernate.Dialect
 			if (quoted)
 				return OpenQuote + name + CloseQuote;
 			return name;
-
 		}
 
 		public override string NoColumnsInsertString

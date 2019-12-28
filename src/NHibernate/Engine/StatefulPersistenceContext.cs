@@ -1477,7 +1477,6 @@ namespace NHibernate.Engine
 					{
 						ce.AfterDeserialize(Session.Factory);
 					}
-
 				}
 				catch (HibernateException he)
 				{

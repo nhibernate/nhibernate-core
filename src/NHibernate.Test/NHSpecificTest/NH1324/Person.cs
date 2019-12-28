@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 
-
 namespace NHibernate.Test.NHSpecificTest.NH1324
 {
 	public class Person
@@ -13,7 +12,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1324
 
 		public Person()
 		{
-
 		}
 
 		public Person(string name, int? iq, int shoeSize)

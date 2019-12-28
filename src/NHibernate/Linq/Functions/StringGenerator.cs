@@ -35,7 +35,6 @@ namespace NHibernate.Linq.Functions
 					treeBuilder.Constant(escapeCharExpression.Value));
 			}
 			throw new ArgumentException("The escape character must be specified as literal value or a string variable");
-
 		}
 
 		public bool SupportsMethod(MethodInfo method)
@@ -59,7 +58,6 @@ namespace NHibernate.Linq.Functions
 			return this;
 		}
 	}
-
 
 	public class LengthGenerator : BaseHqlGeneratorForProperty
 	{

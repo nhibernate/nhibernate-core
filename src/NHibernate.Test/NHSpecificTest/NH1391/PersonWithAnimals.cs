@@ -9,8 +9,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1391
 	{
 		public PersonWithAnimals()
 		{
-
 		}
-
 	}
 }

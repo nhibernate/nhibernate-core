@@ -97,7 +97,6 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 			get { return Array.Empty<string>(); }
 		}
 
-
 		protected override void AddMappings(Cfg.Configuration configuration)
 		{
 			var mapper = new ModelMapper();

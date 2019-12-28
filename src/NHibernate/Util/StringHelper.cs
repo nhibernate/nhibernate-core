@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-
 namespace NHibernate.Util
 {
 	/// <summary></summary>
@@ -529,7 +528,6 @@ namespace NHibernate.Util
 			return !IsEmpty(str);
 		}
 
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -810,7 +808,6 @@ namespace NHibernate.Util
 			return new[] { filterName, parameterName };
 		}
 
-
 		/// <summary>
 		/// Return the index of the next line separator, starting at startIndex. If will match
 		/// the first CRLF or LF line separator. If there is no match, -1 will be returned. When
@@ -832,7 +829,6 @@ namespace NHibernate.Util
 
 			return matchStartIdx;
 		}
-
 
 		/// <summary>
 		/// Check if the given index points to a line separator in the string. Both CRLF and LF

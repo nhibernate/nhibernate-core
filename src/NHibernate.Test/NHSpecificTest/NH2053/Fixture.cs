@@ -76,6 +76,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2053
 				}
 			}
 		}
-
 	}
 }

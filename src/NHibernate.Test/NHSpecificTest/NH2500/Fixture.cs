@@ -18,7 +18,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2500
         public virtual string Name { get; set; }
     }
 
-
     [TestFixture]
     public class Fixture : TestCaseMappingByCode
     {

@@ -69,7 +69,6 @@ namespace NHibernate.Test.ExceptionsTest
 		[Test]
 		public void IntegrityViolation()
 		{
-
 			//ISQLExceptionConverter converter = Dialect.BuildSQLExceptionConverter();
 			ISQLExceptionConverter converter = Sfi.Settings.SqlExceptionConverter;
 

@@ -1,6 +1,5 @@
 using System;
 
-
 namespace NHibernate.Test.Stateless.Fetching
 {
 	public class Task
@@ -45,7 +44,6 @@ namespace NHibernate.Test.Stateless.Fetching
 			}
 		}
 
-
 		public virtual User User
 		{
 			get
@@ -58,7 +56,6 @@ namespace NHibernate.Test.Stateless.Fetching
 				this.user = value;
 			}
 		}
-
 
 		public virtual Resource Resource
 		{
@@ -73,7 +70,6 @@ namespace NHibernate.Test.Stateless.Fetching
 			}
 		}
 
-
 		public virtual string Description
 		{
 			get
@@ -86,7 +82,6 @@ namespace NHibernate.Test.Stateless.Fetching
 				this.description = value;
 			}
 		}
-
 
 		public virtual DateTime DueDate
 		{
@@ -101,7 +96,6 @@ namespace NHibernate.Test.Stateless.Fetching
 			}
 		}
 
-
 		public virtual DateTime? StartDate
 		{
 			get
@@ -115,7 +109,6 @@ namespace NHibernate.Test.Stateless.Fetching
 			}
 		}
 
-
 		public virtual DateTime? CompletionDate
 		{
 			get
@@ -128,7 +121,5 @@ namespace NHibernate.Test.Stateless.Fetching
 				this.completionDate = value;
 			}
 		}
-
 	}
-
 }

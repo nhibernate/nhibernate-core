@@ -18,7 +18,6 @@ namespace NHibernate
 		{
 		}
 
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MappingException"/> class.
 		/// </summary>
@@ -49,5 +48,4 @@ namespace NHibernate
 		{
 		}
 	}
-
 }

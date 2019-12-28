@@ -16,7 +16,6 @@ namespace NHibernate.Test.Cascade.Circle
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-
 	/**
 	* The test case uses the following model:
 	*

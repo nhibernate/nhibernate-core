@@ -320,7 +320,6 @@ namespace NHibernate.Test.Hql.Ast
 			}
 		}
 
-
 		[Test]
 		public void UnaryMinusBeforeParenthesesHandledCorrectly()
 		{

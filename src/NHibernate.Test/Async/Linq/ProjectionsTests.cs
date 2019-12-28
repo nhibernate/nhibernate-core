@@ -109,7 +109,6 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual("nhibernate nhibernate", query[1].DoubleName);
 			Assert.AreEqual("rahien rahien", query[2].DoubleName);
 
-
 			Assert.AreEqual(new DateTime(2010, 06, 17), query[0].RegisteredAt);
 			Assert.AreEqual(new DateTime(2000, 1, 1), query[1].RegisteredAt);
 			Assert.AreEqual(new DateTime(1998, 12, 31), query[2].RegisteredAt);
@@ -127,7 +126,6 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual("rahien", query[1].Key);
 			Assert.AreEqual("nhibernate", query[2].Key);
 
-
 			Assert.AreEqual(new DateTime(2010, 06, 17), query[0].Value);
 			Assert.AreEqual(new DateTime(1998, 12, 31), query[1].Value);
 			Assert.AreEqual(new DateTime(2000, 1, 1), query[2].Value);
@@ -143,7 +141,6 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual("ayende", query[0].Name);
 			Assert.AreEqual("rahien", query[1].Name);
 			Assert.AreEqual("nhibernate", query[2].Name);
-
 
 			Assert.AreEqual(new DateTime(2010, 06, 17), query[0].RegisteredAt);
 			Assert.AreEqual(new DateTime(1998, 12, 31), query[1].RegisteredAt);
@@ -522,7 +519,6 @@ namespace NHibernate.Test.Linq
 		{
 			return string.Format("User {0} logged in at {1}", name, lastLoginDate);
 		}
-
 
 		/// <summary>
 		/// This mimic classes in System.Data.Services.Internal.

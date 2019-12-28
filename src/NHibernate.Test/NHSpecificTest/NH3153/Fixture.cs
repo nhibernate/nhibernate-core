@@ -23,7 +23,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3153
 			Assert.That(((SimpleValue)pc.Identifier).IdentifierGeneratorProperties["schema"], Is.EqualTo("Test"));
 		}
 
-
 		[Test]
 		public void ShouldGetIdentifierSchemaFromMappingElement()
 		{

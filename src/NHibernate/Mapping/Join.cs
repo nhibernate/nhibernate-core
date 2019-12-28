@@ -164,7 +164,6 @@ namespace NHibernate.Mapping
 				}
 				return isLazy.Value;
 			}
-
 		}
 
 		public virtual bool IsOptional

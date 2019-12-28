@@ -18,7 +18,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1845
 	[TestFixture]
 	public class FixtureAsync : TestCaseMappingByCode
 	{
-
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();

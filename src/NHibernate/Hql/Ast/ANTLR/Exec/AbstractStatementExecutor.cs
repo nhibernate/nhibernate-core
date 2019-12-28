@@ -42,7 +42,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 		protected ISessionFactoryImplementor Factory
 		{
-			get{return Walker.SessionFactoryHelper.Factory;}
+			get { return Walker.SessionFactoryHelper.Factory; }
 		}
 
 		protected virtual void CoordinateSharedCacheCleanup(ISessionImplementor session)

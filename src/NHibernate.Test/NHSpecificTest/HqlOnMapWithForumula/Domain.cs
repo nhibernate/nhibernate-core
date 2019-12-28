@@ -22,14 +22,12 @@ namespace NHibernate.Test.NHSpecificTest.HqlOnMapWithForumula
             set { id = value; }
 		}
 
-
     	public IDictionary<string, Info> MyMaps
     	{
     		get { return myMap; }
     		set { myMap = value; }
     	}
     }
-
 
     public class Info
     {

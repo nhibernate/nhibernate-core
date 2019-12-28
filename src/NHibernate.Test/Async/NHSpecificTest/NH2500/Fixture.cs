@@ -23,7 +23,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2500
 {
     using System.Threading.Tasks;
 
-
     [TestFixture]
     public class FixtureAsync : TestCaseMappingByCode
     {
