@@ -258,6 +258,7 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
+		[KnownBug("GH-2222")]
 		[Test]
 		public void DmlPlansAreCached()
 		{
@@ -273,9 +274,10 @@ namespace NHibernate.Test.Linq
 			{
 				db.Customers.Where(c => c.CustomerId == "UNKNOWN").Update(x => new Customer {CompanyName = "Constant1"});
 				db.Customers.Where(c => c.CustomerId == "ALFKI").Update(x => new Customer {CompanyName = x.CompanyName});
+				db.Customers.Where(c => c.CustomerId == "UNKNOWN").Update(x => new Customer {ContactName = "Constant1"});
 				Assert.That(
 					cache,
-					Has.Count.EqualTo(2),
+					Has.Count.EqualTo(3),
 					"Query plans should be cached.");
 
 				using (var spy = new LogSpy(queryPlanCacheType))
@@ -285,6 +287,7 @@ namespace NHibernate.Test.Linq
 					{
 						db.Customers.Where(c => c.CustomerId == "ANATR").Update(x => new Customer {CompanyName = x.CompanyName});
 						db.Customers.Where(c => c.CustomerId == "UNKNOWN").Update(x => new Customer {CompanyName = "Constant2"});
+						db.Customers.Where(c => c.CustomerId == "UNKNOWN").Update(x => new Customer {ContactName = "Constant2"});
 
 						var sqlEvents = sqlSpy.Appender.GetEvents();
 						Assert.That(
@@ -293,11 +296,17 @@ namespace NHibernate.Test.Linq
 							"Unexpected constant parameter value");
 						Assert.That(
 							sqlEvents[1].RenderedMessage,
-							Does.Contain("UNKNOWN").And.Contain("Constant2").And.Not.Contain("Constant1"),
+							Does.Contain("UNKNOWN").And.Contain("Constant2").And.Contain("CompanyName").IgnoreCase
+								.And.Not.Contain("Constant1"),
+							"Unexpected constant parameter value");
+						Assert.That(
+							sqlEvents[1].RenderedMessage,
+							Does.Contain("UNKNOWN").And.Contain("Constant2").And.Contain("ContactName").IgnoreCase
+								.And.Not.Contain("Constant1"),
 							"Unexpected constant parameter value");
 					}
 
-					Assert.That(cache, Has.Count.EqualTo(2), "Additional queries should not cause a plan to be cached.");
+					Assert.That(cache, Has.Count.EqualTo(3), "Additional queries should not cause a plan to be cached.");
 					Assert.That(
 						spy.GetWholeLog(),
 						Does
@@ -305,7 +314,7 @@ namespace NHibernate.Test.Linq
 							.And.Not.Contain("unable to locate HQL query plan in cache"));
 
 					db.Customers.Where(c => c.CustomerId == "ANATR").Update(x => new Customer {ContactName = x.ContactName});
-					Assert.That(cache, Has.Count.EqualTo(3), "Query should be cached");
+					Assert.That(cache, Has.Count.EqualTo(4), "Query should be cached");
 				}
 			}
 		}
