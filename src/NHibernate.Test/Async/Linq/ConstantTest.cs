@@ -11,12 +11,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using NHibernate.Criterion;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Engine.Query;
+using NHibernate.Linq;
 using NHibernate.Linq.Visitors;
 using NHibernate.Util;
 using NUnit.Framework;
-using NHibernate.Linq;
 
 namespace NHibernate.Test.Linq
 {
@@ -264,6 +265,27 @@ namespace NHibernate.Test.Linq
 			await ((from c in db.Customers
 			 where c.CustomerId == "ALFKI"
 			 select new { c.CustomerId, c.ContactName, Constant = 1 }).FirstAsync());
+			Assert.That(
+				cache,
+				Has.Count.EqualTo(0),
+				"Query plan should not be cached.");
+		}
+
+		[Test]
+		public async Task PlansWithNonParameterizedConstantsAreNotCachedForExpandedQueryAsync()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+
+			var cache = (SoftLimitMRUCache)
+				queryPlanCacheType
+					.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
+					.GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			var ids = new[] {"ANATR", "UNKNOWN"}.ToList();
+			await (db.Customers.Where(x => ids.Contains(x.CustomerId)).Select(
+				c => new {c.CustomerId, c.ContactName, Constant = 1}).FirstAsync());
+
 			Assert.That(
 				cache,
 				Has.Count.EqualTo(0),
