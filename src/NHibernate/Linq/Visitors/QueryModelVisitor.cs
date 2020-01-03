@@ -438,20 +438,20 @@ namespace NHibernate.Linq.Visitors
 
 		private void VisitInsertClause(Expression expression)
 		{
-			var listInit = expression as ListInitExpression
+			var assignments = expression as BlockExpression
 				?? throw new QueryException("Malformed insert expression");
 			var insertedType = VisitorParameters.TargetEntityType;
 			var idents = new List<HqlIdent>();
 			var selectColumns = new List<HqlExpression>();
 
 			//Extract the insert clause from the projected ListInit
-			foreach (var assignment in listInit.Initializers)
+			foreach (BinaryExpression assignment in assignments.Expressions)
 			{
-				var member = (ConstantExpression)assignment.Arguments[0];
-				var value = assignment.Arguments[1];
+				var propName = ((ParameterExpression) assignment.Left).Name;
+				var value = assignment.Right;
 
 				//The target property
-				idents.Add(_hqlTree.TreeBuilder.Ident((string)member.Value));
+				idents.Add(_hqlTree.TreeBuilder.Ident(propName));
 
 				var valueHql = HqlGeneratorExpressionVisitor.Visit(value, VisitorParameters).AsExpression();
 				selectColumns.Add(valueHql);
@@ -467,16 +467,15 @@ namespace NHibernate.Linq.Visitors
 
 		private void VisitUpdateClause(Expression expression)
 		{
-			var listInit = expression as ListInitExpression
+			var assignments = expression as BlockExpression
 				?? throw new QueryException("Malformed update expression");
-			foreach (var initializer in listInit.Initializers)
+			foreach (BinaryExpression assigment in assignments.Expressions)
 			{
-				var member = (ConstantExpression)initializer.Arguments[0];
-				var setter = initializer.Arguments[1];
+				var propName = ((ParameterExpression) assigment.Left).Name;
+				var setter = assigment.Right;
 				var setterHql = HqlGeneratorExpressionVisitor.Visit(setter, VisitorParameters).AsExpression();
 
-				_hqlTree.AddSet(_hqlTree.TreeBuilder.Equality(_hqlTree.TreeBuilder.Ident((string)member.Value),
-					setterHql));
+				_hqlTree.AddSet(_hqlTree.TreeBuilder.Equality(_hqlTree.TreeBuilder.Ident(propName), setterHql));
 			}
 		}
 
