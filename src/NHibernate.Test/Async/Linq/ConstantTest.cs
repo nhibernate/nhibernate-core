@@ -237,7 +237,6 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-		[KnownBug("GH-2222")]
 		[Test]
 		public async Task DmlPlansAreCachedAsync()
 		{
@@ -279,7 +278,7 @@ namespace NHibernate.Test.Linq
 								.And.Not.Contain("Constant1"),
 							"Unexpected constant parameter value");
 						Assert.That(
-							sqlEvents[1].RenderedMessage,
+							sqlEvents[2].RenderedMessage,
 							Does.Contain("UNKNOWN").And.Contain("Constant2").And.Contain("ContactName").IgnoreCase
 								.And.Not.Contain("Constant1"),
 							"Unexpected constant parameter value");
