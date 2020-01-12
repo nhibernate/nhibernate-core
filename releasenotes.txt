@@ -1,3 +1,20 @@
+﻿Build 5.2.7
+=============================
+
+Release notes - NHibernate - Version 5.2.7
+
+4 issues were resolved in this release.
+
+** Bug
+
+   * #2302 Backport sqlite.binaryguid to configuration schema
+   * #2298 Dml Linq Update Produce Wrong Sql
+   * #2296 Missing Row Count in Debug Log for Future queries
+
+** Task
+
+   * #2303 Release 5.2.7
+
 Build 5.2.6
 =============================
 
