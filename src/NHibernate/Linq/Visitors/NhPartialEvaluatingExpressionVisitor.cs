@@ -11,7 +11,6 @@ namespace NHibernate.Linq.Visitors
 {
 	internal class NhPartialEvaluatingExpressionVisitor : RelinqExpressionVisitor, IPartialEvaluationExceptionExpressionVisitor
 	{
-		private readonly PartialEvaluationInfo _partialEvaluationInfo;
 		private static readonly NhEvaluatableExpressionFilter ExpressionFilter = new NhEvaluatableExpressionFilter();
 
 		protected override Expression VisitConstant(ConstantExpression expression)
@@ -32,15 +31,13 @@ namespace NHibernate.Linq.Visitors
 
 			var evaluatedExpression = firstPassVisitor.Visit(expression);
 
-			var visitor = new NhPartialEvaluatingExpressionVisitor(partialEvaluationInfo);
-			var reEvaluatedExpression = visitor.Visit(evaluatedExpression);
+			var reEvaluatedExpression = new NhPartialEvaluatingExpressionVisitor().Visit(evaluatedExpression);
 
 			return reEvaluatedExpression;
 		}
 
-		private NhPartialEvaluatingExpressionVisitor(PartialEvaluationInfo partialEvaluationInfo)
+		private NhPartialEvaluatingExpressionVisitor()
 		{
-			_partialEvaluationInfo = partialEvaluationInfo ?? throw new ArgumentNullException(nameof(partialEvaluationInfo));
 		}
 
 		public Expression VisitPartialEvaluationException(PartialEvaluationExceptionExpression partialEvaluationExceptionExpression)
