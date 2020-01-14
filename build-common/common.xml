@@ -13,8 +13,8 @@
 
 	<!-- This is used only for build folder -->
 	<!-- TODO: Either remove or refactor to use NHibernate.props -->
-	<property name="project.version" value="5.1.6" overwrite="false" />
-	<property name="project.version.numeric" value="5.1.6" overwrite="false" />
+	<property name="project.version" value="5.1.7" overwrite="false" />
+	<property name="project.version.numeric" value="5.1.7" overwrite="false" />
 
 	<!-- properties used to connect to database for testing -->
 	<include buildfile="nhibernate-properties.xml" />
