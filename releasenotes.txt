@@ -1,3 +1,11 @@
+Build 5.1.7
+=============================
+
+Release notes - NHibernate - Version 5.1.7
+
+** Bug
+    * #2298 Dml Linq Update Produce Wrong Sql
+
 Build 5.1.6
 =============================
 
