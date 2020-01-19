@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using NHibernate.Criterion;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Engine.Query;
 using NHibernate.Linq;
@@ -336,6 +337,63 @@ namespace NHibernate.Test.Linq
 				cache,
 				Has.Count.EqualTo(0),
 				"Query plan should not be cached.");
+		}
+
+		[Test]
+		public void PlansWithNonParameterizedConstantsAreNotCachedForExpandedQuery()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+
+			var cache = (SoftLimitMRUCache)
+				queryPlanCacheType
+					.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
+					.GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			var ids = new[] {"ANATR", "UNKNOWN"}.ToList();
+			db.Customers.Where(x => ids.Contains(x.CustomerId)).Select(
+				c => new {c.CustomerId, c.ContactName, Constant = 1}).First();
+
+			Assert.That(
+				cache,
+				Has.Count.EqualTo(0),
+				"Query plan should not be cached.");
+		}
+
+		//GH-2298 - Different Update queries - same query cache plan
+		[Test]
+		public void DmlPlansForExpandedQuery()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+
+			var cache = (SoftLimitMRUCache)
+				queryPlanCacheType
+					.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
+					.GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			using (session.BeginTransaction())
+			{
+				var list = new[] {"UNKNOWN", "UNKNOWN2"}.ToList();
+				db.Customers.Where(x => list.Contains(x.CustomerId)).Update(
+					x => new Customer
+					{
+						CompanyName = "Constant1"
+					});
+
+				db.Customers.Where(x => list.Contains(x.CustomerId))
+				.Update(
+					x => new Customer
+					{
+						ContactName = "Constant1"
+					});
+
+				Assert.That(
+					cache.Count,
+					//2 original queries + 2 expanded queries are expected in cache
+					Is.EqualTo(0).Or.EqualTo(4),
+					"Query plans should either be cached separately or not cached at all.");
+			}
 		}
 	}
 }
