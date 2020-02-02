@@ -14,7 +14,7 @@ using NHibernate.Util;
 
 namespace NHibernate
 {
-	// 6.0 TODO: Convert to interface methods
+	// 6.0 TODO: Convert most of these extensions to interface methods
 	public static class SessionExtensions
 	{
 		/// <summary>
@@ -39,6 +39,15 @@ namespace NHibernate
 		{
 			return ReflectHelper.CastOrThrow<AbstractSessionImpl>(session, "query batch").CreateQueryBatch();
 		}
+
+		// 6.0 TODO: consider if it should be added as a property on ISession then obsolete this, or if it should stay here as an extension method.
+		/// <summary>
+		/// Get the current transaction if any is ongoing, else <see langword="null" />.
+		/// </summary>
+		/// <param name="session">The session.</param>
+		/// <returns>The current transaction or <see langword="null" />..</returns>
+		public static ITransaction GetCurrentTransaction(this ISession session)
+			=> session.GetSessionImplementation().ConnectionManager.CurrentTransaction;
 	}
 
 	/// <summary>

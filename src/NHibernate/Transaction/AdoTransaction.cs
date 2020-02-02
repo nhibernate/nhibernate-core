@@ -370,6 +370,7 @@ namespace NHibernate.Transaction
 					// don't dispose of multiple times.
 					return;
 				}
+				_isAlreadyDisposed = true;
 
 				// free managed resources that are being managed by the AdoTransaction if we
 				// know this call came through Dispose()
@@ -392,8 +393,6 @@ namespace NHibernate.Transaction
 				}
 
 				// free unmanaged resources here
-
-				_isAlreadyDisposed = true;
 			}
 		}
 
