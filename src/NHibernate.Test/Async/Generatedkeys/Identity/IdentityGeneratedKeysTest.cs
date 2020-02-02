@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
 using NHibernate.Cfg;
 using NUnit.Framework;
 
@@ -42,15 +41,17 @@ namespace NHibernate.Test.Generatedkeys.Identity
 		[Test]
 		public async Task IdentityColumnGeneratedIdsAsync()
 		{
-			ISession s = OpenSession();
-			s.BeginTransaction();
-			MyEntity myEntity = new MyEntity("test");
-			long id = (long)await (s.SaveAsync(myEntity));
-			Assert.IsNotNull(id,"identity column did not force immediate insert");
-			Assert.AreEqual(id, myEntity.Id);
-			await (s.DeleteAsync(myEntity));
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				MyEntity myEntity = new MyEntity("test");
+				long id = (long) await (s.SaveAsync(myEntity));
+				Assert.IsNotNull(id, "identity column did not force immediate insert");
+				Assert.AreEqual(id, myEntity.Id);
+				await (s.DeleteAsync(myEntity));
+				await (t.CommitAsync());
+				s.Close();
+			}
 		}
 	}
 }

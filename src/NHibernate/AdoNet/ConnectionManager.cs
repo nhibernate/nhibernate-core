@@ -406,6 +406,8 @@ namespace NHibernate.AdoNet
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("Use CurrentTransaction instead, and check for null.")]
 		public ITransaction Transaction
 		{
 			get

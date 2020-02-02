@@ -11,7 +11,6 @@
 using System;
 using System.Collections;
 using System.Threading;
-using NHibernate.Dialect;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Id;
 using NHibernate.Persister.Entity;
@@ -373,14 +372,16 @@ namespace NHibernate.Test.Hql.Ast
 		public async Task InsertWithSelectListUsingJoinsAsync()
 		{
 			// this is just checking parsing and syntax...
-			ISession s = OpenSession();
-			s.BeginTransaction();
-			await (s.CreateQuery(
-				"insert into Animal (description, bodyWeight) select h.description, h.bodyWeight from Human h where h.mother.mother is not null")
-				.ExecuteUpdateAsync());
-			await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.CreateQuery(
+					 "insert into Animal (description, bodyWeight) select h.description, h.bodyWeight from Human h where h.mother.mother is not null")
+				 .ExecuteUpdateAsync());
+				await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
+				await (t.CommitAsync());
+				s.Close();
+			}
 		}
 
 		#endregion
@@ -833,41 +834,48 @@ namespace NHibernate.Test.Hql.Ast
 		public async Task DeleteWithSubqueryAsync()
 		{
 			// setup the test data...
-			ISession s = OpenSession();
-			s.BeginTransaction();
-			var owner = new SimpleEntityWithAssociation {Name = "myEntity-1"};
-			owner.AddAssociation("assoc-1");
-			owner.AddAssociation("assoc-2");
-			owner.AddAssociation("assoc-3");
-			await (s.SaveAsync(owner));
-			var owner2 = new SimpleEntityWithAssociation {Name = "myEntity-2"};
-			owner2.AddAssociation("assoc-1");
-			owner2.AddAssociation("assoc-2");
-			owner2.AddAssociation("assoc-3");
-			owner2.AddAssociation("assoc-4");
-			await (s.SaveAsync(owner2));
-			var owner3 = new SimpleEntityWithAssociation {Name = "myEntity-3"};
-			await (s.SaveAsync(owner3));
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var owner = new SimpleEntityWithAssociation { Name = "myEntity-1" };
+				owner.AddAssociation("assoc-1");
+				owner.AddAssociation("assoc-2");
+				owner.AddAssociation("assoc-3");
+				await (s.SaveAsync(owner));
+				var owner2 = new SimpleEntityWithAssociation { Name = "myEntity-2" };
+				owner2.AddAssociation("assoc-1");
+				owner2.AddAssociation("assoc-2");
+				owner2.AddAssociation("assoc-3");
+				owner2.AddAssociation("assoc-4");
+				await (s.SaveAsync(owner2));
+				var owner3 = new SimpleEntityWithAssociation { Name = "myEntity-3" };
+				await (s.SaveAsync(owner3));
+				await (t.CommitAsync());
+				s.Close();
+			}
 
 			// now try the bulk delete
-			s = OpenSession();
-			s.BeginTransaction();
-			int count =
-				await (s.CreateQuery("delete SimpleEntityWithAssociation e where size(e.AssociatedEntities ) = 0 and e.Name like '%'").
-					ExecuteUpdateAsync());
-			Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				int count =
+					await (s.CreateQuery(
+						 "delete SimpleEntityWithAssociation e where size(e.AssociatedEntities ) = 0 and e.Name like '%'")
+					 .ExecuteUpdateAsync());
+				Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
+				await (t.CommitAsync());
+				s.Close();
+			}
 
 			// finally, clean up
-			s = OpenSession();
-			s.BeginTransaction();
-			await (s.CreateQuery("delete SimpleAssociatedEntity").ExecuteUpdateAsync());
-			await (s.CreateQuery("delete SimpleEntityWithAssociation").ExecuteUpdateAsync());
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.CreateQuery("delete SimpleAssociatedEntity").ExecuteUpdateAsync());
+				await (s.CreateQuery("delete SimpleEntityWithAssociation").ExecuteUpdateAsync());
+				await (t.CommitAsync());
+				s.Close();
+			}
 		}
 
 		[Test]

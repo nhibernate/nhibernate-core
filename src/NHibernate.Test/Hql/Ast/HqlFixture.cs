@@ -88,10 +88,10 @@ namespace NHibernate.Test.Hql.Ast
 		{
 			// NH-322
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.Save(new Animal {BodyWeight = 12, Description = "Polliwog"});
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		
 			using (ISession s = OpenSession())
@@ -107,10 +107,10 @@ namespace NHibernate.Test.Hql.Ast
 			}
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.CreateQuery("delete from Animal").ExecuteUpdate();
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 
@@ -118,10 +118,10 @@ namespace NHibernate.Test.Hql.Ast
 		public void MultipleParametersInCaseStatement()
 		{
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.Save(new Animal { BodyWeight = 12, Description = "Polliwog" });
-				s.Transaction.Commit();
+				t.Commit();
 			}
 
 			try
@@ -139,10 +139,10 @@ namespace NHibernate.Test.Hql.Ast
 			finally
 			{
 				using (ISession s = OpenSession())
-				using (s.BeginTransaction())
+				using (var t = s.BeginTransaction())
 				{
 					s.CreateQuery("delete from Animal").ExecuteUpdate();
-					s.Transaction.Commit();
+					t.Commit();
 				}
 			}
 		}
@@ -151,10 +151,10 @@ namespace NHibernate.Test.Hql.Ast
 		public void ParameterInCaseThenClause()
 		{
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.Save(new Animal { BodyWeight = 12, Description = "Polliwog" });
-				s.Transaction.Commit();
+				t.Commit();
 			}
 
 			try
@@ -170,10 +170,10 @@ namespace NHibernate.Test.Hql.Ast
 			finally
 			{
 				using (ISession s = OpenSession())
-				using (s.BeginTransaction())
+				using (var t = s.BeginTransaction())
 				{
 					s.CreateQuery("delete from Animal").ExecuteUpdate();
-					s.Transaction.Commit();
+					t.Commit();
 				}
 			}
 		}
@@ -182,10 +182,10 @@ namespace NHibernate.Test.Hql.Ast
 		public void ParameterInCaseThenAndElseClausesWithCast()
 		{
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.Save(new Animal { BodyWeight = 12, Description = "Polliwog" });
-				s.Transaction.Commit();
+				t.Commit();
 			}
 
 			try
@@ -202,10 +202,10 @@ namespace NHibernate.Test.Hql.Ast
 			finally
 			{
 				using (ISession s = OpenSession())
-				using (s.BeginTransaction())
+				using (var t = s.BeginTransaction())
 				{
 					s.CreateQuery("delete from Animal").ExecuteUpdate();
-					s.Transaction.Commit();
+					t.Commit();
 				}
 			}
 		}
@@ -214,10 +214,10 @@ namespace NHibernate.Test.Hql.Ast
 		public void SubselectAddition()
 		{
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.Save(new Animal { BodyWeight = 12, Description = "Polliwog" });
-				s.Transaction.Commit();
+				t.Commit();
 			}
 
 			try
@@ -232,10 +232,10 @@ namespace NHibernate.Test.Hql.Ast
 			finally
 			{
 				using (ISession s = OpenSession())
-				using (s.BeginTransaction())
+				using (var t = s.BeginTransaction())
 				{
 					s.CreateQuery("delete from Animal").ExecuteUpdate();
-					s.Transaction.Commit();
+					t.Commit();
 				}
 			}
 		}
@@ -245,10 +245,10 @@ namespace NHibernate.Test.Hql.Ast
 		{
 			// NH-1734
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.Save(new Human{ IntValue = 11, BodyWeight = 12.5f, Description = "Polliwog" });
-				s.Transaction.Commit();
+				t.Commit();
 			}
 
 			using (ISession s = OpenSession())
@@ -258,10 +258,10 @@ namespace NHibernate.Test.Hql.Ast
 			}
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.CreateQuery("delete from Animal").ExecuteUpdate();
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 
@@ -298,25 +298,23 @@ namespace NHibernate.Test.Hql.Ast
 		public void InsertIntoFromSelect_WithSelectClauseParameters()
 		{
 			using (ISession s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				using (s.BeginTransaction())
-				{
-					// arrange
-					s.Save(new Animal() {Description = "cat1", BodyWeight = 2.1f});
-					s.Save(new Animal() {Description = "cat2", BodyWeight = 2.5f});
-					s.Save(new Animal() {Description = "cat3", BodyWeight = 2.7f});
+				// arrange
+				s.Save(new Animal() {Description = "cat1", BodyWeight = 2.1f});
+				s.Save(new Animal() {Description = "cat2", BodyWeight = 2.5f});
+				s.Save(new Animal() {Description = "cat3", BodyWeight = 2.7f});
 
-					// act
-					s.CreateQuery("insert into Animal (description, bodyWeight) select a.description, :weight from Animal a where a.bodyWeight < :weight")
-						.SetParameter<float>("weight", 5.7f).ExecuteUpdate();
+				// act
+				s.CreateQuery("insert into Animal (description, bodyWeight) select a.description, :weight from Animal a where a.bodyWeight < :weight")
+					.SetParameter<float>("weight", 5.7f).ExecuteUpdate();
 
-					// assert
-					Assert.AreEqual(3, s.CreateCriteria<Animal>().SetProjection(Projections.RowCount())
-					                    .Add(Restrictions.Gt("bodyWeight", 5.5f)).UniqueResult<int>());
+				// assert
+				Assert.AreEqual(3, s.CreateCriteria<Animal>().SetProjection(Projections.RowCount())
+				                    .Add(Restrictions.Gt("bodyWeight", 5.5f)).UniqueResult<int>());
 
-					s.CreateQuery("delete from Animal").ExecuteUpdate();
-					s.Transaction.Commit();
-				}
+				s.CreateQuery("delete from Animal").ExecuteUpdate();
+				t.Commit();
 			}
 		}
 

@@ -771,6 +771,8 @@ namespace NHibernate
 		/// <summary>
 		/// Get the current Unit of Work and return the associated <c>ITransaction</c> object.
 		/// </summary>
+		// Since v5.3
+		[Obsolete("Use GetCurrentTransaction extension method instead, and check for null.")]
 		ITransaction Transaction { get; }
 
 		/// <summary>

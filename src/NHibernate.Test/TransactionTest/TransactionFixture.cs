@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TransactionTest
@@ -99,41 +97,30 @@ namespace NHibernate.Test.TransactionTest
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					Assert.AreSame(t, s.Transaction);
-					Assert.IsFalse(s.Transaction.WasCommitted);
-					Assert.IsFalse(s.Transaction.WasRolledBack);
+					Assert.AreSame(t, s.GetCurrentTransaction());
+					Assert.IsFalse(s.GetCurrentTransaction().WasCommitted);
+					Assert.IsFalse(s.GetCurrentTransaction().WasRolledBack);
 					t.Commit();
 
-					// ISession.Transaction returns a new transaction
-					// if the previous one completed!
-					Assert.IsNotNull(s.Transaction);
-					Assert.IsFalse(t == s.Transaction);
+					// ISession.GetCurrentTransaction() returns null if the transaction is completed.
+					Assert.IsNull(s.GetCurrentTransaction());
 
 					Assert.IsTrue(t.WasCommitted);
 					Assert.IsFalse(t.WasRolledBack);
-					Assert.IsFalse(s.Transaction.WasCommitted);
-					Assert.IsFalse(s.Transaction.WasRolledBack);
 					Assert.IsFalse(t.IsActive);
-					Assert.IsFalse(s.Transaction.IsActive);
 				}
 
 				using (ITransaction t = s.BeginTransaction())
 				{
 					t.Rollback();
 
-					// ISession.Transaction returns a new transaction
-					// if the previous one completed!
-					Assert.IsNotNull(s.Transaction);
-					Assert.IsFalse(t == s.Transaction);
+					// ISession.GetCurrentTransaction() returns null if the transaction is completed.
+					Assert.IsNull(s.GetCurrentTransaction());
 
 					Assert.IsTrue(t.WasRolledBack);
 					Assert.IsFalse(t.WasCommitted);
 
-					Assert.IsFalse(s.Transaction.WasCommitted);
-					Assert.IsFalse(s.Transaction.WasRolledBack);
-
 					Assert.IsFalse(t.IsActive);
-					Assert.IsFalse(s.Transaction.IsActive);
 				}
 			}
 		}

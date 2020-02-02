@@ -24,20 +24,20 @@ namespace NHibernate.Test.Cascade
 			A a = new A();
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a.Data = "Anna";
 				s.Save(a);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 			// modify detached entity
 			this.ModifyEntity(a);
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a = s.Merge(a);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 	
 			this.VerifyModifications(a.Id);
@@ -49,22 +49,22 @@ namespace NHibernate.Test.Cascade
 			// persist a simple A in the database
 			A a = new A();
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a.Data = "Anna";
 				s.Save(a);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 			// modify detached entity
 			this.ModifyEntity(a);
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				A aLoaded = s.Load<A>(a.Id);
 				Assert.That(aLoaded, Is.InstanceOf<INHibernateProxy>());
 				Assert.That(s.Merge(a), Is.SameAs(aLoaded));
-				s.Transaction.Commit();
+				t.Commit();
 			}
 	
 			this.VerifyModifications(a.Id);
@@ -77,21 +77,21 @@ namespace NHibernate.Test.Cascade
 			A a = new A();
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a.Data = "Anna";
 				s.Save(a);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 	
 			// modify detached entity
 			this.ModifyEntity(a);
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.Update(a);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 			this.VerifyModifications(a.Id);
 		}
@@ -103,20 +103,20 @@ namespace NHibernate.Test.Cascade
 			A a = new A();
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a.Data = "Anna";
 				s.Save(a);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				// retrieve the previously saved instance from the database, and update it
 				a = s.Get<A>(a.Id);
 				this.ModifyEntity(a);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 			this.VerifyModifications(a.Id);
 		}
@@ -128,20 +128,20 @@ namespace NHibernate.Test.Cascade
 			A a = new A();
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a.Data = "Anna";
 				s.Save(a);
-				s.Transaction.Commit();
+				t.Commit();
 			}	
 			// modify detached entity
 			this.ModifyEntity(a);
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a = s.Merge(a);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 			this.VerifyModifications(a.Id);
 	
@@ -155,7 +155,7 @@ namespace NHibernate.Test.Cascade
 			h.Gs.Add(gNew);
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				try
 				{
@@ -177,20 +177,20 @@ namespace NHibernate.Test.Cascade
 			A a = new A();
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a.Data = "Anna";
 				s.Save(a);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 			// modify detached entity
 			this.ModifyEntity(a);
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a = (A) s.Merge(a);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 			this.VerifyModifications(a.Id);
 	
@@ -226,20 +226,20 @@ namespace NHibernate.Test.Cascade
 			A a = new A();
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a.Data = "Anna";
 				s.Save(a);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 			// modify detached entity
 			this.ModifyEntity(a);
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a = (A) s.Merge(a);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 			this.VerifyModifications(a.Id);
 	
@@ -305,7 +305,7 @@ namespace NHibernate.Test.Cascade
 		private void VerifyModifications(long aId)
 		{
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				// retrieve the A object and check it
 				A a = s.Get<A>(aId);
@@ -332,7 +332,7 @@ namespace NHibernate.Test.Cascade
 				Assert.That(hFromA.Gs.Count, Is.EqualTo(1));
 				Assert.That(hFromA.Gs.First(), Is.SameAs(gFromA));
 
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 	}

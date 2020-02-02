@@ -63,6 +63,8 @@ namespace NHibernate
 		DbConnection Connection { get; }
 		
 		/// <summary>Get the current NHibernate transaction.</summary>
+		// Since v5.3
+		[Obsolete("Use GetCurrentTransaction extension method instead, and check for null.")]
 		ITransaction Transaction { get; }
 		
 		/// <summary>
