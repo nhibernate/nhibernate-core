@@ -26,7 +26,7 @@ namespace NHibernate.Test.Linq
 		private static readonly TryGetMappedType _tryGetMappedType;
 		private static readonly TryGetMappedNullability _tryGetMappedNullability;
 
-		delegate bool TryGetMappedType(
+		private delegate bool TryGetMappedType(
 			ISessionFactoryImplementor sessionFactory,
 			Expression expression,
 			out IType mappedType,
@@ -34,7 +34,7 @@ namespace NHibernate.Test.Linq
 			out IAbstractComponentType component,
 			out string memberPath);
 
-		delegate bool TryGetMappedNullability(
+		private delegate bool TryGetMappedNullability(
 			ISessionFactoryImplementor sessionFactory,
 			Expression expression,
 			out bool nullability);
@@ -108,7 +108,7 @@ namespace NHibernate.Test.Linq
 		public void SelfTest()
 		{
 			var query = db.OrderLines.Select(o => o);
-			AssertTrueNotNull(
+			AssertSupportedAndResultNotNullable(
 				query,
 				typeof(OrderLine).FullName,
 				null,
@@ -119,7 +119,7 @@ namespace NHibernate.Test.Linq
 		public void SelfCastNotMappedTest()
 		{
 			var query = session.Query<A>().Select(o => (object) o);
-			AssertTrueNotNull(
+			AssertSupportedAndResultNotNullable(
 				query,
 				false,
 				typeof(A).FullName,
@@ -131,42 +131,42 @@ namespace NHibernate.Test.Linq
 		public void PropertyTest()
 		{
 			var query = db.OrderLines.Select(o => o.Quantity);
-			AssertTrueNotNull(query, typeof(OrderLine).FullName, "Quantity", o => o is Int32Type);
+			AssertSupportedAndResultNotNullable(query, typeof(OrderLine).FullName, "Quantity", o => o is Int32Type);
 		}
 
 		[Test]
 		public void NotMappedPropertyTest()
 		{
 			var query = db.Users.Select(o => o.NotMapped);
-			AssertFalse(query, typeof(User).FullName, "NotMapped", o => o is null);
+			AssertUnsupported(query, typeof(User).FullName, "NotMapped", o => o is null);
 		}
 
 		[Test]
 		public void NestedNotMappedPropertyTest()
 		{
 			var query = db.Users.Select(o => o.Name.Length);
-			AssertFalse(query, false, null, null, o => o is null);
+			AssertUnsupported(query, false, null, null, o => o is null);
 		}
 
 		[Test]
 		public void PropertyCastTest()
 		{
 			var query = db.OrderLines.Select(o => (long) o.Quantity);
-			AssertTrueNotNull(query, typeof(OrderLine).FullName, "Quantity", o => o is Int64Type);
+			AssertSupportedAndResultNotNullable(query, typeof(OrderLine).FullName, "Quantity", o => o is Int64Type);
 		}
 
 		[Test]
 		public void PropertyIndexer()
 		{
 			var query = db.Products.Select(o => o.Name[0]);
-			AssertFalse(query, null, null, o => o == null);
+			AssertUnsupported(query, null, null, o => o == null);
 		}
 
 		[Test]
 		public void EnumInt32Test()
 		{
 			var query = db.Users.Select(o => o.Enum2);
-			AssertTrueNotNull(
+			AssertSupportedAndResultNotNullable(
 				query,
 				typeof(User).FullName,
 				"Enum2",
@@ -177,28 +177,28 @@ namespace NHibernate.Test.Linq
 		public void EnumInt32CastTest()
 		{
 			var query = db.Users.Select(o => (int) o.Enum2);
-			AssertTrueNotNull(query, typeof(User).FullName, "Enum2", o => o is Int32Type);
+			AssertSupportedAndResultNotNullable(query, typeof(User).FullName, "Enum2", o => o is Int32Type);
 		}
 
 		[Test]
 		public void EnumAsStringTest()
 		{
 			var query = db.Users.Select(o => o.Enum1);
-			AssertTrue(query, typeof(User).FullName, "Enum1", o => o is EnumStoredAsStringType);
+			AssertSupported(query, typeof(User).FullName, "Enum1", o => o is EnumStoredAsStringType);
 		}
 
 		[Test]
 		public void IdentifierTest()
 		{
 			var query = db.OrderLines.Select(o => o.Id);
-			AssertTrueNotNull(query, typeof(OrderLine).FullName, "Id", o => o is Int64Type);
+			AssertSupportedAndResultNotNullable(query, typeof(OrderLine).FullName, "Id", o => o is Int64Type);
 		}
 
 		[Test]
 		public void CompositeIdentifierTest()
 		{
 			var query = session.Query<Fum>().Select(o => o.Id.Date);
-			AssertTrueNotNull(
+			AssertSupportedAndResultNotNullable(
 				query,
 				typeof(Fum).FullName,
 				"Id.Date",
@@ -210,7 +210,7 @@ namespace NHibernate.Test.Linq
 		public void ComponentTest()
 		{
 			var query = db.Customers.Select(o => o.Address);
-			AssertTrue(
+			AssertSupported(
 				query,
 				typeof(Customer).FullName,
 				"Address",
@@ -221,7 +221,7 @@ namespace NHibernate.Test.Linq
 		public void ComponentPropertyTest()
 		{
 			var query = db.Customers.Select(o => o.Address.City);
-			AssertTrue(
+			AssertSupported(
 				query,
 				typeof(Customer).FullName,
 				"Address.City",
@@ -233,7 +233,7 @@ namespace NHibernate.Test.Linq
 		public void ComponentNotMappedPropertyTest()
 		{
 			var query = db.Customers.Select(o => o.Address.NotMapped);
-			AssertFalse(
+			AssertUnsupported(
 				query,
 				typeof(Customer).FullName,
 				"Address.NotMapped",
@@ -245,14 +245,14 @@ namespace NHibernate.Test.Linq
 		public void ComponentNestedNotMappedPropertyTest()
 		{
 			var query = db.Customers.Select(o => o.Address.City.Length);
-			AssertFalse(query, false, null, null, o => o == null);
+			AssertUnsupported(query, false, null, null, o => o == null);
 		}
 
 		[Test]
 		public void NestedComponentPropertyTest()
 		{
 			var query = db.Users.Select(o => o.Component.OtherComponent.OtherProperty1);
-			AssertTrue(
+			AssertSupported(
 				query,
 				typeof(User).FullName,
 				"Component.OtherComponent.OtherProperty1",
@@ -264,7 +264,7 @@ namespace NHibernate.Test.Linq
 		public void NestedComponentPropertyCastTest()
 		{
 			var query = db.Users.Select(o => (object) o.Component.OtherComponent.OtherProperty1);
-			AssertTrue(
+			AssertSupported(
 				query,
 				typeof(User).FullName,
 				"Component.OtherComponent.OtherProperty1",
@@ -276,7 +276,7 @@ namespace NHibernate.Test.Linq
 		public void ManyToOneTest()
 		{
 			var query = db.OrderLines.Select(o => o.Order);
-			AssertTrueNotNull(query, typeof(OrderLine).FullName, "Order",
+			AssertSupportedAndResultNotNullable(query, typeof(OrderLine).FullName, "Order",
 						o => o is ManyToOneType manyToOne && manyToOne.PropertyName == "Order");
 		}
 
@@ -284,28 +284,28 @@ namespace NHibernate.Test.Linq
 		public void ManyToOnePropertyTest()
 		{
 			var query = db.OrderLines.Select(o => o.Order.Freight);
-			AssertTrue(query, typeof(Order).FullName, "Freight", o => o is DecimalType);
+			AssertSupported(query, typeof(Order).FullName, "Freight", o => o is DecimalType);
 		}
 
 		[Test]
 		public void ManyToOneNotMappedPropertyTest()
 		{
 			var query = db.OrderLines.Select(o => o.Product.NotMapped);
-			AssertFalse(query, typeof(Product).FullName, "NotMapped", o => o == null);
+			AssertUnsupported(query, typeof(Product).FullName, "NotMapped", o => o == null);
 		}
 
 		[Test]
 		public void NotMappedManyToOnePropertyTest()
 		{
 			var query = db.Users.Select(o => o.NotMappedRole.Name);
-			AssertFalse(query, false, null, null, o => o is null);
+			AssertUnsupported(query, false, null, null, o => o is null);
 		}
 
 		[Test]
 		public void NestedManyToOneTest()
 		{
 			var query = db.OrderLines.Select(o => o.Order.Employee);
-			AssertTrue(query, false, typeof(Order).FullName, "Employee",
+			AssertSupported(query, false, typeof(Order).FullName, "Employee",
 						o => o is ManyToOneType manyToOne && manyToOne.PropertyName == "Employee");
 		}
 
@@ -313,14 +313,14 @@ namespace NHibernate.Test.Linq
 		public void NestedManyToOnePropertyTest()
 		{
 			var query = db.OrderLines.Select(o => o.Order.Employee.BirthDate);
-			AssertTrue(query, typeof(Employee).FullName, "BirthDate", o => o is DateTimeType);
+			AssertSupported(query, typeof(Employee).FullName, "BirthDate", o => o is DateTimeType);
 		}
 
 		[Test]
 		public void OneToManyTest()
 		{
 			var query = db.Customers.SelectMany(o => o.Orders);
-			AssertTrue(
+			AssertSupported(
 				query,
 				typeof(Customer).FullName,
 				"Orders",
@@ -331,21 +331,21 @@ namespace NHibernate.Test.Linq
 		public void OneToManyElementIndexerTest()
 		{
 			var query = session.Query<Baz>().Select(o => o.StringList[0]);
-			AssertTrue(query, false, typeof(Baz).FullName, "StringList", o => o is StringType);
+			AssertSupported(query, false, typeof(Baz).FullName, "StringList", o => o is StringType);
 		}
 
 		[Test]
 		public void OneToManyElementIndexerNotMappedPropertyTest()
 		{
 			var query = session.Query<Baz>().Select(o => o.StringList[0].Length);
-			AssertFalse(query, false, null, null, o => o == null);
+			AssertUnsupported(query, false, null, null, o => o == null);
 		}
 
 		[Test]
 		public void OneToManyCustomElementIndexerTest()
 		{
 			var query = session.Query<Baz>().Select(o => o.Customs[0]);
-			AssertTrue(
+			AssertSupported(
 				query,
 				false,
 				typeof(Baz).FullName,
@@ -357,28 +357,28 @@ namespace NHibernate.Test.Linq
 		public void OneToManyIndexerCastTest()
 		{
 			var query = session.Query<Baz>().Select(o => (long) o.IntArray[0]);
-			AssertTrue(query, false, typeof(Baz).FullName, "IntArray", o => o is Int64Type);
+			AssertSupported(query, false, typeof(Baz).FullName, "IntArray", o => o is Int64Type);
 		}
 
 		[Test]
 		public void OneToManyIndexerPropertyTest()
 		{
 			var query = session.Query<Baz>().Select(o => o.Fees[0].Count);
-			AssertTrue(query, false, typeof(Fee).FullName, "Count", o => o is Int32Type);
+			AssertSupported(query, false, typeof(Fee).FullName, "Count", o => o is Int32Type);
 		}
 
 		[Test]
 		public void OneToManyElementAtTest()
 		{
 			var query = session.Query<Baz>().Select(o => o.StringList.ElementAt(0));
-			AssertTrue(query, false, typeof(Baz).FullName, "StringList", o => o is StringType);
+			AssertSupported(query, false, typeof(Baz).FullName, "StringList", o => o is StringType);
 		}
 
 		[Test]
 		public void NestedOneToManyManyToOneComponentPropertyTest()
 		{
 			var query = session.Query<Baz>().SelectMany(o => o.Fees).Select(o => o.TheFee.Compon.Name);
-			AssertTrue(
+			AssertSupported(
 				query,
 				typeof(Fee).FullName,
 				"Compon.Name",
@@ -390,7 +390,7 @@ namespace NHibernate.Test.Linq
 		public void OneToManyCompositeElementPropertyTest()
 		{
 			var query = session.Query<Baz>().Select(o => o.Components[0].Count);
-			AssertTrue(
+			AssertSupported(
 				query,
 				false,
 				null,
@@ -403,14 +403,14 @@ namespace NHibernate.Test.Linq
 		public void OneToManyCompositeElementPropertyIndexerTest()
 		{
 			var query = session.Query<Baz>().Select(o => o.Components[0].Name[0]);
-			AssertFalse(query, false, null, null, o => o == null);
+			AssertUnsupported(query, false, null, null, o => o == null);
 		}
 
 		[Test]
 		public void OneToManyCompositeElementNotMappedPropertyTest()
 		{
 			var query = session.Query<Baz>().Select(o => o.Components[0].NotMapped);
-			AssertFalse(
+			AssertUnsupported(
 				query,
 				false,
 				null,
@@ -423,7 +423,7 @@ namespace NHibernate.Test.Linq
 		public void OneToManyCompositeElementCastPropertyTest()
 		{
 			var query = session.Query<Baz>().Select(o => (long) o.Components[0].Count);
-			AssertTrue(
+			AssertSupported(
 				query,
 				false,
 				null,
@@ -436,7 +436,7 @@ namespace NHibernate.Test.Linq
 		public void OneToManyCompositeElementCollectionNotMappedPropertyTest()
 		{
 			var query = session.Query<Baz>().SelectMany(o => o.Components[0].ImportantDates);
-			AssertFalse(
+			AssertUnsupported(
 				query,
 				false,
 				null,
@@ -449,7 +449,7 @@ namespace NHibernate.Test.Linq
 		public void NestedOneToManyCompositeElementTest()
 		{
 			var query = session.Query<Baz>().Select(o => o.Components[0].Subcomponent);
-			AssertTrue(
+			AssertSupported(
 				query,
 				false,
 				null,
@@ -462,21 +462,21 @@ namespace NHibernate.Test.Linq
 		public void NestedOneToManyCompositeElementPropertyTest()
 		{
 			var query = session.Query<Baz>().Select(o => o.Components[0].Subcomponent.Name);
-			AssertTrue(query, false, null, "Name", o => o is StringType, o => o?.Name == "component[Name,Count]");
+			AssertSupported(query, false, null, "Name", o => o is StringType, o => o?.Name == "component[Name,Count]");
 		}
 
 		[Test]
 		public void NestedOneToManyCompositeElementPropertyIndexerTest()
 		{
 			var query = session.Query<Baz>().Select(o => o.Components[0].Subcomponent.Name[0]);
-			AssertFalse(query, false, null, null, o => o == null);
+			AssertUnsupported(query, false, null, null, o => o == null);
 		}
 
 		[Test]
 		public void ManyToManyTest()
 		{
 			var query = session.Query<Baz>().Select(o => o.FooArray);
-			AssertTrue(
+			AssertSupported(
 				query,
 				false,
 				typeof(Baz).FullName,
@@ -488,14 +488,14 @@ namespace NHibernate.Test.Linq
 		public void ManyToManyIndexerTest()
 		{
 			var query = session.Query<Baz>().Select(o => o.FooArray[0].Null);
-			AssertTrue(query, false, typeof(Foo).FullName, "Null", o => o is NullableInt32Type);
+			AssertSupported(query, false, typeof(Foo).FullName, "Null", o => o is NullableInt32Type);
 		}
 
 		[Test]
 		public void SubclassCastTest()
 		{
 			var query = session.Query<A>().Select(o => (B) o);
-			AssertTrueNotNull(
+			AssertSupportedAndResultNotNullable(
 				query,
 				typeof(A).FullName,
 				null,
@@ -506,7 +506,7 @@ namespace NHibernate.Test.Linq
 		public void NestedSubclassCastTest()
 		{
 			var query = session.Query<A>().Select(o => (C1) ((B) o));
-			AssertTrueNotNull(
+			AssertSupportedAndResultNotNullable(
 				query,
 				false,
 				typeof(A).FullName,
@@ -518,28 +518,28 @@ namespace NHibernate.Test.Linq
 		public void SubclassPropertyTest()
 		{
 			var query = session.Query<A>().Select(o => ((C1) o).Count);
-			AssertTrue(query, typeof(C1).FullName, "Count", o => o is Int32Type);
+			AssertSupported(query, typeof(C1).FullName, "Count", o => o is Int32Type);
 		}
 
 		[Test]
 		public void NestedSubclassCastPropertyTest()
 		{
 			var query = session.Query<A>().Select(o => ((C1) ((B) o)).Id);
-			AssertTrueNotNull(query, typeof(C1).FullName, "Id", o => o is Int64Type);
+			AssertSupportedAndResultNotNullable(query, typeof(C1).FullName, "Id", o => o is Int64Type);
 		}
 
 		[Test]
 		public void AnyTest()
 		{
 			var query = session.Query<Bar>().Select(o => o.Object);
-			AssertTrue(query, typeof(Bar).FullName, "Object", o => o.IsAnyType);
+			AssertSupported(query, typeof(Bar).FullName, "Object", o => o.IsAnyType);
 		}
 
 		[Test]
 		public void CastAnyTest()
 		{
 			var query = session.Query<Bar>().Select(o => (Foo) o.Object);
-			AssertTrue(
+			AssertSupported(
 				query,
 				typeof(Bar).FullName,
 				"Object",
@@ -550,7 +550,7 @@ namespace NHibernate.Test.Linq
 		public void NestedCastAnyTest()
 		{
 			var query = session.Query<Bar>().Select(o => (Foo) ((Bar) o.Object).Object);
-			AssertTrue(
+			AssertSupported(
 				query,
 				false,
 				typeof(Bar).FullName,
@@ -562,7 +562,7 @@ namespace NHibernate.Test.Linq
 		public void CastAnyManyToOneTest()
 		{
 			var query = session.Query<Bar>().Select(o => ((Foo) o.Object).Dependent);
-			AssertTrueNotNull(
+			AssertSupportedAndResultNotNullable(
 				query,
 				typeof(Foo).FullName,
 				"Dependent",
@@ -573,42 +573,42 @@ namespace NHibernate.Test.Linq
 		public void CastAnyPropertyTest()
 		{
 			var query = session.Query<Bar>().Select(o => ((Foo) o.Object).String);
-			AssertTrue(query, false, typeof(Foo).FullName, "String", o => o is StringType);
+			AssertSupported(query, false, typeof(Foo).FullName, "String", o => o is StringType);
 		}
 
 		[Test]
-		public void QueryUnmppedEntityTest()
+		public void QueryUnmappedEntityTest()
 		{
 			var query = session.Query<IEntity<int>>().Select(o => o.Id);
-			AssertTrueNotNull(query, typeof(User).FullName, "Id", o => o is Int32Type);
+			AssertSupportedAndResultNotNullable(query, typeof(User).FullName, "Id", o => o is Int32Type);
 		}
 
 		[Test]
 		public void ConditionalExpressionTest()
 		{
 			var query = db.Users.Select(o => (o.Name == "Test" ? o.RegisteredAt : o.LastLoginDate));
-			AssertTrue(query, false, typeof(User).FullName, "RegisteredAt", o => o is DateTimeType);
+			AssertSupported(query, false, typeof(User).FullName, "RegisteredAt", o => o is DateTimeType);
 		}
 
 		[Test]
 		public void ConditionalIfFalseExpressionTest()
 		{
 			var query = db.Users.Select(o => (o.Name == "Test" ? DateTime.Today : o.LastLoginDate));
-			AssertTrue(query, false, typeof(User).FullName, "LastLoginDate", o => o is DateTimeType);
+			AssertSupported(query, false, typeof(User).FullName, "LastLoginDate", o => o is DateTimeType);
 		}
 
 		[Test]
 		public void ConditionalMemberExpressionTest()
 		{
 			var query = db.Users.Select(o => (o.Name == "Test" ? o.NotMappedRole : o.Role).IsActive);
-			AssertTrue(query, false, typeof(Role).FullName, "IsActive", o => o is BooleanType);
+			AssertSupported(query, false, typeof(Role).FullName, "IsActive", o => o is BooleanType);
 		}
 
 		[Test]
 		public void ConditionalNestedExpressionTest()
 		{
 			var query = db.Users.Select(o => (o.Name == "Test" ? o.Component.OtherComponent.OtherProperty1 : o.Component.Property1));
-			AssertTrue(
+			AssertSupported(
 				query,
 				false,
 				typeof(User).FullName,
@@ -621,28 +621,28 @@ namespace NHibernate.Test.Linq
 		public void CoalesceExpressionTest()
 		{
 			var query = db.Users.Select(o => o.LastLoginDate ?? o.RegisteredAt);
-			AssertTrue(query, false, typeof(User).FullName, "LastLoginDate", o => o is DateTimeType);
+			AssertSupported(query, false, typeof(User).FullName, "LastLoginDate", o => o is DateTimeType);
 		}
 
 		[Test]
 		public void CoalesceRightExpressionTest()
 		{
 			var query = db.Users.Select(o => ((DateTime?) DateTime.Now) ?? o.RegisteredAt);
-			AssertTrue(query, false, typeof(User).FullName, "RegisteredAt", o => o is DateTimeType);
+			AssertSupported(query, false, typeof(User).FullName, "RegisteredAt", o => o is DateTimeType);
 		}
 
 		[Test]
 		public void CoalesceMemberExpressionTest()
 		{
 			var query = db.Users.Select(o => (o.NotMappedRole ?? o.Role).IsActive);
-			AssertTrue(query, false, typeof(Role).FullName, "IsActive", o => o is BooleanType);
+			AssertSupported(query, false, typeof(Role).FullName, "IsActive", o => o is BooleanType);
 		}
 
 		[Test]
 		public void CoalesceNestedExpressionTest()
 		{
 			var query = db.Users.Select(o => o.Component.OtherComponent.OtherProperty1 ?? o.Component.Property1);
-			AssertTrue(
+			AssertSupported(
 				query,
 				false,
 				typeof(User).FullName,
@@ -655,7 +655,7 @@ namespace NHibernate.Test.Linq
 		public void CoalesceConditionalMemberExpressionTest()
 		{
 			var query = db.Users.Select(o => (o.Name == "Test" ? o.NotMappedRole : (o.NotMappedRole ?? new Role() ?? o.Role)).IsActive);
-			AssertTrue(query, false, typeof(Role).FullName, "IsActive", o => o is BooleanType);
+			AssertSupported(query, false, typeof(Role).FullName, "IsActive", o => o is BooleanType);
 		}
 
 		[Test]
@@ -668,14 +668,14 @@ namespace NHibernate.Test.Linq
 							into details
 						from d in details
 						select d.UnitPrice;
-			AssertTrueNotNull(query, typeof(OrderLine).FullName, "UnitPrice", o => o is DecimalType);
+			AssertSupportedAndResultNotNullable(query, typeof(OrderLine).FullName, "UnitPrice", o => o is DecimalType);
 		}
 
 		[Test]
 		public void NotNullComponentPropertyTest()
 		{
 			var query = session.Query<Patient>().SelectMany(o => o.PatientRecords.Select(r => r.Name.FirstName));
-			AssertTrueNotNull(
+			AssertSupportedAndResultNotNullable(
 				query,
 				typeof(PatientRecord).FullName,
 				"Name.FirstName",
@@ -687,17 +687,17 @@ namespace NHibernate.Test.Linq
 		public void NotRelatedTypeTest()
 		{
 			var query = session.Query<Expression>().Select(o => o.CanReduce);
-			AssertFalse(query, null, null, o => o == null);
+			AssertUnsupported(query, null, null, o => o == null);
 		}
 
 		[Test]
 		public void NotNhQueryableTest()
 		{
 			var query = new List<User>().AsQueryable().Select(o => o.Name);
-			AssertFalse(query, false, null, null, o => o == null);
+			AssertUnsupported(query, false, null, null, o => o == null);
 		}
 
-		private void AssertFalse(
+		private void AssertUnsupported(
 			IQueryable query,
 			string expectedEntityName,
 			string expectedMemberPath,
@@ -707,7 +707,7 @@ namespace NHibernate.Test.Linq
 			AssertResult(query, true, false, expectedEntityName, expectedMemberPath, expectedMemberType, expectedComponentType);
 		}
 
-		private void AssertFalse(
+		private void AssertUnsupported(
 			IQueryable query,
 			bool rewriteQuery,
 			string expectedEntityName,
@@ -718,7 +718,7 @@ namespace NHibernate.Test.Linq
 			AssertResult(query, rewriteQuery, false, expectedEntityName, expectedMemberPath, expectedMemberType, expectedComponentType);
 		}
 
-		private void AssertTrue(
+		private void AssertSupported(
 			IQueryable query,
 			string expectedEntityName,
 			string expectedMemberPath,
@@ -728,7 +728,7 @@ namespace NHibernate.Test.Linq
 			AssertResult(query, true, true, expectedEntityName, expectedMemberPath, expectedMemberType, expectedComponentType);
 		}
 
-		private void AssertTrue(
+		private void AssertSupported(
 			IQueryable query,
 			bool rewriteQuery,
 			string expectedEntityName,
@@ -739,7 +739,7 @@ namespace NHibernate.Test.Linq
 			AssertResult(query, rewriteQuery, true, expectedEntityName, expectedMemberPath, expectedMemberType, expectedComponentType);
 		}
 
-		private void AssertTrueNotNull(
+		private void AssertSupportedAndResultNotNullable(
 			IQueryable query,
 			string expectedEntityName,
 			string expectedMemberPath,
@@ -749,7 +749,7 @@ namespace NHibernate.Test.Linq
 			AssertResult(query, true, true, expectedEntityName, expectedMemberPath, expectedMemberType, expectedComponentType, false);
 		}
 
-		private void AssertTrueNotNull(
+		private void AssertSupportedAndResultNotNullable(
 			IQueryable query,
 			bool rewriteQuery,
 			string expectedEntityName,
@@ -763,7 +763,7 @@ namespace NHibernate.Test.Linq
 		private void AssertResult(
 			IQueryable query,
 			bool rewriteQuery,
-			bool result,
+			bool supported,
 			string expectedEntityName,
 			string expectedMemberPath,
 			Predicate<IType> expectedMemberType,
@@ -800,8 +800,8 @@ namespace NHibernate.Test.Linq
 				out var entityPersister,
 				out var componentType,
 				out var memberPath);
-			Assert.That(found, Is.EqualTo(result), "Expression should be supported");
-			Assert.That(entityPersister?.EntityName, Is.EqualTo(expectedEntityName), "Invalid enity name");
+			Assert.That(found, Is.EqualTo(supported), $"Expression should be {(supported ? "supported" : "unsupported")}");
+			Assert.That(entityPersister?.EntityName, Is.EqualTo(expectedEntityName), "Invalid entity name");
 			Assert.That(memberPath, Is.EqualTo(expectedMemberPath), "Invalid member path");
 			Assert.That(() => expectedMemberType(memberType), $"Invalid member type: {memberType?.Name ?? "null"}");
 			Assert.That(() => expectedComponentType(componentType), $"Invalid component type: {componentType?.Name ?? "null"}");
