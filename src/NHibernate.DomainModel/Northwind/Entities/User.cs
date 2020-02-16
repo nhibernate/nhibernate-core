@@ -59,10 +59,6 @@ namespace NHibernate.DomainModel.Northwind.Entities
 		}
 	}
 
-
-
-
-
 	public enum EnumStoredAsString { Unspecified, Small, Medium, Large }
 
 	public enum EnumStoredAsInt32 { Unspecified, High, Low }

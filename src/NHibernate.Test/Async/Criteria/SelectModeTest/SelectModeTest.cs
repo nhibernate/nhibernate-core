@@ -711,7 +711,6 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 									ckm.Name("ParentId");
 								});
 							km.ForeignKey("none");
-
 						});
 					m.Cascade(Mapping.ByCode.Cascade.All);
 					if (fetchMode != null)

@@ -57,7 +57,6 @@ namespace NHibernate.DomainModel
 			return (first == null && second == null) ? null : new string[] {first, second};
 		}
 
-
 		public void NullSafeSet(DbCommand st, Object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			string[] strings = (value == null) ? new string[2] : (string[]) value;

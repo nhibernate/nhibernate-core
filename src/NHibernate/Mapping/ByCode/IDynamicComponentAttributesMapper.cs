@@ -18,5 +18,4 @@ namespace NHibernate.Mapping.ByCode
 
 	public interface IDynamicComponentMapper<TComponent> : IDynamicComponentAttributesMapper<TComponent>, IPropertyContainerMapper<TComponent>
 	{ }
-
 }

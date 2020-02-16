@@ -1043,7 +1043,6 @@ namespace NHibernate.Test.ReadOnly
 					await (t.CommitAsync());
 				}
 			}
-	
 		}
 	
 		[Test]

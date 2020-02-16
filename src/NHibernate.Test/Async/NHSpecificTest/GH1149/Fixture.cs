@@ -83,7 +83,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1149
 				}
 			}
 
-			
 			using (var stateless = Sfi.OpenStatelessSession())
 			{
 				var loadedCompany = await (stateless.GetAsync<CompanyO2O>(companyId));

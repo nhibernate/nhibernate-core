@@ -289,7 +289,7 @@ namespace NHibernate.Test.Linq
 				var dbOrders3 = s.CreateQuery("select o.OrderId from Order o").List<int>();
 
 				//var q3 = dbOrders3.SubQueryBatcher(orderId => orderId,
-				//                                   ids => from subO in db.Orders.ToList()  // Note that ToList is just because current group by code is incorrent in our linq provider
+				//                                   ids => from subO in db.Orders.ToList() // Note that ToList is just because current group by code is incorrent in our linq provider
 				//                                          where ids.Contains(subO.OrderId)
 				//                                          from orderLine in subO.OrderLines
 				//                                          group new {orderLine, FreeShippingDiscount = subO.Freight}
@@ -331,7 +331,6 @@ namespace NHibernate.Test.Linq
 									   OrderId = input.Item,
 									   DiscountedProducts = input.Batcher.GetData(index)
 								   });
-
 
 				foreach (var x in q3)
 				{
@@ -739,7 +738,6 @@ namespace NHibernate.Test.Linq
 
 			ObjectDumper.Write(q);
 		}
-
 
 		[Category("ORDER BY")]
 		[Test(Description = "This sample uses Orderby, Max and Group By to find the Products that have " +
@@ -1627,7 +1625,6 @@ namespace NHibernate.Test.Linq
 				(from o in db.Orders
 				 where o.ShippingDate != null
 				 select o.OrderId).ToArray();
-
 
 			var withNullShippingDate =
 				new[]

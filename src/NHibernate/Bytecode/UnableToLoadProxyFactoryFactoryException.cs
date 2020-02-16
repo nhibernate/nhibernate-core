@@ -7,7 +7,6 @@ namespace NHibernate.Bytecode
 	[Serializable]
 	public class UnableToLoadProxyFactoryFactoryException : HibernateByteCodeException
 	{
-
 		public UnableToLoadProxyFactoryFactoryException(string typeName, Exception inner)
 			: base("", inner)
 		{

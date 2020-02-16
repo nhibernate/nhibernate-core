@@ -46,7 +46,6 @@ namespace NHibernate.Type
 			get { return typeof(IDictionary<TKey, TValue>); }
 		}
 
-
 		public override IEnumerable GetElementsIterator(object collection)
 		{
 			return ((IDictionary<TKey, TValue>) collection).Values;

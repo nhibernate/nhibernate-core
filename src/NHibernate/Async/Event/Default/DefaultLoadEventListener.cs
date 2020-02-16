@@ -47,7 +47,6 @@ namespace NHibernate.Event.Default
 
 			if (persister == null)
 			{
-
 				var message = new StringBuilder(512);
 				message.AppendLine(string.Format("Unable to locate persister for the entity named '{0}'.", @event.EntityClassName));
 				message.AppendLine("The persister define the persistence strategy for an entity.");
@@ -392,7 +391,6 @@ namespace NHibernate.Event.Default
 			}
 			return old;
 		}
-
 
 		/// <summary> Attempts to load the entity from the second-level cache. </summary>
 		/// <param name="event">The load event </param>

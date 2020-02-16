@@ -29,6 +29,5 @@ namespace NHibernate.Test.GenericTest.ListGeneric
 			get { return _items; }
 			set { _items = value; }
 		}
-
 	}
 }

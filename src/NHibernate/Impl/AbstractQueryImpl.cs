@@ -916,7 +916,6 @@ namespace NHibernate.Impl
 		{
 			this.cacheMode = cacheMode;
 			return this;
-
 		}
 
 		public IQuery SetIgnoreUknownNamedParameters(bool ignoredUnknownNamedParameters)
@@ -925,7 +924,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		protected internal abstract IDictionary<string, LockMode> LockModes { get;}
+		protected internal abstract IDictionary<string, LockMode> LockModes { get; }
 
 		#endregion
 

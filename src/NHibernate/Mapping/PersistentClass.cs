@@ -236,7 +236,6 @@ namespace NHibernate.Mapping
 
 				return new JoinedEnumerable<PersistentClass>(iters);
 			}
-
 		}
 
 		public virtual Table IdentityTable
@@ -1104,7 +1103,6 @@ namespace NHibernate.Mapping
 						CheckColumnDuplication(distinctColumns, prop.ColumnIterator);
 				}
 			}
-
 		}
 
 		protected internal virtual void CheckColumnDuplication()
@@ -1186,6 +1184,5 @@ namespace NHibernate.Mapping
 		}
 
 		public abstract bool IsLazyPropertiesCacheable { get; }
-
 	}
 }

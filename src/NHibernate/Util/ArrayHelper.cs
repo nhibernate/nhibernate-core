@@ -97,7 +97,6 @@ namespace NHibernate.Util
 			return sb.ToString();
 		}
 
-
 		/// <summary>
 		/// Append all elements in the 'from' list to the 'to' list.
 		/// </summary>
@@ -203,7 +202,6 @@ namespace NHibernate.Util
 		{
 			return ArrayComparer<T>.Default.GetHashCode(array);
 		}
-
 
 		/// <summary>
 		/// Append a value to an array.

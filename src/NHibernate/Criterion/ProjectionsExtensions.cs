@@ -186,7 +186,6 @@ namespace NHibernate.Criterion
 			return Projections.SqlFunction("abs", NHibernateUtil.Int64, property);
 		}
 
-
 		internal static IProjection ProcessRound(MethodCallExpression methodCallExpression)
 		{
 			IProjection innerProjection =
@@ -198,7 +197,6 @@ namespace NHibernate.Criterion
 
 			return Projections.SqlFunction("round", NHibernateUtil.Double, innerProjection, digitsProjection);
 		}
-
 
 		/// <summary>
 		/// Project SQL function abs()
@@ -316,7 +314,7 @@ namespace NHibernate.Criterion
 		{
 			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]).AsProjection();
 			var replaceValueIfIsNull = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[1]);
-			return Projections.SqlFunction("coalesce", NHibernateUtil.Object, property, replaceValueIfIsNull.AsProjection());
+			return new SqlFunctionProjection("coalesce", returnTypeProjection: property, property, replaceValueIfIsNull.AsProjection());
 		}
 
 		/// <summary>

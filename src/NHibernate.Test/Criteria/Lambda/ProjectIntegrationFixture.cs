@@ -123,5 +123,43 @@ namespace NHibernate.Test.Criteria.Lambda
 				Assert.That((int) actual[1], Is.EqualTo(2), "distinct count by name");
 			}
 		}
+
+		[Test]
+		public void ProjectionCanCoalesceInSelect()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var actual
+					= s.QueryOver<Person>()
+						.Select(x => x.Age.Coalesce(0))
+						.Where(x => x.Age == 20)
+						.List<int>().FirstOrDefault();
+
+				Assert.That(actual, Is.EqualTo(20));
+			}
+		}
+
+		//NH-2983
+		[Test]
+		public void ProjectionSelectSumOnCoalesce()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var actual
+					= s.QueryOver<Person>()
+						.SelectList(
+							l =>
+								l
+									.SelectSum(xx => xx.Age.Coalesce(0))
+									.SelectSum(xx => xx.Age.Coalesce(1)))
+						.Where(x => x.Age == 20)
+						.List<object[]>().FirstOrDefault();
+
+				Assert.That(actual[0], Is.EqualTo(20));
+				Assert.That(actual[1], Is.EqualTo(20));
+			}
+		}
 	}
 }

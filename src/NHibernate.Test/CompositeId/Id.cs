@@ -31,14 +31,14 @@ namespace NHibernate.Test.CompositeId
 		//KeyShort is commented to test access attributes; So expose it as method instead  
 		public short GetKeyShort() => _keyShort;
 //		public short KeyShort {
-//			get { return _keyShort;}
-//			set {_keyShort = value;}
+//			get { return _keyShort; }
+//			set {_keyShort = value; }
 //		}
 
 		public DateTime KeyDateTime
 		{
 			get { return _keyDateTime; }
-//			set {_keyDateTime = value;}
+//			set {_keyDateTime = value; }
 		}
 
 		public override int GetHashCode()

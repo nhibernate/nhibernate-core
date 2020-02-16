@@ -1,5 +1,4 @@
-﻿
-namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
+﻿namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 {
 	public class EntityWithUserTypeProperty
 	{
@@ -8,6 +7,4 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 		public virtual IExample Example { get; set; }
 		public virtual double DoubleStoredAsString { get; set; }
 	}
-
-
 }

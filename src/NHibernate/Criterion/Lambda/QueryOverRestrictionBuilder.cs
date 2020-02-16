@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,10 +8,8 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Criterion.Lambda
 {
-
 	public class QueryOverRestrictionBuilder<TRoot,TSubType> : QueryOverRestrictionBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
-
 		public QueryOverRestrictionBuilder(QueryOver<TRoot,TSubType> root, ExpressionProcessor.ProjectionInfo projection)
 			: base(root, projection) { }
 
@@ -24,12 +21,10 @@ namespace NHibernate.Criterion.Lambda
 				return this;
 			}
 		}
-
 	}
 
 	public class IQueryOverRestrictionBuilder<TRoot,TSubType> : QueryOverRestrictionBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
-
 		public IQueryOverRestrictionBuilder(IQueryOver<TRoot,TSubType> root, ExpressionProcessor.ProjectionInfo projection)
 			: base(root, projection) { }
 
@@ -41,7 +36,6 @@ namespace NHibernate.Criterion.Lambda
 				return this;
 			}
 		}
-
 	}
 
 	public class QueryOverRestrictionBuilderBase<TReturn,TRoot,TSubType>
@@ -200,7 +194,5 @@ namespace NHibernate.Criterion.Lambda
 		{
 			return Add(Restrictions.Like(projection.AsProperty(), value, matchMode, escapeChar));
 		}
-		
 	}
-
 }

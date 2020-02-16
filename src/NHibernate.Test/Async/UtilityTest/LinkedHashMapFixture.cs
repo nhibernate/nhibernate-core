@@ -33,7 +33,6 @@ namespace NHibernate.Test.UtilityTest
 				lhm.Add(player.Id, player);
 		}
 
-
 		[Test, Explicit]
 		public async Task ShowDiffAsync()
 		{
@@ -140,4 +139,3 @@ namespace NHibernate.Test.UtilityTest
 		}
 	}
 }
-

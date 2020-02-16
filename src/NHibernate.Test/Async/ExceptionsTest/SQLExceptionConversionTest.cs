@@ -80,7 +80,6 @@ namespace NHibernate.Test.ExceptionsTest
 		[Test]
 		public async Task IntegrityViolationAsync()
 		{
-
 			//ISQLExceptionConverter converter = Dialect.BuildSQLExceptionConverter();
 			ISQLExceptionConverter converter = Sfi.Settings.SqlExceptionConverter;
 

@@ -36,7 +36,6 @@ namespace NHibernate.Test.Linq
 				session.Save(new Employee { FirstName = employeeName, LastName = "LastName" });
 				session.Flush();
 
-
 				var query = (from e in db.Employees
 				             where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, escapeChar)
 				             select e).ToList();

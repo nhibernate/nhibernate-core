@@ -1,3 +1,20 @@
+﻿Build 5.2.7
+=============================
+
+Release notes - NHibernate - Version 5.2.7
+
+4 issues were resolved in this release.
+
+** Bug
+
+   * #2302 Backport sqlite.binaryguid to configuration schema
+   * #2298 Dml Linq Update Produce Wrong Sql
+   * #2296 Missing Row Count in Debug Log for Future queries
+
+** Task
+
+   * #2303 Release 5.2.7
+
 Build 5.2.6
 =============================
 
@@ -368,6 +385,14 @@ Release notes - NHibernate - Version 5.2.0
 
 As part of releasing 5.2.0, a misnamed setting in 5.0.0 release notes has been fixed:
 transaction.use_connection_on_system_events correct name is transaction.use_connection_on_system_prepare
+
+Build 5.1.7
+=============================
+
+Release notes - NHibernate - Version 5.1.7
+
+** Bug
+    * #2298 Dml Linq Update Produce Wrong Sql
 
 Build 5.1.6
 =============================

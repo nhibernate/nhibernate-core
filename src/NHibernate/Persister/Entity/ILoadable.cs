@@ -65,7 +65,7 @@ namespace NHibernate.Persister.Entity
 		string GetDiscriminatorAlias(string suffix);
 
 		/// <summary> Does the result set contain rowids?</summary>
-		bool HasRowId { get;}
+		bool HasRowId { get; }
 
 		/// <summary>
 		/// Retrieve property values from one row of a result set

@@ -207,7 +207,6 @@ namespace NHibernate.Cfg
 			if (string.IsNullOrEmpty(cacheRegionPrefix)) cacheRegionPrefix = null;
 			if (cacheRegionPrefix != null) log.Info("Cache region prefix: {0}", cacheRegionPrefix);
 
-
 			if (useQueryCache)
 			{
 				string queryCacheFactoryClassName = PropertiesHelper.GetString(Environment.QueryCacheFactory, properties,

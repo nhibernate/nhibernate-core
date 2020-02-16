@@ -38,8 +38,7 @@ namespace NHibernate.Engine
 
 		/// <summary> Does this action potentially extrapolate to orphan deletes? </summary>
 		/// <returns> True if this action can lead to deletions of orphans. </returns>
-		public abstract bool DeleteOrphans { get;}
-
+		public abstract bool DeleteOrphans { get; }
 
 		/// <summary> Does the specified cascading action require verification of no cascade validity? </summary>
 		/// <returns> True if this action requires no-cascade verification; false otherwise. </returns>

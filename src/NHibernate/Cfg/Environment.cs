@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Reflection;
 
 using NHibernate.Bytecode;
@@ -382,19 +381,10 @@ namespace NHibernate.Cfg
 
 		private static IHibernateConfiguration GetHibernateConfiguration()
 		{
-			object config = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName);
-			if (config == null)
+			var nhConfig = ConfigurationProvider.Current.GetConfiguration();
+			if (nhConfig == null && log.IsInfoEnabled())
 			{
 				log.Info("{0} section not found in application configuration file", CfgXmlHelper.CfgSectionName);
-				return null;
-			}
-
-			var nhConfig = config as IHibernateConfiguration;
-			if (nhConfig == null)
-			{
-				log.Info(
-					"{0} section handler, in application configuration file, is not IHibernateConfiguration, section ignored",
-					CfgXmlHelper.CfgSectionName);
 			}
 
 			return nhConfig;
@@ -566,7 +556,6 @@ namespace NHibernate.Cfg
 			}
 		}
 
-
 		/// <summary>
 		/// Get a named connection string, if configured.
 		/// </summary>
@@ -576,17 +565,12 @@ namespace NHibernate.Cfg
 		/// </exception>
 		internal static string GetNamedConnectionString(IDictionary<string, string> settings)
 		{
-			string connStringName;
-			if (!settings.TryGetValue(ConnectionStringName, out connStringName))
+			if (!settings.TryGetValue(ConnectionStringName, out var connStringName))
 				return null;
 
-			ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings[connStringName];
-			if (connectionStringSettings == null)
-				throw new HibernateException($"Could not find named connection string '{connStringName}'.");
-
-			return connectionStringSettings.ConnectionString;
+			return ConfigurationProvider.Current.GetNamedConnectionString(connStringName)
+			       ?? throw new HibernateException($"Could not find named connection string '{connStringName}'.");
 		}
-
 
 		/// <summary>
 		/// Get the configured connection string, from <see cref="ConnectionString"/> if that

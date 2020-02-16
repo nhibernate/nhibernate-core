@@ -75,7 +75,6 @@ namespace NHibernate.Test.ProjectionFixtures
             }
         }
 
-
 	    [Test]
 	    public void ErrorFromDBWillGiveTheActualSQLExecutedAsync()
 	    {
@@ -99,7 +98,6 @@ namespace NHibernate.Test.ProjectionFixtures
 			                                                             .Add(Projections.Property("child.Key.Id"))
 			                                                             .Add(Projections.Count("child.Key.Area"))
 			    );
-
 
 		    var e = Assert.ThrowsAsync<GenericADOException>(async () =>
 		    {

@@ -284,7 +284,6 @@ namespace NHibernate.Test.ReadOnly
 		[Test]
 		public async Task ExistingReadOnlyAfterSetSessionModifiableExistingAsync()
 		{
-	
 			Container cOrig = CreateContainer();
 			ISet<object> expectedInitializedObjects =
 					new HashSet<object>(
@@ -376,13 +375,11 @@ namespace NHibernate.Test.ReadOnly
 			await (s.CreateQuery("delete from Owner").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
-	
 		}
 	
 		[Test]
 		public async Task ExistingReadOnlyAfterSetSessionModifiableExistingEntityReadOnlyAsync()
 		{
-	
 			Container cOrig = CreateContainer();
 			ISet<object> expectedInitializedObjects =
 					new HashSet<object>(
@@ -483,7 +480,6 @@ namespace NHibernate.Test.ReadOnly
 		[Test]
 		public async Task ExistingReadOnlyAfterSetSessionModifiableProxyExistingAsync()
 		{
-	
 			Container cOrig = CreateContainer();
 			ISet<object> expectedInitializedObjects =
 					new HashSet<object>(
@@ -576,7 +572,6 @@ namespace NHibernate.Test.ReadOnly
 			await (s.CreateQuery("delete from Owner").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
-	
 		}
 	
 		[Test]
@@ -1398,8 +1393,7 @@ namespace NHibernate.Test.ReadOnly
 			await (t.CommitAsync());
 			s.Close();
 		}
-			
-		
+
 		private Container CreateContainer()
 		{
 			Container c = new Container("container");

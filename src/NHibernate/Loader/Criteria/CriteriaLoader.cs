@@ -120,7 +120,6 @@ namespace NHibernate.Loader.Criteria
 				.TransformTuple(GetResultRow(row, rs, session), ResultRowAliases);
 		}
 
-
 		protected override object[] GetResultRow(object[] row, DbDataReader rs, ISessionImplementor session)
 		{
 			object[] result;

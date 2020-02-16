@@ -245,7 +245,6 @@ namespace NHibernate.Transform
 			return transformedResults;
 		}
 
-
 		/// <summary>
 		/// Untransforms, if necessary, a List of values previously
 		/// transformed by this (or an equivalent) CacheableResultTransformer.
@@ -283,12 +282,10 @@ namespace NHibernate.Transform
 						results[i], _tupleSubsetLength == 1);
 					results[i] = Unindex(tuple);
 				}
-
 			}
 
 			return results;
 		}
-
 
 		/// <summary>
 		/// Returns the result types for the transformed value.
@@ -302,12 +299,10 @@ namespace NHibernate.Transform
 				       : tupleResultTypes;
 		}
 
-
 		public IList TransformList(IList list)
 		{
 			return list;
 		}
-
 
 		/// <summary>
 		/// "Compact" the given array by picking only the elements identified by
@@ -329,7 +324,6 @@ namespace NHibernate.Transform
 			}
 			return objectsIndexed;
 		}
-
 
 		/// <summary>
 		/// Expand the given array by putting each of its elements at the

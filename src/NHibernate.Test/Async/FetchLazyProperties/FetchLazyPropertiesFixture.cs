@@ -195,7 +195,6 @@ namespace NHibernate.Test.FetchLazyProperties
 
 		#endregion
 
-
 		#region FetchComponentAndFormulaTwoQueryReadOnly
 
 		[TestCase(true)]
@@ -342,7 +341,6 @@ namespace NHibernate.Test.FetchLazyProperties
 				          .Fetch(o => o.Formula)
 				          .Fetch(o => o.BestFriend).ThenFetch(o => o.Address)
 				          .FirstOrDefaultAsync(o => o.Id == 1));
-
 			}
 
 			AssertFetchFormulaAndManyToOneComponent(person);

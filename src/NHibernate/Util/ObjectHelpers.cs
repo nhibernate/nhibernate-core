@@ -1,4 +1,3 @@
-
 namespace NHibernate.Util
 {
 	/// <summary>

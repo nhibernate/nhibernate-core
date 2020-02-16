@@ -92,7 +92,6 @@ namespace NHibernate.Test.Hql.Ast
 			data.Cleanup();
 		}
 
-		
 		[Test]
 		public void InsertWithManyToOne()
 		{

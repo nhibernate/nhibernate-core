@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 
-
 namespace NHibernate.Test.NHSpecificTest.NH2065
 {
 	[TestFixture]
@@ -62,6 +61,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2065
 						      "reassociated object has dirty collection: NHibernate.Test.NHSpecificTest.NH2065.Person.Children"));
 			}
 		}
-
 	}
 }

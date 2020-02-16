@@ -30,7 +30,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2951
             using (ISession session = OpenSession())
             using (ITransaction transaction = session.BeginTransaction())
             {
-
                 var c = new Customer { Name = "Bob" };
                 session.Save(c);
 

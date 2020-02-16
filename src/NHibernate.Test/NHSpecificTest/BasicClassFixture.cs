@@ -152,7 +152,6 @@ namespace NHibernate.Test.NHSpecificTest
 
 			index++;
 
-
 			// update a property to make sure it picks up that it is dirty
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
@@ -383,7 +382,6 @@ namespace NHibernate.Test.NHSpecificTest
 
 			index++;
 
-
 			// VERIFY PREVIOUS UPDATE & PERFORM DELETE
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
@@ -437,7 +435,6 @@ namespace NHibernate.Test.NHSpecificTest
 
 			index++;
 
-
 			// modify the array to a new array so it is recreated
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
@@ -452,7 +449,6 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index].Close();
 
 			index++;
-
 
 			// VERIFY PREVIOUS UPDATE & PERFORM DELETE
 			s[index] = OpenSession();
@@ -523,7 +519,6 @@ namespace NHibernate.Test.NHSpecificTest
 
 			index++;
 
-
 			// VERIFY PREVIOUS UPDATE & PERFORM DELETE
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
@@ -589,7 +584,6 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index].Close();
 
 			index++;
-
 
 			// VERIFY PREVIOUS UPDATE & PERFORM DELETE
 			s[index] = OpenSession();
@@ -674,7 +668,6 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index].Close();
 
 			index++;
-
 
 			// VERIFY PREVIOUS UPDATE & PERFORM DELETE
 			s[index] = OpenSession();
@@ -792,7 +785,6 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index].Close();
 
 			index++;
-
 
 			// VERIFY PREVIOUS UPDATE & PERFORM DELETE
 			s[index] = OpenSession();

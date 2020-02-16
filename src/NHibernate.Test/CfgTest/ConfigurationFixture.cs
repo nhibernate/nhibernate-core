@@ -425,7 +425,6 @@ namespace NHibernate.Test.CfgTest
 		{
 			public SampleQueryProvider(ISessionImplementor session) : base(session)
 			{
-
 			}
 
 			protected SampleQueryProvider(ISessionImplementor session, object collection,  NhQueryableOptions options) : base(session, collection, options)
@@ -479,8 +478,6 @@ namespace NHibernate.Test.CfgTest
 					Assert.IsInstanceOf(typeof(SampleQueryProvider), query.Provider);
 				}
 			}
-
 		}
-
 	}
 }

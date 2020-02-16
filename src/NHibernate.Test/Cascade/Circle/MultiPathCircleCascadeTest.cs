@@ -4,7 +4,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Cascade.Circle
 {
-
 	/**
 	* The test case uses the following model:
 	*

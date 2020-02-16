@@ -267,6 +267,5 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 				Assert.That(resHql[0].Address, Is.Not.Null);
 			}
 		}
-
 	}
 }

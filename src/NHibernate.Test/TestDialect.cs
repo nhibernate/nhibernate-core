@@ -98,7 +98,6 @@ namespace NHibernate.Test
 		public bool SupportsEmptyInsertsOrHasNonIdentityNativeGenerator
 			=> SupportsEmptyInserts || !HasIdentityNativeGenerator;
 
-
 		/// <summary>
 		/// Supports condition not bound to any data, like "where @p1 = @p2".
 		/// </summary>

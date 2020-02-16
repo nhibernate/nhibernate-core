@@ -36,7 +36,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2280
             set { key.Organisation = value; }
         }
 
-
         public virtual DateTime? EndDate { get; set; }
 
         public override bool Equals(object obj)

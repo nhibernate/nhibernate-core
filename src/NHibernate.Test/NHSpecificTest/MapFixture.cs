@@ -47,7 +47,6 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-
 		[Test]
 		public void TestSelect()
 		{
