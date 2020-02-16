@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.GH2286">
+
+	<class name="Entity">
+		<id name="Id" generator="assigned" />
+    <property name="Name" />
+
+    <joined-subclass name="Customer">
+      <key column="customerId"/>
+    </joined-subclass>
+	</class>
+
+  <joined-subclass name="IndividualCustomer" extends="Customer">
+    <key column="IndividualCustomerID" />
+    <filter name="filterName" />
+  </joined-subclass>
+  
+  <filter-def name="filterName" condition="IndividualCustomerID in (2,3) AND customerId in (2, 3) AND Id in (2,3)">
+  </filter-def>
+
+</hibernate-mapping>
