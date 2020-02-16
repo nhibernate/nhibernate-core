@@ -812,16 +812,19 @@ namespace NHibernate.Impl
 
 				// free managed resources that are being managed by the session if we
 				// know this call came through Dispose()
-				if (isDisposing && !IsClosed)
+				if (isDisposing)
 				{
-					Close();
+					if (!IsClosed)
+					{
+						Close();
+					}
+
+					// nothing for Finalizer to do - so tell the GC to ignore it
+					GC.SuppressFinalize(this);
 				}
 
 				// free unmanaged resources here
-
 				_isAlreadyDisposed = true;
-				// nothing for Finalizer to do - so tell the GC to ignore it
-				GC.SuppressFinalize(this);
 			}
 			_context?.Dispose();
 		}

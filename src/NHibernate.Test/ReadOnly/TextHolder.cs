@@ -13,7 +13,6 @@ namespace NHibernate.Test.ReadOnly
 			return !(dialect is FirebirdDialect || dialect is Oracle8iDialect || dialect is MsSqlCeDialect || dialect is HanaRowStoreDialect);
 		}
 
-
 		private long id;
 		private string theText;
 		

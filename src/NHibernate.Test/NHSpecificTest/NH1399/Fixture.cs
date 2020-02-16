@@ -31,7 +31,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1399
 			string t1Fk = table1.UniqueColumnString(new object[] { table1ITestManyA }, "BluewireTechnologies.Core.Framework.DynamicTypes2.Albatross.ITestManyA");
 			string t2Fk = table1.UniqueColumnString(new object[] { table1ITestManyB }, "BluewireTechnologies.Core.Framework.DynamicTypes2.Albatross.ITestManyB");
 
-
 			Table table1_ = new Table("ATABLE");
 
 			Column table1ITestManyA_ = new Column("itestmanyaid");

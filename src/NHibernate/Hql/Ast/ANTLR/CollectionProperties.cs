@@ -11,7 +11,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// </summary>
 	internal static class CollectionProperties
 	{
-
 		public static readonly Dictionary<string, string> HQL_COLLECTION_PROPERTIES = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 		static CollectionProperties()

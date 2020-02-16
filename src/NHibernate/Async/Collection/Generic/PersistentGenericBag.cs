@@ -27,7 +27,7 @@ namespace NHibernate.Collection.Generic
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
+	public partial class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IReadOnlyList<T>, IList, IQueryable<T>
 	{
 
 		public override async Task<object> DisassembleAsync(ICollectionPersister persister, CancellationToken cancellationToken)
@@ -76,6 +76,19 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
+		//Since 5.3
+		/// <summary>
+		/// Get all "orphaned" elements
+		/// </summary>
+		/// <param name="snapshot">The snapshot of the collection.</param>
+		/// <param name="entityName">The persistent class whose objects
+		/// the collection is expected to contain.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>
+		/// An <see cref="ICollection"/> that contains all of the elements
+		/// that have been orphaned.
+		/// </returns>
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -85,7 +98,7 @@ namespace NHibernate.Collection.Generic
 			try
 			{
 				var sn = (ICollection) snapshot;
-				return GetOrphansAsync(sn, (ICollection) _gbag, entityName, Session, cancellationToken);
+				return Task.FromResult<ICollection>(GetOrphans(sn, (ICollection) _gbag, entityName, Session));
 			}
 			catch (Exception ex)
 			{
@@ -154,11 +167,9 @@ namespace NHibernate.Collection.Generic
 			// note that if we load this collection from a cartesian product
 			// the multiplicity would be broken ... so use an idbag instead
 			var element = await (role.ReadElementAsync(reader, owner, descriptor.SuffixedElementAliases, Session, cancellationToken)).ConfigureAwait(false);
-			// NH Different behavior : we don't check for null
-			// The NH-750 test show how checking for null we are ignoring the not-found tag and
-			// the DB may have some records ignored by NH. This issue may need some more deep consideration.
-			//if (element != null)
-			_gbag.Add((T) element);
+
+			if (element != null)
+				_gbag.Add((T) element);
 			return element;
 		}
 	}

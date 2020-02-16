@@ -40,7 +40,6 @@ namespace NHibernate.Criterion
 			typedValue = new TypedValue(NHibernateUtil.String, this.value, false);
 		}
 
-
 		public LikeExpression(string propertyName, string value)
 			: this(propertyName, value, null, false)
 		{

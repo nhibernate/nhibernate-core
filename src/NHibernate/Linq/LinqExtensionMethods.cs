@@ -2463,7 +2463,6 @@ namespace NHibernate.Linq
 #pragma warning restore CS0618 // Type or member is obsolete
 		}
 
-
 		/// <summary>
 		/// Allows to set NHibernate query options.
 		/// </summary>

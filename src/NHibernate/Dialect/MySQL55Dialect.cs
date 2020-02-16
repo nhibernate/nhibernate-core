@@ -1,4 +1,3 @@
-
 using System.Data;
 using NHibernate.Dialect.Function;
 

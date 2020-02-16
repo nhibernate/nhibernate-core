@@ -22,7 +22,7 @@ namespace NHibernate.Test.ConnectionStringTest
 	
 	public partial class MockConnectionProvider : ConnectionProvider
 	{
-		
+
 		/// <summary>
 		/// Get an open <see cref="DbConnection"/>.
 		/// </summary>
@@ -33,5 +33,4 @@ namespace NHibernate.Test.ConnectionStringTest
 			throw new NotImplementedException();
 		}
 	}
-	
 }

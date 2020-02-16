@@ -41,8 +41,8 @@ namespace NHibernate.Mapping
 		private IDictionary<string, MetaAttribute> metaAttributes;
 		private readonly List<Join> joins = new List<Join>();
 		private readonly List<Join> subclassJoins = new List<Join>();
-		private readonly IDictionary<string, string> filters = new Dictionary<string, string>();
-		private readonly ISet<string> synchronizedTables = new HashSet<string>();
+		private readonly Dictionary<string, string> filters = new Dictionary<string, string>();
+		private readonly HashSet<string> synchronizedTables = new HashSet<string>();
 		private string loaderName;
 		private bool? isAbstract;
 		private bool hasSubselectLoadableCollections;
@@ -236,7 +236,6 @@ namespace NHibernate.Mapping
 
 				return new JoinedEnumerable<PersistentClass>(iters);
 			}
-
 		}
 
 		public virtual Table IdentityTable
@@ -1104,7 +1103,6 @@ namespace NHibernate.Mapping
 						CheckColumnDuplication(distinctColumns, prop.ColumnIterator);
 				}
 			}
-
 		}
 
 		protected internal virtual void CheckColumnDuplication()
@@ -1186,6 +1184,5 @@ namespace NHibernate.Mapping
 		}
 
 		public abstract bool IsLazyPropertiesCacheable { get; }
-
 	}
 }

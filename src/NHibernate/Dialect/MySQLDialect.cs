@@ -43,7 +43,6 @@ namespace NHibernate.Dialect
 			//default:
 			//http://dev.mysql.com/doc/refman/5.0/en/data-type-defaults.html
 
-
 			//string type
 			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 255, "CHAR($l)");

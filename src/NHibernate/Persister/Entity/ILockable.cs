@@ -15,18 +15,18 @@ namespace NHibernate.Persister.Entity
 		/// <summary> 
 		/// Locks are always applied to the "root table".
 		///  </summary>
-		string RootTableName { get;}
+		string RootTableName { get; }
 
 		/// <summary> 
 		/// Get the names of columns on the root table used to persist the identifier. 
 		/// </summary>
-		string[] RootTableIdentifierColumnNames { get;}
+		string[] RootTableIdentifierColumnNames { get; }
 
 		/// <summary> 
 		/// For versioned entities, get the name of the column (again, expected on the
 		/// root table) used to store the version values. 
 		/// </summary>
-		string VersionColumnName { get;}
+		string VersionColumnName { get; }
 
 		/// <summary> 
 		/// Get the SQL alias this persister would use for the root table
@@ -42,7 +42,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// To build the SQL command in pessimistic lock
 		/// </summary>
-		SqlType[] IdAndVersionSqlTypes { get;}
+		SqlType[] IdAndVersionSqlTypes { get; }
 
 		#endregion
 	}

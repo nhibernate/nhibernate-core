@@ -134,7 +134,6 @@ namespace NHibernate.AdoNet.Util
 			}
 
 			return parameter.Value.ToString();
-
 		}
 
 		private static string GetBufferAsHexString(byte[] buffer)

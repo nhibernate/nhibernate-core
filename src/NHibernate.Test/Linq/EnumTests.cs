@@ -19,7 +19,6 @@ namespace NHibernate.Test.Linq
 			CanQueryOnEnumStoredAsInt32(EnumStoredAsInt32.Unspecified, 2);
 		}
 
-
 		public void CanQueryOnEnumStoredAsInt32(EnumStoredAsInt32 type, int expectedCount)
 		{
 			var query = (from user in db.Users
@@ -33,14 +32,12 @@ namespace NHibernate.Test.Linq
 		public void CanQueryOnEnumStoredAsString_Meduim_2()
 		{
 			CanQueryOnEnumStoredAsString(EnumStoredAsString.Medium, 2);
-
 		}
 
 		[Test]
 		public void CanQueryOnEnumStoredAsString_Small_1()
 		{
 			CanQueryOnEnumStoredAsString(EnumStoredAsString.Small, 1);
-
 		}
 
 		public void CanQueryOnEnumStoredAsString(EnumStoredAsString type, int expectedCount)

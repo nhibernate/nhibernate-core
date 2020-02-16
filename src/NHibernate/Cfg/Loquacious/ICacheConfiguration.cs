@@ -4,6 +4,8 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.Loquacious
 {
+	//Since 5.3
+	[Obsolete("Replaced by direct class usage")]
 	public interface ICacheConfiguration
 	{
 		ICacheConfiguration Through<TProvider>() where TProvider : ICacheProvider;
@@ -13,6 +15,8 @@ namespace NHibernate.Cfg.Loquacious
 		IQueryCacheConfiguration Queries { get; }
 	}
 
+	//Since 5.3
+	[Obsolete("Replaced by direct class usage")]
 	public interface ICacheConfigurationProperties
 	{
 		bool UseMinimalPuts { set; }
@@ -24,9 +28,11 @@ namespace NHibernate.Cfg.Loquacious
 		void QueryCache<TFactory>() where TFactory : IQueryCache;
 	}
 
-	// 6.0 TODO: merge into ICacheConfigurationProperties
+	// 6.0 TODO: Remove
 	public static class CacheConfigurationPropertiesExtensions
 	{
+		//Since 5.3
+		[Obsolete("Replaced by direct class usage")]
 		public static void QueryCacheFactory<TFactory>(this ICacheConfigurationProperties config) where TFactory : IQueryCacheFactory
 		{
 			ReflectHelper

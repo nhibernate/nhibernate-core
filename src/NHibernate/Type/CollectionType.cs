@@ -433,7 +433,6 @@ namespace NHibernate.Type
 			return GetType().FullName + '(' + Role + ')';
 		}
 
-
 		#region Methods added in NH
 
 		protected virtual void Clear(object collection)
@@ -662,12 +661,12 @@ namespace NHibernate.Type
 
 		public virtual bool HasHolder()
 		{
-			return false;// entityMode == EntityMode.DOM4J;
+			return false; // entityMode == EntityMode.DOM4J;
 		}
 
 		protected internal virtual bool InitializeImmediately()
 		{
-			return false;// entityMode == EntityMode.DOM4J;
+			return false; // entityMode == EntityMode.DOM4J;
 		}
 
 		public virtual object IndexOf(object collection, object element)

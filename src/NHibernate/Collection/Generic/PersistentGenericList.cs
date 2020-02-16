@@ -22,7 +22,7 @@ namespace NHibernate.Collection.Generic
 	/// <remarks>The underlying collection used is a <see cref="List{T}"/></remarks>
 	[Serializable]
 	[DebuggerTypeProxy(typeof (CollectionProxy<>))]
-	public partial class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
+	public partial class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IReadOnlyList<T>, IList, IQueryable<T>
 	{
 		protected IList<T> WrappedList;
 
@@ -52,7 +52,6 @@ namespace NHibernate.Collection.Generic
 			SetInitialized();
 			IsDirectlyAccessible = true;
 		}
-
 
 		public override object GetSnapshot(ICollectionPersister persister)
 		{
@@ -242,7 +241,6 @@ namespace NHibernate.Collection.Generic
 			return WrappedList.GetHashCode();
 		}
 
-
 		#region IList Members
 
 		int IList.Add(object value)
@@ -333,7 +331,6 @@ namespace NHibernate.Collection.Generic
 
 		#endregion
 
-
 		#region IList<T> Members
 
 		public int IndexOf(T item)
@@ -404,7 +401,6 @@ namespace NHibernate.Collection.Generic
 
 		#endregion
 
-
 		#region ICollection Members
 
 		void ICollection.CopyTo(Array array, int arrayIndex)
@@ -437,7 +433,6 @@ namespace NHibernate.Collection.Generic
 		}
 
 		#endregion
-
 
 		#region ICollection<T> Members
 
@@ -491,7 +486,6 @@ namespace NHibernate.Collection.Generic
 		}
 
 		#endregion
-
 
 		#region IEnumerable Members
 

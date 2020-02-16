@@ -44,6 +44,27 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 		}
 
 		[Test]
+		public void SelectModeDetachedQueryOver()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex root = null;
+				root = QueryOver.Of(() => root)
+								.Where(x => x.Id == _parentEntityComplexId)
+								.Fetch(SelectMode.Fetch, r => r.Child1)
+								.GetExecutableQueryOver(session)
+								.SingleOrDefault();
+
+				Assert.That(root, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(root), Is.True);
+				Assert.That(root.Child1, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(root.Child1), Is.True, "Joined ManyToOne Child1 should not be fetched.");
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
 		public void SelectModeFetch()
 		{
 			using (var sqlLog = new SqlLogSpy())
@@ -665,7 +686,6 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 									ckm.Name("ParentId");
 								});
 							km.ForeignKey("none");
-
 						});
 					m.Cascade(Mapping.ByCode.Cascade.All);
 					if (fetchMode != null)

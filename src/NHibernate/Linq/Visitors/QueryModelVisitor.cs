@@ -365,7 +365,7 @@ namespace NHibernate.Linq.Visitors
 		public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
 		{
 			PreviousEvaluationType = CurrentEvaluationType;
-			CurrentEvaluationType = resultOperator.GetOutputDataInfo(PreviousEvaluationType);
+			CurrentEvaluationType = GetOutputDataInfo(resultOperator, PreviousEvaluationType);
 
 			if (resultOperator is ClientSideTransformOperator)
 			{
@@ -380,6 +380,26 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			ResultOperatorMap.Process(resultOperator, this, _hqlTree);
+		}
+
+		private static IStreamedDataInfo GetOutputDataInfo(ResultOperatorBase resultOperator, IStreamedDataInfo evaluationType)
+		{
+			//ContainsResultOperator contains data integrity check so for `values.Contains(x)` it checks that  'x' is proper type to be used inside 'values.Contains()'
+			//Due to some reasons (possibly NH expression rewritings) those types might be incompatible (known case NH-3155 - group by subquery). So resultOperator.GetOutputDataInfo throws something like: 
+			//System.ArgumentException : The items of the input sequence of type 'System.Linq.IGrouping`2[System.Object[],EntityType]' are not compatible with the item expression of type 'System.Int32'.
+			//Parameter name: inputInfo
+			//at Remotion.Linq.Clauses.ResultOperators.ContainsResultOperator.GetOutputDataInfo(StreamedSequenceInfo inputInfo)
+			//But in this place we don't really care about types involving inside expression, all we need to know is operation result which is bool for Contains
+			//So let's skip possible type exception mismatch if it allows to generate proper SQL
+			switch (resultOperator)
+			{
+				case ContainsResultOperator _:
+				case AnyResultOperator _:
+				case AllResultOperator _:
+					return new StreamedScalarValueInfo(typeof(bool));
+			}
+
+			return resultOperator.GetOutputDataInfo(evaluationType);
 		}
 
 		public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
@@ -418,20 +438,20 @@ namespace NHibernate.Linq.Visitors
 
 		private void VisitInsertClause(Expression expression)
 		{
-			var listInit = expression as ListInitExpression
+			var assignments = expression as BlockExpression
 				?? throw new QueryException("Malformed insert expression");
 			var insertedType = VisitorParameters.TargetEntityType;
 			var idents = new List<HqlIdent>();
 			var selectColumns = new List<HqlExpression>();
 
 			//Extract the insert clause from the projected ListInit
-			foreach (var assignment in listInit.Initializers)
+			foreach (BinaryExpression assignment in assignments.Expressions)
 			{
-				var member = (ConstantExpression)assignment.Arguments[0];
-				var value = assignment.Arguments[1];
+				var propName = ((ParameterExpression) assignment.Left).Name;
+				var value = assignment.Right;
 
 				//The target property
-				idents.Add(_hqlTree.TreeBuilder.Ident((string)member.Value));
+				idents.Add(_hqlTree.TreeBuilder.Ident(propName));
 
 				var valueHql = HqlGeneratorExpressionVisitor.Visit(value, VisitorParameters).AsExpression();
 				selectColumns.Add(valueHql);
@@ -447,16 +467,15 @@ namespace NHibernate.Linq.Visitors
 
 		private void VisitUpdateClause(Expression expression)
 		{
-			var listInit = expression as ListInitExpression
+			var assignments = expression as BlockExpression
 				?? throw new QueryException("Malformed update expression");
-			foreach (var initializer in listInit.Initializers)
+			foreach (BinaryExpression assigment in assignments.Expressions)
 			{
-				var member = (ConstantExpression)initializer.Arguments[0];
-				var setter = initializer.Arguments[1];
+				var propName = ((ParameterExpression) assigment.Left).Name;
+				var setter = assigment.Right;
 				var setterHql = HqlGeneratorExpressionVisitor.Visit(setter, VisitorParameters).AsExpression();
 
-				_hqlTree.AddSet(_hqlTree.TreeBuilder.Equality(_hqlTree.TreeBuilder.Ident((string)member.Value),
-					setterHql));
+				_hqlTree.AddSet(_hqlTree.TreeBuilder.Equality(_hqlTree.TreeBuilder.Ident(propName), setterHql));
 			}
 		}
 
@@ -499,13 +518,14 @@ namespace NHibernate.Linq.Visitors
 		{
 			var equalityVisitor = new EqualityHqlGenerator(VisitorParameters);
 			var whereClause = equalityVisitor.Visit(joinClause.InnerKeySelector, joinClause.OuterKeySelector);
+			var querySourceName = VisitorParameters.QuerySourceNamer.GetName(joinClause);
 
 			_hqlTree.AddWhereClause(whereClause);
 
 			_hqlTree.AddFromClause(
 				_hqlTree.TreeBuilder.Range(
 					HqlGeneratorExpressionVisitor.Visit(joinClause.InnerSequence, VisitorParameters),
-					_hqlTree.TreeBuilder.Alias(joinClause.ItemName)));
+					_hqlTree.TreeBuilder.Alias(querySourceName)));
 		}
 
 		public override void VisitGroupJoinClause(GroupJoinClause groupJoinClause, QueryModel queryModel, int index)

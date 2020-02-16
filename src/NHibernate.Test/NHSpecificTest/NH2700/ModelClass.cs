@@ -8,5 +8,4 @@ namespace NHibernate.Test.NHSpecificTest.NH2700
         public virtual DateTime Date1 { get; set; }
         public virtual DateTime Value1 { get; set; }
     }
-
 }

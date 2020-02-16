@@ -120,7 +120,6 @@ namespace NHibernate.Test.Linq.ByMethod
 						  "Cannot use distinct on result that depends on methods for which no SQL equivalent exist."));
 		}
 
-
 		[Test]
 		public void DistinctOnTypeProjectionWithCustomProjectionMethodsIsBlocked2()
 		{

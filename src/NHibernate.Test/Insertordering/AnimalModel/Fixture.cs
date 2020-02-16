@@ -153,5 +153,29 @@ namespace NHibernate.Test.Insertordering.AnimalModel
 				// instead.)
 			}
 		}
+
+		// #2141
+		[Test]
+		public void InsertShouldNotDependOnEntityEqualsImplementation()
+		{
+			var person = new PersonWithWrongEquals { Name = "AnimalOwner" };
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.Save(person);
+				t.Commit();
+			}
+			Sfi.Evict(typeof(PersonWithWrongEquals));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var personProxy = s.Get<PersonWithWrongEquals>(person.Id);
+
+				s.Save(new Cat { Name = "Felix", Owner = personProxy });
+				s.Save(new Cat { Name = "Loustic", Owner = personProxy });
+				Assert.DoesNotThrow(() => { t.Commit(); });
+			}
+		}
 	}
 }

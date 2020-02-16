@@ -37,7 +37,6 @@ namespace NHibernate.Test.NHSpecificTest.NH251
 		}
 	}
 
-
 	/// <summary>
 	/// Custom access strategy that uses IDynamicFieldContainer to get/set property values
 	/// </summary>

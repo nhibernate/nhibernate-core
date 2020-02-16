@@ -128,7 +128,6 @@ namespace NHibernate.Test.Linq.ByMethod
 			AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
 		}
 
-
 		[Test]
 		public void SingleKeyPropertyGroupAndOrderByCountBeforeProjection()
 		{
@@ -891,7 +890,6 @@ namespace NHibernate.Test.Linq.ByMethod
 			}
 		}
 
-
 		[Test(Description = "NH-3446"), KnownBug("NH-3446", "NHibernate.HibernateException")]
 		public void GroupByOrderByKeySelectToClass()
 		{
@@ -900,7 +898,6 @@ namespace NHibernate.Test.Linq.ByMethod
 				.Select(x => new GroupInfo {Key = x.Key, ItemCount = x.Count(), HasSubgroups = false, Items = x})
 				.ToList();
 		}
-
 
 		[Test(Description = "NH-3743")]
 		public void FetchBeforeGroupBy()

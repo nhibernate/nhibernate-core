@@ -306,7 +306,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.IsEmbedded = false;
 				model.IsDynamic = true;
 			}
-
 			else if (reflectedClass != null)
 			{
 				model.ComponentClass = reflectedClass;

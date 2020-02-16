@@ -16,7 +16,6 @@ namespace NHibernate.Driver
 		: ReflectionBasedDriver
 #endif
 	{
-
 #if !NETFX
 		public OleDbDriver()
 			: base ("System.Data.OleDb", "System.Data.OleDb.OleDbConnection", "System.Data.OleDb.OleDbCommand")

@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using NHibernate.Criterion;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Engine.Query;
+using NHibernate.Linq;
 using NHibernate.Linq.Visitors;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -258,6 +260,66 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void DmlPlansAreCached()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+
+			var cache = (SoftLimitMRUCache)
+				queryPlanCacheType
+					.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
+					.GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			using (session.BeginTransaction())
+			{
+				db.Customers.Where(c => c.CustomerId == "UNKNOWN").Update(x => new Customer {CompanyName = "Constant1"});
+				db.Customers.Where(c => c.CustomerId == "ALFKI").Update(x => new Customer {CompanyName = x.CompanyName});
+				db.Customers.Where(c => c.CustomerId == "UNKNOWN").Update(x => new Customer {ContactName = "Constant1"});
+				Assert.That(
+					cache,
+					Has.Count.EqualTo(3),
+					"Query plans should be cached.");
+
+				using (var spy = new LogSpy(queryPlanCacheType))
+				{
+					//Queries below should hit plan cache.
+					using (var sqlSpy = new SqlLogSpy())
+					{
+						db.Customers.Where(c => c.CustomerId == "ANATR").Update(x => new Customer {CompanyName = x.CompanyName});
+						db.Customers.Where(c => c.CustomerId == "UNKNOWN").Update(x => new Customer {CompanyName = "Constant2"});
+						db.Customers.Where(c => c.CustomerId == "UNKNOWN").Update(x => new Customer {ContactName = "Constant2"});
+
+						var sqlEvents = sqlSpy.Appender.GetEvents();
+						Assert.That(
+							sqlEvents[0].RenderedMessage,
+							Does.Contain("ANATR").And.Not.Contain("UNKNOWN").And.Not.Contain("Constant1"),
+							"Unexpected constant parameter value");
+						Assert.That(
+							sqlEvents[1].RenderedMessage,
+							Does.Contain("UNKNOWN").And.Contain("Constant2").And.Contain("CompanyName").IgnoreCase
+								.And.Not.Contain("Constant1"),
+							"Unexpected constant parameter value");
+						Assert.That(
+							sqlEvents[2].RenderedMessage,
+							Does.Contain("UNKNOWN").And.Contain("Constant2").And.Contain("ContactName").IgnoreCase
+								.And.Not.Contain("Constant1"),
+							"Unexpected constant parameter value");
+					}
+
+					Assert.That(cache, Has.Count.EqualTo(3), "Additional queries should not cause a plan to be cached.");
+					Assert.That(
+						spy.GetWholeLog(),
+						Does
+							.Contain("located HQL query plan in cache")
+							.And.Not.Contain("unable to locate HQL query plan in cache"));
+
+					db.Customers.Where(c => c.CustomerId == "ANATR").Update(x => new Customer {ContactName = x.ContactName});
+					Assert.That(cache, Has.Count.EqualTo(4), "Query should be cached");
+				}
+			}
+		}
+
+		[Test]
 		public void PlansWithNonParameterizedConstantsAreNotCached()
 		{
 			var queryPlanCacheType = typeof(QueryPlanCache);
@@ -275,6 +337,63 @@ namespace NHibernate.Test.Linq
 				cache,
 				Has.Count.EqualTo(0),
 				"Query plan should not be cached.");
+		}
+
+		[Test]
+		public void PlansWithNonParameterizedConstantsAreNotCachedForExpandedQuery()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+
+			var cache = (SoftLimitMRUCache)
+				queryPlanCacheType
+					.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
+					.GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			var ids = new[] {"ANATR", "UNKNOWN"}.ToList();
+			db.Customers.Where(x => ids.Contains(x.CustomerId)).Select(
+				c => new {c.CustomerId, c.ContactName, Constant = 1}).First();
+
+			Assert.That(
+				cache,
+				Has.Count.EqualTo(0),
+				"Query plan should not be cached.");
+		}
+
+		//GH-2298 - Different Update queries - same query cache plan
+		[Test]
+		public void DmlPlansForExpandedQuery()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+
+			var cache = (SoftLimitMRUCache)
+				queryPlanCacheType
+					.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
+					.GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			using (session.BeginTransaction())
+			{
+				var list = new[] {"UNKNOWN", "UNKNOWN2"}.ToList();
+				db.Customers.Where(x => list.Contains(x.CustomerId)).Update(
+					x => new Customer
+					{
+						CompanyName = "Constant1"
+					});
+
+				db.Customers.Where(x => list.Contains(x.CustomerId))
+				.Update(
+					x => new Customer
+					{
+						ContactName = "Constant1"
+					});
+
+				Assert.That(
+					cache.Count,
+					//2 original queries + 2 expanded queries are expected in cache
+					Is.EqualTo(0).Or.EqualTo(4),
+					"Query plans should either be cached separately or not cached at all.");
+			}
 		}
 	}
 }

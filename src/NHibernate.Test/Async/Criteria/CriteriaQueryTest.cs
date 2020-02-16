@@ -288,122 +288,56 @@ namespace NHibernate.Test.Criteria
 				await (t.CommitAsync());
 			}
 
-			if (TestDialect.SupportsOperatorAll)
+			//Note: It might require separate test dialect flag like SupportsRowValueConstructorWithOperatorAll
+			if (TestDialect.SupportsOperatorAll && TestDialect.SupportsRowValueConstructorSyntax)
 			{
 				using (ISession session = OpenSession())
-				using (ITransaction t = session.BeginTransaction())
-				{
-					try
-					{
-						await (session.CreateCriteria<Student>()
-							.Add(Subqueries.PropertyEqAll("CityState", dc))
-							.ListAsync());
-
-						Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
-					}
-					catch (QueryException)
-					{
-						// expected
-					}
-					await (t.RollbackAsync());
-				}
-			}
-
-			if (TestDialect.SupportsOperatorAll)
-			{
-				using (ISession session = OpenSession())
-				using (ITransaction t = session.BeginTransaction())
-				{
-					try
-					{
-						await (session.CreateCriteria<Student>()
-							.Add(Property.ForName("CityState").EqAll(dc))
-							.ListAsync());
-
-						Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
-					}
-					catch (QueryException)
-					{
-						// expected
-					}
-					finally
-					{
-						await (t.RollbackAsync());
-					}
-				}
-			}
-
-			using (ISession session = OpenSession())
-			using (ITransaction t = session.BeginTransaction())
-			{
-				try
 				{
 					await (session.CreateCriteria<Student>()
-						.Add(Subqueries.In(odessaWa, dc))
-						.ListAsync());
-					
-					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
+							.Add(Subqueries.PropertyEqAll("CityState", dc))
+							.ListAsync());
 				}
-				catch (NHibernate.Exceptions.GenericADOException)
+
+				using (ISession session = OpenSession())
 				{
-					// expected
-				}
-				finally
-				{
-					await (t.RollbackAsync());
+					await (session.CreateCriteria<Student>()
+							.Add(Property.ForName("CityState").EqAll(dc))
+							.ListAsync());
 				}
 			}
-	
-			using (ISession session = OpenSession())
-			using (ITransaction t = session.BeginTransaction())
+
+			if (TestDialect.SupportsRowValueConstructorSyntax)
 			{
-				DetachedCriteria dc2 = DetachedCriteria.For<Student>("st1")
-					.Add(Property.ForName("st1.CityState").EqProperty("st2.CityState"))
-					.SetProjection(Property.ForName("CityState"));
-				
-				try 
+				using (ISession session = OpenSession())
 				{
+					await (session.CreateCriteria<Student>()
+							.Add(Subqueries.In(odessaWa, dc))
+							.ListAsync());
+				}
+
+				using (ISession session = OpenSession())
+				{
+					DetachedCriteria dc2 = DetachedCriteria.For<Student>("st1")
+															.Add(Property.ForName("st1.CityState").EqProperty("st2.CityState"))
+															.SetProjection(Property.ForName("CityState"));
 					await (session.CreateCriteria<Student>("st2")
-						.Add( Subqueries.Eq(odessaWa, dc2))
-						.ListAsync());
-					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
+							.Add( Subqueries.Eq(odessaWa, dc2))
+							.ListAsync());
 				}
-				catch (NHibernate.Exceptions.GenericADOException)
+
+				using (ISession session = OpenSession())
 				{
-					// expected
-				}
-				finally
-				{
-					await (t.RollbackAsync());
-				}
-			}
-	
-			using (ISession session = OpenSession())
-			using (ITransaction t = session.BeginTransaction())
-			{
-				DetachedCriteria dc3 = DetachedCriteria.For<Student>("st")
-					.CreateCriteria("Enrolments")
-						.CreateCriteria("Course")
-							.Add(Property.ForName("Description").Eq("Hibernate Training"))
-							.SetProjection(Property.ForName("st.CityState"));
-				try
-				{
+					DetachedCriteria dc3 = DetachedCriteria.For<Student>("st")
+															.CreateCriteria("Enrolments")
+															.CreateCriteria("Course")
+															.Add(Property.ForName("Description").Eq("Hibernate Training"))
+															.SetProjection(Property.ForName("st.CityState"));
 					await (session.CreateCriteria<Enrolment>("e")
-						.Add(Subqueries.Eq(odessaWa, dc3))
-						.ListAsync());
-					
-					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
-				}
-				catch (NHibernate.Exceptions.GenericADOException)
-				{
-					// expected
-				}
-				finally
-				{
-					await (t.RollbackAsync());
+							.Add(Subqueries.Eq(odessaWa, dc3))
+							.ListAsync());
 				}
 			}
-	
+
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
@@ -442,7 +376,6 @@ namespace NHibernate.Test.Criteria
 				.Add(Property.ForName("m.class").Eq(typeof(Reptile)))
 				.AddOrder(Order.Asc("a.bodyWeight"));
 			ICriteria cloned = CriteriaTransformer.TransformToRowCount(c);
-
 
 			await (cloned.ListAsync());
 			await (t.RollbackAsync());
@@ -868,7 +801,6 @@ namespace NHibernate.Test.Criteria
 			Assert.AreEqual(101L, result[2]);
 			Assert.AreEqual(384.0D, (Double)result[3], 0.01D);
 
-
 			IList resultWithMaps = await (s.CreateCriteria(typeof(Enrolment))
 				.SetProjection(Projections.Distinct(Projections.ProjectionList()
 														.Add(Projections.Property("StudentNumber"), "stNumber")
@@ -898,7 +830,6 @@ namespace NHibernate.Test.Criteria
 
 			Assert.AreEqual(101L, m1["stNumber"]);
 			Assert.AreEqual(667L, m0["stNumber"]);
-
 
 			IList resultWithAliasedBean = await (s.CreateCriteria(typeof(Enrolment))
 				.CreateAlias("Student", "st")
@@ -955,7 +886,6 @@ namespace NHibernate.Test.Criteria
 			Assert.AreEqual(7, array.Length);
 
 			ProjectionList pp1 = Projections.ProjectionList().Add(Projections.RowCountInt64());
-
 
 			object r = await (s.CreateCriteria(typeof(Enrolment))
 											.SetProjection(pp1)
@@ -1060,7 +990,6 @@ namespace NHibernate.Test.Criteria
 			Assert.AreEqual(101L, result[2]);
 			Assert.AreEqual(384.0D, (Double)result[3], 0.01D);
 
-
 			ICriteria criteriaToClone2 = s.CreateCriteria(typeof(Enrolment))
 				.SetProjection(Projections.Distinct(Projections.ProjectionList()
 														.Add(Projections.Property("StudentNumber"), "stNumber")
@@ -1092,7 +1021,6 @@ namespace NHibernate.Test.Criteria
 
 			Assert.AreEqual(101L, m1["stNumber"]);
 			Assert.AreEqual(667L, m0["stNumber"]);
-
 
 			ICriteria criteriaToClone3 = s.CreateCriteria(typeof(Enrolment))
 				.CreateAlias("Student", "st")
@@ -1844,7 +1772,6 @@ namespace NHibernate.Test.Criteria
 			Assert.AreEqual(101L, result[2]);
 			Assert.AreEqual(384.0D, (double)result[3], 0.01D);
 
-
 			await (CriteriaTransformer.Clone(
 				s.CreateCriteria(typeof(Enrolment))
 					.Add(Property.ForName("StudentNumber").Gt(665L))
@@ -1887,7 +1814,6 @@ namespace NHibernate.Test.Criteria
 
 			Assert.AreEqual(101L, m1["stNumber"]);
 			Assert.AreEqual(667L, m0["stNumber"]);
-
 
 			IList resultWithAliasedBean = await (CriteriaTransformer.Clone(s.CreateCriteria(typeof(Enrolment))
 																		.CreateAlias("Student", "st")
@@ -2410,7 +2336,6 @@ namespace NHibernate.Test.Criteria
 						.Add(Projections.Property("StudentNumber"), "StudentNumber")
 						.Add(Projections.Property("Name"), "Name"));
 
-
 			ISession session = OpenSession();
 			ITransaction t = session.BeginTransaction();
 
@@ -2446,7 +2371,6 @@ namespace NHibernate.Test.Criteria
 				.SetResultTransformer(new AliasToBeanResultTransformer(typeof(Student)))
 				.Add(Property.ForName("Name").Eq("Gavin King"))
 				.AddOrder(Order.Asc("StudentNumber"));
-
 
 			ISession session = OpenSession();
 			ITransaction t = session.BeginTransaction();
@@ -2579,7 +2503,6 @@ namespace NHibernate.Test.Criteria
 				ICriteria subCriterium = crit.CreateCriteria("PreferredCourse");
 				subCriterium.Add(Property.ForName("CourseCode").Eq("PREFFERED_CODE"));
 
-
 				ICriteria countCriteria = CriteriaTransformer.TransformToRowCount(crit);
 
 				await (countCriteria.ListAsync());
@@ -2615,7 +2538,6 @@ namespace NHibernate.Test.Criteria
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
-
 				Course courseA = new Course();
 				courseA.CourseCode = "HIB-A";
 				courseA.Description = "Hibernate Training A";

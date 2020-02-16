@@ -27,17 +27,33 @@ namespace NHibernate.Collection
 	public partial class PersistentArrayHolder : AbstractPersistentCollection, ICollection
 	{
 
-		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
+		//Since 5.3
+		/// <summary>
+		/// Get all "orphaned" elements
+		/// </summary>
+		/// <param name="snapshot">The snapshot of the collection.</param>
+		/// <param name="entityName">The persistent class whose objects
+		/// the collection is expected to contain.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>
+		/// An <see cref="ICollection"/> that contains all of the elements
+		/// that have been orphaned.
+		/// </returns>
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			object[] sn = (object[]) snapshot;
-			object[] arr = (object[]) array;
-			List<object> result = new List<object>(sn);
-			for (int i = 0; i < sn.Length; i++)
+			if (cancellationToken.IsCancellationRequested)
 			{
-				await (IdentityRemoveAsync(result, arr[i], entityName, Session, cancellationToken)).ConfigureAwait(false);
+				return Task.FromCanceled<ICollection>(cancellationToken);
 			}
-			return result;
+			try
+			{
+				return Task.FromResult<ICollection>(GetOrphans((object[]) snapshot, (object[]) array, entityName, Session));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<ICollection>(ex);
+			}
 		}
 
 		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister, CancellationToken cancellationToken)

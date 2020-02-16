@@ -30,9 +30,7 @@ namespace NHibernate.Linq.Visitors
 			_parameters = parameters;
 		}
 
-
 		public ISessionFactory SessionFactory { get { return _parameters.SessionFactory; } }
-
 
 		public HqlTreeNode Visit(Expression expression)
 		{
@@ -581,7 +579,7 @@ possible solutions:
 
 		protected HqlTreeNode VisitNewArrayExpression(NewArrayExpression expression)
 		{
-			var expressionSubTree = expression.Expressions.Select(exp => VisitExpression(exp)).ToArray();
+			var expressionSubTree = expression.Expressions.ToArray(exp => VisitExpression(exp));
 			return _hqlTreeBuilder.ExpressionSubTreeHolder(expressionSubTree);
 		}
 	}

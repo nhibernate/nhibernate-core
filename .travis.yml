@@ -1,3 +1,4 @@
+dist: trusty
 language: csharp
 mono: latest
 dotnet: 2.1.300

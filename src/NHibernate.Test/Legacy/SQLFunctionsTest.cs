@@ -137,7 +137,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public void Broken()
 		{
@@ -199,7 +198,6 @@ namespace NHibernate.Test.Legacy
 			t.Commit();
 			s.Close();
 		}
-
 
 		[Test]
 		public void CachedQuery()

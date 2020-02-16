@@ -175,14 +175,14 @@ namespace NHibernate.Cache
 			if (Log.IsDebugEnabled())
 				Log.Debug("checking cached query results in region: '{0}'; {1}", _regionName, StringHelper.CollectionToString(keys));
 
-			var cacheables = (await (_cache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false)).Cast<IList>().ToArray();
+			var cacheables = await (_cache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
 
 			var spacesToCheck = new List<ISet<string>>();
 			var checkedSpacesIndexes = new HashSet<int>();
 			var checkedSpacesTimestamp = new List<long>();
 			for (var i = 0; i < keys.Length; i++)
 			{
-				var cacheable = cacheables[i];
+				var cacheable = (IList) cacheables[i];
 				if (cacheable == null)
 				{
 					Log.Debug("query results were not found in cache: {0}", keys[i]);
@@ -216,7 +216,7 @@ namespace NHibernate.Cache
 
 				for (var i = 0; i < keys.Length; i++)
 				{
-					var cacheable = cacheables[i];
+					var cacheable = (IList) cacheables[i];
 					if (cacheable == null)
 						continue;
 
@@ -253,7 +253,7 @@ namespace NHibernate.Cache
 					{
 						try
 						{
-							results[i] = await (PerformAssembleAsync(keys[i], finalReturnTypes[i], queryParams.NaturalKeyLookup, session, cacheables[i], cancellationToken)).ConfigureAwait(false);
+							results[i] = await (PerformAssembleAsync(keys[i], finalReturnTypes[i], queryParams.NaturalKeyLookup, session, (IList) cacheables[i], cancellationToken)).ConfigureAwait(false);
 						}
 						finally
 						{
@@ -276,7 +276,7 @@ namespace NHibernate.Cache
 					{
 						try
 						{
-							await (InitializeCollectionsAsync(finalReturnTypes[i], session, results[i], cacheables[i], cancellationToken)).ConfigureAwait(false);
+							await (InitializeCollectionsAsync(finalReturnTypes[i], session, results[i], (IList) cacheables[i], cancellationToken)).ConfigureAwait(false);
 						}
 						finally
 						{

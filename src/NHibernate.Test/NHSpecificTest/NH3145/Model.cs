@@ -1,4 +1,3 @@
-
 namespace NHibernate.Test.NHSpecificTest.NH3145
 {
 	public class Root

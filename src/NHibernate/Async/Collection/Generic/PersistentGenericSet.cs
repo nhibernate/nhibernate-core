@@ -28,9 +28,22 @@ namespace NHibernate.Collection.Generic
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, IQueryable<T>
+	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, IReadOnlyCollection<T>, IQueryable<T>
 	{
 
+		//Since 5.3
+		/// <summary>
+		/// Get all "orphaned" elements
+		/// </summary>
+		/// <param name="snapshot">The snapshot of the collection.</param>
+		/// <param name="entityName">The persistent class whose objects
+		/// the collection is expected to contain.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>
+		/// An <see cref="ICollection"/> that contains all of the elements
+		/// that have been orphaned.
+		/// </returns>
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -44,7 +57,7 @@ namespace NHibernate.Collection.Generic
 				// TODO: Avoid duplicating shortcuts and array copy, by making base class GetOrphans() more flexible
 				if (WrappedSet.Count == 0) return Task.FromResult<ICollection>(sn);
 				if (((ICollection)sn).Count == 0) return Task.FromResult<ICollection>(sn);
-				return GetOrphansAsync(sn, WrappedSet.ToArray(), entityName, Session, cancellationToken);
+				return Task.FromResult<ICollection>(GetOrphans(sn, WrappedSet.ToArray(), entityName, Session));
 			}
 			catch (Exception ex)
 			{
@@ -61,7 +74,6 @@ namespace NHibernate.Collection.Generic
 			{
 				return false;
 			}
-
 
 			foreach (T obj in WrappedSet)
 			{
@@ -129,7 +141,6 @@ namespace NHibernate.Collection.Generic
 			var deletes = new List<T>(((ICollection<T>)sn).Count);
 
 			deletes.AddRange(sn.Where(obj => !WrappedSet.Contains(obj)));
-
 
 			foreach (var obj in WrappedSet)
 			{

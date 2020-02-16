@@ -61,5 +61,11 @@
         <one-to-many class="SivasKangal"/>
       </bag>
     </subclass>
+    <subclass name="PersonWithWrongEquals" discriminator-value="6">
+      <bag name="SivasKangalsGeneric" lazy="true" inverse="true" cascade="save-update">
+        <key column="OwnerId" />
+        <one-to-many class="SivasKangal"/>
+      </bag>
+    </subclass>
   </class>
 </hibernate-mapping>

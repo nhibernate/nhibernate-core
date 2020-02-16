@@ -1,7 +1,5 @@
-
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -12,7 +10,6 @@ using Expression = System.Linq.Expressions.Expression;
 
 namespace NHibernate.Impl
 {
-
 	/// <summary>
 	/// Subquery type enumeration
 	/// </summary>
@@ -85,7 +82,6 @@ namespace NHibernate.Impl
 					: orderProjectionDelegate(_projection);
 			}
 
-
 			/// <summary>
 			/// Retrieve the property name from a supplied PropertyProjection
 			/// Note:  throws if the supplied IProjection is not a PropertyProjection
@@ -100,11 +96,11 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private readonly static IDictionary<ExpressionType, Func<ProjectionInfo, object, ICriterion>> _simpleExpressionCreators;
-		private readonly static IDictionary<ExpressionType, Func<ProjectionInfo, ProjectionInfo, ICriterion>> _propertyExpressionCreators;
-		private readonly static IDictionary<LambdaSubqueryType, IDictionary<ExpressionType, Func<string, DetachedCriteria, AbstractCriterion>>> _subqueryExpressionCreatorTypes;
-		private readonly static IDictionary<string, Func<MethodCallExpression, ICriterion>> _customMethodCallProcessors;
-		private readonly static IDictionary<string, Func<Expression, IProjection>> _customProjectionProcessors;
+		private static readonly Dictionary<ExpressionType, Func<ProjectionInfo, object, ICriterion>> _simpleExpressionCreators;
+		private static readonly Dictionary<ExpressionType, Func<ProjectionInfo, ProjectionInfo, ICriterion>> _propertyExpressionCreators;
+		private static readonly Dictionary<LambdaSubqueryType, IDictionary<ExpressionType, Func<string, DetachedCriteria, AbstractCriterion>>> _subqueryExpressionCreatorTypes;
+		private static readonly Dictionary<string, Func<MethodCallExpression, ICriterion>> _customMethodCallProcessors;
+		private static readonly Dictionary<string, Func<Expression, IProjection>> _customProjectionProcessors;
 
 		static ExpressionProcessor()
 		{
@@ -438,7 +434,7 @@ namespace NHibernate.Impl
 			if (memberExpression != null)
 			{
 				if (memberExpression.Expression == null)
-					return false;  // it's a member of a static class
+					return false; // it's a member of a static class
 
 				if (IsMemberExpression(memberExpression.Expression))
 					return true;
@@ -857,4 +853,3 @@ namespace NHibernate.Impl
 		}
 	}
 }
-

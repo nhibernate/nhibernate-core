@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
@@ -18,6 +19,12 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class SQLiteDialect : Dialect
 	{
+		/// <summary>
+		/// The effective value of the BinaryGuid connection string parameter.
+		/// The default value in SQLite is true.
+		/// </summary>
+		private bool _binaryGuid = true;
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -94,8 +101,49 @@ namespace NHibernate.Dialect
 
 			// NH-3787: SQLite requires the cast in SQL too for not defaulting to string.
 			RegisterFunction("transparentcast", new CastFunction());
-			
-			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "substr(hex(?1), 7, 2) || substr(hex(?1), 5, 2) || substr(hex(?1), 3, 2) || substr(hex(?1), 1, 2) || '-' || substr(hex(?1), 11, 2) || substr(hex(?1), 9, 2) || '-' || substr(hex(?1), 15, 2) || substr(hex(?1), 13, 2) || '-' || substr(hex(?1), 17, 4) || '-' || substr(hex(?1), 21) "));
+
+			if (_binaryGuid)
+				RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "substr(hex(?1), 7, 2) || substr(hex(?1), 5, 2) || substr(hex(?1), 3, 2) || substr(hex(?1), 1, 2) || '-' || substr(hex(?1), 11, 2) || substr(hex(?1), 9, 2) || '-' || substr(hex(?1), 15, 2) || substr(hex(?1), 13, 2) || '-' || substr(hex(?1), 17, 4) || '-' || substr(hex(?1), 21) "));
+			else
+				RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
+		}
+
+		public override void Configure(IDictionary<string, string> settings)
+		{
+			base.Configure(settings);
+
+			ConfigureBinaryGuid(settings);
+
+			// Re-register functions depending on settings.
+			RegisterFunctions();
+		}
+
+		private void ConfigureBinaryGuid(IDictionary<string, string> settings)
+		{
+			// We can use a SQLite specific setting to force it, but in common cases it
+			// should be detected automatically from the connection string below.
+			settings.TryGetValue(Cfg.Environment.SqliteBinaryGuid, out var strBinaryGuid);
+
+			if (string.IsNullOrWhiteSpace(strBinaryGuid))
+			{
+				string connectionString = Cfg.Environment.GetConfiguredConnectionString(settings);
+				if (!string.IsNullOrWhiteSpace(connectionString))
+				{
+					var builder = new DbConnectionStringBuilder {ConnectionString = connectionString};
+
+					strBinaryGuid = GetConnectionStringProperty(builder, "BinaryGuid");
+				}
+			}
+
+			// Note that "BinaryGuid=false" is supported by System.Data.SQLite but not Microsoft.Data.Sqlite.
+
+			_binaryGuid = string.IsNullOrWhiteSpace(strBinaryGuid) || bool.Parse(strBinaryGuid);
+		}
+
+		private string GetConnectionStringProperty(DbConnectionStringBuilder builder, string propertyName)
+		{
+			builder.TryGetValue(propertyName, out object propertyValue);
+			return (string) propertyValue;
 		}
 
 		#region private static readonly string[] DialectKeywords = { ... }
@@ -326,7 +374,6 @@ namespace NHibernate.Dialect
 			if (quoted)
 				return OpenQuote + name + CloseQuote;
 			return name;
-
 		}
 
 		public override string NoColumnsInsertString

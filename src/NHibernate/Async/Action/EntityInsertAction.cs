@@ -44,7 +44,6 @@ namespace NHibernate.Action
 			// else inserted the same pk first, the insert would fail
 			if (!veto)
 			{
-
 				await (persister.InsertAsync(id, State, instance, Session, cancellationToken)).ConfigureAwait(false);
 
 				EntityEntry entry = Session.PersistenceContext.GetEntry(instance);
