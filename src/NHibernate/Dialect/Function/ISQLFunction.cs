@@ -68,7 +68,9 @@ namespace NHibernate.Dialect.Function
 			{
 				try
 				{
+#pragma warning disable 618
 					return sqlFunction.ReturnType(argumentTypes.FirstOrDefault(), mapping);
+#pragma warning restore 618
 				}
 				catch (QueryException)
 				{
