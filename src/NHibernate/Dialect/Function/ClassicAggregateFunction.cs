@@ -1,15 +1,15 @@
 using System;
 using System.Collections;
-using System.Text;
+using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Dialect.Function
 {
 	[Serializable]
-	public class ClassicAggregateFunction : ISQLFunction, IFunctionGrammar, ISQLAggregateFunction
+	public class ClassicAggregateFunction : ISQLFunction, IFunctionGrammar, ISQLFunctionExtended
 	{
 		private IType returnType = null;
 		private readonly string name;
@@ -44,6 +44,15 @@ namespace NHibernate.Dialect.Function
 		{
 			return returnType ?? columnType;
 		}
+
+		/// <inheritdoc />
+		public virtual IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+		{
+			return ReturnType(argumentTypes.FirstOrDefault(), mapping);
+		}
+
+		/// <inheritdoc />
+		public string FunctionName => name;
 
 		public bool HasArguments
 		{
@@ -107,19 +116,6 @@ namespace NHibernate.Dialect.Function
 		{
 			return "distinct".Equals(token, StringComparison.OrdinalIgnoreCase) ||
 				"all".Equals(token, StringComparison.OrdinalIgnoreCase);
-		}
-
-		#endregion
-
-		#region ISQLAggregateFunction Members
-
-		/// <inheritdoc />
-		public string FunctionName => name;
-
-		/// <inheritdoc />
-		public virtual IType GetActualReturnType(IType argumentType, IMapping mapping)
-		{
-			return ReturnType(argumentType, mapping);
 		}
 
 		#endregion

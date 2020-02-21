@@ -707,7 +707,7 @@ namespace NHibernate.Dialect
 		{
 			public CountBigQueryFunction() : base("count_big", true) { }
 
-			public override IType ReturnType(IType columnType, IMapping mapping)
+			public override IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
 			{
 				return NHibernateUtil.Int64;
 			}
@@ -716,8 +716,7 @@ namespace NHibernate.Dialect
 		[Serializable]
 		private class CountQueryFunction : CountQueryFunctionInfo
 		{
-			/// <inheritdoc />
-			public override IType GetActualReturnType(IType columnType, IMapping mapping)
+			public override IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
 			{
 				return NHibernateUtil.Int32;
 			}

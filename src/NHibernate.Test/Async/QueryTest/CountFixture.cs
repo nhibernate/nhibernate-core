@@ -12,8 +12,6 @@ using System;
 using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
 using NHibernate.DomainModel;
-using NHibernate.Engine;
-using NHibernate.Type;
 using NUnit.Framework;
 using Environment=NHibernate.Cfg.Environment;
 

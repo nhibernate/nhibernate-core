@@ -20,7 +20,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
-		internal ISQLAggregateFunction SqlFunction => SessionFactoryHelper.FindSQLFunction(Text) as ISQLAggregateFunction;
+		internal ISQLFunctionExtended SqlFunction => SessionFactoryHelper.FindSQLFunction(Text) as ISQLFunctionExtended;
 
 		public override IType DataType
 		{
