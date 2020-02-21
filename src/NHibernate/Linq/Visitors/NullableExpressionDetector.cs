@@ -5,7 +5,6 @@ using NHibernate.Engine;
 using NHibernate.Linq.Clauses;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Functions;
-using NHibernate.Persister.Entity;
 using NHibernate.Util;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
@@ -167,23 +166,9 @@ namespace NHibernate.Linq.Visitors
 				return false;
 			}
 
-			// We have to check the member mapping to determine if is nullable
-			var entityName = ExpressionsHelper.TryGetEntityName(_sessionFactory, memberExpression, out var memberPath, out _);
-			if (entityName == null || memberPath == null)
+			if (!ExpressionsHelper.TryGetMappedNullability(_sessionFactory, memberExpression, out var nullable) || nullable)
 			{
-				return true; // Not mapped
-			}
-
-			var persister = _sessionFactory.GetEntityPersister(entityName);
-			if (persister.EntityMetamodel.GetIdentifierPropertyType(memberPath) != null)
-			{
-				return false; // Identifier is always not null
-			}
-
-			var index = persister.EntityMetamodel.GetPropertyIndexOrNull(memberPath);
-			if (!index.HasValue || persister.EntityMetamodel.PropertyNullability[index.Value])
-			{
-				return true; // Not mapped or nullable
+				return true; // The expression contains one or many unsupported nodes or the member is nullable
 			}
 
 			return IsNullable(memberExpression.Expression, equalityExpression);
