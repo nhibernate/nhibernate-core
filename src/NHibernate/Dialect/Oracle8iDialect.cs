@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
@@ -291,7 +292,7 @@ namespace NHibernate.Dialect
 			// Multi-param numeric dialect functions...
 			RegisterFunction("atan2", new StandardSQLFunction("atan2", NHibernateUtil.Double));
 			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Int32));
-			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
+			RegisterFunction("mod", new ModulusFunction(true, true));
 			RegisterFunction("nvl", new StandardSQLFunction("nvl"));
 			RegisterFunction("nvl2", new StandardSQLFunction("nvl2"));
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
@@ -304,7 +305,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("str", new StandardSQLFunction("to_char", NHibernateUtil.String));
 			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "substr(rawtohex(?1), 7, 2) || substr(rawtohex(?1), 5, 2) || substr(rawtohex(?1), 3, 2) || substr(rawtohex(?1), 1, 2) || '-' || substr(rawtohex(?1), 11, 2) || substr(rawtohex(?1), 9, 2) || '-' || substr(rawtohex(?1), 15, 2) || substr(rawtohex(?1), 13, 2) || '-' || substr(rawtohex(?1), 17, 4) || '-' || substr(rawtohex(?1), 21) "));
 
-			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
+			RegisterFunction("iif", new IifSQLFunction());
 
 			RegisterFunction("band", new Function.BitwiseFunctionOperation("bitand"));
 			RegisterFunction("bor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2)"));
@@ -577,11 +578,11 @@ namespace NHibernate.Dialect
 
 			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{
-				return new SqlString(Name);
+				return new SqlString(FunctionName);
 			}
 		}
 		[Serializable]
-		private class LocateFunction : ISQLFunction
+		private class LocateFunction : ISQLFunction, ISQLFunctionExtended
 		{
 			private static readonly ISQLFunction LocateWith2Params = new SQLFunctionTemplate(NHibernateUtil.Int32,
 																							 "instr(?2, ?1)");
@@ -591,10 +592,29 @@ namespace NHibernate.Dialect
 
 			#region Implementation of ISQLFunction
 
+			// Since v5.3
+			[Obsolete("Use GetReturnType method instead.")]
 			public IType ReturnType(IType columnType, IMapping mapping)
 			{
 				return NHibernateUtil.Int32;
 			}
+
+			/// <inheritdoc />
+			public IType GetReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+#pragma warning disable 618
+				return ReturnType(argumentTypes.FirstOrDefault(), mapping);
+#pragma warning restore 618
+			}
+
+			/// <inheritdoc />
+			public IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+				return GetReturnType(argumentTypes, mapping, throwOnError);
+			}
+
+			/// <inheritdoc />
+			public string FunctionName => "instr";
 
 			public bool HasArguments
 			{

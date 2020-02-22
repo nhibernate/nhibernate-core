@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
@@ -63,10 +65,10 @@ namespace NHibernate.Dialect
 			RegisterFunction("current_timestamp", new NoArgSQLFunction("now", NHibernateUtil.LocalDateTime, true));
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as varchar)"));
 			RegisterFunction("locate", new PositionSubstringFunction());
-			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
+			RegisterFunction("iif", new IifSQLFunction());
 			RegisterFunction("replace", new StandardSQLFunction("replace", NHibernateUtil.String));
 			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,1,?2)"));
-			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
+			RegisterFunction("mod", new ModulusFunctionTemplate(true));
 
 			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
 			RegisterFunction("round", new RoundFunction(false));
@@ -347,7 +349,7 @@ namespace NHibernate.Dialect
 		#endregion
 
 		[Serializable]
-		private class RoundFunction : ISQLFunction
+		private class RoundFunction : ISQLFunction, ISQLFunctionExtended
 		{
 			private static readonly ISQLFunction Round = new StandardSQLFunction("round");
 			private static readonly ISQLFunction Truncate = new StandardSQLFunction("trunc");
@@ -361,7 +363,7 @@ namespace NHibernate.Dialect
 
 			private readonly ISQLFunction _singleParamFunction;
 			private readonly ISQLFunction _twoParamFunction;
-			private readonly string _name;
+			private readonly string _name; // TODO 6.0: convert FunctionName to read-only auto property
 
 			public RoundFunction(bool truncate)
 			{
@@ -379,7 +381,26 @@ namespace NHibernate.Dialect
 				}
 			}
 
+			// Since v5.3
+			[Obsolete("Use GetReturnType method instead.")]
 			public IType ReturnType(IType columnType, IMapping mapping) => columnType;
+
+			/// <inheritdoc />
+			public IType GetReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+#pragma warning disable 618
+				return ReturnType(argumentTypes.FirstOrDefault(), mapping);
+#pragma warning restore 618
+			}
+
+			/// <inheritdoc />
+			public IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+				return GetReturnType(argumentTypes, mapping, throwOnError);
+			}
+
+			/// <inheritdoc />
+			public string FunctionName => _name;
 
 			public bool HasArguments => true;
 

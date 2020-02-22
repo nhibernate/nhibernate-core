@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -11,7 +13,7 @@ namespace NHibernate.Dialect.Function
 	/// Emulation of locate() on Sybase
 	/// </summary>
 	[Serializable]
-	public class CharIndexFunction : ISQLFunction
+	public class CharIndexFunction : ISQLFunction, ISQLFunctionExtended
 	{
 		public CharIndexFunction()
 		{
@@ -19,10 +21,29 @@ namespace NHibernate.Dialect.Function
 
 		#region ISQLFunction Members
 
+		// Since v5.3
+		[Obsolete("Use GetReturnType method instead.")]
 		public IType ReturnType(IType columnType, IMapping mapping)
 		{
 			return NHibernateUtil.Int32;
 		}
+
+		/// <inheritdoc />
+		public IType GetReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+		{
+#pragma warning disable 618
+			return ReturnType(argumentTypes.FirstOrDefault(), mapping);
+#pragma warning restore 618
+		}
+
+		/// <inheritdoc />
+		public virtual IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+		{
+			return GetReturnType(argumentTypes, mapping, throwOnError);
+		}
+
+		/// <inheritdoc />
+		public string FunctionName => "charindex";
 
 		public bool HasArguments
 		{

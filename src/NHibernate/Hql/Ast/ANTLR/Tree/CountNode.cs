@@ -1,4 +1,5 @@
-﻿using Antlr.Runtime;
+﻿using System.Linq;
+using Antlr.Runtime;
 using NHibernate.Dialect.Function;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Type;
@@ -20,7 +21,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get
 			{
-				return SessionFactoryHelper.FindFunctionReturnType(Text, null);
+				return SessionFactoryHelper.FindFunctionReturnType(Text, Enumerable.Empty<IASTNode>());
 			}
 			set
 			{

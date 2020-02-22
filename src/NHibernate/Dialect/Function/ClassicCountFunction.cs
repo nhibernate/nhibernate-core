@@ -14,6 +14,8 @@ namespace NHibernate.Dialect.Function
 		{
 		}
 
+		// Since v5.3
+		[Obsolete("Use GetReturnType method instead.")]
 		public override IType ReturnType(IType columnType, IMapping mapping)
 		{
 			return NHibernateUtil.Int32;

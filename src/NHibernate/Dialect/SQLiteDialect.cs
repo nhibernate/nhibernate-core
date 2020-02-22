@@ -110,9 +110,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
 			RegisterFunction("chr", new StandardSQLFunction("char", NHibernateUtil.Character));
 
-			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
+			RegisterFunction("mod", new ModulusFunctionTemplate(false));
 
-			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
+			RegisterFunction("iif", new IifSQLFunction());
 
 			RegisterFunction("round", new StandardSQLFunction("round"));
 
@@ -121,7 +121,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("bxor", new SQLFunctionTemplate(null, "((?1 | ?2) - (?1 & ?2))"));
 
 			// NH-3787: SQLite requires the cast in SQL too for not defaulting to string.
-			RegisterFunction("transparentcast", new CastFunction());
+			RegisterFunction("transparentcast", new SQLiteCastFunction());
 
 			if (_binaryGuid)
 				RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "substr(hex(?1), 7, 2) || substr(hex(?1), 5, 2) || substr(hex(?1), 3, 2) || substr(hex(?1), 1, 2) || '-' || substr(hex(?1), 11, 2) || substr(hex(?1), 9, 2) || '-' || substr(hex(?1), 15, 2) || substr(hex(?1), 13, 2) || '-' || substr(hex(?1), 17, 4) || '-' || substr(hex(?1), 21) "));

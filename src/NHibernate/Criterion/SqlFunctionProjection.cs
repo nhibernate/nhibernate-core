@@ -125,7 +125,7 @@ namespace NHibernate.Criterion
 
 			var resultType = returnType ?? returnTypeProjection?.GetTypes(criteria, criteriaQuery).FirstOrDefault();
 
-			return sqlFunction.ReturnType(resultType, criteriaQuery.Factory);
+			return sqlFunction.GetReturnType(new[] {resultType}, criteriaQuery.Factory, true);
 		}
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
