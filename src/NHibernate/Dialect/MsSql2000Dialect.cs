@@ -705,12 +705,7 @@ namespace NHibernate.Dialect
 		[Serializable]
 		protected class CountBigQueryFunction : ClassicAggregateFunction
 		{
-			public CountBigQueryFunction() : base("count_big", true) { }
-
-			public override IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
-			{
-				return NHibernateUtil.Int64;
-			}
+			public CountBigQueryFunction() : base("count_big", true, NHibernateUtil.Int64) { }
 		}
 
 		[Serializable]
