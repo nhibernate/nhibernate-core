@@ -133,7 +133,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return extendedSqlFunction.GetReturnType(argumentTypes, _sfi, true);
 		}
 
-
 		/// <summary>
 		/// Given a (potentially unqualified) class name, locate its imported qualified name.
 		/// </summary>
