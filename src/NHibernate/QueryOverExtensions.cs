@@ -39,5 +39,17 @@ namespace NHibernate
 			queryOver.RootCriteria.SetComment(comment);
 			return queryOver;
 		}
+
+		/// <summary>
+		/// Override the current session flush mode, just for this query.
+		/// </summary>
+		/// <param name="queryOver">The query on which to set the flush mode.</param>
+		/// <param name="flushMode">The flush mode to use for the query.</param>
+		/// <returns><see langword="this" /> (for method chaining).</returns>
+		public static TQueryOver SetFlushMode<TQueryOver>(this TQueryOver queryOver, FlushMode flushMode) where TQueryOver: IQueryOver
+		{
+			queryOver.RootCriteria.SetFlushMode(flushMode);
+			return queryOver;
+		}
 	}
 }

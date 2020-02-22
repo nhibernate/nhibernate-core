@@ -966,6 +966,19 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void SetFlushMode(
+			[Values(FlushMode.Always, FlushMode.Auto, FlushMode.Commit, FlushMode.Manual)] FlushMode flushMode)
+		{
+			var expected =
+				CreateTestCriteria(typeof(Person))
+					.SetFlushMode(flushMode);
+			var actual =
+				CreateTestQueryOver<Person>()
+					.SetFlushMode(flushMode);
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
 		public void DetachedQueryOver()
 		{
 			DetachedCriteria expected =
