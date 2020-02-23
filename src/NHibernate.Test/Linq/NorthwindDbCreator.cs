@@ -72,7 +72,7 @@ namespace NHibernate.Test.Linq
 
 			foreach (var user in users)
 			{
-				user.CreatedBy = user;
+				user.CreatedBy = users[0];
 			}
 
 			var timesheets = new[]

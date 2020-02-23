@@ -86,7 +86,9 @@ namespace NHibernate.Linq.Visitors
 				case ExpressionType.Convert:
 				case ExpressionType.ConvertChecked:
 				case ExpressionType.TypeAs:
-					return IsNullable(((UnaryExpression) expression).Operand, equalityExpression); // a cast will not return null if the operand is not null
+					// a cast will not return null if the operand is not null (as long as TypeAs is not translated to
+					// try_convert in SQL).
+					return IsNullable(((UnaryExpression) expression).Operand, equalityExpression);
 				case ExpressionType.Not:
 				case ExpressionType.And:
 				case ExpressionType.Or:
