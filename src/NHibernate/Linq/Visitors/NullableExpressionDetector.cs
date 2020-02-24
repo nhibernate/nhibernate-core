@@ -40,43 +40,25 @@ namespace NHibernate.Linq.Visitors
 			// Example: o.Status != null && o.Status != "New"
 			// Example: (o.Status != null && o.OldStatus != null) && (o.Status != o.OldStatus)
 			// Example: (o.Status != null && o.OldStatus != null) && (o.Status == o.OldStatus)
+			// Example: o.Status != null && (o.OldStatus != null && o.Status == o.OldStatus)
 			if (
-				expression.NodeType != ExpressionType.AndAlso ||
+				_equalityNotNullMembers.ContainsKey(expression) ||
+				!IsAndOrAndAlso(expression) ||
 				(
-					expression.Right.NodeType != ExpressionType.NotEqual &&
-					expression.Right.NodeType != ExpressionType.Equal
+					!IsAndOrAndAlso(expression.Right) &&
+					!IsEqualOrNotEqual(expression.Right)
 				) ||
 				(
-					expression.Left.NodeType != ExpressionType.AndAlso &&
-					expression.Left.NodeType != ExpressionType.NotEqual
+					!IsAndOrAndAlso(expression.Left) &&
+					!IsEqualOrNotEqual(expression.Left)
 				))
 			{
 				return;
 			}
 
-			// Skip if there are no member access expressions on the right side
-			var notEqualExpression = (BinaryExpression) expression.Right;
-			if (!IsMemberAccess(notEqualExpression.Left) && !IsMemberAccess(notEqualExpression.Right))
-			{
-				return;
-			}
-
-			var notNullMembers = new List<MemberExpression>();
-			// We may have multiple conditions
-			// Example: o.Status != null && o.OldStatus != null
-			if (expression.Left.NodeType == ExpressionType.AndAlso)
-			{
-				FindAllNotNullMembers((BinaryExpression) expression.Left, notNullMembers);
-			}
-			else
-			{
-				FindNotNullMember((BinaryExpression) expression.Left, notNullMembers);
-			}
-
-			if (notNullMembers.Count > 0)
-			{
-				_equalityNotNullMembers[notEqualExpression] = notNullMembers;
-			}
+			// Find all not null members and cache them for each binary expression that is found,
+			// in order to verify whether the member in a binary expression is nullable or not
+			FindAllNotNullMembers(expression, new List<MemberExpression>());
 		}
 
 		public bool IsNullable(Expression expression, BinaryExpression equalityExpression)
@@ -157,11 +139,8 @@ namespace NHibernate.Linq.Visitors
 				return IsNullable(memberExpression.Expression, equalityExpression);
 			}
 
-			// Check if there was a not null check prior the equality expression
-			if ((
-				    equalityExpression.NodeType == ExpressionType.NotEqual ||
-				    equalityExpression.NodeType == ExpressionType.Equal
-			    ) &&
+			// Check if there was a not null check prior or after the equality expression
+			if (IsEqualOrNotEqual(equalityExpression) &&
 			    _equalityNotNullMembers.TryGetValue(equalityExpression, out var notNullMembers) &&
 			    notNullMembers.Any(o => AreEqual(o, memberExpression)))
 			{
@@ -208,51 +187,66 @@ namespace NHibernate.Linq.Visitors
 			}
 		}
 
-		private static bool IsMemberAccess(Expression expression)
+		private static bool TryGetMemberAccess(Expression expression, out MemberExpression memberExpression)
 		{
-			if (expression.NodeType == ExpressionType.MemberAccess)
+			memberExpression = expression as MemberExpression;
+			if (memberExpression != null)
 			{
 				return true;
 			}
 
 			// Nullable members can be wrapped in a convert expression
-			return expression is UnaryExpression unaryExpression && unaryExpression.Operand.NodeType == ExpressionType.MemberAccess;
+			if (expression is UnaryExpression unaryExpression)
+			{
+				memberExpression = unaryExpression.Operand as MemberExpression;
+			}
+
+			return memberExpression != null;
 		}
 
-		private static void FindAllNotNullMembers(BinaryExpression andAlsoExpression, List<MemberExpression> notNullMembers)
+		private void FindAllNotNullMembers(Expression expression, List<MemberExpression> notNullMembers)
 		{
-			if (andAlsoExpression.Right.NodeType == ExpressionType.NotEqual)
-			{
-				FindNotNullMember((BinaryExpression) andAlsoExpression.Right, notNullMembers);
-			}
-			else if (andAlsoExpression.Right.NodeType == ExpressionType.AndAlso)
-			{
-				FindAllNotNullMembers((BinaryExpression) andAlsoExpression.Right, notNullMembers);
-			}
-			else
+			if (!(expression is BinaryExpression binaryExpression))
 			{
 				return;
 			}
 
-			if (andAlsoExpression.Left.NodeType == ExpressionType.NotEqual)
+			// We may have multiple conditions
+			// Example: o.Status != null && o.OldStatus != null
+			// Example: o.Status != null && (o.OldStatus != null && o.Test > 0)
+			if (IsAndOrAndAlso(expression))
 			{
-				FindNotNullMember((BinaryExpression) andAlsoExpression.Left, notNullMembers);
+				FindAllNotNullMembers(binaryExpression, notNullMembers);
 			}
-			else if (andAlsoExpression.Left.NodeType == ExpressionType.AndAlso)
+			else if (IsEqualOrNotEqual(expression))
 			{
-				FindAllNotNullMembers((BinaryExpression) andAlsoExpression.Left, notNullMembers);
+				FindNotNullMember(binaryExpression, notNullMembers);
 			}
 		}
 
-		private static void FindNotNullMember(BinaryExpression notEqualExpression, List<MemberExpression> notNullMembers)
+		private void FindAllNotNullMembers(BinaryExpression binaryExpression, List<MemberExpression> notNullMembers)
 		{
-			if (notEqualExpression.Left.NodeType == ExpressionType.MemberAccess && VisitorUtil.IsNullConstant(notEqualExpression.Right))
+			_equalityNotNullMembers.Add(binaryExpression, notNullMembers);
+			FindAllNotNullMembers(binaryExpression.Left, notNullMembers);
+			FindAllNotNullMembers(binaryExpression.Right, notNullMembers);
+		}
+
+		private void FindNotNullMember(BinaryExpression binaryExpression, List<MemberExpression> notNullMembers)
+		{
+			_equalityNotNullMembers[binaryExpression] = notNullMembers;
+			if (binaryExpression.NodeType != ExpressionType.NotEqual)
 			{
-				notNullMembers.Add((MemberExpression) notEqualExpression.Left);
+				return;
 			}
-			else if (VisitorUtil.IsNullConstant(notEqualExpression.Left) && notEqualExpression.Right.NodeType == ExpressionType.MemberAccess)
+
+			MemberExpression memberExpression;
+			if (VisitorUtil.IsNullConstant(binaryExpression.Right) && TryGetMemberAccess(binaryExpression.Left, out memberExpression))
 			{
-				notNullMembers.Add((MemberExpression) notEqualExpression.Right);
+				notNullMembers.Add(memberExpression);
+			}
+			else if (VisitorUtil.IsNullConstant(binaryExpression.Left) && TryGetMemberAccess(binaryExpression.Right, out memberExpression))
+			{
+				notNullMembers.Add(memberExpression);
 			}
 		}
 
@@ -285,6 +279,18 @@ namespace NHibernate.Linq.Visitors
 				default:
 					return memberExpression.Expression == otherMemberExpression.Expression;
 			}
+		}
+
+		private static bool IsAndOrAndAlso(Expression expression)
+		{
+			return expression.NodeType == ExpressionType.And ||
+					expression.NodeType == ExpressionType.AndAlso;
+		}
+
+		private static bool IsEqualOrNotEqual(Expression expression)
+		{
+			return expression.NodeType == ExpressionType.Equal ||
+					expression.NodeType == ExpressionType.NotEqual;
 		}
 	}
 }

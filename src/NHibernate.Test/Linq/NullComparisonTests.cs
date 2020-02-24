@@ -90,17 +90,38 @@ namespace NHibernate.Test.Linq
 			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.HasValue && o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.HasValue && o.NullableAnotherEntityRequiredId.Value != o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.Value);
 			Expect(q, Does.Not.Contain("is null").IgnoreCase);
 
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.Value != o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.Value && o.NullableAnotherEntityRequiredId.HasValue && o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.HasValue);
+			Expect(q, Does.Not.Contain("is null").IgnoreCase);
+
 			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.HasValue && o.NullableAnotherEntityRequiredId.Value != 0);
+			ExpectAll(q, Does.Not.Contain("is null").IgnoreCase);
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.Value != 0 && o.NullableAnotherEntityRequiredId.HasValue);
 			ExpectAll(q, Does.Not.Contain("is null").IgnoreCase);
 
 			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.HasValue || o.NullableAnotherEntityRequiredId.Value != 0);
 			ExpectAll(q, Does.Contain("is null").IgnoreCase);
 
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.Value != 0 || o.NullableAnotherEntityRequiredId.HasValue);
+			ExpectAll(q, Does.Contain("is null").IgnoreCase);
+
 			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput != null && o.NullableOutput != "test");
+			Expect(q, Does.Not.Contain("is null").IgnoreCase, BothDifferent, BothSame, OutputSet);
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput != "test" && o.NullableOutput != null);
 			Expect(q, Does.Not.Contain("is null").IgnoreCase, BothDifferent, BothSame, OutputSet);
 
 			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput != null || o.NullableOutput != "test");
 			ExpectAll(q, Does.Contain("is null").IgnoreCase);
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput != "test" || o.NullableOutput != null);
+			ExpectAll(q, Does.Contain("is null").IgnoreCase);
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput != "test" && (o.NullableAnotherEntityRequiredId > 0 && o.NullableOutput != null));
+			Expect(q, Does.Not.Contain("is null").IgnoreCase, BothDifferent, BothSame, OutputSet);
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput != null && (o.NullableAnotherEntityRequiredId > 0 && o.NullableOutput != "test"));
+			Expect(q, Does.Not.Contain("is null").IgnoreCase, BothDifferent, BothSame, OutputSet);
 
 			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.Value != o.NullableAnotherEntityRequiredId.Value);
 			Expect(q, Does.Contain("or case").IgnoreCase);
@@ -241,10 +262,19 @@ namespace NHibernate.Test.Linq
 			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.HasValue && o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.HasValue && o.NullableAnotherEntityRequiredId.Value == o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.Value);
 			ExpectAll(q, Does.Not.Contain("is null").IgnoreCase);
 
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.Value == o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.Value && o.NullableAnotherEntityRequiredId.HasValue && o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.HasValue);
+			ExpectAll(q, Does.Not.Contain("is null").IgnoreCase);
+
 			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.HasValue && o.NullableAnotherEntityRequiredId.Value == 0);
 			Expect(q, Does.Not.Contain("is null").IgnoreCase);
 
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.Value == 0 && o.NullableAnotherEntityRequiredId.HasValue);
+			Expect(q, Does.Not.Contain("is null").IgnoreCase);
+
 			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.HasValue || o.NullableAnotherEntityRequiredId.Value == 0);
+			ExpectAll(q, Does.Not.Contain("is null").IgnoreCase);
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.Value == 0 || o.NullableAnotherEntityRequiredId.HasValue);
 			ExpectAll(q, Does.Not.Contain("is null").IgnoreCase);
 
 			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput == "test");
