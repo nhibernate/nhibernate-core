@@ -21,16 +21,18 @@ namespace NHibernate.Linq.Visitors
 		private readonly HqlTreeBuilder _hqlTreeBuilder = new HqlTreeBuilder();
 		private readonly VisitorParameters _parameters;
 		private readonly ILinqToHqlGeneratorsRegistry _functionRegistry;
+		private readonly NullableExpressionDetector _nullableExpressionDetector;
 
 		public static HqlTreeNode Visit(Expression expression, VisitorParameters parameters)
 		{
-			return new HqlGeneratorExpressionVisitor(parameters).VisitExpression(expression);
+			return new HqlGeneratorExpressionVisitor(parameters).Visit(expression);
 		}
 
 		public HqlGeneratorExpressionVisitor(VisitorParameters parameters)
 		{
 			_functionRegistry = parameters.SessionFactory.Settings.LinqToHqlGeneratorsRegistry;
 			_parameters = parameters;
+			_nullableExpressionDetector = new NullableExpressionDetector(_parameters.SessionFactory, _functionRegistry);
 		}
 
 		public ISessionFactory SessionFactory { get { return _parameters.SessionFactory; } }
@@ -303,6 +305,8 @@ possible solutions:
 				return TranslateInequalityComparison(expression);
 			}
 
+			_nullableExpressionDetector.SearchForNotNullMemberChecks(expression);
+
 			var lhs = VisitExpression(expression.Left).AsExpression();
 			var rhs = VisitExpression(expression.Right).AsExpression();
 
@@ -384,8 +388,8 @@ possible solutions:
 				return _hqlTreeBuilder.IsNotNull(lhs);
 			}
 
-			var lhsNullable = IsNullable(lhs);
-			var rhsNullable = IsNullable(rhs);
+			var lhsNullable = _nullableExpressionDetector.IsNullable(expression.Left, expression);
+			var rhsNullable = _nullableExpressionDetector.IsNullable(expression.Right, expression);
 
 			var inequality = _hqlTreeBuilder.Inequality(lhs, rhs);
 
@@ -447,8 +451,8 @@ possible solutions:
 				return _hqlTreeBuilder.IsNull((lhs));
 			}
 
-			var lhsNullable = IsNullable(lhs);
-			var rhsNullable = IsNullable(rhs);
+			var lhsNullable = _nullableExpressionDetector.IsNullable(expression.Left, expression);
+			var rhsNullable = _nullableExpressionDetector.IsNullable(expression.Right, expression);
 
 			var equality = _hqlTreeBuilder.Equality(lhs, rhs);
 
@@ -465,12 +469,6 @@ possible solutions:
 				_hqlTreeBuilder.BooleanAnd(
 					_hqlTreeBuilder.IsNull(lhs2),
 					_hqlTreeBuilder.IsNull(rhs2)));
-		}
-
-		static bool IsNullable(HqlExpression original)
-		{
-			var hqlDot = original as HqlDot;
-			return hqlDot != null && hqlDot.Children.Last() is HqlIdent;
 		}
 
 		protected HqlTreeNode VisitUnaryExpression(UnaryExpression expression)

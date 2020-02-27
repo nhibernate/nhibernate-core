@@ -7,10 +7,18 @@
       <generator class="assigned" />
     </id>
 
-    <property name="Name" type="AnsiString" />
+    <property name="Name" type="AnsiString" not-null="true" />
     <property name="InvalidLoginAttempts" type="Int32" />
     <property name="RegisteredAt" type="DateTime" />
     <property name="LastLoginDate" type="DateTime" />
+
+    <many-to-one name="CreatedBy" class="User" not-null="true" lazy="false">
+      <column name="CreatedById" not-null="true" />
+    </many-to-one>
+
+    <many-to-one name="ModifiedBy" class="User" lazy="false">
+      <column name="ModifiedById" />
+    </many-to-one>
 
     <property name="Enum1" type="NHibernate.DomainModel.Northwind.Entities.EnumStoredAsStringType, NHibernate.DomainModel">
       <column name="Enum1" length="12" />

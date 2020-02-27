@@ -12,4 +12,24 @@ namespace NHibernate.Linq.Functions
         IEnumerable<MethodInfo> SupportedMethods { get; }
         HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor);
     }
+
+	// 6.0 TODO: Merge into IHqlGeneratorForMethod
+	internal interface IHqlGeneratorForMethodExtended
+	{
+		bool AllowsNullableReturnType(MethodInfo method);
+	}
+
+	internal static class HqlGeneratorForMethodExtensions
+	{
+		// 6.0 TODO: Remove
+		public static bool AllowsNullableReturnType(this IHqlGeneratorForMethod generator, MethodInfo method)
+		{
+			if (generator is IHqlGeneratorForMethodExtended extendedGenerator)
+			{
+				return extendedGenerator.AllowsNullableReturnType(method);
+			}
+
+			return true;
+		}
+	}
 }
