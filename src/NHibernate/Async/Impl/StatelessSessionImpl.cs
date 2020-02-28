@@ -164,6 +164,7 @@ namespace NHibernate.Impl
 			}
 		}
 
+		/// <inheritdoc />
 		// Since v5.3
 		[Obsolete("Use AsyncEnumerable extension method instead.")]
 		public override Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
@@ -171,9 +172,7 @@ namespace NHibernate.Impl
 			throw new NotImplementedException();
 		}
 
-		/// <summary>
-		/// Strongly-typed version of <see cref="Enumerable(IQueryExpression, QueryParameters)" />
-		/// </summary>
+		/// <inheritdoc />
 		// Since v5.3
 		[Obsolete("Use AsyncEnumerable extension method instead.")]
 		public override Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
@@ -196,9 +195,7 @@ namespace NHibernate.Impl
 			throw new NotSupportedException();
 		}
 
-		/// <summary>
-		/// Collection from a filter
-		/// </summary>
+		/// <inheritdoc />
 		// Since v5.3
 		[Obsolete("Use AsyncEnumerableFilter extension method instead.")]
 		public override Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken)
@@ -206,9 +203,7 @@ namespace NHibernate.Impl
 			throw new NotSupportedException();
 		}
 
-		/// <summary>
-		/// Strongly-typed version of <see cref="EnumerableFilter(object, string, QueryParameters)" />
-		/// </summary>
+		/// <inheritdoc />
 		// Since v5.3
 		[Obsolete("Use AsyncEnumerableFilter extension method instead.")]
 		public override Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken)

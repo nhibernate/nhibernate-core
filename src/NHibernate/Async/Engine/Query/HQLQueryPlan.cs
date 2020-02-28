@@ -97,6 +97,7 @@ namespace NHibernate.Engine.Query
 			}
 		}
 		// Since v5.3
+		/// <inheritdoc />
 		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
 		{
@@ -114,6 +115,7 @@ namespace NHibernate.Engine.Query
 			}
 		}
 		// Since v5.3
+		/// <inheritdoc />
 		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public async Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
 		{

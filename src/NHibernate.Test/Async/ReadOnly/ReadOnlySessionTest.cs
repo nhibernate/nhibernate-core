@@ -385,46 +385,6 @@ namespace NHibernate.Test.ReadOnly
 			}
 		}
 
-		[Test]
-		public async Task QueryReadOnlyAsyncIterate()
-		{
-			int nExpectedChanges = 0;
-			QueryIterateCreate(out var lastDataPointId);
-
-			using (ISession s = OpenSession())
-			{
-				s.CacheMode = CacheMode.Ignore;
-
-				using (ITransaction t = s.BeginTransaction())
-				{
-					s.DefaultReadOnly = false;
-
-					IQuery query = s.CreateQuery("from DataPoint dp order by dp.X asc");
-					QueryReadOnlyIterateAssertReadOnly(query, s);
-
-					var it = query.AsyncEnumerable<DataPoint>().GetAsyncEnumerator();
-					Assert.That(query.IsReadOnly, Is.True);
-					DataPoint dpLast = s.Get<DataPoint>(lastDataPointId);
-					Assert.That(s.IsReadOnly(dpLast), Is.False);
-					query.SetReadOnly(false);
-					Assert.That(query.IsReadOnly, Is.False);
-					Assert.That(s.DefaultReadOnly, Is.False);
-
-					int i = 0;
-					while (await it.MoveNextAsync())
-					{
-						QueryReadOnlyIterateAssertRow(s, it.Current, dpLast, ref i, ref nExpectedChanges);
-					}
-
-					Assert.That(s.DefaultReadOnly, Is.False);
-
-					t.Commit();
-				}
-
-				QueryIterateClear(s, nExpectedChanges);
-			}
-		}
-
 		private void QueryReadOnlyIterateAssertReadOnly(IQuery query, ISession s)
 		{
 			Assert.That(query.IsReadOnly, Is.False);
@@ -507,45 +467,6 @@ namespace NHibernate.Test.ReadOnly
 				}
 
 				await (QueryIterateClearAsync(s, nExpectedChanges));
-			}
-		}
-
-		[Test]
-		public async Task QueryModifiableAsyncIterate()
-		{
-			int nExpectedChanges = 0;
-			QueryIterateCreate(out var lastDataPointId);
-
-			using (ISession s = OpenSession())
-			{
-				s.CacheMode = CacheMode.Ignore;
-
-				using (ITransaction t = s.BeginTransaction())
-				{
-					s.DefaultReadOnly = true;
-
-					IQuery query = s.CreateQuery("from DataPoint dp order by dp.X asc");
-					QueryModifiableIterateAssertReadOnly(query, s);
-
-					var it = query.AsyncEnumerable<DataPoint>().GetAsyncEnumerator();
-					Assert.That(query.IsReadOnly, Is.False);
-					DataPoint dpLast = s.Get<DataPoint>(lastDataPointId);
-					Assert.That(s.IsReadOnly(dpLast), Is.True);
-					query.SetReadOnly(true);
-					Assert.That(query.IsReadOnly, Is.True);
-					Assert.That(s.DefaultReadOnly, Is.True);
-
-					int i = 0;
-					while (await it.MoveNextAsync())
-					{
-						QueryModifiableIterateAssertRow(s, it.Current, dpLast, ref i, ref nExpectedChanges);
-					}
-
-					Assert.That(s.DefaultReadOnly, Is.True);
-					t.Commit();
-				}
-
-				QueryIterateClear(s, nExpectedChanges);
 			}
 		}
 
@@ -638,26 +559,6 @@ namespace NHibernate.Test.ReadOnly
 				}
 
 				await (t.CommitAsync(cancellationToken));
-			}
-		}
-
-		private void QueryIterateClear(ISession s, int nExpectedChanges)
-		{
-			s.Clear();
-			using (ITransaction t = s.BeginTransaction())
-			{
-				try
-				{
-					IList single = s.CreateQuery("from DataPoint where Description = 'done!'").List();
-					Assert.That(single.Count, Is.EqualTo(nExpectedChanges));
-				}
-				finally
-				{
-					// cleanup
-					s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-				}
-
-				t.Commit();
 			}
 		}
 

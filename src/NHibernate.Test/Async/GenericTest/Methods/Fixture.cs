@@ -103,20 +103,6 @@ namespace NHibernate.Test.GenericTest.Methods
 		}
 
 		[Test]
-		public async Task QueryEnumerableAsync()
-		{
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				var results = s.CreateQuery("from One").AsyncEnumerable<One>();
-				var enumerator = results.GetAsyncEnumerator();
-
-				Assert.That(await enumerator.MoveNextAsync(), Is.True);
-				Assert.That(await enumerator.MoveNextAsync(), Is.False);
-			}
-		}
-
-		[Test]
 		public async Task FilterAsync()
 		{
 			using( ISession s = OpenSession() )
@@ -129,23 +115,6 @@ namespace NHibernate.Test.GenericTest.Methods
 				Assert.AreEqual( 1, results.Count );
 				Assert.AreEqual( 10, results[ 0 ].X );
 				await (t.CommitAsync());
-			}
-		}
-
-		[Test]
-		public async Task FilterEnumerableAsync()
-		{
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				One one2 = (One) await s.CreateQuery("from One").UniqueResultAsync();
-				var results = s.CreateFilter(one2.Manies, "where X = 10").AsyncEnumerable<Many>();
-				var en = results.GetAsyncEnumerator();
-
-				Assert.That(await en.MoveNextAsync(), Is.True);
-				Assert.That(en.Current.X, Is.EqualTo(10));
-				Assert.That(await en.MoveNextAsync(), Is.False);
-				await t.CommitAsync();
 			}
 		}
 	}
