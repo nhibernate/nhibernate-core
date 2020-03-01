@@ -90,22 +90,26 @@ namespace NHibernate.Loader.Hql
 		internal async Task<InitializeEnumerableResult> InitializeEnumerableAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			Stopwatch stopWatch = null;
-			if (session.Factory.Statistics.IsStatisticsEnabled)
+			await (session.AutoFlushIfRequiredAsync(_queryTranslator.QuerySpaces, cancellationToken)).ConfigureAwait(false);
+			using (session.SuspendAutoFlush())
 			{
-				stopWatch = Stopwatch.StartNew();
-			}
+				Stopwatch stopWatch = null;
+				if (session.Factory.Statistics.IsStatisticsEnabled)
+				{
+					stopWatch = Stopwatch.StartNew();
+				}
 
-			var command = await (PrepareQueryCommandAsync(queryParameters, false, session, cancellationToken)).ConfigureAwait(false);
-			var dataReader = await (GetResultSetAsync(command, queryParameters, session, null, cancellationToken)).ConfigureAwait(false);
-			if (stopWatch != null)
-			{
-				stopWatch.Stop();
-				session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + _queryTranslator.QueryString, 0, stopWatch.Elapsed);
-				session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWatch.Elapsed);
-			}
+				var command = await (PrepareQueryCommandAsync(queryParameters, false, session, cancellationToken)).ConfigureAwait(false);
+				var dataReader = await (GetResultSetAsync(command, queryParameters, session, null, cancellationToken)).ConfigureAwait(false);
+				if (stopWatch != null)
+				{
+					stopWatch.Stop();
+					session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + _queryTranslator.QueryString, 0, stopWatch.Elapsed);
+					session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWatch.Elapsed);
+				}
 
-			return new InitializeEnumerableResult(command, dataReader);
+				return new InitializeEnumerableResult(command, dataReader);
+			}
 		}
 	}
 }

@@ -24,7 +24,7 @@ namespace NHibernate.Test.GenericTest.Methods
 		{
 			get
 			{
-				return new string[] { "One.hbm.xml", "Many.hbm.xml" };
+				return new string[] { "One.hbm.xml", "Many.hbm.xml", "Simple.hbm.xml" };
 			}
 		}
 
@@ -49,12 +49,15 @@ namespace NHibernate.Test.GenericTest.Methods
 			many2.One = one;
 			one.Manies.Add( many2 );
 
-			using( ISession s = OpenSession() )
+			var simple = new Simple(1) {Count = 1};
+
+			using ( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				s.Save( one );
 				s.Save( many1 );
 				s.Save( many2 );
+				s.Save(simple, 1);
 				t.Commit();
 			}
 		}
@@ -66,6 +69,7 @@ namespace NHibernate.Test.GenericTest.Methods
 			{
 				session.Delete( "from Many" );
 				session.Delete( "from One" );
+				session.Delete("from Simple");
 				tx.Commit();
 			}
 			base.OnTearDown();

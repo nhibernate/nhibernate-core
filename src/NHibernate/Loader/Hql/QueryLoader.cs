@@ -486,22 +486,26 @@ namespace NHibernate.Loader.Hql
 
 		internal InitializeEnumerableResult InitializeEnumerable(QueryParameters queryParameters, ISessionImplementor session)
 		{
-			Stopwatch stopWatch = null;
-			if (session.Factory.Statistics.IsStatisticsEnabled)
+			session.AutoFlushIfRequired(_queryTranslator.QuerySpaces);
+			using (session.SuspendAutoFlush())
 			{
-				stopWatch = Stopwatch.StartNew();
-			}
+				Stopwatch stopWatch = null;
+				if (session.Factory.Statistics.IsStatisticsEnabled)
+				{
+					stopWatch = Stopwatch.StartNew();
+				}
 
-			var command = PrepareQueryCommand(queryParameters, false, session);
-			var dataReader = GetResultSet(command, queryParameters, session, null);
-			if (stopWatch != null)
-			{
-				stopWatch.Stop();
-				session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + _queryTranslator.QueryString, 0, stopWatch.Elapsed);
-				session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWatch.Elapsed);
-			}
+				var command = PrepareQueryCommand(queryParameters, false, session);
+				var dataReader = GetResultSet(command, queryParameters, session, null);
+				if (stopWatch != null)
+				{
+					stopWatch.Stop();
+					session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + _queryTranslator.QueryString, 0, stopWatch.Elapsed);
+					session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWatch.Elapsed);
+				}
 
-			return new InitializeEnumerableResult(command, dataReader);
+				return new InitializeEnumerableResult(command, dataReader);
+			}
 		}
 
 		protected override void ResetEffectiveExpectedType(IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)

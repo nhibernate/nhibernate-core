@@ -585,12 +585,9 @@ namespace NHibernate.Impl
 			{
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, true);
-				AutoFlushIfRequired(plan.QuerySpaces);
 
-				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
-				{
-					return plan.PerformIterate<T>(queryParameters, this);
-				}
+				// AutoFlushIfRequired will be called when iterating through the enumerable
+				return plan.PerformIterate<T>(queryParameters, this);
 			}
 		}
 
@@ -600,12 +597,9 @@ namespace NHibernate.Impl
 			{
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, true);
-				AutoFlushIfRequired(plan.QuerySpaces);
 
-				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
-				{
-					return plan.PerformAsyncIterate<T>(queryParameters, this);
-				}
+				// AutoFlushIfRequired will be called when iterating through the enumerable
+				return plan.PerformAsyncIterate<T>(queryParameters, this);
 			}
 		}
 
@@ -615,12 +609,9 @@ namespace NHibernate.Impl
 			{
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, true);
-				AutoFlushIfRequired(plan.QuerySpaces);
 
-				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
-				{
-					return plan.PerformIterate(queryParameters, this);
-				}
+				// AutoFlushIfRequired will be called when iterating through the enumerable
+				return plan.PerformIterate(queryParameters, this);
 			}
 		}
 

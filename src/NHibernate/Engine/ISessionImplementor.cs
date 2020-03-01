@@ -64,6 +64,11 @@ namespace NHibernate.Engine
 			(implementor as AbstractSessionImpl)?.AutoFlushIfRequired(querySpaces);
 		}
 
+		internal static IDisposable SuspendAutoFlush(this ISessionImplementor implementor)
+		{
+			return (implementor as IEventSource)?.SuspendAutoFlush();
+		}
+
 		/// <summary>
 		/// Returns an <see cref="IAsyncEnumerable{T}" /> which can be enumerated asynchronously.
 		/// </summary>

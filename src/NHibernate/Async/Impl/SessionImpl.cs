@@ -302,38 +302,38 @@ namespace NHibernate.Impl
 		/// <inheritdoc />
 		// Since v5.3
 		[Obsolete("Use AsyncEnumerable extension method instead.")]
-		public override async Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
+		public override Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			using (BeginProcess())
+			if (cancellationToken.IsCancellationRequested)
 			{
-				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(queryExpression, true);
-				await (AutoFlushIfRequiredAsync(plan.QuerySpaces, cancellationToken)).ConfigureAwait(false);
-
-				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
-				{
-					return plan.PerformIterate<T>(queryParameters, this);
-				}
+				return Task.FromCanceled<IEnumerable<T>>(cancellationToken);
+			}
+			try
+			{
+				return Task.FromResult<IEnumerable<T>>(Enumerable<T>(queryExpression, queryParameters));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<IEnumerable<T>>(ex);
 			}
 		}
 
 		/// <inheritdoc />
 		// Since v5.3
 		[Obsolete("Use AsyncEnumerable extension method instead.")]
-		public override async Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
+		public override Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			using (BeginProcess())
+			if (cancellationToken.IsCancellationRequested)
 			{
-				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(queryExpression, true);
-				await (AutoFlushIfRequiredAsync(plan.QuerySpaces, cancellationToken)).ConfigureAwait(false);
-
-				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
-				{
-					return plan.PerformIterate(queryParameters, this);
-				}
+				return Task.FromCanceled<IEnumerable>(cancellationToken);
+			}
+			try
+			{
+				return Task.FromResult<IEnumerable>(Enumerable(queryExpression, queryParameters));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<IEnumerable>(ex);
 			}
 		}
 
