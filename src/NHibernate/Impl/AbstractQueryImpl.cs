@@ -696,7 +696,14 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		// Since 5.3
+		[Obsolete("Use SetParameters method instead.")]
 		public IQuery SetProperties(object bean)
+		{
+			return SetParameters(bean);
+		}
+
+		public IQuery SetParameters(object bean)
 		{
 			System.Type clazz = bean.GetType();
 			string[] @params = NamedParameters;

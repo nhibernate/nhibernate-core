@@ -115,6 +115,8 @@ namespace NHibernate.Test.Legacy
 			session.Close();
 		}
 
+		// Since v5.3
+		[Obsolete]
 		[Test]
 		public void FindBySQLProperties()
 		{
@@ -139,6 +141,31 @@ namespace NHibernate.Test.Legacy
 			session.Delete("from Category");
 			session.Flush();
 			session.Close();
+		}
+
+		[Test]
+		public void FindBySQLObject()
+		{
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
+			{
+				var s = new Category { Name = nextLong.ToString() };
+				nextLong++;
+				session.Save(s);
+
+				s = new Category { Name = "WannaBeFound" };
+				session.Flush();
+
+				var query =
+					session.CreateSQLQuery("select {category.*} from Category {category} where {category}.Name = :Name")
+					       .AddEntity("category", typeof(Category));
+				query.SetParameters(s);
+				var results = query.List();
+				Assert.That(results, Is.Empty);
+
+				session.Delete("from Category");
+				tran.Commit();
+			}
 		}
 
 		[Test]

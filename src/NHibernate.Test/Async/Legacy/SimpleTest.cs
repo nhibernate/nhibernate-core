@@ -112,7 +112,7 @@ namespace NHibernate.Test.Legacy
 		}
 
 		[Test]
-		public async Task SetPropertiesOnQueryAsync()
+		public async Task SetParametersOnQueryAsync()
 		{
 			DateTime now = DateTime.Now;
 
@@ -134,7 +134,7 @@ namespace NHibernate.Test.Legacy
 			t = s.BeginTransaction();
 
 			IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
-			q.SetProperties(simple);
+			q.SetParameters(simple);
 
 			Simple loadedSimple = (Simple) (await (q.ListAsync()))[0];
 			Assert.AreEqual(99, loadedSimple.Count);

@@ -466,7 +466,7 @@ namespace NHibernate.Impl
 			// In IQuery we don't know who override a param value; in DetachedQuery the direct use of 
 			// a named parameter setter override the param value set by SetProperties(POCO)
 			foreach (var obj in optionalUntypeParams)
-				q.SetProperties(obj);
+				q.SetParameters(obj);
 
 			// Set untyped positional parameters
 			foreach (var pup in posUntypeParams)

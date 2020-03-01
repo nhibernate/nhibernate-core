@@ -116,6 +116,8 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
+		// Since v5.3
+		[Obsolete]
 		[Test]
 		public async Task SetPropertiesAsync()
 		{
@@ -130,6 +132,23 @@ namespace NHibernate.Test.Legacy
 			await (s.DeleteAsync(simple));
 			await (t.CommitAsync());
 			s.Close();
+		}
+
+		[Test]
+		public async Task SetParametersWithObjectAsync()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var simple = new Simple { Name = "Simple 1" };
+				await (s.SaveAsync(simple, 10L));
+				var q = s.CreateQuery("from s in class Simple where s.Name = :Name and s.Count = :Count");
+				q.SetParameters(simple);
+				var results = await (q.ListAsync());
+				Assert.That(results, Has.One.EqualTo(simple));
+				await (s.DeleteAsync(simple));
+				await (t.CommitAsync());
+			}
 		}
 
 		[Test]

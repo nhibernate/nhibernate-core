@@ -127,6 +127,8 @@ namespace NHibernate.Test.Legacy
 			session.Close();
 		}
 
+		// Since v5.3
+		[Obsolete]
 		[Test]
 		public async Task FindBySQLPropertiesAsync()
 		{
@@ -151,6 +153,31 @@ namespace NHibernate.Test.Legacy
 			await (session.DeleteAsync("from Category"));
 			await (session.FlushAsync());
 			session.Close();
+		}
+
+		[Test]
+		public async Task FindBySQLObjectAsync()
+		{
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
+			{
+				var s = new Category { Name = nextLong.ToString() };
+				nextLong++;
+				await (session.SaveAsync(s));
+
+				s = new Category { Name = "WannaBeFound" };
+				await (session.FlushAsync());
+
+				var query =
+					session.CreateSQLQuery("select {category.*} from Category {category} where {category}.Name = :Name")
+					       .AddEntity("category", typeof(Category));
+				query.SetParameters(s);
+				var results = await (query.ListAsync());
+				Assert.That(results, Is.Empty);
+
+				await (session.DeleteAsync("from Category"));
+				await (tran.CommitAsync());
+			}
 		}
 
 		[Test]

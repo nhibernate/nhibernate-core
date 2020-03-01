@@ -315,6 +315,8 @@ namespace NHibernate
 		/// NHibernate types using heuristics.
 		/// </summary>
 		/// <param name="obj">Any PONO</param>
+		// Since 5.3
+		[Obsolete("Use SetParameters extension method instead.")]
 		IQuery SetProperties(object obj);
 
 		/// <summary>
