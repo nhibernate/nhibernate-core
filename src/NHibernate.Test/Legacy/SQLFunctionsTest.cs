@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using log4net;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
@@ -135,6 +136,48 @@ namespace NHibernate.Test.Legacy
 			s.Delete(simple);
 			t.Commit();
 			s.Close();
+		}
+
+		[Test]
+		public void SetParametersWithDictionary()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var simple = new Simple { Name = "Simple 1" };
+				s.Save(simple, 10L);
+				var q = s.CreateQuery("from s in class Simple where s.Name = :Name and s.Count = :Count");
+				var parameters = new Dictionary<string, object>
+				{
+					{ nameof(simple.Name), simple.Name },
+					{ nameof(simple.Count), simple.Count },
+				};
+				q.SetProperties(parameters);
+				var results = q.List();
+				Assert.That(results, Has.One.EqualTo(simple));
+				s.Delete(simple);
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void SetParametersWithDynamic()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var simple = new Simple { Name = "Simple 1" };
+				s.Save(simple, 10L);
+				var q = s.CreateQuery("from s in class Simple where s.Name = :Name and s.Count = :Count");
+				dynamic parameters = new ExpandoObject();
+				parameters.Name = simple.Name;
+				parameters.Count = simple.Count;
+				q.SetProperties(parameters);
+				var results = q.List();
+				Assert.That(results, Has.One.EqualTo(simple));
+				s.Delete(simple);
+				t.Commit();
+			}
 		}
 
 		[Test]

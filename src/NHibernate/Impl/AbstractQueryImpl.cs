@@ -651,6 +651,8 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		// Since 5.3
+		[Obsolete("This method was never surfaced to a query interface. Use the overload taking an object instead, and supply to it a generic IDictionary<string, object>.")]
 		public IQuery SetProperties(IDictionary map)
 		{
 			string[] @params = NamedParameters;
@@ -674,8 +676,33 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		private IQuery SetParameters(IDictionary<string, object> map)
+		{
+			foreach (var namedParam in NamedParameters)
+			{
+				var obj = map[namedParam];
+				switch (obj)
+				{
+					case null:
+						break;
+					case IEnumerable enumerable when !(enumerable is string):
+						SetParameterList(namedParam, enumerable);
+						break;
+					default:
+						SetParameter(namedParam, obj, DetermineType(namedParam, obj.GetType()));
+						break;
+				}
+			}
+			return this;
+		}
+
 		public IQuery SetProperties(object bean)
 		{
+			if (bean is IDictionary<string, object> map)
+			{
+				return SetParameters(map);
+			}
+
 			System.Type clazz = bean.GetType();
 			string[] @params = NamedParameters;
 			for (int i = 0; i < @params.Length; i++)
