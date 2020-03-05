@@ -680,17 +680,17 @@ namespace NHibernate.Impl
 		{
 			foreach (var namedParam in NamedParameters)
 			{
-				var obj = map[namedParam];
-				switch (obj)
+				if (map.TryGetValue(namedParam, out var obj))
 				{
-					case null:
-						break;
-					case IEnumerable enumerable when !(enumerable is string):
-						SetParameterList(namedParam, enumerable);
-						break;
-					default:
-						SetParameter(namedParam, obj, DetermineType(namedParam, obj.GetType()));
-						break;
+					switch (obj)
+					{
+						case IEnumerable enumerable when !(enumerable is string):
+							SetParameterList(namedParam, enumerable);
+							break;
+						default:
+							SetParameter(namedParam, obj);
+							break;
+					}
 				}
 			}
 			return this;

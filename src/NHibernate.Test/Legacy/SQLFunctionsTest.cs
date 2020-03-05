@@ -181,6 +181,49 @@ namespace NHibernate.Test.Legacy
 		}
 
 		[Test]
+		public void SetNullParameterWithDictionary()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var simple = new Simple { Name = "Simple 1" };
+				s.Save(simple, 10L);
+				var q = s.CreateQuery("from s in class Simple where s.Name = :Name and (s.Address = :Address or :Address is null and s.Address is null)");
+				var parameters = new Dictionary<string, object>
+				{
+					{ nameof(simple.Name), simple.Name },
+					{ nameof(simple.Address), null },
+				};
+				q.SetProperties(parameters);
+				var results = q.List();
+				Assert.That(results, Has.One.EqualTo(simple));
+				s.Delete(simple);
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void SetParameterListWithDictionary()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var simple = new Simple { Name = "Simple 1" };
+				s.Save(simple, 10L);
+				var q = s.CreateQuery("from s in class Simple where s.Name in (:Name)");
+				var parameters = new Dictionary<string, object>
+				{
+					{ nameof(simple.Name), new [] {simple.Name} }
+				};
+				q.SetProperties(parameters);
+				var results = q.List();
+				Assert.That(results, Has.One.EqualTo(simple));
+				s.Delete(simple);
+				t.Commit();
+			}
+		}
+
+		[Test]
 		public void Broken()
 		{
 			if (Dialect is Oracle8iDialect)
