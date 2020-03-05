@@ -696,11 +696,34 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		private IQuery SetParameters(IDictionary map)
+		{
+			foreach (var namedParam in NamedParameters)
+			{
+				var obj = map[namedParam];
+				switch (obj)
+				{
+					case IEnumerable enumerable when !(enumerable is string):
+						SetParameterList(namedParam, enumerable);
+						break;
+					case null when map.Contains(namedParam):
+					default:
+						SetParameter(namedParam, obj);
+						break;
+				}
+			}
+			return this;
+		}
+
 		public IQuery SetProperties(object bean)
 		{
 			if (bean is IDictionary<string, object> map)
 			{
 				return SetParameters(map);
+			}
+			if (bean is IDictionary hashtable)
+			{
+				return SetParameters(hashtable);
 			}
 
 			System.Type clazz = bean.GetType();

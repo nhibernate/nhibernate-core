@@ -155,6 +155,28 @@ namespace NHibernate.Test.Legacy
 		}
 
 		[Test]
+		public async Task SetParametersWithHashtableAsync()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var simple = new Simple { Name = "Simple 1" };
+				await (s.SaveAsync(simple, 10L));
+				var q = s.CreateQuery("from s in class Simple where s.Name = :Name and (s.Address = :Address or :Address is null and s.Address is null)");
+				var parameters = new Hashtable
+				{
+					{ nameof(simple.Name), simple.Name },
+					{ nameof(simple.Address), simple.Address },
+				};
+				q.SetProperties(parameters);
+				var results = await (q.ListAsync());
+				Assert.That(results, Has.One.EqualTo(simple));
+				await (s.DeleteAsync(simple));
+				await (t.CommitAsync());
+			}
+		}
+
+		[Test]
 		public async Task SetParametersWithDynamicAsync()
 		{
 			using (var s = OpenSession())
