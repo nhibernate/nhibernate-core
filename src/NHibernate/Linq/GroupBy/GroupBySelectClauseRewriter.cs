@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq.Expressions;
@@ -14,6 +15,13 @@ namespace NHibernate.Linq.GroupBy
 	//This should be renamed. It handles entire querymodels, not just select clauses
 	internal class GroupBySelectClauseRewriter : RelinqExpressionVisitor
 	{
+		private readonly static HashSet<ExpressionType> _validElementSelectorTypes = new HashSet<ExpressionType>
+		{
+			ExpressionType.ArrayIndex,
+			ExpressionType.New,
+			ExpressionType.MemberInit
+		};
+
 		public static Expression ReWrite(Expression expression, GroupResultOperator groupBy, QueryModel model)
 		{
 			var visitor = new GroupBySelectClauseRewriter(groupBy, model);
@@ -67,8 +75,8 @@ namespace NHibernate.Linq.GroupBy
 				return base.VisitMember(expression);
 			}
 
-			if ((elementSelector is NewExpression || elementSelector.NodeType == ExpressionType.Convert)
-				&& elementSelector.Type == expression.Expression.Type)
+			if (_validElementSelectorTypes.Contains(UnwrapUnary(elementSelector).NodeType) &&
+				elementSelector.Type == expression.Expression.Type)
 			{
 				//TODO: probably we should check this with a visitor
 				return Expression.MakeMemberAccess(elementSelector, expression.Member);
@@ -155,6 +163,13 @@ namespace NHibernate.Linq.GroupBy
 			// else in the subquery has been removed.  If there were two subqueries, one aggregating & one not, this may not be a 
 			// valid assumption.  Should probably be passed a list of aggregating subqueries that we are flattening so that we can check...
 			return ReWrite(expression.QueryModel.SelectClause.Selector, _groupBy, _model);
+		}
+
+		private static Expression UnwrapUnary(Expression expression)
+		{
+			return expression is UnaryExpression unaryExpression
+				? unaryExpression.Operand
+				: expression;
 		}
 	}
 }
