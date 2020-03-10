@@ -851,6 +851,13 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
+	public class HqlCrossJoin : HqlTreeNode
+	{
+		public HqlCrossJoin(IASTFactory factory, HqlExpression expression, HqlAlias @alias) : base(HqlSqlWalker.JOIN, "join", factory, new HqlCross(factory), expression, @alias)
+		{
+		}
+	}
+
 	public class HqlFetchJoin : HqlTreeNode
 	{
 		public HqlFetchJoin(IASTFactory factory, HqlExpression expression, HqlAlias @alias)
@@ -902,6 +909,14 @@ namespace NHibernate.Hql.Ast
 	{
 		public HqlLeft(IASTFactory factory)
 			: base(HqlSqlWalker.LEFT, "left", factory)
+		{
+		}
+	}
+
+	public class HqlCross : HqlTreeNode
+	{
+		public HqlCross(IASTFactory factory)
+			: base(HqlSqlWalker.CROSS, "cross", factory)
 		{
 		}
 	}

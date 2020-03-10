@@ -315,22 +315,20 @@ namespace NHibernate.Linq.Visitors
 		public override void VisitAdditionalFromClause(AdditionalFromClause fromClause, QueryModel queryModel, int index)
 		{
 			var querySourceName = VisitorParameters.QuerySourceNamer.GetName(fromClause);
-
+			var fromExpressionTree = HqlGeneratorExpressionVisitor.Visit(fromClause.FromExpression, VisitorParameters);
+			var alias = _hqlTree.TreeBuilder.Alias(querySourceName);
 			if (fromClause.FromExpression is MemberExpression)
 			{
 				// It's a join
-				_hqlTree.AddFromClause(
-					_hqlTree.TreeBuilder.Join(
-						HqlGeneratorExpressionVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression(),
-						_hqlTree.TreeBuilder.Alias(querySourceName)));
+				_hqlTree.AddFromClause(_hqlTree.TreeBuilder.Join(fromExpressionTree.AsExpression(), alias));
 			}
 			else
 			{
-				// TODO - exact same code as in MainFromClause; refactor this out
-				_hqlTree.AddFromClause(
-					_hqlTree.TreeBuilder.Range(
-						HqlGeneratorExpressionVisitor.Visit(fromClause.FromExpression, VisitorParameters),
-						_hqlTree.TreeBuilder.Alias(querySourceName)));
+				var join = VisitorParameters.SessionFactory.Dialect.SupportsCrossJoin
+					? _hqlTree.TreeBuilder.CrossJoin(fromExpressionTree.AsExpression(), alias)
+					: (HqlTreeNode) _hqlTree.TreeBuilder.Range(fromExpressionTree, alias);
+
+				_hqlTree.AddFromClause(join);
 			}
 
 			base.VisitAdditionalFromClause(fromClause, queryModel, index);

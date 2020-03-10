@@ -483,6 +483,11 @@ namespace NHibernate.Hql.Ast
 			return new HqlLeftJoin(_factory, expression, @alias);
 		}
 
+		public HqlCrossJoin CrossJoin(HqlExpression expression, HqlAlias @alias)
+		{
+			return new HqlCrossJoin(_factory, expression, @alias);
+		}
+
 		public HqlFetchJoin FetchJoin(HqlExpression expression, HqlAlias @alias)
 		{
 			return new HqlFetchJoin(_factory, expression, @alias);

@@ -247,7 +247,10 @@ namespace NHibernate.Dialect
 		{
 			get { return false; }
 		}
-		
+
+		/// <inheritdoc />
+		public override bool SupportsCrossJoin => false;
+
 		public override char OpenQuote
 		{
 			get { return '['; }
