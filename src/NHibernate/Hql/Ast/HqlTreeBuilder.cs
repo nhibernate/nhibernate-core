@@ -478,6 +478,11 @@ namespace NHibernate.Hql.Ast
 			return new HqlIn(_factory, itemExpression, source);
 		}
 
+		public HqlInnerJoin InnerJoin(HqlExpression expression, HqlAlias @alias)
+		{
+			return new HqlInnerJoin(_factory, expression, @alias);
+		}
+
 		public HqlLeftJoin LeftJoin(HqlExpression expression, HqlAlias @alias)
 		{
 			return new HqlLeftJoin(_factory, expression, @alias);

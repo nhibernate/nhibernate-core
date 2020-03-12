@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Hql.Ast;
@@ -17,6 +18,8 @@ using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Clauses.StreamedData;
 using Remotion.Linq.EagerFetching;
+using OrderByClause = Remotion.Linq.Clauses.OrderByClause;
+using SelectClause = Remotion.Linq.Clauses.SelectClause;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -324,11 +327,7 @@ namespace NHibernate.Linq.Visitors
 			}
 			else
 			{
-				var join = VisitorParameters.SessionFactory.Dialect.SupportsCrossJoin
-					? _hqlTree.TreeBuilder.CrossJoin(fromExpressionTree.AsExpression(), alias)
-					: (HqlTreeNode) _hqlTree.TreeBuilder.Range(fromExpressionTree, alias);
-
-				_hqlTree.AddFromClause(join);
+				_hqlTree.AddFromClause(CreateCrossJoin(fromExpressionTree, alias));
 			}
 
 			base.VisitAdditionalFromClause(fromClause, queryModel, index);
@@ -515,15 +514,25 @@ namespace NHibernate.Linq.Visitors
 		public override void VisitJoinClause(JoinClause joinClause, QueryModel queryModel, int index)
 		{
 			var equalityVisitor = new EqualityHqlGenerator(VisitorParameters);
-			var whereClause = equalityVisitor.Visit(joinClause.InnerKeySelector, joinClause.OuterKeySelector);
-			var querySourceName = VisitorParameters.QuerySourceNamer.GetName(joinClause);
+			var withClause = equalityVisitor.Visit(joinClause.InnerKeySelector, joinClause.OuterKeySelector);
+			var alias = _hqlTree.TreeBuilder.Alias(VisitorParameters.QuerySourceNamer.GetName(joinClause));
+			var joinExpression = HqlGeneratorExpressionVisitor.Visit(joinClause.InnerSequence, VisitorParameters);
+			HqlTreeNode join;
+			// When there are association navigations inside an on clause:
+			// from c in db.Customers join o in db.Orders on c.ContactTitle equals o.Customer.ContactTitle
+			// we have to use a cross join instead of inner join and add the condition in the where statement.
+			if (queryModel.BodyClauses.OfType<NhJoinClause>().Any(o => o.RelatedBodyClause == joinClause))
+			{
+				_hqlTree.AddWhereClause(withClause);
+				join = CreateCrossJoin(joinExpression, alias);
+			}
+			else
+			{
+				join = _hqlTree.TreeBuilder.InnerJoin(joinExpression.AsExpression(), alias);
+				join.AddChild(_hqlTree.TreeBuilder.With(withClause));
+			}
 
-			_hqlTree.AddWhereClause(whereClause);
-
-			_hqlTree.AddFromClause(
-				_hqlTree.TreeBuilder.Range(
-					HqlGeneratorExpressionVisitor.Visit(joinClause.InnerSequence, VisitorParameters),
-					_hqlTree.TreeBuilder.Alias(querySourceName)));
+			_hqlTree.AddFromClause(join);
 		}
 
 		public override void VisitGroupJoinClause(GroupJoinClause groupJoinClause, QueryModel queryModel, int index)
@@ -549,6 +558,23 @@ namespace NHibernate.Linq.Visitors
 			// Visit the predicate to build the query
 			var expression = HqlGeneratorExpressionVisitor.Visit(withClause.Predicate, VisitorParameters).ToBooleanExpression();
 			_hqlTree.AddWhereClause(expression);
+		}
+
+		private HqlTreeNode CreateCrossJoin(HqlTreeNode joinExpression, HqlAlias alias)
+		{
+			if (VisitorParameters.SessionFactory.Dialect.SupportsCrossJoin)
+			{
+				return _hqlTree.TreeBuilder.CrossJoin(joinExpression.AsExpression(), alias);
+			}
+
+			// Simulate cross join as a inner join on 1=1
+			var join = _hqlTree.TreeBuilder.InnerJoin(joinExpression.AsExpression(), alias);
+			var onExpression = _hqlTree.TreeBuilder.Equality(
+				_hqlTree.TreeBuilder.True(),
+				_hqlTree.TreeBuilder.True());
+			join.AddChild(_hqlTree.TreeBuilder.With(onExpression));
+
+			return join;
 		}
 	}
 }

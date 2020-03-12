@@ -1,4 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using NHibernate.Cfg;
+using NHibernate.Engine.Query;
+using NHibernate.Util;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq.ByMethod
@@ -20,30 +26,31 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.IsTrue(orders.All(x => x.FirstId == x.SecondId - 1 && x.SecondId == x.ThirdId - 1));
 		}
 
-		[Test]
-		public void CrossJoinWithPredicateInOnStatement()
+		[TestCase(false)]
+		[TestCase(true)]
+		public void CrossJoinWithPredicateInWhereStatement(bool useCrossJoin)
 		{
-			var result =
-				(from o in db.Orders
-				from p in db.Products
-				join d in db.OrderLines
-					on new { o.OrderId, p.ProductId } equals new { d.Order.OrderId, d.Product.ProductId }
-					into details
-				from d in details
-				select new { o.OrderId, p.ProductId, d.UnitPrice }).Take(10).ToList();
+			if (useCrossJoin && !Dialect.SupportsCrossJoin)
+			{
+				Assert.Ignore("Dialect does not support cross join.");
+			}
 
-			Assert.That(result.Count, Is.EqualTo(10));
-		}
+			using (var substitute = SubstituteDialect())
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				ClearQueryPlanCache();
+				substitute.Value.SupportsCrossJoin.Returns(useCrossJoin);
 
-		[Test]
-		public void CrossJoinWithPredicateInWhereStatement()
-		{
-			var result = (from o in db.Orders
-						from o2 in db.Orders.Where(x => x.Freight > 50)
-						where (o.OrderId == o2.OrderId + 1) || (o.OrderId == o2.OrderId - 1)
-						select new { o.OrderId, OrderId2 = o2.OrderId }).ToList();
+				var result = (from o in db.Orders
+							from o2 in db.Orders.Where(x => x.Freight > 50)
+							where (o.OrderId == o2.OrderId + 1) || (o.OrderId == o2.OrderId - 1)
+							select new { o.OrderId, OrderId2 = o2.OrderId }).ToList();
 
-			Assert.That(result.Count, Is.EqualTo(720));
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(result.Count, Is.EqualTo(720));
+				Assert.That(sql, Does.Contain(useCrossJoin ? "cross join" : "inner join"));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(useCrossJoin ? 0 : 1));
+			}
 		}
 	}
 }

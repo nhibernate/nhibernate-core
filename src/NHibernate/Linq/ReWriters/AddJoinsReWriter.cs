@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Specialized;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Linq.Clauses;
@@ -57,6 +58,24 @@ namespace NHibernate.Linq.ReWriters
 		public override void VisitNhHavingClause(NhHavingClause havingClause, QueryModel queryModel, int index)
 		{
 			_whereJoinDetector.Transform(havingClause);
+		}
+
+		public override void VisitJoinClause(JoinClause joinClause, QueryModel queryModel, int index)
+		{
+			// When there are association navigations inside an on clause (e.g. c.ContactTitle equals o.Customer.ContactTitle),
+			// we have to move the condition to the where statement, otherwise the query will be invalid.
+			// Link newly created joins with the current join clause in order to later detect which join type to use.
+			queryModel.BodyClauses.CollectionChanged += OnCollectionChange;
+			_whereJoinDetector.Transform(joinClause);
+			queryModel.BodyClauses.CollectionChanged -= OnCollectionChange;
+
+			void OnCollectionChange(object sender, NotifyCollectionChangedEventArgs e)
+			{
+				foreach (var nhJoinClause in e.NewItems.OfType<NhJoinClause>())
+				{
+					nhJoinClause.RelatedBodyClause = joinClause;
+				}
+			}
 		}
 
 		public bool IsEntity(System.Type type)

@@ -16,6 +16,9 @@ using NUnit.Framework.Interfaces;
 using System.Text;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Engine.Query;
+using NHibernate.Util;
+using NSubstitute;
 
 namespace NHibernate.Test
 {
@@ -475,6 +478,72 @@ namespace NHibernate.Test
 				dialects,
 				Does.Not.Contain(Dialect.GetType()),
 				$"{Dialect} doesn't support {functionName} standard function.");
+		}
+
+		protected void ClearQueryPlanCache()
+		{
+			var planCacheField = typeof(QueryPlanCache)
+									.GetField("planCache", BindingFlags.NonPublic | BindingFlags.Instance)
+								?? throw new InvalidOperationException("planCache field does not exist in QueryPlanCache.");
+
+			var planCache = (SoftLimitMRUCache) planCacheField.GetValue(Sfi.QueryPlanCache);
+			planCache.Clear();
+		}
+
+		protected Substitute<Dialect.Dialect> SubstituteDialect()
+		{
+			var origDialect = Sfi.Settings.Dialect;
+			var dialectProperty = (PropertyInfo) ReflectHelper.GetProperty<Settings, Dialect.Dialect>(o => o.Dialect);
+			var forPartsOfMethod = ReflectHelper.GetMethodDefinition(() => Substitute.ForPartsOf<object>());
+			var substitute = (Dialect.Dialect) forPartsOfMethod.MakeGenericMethod(origDialect.GetType())
+																.Invoke(null, new object[] { new object[0] });
+
+			dialectProperty.SetValue(Sfi.Settings, substitute);
+
+			return new Substitute<Dialect.Dialect>(substitute, Dispose);
+
+			void Dispose()
+			{
+				dialectProperty.SetValue(Sfi.Settings, origDialect);
+			}
+		}
+
+		protected static int GetTotalOccurrences(string content, string substring)
+		{
+			if (string.IsNullOrEmpty(substring))
+			{
+				throw new ArgumentNullException(nameof(substring));
+			}
+
+			int occurrences = 0;
+			for (var index = 0; ; index += substring.Length)
+			{
+				index = content.IndexOf(substring, index);
+				if (index == -1)
+				{
+					return occurrences;
+				}
+
+				occurrences++;
+			}
+		}
+
+		protected struct Substitute<TType> : IDisposable
+		{
+			private readonly System.Action _disposeAction;
+
+			public Substitute(TType value, System.Action disposeAction)
+			{
+				Value = value;
+				_disposeAction = disposeAction;
+			}
+
+			public TType Value { get; }
+
+			public void Dispose()
+			{
+				_disposeAction();
+			}
 		}
 
 		#endregion

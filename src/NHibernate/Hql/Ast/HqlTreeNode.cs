@@ -844,6 +844,14 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
+	public class HqlInnerJoin : HqlTreeNode
+	{
+		public HqlInnerJoin(IASTFactory factory, HqlExpression expression, HqlAlias alias)
+			: base(HqlSqlWalker.JOIN, "join", factory, new HqlInner(factory), expression, alias)
+		{
+		}
+	}
+
 	public class HqlLeftJoin : HqlTreeNode
 	{
 		public HqlLeftJoin(IASTFactory factory, HqlExpression expression, HqlAlias @alias) : base(HqlSqlWalker.JOIN, "join", factory, new HqlLeft(factory), expression, @alias)
@@ -901,6 +909,14 @@ namespace NHibernate.Hql.Ast
 	{
 		public HqlBitwiseAnd(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.BAND, "band", factory, lhs, rhs)
+		{
+		}
+	}
+
+	public class HqlInner : HqlTreeNode
+	{
+		public HqlInner(IASTFactory factory)
+			: base(HqlSqlWalker.INNER, "inner", factory)
 		{
 		}
 	}
