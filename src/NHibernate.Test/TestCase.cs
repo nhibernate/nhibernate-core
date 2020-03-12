@@ -515,17 +515,14 @@ namespace NHibernate.Test
 				throw new ArgumentNullException(nameof(substring));
 			}
 
-			int occurrences = 0;
-			for (var index = 0; ; index += substring.Length)
+			int occurrences = 0, index = 0;
+			while ((index = content.IndexOf(substring, index)) >= 0)
 			{
-				index = content.IndexOf(substring, index);
-				if (index == -1)
-				{
-					return occurrences;
-				}
-
 				occurrences++;
+				index += substring.Length;
 			}
+
+			return occurrences;
 		}
 
 		protected struct Substitute<TType> : IDisposable
