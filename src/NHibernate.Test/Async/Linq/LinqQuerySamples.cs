@@ -1073,6 +1073,25 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Category("JOIN")]
+		[Test(Description = "This sample joins two tables and projects results from the first table.")]
+		public async Task DLinqJoin5eAsync()
+		{
+			var q =
+				from c in db.Customers
+				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId
+				where c.ContactName != null
+				select o;
+
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+			}
+		}
+
+		[Category("JOIN")]
 		[Test(Description = "This sample explictly joins three tables and projects results from each of them.")]
 		public async Task DLinqJoin6Async()
 		{
