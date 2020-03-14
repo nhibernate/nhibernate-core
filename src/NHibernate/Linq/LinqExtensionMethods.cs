@@ -10,6 +10,7 @@ using Remotion.Linq.Parsing.ExpressionVisitors;
 using System.Threading;
 using System.Threading.Tasks;
 using NHibernate.Engine;
+using static NHibernate.Util.ReflectionCache.QueryableMethods;
 
 namespace NHibernate.Linq
 {
@@ -2465,6 +2466,97 @@ namespace NHibernate.Linq
 			return provider.ExecuteFutureValue<TResult>(expression);
 #pragma warning restore CS0618 // Type or member is obsolete
 		}
+
+		#region LeftJoin
+
+		// Code based on: https://stackoverflow.com/a/18782867
+		/// <summary>
+		/// Correlates the elements of two sequences based on matching keys. The default equality comparer is used to compare keys.
+		/// </summary>
+		/// <param name="outer">The first sequence to join.</param>
+		/// <param name="inner">The sequence to join to the first sequence.</param>
+		/// <param name="outerKeySelector">A dynamic function to extract the join key from each element of the first sequence.</param>
+		/// <param name="innerKeySelector">A dynamic function to extract the join key from each element of the second sequence.</param>
+		/// <param name="resultSelector">A dynamic function to create a result element from two matching elements.</param>
+		/// <returns>An <see cref="IQueryable"/> obtained by performing a left join on two sequences.</returns>
+		public static IQueryable<TResult> LeftJoin<TOuter, TInner, TKey, TResult>(
+			this IQueryable<TOuter> outer,
+			IQueryable<TInner> inner,
+			Expression<Func<TOuter, TKey>> outerKeySelector,
+			Expression<Func<TInner, TKey>> innerKeySelector,
+			Expression<Func<TOuter, TInner, TResult>> resultSelector)
+		{
+			outer = outer ?? throw new ArgumentNullException(nameof(outer));
+			inner = inner ?? throw new ArgumentNullException(nameof(inner));
+			outerKeySelector = outerKeySelector ?? throw new ArgumentNullException(nameof(outerKeySelector));
+			innerKeySelector = innerKeySelector ?? throw new ArgumentNullException(nameof(innerKeySelector));
+			resultSelector = resultSelector ?? throw new ArgumentNullException(nameof(resultSelector));
+
+			Expression<Func<TOuter, IEnumerable<TInner>, LeftJoinIntermediate<TOuter, TInner>>> groupJoinResultSelector =
+				(oneOuter, manyInners) => new LeftJoinIntermediate<TOuter, TInner>
+				{
+					OneOuter = oneOuter,
+					ManyInners = manyInners
+				};
+			var groupJoin = GroupJoinDefinition.MakeGenericMethod(
+				typeof(TOuter),
+				typeof(TInner),
+				typeof(TKey),
+				typeof(LeftJoinIntermediate<TOuter, TInner>));
+			var selectMany = SelectManyDefinition.MakeGenericMethod(
+				typeof(LeftJoinIntermediate<TOuter, TInner>),
+				typeof(TInner),
+				typeof(TResult));
+			var exprGroupJoin = Expression.Call(
+				groupJoin,
+				outer.Expression,
+				inner.Expression,
+				outerKeySelector,
+				innerKeySelector,
+				groupJoinResultSelector);
+			var selectManyCollectionSelector = (Expression<Func<LeftJoinIntermediate<TOuter, TInner>, IEnumerable<TInner>>>)
+				(t => t.ManyInners.DefaultIfEmpty());
+			var outerParameter = resultSelector.Parameters[0];
+			var paramNew = Expression.Parameter(typeof(LeftJoinIntermediate<TOuter, TInner>));
+			var outerProperty = Expression.Property(paramNew, nameof(LeftJoinIntermediate<TOuter, TInner>.OneOuter));
+			var selectManyResultSelector = Expression.Lambda(
+				new Replacer(outerParameter, outerProperty).Visit(resultSelector.Body),
+				paramNew,
+				resultSelector.Parameters[1]);
+
+			return outer.Provider.CreateQuery<TResult>(
+				Expression.Call(selectMany, exprGroupJoin, selectManyCollectionSelector, selectManyResultSelector));
+		}
+
+		private class LeftJoinIntermediate<TOuter, TInner>
+		{
+			public TOuter OneOuter { get; set; }
+			public IEnumerable<TInner> ManyInners { get; set; }
+		}
+
+		private class Replacer : ExpressionVisitor
+		{
+			private readonly ParameterExpression _oldParam;
+			private readonly Expression _replacement;
+
+			public Replacer(ParameterExpression oldParam, Expression replacement)
+			{
+				_oldParam = oldParam;
+				_replacement = replacement;
+			}
+
+			public override Expression Visit(Expression exp)
+			{
+				if (exp == _oldParam)
+				{
+					return _replacement;
+				}
+
+				return base.Visit(exp);
+			}
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Allows to set NHibernate query options.
