@@ -20,11 +20,13 @@ namespace NHibernate.Linq.ReWriters
 		private readonly ISessionFactoryImplementor _sessionFactory;
 		private readonly MemberExpressionJoinDetector _memberExpressionJoinDetector;
 		private readonly WhereJoinDetector _whereJoinDetector;
+		private int? _joinInsertIndex;
+		private JoinClause _currentJoin;
 
 		private AddJoinsReWriter(ISessionFactoryImplementor sessionFactory, QueryModel queryModel)
 		{
 			_sessionFactory = sessionFactory;
-			var joiner = new Joiner(queryModel);
+			var joiner = new Joiner(queryModel, AddJoin);
 			_memberExpressionJoinDetector = new MemberExpressionJoinDetector(this, joiner);
 			_whereJoinDetector = new WhereJoinDetector(this, joiner);
 		}
@@ -62,20 +64,25 @@ namespace NHibernate.Linq.ReWriters
 
 		public override void VisitJoinClause(JoinClause joinClause, QueryModel queryModel, int index)
 		{
-			// When there are association navigations inside an on clause (e.g. c.ContactTitle equals o.Customer.ContactTitle),
+			VisitJoinClause(joinClause, queryModel, joinClause);
+		}
+
+		private void VisitJoinClause(JoinClause joinClause, QueryModel queryModel, IBodyClause bodyClause)
+		{
+			joinClause.InnerSequence = _whereJoinDetector.Transform(joinClause.InnerSequence);
+
+			// When associations are located in the outer key (e.g. from a in A join b in B b on a.C.D.Id equals b.Id),
+			// we have to insert the association join before the current join in order to produce a valid query.
+			_joinInsertIndex = queryModel.BodyClauses.IndexOf(bodyClause);
+			joinClause.OuterKeySelector = _whereJoinDetector.Transform(joinClause.OuterKeySelector);
+			_joinInsertIndex = null;
+
+			// When associations are located in the inner key (e.g. from a in A join b in B b on a.Id equals b.C.D.Id),
 			// we have to move the condition to the where statement, otherwise the query will be invalid.
 			// Link newly created joins with the current join clause in order to later detect which join type to use.
-			queryModel.BodyClauses.CollectionChanged += OnCollectionChange;
-			_whereJoinDetector.Transform(joinClause);
-			queryModel.BodyClauses.CollectionChanged -= OnCollectionChange;
-
-			void OnCollectionChange(object sender, NotifyCollectionChangedEventArgs e)
-			{
-				foreach (var nhJoinClause in e.NewItems.OfType<NhJoinClause>())
-				{
-					nhJoinClause.RelatedBodyClause = joinClause;
-				}
-			}
+			_currentJoin = joinClause;
+			joinClause.InnerKeySelector = _whereJoinDetector.Transform(joinClause.InnerKeySelector);
+			_currentJoin = null;
 		}
 
 		public bool IsEntity(System.Type type)
@@ -87,6 +94,20 @@ namespace NHibernate.Linq.ReWriters
 		{
 			var metadata = _sessionFactory.GetClassMetadata(type);
 			return metadata != null && propertyName.Equals(metadata.IdentifierPropertyName);
+		}
+
+		private void AddJoin(QueryModel queryModel, NhJoinClause joinClause)
+		{
+			joinClause.ParentJoinClause = _currentJoin;
+			if (_joinInsertIndex.HasValue)
+			{
+				queryModel.BodyClauses.Insert(_joinInsertIndex.Value, joinClause);
+				_joinInsertIndex++;
+			}
+			else
+			{
+				queryModel.BodyClauses.Add(joinClause);
+			}
 		}
 	}
 }

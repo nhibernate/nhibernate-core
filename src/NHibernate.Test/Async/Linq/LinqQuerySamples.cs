@@ -965,7 +965,13 @@ namespace NHibernate.Test.Linq
 				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId
 				select new { c.ContactName, o.OrderId };
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+			}
 		}
 
 		[Category("JOIN")]
@@ -1005,7 +1011,9 @@ namespace NHibernate.Test.Linq
 
 			var q =
 				from c in db.Customers
-				join o in db.Orders on new {c.CustomerId, HasContractTitle = c.ContactTitle != null} equals new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null }
+				join o in db.Orders on
+					new {c.CustomerId, HasContractTitle = c.ContactTitle != null} equals
+					new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null }
 				select new { c.ContactName, o.OrderId };
 
 			using (var substitute = SubstituteDialect())
@@ -1037,6 +1045,27 @@ namespace NHibernate.Test.Linq
 				await (ObjectDumper.WriteAsync(q));
 
 				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+			}
+		}
+
+		[Category("JOIN")]
+		[TestCase(Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
+		public async Task DLinqJoin5fAsync()
+		{
+			var q =
+				from o in db.Orders
+				join c in db.Customers on 
+					new { o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null } equals 
+					new { c.CustomerId, HasContractTitle = c.ContactTitle != null }
+				select new { c.ContactName, o.OrderId };
+			
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
 				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
 			}
 		}
@@ -1137,6 +1166,25 @@ namespace NHibernate.Test.Linq
 					 select new { CustomerName = x.Key.ContactName, Order = x };
 
 			await (ObjectDumper.WriteAsync(q));
+		}
+
+		[Category("JOIN")]
+		[Test(Description = "This sample shows how to join multiple tables.")]
+		public async Task DLinqJoin10aAsync()
+		{
+			var q =
+				from e in db.Employees
+				join s in db.Employees on e.Superior.EmployeeId equals s.EmployeeId
+				join s2 in db.Employees on s.Superior.EmployeeId equals s2.EmployeeId
+				select new { e.FirstName, SuperiorName = s.FirstName, Superior2Name = s2.FirstName };
+
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
+			}
 		}
 	}
 }

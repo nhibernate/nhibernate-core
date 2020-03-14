@@ -518,10 +518,9 @@ namespace NHibernate.Linq.Visitors
 			var alias = _hqlTree.TreeBuilder.Alias(VisitorParameters.QuerySourceNamer.GetName(joinClause));
 			var joinExpression = HqlGeneratorExpressionVisitor.Visit(joinClause.InnerSequence, VisitorParameters);
 			HqlTreeNode join;
-			// When there are association navigations inside an on clause:
-			// from c in db.Customers join o in db.Orders on c.ContactTitle equals o.Customer.ContactTitle
-			// we have to use a cross join instead of inner join and add the condition in the where statement.
-			if (queryModel.BodyClauses.OfType<NhJoinClause>().Any(o => o.RelatedBodyClause == joinClause))
+			// When associations are located inside the inner key selector we have to use a cross join instead of an inner
+			// join and add the condition in the where statement.
+			if (queryModel.BodyClauses.OfType<NhJoinClause>().Any(o => o.ParentJoinClause == joinClause))
 			{
 				_hqlTree.AddWhereClause(withClause);
 				join = CreateCrossJoin(joinExpression, alias);
