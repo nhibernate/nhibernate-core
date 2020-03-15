@@ -20,7 +20,6 @@ namespace NHibernate.Linq.ReWriters
 		private readonly ISessionFactoryImplementor _sessionFactory;
 		private readonly MemberExpressionJoinDetector _memberExpressionJoinDetector;
 		private readonly WhereJoinDetector _whereJoinDetector;
-		private int? _joinInsertIndex;
 		private JoinClause _currentJoin;
 
 		private AddJoinsReWriter(ISessionFactoryImplementor sessionFactory, QueryModel queryModel)
@@ -72,13 +71,11 @@ namespace NHibernate.Linq.ReWriters
 			joinClause.InnerSequence = _whereJoinDetector.Transform(joinClause.InnerSequence);
 
 			// When associations are located in the outer key (e.g. from a in A join b in B b on a.C.D.Id equals b.Id),
-			// we have to insert the association join before the current join in order to produce a valid query.
-			_joinInsertIndex = queryModel.BodyClauses.IndexOf(bodyClause);
-			joinClause.OuterKeySelector = _whereJoinDetector.Transform(joinClause.OuterKeySelector);
-			_joinInsertIndex = null;
+			// do nothing and leave them to HQL for adding the missing joins.
 
 			// When associations are located in the inner key (e.g. from a in A join b in B b on a.Id equals b.C.D.Id),
-			// we have to move the condition to the where statement, otherwise the query will be invalid.
+			// we have to move the condition to the where statement, otherwise the query will be invalid (HQL does not
+			// support them).
 			// Link newly created joins with the current join clause in order to later detect which join type to use.
 			_currentJoin = joinClause;
 			joinClause.InnerKeySelector = _whereJoinDetector.Transform(joinClause.InnerKeySelector);
@@ -99,15 +96,7 @@ namespace NHibernate.Linq.ReWriters
 		private void AddJoin(QueryModel queryModel, NhJoinClause joinClause)
 		{
 			joinClause.ParentJoinClause = _currentJoin;
-			if (_joinInsertIndex.HasValue)
-			{
-				queryModel.BodyClauses.Insert(_joinInsertIndex.Value, joinClause);
-				_joinInsertIndex++;
-			}
-			else
-			{
-				queryModel.BodyClauses.Add(joinClause);
-			}
+			queryModel.BodyClauses.Add(joinClause);
 		}
 	}
 }

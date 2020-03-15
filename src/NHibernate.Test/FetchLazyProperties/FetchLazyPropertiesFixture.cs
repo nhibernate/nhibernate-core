@@ -937,6 +937,11 @@ namespace NHibernate.Test.FetchLazyProperties
 		[Test]
 		public void TestHqlCrossJoinFetchFormula()
 		{
+			if (!Dialect.SupportsCrossJoin)
+			{
+				Assert.Ignore("Dialect does not support cross join.");
+			}
+
 			var persons = new List<Person>();
 			var bestFriends = new List<Person>();
 			using (var sqlSpy = new SqlLogSpy())

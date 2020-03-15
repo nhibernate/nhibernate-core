@@ -1065,8 +1065,8 @@ namespace NHibernate.Test.Linq
 				await (ObjectDumper.WriteAsync(q));
 
 				var sql = sqlSpy.GetWholeLog();
-				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
-				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(0));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
 			}
 		}
 
