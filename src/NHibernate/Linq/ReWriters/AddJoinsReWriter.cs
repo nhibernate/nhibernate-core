@@ -63,11 +63,6 @@ namespace NHibernate.Linq.ReWriters
 
 		public override void VisitJoinClause(JoinClause joinClause, QueryModel queryModel, int index)
 		{
-			VisitJoinClause(joinClause, queryModel, joinClause);
-		}
-
-		private void VisitJoinClause(JoinClause joinClause, QueryModel queryModel, IBodyClause bodyClause)
-		{
 			joinClause.InnerSequence = _whereJoinDetector.Transform(joinClause.InnerSequence);
 
 			// When associations are located in the outer key (e.g. from a in A join b in B b on a.C.D.Id equals b.Id),
