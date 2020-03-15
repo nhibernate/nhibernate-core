@@ -22,6 +22,7 @@ namespace NHibernate.Linq.ReWriters
 		private readonly MemberExpressionJoinDetector _memberExpressionJoinDetector;
 		private readonly WhereJoinDetector _whereJoinDetector;
 		private JoinClause _currentJoin;
+		private bool? _innerJoin;
 
 		private AddJoinsReWriter(ISessionFactoryImplementor sessionFactory, QueryModel queryModel)
 		{
@@ -64,10 +65,15 @@ namespace NHibernate.Linq.ReWriters
 
 		public void VisitNhOuterJoinClause(NhOuterJoinClause nhOuterJoinClause, QueryModel queryModel, int index)
 		{
-			VisitJoinClause(nhOuterJoinClause.JoinClause, queryModel, nhOuterJoinClause);
+			VisitJoinClause(nhOuterJoinClause.JoinClause, false);
 		}
 
 		public override void VisitJoinClause(JoinClause joinClause, QueryModel queryModel, int index)
+		{
+			VisitJoinClause(joinClause, true);
+		}
+
+		private void VisitJoinClause(JoinClause joinClause, bool innerJoin)
 		{
 			joinClause.InnerSequence = _whereJoinDetector.Transform(joinClause.InnerSequence);
 
@@ -79,8 +85,10 @@ namespace NHibernate.Linq.ReWriters
 			// support them).
 			// Link newly created joins with the current join clause in order to later detect which join type to use.
 			_currentJoin = joinClause;
+			_innerJoin = innerJoin;
 			joinClause.InnerKeySelector = _whereJoinDetector.Transform(joinClause.InnerKeySelector);
 			_currentJoin = null;
+			_innerJoin = null;
 		}
 
 		public bool IsEntity(System.Type type)
@@ -97,7 +105,7 @@ namespace NHibernate.Linq.ReWriters
 		private void AddJoin(QueryModel queryModel, NhJoinClause joinClause)
 		{
 			joinClause.ParentJoinClause = _currentJoin;
-			if (_currentJoin != null)
+			if (_innerJoin == true)
 			{
 				// Match the parent join type
 				joinClause.MakeInner();
