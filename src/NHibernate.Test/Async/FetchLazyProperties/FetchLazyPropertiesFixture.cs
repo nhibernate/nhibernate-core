@@ -9,12 +9,14 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Linq;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.FetchLazyProperties
@@ -941,6 +943,37 @@ namespace NHibernate.Test.FetchLazyProperties
 			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Image"), Is.True);
 			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Address"), Is.True);
 			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Formula"), Is.True);
+		}
+
+		[Test]
+		public async Task TestHqlCrossJoinFetchFormulaAsync()
+		{
+			var persons = new List<Person>();
+			var bestFriends = new List<Person>();
+			using (var sqlSpy = new SqlLogSpy())
+			using (var s = OpenSession())
+			{
+				var list = await (s.CreateQuery("select p, bf from Person p cross join Person bf fetch bf.Formula where bf.Id = p.BestFriend.Id").ListAsync<object[]>());
+				foreach (var arr in list)
+				{
+					persons.Add((Person) arr[0]);
+					bestFriends.Add((Person) arr[1]);
+				}
+			}
+
+			AssertPersons(persons, false);
+			AssertPersons(bestFriends, true);
+
+			void AssertPersons(List<Person> results, bool fetched)
+			{
+				foreach (var person in results)
+				{
+					Assert.That(person, Is.Not.Null);
+					Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Image"), Is.False);
+					Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Address"), Is.False);
+					Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Formula"), fetched ? Is.True : (IResolveConstraint) Is.False);
+				}
+			}
 		}
 
 		private static Person GeneratePerson(int i, Person bestFriend)
