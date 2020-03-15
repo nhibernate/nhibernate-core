@@ -1570,7 +1570,9 @@ namespace NHibernate.Test.Linq
 
 				var sql = sqlSpy.GetWholeLog();
 				Assert.That(sql, Does.Contain(useCrossJoin ? "cross join" : "inner join"));
-				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(0));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(useCrossJoin ? 1 : 2));
+				Assert.That(GetTotalOccurrences(sql, "cross join"), Is.EqualTo(useCrossJoin ? 1 : 0));
 			}
 		}
 

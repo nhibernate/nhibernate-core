@@ -96,6 +96,12 @@ namespace NHibernate.Linq.ReWriters
 		private void AddJoin(QueryModel queryModel, NhJoinClause joinClause)
 		{
 			joinClause.ParentJoinClause = _currentJoin;
+			if (_currentJoin != null)
+			{
+				// Match the parent join type
+				joinClause.MakeInner();
+			}
+
 			queryModel.BodyClauses.Add(joinClause);
 		}
 	}
