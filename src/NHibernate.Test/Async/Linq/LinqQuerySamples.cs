@@ -1124,15 +1124,15 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore("Dialect does not support cross join.");
 			}
 
-			ICollection expected, actual;
-			expected =
-				(from o in db.Orders.ToList()
-				 from p in db.Products.ToList()
-				 join d in db.OrderLines.ToList()
-					on new {o.OrderId, p.ProductId} equals new {d.Order.OrderId, d.Product.ProductId}
-					into details
-				 from d in details
-				 select new {o.OrderId, p.ProductId, d.UnitPrice}).ToList();
+			// The expected collection can be obtained from the below Linq to Objects query.
+			//var expected =
+			//	(from o in db.Orders.ToList()
+			//	 from p in db.Products.ToList()
+			//	 join d in db.OrderLines.ToList()
+			//		on new {o.OrderId, p.ProductId} equals new {d.Order.OrderId, d.Product.ProductId}
+			//		into details
+			//	 from d in details
+			//	 select new {o.OrderId, p.ProductId, d.UnitPrice}).ToList();
 
 			using (var substitute = SubstituteDialect())
 			using (var sqlSpy = new SqlLogSpy())
@@ -1140,7 +1140,7 @@ namespace NHibernate.Test.Linq
 				ClearQueryPlanCache();
 				substitute.Value.SupportsCrossJoin.Returns(useCrossJoin);
 
-				actual =
+				var actual =
 					await ((from o in db.Orders
 					from p in db.Products
 					join d in db.OrderLines
@@ -1154,8 +1154,6 @@ namespace NHibernate.Test.Linq
 				Assert.That(sql, Does.Contain(useCrossJoin ? "cross join" : "inner join"));
 				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(useCrossJoin ? 1 : 2));
 			}
-
-			Assert.AreEqual(expected.Count, actual.Count);
 		}
 
 		[Category("JOIN")]
