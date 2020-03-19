@@ -1,5 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Criterion;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Test.Hql.EntityJoinHqlTestEntities;
 using NUnit.Framework;
@@ -279,6 +282,43 @@ namespace NHibernate.Test.Hql
 			}
 		}
 
+		[Test]
+		public void Join_Inheritance()
+		{
+			// arrange
+			IEnumerable<int> results;
+			var person = new PersonBase { Login = "dave", FamilyName = "grohl" };
+			var visit_1 = new UserEntityVisit { PersonBase = person };
+			var visit_2 = new UserEntityVisit { PersonBase = person };
+
+			using (ISession arrangeSession = OpenSession())
+			using (ITransaction tx = arrangeSession.BeginTransaction())
+			{
+				arrangeSession.Save(person);
+				arrangeSession.Save(visit_1);
+				arrangeSession.Save(visit_2);
+				arrangeSession.Flush();
+
+				tx.Commit();
+			}
+
+			// act
+			using (var session = OpenSession())
+			{
+				results = session.CreateCriteria<UserEntityVisit>()
+					.CreateCriteria(
+						$"{nameof(UserEntityVisit.PersonBase)}",
+						"f",
+						SqlCommand.JoinType.LeftOuterJoin,
+						Restrictions.Eq("Deleted", false))
+					.List<UserEntityVisit>()
+					.Select(x => x.Id);
+			}
+
+			// assert
+			Assert.That(results, Is.EquivalentTo(new[] { visit_1.Id, visit_2.Id, }));
+		}
+
 		#region Test Setup
 
 		protected override HbmMapping GetMappings()
@@ -350,6 +390,10 @@ namespace NHibernate.Test.Hql
 					rc.Id(e => e.Id, m => m.Generator(Generators.GuidComb));
 					rc.Property(e => e.Name);
 				});
+
+			
+			Node.AddMapping(mapper);
+			UserEntityVisit.AddMapping(mapper);
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}

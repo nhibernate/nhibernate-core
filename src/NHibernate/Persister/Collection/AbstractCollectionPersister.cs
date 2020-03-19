@@ -1386,6 +1386,12 @@ namespace NHibernate.Persister.Collection
 			return IsManyToMany && (manyToManyWhereString != null || manyToManyFilterHelper.IsAffectedBy(enabledFilters));
 		}
 
+		public string[] ToColumns(ICriteria pathCriteria, string propertyName, Func<ICriteria, string> getSQLAlias)
+		{
+			string alias = getSQLAlias(pathCriteria);
+			return ToColumns(alias, propertyName);
+		}
+
 		public string[] ToColumns(string alias, string propertyName)
 		{
 			if ("index".Equals(propertyName))

@@ -47,6 +47,12 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
+		public string[] ToColumns(ICriteria pathCriteria, string propertyName, Func<ICriteria, string> getSQLAlias)
+		{
+			string alias = getSQLAlias(pathCriteria);
+			return ToColumns(alias, propertyName);
+		}
+
 		public string[] ToColumns(string alias, string propertyName)
 		{
 			if (propertyName == null || "id".Equals(propertyName))

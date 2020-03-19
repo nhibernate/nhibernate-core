@@ -29,6 +29,8 @@ namespace NHibernate.Persister.Entity
 		/// <returns>true if a type was found, false if not</returns>
 		bool TryToType(string propertyName, out IType type);
 
+		string[] ToColumns(ICriteria pathCriteria, string propertyName, System.Func<ICriteria, string> getSQLAlias);
+
 		/// <summary>
 		/// Given a query alias and a property path, return the qualified column name
 		/// </summary>

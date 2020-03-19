@@ -150,6 +150,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					return fromElementType.GetBasePropertyMapping().TryToType(GetPropertyPath(propertyName), out type);
 				}
 
+				public string[] ToColumns(ICriteria pathCriteria, string propertyName, Func<ICriteria, string> getSQLAlias)
+				{
+					return fromElementType.GetBasePropertyMapping().ToColumns(pathCriteria, GetPropertyPath(propertyName), getSQLAlias);
+				}
+
 				public string[] ToColumns(string alias, string propertyName)
 				{
 					return fromElementType.GetBasePropertyMapping().ToColumns(alias, GetPropertyPath(propertyName));
