@@ -766,7 +766,7 @@ namespace NHibernate.Loader.Criteria
 				return false;
 			}
 
-			columns = propertyMapping.ToColumns(GetSQLAlias(pathCriteria), propertyName);
+			columns = propertyMapping.ToColumns(pathCriteria, propertyName, GetSQLAlias);
 			return true;
 		}
 
