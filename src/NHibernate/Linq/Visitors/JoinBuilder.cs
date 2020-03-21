@@ -21,11 +21,20 @@ namespace NHibernate.Linq.Visitors
 		private readonly NameGenerator _nameGenerator;
 		private readonly QueryModel _queryModel;
 
+		internal Joiner(QueryModel queryModel, System.Action<QueryModel, NhJoinClause> addJoinMethod)
+			: this(queryModel)
+		{
+			AddJoinMethod = addJoinMethod;
+		}
+
 		internal Joiner(QueryModel queryModel)
 		{
 			_nameGenerator = new NameGenerator(queryModel);
 			_queryModel = queryModel;
+			AddJoinMethod = AddJoin;
 		}
+		
+		internal System.Action<QueryModel, NhJoinClause> AddJoinMethod { get; }
 
 		public IEnumerable<NhJoinClause> Joins
 		{
@@ -39,7 +48,7 @@ namespace NHibernate.Linq.Visitors
 			if (!_joins.TryGetValue(key, out join))
 			{
 				join = new NhJoinClause(_nameGenerator.GetNewName(), expression.Type, expression);
-				_queryModel.BodyClauses.Add(join);
+				AddJoinMethod(_queryModel, join);
 				_joins.Add(key, join);
 			}
 
@@ -70,6 +79,11 @@ namespace NHibernate.Linq.Visitors
 
 			var resultOperatorBase = source as ResultOperatorBase;
 			return resultOperatorBase != null && _queryModel.ResultOperators.Contains(resultOperatorBase);
+		}
+
+		private void AddJoin(QueryModel queryModel, NhJoinClause joinClause)
+		{
+			queryModel.BodyClauses.Add(joinClause);
 		}
 
 		private class QuerySourceExtractor : RelinqExpressionVisitor

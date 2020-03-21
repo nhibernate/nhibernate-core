@@ -1337,6 +1337,11 @@ namespace NHibernate.Dialect
 			return new ANSIJoinFragment();
 		}
 
+		/// <summary>
+		/// Does this dialect support CROSS JOIN?
+		/// </summary>
+		public virtual bool SupportsCrossJoin => true;
+
 		/// <summary> 
 		/// Create a <see cref="CaseFragment"/> strategy responsible
 		/// for handling this dialect's variations in how CASE statements are

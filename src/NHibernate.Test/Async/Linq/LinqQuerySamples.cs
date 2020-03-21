@@ -9,9 +9,11 @@
 
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NSubstitute;
 using NUnit.Framework;
 using NHibernate.Linq;
 
@@ -757,7 +759,13 @@ namespace NHibernate.Test.Linq
 				where c.Address.City == "London"
 				select o;
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+			}
 		}
 
 		[Category("JOIN")]
@@ -863,7 +871,13 @@ namespace NHibernate.Test.Linq
 				where p.Supplier.Address.Country == "USA" && p.UnitsInStock == 0
 				select p;
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+			}
 		}
 
 		[Category("JOIN")]
@@ -879,7 +893,16 @@ namespace NHibernate.Test.Linq
 				where e.Address.City == "Seattle"
 				select new {e.FirstName, e.LastName, et.Region.Description};
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				// EmployeeTerritories and Territories
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
+				// Region
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
 		}
 
 		[Category("JOIN")]
@@ -903,7 +926,13 @@ namespace NHibernate.Test.Linq
 							   e1.Address.City
 						   };
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+			}
 		}
 
 		[Category("JOIN")]
@@ -918,7 +947,13 @@ namespace NHibernate.Test.Linq
 				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId into orders
 				select new {c.ContactName, OrderCount = orders.Average(x => x.Freight)};
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(0));
+			}
 		}
 
 		[Category("JOIN")]
@@ -930,7 +965,13 @@ namespace NHibernate.Test.Linq
 				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId
 				select new { c.ContactName, o.OrderId };
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+			}
 		}
 
 		[Category("JOIN")]
@@ -959,15 +1000,76 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Category("JOIN")]
-		[Test(Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
-		public async Task DLinqJoin5dAsync()
+		[TestCase(true, Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
+		[TestCase(false, Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
+		public async Task DLinqJoin5dAsync(bool useCrossJoin)
+		{
+			if (useCrossJoin && !Dialect.SupportsCrossJoin)
+			{
+				Assert.Ignore("Dialect does not support cross join.");
+			}
+
+			var q =
+				from c in db.Customers
+				join o in db.Orders on
+					new {c.CustomerId, HasContractTitle = c.ContactTitle != null} equals
+					new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null }
+				select new { c.ContactName, o.OrderId };
+
+			using (var substitute = SubstituteDialect())
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				ClearQueryPlanCache();
+				substitute.Value.SupportsCrossJoin.Returns(useCrossJoin);
+
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(sql, Does.Contain(useCrossJoin ? "cross join" : "inner join"));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(0));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(useCrossJoin ? 1 : 2));
+				Assert.That(GetTotalOccurrences(sql, "cross join"), Is.EqualTo(useCrossJoin ? 1 : 0));
+			}
+		}
+
+		[Category("JOIN")]
+		[Test(Description = "This sample joins two tables and projects results from the first table.")]
+		public async Task DLinqJoin5eAsync()
 		{
 			var q =
 				from c in db.Customers
-				join o in db.Orders on new {c.CustomerId, HasContractTitle = c.ContactTitle != null} equals new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null }
-				select new { c.ContactName, o.OrderId };
+				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId
+				where c.ContactName != null
+				select o;
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+			}
+		}
+
+		[Category("JOIN")]
+		[TestCase(Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
+		public async Task DLinqJoin5fAsync()
+		{
+			var q =
+				from o in db.Orders
+				join c in db.Customers on 
+					new { o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null } equals 
+					new { c.CustomerId, HasContractTitle = c.ContactTitle != null }
+				select new { c.ContactName, o.OrderId };
+			
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(0));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
+			}
 		}
 
 		[Category("JOIN")]
@@ -983,7 +1085,13 @@ namespace NHibernate.Test.Linq
 				join e in db.Employees on c.Address.City equals e.Address.City into emps
 				select new {c.ContactName, ords = ords.Count(), emps = emps.Count()};
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(0));
+			}
 		}
 
 		[Category("JOIN")]
@@ -997,32 +1105,55 @@ namespace NHibernate.Test.Linq
 				from o in ords
 				select new {c.ContactName, o.OrderId, z};
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+			}
 		}
 
 		[Category("JOIN")]
-		[Test(Description = "This sample shows a group join with a composite key.")]
-		public async Task DLinqJoin9Async()
+		[TestCase(true, Description = "This sample shows a group join with a composite key.")]
+		[TestCase(false, Description = "This sample shows a group join with a composite key.")]
+		public async Task DLinqJoin9Async(bool useCrossJoin)
 		{
-			var expected =
-				(from o in db.Orders.ToList()
-				 from p in db.Products.ToList()
-				 join d in db.OrderLines.ToList()
-					on new {o.OrderId, p.ProductId} equals new {d.Order.OrderId, d.Product.ProductId}
-					into details
-				 from d in details
-				 select new {o.OrderId, p.ProductId, d.UnitPrice}).ToList();
+			if (useCrossJoin && !Dialect.SupportsCrossJoin)
+			{
+				Assert.Ignore("Dialect does not support cross join.");
+			}
 
-			var actual =
-				await ((from o in db.Orders
-				 from p in db.Products
-				 join d in db.OrderLines
-					on new {o.OrderId, p.ProductId} equals new {d.Order.OrderId, d.Product.ProductId}
-					into details
-				 from d in details
-				 select new {o.OrderId, p.ProductId, d.UnitPrice}).ToListAsync());
+			// The expected collection can be obtained from the below Linq to Objects query.
+			//var expected =
+			//	(from o in db.Orders.ToList()
+			//	 from p in db.Products.ToList()
+			//	 join d in db.OrderLines.ToList()
+			//		on new {o.OrderId, p.ProductId} equals new {d.Order.OrderId, d.Product.ProductId}
+			//		into details
+			//	 from d in details
+			//	 select new {o.OrderId, p.ProductId, d.UnitPrice}).ToList();
 
-			Assert.AreEqual(expected.Count, actual.Count);
+			using (var substitute = SubstituteDialect())
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				ClearQueryPlanCache();
+				substitute.Value.SupportsCrossJoin.Returns(useCrossJoin);
+
+				var actual =
+					await ((from o in db.Orders
+					from p in db.Products
+					join d in db.OrderLines
+						on new { o.OrderId, p.ProductId } equals new { d.Order.OrderId, d.Product.ProductId }
+						into details
+					from d in details
+					select new { o.OrderId, p.ProductId, d.UnitPrice }).ToListAsync());
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(actual.Count, Is.EqualTo(2155));
+				Assert.That(sql, Does.Contain(useCrossJoin ? "cross join" : "inner join"));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(useCrossJoin ? 1 : 2));
+			}
 		}
 
 		[Category("JOIN")]
@@ -1035,6 +1166,25 @@ namespace NHibernate.Test.Linq
 					 select new { CustomerName = x.Key.ContactName, Order = x };
 
 			await (ObjectDumper.WriteAsync(q));
+		}
+
+		[Category("JOIN")]
+		[Test(Description = "This sample shows how to join multiple tables.")]
+		public async Task DLinqJoin10aAsync()
+		{
+			var q =
+				from e in db.Employees
+				join s in db.Employees on e.Superior.EmployeeId equals s.EmployeeId
+				join s2 in db.Employees on s.Superior.EmployeeId equals s2.EmployeeId
+				select new { e.FirstName, SuperiorName = s.FirstName, Superior2Name = s2.FirstName };
+
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
+			}
 		}
 	}
 }

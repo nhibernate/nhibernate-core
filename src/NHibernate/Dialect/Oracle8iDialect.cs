@@ -328,6 +328,9 @@ namespace NHibernate.Dialect
 			return new OracleJoinFragment();
 		}
 
+		/// <inheritdoc />
+		public override bool SupportsCrossJoin => false;
+
 		/// <summary> 
 		/// Map case support to the Oracle DECODE function.  Oracle did not
 		/// add support for CASE until 9i. 

@@ -274,6 +274,27 @@ namespace NHibernate.Test.Hql
 			}
 		}
 
+		[Test]
+		public async Task CrossJoinAndWhereClauseAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var result = await (session.CreateQuery(
+					"SELECT s " +
+					"FROM EntityComplex s cross join EntityComplex q " +
+					"where s.SameTypeChild.Id = q.SameTypeChild.Id"
+				).ListAsync());
+
+				Assert.That(result, Has.Count.EqualTo(1));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+				if (Dialect.SupportsCrossJoin)
+				{
+					Assert.That(sqlLog.GetWholeLog(), Does.Contain("cross join"), "A cross join is expected in the SQL select");
+				}
+			}
+		}
+
 		#region Test Setup
 
 		protected override HbmMapping GetMappings()

@@ -300,6 +300,9 @@ namespace NHibernate.Dialect
 
 		public override bool SupportsResultSetPositionQueryMethodsOnForwardOnlyCursor => false;
 
+		/// <inheritdoc />
+		public override bool SupportsCrossJoin => false; // DB2 v9.1 doesn't support 'cross join' syntax
+
 		public override bool SupportsLobValueChangePropogation => false;
 
 		public override bool SupportsExistsInSelect => false;
