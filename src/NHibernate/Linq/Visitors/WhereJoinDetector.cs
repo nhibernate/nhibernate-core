@@ -77,10 +77,21 @@ namespace NHibernate.Linq.Visitors
 			_joiner = joiner;
 		}
 
+		public Expression Transform(Expression expression)
+		{
+			var result = Visit(expression);
+			PostTransform();
+			return result;
+		}
+
 		public void Transform(IClause whereClause)
 		{
 			whereClause.TransformExpressions(Visit);
+			PostTransform();
+		}
 
+		private void PostTransform()
+		{
 			var values = _values.Pop();
 
 			foreach (var memberExpression in values.MemberExpressions)

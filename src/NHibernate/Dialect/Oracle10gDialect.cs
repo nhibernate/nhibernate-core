@@ -15,5 +15,8 @@ namespace NHibernate.Dialect
 		{
 			return new ANSIJoinFragment();
 		}
+
+		/// <inheritdoc />
+		public override bool SupportsCrossJoin => true;
 	}
 }

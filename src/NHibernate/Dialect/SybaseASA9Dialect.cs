@@ -97,6 +97,9 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		/// <inheritdoc />
+		public override bool SupportsCrossJoin => false;
+
 		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
 			int intSelectInsertPoint = GetAfterSelectInsertPoint(queryString);
