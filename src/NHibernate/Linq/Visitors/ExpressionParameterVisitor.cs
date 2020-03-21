@@ -17,6 +17,7 @@ namespace NHibernate.Linq.Visitors
 	public class ExpressionParameterVisitor : RelinqExpressionVisitor
 	{
 		private readonly Dictionary<ConstantExpression, NamedParameter> _parameters = new Dictionary<ConstantExpression, NamedParameter>();
+		private readonly Dictionary<object, NamedParameter> _valueParameters = new Dictionary<object, NamedParameter>();
 		private readonly ISessionFactoryImplementor _sessionFactory;
 
 		private static readonly MethodInfo QueryableSkipDefinition =
@@ -122,7 +123,19 @@ namespace NHibernate.Linq.Visitors
 				// comes up, it would be nice to combine the HQL parameter type determination code
 				// and the Expression information.
 
-				_parameters.Add(expression, new NamedParameter("p" + (_parameters.Count + 1), value, type));
+				// Create only one parameter for the same value
+				if (value == null || !_valueParameters.TryGetValue(value, out var parameter))
+				{
+					parameter = new NamedParameter("p" + (_parameters.Count + 1), value, type);
+					if (value != null)
+					{
+						_valueParameters.Add(value, parameter);
+					}
+				}
+
+				_parameters.Add(expression, parameter);
+
+				return base.VisitConstant(expression);
 			}
 
 			return base.VisitConstant(expression);
