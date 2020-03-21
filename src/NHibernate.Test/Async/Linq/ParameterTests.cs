@@ -125,7 +125,7 @@ namespace NHibernate.Test.Linq
 				var matches = Regex.Matches(sqlParameters, @"([\d\w]+)[\s]+\=", RegexOptions.IgnoreCase);
 
 				// Due to ODBC drivers not supporting parameter names, we have to do a distinct of parameter names.
-				var distinctParameters = matches.Select(m => m.Groups[1].Value.Trim()).Distinct().ToList();
+				var distinctParameters = matches.OfType<Match>().Select(m => m.Groups[1].Value.Trim()).Distinct().ToList();
 				Assert.That(distinctParameters, Has.Count.EqualTo(parameterNumber));
 			}
 		}
