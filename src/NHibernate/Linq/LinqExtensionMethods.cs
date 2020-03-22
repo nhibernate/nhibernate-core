@@ -2520,7 +2520,7 @@ namespace NHibernate.Linq
 			var paramNew = Expression.Parameter(typeof(LeftJoinIntermediate<TOuter, TInner>));
 			var outerProperty = Expression.Property(paramNew, nameof(LeftJoinIntermediate<TOuter, TInner>.OneOuter));
 			var selectManyResultSelector = Expression.Lambda(
-				new Replacer(outerParameter, outerProperty).Visit(resultSelector.Body),
+				ReplacingExpressionVisitor.Replace(outerParameter, outerProperty, resultSelector.Body),
 				paramNew,
 				resultSelector.Parameters[1]);
 
@@ -2532,28 +2532,6 @@ namespace NHibernate.Linq
 		{
 			public TOuter OneOuter { get; set; }
 			public IEnumerable<TInner> ManyInners { get; set; }
-		}
-
-		private class Replacer : ExpressionVisitor
-		{
-			private readonly ParameterExpression _oldParam;
-			private readonly Expression _replacement;
-
-			public Replacer(ParameterExpression oldParam, Expression replacement)
-			{
-				_oldParam = oldParam;
-				_replacement = replacement;
-			}
-
-			public override Expression Visit(Expression exp)
-			{
-				if (exp == _oldParam)
-				{
-					return _replacement;
-				}
-
-				return base.Visit(exp);
-			}
 		}
 
 		#endregion

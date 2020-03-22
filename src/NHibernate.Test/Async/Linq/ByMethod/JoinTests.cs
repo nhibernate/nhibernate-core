@@ -93,6 +93,27 @@ namespace NHibernate.Test.Linq.ByMethod
 			}
 		}
 
+		[Test]
+		public async Task LeftJoinExtensionMethodWithMultipleKeyPropertiesAsync()
+		{
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				var orders = await (db.Orders
+				               .LeftJoin(
+					               db.Orders,
+					               x => new {x.OrderId, x.Customer.CustomerId},
+					               x => new {x.OrderId, x.Customer.CustomerId},
+					               (order, order1) => new {order, order1})
+				               .Select(x => new {FirstId = x.order.OrderId, SecondId = x.order1.OrderId})
+				               .ToListAsync());
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(orders.Count, Is.EqualTo(830));
+				Assert.IsTrue(orders.All(x => x.FirstId == x.SecondId));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
+		}
+
 		[TestCase(false)]
 		[TestCase(true)]
 		public async Task CrossJoinWithPredicateInWhereStatementAsync(bool useCrossJoin)
