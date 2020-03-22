@@ -8,9 +8,12 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text.RegularExpressions;
+using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 using NHibernate.Linq;
 
@@ -22,7 +25,7 @@ namespace NHibernate.Test.Linq
 	public class ParameterTestsAsync : LinqTestCase
 	{
 		[Test]
-		public async Task UsingSameArrayParameterTwiceAsync()
+		public async Task UsingArrayParameterTwiceAsync()
 		{
 			var ids = new[] {11008, 11019, 11039};
 			await (AssertTotalParametersAsync(
@@ -31,36 +34,36 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public async Task UsingDifferentArrayParametersAsync()
+		public async Task UsingTwoArrayParametersAsync()
 		{
-			var ids = new[] { 11008, 11019, 11039 };
-			var ids2 = new[] { 11008, 11019, 11039 };
+			var ids = new[] {11008, 11019, 11039};
+			var ids2 = new[] {11008, 11019, 11039};
 			await (AssertTotalParametersAsync(
 				db.Orders.Where(o => ids.Contains(o.OrderId) && ids2.Contains(o.OrderId)),
 				ids.Length + ids2.Length));
 		}
 
 		[Test]
-		public async Task UsingSameListParameterTwiceAsync()
+		public async Task UsingListParameterTwiceAsync()
 		{
-			var ids = new List<int> { 11008, 11019, 11039 };
+			var ids = new List<int> {11008, 11019, 11039};
 			await (AssertTotalParametersAsync(
 				db.Orders.Where(o => ids.Contains(o.OrderId) && ids.Contains(o.OrderId)),
 				ids.Count));
 		}
 
 		[Test]
-		public async Task UsingDifferentListParametersAsync()
+		public async Task UsingTwoListParametersAsync()
 		{
-			var ids = new List<int> { 11008, 11019, 11039 };
-			var ids2 = new List<int> { 11008, 11019, 11039 };
+			var ids = new List<int> {11008, 11019, 11039};
+			var ids2 = new List<int> {11008, 11019, 11039};
 			await (AssertTotalParametersAsync(
 				db.Orders.Where(o => ids.Contains(o.OrderId) && ids2.Contains(o.OrderId)),
 				ids.Count + ids2.Count));
 		}
 
 		[Test]
-		public async Task UsingSameEntityParameterTwiceAsync()
+		public async Task UsingEntityParameterTwiceAsync()
 		{
 			var order = await (db.Orders.FirstAsync());
 			await (AssertTotalParametersAsync(
@@ -69,17 +72,17 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public async Task UsingDifferentEntityParametersAsync()
+		public async Task UsingTwoEntityParametersAsync()
 		{
 			var order = await (db.Orders.FirstAsync());
-			var order2 = await (db.Orders.Skip(1).FirstAsync());
+			var order2 = await (db.Orders.FirstAsync());
 			await (AssertTotalParametersAsync(
 				db.Orders.Where(o => o == order && o != order2),
 				2));
 		}
 
 		[Test]
-		public async Task UsingSameValueTypeParameterTwiceAsync()
+		public async Task UsingValueTypeParameterTwiceAsync()
 		{
 			var value = 1;
 			await (AssertTotalParametersAsync(
@@ -88,17 +91,35 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public async Task UsingDifferentValueTypeParametersAsync()
+		public async Task UsingNegateValueTypeParameterTwiceAsync()
 		{
 			var value = 1;
-			var value2 = 2;
+			await (AssertTotalParametersAsync(
+				db.Orders.Where(o => o.OrderId == -value && o.OrderId != -value),
+				1));
+		}
+
+		[Test]
+		public async Task UsingNegateValueTypeParameterAsync()
+		{
+			var value = 1;
+			await (AssertTotalParametersAsync(
+				db.Orders.Where(o => o.OrderId == value && o.OrderId != -value),
+				2));
+		}
+
+		[Test]
+		public async Task UsingTwoValueTypeParametersAsync()
+		{
+			var value = 1;
+			var value2 = 1;
 			await (AssertTotalParametersAsync(
 				db.Orders.Where(o => o.OrderId == value && o.OrderId != value2),
 				2));
 		}
 
 		[Test]
-		public async Task UsingSameStringParameterTwiceAsync()
+		public async Task UsingStringParameterTwiceAsync()
 		{
 			var value = "test";
 			await (AssertTotalParametersAsync(
@@ -107,13 +128,89 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public async Task UsingDifferentStringParametersAsync()
+		public async Task UsingTwoStringParametersAsync()
 		{
 			var value = "test";
-			var value2 = "test2";
+			var value2 = "test";
 			await (AssertTotalParametersAsync(
 				db.Products.Where(o => o.Name == value && o.Name != value2),
 				2));
+		}
+
+		[Test]
+		public async Task UsingObjectPropertyParameterTwiceAsync()
+		{
+			var value = new Product {Name = "test"};
+			await (AssertTotalParametersAsync(
+				db.Products.Where(o => o.Name == value.Name && o.Name != value.Name),
+				1));
+		}
+
+		[Test]
+		public async Task UsingTwoObjectPropertyParametersAsync()
+		{
+			var value = new Product {Name = "test"};
+			var value2 = new Product {Name = "test"};
+			await (AssertTotalParametersAsync(
+				db.Products.Where(o => o.Name == value.Name && o.Name != value2.Name),
+				2));
+		}
+
+		[Test]
+		public async Task UsingObjectNestedPropertyParameterTwiceAsync()
+		{
+			var value = new Employee {Superior = new Employee {Superior = new Employee {FirstName = "test"}}};
+			await (AssertTotalParametersAsync(
+				db.Employees.Where(o => o.FirstName == value.Superior.Superior.FirstName && o.FirstName != value.Superior.Superior.FirstName),
+				1));
+		}
+
+		[Test]
+		public async Task UsingDifferentObjectNestedPropertyParameterAsync()
+		{
+			var value = new Employee {Superior = new Employee {FirstName = "test", Superior = new Employee {FirstName = "test"}}};
+			await (AssertTotalParametersAsync(
+				db.Employees.Where(o => o.FirstName == value.Superior.FirstName && o.FirstName != value.Superior.Superior.FirstName),
+				2));
+		}
+
+		[Test]
+		public async Task UsingMethodObjectPropertyParameterTwiceAsync()
+		{
+			var value = new Product {Name = "test"};
+			await (AssertTotalParametersAsync(
+				db.Products.Where(o => o.Name == value.Name.Trim() && o.Name != value.Name.Trim()),
+				2));
+		}
+
+		[Test]
+		public async Task UsingStaticMethodObjectPropertyParameterTwiceAsync()
+		{
+			var value = new Product {Name = "test"};
+			await (AssertTotalParametersAsync(
+				db.Products.Where(o => o.Name == string.Copy(value.Name) && o.Name != string.Copy(value.Name)),
+				2));
+		}
+
+		[Test]
+		public async Task UsingObjectPropertyParameterWithSecondLevelClosureAsync()
+		{
+			var value = new Product {Name = "test"};
+			Expression<Func<Product, bool>> predicate = o => o.Name == value.Name && o.Name != value.Name;
+			await (AssertTotalParametersAsync(
+				db.Products.Where(predicate),
+				1));
+		}
+
+		[Test]
+		public async Task UsingObjectPropertyParameterWithThirdLevelClosureAsync()
+		{
+			var value = new Product {Name = "test"};
+			Expression<Func<OrderLine, bool>> orderLinePredicate = o => o.Order.ShippedTo == value.Name && o.Order.ShippedTo != value.Name;
+			Expression<Func<Product, bool>> predicate = o => o.Name == value.Name && o.OrderLines.AsQueryable().Any(orderLinePredicate);
+			await (AssertTotalParametersAsync(
+				db.Products.Where(predicate),
+				1));
 		}
 
 		private static async Task AssertTotalParametersAsync<T>(IQueryable<T> query, int parameterNumber, CancellationToken cancellationToken = default(CancellationToken))

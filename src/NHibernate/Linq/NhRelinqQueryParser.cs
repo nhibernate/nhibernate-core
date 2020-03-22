@@ -7,6 +7,7 @@ using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.Linq.ExpressionTransformers;
 using NHibernate.Linq.Visitors;
+using NHibernate.Param;
 using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.EagerFetching.Parsing;
@@ -56,7 +57,7 @@ namespace NHibernate.Linq
 		[Obsolete("Use overload with an additional sessionFactory parameter")]
 		public static Expression PreTransform(Expression expression)
 		{
-			return PreTransform(expression, null);
+			return PreTransform(expression, null).Expression;
 		}
 
 		/// <summary>
@@ -65,12 +66,16 @@ namespace NHibernate.Linq
 		/// </summary>
 		/// <param name="expression">The expression to transform.</param>
 		/// <param name="sessionFactory">The session factory.</param>
-		/// <returns>The transformed expression.</returns>
-		public static Expression PreTransform(Expression expression, ISessionFactoryImplementor sessionFactory)
+		/// <returns><see cref="PreTransformationResult"/> that contains the transformed expression.</returns>
+		public static PreTransformationResult PreTransform(Expression expression, ISessionFactoryImplementor sessionFactory)
 		{
-			var partiallyEvaluatedExpression =
-				NhPartialEvaluatingExpressionVisitor.EvaluateIndependentSubtrees(expression, sessionFactory);
-			return PreProcessor.Process(partiallyEvaluatedExpression);
+			var queryVariables = new Dictionary<ConstantExpression, QueryVariable>();
+			var partiallyEvaluatedExpression = NhPartialEvaluatingExpressionVisitor
+				.EvaluateIndependentSubtrees(expression, new NhEvaluatableExpressionFilter(sessionFactory), queryVariables);
+
+			return new PreTransformationResult(
+				PreProcessor.Process(partiallyEvaluatedExpression),
+				queryVariables);
 		}
 
 		public static QueryModel Parse(Expression expression)

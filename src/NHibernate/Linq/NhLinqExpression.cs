@@ -39,7 +39,8 @@ namespace NHibernate.Linq
 
 		public NhLinqExpression(Expression expression, ISessionFactoryImplementor sessionFactory)
 		{
-			_expression = NhRelinqQueryParser.PreTransform(expression, sessionFactory);
+			var preTransformResult = NhRelinqQueryParser.PreTransform(expression, sessionFactory);
+			_expression = preTransformResult.Expression;
 
 			// We want logging to be as close as possible to the original expression sent from the
 			// application. But if we log before partial evaluation done in PreTransform, the log won't
@@ -47,7 +48,10 @@ namespace NHibernate.Linq
 			// referenced from the main query.
 			LinqLogging.LogExpression("Expression (partially evaluated)", _expression);
 
-			_constantToParameterMap = ExpressionParameterVisitor.Visit(ref _expression, sessionFactory);
+			_expression = ExpressionParameterVisitor.Visit(
+				preTransformResult,
+				sessionFactory,
+				out _constantToParameterMap);
 
 			ParameterValuesByName = _constantToParameterMap.Values.Distinct().ToDictionary(p => p.Name,
 																				p => System.Tuple.Create(p.Value, p.Type));
