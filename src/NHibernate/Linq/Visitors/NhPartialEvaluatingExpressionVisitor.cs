@@ -5,13 +5,14 @@ using NHibernate.Collection;
 using NHibernate.Util;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
-using Remotion.Linq.Parsing.ExpressionVisitors;
 using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
 
 namespace NHibernate.Linq.Visitors
 {
 	internal class NhPartialEvaluatingExpressionVisitor : RelinqExpressionVisitor, IPartialEvaluationExceptionExpressionVisitor
 	{
+		private static readonly NhEvaluatableExpressionFilter ExpressionFilter = new NhEvaluatableExpressionFilter();
+
 		protected override Expression VisitConstant(ConstantExpression expression)
 		{
 			if (expression.Value is Expression value)
@@ -24,8 +25,19 @@ namespace NHibernate.Linq.Visitors
 
 		public static Expression EvaluateIndependentSubtrees(Expression expression)
 		{
-			var evaluatedExpression = PartialEvaluatingExpressionVisitor.EvaluateIndependentSubtrees(expression, new NhEvaluatableExpressionFilter());
-			return new NhPartialEvaluatingExpressionVisitor().Visit(evaluatedExpression);
+			var partialEvaluationInfo = NhEvaluatableTreeFindingExpressionVisitor.Analyze(expression, ExpressionFilter);
+            
+            var firstPassVisitor = new PartialEvaluatingExpressionVisitor(partialEvaluationInfo, ExpressionFilter);
+
+			var evaluatedExpression = firstPassVisitor.Visit(expression);
+
+			var reEvaluatedExpression = new NhPartialEvaluatingExpressionVisitor().Visit(evaluatedExpression);
+
+			return reEvaluatedExpression;
+		}
+
+		private NhPartialEvaluatingExpressionVisitor()
+		{
 		}
 
 		public Expression VisitPartialEvaluationException(PartialEvaluationExceptionExpression partialEvaluationExceptionExpression)
@@ -52,6 +64,10 @@ namespace NHibernate.Linq.Visitors
 		{
 			if (node == null)
 				throw new ArgumentNullException(nameof(node));
+
+			//below could be uncommented, but considering usage it is inconsequential
+            //if (!EvaluatableTreeFindingExpressionVisitor.IsEvaluatableMethodCall(node))
+            //    return false;
 
 			var attributes = node.Method
 				.GetCustomAttributes(typeof(LinqExtensionMethodAttributeBase), false)

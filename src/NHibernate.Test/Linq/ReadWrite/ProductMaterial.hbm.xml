@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.Test.Linq.ReadWrite" assembly="NHibernate.Test" default-lazy="false">
+
+    <class name="Material" >
+        <id name="Id" type="Int32">
+            <generator class="assigned"/>
+        </id>
+        <version name="IntegrityVersion" column="IntegrityVersion" unsaved-value="0" />
+
+        <many-to-one name="MaterialDefinition" class="MaterialDefinition" column="MaterialDefinitionId" not-null="true" not-found="exception" />
+        <many-to-one name="ProductDefinition" class="ProductDefinition" column="ProductDefinitionId" not-null="true" not-found="exception" />
+        
+        <property name="Name" type="string" />
+    </class>
+
+    <class name="MaterialDefinition">
+        <id name="Id" type="Int32">
+            <generator class="assigned"/>
+        </id>
+        <version name="IntegrityVersion" column="IntegrityVersion" unsaved-value="0" />
+
+        <property name="Name" type="string" />
+    </class>
+
+    <class name="ProductDefinition">
+        <id name="Id" type="Int32">
+            <generator class="assigned"/>
+        </id>
+        <version name="IntegrityVersion" column="IntegrityVersion" unsaved-value="0" />
+        <many-to-one name="MaterialDefinition" class="MaterialDefinition" column="MaterialDefinitionId" not-null="true" not-found="exception" cascade="save-update" />
+
+        <property name="Name" type="string" />
+    </class>
+
+</hibernate-mapping>
