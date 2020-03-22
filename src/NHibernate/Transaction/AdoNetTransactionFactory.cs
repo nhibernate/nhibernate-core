@@ -136,7 +136,7 @@ namespace NHibernate.Transaction
 					isolaterLog.Warn(ignore, "Unable to dispose transaction");
 				}
 
-				if (session.Factory.Dialect is SQLiteDialect == false)
+				if (connection != null && session.Factory.Dialect is SQLiteDialect == false)
 					session.Factory.ConnectionProvider.CloseConnection(connection);
 			}
 		}
