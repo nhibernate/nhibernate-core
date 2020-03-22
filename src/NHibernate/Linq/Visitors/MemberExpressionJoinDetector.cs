@@ -32,6 +32,13 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitMember(MemberExpression expression)
 		{
+			// A static member expression such as DateTime.Now has a null Expression.
+			if (expression.Expression == null)
+			{
+				// A static member call is never a join, and it is not an instance member access either.
+				return base.VisitMember(expression);
+			}
+
 			var isIdentifier = _isEntityDecider.IsIdentifier(expression.Expression.Type, expression.Member.Name);
 			if (isIdentifier)
 				_hasIdentifier = true;

@@ -252,7 +252,7 @@ namespace NHibernate.Dialect
 
 			// In Oracle, date includes a time, just with fractional seconds dropped. For actually only having
 			// the date, it must be truncated. Otherwise comparisons may yield unexpected results.
-			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.Date, "trunc(current_date)"));
+			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.LocalDate, "trunc(current_date)"));
 			RegisterFunction("current_time", new NoArgSQLFunction("current_timestamp", NHibernateUtil.Time, false));
 			RegisterFunction("current_timestamp", new CurrentTimeStamp());
 
@@ -310,6 +310,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("bor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2)"));
 			RegisterFunction("bxor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2) * 2"));
 			RegisterFunction("bnot", new SQLFunctionTemplate(null, "(-1 - ?1)"));
+
+			RegisterFunction("new_uuid", new NoArgSQLFunction("sys_guid", NHibernateUtil.Guid));
 		}
 
 		protected internal virtual void RegisterDefaultProperties()
@@ -571,7 +573,7 @@ namespace NHibernate.Dialect
 		[Serializable]
 		private class CurrentTimeStamp : NoArgSQLFunction
 		{
-			public CurrentTimeStamp() : base("current_timestamp", NHibernateUtil.DateTime, true) {}
+			public CurrentTimeStamp() : base("current_timestamp", NHibernateUtil.LocalDateTime, true) {}
 
 			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{

@@ -61,6 +61,8 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.DateTime, "DATETIME");
 			RegisterColumnType(DbType.Time, "TIME");
 			RegisterColumnType(DbType.Boolean, "BOOL");
+			// UNIQUEIDENTIFIER is not a SQLite type, but SQLite does not care much, see
+			// https://www.sqlite.org/datatype3.html
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 		}
 
@@ -74,12 +76,17 @@ namespace NHibernate.Dialect
 			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%m', ?1) as int)"));
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%Y', ?1) as int)"));
 			// Uses local time like MSSQL and PostgreSQL.
-			RegisterFunction("current_timestamp", new SQLFunctionTemplate(NHibernateUtil.DateTime, "datetime(current_timestamp, 'localtime')"));
+			RegisterFunction("current_timestamp", new SQLFunctionTemplate(NHibernateUtil.LocalDateTime, "datetime(current_timestamp, 'localtime')"));
+			RegisterFunction("current_utctimestamp", new SQLFunctionTemplate(NHibernateUtil.UtcDateTime, "datetime(current_timestamp)"));
 			// The System.Data.SQLite driver stores both Date and DateTime as 'YYYY-MM-DD HH:MM:SS'
 			// The SQLite date() function returns YYYY-MM-DD, which unfortunately SQLite does not consider
 			// as equal to 'YYYY-MM-DD 00:00:00'.  Because of this, it is best to return the
 			// 'YYYY-MM-DD 00:00:00' format for the date function.
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "datetime(date(?1))"));
+			// SQLite has current_date, but as current_timestamp, it is in UTC. So converting the timestamp to
+			// localtime then to date then, like the above date function, go back to datetime format for comparisons
+			// sake.
+			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.LocalDate, "datetime(date(current_timestamp, 'localtime'))"));
 
 			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
 			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,1,?2)"));
@@ -106,6 +113,16 @@ namespace NHibernate.Dialect
 				RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "substr(hex(?1), 7, 2) || substr(hex(?1), 5, 2) || substr(hex(?1), 3, 2) || substr(hex(?1), 1, 2) || '-' || substr(hex(?1), 11, 2) || substr(hex(?1), 9, 2) || '-' || substr(hex(?1), 15, 2) || substr(hex(?1), 13, 2) || '-' || substr(hex(?1), 17, 4) || '-' || substr(hex(?1), 21) "));
 			else
 				RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
+
+			// SQLite random function yields a long, ranging form MinValue to MaxValue. (-9223372036854775808 to
+			// 9223372036854775807). HQL random requires a float from 0 inclusive to 1 exclusive, so we divide by
+			// 9223372036854775808 then 2 for having a value between -0.5 included to 0.5 excluded, and finally
+			// add 0.5. The division is written as "/ 4611686018427387904 / 4" for avoiding overflowing long.
+			RegisterFunction(
+				"random",
+				new SQLFunctionTemplate(
+					NHibernateUtil.Double,
+					"(cast(random() as real) / 4611686018427387904 / 4 + 0.5)"));
 		}
 
 		public override void Configure(IDictionary<string, string> settings)

@@ -719,6 +719,57 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>linqtohql.legacy_preevaluation</literal>
+                        </entry>
+                        <entry>
+                            Whether to use the legacy pre-evaluation or not in Linq queries. Defaults to <literal>true</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                            <para>
+                                Legacy pre-evaluation is causing special properties or functions like <literal>DateTime.Now</literal>
+                                or <literal>Guid.NewGuid()</literal> to be always evaluated with the .Net runtime and replaced in the
+                                query by parameter values.
+                            </para>
+                            <para>
+                                The new pre-evaluation allows them to be converted to HQL function calls which will be run on the db
+                                side. This allows for example to retrieve the server time instead of the client time, or to generate
+                                UUIDs for each row instead of an unique one for all rows.
+                            </para>
+                            <para>
+                                The new pre-evaluation will likely be enabled by default in the next major version (6.0).
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>linqtohql.fallback_on_preevaluation</literal>
+                        </entry>
+                        <entry>
+                            When the new pre-evaluation is enabled, should methods which translation is not supported by the current
+                            dialect fallback to pre-evaluation? Defaults to <literal>false</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                            <para>
+                                When this fallback option is enabled while legacy pre-evaluation is disabled, properties or functions
+                                like <literal>DateTime.Now</literal> or <literal>Guid.NewGuid()</literal> used in Linq expressions
+                                will not fail when the dialect does not support them, but will instead be pre-evaluated.
+                            </para>
+                            <para>
+                                When this fallback option is disabled while legacy pre-evaluation is disabled, properties or functions
+                                like <literal>DateTime.Now</literal> or <literal>Guid.NewGuid()</literal> used in Linq expressions
+                                will fail when the dialect does not support them.
+                            </para>
+                            <para>
+                                This option has no effect if the legacy pre-evaluation is enabled.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>sql_exception_converter</literal>
                         </entry>
                         <entry>

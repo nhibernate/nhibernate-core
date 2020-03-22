@@ -54,6 +54,15 @@ namespace NHibernate.Cfg
 			settings.Dialect = dialect;
 
 			settings.LinqToHqlGeneratorsRegistry = LinqToHqlGeneratorsRegistryFactory.CreateGeneratorsRegistry(properties);
+			// 6.0 TODO: default to false instead of true, and adjust documentation in xsd, xml comment on Environment
+			// and Setting properties, and doc\reference.
+			settings.LinqToHqlLegacyPreEvaluation = PropertiesHelper.GetBoolean(
+				Environment.LinqToHqlLegacyPreEvaluation,
+				properties,
+				true);
+			settings.LinqToHqlFallbackOnPreEvaluation = PropertiesHelper.GetBoolean(
+				Environment.LinqToHqlFallbackOnPreEvaluation,
+				properties);
 
 			#region SQL Exception converter
 
