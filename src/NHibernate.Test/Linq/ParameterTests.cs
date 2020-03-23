@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -17,7 +18,8 @@ namespace NHibernate.Test.Linq
 			var ids = new[] {11008, 11019, 11039};
 			AssertTotalParameters(
 				db.Orders.Where(o => ids.Contains(o.OrderId) && ids.Contains(o.OrderId)),
-				ids.Length);
+				ids.Length,
+				1);
 		}
 
 		[Test]
@@ -27,7 +29,8 @@ namespace NHibernate.Test.Linq
 			var ids2 = new[] {11008, 11019, 11039};
 			AssertTotalParameters(
 				db.Orders.Where(o => ids.Contains(o.OrderId) && ids2.Contains(o.OrderId)),
-				ids.Length + ids2.Length);
+				ids.Length + ids2.Length,
+				2);
 		}
 
 		[Test]
@@ -36,7 +39,8 @@ namespace NHibernate.Test.Linq
 			var ids = new List<int> {11008, 11019, 11039};
 			AssertTotalParameters(
 				db.Orders.Where(o => ids.Contains(o.OrderId) && ids.Contains(o.OrderId)),
-				ids.Count);
+				ids.Count,
+				1);
 		}
 
 		[Test]
@@ -46,7 +50,8 @@ namespace NHibernate.Test.Linq
 			var ids2 = new List<int> {11008, 11019, 11039};
 			AssertTotalParameters(
 				db.Orders.Where(o => ids.Contains(o.OrderId) && ids2.Contains(o.OrderId)),
-				ids.Count + ids2.Count);
+				ids.Count + ids2.Count,
+				2);
 		}
 
 		[Test]
@@ -78,6 +83,26 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void ValidateMixingTwoParametersCacheKeys()
+		{
+			var value = 1;
+			var value2 = 1;
+			var expression1 = GetLinqExpression(db.Orders.Where(o => o.OrderId == value && o.OrderId != value));
+			var expression2 = GetLinqExpression(db.Orders.Where(o => o.OrderId == value && o.OrderId != value2));
+			var expression3 = GetLinqExpression(db.Orders.Where(o => o.OrderId == value2 && o.OrderId != value));
+			var expression4 = GetLinqExpression(db.Orders.Where(o => o.OrderId == value2 && o.OrderId != value2));
+
+			Assert.That(expression1.Key, Is.Not.EqualTo(expression2.Key));
+			Assert.That(expression1.Key, Is.Not.EqualTo(expression3.Key));
+			Assert.That(expression1.Key, Is.EqualTo(expression4.Key));
+
+			Assert.That(expression2.Key, Is.EqualTo(expression3.Key));
+			Assert.That(expression2.Key, Is.Not.EqualTo(expression4.Key));
+
+			Assert.That(expression3.Key, Is.Not.EqualTo(expression4.Key));
+		}
+
+		[Test]
 		public void UsingNegateValueTypeParameterTwice()
 		{
 			var value = 1;
@@ -92,6 +117,16 @@ namespace NHibernate.Test.Linq
 			var value = 1;
 			AssertTotalParameters(
 				db.Orders.Where(o => o.OrderId == value && o.OrderId != -value),
+				2);
+		}
+
+		[Test]
+		public void UsingValueTypeParameterInArray()
+		{
+			var id = 11008;
+			AssertTotalParameters(
+				db.Orders.Where(o => new[] {id, 11019}.Contains(o.OrderId) && new[] {id, 11019}.Contains(o.OrderId)),
+				4,
 				2);
 		}
 
@@ -141,6 +176,22 @@ namespace NHibernate.Test.Linq
 			AssertTotalParameters(
 				db.Products.Where(o => o.Name == value.Name && o.Name != value2.Name),
 				2);
+		}
+
+		[Test]
+		public void UsingParameterInWhereSkipTake()
+		{
+			var value3 = 1;
+			var q1 = db.Products.Where(o => o.ProductId < value3).Take(value3).Skip(value3);
+			AssertTotalParameters(q1, 3);
+		}
+
+		[Test]
+		public void UsingParameterInTwoWhere()
+		{
+			var value3 = 1;
+			var q1 = db.Products.Where(o => o.ProductId < value3).Where(o => o.ProductId < value3);
+			AssertTotalParameters(q1, 1);
 		}
 
 		[Test]
@@ -200,18 +251,195 @@ namespace NHibernate.Test.Linq
 				1);
 		}
 
-		private static void AssertTotalParameters<T>(IQueryable<T> query, int parameterNumber)
+		[Test]
+		public void UsingParameterInDMLInsertIntoFourTimes()
+		{
+			var value = "test";
+			AssertTotalParameters(
+				QueryMode.Insert,
+				db.Customers.Where(c => c.CustomerId == value),
+				x => new Customer {CustomerId = value, ContactName = value, CompanyName = value},
+				4);
+		}
+
+		[Test]
+		public void UsingFourParametersInDMLInsertInto()
+		{
+			var value = "test";
+			var value2 = "test";
+			var value3 = "test";
+			var value4 = "test";
+			AssertTotalParameters(
+				QueryMode.Insert,
+				db.Customers.Where(c => c.CustomerId == value3),
+				x => new Customer {CustomerId = value4, ContactName = value2, CompanyName = value},
+				4);
+		}
+
+		[Test]
+		public void DMLInsertIntoShouldHaveSameCacheKeys()
+		{
+			var value = "test";
+			var value2 = "test";
+			var value3 = "test";
+			var value4 = "test";
+			var expression1 = GetLinqExpression(
+				QueryMode.Insert,
+				db.Customers.Where(c => c.CustomerId == value),
+				x => new Customer {CustomerId = value, ContactName = value, CompanyName = value});
+			var expression2 = GetLinqExpression(
+				QueryMode.Insert,
+				db.Customers.Where(c => c.CustomerId == value3),
+				x => new Customer {CustomerId = value4, ContactName = value2, CompanyName = value});
+
+			Assert.That(expression1.Key, Is.EqualTo(expression2.Key));
+		}
+
+		[Test]
+		public void UsingParameterInDMLUpdateThreeTimes()
+		{
+			var value = "test";
+			AssertTotalParameters(
+				QueryMode.Update,
+				db.Customers.Where(c => c.CustomerId == value),
+				x => new Customer {ContactName = value, CompanyName = value},
+				3);
+		}
+
+		[Test]
+		public void UsingThreeParametersInDMLUpdate()
+		{
+			var value = "test";
+			var value2 = "test";
+			var value3 = "test";
+			AssertTotalParameters(
+				QueryMode.Update,
+				db.Customers.Where(c => c.CustomerId == value3),
+				x => new Customer { ContactName = value2, CompanyName = value },
+				3);
+		}
+
+		[TestCase(QueryMode.Update)]
+		[TestCase(QueryMode.UpdateVersioned)]
+		public void DMLUpdateIntoShouldHaveSameCacheKeys(QueryMode queryMode)
+		{
+			var value = "test";
+			var value2 = "test";
+			var value3 = "test";
+			var expression1 = GetLinqExpression(
+				queryMode,
+				db.Customers.Where(c => c.CustomerId == value),
+				x => new Customer {ContactName = value, CompanyName = value});
+			var expression2 = GetLinqExpression(
+				queryMode,
+				db.Customers.Where(c => c.CustomerId == value3),
+				x => new Customer {ContactName = value2, CompanyName = value});
+
+			Assert.That(expression1.Key, Is.EqualTo(expression2.Key));
+		}
+
+		[Test]
+		public void UsingParameterInDMLDeleteTwice()
+		{
+			var value = "test";
+			AssertTotalParameters(
+				QueryMode.Delete,
+				db.Customers.Where(c => c.CustomerId == value && c.CompanyName == value),
+				2);
+		}
+
+		[Test]
+		public void UsingTwoParametersInDMLDelete()
+		{
+			var value = "test";
+			var value2 = "test";
+			AssertTotalParameters(
+				QueryMode.Delete,
+				db.Customers.Where(c => c.CustomerId == value && c.CompanyName == value2),
+				2);
+		}
+
+		[Test]
+		public void DMLDeleteShouldHaveSameCacheKeys()
+		{
+			var value = "test";
+			var value2 = "test";
+			var expression1 = GetLinqExpression(
+				QueryMode.Delete,
+				db.Customers.Where(c => c.CustomerId == value && c.CompanyName == value));
+			var expression2 = GetLinqExpression(
+				QueryMode.Delete,
+				db.Customers.Where(c => c.CustomerId == value && c.CompanyName == value2));
+
+			Assert.That(expression1.Key, Is.EqualTo(expression2.Key));
+		}
+
+		private void AssertTotalParameters<T>(IQueryable<T> query, int parameterNumber, int? linqParameterNumber = null)
 		{
 			using (var sqlSpy = new SqlLogSpy())
 			{
-				query.ToList();
-				var sqlParameters = sqlSpy.GetWholeLog().Split(';')[1];
-				var matches = Regex.Matches(sqlParameters, @"([\d\w]+)[\s]+\=", RegexOptions.IgnoreCase);
+				// In case of arrays linqParameterNumber and parameterNumber will be different
+				Assert.That(
+					GetLinqExpression(query).ParameterValuesByName.Count,
+					Is.EqualTo(linqParameterNumber ?? parameterNumber),
+					"Linq expression has different number of parameters");
 
-				// Due to ODBC drivers not supporting parameter names, we have to do a distinct of parameter names.
-				var distinctParameters = matches.OfType<Match>().Select(m => m.Groups[1].Value.Trim()).Distinct().ToList();
-				Assert.That(distinctParameters, Has.Count.EqualTo(parameterNumber));
+				query.ToList();
+				AssertParameters(sqlSpy, parameterNumber);
 			}
+		}
+
+		private static void AssertTotalParameters<T>(QueryMode queryMode, IQueryable<T> query, int parameterNumber)
+		{
+			AssertTotalParameters(queryMode, query, null, parameterNumber);
+		}
+
+		private static void AssertTotalParameters<T>(QueryMode queryMode, IQueryable<T> query, Expression<Func<T, T>> expression, int parameterNumber)
+		{
+			var provider = query.Provider as INhQueryProvider;
+			Assert.That(provider, Is.Not.Null);
+
+			var dmlExpression = expression != null
+				? DmlExpressionRewriter.PrepareExpression(query.Expression, expression)
+				: query.Expression;
+
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				Assert.That(provider.ExecuteDml<T>(queryMode, dmlExpression), Is.EqualTo(0), "The DML query updated the data"); // Avoid updating the data
+				AssertParameters(sqlSpy, parameterNumber);
+			}
+		}
+
+		private static void AssertParameters(SqlLogSpy sqlSpy, int parameterNumber)
+		{
+			var sqlParameters = sqlSpy.GetWholeLog().Split(';')[1];
+			var matches = Regex.Matches(sqlParameters, @"([\d\w]+)[\s]+\=", RegexOptions.IgnoreCase);
+
+			// Due to ODBC drivers not supporting parameter names, we have to do a distinct of parameter names.
+			var distinctParameters = matches.OfType<Match>().Select(m => m.Groups[1].Value.Trim()).Distinct().ToList();
+			Assert.That(distinctParameters, Has.Count.EqualTo(parameterNumber));
+		}
+
+		private NhLinqExpression GetLinqExpression<T>(QueryMode queryMode, IQueryable<T> query, Expression<Func<T, T>> expression)
+		{
+			return GetLinqExpression(queryMode, DmlExpressionRewriter.PrepareExpression(query.Expression, expression));
+		}
+
+		private NhLinqExpression GetLinqExpression<T>(QueryMode queryMode, IQueryable<T> query)
+		{
+			return GetLinqExpression(queryMode, query.Expression);
+		}
+
+		private NhLinqExpression GetLinqExpression<T>(IQueryable<T> query)
+		{
+			return GetLinqExpression(QueryMode.Select, query.Expression);
+		}
+
+		private NhLinqExpression GetLinqExpression(QueryMode queryMode, Expression expression)
+		{
+			return queryMode == QueryMode.Select
+				? new NhLinqExpression(expression, Sfi)
+				: new NhLinqDmlExpression<Customer>(queryMode, expression, Sfi);
 		}
 	}
 }

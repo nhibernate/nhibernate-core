@@ -32,13 +32,19 @@ namespace NHibernate.Linq
 
 		public ExpressionToHqlTranslationResults ExpressionToHqlTranslationResults { get; private set; }
 
-		protected virtual QueryMode QueryMode => QueryMode.Select;
+		protected virtual QueryMode QueryMode { get; }
 
 		private readonly Expression _expression;
 		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 
 		public NhLinqExpression(Expression expression, ISessionFactoryImplementor sessionFactory)
+			: this(QueryMode.Select, expression, sessionFactory)
 		{
+		}
+
+		internal NhLinqExpression(QueryMode queryMode, Expression expression, ISessionFactoryImplementor sessionFactory)
+		{
+			QueryMode = queryMode;
 			var preTransformResult = NhRelinqQueryParser.PreTransform(expression, sessionFactory);
 			_expression = preTransformResult.Expression;
 
@@ -49,6 +55,7 @@ namespace NHibernate.Linq
 			LinqLogging.LogExpression("Expression (partially evaluated)", _expression);
 
 			_expression = ExpressionParameterVisitor.Visit(
+				QueryMode,
 				preTransformResult,
 				sessionFactory,
 				out _constantToParameterMap);

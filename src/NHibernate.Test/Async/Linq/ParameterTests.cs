@@ -14,8 +14,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using NHibernate.DomainModel.Northwind.Entities;
-using NUnit.Framework;
 using NHibernate.Linq;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
@@ -30,7 +30,8 @@ namespace NHibernate.Test.Linq
 			var ids = new[] {11008, 11019, 11039};
 			await (AssertTotalParametersAsync(
 				db.Orders.Where(o => ids.Contains(o.OrderId) && ids.Contains(o.OrderId)),
-				ids.Length));
+				ids.Length,
+				1));
 		}
 
 		[Test]
@@ -40,7 +41,8 @@ namespace NHibernate.Test.Linq
 			var ids2 = new[] {11008, 11019, 11039};
 			await (AssertTotalParametersAsync(
 				db.Orders.Where(o => ids.Contains(o.OrderId) && ids2.Contains(o.OrderId)),
-				ids.Length + ids2.Length));
+				ids.Length + ids2.Length,
+				2));
 		}
 
 		[Test]
@@ -49,7 +51,8 @@ namespace NHibernate.Test.Linq
 			var ids = new List<int> {11008, 11019, 11039};
 			await (AssertTotalParametersAsync(
 				db.Orders.Where(o => ids.Contains(o.OrderId) && ids.Contains(o.OrderId)),
-				ids.Count));
+				ids.Count,
+				1));
 		}
 
 		[Test]
@@ -59,7 +62,8 @@ namespace NHibernate.Test.Linq
 			var ids2 = new List<int> {11008, 11019, 11039};
 			await (AssertTotalParametersAsync(
 				db.Orders.Where(o => ids.Contains(o.OrderId) && ids2.Contains(o.OrderId)),
-				ids.Count + ids2.Count));
+				ids.Count + ids2.Count,
+				2));
 		}
 
 		[Test]
@@ -109,6 +113,16 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task UsingValueTypeParameterInArrayAsync()
+		{
+			var id = 11008;
+			await (AssertTotalParametersAsync(
+				db.Orders.Where(o => new[] {id, 11019}.Contains(o.OrderId) && new[] {id, 11019}.Contains(o.OrderId)),
+				4,
+				2));
+		}
+
+		[Test]
 		public async Task UsingTwoValueTypeParametersAsync()
 		{
 			var value = 1;
@@ -154,6 +168,22 @@ namespace NHibernate.Test.Linq
 			await (AssertTotalParametersAsync(
 				db.Products.Where(o => o.Name == value.Name && o.Name != value2.Name),
 				2));
+		}
+
+		[Test]
+		public async Task UsingParameterInWhereSkipTakeAsync()
+		{
+			var value3 = 1;
+			var q1 = db.Products.Where(o => o.ProductId < value3).Take(value3).Skip(value3);
+			await (AssertTotalParametersAsync(q1, 3));
+		}
+
+		[Test]
+		public async Task UsingParameterInTwoWhereAsync()
+		{
+			var value3 = 1;
+			var q1 = db.Products.Where(o => o.ProductId < value3).Where(o => o.ProductId < value3);
+			await (AssertTotalParametersAsync(q1, 1));
 		}
 
 		[Test]
@@ -213,18 +243,142 @@ namespace NHibernate.Test.Linq
 				1));
 		}
 
-		private static async Task AssertTotalParametersAsync<T>(IQueryable<T> query, int parameterNumber, CancellationToken cancellationToken = default(CancellationToken))
+		[Test]
+		public async Task UsingParameterInDMLInsertIntoFourTimesAsync()
+		{
+			var value = "test";
+			await (AssertTotalParametersAsync(
+				QueryMode.Insert,
+				db.Customers.Where(c => c.CustomerId == value),
+				x => new Customer {CustomerId = value, ContactName = value, CompanyName = value},
+				4));
+		}
+
+		[Test]
+		public async Task UsingFourParametersInDMLInsertIntoAsync()
+		{
+			var value = "test";
+			var value2 = "test";
+			var value3 = "test";
+			var value4 = "test";
+			await (AssertTotalParametersAsync(
+				QueryMode.Insert,
+				db.Customers.Where(c => c.CustomerId == value3),
+				x => new Customer {CustomerId = value4, ContactName = value2, CompanyName = value},
+				4));
+		}
+
+		[Test]
+		public async Task UsingParameterInDMLUpdateThreeTimesAsync()
+		{
+			var value = "test";
+			await (AssertTotalParametersAsync(
+				QueryMode.Update,
+				db.Customers.Where(c => c.CustomerId == value),
+				x => new Customer {ContactName = value, CompanyName = value},
+				3));
+		}
+
+		[Test]
+		public async Task UsingThreeParametersInDMLUpdateAsync()
+		{
+			var value = "test";
+			var value2 = "test";
+			var value3 = "test";
+			await (AssertTotalParametersAsync(
+				QueryMode.Update,
+				db.Customers.Where(c => c.CustomerId == value3),
+				x => new Customer { ContactName = value2, CompanyName = value },
+				3));
+		}
+
+		[Test]
+		public async Task UsingParameterInDMLDeleteTwiceAsync()
+		{
+			var value = "test";
+			await (AssertTotalParametersAsync(
+				QueryMode.Delete,
+				db.Customers.Where(c => c.CustomerId == value && c.CompanyName == value),
+				2));
+		}
+
+		[Test]
+		public async Task UsingTwoParametersInDMLDeleteAsync()
+		{
+			var value = "test";
+			var value2 = "test";
+			await (AssertTotalParametersAsync(
+				QueryMode.Delete,
+				db.Customers.Where(c => c.CustomerId == value && c.CompanyName == value2),
+				2));
+		}
+
+		private async Task AssertTotalParametersAsync<T>(IQueryable<T> query, int parameterNumber, int? linqParameterNumber = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (var sqlSpy = new SqlLogSpy())
 			{
-				await (query.ToListAsync(cancellationToken));
-				var sqlParameters = sqlSpy.GetWholeLog().Split(';')[1];
-				var matches = Regex.Matches(sqlParameters, @"([\d\w]+)[\s]+\=", RegexOptions.IgnoreCase);
+				// In case of arrays linqParameterNumber and parameterNumber will be different
+				Assert.That(
+					GetLinqExpression(query).ParameterValuesByName.Count,
+					Is.EqualTo(linqParameterNumber ?? parameterNumber),
+					"Linq expression has different number of parameters");
 
-				// Due to ODBC drivers not supporting parameter names, we have to do a distinct of parameter names.
-				var distinctParameters = matches.OfType<Match>().Select(m => m.Groups[1].Value.Trim()).Distinct().ToList();
-				Assert.That(distinctParameters, Has.Count.EqualTo(parameterNumber));
+				await (query.ToListAsync(cancellationToken));
+				AssertParameters(sqlSpy, parameterNumber);
 			}
+		}
+
+		private static Task AssertTotalParametersAsync<T>(QueryMode queryMode, IQueryable<T> query, int parameterNumber, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return AssertTotalParametersAsync(queryMode, query, null, parameterNumber, cancellationToken);
+		}
+
+		private static async Task AssertTotalParametersAsync<T>(QueryMode queryMode, IQueryable<T> query, Expression<Func<T, T>> expression, int parameterNumber, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var provider = query.Provider as INhQueryProvider;
+			Assert.That(provider, Is.Not.Null);
+
+			var dmlExpression = expression != null
+				? DmlExpressionRewriter.PrepareExpression(query.Expression, expression)
+				: query.Expression;
+
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				Assert.That(await (provider.ExecuteDmlAsync<T>(queryMode, dmlExpression, cancellationToken)), Is.EqualTo(0), "The DML query updated the data"); // Avoid updating the data
+				AssertParameters(sqlSpy, parameterNumber);
+			}
+		}
+
+		private static void AssertParameters(SqlLogSpy sqlSpy, int parameterNumber)
+		{
+			var sqlParameters = sqlSpy.GetWholeLog().Split(';')[1];
+			var matches = Regex.Matches(sqlParameters, @"([\d\w]+)[\s]+\=", RegexOptions.IgnoreCase);
+
+			// Due to ODBC drivers not supporting parameter names, we have to do a distinct of parameter names.
+			var distinctParameters = matches.OfType<Match>().Select(m => m.Groups[1].Value.Trim()).Distinct().ToList();
+			Assert.That(distinctParameters, Has.Count.EqualTo(parameterNumber));
+		}
+
+		private NhLinqExpression GetLinqExpression<T>(QueryMode queryMode, IQueryable<T> query, Expression<Func<T, T>> expression)
+		{
+			return GetLinqExpression(queryMode, DmlExpressionRewriter.PrepareExpression(query.Expression, expression));
+		}
+
+		private NhLinqExpression GetLinqExpression<T>(QueryMode queryMode, IQueryable<T> query)
+		{
+			return GetLinqExpression(queryMode, query.Expression);
+		}
+
+		private NhLinqExpression GetLinqExpression<T>(IQueryable<T> query)
+		{
+			return GetLinqExpression(QueryMode.Select, query.Expression);
+		}
+
+		private NhLinqExpression GetLinqExpression(QueryMode queryMode, Expression expression)
+		{
+			return queryMode == QueryMode.Select
+				? new NhLinqExpression(expression, Sfi)
+				: new NhLinqDmlExpression<Customer>(queryMode, expression, Sfi);
 		}
 	}
 }
