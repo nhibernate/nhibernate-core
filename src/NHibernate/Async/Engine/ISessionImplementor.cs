@@ -12,6 +12,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -28,9 +30,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
-	using System.Threading.Tasks;
-	using System.Threading;
-	internal static partial class SessionImplementorExtensions
+	public static partial class SessionImplementorExtensions
 	{
 
 		internal static async Task AutoFlushIfRequiredAsync(this ISessionImplementor implementor, ISet<string> querySpaces, CancellationToken cancellationToken)
@@ -106,20 +106,6 @@ namespace NHibernate.Engine
 		Task<IList> ListAsync(CriteriaImpl criteria, CancellationToken cancellationToken);
 
 		/// <summary>
-		/// Execute an <c>Iterate()</c> query
-		/// </summary>
-		/// <param name="query"></param>
-		/// <param name="parameters"></param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns></returns>
-		Task<IEnumerable> EnumerableAsync(IQueryExpression query, QueryParameters parameters, CancellationToken cancellationToken);
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="Enumerable(IQueryExpression, QueryParameters)" />
-		/// </summary>
-		Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression query, QueryParameters queryParameters, CancellationToken cancellationToken);
-
-		/// <summary>
 		/// Execute a filter
 		/// </summary>
 		Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
@@ -133,16 +119,6 @@ namespace NHibernate.Engine
 		/// Execute a filter (strongly-typed version).
 		/// </summary>
 		Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
-
-		/// <summary>
-		/// Collection from a filter
-		/// </summary>
-		Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="EnumerableFilter(object, string, QueryParameters)" />
-		/// </summary>
-		Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Notify the session that the transaction is about to complete

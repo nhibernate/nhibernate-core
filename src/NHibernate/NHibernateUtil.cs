@@ -537,11 +537,12 @@ namespace NHibernate
 		/// </summary>
 		public static void Close(IEnumerator enumerator)
 		{
-			EnumerableImpl hibernateEnumerator = enumerator as EnumerableImpl;
+			var hibernateEnumerator = enumerator as IDisposable;
 			if (hibernateEnumerator == null)
 			{
 				throw new ArgumentException("Not a NHibernate enumerator", nameof(enumerator));
 			}
+
 			hibernateEnumerator.Dispose();
 		}
 
@@ -549,6 +550,8 @@ namespace NHibernate
 		/// Close an <see cref="IEnumerable" /> returned by NHibernate immediately,
 		/// instead of waiting until the session is closed or disconnected.
 		/// </summary>
+		// Since v5.3
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		public static void Close(IEnumerable enumerable)
 		{
 			EnumerableImpl hibernateEnumerable = enumerable as EnumerableImpl;

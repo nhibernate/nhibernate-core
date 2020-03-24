@@ -81,11 +81,17 @@ namespace NHibernate.Impl
 			}
 		}
 
+		/// <inheritdoc />
+		// Since v5.3
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
 		public override Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			throw new NotSupportedException("SQL queries do not currently support enumeration");
 		}
 
+		/// <inheritdoc />
+		// Since v5.3
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
 		public override Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			throw new NotSupportedException("SQL queries do not currently support enumeration");

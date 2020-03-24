@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
@@ -372,30 +373,9 @@ namespace NHibernate.Test.ReadOnly
 		[Test]
 		public void QueryReadOnlyIterate()
 		{
-			long lastDataPointId = 0;
 			int nExpectedChanges = 0;
-			
-			using (ISession s = OpenSession())
-			{
-				s.CacheMode = CacheMode.Ignore;
-				
-				using (ITransaction t = s.BeginTransaction())
-				{
-					DataPoint dp = null;
-					
-					for (int i = 0; i < 100; i++)
-					{
-						dp = new DataPoint();
-						dp.X = 0.1M * i;
-						dp.Y = (decimal)System.Math.Cos((double)dp.X);
-						s.Save(dp);
-					}
-					t.Commit();
-					
-					lastDataPointId = dp.Id;
-				}
-			}
-			
+			QueryIterateCreate(out var lastDataPointId);
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
@@ -405,113 +385,123 @@ namespace NHibernate.Test.ReadOnly
 					s.DefaultReadOnly = false;
 
 					IQuery query = s.CreateQuery("from DataPoint dp order by dp.X asc");
-					
-					Assert.That(query.IsReadOnly, Is.False);
-					s.DefaultReadOnly = true;
-					Assert.That(query.IsReadOnly, Is.True);
-					s.DefaultReadOnly = false;
-					Assert.That(query.IsReadOnly, Is.False);
-					query.SetReadOnly(true);
-					Assert.That(query.IsReadOnly, Is.True);
-					s.DefaultReadOnly = true;
-					Assert.That(query.IsReadOnly, Is.True);
-					s.DefaultReadOnly = false;
-					Assert.That(query.IsReadOnly, Is.True);
-					query.SetReadOnly(false);
-					Assert.That(query.IsReadOnly, Is.False);
-					s.DefaultReadOnly = true;
-					Assert.That(query.IsReadOnly, Is.False);
-					query.SetReadOnly(true);
-					Assert.That(query.IsReadOnly, Is.True);
-					s.DefaultReadOnly = false;
-					Assert.That(s.DefaultReadOnly, Is.False);
-					IEnumerator<DataPoint> it = query.Enumerable<DataPoint>().GetEnumerator();
+					QueryReadOnlyIterateAssertReadOnly(query, s);
+
+					var it = query.Enumerable<DataPoint>().GetEnumerator();
 					Assert.That(query.IsReadOnly, Is.True);
 					DataPoint dpLast = s.Get<DataPoint>(lastDataPointId);
 					Assert.That(s.IsReadOnly(dpLast), Is.False);
 					query.SetReadOnly(false);
 					Assert.That(query.IsReadOnly, Is.False);
 					Assert.That(s.DefaultReadOnly, Is.False);
-		
+
 					int i = 0;
-					
 					while (it.MoveNext())
 					{
-						Assert.That(s.DefaultReadOnly, Is.False);
-						DataPoint dp = it.Current;
-						Assert.That(s.DefaultReadOnly, Is.False);
-						
-						if (dp.Id == dpLast.Id)
-						{
-							//dpLast existed in the session before executing the read-only query
-							Assert.That(s.IsReadOnly(dp), Is.False);
-						}
-						else
-						{
-							Assert.That(s.IsReadOnly(dp), Is.True);
-						}
-						
-						if (++i == 50)
-						{
-							s.SetReadOnly(dp, false);
-							nExpectedChanges = (dp == dpLast ? 1 : 2 );
-						}
-						
-						dp.Description = "done!";
+						QueryReadOnlyIterateAssertRow(s, it.Current, dpLast, ref i, ref nExpectedChanges);
 					}
 					
 					Assert.That(s.DefaultReadOnly, Is.False);
 							
 					t.Commit();
 				}
-				
-				s.Clear();
-			
+
+				QueryIterateClear(s, nExpectedChanges);
+			}
+		}
+
+		[Test]
+		public async Task QueryReadOnlyAsyncIterate()
+		{
+			int nExpectedChanges = 0;
+			QueryIterateCreate(out var lastDataPointId);
+
+			using (ISession s = OpenSession())
+			{
+				s.CacheMode = CacheMode.Ignore;
+
 				using (ITransaction t = s.BeginTransaction())
 				{
-					try
+					s.DefaultReadOnly = false;
+
+					IQuery query = s.CreateQuery("from DataPoint dp order by dp.X asc");
+					QueryReadOnlyIterateAssertReadOnly(query, s);
+
+					var it = query.AsyncEnumerable<DataPoint>().GetAsyncEnumerator();
+					Assert.That(query.IsReadOnly, Is.True);
+					DataPoint dpLast = s.Get<DataPoint>(lastDataPointId);
+					Assert.That(s.IsReadOnly(dpLast), Is.False);
+					query.SetReadOnly(false);
+					Assert.That(query.IsReadOnly, Is.False);
+					Assert.That(s.DefaultReadOnly, Is.False);
+
+					int i = 0;
+					while (await it.MoveNextAsync())
 					{
-						IList single = s.CreateQuery("from DataPoint where Description = 'done!'").List();
-						Assert.That(single.Count, Is.EqualTo(nExpectedChanges));
+						QueryReadOnlyIterateAssertRow(s, it.Current, dpLast, ref i, ref nExpectedChanges);
 					}
-					finally
-					{
-						// cleanup
-						s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-					}
-					
+
+					Assert.That(s.DefaultReadOnly, Is.False);
+
 					t.Commit();
 				}
+
+				QueryIterateClear(s, nExpectedChanges);
 			}
+		}
+
+		private void QueryReadOnlyIterateAssertReadOnly(IQuery query, ISession s)
+		{
+			Assert.That(query.IsReadOnly, Is.False);
+			s.DefaultReadOnly = true;
+			Assert.That(query.IsReadOnly, Is.True);
+			s.DefaultReadOnly = false;
+			Assert.That(query.IsReadOnly, Is.False);
+			query.SetReadOnly(true);
+			Assert.That(query.IsReadOnly, Is.True);
+			s.DefaultReadOnly = true;
+			Assert.That(query.IsReadOnly, Is.True);
+			s.DefaultReadOnly = false;
+			Assert.That(query.IsReadOnly, Is.True);
+			query.SetReadOnly(false);
+			Assert.That(query.IsReadOnly, Is.False);
+			s.DefaultReadOnly = true;
+			Assert.That(query.IsReadOnly, Is.False);
+			query.SetReadOnly(true);
+			Assert.That(query.IsReadOnly, Is.True);
+			s.DefaultReadOnly = false;
+			Assert.That(s.DefaultReadOnly, Is.False);
+		}
+
+		private void QueryReadOnlyIterateAssertRow(ISession s, DataPoint dp, DataPoint dpLast, ref int i, ref int nExpectedChanges)
+		{
+			Assert.That(s.DefaultReadOnly, Is.False);
+
+			if (dp.Id == dpLast.Id)
+			{
+				//dpLast existed in the session before executing the read-only query
+				Assert.That(s.IsReadOnly(dp), Is.False);
+			}
+			else
+			{
+				Assert.That(s.IsReadOnly(dp), Is.True);
+			}
+
+			if (++i == 50)
+			{
+				s.SetReadOnly(dp, false);
+				nExpectedChanges = (dp == dpLast ? 1 : 2);
+			}
+
+			dp.Description = "done!";
 		}
 		
 		[Test]
 		public void QueryModifiableIterate()
 		{
-			long lastDataPointId = 0;
 			int nExpectedChanges = 0;
-			
-			using (ISession s = OpenSession())
-			{
-				s.CacheMode = CacheMode.Ignore;
-				
-				using (ITransaction t = s.BeginTransaction())
-				{
-					DataPoint dp = null;
-					
-					for (int i = 0; i < 100; i++)
-					{
-						dp = new DataPoint();
-						dp.X = 0.1M * i;
-						dp.Y = (decimal)System.Math.Cos((double)dp.X);
-						s.Save(dp);
-					}
-					t.Commit();
-					
-					lastDataPointId = dp.Id;
-				}
-			}
-			
+			QueryIterateCreate(out var lastDataPointId);
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
@@ -521,28 +511,8 @@ namespace NHibernate.Test.ReadOnly
 					s.DefaultReadOnly = true;
 
 					IQuery query = s.CreateQuery("from DataPoint dp order by dp.X asc");
-					
-					Assert.That(query.IsReadOnly, Is.True);
-					s.DefaultReadOnly = false;
-					Assert.That(query.IsReadOnly, Is.False);
-					s.DefaultReadOnly = true;
-					Assert.That(query.IsReadOnly, Is.True);
-					query.SetReadOnly(false);
-					Assert.That(query.IsReadOnly, Is.False);
-					s.DefaultReadOnly = false;
-					Assert.That(query.IsReadOnly, Is.False);
-					s.DefaultReadOnly = true;
-					Assert.That(query.IsReadOnly, Is.False);
-					query.SetReadOnly(true);
-					Assert.That(query.IsReadOnly, Is.True);
-					s.DefaultReadOnly = false;
-					Assert.That(query.IsReadOnly, Is.True);
-					
-					query.SetReadOnly(false);
-					Assert.That(query.IsReadOnly, Is.False);
-					s.DefaultReadOnly = true;
-					Assert.That(s.DefaultReadOnly, Is.True);
-					
+					QueryModifiableIterateAssertReadOnly(query, s);
+
 					IEnumerator<DataPoint> it = query.Enumerable<DataPoint>().GetEnumerator();
 					Assert.That(query.IsReadOnly, Is.False);
 					DataPoint dpLast = s.Get<DataPoint>(lastDataPointId);
@@ -552,57 +522,150 @@ namespace NHibernate.Test.ReadOnly
 					Assert.That(s.DefaultReadOnly, Is.True);
 		
 					int i = 0;
-					
 					while (it.MoveNext())
 					{
-						Assert.That(s.DefaultReadOnly, Is.True);
-						DataPoint dp = it.Current;
-						Assert.That(s.DefaultReadOnly, Is.True);
-						
-						if (dp.Id == dpLast.Id)
-						{
-							//dpLast existed in the session before executing the read-only query
-							Assert.That(s.IsReadOnly(dp), Is.True);
-						}
-						else
-						{
-							Assert.That(s.IsReadOnly(dp), Is.False);
-						}
-						
-						if (++i == 50)
-						{
-							s.SetReadOnly(dp, true);
-							nExpectedChanges = (dp == dpLast ? 99 : 98);
-						}
-						
-						dp.Description = "done!";
+						QueryModifiableIterateAssertRow(s, it.Current, dpLast, ref i, ref nExpectedChanges);
 					}
 					
 					Assert.That(s.DefaultReadOnly, Is.True);
-							
 					t.Commit();
 				}
-				
-				s.Clear();
-			
+
+				QueryIterateClear(s, nExpectedChanges);
+			}
+		}
+
+		[Test]
+		public async Task QueryModifiableAsyncIterate()
+		{
+			int nExpectedChanges = 0;
+			QueryIterateCreate(out var lastDataPointId);
+
+			using (ISession s = OpenSession())
+			{
+				s.CacheMode = CacheMode.Ignore;
+
 				using (ITransaction t = s.BeginTransaction())
 				{
-					try
+					s.DefaultReadOnly = true;
+
+					IQuery query = s.CreateQuery("from DataPoint dp order by dp.X asc");
+					QueryModifiableIterateAssertReadOnly(query, s);
+
+					var it = query.AsyncEnumerable<DataPoint>().GetAsyncEnumerator();
+					Assert.That(query.IsReadOnly, Is.False);
+					DataPoint dpLast = s.Get<DataPoint>(lastDataPointId);
+					Assert.That(s.IsReadOnly(dpLast), Is.True);
+					query.SetReadOnly(true);
+					Assert.That(query.IsReadOnly, Is.True);
+					Assert.That(s.DefaultReadOnly, Is.True);
+
+					int i = 0;
+					while (await it.MoveNextAsync())
 					{
-						IList list = s.CreateQuery("from DataPoint where Description = 'done!'").List();
-						Assert.That(list.Count, Is.EqualTo(nExpectedChanges));
+						QueryModifiableIterateAssertRow(s, it.Current, dpLast, ref i, ref nExpectedChanges);
 					}
-					finally
-					{
-						// cleanup
-						s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-					}
-					
+
+					Assert.That(s.DefaultReadOnly, Is.True);
 					t.Commit();
+				}
+
+				QueryIterateClear(s, nExpectedChanges);
+			}
+		}
+
+		private void QueryModifiableIterateAssertReadOnly(IQuery query, ISession s)
+		{
+			Assert.That(query.IsReadOnly, Is.True);
+			s.DefaultReadOnly = false;
+			Assert.That(query.IsReadOnly, Is.False);
+			s.DefaultReadOnly = true;
+			Assert.That(query.IsReadOnly, Is.True);
+			query.SetReadOnly(false);
+			Assert.That(query.IsReadOnly, Is.False);
+			s.DefaultReadOnly = false;
+			Assert.That(query.IsReadOnly, Is.False);
+			s.DefaultReadOnly = true;
+			Assert.That(query.IsReadOnly, Is.False);
+			query.SetReadOnly(true);
+			Assert.That(query.IsReadOnly, Is.True);
+			s.DefaultReadOnly = false;
+			Assert.That(query.IsReadOnly, Is.True);
+
+			query.SetReadOnly(false);
+			Assert.That(query.IsReadOnly, Is.False);
+			s.DefaultReadOnly = true;
+			Assert.That(s.DefaultReadOnly, Is.True);
+		}
+
+		private void QueryModifiableIterateAssertRow(ISession s, DataPoint dp, DataPoint dpLast, ref int i, ref int nExpectedChanges)
+		{
+			Assert.That(s.DefaultReadOnly, Is.True);
+			Assert.That(s.DefaultReadOnly, Is.True);
+
+			if (dp.Id == dpLast.Id)
+			{
+				//dpLast existed in the session before executing the read-only query
+				Assert.That(s.IsReadOnly(dp), Is.True);
+			}
+			else
+			{
+				Assert.That(s.IsReadOnly(dp), Is.False);
+			}
+
+			if (++i == 50)
+			{
+				s.SetReadOnly(dp, true);
+				nExpectedChanges = (dp == dpLast ? 99 : 98);
+			}
+
+			dp.Description = "done!";
+		}
+
+		private void QueryIterateCreate(out long lastDataPointId)
+		{
+			using (ISession s = OpenSession())
+			{
+				s.CacheMode = CacheMode.Ignore;
+
+				using (ITransaction t = s.BeginTransaction())
+				{
+					DataPoint dp = null;
+
+					for (int i = 0; i < 100; i++)
+					{
+						dp = new DataPoint();
+						dp.X = 0.1M * i;
+						dp.Y = (decimal) System.Math.Cos((double) dp.X);
+						s.Save(dp);
+					}
+					t.Commit();
+
+					lastDataPointId = dp.Id;
 				}
 			}
 		}
-		
+
+		private void QueryIterateClear(ISession s, int nExpectedChanges)
+		{
+			s.Clear();
+			using (ITransaction t = s.BeginTransaction())
+			{
+				try
+				{
+					IList single = s.CreateQuery("from DataPoint where Description = 'done!'").List();
+					Assert.That(single.Count, Is.EqualTo(nExpectedChanges));
+				}
+				finally
+				{
+					// cleanup
+					s.CreateQuery("delete from DataPoint").ExecuteUpdate();
+				}
+
+				t.Commit();
+			}
+		}
+
 		[Test]
 		public void ReadOnlyRefresh()
 		{

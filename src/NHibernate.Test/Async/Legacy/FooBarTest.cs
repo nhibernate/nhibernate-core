@@ -28,6 +28,7 @@ using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 using NUnit.Framework;
+using System.Linq;
 
 namespace NHibernate.Test.Legacy
 {
@@ -487,7 +488,7 @@ namespace NHibernate.Test.Legacy
 
 			if (Dialect is MsSql2000Dialect)
 			{
-				await (s.CreateQuery("select baz from Baz as baz join baz.FooArray foo group by baz order by sum(foo.Float)").EnumerableAsync());
+				s.CreateQuery("select baz from Baz as baz join baz.FooArray foo group by baz order by sum(foo.Float)").Enumerable();
 			}
 
 			await (s.CreateQuery("from Foo as foo where foo.Component.Glarch.Name is not null").ListAsync());
@@ -511,9 +512,9 @@ namespace NHibernate.Test.Legacy
 					.ListAsync());
 			Assert.AreEqual(0, list.Count, "empty query");
 			IEnumerable enumerable =
-				await (s.CreateQuery(
+				s.CreateQuery(
 					"from foo in class NHibernate.DomainModel.Foo where foo.String='osama bin laden' order by foo.String asc, foo.Component.Count desc")
-					.EnumerableAsync());
+					.Enumerable();
 			Assert.IsTrue(IsEmpty(enumerable), "empty enumerator");
 
 			list = await (s.CreateQuery("select foo.TheFoo from foo in class NHibernate.DomainModel.Foo").ListAsync());
@@ -557,9 +558,9 @@ namespace NHibernate.Test.Legacy
 				await (s.CreateQuery("from foo in class Foo where foo = some(select x from x in class Foo where x.Long > foo.TheFoo.Long)")
 					.ListAsync());
 
-				await (s.CreateQuery(
+				s.CreateQuery(
 					"select foo.String, foo.Date, foo.TheFoo.String, foo.id from foo in class Foo, baz in class Baz where foo in elements(baz.FooArray) and foo.String like 'foo'")
-					.EnumerableAsync());
+					.Enumerable();
 			}
 
 			list = await (s.CreateQuery("from foo in class Foo where foo.Component.Count is null order by foo.Component.Count").ListAsync());
@@ -604,12 +605,12 @@ namespace NHibernate.Test.Legacy
 			await (s.CreateQuery("from foo in class Foo where foo.TheFoo = ?").SetEntity(0, foo.TheFoo).ListAsync());
 
 			Assert.IsTrue(
-				IsEmpty(await (s.CreateQuery("from bar in class Bar where bar.String='a string' or bar.String='a string'").EnumerableAsync())
+				IsEmpty(s.CreateQuery("from bar in class Bar where bar.String='a string' or bar.String='a string'").Enumerable()
 					));
 
-			enumerable = await (s.CreateQuery(
+			enumerable = s.CreateQuery(
 						"select foo.Component.Name, elements(foo.Component.ImportantDates) from foo in class Foo where foo.TheFoo.id=?").
-						SetString(0, foo.TheFoo.Key).EnumerableAsync());
+						SetString(0, foo.TheFoo.Key).Enumerable();
 
 			int i = 0;
 			foreach (object[] row in enumerable)
@@ -620,8 +621,8 @@ namespace NHibernate.Test.Legacy
 			}
 			Assert.AreEqual(3, i); //WAS: 4
 
-			enumerable = await (s.CreateQuery("select max(elements(foo.Component.ImportantDates)) from foo in class Foo group by foo.id").
-						EnumerableAsync());
+			enumerable = s.CreateQuery("select max(elements(foo.Component.ImportantDates)) from foo in class Foo group by foo.id").
+						Enumerable();
 			
 			IEnumerator enumerator = enumerable.GetEnumerator();
 
@@ -668,24 +669,24 @@ namespace NHibernate.Test.Legacy
 
 			if (TestDialect.SupportsCountDistinct)
 			{
-				enumerable = await (s.CreateQuery("select count(distinct foo.TheFoo) from foo in class Foo").EnumerableAsync());
+				enumerable = s.CreateQuery("select count(distinct foo.TheFoo) from foo in class Foo").Enumerable();
 				Assert.IsTrue(ContainsSingleObject(enumerable, (long) 2), "count"); // changed to Int64 (HQLFunction H3.2)
 			}
 
-			enumerable = await (s.CreateQuery("select count(foo.TheFoo.Boolean) from foo in class Foo").EnumerableAsync());
+			enumerable = s.CreateQuery("select count(foo.TheFoo.Boolean) from foo in class Foo").Enumerable();
 			Assert.IsTrue(ContainsSingleObject(enumerable, (long) 2), "count"); // changed to Int64 (HQLFunction H3.2)
 
-			enumerable = await (s.CreateQuery("select count(*), foo.Int from foo in class Foo group by foo.Int").EnumerableAsync());
+			enumerable = s.CreateQuery("select count(*), foo.Int from foo in class Foo group by foo.Int").Enumerable();
 			enumerator = enumerable.GetEnumerator();
 			Assert.IsTrue(enumerator.MoveNext());
 			Assert.AreEqual(3L, (long) ((object[]) enumerator.Current)[0]);
 			Assert.IsFalse(enumerator.MoveNext());
 
-			enumerable = await (s.CreateQuery("select sum(foo.TheFoo.Int) from foo in class Foo").EnumerableAsync());
+			enumerable = s.CreateQuery("select sum(foo.TheFoo.Int) from foo in class Foo").Enumerable();
 			Assert.IsTrue(ContainsSingleObject(enumerable, (long) 4), "sum"); // changed to Int64 (HQLFunction H3.2)
 
-			enumerable = await (s.CreateQuery("select count(foo) from foo in class Foo where foo.id=?")
-				.SetString(0, foo.Key).EnumerableAsync());
+			enumerable = s.CreateQuery("select count(foo) from foo in class Foo where foo.id=?")
+				.SetString(0, foo.Key).Enumerable();
 			Assert.IsTrue(ContainsSingleObject(enumerable, (long) 1), "id query count");
 
 			list = await (s.CreateQuery("from foo in class Foo where foo.Boolean = ?").SetBoolean(0, true).ListAsync());
@@ -702,7 +703,7 @@ namespace NHibernate.Test.Legacy
 				.ListAsync());
 			Assert.IsTrue(list.Count == 3);
 
-			enumerable = await (s.CreateQuery("select new Foo(fo.X) from Foo fo").EnumerableAsync());
+			enumerable = s.CreateQuery("select new Foo(fo.X) from Foo fo").Enumerable();
 			enumerator = enumerable.GetEnumerator();
 			Assert.IsTrue(enumerator.MoveNext(), "projection iterate (results)");
 			Assert.IsTrue(typeof(Foo).IsAssignableFrom(enumerator.Current.GetType()),
@@ -753,13 +754,13 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(7, (await (s.CreateQuery("from n in class INamed").ListAsync())).Count);
 			Assert.IsTrue((await (s.CreateQuery("from n in class INamed where n.Name is not null").ListAsync())).Count == 4);
 
-			foreach (INamed named in await (s.CreateQuery("from n in class INamed").EnumerableAsync()))
+			foreach (INamed named in s.CreateQuery("from n in class INamed").Enumerable())
 			{
 				Assert.IsNotNull(named);
 			}
 
 			await (s.SaveAsync(new Holder("bar")));
-			enumerable = await (s.CreateQuery("from n0 in class INamed, n1 in class INamed where n0.Name = n1.Name").EnumerableAsync());
+			enumerable = s.CreateQuery("from n0 in class INamed, n1 in class INamed where n0.Name = n1.Name").Enumerable();
 			int cnt = 0;
 			foreach (object[] row in enumerable)
 			{
@@ -781,19 +782,19 @@ namespace NHibernate.Test.Legacy
 
 			int c = 0;
 
-			foreach (object obj in await (s.CreateQuery("from o in class System.Object").EnumerableAsync()))
+			foreach (object obj in s.CreateQuery("from o in class System.Object").Enumerable())
 			{
 				c++;
 			}
 			Assert.IsTrue(c == 16);
 
-			await (s.CreateQuery("select baz.Code, min(baz.Count) from baz in class Baz group by baz.Code").EnumerableAsync());
+			s.CreateQuery("select baz.Code, min(baz.Count) from baz in class Baz group by baz.Code").Enumerable();
 
 			Assert.IsTrue(
 				IsEmpty(
-					await (s.CreateQuery(
+					s.CreateQuery(
 						"selecT baz from baz in class Baz where baz.StringDateMap['foo'] is not null or baz.StringDateMap['bar'] = ?")
-						.SetDateTime(0, DateTime.Today).EnumerableAsync())));
+						.SetDateTime(0, DateTime.Today).Enumerable()));
 
 			list = await (s.CreateQuery("select baz from baz in class Baz where baz.StringDateMap['now'] is not null").ListAsync());
 			Assert.AreEqual(1, list.Count);
@@ -925,7 +926,7 @@ namespace NHibernate.Test.Legacy
 				await (s.DeleteAsync(baz));
 				await (s.FlushAsync());
 
-				Assert.IsFalse((await (s.CreateQuery("from Fee").EnumerableAsync())).GetEnumerator().MoveNext());
+				Assert.IsFalse(s.CreateQuery("from Fee").Enumerable().GetEnumerator().MoveNext());
 			}
 
 			using (ISession s = OpenSession())
@@ -951,7 +952,7 @@ namespace NHibernate.Test.Legacy
 			{
 				await (s.DeleteAsync(baz));
 				await (s.FlushAsync());
-				Assert.IsTrue(IsEmpty(await (s.CreateQuery("from Fee").EnumerableAsync())));
+				Assert.IsTrue(IsEmpty(s.CreateQuery("from Fee").Enumerable()));
 			}
 		}
 
@@ -1222,10 +1223,7 @@ namespace NHibernate.Test.Legacy
 				await (s.DeleteAsync(baz2));
 				await (s.DeleteAsync(baz3));
 
-				IEnumerable en = new JoinedEnumerable(
-					new IEnumerable[] {baz.FooSet, baz2.FooSet});
-
-				foreach (object obj in en)
+				foreach (object obj in baz.FooSet.Concat(baz2.FooSet))
 				{
 					await (s.DeleteAsync(obj));
 				}
@@ -1811,10 +1809,10 @@ namespace NHibernate.Test.Legacy
 				await (s.SaveAsync(new Foo()));
 			}
 
-			IEnumerable enumerable = await (s.CreateQuery("from Foo foo")
+			IEnumerable enumerable = s.CreateQuery("from Foo foo")
 				.SetMaxResults(4)
 				.SetFirstResult(2)
-				.EnumerableAsync());
+				.Enumerable();
 
 			int count = 0;
 			IEnumerator e = enumerable.GetEnumerator();
@@ -2356,7 +2354,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(2, baz.Fees.Count);
 			await (s.DeleteAsync(baz));
 
-			Assert.IsTrue(IsEmpty(await (s.CreateQuery("from fee in class Fee").EnumerableAsync())));
+			Assert.IsTrue(IsEmpty(s.CreateQuery("from fee in class Fee").Enumerable()));
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -2537,11 +2535,11 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 
 			baz.StringArray[0] = "a new value";
-			IEnumerator enumer = (await (s.CreateQuery("from baz in class Baz").EnumerableAsync())).GetEnumerator(); // no flush
+			IEnumerator enumer = s.CreateQuery("from baz in class Baz").Enumerable().GetEnumerator(); // no flush
 			Assert.IsTrue(enumer.MoveNext());
 			Assert.AreSame(baz, enumer.Current);
 
-			enumer = (await (s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").EnumerableAsync())).GetEnumerator();
+			enumer = s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").Enumerable().GetEnumerator();
 
 			bool found = false;
 			while (enumer.MoveNext())
@@ -2554,17 +2552,17 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(found);
 
 			baz.StringArray = null;
-			await (s.CreateQuery("from baz in class Baz").EnumerableAsync()); // no flush
+			s.CreateQuery("from baz in class Baz").Enumerable(); // no flush
 
-			enumer = (await (s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").EnumerableAsync())).GetEnumerator();
+			enumer = s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").Enumerable().GetEnumerator();
 
 			Assert.IsFalse(enumer.MoveNext());
 
 			baz.StringList.Add("1E1");
-			enumer = (await (s.CreateQuery("from foo in class Foo").EnumerableAsync())).GetEnumerator(); // no flush
+			enumer = s.CreateQuery("from foo in class Foo").Enumerable().GetEnumerator(); // no flush
 			Assert.IsFalse(enumer.MoveNext());
 
-			enumer = (await (s.CreateQuery("select elements(baz.StringList) from baz in class Baz").EnumerableAsync())).GetEnumerator();
+			enumer = s.CreateQuery("select elements(baz.StringList) from baz in class Baz").Enumerable().GetEnumerator();
 
 			found = false;
 			while (enumer.MoveNext())
@@ -2577,9 +2575,9 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(found);
 
 			baz.StringList.Remove("1E1");
-			await (s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").EnumerableAsync()); //no flush
+			s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").Enumerable(); //no flush
 
-			enumer = (await (s.CreateQuery("select elements(baz.StringList) from baz in class Baz").EnumerableAsync())).GetEnumerator();
+			enumer = s.CreateQuery("select elements(baz.StringList) from baz in class Baz").Enumerable().GetEnumerator();
 
 			found = false;
 			while (enumer.MoveNext())
@@ -2595,11 +2593,11 @@ namespace NHibernate.Test.Legacy
 			newList.Add("value");
 			baz.StringList = newList;
 			
-			(await (s.CreateQuery("from foo in class Foo").EnumerableAsync())).GetEnumerator(); //no flush
+			s.CreateQuery("from foo in class Foo").Enumerable().GetEnumerator(); //no flush
 			
 			baz.StringList = null;
 
-			enumer = (await (s.CreateQuery("select elements(baz.StringList) from baz in class Baz").EnumerableAsync())).GetEnumerator();
+			enumer = s.CreateQuery("select elements(baz.StringList) from baz in class Baz").Enumerable().GetEnumerator();
 
 			Assert.IsFalse(enumer.MoveNext());
 
@@ -2613,7 +2611,7 @@ namespace NHibernate.Test.Legacy
 		{
 			ISession s = OpenSession();
 			ITransaction txn = s.BeginTransaction();
-			IEnumerator enumer = (await (s.CreateQuery("select count(*) from b in class Bar").EnumerableAsync())).GetEnumerator();
+			IEnumerator enumer = s.CreateQuery("select count(*) from b in class Bar").Enumerable().GetEnumerator();
 			enumer.MoveNext();
 			Assert.AreEqual(0L, enumer.Current);
 
@@ -3425,7 +3423,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			IEnumerator enumer =
-				(await (s.CreateQuery("from q in class NHibernate.DomainModel.Qux where q.Stuff is null").EnumerableAsync())).GetEnumerator();
+				s.CreateQuery("from q in class NHibernate.DomainModel.Qux where q.Stuff is null").Enumerable().GetEnumerator();
 			int count = 0;
 			while (enumer.MoveNext())
 			{
@@ -3453,7 +3451,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 
 			s = OpenSession();
-			enumer = (await (s.CreateQuery("from q in class NHibernate.DomainModel.Qux").EnumerableAsync())).GetEnumerator();
+			enumer = s.CreateQuery("from q in class NHibernate.DomainModel.Qux").Enumerable().GetEnumerator();
 			Assert.IsFalse(enumer.MoveNext(), "no items in enumerator");
 			await (s.FlushAsync());
 			s.Close();
@@ -3489,7 +3487,7 @@ namespace NHibernate.Test.Legacy
 			// of an object.  If the query is "from Simple as s" then it will be converted to a NDataReader
 			// on the MoveNext so it can get the object from the id - thus needing another open DataReader so
 			// it must convert to an NDataReader.
-			IEnumerable enumer = await (s.CreateQuery("select s.Count from Simple as s").EnumerableAsync());
+			IEnumerable enumer = s.CreateQuery("select s.Count from Simple as s").Enumerable();
 			//int count = 0;
 			foreach (object obj in enumer)
 			{
@@ -3512,7 +3510,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 
 			s = OpenSession();
-			enumer = await (s.CreateQuery("from Simple").EnumerableAsync());
+			enumer = s.CreateQuery("from Simple").Enumerable();
 			Assert.IsFalse(enumer.GetEnumerator().MoveNext(), "no items in enumerator");
 			await (s.FlushAsync());
 			s.Close();
@@ -3762,7 +3760,7 @@ namespace NHibernate.Test.Legacy
 				last.Order = (short) (i + 1);
 			}
 
-			IEnumerator enumer = (await (s.CreateQuery("from g in class NHibernate.DomainModel.Glarch").EnumerableAsync())).GetEnumerator();
+			IEnumerator enumer = s.CreateQuery("from g in class NHibernate.DomainModel.Glarch").Enumerable().GetEnumerator();
 			while (enumer.MoveNext())
 			{
 				object objTemp = enumer.Current;
@@ -3785,7 +3783,7 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			txn = s.BeginTransaction();
 			enumer =
-				(await (s.CreateQuery("from g in class NHibernate.DomainModel.Glarch order by g.Order asc").EnumerableAsync())).GetEnumerator();
+				s.CreateQuery("from g in class NHibernate.DomainModel.Glarch order by g.Order asc").Enumerable().GetEnumerator();
 			while (enumer.MoveNext())
 			{
 				GlarchProxy g = (GlarchProxy) enumer.Current;
@@ -3812,7 +3810,7 @@ namespace NHibernate.Test.Legacy
 				flast.String = "foo" + (i + 1);
 			}
 
-			enumer = (await (s.CreateQuery("from foo in class NHibernate.DomainModel.Foo").EnumerableAsync())).GetEnumerator();
+			enumer = s.CreateQuery("from foo in class NHibernate.DomainModel.Foo").Enumerable().GetEnumerator();
 			while (enumer.MoveNext())
 			{
 				object objTemp = enumer.Current;
@@ -3838,7 +3836,7 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			txn = s.BeginTransaction();
 			enumer =
-				(await (s.CreateQuery("from foo in class NHibernate.DomainModel.Foo order by foo.String asc").EnumerableAsync())).GetEnumerator();
+				s.CreateQuery("from foo in class NHibernate.DomainModel.Foo order by foo.String asc").Enumerable().GetEnumerator();
 			string currentString = String.Empty;
 
 			while (enumer.MoveNext())
@@ -3886,9 +3884,9 @@ namespace NHibernate.Test.Legacy
 			if (TestDialect.SupportsCountDistinct)
 			{
 				rs =
-					(await (s.CreateQuery(
+					s.CreateQuery(
 						"select count(distinct child.id), count(distinct parent.id) from parent in class NHibernate.DomainModel.Foo, child in class NHibernate.DomainModel.Foo where parent.TheFoo = child")
-						.EnumerableAsync())).GetEnumerator();
+						.Enumerable().GetEnumerator();
 				Assert.IsTrue(rs.MoveNext());
 				row = (object[]) rs.Current;
 				Assert.AreEqual(1, row[0], "multi-column count");
@@ -3897,9 +3895,9 @@ namespace NHibernate.Test.Legacy
 			}
 
 			rs =
-				(await (s.CreateQuery(
+				s.CreateQuery(
 					"select child.id, parent.id, child.Long from parent in class NHibernate.DomainModel.Foo, child in class NHibernate.DomainModel.Foo where parent.TheFoo = child")
-					.EnumerableAsync())).GetEnumerator();
+					.Enumerable().GetEnumerator();
 			Assert.IsTrue(rs.MoveNext());
 			row = (object[]) rs.Current;
 			Assert.AreEqual(foo.TheFoo.Key, row[0], "multi-column id");
@@ -3908,9 +3906,9 @@ namespace NHibernate.Test.Legacy
 			Assert.IsFalse(rs.MoveNext());
 
 			rs =
-				(await (s.CreateQuery(
+				s.CreateQuery(
 					"select child.id, parent.id, child.Long, child, parent.TheFoo from parent in class NHibernate.DomainModel.Foo, child in class NHibernate.DomainModel.Foo where parent.TheFoo = child")
-					.EnumerableAsync())).GetEnumerator();
+					.Enumerable().GetEnumerator();
 			Assert.IsTrue(rs.MoveNext());
 			row = (object[]) rs.Current;
 			Assert.AreEqual(foo.TheFoo.Key, row[0], "multi-column id");
@@ -3929,9 +3927,9 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			txn = s.BeginTransaction();
 			IEnumerator enumer =
-				(await (s.CreateQuery(
+				s.CreateQuery(
 					"select parent, child from parent in class NHibernate.DomainModel.Foo, child in class NHibernate.DomainModel.Foo where parent.TheFoo = child and parent.String='a string'")
-					.EnumerableAsync())).GetEnumerator();
+					.Enumerable().GetEnumerator();
 			int deletions = 0;
 			while (enumer.MoveNext())
 			{
@@ -4513,7 +4511,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			IEnumerable enumerable =
-				await (s.CreateQuery("SELECT one FROM one IN CLASS " + typeof(One).Name + " ORDER BY one.Value ASC").EnumerableAsync());
+				s.CreateQuery("SELECT one FROM one IN CLASS " + typeof(One).Name + " ORDER BY one.Value ASC").Enumerable();
 			int count = 0;
 			foreach (One one in enumerable)
 			{
@@ -4537,8 +4535,8 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			enumerable =
-				await (s.CreateQuery("SELECT many.One FROM many IN CLASS " + typeof(Many).Name +
-				              " ORDER BY many.One.Value ASC, many.One.id").EnumerableAsync());
+				s.CreateQuery("SELECT many.One FROM many IN CLASS " + typeof(Many).Name +
+				              " ORDER BY many.One.Value ASC, many.One.id").Enumerable();
 			count = 0;
 			foreach (One one in enumerable)
 			{
@@ -4642,7 +4640,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(g, g.ProxyArray[1].ProxyArray[2], "deferred load test");
 			Assert.AreEqual(2, g.ProxySet.Count, "set of proxies");
 
-			IEnumerator enumer = (await (s.CreateQuery("from g in class NHibernate.DomainModel.Glarch").EnumerableAsync())).GetEnumerator();
+			IEnumerator enumer = s.CreateQuery("from g in class NHibernate.DomainModel.Glarch").Enumerable().GetEnumerator();
 			while (enumer.MoveNext())
 			{
 				await (s.DeleteAsync(enumer.Current));
@@ -4878,7 +4876,7 @@ namespace NHibernate.Test.Legacy
 
 			IEnumerator e;
 
-			e = (await (s.CreateQuery("select elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").EnumerableAsync())).
+			e = s.CreateQuery("select elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").Enumerable().
 						GetEnumerator();
 
 			bool found = false;
@@ -4892,13 +4890,13 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(found);
 			baz.StringArray = null;
 
-			e = (await (s.CreateQuery("select distinct elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").EnumerableAsync()))
+			e = s.CreateQuery("select distinct elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").Enumerable()
 						.GetEnumerator();
 			
 			Assert.IsFalse(e.MoveNext());
 			baz.StringArray = new string[] {"foo", "bar"};
 
-			e = (await (s.CreateQuery("select elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").EnumerableAsync())).
+			e = s.CreateQuery("select elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").Enumerable().
 						GetEnumerator();
 			
 			Assert.IsTrue(e.MoveNext());
@@ -4908,7 +4906,7 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			baz.FooArray = new Foo[] {foo};
 
-			e = (await (s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooArray)").EnumerableAsync()))
+			e = s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooArray)").Enumerable()
 						.GetEnumerator();
 			
 			found = false;
@@ -4923,13 +4921,13 @@ namespace NHibernate.Test.Legacy
 
 			baz.FooArray[0] = null;
 
-			e = (await (s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooArray)").EnumerableAsync()))
+			e = s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooArray)").Enumerable()
 						.GetEnumerator();
 			
 			Assert.IsFalse(e.MoveNext());
 			baz.FooArray[0] = foo;
 
-			e = (await (s.CreateQuery("select elements(baz.FooArray) from baz in class NHibernate.DomainModel.Baz").EnumerableAsync())).
+			e = s.CreateQuery("select elements(baz.FooArray) from baz in class NHibernate.DomainModel.Baz").Enumerable().
 						GetEnumerator();
 			
 			Assert.IsTrue(e.MoveNext());
@@ -4937,14 +4935,14 @@ namespace NHibernate.Test.Legacy
 			if (Dialect.SupportsSubSelects && !(Dialect is FirebirdDialect))
 			{
 				baz.FooArray[0] = null;
-				e = (await (s.CreateQuery("from baz in class NHibernate.DomainModel.Baz where ? in elements(baz.FooArray)").SetEntity(0, foo).
-							EnumerableAsync())).GetEnumerator();
+				e = s.CreateQuery("from baz in class NHibernate.DomainModel.Baz where ? in elements(baz.FooArray)").SetEntity(0, foo).
+							Enumerable().GetEnumerator();
 
 				Assert.IsFalse(e.MoveNext());
 				baz.FooArray[0] = foo;
-				e = (await (s.CreateQuery("select foo from foo in class NHibernate.DomainModel.Foo where foo in "
+				e = s.CreateQuery("select foo from foo in class NHibernate.DomainModel.Foo where foo in "
 													+ "(select elt from baz in class NHibernate.DomainModel.Baz, elt in elements(baz.FooArray))").
-							EnumerableAsync())).GetEnumerator();
+							Enumerable().GetEnumerator();
 				
 				Assert.IsTrue(e.MoveNext());
 			}
@@ -5018,7 +5016,7 @@ namespace NHibernate.Test.Legacy
 			q.Foo.String = "foo2";
 
 			IEnumerator enumer =
-				(await (s.CreateQuery("from foo in class Foo where foo.Dependent.Qux.Foo.String = 'foo2'").EnumerableAsync())).GetEnumerator();
+				s.CreateQuery("from foo in class Foo where foo.Dependent.Qux.Foo.String = 'foo2'").Enumerable().GetEnumerator();
 			Assert.IsTrue(enumer.MoveNext());
 			await (s.DeleteAsync(foo));
 			await (txn.CommitAsync());
@@ -5279,10 +5277,9 @@ namespace NHibernate.Test.Legacy
 			baz.FooBag = foos;
 			await (s.SaveAsync(baz));
 
-			IEnumerator enumer = new JoinedEnumerable(new IEnumerable[] {foos, bars}).GetEnumerator();
-			while (enumer.MoveNext())
+			foreach (var foo in foos.Concat(bars.Cast<Foo>()))
 			{
-				FooComponent cmp = ((Foo) enumer.Current).Component;
+				FooComponent cmp = foo.Component;
 				await (s.DeleteAsync(cmp.Glarch));
 				cmp.Glarch = null;
 			}

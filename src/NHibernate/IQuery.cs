@@ -3,6 +3,10 @@ using System.Collections;
 using NHibernate.Transform;
 using NHibernate.Type;
 using System.Collections.Generic;
+using NHibernate.Impl;
+using System.Threading.Tasks;
+using System.Threading;
+using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -118,6 +122,35 @@ namespace NHibernate
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		IEnumerable<T> Enumerable<T>();
+
+		/// <summary>
+		/// Return the query results as an <see cref="IEnumerable"/>. If the query contains multiple results
+		/// per row, the results are returned in an instance of <c>object[]</c>.
+		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <remarks>
+		/// <p>
+		/// Entities returned as results are initialized on demand. The first SQL query returns
+		/// identifiers only.
+		/// </p>
+		/// <p>
+		/// This is a good strategy to use if you expect a high number of the objects
+		/// returned to be already loaded in the <see cref="ISession"/> or in the 2nd level cache.
+		/// </p>
+		/// </remarks>
+		// Since v5.3
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
+		Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken));
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="Enumerable()"/>.
+		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		// Since v5.3
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
+		Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Return the query results as an <see cref="IList"/>. If the query contains multiple results per row,
@@ -663,5 +696,23 @@ namespace NHibernate
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		IFutureValue<T> FutureValue<T>();
+	}
+
+	// 6.0 TODO: Move into IQuery
+	public static class QueryExtensions
+	{
+		/// <summary>
+		/// Returns an <see cref="IAsyncEnumerable{T}" /> which can be enumerated asynchronously.
+		/// </summary>
+		/// <remarks>
+		/// This is a good strategy to use if you expect a high number of the objects
+		/// returned to be already loaded in the <see cref="ISession"/> or in the 2nd level cache.
+		/// </remarks>
+		/// <typeparam name="T">The element type.</typeparam>
+		/// <param name="query">The query.</param>
+		public static IAsyncEnumerable<T> AsyncEnumerable<T>(this IQuery query)
+		{
+			return ReflectHelper.CastOrThrow<AbstractQueryImpl>(query, "async enumerable").AsyncEnumerable<T>();
+		}
 	}
 }

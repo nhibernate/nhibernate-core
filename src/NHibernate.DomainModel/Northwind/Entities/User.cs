@@ -30,7 +30,7 @@ namespace NHibernate.DomainModel.Northwind.Entities
 		IUser ModifiedBy { get; set; }
 	}
 
-	public class User : IUser, IEntity
+	public class User : IUser, IEntity, INamedEntity
 	{
 		public virtual int Id { get; set; }
 

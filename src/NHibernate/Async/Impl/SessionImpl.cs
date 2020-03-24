@@ -299,35 +299,41 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
+		/// <inheritdoc />
+		// Since v5.3
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
+		public override Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			using (BeginProcess())
+			if (cancellationToken.IsCancellationRequested)
 			{
-				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(queryExpression, true);
-				await (AutoFlushIfRequiredAsync(plan.QuerySpaces, cancellationToken)).ConfigureAwait(false);
-
-				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
-				{
-					return await (plan.PerformIterateAsync<T>(queryParameters, this, cancellationToken)).ConfigureAwait(false);
-				}
+				return Task.FromCanceled<IEnumerable<T>>(cancellationToken);
+			}
+			try
+			{
+				return Task.FromResult<IEnumerable<T>>(Enumerable<T>(queryExpression, queryParameters));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<IEnumerable<T>>(ex);
 			}
 		}
 
-		public override async Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
+		/// <inheritdoc />
+		// Since v5.3
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
+		public override Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			using (BeginProcess())
+			if (cancellationToken.IsCancellationRequested)
 			{
-				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(queryExpression, true);
-				await (AutoFlushIfRequiredAsync(plan.QuerySpaces, cancellationToken)).ConfigureAwait(false);
-
-				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
-				{
-					return await (plan.PerformIterateAsync(queryParameters, this, cancellationToken)).ConfigureAwait(false);
-				}
+				return Task.FromCanceled<IEnumerable>(cancellationToken);
+			}
+			try
+			{
+				return Task.FromResult<IEnumerable>(Enumerable(queryExpression, queryParameters));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<IEnumerable>(ex);
 			}
 		}
 
@@ -1101,23 +1107,29 @@ namespace NHibernate.Impl
 			return results;
 		}
 
+		/// <inheritdoc />
+		// Since v5.3
+		[Obsolete("Use AsyncEnumerableFilter extension method instead.")]
 		public override async Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (BeginProcess())
 			{
 				var plan = await (GetFilterQueryPlanAsync(collection, filter, queryParameters, true, cancellationToken)).ConfigureAwait(false);
-				return await (plan.PerformIterateAsync(queryParameters, this, cancellationToken)).ConfigureAwait(false);
+				return plan.PerformIterate(queryParameters, this);
 			}
 		}
 
+		/// <inheritdoc />
+		// Since v5.3
+		[Obsolete("Use AsyncEnumerableFilter extension method instead.")]
 		public override async Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (BeginProcess())
 			{
 				var plan = await (GetFilterQueryPlanAsync(collection, filter, queryParameters, true, cancellationToken)).ConfigureAwait(false);
-				return await (plan.PerformIterateAsync<T>(queryParameters, this, cancellationToken)).ConfigureAwait(false);
+				return plan.PerformIterate<T>(queryParameters, this);
 			}
 		}
 

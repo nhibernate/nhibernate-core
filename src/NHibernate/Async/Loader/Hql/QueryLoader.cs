@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR;
@@ -30,8 +32,6 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Loader.Hql
 {
-	using System.Threading.Tasks;
-	using System.Threading;
 	public partial class QueryLoader : BasicLoader
 	{
 
@@ -87,34 +87,29 @@ namespace NHibernate.Loader.Hql
 			return resultRow;
 		}
 
-		internal async Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
+		internal async Task<InitializeEnumerableResult> InitializeEnumerableAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			CheckQuery(queryParameters);
-			Stopwatch stopWatch = null;
-			if (session.Factory.Statistics.IsStatisticsEnabled)
+			await (session.AutoFlushIfRequiredAsync(_queryTranslator.QuerySpaces, cancellationToken)).ConfigureAwait(false);
+			using (session.SuspendAutoFlush())
 			{
-				stopWatch = Stopwatch.StartNew();
+				Stopwatch stopWatch = null;
+				if (session.Factory.Statistics.IsStatisticsEnabled)
+				{
+					stopWatch = Stopwatch.StartNew();
+				}
+
+				var command = await (PrepareQueryCommandAsync(queryParameters, false, session, cancellationToken)).ConfigureAwait(false);
+				var dataReader = await (GetResultSetAsync(command, queryParameters, session, null, cancellationToken)).ConfigureAwait(false);
+				if (stopWatch != null)
+				{
+					stopWatch.Stop();
+					session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + _queryTranslator.QueryString, 0, stopWatch.Elapsed);
+					session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWatch.Elapsed);
+				}
+
+				return new InitializeEnumerableResult(command, dataReader);
 			}
-
-			var cmd = await (PrepareQueryCommandAsync(queryParameters, false, session, cancellationToken)).ConfigureAwait(false);
-
-			// This DbDataReader is disposed of in EnumerableImpl.Dispose
-			var rs = await (GetResultSetAsync(cmd, queryParameters, session, null, cancellationToken)).ConfigureAwait(false);
-
-			var resultTransformer = _selectNewTransformer ?? queryParameters.ResultTransformer;
-			IEnumerable result = 
-				new EnumerableImpl(rs, cmd, session, queryParameters.IsReadOnly(session), _queryTranslator.ReturnTypes, _queryTranslator.GetColumnNames(), queryParameters.RowSelection, resultTransformer, _queryReturnAliases);
-
-			if (stopWatch != null)
-			{
-				stopWatch.Stop();
-				session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + _queryTranslator.QueryString, 0, stopWatch.Elapsed);
-				// NH: Different behavior (H3.2 use QueryLoader in AST parser) we need statistic for orginal query too.
-				// probably we have a bug some where else for statistic RowCount
-				session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWatch.Elapsed);
-			}
-			return result;
 		}
 	}
 }

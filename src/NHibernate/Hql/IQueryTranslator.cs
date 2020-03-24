@@ -1,9 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Event;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Hql
 {
@@ -37,7 +42,13 @@ namespace NHibernate.Hql
 		/// <exception cref="NHibernate.HibernateException"></exception>
 		IList List(ISessionImplementor session, QueryParameters queryParameters);
 
+		// Since v5.3
+		[Obsolete("Use the generic extension method instead.")]
 		IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session);
+
+		// Since v5.3
+		[Obsolete("Use GetAsyncEnumerable extension method instead.")]
+		Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
 
 		// Not ported:
 		//IScrollableResults scroll(QueryParameters queryParameters, ISessionImplementor session);
@@ -118,5 +129,35 @@ namespace NHibernate.Hql
 		IType[] ActualReturnTypes { get; }
 
         ParameterMetadata BuildParameterMetadata();
+	}
+
+	// 6.0 TODO: Move into IQueryTranslator
+	internal static class QueryTranslatorExtensions
+	{
+		/// <summary>
+		/// Returns an <see cref="IAsyncEnumerable{T}" /> which can be enumerated asynchronously.
+		/// </summary>
+		/// <typeparam name="T">The element type.</typeparam>
+		/// <param name="queryTranslator">The query translator.</param>
+		/// <param name="queryParameters">The query parameters.</param>
+		/// <param name="session">The session.</param>
+		public static IAsyncEnumerable<T> GetAsyncEnumerable<T>(this IQueryTranslator queryTranslator, QueryParameters queryParameters, ISessionImplementor session)
+		{
+			return ReflectHelper.CastOrThrow<QueryTranslatorImpl>(queryTranslator, "async enumerable")
+				.GetAsyncEnumerable<T>(queryParameters, session);
+		}
+
+		/// <summary>
+		/// Returns an <see cref="IEnumerable{T}" /> which can be enumerated asynchronously.
+		/// </summary>
+		/// <typeparam name="T">The element type.</typeparam>
+		/// <param name="queryTranslator">The query translator.</param>
+		/// <param name="queryParameters">The query parameters.</param>
+		/// <param name="session">The session.</param>
+		public static IEnumerable<T> GetEnumerable<T>(this IQueryTranslator queryTranslator, QueryParameters queryParameters, ISessionImplementor session)
+		{
+			return ReflectHelper.CastOrThrow<QueryTranslatorImpl>(queryTranslator, "async enumerable")
+				.GetEnumerable<T>(queryParameters, session);
+		}
 	}
 }

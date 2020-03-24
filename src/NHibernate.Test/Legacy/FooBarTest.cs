@@ -18,6 +18,7 @@ using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 using NUnit.Framework;
+using System.Linq;
 
 namespace NHibernate.Test.Legacy
 {
@@ -1210,10 +1211,7 @@ namespace NHibernate.Test.Legacy
 				s.Delete(baz2);
 				s.Delete(baz3);
 
-				IEnumerable en = new JoinedEnumerable(
-					new IEnumerable[] {baz.FooSet, baz2.FooSet});
-
-				foreach (object obj in en)
+				foreach (object obj in baz.FooSet.Concat(baz2.FooSet))
 				{
 					s.Delete(obj);
 				}
@@ -5267,10 +5265,9 @@ namespace NHibernate.Test.Legacy
 			baz.FooBag = foos;
 			s.Save(baz);
 
-			IEnumerator enumer = new JoinedEnumerable(new IEnumerable[] {foos, bars}).GetEnumerator();
-			while (enumer.MoveNext())
+			foreach (var foo in foos.Concat(bars.Cast<Foo>()))
 			{
-				FooComponent cmp = ((Foo) enumer.Current).Component;
+				FooComponent cmp = foo.Component;
 				s.Delete(cmp.Glarch);
 				cmp.Glarch = null;
 			}

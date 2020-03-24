@@ -105,6 +105,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return results;
 		}
 
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -113,8 +115,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 			try
 			{
-				ErrorIfDML();
-				return _queryLoader.GetEnumerableAsync(queryParameters, session, cancellationToken);
+				return Task.FromResult<IEnumerable>(GetEnumerable(queryParameters, session));
 			}
 			catch (Exception ex)
 			{

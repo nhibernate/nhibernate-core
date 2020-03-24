@@ -211,8 +211,8 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(2, list.Count, "List Identifiers");
 
 			IEnumerator enumerator =
-				(await (s.CreateQuery("select fum.Id from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").
-					EnumerableAsync())).GetEnumerator();
+				s.CreateQuery("select fum.Id from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").
+					Enumerable().GetEnumerator();
 			int i = 0;
 			while (enumerator.MoveNext())
 			{
@@ -304,7 +304,7 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			t = s.BeginTransaction();
 			IEnumerator enumerator =
-				(await (s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").EnumerableAsync())).
+				s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").Enumerable().
 					GetEnumerator();
 			int i = 0;
 			while (enumerator.MoveNext())
@@ -385,10 +385,10 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			Assert.IsTrue(
-				(await (s.CreateQuery("select fum.Id.Short, fum.Id.Date, fum.Id.String from fum in class NHibernate.DomainModel.Fum").
-					EnumerableAsync())).GetEnumerator().MoveNext());
+				s.CreateQuery("select fum.Id.Short, fum.Id.Date, fum.Id.String from fum in class NHibernate.DomainModel.Fum").
+					Enumerable().GetEnumerator().MoveNext());
 			Assert.IsTrue(
-				(await (s.CreateQuery("select fum.Id from fum in class NHibernate.DomainModel.Fum").EnumerableAsync())).GetEnumerator().MoveNext());
+				s.CreateQuery("select fum.Id from fum in class NHibernate.DomainModel.Fum").Enumerable().GetEnumerator().MoveNext());
 
 			IQuery qu =
 				s.CreateQuery("select fum.FumString, fum, fum.FumString, fum.Id.Date from fum in class NHibernate.DomainModel.Fum");
@@ -402,7 +402,7 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(types[1] is EntityType);
 			Assert.IsTrue(types[2] is StringType);
 			Assert.IsTrue(types[3] is DateTimeType);
-			IEnumerator enumer = (await (qu.EnumerableAsync())).GetEnumerator();
+			IEnumerator enumer = qu.Enumerable().GetEnumerator();
 			int j = 0;
 			while (enumer.MoveNext())
 			{
@@ -416,10 +416,10 @@ namespace NHibernate.Test.Legacy
 			(await (s.CreateFilterAsync(fum.QuxArray, "where this.Foo.id = ?"))).SetString(0, "fooid");
 			IQuery f = await (s.CreateFilterAsync(fum.QuxArray, "where this.Foo.id = :fooId"));
 			f.SetString("fooId", "abc");
-			Assert.IsFalse((await (f.EnumerableAsync())).GetEnumerator().MoveNext());
+			Assert.IsFalse(f.Enumerable().GetEnumerator().MoveNext());
 
 			enumer =
-				(await (s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").EnumerableAsync())).
+				s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").Enumerable().
 					GetEnumerator();
 			int i = 0;
 			while (enumer.MoveNext())
@@ -431,9 +431,9 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(4, i, "iterate on composite key");
 			await (s.FlushAsync());
 
-			await (s.CreateQuery(
+			s.CreateQuery(
 				"from fu in class Fum, fo in class Fum where fu.Fo.Id.String = fo.Id.String and fo.FumString is not null").
-				EnumerableAsync());
+				Enumerable();
 			await (s.CreateQuery("from Fumm f1 inner join f1.Fum f2").ListAsync());
 			s.Close();
 		}
@@ -529,7 +529,7 @@ namespace NHibernate.Test.Legacy
 			fo = (Fo) await (s.LoadAsync(typeof(Fo), FumKey("an instance of fo")));
 			Assert.AreEqual(5, fo.X);
 			IEnumerator enumer =
-				(await (s.CreateQuery("from fo in class NHibernate.DomainModel.Fo where fo.id.String like 'an instance of fo'").EnumerableAsync()))
+				s.CreateQuery("from fo in class NHibernate.DomainModel.Fo where fo.id.String like 'an instance of fo'").Enumerable()
 					.GetEnumerator();
 			Assert.IsTrue(enumer.MoveNext());
 			Assert.AreSame(fo, enumer.Current);

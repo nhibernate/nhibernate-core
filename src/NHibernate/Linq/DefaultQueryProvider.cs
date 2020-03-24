@@ -28,6 +28,22 @@ namespace NHibernate.Linq
 		Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken);
 	}
 
+	// 6.0 TODO: Move into INhQueryProvider
+	internal static class NhQueryProviderExtensions
+	{
+		/// <summary>
+		/// Return the query results as an <see cref="IAsyncEnumerable{T}"/>.
+		/// </summary>
+		/// <typeparam name="T">The element type.</typeparam>
+		/// <param name="nhQueryProvider">The query provider.</param>
+		/// <param name="expression">The query expression.</param>
+		public static IAsyncEnumerable<T> GetAsyncEnumerable<T>(this INhQueryProvider nhQueryProvider, Expression expression)
+		{
+			return ReflectHelper.CastOrThrow<DefaultQueryProvider>(nhQueryProvider, "async enumerable")
+				.GetAsyncEnumerable<T>(expression);
+		}
+	}
+
 	// 6.0 TODO: merge into INhQueryProvider.
 	public interface ISupportFutureBatchNhQueryProvider
 	{
@@ -297,6 +313,17 @@ namespace NHibernate.Linq
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
 			_options?.Apply(query);
 			return query.ExecuteUpdate();
+		}
+
+		public IAsyncEnumerable<T> GetAsyncEnumerable<T>(Expression expression)
+		{
+			var nhLinqExpression = PrepareQuery(expression, out var query);
+			if (nhLinqExpression.ExpressionToHqlTranslationResults?.PostExecuteTransformer != null)
+			{
+				throw new NotSupportedException("AsyncEnumerable is not supported when PostExecuteTransformer is set.");
+			}
+
+			return query.AsyncEnumerable<T>();
 		}
 
 		public IQuery GetPreparedQuery(Expression expression, out NhLinqExpression nhExpression)

@@ -32,8 +32,7 @@ namespace NHibernate.Impl
 		#region Execution methods
 
 		public abstract Task<int> ExecuteUpdateAsync(CancellationToken cancellationToken = default(CancellationToken));
-		public abstract Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken));
-		public abstract Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken));
+
 		public abstract Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken));
 		public abstract Task ListAsync(IList results, CancellationToken cancellationToken = default(CancellationToken));
 		public abstract Task<IList<T>> ListAsync<T>(CancellationToken cancellationToken = default(CancellationToken));

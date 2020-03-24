@@ -40,7 +40,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			IEnumerator iter = (await (s.CreateQuery("select max(s.Count) from s in class Simple").EnumerableAsync()))
+			IEnumerator iter = s.CreateQuery("select max(s.Count) from s in class Simple").Enumerable()
 				.GetEnumerator();
 
 			if (Dialect is MySQLDialect
@@ -504,7 +504,7 @@ namespace NHibernate.Test.Legacy
 				}
 
 				IEnumerator enumer =
-					(await (s.CreateQuery("select sum(s.Count) from s in class Simple group by s.Count having sum(s.Count) > 10 ").EnumerableAsync()))
+					s.CreateQuery("select sum(s.Count) from s in class Simple group by s.Count having sum(s.Count) > 10 ").Enumerable()
 						.GetEnumerator();
 				Assert.IsTrue(enumer.MoveNext());
 				Assert.AreEqual(12, (Int64)enumer.Current); // changed cast from Int32 to Int64 (H3.2)
@@ -513,15 +513,15 @@ namespace NHibernate.Test.Legacy
 				if (Dialect.SupportsSubSelects)
 				{
 					enumer =
-						(await (s.CreateQuery("select s.Count from s in class Simple group by s.Count having s.Count = 12").EnumerableAsync())).
+						s.CreateQuery("select s.Count from s in class Simple group by s.Count having s.Count = 12").Enumerable().
 							GetEnumerator();
 					Assert.IsTrue(enumer.MoveNext());
 				}
 
 				enumer =
-					(await (s.CreateQuery(
+					s.CreateQuery(
 						"select s.id, s.Count, count(t), max(t.Date) from s in class Simple, t in class Simple where s.Count = t.Count group by s.id, s.Count order by s.Count")
-						.EnumerableAsync())).GetEnumerator();
+						.Enumerable().GetEnumerator();
 
 				IQuery q = s.CreateQuery("from s in class Simple");
 				q.SetMaxResults(10);
@@ -542,7 +542,7 @@ namespace NHibernate.Test.Legacy
 				q.SetString(1, "SIMPLE 1");
 				q.SetString(0, "Simple 1");
 				q.SetFirstResult(0);
-				Assert.IsTrue((await (q.EnumerableAsync())).GetEnumerator().MoveNext());
+				Assert.IsTrue(q.Enumerable().GetEnumerator().MoveNext());
 
 				q =
 					s.CreateQuery(
@@ -551,12 +551,12 @@ namespace NHibernate.Test.Legacy
 				q.SetString("foo", "Simple 1");
 				q.SetInt32("count", 69);
 				q.SetFirstResult(0);
-				Assert.IsTrue((await (q.EnumerableAsync())).GetEnumerator().MoveNext());
+				Assert.IsTrue(q.Enumerable().GetEnumerator().MoveNext());
 
 				q = s.CreateQuery("select s.id from s in class Simple");
 				q.SetFirstResult(1);
 				q.SetMaxResults(2);
-				IEnumerable enumerable = await (q.EnumerableAsync());
+				IEnumerable enumerable = q.Enumerable();
 				int i = 0;
 				foreach (object obj in enumerable)
 				{

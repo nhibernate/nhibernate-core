@@ -110,6 +110,10 @@
     - conversion: Ignore
       name: GetEnumerator
       containingTypeName: IFutureEnumerable
+    - conversion: Ignore
+      name: AsyncEnumerable
+    - conversion: Ignore
+      name: AsyncEnumerableFilter
     - conversion: ToAsync
       name: ExecuteReader
       containingTypeName: IBatcher
@@ -221,6 +225,8 @@
     - conversion: Ignore
       anyBaseTypeRule: IsTestCase
       executionPhase: PostProviders
+    ignoreSearchForAsyncCounterparts:
+    - name: Enumerable
     ignoreDocuments:
     - filePathEndsWith: Linq/MathTests.cs
     - filePathEndsWith: Linq/ExpressionSessionLeakTest.cs

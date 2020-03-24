@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -186,6 +188,19 @@ namespace NHibernate.Impl
 		public abstract IList<T> ListFilter<T>(object collection, string filter, QueryParameters parameters);
 		public abstract IEnumerable EnumerableFilter(object collection, string filter, QueryParameters parameters);
 		public abstract IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters parameters);
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public abstract Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public abstract Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
+
+		//6.0 TODO: Make abstract
+		public virtual IAsyncEnumerable<T> AsyncEnumerableFilter<T>(object collection, string filter, QueryParameters parameters)
+		{
+			throw new NotImplementedException();
+		}
+
 		public abstract IEntityPersister GetEntityPersister(string entityName, object obj);
 		public abstract void AfterTransactionBegin(ITransaction tx);
 		public abstract void BeforeTransactionCompletion(ITransaction tx);
@@ -637,6 +652,20 @@ namespace NHibernate.Impl
 		public abstract IEnumerable Enumerable(IQueryExpression queryExpression, QueryParameters queryParameters);
 
 		public abstract IEnumerable<T> Enumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters);
+
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public abstract Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
+
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public abstract Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
+
+		// 6.0 TODO: make abstract
+		public virtual IAsyncEnumerable<T> AsyncEnumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters)
+		{
+			throw new NotImplementedException();
+		}
 
 		public abstract int ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters);
 		

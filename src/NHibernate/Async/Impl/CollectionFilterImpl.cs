@@ -24,6 +24,9 @@ namespace NHibernate.Impl
 	public partial class CollectionFilterImpl : QueryImpl
 	{
 
+		/// <inheritdoc />
+		// Since v5.3
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
 		public override Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -32,9 +35,7 @@ namespace NHibernate.Impl
 			}
 			try
 			{
-				VerifyParameters();
-				IDictionary<string, TypedValue> namedParams = NamedParams;
-				return Session.EnumerableFilterAsync(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams), cancellationToken);
+				return Task.FromResult<IEnumerable>(Enumerable());
 			}
 			catch (Exception ex)
 			{
@@ -42,6 +43,9 @@ namespace NHibernate.Impl
 			}
 		}
 
+		/// <inheritdoc />
+		// Since v5.3
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
 		public override Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -50,9 +54,7 @@ namespace NHibernate.Impl
 			}
 			try
 			{
-				VerifyParameters();
-				IDictionary<string, TypedValue> namedParams = NamedParams;
-				return Session.EnumerableFilterAsync<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams), cancellationToken);
+				return Task.FromResult<IEnumerable<T>>(Enumerable<T>());
 			}
 			catch (Exception ex)
 			{

@@ -173,7 +173,8 @@ namespace NHibernate.Test.Stats
 			Assert.AreEqual(maxTime, stats.QueryExecutionMaxTime);
 			Assert.AreEqual( continents, stats.QueryExecutionMaxTimeQueryString );
 
-			IEnumerable itr = await (s.CreateQuery(continents).EnumerableAsync());
+			var itr = s.CreateQuery(continents).Enumerable().GetEnumerator();
+			itr.MoveNext();
 			// Enumerable() should increment the execution count
 			Assert.AreEqual(2, continentStats.ExecutionCount, "unexpected execution count");
 			// but should not effect the cumulative row count

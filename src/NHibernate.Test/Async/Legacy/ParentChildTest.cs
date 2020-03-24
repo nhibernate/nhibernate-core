@@ -473,9 +473,9 @@ namespace NHibernate.Test.Legacy
 			await (s.CreateQuery(
 				"select c, c.Parent from c in class NHibernate.DomainModel.Child where c.Parent.Count=66 order by c.Parent.Count").
 				ListAsync());
-			await (s.CreateQuery(
+			s.CreateQuery(
 				"select c, c.Parent, c.Parent.Count from c in class NHibernate.DomainModel.Child order by c.Parent.Count").
-				EnumerableAsync());
+				Enumerable();
 			Assert.AreEqual(1,
 			                (await (s.CreateQuery("FROM p in CLASS NHibernate.DomainModel.Parent WHERE p.Count=?").SetInt32(0, 66).ListAsync()))
 			                	.Count, "1-1 query");
@@ -727,7 +727,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 
 			s = OpenSession();
-			foreach (Container obj in await (s.CreateQuery("from c in class ContainerX").EnumerableAsync()))
+			foreach (Container obj in s.CreateQuery("from c in class ContainerX").Enumerable())
 			{
 				c = obj;
 				break;
@@ -756,7 +756,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 
 			s = OpenSession();
-			foreach (Container obj in await (s.CreateQuery("from c in class ContainerX").EnumerableAsync()))
+			foreach (Container obj in s.CreateQuery("from c in class ContainerX").Enumerable())
 			{
 				c = obj;
 			}

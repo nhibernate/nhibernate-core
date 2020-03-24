@@ -13,38 +13,15 @@ using System.Collections;
 using NHibernate.Transform;
 using NHibernate.Type;
 using System.Collections.Generic;
+using NHibernate.Impl;
+using System.Threading.Tasks;
+using System.Threading;
+using NHibernate.Util;
 
 namespace NHibernate
 {
-	using System.Threading.Tasks;
-	using System.Threading;
 	public partial interface IQuery
 	{
-
-		/// <summary>
-		/// Return the query results as an <see cref="IEnumerable"/>. If the query contains multiple results
-		/// per row, the results are returned in an instance of <c>object[]</c>.
-		/// </summary>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <remarks>
-		/// <p>
-		/// Entities returned as results are initialized on demand. The first SQL query returns
-		/// identifiers only.
-		/// </p>
-		/// <p>
-		/// This is a good strategy to use if you expect a high number of the objects
-		/// returned to be already loaded in the <see cref="ISession"/> or in the 2nd level cache.
-		/// </p>
-		/// </remarks>
-		Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken));
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="Enumerable()"/>.
-		/// </summary>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Return the query results as an <see cref="IList"/>. If the query contains multiple results per row,

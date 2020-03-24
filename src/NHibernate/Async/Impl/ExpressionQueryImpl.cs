@@ -70,11 +70,17 @@ namespace NHibernate.Impl
 			ArrayHelper.AddAll(results, await (ListAsync(cancellationToken)).ConfigureAwait(false));
 		}
 
+		/// <inheritdoc />
+		// Since v5.3
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
 		public override Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			throw new NotImplementedException();
 		}
 
+		/// <inheritdoc />
+		// Since v5.3
+		[Obsolete("Use AsyncEnumerable extension method instead.")]
 		public override Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			throw new NotImplementedException();

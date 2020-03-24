@@ -933,6 +933,19 @@ namespace NHibernate.Impl
 		public abstract int ExecuteUpdate();
 		public abstract IEnumerable Enumerable();
 		public abstract IEnumerable<T> Enumerable<T>();
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public abstract Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken));
+		// Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public abstract Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken));
+
+		// 6.0 TODO: make abstract
+		public virtual IAsyncEnumerable<T> AsyncEnumerable<T>()
+		{
+			throw new NotImplementedException();
+		}
+
 		public abstract IList List();
 		public abstract void List(IList results);
 		public abstract IList<T> List<T>();

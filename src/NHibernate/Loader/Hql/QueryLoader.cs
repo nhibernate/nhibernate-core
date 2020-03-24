@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR;
@@ -466,33 +468,44 @@ namespace NHibernate.Loader.Hql
 		[Obsolete("Please use ResultTypes instead")]
 		public IType[] ReturnTypes => ResultTypes;
 
-		internal IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session)
+		internal AsyncEnumerableImpl<T> GetAsyncEnumerable<T>(QueryParameters queryParameters, ISessionImplementor session)
 		{
 			CheckQuery(queryParameters);
-			Stopwatch stopWatch = null;
-			if (session.Factory.Statistics.IsStatisticsEnabled)
+
+			return new AsyncEnumerableImpl<T>(
+				() => InitializeEnumerable(queryParameters, session),
+				cancellationToken => InitializeEnumerableAsync(queryParameters, session, cancellationToken),
+				queryParameters.IsReadOnly(session),
+				_queryTranslator.ReturnTypes,
+				_queryTranslator.GetColumnNames(),
+				queryParameters.RowSelection,
+				_selectNewTransformer ?? queryParameters.ResultTransformer,
+				_queryReturnAliases,
+				session);
+		}
+
+		internal InitializeEnumerableResult InitializeEnumerable(QueryParameters queryParameters, ISessionImplementor session)
+		{
+			session.AutoFlushIfRequired(_queryTranslator.QuerySpaces);
+			using (session.SuspendAutoFlush())
 			{
-				stopWatch = Stopwatch.StartNew();
+				Stopwatch stopWatch = null;
+				if (session.Factory.Statistics.IsStatisticsEnabled)
+				{
+					stopWatch = Stopwatch.StartNew();
+				}
+
+				var command = PrepareQueryCommand(queryParameters, false, session);
+				var dataReader = GetResultSet(command, queryParameters, session, null);
+				if (stopWatch != null)
+				{
+					stopWatch.Stop();
+					session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + _queryTranslator.QueryString, 0, stopWatch.Elapsed);
+					session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWatch.Elapsed);
+				}
+
+				return new InitializeEnumerableResult(command, dataReader);
 			}
-
-			var cmd = PrepareQueryCommand(queryParameters, false, session);
-
-			// This DbDataReader is disposed of in EnumerableImpl.Dispose
-			var rs = GetResultSet(cmd, queryParameters, session, null);
-
-			var resultTransformer = _selectNewTransformer ?? queryParameters.ResultTransformer;
-			IEnumerable result = 
-				new EnumerableImpl(rs, cmd, session, queryParameters.IsReadOnly(session), _queryTranslator.ReturnTypes, _queryTranslator.GetColumnNames(), queryParameters.RowSelection, resultTransformer, _queryReturnAliases);
-
-			if (stopWatch != null)
-			{
-				stopWatch.Stop();
-				session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + _queryTranslator.QueryString, 0, stopWatch.Elapsed);
-				// NH: Different behavior (H3.2 use QueryLoader in AST parser) we need statistic for orginal query too.
-				// probably we have a bug some where else for statistic RowCount
-				session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWatch.Elapsed);
-			}
-			return result;
 		}
 
 		protected override void ResetEffectiveExpectedType(IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)

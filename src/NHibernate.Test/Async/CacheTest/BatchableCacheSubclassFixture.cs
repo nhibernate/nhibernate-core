@@ -119,7 +119,7 @@ namespace NHibernate.Test.CacheTest
 			using (var tx = s.BeginTransaction())
 			{
 				var enumerator =
-					(await (s.CreateQuery("from foo in class NHibernate.DomainModel.Foo order by foo.String").EnumerableAsync())).GetEnumerator();
+					s.CreateQuery("from foo in class NHibernate.DomainModel.Foo order by foo.String").Enumerable().GetEnumerator();
 				var i = 1;
 				while (enumerator.MoveNext())
 				{

@@ -8,6 +8,8 @@ namespace NHibernate.Util
 	/// <summary>
 	/// Concatenates multiple objects implementing <see cref="IEnumerable"/> into one.
 	/// </summary>
+	//Since 5.3
+	[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 	public class JoinedEnumerable : IEnumerable
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(JoinedEnumerable));

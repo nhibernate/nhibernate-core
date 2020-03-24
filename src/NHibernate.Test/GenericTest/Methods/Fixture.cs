@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NHibernate.Criterion;
 using NHibernate.DomainModel;
 using NUnit.Framework;
@@ -13,7 +14,7 @@ namespace NHibernate.Test.GenericTest.Methods
 		{
 			get
 			{
-				return new string[] { "One.hbm.xml", "Many.hbm.xml" };
+				return new string[] { "One.hbm.xml", "Many.hbm.xml", "Simple.hbm.xml" };
 			}
 		}
 
@@ -38,12 +39,15 @@ namespace NHibernate.Test.GenericTest.Methods
 			many2.One = one;
 			one.Manies.Add( many2 );
 
-			using( ISession s = OpenSession() )
+			var simple = new Simple(1) {Count = 1};
+
+			using ( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				s.Save( one );
 				s.Save( many1 );
 				s.Save( many2 );
+				s.Save(simple, 1);
 				t.Commit();
 			}
 		}
@@ -55,6 +59,7 @@ namespace NHibernate.Test.GenericTest.Methods
 			{
 				session.Delete( "from Many" );
 				session.Delete( "from One" );
+				session.Delete("from Simple");
 				tx.Commit();
 			}
 			base.OnTearDown();
@@ -106,6 +111,88 @@ namespace NHibernate.Test.GenericTest.Methods
 		}
 
 		[Test]
+		public void AutoFlushQueryEnumerable()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				Assert.That(s.FlushMode, Is.EqualTo(FlushMode.Auto));
+				var results = s.CreateQuery("from Simple").Enumerable<Simple>();
+
+				var id = 2;
+				var simple = new Simple(id) {Count = id};
+				s.Save(simple, id);
+				var enumerator = results.GetEnumerator();
+
+				Assert.That(enumerator.MoveNext(), Is.True);
+				Assert.That(enumerator.MoveNext(), Is.True);
+				Assert.That(enumerator.MoveNext(), Is.False);
+				enumerator.Dispose();
+
+				id++;
+				simple = new Simple(id) {Count = id};
+				s.Save(simple, id);
+				enumerator = results.GetEnumerator();
+
+				Assert.That(enumerator.MoveNext(), Is.True);
+				Assert.That(enumerator.MoveNext(), Is.True);
+				Assert.That(enumerator.MoveNext(), Is.True);
+				Assert.That(enumerator.MoveNext(), Is.False);
+				enumerator.Dispose();
+
+				t.Rollback();
+			}
+		}
+
+		[Test]
+		public async Task QueryEnumerableAsync()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var results = s.CreateQuery("from One").AsyncEnumerable<One>();
+				var enumerator = results.GetAsyncEnumerator();
+
+				Assert.That(await enumerator.MoveNextAsync(), Is.True);
+				Assert.That(await enumerator.MoveNextAsync(), Is.False);
+			}
+		}
+
+		[Test]
+		public async Task AutoFlushQueryEnumerableAsync()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				Assert.That(s.FlushMode, Is.EqualTo(FlushMode.Auto));
+				var results = s.CreateQuery("from Simple").AsyncEnumerable<Simple>();
+
+				var id = 2;
+				var simple = new Simple(id) {Count = id};
+				s.Save(simple, id);
+				var enumerator = results.GetAsyncEnumerator();
+
+				Assert.That(await enumerator.MoveNextAsync(), Is.True);
+				Assert.That(await enumerator.MoveNextAsync(), Is.True);
+				Assert.That(await enumerator.MoveNextAsync(), Is.False);
+				await enumerator.DisposeAsync();
+
+				id++;
+				simple = new Simple(id) {Count = id};
+				s.Save(simple, id);
+				enumerator = results.GetAsyncEnumerator();
+
+				Assert.That(await enumerator.MoveNextAsync(), Is.True);
+				Assert.That(await enumerator.MoveNextAsync(), Is.True);
+				Assert.That(await enumerator.MoveNextAsync(), Is.True);
+				Assert.That(await enumerator.MoveNextAsync(), Is.False);
+				await enumerator.DisposeAsync();
+
+				await t.RollbackAsync();
+			}
+		}
+
+		[Test]
 		public void Filter()
 		{
 			using( ISession s = OpenSession() )
@@ -136,6 +223,23 @@ namespace NHibernate.Test.GenericTest.Methods
 				Assert.AreEqual( 10, en.Current.X );
 				Assert.IsFalse( en.MoveNext() );
 				t.Commit();
+			}
+		}
+
+		[Test]
+		public async Task FilterEnumerableAsync()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				One one2 = (One) await s.CreateQuery("from One").UniqueResultAsync();
+				var results = s.CreateFilter(one2.Manies, "where X = 10").AsyncEnumerable<Many>();
+				var en = results.GetAsyncEnumerator();
+
+				Assert.That(await en.MoveNextAsync(), Is.True);
+				Assert.That(en.Current.X, Is.EqualTo(10));
+				Assert.That(await en.MoveNextAsync(), Is.False);
+				await t.CommitAsync();
 			}
 		}
 	}
