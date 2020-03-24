@@ -168,7 +168,6 @@ namespace NHibernate.Linq.Visitors
 	{
 		private readonly IQuerySource _querySource;
 		private bool _references;
-		private readonly List<IQuerySource> _usages = new List<IQuerySource>();
 
 		public QuerySourceUsageLocator(IQuerySource querySource)
 		{
@@ -177,10 +176,7 @@ namespace NHibernate.Linq.Visitors
 
 		internal bool LeftJoin { get; private set; }
 
-		public IList<IQuerySource> Usages
-		{
-			get { return _usages.AsReadOnly(); }
-		}
+		public IList<IQuerySource> Usages { get; } = new List<IQuerySource>();
 
 		public void Search(IBodyClause clause)
 		{
@@ -195,7 +191,7 @@ namespace NHibernate.Linq.Visitors
 
 			if (_references)
 			{
-				_usages.Add(querySource);
+				Usages.Add(querySource);
 			}
 		}
 
