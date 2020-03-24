@@ -773,8 +773,8 @@ namespace NHibernate.Test.Linq
 			expectedComponentType = expectedComponentType ?? (o => o == null);
 
 			var expression = query.Expression;
-			var preTransformResult = NhRelinqQueryParser.PreTransform(expression, Sfi);
-			expression = ExpressionParameterVisitor.Visit(QueryMode.Select, preTransformResult, Sfi, out var constantToParameterMap);
+			var preTransformResult = NhRelinqQueryParser.PreTransform(expression, new PreTransformationParameters(QueryMode.Select, Sfi));
+			expression = ExpressionParameterVisitor.Visit(preTransformResult, out var constantToParameterMap);
 			var queryModel = NhRelinqQueryParser.Parse(expression);
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
 			var visitorParameters = new VisitorParameters(

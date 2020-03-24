@@ -20,7 +20,6 @@ namespace NHibernate.Linq.Visitors
 		private readonly Dictionary<QueryVariable, NamedParameter> _variableParameters = new Dictionary<QueryVariable, NamedParameter>();
 		private readonly IDictionary<ConstantExpression, QueryVariable> _queryVariables;
 		private readonly ISessionFactoryImplementor _sessionFactory;
-		private readonly QueryMode _queryMode;
 
 		private static readonly MethodInfo QueryableSkipDefinition =
 			ReflectHelper.FastGetMethodDefinition(Queryable.Skip, default(IQueryable<object>), 0);
@@ -38,21 +37,15 @@ namespace NHibernate.Linq.Visitors
 			};
 
 		// Since v5.3
-		[Obsolete("Please use overload with preTransformationResult and queryMode parameters instead.")]
+		[Obsolete("Please use overload with preTransformationResult parameter instead.")]
 		public ExpressionParameterVisitor(ISessionFactoryImplementor sessionFactory)
 		{
 			_sessionFactory = sessionFactory;
-			// In order to keep the old behavior use a DML query mode to generate parameters for each constant
-			_queryMode = QueryMode.Delete;
 		}
 
-		public ExpressionParameterVisitor(
-			QueryMode queryMode,
-			ISessionFactoryImplementor sessionFactory,
-			PreTransformationResult preTransformationResult)
+		public ExpressionParameterVisitor(PreTransformationResult preTransformationResult)
 		{
-			_queryMode = queryMode;
-			_sessionFactory = sessionFactory;
+			_sessionFactory = preTransformationResult.SessionFactory;
 			_queryVariables = preTransformationResult.QueryVariables;
 		}
 
@@ -67,12 +60,10 @@ namespace NHibernate.Linq.Visitors
 		}
 
 		public static Expression Visit(
-			QueryMode queryMode,
 			PreTransformationResult preTransformationResult,
-			ISessionFactoryImplementor sessionFactory,
 			out IDictionary<ConstantExpression, NamedParameter> parameters)
 		{
-			var visitor = new ExpressionParameterVisitor(queryMode, sessionFactory, preTransformationResult);
+			var visitor = new ExpressionParameterVisitor(preTransformationResult);
 			var expression = visitor.Visit(preTransformationResult.Expression);
 			parameters = visitor._parameters;
 
@@ -148,11 +139,8 @@ namespace NHibernate.Linq.Visitors
 				// comes up, it would be nice to combine the HQL parameter type determination code
 				// and the Expression information.
 
-				// When QueryMode.Select, create only one parameter for the same variable. HQL does not support
-				// reusing parameters for DML queries.
 				NamedParameter parameter = null;
-				if (_queryMode == QueryMode.Select &&
-				    _queryVariables != null &&
+				if (_queryVariables != null &&
 				    _queryVariables.TryGetValue(expression, out var variable) &&
 				    !_variableParameters.TryGetValue(variable, out parameter))
 				{

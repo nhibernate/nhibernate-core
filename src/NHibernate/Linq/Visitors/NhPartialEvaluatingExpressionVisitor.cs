@@ -32,28 +32,26 @@ namespace NHibernate.Linq.Visitors
 		/// </summary>
 		public static Expression EvaluateIndependentSubtrees(
 			Expression expressionTree,
-			IEvaluatableExpressionFilter evaluatableExpressionFilter,
-			IDictionary<ConstantExpression, QueryVariable> queryVariables)
+			PreTransformationParameters preTransformationParameters)
 		{
-			var partialEvaluationInfo = EvaluatableTreeFindingExpressionVisitor.Analyze(expressionTree, evaluatableExpressionFilter);
-			var visitor = new NhPartialEvaluatingExpressionVisitor(partialEvaluationInfo, evaluatableExpressionFilter, queryVariables);
+			var partialEvaluationInfo = EvaluatableTreeFindingExpressionVisitor.Analyze(
+				expressionTree,
+				preTransformationParameters.EvaluatableExpressionFilter);
+			var visitor = new NhPartialEvaluatingExpressionVisitor(partialEvaluationInfo, preTransformationParameters);
 
 			return visitor.Visit(expressionTree);
 		}
 
 		// _partialEvaluationInfo contains a list of the expressions that are safe to be evaluated.
 		private readonly PartialEvaluationInfo _partialEvaluationInfo;
-		private readonly IEvaluatableExpressionFilter _evaluatableExpressionFilter;
-		private readonly IDictionary<ConstantExpression, QueryVariable> _queryVariables;
+		private readonly PreTransformationParameters _preTransformationParameters;
 
 		private NhPartialEvaluatingExpressionVisitor(
 			PartialEvaluationInfo partialEvaluationInfo,
-			IEvaluatableExpressionFilter evaluatableExpressionFilter,
-			IDictionary<ConstantExpression, QueryVariable> queryVariables)
+			PreTransformationParameters preTransformationParameters)
 		{
 			_partialEvaluationInfo = partialEvaluationInfo;
-			_evaluatableExpressionFilter = evaluatableExpressionFilter;
-			_queryVariables = queryVariables;
+			_preTransformationParameters = preTransformationParameters;
 		}
 
 		public override Expression Visit(Expression expression)
@@ -81,7 +79,7 @@ namespace NHibernate.Linq.Visitors
 
 			if (evaluatedExpression != expression)
 			{
-				evaluatedExpression = EvaluateIndependentSubtrees(evaluatedExpression, _evaluatableExpressionFilter, _queryVariables);
+				evaluatedExpression = EvaluateIndependentSubtrees(evaluatedExpression, _preTransformationParameters);
 			}
 
 			// When having multiple level closure, we have to evaluate each closure independently
@@ -90,13 +88,15 @@ namespace NHibernate.Linq.Visitors
 				evaluatedExpression = VisitConstant(constantExpression);
 			}
 
-			// Variables in expressions are never a constant, they are encapsulated as fields of a compiler generated class
+			// Variables in expressions are never a constant, they are encapsulated as fields of a compiler generated class.
+			// Skip detecting variables for DML queries as HQL does not support reusing parameters for them.
 			if (expression.NodeType != ExpressionType.Constant &&
+				_preTransformationParameters.QueryMode == QueryMode.Select &&
 			    evaluatedExpression is ConstantExpression variableConstant &&
-			    !_queryVariables.ContainsKey(variableConstant) &&
+			    !_preTransformationParameters.QueryVariables.ContainsKey(variableConstant) &&
 			    IsVariable(expression, out var path, out var closureContext))
 			{
-				_queryVariables.Add(variableConstant, new QueryVariable(path, closureContext));
+				_preTransformationParameters.QueryVariables.Add(variableConstant, new QueryVariable(path, closureContext));
 			}
 
 			return evaluatedExpression;
@@ -106,7 +106,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			if (expression.Value is Expression value)
 			{
-				return EvaluateIndependentSubtrees(value, _evaluatableExpressionFilter, _queryVariables);
+				return EvaluateIndependentSubtrees(value, _preTransformationParameters);
 			}
 
 			return base.VisitConstant(expression);

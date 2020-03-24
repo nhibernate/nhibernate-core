@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
+using NHibernate.Engine;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -10,9 +11,11 @@ namespace NHibernate.Linq.Visitors
 	{
 		internal PreTransformationResult(
 			Expression expression,
+			ISessionFactoryImplementor sessionFactory,
 			IDictionary<ConstantExpression, QueryVariable> queryVariables)
 		{
 			Expression = expression;
+			SessionFactory = sessionFactory;
 			QueryVariables = queryVariables;
 		}
 
@@ -20,6 +23,11 @@ namespace NHibernate.Linq.Visitors
 		/// The transformed expression.
 		/// </summary>
 		public Expression Expression { get; }
+
+		/// <summary>
+		/// The session factory used in the pre-transform process.
+		/// </summary>
+		public ISessionFactoryImplementor SessionFactory { get; }
 
 		/// <summary>
 		/// A dictionary of <see cref="ConstantExpression"/> that were evaluated from variables.

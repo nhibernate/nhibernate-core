@@ -45,7 +45,9 @@ namespace NHibernate.Linq
 		internal NhLinqExpression(QueryMode queryMode, Expression expression, ISessionFactoryImplementor sessionFactory)
 		{
 			QueryMode = queryMode;
-			var preTransformResult = NhRelinqQueryParser.PreTransform(expression, sessionFactory);
+			var preTransformResult = NhRelinqQueryParser.PreTransform(
+				expression,
+				new PreTransformationParameters(queryMode, sessionFactory));
 			_expression = preTransformResult.Expression;
 
 			// We want logging to be as close as possible to the original expression sent from the
@@ -54,11 +56,7 @@ namespace NHibernate.Linq
 			// referenced from the main query.
 			LinqLogging.LogExpression("Expression (partially evaluated)", _expression);
 
-			_expression = ExpressionParameterVisitor.Visit(
-				QueryMode,
-				preTransformResult,
-				sessionFactory,
-				out _constantToParameterMap);
+			_expression = ExpressionParameterVisitor.Visit(preTransformResult, out _constantToParameterMap);
 
 			ParameterValuesByName = _constantToParameterMap.Values.Distinct().ToDictionary(p => p.Name,
 																				p => System.Tuple.Create(p.Value, p.Type));

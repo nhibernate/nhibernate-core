@@ -54,10 +54,12 @@ namespace NHibernate.Linq
 		/// </summary>
 		/// <param name="expression">The expression to transform.</param>
 		/// <returns>The transformed expression.</returns>
-		[Obsolete("Use overload with an additional sessionFactory parameter")]
+		[Obsolete("Use overload with PreTransformationParameters parameter")]
 		public static Expression PreTransform(Expression expression)
 		{
-			return PreTransform(expression, null).Expression;
+			// In order to keep the old behavior use a DML query mode to skip detecting variables,
+			// which will then generate parameters for each constant expression
+			return PreTransform(expression, new PreTransformationParameters(QueryMode.Delete, null)).Expression;
 		}
 
 		/// <summary>
@@ -65,17 +67,20 @@ namespace NHibernate.Linq
 		/// expression key computing and parsing.
 		/// </summary>
 		/// <param name="expression">The expression to transform.</param>
-		/// <param name="sessionFactory">The session factory.</param>
+		/// <param name="parameters">The parameters used in the transformation process.</param>
 		/// <returns><see cref="PreTransformationResult"/> that contains the transformed expression.</returns>
-		public static PreTransformationResult PreTransform(Expression expression, ISessionFactoryImplementor sessionFactory)
+		public static PreTransformationResult PreTransform(Expression expression, PreTransformationParameters parameters)
 		{
-			var queryVariables = new Dictionary<ConstantExpression, QueryVariable>();
+			parameters.EvaluatableExpressionFilter = new NhEvaluatableExpressionFilter(parameters.SessionFactory);
+			parameters.QueryVariables = new Dictionary<ConstantExpression, QueryVariable>();
+
 			var partiallyEvaluatedExpression = NhPartialEvaluatingExpressionVisitor
-				.EvaluateIndependentSubtrees(expression, new NhEvaluatableExpressionFilter(sessionFactory), queryVariables);
+				.EvaluateIndependentSubtrees(expression, parameters);
 
 			return new PreTransformationResult(
 				PreProcessor.Process(partiallyEvaluatedExpression),
-				queryVariables);
+				parameters.SessionFactory,
+				parameters.QueryVariables);
 		}
 
 		public static QueryModel Parse(Expression expression)
