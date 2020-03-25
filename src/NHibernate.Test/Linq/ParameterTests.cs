@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Engine.Query;
 using NHibernate.Linq;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -384,7 +387,18 @@ namespace NHibernate.Test.Linq
 					Is.EqualTo(linqParameterNumber ?? parameterNumber),
 					"Linq expression has different number of parameters");
 
+				var queryPlanCacheType = typeof(QueryPlanCache);
+				var cache = (SoftLimitMRUCache)
+					queryPlanCacheType
+						.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
+						.GetValue(Sfi.QueryPlanCache);
+				cache.Clear();
+
 				query.ToList();
+
+				// In case of arrays two query plans will be stored, one with an one without expended parameters
+				Assert.That(cache, Has.Count.EqualTo(linqParameterNumber.HasValue ? 2 : 1), "Query should be cacheable");
+
 				AssertParameters(sqlSpy, parameterNumber);
 			}
 		}
