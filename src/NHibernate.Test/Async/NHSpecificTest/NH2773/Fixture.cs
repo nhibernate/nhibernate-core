@@ -62,7 +62,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2773 {
                await (tx.CommitAsync());
             }
 
-
             using (MemoryStream sessionMemoryStream = new MemoryStream())
             {
                var formatter = new BinaryFormatter

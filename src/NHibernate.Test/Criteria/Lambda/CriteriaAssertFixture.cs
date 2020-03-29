@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 
 using NUnit.Framework;
 
@@ -8,11 +7,9 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
-
 	[TestFixture]
 	public class CriteriaAssertFixture : LambdaFixtureBase
 	{
-
 		private void AssertCriteriaAreNotEqual(ICriteria expected, ICriteria actual)
 		{
 			try
@@ -236,7 +233,5 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			AssertCriteriaAreNotEqual(expected, actual);
 		}
-
 	}
-
 }

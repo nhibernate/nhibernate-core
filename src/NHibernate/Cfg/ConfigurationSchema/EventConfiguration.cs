@@ -57,6 +57,5 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		{
 			get { return listeners; }
 		}
-
 	}
 }

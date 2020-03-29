@@ -21,7 +21,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1905
 		}
 	}
 
-
 	public class Det
 	{
 		private int _Id;

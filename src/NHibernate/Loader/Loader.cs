@@ -95,7 +95,7 @@ namespace NHibernate.Loader
 		/// <summary> 
 		/// An array of hash sets indicating which lazy properties will be fetched for an entity persister.
 		/// </summary>
-		protected virtual HashSet<string>[] EntityFetchLazyProperties
+		protected virtual ISet<string>[] EntityFetchLazyProperties
 		{
 			get { return null; }
 		}
@@ -262,7 +262,6 @@ namespace NHibernate.Loader
 		{
 			return DoQueryAndInitializeNonLazyCollections(session, queryParameters, returnProxies, null, null);
 		}
-
 
 		private IList DoQueryAndInitializeNonLazyCollections(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, 
 		                                                     IResultTransformer forcedResultTransformer,
@@ -737,7 +736,6 @@ namespace NHibernate.Loader
 			return resultTransformer;
 		}
 
-
 		/// <summary>
 		/// Are rows transformed immediately after being read from the ResultSet?
 		/// </summary>
@@ -747,12 +745,10 @@ namespace NHibernate.Loader
 			return false;
 		}
 
-
 		public virtual IList GetResultList(IList results, IResultTransformer resultTransformer)
 		{
 			return results;
 		}
-
 
 		/// <summary>
 		/// Returns the aliases that correspond to a result row.
@@ -762,7 +758,6 @@ namespace NHibernate.Loader
 		{
 			get { return null; }
 		}
-
 
 		/// <summary>
 		/// Get the actual object that is returned in the user-visible result list.
@@ -1163,7 +1158,7 @@ namespace NHibernate.Loader
 			return array != null && array[i];
 		}
 
-		private HashSet<string> GetFetchLazyProperties(int i)
+		private ISet<string> GetFetchLazyProperties(int i)
 		{
 			var array = EntityFetchLazyProperties;
 			return array?[i];

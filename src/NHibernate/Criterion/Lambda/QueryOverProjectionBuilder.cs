@@ -1,4 +1,3 @@
-
 using System;
 using System.Linq.Expressions;
 
@@ -6,10 +5,8 @@ using NHibernate.Impl;
 
 namespace NHibernate.Criterion.Lambda
 {
-
 	public class QueryOverProjectionBuilder<T>
 	{
-
 		private ProjectionList projectionList;
 		private IProjection lastProjection = null;
 
@@ -216,7 +213,5 @@ namespace NHibernate.Criterion.Lambda
 			PushProjection(Projections.Sum(expression));
 			return this;
 		}
-
 	}
-
 }

@@ -33,12 +33,21 @@ namespace NHibernate.SqlCommand
 				case JoinType.FullJoin:
 					joinString = " full outer join ";
 					break;
+				case JoinType.CrossJoin:
+					joinString = " cross join ";
+					break;
 				default:
 					throw new AssertionFailure("undefined join type");
 			}
 
-			_fromFragment.Add(joinString + tableName + ' ' + alias + " on ");
+			_fromFragment.Add(joinString).Add(tableName).Add(" ").Add(alias).Add(" ");
+			if (joinType == JoinType.CrossJoin)
+			{
+				// Cross join does not have an 'on' statement
+				return;
+			}
 
+			_fromFragment.Add("on ");
 			if (fkColumns.Length == 0)
 			{
 				AddBareCondition(_fromFragment, on);

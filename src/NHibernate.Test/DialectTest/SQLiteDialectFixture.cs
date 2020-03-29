@@ -103,7 +103,6 @@ namespace NHibernate.Test.DialectTest
             Assert.AreEqual("\"Group\"", tbl.GetQualifiedName(dialect));
         }
 
-
         [Test]
         public void SchemaNameWithSqlLite()
         {

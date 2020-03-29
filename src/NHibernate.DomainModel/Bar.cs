@@ -12,7 +12,6 @@ namespace NHibernate.DomainModel
 		private string _name = "bar";
 		private object _object;
 
-
 		/// <summary>
 		/// Gets or sets the X
 		/// </summary> 
@@ -31,7 +30,6 @@ namespace NHibernate.DomainModel
 			set { _barString = value; }
 		}
 
-
 		/// <summary>
 		/// Gets or sets the _barComponent
 		/// </summary> 
@@ -40,7 +38,6 @@ namespace NHibernate.DomainModel
 			get { return _barComponent; }
 			set { _barComponent = value; }
 		}
-
 
 		/// <summary>
 		/// Gets or sets the _baz
@@ -51,7 +48,6 @@ namespace NHibernate.DomainModel
 			set { _baz = value; }
 		}
 
-
 		/// <summary>
 		/// Gets or sets the _name
 		/// </summary> 
@@ -60,7 +56,6 @@ namespace NHibernate.DomainModel
 			get { return _name; }
 			set { _name = value; }
 		}
-
 
 		/// <summary>
 		/// Gets or sets the _object

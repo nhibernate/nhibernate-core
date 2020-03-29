@@ -32,12 +32,10 @@ namespace NHibernate.Test.UtilityTest
 
 		public interface IEmpty
 		{
-
 		}
 
 		public interface IComplex: IEmpty, IMyInheritedWithEqual
 		{
-			
 		}
 
 		[Test]

@@ -88,7 +88,6 @@ namespace NHibernate.Test.Criteria.Lambda
 						.Where(p => p.Name == father.Name && p.Father.Id == 10 && child.Nickname == "nickname" && child.Age > person.Age).UnderlyingCriteria;
 
 				BenchQuery(s, criteria);
-
 			}
 		}
 

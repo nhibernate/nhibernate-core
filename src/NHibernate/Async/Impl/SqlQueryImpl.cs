@@ -107,6 +107,7 @@ namespace NHibernate.Impl
 		}
 
 		// Since v5.2
+		/// <inheritdoc />
 		[Obsolete("This method has no usages and will be removed in a future version")]
 		protected internal override Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{

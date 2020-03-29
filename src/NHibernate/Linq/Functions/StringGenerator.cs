@@ -10,7 +10,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Linq.Functions
 {
-	public class LikeGenerator : IHqlGeneratorForMethod, IRuntimeMethodHqlGenerator
+	public class LikeGenerator : IHqlGeneratorForMethod, IRuntimeMethodHqlGenerator, IHqlGeneratorForMethodExtended
 	{
 		public IEnumerable<MethodInfo> SupportedMethods
 		{
@@ -35,7 +35,6 @@ namespace NHibernate.Linq.Functions
 					treeBuilder.Constant(escapeCharExpression.Value));
 			}
 			throw new ArgumentException("The escape character must be specified as literal value or a string variable");
-
 		}
 
 		public bool SupportsMethod(MethodInfo method)
@@ -58,8 +57,9 @@ namespace NHibernate.Linq.Functions
 		{
 			return this;
 		}
-	}
 
+		public bool AllowsNullableReturnType(MethodInfo method) => false;
+	}
 
 	public class LengthGenerator : BaseHqlGeneratorForProperty
 	{
@@ -81,6 +81,8 @@ namespace NHibernate.Linq.Functions
 			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition<string>(x => x.StartsWith(null)) };
 		}
 
+		public override bool AllowsNullableReturnType(MethodInfo method) => false;
+
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			return treeBuilder.Like(
@@ -98,6 +100,8 @@ namespace NHibernate.Linq.Functions
 			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition<string>(x => x.EndsWith(null)) };
 		}
 
+		public override bool AllowsNullableReturnType(MethodInfo method) => false;
+
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			return treeBuilder.Like(
@@ -114,6 +118,8 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition<string>(x => x.Contains(null)) };
 		}
+
+		public override bool AllowsNullableReturnType(MethodInfo method) => false;
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{

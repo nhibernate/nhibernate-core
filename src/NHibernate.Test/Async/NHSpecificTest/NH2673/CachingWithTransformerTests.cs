@@ -63,7 +63,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 					blog.Posts.Add(new Post { Title = "Second post", Body = "Some other text" });
 					blog.Posts.Add(new Post { Title = "Third post", Body = "Third post text" });
 
-
 					blog.Comments.Add(new Comment { Title = "First comment", Body = "Some text" });
 					blog.Comments.Add(new Comment { Title = "Second comment", Body = "Some other text" });
 					session.Save(blog);
@@ -221,7 +220,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 			}
 		}
 
-		
 		[Test(Description = "NH2961/3311")]
 		public async Task CanCacheCriteriaWithLeftJoinAndResultTransformerAsync()
 		{
@@ -239,7 +237,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 			}
 		}
 
-
 		[Test(Description = "NH2961/3311")]
 		public async Task CanCacheCriteriaWithEagerLoadAndResultTransformerAsync()
 		{
@@ -255,7 +252,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 			}
 		}
 
-		
 		[Test(Description = "NH2961/3311")]
 		public async Task CanCacheCriteriaWithLeftJoinAsync()
 		{

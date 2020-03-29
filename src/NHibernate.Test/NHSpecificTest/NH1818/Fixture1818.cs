@@ -32,7 +32,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1818
 			return dialect as PostgreSQL82Dialect != null;
 		}
 
-
 		[Test]
 		[Description("Test HQL query on a property mapped with a formula.")]
 		public void ComputedPropertyShouldRetrieveDataCorrectly()

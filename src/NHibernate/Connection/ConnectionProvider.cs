@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Configuration;
 using System.Data.Common;
 
 using NHibernate.Driver;
@@ -25,6 +24,9 @@ namespace NHibernate.Connection
 		/// <param name="conn">The <see cref="DbConnection"/> to clean up.</param>
 		public virtual void CloseConnection(DbConnection conn)
 		{
+			if (conn == null)
+				throw new ArgumentNullException(nameof(conn));
+
 			log.Debug("Closing connection");
 			try
 			{

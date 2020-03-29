@@ -58,7 +58,6 @@ namespace NHibernate.Test.CompositeId
 			}
 		}
 
-
 		/// <summary>
 		/// Test the basic CRUD operations for a class with a Composite Identifier
 		/// </summary>
@@ -365,6 +364,36 @@ namespace NHibernate.Test.CompositeId
 				var results = await (s.CreateQuery("from ClassWithCompositeId x where x in (select s from ClassWithCompositeId s where s.Id.KeyString = :keyString)")
 								.SetParameter("keyString", id.KeyString).ListAsync());
 				Assert.That(results.Count, Is.EqualTo(2));
+			}
+		}
+
+		//NH-2926 (GH-1103)
+		[Test]
+		public async Task QueryOverOrderByAndWhereWithIdProjectionDoesntThrowAsync()
+		{
+			// insert the new objects
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				ClassWithCompositeId theClass = new ClassWithCompositeId(id);
+				theClass.OneProperty = 5;
+
+				ClassWithCompositeId theSecondClass = new ClassWithCompositeId(secondId);
+				theSecondClass.OneProperty = 10;
+
+				await (s.SaveAsync(theClass));
+				await (s.SaveAsync(theSecondClass));
+
+				await (t.CommitAsync());
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var results = await (s.QueryOver<ClassWithCompositeId>()
+								.Select(Projections.Id())
+								.Where(Restrictions.Eq(Projections.Id(), id))
+								.OrderBy(Projections.Id()).Desc.ListAsync<Id>());
+				Assert.That(results.Count, Is.EqualTo(1));
 			}
 		}
 	}

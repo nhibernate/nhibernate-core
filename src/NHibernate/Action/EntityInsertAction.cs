@@ -48,7 +48,6 @@ namespace NHibernate.Action
 			// else inserted the same pk first, the insert would fail
 			if (!veto)
 			{
-
 				persister.Insert(id, State, instance, Session);
 
 				EntityEntry entry = Session.PersistenceContext.GetEntry(instance);

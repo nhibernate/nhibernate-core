@@ -25,7 +25,7 @@ namespace NHibernate.Collection.Generic
 	/// <remarks>The underlying collection used is an <see cref="List{T}"/></remarks>
 	[Serializable]
 	[DebuggerTypeProxy(typeof (CollectionProxy<>))]
-	public partial class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
+	public partial class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IReadOnlyList<T>, IList, IQueryable<T>
 	{
 		// TODO NH: find a way to writeonce (no duplicated code from PersistentBag)
 

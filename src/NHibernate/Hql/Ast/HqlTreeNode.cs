@@ -257,6 +257,28 @@ namespace NHibernate.Hql.Ast
 					throw new NotSupportedException(string.Format("Don't currently support idents of type {0}", type.Name));
 			}
 		}
+
+		internal static bool SupportsType(System.Type type)
+		{
+			type = type.UnwrapIfNullable();
+			switch (System.Type.GetTypeCode(type))
+			{
+				case TypeCode.Boolean:
+				case TypeCode.Int16:
+				case TypeCode.Int32:
+				case TypeCode.Int64:
+				case TypeCode.Decimal:
+				case TypeCode.Single:
+				case TypeCode.DateTime:
+				case TypeCode.String:
+				case TypeCode.Double:
+					return true;
+				default:
+					return
+						type == typeof(Guid) ||
+						type == typeof(DateTimeOffset);
+			}
+		}
 	}
 
 	public class HqlRange : HqlStatement
@@ -822,9 +844,24 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
+	public class HqlInnerJoin : HqlTreeNode
+	{
+		public HqlInnerJoin(IASTFactory factory, HqlExpression expression, HqlAlias alias)
+			: base(HqlSqlWalker.JOIN, "join", factory, new HqlInner(factory), expression, alias)
+		{
+		}
+	}
+
 	public class HqlLeftJoin : HqlTreeNode
 	{
 		public HqlLeftJoin(IASTFactory factory, HqlExpression expression, HqlAlias @alias) : base(HqlSqlWalker.JOIN, "join", factory, new HqlLeft(factory), expression, @alias)
+		{
+		}
+	}
+
+	public class HqlCrossJoin : HqlTreeNode
+	{
+		public HqlCrossJoin(IASTFactory factory, HqlExpression expression, HqlAlias @alias) : base(HqlSqlWalker.JOIN, "join", factory, new HqlCross(factory), expression, @alias)
 		{
 		}
 	}
@@ -876,10 +913,26 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
+	public class HqlInner : HqlTreeNode
+	{
+		public HqlInner(IASTFactory factory)
+			: base(HqlSqlWalker.INNER, "inner", factory)
+		{
+		}
+	}
+
 	public class HqlLeft : HqlTreeNode
 	{
 		public HqlLeft(IASTFactory factory)
 			: base(HqlSqlWalker.LEFT, "left", factory)
+		{
+		}
+	}
+
+	public class HqlCross : HqlTreeNode
+	{
+		public HqlCross(IASTFactory factory)
+			: base(HqlSqlWalker.CROSS, "cross", factory)
 		{
 		}
 	}

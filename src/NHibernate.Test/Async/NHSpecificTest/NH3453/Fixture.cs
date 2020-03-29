@@ -24,7 +24,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3453
             using (var session = OpenSession())
             using (session.BeginTransaction())
             {
-
                 var direction1 = new Direction { Id1 = 1, Id2 = 1, GUID = Guid.NewGuid() };
                 await (session.SaveAsync(direction1));
                 
@@ -51,6 +50,5 @@ namespace NHibernate.Test.NHSpecificTest.NH3453
                 Assert.That(true);
             }
         }
-
-    }
+	}
 }

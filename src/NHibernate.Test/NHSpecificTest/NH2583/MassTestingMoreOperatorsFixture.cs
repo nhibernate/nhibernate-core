@@ -80,7 +80,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     Setters<TBO1_I, TBO1_I>(MyBO.SetBO1_I1, MyBO.SetBO1_I2));
         }
 
-
         [Test]
         public void TestNestedPlusBehindOrNav2()
         {

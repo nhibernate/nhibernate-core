@@ -90,11 +90,11 @@ namespace NHibernate.Id
 		/// Get the database-specific SQL command to retrieve the last
 		/// generated IDENTITY value.
 		/// </summary>
-		string IdentitySelectString { get;}
+		string IdentitySelectString { get; }
 
 		/// <summary> The names of the primary key columns in the root table. </summary>
 		/// <returns> The primary key column names. </returns>
-		string[] RootTableKeyColumnNames { get;}
+		string[] RootTableKeyColumnNames { get; }
 
 		/// <summary> 
 		/// Get a SQL select string that performs a select based on a unique

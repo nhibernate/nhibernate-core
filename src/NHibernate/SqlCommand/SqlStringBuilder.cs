@@ -164,7 +164,6 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
-
 		/// <summary>
 		/// Adds an existing SqlString to this SqlStringBuilder
 		/// </summary>

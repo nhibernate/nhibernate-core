@@ -152,6 +152,40 @@
 										<xs:enumeration value="order_updates" />
 										<xs:enumeration value="query.query_model_rewriter_factory" />
 										<xs:enumeration value="linqtohql.generatorsregistry" />
+										<xs:enumeration value="linqtohql.legacy_preevaluation">
+											<xs:annotation>
+												<xs:documentation>
+													Whether to use the legacy pre-evaluation or not in Linq queries. true by default.
+
+													Legacy pre-evaluation is causing special properties or functions like DateTime.Now or Guid.NewGuid()
+													to be always evaluated with the .Net runtime and replaced in the query by parameter values.
+
+													The new pre-evaluation allows them to be converted to HQL function calls which will be run on the db
+													side. This allows for example to retrieve the server time instead of the client time, or to generate
+													UUIDs for each row instead of an unique one for all rows.
+
+													The new pre-evaluation will likely be enabled by default in the next major version (6.0).
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="linqtohql.fallback_on_preevaluation">
+											<xs:annotation>
+												<xs:documentation>
+													When the new pre-evaluation is enabled, should methods which translation is not supported by the current
+													dialect fallback to pre-evaluation? false by default.
+
+													When this fallback option is enabled while legacy pre-evaluation is disabled, properties or functions
+													like DateTime.Now or Guid.NewGuid() used in Linq expressions will not fail when the dialect does not
+													support them, but will instead be pre-evaluated.
+
+													When this fallback option is disabled while legacy pre-evaluation is disabled, properties or functions
+													like DateTime.Now or Guid.NewGuid() used in Linq expressions will fail when the dialect does not
+													support them.
+
+													This option has no effect if the legacy pre-evaluation is enabled.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="odbc.explicit_datetime_scale" />
 										<xs:enumeration value="adonet.batch_versioned_data" />
 										<xs:enumeration value="transaction.system_completion_lock_timeout">
@@ -215,6 +249,18 @@
 													commands for detecting parameters in them and adding an explicit SQL cast around
 													parameters which may trigger the issue.
 													For disabling this behavior, set this setting to true.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="sqlite.binaryguid">
+											<xs:annotation>
+												<xs:documentation>
+													SQLite can store GUIDs in binary or text form, controlled by the BinaryGuid
+													connection string parameter (default is 'true'). The BinaryGuid setting will affect
+													how to cast GUID to string in SQL. NHibernate will attempt to detect this
+													setting automatically from the connection string, but if the connection
+													or connection string is being handled by the application instead of by NHibernate,
+													you can use the 'sqlite.binaryguid' NHibernate setting to override the behavior.
 												</xs:documentation>
 											</xs:annotation>
 										</xs:enumeration>

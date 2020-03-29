@@ -7,7 +7,7 @@
   - pattern: ^.*(Hql\.g).*$
   analyzation:
     methodConversion:
-#TODO 6.0: Remove ignore rule for IQueryBatchItem.ProcessResults  
+#TODO 6.0: Remove ignore rule for IQueryBatchItem.ProcessResults
     - conversion: Ignore
       name: ProcessResults
       containingTypeName: IQueryBatchItem
@@ -121,7 +121,7 @@
     - conversion: ToAsync
       rule: Cache
     - conversion: ToAsync
-      rule: TransactionCompletion      
+      rule: TransactionCompletion
     typeConversion:
     - conversion: Ignore
       name: EnumerableImpl
@@ -276,7 +276,7 @@ methodRules:
   - containingType: NHibernate.Action.IAfterTransactionCompletionProcess
   - containingType: NHibernate.Action.IBeforeTransactionCompletionProcess
   - containingType: NHibernate.Action.EntityAction
-    name: BeforeTransactionCompletionProcessImpl  
+    name: BeforeTransactionCompletionProcessImpl
   name: TransactionCompletion
 - filters:
   - containingNamespace: NHibernate

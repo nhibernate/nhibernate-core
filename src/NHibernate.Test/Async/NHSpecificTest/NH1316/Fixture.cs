@@ -62,7 +62,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1316
 			}
 		}
 
-
 		[Test]
 		public async Task Correct_Id_Returned_When_Using_TriggerAsync()
 		{

@@ -139,7 +139,6 @@ namespace NHibernate.Test.Linq.ByMethod
 			AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
 		}
 
-
 		[Test]
 		public async Task SingleKeyPropertyGroupAndOrderByCountBeforeProjectionAsync()
 		{
@@ -901,7 +900,6 @@ namespace NHibernate.Test.Linq.ByMethod
 				return Item1.GetHashCode() ^ Item2.GetHashCode();
 			}
 		}
-
 
 		[Test(Description = "NH-3446"), KnownBug("NH-3446", "NHibernate.HibernateException")]
 		public async Task GroupByOrderByKeySelectToClassAsync()

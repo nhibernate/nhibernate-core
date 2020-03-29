@@ -23,5 +23,4 @@ namespace NHibernate.Test.NHSpecificTest.NH1863
 
 		public virtual bool IsActive { get; set; }
 	}
-
 }

@@ -5,7 +5,6 @@ namespace NHibernate.Dialect.Schema
 {
 	public static class SchemaHelper
 	{
-
 		/// <summary>
 		/// Get a value from the DataRow. Multiple alternative column names can be given.
 		/// The names are tried in order, and the value from the first present column
@@ -27,7 +26,6 @@ namespace NHibernate.Dialect.Schema
 
 			throw new InvalidOperationException("None of the alternative column names found in the DataTable.");
 		}
-
 
 		/// <summary>
 		/// Get a string value from the DataRow. Multiple alternative column names can be given.

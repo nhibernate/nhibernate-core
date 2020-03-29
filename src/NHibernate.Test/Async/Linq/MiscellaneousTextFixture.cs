@@ -27,7 +27,8 @@ namespace NHibernate.Test.Linq
         [Test(Description = "This sample uses Count to find the number of Orders placed before yesterday in the database.")]
         public async Task CountWithWhereClauseAsync()
   {
-      var q = from o in db.Orders where o.OrderDate <= DateTime.Today.AddDays(-1) select o;
+      var yesterday = DateTime.Today.AddDays(-1);
+      var q = from o in db.Orders where o.OrderDate <= yesterday select o;
 
       var count = await (q.CountAsync());
 

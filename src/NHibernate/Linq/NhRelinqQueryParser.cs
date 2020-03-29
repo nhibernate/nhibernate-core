@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Engine;
 using NHibernate.Linq.ExpressionTransformers;
 using NHibernate.Linq.Visitors;
 using NHibernate.Util;
@@ -44,15 +46,30 @@ namespace NHibernate.Linq
 			QueryParser = new QueryParser(expressionTreeParser);
 		}
 
+		// Obsolete since v5.3
 		/// <summary>
-		/// Applies the minimal transformations required before parameterization,
+		/// Applies the minimal transformations required before parametrization,
 		/// expression key computing and parsing.
 		/// </summary>
 		/// <param name="expression">The expression to transform.</param>
 		/// <returns>The transformed expression.</returns>
+		[Obsolete("Use overload with an additional sessionFactory parameter")]
 		public static Expression PreTransform(Expression expression)
 		{
-			var partiallyEvaluatedExpression = NhPartialEvaluatingExpressionVisitor.EvaluateIndependentSubtrees(expression);
+			return PreTransform(expression, null);
+		}
+
+		/// <summary>
+		/// Applies the minimal transformations required before parametrization,
+		/// expression key computing and parsing.
+		/// </summary>
+		/// <param name="expression">The expression to transform.</param>
+		/// <param name="sessionFactory">The session factory.</param>
+		/// <returns>The transformed expression.</returns>
+		public static Expression PreTransform(Expression expression, ISessionFactoryImplementor sessionFactory)
+		{
+			var partiallyEvaluatedExpression =
+				NhPartialEvaluatingExpressionVisitor.EvaluateIndependentSubtrees(expression, sessionFactory);
 			return PreProcessor.Process(partiallyEvaluatedExpression);
 		}
 

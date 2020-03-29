@@ -281,7 +281,6 @@ namespace NHibernate.Impl
 		/// <returns>An info string, in the form [Foo.bars#1]</returns>
 		internal static String CollectionInfoString(ICollectionPersister persister, IPersistentCollection collection, object collectionKey, ISessionImplementor session)
 		{
-
 			StringBuilder s = new StringBuilder();
 			s.Append("[");
 			if (persister == null)

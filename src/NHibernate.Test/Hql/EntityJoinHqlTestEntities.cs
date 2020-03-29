@@ -14,7 +14,6 @@ namespace NHibernate.Test.Hql.EntityJoinHqlTestEntities
 
 		public virtual EntityComplex SameTypeChild { get; set; }
 		public virtual EntityComplex SameTypeChild2 { get; set; }
-
 	}
 
 	public class EntityWithCompositeId

@@ -70,6 +70,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1693
 				tx.Commit();
 			}
 		}
-
 	}
 }

@@ -102,7 +102,6 @@ namespace NHibernate.Test.UtilityTest
 			Assert.IsTrue(second.WasDisposed, "second should have been disposed of. ");
 		}
 
-
 		private static JoinedEnumerable<int> InitSingle(out EnumerableTester<int> first)
 		{
 			first = new EnumerableTester<int>(new List<int>(new int[] { 1, 2, 3 }));

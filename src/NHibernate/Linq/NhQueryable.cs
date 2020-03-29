@@ -33,7 +33,6 @@ namespace NHibernate.Linq
 			EntityName = entityName;
 		}
 
-
 		// This constructor is called indirectly by LINQ's query methods, just pass to base.
 		public NhQueryable(IQueryProvider provider, Expression expression)
 			: this(provider, expression, typeof(T).FullName)

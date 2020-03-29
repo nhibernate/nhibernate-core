@@ -544,7 +544,6 @@ namespace NHibernate.Test.QueryTest
 				tx.Commit();
 
 				Assert.That(count, Is.EqualTo(0), "Session wasn't auto flushed.");
-
 			}
 		}
 	}

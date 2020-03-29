@@ -48,7 +48,6 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		
 		private class MyClass : MyBaseClass
 		{
-			
 		}
 
 		[Test]
@@ -181,7 +180,6 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 
 		private interface IMyEntity : IEntity<Guid>
 		{
-
 		}
 
 		[Test]

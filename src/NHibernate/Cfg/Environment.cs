@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Reflection;
 
 using NHibernate.Bytecode;
@@ -227,6 +226,48 @@ namespace NHibernate.Cfg
 
 		public const string LinqToHqlGeneratorsRegistry = "linqtohql.generatorsregistry";
 
+		/// <summary>
+		/// Whether to use the legacy pre-evaluation or not in Linq queries. <c>true</c> by default.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Legacy pre-evaluation is causing special properties or functions like <c>DateTime.Now</c> or
+		/// <c>Guid.NewGuid()</c> to be always evaluated with the .Net runtime and replaced in the query by
+		/// parameter values.
+		/// </para>
+		/// <para>
+		/// The new pre-evaluation allows them to be converted to HQL function calls which will be run on the db
+		/// side. This allows for example to retrieve the server time instead of the client time, or to generate
+		/// UUIDs for each row instead of an unique one for all rows. (This does not happen if the dialect does
+		/// not support the required HQL function.)
+		/// </para>
+		/// <para>
+		/// The new pre-evaluation will likely be enabled by default in the next major version (6.0).
+		/// </para>
+		/// </remarks>
+		public const string LinqToHqlLegacyPreEvaluation = "linqtohql.legacy_preevaluation";
+
+		/// <summary>
+		/// When the new pre-evaluation is enabled, should methods which translation is not supported by the current
+		/// dialect fallback to pre-evaluation? <c>false</c> by default.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// When this fallback option is enabled while legacy pre-evaluation is disabled, properties or functions
+		/// like <c>DateTime.Now</c> or <c>Guid.NewGuid()</c> used in Linq expressions will not fail when the dialect does not
+		/// support them, but will instead be pre-evaluated.
+		/// </para>
+		/// <para>
+		/// When this fallback option is disabled while legacy pre-evaluation is disabled, properties or functions
+		/// like <c>DateTime.Now</c> or <c>Guid.NewGuid()</c> used in Linq expressions will fail when the dialect does not
+		/// support them.
+		/// </para>
+		/// <para>
+		/// This option has no effect if the legacy pre-evaluation is enabled.
+		/// </para>
+		/// </remarks>
+		public const string LinqToHqlFallbackOnPreEvaluation = "linqtohql.fallback_on_preevaluation";
+
 		/// <summary> Enable ordering of insert statements for the purpose of more efficient batching.</summary>
 		public const string OrderInserts = "order_inserts";
 
@@ -382,19 +423,10 @@ namespace NHibernate.Cfg
 
 		private static IHibernateConfiguration GetHibernateConfiguration()
 		{
-			object config = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName);
-			if (config == null)
+			var nhConfig = ConfigurationProvider.Current.GetConfiguration();
+			if (nhConfig == null && log.IsInfoEnabled())
 			{
 				log.Info("{0} section not found in application configuration file", CfgXmlHelper.CfgSectionName);
-				return null;
-			}
-
-			var nhConfig = config as IHibernateConfiguration;
-			if (nhConfig == null)
-			{
-				log.Info(
-					"{0} section handler, in application configuration file, is not IHibernateConfiguration, section ignored",
-					CfgXmlHelper.CfgSectionName);
 			}
 
 			return nhConfig;
@@ -566,7 +598,6 @@ namespace NHibernate.Cfg
 			}
 		}
 
-
 		/// <summary>
 		/// Get a named connection string, if configured.
 		/// </summary>
@@ -576,17 +607,12 @@ namespace NHibernate.Cfg
 		/// </exception>
 		internal static string GetNamedConnectionString(IDictionary<string, string> settings)
 		{
-			string connStringName;
-			if (!settings.TryGetValue(ConnectionStringName, out connStringName))
+			if (!settings.TryGetValue(ConnectionStringName, out var connStringName))
 				return null;
 
-			ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings[connStringName];
-			if (connectionStringSettings == null)
-				throw new HibernateException($"Could not find named connection string '{connStringName}'.");
-
-			return connectionStringSettings.ConnectionString;
+			return ConfigurationProvider.Current.GetNamedConnectionString(connStringName)
+			       ?? throw new HibernateException($"Could not find named connection string '{connStringName}'.");
 		}
-
 
 		/// <summary>
 		/// Get the configured connection string, from <see cref="ConnectionString"/> if that

@@ -20,7 +20,7 @@ namespace NHibernate.Proxy
 		/// <summary>
 		/// The entity-name of the entity our owning proxy represents.
 		/// </summary>
-		string EntityName { get;}
+		string EntityName { get; }
 
 		/// <summary>
 		/// Get the actual class of the entity.  Generally, <see cref="EntityName" /> should be used instead.

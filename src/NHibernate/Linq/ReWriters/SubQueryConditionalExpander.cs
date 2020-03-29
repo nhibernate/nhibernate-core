@@ -103,7 +103,6 @@ namespace NHibernate.Linq.ReWriters
 				var newTest = Visit(node.Test);
 				_nominate.Pop();
 
-
 				_nominate.Push(false);
 				var newTrue = Visit(node.IfTrue);
 				if (_nominate.Pop() && _subQueryCollectionType.IsAssignableFrom(newTrue.Type))

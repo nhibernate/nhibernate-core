@@ -163,6 +163,53 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				Assert.That(NHibernateUtil.IsInitialized(root), Is.True);
 				Assert.That(root.LazyProp, Is.Not.Null);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(root, nameof(root.LazyProp)), Is.True, "Lazy property must be fetched.");
+				Assert.That(NHibernateUtil.IsPropertyInitialized(root, nameof(root.LazyProp2)), Is.True, "Lazy property must be fetched.");
+
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public void SelectModeFetchKeepLazyPropertiesUninitialized()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var root = session.QueryOver<EntityComplex>()
+								.Fetch(SelectMode.Fetch, ec => ec)
+								.Where(ec => ec.LazyProp != null)
+								.Take(1)
+								.SingleOrDefault();
+
+				Assert.That(root, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(root), Is.True);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(root, nameof(root.LazyProp)), Is.False, "Property must be lazy.");
+				Assert.That(NHibernateUtil.IsPropertyInitialized(root, nameof(root.LazyProp2)), Is.False, "Property must be lazy.");
+
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public void SelectModeFetchLazyPropertiesFetchGroup()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var root = session.QueryOver<EntityComplex>()
+								.Fetch(SelectMode.FetchLazyPropertyGroup, ec => ec.LazyProp, ec => ec.LazyProp2, ec => ec.SameTypeChild.LazyProp2)
+								.Where(ec => ec.Id == _parentEntityComplexId)
+								.SingleOrDefault();
+
+				Assert.That(root, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(root), Is.True);
+				Assert.That(root.LazyProp, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(root, nameof(root.LazyProp)), Is.True, "Lazy property must be fetched.");
+				Assert.That(NHibernateUtil.IsPropertyInitialized(root, nameof(root.LazyProp2)), Is.True, "Lazy property must be fetched.");
+				Assert.That(NHibernateUtil.IsInitialized(root.SameTypeChild), Is.True, "Object must be initialized.");
+				Assert.That(root.SameTypeChild, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(root.SameTypeChild, nameof(root.LazyProp2)), Is.True, "Lazy property must be fetched.");
+				Assert.That(NHibernateUtil.IsPropertyInitialized(root.SameTypeChild, nameof(root.LazyProp)), Is.False, "Property must be lazy.");
 
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
@@ -610,7 +657,16 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 
 					rc.Property(x => x.Name);
 
-					rc.Property(ep => ep.LazyProp, m => m.Lazy(true));
+					rc.Property(ep => ep.LazyProp, m =>
+					{
+						m.Lazy(true);
+						m.FetchGroup("LazyGroup");
+					});
+					rc.Property(ep => ep.LazyProp2, m =>
+					{
+						m.Lazy(true);
+						m.FetchGroup("LazyGroup2");
+					});
 
 					rc.ManyToOne(
 						ep => ep.Child1,
@@ -686,7 +742,6 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 									ckm.Name("ParentId");
 								});
 							km.ForeignKey("none");
-
 						});
 					m.Cascade(Mapping.ByCode.Cascade.All);
 					if (fetchMode != null)
@@ -783,9 +838,12 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 					Child1 = child1,
 					Child2 = child2,
 					LazyProp = "SomeBigValue",
+					LazyProp2 = "SomeBigValue2",
 					SameTypeChild = new EntityComplex()
 					{
-						Name = "ComplexEntityChild"
+						Name = "ComplexEntityChild",
+						LazyProp = "LazyProp1",
+						LazyProp2 = "LazyProp2",
 					},
 					ChildrenList = new List<EntitySimpleChild> {child3, child1, child4 },
 					ChildrenListEmpty = new List<EntityComplex> { },
