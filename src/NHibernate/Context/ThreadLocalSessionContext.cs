@@ -40,7 +40,6 @@ namespace NHibernate.Context
 
 		protected readonly ISessionFactoryImplementor factory;
 
-
 		public ThreadLocalSessionContext(ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;

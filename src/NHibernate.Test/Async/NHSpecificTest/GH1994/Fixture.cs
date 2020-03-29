@@ -117,6 +117,23 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 			}
 		}
 
+		[Test]
+		public async Task TestFilteredBagQueryOverAsync()
+		{
+			using (var s = OpenSession())
+			{
+				s.EnableFilter("deletedFilter").SetParameter("deletedParam", false);
+
+				var query = await (s.QueryOver<Asset>()
+				             .Fetch(SelectMode.Fetch, x => x.DocumentsBag)
+				             .TransformUsing(Transformers.DistinctRootEntity)
+				             .ListAsync<Asset>());
+
+				Assert.That(query.Count, Is.EqualTo(1), "filtered assets");
+				Assert.That(query[0].DocumentsBag.Count, Is.EqualTo(1), "filtered asset documents");
+			}
+		}
+
 		//NH-2991
 		[Test]
 		public async Task TestQueryOverRestrictionWithClauseAsync()

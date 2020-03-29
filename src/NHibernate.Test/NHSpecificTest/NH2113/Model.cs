@@ -2,7 +2,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2113
 {
 	public class Loan
 	{
-        public virtual Broker Broker{ get; set;}
+        public virtual Broker Broker{ get; set; }
         public virtual Group Group { get; set; }
         public virtual string Name { get; set; }
 

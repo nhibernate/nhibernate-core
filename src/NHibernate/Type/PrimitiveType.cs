@@ -17,9 +17,9 @@ namespace NHibernate.Type
 		protected PrimitiveType(SqlType sqlType)
 			: base(sqlType) {}
 
-		public abstract System.Type PrimitiveClass { get;}
+		public abstract System.Type PrimitiveClass { get; }
 
-		public abstract object DefaultValue { get;}
+		public abstract object DefaultValue { get; }
 
 		#region ILiteralType Members
 

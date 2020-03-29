@@ -26,7 +26,6 @@ namespace NHibernate.DomainModel
 			set { _i = value; }
 		}
 
-
 		public ISet<SubDetail> SubDetails
 		{
 			get { return _details; }

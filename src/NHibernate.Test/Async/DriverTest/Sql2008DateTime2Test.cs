@@ -74,6 +74,5 @@ namespace NHibernate.Test.DriverTest
 				await (t.CommitAsync());
 			}
 		}
-
 	}
 }

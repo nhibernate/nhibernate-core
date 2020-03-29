@@ -75,7 +75,6 @@ namespace NHibernate.Loader.Criteria
 				.TransformTuple(await (GetResultRowAsync(row, rs, session, cancellationToken)).ConfigureAwait(false), ResultRowAliases);
 		}
 
-
 		protected override async Task<object[]> GetResultRowAsync(object[] row, DbDataReader rs, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();

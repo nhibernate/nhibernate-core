@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,7 +61,6 @@ namespace NHibernate.Criterion
 			}
 			return criteria.UniqueResultAsync<U>(cancellationToken);
 		}
-
 
 		Task<IList<TRoot>> IQueryOver<TRoot>.ListAsync(CancellationToken cancellationToken)
 		{
@@ -131,7 +129,5 @@ namespace NHibernate.Criterion
 			}
 			return SingleOrDefaultAsync<U>(cancellationToken);
 		}
-
 	}
-
 }

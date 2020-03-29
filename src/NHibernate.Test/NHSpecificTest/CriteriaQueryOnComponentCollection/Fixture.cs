@@ -94,7 +94,6 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 			}
 		}
 
-
 		[TestCase(JoinType.LeftOuterJoin)]
 		[TestCase(JoinType.InnerJoin)]
 		public void CanQueryByCriteriaOnSetOfElementByCreateAlias(JoinType joinType)
@@ -112,7 +111,6 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 				Assert.That(((Employee) list[0]).Id, Is.EqualTo(1));
 			}
 		}
-
 
 		[Test]
 		public void CanQueryByCriteriaOnSetOfCompositeElement_UsingDetachedCriteria()
@@ -133,7 +131,6 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 			}
 		}
 
-
 		protected override string[] Mappings
 		{
 			get { return new[] {"NHSpecificTest.CriteriaQueryOnComponentCollection.Mappings.hbm.xml"}; }
@@ -143,6 +140,5 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 		{
 			get { return "NHibernate.Test"; }
 		}
-
 	}
 }

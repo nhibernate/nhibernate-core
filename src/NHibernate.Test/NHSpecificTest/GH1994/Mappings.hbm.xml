@@ -18,6 +18,12 @@
 				<filter name="deletedFilter" condition="IsDeleted = :deletedParam"/>
 			</many-to-many>
 		</set>
+    <bag name="DocumentsBag" table="asset_to_document" lazy="true" cascade="none">
+      <key column="AssetId"/>
+      <many-to-many class="Document" column="DocumentId">
+        <filter name="deletedFilter" condition="IsDeleted = :deletedParam"/>
+      </many-to-many>
+    </bag>
 		<set name="DocumentsFiltered" table="asset_to_document" lazy="true" cascade="none">
 			<key column="AssetId"/>
 			<many-to-many class="Document" column="DocumentId" where="IsDeleted = 0"/>

@@ -76,7 +76,7 @@ namespace NHibernate.Id.Enhanced
 			}
 			catch (Exception ex)
 			{
-				Log.Error(ex, "Unable to instantiate id generator optimizer.");  // FIXME: Review log message.
+				Log.Error(ex, "Unable to instantiate id generator optimizer."); // FIXME: Review log message.
 			}
 
 			// the default...

@@ -216,6 +216,22 @@ namespace NHibernate.Impl
 				log.Warn(ex, "Dialect does not provide DataBaseSchema, but keywords import or auto quoting is enabled.");
 			}
 
+			#region Serialization info
+
+			name = settings.SessionFactoryName;
+			try
+			{
+				uuid = (string)UuidGenerator.Generate(null, null);
+			}
+			catch (Exception ex)
+			{
+				throw new AssertionFailure("Could not generate UUID", ex);
+			}
+
+			SessionFactoryObjectFactory.AddInstance(uuid, name, this, properties);
+
+			#endregion
+
 			#region Caches
 			settings.CacheProvider.Start(properties);
 			#endregion
@@ -324,22 +340,6 @@ namespace NHibernate.Impl
 			{
 				persister.PostInstantiate();
 			}
-			#endregion
-
-			#region Serialization info
-
-			name = settings.SessionFactoryName;
-			try
-			{
-				uuid = (string)UuidGenerator.Generate(null, null);
-			}
-			catch (Exception ex)
-			{
-				throw new AssertionFailure("Could not generate UUID", ex);
-			}
-
-			SessionFactoryObjectFactory.AddInstance(uuid, name, this, properties);
-
 			#endregion
 
 			log.Debug("Instantiated session factory");
@@ -857,6 +857,16 @@ namespace NHibernate.Impl
 		/// </summary>
 		public void Close()
 		{
+			if (isClosed)
+			{
+				if (log.IsDebugEnabled())
+				{
+					log.Debug("Already closed");
+				}
+
+				return;
+			}
+
 			log.Info("Closing");
 
 			isClosed = true;
@@ -1415,7 +1425,7 @@ namespace NHibernate.Impl
 			private ConnectionReleaseMode _connectionReleaseMode;
 			private FlushMode _flushMode;
 			private bool _autoClose;
-			private bool _autoJoinTransaction = true;
+			private bool _autoJoinTransaction;
 
 			public SessionBuilderImpl(SessionFactoryImpl sessionFactory)
 			{
@@ -1424,6 +1434,7 @@ namespace NHibernate.Impl
 				// set up default builder values...
 				_connectionReleaseMode = sessionFactory.Settings.ConnectionReleaseMode;
 				_autoClose = sessionFactory.Settings.IsAutoCloseSessionEnabled;
+				_autoJoinTransaction = sessionFactory.Settings.AutoJoinTransaction;
 				// NH different implementation: not using Settings.IsFlushBeforeCompletionEnabled
 				_flushMode = sessionFactory.Settings.DefaultFlushMode;
 			}

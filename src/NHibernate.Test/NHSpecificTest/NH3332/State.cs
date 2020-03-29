@@ -32,7 +32,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3332
 			return toCompareWith != null && Id == toCompareWith.Id;
 		}
 
-
 		public virtual Int32 Id
 		{
 			get { return _id; }

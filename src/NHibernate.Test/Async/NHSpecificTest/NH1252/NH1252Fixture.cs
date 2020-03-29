@@ -58,7 +58,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1252
 				Assert.IsNull(await (s.GetAsync<SubClass2>(savedId)));
 				await (tx.CommitAsync());
 			}
-
 		}
 	}
 }

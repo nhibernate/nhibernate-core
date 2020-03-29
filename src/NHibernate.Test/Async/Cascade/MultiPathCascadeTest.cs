@@ -38,7 +38,6 @@ namespace NHibernate.Test.Cascade
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-			
 				a.Data = "Anna";
 				await (s.SaveAsync(a));
 				await (s.Transaction.CommitAsync());

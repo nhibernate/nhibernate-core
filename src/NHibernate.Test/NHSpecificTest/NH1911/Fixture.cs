@@ -5,11 +5,9 @@ using NHibernate.Criterion;
 
 namespace NHibernate.Test.NHSpecificTest.NH1911
 {
-
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
@@ -59,7 +57,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1911
 				Assert.That(actual[0][1], Is.EqualTo(2));
 			}
 		}
-
 	}
-
 }

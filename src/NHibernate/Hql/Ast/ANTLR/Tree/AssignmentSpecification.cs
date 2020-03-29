@@ -147,7 +147,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 				return _sqlAssignmentString;
 			}
-
 		}
 	}
 }

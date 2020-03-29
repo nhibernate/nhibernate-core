@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using NHibernate.Driver;
@@ -5,6 +6,8 @@ using NHibernate.Connection;
 
 namespace NHibernate.Cfg.Loquacious
 {
+	//Since 5.3
+	[Obsolete("Replaced by direct class usage")]
 	public interface IConnectionConfiguration
 	{
 		IConnectionConfiguration Through<TProvider>() where TProvider : IConnectionProvider;

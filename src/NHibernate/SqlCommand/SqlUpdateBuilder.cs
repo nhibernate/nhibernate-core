@@ -52,7 +52,6 @@ namespace NHibernate.SqlCommand
 			return AddColumn(columnName, literalType.ObjectToSQLString(val, Dialect));
 		}
 
-
 		/// <summary>
 		/// Add a column with a specific value to the UPDATE sql
 		/// </summary>
@@ -134,7 +133,7 @@ namespace NHibernate.SqlCommand
 		public SqlUpdateBuilder AppendAssignmentFragment(SqlString fragment)
 		{
 			// SqlString is immutable
-			assignments = assignments == null ? fragment : assignments.Append(", ").Append(fragment);
+			assignments = assignments == null ? fragment : assignments.Append(", ", fragment);
 			return this;
 		}
 
@@ -301,7 +300,6 @@ namespace NHibernate.SqlCommand
 					sqlBuilder.Add(StringHelper.CommaSpace);
 				commaNeeded = true;
 
-
 				sqlBuilder.Add(valuePair.Key)
 					.Add(" = ");
 
@@ -320,7 +318,6 @@ namespace NHibernate.SqlCommand
 				}
 				sqlBuilder.Add(assignments);
 			}
-
 
 			sqlBuilder.Add(" WHERE ");
 			bool andNeeded = false;

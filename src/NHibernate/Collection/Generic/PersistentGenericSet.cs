@@ -21,7 +21,7 @@ namespace NHibernate.Collection.Generic
 	/// </summary>
 	[Serializable]
 	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
-	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, IQueryable<T>
+	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, IReadOnlyCollection<T>, IQueryable<T>
 	{
 		/// <summary>
 		/// The <see cref="ISet{T}"/> that NHibernate is wrapping.
@@ -44,7 +44,6 @@ namespace NHibernate.Collection.Generic
 		public PersistentGenericSet()
 		{
 		}
-
 
 		/// <summary> 
 		/// Constructor matching super.
@@ -109,7 +108,6 @@ namespace NHibernate.Collection.Generic
 			{
 				return false;
 			}
-
 
 			foreach (T obj in WrappedSet)
 			{
@@ -224,7 +222,6 @@ namespace NHibernate.Collection.Generic
 
 			deletes.AddRange(sn.Where(obj => !WrappedSet.Contains(obj)));
 
-
 			foreach (var obj in WrappedSet)
 			{
 				T oldValue;
@@ -295,13 +292,11 @@ namespace NHibernate.Collection.Generic
 
 		#region ISet<T> Members
 
-
 		public bool Contains(T item)
 		{
 			bool? exists = ReadElementExistence(item);
 			return exists == null ? WrappedSet.Contains(item) : exists.Value;
 		}
-
 
 		public bool Add(T o)
 		{

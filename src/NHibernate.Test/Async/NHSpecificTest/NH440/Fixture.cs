@@ -32,7 +32,6 @@ namespace NHibernate.Test.NHSpecificTest.NH440
 			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
-
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();

@@ -50,7 +50,6 @@ namespace NHibernate.Test.BulkManipulation
 
 				using (var t = s.BeginTransaction())
 				{
-
 					await (s.CreateSQLQuery(ssql).ExecuteUpdateAsync());
 					await (t.CommitAsync());
 

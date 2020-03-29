@@ -43,7 +43,7 @@ namespace NHibernate.Mapping
 				pk.AddColumns(new SafetyEnumerable<Column>(Identifier.ColumnIterator));
 				CollectionTable.PrimaryKey = pk;
 			}
-			//else  // Create an index on the key columns?
+			//else // Create an index on the key columns?
 		}
 
 		/// <summary>

@@ -118,7 +118,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
-
 		public string PropertyPath
 		{
 			get { return _propertyPath; }
@@ -244,7 +243,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			IsResolved = true;
 		}
 
-		
 		public FromReferenceNode GetLhs()
 		{
 			var lhs = ((FromReferenceNode)GetChild(0));
@@ -358,7 +356,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			Walker.AddQuerySpaces( queryableCollection.CollectionSpaces );	// Always add the collection's query spaces.
 		}
-
 
 		private void DereferenceEntity(EntityType entityType, bool implicitJoin, string classAlias, bool generateJoin, IASTNode parent) 
 		{
@@ -534,7 +531,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				currentFromClause.AddDuplicateAlias(classAlias, elem);
 			}
-		
 
 			SetImpliedJoin( elem );
 			Walker.AddQuerySpaces( elem.EntityPersister.QuerySpaces );
@@ -558,7 +554,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 			}
 		}
-
 
 		/// <summary>
 		/// Is the given property name a reference to the primary key of the associated
@@ -610,7 +605,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get { return Walker.IsSubQuery && FromElement.FromClause != Walker.CurrentFromClause; }
 		}
-
 
 		private void CheckLhsIsNotCollection()
 		{

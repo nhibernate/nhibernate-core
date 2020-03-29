@@ -142,6 +142,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
 			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
 			RegisterFunction("rand", new StandardSQLFunction("rand", NHibernateUtil.Double));
+			RegisterFunction("random", new StandardSQLFunction("rand", NHibernateUtil.Double));
 			RegisterFunction("remainder", new StandardSQLFunction("remainder"));
 			RegisterFunction("round", new StandardSQLFunctionWithRequiredParameters("round", new object[] {null, "0"}));
 			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
@@ -238,9 +239,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("ymd", new StandardSQLFunction("ymd", NHibernateUtil.Date));
 
 			// compatibility functions
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime, true));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.LocalDateTime, true));
 			RegisterFunction("current_time", new NoArgSQLFunction("getdate", NHibernateUtil.Time, true));
-			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.Date, "date(getdate())"));
+			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.LocalDate, "date(getdate())"));
 		}
 
 		protected virtual void RegisterStringFunctions()
@@ -338,6 +339,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("isnull", new VarArgsSQLFunction("isnull(", ",", ")"));
 			RegisterFunction("lesser", new StandardSQLFunction("lesser"));
 			RegisterFunction("newid", new NoArgSQLFunction("newid", NHibernateUtil.String, true));
+			RegisterFunction("new_uuid", new NoArgSQLFunction("newid", NHibernateUtil.Guid));
 			RegisterFunction("nullif", new StandardSQLFunction("nullif"));
 			RegisterFunction("number", new NoArgSQLFunction("number", NHibernateUtil.Int32));
 			RegisterFunction("plan", new VarArgsSQLFunction(NHibernateUtil.String, "plan(", ",", ")"));

@@ -334,7 +334,6 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
-
 		public Task ExecuteAsync(Action<string> scriptAction, bool execute, bool justDrop, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -343,7 +342,6 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 			return ExecuteAsync(scriptAction, execute, justDrop, null, cancellationToken);
 		}
-
 
 		public async Task ExecuteAsync(Action<string> scriptAction, bool execute, bool justDrop, TextWriter exportOutput, CancellationToken cancellationToken = default(CancellationToken))
 		{

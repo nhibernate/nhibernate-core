@@ -296,7 +296,6 @@ namespace NHibernate.Impl
 					}
 				}
 			}
-
 		}
 
 		public override IQuery SetLockMode(string alias, LockMode lockMode)

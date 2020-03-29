@@ -20,7 +20,6 @@ namespace NHibernate.DomainModel
 				return -1;
 			}
 
-
 			return ((String) x).ToLower().CompareTo(((String) y).ToLower());
 		}
 

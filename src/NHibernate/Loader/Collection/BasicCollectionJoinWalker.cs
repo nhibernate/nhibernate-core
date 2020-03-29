@@ -85,7 +85,6 @@ namespace NHibernate.Loader.Collection
 			SqlString = select.ToSqlString();
 		}
 
-
 		public override string ToString()
 		{
 			return GetType().FullName + '(' + collectionPersister.Role + ')';

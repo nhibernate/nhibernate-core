@@ -121,7 +121,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public virtual bool IsImpliedInFromClause
 		{
-			get { return false; }  // Since this is an explicit FROM element, it can't be implied in the FROM clause.
+			get { return false; } // Since this is an explicit FROM element, it can't be implied in the FROM clause.
 		}
 
 		public bool IsFetch
@@ -457,7 +457,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public bool UseWhereFragment
 		{
-			get { return _useWhereFragment;}
+			get { return _useWhereFragment; }
 			set { _useWhereFragment = value; }
 		}
 
@@ -505,7 +505,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				propertyName = NHibernate.Persister.Entity.EntityPersister.EntityID;
 			}
-			if (Walker.StatementType == HqlSqlWalker.SELECT)
+			if (Walker.StatementType == HqlSqlWalker.SELECT || Walker.IsSubQuery)
 			{
 				cols = GetPropertyMapping(propertyName).ToColumns(table, propertyName);
 			}
@@ -515,9 +515,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			string result = string.Join(", ", cols);
 
-			// There used to be code here that added parentheses if the number of columns was greater than one.
-			// This was causing invalid queries like select (c1, c2) from x.  I couldn't think of a reason that
-			// parentheses would be wanted around a list of columns, so I removed them.
+			if (cols.Length > 1 && Walker.IsComparativeExpressionClause)
+			{
+				return "(" + result + ")";
+			}
+
 			return result;
 		}
 

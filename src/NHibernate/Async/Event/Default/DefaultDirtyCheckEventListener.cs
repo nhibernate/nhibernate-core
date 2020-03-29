@@ -10,7 +10,6 @@
 
 using System;
 
-
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;

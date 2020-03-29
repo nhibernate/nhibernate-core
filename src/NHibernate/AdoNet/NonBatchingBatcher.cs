@@ -56,7 +56,6 @@ namespace NHibernate.AdoNet
 			get { return 1; }
 		}
 
-
 		public override int BatchSize
 		{
 			get { return 1; }

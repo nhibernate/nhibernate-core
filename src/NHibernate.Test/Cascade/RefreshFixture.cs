@@ -83,7 +83,6 @@ namespace NHibernate.Test.Cascade
 			{
 				using (ITransaction txn = session.BeginTransaction())
 				{
-
 					var batch = new JobBatch(DateTime.Now);
 					batch.CreateJob().ProcessingInstructions = "Just do it!";
 					session.Persist(batch);
@@ -116,6 +115,5 @@ namespace NHibernate.Test.Cascade
 				session.Close();
 			}
 		}
-
 	}
 }

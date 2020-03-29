@@ -7,7 +7,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -678,22 +677,8 @@ namespace NHibernate.Test.Insertordering
 	}
 	public partial class InsertOrderingFixture : TestCase
 	{
-
-
-
-
-
-
-
-
-
-
-
-		
-		
 		public partial class StatsBatcher : SqlClientBatchingBatcher
 		{
-
 			public override async System.Threading.Tasks.Task<DbCommand> PrepareBatchCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes, CancellationToken cancellationToken)
 			{
 				var result = await (base.PrepareBatchCommandAsync(type, sql, parameterTypes, cancellationToken));
@@ -729,7 +714,6 @@ namespace NHibernate.Test.Insertordering
 				}
 			}
 		}
-
 
 			}
 }

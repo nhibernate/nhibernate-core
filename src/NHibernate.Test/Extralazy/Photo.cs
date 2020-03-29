@@ -6,7 +6,6 @@ namespace NHibernate.Test.Extralazy
 {
 	public class Photo
 	{
-
 		protected Photo() {}
 		public Photo(string title, User owner)
 		{

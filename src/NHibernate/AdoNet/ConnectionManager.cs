@@ -456,7 +456,13 @@ namespace NHibernate.AdoNet
 		public void EnlistIfRequired(System.Transactions.Transaction transaction)
 		{
 			if (transaction == _currentSystemTransaction)
+			{
+				// Short-circuit after having stored the transaction : they may be equal, but not the same reference.
+				// And the previous one may be an already disposed dependent clone, in which case we need to update
+				// our reference.
+				_currentSystemTransaction = transaction;
 				return;
+			}
 
 			_currentSystemTransaction = transaction;
 

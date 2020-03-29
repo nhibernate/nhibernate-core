@@ -25,7 +25,7 @@ namespace NHibernate.Collection.Generic
 	/// <remarks>The underlying collection used is an <see cref="List{T}"/></remarks>
 	[Serializable]
 	[DebuggerTypeProxy(typeof (CollectionProxy<>))]
-	public partial class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
+	public partial class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IReadOnlyList<T>, IList, IQueryable<T>
 	{
 		// TODO NH: find a way to writeonce (no duplicated code from PersistentBag)
 
@@ -448,11 +448,9 @@ namespace NHibernate.Collection.Generic
 			// note that if we load this collection from a cartesian product
 			// the multiplicity would be broken ... so use an idbag instead
 			var element = role.ReadElement(reader, owner, descriptor.SuffixedElementAliases, Session);
-			// NH Different behavior : we don't check for null
-			// The NH-750 test show how checking for null we are ignoring the not-found tag and
-			// the DB may have some records ignored by NH. This issue may need some more deep consideration.
-			//if (element != null)
-			_gbag.Add((T) element);
+
+			if (element != null)
+				_gbag.Add((T) element);
 			return element;
 		}
 

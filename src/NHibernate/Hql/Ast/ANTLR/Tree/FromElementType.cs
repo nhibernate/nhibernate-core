@@ -189,7 +189,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return buf.ToString();
 		}
 
-
 		/// <summary>
 		/// Returns the property select SQL fragment.
 		/// </summary>

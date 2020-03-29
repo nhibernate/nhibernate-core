@@ -94,7 +94,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
             return project;
         }
 
-
         public ProjectWithOneList LoadProject()
         {
             ProjectWithOneList project;
@@ -113,7 +112,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
 
         public void RefreshProject(ProjectWithOneList project)
         {
-
             using (ISession session = OpenSession())
             using (ITransaction tx = session.BeginTransaction())
             {

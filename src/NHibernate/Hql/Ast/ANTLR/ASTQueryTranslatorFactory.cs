@@ -39,7 +39,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 
 			return translators;
-			
 		}
 	}
 }
