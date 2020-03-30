@@ -137,13 +137,16 @@ namespace NHibernate.Test.Criteria
 			await (SerializeAndListAsync(dc));
 
 			// Subquery
-			dc = DetachedCriteria.For(typeof(Student))
-				.Add(Property.ForName("StudentNumber").Eq(232L))
-				.SetProjection(Property.ForName("Name"));
+			if (TestDialect.SupportsOperatorAll)
+			{
+				dc = DetachedCriteria.For(typeof(Student))
+				  .Add(Property.ForName("StudentNumber").Eq(232L))
+				  .SetProjection(Property.ForName("Name"));
 
-			DetachedCriteria dcs = DetachedCriteria.For(typeof(Student))
-				.Add(Subqueries.PropertyEqAll("Name", dc));
-			await (SerializeAndListAsync(dc));
+				DetachedCriteria dcs = DetachedCriteria.For(typeof(Student))
+					.Add(Subqueries.PropertyEqAll("Name", dc));
+				await (SerializeAndListAsync(dcs));
+			}
 
 			// SQLCriterion
 			dc = DetachedCriteria.For(typeof(Student))
