@@ -97,5 +97,10 @@ namespace NHibernate.Util
 		{
 			return input.ConvertAll(converter);
 		}
+
+		internal static IList ToIList<T>(this IEnumerable<T> list)
+		{
+			return list as IList ?? list.ToList();
+		}
 	}
 }

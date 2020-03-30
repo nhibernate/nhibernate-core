@@ -382,7 +382,7 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test, Ignore("Failing for unrelated reasons")]
-		public void CrossJoinAndWithClause()
+		public void ImplicitJoinAndWithClause()
 		{
 			//This is about complex theta style join fix that was implemented in hibernate along with entity join functionality
 			//https://hibernate.atlassian.net/browse/HHH-7321
@@ -394,6 +394,27 @@ namespace NHibernate.Test.Hql
 				"FROM EntityComplex s, EntityComplex q " +
 				"LEFT JOIN s.SameTypeChild AS sa WITH sa.SameTypeChild.Id = q.SameTypeChild.Id"
 				).List();
+			}
+		}
+
+		[Test]
+		public void CrossJoinAndWhereClause()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var result = session.CreateQuery(
+					"SELECT s " +
+					"FROM EntityComplex s cross join EntityComplex q " +
+					"where s.SameTypeChild.Id = q.SameTypeChild.Id"
+				).List();
+
+				Assert.That(result, Has.Count.EqualTo(1));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+				if (Dialect.SupportsCrossJoin)
+				{
+					Assert.That(sqlLog.GetWholeLog(), Does.Contain("cross join"), "A cross join is expected in the SQL select");
+				}
 			}
 		}
 

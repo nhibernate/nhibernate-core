@@ -192,9 +192,10 @@ namespace NHibernate.Impl
 		}
 	}
 
-	internal class ExpandedQueryExpression : IQueryExpression
+	internal class ExpandedQueryExpression : IQueryExpression, ICacheableQueryExpression
 	{
 		private readonly IASTNode _tree;
+		private ICacheableQueryExpression _cacheableExpression;
 
 		public ExpandedQueryExpression(IQueryExpression queryExpression, IASTNode tree, string key)
 		{
@@ -202,6 +203,7 @@ namespace NHibernate.Impl
 			Key = key;
 			Type = queryExpression.Type;
 			ParameterDescriptors = queryExpression.ParameterDescriptors;
+			 _cacheableExpression = queryExpression as ICacheableQueryExpression;
 		}
 
 		#region IQueryExpression Members
@@ -218,6 +220,8 @@ namespace NHibernate.Impl
 		public IList<NamedParameterDescriptor> ParameterDescriptors { get; private set; }
 
 		#endregion
+
+		public bool CanCachePlan => _cacheableExpression?.CanCachePlan ?? true;
 	}
 
 	internal class ParameterExpander

@@ -114,7 +114,7 @@ namespace NHibernate.Loader
 
 				Suffixes = BasicLoader.GenerateSuffixes(joins + 1);
 				var suffix = Suffixes[joins];
-				selectClause = new SqlString(GetSelectFragment(rootAssociation, suffix, null) + SelectString(associations));
+				selectClause = new SqlString(rootAssociation.GetSelectFragment(suffix, null, null) + SelectString(associations));
 			}
 
 			JoinFragment ojf = MergeOuterJoins(associations);

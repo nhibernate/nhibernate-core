@@ -78,7 +78,8 @@ namespace NHibernate.Dialect
 			//			RegisterFunction("cast", new CastFunction());
 			//			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "||", ")"));
 
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("current", NHibernateUtil.DateTime, false));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current", NHibernateUtil.LocalDateTime, false));
+			RegisterFunction("current_date", new NoArgSQLFunction("today", NHibernateUtil.LocalDate, false));
 			RegisterFunction("sysdate", new NoArgSQLFunction("today", NHibernateUtil.DateTime, false));
 			RegisterFunction("current", new NoArgSQLFunction("current", NHibernateUtil.DateTime, false));
 			RegisterFunction("today", new NoArgSQLFunction("today", NHibernateUtil.DateTime, false));

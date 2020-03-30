@@ -28,21 +28,11 @@ namespace NHibernate.Collection.Generic
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, IQueryable<T>
+	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, IReadOnlyCollection<T>, IQueryable<T>
 	{
 
 		//Since 5.3
-		/// <summary>
-		/// Get all "orphaned" elements
-		/// </summary>
-		/// <param name="snapshot">The snapshot of the collection.</param>
-		/// <param name="entityName">The persistent class whose objects
-		/// the collection is expected to contain.</param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns>
-		/// An <see cref="ICollection"/> that contains all of the elements
-		/// that have been orphaned.
-		/// </returns>
+		/// <inheritdoc />
 		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
@@ -52,12 +42,7 @@ namespace NHibernate.Collection.Generic
 			}
 			try
 			{
-				var sn = new SetSnapShot<T>((IEnumerable<T>)snapshot);
-
-				// TODO: Avoid duplicating shortcuts and array copy, by making base class GetOrphans() more flexible
-				if (WrappedSet.Count == 0) return Task.FromResult<ICollection>(sn);
-				if (((ICollection)sn).Count == 0) return Task.FromResult<ICollection>(sn);
-				return Task.FromResult<ICollection>(GetOrphans(sn, WrappedSet.ToArray(), entityName, Session));
+				return Task.FromResult<ICollection>(GetOrphans(snapshot, entityName));
 			}
 			catch (Exception ex)
 			{

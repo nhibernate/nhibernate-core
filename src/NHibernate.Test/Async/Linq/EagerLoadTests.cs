@@ -35,6 +35,48 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task CanSelectAndFetchManyAsync()
+		{
+			var result = await (db.OrderLines
+							.Select(o => o.Product)
+							.FetchMany(o => o.OrderLines)
+							.ToListAsync());
+
+			session.Close();
+
+			Assert.IsNotEmpty(result);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(result[0].OrderLines));
+		}
+
+		[Test]
+		public async Task CanSelectManyAndFetchAsync()
+		{
+			var result = await (db.Orders
+							.SelectMany(o => o.OrderLines)
+							.Fetch(o => o.Product)
+							.ToListAsync());
+
+			session.Close();
+
+			Assert.IsNotEmpty(result);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(result[0].Product));
+		}
+
+		[Test]
+		public async Task CanSelectManyAndFetchManyAsync()
+		{
+			var result = await (db.Employees
+							.SelectMany(o => o.Orders)
+							.FetchMany(o => o.OrderLines)
+							.ToListAsync());
+
+			session.Close();
+
+			Assert.IsNotEmpty(result);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(result[0].OrderLines));
+		}
+
+		[Test]
 		public async Task CanSelectAndFetchHqlAsync()
 		{
 			//NH-3075

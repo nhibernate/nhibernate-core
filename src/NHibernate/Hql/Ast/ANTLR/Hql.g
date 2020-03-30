@@ -19,6 +19,7 @@ tokens
 	BETWEEN='between';
 	CLASS='class';
 	COUNT='count';
+	CROSS='cross';
 	DELETE='delete';
 	DESCENDING='desc';
 	DOT;
@@ -255,6 +256,7 @@ fromClause
 fromJoin
 	: ( ( ( LEFT | RIGHT ) (OUTER)? ) | FULL | INNER )? JOIN^ (FETCH)? path (asAlias)? (propertyFetch)? (withClause)?
 	| ( ( ( LEFT | RIGHT ) (OUTER)? ) | FULL | INNER )? JOIN^ (FETCH)? ELEMENTS! OPEN! path CLOSE! (asAlias)? (propertyFetch)? (withClause)?
+	| CROSS JOIN^ { WeakKeywords(); } path (asAlias)? (propertyFetch)?
 	;
 
 withClause

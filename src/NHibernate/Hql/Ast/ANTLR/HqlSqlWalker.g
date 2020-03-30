@@ -306,6 +306,9 @@ joinType returns [int j]
 	| INNER {
 		$j = INNER;
 	}
+	| CROSS {
+		$j = CROSS;
+	}
 	;
 
 // Matches a path and returns the normalized string for the path (usually
