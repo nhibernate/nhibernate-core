@@ -2389,8 +2389,11 @@ namespace NHibernate.Linq
 
 			async Task<List<TSource>> InternalToListAsync()
 			{
-				var result = await provider.ExecuteAsync<IEnumerable<TSource>>(source.Expression, cancellationToken).ConfigureAwait(false);
-				return result.ToList();
+				//TODO 6.0: Replace with provider.ExecuteListAsync
+				var result = provider is DefaultQueryProvider nhQueryProvider
+					? await nhQueryProvider.ExecuteListAsync<TSource>(source.Expression, cancellationToken).ConfigureAwait(false)
+					: await provider.ExecuteAsync<IEnumerable<TSource>>(source.Expression, cancellationToken).ConfigureAwait(false);
+				return (result as List<TSource>) ?? result.ToList();
 			}
 		}
 
