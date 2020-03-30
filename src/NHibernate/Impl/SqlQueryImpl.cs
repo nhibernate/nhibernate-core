@@ -312,44 +312,34 @@ namespace NHibernate.Impl
 		// See NH-3079 (#1117)
 		private void ComputeFlattenedParameters()
 		{
-			var flattenedParameters = FlattenTypesAndValues(base.Types, base.Values.Cast<object>());
-			_flattenedTypes = flattenedParameters.Item1.ToList();
-			_flattenedValues = flattenedParameters.Item2.ToList();
+			_flattenedTypes = new List<IType>(base.Types.Count * 2);
+			_flattenedValues = new List<object>(base.Types.Count * 2);
+			FlattenTypesAndValues(base.Types, base.Values);
 
-			Tuple<IEnumerable<IType>, IEnumerable<object>> FlattenTypesAndValues(ICollection<IType> types, IEnumerable<object> values)
+			void FlattenTypesAndValues(IList<IType> types, IList values)
 			{
-				var resultTypes = new List<IType>(types.Count * 2);
-				var resultValues = new List<object>(types.Count * 2);
-				using (var valuesEnumerator = values.GetEnumerator())
+				for (var i = 0; i < types.Count; i++)
 				{
-					foreach (var type in types)
+					var type = types[i];
+					var value = values[i];
+					if (type is EntityType entityType)
 					{
-						var actualType = type;
-						valuesEnumerator.MoveNext();
-						var value = valuesEnumerator.Current;
-						if (type is EntityType entityType)
-						{
-							actualType = entityType.GetIdentifierType(session);
-							value = entityType.GetIdentifier(value, session);
-						}
+						type = entityType.GetIdentifierType(session);
+						value = entityType.GetIdentifier(value, session);
+					}
 
-						if (actualType is IAbstractComponentType componentType)
-						{
-							var flattened = FlattenTypesAndValues(
-								componentType.Subtypes,
-								componentType.GetPropertyValues(value, session));
-							resultTypes.AddRange(flattened.Item1);
-							resultValues.AddRange(flattened.Item2);
-						}
-						else
-						{
-							resultTypes.Add(actualType);
-							resultValues.Add(value);
-						}
+					if (type is IAbstractComponentType componentType)
+					{
+						FlattenTypesAndValues(
+							componentType.Subtypes,
+							componentType.GetPropertyValues(value, session));
+					}
+					else
+					{
+						_flattenedTypes.Add(type);
+						_flattenedValues.Add(value);
 					}
 				}
-
-				return new Tuple<IEnumerable<IType>, IEnumerable<object>>(resultTypes, resultValues);
 			}
 		}
 
@@ -361,6 +351,7 @@ namespace NHibernate.Impl
 
 		public override object[] ValueArray()
 		{
+			// TODO 6.0: Change to Values.ToArray()
 			return _flattenedValues?.ToArray() ??
 				throw new InvalidOperationException("Flattened parameters have not been computed");
 		}

@@ -767,6 +767,7 @@ namespace NHibernate.Impl
 			get { return namedParameterLists; }
 		}
 
+		// TODO 6.0: Change type to IList<object>
 		protected virtual IList Values
 		{
 			get { return values; }
