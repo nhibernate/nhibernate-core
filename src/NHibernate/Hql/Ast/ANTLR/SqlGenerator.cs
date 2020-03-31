@@ -313,7 +313,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private void OutAggregateFunctionName(IASTNode m)
 		{
 			var aggregateNode = (AggregateNode) m;
-			Out(aggregateNode.SqlFunctionName());
+			Out(aggregateNode.FunctionName);
 		}
 
 		private void CommaBetweenParameters(String comma)

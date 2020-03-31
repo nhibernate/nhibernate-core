@@ -20,7 +20,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
-		internal ISQLFunctionExtended SqlFunction => SessionFactoryHelper.FindSQLFunction(Text) as ISQLFunctionExtended;
+		public string FunctionName
+		{
+			get
+			{
+				if (SessionFactoryHelper.FindSQLFunction(Text) is ISQLFunctionExtended sqlFunction)
+				{
+					return sqlFunction.FunctionName;
+				}
+
+				return Text;
+			}
+		}
 
 		public override IType DataType
 		{
@@ -38,16 +49,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public override void SetScalarColumnText(int i)
 		{
 			ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i);
-		}
-
-		public string SqlFunctionName()
-		{
-			if (SessionFactoryHelper.FindSQLFunction(Text) is ISQLFunctionExtended sqlFunction)
-			{
-				return sqlFunction.FunctionName;
-			}
-
-			return Text;
 		}
 	}
 }
