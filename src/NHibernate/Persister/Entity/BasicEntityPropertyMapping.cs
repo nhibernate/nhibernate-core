@@ -1,7 +1,4 @@
-using System;
-using NHibernate.Criterion;
 using NHibernate.Type;
-using static NHibernate.Impl.CriteriaImpl;
 
 namespace NHibernate.Persister.Entity
 {
@@ -27,17 +24,6 @@ namespace NHibernate.Persister.Entity
 		public override IType Type
 		{
 			get { return persister.Type; }
-		}
-
-		public override string[] ToColumns(ICriteria pathCriteria, string propertyName, Func<ICriteria, string> getSQLAlias)
-		{
-			var withClause = pathCriteria as Subcriteria != null ? ((Subcriteria) pathCriteria).WithClause as SimpleExpression : null;
-			if (withClause != null && withClause.PropertyName == propertyName)
-			{
-				return base.ToColumns(persister.GenerateTableAlias(getSQLAlias(pathCriteria), 0), propertyName);
-			}
-
-			return base.ToColumns(pathCriteria, propertyName, getSQLAlias);
 		}
 
 		public override string[] ToColumns(string alias, string propertyName)
