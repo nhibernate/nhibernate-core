@@ -79,11 +79,11 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Perform parameter validation.  Used prior to executing the encapsulated query.
+		/// Perform parameters validation. Flatten them if needed. Used prior to executing the encapsulated query.
 		/// </summary>
 		/// <param name="reserveFirstParameter">
-		/// if true, the first ? will not be verified since
-		/// its needed for e.g. callable statements returning a out parameter
+		/// If true, the first positional parameter will not be verified since
+		/// its needed for e.g. callable statements returning an out parameter.
 		/// </param>
 		protected internal virtual void VerifyParameters(bool reserveFirstParameter)
 		{
@@ -95,11 +95,15 @@ namespace NHibernate.Impl
 				throw new QueryException("Not all named parameters have been set: " + CollectionPrinter.ToString(missingParams), QueryString);
 			}
 
-			int positionalValueSpan = 0;
-			for (int i = 0; i < values.Count; i++)
+			var positionalValueSpan = 0;
+			// Values and Types may be overriden to yield refined parameters, check them
+			// instead of the fields.
+			var values = Values;
+			var types = Types;
+			for (var i = 0; i < values.Count; i++)
 			{
-				object obj = types[i];
-				if (values[i] == UNSET_PARAMETER || obj == UNSET_TYPE)
+				var type = types[i];
+				if (values[i] == UNSET_PARAMETER || type == UNSET_TYPE)
 				{
 					if (reserveFirstParameter && i == 0)
 					{
@@ -813,12 +817,13 @@ namespace NHibernate.Impl
 			get { return namedParameterLists; }
 		}
 
-		protected IList Values
+		// TODO 6.0: Change type to IList<object>
+		protected virtual IList Values
 		{
 			get { return values; }
 		}
 
-		protected IList<IType> Types
+		protected virtual IList<IType> Types
 		{
 			get { return types; }
 		}
