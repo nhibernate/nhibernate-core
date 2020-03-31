@@ -2050,11 +2050,6 @@ namespace NHibernate.Persister.Entity
 			return drivingAlias;
 		}
 
-		public virtual string[] ToColumns(ICriteria pathCriteria, string propertyName, Func<ICriteria, string> getSQLAlias)
-		{
-			return propertyMapping.ToColumns(pathCriteria, propertyName, getSQLAlias);
-		}
-
 		public virtual string[] ToColumns(string alias, string propertyName)
 		{
 			return propertyMapping.ToColumns(alias, propertyName);

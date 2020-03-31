@@ -44,12 +44,6 @@ namespace NHibernate.Persister.Entity
 			return typesByPropertyPath.TryGetValue(propertyName, out type);
 		}
 
-		public virtual string[] ToColumns(ICriteria pathCriteria, string propertyName, Func<ICriteria, string> getSQLAlias)
-		{
-			string alias = getSQLAlias(pathCriteria);
-			return ToColumns(alias, propertyName);
-		}
-
 		public virtual string[] ToColumns(string alias, string propertyName)
 		{
 			//TODO: *two* hashmap lookups here is one too many...
