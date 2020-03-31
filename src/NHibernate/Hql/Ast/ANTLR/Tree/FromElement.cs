@@ -483,6 +483,19 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public virtual string GetIdentityColumn()
 		{
+			var cols = GetIdentityColumns();
+			string result = string.Join(", ", cols);
+
+			if (cols.Length > 1 && Walker.IsComparativeExpressionClause)
+			{
+				return "(" + result + ")";
+			}
+
+			return result;
+		}
+
+		internal string[] GetIdentityColumns()
+		{
 			CheckInitialized();
 			string table = TableAlias;
 
@@ -513,14 +526,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				cols = GetPropertyMapping(propertyName).ToColumns(propertyName);
 			}
-			string result = string.Join(", ", cols);
 
-			if (cols.Length > 1 && Walker.IsComparativeExpressionClause)
-			{
-				return "(" + result + ")";
-			}
-
-			return result;
+			return cols;
 		}
 
 		public void HandlePropertyBeingDereferenced(IType propertySource, string propertyName)
