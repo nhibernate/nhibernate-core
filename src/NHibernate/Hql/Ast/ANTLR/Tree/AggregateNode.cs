@@ -34,9 +34,20 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				base.DataType = value;
 			}
 		}
+		
 		public override void SetScalarColumnText(int i)
 		{
 			ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i);
+		}
+
+		public string SqlFunctionName()
+		{
+			if (SessionFactoryHelper.FindSQLFunction(Text) is ISQLFunctionExtended sqlFunction)
+			{
+				return sqlFunction.FunctionName;
+			}
+
+			return Text;
 		}
 	}
 }
