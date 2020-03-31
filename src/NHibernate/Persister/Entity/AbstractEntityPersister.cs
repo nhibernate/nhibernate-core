@@ -2110,7 +2110,7 @@ namespace NHibernate.Persister.Entity
 					return getSubclassColumnTableNumberClosure()[idx];
 				}
 			}*/
-			int index = Array.IndexOf(SubclassPropertyNameClosure, rootPropertyName); //TODO: optimize this better!
+			int index = Array.LastIndexOf(SubclassPropertyNameClosure, rootPropertyName); //TODO: optimize this better!
 			return index == -1 ? 0 : GetSubclassPropertyTableNumber(index);
 		}
 
