@@ -55,6 +55,7 @@ namespace NHibernate.Dialect
 		static Dialect()
 		{
 			StandardAggregateFunctions["count"] = new CountQueryFunctionInfo();
+			StandardAggregateFunctions["count_big"] = new CountQueryFunctionInfo();
 			StandardAggregateFunctions["avg"] = new AvgQueryFunctionInfo();
 			StandardAggregateFunctions["max"] = new ClassicAggregateFunction("max", false);
 			StandardAggregateFunctions["min"] = new ClassicAggregateFunction("min", false);

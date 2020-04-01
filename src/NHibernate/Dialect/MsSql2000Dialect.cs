@@ -286,7 +286,8 @@ namespace NHibernate.Dialect
 
 		protected virtual void RegisterFunctions()
 		{
-			RegisterFunction("count", new CountBigQueryFunction());
+			RegisterFunction("count", new CountQueryFunction());
+			RegisterFunction("count_big", new CountBigQueryFunction());
 
 			RegisterFunction("abs", new StandardSQLFunction("abs"));
 			RegisterFunction("absval", new StandardSQLFunction("absval"));
@@ -704,11 +705,15 @@ namespace NHibernate.Dialect
 		[Serializable]
 		protected class CountBigQueryFunction : ClassicAggregateFunction
 		{
-			public CountBigQueryFunction() : base("count_big", true) { }
+			public CountBigQueryFunction() : base("count_big", true, NHibernateUtil.Int64) { }
+		}
 
-			public override IType ReturnType(IType columnType, IMapping mapping)
+		[Serializable]
+		private class CountQueryFunction : CountQueryFunctionInfo
+		{
+			public override IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
 			{
-				return NHibernateUtil.Int64;
+				return NHibernateUtil.Int32;
 			}
 		}
 
