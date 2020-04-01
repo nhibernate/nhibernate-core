@@ -219,6 +219,7 @@ namespace NHibernate.Test.Linq
 			var query = db.Orders.FetchMany(o => o.OrderLines).SelectMany(o => o.OrderLines);
 			var result = query.ToList();
 			Assert.That(result.Count, Is.EqualTo(2155));
+
 		}
 
 		[Test]
@@ -242,6 +243,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = db.Orders.Select(o => new { o.OrderId, o.OrderLines });
 			var result = query.ToList();
+			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
 			Assert.That(result.Count, Is.EqualTo(830));
 		}
 
@@ -250,6 +252,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = db.Orders.Fetch(o => o.OrderLines).Select(o => new { o.OrderId, o.OrderLines });
 			var result = query.ToList();
+			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
 			Assert.That(result.Count, Is.EqualTo(830));
 		}
 
@@ -263,19 +266,19 @@ namespace NHibernate.Test.Linq
 
 			var result = query.ToList();
 			Assert.That(result.Count, Is.EqualTo(830));
+			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
 			Assert.That(result[0].o.OrderLines, Is.EquivalentTo(result[0].OrderLines));
 		}
 
 		[Test]
 		public void ProjectAnonymousTypeWithCollectionWithFetch()
-		{
-			// NH-3333
-			// done by WCF DS: context.Orders.Expand(o => o.OrderLines) from the client 
+		{ 
 			var query = from o in db.Orders.Fetch(o => o.OrderLines)
 						select new { o, o.OrderLines };
 
 			var result = query.ToList();
 			Assert.That(result.Count, Is.EqualTo(830));
+			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
 			Assert.That(result[0].o.OrderLines, Is.EquivalentTo(result[0].OrderLines));
 		}
 
@@ -289,19 +292,19 @@ namespace NHibernate.Test.Linq
 
 			var result = query.ToList();
 			Assert.That(result.Count, Is.EqualTo(830));
+			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
 			Assert.That(result[0].o.OrderLines, Is.EquivalentTo(result[0].OrderLines));
 		}
 
 		[Test]
 		public void ProjectAnonymousTypeWithCollection1WithFetch()
 		{
-			// NH-3333
-			// done by WCF DS: context.Orders.Expand(o => o.OrderLines) from the client 
 			var query = from o in db.Orders.Fetch(o => o.OrderLines)
 						select new { o.OrderLines, o };
 
 			var result = query.ToList();
 			Assert.That(result.Count, Is.EqualTo(830));
+			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
 			Assert.That(result[0].o.OrderLines, Is.EquivalentTo(result[0].OrderLines));
 		}
 
@@ -314,18 +317,18 @@ namespace NHibernate.Test.Linq
 						select new { o.OrderLines, A = 1, B = 2 };
 
 			var result = query.ToList();
+			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
 			Assert.That(result.Count, Is.EqualTo(830));
 		}
 
 		[Test]
 		public void ProjectAnonymousTypeWithCollection2WithFetch()
 		{
-			// NH-3333
-			// done by WCF DS: context.Orders.Expand(o => o.OrderLines) from the client 
 			var query = from o in db.Orders.Fetch(o => o.OrderLines)
 						select new { o.OrderLines, A = 1, B = 2 };
 
 			var result = query.ToList();
+			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
 			Assert.That(result.Count, Is.EqualTo(830));
 		}
 
@@ -338,18 +341,18 @@ namespace NHibernate.Test.Linq
 						select new { OrderLines = o.OrderLines.ToList() };
 
 			var result = query.ToList();
+			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
 			Assert.That(result.Count, Is.EqualTo(830));
 		}
 
 		[Test]
 		public void ProjectAnonymousTypeWithCollection3WithFetch()
 		{
-			// NH-3333
-			// done by WCF DS: context.Orders.Expand(o => o.OrderLines) from the client 
 			var query = from o in db.Orders.Fetch(o => o.OrderLines)
 						select new { OrderLines = o.OrderLines.ToList() };
 
 			var result = query.ToList();
+			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
 			Assert.That(result.Count, Is.EqualTo(830));
 		}
 
@@ -367,12 +370,15 @@ namespace NHibernate.Test.Linq
 
 			var result = query.ToList();
 			Assert.That(result.Count, Is.EqualTo(830));
+			Assert.That(NHibernateUtil.IsInitialized(result[0].ExpandedElement.OrderLines), Is.True);
+			Assert.That(NHibernateUtil.IsInitialized(result[0].ProjectedProperty0), Is.True);
 			Assert.That(result[0].ExpandedElement.OrderLines, Is.EquivalentTo(result[0].ProjectedProperty0));
 		}
 
 		[Test]
 		public void ProjectKnownTypeWithCollectionWithFetch()
 		{
+			// NH-3396
 			var query = from o in db.Orders.Fetch(x => x.OrderLines)
 			            select new ExpandedWrapper<Order, ISet<OrderLine>>
 			            {
