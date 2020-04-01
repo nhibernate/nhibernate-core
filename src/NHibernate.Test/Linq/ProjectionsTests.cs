@@ -369,7 +369,7 @@ namespace NHibernate.Test.Linq
 
 			var result = query.ToList();
 			Assert.That(result.Count, Is.EqualTo(830));
-			Assert.That(NHibernateUtil.IsInitialized(result[0].ExpandedElement.OrderLines), Is.True);
+			Assert.That(NHibernateUtil.IsInitialized(result[0].ExpandedElement.OrderLines), Is.False);
 			Assert.That(NHibernateUtil.IsInitialized(result[0].ProjectedProperty0), Is.True);
 			Assert.That(result[0].ExpandedElement.OrderLines, Is.EquivalentTo(result[0].ProjectedProperty0));
 		}
