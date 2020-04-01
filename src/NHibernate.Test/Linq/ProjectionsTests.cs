@@ -219,7 +219,6 @@ namespace NHibernate.Test.Linq
 			var query = db.Orders.FetchMany(o => o.OrderLines).SelectMany(o => o.OrderLines);
 			var result = query.ToList();
 			Assert.That(result.Count, Is.EqualTo(2155));
-
 		}
 
 		[Test]
