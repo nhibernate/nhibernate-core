@@ -127,7 +127,6 @@ namespace NHibernate.Test.CompositeId
 				t.Commit();
 			}
 
-			
 			using (s = OpenSession())
 			{
 				t = s.BeginTransaction();

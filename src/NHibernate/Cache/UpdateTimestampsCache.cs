@@ -88,13 +88,9 @@ namespace NHibernate.Cache
 			if (spaces.Count == 0)
 				return;
 
-			var timestamps = new object[spaces.Count];
-			for (var i = 0; i < timestamps.Length; i++)
-			{
-				timestamps[i] = ts;
-			}
-
-			_updateTimestamps.PutMany(spaces.ToArray(), timestamps);
+			_updateTimestamps.PutMany(
+				spaces.ToArray<object>(),
+				ArrayHelper.Fill<object>(ts, spaces.Count));
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
@@ -103,20 +99,16 @@ namespace NHibernate.Cache
 			if (spaces.Count == 0)
 				return true;
 
-			var keys = new object[spaces.Count];
-			var index = 0;
-			foreach (var space in spaces)
-			{
-				keys[index++] = space;
-			}
-			var lastUpdates = _updateTimestamps.GetMany(keys);
+			var lastUpdates = _updateTimestamps.GetMany(spaces.ToArray<object>());
 			return lastUpdates.All(lastUpdate => !IsOutdated(lastUpdate as long?, timestamp));
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual bool[] AreUpToDate(ISet<string>[] spaces, long[] timestamps)
 		{
-			var results = new bool[spaces.Length];
+			if (spaces.Length == 0)
+				return Array.Empty<bool>();
+
 			var allSpaces = new HashSet<string>();
 			foreach (var sp in spaces)
 			{
@@ -124,28 +116,17 @@ namespace NHibernate.Cache
 			}
 
 			if (allSpaces.Count == 0)
-			{
-				for (var i = 0; i < spaces.Length; i++)
-				{
-					results[i] = true;
-				}
+				return ArrayHelper.Fill(true, spaces.Length);
 
-				return results;
-			}
+			var keys = allSpaces.ToArray<object>();
 
-			var keys = new object[allSpaces.Count];
 			var index = 0;
-			foreach (var space in allSpaces)
-			{
-				keys[index++] = space;
-			}
-
-			index = 0;
 			var lastUpdatesBySpace =
 				_updateTimestamps
 					.GetMany(keys)
 					.ToDictionary(u => keys[index++], u => u as long?);
 
+			var results = new bool[spaces.Length];
 			for (var i = 0; i < spaces.Length; i++)
 			{
 				var timestamp = timestamps[i];
@@ -163,7 +144,7 @@ namespace NHibernate.Cache
 			// not the responsibility of this class.
 		}
 
-		private bool IsOutdated(long? lastUpdate, long timestamp)
+		private static bool IsOutdated(long? lastUpdate, long timestamp)
 		{
 			if (!lastUpdate.HasValue)
 			{

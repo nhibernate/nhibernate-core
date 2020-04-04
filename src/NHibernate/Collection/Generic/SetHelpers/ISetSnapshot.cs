@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Collection.Generic.SetHelpers
 {
-	internal interface ISetSnapshot<T> : ICollection<T>, ICollection
+	internal interface ISetSnapshot<T> : ICollection<T>, IReadOnlyCollection<T>, ICollection
 	{
 		bool TryGetValue(T element, out T value);
 	}

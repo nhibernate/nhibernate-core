@@ -49,7 +49,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 		{
 			using (var session = OpenSession())
 			{
-			
 				var contentQuery = session
 					.CreateCriteria<DomainClass>()
 					.Add(Restrictions.Eq("Data", "Test"));
@@ -73,7 +72,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 		{
 			using (var session = OpenSession())
 			{
-			
 				var countQuery = session
 					.CreateCriteria<DomainClass>()
 					.Add(Restrictions.Eq("Data", "Test"));
@@ -97,7 +95,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 		{
 			using (var session = OpenSession())
 			{
-
 				var contentQuery = session.CreateQuery("from DomainClass as d where d.Data = ?");
 				contentQuery.SetString(0, "Test");
 				contentQuery.SetMaxResults(2);
@@ -118,7 +115,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 		{
 			using (var session = OpenSession())
 			{
-
 				var contentQuery = session.CreateQuery("from DomainClass as d where d.Data = ?");
 				contentQuery.SetString(0, "Test");
 				contentQuery.SetMaxResults(2);

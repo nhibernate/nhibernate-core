@@ -37,7 +37,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2089
 			}
 		}
 
-
 		protected override void OnTearDown()
 		{
 			using (var s = OpenSession())

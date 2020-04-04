@@ -70,7 +70,6 @@ namespace NHibernate.Test.SystemTransactions
 			session.Dispose();
 			Assert.AreEqual(1, interceptor.beforeTransactionCompletionCalled);
 			Assert.AreEqual(1, interceptor.afterTransactionCompletionCalled);
-
 		}
 
 		[Test]
@@ -124,7 +123,6 @@ namespace NHibernate.Test.SystemTransactions
 			Assert.AreEqual(1, interceptor.beforeTransactionCompletionCalled);
 			Assert.AreEqual(1, interceptor.afterTransactionCompletionCalled);
 		}
-
 
 		[Description("NH2128, NH3572")]
 		[Theory]

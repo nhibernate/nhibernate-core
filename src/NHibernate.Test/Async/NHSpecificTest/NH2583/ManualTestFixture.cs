@@ -166,8 +166,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                 //Assert.AreEqual(0, leftResult.Count);
                 //Assert.AreEqual(0, rightResult.Count);
                 //Assert.AreEqual(0, orResult.Count);
-
-            }
+			}
         }
 
         private static void TestCoreOrShouldBeCompatibleWithSum(ISession session,
@@ -228,7 +227,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                 //    // ReSharper restore EqualExpressionComparison
                 //            );
                 //result.ToList();
-
 
                 var result = from r in session.Query<MyRef1>()
                              orderby (r.Id == 1101 || r.Id == 1102 ? r.Id - 1000 : r.Id)

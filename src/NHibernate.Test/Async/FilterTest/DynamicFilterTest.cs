@@ -199,7 +199,6 @@ namespace NHibernate.Test.FilterTest
 			}
 		}
 
-
 		[Test]
 		public async Task CriteriaControlAsync()
 		{
@@ -294,7 +293,6 @@ namespace NHibernate.Test.FilterTest
 
 				Assert.That(orders.Count, Is.EqualTo(1), "Incorrect orders count");
 
-
 				log.Info("query against Order with a subquery for line items with a subquery line items where the product name is Acme Hair Gel and the quantity is greater than 1 in a given region and the product is effective as of 4 months ago");
 				session.EnableFilter("region").SetParameter("region", "APAC");
 				session.EnableFilter("effectiveDate").SetParameter("asOfDate", testData.fourMonthsAgo.Date);
@@ -309,7 +307,6 @@ namespace NHibernate.Test.FilterTest
 				session.Close();
 			}
 		}
-
 
 		[Test]
 		public async Task GetFiltersAsync()
@@ -826,7 +823,6 @@ namespace NHibernate.Test.FilterTest
 				using (var session = outer.OpenSession())
 				using (var transaction = session.BeginTransaction())
 				{
-
 					foreach (var obj in entitiesToCleanUp)
 					{
 						await (session.DeleteAsync(obj, cancellationToken));
@@ -841,7 +837,6 @@ namespace NHibernate.Test.FilterTest
 				using (var session = outer.OpenSession())
 				using (var transaction = session.BeginTransaction())
 				{
-
 					foreach (var obj in entitiesToCleanUp)
 					{
 						session.Delete(obj);

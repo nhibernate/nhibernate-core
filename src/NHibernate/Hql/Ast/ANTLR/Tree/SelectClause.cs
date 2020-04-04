@@ -36,7 +36,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
-
 		/// <summary>
 		/// Prepares a derived (i.e., not explicitly defined in the query) select clause.
 		/// </summary>
@@ -108,7 +107,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			FinishInitialization( /*sqlResultTypeList,*/ queryReturnTypeList);
 		}
-
 
 		/// <summary>
 		/// Prepares an explicitly defined select clause.
@@ -210,7 +208,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 						}
 						else
 						{
-
 							IType type = fromElement.SelectType;
 							AddCollectionFromElement(fromElement);
 

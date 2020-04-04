@@ -123,7 +123,7 @@ namespace NHibernate.Proxy
 			set { _id = value; }
 		}
 
-		public abstract System.Type PersistentClass { get;}
+		public abstract System.Type PersistentClass { get; }
 
 		public bool IsUninitialized
 		{

@@ -289,7 +289,6 @@ namespace NHibernate.Test.Hql.Ast
 			}
 		}
 
-
 		[Test]
 		public async Task UnaryMinusBeforeParenthesesHandledCorrectlyAsync()
 		{

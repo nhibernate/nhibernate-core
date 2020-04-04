@@ -103,7 +103,6 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.CleanupAsync());
 		}
 
-		
 		[Test]
 		public async Task InsertWithManyToOneAsync()
 		{

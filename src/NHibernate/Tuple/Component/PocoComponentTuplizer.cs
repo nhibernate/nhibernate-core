@@ -22,7 +22,6 @@ namespace NHibernate.Tuple.Component
 		[NonSerialized]
 		private bool isBytecodeProviderImpl; // 6.0 TODO: remove
 
-
 		[OnDeserialized]
 		internal void OnDeserialized(StreamingContext context)
 		{

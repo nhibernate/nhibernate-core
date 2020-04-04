@@ -150,7 +150,7 @@ selectExpr
 	;
 
 count
-	: ^(COUNT { Out("count("); }  ( distinctOrAll ) ? countExpr { Out(")"); } )
+	: ^(c=COUNT { OutAggregateFunctionName(c); Out("("); }  ( distinctOrAll ) ? countExpr { Out(")"); } )
 	;
 
 distinctOrAll
@@ -344,7 +344,7 @@ caseExpr
 	;
 
 aggregate
-	: ^(a=AGGREGATE { Out(a); Out("("); }  expr { Out(")"); } )
+	: ^(a=AGGREGATE { OutAggregateFunctionName(a); Out("("); }  expr { Out(")"); } )
 	;
 
 

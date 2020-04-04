@@ -121,7 +121,7 @@ namespace NHibernate.Loader.Hql
 			get { return _entityEagerPropertyFetches; }
 		}
 
-		protected override HashSet<string>[] EntityFetchLazyProperties
+		protected override ISet<string>[] EntityFetchLazyProperties
 		{
 			get { return _entityFetchLazyProperties; }
 		}

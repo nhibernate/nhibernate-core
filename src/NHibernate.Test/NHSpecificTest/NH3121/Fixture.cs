@@ -46,7 +46,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 						Is.EqualTo("The length of the byte[] value exceeds the length configured in the mapping/parameter."));
 		}
 
-
 		[Test]
 		public void ShouldThrowWhenImageTooLarge()
 		{
@@ -63,7 +62,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 						Is.EqualTo("The length of the byte[] value exceeds the length configured in the mapping/parameter."));
 		}
 
-
 		[Test]
 		public void ShouldThrowWhenImageAsISerializableTooLarge()
 		{
@@ -79,7 +77,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 			Assert.That(ex.InnerException.Message,
 						Is.EqualTo("The length of the byte[] value exceeds the length configured in the mapping/parameter."));
 		}
-
 
 		private void PersistReport(Report report)
 		{

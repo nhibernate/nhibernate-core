@@ -62,7 +62,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2705
 					Assert.That(() => s.Query<ItemBase>()
 									   .Fetch(p => p.SubItem).ToList(), Throws.Nothing);
 
-
 					// fetching second level properties should work too
 					Assert.That(() => s.Query<ItemWithComponentSubItem>()
 									   .Fetch(p => p.SubItem).ThenFetch(p => p.Details).ToList(), Throws.Nothing);

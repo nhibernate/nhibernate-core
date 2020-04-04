@@ -116,13 +116,9 @@ namespace NHibernate.Cache
 				if (spaces.Count == 0)
 					return Task.CompletedTask;
 
-				var timestamps = new object[spaces.Count];
-				for (var i = 0; i < timestamps.Length; i++)
-				{
-					timestamps[i] = ts;
-				}
-
-				return _updateTimestamps.PutManyAsync(spaces.ToArray(), timestamps, cancellationToken);
+				return _updateTimestamps.PutManyAsync(
+				spaces.ToArray<object>(),
+				ArrayHelper.Fill<object>(ts, spaces.Count), cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -139,13 +135,7 @@ namespace NHibernate.Cache
 				if (spaces.Count == 0)
 					return true;
 
-				var keys = new object[spaces.Count];
-				var index = 0;
-				foreach (var space in spaces)
-				{
-					keys[index++] = space;
-				}
-				var lastUpdates = await (_updateTimestamps.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
+				var lastUpdates = await (_updateTimestamps.GetManyAsync(spaces.ToArray<object>(), cancellationToken)).ConfigureAwait(false);
 				return lastUpdates.All(lastUpdate => !IsOutdated(lastUpdate as long?, timestamp));
 			}
 		}
@@ -156,7 +146,9 @@ namespace NHibernate.Cache
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _areUpToDate.LockAsync())
 			{
-				var results = new bool[spaces.Length];
+				if (spaces.Length == 0)
+					return Array.Empty<bool>();
+
 				var allSpaces = new HashSet<string>();
 				foreach (var sp in spaces)
 				{
@@ -164,28 +156,17 @@ namespace NHibernate.Cache
 				}
 
 				if (allSpaces.Count == 0)
-				{
-					for (var i = 0; i < spaces.Length; i++)
-					{
-						results[i] = true;
-					}
+					return ArrayHelper.Fill(true, spaces.Length);
 
-					return results;
-				}
+				var keys = allSpaces.ToArray<object>();
 
-				var keys = new object[allSpaces.Count];
 				var index = 0;
-				foreach (var space in allSpaces)
-				{
-					keys[index++] = space;
-				}
-
-				index = 0;
 				var lastUpdatesBySpace =
 				(await (_updateTimestamps
 					.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false))
 					.ToDictionary(u => keys[index++], u => u as long?);
 
+				var results = new bool[spaces.Length];
 				for (var i = 0; i < spaces.Length; i++)
 				{
 					var timestamp = timestamps[i];

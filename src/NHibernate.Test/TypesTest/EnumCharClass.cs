@@ -28,7 +28,6 @@ namespace NHibernate.Test.TypesTest
 		Dimmed = 'D'
 	}
 
-
 	public class EnumCharFoo
 	{
 		private Int32 id;

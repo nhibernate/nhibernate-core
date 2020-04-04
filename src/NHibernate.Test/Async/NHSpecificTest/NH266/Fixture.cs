@@ -65,7 +65,6 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task BaseClassLoadAsync()
 		{
@@ -74,7 +73,6 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			A a = await (s.LoadAsync(typeof(A), aId)) as A;
 			Assert.AreEqual("the a", a.Name);
 			s.Close();
-
 
 			// load instance through hql
 			s = OpenSession();

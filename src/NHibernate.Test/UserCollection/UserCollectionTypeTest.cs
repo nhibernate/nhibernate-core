@@ -17,7 +17,6 @@ namespace NHibernate.Test.UserCollection
 			get { return new string[] {"UserCollection.UserPermissions.hbm.xml"}; }
 		}
 
-
 		[Test]
 		public void BasicOperation()
 		{

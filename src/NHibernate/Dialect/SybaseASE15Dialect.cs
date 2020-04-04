@@ -56,6 +56,9 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "date");
 			RegisterColumnType(DbType.Binary, 8000, "varbinary($l)");
 			RegisterColumnType(DbType.Binary, "varbinary");
+			// newid default is to generate a 32 bytes character uuid (no-dashes), but it has an option for
+			// including dashes, then raising it to 36 bytes.
+			RegisterColumnType(DbType.Guid, "varchar(36)");
 
 			RegisterFunction("abs", new StandardSQLFunction("abs"));
 			RegisterFunction("acos", new StandardSQLFunction("acos", NHibernateUtil.Double));
@@ -68,9 +71,10 @@ namespace NHibernate.Dialect
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(","+",")"));
 			RegisterFunction("cos", new StandardSQLFunction("cos", NHibernateUtil.Double));
 			RegisterFunction("cot", new StandardSQLFunction("cot", NHibernateUtil.Double));
-			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.Date));
+			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate));
 			RegisterFunction("current_time", new NoArgSQLFunction("current_time", NHibernateUtil.Time));
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.LocalDateTime));
+			RegisterFunction("current_utctimestamp", new NoArgSQLFunction("getutcdate", NHibernateUtil.UtcDateTime));
 			RegisterFunction("datename", new StandardSQLFunction("datename", NHibernateUtil.String));
 			RegisterFunction("day", new StandardSQLFunction("day", NHibernateUtil.Int32));
 			RegisterFunction("degrees", new StandardSQLFunction("degrees", NHibernateUtil.Double));
@@ -94,6 +98,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("pi", new NoArgSQLFunction("pi", NHibernateUtil.Double));
 			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
 			RegisterFunction("rand", new StandardSQLFunction("rand", NHibernateUtil.Double));
+			// rand returns the same value for each row, rand2 returns a new one for each row.
+			RegisterFunction("random", new StandardSQLFunction("rand2", NHibernateUtil.Double));
 			RegisterFunction("reverse", new StandardSQLFunction("reverse"));
 			RegisterFunction("round", new StandardSQLFunction("round"));
 			RegisterFunction("rtrim", new StandardSQLFunction("rtrim"));
@@ -112,6 +118,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("year", new StandardSQLFunction("year", NHibernateUtil.Int32));
 
 			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
+
+			RegisterFunction("new_uuid", new NoArgSQLFunction("newid", NHibernateUtil.Guid));
 		}
 		
 		public override string AddColumnString
@@ -247,7 +255,10 @@ namespace NHibernate.Dialect
 		{
 			get { return false; }
 		}
-		
+
+		/// <inheritdoc />
+		public override bool SupportsCrossJoin => false;
+
 		public override char OpenQuote
 		{
 			get { return '['; }

@@ -149,6 +149,21 @@ namespace NHibernate.Util
 			return ((MemberExpression)property.Body).Member;
 		}
 
+		/// <summary>
+		/// Gets the static field or property to be accessed.
+		/// </summary>
+		/// <typeparam name="TResult">The type of the property.</typeparam>
+		/// <param name="property">The expression representing the property getter.</param>
+		/// <returns>The <see cref="MemberInfo"/> of the property.</returns>
+		public static MemberInfo GetProperty<TResult>(Expression<Func<TResult>> property)
+		{
+			if (property == null)
+			{
+				throw new ArgumentNullException(nameof(property));
+			}
+			return ((MemberExpression)property.Body).Member;
+		}
+
 		internal static bool ParameterTypesMatch(ParameterInfo[] parameters, System.Type[] types)
 		{
 			if (parameters.Length != types.Length)

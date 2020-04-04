@@ -26,9 +26,11 @@ namespace NHibernate.DomainModel.Northwind.Entities
 		Role Role { get; set; }
 		EnumStoredAsString Enum1 { get; set; }
 		EnumStoredAsInt32 Enum2 { get; set; }
+		IUser CreatedBy { get; set; }
+		IUser ModifiedBy { get; set; }
 	}
 
-	public class User : IUser
+	public class User : IUser, IEntity
 	{
 		public virtual int Id { get; set; }
 
@@ -50,6 +52,14 @@ namespace NHibernate.DomainModel.Northwind.Entities
 
 		public virtual EnumStoredAsInt32 Enum2 { get; set; }
 
+		public virtual IUser CreatedBy { get; set; }
+
+		public virtual IUser ModifiedBy { get; set; }
+
+		public virtual int NotMapped { get; set; }
+
+		public virtual Role NotMappedRole { get; set; }
+
 		public User() { }
 
 		public User(string name, DateTime registeredAt)
@@ -58,10 +68,6 @@ namespace NHibernate.DomainModel.Northwind.Entities
 			RegisteredAt = registeredAt;
 		}
 	}
-
-
-
-
 
 	public enum EnumStoredAsString { Unspecified, Small, Medium, Large }
 

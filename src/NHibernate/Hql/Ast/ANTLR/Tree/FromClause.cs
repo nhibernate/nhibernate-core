@@ -163,7 +163,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_collectionJoinFromElementsByPath.Add(path, destination);	// Add the new node to the map so that we don't create it twice.
 		}
 
-
 		private void AddChild(FromClause fromClause)
 		{
 			if (_childFromClauses == null)
@@ -252,7 +251,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				_fromElementByClassAlias.Add(alias, element);
 			}
 		}
-
 
 		/// <summary>
 		/// Look for an existing implicit or explicit join by the given path.

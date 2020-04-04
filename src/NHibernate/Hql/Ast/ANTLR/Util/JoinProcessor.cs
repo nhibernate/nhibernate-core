@@ -48,6 +48,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 					return JoinType.RightOuterJoin;
 				case HqlSqlWalker.FULL:
 					return JoinType.FullJoin;
+				case HqlSqlWalker.CROSS:
+					return JoinType.CrossJoin;
 				default:
 					throw new AssertionFailure("undefined join type " + astJoinType);
 			}

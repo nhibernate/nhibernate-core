@@ -59,7 +59,6 @@ namespace NHibernate.Loader
 			return DoQueryAndInitializeNonLazyCollectionsAsync(session, queryParameters, returnProxies, null, null, cancellationToken);
 		}
 
-
 		private async Task<IList> DoQueryAndInitializeNonLazyCollectionsAsync(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, 
 		                                                     IResultTransformer forcedResultTransformer,
 		                                                     QueryCacheResultBuilder queryCacheResultBuilder, CancellationToken cancellationToken)
@@ -436,7 +435,6 @@ namespace NHibernate.Loader
 				return Task.FromException<object>(ex);
 			}
 		}
-
 
 		/// <summary>
 		/// Get the actual object that is returned in the user-visible result list.

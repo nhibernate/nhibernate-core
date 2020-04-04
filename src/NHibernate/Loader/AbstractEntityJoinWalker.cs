@@ -105,7 +105,6 @@ namespace NHibernate.Loader
 				CollectionHelper.EmptyDictionary<string, IFilter>());
 		}
 
-
 		private void InitStatementString(OuterJoinableAssociation rootAssociation, SqlString projection, SqlString condition, SqlString orderBy, SqlString groupBy, SqlString having, LockMode lockMode)
 		{
 			SqlString selectClause = projection;
@@ -115,7 +114,7 @@ namespace NHibernate.Loader
 
 				Suffixes = BasicLoader.GenerateSuffixes(joins + 1);
 				var suffix = Suffixes[joins];
-				selectClause = new SqlString(GetSelectFragment(rootAssociation, suffix, null) + SelectString(associations));
+				selectClause = new SqlString(rootAssociation.GetSelectFragment(suffix, null, null) + SelectString(associations));
 			}
 
 			JoinFragment ojf = MergeOuterJoins(associations);

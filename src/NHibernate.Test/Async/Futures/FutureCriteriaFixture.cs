@@ -50,12 +50,10 @@ namespace NHibernate.Test.Futures
                 {
                     foreach (var person in await (persons5.GetEnumerableAsync()))
                     {
-
                     }
 
                     foreach (var person in await (persons10.GetEnumerableAsync()))
                     {
-
                     }
 
                     var events = logSpy.Appender.GetEvents();
@@ -112,7 +110,6 @@ namespace NHibernate.Test.Futures
 
 					foreach (var person in await (persons.GetEnumerableAsync()))
 					{
-
 					}
 
 					var events = logSpy.Appender.GetEvents();

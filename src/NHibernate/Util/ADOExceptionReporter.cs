@@ -1,6 +1,5 @@
 using System;
 
-
 namespace NHibernate.Util
 {
 	public class ADOExceptionReporter

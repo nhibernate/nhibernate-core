@@ -10,7 +10,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 
 		public Person()
 		{
-
 		}
 
 		public Person(string name, int iq, int shoeSize)
@@ -49,6 +48,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 			get { return home; }
 			set { home = value; }
 		}
-
 	}
 }

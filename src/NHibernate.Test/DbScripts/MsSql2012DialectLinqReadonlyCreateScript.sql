@@ -3774,6 +3774,8 @@ CREATE TABLE [dbo].[Users](
 	[Property1] [varchar](255) NULL,
 	[Property2] [varchar](255) NULL,
 	[OtherProperty1] [varchar](255) NULL,
+	[CreatedById] [int] NOT NULL,
+	[ModifiedById] [int] NULL
 PRIMARY KEY CLUSTERED 
 (
 	[UserId] ASC
@@ -3783,9 +3785,9 @@ GO
 SET ANSI_PADDING OFF
 GO
 SET IDENTITY_INSERT [dbo].[Users] ON
-INSERT [dbo].[Users] ([UserId], [Name], [InvalidLoginAttempts], [RegisteredAt], [LastLoginDate], [Enum1], [Enum2], [RoleId], [Property1], [Property2], [OtherProperty1]) VALUES (1, N'ayende', 4, CAST(0x00009D9800000000 AS DateTime), NULL, N'Medium', 1, 1, N'test1', N'test2', N'othertest1')
-INSERT [dbo].[Users] ([UserId], [Name], [InvalidLoginAttempts], [RegisteredAt], [LastLoginDate], [Enum1], [Enum2], [RoleId], [Property1], [Property2], [OtherProperty1]) VALUES (2, N'rahien', 5, CAST(0x00008D3E00000000 AS DateTime), NULL, N'Small', 0, 2, NULL, N'test2', NULL)
-INSERT [dbo].[Users] ([UserId], [Name], [InvalidLoginAttempts], [RegisteredAt], [LastLoginDate], [Enum1], [Enum2], [Features], [RoleId], [Property1], [Property2], [OtherProperty1]) VALUES (3, N'nhibernate', 6, CAST(0x00008EAC00000000 AS DateTime), CAST(0x00009D970110B41C AS DateTime), N'Medium', 0, 8, NULL, NULL, NULL, NULL)
+INSERT [dbo].[Users] ([UserId], [Name], [InvalidLoginAttempts], [RegisteredAt], [LastLoginDate], [Enum1], [Enum2], [RoleId], [Property1], [Property2], [OtherProperty1], [CreatedById], [ModifiedById]) VALUES (1, N'ayende', 4, CAST(0x00009D9800000000 AS DateTime), NULL, N'Medium', 1, 1, N'test1', N'test2', N'othertest1', 1, NULL)
+INSERT [dbo].[Users] ([UserId], [Name], [InvalidLoginAttempts], [RegisteredAt], [LastLoginDate], [Enum1], [Enum2], [RoleId], [Property1], [Property2], [OtherProperty1], [CreatedById], [ModifiedById]) VALUES (2, N'rahien', 5, CAST(0x00008D3E00000000 AS DateTime), NULL, N'Small', 0, 2, NULL, N'test2', NULL, 1, NULL)
+INSERT [dbo].[Users] ([UserId], [Name], [InvalidLoginAttempts], [RegisteredAt], [LastLoginDate], [Enum1], [Enum2], [Features], [RoleId], [Property1], [Property2], [OtherProperty1], [CreatedById], [ModifiedById]) VALUES (3, N'nhibernate', 6, CAST(0x00008EAC00000000 AS DateTime), CAST(0x00009D970110B41C AS DateTime), N'Medium', 0, 8, NULL, NULL, NULL, NULL, 1, NULL)
 SET IDENTITY_INSERT [dbo].[Users] OFF
 /****** Object:  Table [dbo].[TimeSheetUsers]    Script Date: 06/17/2010 13:08:54 ******/
 SET ANSI_NULLS ON

@@ -15,7 +15,6 @@ namespace NHibernate.DomainModel
 		private IList<Stuff> _stuffs;
 		private string _name;
 
-
 		public string StringId
 		{
 			get { return _stringId; }
@@ -51,7 +50,6 @@ namespace NHibernate.DomainModel
 
 			return (rhs.IntId == this.IntId && rhs.StringId.Equals(this.StringId));
 		}
-
 
 		public override int GetHashCode()
 		{

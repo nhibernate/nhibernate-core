@@ -75,7 +75,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3139
 					tran.Commit();
 				}
 			}
-
 		}
 
 		[Test]
