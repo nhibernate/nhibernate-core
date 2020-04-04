@@ -23,11 +23,11 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 		//Just for discoverability
 		private class CriteriaCacheableTest{}
 		
-		protected override void Configure(Configuration cfg)
+		protected override void Configure(Configuration config)
 		{
-			cfg.SetProperty(Environment.UseQueryCache, "true");
-			cfg.SetProperty(Environment.GenerateStatistics, "true");
-			base.Configure(cfg);
+			config.SetProperty(Environment.UseQueryCache, "true");
+			config.SetProperty(Environment.GenerateStatistics, "true");
+			base.Configure(config);
 		}
 
 		[Test]
@@ -36,8 +36,8 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 			Sfi.Statistics.Clear();
 			await (Sfi.EvictQueriesAsync());
 
-			var x = await (db.Customers.Cacheable().Take(1).ListAsync());
-			var x2 = await (db.Customers.Cacheable().Take(1).ListAsync());
+			await (db.Customers.Cacheable().Take(1).ListAsync());
+			await (db.Customers.Cacheable().Take(1).ListAsync());
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1), "Unexpected cache put count");
@@ -50,8 +50,8 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 			Sfi.Statistics.Clear();
 			await (Sfi.EvictQueriesAsync());
 
-			var x = await (db.Customers.Cacheable().Take(1).ListAsync());
-			var x2 = await (db.Customers.Take(1).ListAsync());
+			await (db.Customers.Cacheable().Take(1).ListAsync());
+			await (db.Customers.Take(1).ListAsync());
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1), "Unexpected cache put count");
@@ -66,20 +66,18 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 			await (Sfi.EvictQueriesAsync("test"));
 			await (Sfi.EvictQueriesAsync("other"));
 
-			var x = await (db.Customers.Cacheable().Take(1).CacheRegion("test").ListAsync());
-			var x2 = await (db.Customers.Cacheable().Take(1).CacheRegion("test").ListAsync());
-			var x3 = await (db.Customers.Cacheable().Take(1).CacheRegion("other").ListAsync());
+			await (db.Customers.Cacheable().Take(1).CacheRegion("test").ListAsync());
+			await (db.Customers.Cacheable().Take(1).CacheRegion("test").ListAsync());
+			await (db.Customers.Cacheable().Take(1).CacheRegion("other").ListAsync());
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(2), "Unexpected cache put count");
 			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1), "Unexpected cache hit count");
 		}
 
-
 		[Test]
 		public async Task CanBeCombinedWithFetchAsync()
 		{
-
 			Sfi.Statistics.Clear();
 			await (Sfi.EvictQueriesAsync());
 
@@ -104,13 +102,13 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 				.Take(1)
 				.ListAsync());
 
-			var customer = await (db.Customers
+			await (db.Customers
 				.Fetch(SelectMode.Fetch, x => x.Address)
 				.Where(x => x.CustomerId == "VINET")
 				.Cacheable()
 				.SingleOrDefaultAsync());
 
-			customer = await (db.Customers
+			var customer = await (db.Customers
 				.Fetch(SelectMode.Fetch, x => x.Address)
 				.Where(x => x.CustomerId == "VINET")
 				.Cacheable()
@@ -128,8 +126,7 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 			Sfi.Statistics.Clear();
 			await (Sfi.EvictQueriesAsync());
 
-			Order order;
-			order = (await (db.Orders
+			var order = (await (db.Orders
 					.Fetch(
 						SelectMode.Fetch,
 						x => x.Customer,
@@ -170,20 +167,18 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1), "Unexpected cache hit count");
 		}
 
-
 		[Test]
 		public async Task FetchIsCacheableForJoinAliasAsync()
 		{
 			Sfi.Statistics.Clear();
 			await (Sfi.EvictQueriesAsync());
 
-			Order order;
 			Customer customer = null;
 			OrderLine orderLines = null;
 			Product product = null;
 			OrderLine prOrderLines = null;
-			
-			order = (await (db.Orders
+
+			var order = (await (db.Orders
 					.JoinAlias(x => x.Customer, () => customer)
 					.JoinAlias(x => x.OrderLines, () => orderLines, JoinType.LeftOuterJoin)
 					.JoinAlias(() => orderLines.Product, () => product)
@@ -227,15 +222,13 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 			await (Sfi.EvictQueriesAsync());
 			var multiQueries = Sfi.ConnectionProvider.Driver.SupportsMultipleQueries;
 
-			Order order;
-
 			db.Orders
 			.Fetch(SelectMode.Fetch, x => x.Customer)
 			.Where(x => x.OrderId == 10248)
 			.Cacheable()
 			.Future();
 
-			order = db.Orders
+			var order = db.Orders
 					.Fetch(
 						SelectMode.Fetch,
 						x => x.OrderLines,
@@ -284,12 +277,12 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 
 		private static void AssertFetchedOrder(Order order)
 		{
-			Assert.That(order.Customer, Is.Not.Null, "Expected the fetched Customer to be initialized");
+			Assert.That(order.Customer, Is.Not.Null, "Expected the fetched Customer to be not null");
 			Assert.That(NHibernateUtil.IsInitialized(order.Customer), Is.True, "Expected the fetched Customer to be initialized");
 			Assert.That(NHibernateUtil.IsInitialized(order.OrderLines), Is.True, "Expected the fetched  OrderLines to be initialized");
 			Assert.That(order.OrderLines, Has.Count.EqualTo(3), "Expected the fetched OrderLines to have 3 items");
 			var orderLine = order.OrderLines.First();
-			Assert.That(orderLine.Product, Is.Not.Null, "Expected the fetched Product to be initialized");
+			Assert.That(orderLine.Product, Is.Not.Null, "Expected the fetched Product to be not null");
 			Assert.That(NHibernateUtil.IsInitialized(orderLine.Product), Is.True, "Expected the fetched Product to be initialized");
 			Assert.That(NHibernateUtil.IsInitialized(orderLine.Product.OrderLines), Is.True, "Expected the fetched OrderLines to be initialized");
 		}

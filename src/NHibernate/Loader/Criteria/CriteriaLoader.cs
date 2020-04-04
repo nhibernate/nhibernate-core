@@ -85,7 +85,7 @@ namespace NHibernate.Loader.Criteria
 			}
 
 			PostInstantiate();
-			if(!translator.HasProjection)
+			if (!translator.HasProjection)
 			{
 				CachePersistersWithCollections(ArrayHelper.IndexesOf(includeInResultRow, true));
 			}
