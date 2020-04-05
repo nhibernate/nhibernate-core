@@ -61,7 +61,7 @@ namespace NHibernate.Transform
 		/// <returns>a CacheableResultTransformer that is used to transform
 		///    tuples to a value(s) that can be cached.</returns>
 		// Since v5.1
-		[Obsolete("Please use override with skipTransformer parameter.")]
+		[Obsolete("Please use overload with skipTransformer parameter.")]
 		public static CacheableResultTransformer Create(IResultTransformer transformer,
 		                                                string[] aliases,
 		                                                bool[] includeInTuple)
