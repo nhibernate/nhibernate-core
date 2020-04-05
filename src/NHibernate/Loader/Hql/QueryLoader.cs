@@ -46,6 +46,7 @@ namespace NHibernate.Loader.Hql
 		private LockMode[] _defaultLockModes;
 		private ISet<ICollectionPersister> _uncacheableCollectionPersisters;
 		private Dictionary<string, string[]>[] _collectionUserProvidedAliases;
+		private IReadOnlyDictionary<int, int> _entityByResultTypeDic;
 
 		public QueryLoader(QueryTranslatorImpl queryTranslator, ISessionFactoryImplementor factory, SelectClause selectClause)
 			: base(factory)
@@ -211,6 +212,7 @@ namespace NHibernate.Loader.Hql
 		private void Initialize(SelectClause selectClause)
 		{
 			IList<FromElement> fromElementList = selectClause.FromElementsForLoad;
+			_entityByResultTypeDic = selectClause.EntityByResultTypeDic;
 
 			_hasScalars = selectClause.IsScalarSelect;
 			_scalarColumnNames = selectClause.ColumnNames;
@@ -383,7 +385,9 @@ namespace NHibernate.Loader.Hql
 				resultRow = new object[queryCols];
 				for (int i = 0; i < queryCols; i++)
 				{
-					resultRow[i] = ResultTypes[i].NullSafeGet(rs, scalarColumns[i], session, null);
+					resultRow[i] = _entityByResultTypeDic.TryGetValue(i, out var rowIndex)
+						? row[rowIndex]
+						: ResultTypes[i].NullSafeGet(rs, scalarColumns[i], session, null);
 				}
 			}
 			else
