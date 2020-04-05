@@ -70,7 +70,7 @@ namespace NHibernate.Transform
 		}
 
 		// Since 5.2
-		[Obsolete("Please use override with skipTransformer parameter.")]
+		[Obsolete("Please use overload with skipTransformer parameter.")]
 		public static CacheableResultTransformer Create(
 			IResultTransformer transformer, string[] aliases, bool[] includeInTuple, bool autoDiscoverTypes,
 			SqlString autoDiscoveredQuery)
