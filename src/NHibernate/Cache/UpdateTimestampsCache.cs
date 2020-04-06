@@ -57,6 +57,7 @@ namespace NHibernate.Cache
 
 		public virtual void PreInvalidate(IReadOnlyCollection<string> spaces)
 		{
+			//TODO: to handle concurrent writes correctly, this should return a Lock to the client
 			if (spaces.Count == 0)
 				return;
 
@@ -77,6 +78,7 @@ namespace NHibernate.Cache
 
 		public virtual void Invalidate(IReadOnlyCollection<string> spaces)
 		{
+			//TODO: to handle concurrent writes correctly, the client should pass in a Lock
 			if (spaces.Count == 0)
 				return;
 

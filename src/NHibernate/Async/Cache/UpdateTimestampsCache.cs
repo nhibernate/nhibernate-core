@@ -54,6 +54,7 @@ namespace NHibernate.Cache
 		public virtual async Task PreInvalidateAsync(IReadOnlyCollection<string> spaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			//TODO: to handle concurrent writes correctly, this should return a Lock to the client
 			if (spaces.Count == 0)
 				return;
 			cancellationToken.ThrowIfCancellationRequested();
@@ -87,6 +88,7 @@ namespace NHibernate.Cache
 		public virtual async Task InvalidateAsync(IReadOnlyCollection<string> spaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			//TODO: to handle concurrent writes correctly, the client should pass in a Lock
 			if (spaces.Count == 0)
 				return;
 			cancellationToken.ThrowIfCancellationRequested();

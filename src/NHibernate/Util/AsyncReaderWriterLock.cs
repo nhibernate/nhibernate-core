@@ -15,6 +15,7 @@ namespace NHibernate.Util
 		private readonly Releaser _readerReleaser;
 		private readonly Task<Releaser> _readerReleaserTask;
 		private SemaphoreSlim _waitingReadLockSemaphore;
+		private SemaphoreSlim _waitingDisposalSemaphore;
 		private int _readersWaiting;
 		private int _currentReaders;
 		private int _writersWaiting;
@@ -52,6 +53,8 @@ namespace NHibernate.Util
 				_readLockSemaphore.Wait();
 			}
 
+			DisposeWaitingSemaphore();
+
 			return _writerReleaser;
 		}
 
@@ -71,6 +74,8 @@ namespace NHibernate.Util
 				await _readLockSemaphore.WaitAsync().ConfigureAwait(false);
 			}
 
+			DisposeWaitingSemaphore();
+
 			return _writerReleaser;
 		}
 
@@ -82,7 +87,6 @@ namespace NHibernate.Util
 			}
 
 			_waitingReadLockSemaphore.Wait();
-			ReleaseWaitingReader();
 
 			return _readerReleaser;
 		}
@@ -94,7 +98,6 @@ namespace NHibernate.Util
 			async Task<Releaser> ReadLockInternalAsync()
 			{
 				await _waitingReadLockSemaphore.WaitAsync().ConfigureAwait(false);
-				ReleaseWaitingReader();
 
 				return _readerReleaser;
 			}
@@ -137,6 +140,10 @@ namespace NHibernate.Util
 				{
 					_currentReaders += _readersWaiting;
 					_waitingReadLockSemaphore.Release(_readersWaiting);
+					_readersWaiting = 0;
+					// We have to dispose the waiting read lock only after all readers finished using it
+					_waitingDisposalSemaphore = _waitingReadLockSemaphore;
+					_waitingReadLockSemaphore = null;
 				}
 
 				_writeLockSemaphore.Release();
@@ -182,19 +189,15 @@ namespace NHibernate.Util
 			}
 		}
 
-		private void ReleaseWaitingReader()
+		private void DisposeWaitingSemaphore()
 		{
-			lock (_writeLockSemaphore)
+			if (_waitingDisposalSemaphore == null)
 			{
-				_readersWaiting--;
-				if (_readersWaiting != 0)
-				{
-					return;
-				}
-
-				_waitingReadLockSemaphore.Dispose();
-				_waitingReadLockSemaphore = null;
+				return;
 			}
+
+			_waitingDisposalSemaphore.Dispose();
+			_waitingDisposalSemaphore = null;
 		}
 
 		public struct Releaser : IDisposable
