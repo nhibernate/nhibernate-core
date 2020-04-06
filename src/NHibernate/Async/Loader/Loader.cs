@@ -27,7 +27,6 @@ using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
-using NHibernate.Intercept;
 using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;

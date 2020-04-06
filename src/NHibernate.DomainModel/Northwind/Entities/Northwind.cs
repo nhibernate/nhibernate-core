@@ -94,7 +94,7 @@ namespace NHibernate.DomainModel.Northwind.Entities
             get { return _session.Query<Role>(); }
         }
 
-        public IEnumerable<IUser> IUsers
+        public IQueryable<IUser> IUsers
         {
             get { return _session.Query<IUser>(); }
         }

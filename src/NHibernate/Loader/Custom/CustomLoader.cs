@@ -275,7 +275,7 @@ namespace NHibernate.Loader.Custom
 			get { return entityPersisters; }
 		}
 
-		protected override ICollectionPersister[] CollectionPersisters
+		protected internal override ICollectionPersister[] CollectionPersisters
 		{
 			get { return collectionPersisters; }
 		}
