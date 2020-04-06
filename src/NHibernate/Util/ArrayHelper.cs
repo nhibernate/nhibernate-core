@@ -180,6 +180,15 @@ namespace NHibernate.Util
 			return array.Count(t => t);
 		}
 
+		internal static IEnumerable<int> IndexesOf<T>(T[] array, T value)
+		{
+			for (int i = 0; i < array.Length; i++)
+			{
+				if (EqualityComparer<T>.Default.Equals(array[i], value))
+					yield return i;
+			}
+		}
+
 		public static bool ArrayEquals<T>(T[] a, T[] b)
 		{
 			return ArrayComparer<T>.Default.Equals(a, b);
