@@ -7,7 +7,7 @@ namespace NHibernate.Util
 	// Idea from:
 	// https://github.com/kpreisser/AsyncReaderWriterLockSlim
 	// https://devblogs.microsoft.com/pfxteam/building-async-coordination-primitives-part-7-asyncreaderwriterlock/
-	internal class AsyncReaderWriterLock
+	internal class AsyncReaderWriterLock : IDisposable
 	{
 		private readonly SemaphoreSlim _writeLockSemaphore = new SemaphoreSlim(1, 1);
 		private readonly SemaphoreSlim _readLockSemaphore = new SemaphoreSlim(0, 1);
@@ -19,6 +19,7 @@ namespace NHibernate.Util
 		private int _readersWaiting;
 		private int _currentReaders;
 		private int _writersWaiting;
+		private bool _disposed;
 
 		public AsyncReaderWriterLock()
 		{
@@ -103,11 +104,24 @@ namespace NHibernate.Util
 			}
 		}
 
+		public void Dispose()
+		{
+			lock (_writeLockSemaphore)
+			{
+				_writeLockSemaphore.Dispose();
+				_readLockSemaphore.Dispose();
+				_waitingReadLockSemaphore?.Dispose();
+				_waitingDisposalSemaphore?.Dispose();
+				_disposed = true;
+			}
+		}
+
 		private bool CanEnterWriteLock(out bool waitForReadLocks)
 		{
 			waitForReadLocks = false;
 			lock (_writeLockSemaphore)
 			{
+				AssertNotDisposed();
 				if (_writeLockSemaphore.CurrentCount > 0 && _writeLockSemaphore.Wait(0))
 				{
 					waitForReadLocks = _currentReaders > 0;
@@ -124,6 +138,7 @@ namespace NHibernate.Util
 		{
 			lock (_writeLockSemaphore)
 			{
+				AssertNotDisposed();
 				if (_writeLockSemaphore.CurrentCount == 1)
 				{
 					throw new InvalidOperationException();
@@ -154,6 +169,7 @@ namespace NHibernate.Util
 		{
 			lock (_writeLockSemaphore)
 			{
+				AssertNotDisposed();
 				if (_writersWaiting == 0 && _writeLockSemaphore.CurrentCount > 0)
 				{
 					_currentReaders++;
@@ -176,6 +192,7 @@ namespace NHibernate.Util
 		{
 			lock (_writeLockSemaphore)
 			{
+				AssertNotDisposed();
 				if (_currentReaders == 0)
 				{
 					throw new InvalidOperationException();
@@ -191,13 +208,16 @@ namespace NHibernate.Util
 
 		private void DisposeWaitingSemaphore()
 		{
-			if (_waitingDisposalSemaphore == null)
-			{
-				return;
-			}
-
-			_waitingDisposalSemaphore.Dispose();
+			_waitingDisposalSemaphore?.Dispose();
 			_waitingDisposalSemaphore = null;
+		}
+
+		private void AssertNotDisposed()
+		{
+			if (_disposed)
+			{
+				throw new InvalidOperationException("The instance is disposed.");
+			}
 		}
 
 		public struct Releaser : IDisposable

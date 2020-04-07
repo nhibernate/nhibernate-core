@@ -383,6 +383,7 @@ namespace NHibernate.Cache
 			// The cache is externally provided and may be shared. Destroying the cache is
 			// not the responsibility of this class.
 			Cache = null;
+			_asyncReaderWriterLock.Dispose();
 		}
 
 		/// <summary>

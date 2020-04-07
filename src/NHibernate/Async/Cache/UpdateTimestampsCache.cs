@@ -54,15 +54,16 @@ namespace NHibernate.Cache
 		public virtual async Task PreInvalidateAsync(IReadOnlyCollection<string> spaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			//TODO: to handle concurrent writes correctly, this should return a Lock to the client
 			if (spaces.Count == 0)
 				return;
 			cancellationToken.ThrowIfCancellationRequested();
 
 			using (await (_asyncReaderWriterLock.WriteLockAsync()).ConfigureAwait(false))
 			{
+				//TODO: to handle concurrent writes correctly, this should return a Lock to the client
 				var ts = _updateTimestamps.NextTimestamp() + _updateTimestamps.Timeout;
 				await (SetSpacesTimestampAsync(spaces, ts, cancellationToken)).ConfigureAwait(false);
+				//TODO: return new Lock(ts);
 			}
 		}
 
@@ -88,14 +89,15 @@ namespace NHibernate.Cache
 		public virtual async Task InvalidateAsync(IReadOnlyCollection<string> spaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			//TODO: to handle concurrent writes correctly, the client should pass in a Lock
 			if (spaces.Count == 0)
 				return;
 			cancellationToken.ThrowIfCancellationRequested();
 
 			using (await (_asyncReaderWriterLock.WriteLockAsync()).ConfigureAwait(false))
 			{
+				//TODO: to handle concurrent writes correctly, the client should pass in a Lock
 				long ts = _updateTimestamps.NextTimestamp();
+				//TODO: if lock.getTimestamp().equals(ts)
 				if (log.IsDebugEnabled())
 					log.Debug("Invalidating spaces [{0}]", StringHelper.CollectionToString(spaces));
 				await (SetSpacesTimestampAsync(spaces, ts, cancellationToken)).ConfigureAwait(false);
