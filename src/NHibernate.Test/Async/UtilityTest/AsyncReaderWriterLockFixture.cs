@@ -136,6 +136,50 @@ namespace NHibernate.Test.UtilityTest
 			Assert.Throws<InvalidOperationException>(() => writeReleaser.Dispose());
 		}
 
+		private static async Task LockAsync(
+			AsyncReaderWriterLock readWriteLock,
+			Random random,
+			LockStatistics lockStatistics,
+			System.Action checkLockAction,
+			Func<bool> canContinue, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			while (canContinue())
+			{
+				var isRead = random.Next(100) < 80;
+				var releaser = isRead ? await (readWriteLock.ReadLockAsync()) : await (readWriteLock.WriteLockAsync());
+				lock (readWriteLock)
+				{
+					if (isRead)
+					{
+						lockStatistics.ReadLockCount++;
+					}
+					else
+					{
+						lockStatistics.WriteLockCount++;
+					}
+
+					checkLockAction();
+				}
+
+				await (Task.Delay(10, cancellationToken));
+
+				lock (readWriteLock)
+				{
+					releaser.Dispose();
+					if (isRead)
+					{
+						lockStatistics.ReadLockCount--;
+					}
+					else
+					{
+						lockStatistics.WriteLockCount--;
+					}
+
+					checkLockAction();
+				}
+			}
+		}
+
 		private static async Task AssertEqualValueAsync<T>(Func<T> getValueFunc, T value, Task task = null, int waitDelay = 5000, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var currentTime = 0;

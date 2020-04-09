@@ -350,7 +350,7 @@ namespace NHibernate.Test.UtilityTest
 		public async Task TestLoadSyncAndAsync()
 		{
 			var l = new AsyncReaderWriterLock();
-			int readLockCount = 0, writeLockCount = 0;
+			var lockStatistics = new LockStatistics();
 			var incorrectLockCount = false;
 			var tasks = new Task[20];
 			var masterRandom = new Random();
@@ -361,99 +361,81 @@ namespace NHibernate.Test.UtilityTest
 				// Ensure that each random has its own unique seed
 				var random = new Random(masterRandom.Next());
 				tasks[i] = i % 2 == 0
-					? Task.Run(() => SyncLock(random, cancellationTokenSource.Token))
-					: AsyncLock(random, cancellationTokenSource.Token);
+					? Task.Run(() => Lock(l, random, lockStatistics, CheckLockCount, CanContinue))
+					: LockAsync(l, random, lockStatistics, CheckLockCount, CanContinue);
 			}
 
 			await Task.WhenAll(tasks);
 			Assert.That(incorrectLockCount, Is.False);
 
-
 			void CheckLockCount()
 			{
-				var countIsCorrect = readLockCount == 0 && writeLockCount == 0 ||
-				                     readLockCount > 0 && writeLockCount == 0 ||
-				                     readLockCount == 0 && writeLockCount == 1;
-
-				if (!countIsCorrect)
+				if (!lockStatistics.Validate())
 				{
 					Volatile.Write(ref incorrectLockCount, true);
 				}
 			}
 
-			void SyncLock(Random random, CancellationToken cancellationToken)
+			bool CanContinue()
 			{
-				while (!cancellationToken.IsCancellationRequested)
-				{
-					var isRead = random.Next(100) < 80;
-					var releaser = isRead ? l.ReadLock() : l.WriteLock();
-					lock (l)
-					{
-						if (isRead)
-						{
-							readLockCount++;
-						}
-						else
-						{
-							writeLockCount++;
-						}
-					}
-
-					Thread.Sleep(10);
-
-					lock (l)
-					{
-						releaser.Dispose();
-						if (isRead)
-						{
-							readLockCount--;
-						}
-						else
-						{
-							writeLockCount--;
-						}
-					}
-				}
+				return !cancellationTokenSource.Token.IsCancellationRequested;
 			}
+		}
 
-			async Task AsyncLock(Random random, CancellationToken cancellationToken)
+		private class LockStatistics
+		{
+			public int ReadLockCount { get; set; }
+
+			public int WriteLockCount { get; set; }
+
+			public bool Validate()
 			{
-				while (!cancellationToken.IsCancellationRequested)
+				return (ReadLockCount == 0 && WriteLockCount == 0) ||
+				       (ReadLockCount > 0 && WriteLockCount == 0) ||
+				       (ReadLockCount == 0 && WriteLockCount == 1);
+			}
+		}
+
+		private static void Lock(
+			AsyncReaderWriterLock readWriteLock,
+			Random random,
+			LockStatistics lockStatistics,
+			System.Action checkLockAction,
+			Func<bool> canContinue)
+		{
+			while (canContinue())
+			{
+				var isRead = random.Next(100) < 80;
+				var releaser = isRead ? readWriteLock.ReadLock() : readWriteLock.WriteLock();
+				lock (readWriteLock)
 				{
-					var isRead = random.Next(100) < 80;
-					var releaser = isRead
-						? await l.ReadLockAsync().ConfigureAwait(false)
-						: await l.WriteLockAsync().ConfigureAwait(false);
-					lock (l)
+					if (isRead)
 					{
-						if (isRead)
-						{
-							readLockCount++;
-						}
-						else
-						{
-							writeLockCount++;
-						}
-
-						CheckLockCount();
+						lockStatistics.ReadLockCount++;
+					}
+					else
+					{
+						lockStatistics.WriteLockCount++;
 					}
 
-					await Task.Delay(10).ConfigureAwait(false);
+					checkLockAction();
+				}
 
-					lock (l)
+				Thread.Sleep(10);
+
+				lock (readWriteLock)
+				{
+					releaser.Dispose();
+					if (isRead)
 					{
-						releaser.Dispose();
-						if (isRead)
-						{
-							readLockCount--;
-						}
-						else
-						{
-							writeLockCount--;
-						}
-
-						CheckLockCount();
+						lockStatistics.ReadLockCount--;
 					}
+					else
+					{
+						lockStatistics.WriteLockCount--;
+					}
+
+					checkLockAction();
 				}
 			}
 		}
