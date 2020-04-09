@@ -13,6 +13,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
+using static NHibernate.Impl.CriteriaImpl;
 
 namespace NHibernate.Loader.Criteria
 {
@@ -766,7 +767,15 @@ namespace NHibernate.Loader.Criteria
 				return false;
 			}
 
-			columns = propertyMapping.ToColumns(GetSQLAlias(pathCriteria), propertyName);
+			// here we can check if the condition belongs to a with clause
+			bool useLastIndex = false;
+			var withClause = pathCriteria as Subcriteria != null ? ((Subcriteria) pathCriteria).WithClause as SimpleExpression : null;
+			if (withClause != null && withClause.PropertyName == propertyName)
+			{
+				useLastIndex = true;
+			}
+
+			columns = propertyMapping.ToColumns(GetSQLAlias(pathCriteria), propertyName, useLastIndex);
 			return true;
 		}
 

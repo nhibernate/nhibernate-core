@@ -1386,7 +1386,7 @@ namespace NHibernate.Persister.Collection
 			return IsManyToMany && (manyToManyWhereString != null || manyToManyFilterHelper.IsAffectedBy(enabledFilters));
 		}
 
-		public string[] ToColumns(string alias, string propertyName)
+		public string[] ToColumns(string alias, string propertyName, bool useLastIndex = false)
 		{
 			if ("index".Equals(propertyName))
 			{
@@ -1397,10 +1397,10 @@ namespace NHibernate.Persister.Collection
 
 				return StringHelper.Qualify(alias, indexColumnNames);
 			}
-			return elementPropertyMapping.ToColumns(alias, propertyName);
+			return elementPropertyMapping.ToColumns(alias, propertyName, useLastIndex);
 		}
 
-		public string[] ToColumns(string propertyName)
+		public string[] ToColumns(string propertyName, bool useLastIndex = false)
 		{
 			if ("index".Equals(propertyName))
 			{
@@ -1412,7 +1412,7 @@ namespace NHibernate.Persister.Collection
 				return indexColumnNames;
 			}
 
-			return elementPropertyMapping.ToColumns(propertyName);
+			return elementPropertyMapping.ToColumns(propertyName, useLastIndex);
 		}
 
 		protected abstract SqlCommandInfo GenerateDeleteString();

@@ -526,7 +526,7 @@ namespace NHibernate.Persister.Entity
 			return GenerateTableAlias(rootAlias, tableSpan - 1);
 		}
 
-		public override string[] ToColumns(string alias, string propertyName)
+		public override string[] ToColumns(string alias, string propertyName, bool useLastIndex)
 		{
 			if (EntityClass.Equals(propertyName))
 			{
@@ -542,11 +542,11 @@ namespace NHibernate.Persister.Entity
 			}
 			else
 			{
-				return base.ToColumns(alias, propertyName);
+				return base.ToColumns(alias, propertyName, useLastIndex);
 			}
 		}
 
-		protected override int GetSubclassPropertyTableNumber(int i)
+		protected override int GetSubclassPropertyTableNumber(int i, bool useLastIndex)
 		{
 			return subclassPropertyTableNumberClosure[i];
 		}

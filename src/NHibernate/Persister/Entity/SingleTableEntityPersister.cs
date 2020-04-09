@@ -675,7 +675,7 @@ possible solutions:
 				select.AddColumn(name, DiscriminatorColumnName, DiscriminatorAlias);
 		}
 
-		protected override int GetSubclassPropertyTableNumber(int i)
+		protected override int GetSubclassPropertyTableNumber(int i, bool useLastIndex)
 		{
 			return subclassPropertyTableNumberClosure[i];
 		}
@@ -696,12 +696,12 @@ possible solutions:
 		protected override bool IsSubclassPropertyDeferred(string propertyName, string entityName)
 		{
 			return
-				hasSequentialSelects && IsSubclassTableSequentialSelect(base.GetSubclassPropertyTableNumber(propertyName, entityName));
+				hasSequentialSelects && IsSubclassTableSequentialSelect(base.GetSubclassPropertyTableNumber(propertyName, entityName, false));
 		}
 
 		protected override bool IsPropertyDeferred(int propertyIndex)
 		{
-			return _hasSequentialSelect && subclassTableSequentialSelect[GetSubclassPropertyTableNumber(propertyIndex)];
+			return _hasSequentialSelect && subclassTableSequentialSelect[GetSubclassPropertyTableNumber(propertyIndex, false)];
 		}
 
 		//Since v5.3
@@ -713,9 +713,9 @@ possible solutions:
 
 		//Since v5.3
 		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
-		public new int GetSubclassPropertyTableNumber(string propertyName, string entityName)
+		public new int GetSubclassPropertyTableNumber(string propertyName, string entityName, bool useLastIndex = false)
 		{
-			return base.GetSubclassPropertyTableNumber(propertyName, entityName);
+			return base.GetSubclassPropertyTableNumber(propertyName, entityName, useLastIndex);
 		}
 
 		//Since v5.3
