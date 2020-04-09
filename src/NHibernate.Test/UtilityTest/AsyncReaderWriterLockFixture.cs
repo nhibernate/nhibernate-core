@@ -131,7 +131,7 @@ namespace NHibernate.Test.UtilityTest
 				Assert.That(l.Writing, Is.True);
 
 				var secondWriteSemaphore = new SemaphoreSlim(0);
-				AsyncReaderWriterLock.Releaser secondWriteReleaser = default;
+				var secondWriteReleaser = default(AsyncReaderWriterLock.Releaser);
 				var secondWriteThread = new Thread(
 					() =>
 					{
@@ -222,8 +222,8 @@ namespace NHibernate.Test.UtilityTest
 			var l = new AsyncReaderWriterLock();
 			l.Dispose();
 
-			Assert.Throws<InvalidOperationException>(() => l.ReadLock());
-			Assert.Throws<InvalidOperationException>(() => l.WriteLock());
+			Assert.Throws<ObjectDisposedException>(() => l.ReadLock());
+			Assert.Throws<ObjectDisposedException>(() => l.WriteLock());
 		}
 
 		[Test]

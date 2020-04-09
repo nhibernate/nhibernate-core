@@ -216,7 +216,7 @@ namespace NHibernate.Util
 		{
 			if (_disposed)
 			{
-				throw new InvalidOperationException("The instance is disposed.");
+				throw new ObjectDisposedException(nameof(AsyncReaderWriterLock));
 			}
 		}
 
