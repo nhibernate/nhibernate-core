@@ -150,14 +150,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					return fromElementType.GetBasePropertyMapping().TryToType(GetPropertyPath(propertyName), out type);
 				}
 
-				public string[] ToColumns(string alias, string propertyName)
+				public string[] ToColumns(string alias, string propertyName, bool useLastIndex = false)
 				{
-					return fromElementType.GetBasePropertyMapping().ToColumns(alias, GetPropertyPath(propertyName));
+					return fromElementType.GetBasePropertyMapping().ToColumns(alias, GetPropertyPath(propertyName), useLastIndex);
 				}
 
-				public string[] ToColumns(string propertyName)
+				public string[] ToColumns(string propertyName, bool useLastIndex = false)
 				{
-					return fromElementType.GetBasePropertyMapping().ToColumns(GetPropertyPath(propertyName));
+					return fromElementType.GetBasePropertyMapping().ToColumns(GetPropertyPath(propertyName), useLastIndex);
 				}
 
 				#endregion

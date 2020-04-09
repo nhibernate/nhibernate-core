@@ -1118,9 +1118,9 @@ namespace NHibernate.Persister.Entity
 			return false;
 		}
 
-		protected abstract int GetSubclassPropertyTableNumber(int i);
+		protected abstract int GetSubclassPropertyTableNumber(int i, bool useLastIndex);
 
-		internal int GetSubclassPropertyTableNumber(string propertyName, string entityName)
+		internal int GetSubclassPropertyTableNumber(string propertyName, string entityName, bool useLastIndex = false)
 		{
 			var type = propertyMapping.ToType(propertyName);
 			if (type.IsAssociationType && ((IAssociationType) type).UseLHSPrimaryKey)
@@ -1271,7 +1271,7 @@ namespace NHibernate.Persister.Entity
 				// use the subclass closure
 				int propertyNumber = GetSubclassPropertyIndex(lazyPropertyNames[i]);
 
-				int tableNumber = GetSubclassPropertyTableNumber(propertyNumber);
+				int tableNumber = GetSubclassPropertyTableNumber(propertyNumber, false);
 				tableNumbers.Add(tableNumber);
 
 				int[] colNumbers = subclassPropertyColumnNumberClosure[propertyNumber];
@@ -1326,7 +1326,7 @@ namespace NHibernate.Persister.Entity
 					// use the subclass closure
 					var propertyNumber = GetSubclassPropertyIndex(lazyPropertyDescriptor.Name);
 
-					var tableNumber = GetSubclassPropertyTableNumber(propertyNumber);
+					var tableNumber = GetSubclassPropertyTableNumber(propertyNumber, false);
 					tableNumbers.Add(tableNumber);
 
 					var colNumbers = subclassPropertyColumnNumberClosure[propertyNumber];
@@ -2050,12 +2050,12 @@ namespace NHibernate.Persister.Entity
 			return drivingAlias;
 		}
 
-		public virtual string[] ToColumns(string alias, string propertyName)
+		public virtual string[] ToColumns(string alias, string propertyName, bool useLastIndex = false)
 		{
-			return propertyMapping.ToColumns(alias, propertyName);
+			return propertyMapping.ToColumns(alias, propertyName, useLastIndex);
 		}
 
-		public string[] ToColumns(string propertyName)
+		public string[] ToColumns(string propertyName, bool useLastIndex = false)
 		{
 			return propertyMapping.GetColumnNames(propertyName);
 		}
@@ -2083,7 +2083,7 @@ namespace NHibernate.Persister.Entity
 		/// SingleTableEntityPersister defines an overloaded form
 		/// which takes the entity name.
 		/// </remarks>
-		public virtual int GetSubclassPropertyTableNumber(string propertyPath)
+		public virtual int GetSubclassPropertyTableNumber(string propertyPath, bool useLastIndex)
 		{
 			string rootPropertyName = StringHelper.Root(propertyPath);
 			IType type = propertyMapping.ToType(rootPropertyName);
@@ -2110,13 +2110,16 @@ namespace NHibernate.Persister.Entity
 					return getSubclassColumnTableNumberClosure()[idx];
 				}
 			}*/
-			int index = Array.LastIndexOf(SubclassPropertyNameClosure, rootPropertyName); //TODO: optimize this better!
-			return index == -1 ? 0 : GetSubclassPropertyTableNumber(index);
+			int index = useLastIndex
+				? Array.LastIndexOf(SubclassPropertyNameClosure, rootPropertyName)
+				: Array.IndexOf(SubclassPropertyNameClosure, rootPropertyName); //TODO: optimize this better!
+
+			return index == -1 ? 0 : GetSubclassPropertyTableNumber(index, false);
 		}
 
 		public virtual Declarer GetSubclassPropertyDeclarer(string propertyPath)
 		{
-			int tableIndex = GetSubclassPropertyTableNumber(propertyPath);
+			int tableIndex = GetSubclassPropertyTableNumber(propertyPath, false);
 			if (tableIndex == 0)
 			{
 				return Declarer.Class;
@@ -2164,7 +2167,7 @@ namespace NHibernate.Persister.Entity
 
 		public string[] ToColumns(string name, int i)
 		{
-			string alias = GenerateTableAlias(name, GetSubclassPropertyTableNumber(i));
+			string alias = GenerateTableAlias(name, GetSubclassPropertyTableNumber(i, false));
 			string[] cols = GetSubclassPropertyColumnNames(i);
 			string[] templates = SubclassPropertyFormulaTemplateClosure[i];
 			string[] result = new string[cols.Length];
@@ -2398,7 +2401,7 @@ namespace NHibernate.Persister.Entity
 				return uniqueKeyLoaders[propertyName];
 			}
 
-			return CreateUniqueKeyLoader(propertyMapping.ToType(propertyName), propertyMapping.ToColumns(propertyName), enabledFilters);
+			return CreateUniqueKeyLoader(propertyMapping.ToType(propertyName), propertyMapping.ToColumns(propertyName, false), enabledFilters);
 		}
 
 		public int GetPropertyIndex(string propertyName)
@@ -3682,7 +3685,7 @@ namespace NHibernate.Persister.Entity
 
 				if (cols != null && cols.Length > 0)
 				{
-					PropertyKey key = new PropertyKey(cols[0], GetSubclassPropertyTableNumber(i));
+					PropertyKey key = new PropertyKey(cols[0], GetSubclassPropertyTableNumber(i, false));
 					propDictionary[key] = property;
 				}
 			}

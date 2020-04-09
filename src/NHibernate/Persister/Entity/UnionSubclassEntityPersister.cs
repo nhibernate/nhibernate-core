@@ -289,12 +289,12 @@ namespace NHibernate.Persister.Entity
 			select.AddColumn(name, DiscriminatorColumnName, DiscriminatorAlias);
 		}
 
-		protected override int GetSubclassPropertyTableNumber(int i)
+		protected override int GetSubclassPropertyTableNumber(int i, bool useLastIndex)
 		{
 			return 0;
 		}
 
-		public override int GetSubclassPropertyTableNumber(string propertyName)
+		public override int GetSubclassPropertyTableNumber(string propertyName, bool useLastIndex)
 		{
 			return 0;
 		}

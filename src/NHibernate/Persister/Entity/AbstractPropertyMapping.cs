@@ -44,7 +44,7 @@ namespace NHibernate.Persister.Entity
 			return typesByPropertyPath.TryGetValue(propertyName, out type);
 		}
 
-		public virtual string[] ToColumns(string alias, string propertyName)
+		public virtual string[] ToColumns(string alias, string propertyName, bool useLastIndex)
 		{
 			//TODO: *two* hashmap lookups here is one too many...
 			string[] columns = GetColumns(propertyName);
@@ -71,7 +71,7 @@ namespace NHibernate.Persister.Entity
 			return columns;
 		}
 
-		public virtual string[] ToColumns(string propertyName)
+		public virtual string[] ToColumns(string propertyName, bool useLastIndex)
 		{
 			string[] columns = GetColumns(propertyName);
 

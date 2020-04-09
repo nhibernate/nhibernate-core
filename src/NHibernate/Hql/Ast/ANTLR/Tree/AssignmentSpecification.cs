@@ -61,7 +61,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else
 			{
-				temp.Add(persister.GetSubclassTableName(persister.GetSubclassPropertyTableNumber(propertyPath)));
+				temp.Add(persister.GetSubclassTableName(persister.GetSubclassPropertyTableNumber(propertyPath, false)));
 			}
 			_tableNames = new HashSet<string>(temp);
 

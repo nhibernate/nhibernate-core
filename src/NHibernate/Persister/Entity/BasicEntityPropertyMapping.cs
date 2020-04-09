@@ -26,11 +26,10 @@ namespace NHibernate.Persister.Entity
 			get { return persister.Type; }
 		}
 
-		public override string[] ToColumns(string alias, string propertyName)
+		public override string[] ToColumns(string alias, string propertyName, bool useLastIndex)
 		{
-			return
-				base.ToColumns(persister.GenerateTableAlias(alias, persister.GetSubclassPropertyTableNumber(propertyName)),
-				               propertyName);
+			var tableAlias = persister.GenerateTableAlias(alias, persister.GetSubclassPropertyTableNumber(propertyName, useLastIndex));
+			return base.ToColumns(tableAlias, propertyName, useLastIndex);
 		}
 	}
 }

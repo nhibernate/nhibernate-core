@@ -214,7 +214,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			//
 			// we may want to disallow it for discrim-subclass just for
 			// consistency-sake (currently does not work anyway)...
-			return _persister.GetSubclassPropertyTableNumber(propertyName) != 0;
+			return _persister.GetSubclassPropertyTableNumber(propertyName, false) != 0;
 		}
 
 		/// <summary>
