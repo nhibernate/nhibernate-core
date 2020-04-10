@@ -214,29 +214,13 @@ namespace NHibernate.Test.Linq
 		}
 		
 		[Test]
-		public void CanProjectManyCollectionsWithFetch()
-		{
-			var query = db.Orders.FetchMany(o => o.OrderLines).SelectMany(o => o.OrderLines);
-			var result = query.ToList();
-			Assert.That(result.Count, Is.EqualTo(2155));
-		}
-
-		[Test]
 		public void CanProjectCollections()
 		{
 			var query = db.Orders.Select(o => o.OrderLines);
 			var result = query.ToList();
 			Assert.That(result.Count, Is.EqualTo(830));
 		}
-
-		[Test]
-		public void CanProjectCollectionsWithFetch()
-		{
-			var query = db.Orders.Fetch(o => o.OrderLines).Select(o => o.OrderLines);
-			var result = query.ToList();
-			Assert.That(result.Count, Is.EqualTo(830));
-		}
-
+		
 		[Test]
 		public void CanProjectCollectionsInsideAnonymousType()
 		{
@@ -245,34 +229,13 @@ namespace NHibernate.Test.Linq
 			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
 			Assert.That(result.Count, Is.EqualTo(830));
 		}
-
-		[Test]
-		public void CanProjectCollectionsInsideAnonymousTypeWithFetch()
-		{
-			var query = db.Orders.Fetch(o => o.OrderLines).Select(o => new { o.OrderId, o.OrderLines });
-			var result = query.ToList();
-			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
-			Assert.That(result.Count, Is.EqualTo(830));
-		}
-
+		
 		[Test]
 		public void ProjectAnonymousTypeWithCollection()
 		{
 			// NH-3333
 			// done by WCF DS: context.Orders.Expand(o => o.OrderLines) from the client 
 			var query = from o in db.Orders
-						select new { o, o.OrderLines };
-
-			var result = query.ToList();
-			Assert.That(result.Count, Is.EqualTo(830));
-			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
-			Assert.That(result[0].o.OrderLines, Is.EquivalentTo(result[0].OrderLines));
-		}
-
-		[Test]
-		public void ProjectAnonymousTypeWithCollectionWithFetch()
-		{ 
-			var query = from o in db.Orders.Fetch(o => o.OrderLines)
 						select new { o, o.OrderLines };
 
 			var result = query.ToList();
@@ -296,18 +259,6 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public void ProjectAnonymousTypeWithCollection1WithFetch()
-		{
-			var query = from o in db.Orders.Fetch(o => o.OrderLines)
-						select new { o.OrderLines, o };
-
-			var result = query.ToList();
-			Assert.That(result.Count, Is.EqualTo(830));
-			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
-			Assert.That(result[0].o.OrderLines, Is.EquivalentTo(result[0].OrderLines));
-		}
-
-		[Test]
 		public void ProjectAnonymousTypeWithCollection2()
 		{
 			// NH-3333
@@ -321,33 +272,11 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public void ProjectAnonymousTypeWithCollection2WithFetch()
-		{
-			var query = from o in db.Orders.Fetch(o => o.OrderLines)
-						select new { o.OrderLines, A = 1, B = 2 };
-
-			var result = query.ToList();
-			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
-			Assert.That(result.Count, Is.EqualTo(830));
-		}
-
-		[Test]
 		public void ProjectAnonymousTypeWithCollection3()
 		{
 			// NH-3333
 			// done by WCF DS: context.Orders.Expand(o => o.OrderLines) from the client 
 			var query = from o in db.Orders
-						select new { OrderLines = o.OrderLines.ToList() };
-
-			var result = query.ToList();
-			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
-			Assert.That(result.Count, Is.EqualTo(830));
-		}
-
-		[Test]
-		public void ProjectAnonymousTypeWithCollection3WithFetch()
-		{
-			var query = from o in db.Orders.Fetch(o => o.OrderLines)
 						select new { OrderLines = o.OrderLines.ToList() };
 
 			var result = query.ToList();
@@ -378,6 +307,7 @@ namespace NHibernate.Test.Linq
 		public void ProjectKnownTypeWithCollectionWithFetch()
 		{
 			// NH-3396
+			// However, due to a double join on Orderlines, this query has 7000+ results
 			var query = from o in db.Orders.Fetch(x => x.OrderLines)
 			            select new ExpandedWrapper<Order, ISet<OrderLine>>
 			            {
