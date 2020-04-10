@@ -212,7 +212,7 @@ namespace NHibernate.Test.Linq
 			var result = query.ToList();
 			Assert.That(result.Count, Is.EqualTo(2155));
 		}
-		
+
 		[Test]
 		public void CanProjectCollections()
 		{
@@ -220,7 +220,7 @@ namespace NHibernate.Test.Linq
 			var result = query.ToList();
 			Assert.That(result.Count, Is.EqualTo(830));
 		}
-		
+
 		[Test]
 		public void CanProjectCollectionsInsideAnonymousType()
 		{
@@ -229,7 +229,7 @@ namespace NHibernate.Test.Linq
 			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
 			Assert.That(result.Count, Is.EqualTo(830));
 		}
-		
+
 		[Test]
 		public void ProjectAnonymousTypeWithCollection()
 		{
