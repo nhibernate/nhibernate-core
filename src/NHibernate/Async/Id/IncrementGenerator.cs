@@ -19,6 +19,7 @@ using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Id
 {
@@ -26,7 +27,6 @@ namespace NHibernate.Id
 	using System.Threading;
 	public partial class IncrementGenerator : IIdentifierGenerator, IConfigurable
 	{
-		private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
 
 		/// <summary>
 		///
@@ -35,16 +35,16 @@ namespace NHibernate.Id
 		/// <param name="obj"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		[MethodImpl()]
 		public async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (await _generate.LockAsync())
+			using (await (_asyncLock.LockAsync()).ConfigureAwait(false))
 			{
 				if (_sql != null)
 				{
 					await (GetNextAsync(session, cancellationToken)).ConfigureAwait(false);
 				}
+
 				return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
 			}
 		}

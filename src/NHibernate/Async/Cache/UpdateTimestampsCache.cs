@@ -22,10 +22,6 @@ namespace NHibernate.Cache
 	using System.Threading;
 	public partial class UpdateTimestampsCache
 	{
-		private readonly NHibernate.Util.AsyncLock _preInvalidate = new NHibernate.Util.AsyncLock();
-		private readonly NHibernate.Util.AsyncLock _invalidate = new NHibernate.Util.AsyncLock();
-		private readonly NHibernate.Util.AsyncLock _isUpToDate = new NHibernate.Util.AsyncLock();
-		private readonly NHibernate.Util.AsyncLock _areUpToDate = new NHibernate.Util.AsyncLock();
 
 		public virtual Task ClearAsync(CancellationToken cancellationToken)
 		{
@@ -55,20 +51,20 @@ namespace NHibernate.Cache
 			}
 		}
 
-		[MethodImpl()]
 		public virtual async Task PreInvalidateAsync(IReadOnlyCollection<string> spaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (await _preInvalidate.LockAsync())
+			if (spaces.Count == 0)
+				return;
+			cancellationToken.ThrowIfCancellationRequested();
+
+			using (await (_asyncReaderWriterLock.WriteLockAsync()).ConfigureAwait(false))
 			{
 				//TODO: to handle concurrent writes correctly, this should return a Lock to the client
 				var ts = _updateTimestamps.NextTimestamp() + _updateTimestamps.Timeout;
 				await (SetSpacesTimestampAsync(spaces, ts, cancellationToken)).ConfigureAwait(false);
-
 				//TODO: return new Lock(ts);
 			}
-
-			//TODO: return new Lock(ts);
 		}
 
 		//Since v5.1
@@ -90,11 +86,14 @@ namespace NHibernate.Cache
 			}
 		}
 
-		[MethodImpl()]
 		public virtual async Task InvalidateAsync(IReadOnlyCollection<string> spaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (await _invalidate.LockAsync())
+			if (spaces.Count == 0)
+				return;
+			cancellationToken.ThrowIfCancellationRequested();
+
+			using (await (_asyncReaderWriterLock.WriteLockAsync()).ConfigureAwait(false))
 			{
 				//TODO: to handle concurrent writes correctly, the client should pass in a Lock
 				long ts = _updateTimestamps.NextTimestamp();
@@ -113,9 +112,6 @@ namespace NHibernate.Cache
 			}
 			try
 			{
-				if (spaces.Count == 0)
-					return Task.CompletedTask;
-
 				return _updateTimestamps.PutManyAsync(
 				spaces.ToArray<object>(),
 				ArrayHelper.Fill<object>(ts, spaces.Count), cancellationToken);
@@ -126,45 +122,45 @@ namespace NHibernate.Cache
 			}
 		}
 
-		[MethodImpl()]
 		public virtual async Task<bool> IsUpToDateAsync(ISet<string> spaces, long timestamp /* H2.1 has Long here */, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (await _isUpToDate.LockAsync())
-			{
-				if (spaces.Count == 0)
-					return true;
+			if (spaces.Count == 0)
+				return true;
+			cancellationToken.ThrowIfCancellationRequested();
 
+			using (await (_asyncReaderWriterLock.ReadLockAsync()).ConfigureAwait(false))
+			{
 				var lastUpdates = await (_updateTimestamps.GetManyAsync(spaces.ToArray<object>(), cancellationToken)).ConfigureAwait(false);
 				return lastUpdates.All(lastUpdate => !IsOutdated(lastUpdate as long?, timestamp));
 			}
 		}
 
-		[MethodImpl()]
 		public virtual async Task<bool[]> AreUpToDateAsync(ISet<string>[] spaces, long[] timestamps, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (await _areUpToDate.LockAsync())
+			if (spaces.Length == 0)
+				return Array.Empty<bool>();
+
+			var allSpaces = new HashSet<string>();
+			foreach (var sp in spaces)
 			{
-				if (spaces.Length == 0)
-					return Array.Empty<bool>();
+				allSpaces.UnionWith(sp);
+			}
 
-				var allSpaces = new HashSet<string>();
-				foreach (var sp in spaces)
-				{
-					allSpaces.UnionWith(sp);
-				}
+			if (allSpaces.Count == 0)
+				return ArrayHelper.Fill(true, spaces.Length);
 
-				if (allSpaces.Count == 0)
-					return ArrayHelper.Fill(true, spaces.Length);
+			var keys = allSpaces.ToArray<object>();
+			cancellationToken.ThrowIfCancellationRequested();
 
-				var keys = allSpaces.ToArray<object>();
-
+			using (await (_asyncReaderWriterLock.ReadLockAsync()).ConfigureAwait(false))
+			{
 				var index = 0;
 				var lastUpdatesBySpace =
-				(await (_updateTimestamps
-					.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false))
-					.ToDictionary(u => keys[index++], u => u as long?);
+					(await (_updateTimestamps
+						.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false))
+						.ToDictionary(u => keys[index++], u => u as long?);
 
 				var results = new bool[spaces.Length];
 				for (var i = 0; i < spaces.Length; i++)
