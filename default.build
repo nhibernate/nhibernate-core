@@ -67,7 +67,13 @@
 	<target name="find-async-generator-console">
 		<property name="tool.id" value="CSharpAsyncGenerator.CommandLine" />
 		<call target="get-tool-info" />
-		<property name="async-generator-console"  value="${tool.path}tools/netcoreapp2.1/AsyncGenerator.CommandLine.dll" />
+		<property name="async-generator-console" value="${tool.path}tools/netcoreapp2.1/AsyncGenerator.CommandLine.dll" />
+		<if test="${version::get-major(version::parse(dotnet.version)) == 3}">
+			<property name="async-generator-console" value="${tool.path}tools/netcoreapp3.1/AsyncGenerator.CommandLine.dll" />
+		</if>
+		<if test="${version::get-major(version::parse(dotnet.version)) >= 5}">
+			<property name="async-generator-console" value="${tool.path}tools/net5.0/AsyncGenerator.CommandLine.dll" />
+		</if>
 	</target>
 
 	<target name="generate-async" depends="solution-restore find-async-generator-console">
