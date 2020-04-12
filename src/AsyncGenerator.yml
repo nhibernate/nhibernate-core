@@ -160,9 +160,6 @@
   transformation:
     configureAwaitArgument: false
     localFunctions: true
-    asyncLock:
-      type: NHibernate.Util.AsyncLock
-      methodName: LockAsync
     documentationComments:
       addOrReplaceMethodSummary:
         - name: Commit
