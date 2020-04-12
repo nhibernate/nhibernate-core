@@ -9,7 +9,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2244
 	{
 		public PhoneNumber()
 		{
-			
 		}
 
 		public PhoneNumber(int countryCode, string number)

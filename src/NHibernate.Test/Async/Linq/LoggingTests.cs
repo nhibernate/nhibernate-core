@@ -39,7 +39,6 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-
 		[Test]
 		public async Task CanLogLinqExpressionWithoutInitializingContainedProxyAsync()
 		{

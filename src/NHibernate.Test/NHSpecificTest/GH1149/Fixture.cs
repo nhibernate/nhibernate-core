@@ -72,7 +72,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1149
 				}
 			}
 
-			
 			using (var stateless = Sfi.OpenStatelessSession())
 			{
 				var loadedCompany = stateless.Get<CompanyO2O>(companyId);

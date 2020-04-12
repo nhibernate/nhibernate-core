@@ -98,7 +98,6 @@ namespace NHibernate.Criterion
 
 			sqlBuilder.Add(this.criteria[this.criteria.Count - 1].ToSqlString(criteria, criteriaQuery));
 
-
 			sqlBuilder.Add(")");
 
 			return sqlBuilder.ToSqlString();

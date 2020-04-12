@@ -172,7 +172,7 @@ namespace NHibernate.Engine
 
 		private void PreInvalidateCaches()
 		{
-			if (session.Factory.Settings.IsQueryCacheEnabled)
+			if (session.Factory.Settings.IsQueryCacheEnabled && executedSpaces.Count > 0)
 			{
 				session.Factory.UpdateTimestampsCache.PreInvalidate(executedSpaces);
 			}
@@ -294,7 +294,7 @@ namespace NHibernate.Engine
 
 		private void InvalidateCaches()
 		{
-			if (session.Factory.Settings.IsQueryCacheEnabled)
+			if (session.Factory.Settings.IsQueryCacheEnabled && executedSpaces.Count > 0)
 			{
 				session.Factory.UpdateTimestampsCache.Invalidate(executedSpaces);
 			}

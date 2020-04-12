@@ -25,7 +25,6 @@ namespace NHibernate.Util
 				Add(member);
 		}
 
-
 		#region Implementation of ICollection<object>
 
 		void ICollection<object>.Add(object item)
@@ -35,14 +34,12 @@ namespace NHibernate.Util
 
 		#endregion
 
-
 		public bool Add(object o)
 		{
 			object tempObject = map[o];
 			map[o] = DumpValue;
 			return tempObject == null;
 		}
-
 
 		public void Clear()
 		{
@@ -85,7 +82,6 @@ namespace NHibernate.Util
 		{
 			get { return false; }
 		}
-
 
 		#region Implementation of ISet<object>
 
@@ -154,6 +150,5 @@ namespace NHibernate.Util
 		}
 
 		#endregion
-
 	}
 }

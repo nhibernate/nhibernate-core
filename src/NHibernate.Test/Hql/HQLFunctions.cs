@@ -204,8 +204,7 @@ namespace NHibernate.Test.Hql
 				Assert.DoesNotThrow(() => s.CreateQuery("select a.Id, sum(BodyWeight)/avg(BodyWeight) from Animal a group by a.Id having sum(BodyWeight)>0").List());
 			}			
 		}
-
-
+		
 		[Test]
 		public void SubStringTwoParameters()
 		{
@@ -246,8 +245,7 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
-
-
+		
 		[Test]
 		public void SubString()
 		{
@@ -272,7 +270,6 @@ namespace NHibernate.Test.Hql
 					.UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 
-
 				// Following tests verify that parameters can be used.
 
 				hql = "from Animal a where substring(a.Description, 2, ?) = 'bcd'";
@@ -280,7 +277,6 @@ namespace NHibernate.Test.Hql
 					.SetParameter(0, 3)
 					.UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
-
 
 				hql = "from Animal a where substring(a.Description, ?, ?) = ?";
 				result = (Animal)s.CreateQuery(hql)

@@ -8,15 +8,12 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 	{
 		private class MyClass
 		{
-			
 		}
 		private class Inherited1: MyClass
 		{
-
 		}
 		private class Inherited2 : Inherited1
 		{
-
 		}
 
 		[Test]
@@ -73,7 +70,6 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			Assert.That(inspector.IsTablePerClassHierarchy(typeof(MyClass)), Is.True);
 			Assert.That(inspector.IsTablePerConcreteClass(typeof(MyClass)), Is.False);
 		}
-
 
 		[Test]
 		public void WhenRegisteredConcreteClassThenTheStrategyIsDefinedEvenForRoot()

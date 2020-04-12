@@ -11,6 +11,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NUnit.Framework;
@@ -150,6 +151,64 @@ namespace NHibernate.Test.Legacy
 			await (session.DeleteAsync("from Category"));
 			await (session.FlushAsync());
 			session.Close();
+		}
+
+		[Test]
+		public async Task FindBySQLDictionaryAsync()
+		{
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
+			{
+				var s = new Category { Name = nextLong.ToString() };
+				nextLong++;
+				await (session.SaveAsync(s));
+
+				s = new Category { Name = "WannaBeFound" };
+				await (session.FlushAsync());
+
+				var query =
+					session.CreateSQLQuery("select {category.*} from Category {category} where {category}.Name = :Name")
+					       .AddEntity("category", typeof(Category));
+				var parameters = new Dictionary<string, object>
+				{
+					{ nameof(s.Name), s.Name }
+				};
+				query.SetProperties(parameters);
+				var results = await (query.ListAsync());
+				Assert.That(results, Is.Empty);
+
+				await (session.DeleteAsync("from Category"));
+				await (tran.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task FindBySQLDynamicAsync()
+		{
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
+			{
+				var s = new Category { Name = nextLong.ToString() };
+				nextLong++;
+				await (session.SaveAsync(s));
+
+				s = new Category { Name = "WannaBeFound" };
+				await (session.FlushAsync());
+
+				var query =
+					session.CreateSQLQuery("select {category.*} from Category {category} where {category}.Name = :Name")
+					       .AddEntity("category", typeof(Category));
+				dynamic parameters = new ExpandoObject();
+				parameters.Name = s.Name;
+				// dynamic does not work on inherited interface method calls. https://stackoverflow.com/q/3071634
+				IQuery q = query;
+				q.SetProperties(parameters);
+				var results = await (query.ListAsync());
+				Assert.That(results, Is.Empty);
+
+				await (session.DeleteAsync("from Category"));
+				await (tran.CommitAsync());
+			}
 		}
 
 		[Test]
@@ -369,7 +428,6 @@ namespace NHibernate.Test.Legacy
 			list = await (query.ListAsync());
 
 			Assert.IsTrue(list.Count == 1);
-
 
 			session.Clear();
 

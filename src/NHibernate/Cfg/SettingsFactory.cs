@@ -54,6 +54,15 @@ namespace NHibernate.Cfg
 			settings.Dialect = dialect;
 
 			settings.LinqToHqlGeneratorsRegistry = LinqToHqlGeneratorsRegistryFactory.CreateGeneratorsRegistry(properties);
+			// 6.0 TODO: default to false instead of true, and adjust documentation in xsd, xml comment on Environment
+			// and Setting properties, and doc\reference.
+			settings.LinqToHqlLegacyPreEvaluation = PropertiesHelper.GetBoolean(
+				Environment.LinqToHqlLegacyPreEvaluation,
+				properties,
+				true);
+			settings.LinqToHqlFallbackOnPreEvaluation = PropertiesHelper.GetBoolean(
+				Environment.LinqToHqlFallbackOnPreEvaluation,
+				properties);
 
 			#region SQL Exception converter
 
@@ -206,7 +215,6 @@ namespace NHibernate.Cfg
 			string cacheRegionPrefix = PropertiesHelper.GetString(Environment.CacheRegionPrefix, properties, null);
 			if (string.IsNullOrEmpty(cacheRegionPrefix)) cacheRegionPrefix = null;
 			if (cacheRegionPrefix != null) log.Info("Cache region prefix: {0}", cacheRegionPrefix);
-
 
 			if (useQueryCache)
 			{

@@ -20,7 +20,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3567
 				session.Save(site1);
 				session.Save(site2);
 
-
 				var p1 = new Post { Id = ++id, Content = "Post 1", Site = site1 };
 				var p2 = new Post { Id = ++id, Content = "Post 2", Site = site2 };
 
@@ -92,16 +91,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3567
 
 					Assert.That(numberOfComments, Is.EqualTo(2), "Query with sub-query returned an invalid number of rows.");
 
-
 					transaction.Rollback();
-
 				}
-
 			}
 		}
-
-
 	}
-
-
 }

@@ -5,7 +5,6 @@ using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
 using NUnit.Framework;
 
-
 namespace NHibernate.Test.DialectTest.FunctionTests
 {
 	[TestFixture]
@@ -22,7 +21,6 @@ namespace NHibernate.Test.DialectTest.FunctionTests
 				.Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(dialectBaseType))
 				.ToList();
 		}
-
 
 		[TestCaseSource(nameof(GetAllDialectTypes))]
 		public void DialectShouldUseCorrectSubstringImplementation(System.Type dialectType)

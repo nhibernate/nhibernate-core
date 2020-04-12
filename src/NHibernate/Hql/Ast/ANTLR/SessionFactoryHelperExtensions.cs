@@ -32,7 +32,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public ISessionFactoryImplementor Factory
 		{
-			get { return _sfi;}
+			get { return _sfi; }
 		}
 
 		/// <summary>

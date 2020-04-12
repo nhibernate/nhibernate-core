@@ -43,7 +43,6 @@ namespace NHibernate.Dialect
 			//default:
 			//http://dev.mysql.com/doc/refman/5.0/en/data-type-defaults.html
 
-
 			//string type
 			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 255, "CHAR($l)");
@@ -266,7 +265,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("truncate", new StandardSQLFunctionWithRequiredParameters("truncate", new object[] {null, "0"}));
 
 			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
-			
+			RegisterFunction("random", new NoArgSQLFunction("rand", NHibernateUtil.Double));
+
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
 			
 			RegisterFunction("stddev", new StandardSQLFunction("stddev", NHibernateUtil.Double));
@@ -295,7 +295,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("hex", new StandardSQLFunction("hex", NHibernateUtil.String));
 			RegisterFunction("soundex", new StandardSQLFunction("soundex", NHibernateUtil.String));
 
-			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.Date, false));
+			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate, false));
 			RegisterFunction("current_time", new NoArgSQLFunction("current_time", NHibernateUtil.Time, false));
 
 			RegisterFunction("second", new StandardSQLFunction("second", NHibernateUtil.Int32));
@@ -497,6 +497,10 @@ namespace NHibernate.Dialect
 		/// <returns> The database type name </returns>
 		public override string GetCastTypeName(SqlType sqlType) =>
 			GetCastTypeName(sqlType, castTypeNames);
+
+		/// <inheritdoc />
+		public override bool TryGetCastTypeName(SqlType sqlType, out string typeName) =>
+			TryGetCastTypeName(sqlType, castTypeNames, out typeName);
 
 		public override long TimestampResolutionInTicks
 		{

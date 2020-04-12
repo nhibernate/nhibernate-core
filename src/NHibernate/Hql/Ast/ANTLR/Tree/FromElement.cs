@@ -121,7 +121,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public virtual bool IsImpliedInFromClause
 		{
-			get { return false; }  // Since this is an explicit FROM element, it can't be implied in the FROM clause.
+			get { return false; } // Since this is an explicit FROM element, it can't be implied in the FROM clause.
 		}
 
 		public bool IsFetch
@@ -457,7 +457,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public bool UseWhereFragment
 		{
-			get { return _useWhereFragment;}
+			get { return _useWhereFragment; }
 			set { _useWhereFragment = value; }
 		}
 
@@ -482,6 +482,19 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		}
 
 		public virtual string GetIdentityColumn()
+		{
+			var cols = GetIdentityColumns();
+			string result = string.Join(", ", cols);
+
+			if (cols.Length > 1 && Walker.IsComparativeExpressionClause)
+			{
+				return "(" + result + ")";
+			}
+
+			return result;
+		}
+
+		internal string[] GetIdentityColumns()
 		{
 			CheckInitialized();
 			string table = TableAlias;
@@ -513,14 +526,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				cols = GetPropertyMapping(propertyName).ToColumns(propertyName);
 			}
-			string result = string.Join(", ", cols);
 
-			if (cols.Length > 1 && Walker.IsComparativeExpressionClause)
-			{
-				return "(" + result + ")";
-			}
-
-			return result;
+			return cols;
 		}
 
 		public void HandlePropertyBeingDereferenced(IType propertySource, string propertyName)

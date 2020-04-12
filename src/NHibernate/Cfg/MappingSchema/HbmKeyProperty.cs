@@ -6,7 +6,6 @@ namespace NHibernate.Cfg.MappingSchema
 {
 	public partial class HbmKeyProperty : AbstractDecoratable, IColumnsMapping, ITypeMapping, IEntityPropertyMapping
 	{
-
 		#region Implementation of IColumnsMapping
 
 		[XmlIgnore]

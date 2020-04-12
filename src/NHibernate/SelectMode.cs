@@ -36,5 +36,11 @@ namespace NHibernate
 		/// Skips fetching for eagerly mapped association (no-op for lazy association).
 		/// </summary>
 		Skip,
+
+		/// <summary>
+		/// Fetch lazy property group
+		/// Note: To fetch single property it must be mapped with unique fetch group (lazy-group)
+		/// </summary>
+		FetchLazyPropertyGroup,
 	}
 }

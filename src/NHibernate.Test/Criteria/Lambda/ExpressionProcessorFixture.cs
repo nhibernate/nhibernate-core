@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +9,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
-
 	[TestFixture]
 	public class ExpressionProcessorFixture
 	{
-
 		[Test]
 		public void TestFindMemberExpressionReference()
 		{
@@ -353,7 +350,5 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			Assert.That(ExpressionProcessor.Signature(genericMethodWithQualifiedType), Is.EqualTo("NHibernate.Test.Criteria.Lambda.ExpressionProcessorFixture:T GenericMethod[T](T)"));
 		}
-
 	}
-
 }

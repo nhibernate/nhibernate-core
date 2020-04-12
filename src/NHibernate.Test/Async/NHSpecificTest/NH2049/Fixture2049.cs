@@ -37,7 +37,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2049
 			}
 		}
 
-
 		protected override void OnTearDown()
 		{
 			base.OnTearDown();
@@ -47,7 +46,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2049
 				session.Flush();
 			}
 		}
-
 
 		[Test]
 		[KnownBug("Known bug NH-2049.")]
@@ -65,7 +63,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2049
 				Assert.That(persons[0].IndividualCustomer.Deleted, Is.False);
 			}
 		}
-
 
 		[Test]
 		[KnownBug("Known bug NH-2049.", "NHibernate.Exceptions.GenericADOException")]

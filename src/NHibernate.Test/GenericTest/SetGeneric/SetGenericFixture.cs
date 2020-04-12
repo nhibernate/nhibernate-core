@@ -9,7 +9,6 @@ namespace NHibernate.Test.GenericTest.SetGeneric
 	[TestFixture]
 	public class SetGenericFixture : TestCase
 	{
-
 		protected override string[] Mappings
 		{
 			get { return new string[] { "GenericTest.SetGeneric.SetGenericFixture.hbm.xml" }; }

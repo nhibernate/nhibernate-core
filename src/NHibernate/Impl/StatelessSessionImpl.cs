@@ -136,7 +136,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override void List(CriteriaImpl criteria, IList results)
+		public override IList<T> List<T>(CriteriaImpl criteria)
 		{
 			using (BeginProcess())
 			{
@@ -146,18 +146,16 @@ namespace NHibernate.Impl
 				CriteriaLoader[] loaders = new CriteriaLoader[size];
 				for (int i = 0; i < size; i++)
 				{
-					loaders[i] = new CriteriaLoader(GetOuterJoinLoadable(implementors[i]), Factory,
+					loaders[size - 1 - i] = new CriteriaLoader(GetOuterJoinLoadable(implementors[i]), Factory,
 													criteria, implementors[i], EnabledFilters);
 				}
 
 				bool success = false;
 				try
 				{
-					for (int i = size - 1; i >= 0; i--)
-					{
-						ArrayHelper.AddAll(results, loaders[i].List(this));
-					}
+					var results = loaders.LoadAllToList<T>(this);
 					success = true;
+					return results;
 				}
 				catch (HibernateException)
 				{
@@ -171,9 +169,15 @@ namespace NHibernate.Impl
 				finally
 				{
 					AfterOperation(success);
+					temporaryPersistenceContext.Clear();
 				}
-				temporaryPersistenceContext.Clear();
 			}
+		}
+
+		//TODO 6.0: Remove (use base class implementation)
+		public override void List(CriteriaImpl criteria, IList results)
+		{
+			ArrayHelper.AddAll(results, List(criteria));
 		}
 
 		public override IEnumerable Enumerable(IQueryExpression queryExpression, QueryParameters queryParameters)

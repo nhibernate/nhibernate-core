@@ -112,6 +112,5 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var pi = typeof(MyEntity).GetProperty("AutoPropWithPrivateSet");
 			Assert.That(inspector.IsPersistentProperty(pi), Is.True);
 		}
-
 	}
 }

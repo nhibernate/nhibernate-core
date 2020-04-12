@@ -18,7 +18,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2224
 			}
 		}
 
-		
 		public virtual DateTime DateOfChange 
 		{
 			get 

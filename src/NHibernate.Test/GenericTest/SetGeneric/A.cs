@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-
 namespace NHibernate.Test.GenericTest.SetGeneric
 {
 	public class A
@@ -30,6 +29,5 @@ namespace NHibernate.Test.GenericTest.SetGeneric
 			get { return _items; }
 			set { _items = value; }
 		}
-
 	}
 }

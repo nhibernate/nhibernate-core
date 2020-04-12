@@ -310,6 +310,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
+		private void OutAggregateFunctionName(IASTNode m)
+		{
+			var aggregateNode = (AggregateNode) m;
+			Out(aggregateNode.FunctionName);
+		}
+
 		private void CommaBetweenParameters(String comma)
 		{
 			writer.CommaBetweenParameters(comma);
@@ -493,7 +499,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				return builder.ToSqlString();
 			}
-
 
 			#endregion
 		}

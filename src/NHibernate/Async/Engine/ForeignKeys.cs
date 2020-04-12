@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-
 using NHibernate.Id;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -99,7 +98,6 @@ namespace NHibernate.Engine
 			private async Task<bool> IsNullifiableAsync(string entityName, object obj, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-
 				//if (obj == org.hibernate.intercept.LazyPropertyInitializer_Fields.UNFETCHED_PROPERTY)
 				//  return false; //this is kinda the best we can do...
 
@@ -157,10 +155,6 @@ namespace NHibernate.Engine
 		public static async Task<bool> IsNotTransientSlowAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (entity.IsProxy())
-				return true;
-			if (session.PersistenceContext.IsEntryFor(entity))
-				return true;
 			return !await (IsTransientSlowAsync(entityName, entity, session, cancellationToken)).ConfigureAwait(false);
 		}
 
@@ -271,21 +265,10 @@ namespace NHibernate.Engine
 
 					if ((await (IsTransientFastAsync(entityName, entity, session, cancellationToken)).ConfigureAwait(false)).GetValueOrDefault())
 					{
-						/***********************************************/
-						// TODO NH verify the behavior of NH607 test
-						// these lines are only to pass test NH607 during PersistenceContext porting
-						// i'm not secure that NH607 is a test for a right behavior
-						EntityEntry entry = session.PersistenceContext.GetEntry(entity);
-						if (entry != null)
-							return entry.Id;
-						// the check was put here to have les possible impact
-						/**********************************************/
-
 						entityName = entityName ?? session.GuessEntityName(entity);
 						string entityString = entity.ToString();
 						throw new TransientObjectException(
 							string.Format("object references an unsaved transient instance - save the transient instance before flushing or set cascade action for the property to something that would make it autosave. Type: {0}, Entity: {1}", entityName, entityString));
-
 					}
 					id = session.GetEntityPersister(entityName, entity).GetIdentifier(entity);
 				}

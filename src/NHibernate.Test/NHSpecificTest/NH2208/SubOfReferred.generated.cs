@@ -16,7 +16,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2208
 	/// </summary>
 	public  partial class SubOfReferred : Referred
 	{
-
 	#region private fields
 		String _xX;	
 	#endregion

@@ -120,7 +120,6 @@ namespace NHibernate.Criterion
 				}
 			}
 			return types.ToArray();
-
 		}
 	}
 }

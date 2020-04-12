@@ -21,7 +21,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public string EmbeddedNode
 		{
-			get { return node;}
+			get { return node; }
 		}
 
 		public string Name

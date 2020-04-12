@@ -48,7 +48,6 @@ namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 					await (s.DeleteAsync(result));
 					await (t.CommitAsync());
 				}
-				
 			}
 		}
 
@@ -69,7 +68,6 @@ namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 					var result = await (s.QueryOver<Party>().Where(p => p.Name == "Limited").SingleOrDefaultAsync());
 					Assert.NotNull(result);
 				}
-
 			}
 		}
 	}

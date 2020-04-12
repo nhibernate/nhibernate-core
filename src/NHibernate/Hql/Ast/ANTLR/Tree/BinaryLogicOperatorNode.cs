@@ -27,12 +27,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public IASTNode LeftHandOperand
 		{
-			get { return GetChild(0);}
+			get { return GetChild(0); }
 		}
 
 		public IASTNode RightHandOperand
 		{
-			get { return GetChild(1);}
+			get { return GetChild(1); }
 		}
 
 		/// <summary>

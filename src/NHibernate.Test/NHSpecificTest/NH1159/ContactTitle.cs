@@ -9,7 +9,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 	[Serializable]
 	public class ContactTitle
 	{
-
 		#region Private Members
 		private bool isChanged;
 
@@ -55,7 +54,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 				isChanged |= (id != value);
 				id = value;
 			}
-
 		}
 
 		public virtual IList<Contact> ContactList
@@ -117,7 +115,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 		/// </summary>
 		public override int GetHashCode()
 		{
-
 			int hash = 57;
 			hash = 27 * hash * id.GetHashCode();
 			return hash;
@@ -129,5 +126,4 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 			return id.ToString() + " " + descr;
 		}
 	}
-
 }

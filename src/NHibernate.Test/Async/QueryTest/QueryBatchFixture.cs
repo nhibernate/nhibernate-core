@@ -472,7 +472,6 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanUseSecondLevelCacheWithPositionalParametersAndHqlAsync()
 		{
-			
 			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
 			await (CreateItemsAsync());
@@ -736,7 +735,6 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanUseSecondLevelCacheWithPositionalParametersAsync()
 		{
-			
 			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
 			await (CreateItemsAsync());

@@ -216,7 +216,6 @@ namespace NHibernate.Test.Naturalid.Mutable
 			t.Commit();
 			s.Close();
 
-
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Delete("from User");

@@ -68,5 +68,4 @@ namespace NHibernate.Test.GenericTest.Overall
 			}
 		}
 	}
-
 }
