@@ -62,7 +62,6 @@ namespace NHibernate.Test.UtilityTest
 			Assert.AreEqual(players[1], lhm.FirstValue);
 		}
 
-
 		[Test]
 		public void Clear()
 		{
@@ -261,7 +260,6 @@ namespace NHibernate.Test.UtilityTest
 			Assert.AreEqual(6, index);
 		}
 
-
 		[Test, Explicit]
 		public void ShowDiff()
 		{
@@ -415,4 +413,3 @@ namespace NHibernate.Test.UtilityTest
 		}
 	}
 }
-

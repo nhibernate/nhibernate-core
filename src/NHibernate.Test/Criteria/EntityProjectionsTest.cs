@@ -50,7 +50,6 @@ namespace NHibernate.Test.Criteria
 							m.Inverse(true);
 						},
 						a => a.OneToMany());
-
 				});
 
 			mapper.Class<EntitySimpleChild>(
@@ -180,7 +179,6 @@ namespace NHibernate.Test.Criteria
 					.QueryOver<EntityComplex>()
 					.Select(Projections.RootEntity().SetLazy(true))
 					.Take(1).SingleOrDefault();
-
 
 				Assert.That(NHibernateUtil.IsInitialized(entityRoot), Is.False, "Object must be lazy loaded.");
 			}
@@ -314,7 +312,6 @@ namespace NHibernate.Test.Criteria
 				//make sure objects are populated from different aliases for the same types
 				Assert.That(root.Id, Is.Not.EqualTo(sameTypeChild.Id), "Different objects are expected for root and sameTypeChild.");
 				Assert.That(child1.Id, Is.Not.EqualTo(child2.Id), "Different objects are expected for child1 and child2.");
-
 			}
 		}
 
@@ -444,7 +441,6 @@ namespace NHibernate.Test.Criteria
 			}
 		}
 
-
 		[Test]
 		public void ReadOnlyProjection()
 		{
@@ -476,7 +472,6 @@ namespace NHibernate.Test.Criteria
 				Assert.That(composite, Is.EqualTo(_entityWithCompositeId).Using((EntityWithCompositeId x, EntityWithCompositeId y) => (Equals(x.Key, y.Key) && Equals(x.Name, y.Name)) ? 0 : 1));
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
-
 		}
 
 		[Test]

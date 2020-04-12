@@ -42,13 +42,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1478
 		{
 			using (ISession session=OpenSession())
 			{
-
-
 				IList lst = session.CreateSQLQuery("select Biography from Person where Biography='Born in Istanbul :Turkey'")
 					.AddScalar("Biography", NHibernateUtil.String).List();
 				Assert.AreEqual(1,lst.Count);
 			}
-
 		}
 
 		[Test]
@@ -56,14 +53,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1478
 		{
 			using (ISession session = OpenSession())
 			{
-
-
 				IList lst = session.CreateSQLQuery("select p.Biography from Person p where p.Biography='Born in Istanbul :Turkey'")
 					.List();
 				Assert.AreEqual(1, lst.Count);
 			}
-
 		}
-
 	}
 }

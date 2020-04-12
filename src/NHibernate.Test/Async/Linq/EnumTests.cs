@@ -32,7 +32,6 @@ namespace NHibernate.Test.Linq
 			await (CanQueryOnEnumStoredAsInt32Async(EnumStoredAsInt32.Unspecified, 2));
 		}
 
-
 		public async Task CanQueryOnEnumStoredAsInt32Async(EnumStoredAsInt32 type, int expectedCount, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var query = await ((from user in db.Users
@@ -46,14 +45,12 @@ namespace NHibernate.Test.Linq
 		public async Task CanQueryOnEnumStoredAsString_Meduim_2Async()
 		{
 			await (CanQueryOnEnumStoredAsStringAsync(EnumStoredAsString.Medium, 2));
-
 		}
 
 		[Test]
 		public async Task CanQueryOnEnumStoredAsString_Small_1Async()
 		{
 			await (CanQueryOnEnumStoredAsStringAsync(EnumStoredAsString.Small, 1));
-
 		}
 
 		public async Task CanQueryOnEnumStoredAsStringAsync(EnumStoredAsString type, int expectedCount, CancellationToken cancellationToken = default(CancellationToken))

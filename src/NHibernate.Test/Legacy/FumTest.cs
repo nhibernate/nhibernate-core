@@ -536,7 +536,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public void KeyManyToOne()
 		{
@@ -587,7 +586,6 @@ namespace NHibernate.Test.Legacy
 			s.Flush();
 			s.Close();
 		}
-
 
 		[Test]
 		public void CompositeKeyPathExpressions()

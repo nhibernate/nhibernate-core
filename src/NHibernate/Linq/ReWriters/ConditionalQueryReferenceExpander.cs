@@ -31,6 +31,14 @@ namespace NHibernate.Linq.ReWriters
 			_expander.Transform(selectClause);
 		}
 
+		public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
+		{
+			if (fromClause.FromExpression is SubQueryExpression subqueryExpression)
+			{
+				VisitQueryModel(subqueryExpression.QueryModel);
+			}
+		}
+
 		public override void VisitOrdering(Ordering ordering, QueryModel queryModel, OrderByClause orderByClause, int index)
 		{
 			_expander.Transform(ordering);

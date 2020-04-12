@@ -1,5 +1,6 @@
 ﻿using System;
 using Antlr.Runtime;
+using NHibernate.Dialect.Function;
 using NHibernate.Type;
 using NHibernate.Hql.Ast.ANTLR.Util;
 
@@ -19,6 +20,19 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
+		public string FunctionName
+		{
+			get
+			{
+				if (SessionFactoryHelper.FindSQLFunction(Text) is ISQLFunctionExtended sqlFunction)
+				{
+					return sqlFunction.FunctionName;
+				}
+
+				return Text;
+			}
+		}
+
 		public override IType DataType
 		{
 			get
@@ -31,6 +45,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				base.DataType = value;
 			}
 		}
+		
 		public override void SetScalarColumnText(int i)
 		{
 			ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i);

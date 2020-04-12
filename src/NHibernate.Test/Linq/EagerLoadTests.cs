@@ -24,6 +24,48 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void CanSelectAndFetchMany()
+		{
+			var result = db.OrderLines
+							.Select(o => o.Product)
+							.FetchMany(o => o.OrderLines)
+							.ToList();
+
+			session.Close();
+
+			Assert.IsNotEmpty(result);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(result[0].OrderLines));
+		}
+
+		[Test]
+		public void CanSelectManyAndFetch()
+		{
+			var result = db.Orders
+							.SelectMany(o => o.OrderLines)
+							.Fetch(o => o.Product)
+							.ToList();
+
+			session.Close();
+
+			Assert.IsNotEmpty(result);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(result[0].Product));
+		}
+
+		[Test]
+		public void CanSelectManyAndFetchMany()
+		{
+			var result = db.Employees
+							.SelectMany(o => o.Orders)
+							.FetchMany(o => o.OrderLines)
+							.ToList();
+
+			session.Close();
+
+			Assert.IsNotEmpty(result);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(result[0].OrderLines));
+		}
+
+		[Test]
 		public void CanSelectAndFetchHql()
 		{
 			//NH-3075

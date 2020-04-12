@@ -11,7 +11,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Linq
 {
-	public class NhLinqExpression : IQueryExpression
+	public class NhLinqExpression : IQueryExpression, ICacheableQueryExpression
 	{
 		public string Key { get; protected set; }
 
@@ -39,7 +39,7 @@ namespace NHibernate.Linq
 
 		public NhLinqExpression(Expression expression, ISessionFactoryImplementor sessionFactory)
 		{
-			_expression = NhRelinqQueryParser.PreTransform(expression);
+			_expression = NhRelinqQueryParser.PreTransform(expression, sessionFactory);
 
 			// We want logging to be as close as possible to the original expression sent from the
 			// application. But if we log before partial evaluation done in PreTransform, the log won't

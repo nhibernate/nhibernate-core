@@ -83,7 +83,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1552
             }
         }
 
-
         [Test]
         public void Paging_with_sql_works_as_expected_with_FirstResultMaxResult()
         {

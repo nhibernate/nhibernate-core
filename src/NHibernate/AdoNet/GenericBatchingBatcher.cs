@@ -140,6 +140,11 @@ namespace NHibernate.AdoNet
 			_currentBatch.Clear();
 		}
 
+		internal override void OnPreparedBatchStatement(SqlString sqlString)
+		{
+			_currentBatch.CurrentStatement = sqlString;
+		}
+
 		private partial class BatchingCommandSet
 		{
 			private readonly string _statementTerminator;
@@ -172,6 +177,8 @@ namespace NHibernate.AdoNet
 
 			public int CountOfParameters { get; private set; }
 
+			public SqlString CurrentStatement { get; set; }
+
 			public void Append(DbParameterCollection parameters)
 			{
 				if (CountOfCommands > 0)
@@ -183,7 +190,7 @@ namespace NHibernate.AdoNet
 					_commandType = _batcher.CurrentCommand.CommandType;
 				}
 				
-				_sql.Add(_batcher.CurrentCommandSql.Copy());
+				_sql.Add(CurrentStatement);
 				_sqlTypes.AddRange(_batcher.CurrentCommandParameterTypes);
 
 				foreach (DbParameter parameter in parameters)
@@ -207,6 +214,7 @@ namespace NHibernate.AdoNet
 				{
 					return 0;
 				}
+
 				var batcherCommand = _batcher.Driver.GenerateCommand(
 					_commandType,
 					_sql.ToSqlString(),

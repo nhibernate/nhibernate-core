@@ -44,6 +44,9 @@ namespace NHibernate.Linq.NestedSelects
 					replacements.Add(expression, processed);
 			}
 
+			if (!replacements.Any())
+				return;
+
 			var key = Expression.Property(group, IGroupingKeyProperty);
 
 			var expressions = new List<ExpressionHolder>();
@@ -92,6 +95,10 @@ namespace NHibernate.Linq.NestedSelects
 
 		private static Expression ProcessSubquery(ISessionFactory sessionFactory, ICollection<ExpressionHolder> elementExpression, QueryModel queryModel, Expression @group, QueryModel subQueryModel)
 		{
+			var resultTypeOverride = subQueryModel.ResultTypeOverride;
+			if (resultTypeOverride != null && !resultTypeOverride.IsArray && !resultTypeOverride.IsEnumerableOfT())
+				return null;
+
 			var subQueryMainFromClause = subQueryModel.MainFromClause;
 
 			var restrictions = subQueryModel.BodyClauses

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-
 namespace NHibernate.Util
 {
 	/// <summary>
@@ -203,7 +202,6 @@ namespace NHibernate.Util
 		{
 			get { return map.Values; }
 		}
-
 
 		/// <summary>
 		/// <see cref="ICollection.CopyTo"/>

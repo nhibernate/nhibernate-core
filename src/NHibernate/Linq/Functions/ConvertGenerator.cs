@@ -44,7 +44,6 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-
 	public class ConvertToInt32Generator : ConvertToGenerator<int>
 	{
 		public ConvertToInt32Generator()

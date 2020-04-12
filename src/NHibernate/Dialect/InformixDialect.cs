@@ -68,7 +68,7 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("substr", new StandardSQLFunction("substr"));
 			//			RegisterFunction("trim", new AnsiTrimFunction()); // defined in base class
-			//			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));  // defined in base class
+			//			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32)); // defined in base class
 			RegisterFunction("coalesce", new NvlFunction()); // base class override
 			//			RegisterFunction("abs", new StandardSQLFunction("abs")); 
 			//			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
@@ -78,7 +78,8 @@ namespace NHibernate.Dialect
 			//			RegisterFunction("cast", new CastFunction());
 			//			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "||", ")"));
 
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("current", NHibernateUtil.DateTime, false));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current", NHibernateUtil.LocalDateTime, false));
+			RegisterFunction("current_date", new NoArgSQLFunction("today", NHibernateUtil.LocalDate, false));
 			RegisterFunction("sysdate", new NoArgSQLFunction("today", NHibernateUtil.DateTime, false));
 			RegisterFunction("current", new NoArgSQLFunction("current", NHibernateUtil.DateTime, false));
 			RegisterFunction("today", new NoArgSQLFunction("today", NHibernateUtil.DateTime, false));

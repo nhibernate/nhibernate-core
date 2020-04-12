@@ -81,7 +81,16 @@ namespace NHibernate.AdoNet
 
 		public DbCommand Generate(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
 		{
-			SqlString sql = GetSQL(sqlString);
+			return Generate(type, sqlString, parameterTypes, false);
+		}
+
+		private DbCommand Generate(CommandType type, SqlString sqlString, SqlType[] parameterTypes, bool batch)
+		{
+			var sql = GetSQL(sqlString);
+			if (batch)
+			{
+				OnPreparedBatchStatement(sql);
+			}
 
 			var cmd = _factory.ConnectionProvider.Driver.GenerateCommand(type, sql, parameterTypes);
 			LogOpenPreparedCommand();
@@ -141,7 +150,7 @@ namespace NHibernate.AdoNet
 			}
 			else
 			{
-				_batchCommand = PrepareCommand(type, sql, parameterTypes); // calls ExecuteBatch()
+				_batchCommand = PrepareCommand(type, sql, parameterTypes, true); // calls ExecuteBatch()
 				_batchCommandSql = sql;
 				_batchCommandParameterTypes = parameterTypes;
 			}
@@ -151,13 +160,18 @@ namespace NHibernate.AdoNet
 
 		public DbCommand PrepareCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 		{
+			return PrepareCommand(type, sql, parameterTypes, false);
+		}
+
+		private DbCommand PrepareCommand(CommandType type, SqlString sql, SqlType[] parameterTypes, bool batch)
+		{
 			OnPreparedCommand();
 
 			// do not actually prepare the Command here - instead just generate it because
 			// if the command is associated with an ADO.NET Transaction/Connection while
 			// another open one Command is doing something then an exception will be 
 			// thrown.
-			return Generate(type, sql, parameterTypes);
+			return Generate(type, sql, parameterTypes, batch);
 		}
 
 		protected virtual void OnPreparedCommand()
@@ -166,6 +180,8 @@ namespace NHibernate.AdoNet
 			// started - so execute the current batch of commands.
 			ExecuteBatch();
 		}
+
+		internal virtual void OnPreparedBatchStatement(SqlString sqlString) { }
 
 		public DbCommand PrepareQueryCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 		{
@@ -616,13 +632,13 @@ namespace NHibernate.AdoNet
 			if (isDisposing)
 			{
 				CloseCommands();
+				// nothing for Finalizer to do - so tell the GC to ignore it
+				GC.SuppressFinalize(this);
 			}
 
 			// free unmanaged resources here
 
 			_isAlreadyDisposed = true;
-			// nothing for Finalizer to do - so tell the GC to ignore it
-			GC.SuppressFinalize(this);
 		}
 
 		#endregion

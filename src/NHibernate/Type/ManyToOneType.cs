@@ -34,9 +34,7 @@ namespace NHibernate.Type
 		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne)
 			: this(entityName, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, null)
 		{
-			
 		}
-
 
 		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne, string propertyName)
 			: base(entityName, uniqueKeyPropertyName, !lazy, unwrapProxy)
@@ -236,7 +234,7 @@ namespace NHibernate.Type
 			return IsDirtyManyToOne(old, current, IsAlwaysDirtyChecked ? null : checkable, session);
 		}
 
-
+		/// <inheritdoc />
 		public override bool IsNullable
 		{
 			get { return ignoreNotFound; }

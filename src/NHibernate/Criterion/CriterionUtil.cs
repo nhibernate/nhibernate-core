@@ -46,6 +46,11 @@ namespace NHibernate.Criterion
 
 		internal static SqlString[] GetColumnNamesUsingProjection(IProjection projection, ICriteriaQuery criteriaQuery, ICriteria criteria)
 		{
+			if (projection is IPropertyProjection propertyProjection)
+			{
+				return GetColumnNamesUsingPropertyName(criteriaQuery, criteria, propertyProjection.PropertyName);
+			}
+
 			SqlString sqlString = projection.ToSqlString(criteria, 
 				criteriaQuery.GetIndexForAlias(),
 				criteriaQuery);
@@ -115,7 +120,6 @@ namespace NHibernate.Criterion
 				}
 			}
 			return types.ToArray();
-
 		}
 	}
 }

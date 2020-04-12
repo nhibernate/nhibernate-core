@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -14,7 +13,6 @@ using Expression = System.Linq.Expressions.Expression;
 
 namespace NHibernate.Impl
 {
-
 	/// <summary>
 	/// Subquery type enumeration
 	/// </summary>
@@ -86,7 +84,6 @@ namespace NHibernate.Impl
 					? orderStringDelegate(_property)
 					: orderProjectionDelegate(_projection);
 			}
-
 
 			/// <summary>
 			/// Retrieve the property name from a supplied PropertyProjection
@@ -502,7 +499,7 @@ namespace NHibernate.Impl
 			if (memberExpression != null)
 			{
 				if (memberExpression.Expression == null)
-					return false;  // it's a member of a static class
+					return false; // it's a member of a static class
 
 				if (IsMemberExpression(memberExpression.Expression))
 					return true;
@@ -908,4 +905,3 @@ namespace NHibernate.Impl
 		}
 	}
 }
-

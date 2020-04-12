@@ -17,44 +17,44 @@ namespace NHibernate.Engine
 	/// </summary>
 	public partial interface IPersistenceContext
 	{
-		bool IsStateless { get;}
+		bool IsStateless { get; }
 
 		/// <summary>
 		/// Get the session to which this persistence context is bound.
 		/// </summary>
-		ISessionImplementor Session { get;}
+		ISessionImplementor Session { get; }
 
 		/// <summary>
 		/// Retrieve this persistence context's managed load context.
 		/// </summary>
-		LoadContexts LoadContexts { get;}
+		LoadContexts LoadContexts { get; }
 
 		/// <summary>
 		/// Get the <tt>BatchFetchQueue</tt>, instantiating one if necessary.
 		/// </summary>
-		BatchFetchQueue BatchFetchQueue { get;}
+		BatchFetchQueue BatchFetchQueue { get; }
 
 		/// <summary> Retrieve the set of EntityKeys representing nullifiable references</summary>
-		ISet<EntityKey> NullifiableEntityKeys { get;}
+		ISet<EntityKey> NullifiableEntityKeys { get; }
 
 		/// <summary> Get the mapping from key value to entity instance</summary>
-		IDictionary<EntityKey, object> EntitiesByKey { get;}
+		IDictionary<EntityKey, object> EntitiesByKey { get; }
 
 		/// <summary> Get the mapping from entity instance to entity entry</summary>
-		IDictionary EntityEntries { get;}
+		IDictionary EntityEntries { get; }
 
 		/// <summary> Get the mapping from collection instance to collection entry</summary>
-		IDictionary CollectionEntries { get;}
+		IDictionary CollectionEntries { get; }
 
 		/// <summary> Get the mapping from collection key to collection instance</summary>
-		IDictionary<CollectionKey, IPersistentCollection> CollectionsByKey { get;}
+		IDictionary<CollectionKey, IPersistentCollection> CollectionsByKey { get; }
 
 		/// <summary> How deep are we cascaded?</summary>
-		int CascadeLevel { get;}
+		int CascadeLevel { get; }
 
 		/// <summary>Is a flush cycle currently in process?</summary>
 		/// <remarks>Called before and after the flushcycle</remarks>
-		bool Flushing { get; set;}
+		bool Flushing { get; set; }
 		
 		/// <summary>
 		/// The read-only status for entities (and proxies) loaded into this persistence context.
@@ -87,7 +87,7 @@ namespace NHibernate.Engine
 		void Clear();
 
 		/// <summary>False if we know for certain that all the entities are read-only</summary>
-		bool HasNonReadOnlyEntities { get;}
+		bool HasNonReadOnlyEntities { get; }
 
 		/// <summary> Set the status of an entry</summary>
 		void SetEntryStatus(EntityEntry entry, Status status);

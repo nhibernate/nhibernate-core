@@ -124,9 +124,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 			_oneToOne.formula1 = null;
 			_oneToOne.formula =
 				formulas
-					.Select(
-						f => new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) })
-					.ToArray();
+					.ToArray(
+						f => new HbmFormula {Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None)});
 		}
 
 		public void ForeignKey(string foreignKeyName)

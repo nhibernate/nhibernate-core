@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+           namespace="NHibernate.Test.NHSpecificTest.GH1228"
+           assembly="NHibernate.Test"
+>
+  <class name="Shelf" >
+    <id name="Id">
+      <generator class="increment"/>
+    </id>
+    <property name="Name"/>
+    <set name="Folders" lazy="true" cascade="all-delete-orphan" inverse="true">
+      <key column="Shelf"/>
+      <one-to-many class="Folder"/>
+    </set>
+  </class>
+
+  <class name="Folder" >
+    <id name="Id">
+      <generator class="increment"/>
+    </id>
+    <property name="Name"/>
+    <many-to-one name="Shelf" class="Shelf"/>
+    <set name="Sheets" lazy="true" cascade="all-delete-orphan" inverse="true">
+      <key column="Folder"/>
+      <one-to-many class="Sheet"/>
+    </set>
+  </class>
+
+  <class name="Sheet" >
+    <id name="Id">
+      <generator class="increment"/>
+    </id>
+    <property name="Name"/>
+    <many-to-one name="Folder" class="Folder"/>
+  </class>
+
+</hibernate-mapping>

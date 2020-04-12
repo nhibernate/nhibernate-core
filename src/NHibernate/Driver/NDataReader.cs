@@ -552,7 +552,6 @@ namespace NHibernate.Driver
 				return result;
 			}
 
-
 			private static DataTable SafeGetSchemaTable(IDataReader reader, out NotSupportedException exception)
 			{
 				exception = null;

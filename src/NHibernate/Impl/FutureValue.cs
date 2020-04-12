@@ -40,7 +40,6 @@ namespace NHibernate.Impl
 			if (ExecuteOnEval == null)
 				return collection;
 
-
 			// When not null on a future value, ExecuteOnEval is fetched with PostExecuteTransformer from
 			// IntermediateHqlTree through ExpressionToHqlTranslationResults, which requires a IQueryable
 			// as input and directly yields the scalar result when the query is scalar.

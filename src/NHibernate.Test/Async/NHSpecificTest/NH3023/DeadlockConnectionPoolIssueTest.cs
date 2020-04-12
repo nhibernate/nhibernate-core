@@ -259,7 +259,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 								? "Deadlock not reported on initial request, and initial request failed"
 								: "Initial request failed",
 							subsequentFailedRequests);
-
 			} while (tryCount < 3);
 			//
 			// I'll change this to while(true) sometimes so I don't have to keep running the test
@@ -295,7 +294,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 				foreach (var batch in Regex.Split(sql, @"^go\s*$", RegexOptions.IgnoreCase | RegexOptions.Multiline)
 					.Where(b => !string.IsNullOrEmpty(b)))
 				{
-
 					using (var cmd = new System.Data.SqlClient.SqlCommand(batch, cxn))
 					{
 						cmd.ExecuteNonQuery();

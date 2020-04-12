@@ -229,7 +229,7 @@ namespace NHibernate.Linq.Visitors
 			if (methodInfo.IsGenericMethod)
 			{
 				_string.Append('[');
-				_string.Append(string.Join(",", methodInfo.GetGenericArguments().Select(a => a.AssemblyQualifiedName).ToArray()));
+				_string.Append(string.Join(",", methodInfo.GetGenericArguments().Select(a => a.AssemblyQualifiedName)));
 				_string.Append(']');
 			}
 		}

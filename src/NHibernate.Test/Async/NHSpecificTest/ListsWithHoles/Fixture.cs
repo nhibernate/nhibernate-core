@@ -56,7 +56,6 @@ namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
                 await (tx.CommitAsync());
             }
 
-
             using (ISession sess = OpenSession())
             using (ITransaction tx = sess.BeginTransaction())
             {
@@ -64,8 +63,6 @@ namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
                 employee.Children.Add(new Employee());
                 await (tx.CommitAsync());
             }
-
-
 
             using (ISession sess = OpenSession())
             using (ITransaction tx = sess.BeginTransaction())

@@ -658,7 +658,6 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
 
-
 		[Test(Description = "NH-3423")]
 		public async Task NullComparedToNewExpressionInWhereClauseAsync()
 		{

@@ -47,7 +47,6 @@ namespace NHibernate.Test.Linq
 				await (session.SaveAsync(new Employee { FirstName = employeeName, LastName = "LastName" }));
 				await (session.FlushAsync());
 
-
 				var query = await ((from e in db.Employees
 				             where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, escapeChar)
 				             select e).ToListAsync());

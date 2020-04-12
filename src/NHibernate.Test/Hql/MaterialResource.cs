@@ -11,7 +11,6 @@ namespace NHibernate.Test.Hql
 
 		public MaterialResource()
 		{
-
 		}
 
 		public MaterialResource(string description, string serialNumber, MaterialState state)

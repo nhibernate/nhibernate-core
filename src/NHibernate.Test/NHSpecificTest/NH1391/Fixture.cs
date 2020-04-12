@@ -46,7 +46,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1391
 				var sivasKangalForSivasKangals = new SivasKangal { Name = "Karabas4", Country = "Turkey", HouseAddress = "Atakoy", Owner = personWithSivasKangals };
 				personWithSivasKangals.AnimalsGeneric.Add(sivasKangalForSivasKangals);
 
-
 				session.Save(animalForCats);
 				session.Save(dogForCats);
 
@@ -60,8 +59,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1391
 				_idOfPersonWithCats = session.Save(personWithCats);
 				_idOfPersonWithDogs = session.Save(personWithDogs);
 				_idOfPersonWithSivasKangals = session.Save(personWithSivasKangals);
-				
-
 
 				tran.Commit();
 			}
@@ -76,7 +73,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1391
 				tran.Commit();
 			}
 		}
-
 
 		[Test]
 		public void Can_discriminate_subclass_on_list_with_lazy_loading_when_used_get()

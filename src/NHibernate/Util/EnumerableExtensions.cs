@@ -5,8 +5,7 @@ using System.Linq;
 
 namespace NHibernate.Util
 {
-	//Since v5.1
-	[Obsolete("This class has no more usages and will be removed in next major version.")]
+	//TODO 6.0: Make internal
 	public static class EnumerableExtensions
 	{
 		//Since v5.1
@@ -38,6 +37,75 @@ namespace NHibernate.Util
 			{
 				method(item);
 			}
+		}
+
+		internal static TOutput[] ToArray<TInput, TOutput>(this ICollection<TInput> input, Func<TInput, TOutput> converter)
+		{
+			var results = new TOutput[input.Count];
+
+			int i = 0;
+			foreach (var value in input)
+			{
+				results[i++] = converter(value);
+			}
+
+			return results;
+		}
+
+		internal static TOutput[] ToArray<TInput, TOutput>(this List<TInput> input, Func<TInput, TOutput> converter)
+		{
+			var results = new TOutput[input.Count];
+
+			for (var i = 0; i < input.Count; i++)
+			{
+				results[i] = converter(input[i]);
+			}
+
+			return results;
+		}
+
+		internal static TOutput[] ToArray<TInput, TOutput>(this TInput[] input, Converter<TInput, TOutput> converter)
+		{
+			return Array.ConvertAll(input, converter);
+		}
+
+		internal static List<TOutput> ToList<TInput, TOutput>(this ICollection<TInput> input, Func<TInput, TOutput> converter)
+		{
+			var results = new List<TOutput>(input.Count);
+
+			foreach (var value in input)
+			{
+				results.Add(converter(value));
+			}
+
+			return results;
+		}
+
+		internal static List<TOutput> ToList<TInput, TOutput>(this TInput[] input, Func<TInput, TOutput> converter)
+		{
+			var results = new List<TOutput>(input.Length);
+
+			foreach (var value in input)
+			{
+				results.Add(converter(value));
+			}
+
+			return results;
+		}
+
+		internal static List<TOutput> ToList<TInput, TOutput>(this List<TInput> input, Converter<TInput, TOutput> converter)
+		{
+			return input.ConvertAll(converter);
+		}
+
+		internal static IList ToIList<T>(this IEnumerable<T> list)
+		{
+			return list as IList ?? list.ToList();
+		}
+		
+		internal static IReadOnlyList<T> EmptyIfNull<T>(this IReadOnlyList<T> list)
+		{
+			return list ?? Array.Empty<T>();
 		}
 	}
 }

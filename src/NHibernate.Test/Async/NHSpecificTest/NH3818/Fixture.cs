@@ -70,9 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3818
 
                 //Console.WriteLine(spy.ToString());
                 Assert.That(catInfo2.AliveDays, Is.EqualTo(0));
-
-            }
+			}
         }
-
-    }
+	}
 }

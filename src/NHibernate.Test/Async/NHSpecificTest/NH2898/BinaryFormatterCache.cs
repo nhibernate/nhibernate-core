@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 				var fmt = new BinaryFormatter
 			{
 #if !NETFX
-					SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
 #endif
 			};
 				using (var stream = new MemoryStream(entry))
@@ -55,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 				var fmt = new BinaryFormatter
 			{
 #if !NETFX
-					SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
 #endif
 			};
 				using (var stream = new MemoryStream())

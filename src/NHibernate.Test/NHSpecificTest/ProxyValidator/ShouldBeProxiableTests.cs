@@ -12,7 +12,6 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		{
 			public void Dispose()
 			{
-				
 			}
 		}
 		private class ProtectedNoVirtualProperty

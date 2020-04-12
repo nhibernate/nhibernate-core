@@ -26,7 +26,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1788
 				tx.Commit();
 			}
 
-
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
@@ -35,14 +34,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1788
 				tx.Commit();
 			} 
 
-
 			using (ISession session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
 				session.Delete(session.Get<Person>(1));
 				tx.Commit();
 			}
-			
 		}
 	}
 }

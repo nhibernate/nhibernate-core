@@ -27,7 +27,6 @@ using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
-using NHibernate.Intercept;
 using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -58,7 +57,6 @@ namespace NHibernate.Loader
 			}
 			return DoQueryAndInitializeNonLazyCollectionsAsync(session, queryParameters, returnProxies, null, null, cancellationToken);
 		}
-
 
 		private async Task<IList> DoQueryAndInitializeNonLazyCollectionsAsync(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, 
 		                                                     IResultTransformer forcedResultTransformer,
@@ -436,7 +434,6 @@ namespace NHibernate.Loader
 				return Task.FromException<object>(ex);
 			}
 		}
-
 
 		/// <summary>
 		/// Get the actual object that is returned in the user-visible result list.

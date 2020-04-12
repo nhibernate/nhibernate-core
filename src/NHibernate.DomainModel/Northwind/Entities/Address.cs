@@ -61,6 +61,8 @@ namespace NHibernate.DomainModel.Northwind.Entities
             get { return _fax; }
         }
 
+		public int NotMapped => 1;
+
         public static bool operator ==(Address address1, Address address2)
         {
             if (!ReferenceEquals(address1, null) &&

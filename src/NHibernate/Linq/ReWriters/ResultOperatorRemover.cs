@@ -47,6 +47,5 @@ namespace NHibernate.Linq.ReWriters
 				VisitQueryModel(subQueryExpression.QueryModel);
 			base.VisitMainFromClause(fromClause, queryModel);
 		}
-
 	}
 }

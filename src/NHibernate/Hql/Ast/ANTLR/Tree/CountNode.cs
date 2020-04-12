@@ -1,4 +1,5 @@
 ﻿using Antlr.Runtime;
+using NHibernate.Dialect.Function;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Type;
 
@@ -9,12 +10,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
-	class CountNode : AbstractSelectExpression, ISelectExpression
+	class CountNode : AggregateNode, ISelectExpression
 	{
 		public CountNode(IToken token) : base(token)
 		{
 		}
-
 
 		public override IType DataType
 		{
@@ -26,10 +26,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				base.DataType = value;
 			}
-		}
-		public override void SetScalarColumnText(int i)
-		{
-			ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i);
 		}
 	}
 }
