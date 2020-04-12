@@ -45,6 +45,11 @@
     <Compile Remove="**\NHSpecificTest\NH3121\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\NHibernate\Util\AsyncReaderWriterLock.cs">
+      <Link>UtilityTest\AsyncReaderWriterLock.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="1.0.19269.1" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.109.2" />

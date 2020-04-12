@@ -19,6 +19,7 @@ namespace NHibernate.Cache
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(UpdateTimestampsCache));
 		private readonly CacheBase _updateTimestamps;
+		private readonly AsyncReaderWriterLock _asyncReaderWriterLock = new AsyncReaderWriterLock();
 
 		public virtual void Clear()
 		{
@@ -54,14 +55,18 @@ namespace NHibernate.Cache
 			PreInvalidate(spaces.OfType<string>().ToList());
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual void PreInvalidate(IReadOnlyCollection<string> spaces)
 		{
-			//TODO: to handle concurrent writes correctly, this should return a Lock to the client
-			var ts = _updateTimestamps.NextTimestamp() + _updateTimestamps.Timeout;
-			SetSpacesTimestamp(spaces, ts);
+			if (spaces.Count == 0)
+				return;
 
-			//TODO: return new Lock(ts);
+			using (_asyncReaderWriterLock.WriteLock())
+			{
+				//TODO: to handle concurrent writes correctly, this should return a Lock to the client
+				var ts = _updateTimestamps.NextTimestamp() + _updateTimestamps.Timeout;
+				SetSpacesTimestamp(spaces, ts);
+				//TODO: return new Lock(ts);
+			}
 		}
 
 		//Since v5.1
@@ -72,38 +77,41 @@ namespace NHibernate.Cache
 			Invalidate(spaces.OfType<string>().ToList());
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual void Invalidate(IReadOnlyCollection<string> spaces)
-		{
-			//TODO: to handle concurrent writes correctly, the client should pass in a Lock
-			long ts = _updateTimestamps.NextTimestamp();
-			//TODO: if lock.getTimestamp().equals(ts)
-			if (log.IsDebugEnabled())
-				log.Debug("Invalidating spaces [{0}]", StringHelper.CollectionToString(spaces));
-			SetSpacesTimestamp(spaces, ts);
-		}
-
-		private void SetSpacesTimestamp(IReadOnlyCollection<string> spaces, long ts)
 		{
 			if (spaces.Count == 0)
 				return;
 
+			using (_asyncReaderWriterLock.WriteLock())
+			{
+				//TODO: to handle concurrent writes correctly, the client should pass in a Lock
+				long ts = _updateTimestamps.NextTimestamp();
+				//TODO: if lock.getTimestamp().equals(ts)
+				if (log.IsDebugEnabled())
+					log.Debug("Invalidating spaces [{0}]", StringHelper.CollectionToString(spaces));
+				SetSpacesTimestamp(spaces, ts);
+			}
+		}
+
+		private void SetSpacesTimestamp(IReadOnlyCollection<string> spaces, long ts)
+		{
 			_updateTimestamps.PutMany(
 				spaces.ToArray<object>(),
 				ArrayHelper.Fill<object>(ts, spaces.Count));
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual bool IsUpToDate(ISet<string> spaces, long timestamp /* H2.1 has Long here */)
 		{
 			if (spaces.Count == 0)
 				return true;
 
-			var lastUpdates = _updateTimestamps.GetMany(spaces.ToArray<object>());
-			return lastUpdates.All(lastUpdate => !IsOutdated(lastUpdate as long?, timestamp));
+			using (_asyncReaderWriterLock.ReadLock())
+			{
+				var lastUpdates = _updateTimestamps.GetMany(spaces.ToArray<object>());
+				return lastUpdates.All(lastUpdate => !IsOutdated(lastUpdate as long?, timestamp));
+			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual bool[] AreUpToDate(ISet<string>[] spaces, long[] timestamps)
 		{
 			if (spaces.Length == 0)
@@ -120,20 +128,23 @@ namespace NHibernate.Cache
 
 			var keys = allSpaces.ToArray<object>();
 
-			var index = 0;
-			var lastUpdatesBySpace =
-				_updateTimestamps
-					.GetMany(keys)
-					.ToDictionary(u => keys[index++], u => u as long?);
-
-			var results = new bool[spaces.Length];
-			for (var i = 0; i < spaces.Length; i++)
+			using (_asyncReaderWriterLock.ReadLock())
 			{
-				var timestamp = timestamps[i];
-				results[i] = spaces[i].All(space => !IsOutdated(lastUpdatesBySpace[space], timestamp));
-			}
+				var index = 0;
+				var lastUpdatesBySpace =
+					_updateTimestamps
+						.GetMany(keys)
+						.ToDictionary(u => keys[index++], u => u as long?);
 
-			return results;
+				var results = new bool[spaces.Length];
+				for (var i = 0; i < spaces.Length; i++)
+				{
+					var timestamp = timestamps[i];
+					results[i] = spaces[i].All(space => !IsOutdated(lastUpdatesBySpace[space], timestamp));
+				}
+
+				return results;
+			}
 		}
 
 		// Since v5.3
@@ -142,6 +153,7 @@ namespace NHibernate.Cache
 		{
 			// The cache is externally provided and may be shared. Destroying the cache is
 			// not the responsibility of this class.
+			_asyncReaderWriterLock.Dispose();
 		}
 
 		private static bool IsOutdated(long? lastUpdate, long timestamp)
