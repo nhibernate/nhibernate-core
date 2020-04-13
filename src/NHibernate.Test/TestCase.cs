@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using log4net;
-using log4net.Config;
 using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Engine;
@@ -55,12 +54,6 @@ namespace NHibernate.Test
 		}
 
 		protected SchemaExport SchemaExport => _schemaExport ?? (_schemaExport = new SchemaExport(cfg));
-
-		static TestCase()
-		{
-			// Configure log4net here since configuration through an attribute doesn't always work.
-			XmlConfigurator.Configure(LogManager.GetRepository(typeof(TestCase).Assembly));
-		}
 
 		/// <summary>
 		/// Creates the tables used in this TestCase
