@@ -46,6 +46,8 @@ namespace NHibernate.Type
 				if (value is TimeSpan time) //For those dialects where DbType.Time means TimeSpan.
 					return time;
 
+				// Todo: investigate if this convert should be made culture invariant, here and in other NHibernate types,
+				// such as AbstractDateTimeType and TimeType, or even in all other places doing such converts in NHibernate.
 				var dbValue = Convert.ToDateTime(value);
 				return dbValue.TimeOfDay;
 			}
