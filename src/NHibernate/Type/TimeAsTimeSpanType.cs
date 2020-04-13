@@ -43,10 +43,11 @@ namespace NHibernate.Type
 			try
 			{
 				var value = rs[index];
-				if(value is TimeSpan time) //For those dialects where DbType.Time means TimeSpan.
+				if (value is TimeSpan time) //For those dialects where DbType.Time means TimeSpan.
 					return time;
-                
-				return ((DateTime)value).TimeOfDay;
+
+				var dbValue = Convert.ToDateTime(value);
+				return dbValue.TimeOfDay;
 			}
 			catch (Exception ex)
 			{

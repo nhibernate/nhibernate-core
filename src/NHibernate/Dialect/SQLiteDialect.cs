@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -38,32 +37,46 @@ namespace NHibernate.Dialect
 
 		protected virtual void RegisterColumnTypes()
 		{
+			// SQLite really has only five types, and a very lax typing system, see https://www.sqlite.org/datatype3.html
+			// Please do not map (again) fancy types that do not actually exist in SQLite, as this is kind of supported by
+			// SQLite but creates bugs in convert operations.
 			RegisterColumnType(DbType.Binary, "BLOB");
-			RegisterColumnType(DbType.Byte, "TINYINT");
-			RegisterColumnType(DbType.Int16, "SMALLINT");
-			RegisterColumnType(DbType.Int32, "INT");
-			RegisterColumnType(DbType.Int64, "BIGINT");
+			RegisterColumnType(DbType.Byte, "INTEGER");
+			RegisterColumnType(DbType.Int16, "INTEGER");
+			RegisterColumnType(DbType.Int32, "INTEGER");
+			RegisterColumnType(DbType.Int64, "INTEGER");
 			RegisterColumnType(DbType.SByte, "INTEGER");
 			RegisterColumnType(DbType.UInt16, "INTEGER");
 			RegisterColumnType(DbType.UInt32, "INTEGER");
 			RegisterColumnType(DbType.UInt64, "INTEGER");
+
+			// NUMERIC and REAL are almost the same, they are binary floating point numbers. There is only a slight difference
+			// for values without a floating part. They will be represented as integers with numeric, but still as floating
+			// values with real. The side-effect of this is numeric being able of storing exactly bigger integers than real.
 			RegisterColumnType(DbType.Currency, "NUMERIC");
 			RegisterColumnType(DbType.Decimal, "NUMERIC");
-			RegisterColumnType(DbType.Double, "DOUBLE");
-			RegisterColumnType(DbType.Single, "DOUBLE");
+			RegisterColumnType(DbType.Double, "REAL");
+			RegisterColumnType(DbType.Single, "REAL");
 			RegisterColumnType(DbType.VarNumeric, "NUMERIC");
+
 			RegisterColumnType(DbType.AnsiString, "TEXT");
 			RegisterColumnType(DbType.String, "TEXT");
 			RegisterColumnType(DbType.AnsiStringFixedLength, "TEXT");
 			RegisterColumnType(DbType.StringFixedLength, "TEXT");
 
-			RegisterColumnType(DbType.Date, "DATE");
-			RegisterColumnType(DbType.DateTime, "DATETIME");
-			RegisterColumnType(DbType.Time, "TIME");
-			RegisterColumnType(DbType.Boolean, "BOOL");
-			// UNIQUEIDENTIFIER is not a SQLite type, but SQLite does not care much, see
-			// https://www.sqlite.org/datatype3.html
-			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
+			// https://www.sqlite.org/datatype3.html#boolean_datatype
+			RegisterColumnType(DbType.Boolean, "INTEGER");
+
+			// See https://www.sqlite.org/datatype3.html#date_and_time_datatype, we have three choices for date and time
+			// The one causing the less issues in case of an explicit cast is text. Beware, System.Data.SQLite has an
+			// internal use only "DATETIME" type. Using it causes it to directly convert the text stored into SQLite to
+			// a .Net DateTime, but also causes columns in SQLite to have numeric affinity and convert to destroy the
+			// value. As said in their chm documentation, this "DATETIME" type is for System.Data.SQLite internal use only.
+			RegisterColumnType(DbType.Date, "TEXT");
+			RegisterColumnType(DbType.DateTime, "TEXT");
+			RegisterColumnType(DbType.Time, "TEXT");
+
+			RegisterColumnType(DbType.Guid, _binaryGuid ? "BLOB" : "TEXT");
 		}
 
 		protected virtual void RegisterFunctions()
@@ -98,8 +111,6 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 
-			RegisterFunction("cast", new SQLiteCastFunction());
-
 			RegisterFunction("round", new StandardSQLFunction("round"));
 
 			// SQLite has no built-in support of bitwise xor, but can emulate it.
@@ -112,7 +123,7 @@ namespace NHibernate.Dialect
 			if (_binaryGuid)
 				RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "substr(hex(?1), 7, 2) || substr(hex(?1), 5, 2) || substr(hex(?1), 3, 2) || substr(hex(?1), 1, 2) || '-' || substr(hex(?1), 11, 2) || substr(hex(?1), 9, 2) || '-' || substr(hex(?1), 15, 2) || substr(hex(?1), 13, 2) || '-' || substr(hex(?1), 17, 4) || '-' || substr(hex(?1), 21) "));
 			else
-				RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
+				RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as text)"));
 
 			// SQLite random function yields a long, ranging form MinValue to MaxValue. (-9223372036854775808 to
 			// 9223372036854775807). HQL random requires a float from 0 inclusive to 1 exclusive, so we divide by
@@ -131,7 +142,8 @@ namespace NHibernate.Dialect
 
 			ConfigureBinaryGuid(settings);
 
-			// Re-register functions depending on settings.
+			// Re-register functions and types depending on settings.
+			RegisterColumnTypes();
 			RegisterFunctions();
 		}
 
@@ -484,17 +496,5 @@ namespace NHibernate.Dialect
 		// Said to be unlimited. http://sqlite.1065341.n5.nabble.com/Max-limits-on-the-following-td37859.html
 		/// <inheritdoc />
 		public override int MaxAliasLength => 128;
-
-		[Serializable]
-		protected class SQLiteCastFunction : CastFunction
-		{
-			protected override bool CastingIsRequired(string sqlType)
-			{
-				// SQLite doesn't support casting to datetime types.  It assumes you want an integer and destroys the date string.
-				if (StringHelper.ContainsCaseInsensitive(sqlType, "date") || StringHelper.ContainsCaseInsensitive(sqlType, "time"))
-					return false;
-				return true;
-			}
-		}
 	}
 }
