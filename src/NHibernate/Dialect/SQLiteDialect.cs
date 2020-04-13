@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -498,5 +499,19 @@ namespace NHibernate.Dialect
 		// Said to be unlimited. http://sqlite.1065341.n5.nabble.com/Max-limits-on-the-following-td37859.html
 		/// <inheritdoc />
 		public override int MaxAliasLength => 128;
+
+		// Since v5.3
+		[Obsolete("This class has no usage in NHibernate anymore and will be removed in a future version. Use or extend CastFunction instead.")]
+		[Serializable]
+		protected class SQLiteCastFunction : CastFunction
+		{
+			protected override bool CastingIsRequired(string sqlType)
+			{
+				if (StringHelper.ContainsCaseInsensitive(sqlType, "date") ||
+					StringHelper.ContainsCaseInsensitive(sqlType, "time"))
+					return false;
+				return true;
+			}
+		}
 	}
 }
