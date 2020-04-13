@@ -53,11 +53,13 @@ namespace NHibernate.Dialect
 			// NUMERIC and REAL are almost the same, they are binary floating point numbers. There is only a slight difference
 			// for values without a floating part. They will be represented as integers with numeric, but still as floating
 			// values with real. The side-effect of this is numeric being able of storing exactly bigger integers than real.
-			RegisterColumnType(DbType.Currency, "NUMERIC");
-			RegisterColumnType(DbType.Decimal, "NUMERIC");
+			// But it also creates bugs in division, when dividing two numeric happening to be integers, the result is then
+			// never fractional. So we use "REAL" for all.
+			RegisterColumnType(DbType.Currency, "REAL");
+			RegisterColumnType(DbType.Decimal, "REAL");
 			RegisterColumnType(DbType.Double, "REAL");
 			RegisterColumnType(DbType.Single, "REAL");
-			RegisterColumnType(DbType.VarNumeric, "NUMERIC");
+			RegisterColumnType(DbType.VarNumeric, "REAL");
 
 			RegisterColumnType(DbType.AnsiString, "TEXT");
 			RegisterColumnType(DbType.String, "TEXT");
