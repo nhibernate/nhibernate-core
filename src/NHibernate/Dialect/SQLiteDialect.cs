@@ -121,7 +121,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("bxor", new SQLFunctionTemplate(null, "((?1 | ?2) - (?1 & ?2))"));
 
 			// NH-3787: SQLite requires the cast in SQL too for not defaulting to string.
-			RegisterFunction("transparentcast", new SQLiteCastFunction());
+			RegisterFunction("transparentcast", new CastFunction());
 
 			if (_binaryGuid)
 				RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "substr(hex(?1), 7, 2) || substr(hex(?1), 5, 2) || substr(hex(?1), 3, 2) || substr(hex(?1), 1, 2) || '-' || substr(hex(?1), 11, 2) || substr(hex(?1), 9, 2) || '-' || substr(hex(?1), 15, 2) || substr(hex(?1), 13, 2) || '-' || substr(hex(?1), 17, 4) || '-' || substr(hex(?1), 21) "));
