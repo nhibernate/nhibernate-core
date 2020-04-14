@@ -1,5 +1,10 @@
+using System.Collections.Generic;
+using System.Data;
+using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Dialect
 {
@@ -12,9 +17,39 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class Oracle10gDialect : Oracle9iDialect
 	{
+		private bool _useBinaryFloatingPointTypes;
+
 		public override JoinFragment CreateOuterJoinFragment()
 		{
 			return new ANSIJoinFragment();
+		}
+
+		public override void Configure(IDictionary<string, string> settings)
+		{
+			base.Configure(settings);
+
+			_useBinaryFloatingPointTypes = PropertiesHelper.GetBoolean(
+				Environment.OracleUseBinaryFloatingPointTypes,
+				settings,
+				false);
+		}
+
+		// Avoid registering weighted double type when using binary floating point types
+		protected override void RegisterFloatingPointTypeMappings()
+		{
+			if (_useBinaryFloatingPointTypes)
+			{
+				// Use binary_float (available since 10g) instead of float. With Oracle, float is a decimal but
+				// with a precision expressed in number of bytes instead of digits.
+				RegisterColumnType(DbType.Single, "binary_float");
+				// Using binary_double (available since 10g) instead of double precision. With Oracle, double
+				// precision is a float(126), which is a decimal with a 126 bytes precision.
+				RegisterColumnType(DbType.Double, "binary_double");
+			}
+			else
+			{
+				base.RegisterFloatingPointTypeMappings();
+			}
 		}
 
 		protected override void RegisterFunctions()
@@ -28,19 +63,6 @@ namespace NHibernate.Dialect
 			// it to double.
 			RegisterFunction("random", new SQLFunctionTemplate(NHibernateUtil.Double, "cast(DBMS_RANDOM.VALUE() as binary_double)"));
 		}
-
-		/* 6.0 TODO: consider redefining float and double registrations
-		protected override void RegisterNumericTypeMappings()
-		{
-			base.RegisterNumericTypeMappings();
-
-			// Use binary_float (available since 10g) instead of float. With Oracle, float is a decimal but
-			// with a precision expressed in number of bytes instead of digits.
-			RegisterColumnType(DbType.Single, "binary_float");
-			// Using binary_double (available since 10g) instead of double precision. With Oracle, double
-			// precision is a float(126), which is a decimal with a 126 bytes precision.
-			RegisterColumnType(DbType.Double, "binary_double");
-		}*/
 
 		/// <inheritdoc />
 		public override bool SupportsCrossJoin => true;

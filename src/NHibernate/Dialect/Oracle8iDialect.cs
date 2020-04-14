@@ -102,6 +102,7 @@ namespace NHibernate.Dialect
 			// If changing the default value, keep it in sync with OracleDataClientDriverBase.Configure.
 			UseNPrefixedTypesForUnicode = PropertiesHelper.GetBoolean(Environment.OracleUseNPrefixedTypesForUnicode, settings, false);
 			RegisterCharacterTypeMappings();
+			RegisterFloatingPointTypeMappings();
 		}
 
 		#region private static readonly string[] DialectKeywords = { ... }
@@ -184,12 +185,16 @@ namespace NHibernate.Dialect
 
 			// 6.0 TODO: bring down to 18,4 for consistency with other dialects.
 			RegisterColumnType(DbType.Currency, "NUMBER(22,4)");
-			RegisterColumnType(DbType.Single, "FLOAT(24)");
-			RegisterColumnType(DbType.Double, "DOUBLE PRECISION");
-			RegisterColumnType(DbType.Double, 40, "NUMBER($p,$s)");
 			RegisterColumnType(DbType.Decimal, "NUMBER(19,5)");
 			// Oracle max precision is 39-40, but .Net is limited to 28-29.
 			RegisterColumnType(DbType.Decimal, 29, "NUMBER($p,$s)");
+		}
+
+		protected virtual void RegisterFloatingPointTypeMappings()
+		{
+			RegisterColumnType(DbType.Single, "FLOAT(24)");
+			RegisterColumnType(DbType.Double, "DOUBLE PRECISION");
+			RegisterColumnType(DbType.Double, 40, "NUMBER($p,$s)");
 		}
 
 		protected virtual void RegisterDateTimeTypeMappings()
