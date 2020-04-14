@@ -20,5 +20,13 @@ namespace NHibernate.Dialect.Function
 		{
 			return NHibernateUtil.Int32;
 		}
+
+		public override IType GetReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+		{
+			// 6.0 TODO: return NHibernateUtil.Int32;
+#pragma warning disable 618
+			return ReturnType(argumentTypes.FirstOrDefault(), mapping);
+#pragma warning restore 618
+		}
 	}
 }
