@@ -2,7 +2,6 @@
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
-using Remotion.Linq.Parsing.ExpressionVisitors;
 
 namespace NHibernate.Linq.Visitors
 {
