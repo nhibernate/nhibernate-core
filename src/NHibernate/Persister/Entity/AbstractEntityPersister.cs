@@ -1118,7 +1118,7 @@ namespace NHibernate.Persister.Entity
 			return false;
 		}
 
-		protected abstract int GetSubclassPropertyTableNumber(int i, bool useLastIndex);
+		protected abstract int GetSubclassPropertyTableNumber(int i);
 
 		internal int GetSubclassPropertyTableNumber(string propertyName, string entityName, bool useLastIndex = false)
 		{
@@ -1271,7 +1271,7 @@ namespace NHibernate.Persister.Entity
 				// use the subclass closure
 				int propertyNumber = GetSubclassPropertyIndex(lazyPropertyNames[i]);
 
-				int tableNumber = GetSubclassPropertyTableNumber(propertyNumber, false);
+				int tableNumber = GetSubclassPropertyTableNumber(propertyNumber);
 				tableNumbers.Add(tableNumber);
 
 				int[] colNumbers = subclassPropertyColumnNumberClosure[propertyNumber];
@@ -1326,7 +1326,7 @@ namespace NHibernate.Persister.Entity
 					// use the subclass closure
 					var propertyNumber = GetSubclassPropertyIndex(lazyPropertyDescriptor.Name);
 
-					var tableNumber = GetSubclassPropertyTableNumber(propertyNumber, false);
+					var tableNumber = GetSubclassPropertyTableNumber(propertyNumber);
 					tableNumbers.Add(tableNumber);
 
 					var colNumbers = subclassPropertyColumnNumberClosure[propertyNumber];
@@ -2114,7 +2114,7 @@ namespace NHibernate.Persister.Entity
 				? Array.LastIndexOf(SubclassPropertyNameClosure, rootPropertyName)
 				: Array.IndexOf(SubclassPropertyNameClosure, rootPropertyName); //TODO: optimize this better!
 
-			return index == -1 ? 0 : GetSubclassPropertyTableNumber(index, false);
+			return index == -1 ? 0 : GetSubclassPropertyTableNumber(index);
 		}
 
 		public virtual Declarer GetSubclassPropertyDeclarer(string propertyPath)
@@ -2167,7 +2167,7 @@ namespace NHibernate.Persister.Entity
 
 		public string[] ToColumns(string name, int i)
 		{
-			string alias = GenerateTableAlias(name, GetSubclassPropertyTableNumber(i, false));
+			string alias = GenerateTableAlias(name, GetSubclassPropertyTableNumber(i));
 			string[] cols = GetSubclassPropertyColumnNames(i);
 			string[] templates = SubclassPropertyFormulaTemplateClosure[i];
 			string[] result = new string[cols.Length];
@@ -3685,7 +3685,7 @@ namespace NHibernate.Persister.Entity
 
 				if (cols != null && cols.Length > 0)
 				{
-					PropertyKey key = new PropertyKey(cols[0], GetSubclassPropertyTableNumber(i, false));
+					PropertyKey key = new PropertyKey(cols[0], GetSubclassPropertyTableNumber(i));
 					propDictionary[key] = property;
 				}
 			}

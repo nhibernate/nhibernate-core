@@ -675,7 +675,7 @@ possible solutions:
 				select.AddColumn(name, DiscriminatorColumnName, DiscriminatorAlias);
 		}
 
-		protected override int GetSubclassPropertyTableNumber(int i, bool useLastIndex)
+		protected override int GetSubclassPropertyTableNumber(int i)
 		{
 			return subclassPropertyTableNumberClosure[i];
 		}
@@ -701,7 +701,7 @@ possible solutions:
 
 		protected override bool IsPropertyDeferred(int propertyIndex)
 		{
-			return _hasSequentialSelect && subclassTableSequentialSelect[GetSubclassPropertyTableNumber(propertyIndex, false)];
+			return _hasSequentialSelect && subclassTableSequentialSelect[GetSubclassPropertyTableNumber(propertyIndex)];
 		}
 
 		//Since v5.3

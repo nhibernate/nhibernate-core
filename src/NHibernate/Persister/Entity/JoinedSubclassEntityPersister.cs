@@ -546,7 +546,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		protected override int GetSubclassPropertyTableNumber(int i, bool useLastIndex)
+		protected override int GetSubclassPropertyTableNumber(int i)
 		{
 			return subclassPropertyTableNumberClosure[i];
 		}
