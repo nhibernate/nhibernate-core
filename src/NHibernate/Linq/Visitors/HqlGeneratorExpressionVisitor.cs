@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using NHibernate.Dialect.Function;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
 using NHibernate.Hql.Ast.ANTLR;
@@ -257,7 +258,22 @@ possible solutions:
 
 		protected HqlTreeNode VisitNhCount(NhCountExpression expression)
 		{
-			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Count(VisitExpression(expression.Expression).AsExpression()), expression.Type);
+			string functionName;
+			HqlExpression countHqlExpression;
+			if (expression is NhLongCountExpression)
+			{
+				functionName = "count_big";
+				countHqlExpression = _hqlTreeBuilder.CountBig(VisitExpression(expression.Expression).AsExpression());
+			}
+			else
+			{
+				functionName = "count";
+				countHqlExpression = _hqlTreeBuilder.Count(VisitExpression(expression.Expression).AsExpression());
+			}
+
+			return IsCastRequired(functionName, expression.Expression, expression.Type)
+				? (HqlTreeNode) _hqlTreeBuilder.Cast(countHqlExpression, expression.Type)
+				: _hqlTreeBuilder.TransparentCast(countHqlExpression, expression.Type);
 		}
 
 		protected HqlTreeNode VisitNhMin(NhMinExpression expression)
@@ -595,7 +611,7 @@ possible solutions:
 		{
 			existType = false;
 			return toType != typeof(object) &&
-					IsCastRequired(GetType(expression), TypeFactory.GetDefaultTypeFor(toType), out existType);
+					IsCastRequired(ExpressionsHelper.GetType(_parameters, expression), TypeFactory.GetDefaultTypeFor(toType), out existType);
 		}
 
 		private bool IsCastRequired(IType type, IType toType, out bool existType)
@@ -639,7 +655,7 @@ possible solutions:
 
 		private bool IsCastRequired(string sqlFunctionName, Expression argumentExpression, System.Type returnType)
 		{
-			var argumentType = GetType(argumentExpression);
+			var argumentType = ExpressionsHelper.GetType(_parameters, argumentExpression);
 			if (argumentType == null || returnType == typeof(object))
 			{
 				return false;
@@ -657,18 +673,8 @@ possible solutions:
 				return true; // Fallback to the old behavior
 			}
 
-			var fnReturnType = sqlFunction.ReturnType(argumentType, _parameters.SessionFactory);
+			var fnReturnType = sqlFunction.GetEffectiveReturnType(new[] {argumentType}, _parameters.SessionFactory, false);
 			return fnReturnType == null || IsCastRequired(fnReturnType, returnNhType, out _);
-		}
-
-		private IType GetType(Expression expression)
-		{
-			// Try to get the mapped type for the member as it may be a non default one
-			return expression.Type == typeof(object)
-				? null
-				: (ExpressionsHelper.TryGetMappedType(_parameters.SessionFactory, expression, out var type, out _, out _, out _)
-					? type
-					: TypeFactory.GetDefaultTypeFor(expression.Type));
 		}
 	}
 }

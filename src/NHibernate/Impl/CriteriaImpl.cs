@@ -280,29 +280,25 @@ namespace NHibernate.Impl
 
 		public IList List()
 		{
-			var results = new List<object>();
-			List(results);
-			return results;
+			return List<object>().ToIList();
 		}
 
 		public void List(IList results)
 		{
+			ArrayHelper.AddAll(results, List());
+		}
+
+		public IList<T> List<T>()
+		{
 			Before();
 			try
 			{
-				session.List(this, results);
+				return session.List<T>(this);
 			}
 			finally
 			{
 				After();
 			}
-		}
-
-		public IList<T> List<T>()
-		{
-			List<T> results = new List<T>();
-			List(results);
-			return results;
 		}
 
 		public T UniqueResult<T>()

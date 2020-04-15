@@ -1698,7 +1698,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override void List(CriteriaImpl criteria, IList results)
+		public override IList<T> List<T>(CriteriaImpl criteria)
 		{
 			using (BeginProcess())
 			{
@@ -1710,7 +1710,7 @@ namespace NHibernate.Impl
 
 				for (int i = 0; i < size; i++)
 				{
-					loaders[i] = new CriteriaLoader(
+					var loader = new CriteriaLoader(
 						GetOuterJoinLoadable(implementors[i]),
 						Factory,
 						criteria,
@@ -1718,7 +1718,8 @@ namespace NHibernate.Impl
 						enabledFilters
 						);
 
-					spaces.UnionWith(loaders[i].QuerySpaces);
+					spaces.UnionWith(loader.QuerySpaces);
+					loaders[size - 1 - i] = loader;
 				}
 
 				AutoFlushIfRequired(spaces);
@@ -1728,11 +1729,9 @@ namespace NHibernate.Impl
 				{
 					try
 					{
-						for (int i = size - 1; i >= 0; i--)
-						{
-							ArrayHelper.AddAll(results, loaders[i].List(this));
-						}
+						var results = loaders.LoadAllToList<T>(this); 
 						success = true;
+						return results;
 					}
 					catch (HibernateException)
 					{
@@ -1749,6 +1748,12 @@ namespace NHibernate.Impl
 					}
 				}
 			}
+		}
+
+		//TODO 6.0: Remove (use base class implementation)
+		public override void List(CriteriaImpl criteria, IList results)
+		{
+			ArrayHelper.AddAll(results, List(criteria));
 		}
 
 		public bool Contains(object obj)

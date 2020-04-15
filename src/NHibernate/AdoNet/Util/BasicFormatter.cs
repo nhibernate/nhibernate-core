@@ -20,6 +20,7 @@ namespace NHibernate.AdoNet.Util
 		{
 			beginClauses.Add("left");
 			beginClauses.Add("right");
+			beginClauses.Add("cross");
 			beginClauses.Add("inner");
 			beginClauses.Add("outer");
 			beginClauses.Add("group");

@@ -138,6 +138,11 @@ namespace NHibernate
 		public static readonly DateType Date = new DateType();
 
 		/// <summary>
+		/// NHibernate local date type
+		/// </summary>
+		public static readonly DateType LocalDate = new LocalDateType();
+
+		/// <summary>
 		/// NHibernate decimal type
 		/// </summary>
 		public static readonly DecimalType Decimal = new DecimalType();

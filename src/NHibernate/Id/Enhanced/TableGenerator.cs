@@ -181,6 +181,7 @@ namespace NHibernate.Id.Enhanced
 		private SqlTypes.SqlType[] insertParameterTypes;
 		private SqlString updateQuery;
 		private SqlTypes.SqlType[] updateParameterTypes;
+		private readonly AsyncLock _asyncLock = new AsyncLock();
 
 		public virtual string GeneratorKey()
 		{
@@ -378,10 +379,12 @@ namespace NHibernate.Id.Enhanced
 			};
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual object Generate(ISessionImplementor session, object obj)
 		{
-			return Optimizer.Generate(new TableAccessCallback(session, this));
+			using (_asyncLock.Lock())
+			{
+				return Optimizer.Generate(new TableAccessCallback(session, this));
+			}
 		}
 
 		private partial class TableAccessCallback : IAccessCallback

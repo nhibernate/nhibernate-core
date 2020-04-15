@@ -29,6 +29,29 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
+		/// Get the mapped type for the given expression.
+		/// </summary>
+		/// <param name="parameters">The query parameters.</param>
+		/// <param name="expression">The expression.</param>
+		/// <returns>The mapped type of the expression or <see langword="null"/> when the mapped type was not
+		/// found and the <paramref name="expression"/> type is <see cref="object"/>.</returns>
+		internal static IType GetType(VisitorParameters parameters, Expression expression)
+		{
+			if (expression is ConstantExpression constantExpression &&
+				parameters.ConstantToParameterMap.TryGetValue(constantExpression, out var param))
+			{
+				return param.Type;
+			}
+
+			if (TryGetMappedType(parameters.SessionFactory, expression, out var type, out _, out _, out _))
+			{
+				return type;
+			}
+
+			return expression.Type == typeof(object) ? null : TypeFactory.HeuristicType(expression.Type);
+		}
+
+		/// <summary>
 		/// Try to get the mapped nullability from the given expression.
 		/// </summary>
 		/// <param name="sessionFactory">The session factory.</param>

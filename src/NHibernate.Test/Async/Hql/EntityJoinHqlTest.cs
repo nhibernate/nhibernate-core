@@ -154,6 +154,124 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test]
+		public async Task EntityJoinWithNullableOneToOneEntityComparisonInWithClausShouldAddJoinAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var entity =
+					await (session
+						.CreateQuery(
+							"select ex "
+							+ "from NullableOwner ex "
+							+ "left join OneToOneEntity st with st = ex.OneToOne "
+						).SetMaxResults(1)
+						.UniqueResultAsync<NullableOwner>());
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(2));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public async Task NullableOneToOneWhereEntityIsNotNullAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var entity =
+					await (session
+						.CreateQuery(
+							"select ex "
+							+ "from NullableOwner ex "
+							+ "where ex.OneToOne is not null "
+						).SetMaxResults(1)
+						.UniqueResultAsync<NullableOwner>());
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(1));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public async Task NullableOneToOneWhereIdIsNotNullAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var entity =
+					await (session
+						.CreateQuery(
+							"select ex "
+							+ "from NullableOwner ex "
+							+ "where ex.OneToOne.Id is not null "
+						).SetMaxResults(1)
+						.UniqueResultAsync<NullableOwner>());
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(1));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public async Task NullablePropRefWhereIdEntityNotNullShouldAddJoinAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var entity =
+					await (session
+						.CreateQuery(
+							"select ex "
+							+ "from NullableOwner ex "
+							+ "where ex.PropRef is not null "
+						).SetMaxResults(1)
+						.UniqueResultAsync<NullableOwner>());
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "PropRefEntity").Count, Is.EqualTo(1));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public async Task NullableOneToOneFetchQueryIsNotAffectedAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var entity =
+					await (session
+						.CreateQuery(
+							"select ex "
+							+ "from NullableOwner ex left join fetch ex.OneToOne o "
+							+ "where o is null "
+						).SetMaxResults(1)
+						.UniqueResultAsync<NullableOwner>());
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(1));
+			}
+		}
+		
+		[Test]
+		public async Task NullableOneToOneFetchQueryIsNotAffected2Async()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var entity =
+					await (session
+						.CreateQuery(
+							"select ex "
+							+ "from NullableOwner ex left join fetch ex.OneToOne o "
+							+ "where o.Id is null "
+						).SetMaxResults(1)
+						.UniqueResultAsync<NullableOwner>());
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
 		public async Task EntityJoinWithEntityComparisonInWithClausShouldNotAddJoinAsync()
 		{
 			using (var sqlLog = new SqlLogSpy())
@@ -274,6 +392,27 @@ namespace NHibernate.Test.Hql
 			}
 		}
 
+		[Test]
+		public async Task CrossJoinAndWhereClauseAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var result = await (session.CreateQuery(
+					"SELECT s " +
+					"FROM EntityComplex s cross join EntityComplex q " +
+					"where s.SameTypeChild.Id = q.SameTypeChild.Id"
+				).ListAsync());
+
+				Assert.That(result, Has.Count.EqualTo(1));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+				if (Dialect.SupportsCrossJoin)
+				{
+					Assert.That(sqlLog.GetWholeLog(), Does.Contain("cross join"), "A cross join is expected in the SQL select");
+				}
+			}
+		}
+
 		#region Test Setup
 
 		protected override HbmMapping GetMappings()
@@ -308,7 +447,7 @@ namespace NHibernate.Test.Hql
 
 					rc.Property(e => e.Name);
 				});
-			
+
 			mapper.Class<EntityWithCompositeId>(
 				rc =>
 				{
@@ -345,6 +484,39 @@ namespace NHibernate.Test.Hql
 					rc.Id(e => e.Id, m => m.Generator(Generators.GuidComb));
 					rc.Property(e => e.Name);
 				});
+
+			mapper.Class<OneToOneEntity>(
+				rc =>
+				{
+					rc.Id(e => e.Id, m => m.Generator(Generators.GuidComb));
+					rc.Property(e => e.Name);
+				});
+
+			mapper.Class<PropRefEntity>(
+				rc =>
+				{
+					rc.Id(e => e.Id, m => m.Generator(Generators.GuidComb));
+					rc.Property(e => e.Name);
+					rc.Property(e => e.PropertyRef, m => m.Column("EntityPropertyRef"));
+				});
+
+			mapper.Class<NullableOwner>(
+				rc =>
+				{
+					rc.Id(e => e.Id, m => m.Generator(Generators.GuidComb));
+					rc.Property(e => e.Name);
+					rc.OneToOne(e => e.OneToOne, m => m.Constrained(false));
+					rc.ManyToOne(
+						e => e.PropRef,
+						m =>
+						{
+							m.Column("OwnerPropertyRef");
+							m.PropertyRef(nameof(PropRefEntity.PropertyRef));
+							m.ForeignKey("none");
+							m.NotFound(NotFoundMode.Ignore);
+						});
+				});
+
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
@@ -410,7 +582,6 @@ namespace NHibernate.Test.Hql
 					Composite1Key2 = _entityWithCompositeId.Key.Id2,
 					CustomEntityNameId = _entityWithCustomEntityName.Id
 				};
-
 				session.Save(_noAssociation);
 
 				session.Flush();

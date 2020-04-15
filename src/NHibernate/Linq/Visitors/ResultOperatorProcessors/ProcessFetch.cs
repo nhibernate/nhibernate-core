@@ -13,8 +13,9 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			var querySource = QuerySourceLocator.FindQuerySource(
 				queryModelVisitor.Model,
 				resultOperator.RelationMember.DeclaringType);
+			var name = queryModelVisitor.VisitorParameters.QuerySourceNamer.GetName(querySource);
 
-			Process(resultOperator, queryModelVisitor, tree, querySource.ItemName);
+			Process(resultOperator, queryModelVisitor, tree, name);
 		}
 
 		public void Process(FetchRequestBase resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree, string sourceAlias)
