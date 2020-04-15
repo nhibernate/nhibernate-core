@@ -1120,7 +1120,7 @@ namespace NHibernate.Persister.Entity
 
 		protected abstract int GetSubclassPropertyTableNumber(int i);
 
-		internal int GetSubclassPropertyTableNumber(string propertyName, string entityName, bool useLastIndex = false)
+		internal int GetSubclassPropertyTableNumber(string propertyName, string entityName)
 		{
 			var type = propertyMapping.ToType(propertyName);
 			if (type.IsAssociationType && ((IAssociationType) type).UseLHSPrimaryKey)
