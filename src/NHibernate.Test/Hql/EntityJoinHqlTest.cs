@@ -568,6 +568,9 @@ namespace NHibernate.Test.Hql
 					rc.Id(e => e.Id, m => m.Generator(Generators.GuidComb));
 					rc.Property(e => e.Name);
 				});
+			
+			Node.AddMapping(mapper);
+			UserEntityVisit.AddMapping(mapper);
 
 			mapper.Class<OneToOneEntity>(
 				rc =>
