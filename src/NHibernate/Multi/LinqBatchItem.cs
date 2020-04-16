@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,8 +10,15 @@ using Remotion.Linq.Parsing.ExpressionVisitors;
 
 namespace NHibernate.Multi
 {
+	interface ILinqBatchItem
+	{
+		List<TResult> GetTypedResults<TResult>();
+	}
+
 	public static class LinqBatchItem
 	{
+		internal static ConcurrentDictionary<System.Type, Func<ILinqBatchItem, IList>> GetResultsForTypeDic = new ConcurrentDictionary<System.Type, Func<ILinqBatchItem, IList>>();
+
 		public static LinqBatchItem<TResult> Create<T, TResult>(IQueryable<T> query, Expression<Func<IQueryable<T>, TResult>> selector)
 		{
 			if (query == null)
@@ -42,9 +50,10 @@ namespace NHibernate.Multi
 	/// Create instance via <see cref="LinqBatchItem.Create"/> methods
 	/// </summary>
 	/// <typeparam name="T">Result type</typeparam>
-	public partial class LinqBatchItem<T> : QueryBatchItem<T>
+	public partial class LinqBatchItem<T> : QueryBatchItem<T>, ILinqBatchItem
 	{
 		private readonly Delegate _postExecuteTransformer;
+		private readonly System.Type _resultTypeOverride;
 
 		public LinqBatchItem(IQuery query) : base(query)
 		{
@@ -53,6 +62,7 @@ namespace NHibernate.Multi
 		internal LinqBatchItem(IQuery query, NhLinqExpression linq) : base(query)
 		{
 			_postExecuteTransformer = linq.ExpressionToHqlTranslationResults.PostExecuteTransformer;
+			_resultTypeOverride = linq.ExpressionToHqlTranslationResults.ExecuteResultTypeOverride;
 		}
 
 		protected override IList<T> GetResultsNonBatched()
@@ -69,11 +79,10 @@ namespace NHibernate.Multi
 		{
 			if (_postExecuteTransformer != null)
 			{
-				var elementType = GetResultTypeIfChanged();
-
-				IList transformerList = elementType == null
+				IList transformerList = _resultTypeOverride == null
 					? base.DoGetResults()
-					: GetTypedResults(elementType);
+					//see LinqToFutureValueFixture tests that cover this scenario
+					: GetTypedResults(_resultTypeOverride);
 
 				return GetTransformedResults(transformerList);
 			}
@@ -90,27 +99,24 @@ namespace NHibernate.Multi
 			};
 		}
 
-		private System.Type GetResultTypeIfChanged()
-		{
-			if (_postExecuteTransformer == null)
-			{
-				return null;
-			}
-			var elementType = _postExecuteTransformer.Method.GetParameters()[1].ParameterType.GetGenericArguments()[0];
-			if (typeof(T).IsAssignableFrom(elementType))
-			{
-				return null;
-			}
-
-			return elementType;
-		}
-
 		private IList GetTypedResults(System.Type type)
 		{
-			var method = ReflectHelper.GetMethod(() => GetTypedResults<T>())
-									.GetGenericMethodDefinition();
-			var generic = method.MakeGenericMethod(type);
-			return (IList) generic.Invoke(this, null);
+			return LinqBatchItem.GetResultsForTypeDic.GetOrAdd(
+				type,
+				v =>
+				{
+					var method = ReflectHelper.GetMethod(() => ((ILinqBatchItem) this).GetTypedResults<T>())
+											.GetGenericMethodDefinition();
+					var generic = method.MakeGenericMethod(type);
+					var instance = Expression.Parameter(method.DeclaringType);
+					var methodCall = Expression.Call(instance, generic);
+					return Expression.Lambda<Func<ILinqBatchItem, IList>>(methodCall, instance).Compile();
+				})(this);
+		}
+
+		List<TResult> ILinqBatchItem.GetTypedResults<TResult>()
+		{
+			return GetTypedResults<TResult>();
 		}
 	}
 }
