@@ -458,6 +458,45 @@ namespace NHibernate.Test.Hql
 			Assert.That(results, Is.EquivalentTo(new[] { visit_1.Id, visit_2.Id, }));
 		}
 
+		[Test]
+		public void Join_Inheritance_QueryOver()
+		{
+			// arrange
+			IEnumerable<int> results;
+			var person = new PersonBase { Login = "dave", FamilyName = "grohl" };
+			var visit_1 = new UserEntityVisit { PersonBase = person };
+			var visit_2 = new UserEntityVisit { PersonBase = person };
+
+			using (ISession arrangeSession = OpenSession())
+			using (ITransaction tx = arrangeSession.BeginTransaction())
+			{
+				arrangeSession.Save(person);
+				arrangeSession.Save(visit_1);
+				arrangeSession.Save(visit_2);
+				arrangeSession.Flush();
+
+				tx.Commit();
+			}
+
+			// act
+			using (var session = OpenSession())
+			{
+				PersonBase f = null;
+				results =
+					session.QueryOver<UserEntityVisit>()
+							.JoinAlias(
+								x => x.PersonBase,
+								() => f,
+								SqlCommand.JoinType.LeftOuterJoin,
+								Restrictions.Where(() => f.Deleted == false))
+							.List()
+							.Select(x => x.Id);
+			}
+
+			// assert
+			Assert.That(results, Is.EquivalentTo(new[] { visit_1.Id, visit_2.Id, }));
+		}
+
 		#region Test Setup
 
 		protected override HbmMapping GetMappings()
