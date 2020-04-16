@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using NHibernate.Linq;
 using NHibernate.Util;
 using Remotion.Linq.Parsing.ExpressionVisitors;
@@ -101,17 +102,14 @@ namespace NHibernate.Multi
 
 		private IList GetTypedResults(System.Type type)
 		{
-			return LinqBatchItem.GetResultsForTypeDic.GetOrAdd(
-				type,
-				v =>
-				{
-					var method = ReflectHelper.GetMethod(() => ((ILinqBatchItem) this).GetTypedResults<T>())
-											.GetGenericMethodDefinition();
-					var generic = method.MakeGenericMethod(type);
-					var instance = Expression.Parameter(method.DeclaringType);
-					var methodCall = Expression.Call(instance, generic);
-					return Expression.Lambda<Func<ILinqBatchItem, IList>>(methodCall, instance).Compile();
-				})(this);
+			return LinqBatchItem.GetResultsForTypeDic.GetOrAdd(type, t => CreateDelegate(t)).Invoke(this);
+		}
+
+		private static Func<ILinqBatchItem, IList> CreateDelegate(System.Type type)
+		{
+			return ReflectHelper.GetMethodDefinition((ILinqBatchItem i) => i.GetTypedResults<object>())
+				.MakeGenericMethod(type)
+				.CreateDelegate<Func<ILinqBatchItem, IList>>();
 		}
 
 		List<TResult> ILinqBatchItem.GetTypedResults<TResult>()

@@ -946,5 +946,8 @@ namespace NHibernate.Util
 			}
 			return false;
 		}
+
+		internal static T CreateDelegate<T>(this MethodInfo methodInfo) where T : class
+			=> (T) (object) methodInfo.CreateDelegate(typeof(T));
 	}
 }
