@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -22,7 +23,7 @@ namespace NHibernate.Multi
 	using System.Threading.Tasks;
 	using System.Threading;
 
-	public partial class LinqBatchItem<T> : QueryBatchItem<T>
+	public partial class LinqBatchItem<T> : QueryBatchItem<T>, ILinqBatchItem
 	{
 
 		protected override async Task<IList<T>> GetResultsNonBatchedAsync(CancellationToken cancellationToken)
