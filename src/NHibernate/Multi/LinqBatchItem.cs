@@ -1,12 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using NHibernate.Linq;
-using NHibernate.Util;
 using Remotion.Linq.Parsing.ExpressionVisitors;
 
 namespace NHibernate.Multi
@@ -18,12 +15,6 @@ namespace NHibernate.Multi
 
 	public static class LinqBatchItem
 	{
-		internal static ConcurrentDictionary<System.Type, Func<ILinqBatchItem, IList>> GetResultsForTypeDic = new ConcurrentDictionary<System.Type, Func<ILinqBatchItem, IList>>();
-
-		internal static MethodInfo GetTypedResultsMethod = ReflectHelper
-			.GetMethod((ILinqBatchItem i) => i.GetTypedResults<object>())
-			.GetGenericMethodDefinition();
-
 		public static LinqBatchItem<TResult> Create<T, TResult>(IQueryable<T> query, Expression<Func<IQueryable<T>, TResult>> selector)
 		{
 			if (query == null)
@@ -87,7 +78,7 @@ namespace NHibernate.Multi
 				IList transformerList = _resultTypeOverride == null
 					? base.DoGetResults()
 					//see LinqToFutureValueFixture tests that cover this scenario
-					: GetTypedResults(_resultTypeOverride);
+					: LinqBatchReflectHelper.GetTypedResults(this, _resultTypeOverride);
 
 				return GetTransformedResults(transformerList);
 			}
@@ -102,19 +93,6 @@ namespace NHibernate.Multi
 			{
 				(T) res
 			};
-		}
-
-		private IList GetTypedResults(System.Type type)
-		{
-			return LinqBatchItem.GetResultsForTypeDic.GetOrAdd(type, t => CompileDelegate(t)).Invoke(this);
-		}
-
-		private static Func<ILinqBatchItem, IList> CompileDelegate(System.Type type)
-		{
-			var generic = LinqBatchItem.GetTypedResultsMethod.MakeGenericMethod(type);
-			var instance = Expression.Parameter(typeof(ILinqBatchItem));
-			var methodCall = Expression.Call(instance, generic);
-			return Expression.Lambda<Func<ILinqBatchItem, IList>>(methodCall, instance).Compile();
 		}
 
 		List<TResult> ILinqBatchItem.GetTypedResults<TResult>()
