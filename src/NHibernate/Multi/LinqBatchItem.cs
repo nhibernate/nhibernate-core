@@ -20,6 +20,10 @@ namespace NHibernate.Multi
 	{
 		internal static ConcurrentDictionary<System.Type, Func<ILinqBatchItem, IList>> GetResultsForTypeDic = new ConcurrentDictionary<System.Type, Func<ILinqBatchItem, IList>>();
 
+		internal static MethodInfo GetTypedResultsMethod = ReflectHelper
+			.GetMethod((ILinqBatchItem i) => i.GetTypedResults<object>())
+			.GetGenericMethodDefinition();
+
 		public static LinqBatchItem<TResult> Create<T, TResult>(IQueryable<T> query, Expression<Func<IQueryable<T>, TResult>> selector)
 		{
 			if (query == null)
@@ -102,14 +106,15 @@ namespace NHibernate.Multi
 
 		private IList GetTypedResults(System.Type type)
 		{
-			return LinqBatchItem.GetResultsForTypeDic.GetOrAdd(type, t => CreateDelegate(t)).Invoke(this);
+			return LinqBatchItem.GetResultsForTypeDic.GetOrAdd(type, t => CompileDelegate(t)).Invoke(this);
 		}
 
-		private static Func<ILinqBatchItem, IList> CreateDelegate(System.Type type)
+		private static Func<ILinqBatchItem, IList> CompileDelegate(System.Type type)
 		{
-			return ReflectHelper.GetMethodDefinition((ILinqBatchItem i) => i.GetTypedResults<object>())
-				.MakeGenericMethod(type)
-				.CreateDelegate<Func<ILinqBatchItem, IList>>();
+			var generic = LinqBatchItem.GetTypedResultsMethod.MakeGenericMethod(type);
+			var instance = Expression.Parameter(typeof(ILinqBatchItem));
+			var methodCall = Expression.Call(instance, generic);
+			return Expression.Lambda<Func<ILinqBatchItem, IList>>(methodCall, instance).Compile();
 		}
 
 		List<TResult> ILinqBatchItem.GetTypedResults<TResult>()
