@@ -88,25 +88,25 @@ namespace NHibernate.Linq
 			var methodInfoRegistry = new MethodInfoBasedNodeTypeRegistry();
 
 			methodInfoRegistry.Register(
-				new[] { ReflectHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.Fetch<object, object>(null, null)) },
+				new[] { ReflectHelper.FastGetMethodDefinition(EagerFetchingExtensionMethods.Fetch, default(IQueryable<object>), default(Expression<Func<object, object>>)) },
 				typeof(FetchOneExpressionNode));
 			methodInfoRegistry.Register(
-				new[] { ReflectHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.FetchLazyProperties<object>(null)) },
+				new[] { ReflectHelper.FastGetMethodDefinition(EagerFetchingExtensionMethods.FetchLazyProperties, default(IQueryable<object>)) },
 				typeof(FetchLazyPropertiesExpressionNode));
 			methodInfoRegistry.Register(
-				new[] { ReflectHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.FetchMany<object, object>(null, null)) },
+				new[] { ReflectHelper.FastGetMethodDefinition(EagerFetchingExtensionMethods.FetchMany, default(IQueryable<object>), default(Expression<Func<object, IEnumerable<object>>>)) },
 				typeof(FetchManyExpressionNode));
 			methodInfoRegistry.Register(
-				new[] { ReflectHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.ThenFetch<object, object, object>(null, null)) },
+				new[] { ReflectHelper.FastGetMethodDefinition(EagerFetchingExtensionMethods.ThenFetch, default(INhFetchRequest<object, object>), default(Expression<Func<object, object>>)) },
 				typeof(ThenFetchOneExpressionNode));
 			methodInfoRegistry.Register(
-				new[] { ReflectHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.ThenFetchMany<object, object, object>(null, null)) },
+				new[] { ReflectHelper.FastGetMethodDefinition( EagerFetchingExtensionMethods.ThenFetchMany, default(INhFetchRequest<object, object>), default(Expression<Func<object, IEnumerable<object>>>)) },
 				typeof(ThenFetchManyExpressionNode));
 			methodInfoRegistry.Register(
 				new[]
 				{
-					ReflectHelper.GetMethodDefinition(() => default(IQueryable<object>).WithLock(LockMode.Read)),
-					ReflectHelper.GetMethodDefinition(() => default(IEnumerable<object>).WithLock(LockMode.Read))
+					ReflectHelper.FastGetMethodDefinition(LinqExtensionMethods.WithLock, default(IQueryable<object>), default(LockMode)),
+					ReflectHelper.FastGetMethodDefinition(LinqExtensionMethods.WithLock, default(IEnumerable<object>), default(LockMode))
 				}, 
 				typeof(LockExpressionNode));
 

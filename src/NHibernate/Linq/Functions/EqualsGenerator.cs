@@ -14,7 +14,7 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 				{
-					ReflectHelper.GetMethodDefinition(() => string.Equals(default(string), default(string))),
+					ReflectHelper.FastGetMethod(string.Equals, default(string), default(string)),
 					ReflectHelper.GetMethodDefinition<string>(x => x.Equals(x)),
 					ReflectHelper.GetMethodDefinition<char>(x => x.Equals(x)),
 
@@ -33,7 +33,7 @@ namespace NHibernate.Linq.Functions
 					ReflectHelper.GetMethodDefinition<float>(x => x.Equals(x)),
 					ReflectHelper.GetMethodDefinition<double>(x => x.Equals(x)),
 					
-					ReflectHelper.GetMethodDefinition(() => decimal.Equals(default(decimal), default(decimal))),
+					ReflectHelper.FastGetMethod(decimal.Equals, default(decimal), default(decimal)),
 					ReflectHelper.GetMethodDefinition<decimal>(x => x.Equals(x)),
 
 					ReflectHelper.GetMethodDefinition<Guid>(x => x.Equals(x)),
