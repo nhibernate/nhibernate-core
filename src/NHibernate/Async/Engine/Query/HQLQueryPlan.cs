@@ -58,7 +58,7 @@ namespace NHibernate.Engine.Query
 			}
 
 			IList combinedResults = results ?? new List<object>();
-			IdentitySet distinction = new IdentitySet();
+			var distinction = new HashSet<object>(ReferenceComparer<object>.Instance);
 			int includedCount = -1;
 			for (int i = 0; i < Translators.Length; i++)
 			{

@@ -77,7 +77,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				int size = results.Count;
 				var tmp = new List<object>();
-				var distinction = new IdentitySet();
+				var distinction = new HashSet<object>(ReferenceComparer<object>.Instance);
 
 				for ( int i = 0; i < size; i++ ) 
 				{
