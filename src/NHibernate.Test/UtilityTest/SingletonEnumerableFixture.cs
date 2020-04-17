@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest
 {
+	[Obsolete]
 	[TestFixture]
 	public class SingletonEnumerableFixture
 	{
