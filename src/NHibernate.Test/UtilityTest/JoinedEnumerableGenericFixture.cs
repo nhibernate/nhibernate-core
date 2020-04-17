@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Util;
@@ -6,6 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.UtilityTest
 {
 	// This test is the same of JoinedEnumerableFixture but for generic version.
+	[Obsolete]
 	[TestFixture]
 	public class JoinedEnumerableGenericFixture
 	{
