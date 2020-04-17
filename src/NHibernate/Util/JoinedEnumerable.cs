@@ -167,7 +167,7 @@ namespace NHibernate.Util
 		#endregion
 	}
 
-	//Since 5.2
+	// Since 5.3
 	[Obsolete("This class has no more usages and will be removed in a future version")]
 	public class JoinedEnumerable<T> : IEnumerable<T>
 	{

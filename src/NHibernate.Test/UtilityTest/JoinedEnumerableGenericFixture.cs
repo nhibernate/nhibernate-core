@@ -7,6 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.UtilityTest
 {
 	// This test is the same of JoinedEnumerableFixture but for generic version.
+	// Since 5.3
 	[Obsolete]
 	[TestFixture]
 	public class JoinedEnumerableGenericFixture
