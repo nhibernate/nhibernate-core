@@ -33,12 +33,13 @@ namespace NHibernate
 		JoinOnly,
 
 		/// <summary>
-		/// Skips fetching for eagerly mapped association (no-op for lazy association).
+		/// Skips fetching for fetch="join" association (no-op for lazy association).
 		/// </summary>
 		Skip,
 
 		/// <summary>
-		/// Fetch lazy property group
+		/// Fetch lazy property group.
+		/// Provide path to lazy property and it will be fetched along with properties that belong to the same fetch group (lazy-group)
 		/// Note: To fetch single property it must be mapped with unique fetch group (lazy-group)
 		/// </summary>
 		FetchLazyPropertyGroup,

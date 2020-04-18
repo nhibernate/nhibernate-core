@@ -81,6 +81,7 @@ namespace NHibernate.Criterion
 
 		/// <summary>
 		/// Fetch individual lazy properties or property groups
+		/// Provide lazy property name and it will be fetched along with properties that belong to the same fetch group (lazy-group)
 		/// Note: To fetch single property it must be mapped with unique fetch group (lazy-group)
 		/// </summary>
 		public EntityProjection SetFetchLazyPropertyGroups(params string[] lazyPropertyGroups)
