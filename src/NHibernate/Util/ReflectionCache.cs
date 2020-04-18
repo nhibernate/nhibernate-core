@@ -200,10 +200,6 @@ namespace NHibernate.Util
 				ReflectHelper.FastGetMethodDefinition(Queryable.Average, default(IQueryable<object>), default(Expression<Func<object, decimal>>));
 			internal static readonly MethodInfo AverageWithSelectorOfNullableDecimalDefinition =
 				ReflectHelper.FastGetMethodDefinition(Queryable.Average, default(IQueryable<object>), default(Expression<Func<object, decimal?>>));
-
-			static QueryableMethods()
-			{
-			}
 		}
 
 		internal static class TypeMethods
