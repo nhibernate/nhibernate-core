@@ -99,13 +99,13 @@ namespace NHibernate.Linq.ExpressionTransformers
 		private static readonly Dictionary<System.Type, MethodInfo> dummies = new Dictionary<System.Type, MethodInfo>
 			{
 				// Corresponds to string.Compare(a, b).
-				{typeof (string), ReflectHelper.FastGetMethod(DummyComparison,default(string), default(string))},
+				{typeof (string), ReflectHelper.FastGetMethod(DummyComparison, default(string), default(string))},
 
 				// System.Data.Services.Providers.DataServiceProviderMethods has Compare methods for these types.
-				{typeof (bool), ReflectHelper.FastGetMethod(DummyComparison,false, false)},
-				{typeof (bool?), ReflectHelper.FastGetMethod(DummyComparison,default(bool?), default(bool?))},
-				{typeof (Guid), ReflectHelper.FastGetMethod(DummyComparison,default(Guid), default(Guid))},
-				{typeof (Guid?), ReflectHelper.FastGetMethod(DummyComparison,default(Guid?), default(Guid?))},
+				{typeof (bool), ReflectHelper.FastGetMethod(DummyComparison, false, false)},
+				{typeof (bool?), ReflectHelper.FastGetMethod(DummyComparison, default(bool?), default(bool?))},
+				{typeof (Guid), ReflectHelper.FastGetMethod(DummyComparison, default(Guid), default(Guid))},
+				{typeof (Guid?), ReflectHelper.FastGetMethod(DummyComparison, default(Guid?), default(Guid?))},
 			};
 
 		private static bool DummyComparison<T>(T lhs, T rhs)
