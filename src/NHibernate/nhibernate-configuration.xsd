@@ -240,6 +240,18 @@
 												</xs:documentation>
 											</xs:annotation>
 										</xs:enumeration>
+										<xs:enumeration value="oracle.use_binary_floating_point_types">
+											<xs:annotation>
+												<xs:documentation>
+													Oracle 10g introduced BINARY_DOUBLE and BINARY_FLOAT types which are compatible with .NET
+													double and float types, where FLOAT and DOUBLE are not. Oracle FLOAT and DOUBLE types do
+													not conform to the IEEE standard as they are internally implemented as NUMBER type, which
+													makes them an exact numeric type.
+													False by default.
+													See https://docs.oracle.com/database/121/TTSQL/types.htm#TTSQL126
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="firebird.disable_parameter_casting">
 											<xs:annotation>
 												<xs:documentation>
