@@ -45,7 +45,7 @@ namespace NHibernate.Engine
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			if (session.Factory.Settings.IsQueryCacheEnabled)
+			if (session.Factory.Settings.IsQueryCacheEnabled && executedSpaces.Count > 0)
 			{
 				return session.Factory.UpdateTimestampsCache.PreInvalidateAsync(executedSpaces, cancellationToken);
 			}
@@ -165,7 +165,7 @@ namespace NHibernate.Engine
 		private async Task InvalidateCachesAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (session.Factory.Settings.IsQueryCacheEnabled)
+			if (session.Factory.Settings.IsQueryCacheEnabled && executedSpaces.Count > 0)
 			{
 				await (session.Factory.UpdateTimestampsCache.InvalidateAsync(executedSpaces, cancellationToken)).ConfigureAwait(false);
 			}

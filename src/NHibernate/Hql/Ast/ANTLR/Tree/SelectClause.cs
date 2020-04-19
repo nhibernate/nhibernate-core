@@ -23,6 +23,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private IType[] _queryReturnTypes;
 		private string[][] _columnNames;
 		private readonly List<FromElement> _fromElementsForLoad = new List<FromElement>();
+		private readonly Dictionary<int, int> _entityByResultTypeDic = new Dictionary<int, int>();
+
 		private ConstructorNode _constructorNode;
 		private string[] _aliases;
 		private int[] _columnNamesStartPositions;
@@ -54,7 +56,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			ASTAppender appender = new ASTAppender(ASTFactory, this);	// Get ready to start adding nodes.
 			int size = fromElements.Count;
-			List<IType> sqlResultTypeList = new List<IType>(size);
 			List<IType> queryReturnTypeList = new List<IType>(size);
 
 			int k = 0;
@@ -76,7 +77,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 						}
 
 						_fromElementsForLoad.Add(fromElement);
-						sqlResultTypeList.Add(type);
 
 						// Generate the select expression.
 						string text = fromElement.RenderIdentifierSelect(size, k);
@@ -134,19 +134,20 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				if (expr.IsConstructor)
 				{
 					_constructorNode = (ConstructorNode)expr;
-					IList<IType> constructorArgumentTypeList = _constructorNode.ConstructorArgumentTypeList;
 					//sqlResultTypeList.addAll( constructorArgumentTypeList );
-					queryReturnTypeList.AddRange(constructorArgumentTypeList);
 					_scalarSelect = true;
 
-					for (int j = 1; j < _constructorNode.ChildCount; j++)
+					var ctorSelectExpressions = _constructorNode.CollectSelectExpressions();
+					for (int j = 0; j < ctorSelectExpressions.Length; j++)
 					{
-						ISelectExpression se = _constructorNode.GetChild(j) as ISelectExpression;
+						ISelectExpression se = ctorSelectExpressions[j];
 
-						if (se != null && IsReturnableEntity(se))
+						if (IsReturnableEntity(se))
 						{
-							_fromElementsForLoad.Add(se.FromElement);
+							AddEntityToProjection(queryReturnTypeList.Count, se);
 						}
+
+						queryReturnTypeList.Add(se.DataType);
 					}
 				}
 				else
@@ -163,10 +164,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					{
 						_scalarSelect = true;
 					}
-
-					if (IsReturnableEntity(expr))
+					else if (IsReturnableEntity(expr))
 					{
-						_fromElementsForLoad.Add(expr.FromElement);
+						AddEntityToProjection(queryReturnTypeList.Count, expr);
 					}
 
 					// Always add the type to the return type list.
@@ -247,6 +247,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			FinishInitialization( /*sqlResultTypeList,*/ queryReturnTypeList);
 		}
 
+		private void AddEntityToProjection(int resultIndex, ISelectExpression se)
+		{
+			_entityByResultTypeDic[resultIndex] = _fromElementsForLoad.Count;
+			_fromElementsForLoad.Add(se.FromElement);
+		}
+
 		private static FromElement GetOrigin(FromElement fromElement)
 		{
 			var realOrigin = fromElement.RealOrigin;
@@ -270,6 +276,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get { return _fromElementsForLoad; }
 		}
+
+		/// <summary>
+		/// Maps QueryReturnTypes[key] to entities from FromElementsForLoad[value]
+		/// </summary>
+		internal IReadOnlyDictionary<int, int> EntityByResultTypeDic => _entityByResultTypeDic;
 
 		public bool IsScalarSelect
 		{

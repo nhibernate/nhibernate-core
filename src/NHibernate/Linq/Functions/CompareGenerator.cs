@@ -51,6 +51,7 @@ namespace NHibernate.Linq.Functions
 				   methodInfo.DeclaringType.FullName == "System.Data.Services.Providers.DataServiceProviderMethods";
 		}
 
+		public override bool AllowsNullableReturnType(MethodInfo method) => false;
 		public CompareGenerator()
 		{
 			SupportedMethods = ActingMethods.ToArray();

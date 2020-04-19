@@ -286,7 +286,8 @@ namespace NHibernate.Dialect
 
 		protected virtual void RegisterFunctions()
 		{
-			RegisterFunction("count", new CountBigQueryFunction());
+			RegisterFunction("count", new CountQueryFunction());
+			RegisterFunction("count_big", new CountBigQueryFunction());
 
 			RegisterFunction("abs", new StandardSQLFunction("abs"));
 			RegisterFunction("absval", new StandardSQLFunction("absval"));
@@ -315,6 +316,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
 			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
 			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
+			// SQL Server rand returns the same value for each row, unless hacking it with a random seed per row
+			RegisterFunction("random", new SQLFunctionTemplate(NHibernateUtil.Double, "rand(checksum(newid()))"));
 			RegisterFunction("sin", new StandardSQLFunction("sin", NHibernateUtil.Double));
 			RegisterFunction("soundex", new StandardSQLFunction("soundex", NHibernateUtil.String));
 			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
@@ -326,7 +329,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("right", new SQLFunctionTemplate(NHibernateUtil.String, "right(?1, ?2)"));
 			RegisterFunction("locate", new StandardSQLFunction("charindex", NHibernateUtil.Int32));
 
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime, true));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.LocalDateTime, true));
+			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.LocalDate, "dateadd(dd, 0, datediff(dd, 0, getdate()))"));
+			RegisterFunction("current_utctimestamp", new NoArgSQLFunction("getutcdate", NHibernateUtil.UtcDateTime, true));
 			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(second, ?1)"));
 			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(minute, ?1)"));
 			RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(hour, ?1)"));
@@ -358,6 +363,8 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("bit_length", new SQLFunctionTemplate(NHibernateUtil.Int32, "datalength(?1) * 8"));
 			RegisterFunction("extract", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(?1, ?3)"));
+
+			RegisterFunction("new_uuid", new NoArgSQLFunction("newid", NHibernateUtil.Guid));
 		}
 
 		protected virtual void RegisterGuidTypeMapping()
@@ -698,11 +705,15 @@ namespace NHibernate.Dialect
 		[Serializable]
 		protected class CountBigQueryFunction : ClassicAggregateFunction
 		{
-			public CountBigQueryFunction() : base("count_big", true) { }
+			public CountBigQueryFunction() : base("count_big", true, NHibernateUtil.Int64) { }
+		}
 
-			public override IType ReturnType(IType columnType, IMapping mapping)
+		[Serializable]
+		private class CountQueryFunction : CountQueryFunctionInfo
+		{
+			public override IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
 			{
-				return NHibernateUtil.Int64;
+				return NHibernateUtil.Int32;
 			}
 		}
 

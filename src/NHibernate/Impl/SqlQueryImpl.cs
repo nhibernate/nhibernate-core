@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
@@ -29,6 +30,8 @@ namespace NHibernate.Impl
 		private readonly bool callable;
 		private bool autoDiscoverTypes;
 		private readonly HashSet<string> addedQuerySpaces = new HashSet<string>();
+		private List<IType> _flattenedTypes;
+		private List<object> _flattenedValues;
 
 		/// <summary> Constructs a SQLQueryImpl given a sql query defined in the mappings. </summary>
 		/// <param name="queryDef">The representation of the defined sql-query. </param>
@@ -298,6 +301,66 @@ namespace NHibernate.Impl
 			}
 		}
 
+		/// <inheritdoc />
+		protected internal override void VerifyParameters(bool reserveFirstParameter)
+		{
+			ComputeFlattenedParameters();
+			base.VerifyParameters(reserveFirstParameter);
+		}
+
+		// Flattening parameters is required for custom SQL loaders when entities have composite ids.
+		// See NH-3079 (#1117)
+		private void ComputeFlattenedParameters()
+		{
+			_flattenedTypes = new List<IType>(base.Types.Count * 2);
+			_flattenedValues = new List<object>(base.Types.Count * 2);
+			FlattenTypesAndValues(base.Types, base.Values);
+
+			void FlattenTypesAndValues(IList<IType> types, IList values)
+			{
+				for (var i = 0; i < types.Count; i++)
+				{
+					var type = types[i];
+					var value = values[i];
+					if (type is EntityType entityType)
+					{
+						type = entityType.GetIdentifierType(session);
+						value = entityType.GetIdentifier(value, session);
+					}
+
+					if (type is IAbstractComponentType componentType)
+					{
+						FlattenTypesAndValues(
+							componentType.Subtypes,
+							componentType.GetPropertyValues(value, session));
+					}
+					else
+					{
+						_flattenedTypes.Add(type);
+						_flattenedValues.Add(value);
+					}
+				}
+			}
+		}
+
+		protected override IList Values => _flattenedValues ??
+			throw new InvalidOperationException("Flattened parameters have not been computed");
+
+		protected override IList<IType> Types => _flattenedTypes ??
+			throw new InvalidOperationException("Flattened parameters have not been computed");
+
+		public override object[] ValueArray()
+		{
+			// TODO 6.0: Change to Values.ToArray()
+			return _flattenedValues?.ToArray() ??
+				throw new InvalidOperationException("Flattened parameters have not been computed");
+		}
+
+		public override IType[] TypeArray()
+		{
+			return Types.ToArray();
+		}
+
 		public override IQuery SetLockMode(string alias, LockMode lockMode)
 		{
 			throw new NotSupportedException("cannot set the lock mode for a native SQL query");
@@ -309,6 +372,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
+				ComputeFlattenedParameters();
 				return Session.ExecuteNativeUpdate(GenerateQuerySpecification(namedParams), GetQueryParameters(namedParams));
 			}
 			finally

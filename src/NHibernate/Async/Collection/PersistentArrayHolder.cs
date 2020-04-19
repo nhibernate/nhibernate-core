@@ -28,17 +28,7 @@ namespace NHibernate.Collection
 	{
 
 		//Since 5.3
-		/// <summary>
-		/// Get all "orphaned" elements
-		/// </summary>
-		/// <param name="snapshot">The snapshot of the collection.</param>
-		/// <param name="entityName">The persistent class whose objects
-		/// the collection is expected to contain.</param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns>
-		/// An <see cref="ICollection"/> that contains all of the elements
-		/// that have been orphaned.
-		/// </returns>
+		/// <inheritdoc />
 		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
@@ -48,7 +38,7 @@ namespace NHibernate.Collection
 			}
 			try
 			{
-				return Task.FromResult<ICollection>(GetOrphans((object[]) snapshot, (object[]) array, entityName, Session));
+				return Task.FromResult<ICollection>(GetOrphans(snapshot, entityName));
 			}
 			catch (Exception ex)
 			{

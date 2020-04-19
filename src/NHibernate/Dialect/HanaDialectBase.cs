@@ -395,6 +395,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 			RegisterFunction("sysdate", new NoArgSQLFunction("current_timestamp", NHibernateUtil.DateTime, false));
 			RegisterFunction("truncate", new SQLFunctionTemplateWithRequiredParameters(null, "floor(?1 * power(10, ?2)) / power(10, ?2)", new object[] { null, "0" }));
+			RegisterFunction("new_uuid", new NoArgSQLFunction("sysuuid", NHibernateUtil.Guid, false));
+			RegisterFunction("random", new NoArgSQLFunction("rand", NHibernateUtil.Double));
 		}
 
 		protected virtual void RegisterHANAFunctions()
@@ -439,20 +441,20 @@ namespace NHibernate.Dialect
 			RegisterFunction("cosh", new StandardSQLFunction("cosh", NHibernateUtil.Double));
 			RegisterFunction("cot", new StandardSQLFunction("cot", NHibernateUtil.Double));
 			RegisterFunction("current_connection", new NoArgSQLFunction("current_connection", NHibernateUtil.Int32));
-			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.DateTime, false));
+			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate, false));
 			RegisterFunction("current_identity_value", new NoArgSQLFunction("current_identity_value", NHibernateUtil.Int64));
 			RegisterFunction("current_mvcc_snapshot_timestamp", new NoArgSQLFunction("current_mvcc_snapshot_timestamp", NHibernateUtil.Int32));
 			RegisterFunction("current_object_schema", new NoArgSQLFunction("current_object_schema", NHibernateUtil.String));
 			RegisterFunction("current_schema", new NoArgSQLFunction("current_schema", NHibernateUtil.String, false));
 			RegisterFunction("current_time", new NoArgSQLFunction("current_time", NHibernateUtil.DateTime, false));
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.DateTime, false));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.LocalDateTime, false));
 			RegisterFunction("current_transaction_isolation_level", new NoArgSQLFunction("current_transaction_isolation_level", NHibernateUtil.String, false));
 			RegisterFunction("current_update_statement_sequence", new NoArgSQLFunction("current_update_statement_sequence", NHibernateUtil.Int64));
 			RegisterFunction("current_update_transaction", new NoArgSQLFunction("current_update_transaction", NHibernateUtil.Int64));
 			RegisterFunction("current_user", new NoArgSQLFunction("current_user", NHibernateUtil.String, false));
 			RegisterFunction("current_utcdate", new NoArgSQLFunction("current_utcdate", NHibernateUtil.DateTime, false));
 			RegisterFunction("current_utctime", new NoArgSQLFunction("current_utctime", NHibernateUtil.DateTime, false));
-			RegisterFunction("current_utctimestamp", new NoArgSQLFunction("current_utctimestamp", NHibernateUtil.DateTime, false));
+			RegisterFunction("current_utctimestamp", new NoArgSQLFunction("current_utctimestamp", NHibernateUtil.UtcDateTime, false));
 			RegisterFunction("dayname", new StandardSQLFunction("dayname", NHibernateUtil.String));
 			RegisterFunction("dayofmonth", new StandardSQLFunction("dayofmonth", NHibernateUtil.Int32));
 			RegisterFunction("dayofyear", new StandardSQLFunction("dayofyear", NHibernateUtil.Int32));

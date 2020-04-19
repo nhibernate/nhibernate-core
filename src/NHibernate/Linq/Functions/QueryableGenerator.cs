@@ -22,6 +22,8 @@ namespace NHibernate.Linq.Functions
 			};
 		}
 
+		public override bool AllowsNullableReturnType(MethodInfo method) => false;
+
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			HqlAlias alias = null;
@@ -58,6 +60,8 @@ namespace NHibernate.Linq.Functions
 				ReflectHelper.GetMethodDefinition(() => Enumerable.All<object>(null, null))
 			};
 		}
+
+		public override bool AllowsNullableReturnType(MethodInfo method) => false;
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
@@ -147,6 +151,8 @@ namespace NHibernate.Linq.Functions
 			                   		ReflectHelper.GetMethodDefinition(() => Enumerable.Contains<object>(null, null))
 			                   	};
 		}
+
+		public override bool AllowsNullableReturnType(MethodInfo method) => false;
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{

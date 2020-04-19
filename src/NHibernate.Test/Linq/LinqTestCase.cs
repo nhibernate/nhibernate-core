@@ -29,6 +29,7 @@ namespace NHibernate.Test.Linq
 					"Northwind.Mappings.Supplier.hbm.xml",
 					"Northwind.Mappings.Territory.hbm.xml",
 					"Northwind.Mappings.AnotherEntity.hbm.xml",
+					"Northwind.Mappings.AnotherEntityRequired.hbm.xml",
 					"Northwind.Mappings.Role.hbm.xml",
 					"Northwind.Mappings.User.hbm.xml",
 					"Northwind.Mappings.TimeSheet.hbm.xml",

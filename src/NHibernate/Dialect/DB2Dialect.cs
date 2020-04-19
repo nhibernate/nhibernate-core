@@ -80,6 +80,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("log10", new StandardSQLFunction("log10", NHibernateUtil.Double));
 			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
 			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
+			RegisterFunction("random", new NoArgSQLFunction("rand", NHibernateUtil.Double));
 			RegisterFunction("sin", new StandardSQLFunction("sin", NHibernateUtil.Double));
 			RegisterFunction("soundex", new StandardSQLFunction("soundex", NHibernateUtil.String));
 			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
@@ -87,6 +88,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
 			RegisterFunction("variance", new StandardSQLFunction("variance", NHibernateUtil.Double));
 
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.LocalDateTime, false));
+			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate, false));
 			RegisterFunction("julian_day", new StandardSQLFunction("julian_day", NHibernateUtil.Int32));
 			RegisterFunction("microsecond", new StandardSQLFunction("microsecond", NHibernateUtil.Int32));
 			RegisterFunction("midnight_seconds", new StandardSQLFunction("midnight_seconds", NHibernateUtil.Int32));
@@ -137,8 +140,6 @@ namespace NHibernate.Dialect
 			RegisterFunction("bor", new Function.BitwiseFunctionOperation("bitor"));
 			RegisterFunction("bxor", new Function.BitwiseFunctionOperation("bitxor"));
 			RegisterFunction("bnot", new Function.BitwiseFunctionOperation("bitnot"));
-
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.DateTime, false));
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.DB2Driver";
 		}
@@ -299,6 +300,9 @@ namespace NHibernate.Dialect
 		public override bool SupportsEmptyInList => false;
 
 		public override bool SupportsResultSetPositionQueryMethodsOnForwardOnlyCursor => false;
+
+		/// <inheritdoc />
+		public override bool SupportsCrossJoin => false; // DB2 v9.1 doesn't support 'cross join' syntax
 
 		public override bool SupportsLobValueChangePropogation => false;
 

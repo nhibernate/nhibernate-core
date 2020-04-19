@@ -102,6 +102,7 @@ namespace NHibernate.Dialect
 			// If changing the default value, keep it in sync with OracleDataClientDriverBase.Configure.
 			UseNPrefixedTypesForUnicode = PropertiesHelper.GetBoolean(Environment.OracleUseNPrefixedTypesForUnicode, settings, false);
 			RegisterCharacterTypeMappings();
+			RegisterFloatingPointTypeMappings();
 		}
 
 		#region private static readonly string[] DialectKeywords = { ... }
@@ -184,12 +185,16 @@ namespace NHibernate.Dialect
 
 			// 6.0 TODO: bring down to 18,4 for consistency with other dialects.
 			RegisterColumnType(DbType.Currency, "NUMBER(22,4)");
-			RegisterColumnType(DbType.Single, "FLOAT(24)");
-			RegisterColumnType(DbType.Double, "DOUBLE PRECISION");
-			RegisterColumnType(DbType.Double, 40, "NUMBER($p,$s)");
 			RegisterColumnType(DbType.Decimal, "NUMBER(19,5)");
 			// Oracle max precision is 39-40, but .Net is limited to 28-29.
 			RegisterColumnType(DbType.Decimal, 29, "NUMBER($p,$s)");
+		}
+
+		protected virtual void RegisterFloatingPointTypeMappings()
+		{
+			RegisterColumnType(DbType.Single, "FLOAT(24)");
+			RegisterColumnType(DbType.Double, "DOUBLE PRECISION");
+			RegisterColumnType(DbType.Double, 40, "NUMBER($p,$s)");
 		}
 
 		protected virtual void RegisterDateTimeTypeMappings()
@@ -252,7 +257,7 @@ namespace NHibernate.Dialect
 
 			// In Oracle, date includes a time, just with fractional seconds dropped. For actually only having
 			// the date, it must be truncated. Otherwise comparisons may yield unexpected results.
-			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.Date, "trunc(current_date)"));
+			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.LocalDate, "trunc(current_date)"));
 			RegisterFunction("current_time", new NoArgSQLFunction("current_timestamp", NHibernateUtil.Time, false));
 			RegisterFunction("current_timestamp", new CurrentTimeStamp());
 
@@ -310,6 +315,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("bor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2)"));
 			RegisterFunction("bxor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2) * 2"));
 			RegisterFunction("bnot", new SQLFunctionTemplate(null, "(-1 - ?1)"));
+
+			RegisterFunction("new_uuid", new NoArgSQLFunction("sys_guid", NHibernateUtil.Guid));
 		}
 
 		protected internal virtual void RegisterDefaultProperties()
@@ -327,6 +334,9 @@ namespace NHibernate.Dialect
 		{
 			return new OracleJoinFragment();
 		}
+
+		/// <inheritdoc />
+		public override bool SupportsCrossJoin => false;
 
 		/// <summary> 
 		/// Map case support to the Oracle DECODE function.  Oracle did not
@@ -568,7 +578,7 @@ namespace NHibernate.Dialect
 		[Serializable]
 		private class CurrentTimeStamp : NoArgSQLFunction
 		{
-			public CurrentTimeStamp() : base("current_timestamp", NHibernateUtil.DateTime, true) {}
+			public CurrentTimeStamp() : base("current_timestamp", NHibernateUtil.LocalDateTime, true) {}
 
 			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{

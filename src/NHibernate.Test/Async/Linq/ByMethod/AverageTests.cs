@@ -22,6 +22,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public async Task CanGetAverageOfIntegersAsDoubleAsync()
 		{
+			// TODO 6.0: Enable test for Oracle once nhibernate.oracle.use_binary_floating_point_types is set to true
 			if (Dialect is Oracle8iDialect)
 			{
 				// The point of this test is to verify that LINQ's Average over an

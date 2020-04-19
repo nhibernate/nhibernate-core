@@ -114,11 +114,14 @@ namespace NHibernate.Linq.Visitors
 			if (expression.NodeType == ExpressionType.Call)
 			{
 				var methodCallExpression = (MethodCallExpression) expression;
-				IHqlGeneratorForMethod methodGenerator;
-				if (_functionRegistry.TryGetGenerator(methodCallExpression.Method, out methodGenerator))
+				if (_functionRegistry.TryGetGenerator(methodCallExpression.Method, out var methodGenerator))
 				{
-					return methodCallExpression.Object == null || // is static or extension method
-					       methodCallExpression.Object.NodeType != ExpressionType.Constant; // does not belong to parameter 
+					// is static or extension method
+					return methodCallExpression.Object == null ||
+						// does not belong to parameter
+						methodCallExpression.Object.NodeType != ExpressionType.Constant ||
+						// does not ignore the parameter it belongs to
+						methodGenerator.IgnoreInstance(methodCallExpression.Method);
 				}
 			}
 			else if (expression is NhSumExpression ||

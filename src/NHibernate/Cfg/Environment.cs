@@ -226,6 +226,48 @@ namespace NHibernate.Cfg
 
 		public const string LinqToHqlGeneratorsRegistry = "linqtohql.generatorsregistry";
 
+		/// <summary>
+		/// Whether to use the legacy pre-evaluation or not in Linq queries. <c>true</c> by default.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Legacy pre-evaluation is causing special properties or functions like <c>DateTime.Now</c> or
+		/// <c>Guid.NewGuid()</c> to be always evaluated with the .Net runtime and replaced in the query by
+		/// parameter values.
+		/// </para>
+		/// <para>
+		/// The new pre-evaluation allows them to be converted to HQL function calls which will be run on the db
+		/// side. This allows for example to retrieve the server time instead of the client time, or to generate
+		/// UUIDs for each row instead of an unique one for all rows. (This does not happen if the dialect does
+		/// not support the required HQL function.)
+		/// </para>
+		/// <para>
+		/// The new pre-evaluation will likely be enabled by default in the next major version (6.0).
+		/// </para>
+		/// </remarks>
+		public const string LinqToHqlLegacyPreEvaluation = "linqtohql.legacy_preevaluation";
+
+		/// <summary>
+		/// When the new pre-evaluation is enabled, should methods which translation is not supported by the current
+		/// dialect fallback to pre-evaluation? <c>false</c> by default.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// When this fallback option is enabled while legacy pre-evaluation is disabled, properties or functions
+		/// like <c>DateTime.Now</c> or <c>Guid.NewGuid()</c> used in Linq expressions will not fail when the dialect does not
+		/// support them, but will instead be pre-evaluated.
+		/// </para>
+		/// <para>
+		/// When this fallback option is disabled while legacy pre-evaluation is disabled, properties or functions
+		/// like <c>DateTime.Now</c> or <c>Guid.NewGuid()</c> used in Linq expressions will fail when the dialect does not
+		/// support them.
+		/// </para>
+		/// <para>
+		/// This option has no effect if the legacy pre-evaluation is enabled.
+		/// </para>
+		/// </remarks>
+		public const string LinqToHqlFallbackOnPreEvaluation = "linqtohql.fallback_on_preevaluation";
+
 		/// <summary> Enable ordering of insert statements for the purpose of more efficient batching.</summary>
 		public const string OrderInserts = "order_inserts";
 
@@ -276,6 +318,20 @@ namespace NHibernate.Cfg
 		/// This setting applies only to Oracle dialects and ODP.Net managed or unmanaged driver.
 		/// </remarks>
 		public const string OracleUseNPrefixedTypesForUnicode = "oracle.use_n_prefixed_types_for_unicode";
+
+		/// <summary>
+		/// Oracle 10g introduced BINARY_DOUBLE and BINARY_FLOAT types which are compatible with .NET
+		/// <see cref="double"/> and <see cref="float"/> types, where FLOAT and DOUBLE are not. Oracle
+		/// FLOAT and DOUBLE types do not conform to the IEEE standard as they are internally implemented as
+		/// NUMBER type, which makes them an exact numeric type.
+		/// <para>
+		/// <see langword="false"/> by default.
+		/// </para>
+		/// </summary>
+		/// <remarks>
+		/// See https://docs.oracle.com/database/121/TTSQL/types.htm#TTSQL126
+		/// </remarks>
+		public const string OracleUseBinaryFloatingPointTypes = "oracle.use_binary_floating_point_types";
 
 		/// <summary>
 		/// <para>
