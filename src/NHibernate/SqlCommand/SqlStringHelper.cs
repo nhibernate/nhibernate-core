@@ -59,8 +59,12 @@ namespace NHibernate.SqlCommand
 			return result;
 		}
 
-
-		//Consider using CriterionUtil.GetColumn... methods instead
+		/// <summary>
+		/// Removes the <c>as someColumnAlias</c> clause from a <c>SqlString</c> representing a column expression.
+		/// Consider using <c>CriterionUtil.GetColumn...</c> methods instead.
+		/// </summary>
+		/// <param name="sql">The <c>SqlString</c> representing a column expression which might be aliased.</param>
+		/// <returns><paramref name="sql" /> if it was not aliased, otherwise an un-aliased <c>SqlString</c> representing the column.</returns>
 		public static SqlString RemoveAsAliasesFromSql(SqlString sql)
 		{
 			int index = sql.LastIndexOfCaseInsensitive(" as ");
