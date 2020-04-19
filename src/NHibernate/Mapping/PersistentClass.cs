@@ -215,13 +215,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				IEnumerable<Subclass>[] iters = new IEnumerable<Subclass>[subclasses.Count + 1];
-				int i = 0;
-				foreach (Subclass subclass in subclasses)
-					iters[i++] = subclass.SubclassIterator;
-
-				iters[i] = subclasses;
-				return new JoinedEnumerable<Subclass>(iters);
+				return subclasses.SelectMany(s => s.SubclassIterator).Concat(subclasses);
 			}
 		}
 
@@ -229,12 +223,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				List<IEnumerable<PersistentClass>> iters = new List<IEnumerable<PersistentClass>>();
-				iters.Add(new SingletonEnumerable<PersistentClass>(this));
-				foreach (Subclass clazz in SubclassIterator)
-					iters.Add(clazz.SubclassClosureIterator);
-
-				return new JoinedEnumerable<PersistentClass>(iters);
+				return new[] {this}.Concat(SubclassIterator.SelectMany(x => x.SubclassClosureIterator));
 			}
 		}
 
@@ -322,19 +311,15 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				List<IEnumerable<Property>> iters = new List<IEnumerable<Property>>();
-				iters.Add(PropertyClosureIterator);
-				iters.Add(subclassProperties);
-				foreach (Join join in subclassJoins)
-					iters.Add(join.PropertyIterator);
-
-				return new JoinedEnumerable<Property>(iters);
+				return PropertyClosureIterator
+						.Concat(subclassProperties)
+						.Concat(subclassJoins.SelectMany(x => x.PropertyIterator));
 			}
 		}
 
 		public virtual IEnumerable<Join> SubclassJoinClosureIterator
 		{
-			get { return new JoinedEnumerable<Join>(JoinClosureIterator, subclassJoins); }
+			get { return JoinClosureIterator.Concat(subclassJoins); }
 		}
 
 		/// <summary>
@@ -345,7 +330,7 @@ namespace NHibernate.Mapping
 		/// <remarks>It adds the TableClosureIterator and the subclassTables into the IEnumerable.</remarks>
 		public virtual IEnumerable<Table> SubclassTableClosureIterator
 		{
-			get { return new JoinedEnumerable<Table>(TableClosureIterator, subclassTables); }
+			get { return TableClosureIterator.Concat(subclassTables); }
 		}
 
 		public bool IsLazy
@@ -455,12 +440,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				List<IEnumerable<Property>> iterators = new List<IEnumerable<Property>>();
-				iterators.Add(properties);
-				foreach (Join join in joins)
-					iterators.Add(join.PropertyIterator);
-
-				return new JoinedEnumerable<Property>(iterators);
+				return properties.Concat(joins.SelectMany(x => x.PropertyIterator));
 			}
 		}
 
