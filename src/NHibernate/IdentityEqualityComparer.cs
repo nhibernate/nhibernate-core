@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 
 namespace NHibernate
 {
+	// Since v5.3 
+	[Obsolete("This class has no more usages and will be removed in a future version")]
 	[Serializable]
 	public class IdentityEqualityComparer : IEqualityComparer, IEqualityComparer<object>
 	{

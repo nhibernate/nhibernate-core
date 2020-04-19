@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using NHibernate.Util;
 
 namespace NHibernate.Transform
 {
@@ -11,19 +12,6 @@ namespace NHibernate.Transform
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DistinctRootEntityResultTransformer));
 		internal static readonly DistinctRootEntityResultTransformer Instance = new DistinctRootEntityResultTransformer();
-
-		sealed class IdentityComparer<T> : IEqualityComparer<T>
-		{
-			public bool Equals(T x, T y)
-			{
-				return ReferenceEquals(x, y);
-			}
-
-			public int GetHashCode(T obj)
-			{
-				return RuntimeHelpers.GetHashCode(obj);
-			}
-		}
 
 		public object TransformTuple(object[] tuple, string[] aliases)
 		{
@@ -36,7 +24,7 @@ namespace NHibernate.Transform
 				return list;
 
 			IList result = (IList) Activator.CreateInstance(list.GetType());
-			var distinct = new HashSet<object>(new IdentityComparer<object>());
+			var distinct = new HashSet<object>(ReferenceComparer<object>.Instance);
 
 			for (int i = 0; i < list.Count; i++)
 			{
@@ -54,9 +42,9 @@ namespace NHibernate.Transform
 			return result;
 		}
 
-		internal static List<T> TransformList<T>(IEnumerable<T> list)
+		internal static List<T> TransformList<T>(IEnumerable<T> list) where T: class
 		{
-			var result = list.Distinct(new IdentityComparer<T>()).ToList();
+			var result = list.Distinct(ReferenceComparer<T>.Instance).ToList();
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("transformed: {0} rows to: {1} distinct results", list.Count(), result.Count);
