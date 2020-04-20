@@ -27,8 +27,8 @@ namespace NHibernate.Linq.ReWriters
 		{
 			_sessionFactory = sessionFactory;
 			var joiner = new Joiner(queryModel, AddJoin);
-			_memberExpressionJoinDetector = new MemberExpressionJoinDetector(this, joiner, _sessionFactory);
-			_whereJoinDetector = new WhereJoinDetector(this, joiner, _sessionFactory);
+			_memberExpressionJoinDetector = new MemberExpressionJoinDetector(this, joiner);
+			_whereJoinDetector = new WhereJoinDetector(this, joiner);
 		}
 
 		public static void ReWrite(QueryModel queryModel, VisitorParameters parameters)

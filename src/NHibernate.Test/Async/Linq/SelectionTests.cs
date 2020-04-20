@@ -290,6 +290,14 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task CanSelectNotMappedEntityPropertyAsync()
+		{
+			var list = await (db.Animals.Where(o => o.Mother != null).Select(o => o.FatherOrMother.SerialNumber).ToListAsync());
+
+			Assert.That(list, Has.Count.GreaterThan(0));
+		}
+
+		[Test]
 		public async Task CanProjectWithCastAsync()
 		{
 			// NH-2463
