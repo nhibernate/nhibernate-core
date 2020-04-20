@@ -19,7 +19,7 @@ namespace NHibernate.SqlCommand
 		private string comment;
 
 		// columns-> (ColumnName, Value) or (ColumnName, SqlType) for parametrized column
-		private readonly LinkedHashMap<string, object> columns = new LinkedHashMap<string, object>();
+		private readonly Dictionary<string, object> columns = new Dictionary<string, object>();
 
 	    private List<SqlString> whereStrings = new List<SqlString>();
 		private readonly List<SqlType> whereParameterTypes = new List<SqlType>();
@@ -123,11 +123,17 @@ namespace NHibernate.SqlCommand
 
 		private void AddColumnWithValueOrType(string columnName, object valueOrType)
 		{
-			if (columns.ContainsKey(columnName))
+			try
+			{
+				columns.Add(columnName, valueOrType);
+			}
+			catch (ArgumentException e)
+			{
 				throw new ArgumentException(
-					$"The column '{columnName}' has already been added in this SQL builder",
-					nameof(columnName));
-			columns.Add(columnName, valueOrType);
+					$"The column '{columnName}' has already been added in Update SQL builder",
+					nameof(columnName),
+					e);
+			}
 		}
 
 		public SqlUpdateBuilder AppendAssignmentFragment(SqlString fragment)

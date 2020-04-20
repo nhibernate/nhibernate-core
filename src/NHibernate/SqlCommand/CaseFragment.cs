@@ -9,7 +9,7 @@ namespace NHibernate.SqlCommand
 		protected internal readonly Dialect.Dialect dialect;
 		protected internal string returnColumnName;
 
-		protected internal IDictionary<string,string > cases = new LinkedHashMap<string,string>();
+		protected internal Dictionary<string,string > cases = new Dictionary<string,string>();
 
 		protected CaseFragment(Dialect.Dialect dialect)
 		{

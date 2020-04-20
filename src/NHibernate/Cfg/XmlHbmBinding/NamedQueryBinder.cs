@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
-using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -31,7 +30,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 										? querySchema.cachemode.ToCacheMode()
 										: null;
 
-			IDictionary<string,string> parameterTypes = new LinkedHashMap<string,string>();
+			var parameterTypes = new Dictionary<string, string>();
 
 			var namedQuery = new NamedQueryDefinition(queryText, cacheable, region, timeout,
 				fetchSize, flushMode, cacheMode, readOnly, comment, parameterTypes);
