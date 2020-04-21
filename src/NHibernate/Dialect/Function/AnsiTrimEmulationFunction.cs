@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -17,7 +17,7 @@ namespace NHibernate.Dialect.Function
 	/// functionality.
 	/// </summary>
 	[Serializable]
-	public class AnsiTrimEmulationFunction : ISQLFunction, IFunctionGrammar
+	public class AnsiTrimEmulationFunction : ISQLFunction, IFunctionGrammar, ISQLFunctionExtended
 	{
 		private static readonly ISQLFunction LeadingSpaceTrim = new SQLFunctionTemplate(NHibernateUtil.String, "ltrim( ?1 )");
 		private static readonly ISQLFunction TrailingSpaceTrim = new SQLFunctionTemplate(NHibernateUtil.String, "rtrim( ?1 )");
@@ -76,10 +76,29 @@ namespace NHibernate.Dialect.Function
 
 		#region ISQLFunction Members
 
+		// Since v5.3
+		[Obsolete("Use GetReturnType method instead.")]
 		public IType ReturnType(IType columnType, IMapping mapping)
 		{
 			return NHibernateUtil.String;
 		}
+
+		/// <inheritdoc />
+		public IType GetReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+		{
+#pragma warning disable 618
+			return ReturnType(argumentTypes.FirstOrDefault(), mapping);
+#pragma warning restore 618
+		}
+
+		/// <inheritdoc />
+		public IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+		{
+			return GetReturnType(argumentTypes, mapping, throwOnError);
+		}
+
+		/// <inheritdoc />
+		public string FunctionName => null;
 
 		public bool HasArguments
 		{

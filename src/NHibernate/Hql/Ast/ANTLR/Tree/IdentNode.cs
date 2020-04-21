@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Antlr.Runtime;
 using NHibernate.Dialect.Function;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Persister.Collection;
-using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
@@ -38,7 +39,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					return fe.DataType;
 				}
 				ISQLFunction sf = Walker.SessionFactoryHelper.FindSQLFunction(Text);
-				return sf?.ReturnType(null, Walker.SessionFactoryHelper.Factory);
+				return sf?.GetReturnType(Enumerable.Empty<IType>(), Walker.SessionFactoryHelper.Factory, true);
 			}
 
 			set

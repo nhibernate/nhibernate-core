@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -12,16 +14,35 @@ namespace NHibernate.Dialect.Function
 	/// ANSI-SQL style cast(foo as type) where the type is a NHibernate type
 	/// </summary>
 	[Serializable]
-	public class CastFunction : ISQLFunction, IFunctionGrammar
+	public class CastFunction : ISQLFunction, IFunctionGrammar, ISQLFunctionExtended
 	{
 		#region ISQLFunction Members
 
+		// Since v5.3
+		[Obsolete("Use GetReturnType method instead.")]
 		public IType ReturnType(IType columnType, IMapping mapping)
 		{
 			//note there is a weird implementation in the client side
 			//TODO: cast that use only costant are not supported in SELECT. Ex: cast(5 as string)
 			return columnType;
 		}
+
+		/// <inheritdoc />
+		public IType GetReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+		{
+#pragma warning disable 618
+			return ReturnType(argumentTypes.FirstOrDefault(), mapping);
+#pragma warning restore 618
+		}
+
+		/// <inheritdoc />
+		public virtual IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+		{
+			return GetReturnType(argumentTypes, mapping, throwOnError);
+		}
+
+		/// <inheritdoc />
+		public string FunctionName => "cast";
 
 		public bool HasArguments
 		{

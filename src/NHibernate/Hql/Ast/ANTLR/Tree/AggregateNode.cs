@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Antlr.Runtime;
 using NHibernate.Dialect.Function;
 using NHibernate.Type;
@@ -38,7 +39,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			get
 			{
 				// Get the function return value type, based on the type of the first argument.
-				return SessionFactoryHelper.FindFunctionReturnType(Text, GetChild(0));
+				return SessionFactoryHelper.FindFunctionReturnType(Text, (IEnumerable<IASTNode>) this);
 			}
 			set
 			{

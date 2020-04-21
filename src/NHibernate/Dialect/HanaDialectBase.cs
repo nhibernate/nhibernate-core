@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
@@ -17,7 +19,7 @@ namespace NHibernate.Dialect
 	public abstract class HanaDialectBase : Dialect
 	{
 		[Serializable]
-		private class TypeConvertingVarArgsSQLFunction : ISQLFunction
+		private class TypeConvertingVarArgsSQLFunction : ISQLFunction, ISQLFunctionExtended
 		{
 			private readonly string _begin;
 			private readonly string _sep;
@@ -33,11 +35,30 @@ namespace NHibernate.Dialect
 
 			#region ISQLFunction Members
 
+			// Since v5.3
+			[Obsolete("Use GetReturnType method instead.")]
 			public IType ReturnType(IType columnType, IMapping mapping)
 			{
 				_type = columnType.SqlTypes(mapping)[0];
 				return columnType;
 			}
+
+			/// <inheritdoc />
+			public IType GetReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+#pragma warning disable 618
+				return ReturnType(argumentTypes.FirstOrDefault(), mapping);
+#pragma warning restore 618
+			}
+
+			/// <inheritdoc />
+			public IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+				return GetReturnType(argumentTypes, mapping, throwOnError);
+			}
+
+			/// <inheritdoc />
+			public virtual string FunctionName => "cast";
 
 			public bool HasArguments => true;
 
@@ -392,7 +413,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("ceiling", new StandardSQLFunction("ceil"));
 			RegisterFunction("chr", new StandardSQLFunction("char", NHibernateUtil.AnsiChar));
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "to_date(?1)"));
-			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
+			RegisterFunction("iif", new IifSQLFunction());
 			RegisterFunction("sysdate", new NoArgSQLFunction("current_timestamp", NHibernateUtil.DateTime, false));
 			RegisterFunction("truncate", new SQLFunctionTemplateWithRequiredParameters(null, "floor(?1 * power(10, ?2)) / power(10, ?2)", new object[] { null, "0" }));
 			RegisterFunction("new_uuid", new NoArgSQLFunction("sysuuid", NHibernateUtil.Guid, false));
@@ -498,7 +519,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("map", new VarArgsSQLFunction("map(", ",", ")"));
 			RegisterFunction("mimetype", new StandardSQLFunction("mimetype", NHibernateUtil.String));
 			RegisterFunction("minute", new StandardSQLFunction("minute", NHibernateUtil.Int32));
-			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
+			RegisterFunction("mod", new ModulusFunction(false, false));
 			RegisterFunction("month", new StandardSQLFunction("month", NHibernateUtil.Int32));
 			RegisterFunction("monthname", new StandardSQLFunction("monthname", NHibernateUtil.String));
 			RegisterFunction("months_between", new StandardSQLFunction("months_between", NHibernateUtil.Int32));
