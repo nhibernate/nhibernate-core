@@ -172,7 +172,7 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			return !(expression is MemberExpression memberExpression) || // Assume all is good
-			       // Evaluate only expressions that represent a mapped property
+			       // Nominate only expressions that represent a mapped property or a translatable method call
 			       ExpressionsHelper.TryGetMappedType(_sessionFactory, expression, out _, out _, out _, out _) ||
 			       _functionRegistry.TryGetGenerator(memberExpression.Member, out _);
 		}
