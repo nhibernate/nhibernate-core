@@ -16,7 +16,7 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 			{
-				ReflectHelper.GetMethod(() => Guid.NewGuid())
+				ReflectHelper.FastGetMethod(Guid.NewGuid)
 			};
 		}
 

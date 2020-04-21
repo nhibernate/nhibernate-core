@@ -2518,7 +2518,7 @@ namespace NHibernate.Linq
 
 		public static IQueryable<T> WithLock<T>(this IQueryable<T> query, LockMode lockMode)
 		{
-			var method = ReflectHelper.GetMethod(() => WithLock(query, lockMode));
+			var method = ReflectHelper.FastGetMethod(WithLock, query, lockMode);
 
 			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(lockMode));
 
