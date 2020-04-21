@@ -69,10 +69,20 @@ namespace NHibernate.Util
 			internal static readonly MethodInfo SelectDefinition =
 				ReflectHelper.FastGetMethodDefinition(Queryable.Select, default(IQueryable<object>), default(Expression<Func<object, object>>));
 			internal static readonly MethodInfo SelectManyDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.SelectMany<object, object, object>(null, (Expression<Func<object, IEnumerable<object>>>) null, null));
+				ReflectHelper.FastGetMethodDefinition(
+					Queryable.SelectMany,
+					default(IQueryable<object>),
+					default(Expression<Func<object, IEnumerable<object>>>),
+					default(Expression<Func<object, object, object>>));
 
 			internal static readonly MethodInfo GroupJoinDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.GroupJoin<object, object, object, object>(null, null, null, null, null));
+				ReflectHelper.FastGetMethodDefinition(
+					Queryable.GroupJoin,
+					default(IQueryable<object>),
+					default(IEnumerable<object>),
+					default(Expression<Func<object, int>>),
+					default(Expression<Func<object, int>>),
+					default(Expression<Func<object, IEnumerable<object>, object>>));
 
 			internal static readonly MethodInfo CountDefinition =
 				ReflectHelper.FastGetMethodDefinition(Queryable.Count, default(IQueryable<object>));

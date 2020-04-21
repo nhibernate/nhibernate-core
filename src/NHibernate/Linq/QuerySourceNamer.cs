@@ -16,7 +16,10 @@ namespace NHibernate.Linq
 
 		public void Add(IQuerySource querySource)
 		{
-			Add(querySource, CreateUniqueName(querySource.ItemName));
+			if (_map.ContainsKey(querySource))
+				return;
+
+			_map.Add(querySource, CreateUniqueName(querySource.ItemName));
 		}
 
 		internal void Add(IQuerySource querySource, string name)
