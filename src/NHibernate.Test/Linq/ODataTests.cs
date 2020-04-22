@@ -25,6 +25,21 @@ namespace NHibernate.Test.Linq
 			_edmModel = CreatEdmModel();
 		}
 
+		[TestCase("$expand=Customer", 830, "Customer")]
+		[TestCase("$expand=OrderLines", 830, "OrderLines")]
+		public void Expand(string queryString, int expectedRows, string expandedProperty)
+		{
+			var query = ApplyFilter(session.Query<Order>(), queryString);
+			Assert.That(query, Is.AssignableTo<IQueryable<ISelectExpandWrapper>>());
+
+			var results = ((IQueryable<ISelectExpandWrapper>) query).ToList();
+			Assert.That(results, Has.Count.EqualTo(expectedRows));
+
+			var dict = results[0].ToDictionary();
+			Assert.That(dict.TryGetValue(expandedProperty, out var value), Is.True);
+			Assert.That(value, Is.Not.Null);
+		}
+
 		[TestCase("$apply=groupby((Customer/CustomerId))", 89)]
 		[TestCase("$apply=groupby((Customer/CustomerId))&$orderby=Customer/CustomerId", 89)]
 		[TestCase("$apply=groupby((Customer/CustomerId, ShippingAddress/PostalCode), aggregate(OrderId with average as Average, Employee/EmployeeId with max as Max))", 89)]
@@ -70,14 +85,14 @@ namespace NHibernate.Test.Linq
 		{
 			var builder = new ODataConventionModelBuilder();
 
-			var adressModel = builder.ComplexType<Address>();
-			adressModel.Property(o => o.City);
-			adressModel.Property(o => o.Country);
-			adressModel.Property(o => o.Fax);
-			adressModel.Property(o => o.PhoneNumber);
-			adressModel.Property(o => o.PostalCode);
-			adressModel.Property(o => o.Region);
-			adressModel.Property(o => o.Street);
+			var addressModel = builder.ComplexType<Address>();
+			addressModel.Property(o => o.City);
+			addressModel.Property(o => o.Country);
+			addressModel.Property(o => o.Fax);
+			addressModel.Property(o => o.PhoneNumber);
+			addressModel.Property(o => o.PostalCode);
+			addressModel.Property(o => o.Region);
+			addressModel.Property(o => o.Street);
 
 			var customerModel = builder.EntitySet<Customer>(nameof(Customer));
 			customerModel.EntityType.HasKey(o => o.CustomerId);
@@ -85,6 +100,13 @@ namespace NHibernate.Test.Linq
 			customerModel.EntityType.Property(o => o.ContactTitle);
 			customerModel.EntityType.ComplexProperty(o => o.Address);
 			customerModel.EntityType.HasMany(o => o.Orders);
+
+			var orderLineModel = builder.EntitySet<OrderLine>(nameof(OrderLine));
+			orderLineModel.EntityType.HasKey(o => o.Id);
+			orderLineModel.EntityType.Property(o => o.Discount);
+			orderLineModel.EntityType.Property(o => o.Quantity);
+			orderLineModel.EntityType.Property(o => o.UnitPrice);
+			orderLineModel.EntityType.HasRequired(o => o.Order);
 
 			var orderModel = builder.EntitySet<Order>(nameof(Order));
 			orderModel.EntityType.HasKey(o => o.OrderId);
@@ -96,6 +118,7 @@ namespace NHibernate.Test.Linq
 			orderModel.EntityType.ComplexProperty(o => o.ShippingAddress);
 			orderModel.EntityType.HasRequired(o => o.Customer);
 			orderModel.EntityType.HasOptional(o => o.Employee);
+			orderModel.EntityType.HasMany(o => o.OrderLines);
 
 			var employeeModel = builder.EntitySet<Employee>(nameof(Employee));
 			employeeModel.EntityType.HasKey(o => o.EmployeeId);
