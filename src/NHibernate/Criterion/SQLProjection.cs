@@ -63,9 +63,18 @@ namespace NHibernate.Criterion
 
 		private SqlString GetSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, string sqlTemplate)
 		{
-			if (_criteriaAliases != null)
+			return GetSqlString(criteria, criteriaQuery, new SqlString(sqlTemplate), _criteriaAliases);
+		}
+
+		internal static SqlString GetSqlString(
+			ICriteria criteria,
+			ICriteriaQuery criteriaQuery,
+			SqlString sqlTemplate,
+			List<string> criteriaAliases)
+		{
+			if (criteriaAliases != null)
 			{
-				foreach (var alias in _criteriaAliases)
+				foreach (var alias in criteriaAliases)
 				{
 					sqlTemplate = sqlTemplate.Replace(
 						"{" + alias + "}",
@@ -75,7 +84,7 @@ namespace NHibernate.Criterion
 				}
 			}
 
-			return new SqlString(sqlTemplate.Replace("{alias}", criteriaQuery.GetSQLAlias(criteria)));
+			return sqlTemplate.Replace("{alias}", criteriaQuery.GetSQLAlias(criteria));
 		}
 
 		public override string ToString()
