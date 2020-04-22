@@ -583,7 +583,7 @@ namespace NHibernate.Dialect
 
 			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{
-				return new SqlString(FunctionName);
+				return new SqlString(Name);
 			}
 		}
 		[Serializable]
@@ -619,7 +619,7 @@ namespace NHibernate.Dialect
 			}
 
 			/// <inheritdoc />
-			public string FunctionName => "instr";
+			public string Name => "instr";
 
 			public bool HasArguments
 			{

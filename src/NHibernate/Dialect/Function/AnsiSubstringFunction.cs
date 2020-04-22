@@ -50,7 +50,7 @@ namespace NHibernate.Dialect.Function
 		}
 
 		/// <inheritdoc />
-		public string FunctionName => "substring";
+		public string Name => "substring";
 
 		public bool HasArguments
 		{

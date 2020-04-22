@@ -43,7 +43,7 @@ namespace NHibernate.Dialect.Function
 		}
 
 		/// <inheritdoc />
-		public string FunctionName => "charindex";
+		public string Name => "charindex";
 
 		public bool HasArguments
 		{

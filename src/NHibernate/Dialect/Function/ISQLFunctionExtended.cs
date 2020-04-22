@@ -10,7 +10,7 @@ namespace NHibernate.Dialect.Function
 		/// <summary>
 		/// The function name or <see langword="null"/> when multiple functions/operators/statements are used.
 		/// </summary>
-		string FunctionName { get; }
+		string Name { get; }
 
 		/// <summary>
 		/// Get the function general return type, ignoring underlying database specifics.
