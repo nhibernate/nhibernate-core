@@ -969,7 +969,7 @@ namespace NHibernate.Test.Criteria
 			using (var s = OpenSession())
 			{
 				var uniqueResult = await (s.CreateCriteria(typeof(Student))
-				                    .Add(Expression.Like("Name", "Gavi", MatchMode.Start))
+				                    .Add(Expression.Sql("{e}.studentId = 667").AddCriteriaAliases("e"))
 				                    .AddOrder(Order.Asc("Name"))
 				                    .CreateCriteria("Enrolments", "e")
 				                    .AddOrder(Order.Desc("Year"))
@@ -978,13 +978,12 @@ namespace NHibernate.Test.Criteria
 				                    .AddOrder(Order.Asc("Description"))
 				                    .SetProjection(
 					                    Projections.SqlProjection(
-						                    "{alias}.studentId as studentNumber, {e}.Year as year, {e}.Semester as semester,"
+						                    "{alias}.studentId as studentNumber, {e}.Semester as semester,"
 						                    + " {c}.CourseCode as courseCode, {c}.Description as descr",
-						                    new string[] {"studentNumber", "year", "semester", "courseCode", "descr"},
+						                    new string[] {"studentNumber", "semester", "courseCode", "descr"},
 						                    new[]
 						                    {
 							                    TypeFactory.HeuristicType(typeof(long)),
-							                    TypeFactory.HeuristicType(typeof(short)),
 							                    TypeFactory.HeuristicType(typeof(short)),
 							                    TypeFactory.HeuristicType(typeof(string)),
 							                    TypeFactory.HeuristicType(typeof(string)),
