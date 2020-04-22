@@ -1065,8 +1065,14 @@ namespace NHibernate.Test.Criteria
 
 			using (var s = OpenSession())
 			{
+				Student studentSubquery = null;
+				var subquery = QueryOver.Of(() => studentSubquery)
+				         .And(
+					         Expression.Sql("{e}.studentId = 667 and {studentSubquery}.studentId = 667")
+					                   .AddCriteriaAliases("e", "studentSubquery")).Select(Projections.Id());
+				         
 				var uniqueResult = s.CreateCriteria(typeof(Student))
-				                    .Add(Expression.Sql("{e}.studentId = 667").AddCriteriaAliases("e"))
+				                    .Add(Subqueries.Exists(subquery.DetachedCriteria))
 				                    .AddOrder(Order.Asc("Name"))
 				                    .CreateCriteria("Enrolments", "e")
 				                    .AddOrder(Order.Desc("Year"))

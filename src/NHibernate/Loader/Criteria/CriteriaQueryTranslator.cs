@@ -865,8 +865,13 @@ namespace NHibernate.Loader.Criteria
 
 		public string GetSQLAlias(string criteriaAlias)
 		{
-			if(!aliasCriteriaMap.TryGetValue(criteriaAlias, out var criteria))
+			if (!aliasCriteriaMap.TryGetValue(criteriaAlias, out var criteria))
+			{
+				if (outerQueryTranslator != null)
+					return ((ICriteriaQueryNextVer) outerQueryTranslator).GetSQLAlias(criteriaAlias);
+
 				throw new InvalidOperationException("Could not find criteria by alias: " + criteriaAlias);
+			}
 			return GetSQLAlias(criteria);
 		}
 
