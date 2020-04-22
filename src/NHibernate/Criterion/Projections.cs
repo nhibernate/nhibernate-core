@@ -214,26 +214,21 @@ namespace NHibernate.Criterion
 		}
 
 		/// <summary>
-		/// A SQL projection, a typed select clause fragment
+		/// A SQL projection, a typed select clause fragment.
+		/// The string {alias} will be replaced by the alias of the root entity.
+		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddCriteriaAliases("a", "bc")
 		/// </summary>
-		/// <param name="sql"></param>
-		/// <param name="columnAliases"></param>
-		/// <param name="types"></param>
-		/// <returns></returns>
-		public static IProjection SqlProjection(string sql, string[] columnAliases, IType[] types)
+		public static SQLProjection SqlProjection(string sql, string[] columnAliases, IType[] types)
 		{
 			return new SQLProjection(sql, columnAliases, types);
 		}
 
 		/// <summary>
 		/// A grouping SQL projection, specifying both select clause and group by clause fragments
+		/// The string {alias} will be replaced by the alias of the root entity.
+		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddCriteriaAliases("a", "bc")
 		/// </summary>
-		/// <param name="sql"></param>
-		/// <param name="groupBy"></param>
-		/// <param name="columnAliases"></param>
-		/// <param name="types"></param>
-		/// <returns></returns>
-		public static IProjection SqlGroupProjection(string sql, string groupBy, string[] columnAliases, IType[] types)
+		public static SQLProjection SqlGroupProjection(string sql, string groupBy, string[] columnAliases, IType[] types)
 		{
 			return new SQLProjection(sql, groupBy, columnAliases, types);
 		}

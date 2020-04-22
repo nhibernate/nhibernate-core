@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -9,6 +9,7 @@ namespace NHibernate.Criterion
 
 	/// <summary>
 	/// A SQL fragment. The string {alias} will be replaced by the alias of the root entity.
+	/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddCriteriaAliases("a", "bc")
 	/// </summary>
 	[Serializable]
 	public sealed class SQLProjection : IProjection
@@ -19,6 +20,7 @@ namespace NHibernate.Criterion
 		private readonly string[] aliases;
 		private readonly string[] columnAliases;
 		private readonly bool grouped;
+		private List<string> _criteriaAliases;
 
 		internal SQLProjection(string sql, string[] columnAliases, IType[] types)
 			: this(sql, null, columnAliases, types)
@@ -37,15 +39,43 @@ namespace NHibernate.Criterion
 
 		public SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
 		{
-			//SqlString result = new SqlString(criteriaQuery.GetSQLAlias(criteria));
-			//result.Replace(sql, "{alias}");
-			//return result;
-			return new SqlString(sql?.Replace("{alias}", criteriaQuery.GetSQLAlias(criteria)));
+			return GetSqlString(criteria, criteriaQuery, sql);
+		}
+
+		/// <summary>
+		/// Provide list of criteria aliases that's used in SQL projection.
+		/// To be replaced with SQL aliases.
+		/// </summary>
+		public SQLProjection AddCriteriaAliases(params string[] criteriaAliases)
+		{
+			if(_criteriaAliases == null)
+				_criteriaAliases = new List<string>();
+
+			_criteriaAliases.AddRange(criteriaAliases);
+
+			return this;
 		}
 
 		public SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new SqlString(groupBy?.Replace("{alias}", criteriaQuery.GetSQLAlias(criteria)));
+			return GetSqlString(criteria, criteriaQuery, groupBy);
+		}
+
+		private SqlString GetSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, string sqlTemplate)
+		{
+			if (_criteriaAliases != null)
+			{
+				foreach (var alias in _criteriaAliases)
+				{
+					sqlTemplate = sqlTemplate.Replace(
+						"{" + alias + "}",
+						criteriaQuery is ICriteriaQueryNextVer cqNew
+							? cqNew.GetSQLAlias(alias)
+							: criteriaQuery.GetSQLAlias(criteria, alias + ".id"));
+				}
+			}
+
+			return new SqlString(sqlTemplate.Replace("{alias}", criteriaQuery.GetSQLAlias(criteria)));
 		}
 
 		public override string ToString()

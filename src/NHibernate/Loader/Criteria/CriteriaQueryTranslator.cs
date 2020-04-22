@@ -16,7 +16,7 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Loader.Criteria
 {
-	public class CriteriaQueryTranslator : ICriteriaQuery, ISupportEntityProjectionCriteriaQuery
+	public class CriteriaQueryTranslator : ICriteriaQuery, ISupportEntityProjectionCriteriaQuery, ICriteriaQueryNextVer
 	{
 		public class EntityJoinInfo
 		{
@@ -861,6 +861,13 @@ namespace NHibernate.Loader.Criteria
 				}
 			}
 			return GetEntityName(subcriteria);
+		}
+
+		public string GetSQLAlias(string criteriaAlias)
+		{
+			if(!aliasCriteriaMap.TryGetValue(criteriaAlias, out var criteria))
+				throw new InvalidOperationException("Could not find criteria by alias: " + criteriaAlias);
+			return GetSQLAlias(criteria);
 		}
 
 		public string GetSQLAlias(ICriteria criteria, string propertyName)

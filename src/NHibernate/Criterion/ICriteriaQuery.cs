@@ -6,6 +6,15 @@ using NHibernate.Type;
 
 namespace NHibernate.Criterion
 {
+	//TODO 6.0: Add to ICriteriaQuery interface
+	internal interface ICriteriaQueryNextVer
+	{
+		/// <summary> 
+		/// Get the SQL table alias for given criteria alias
+		/// </summary>
+		string GetSQLAlias(string criteriaAlias);
+	}
+
 	/// <summary> 
 	/// An instance of <see cref="ICriteriaQuery"/> is passed to criterion, 
 	/// order and projection instances when actually compiling and
