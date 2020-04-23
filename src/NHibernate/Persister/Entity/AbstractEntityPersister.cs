@@ -2114,7 +2114,7 @@ namespace NHibernate.Persister.Entity
 				? Array.LastIndexOf(SubclassPropertyNameClosure, rootPropertyName)
 				: Array.IndexOf(SubclassPropertyNameClosure, rootPropertyName); //TODO: optimize this better!
 
-			return index == -1 ? 0 : GetSubclassPropertyTableNumber(index);
+			return index == -1 ? 0 : GetSubclassPropertyTableNumber(index, false);
 		}
 
 		public virtual Declarer GetSubclassPropertyDeclarer(string propertyPath)
