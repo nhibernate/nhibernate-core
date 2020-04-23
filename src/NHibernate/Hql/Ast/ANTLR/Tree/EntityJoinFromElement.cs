@@ -18,7 +18,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			JoinSequence = new EntityJoinJoinSequenceImpl(
 				SessionFactoryHelper.Factory,
 				entityType,
-				entityPersister.TableName,
 				tableAlias,
 				joinType);
 
