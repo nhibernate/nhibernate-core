@@ -59,7 +59,7 @@ namespace NHibernate.Criterion
 
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			var columns = CriterionUtil.GetColumnNamesAsSqlStringParts(null, projection, criteriaQuery, criteria);
+			var columns = CriterionUtil.GetColumnNamesAsSqlStringParts(projection, criteriaQuery, criteria);
 			if (columns.Length != 1)
 				throw new HibernateException("Like may only be used with single-column properties / projections.");
 

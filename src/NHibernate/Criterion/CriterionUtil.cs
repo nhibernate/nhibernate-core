@@ -57,7 +57,12 @@ namespace NHibernate.Criterion
 		{
 			if (propertyName != null)
 				return criteriaQuery.GetColumnsUsingProjection(criteria, propertyName);
+			
+			return GetColumnNamesAsSqlStringParts(projection, criteriaQuery, criteria);
+		}
 
+		internal static object[] GetColumnNamesAsSqlStringParts(IProjection projection, ICriteriaQuery criteriaQuery, ICriteria criteria)
+		{
 			if (projection is IPropertyProjection propertyProjection)
 			{
 				return criteriaQuery.GetColumnsUsingProjection(criteria, propertyProjection.PropertyName);
@@ -77,15 +82,21 @@ namespace NHibernate.Criterion
 			return columnNames[0];
 		}
 
+		internal static object GetColumnNameAsSqlStringPart(IProjection projection, ICriteriaQuery criteriaQuery, ICriteria criteria)
+		{
+			var columnNames = GetColumnNamesAsSqlStringParts(projection, criteriaQuery, criteria);
+			if (columnNames.Length != 1)
+			{
+				throw new QueryException("property or projection does not map to a single column: " + (projection.ToString()));
+			}
+
+			return columnNames[0];
+		}
+
 		private static SqlString[] GetProjectionColumns(IProjection projection, ICriteriaQuery criteriaQuery, ICriteria criteria)
 		{
-			SqlString sqlString = projection.ToSqlString(criteria,
-				criteriaQuery.GetIndexForAlias(),
-				criteriaQuery);
-			return new SqlString[]
-				{
-					SqlStringHelper.RemoveAsAliasesFromSql(sqlString)
-				};
+			var sqlString = projection.ToSqlString(criteria, criteriaQuery.GetIndexForAlias(), criteriaQuery);
+			return new[] {SqlStringHelper.RemoveAsAliasesFromSql(sqlString)};
 		}
 
 		private static SqlString[] GetColumnNamesUsingPropertyName(ICriteriaQuery criteriaQuery, ICriteria criteria, string propertyName)
@@ -148,6 +159,23 @@ namespace NHibernate.Criterion
 				}
 			}
 			return types.ToArray();
+		}
+
+		public static TypedValue GetTypedValue(
+			ICriteriaQuery criteriaQuery,
+			ICriteria criteria,
+			IProjection projection,
+			string propertyName,
+			object value)
+		{
+			var propertyProjection = projection as IPropertyProjection;
+			if (projection == null || propertyProjection != null)
+			{
+				var pn = propertyProjection != null ? propertyProjection.PropertyName : propertyName;
+				return criteriaQuery.GetTypedValue(criteria, pn, value);
+			}
+
+			return new TypedValue(NHibernateUtil.GuessType(value), value);
 		}
 	}
 }

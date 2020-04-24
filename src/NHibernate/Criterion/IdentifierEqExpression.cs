@@ -69,7 +69,7 @@ namespace NHibernate.Criterion
 			}
 			else
 			{
-				result.AddObject(CriterionUtil.GetColumnNameAsSqlStringPart(null, _projection, criteriaQuery, criteria));
+				result.AddObject(CriterionUtil.GetColumnNameAsSqlStringPart(_projection, criteriaQuery, criteria));
 			}
 		}
 

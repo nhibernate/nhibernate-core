@@ -106,11 +106,7 @@ namespace NHibernate.Criterion
 		public TypedValue GetParameterTypedValue(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			var matchValue = value.ToString().ToLower();
-			if (projection != null)
-			{
-				return CriterionUtil.GetTypedValues(criteriaQuery, criteria, projection, null, matchValue).Single();
-			}
-			return criteriaQuery.GetTypedValue(criteria, propertyName, matchValue);
+			return CriterionUtil.GetTypedValue(criteriaQuery, criteria, projection, propertyName, matchValue);
 		}
 
 		public override IProjection[] GetProjections()

@@ -109,7 +109,7 @@ namespace NHibernate.Criterion
 
 		private static object[] GetProjectionArguments(ICriteriaQuery criteriaQuery, ICriteria criteria, IProjection projection)
 		{
-			return CriterionUtil.GetColumnNamesAsSqlStringParts(null, projection, criteriaQuery, criteria);
+			return CriterionUtil.GetColumnNamesAsSqlStringParts(projection, criteriaQuery, criteria);
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)

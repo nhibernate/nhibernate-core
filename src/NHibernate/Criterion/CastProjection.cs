@@ -37,7 +37,7 @@ namespace NHibernate.Criterion
 				throw new QueryException("invalid Hibernate type for CastProjection");
 			}
 			string sqlType = factory.Dialect.GetCastTypeName(sqlTypeCodes[0]);
-			var val = CriterionUtil.GetColumnNameAsSqlStringPart(null, projection, criteriaQuery, criteria);
+			var val = CriterionUtil.GetColumnNameAsSqlStringPart(projection, criteriaQuery, criteria);
 
 			return new SqlString("cast( ", val, " as ", sqlType, ") as ", GetColumnAliases(position, criteria, criteriaQuery)[0]);
 		}

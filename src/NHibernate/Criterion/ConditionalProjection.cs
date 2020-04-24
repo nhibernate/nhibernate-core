@@ -45,8 +45,8 @@ namespace NHibernate.Criterion
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
 			SqlString condition = criterion.ToSqlString(criteria, criteriaQuery);
-			var ifTrue = CriterionUtil.GetColumnNameAsSqlStringPart(null, whenTrue, criteriaQuery, criteria);
-			var ifFalse = CriterionUtil.GetColumnNameAsSqlStringPart(null, whenFalse, criteriaQuery, criteria);
+			var ifTrue = CriterionUtil.GetColumnNameAsSqlStringPart(whenTrue, criteriaQuery, criteria);
+			var ifFalse = CriterionUtil.GetColumnNameAsSqlStringPart(whenFalse, criteriaQuery, criteria);
 			return new SqlString("(case when ", condition, " then ", ifTrue, " else ", ifFalse, " end) as ",
 			                     GetColumnAliases(position, criteria, criteriaQuery)[0]);
 		}
