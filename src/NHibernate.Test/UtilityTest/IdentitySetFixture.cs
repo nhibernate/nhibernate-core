@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using NHibernate.Util;
 using NUnit.Framework;
 
@@ -10,6 +9,8 @@ namespace NHibernate.Test.UtilityTest
 	/// <summary>
 	/// Test for the IdentityMap.
 	/// </summary>
+	// Since 5.3
+	[Obsolete("This class has no more usages and will be removed in a future version")]
 	[TestFixture]
 	public class IdentitySetFixture
 	{
