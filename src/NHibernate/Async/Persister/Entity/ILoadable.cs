@@ -50,12 +50,12 @@ namespace NHibernate.Persister.Entity
 				if (loadable is AbstractEntityPersister abstractEntityPersister)
 				{
 					return abstractEntityPersister.HydrateAsync(
-					rs, id, obj, suffixedPropertyColumns, fetchedLazyProperties, allProperties, session, cancellationToken);
+						rs, id, obj, suffixedPropertyColumns, fetchedLazyProperties, allProperties, session, cancellationToken);
 				}
 				
 				var rootLoadable = loadable.RootEntityName == loadable.EntityName
-				? loadable
-				: (ILoadable) loadable.Factory.GetEntityPersister(loadable.RootEntityName);
+					? loadable
+					: (ILoadable) loadable.Factory.GetEntityPersister(loadable.RootEntityName);
 
 #pragma warning disable 618
 				// Fallback to the old behavior

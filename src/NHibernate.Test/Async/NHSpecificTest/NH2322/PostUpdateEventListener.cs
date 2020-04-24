@@ -26,9 +26,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2322
 				if (@event.Entity is Person)
 				{
 					return @event.Session
-					.CreateSQLQuery("update Person set Name = :newName")
-					.SetString("newName", "new updated name")
-					.ExecuteUpdateAsync(cancellationToken);
+						.CreateSQLQuery("update Person set Name = :newName")
+						.SetString("newName", "new updated name")
+						.ExecuteUpdateAsync(cancellationToken);
 				}
 				return Task.CompletedTask;
 			}

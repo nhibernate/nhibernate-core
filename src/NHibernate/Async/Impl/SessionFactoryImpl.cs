@@ -236,7 +236,7 @@ namespace NHibernate.Impl
 					if (log.IsDebugEnabled())
 					{
 						log.Debug("evicting second-level cache for: {0}",
-					          string.Join(", ", cacheGroup.Select(p => p.EntityName)));
+						          string.Join(", ", cacheGroup.Select(p => p.EntityName)));
 					}
 					await (cacheGroup.Key.ClearAsync(cancellationToken)).ConfigureAwait(false);
 				}
@@ -337,7 +337,7 @@ namespace NHibernate.Impl
 					if (log.IsDebugEnabled())
 					{
 						log.Debug("evicting second-level cache for: {0}",
-					          string.Join(", ", cacheGroup.Select(p => p.Role)));
+						          string.Join(", ", cacheGroup.Select(p => p.Role)));
 					}
 					await (cacheGroup.Key.ClearAsync(cancellationToken)).ConfigureAwait(false);
 				}
