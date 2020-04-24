@@ -75,22 +75,17 @@ namespace NHibernate.Criterion
 			var otherColumnNames =
 				CriterionUtil.GetColumnNamesAsSqlStringParts(_rhsPropertyName, _rhsProjection, criteriaQuery, criteria);
 
-			switch (columnNames.Length)
-			{
-				case 1:
-					return new SqlString(columnNames[0], Op, otherColumnNames[0]);
-				case 0:
-					return SqlString.Empty;
-			}
+			if (columnNames.Length == 0)
+				return SqlString.Empty;
+			if (columnNames.Length == 1)
+				return new SqlString(columnNames[0], Op, otherColumnNames[0]);
 
 			var sb = new SqlStringBuilder();
 			sb.Add(StringHelper.OpenParen);
-
-			for (var i = 0; i < columnNames.Length; i++)
+			sb.AddObject(columnNames[0]).Add(Op).AddObject(otherColumnNames[0]);
+			for (var i = 1; i < columnNames.Length; i++)
 			{
-				if (i != 0)
-					sb.Add(" and ");
-
+				sb.Add(" and ");
 				sb.AddObject(columnNames[i]).Add(Op).AddObject(otherColumnNames[i]);
 			}
 			sb.Add(StringHelper.ClosedParen);
