@@ -168,12 +168,8 @@ namespace NHibernate.Criterion
 			string propertyName,
 			object value)
 		{
-			var propertyProjection = projection as IPropertyProjection;
-			if (projection == null || propertyProjection != null)
-			{
-				var pn = propertyProjection != null ? propertyProjection.PropertyName : propertyName;
-				return criteriaQuery.GetTypedValue(criteria, pn, value);
-			}
+			if (propertyName != null || (propertyName = (projection as IPropertyProjection)?.PropertyName) != null)
+				return criteriaQuery.GetTypedValue(criteria, propertyName, value);
 
 			return new TypedValue(NHibernateUtil.GuessType(value), value);
 		}
