@@ -203,13 +203,13 @@ namespace NHibernate.Engine
 				{
 					// it is or was referenced _somewhere_
 					bool ownerChanged = loadedPersister != currentPersister ||
-					!currentPersister.KeyType.IsEqual(entry.LoadedKey, entry.CurrentKey, factory);
+						!currentPersister.KeyType.IsEqual(entry.LoadedKey, entry.CurrentKey, factory);
 
 					if (ownerChanged)
 					{
 						// do a check
 						bool orphanDeleteAndRoleChanged = loadedPersister != null && 
-						currentPersister != null && loadedPersister.HasOrphanDelete;
+							currentPersister != null && loadedPersister.HasOrphanDelete;
 
 						if (orphanDeleteAndRoleChanged)
 						{

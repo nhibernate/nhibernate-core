@@ -113,8 +113,8 @@ namespace NHibernate.Cache
 			try
 			{
 				return _updateTimestamps.PutManyAsync(
-				spaces.ToArray<object>(),
-				ArrayHelper.Fill<object>(ts, spaces.Count), cancellationToken);
+					spaces.ToArray<object>(),
+					ArrayHelper.Fill<object>(ts, spaces.Count), cancellationToken);
 			}
 			catch (Exception ex)
 			{
