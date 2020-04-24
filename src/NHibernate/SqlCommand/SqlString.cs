@@ -1024,6 +1024,22 @@ namespace NHibernate.SqlCommand
 			return new SubselectClauseExtractor(this).GetSqlString();
 		}
 
+		internal void SubstituteBogusParameters(IReadOnlyList<Parameter> actualParams, Parameter bogusParam)
+		{
+			int index = 0;
+			var keys = _parameters.Keys;
+			// The loop below is technically not altering the keys collection on which we iterate, but
+			// the underlying implementation still throws on foreach iterations over keys even if we
+			// have only changed the associated value.
+			// ReSharper disable once ForCanBeConvertedToForeach
+			for (var i = 0; i < keys.Count; i++)
+			{
+				var key = keys[i];
+				if (ReferenceEquals(_parameters[key], bogusParam))
+					_parameters[key] = actualParams[index++];
+			}
+		}
+
 		[Serializable]
 		private struct Part : IEquatable<Part>
 		{

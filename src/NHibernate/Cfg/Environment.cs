@@ -320,6 +320,20 @@ namespace NHibernate.Cfg
 		public const string OracleUseNPrefixedTypesForUnicode = "oracle.use_n_prefixed_types_for_unicode";
 
 		/// <summary>
+		/// Oracle 10g introduced BINARY_DOUBLE and BINARY_FLOAT types which are compatible with .NET
+		/// <see cref="double"/> and <see cref="float"/> types, where FLOAT and DOUBLE are not. Oracle
+		/// FLOAT and DOUBLE types do not conform to the IEEE standard as they are internally implemented as
+		/// NUMBER type, which makes them an exact numeric type.
+		/// <para>
+		/// <see langword="false"/> by default.
+		/// </para>
+		/// </summary>
+		/// <remarks>
+		/// See https://docs.oracle.com/database/121/TTSQL/types.htm#TTSQL126
+		/// </remarks>
+		public const string OracleUseBinaryFloatingPointTypes = "oracle.use_binary_floating_point_types";
+
+		/// <summary>
 		/// <para>
 		/// Firebird with FirebirdSql.Data.FirebirdClient may be unable to determine the type
 		/// of parameters in many circumstances, unless they are explicitly casted in the SQL

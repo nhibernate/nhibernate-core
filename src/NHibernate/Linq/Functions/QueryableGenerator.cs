@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
@@ -17,8 +18,8 @@ namespace NHibernate.Linq.Functions
 			{
 				ReflectionCache.QueryableMethods.AnyDefinition,
 				ReflectionCache.QueryableMethods.AnyWithPredicateDefinition,
-				ReflectHelper.GetMethodDefinition(() => Enumerable.Any<object>(null)),
-				ReflectHelper.GetMethodDefinition(() => Enumerable.Any<object>(null, null))
+				ReflectHelper.FastGetMethodDefinition(Enumerable.Any, default(IEnumerable<object>)),
+				ReflectHelper.FastGetMethodDefinition(Enumerable.Any, default(IEnumerable<object>), default(Func<object, bool>))
 			};
 		}
 
@@ -57,7 +58,7 @@ namespace NHibernate.Linq.Functions
 			SupportedMethods = new[]
 			{
 				ReflectionCache.QueryableMethods.AllDefinition,
-				ReflectHelper.GetMethodDefinition(() => Enumerable.All<object>(null, null))
+				ReflectHelper.FastGetMethodDefinition(Enumerable.All, default(IEnumerable<object>), default(Func<object, bool>))
 			};
 		}
 
@@ -94,7 +95,7 @@ namespace NHibernate.Linq.Functions
 			SupportedMethods = new[]
 			{
 				ReflectionCache.QueryableMethods.MinDefinition,
-				ReflectHelper.GetMethodDefinition(() => Enumerable.Min<object>(null))
+				ReflectionCache.EnumerableMethods.MinDefinition
 			};
 		}
 
@@ -111,7 +112,7 @@ namespace NHibernate.Linq.Functions
 			SupportedMethods = new[]
 			{
 				ReflectionCache.QueryableMethods.MaxDefinition,
-				ReflectHelper.GetMethodDefinition(() => Enumerable.Max<object>(null))
+				ReflectionCache.EnumerableMethods.MaxDefinition,
 			};
 		}
 
@@ -146,10 +147,10 @@ namespace NHibernate.Linq.Functions
 		public CollectionContainsGenerator()
 		{
 			SupportedMethods = new[]
-			                   	{
-			                   		ReflectHelper.GetMethodDefinition(() => Queryable.Contains<object>(null, null)),
-			                   		ReflectHelper.GetMethodDefinition(() => Enumerable.Contains<object>(null, null))
-			                   	};
+			{
+				ReflectHelper.FastGetMethodDefinition(Queryable.Contains, default(IQueryable<object>), default(object)),
+				ReflectHelper.FastGetMethodDefinition(Enumerable.Contains, default(IEnumerable<object>), default(object))
+			};
 		}
 
 		public override bool AllowsNullableReturnType(MethodInfo method) => false;

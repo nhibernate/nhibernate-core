@@ -1,6 +1,6 @@
 dist: trusty
 language: csharp
-mono: latest
+mono: none
 dotnet: 2.1.300
 sudo: required
 services:

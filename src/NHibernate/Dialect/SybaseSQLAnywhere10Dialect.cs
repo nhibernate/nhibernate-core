@@ -137,7 +137,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("floor", new StandardSQLFunction("floor", NHibernateUtil.Double));
 			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Double));
 			RegisterFunction("log10", new StandardSQLFunction("log10", NHibernateUtil.Double));
-			RegisterFunction("mod", new StandardSQLFunction("mod"));
+			RegisterFunction("mod", new ModulusFunction(false, false));
 			RegisterFunction("pi", new NoArgSQLFunction("pi", NHibernateUtil.Double, true));
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
 			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
@@ -355,7 +355,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("transactsql", new StandardSQLFunction("transactsql", NHibernateUtil.String));
 			RegisterFunction("varexists", new StandardSQLFunction("varexists", NHibernateUtil.Int32));
 			RegisterFunction("watcomsql", new StandardSQLFunction("watcomsql", NHibernateUtil.String));
-			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
+			RegisterFunction("iif", new IifSQLFunction());
 		}
 
 		#region private static readonly string[] DialectKeywords = { ... }

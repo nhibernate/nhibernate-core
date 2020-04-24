@@ -20,13 +20,13 @@ namespace NHibernate.Linq.Visitors
 		private readonly ISessionFactoryImplementor _sessionFactory;
 
 		private static readonly MethodInfo QueryableSkipDefinition =
-			ReflectHelper.GetMethodDefinition(() => Queryable.Skip<object>(null, 0));
+			ReflectHelper.FastGetMethodDefinition(Queryable.Skip, default(IQueryable<object>), 0);
 		private static readonly MethodInfo QueryableTakeDefinition =
-			ReflectHelper.GetMethodDefinition(() => Queryable.Take<object>(null, 0));
+			ReflectHelper.FastGetMethodDefinition(Queryable.Take, default(IQueryable<object>), 0);
 		private static readonly MethodInfo EnumerableSkipDefinition =
-			ReflectHelper.GetMethodDefinition(() => Enumerable.Skip<object>(null, 0));
+			ReflectHelper.FastGetMethodDefinition(Enumerable.Skip, default(IEnumerable<object>), 0);
 		private static readonly MethodInfo EnumerableTakeDefinition =
-			ReflectHelper.GetMethodDefinition(() => Enumerable.Take<object>(null, 0));
+			ReflectHelper.FastGetMethodDefinition(Enumerable.Take, default(IEnumerable<object>), 0);
 
 		private readonly ICollection<MethodBase> _pagingMethods = new HashSet<MethodBase>
 			{

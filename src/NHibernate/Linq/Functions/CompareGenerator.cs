@@ -14,7 +14,7 @@ namespace NHibernate.Linq.Functions
 	{
 		private static readonly HashSet<MethodInfo> ActingMethods = new HashSet<MethodInfo>
 			{
-				ReflectHelper.GetMethodDefinition(() => string.Compare(null, null)),
+				ReflectHelper.FastGetMethod(string.Compare, default(string), default(string)),
 				ReflectHelper.GetMethodDefinition<string>(s => s.CompareTo(s)),
 				ReflectHelper.GetMethodDefinition<char>(x => x.CompareTo(x)),
 
@@ -33,7 +33,7 @@ namespace NHibernate.Linq.Functions
 				ReflectHelper.GetMethodDefinition<float>(x => x.CompareTo(x)),
 				ReflectHelper.GetMethodDefinition<double>(x => x.CompareTo(x)),
 				
-				ReflectHelper.GetMethodDefinition(() => decimal.Compare(default(decimal), default(decimal))),
+				ReflectHelper.FastGetMethod(decimal.Compare, default(decimal), default(decimal)),
 				ReflectHelper.GetMethodDefinition<decimal>(x => x.CompareTo(x)),
 
 				ReflectHelper.GetMethodDefinition<DateTime>(x => x.CompareTo(x)),

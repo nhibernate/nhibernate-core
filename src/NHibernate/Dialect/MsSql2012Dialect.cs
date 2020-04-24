@@ -53,7 +53,7 @@ namespace NHibernate.Dialect
 		protected override void RegisterFunctions()
 		{
 			base.RegisterFunctions();
-			RegisterFunction("iif", new StandardSafeSQLFunction("iif", 3));
+			RegisterFunction("iif", new IifSafeSQLFunction());
 		}
 
 		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)

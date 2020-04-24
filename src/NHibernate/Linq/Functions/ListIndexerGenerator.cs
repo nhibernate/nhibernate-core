@@ -14,8 +14,8 @@ namespace NHibernate.Linq.Functions
 	{
 		private static readonly HashSet<MethodInfo> _supportedMethods = new HashSet<MethodInfo>
 		{
-			ReflectHelper.GetMethodDefinition(() => Enumerable.ElementAt<object>(null, 0)),
-			ReflectHelper.GetMethodDefinition(() => Queryable.ElementAt<object>(null, 0))
+			ReflectHelper.FastGetMethodDefinition(Enumerable.ElementAt, default(IEnumerable<object>), 0),
+			ReflectHelper.FastGetMethodDefinition(Queryable.ElementAt, default(IQueryable<object>), 0)
 		};
 
 		public ListIndexerGenerator()
