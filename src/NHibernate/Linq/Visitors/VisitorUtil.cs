@@ -131,5 +131,11 @@ namespace NHibernate.Linq.Visitors
 			}
 			return path;
 		}
+
+		internal static bool IsMappedAs(MethodInfo methodInfo)
+		{
+			return methodInfo.Name == nameof(LinqExtensionMethods.MappedAs) &&
+			       methodInfo.DeclaringType == typeof(LinqExtensionMethods);
+		}
 	}
 }

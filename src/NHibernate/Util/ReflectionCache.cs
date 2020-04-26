@@ -54,6 +54,11 @@ namespace NHibernate.Util
 
 			internal static readonly MethodInfo ToListDefinition =
 				ReflectHelper.FastGetMethodDefinition(Enumerable.ToList, default(IEnumerable<object>));
+
+			internal static readonly MethodInfo SkipDefinition =
+				ReflectHelper.FastGetMethodDefinition(Enumerable.Skip, default(IEnumerable<object>), default(int));
+			internal static readonly MethodInfo TakeDefinition =
+				ReflectHelper.FastGetMethodDefinition(Enumerable.Take, default(IEnumerable<object>), default(int));
 		}
 
 		internal static class MethodBaseMethods
@@ -215,6 +220,11 @@ namespace NHibernate.Util
 				ReflectHelper.FastGetMethodDefinition(Queryable.Average, default(IQueryable<object>), default(Expression<Func<object, decimal>>));
 			internal static readonly MethodInfo AverageWithSelectorOfNullableDecimalDefinition =
 				ReflectHelper.FastGetMethodDefinition(Queryable.Average, default(IQueryable<object>), default(Expression<Func<object, decimal?>>));
+
+			internal static readonly MethodInfo SkipDefinition =
+				ReflectHelper.FastGetMethodDefinition(Queryable.Skip, default(IQueryable<object>), default(int));
+			internal static readonly MethodInfo TakeDefinition =
+				ReflectHelper.FastGetMethodDefinition(Queryable.Take, default(IQueryable<object>), default(int));
 		}
 
 		internal static class TypeMethods

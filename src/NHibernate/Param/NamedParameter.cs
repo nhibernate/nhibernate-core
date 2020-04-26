@@ -15,6 +15,8 @@ namespace NHibernate.Param
 		public object Value { get; internal set; }
 		public IType Type { get; internal set; }
 
+		public virtual bool IsCollection => false;
+
 		public bool Equals(NamedParameter other)
 		{
 			if (ReferenceEquals(null, other))

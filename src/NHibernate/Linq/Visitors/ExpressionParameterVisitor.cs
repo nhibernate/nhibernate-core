@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -21,20 +22,13 @@ namespace NHibernate.Linq.Visitors
 		private readonly IDictionary<ConstantExpression, QueryVariable> _queryVariables;
 		private readonly ISessionFactoryImplementor _sessionFactory;
 
-		private static readonly MethodInfo QueryableSkipDefinition =
-			ReflectHelper.FastGetMethodDefinition(Queryable.Skip, default(IQueryable<object>), 0);
-		private static readonly MethodInfo QueryableTakeDefinition =
-			ReflectHelper.FastGetMethodDefinition(Queryable.Take, default(IQueryable<object>), 0);
-		private static readonly MethodInfo EnumerableSkipDefinition =
-			ReflectHelper.FastGetMethodDefinition(Enumerable.Skip, default(IEnumerable<object>), 0);
-		private static readonly MethodInfo EnumerableTakeDefinition =
-			ReflectHelper.FastGetMethodDefinition(Enumerable.Take, default(IEnumerable<object>), 0);
-
-		private readonly ICollection<MethodBase> _pagingMethods = new HashSet<MethodBase>
-			{
-				QueryableSkipDefinition, QueryableTakeDefinition,
-				EnumerableSkipDefinition, EnumerableTakeDefinition
-			};
+		private static readonly ISet<MethodBase> PagingMethods = new HashSet<MethodBase>
+		{
+			ReflectionCache.EnumerableMethods.SkipDefinition,
+			ReflectionCache.EnumerableMethods.TakeDefinition,
+			ReflectionCache.QueryableMethods.SkipDefinition,
+			ReflectionCache.QueryableMethods.TakeDefinition
+		};
 
 		// Since v5.3
 		[Obsolete("Please use overload with preTransformationResult parameter instead.")]
@@ -59,22 +53,19 @@ namespace NHibernate.Linq.Visitors
 			return visitor._parameters;
 		}
 
-		public static Expression Visit(
-			PreTransformationResult preTransformationResult,
-			out IDictionary<ConstantExpression, NamedParameter> parameters)
+		public static IDictionary<ConstantExpression, NamedParameter> Visit(PreTransformationResult preTransformationResult)
 		{
 			var visitor = new ExpressionParameterVisitor(preTransformationResult);
-			var expression = visitor.Visit(preTransformationResult.Expression);
-			parameters = visitor._parameters;
-
-			return expression;
+			visitor.Visit(preTransformationResult.Expression);
+			return visitor._parameters;
 		}
 
 		protected override Expression VisitMethodCall(MethodCallExpression expression)
 		{
-			if (expression.Method.Name == nameof(LinqExtensionMethods.MappedAs) && expression.Method.DeclaringType == typeof(LinqExtensionMethods))
+			if (VisitorUtil.IsMappedAs(expression.Method))
 			{
 				var rawParameter = Visit(expression.Arguments[0]);
+				// TODO 6.0: Remove below code and return expression as this logic is now inside ConstantTypeLocator
 				var parameter = rawParameter as ConstantExpression;
 				var type = expression.Arguments[1] as ConstantExpression;
 				if (parameter == null)
@@ -95,10 +86,10 @@ namespace NHibernate.Linq.Visitors
 							 ? expression.Method.GetGenericMethodDefinition()
 							 : expression.Method;
 
-			if (_pagingMethods.Contains(method) && !_sessionFactory.Dialect.SupportsVariableLimit)
+			if (PagingMethods.Contains(method) && !_sessionFactory.Dialect.SupportsVariableLimit)
 			{
-				//TODO: find a way to make this code cleaner
 				var query = Visit(expression.Arguments[0]);
+				//TODO 6.0: Remove the below code and return expression
 				var arg = expression.Arguments[1];
 
 				if (query == expression.Arguments[0])
@@ -125,11 +116,14 @@ namespace NHibernate.Linq.Visitors
 
 				// We have a bit more information about the null parameter value.
 				// Figure out a type so that HQL doesn't break on the null. (Related to NH-2430)
+				// In v5.3 types are calculated by ConstantTypeLocator, this logic is only for back compatibility.
+				// TODO 6.0: Remove
 				if (expression.Value == null)
 					type = NHibernateUtil.GuessType(expression.Type);
 
 				// Constant characters should be sent as strings
-				if (expression.Type == typeof(char))
+				// TODO 6.0: Remove
+				if (_queryVariables == null && expression.Type == typeof(char))
 				{
 					value = value.ToString();
 				}
@@ -144,13 +138,13 @@ namespace NHibernate.Linq.Visitors
 				    _queryVariables.TryGetValue(expression, out var variable) &&
 				    !_variableParameters.TryGetValue(variable, out parameter))
 				{
-					parameter = new NamedParameter("p" + (_parameters.Count + 1), value, type);
+					parameter = CreateParameter(expression, value, type);
 					_variableParameters.Add(variable, parameter);
 				}
 
 				if (parameter == null)
 				{
-					parameter = new NamedParameter("p" + (_parameters.Count + 1), value, type);
+					parameter = CreateParameter(expression, value, type);
 				}
 
 				_parameters.Add(expression, parameter);
@@ -161,9 +155,27 @@ namespace NHibernate.Linq.Visitors
 			return base.VisitConstant(expression);
 		}
 
+		private NamedParameter CreateParameter(ConstantExpression expression, object value, IType type)
+		{
+			var parameterName = "p" + (_parameters.Count + 1);
+			return IsCollectionType(expression)
+				? new NamedListParameter(parameterName, value, type)
+				: new NamedParameter(parameterName, value, type);
+		}
+
 		private static bool IsNullObject(ConstantExpression expression)
 		{
 			return expression.Type == typeof(Object) && expression.Value == null;
+		}
+
+		private static bool IsCollectionType(ConstantExpression expression)
+		{
+			if (expression.Value != null)
+			{
+				return expression.Value is IEnumerable && !(expression.Value is string);
+			}
+
+			return expression.Type.IsCollectionType();
 		}
 	}
 }
