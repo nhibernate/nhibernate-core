@@ -120,6 +120,8 @@ namespace NHibernate.Linq.Visitors
 				_preTransformationParameters.QueryVariables.Add(variableConstant, new QueryVariable(path, closureContext));
 			}
 
+			#endregion
+
 			return evaluatedExpression;
 		}
 
