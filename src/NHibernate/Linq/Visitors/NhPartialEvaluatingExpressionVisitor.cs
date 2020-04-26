@@ -121,10 +121,6 @@ namespace NHibernate.Linq.Visitors
 			return evaluatedExpression;
 		}
 
-		protected override Expression VisitConstant(ConstantExpression expression)
-		{
-			if (expression.Value is Expression value)
-			{
 				return EvaluateIndependentSubtrees(value, _preTransformationParameters);
 			}
 
