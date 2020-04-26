@@ -35,7 +35,7 @@ namespace NHibernate.Util
 		/// <param name="expression">The expression to check.</param>
 		/// <param name="path">The path of the variable.</param>
 		/// <param name="closureContext">The closure context where the variable is stored.</param>
-		/// <returns></returns>
+		/// <returns>Whether the expression represents a variable.</returns>
 		internal static bool IsVariable(Expression expression, out string path, out object closureContext)
 		{
 			Expression childExpression;
