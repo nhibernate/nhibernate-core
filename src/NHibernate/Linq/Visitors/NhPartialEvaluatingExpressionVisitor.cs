@@ -153,6 +153,17 @@ namespace NHibernate.Linq.Visitors
 			}
 		}
 
+		#endregion
+		
+		protected override Expression VisitConstant(ConstantExpression expression)
+		{
+			if (expression.Value is Expression value)
+			{
+				return EvaluateIndependentSubtrees(value, _preTransformationParameters);
+			}
+			return base.VisitConstant(expression);
+		}
+
 		private bool IsVariable(Expression expression, out string path, out object closureContext)
 		{
 			Expression childExpression;
