@@ -384,6 +384,18 @@ namespace NHibernate.Test.CompositeId
 		}
 
 		[Test]
+		public void CriteriaGroupProjection()
+		{
+			using (ISession s = OpenSession())
+			{
+				s.CreateCriteria<ClassWithCompositeId>()
+				.SetProjection(Projections.GroupProperty(Projections.Id()))
+				.Add(Restrictions.Eq(Projections.Id(), id))
+				.List<Id>();
+			}
+		}
+
+		[Test]
 		public void QueryOverInClause()
 		{
 			// insert the new objects

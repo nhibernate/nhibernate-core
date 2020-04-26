@@ -35,7 +35,7 @@ namespace NHibernate.Criterion
 			}
 			if (projection != null)
 			{
-				buf.Add(SqlStringHelper.RemoveAsAliasesFromSql(projection.ToSqlString(criteria, position, criteriaQuery)));
+				buf.AddObject(CriterionUtil.GetColumnNameAsSqlStringPart(projection, criteriaQuery, criteria));
 			}
 			else
 			{
