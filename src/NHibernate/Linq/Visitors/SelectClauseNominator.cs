@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using NHibernate.Engine;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Expressions;
 using NHibernate.Util;
@@ -15,6 +16,7 @@ namespace NHibernate.Linq.Visitors
 	class SelectClauseHqlNominator : RelinqExpressionVisitor
 	{
 		private readonly ILinqToHqlGeneratorsRegistry _functionRegistry;
+		private readonly ISessionFactoryImplementor _sessionFactory;
 
 		/// <summary>
 		/// The expression parts that can be converted to pure HQL.
@@ -35,6 +37,7 @@ namespace NHibernate.Linq.Visitors
 		public SelectClauseHqlNominator(VisitorParameters parameters)
 		{
 			_functionRegistry = parameters.SessionFactory.Settings.LinqToHqlGeneratorsRegistry;
+			_sessionFactory = parameters.SessionFactory;
 		}
 
 		internal Expression Nominate(Expression expression)
@@ -168,8 +171,10 @@ namespace NHibernate.Linq.Visitors
 				return projectConstantsInHql;
 			}
 
-			// Assume all is good
-			return true;
+			return !(expression is MemberExpression memberExpression) || // Assume all is good
+			       // Nominate only expressions that represent a mapped property or a translatable method call
+			       ExpressionsHelper.TryGetMappedType(_sessionFactory, expression, out _, out _, out _, out _) ||
+			       _functionRegistry.TryGetGenerator(memberExpression.Member, out _);
 		}
 
 		private static bool CanBeEvaluatedInHqlStatementShortcut(Expression expression)
