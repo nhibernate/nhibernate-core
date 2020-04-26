@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using NHibernate.Engine;
 using NHibernate.Linq;
 using NHibernate.Linq.Expressions;
@@ -26,6 +27,49 @@ namespace NHibernate.Util
 					string.Format("Invalid expression type: Expected ExpressionType.MemberAccess, Found {0}", expression.Body.NodeType));
 			}
 			return ((MemberExpression)expression.Body).Member;
+		}
+
+		/// <summary>
+		/// Check whether the given expression represent a variable.
+		/// </summary>
+		/// <param name="expression">The expression to check.</param>
+		/// <param name="path">The path of the variable.</param>
+		/// <param name="closureContext">The closure context where the variable is stored.</param>
+		/// <returns></returns>
+		internal static bool IsVariable(Expression expression, out string path, out object closureContext)
+		{
+			Expression childExpression;
+			string currentPath;
+			switch (expression)
+			{
+				case MemberExpression memberExpression:
+					childExpression = memberExpression.Expression;
+					currentPath = memberExpression.Member.Name;
+					break;
+				case ConstantExpression constantExpression:
+					path = null;
+					if (constantExpression.Type.Attributes.HasFlag(TypeAttributes.NestedPrivate) &&
+					    Attribute.IsDefined(constantExpression.Type, typeof(CompilerGeneratedAttribute), inherit: true))
+					{
+						closureContext = constantExpression.Value;
+						return true;
+					}
+
+					closureContext = null;
+					return false;
+				default:
+					path = null;
+					closureContext = null;
+					return false;
+			}
+
+			if (!IsVariable(childExpression, out path, out closureContext))
+			{
+				return false;
+			}
+
+			path = path != null ? $"{currentPath}_{path}" : currentPath;
+			return true;
 		}
 
 		/// <summary>

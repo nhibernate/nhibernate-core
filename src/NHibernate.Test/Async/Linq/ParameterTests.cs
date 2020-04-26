@@ -112,7 +112,7 @@ namespace NHibernate.Test.Linq
 			var value = 1;
 			await (AssertTotalParametersAsync(
 				db.Orders.Where(o => o.OrderId == value && o.OrderId != -value),
-				2));
+				1));
 		}
 
 		[Test]

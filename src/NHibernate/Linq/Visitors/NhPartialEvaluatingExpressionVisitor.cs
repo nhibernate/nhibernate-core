@@ -16,11 +16,8 @@
 // 
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Linq.Functions;
@@ -112,10 +109,10 @@ namespace NHibernate.Linq.Visitors
 			// Variables in expressions are never a constant, they are encapsulated as fields of a compiler generated class.
 			// Skip detecting variables for DML queries as HQL does not support reusing parameters for them.
 			if (expression.NodeType != ExpressionType.Constant &&
-				_preTransformationParameters.QueryMode == QueryMode.Select &&
+			    _preTransformationParameters.QueryMode == QueryMode.Select &&
 			    evaluatedExpression is ConstantExpression variableConstant &&
 			    !_preTransformationParameters.QueryVariables.ContainsKey(variableConstant) &&
-			    IsVariable(expression, out var path, out var closureContext))
+			    ExpressionsHelper.IsVariable(expression, out var path, out var closureContext))
 			{
 				_preTransformationParameters.QueryVariables.Add(variableConstant, new QueryVariable(path, closureContext));
 			}
@@ -162,46 +159,6 @@ namespace NHibernate.Linq.Visitors
 				return EvaluateIndependentSubtrees(value, _preTransformationParameters);
 			}
 			return base.VisitConstant(expression);
-		}
-
-		private bool IsVariable(Expression expression, out string path, out object closureContext)
-		{
-			Expression childExpression;
-			string currentPath;
-			switch (expression)
-			{
-				case MemberExpression memberExpression:
-					childExpression = memberExpression.Expression;
-					currentPath = memberExpression.Member.Name;
-					break;
-				case ConstantExpression constantExpression:
-					path = null;
-					if (constantExpression.Type.Attributes.HasFlag(TypeAttributes.NestedPrivate) &&
-					    Attribute.IsDefined(constantExpression.Type, typeof(CompilerGeneratedAttribute), inherit: true))
-					{
-						closureContext = constantExpression.Value;
-						return true;
-					}
-
-					closureContext = null;
-					return false;
-				case UnaryExpression unaryExpression:
-					childExpression = unaryExpression.Operand;
-					currentPath = $"({unaryExpression.NodeType})";
-					break;
-				default:
-					path = null;
-					closureContext = null;
-					return false;
-			}
-
-			if (!IsVariable(childExpression, out path, out closureContext))
-			{
-				return false;
-			}
-
-			path = path != null ? $"{path}_{currentPath}" : currentPath;
-			return true;
 		}
 	}
 
@@ -253,6 +210,11 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			return base.IsEvaluatableConstant(node);
+		}
+
+		public override bool IsEvaluatableUnary(UnaryExpression node)
+		{
+			return !ExpressionsHelper.IsVariable(node.Operand, out _, out _);
 		}
 
 		public override bool IsEvaluatableMember(MemberExpression node)
