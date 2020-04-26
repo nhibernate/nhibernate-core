@@ -44,6 +44,8 @@ namespace NHibernate.Linq.Visitors
 	/// </remarks>
 	internal sealed class NhPartialEvaluatingExpressionVisitor : RelinqExpressionVisitor
 	{
+		#region Relinq adjusted code
+
 		/// <summary>
 		/// Takes an expression tree and finds and evaluates all its evaluatable subtrees.
 		/// </summary>
