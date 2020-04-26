@@ -121,12 +121,6 @@ namespace NHibernate.Linq.Visitors
 			return evaluatedExpression;
 		}
 
-				return EvaluateIndependentSubtrees(value, _preTransformationParameters);
-			}
-
-			return base.VisitConstant(expression);
-		}
-
 		/// <summary>
 		/// Evaluates an evaluatable <see cref="Expression"/> subtree, i.e. an independent expression tree that is compilable and executable
 		/// without any data being passed in. The result of the evaluation is returned as a <see cref="ConstantExpression"/>; if the subtree
