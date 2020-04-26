@@ -217,12 +217,12 @@ namespace NHibernate.Test.Linq
 			          select c);
 			var preTransformParameters = new PreTransformationParameters(QueryMode.Select, Sfi);
 			var preTransformResult = NhRelinqQueryParser.PreTransform(q1.Expression, preTransformParameters);
-			var expression = ExpressionParameterVisitor.Visit(preTransformResult, out var parameters1);
-			var k1 = ExpressionKeyVisitor.Visit(expression, parameters1);
+			var parameters1 = ExpressionParameterVisitor.Visit(preTransformResult);
+			var k1 = ExpressionKeyVisitor.Visit(preTransformResult.Expression, parameters1, Sfi);
 
 			var preTransformResult2 = NhRelinqQueryParser.PreTransform(q2.Expression, preTransformParameters);
-			var expression2 = ExpressionParameterVisitor.Visit(preTransformResult2, out var parameters2);
-			var k2 = ExpressionKeyVisitor.Visit(expression2, parameters2);
+			var parameters2 = ExpressionParameterVisitor.Visit(preTransformResult2);
+			var k2 = ExpressionKeyVisitor.Visit(preTransformResult2.Expression, parameters2, Sfi);
 
 			Assert.That(parameters1, Has.Count.GreaterThan(0), "parameters1");
 			Assert.That(parameters2, Has.Count.GreaterThan(0), "parameters2");
