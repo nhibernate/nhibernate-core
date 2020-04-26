@@ -161,7 +161,9 @@ namespace NHibernate.Driver
 			{
 				case DbType.AnsiString:
 				case DbType.AnsiStringFixedLength:
-					dbParam.Size = IsAnsiText(dbParam, sqlType) ? MsSql2000Dialect.MaxSizeForAnsiClob : MsSql2000Dialect.MaxSizeForLengthLimitedAnsiString;
+					dbParam.Size = IsAnsiText(dbParam, sqlType)
+						? MsSql2000Dialect.MaxSizeForAnsiClob
+						: IsChar(dbParam, sqlType) ? sqlType.Length : MsSql2000Dialect.MaxSizeForLengthLimitedAnsiString;
 					break;
 				case DbType.Binary:
 					dbParam.Size = IsBlob(dbParam, sqlType) ? MsSql2000Dialect.MaxSizeForBlob : MsSql2000Dialect.MaxSizeForLengthLimitedBinary;
@@ -174,7 +176,9 @@ namespace NHibernate.Driver
 					break;
 				case DbType.String:
 				case DbType.StringFixedLength:
-					dbParam.Size = IsText(dbParam, sqlType) ? MsSql2000Dialect.MaxSizeForClob : MsSql2000Dialect.MaxSizeForLengthLimitedString;
+					dbParam.Size = IsText(dbParam, sqlType)
+						? MsSql2000Dialect.MaxSizeForClob
+						: IsChar(dbParam, sqlType) ? sqlType.Length : MsSql2000Dialect.MaxSizeForLengthLimitedString;
 					break;
 				case DbType.DateTime2:
 					dbParam.Size = MsSql2000Dialect.MaxDateTime2;
@@ -281,6 +285,18 @@ namespace NHibernate.Driver
 		protected static bool IsBlob(DbParameter dbParam, SqlType sqlType)
 		{
 			return (sqlType is BinaryBlobSqlType) || ((DbType.Binary == dbParam.DbType) && sqlType.LengthDefined && (sqlType.Length > MsSql2000Dialect.MaxSizeForLengthLimitedBinary));
+		}
+
+		/// <summary>
+		/// Interprets if a parameter is a character (for the purposes of setting its default size)
+		/// </summary>
+		/// <param name="dbParam">The parameter</param>
+		/// <param name="sqlType">The <see cref="SqlType" /> of the parameter</param>
+		/// <returns>True, if the parameter should be interpreted as a character, otherwise False</returns>
+		protected static bool IsChar(DbParameter dbParam, SqlType sqlType)
+		{
+			return (DbType.StringFixedLength == dbParam.DbType || DbType.StringFixedLength == dbParam.DbType) &&
+			       sqlType.LengthDefined && sqlType.Length == 1;
 		}
 
 		public override IResultSetsCommand GetResultSetsCommand(ISessionImplementor session)

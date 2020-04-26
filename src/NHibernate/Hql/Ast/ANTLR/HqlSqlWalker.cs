@@ -36,7 +36,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private string _statementTypeName;
 		private int _positionalParameterCount;
 		private int _parameterCount;
-		private readonly NullableDictionary<string, object> _namedParameters = new NullableDictionary<string, object>();
+		private readonly NullableDictionary<string, object> _namedParameterLocations = new NullableDictionary<string, object>();
 		private readonly List<IParameterSpecification> _parameters = new List<IParameterSpecification>();
 		private FromClause _currentFromClause;
 		private SelectClause _selectClause;
@@ -54,6 +54,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly LiteralProcessor _literalProcessor;
 
 		private readonly IDictionary<string, string> _tokenReplacements;
+		private readonly IDictionary<string, NamedParameter> _namedParameters;
 
 		private JoinType _impliedJoinType;
 
@@ -64,17 +65,30 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private int numberOfParametersInSetClause;
 		private Stack<int> clauseStack=new Stack<int>();
 
-		public HqlSqlWalker(QueryTranslatorImpl qti,
-					  ISessionFactoryImplementor sfi,
-					  ITreeNodeStream input, 
-					  IDictionary<string, string> tokenReplacements,
-					  string collectionRole)
+		public HqlSqlWalker(
+			QueryTranslatorImpl qti,
+			ISessionFactoryImplementor sfi,
+			ITreeNodeStream input,
+			IDictionary<string, string> tokenReplacements,
+			string collectionRole)
+			: this(qti, sfi, input, tokenReplacements, null, collectionRole)
+		{
+		}
+
+		internal HqlSqlWalker(
+			QueryTranslatorImpl qti,
+			ISessionFactoryImplementor sfi,
+			ITreeNodeStream input,
+			IDictionary<string, string> tokenReplacements,
+			IDictionary<string, NamedParameter> namedParameters,
+			string collectionRole)
 			: this(input)
 		{
 			_sessionFactoryHelper = new SessionFactoryHelperExtensions(sfi);
 			_qti = qti;
 			_literalProcessor = new LiteralProcessor(this);
 			_tokenReplacements = tokenReplacements;
+			_namedParameters = namedParameters;
 			_collectionFilterRole = collectionRole;
 		}
 
@@ -122,7 +136,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public IDictionary<string, object> NamedParameters
 		{
-			get { return _namedParameters; }
+			get { return _namedParameterLocations; }
 		}
 
 		internal SessionFactoryHelperExtensions SessionFactoryHelper
@@ -1033,13 +1047,20 @@ namespace NHibernate.Hql.Ast.ANTLR
 			);
 
 			parameter.HqlParameterSpecification = paramSpec;
+			if (_namedParameters != null && _namedParameters.TryGetValue(name, out var namedParameter))
+			{
+				// Add the parameter type information so that we are able to calculate functions return types
+				// when the parameter is used as an argument.
+				parameter.ExpectedType = namedParameter.Type;
+			}
+
 			_parameters.Add(paramSpec);
 			return parameter;
 		}
 
 		IASTNode GeneratePositionalParameter(IASTNode inputNode)
 		{
-			if (_namedParameters.Count > 0)
+			if (_namedParameterLocations.Count > 0)
 			{
 				// NH TODO: remove this limitation
 				throw new SemanticException("cannot define positional parameter after any named parameters have been defined");
@@ -1171,15 +1192,15 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private void TrackNamedParameterPositions(string name) 
 		{
 			int loc = _parameterCount++;
-			object o = _namedParameters[name];
+			object o = _namedParameterLocations[name];
 			if ( o == null ) 
 			{
-				_namedParameters.Add(name, loc);
+				_namedParameterLocations.Add(name, loc);
 			}
 			else if (o is int)
 			{
 				List<int> list = new List<int>(4) {(int) o, loc};
-				_namedParameters[name] = list;
+				_namedParameterLocations[name] = list;
 			}
 			else
 			{
