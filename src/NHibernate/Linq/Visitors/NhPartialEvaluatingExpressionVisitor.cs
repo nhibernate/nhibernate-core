@@ -101,6 +101,8 @@ namespace NHibernate.Linq.Visitors
 				evaluatedExpression = EvaluateIndependentSubtrees(evaluatedExpression, _preTransformationParameters);
 			}
 
+			#region NH additions
+
 			// When having multiple level closure, we have to evaluate each closure independently
 			if (evaluatedExpression is ConstantExpression constantExpression)
 			{
