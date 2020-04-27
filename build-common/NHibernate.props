@@ -3,7 +3,9 @@
 
   <PropertyGroup>
     <VersionPrefix Condition="'$(VersionPrefix)' == ''">5.3.0</VersionPrefix>
-    <VersionSuffix Condition="'$(VersionSuffix)' == ''">dev</VersionSuffix>
+    <!-- Clear VersionSuffix for making release and set it to dev for making development builds -->
+    <VersionSuffix Condition="'$(VersionSuffix)' == ''">dev</VersionSuffix>  
+
     <VersionSuffix Condition="'$(VersionSuffix)' != '' AND '$(BuildNumber)' != ''">$(VersionSuffix).$(BuildNumber)</VersionSuffix>
 
     <NhAppTargetFrameworks Condition ="$(NhAppTargetFrameworks) == ''">net461;netcoreapp2.0</NhAppTargetFrameworks>
