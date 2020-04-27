@@ -25,8 +25,8 @@ namespace NHibernate.Util
 			{
 				if (element == null)
 					yield return default(T);
-				else if (element is T)
-					yield return (T) element;
+				else if (element is T elem)
+					yield return elem;
 			}
 		}
 
