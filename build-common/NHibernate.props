@@ -9,7 +9,7 @@
     <VersionSuffix Condition="'$(VersionSuffix)' != '' AND '$(BuildNumber)' != ''">$(VersionSuffix).$(BuildNumber)</VersionSuffix>
 
     <!-- Make assembly version always as major.minor.0.0 -->
-    <AssemblyVersion>$([System.Text.RegularExpressions.Regex]::Replace($(VersionPrefix), '\.\d+$', '.0.0'))</AssemblyVersion>
+    <AssemblyVersion>$([System.Text.RegularExpressions.Regex]::Replace($(VersionPrefix), '^(\d+\.\d+).+', '$1.0.0'))</AssemblyVersion>
     
     <NhAppTargetFrameworks Condition ="$(NhAppTargetFrameworks) == ''">net461;netcoreapp2.0</NhAppTargetFrameworks>
     <NhLibTargetFrameworks Condition ="$(NhLibTargetFrameworks) == ''">net461;netcoreapp2.0;netstandard2.0</NhLibTargetFrameworks>
