@@ -19,6 +19,13 @@
       property="version.prefix" />
     <property name="project.version" value="${version.prefix}" />
   </target>
+  
+  <target name="set-doc-version">
+    <xmlpoke
+      file="${root.dir}/doc/reference/master.xml"
+      xpath="/book/bookinfo/releaseinfo/text()"
+      value="${project.version}" />
+  </target>
 
 	<!-- properties used to connect to database for testing -->
 	<include buildfile="nhibernate-properties.xml" />
