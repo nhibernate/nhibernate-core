@@ -23,7 +23,7 @@
   <target name="set-doc-version">
     <xmlpoke
       file="${root.dir}/doc/reference/master.xml"
-      xpath="/book/bookinfo/releaseinfo/text()"
+      xpath="/book/bookinfo/releaseinfo"
       value="${project.version}" />
   </target>
 
