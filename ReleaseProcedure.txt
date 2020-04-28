@@ -25,9 +25,8 @@ Tools\gitreleasemanager\0.7.0\tools\GitReleaseManager.exe create -o nhibernate -
     If the release tag does not match the released version with major.minor.release
     formalism, the NuGet package will have an invalid link to release notes.
 
-  * Check/update version number in NHibernate.props under
-    build-common folder. Clear VersionSuffix if present.
-    Check/update version in master.xml under doc\reference folder in the NHibernate root.
+  * Check/update version number in NHibernate.props under build-common folder.
+    Clear VersionSuffix if present.
     NOTE: This paragraph is changed for 5.3 - if you are releasing earlier version please check instruction from appropriate branch   
 
   * Don't forget to commit the above.

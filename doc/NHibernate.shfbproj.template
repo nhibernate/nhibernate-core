@@ -18,8 +18,8 @@
     <HtmlHelpName>NHibernateAPI</HtmlHelpName>
     <HelpFileFormat>HtmlHelp1x</HelpFileFormat>
     <CopyrightText>NHibernate</CopyrightText>
-    <CopyrightHref>nhibernate.info</CopyrightHref>
-    <FeedbackEMailAddress>http://groups.google.com/group/nhibernate-development</FeedbackEMailAddress>
+    <CopyrightHref>https://nhibernate.info</CopyrightHref>
+    <FeedbackEMailAddress>https://groups.google.com/group/nhibernate-development</FeedbackEMailAddress>
     <FeedbackEMailLinkText>nhibernate team</FeedbackEMailLinkText>
     <HelpTitle>NHibernate API Reference</HelpTitle>
     <IndentHtml>False</IndentHtml>
