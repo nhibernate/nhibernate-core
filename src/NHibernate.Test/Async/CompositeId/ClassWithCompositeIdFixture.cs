@@ -395,6 +395,18 @@ namespace NHibernate.Test.CompositeId
 		}
 
 		[Test]
+		public async Task CriteriaGroupProjectionAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				await (s.CreateCriteria<ClassWithCompositeId>()
+				.SetProjection(Projections.GroupProperty(Projections.Id()))
+				.Add(Restrictions.Eq(Projections.Id(), id))
+				.ListAsync<Id>());
+			}
+		}
+
+		[Test]
 		public async Task QueryOverInClauseAsync()
 		{
 			// insert the new objects

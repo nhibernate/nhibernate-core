@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Engine;
 using NHibernate.Linq.ReWriters;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
@@ -314,10 +315,7 @@ namespace NHibernate.Linq.Visitors
 				return base.VisitMember(expression);
 			}
 
-			var isIdentifier = _isEntityDecider.IsIdentifier(
-				expression.Expression.Type,
-				expression.Member.Name);
-
+			var isEntity = _isEntityDecider.IsEntity(expression, out var isIdentifier);
 			if (!isIdentifier)
 				_memberExpressionDepth++;
 
@@ -327,7 +325,7 @@ namespace NHibernate.Linq.Visitors
 				_memberExpressionDepth--;
 
 			ExpressionValues values = _values.Pop().Operation(pvs => pvs.MemberAccess(expression.Type));
-			if (_isEntityDecider.IsEntity(expression.Type))
+			if (isEntity)
 			{
 				// Don't add joins for things like a.B == a.C where B and C are entities.
 				// We only need to join B when there's something like a.B.D.

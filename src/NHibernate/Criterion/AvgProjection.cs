@@ -23,7 +23,7 @@ namespace NHibernate.Criterion
 			sql.Add("cast(");
 			if (projection != null)
 			{
-				sql.Add(SqlStringHelper.RemoveAsAliasesFromSql(projection.ToSqlString(criteria, loc, criteriaQuery)));
+				sql.AddObject(CriterionUtil.GetColumnNameAsSqlStringPart(projection, criteriaQuery, criteria));
 			}
 			else
 			{

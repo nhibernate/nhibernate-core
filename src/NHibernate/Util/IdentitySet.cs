@@ -1,13 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NHibernate.Util
 {
 	/// <summary> 
 	/// Set implementation that use reference equals instead of Equals() as its comparison mechanism.
 	/// </summary>
+	// Since 5.3
+	[Obsolete("This class has no more usages and will be removed in a future version")]
 	public class IdentitySet : ISet<object>
 	{
 		private IDictionary map;

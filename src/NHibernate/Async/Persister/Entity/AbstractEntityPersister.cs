@@ -201,9 +201,9 @@ namespace NHibernate.Persister.Entity
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("Forcing version increment [{0}; {1} -> {2}]",
-				          MessageHelper.InfoString(this, id, Factory),
-				          VersionType.ToLoggableString(currentVersion, Factory),
-				          VersionType.ToLoggableString(nextVersion, Factory));
+					          MessageHelper.InfoString(this, id, Factory),
+					          VersionType.ToLoggableString(currentVersion, Factory),
+					          VersionType.ToLoggableString(nextVersion, Factory));
 				}
 
 				IExpectation expectation = Expectations.AppropriateExpectation(updateResultCheckStyles[0]);
@@ -227,13 +227,13 @@ namespace NHibernate.Persister.Entity
 				catch (DbException sqle)
 				{
 					var exceptionContext = new AdoExceptionContextInfo
-										{
-											SqlException = sqle,
-											Message = "could not retrieve version: " + MessageHelper.InfoString(this, id, Factory),
-											Sql = VersionSelectString.ToString(),
-											EntityName = EntityName,
-											EntityId = id
-										};
+											{
+												SqlException = sqle,
+												Message = "could not retrieve version: " + MessageHelper.InfoString(this, id, Factory),
+												Sql = VersionSelectString.ToString(),
+												EntityName = EntityName,
+												EntityId = id
+											};
 					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 				}
 				return nextVersion;
@@ -1388,9 +1388,9 @@ namespace NHibernate.Persister.Entity
 
 				string[] aliasedIdColumns = StringHelper.Qualify(RootAlias, IdentifierColumnNames);
 				SqlString whereClause = new SqlString(
-				SqlStringHelper.Join(new SqlString("=", Parameter.Placeholder, " and "), aliasedIdColumns),
-				"=", Parameter.Placeholder,
-				WhereJoinFragment(RootAlias, true, false));
+					SqlStringHelper.Join(new SqlString("=", Parameter.Placeholder, " and "), aliasedIdColumns),
+					"=", Parameter.Placeholder,
+					WhereJoinFragment(RootAlias, true, false));
 
 				SqlString sql = select.SetOuterJoins(SqlString.Empty, SqlString.Empty).SetWhereClause(whereClause).ToStatementString();
 				///////////////////////////////////////////////////////////////////////
@@ -1414,7 +1414,7 @@ namespace NHibernate.Persister.Entity
 						for (int i = 0; i < naturalIdPropertyCount; i++)
 						{
 							snapshot[i] =
-							await (extractionTypes[i].HydrateAsync(rs, GetPropertyAliases(string.Empty, naturalIdPropertyIndexes[i]), session, null, cancellationToken)).ConfigureAwait(false);
+								await (extractionTypes[i].HydrateAsync(rs, GetPropertyAliases(string.Empty, naturalIdPropertyIndexes[i]), session, null, cancellationToken)).ConfigureAwait(false);
 							if (extractionTypes[i].IsEntityType)
 							{
 								snapshot[i] = await (extractionTypes[i].ResolveIdentifierAsync(snapshot[i], session, null, cancellationToken)).ConfigureAwait(false);
@@ -1430,13 +1430,13 @@ namespace NHibernate.Persister.Entity
 				catch (DbException sqle)
 				{
 					var exceptionContext = new AdoExceptionContextInfo
-										{
-											SqlException = sqle,
-											Message = "could not retrieve snapshot: " + MessageHelper.InfoString(this, id, Factory),
-											Sql = sql.ToString(),
-											EntityName = EntityName,
-											EntityId = id
-										};
+											{
+												SqlException = sqle,
+												Message = "could not retrieve snapshot: " + MessageHelper.InfoString(this, id, Factory),
+												Sql = sql.ToString(),
+												EntityName = EntityName,
+												EntityId = id
+											};
 					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 				}
 			}

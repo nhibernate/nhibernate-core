@@ -329,6 +329,14 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void CanSelectNotMappedEntityProperty()
+		{
+			var list = db.Animals.Where(o => o.Mother != null).Select(o => o.FatherOrMother.SerialNumber).ToList();
+
+			Assert.That(list, Has.Count.GreaterThan(0));
+		}
+
+		[Test]
 		public void CanProjectWithCast()
 		{
 			// NH-2463

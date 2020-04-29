@@ -192,19 +192,19 @@ namespace NHibernate.Cache
 				if (queryCache is IBatchableQueryCache batchableQueryCache)
 				{
 					return batchableQueryCache.PutAsync(
-					key, queryParameters,
-					returnTypes,
-					result, session, cancellationToken);
+						key, queryParameters,
+						returnTypes,
+						result, session, cancellationToken);
 				}
 
 #pragma warning disable 618
 				return queryCache.PutAsync(
 #pragma warning restore 618
-				key,
-				returnTypes,
-				result,
-				queryParameters.NaturalKeyLookup,
-				session, cancellationToken);
+					key,
+					returnTypes,
+					result,
+					queryParameters.NaturalKeyLookup,
+					session, cancellationToken);
 			}
 			catch (Exception ex)
 			{
