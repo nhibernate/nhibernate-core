@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NUnit.Framework;
@@ -56,11 +55,11 @@ namespace NHibernate.Test.Ado
 		private async Task CleanupAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (ISession s = Sfi.OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				await (s.CreateQuery("delete from VerySimple").ExecuteUpdateAsync(cancellationToken));
 				await (s.CreateQuery("delete from AlmostSimple").ExecuteUpdateAsync(cancellationToken));
-				await (s.Transaction.CommitAsync(cancellationToken));
+				await (t.CommitAsync(cancellationToken));
 			}
 		}
 

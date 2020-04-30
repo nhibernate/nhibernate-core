@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
 using NHibernate.Criterion;
 using NUnit.Framework;
 
@@ -32,29 +31,35 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 		public async Task LoadByIDFailureSameSessionAsync()
 		{
 			User ui1 = new User("User1");
+			object uid1;
 
-			ISession s = OpenSession();
-			s.BeginTransaction();
-			object uid1 = await (s.SaveAsync(ui1));
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				uid1 = await (s.SaveAsync(ui1));
+				await (t.CommitAsync());
+				s.Close();
+			}
 
-			s = OpenSession();
-			s.BeginTransaction();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				Assert.IsNotNull(await (s.GetAsync(typeof(User), uid1)));
 
-			Assert.IsNotNull(await (s.GetAsync(typeof(User), uid1)));
+				UserGroup ug = (UserGroup) await (s.GetAsync(typeof(UserGroup), uid1));
+				Assert.IsNull(ug);
 
-			UserGroup ug = (UserGroup) await (s.GetAsync(typeof(UserGroup), uid1));
-			Assert.IsNull(ug);
+				await (t.CommitAsync());
+				s.Close();
+			}
 
-			await (s.Transaction.CommitAsync());
-			s.Close();
-
-			s = OpenSession();
-			s.BeginTransaction();
-			await (s.DeleteAsync("from Party"));
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.DeleteAsync("from Party"));
+				await (t.CommitAsync());
+				s.Close();
+			}
 		}
 
 		[Test]
@@ -63,79 +68,98 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 			UserGroup ug1 = new UserGroup();
 			ug1.Name = "Group1";
 			User ui1 = new User("User1");
+			object gid1, uid1;
 
-			ISession s = OpenSession();
-			s.BeginTransaction();
-			object gid1 = await (s.SaveAsync(ug1));
-			object uid1 = await (s.SaveAsync(ui1));
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gid1 = await (s.SaveAsync(ug1));
+				uid1 = await (s.SaveAsync(ui1));
+				await (t.CommitAsync());
+				s.Close();
+			}
 
-			s = OpenSession();
-			s.BeginTransaction();
-			//Load user with USER NAME: 
-			ICriteria criteria1 = s.CreateCriteria(typeof(User));
-			criteria1.Add(Expression.Eq("Name", "User1"));
-			Assert.AreEqual(1, (await (criteria1.ListAsync())).Count);
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				//Load user with USER NAME: 
+				ICriteria criteria1 = s.CreateCriteria(typeof(User));
+				criteria1.Add(Expression.Eq("Name", "User1"));
+				Assert.AreEqual(1, (await (criteria1.ListAsync())).Count);
+				await (t.CommitAsync());
+				s.Close();
+			}
 
-			s = OpenSession();
-			s.BeginTransaction();
-			//Load group with USER NAME: 
-			ICriteria criteria2 = s.CreateCriteria(typeof(UserGroup));
-			criteria2.Add(Expression.Eq("Name", "User1"));
-			Assert.AreEqual(0, (await (criteria2.ListAsync())).Count);
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				//Load group with USER NAME: 
+				ICriteria criteria2 = s.CreateCriteria(typeof(UserGroup));
+				criteria2.Add(Expression.Eq("Name", "User1"));
+				Assert.AreEqual(0, (await (criteria2.ListAsync())).Count);
+				await (t.CommitAsync());
+				s.Close();
+			}
 
-			s = OpenSession();
-			s.BeginTransaction();
-			//Load group with GROUP NAME
-			ICriteria criteria3 = s.CreateCriteria(typeof(UserGroup));
-			criteria3.Add(Expression.Eq("Name", "Group1"));
-			Assert.AreEqual(1, (await (criteria3.ListAsync())).Count);
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				//Load group with GROUP NAME
+				ICriteria criteria3 = s.CreateCriteria(typeof(UserGroup));
+				criteria3.Add(Expression.Eq("Name", "Group1"));
+				Assert.AreEqual(1, (await (criteria3.ListAsync())).Count);
+				await (t.CommitAsync());
+				s.Close();
+			}
 
-			s = OpenSession();
-			s.BeginTransaction();
-			//Load user with GROUP NAME
-			ICriteria criteria4 = s.CreateCriteria(typeof(User));
-			criteria4.Add(Expression.Eq("Name", "Group1"));
-			Assert.AreEqual(0, (await (criteria4.ListAsync())).Count);
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				//Load user with GROUP NAME
+				ICriteria criteria4 = s.CreateCriteria(typeof(User));
+				criteria4.Add(Expression.Eq("Name", "Group1"));
+				Assert.AreEqual(0, (await (criteria4.ListAsync())).Count);
+				await (t.CommitAsync());
+				s.Close();
+			}
 
-			s = OpenSession();
-			s.BeginTransaction();
-			//Load group with USER IDENTITY
-			ug1 = (UserGroup) await (s.GetAsync(typeof(UserGroup), uid1));
-			Assert.IsNull(ug1);
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				//Load group with USER IDENTITY
+				ug1 = (UserGroup) await (s.GetAsync(typeof(UserGroup), uid1));
+				Assert.IsNull(ug1);
+				await (t.CommitAsync());
+				s.Close();
+			}
 
-			s = OpenSession();
-			s.BeginTransaction();
-			ui1 = (User) await (s.GetAsync(typeof(User), gid1));
-			Assert.IsNull(ui1);
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				ui1 = (User) await (s.GetAsync(typeof(User), gid1));
+				Assert.IsNull(ui1);
+				await (t.CommitAsync());
+				s.Close();
+			}
 
-			s = OpenSession();
-			s.BeginTransaction();
-			Party p = (Party) await (s.GetAsync(typeof(Party), uid1));
-			Assert.IsTrue(p is User);
-			p = (Party) await (s.GetAsync(typeof(Party), gid1));
-			Assert.IsTrue(p is UserGroup);
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				Party p = (Party) await (s.GetAsync(typeof(Party), uid1));
+				Assert.IsTrue(p is User);
+				p = (Party) await (s.GetAsync(typeof(Party), gid1));
+				Assert.IsTrue(p is UserGroup);
+				await (t.CommitAsync());
+				s.Close();
+			}
 
-			s = OpenSession();
-			s.BeginTransaction();
-			await (s.DeleteAsync("from Party"));
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.DeleteAsync("from Party"));
+				await (t.CommitAsync());
+				s.Close();
+			}
 		}
 
 		[Test]

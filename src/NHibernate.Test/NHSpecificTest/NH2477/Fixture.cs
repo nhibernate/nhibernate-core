@@ -31,23 +31,23 @@ namespace NHibernate.Test.NHSpecificTest.NH2477
 			{
 				this.factory = factory;
 				using (var session = factory.OpenSession())
-				using (session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					for (int i = 0; i < 5; i++)
 					{
 						session.Persist(new Something { Name = i.ToString() });
 					}
-					session.Transaction.Commit();
+					tran.Commit();
 				}
 			}
 
 			public void Dispose()
 			{
 				using (var session = factory.OpenSession())
-				using (session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					session.CreateQuery("delete from Something").ExecuteUpdate();
-					session.Transaction.Commit();
+					tran.Commit();
 				}
 			}
 		}
@@ -58,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2477
 			using (new Scenario(Sfi))
 			{
 				using (var session = Sfi.OpenSession())
-				using (session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					// This is another case where we have to work with subqueries and we have to write a specific query rewriter for Skip/Take instead flat the query in QueryReferenceExpressionFlattener
 					//var actual = session.CreateQuery("select count(s) from Something s where s in (from Something take 3)").UniqueResult<long>();

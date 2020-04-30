@@ -10,9 +10,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3567
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
-			using (ISession session = this.OpenSession())
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
 			{
-				session.BeginTransaction();
 				var id = 0;
 
 				var site1 = new Site { Id = ++id, Name = "Site 1" };
@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3567
 				session.Save(new Comment { Id = ++id, Content = "Comment 2.1", Post = p2 });
 				session.Save(new Comment { Id = ++id, Content = "Comment 2.2", Post = p2 });
 				session.Flush();
-				session.Transaction.Commit();
+				tran.Commit();
 			}
 		}
 

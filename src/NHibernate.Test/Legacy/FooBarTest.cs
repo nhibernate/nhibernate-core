@@ -2825,7 +2825,7 @@ namespace NHibernate.Test.Legacy
 			s.Delete(baz.TopGlarchez['H']);
 
 			var cmd = s.Connection.CreateCommand();
-			s.Transaction.Enlist(cmd);
+			txn.Enlist(cmd);
 			cmd.CommandText = "update " + Dialect.QuoteForTableName("glarchez") + " set baz_map_id=null where baz_map_index='a'";
 			int rows = cmd.ExecuteNonQuery();
 			Assert.AreEqual(1, rows);

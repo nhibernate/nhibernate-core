@@ -720,7 +720,7 @@ namespace NHibernate.Test.SqlTest.Query
 		public async Task HandlesManualSynchronizationAsync()
 		{
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.SessionFactory.Statistics.IsStatisticsEnabled = true;
 				s.SessionFactory.Statistics.Clear();
@@ -739,7 +739,7 @@ namespace NHibernate.Test.SqlTest.Query
 
 				// clean up
 				await (s.DeleteAsync(jboss));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 				s.Close();
 			}
 		}

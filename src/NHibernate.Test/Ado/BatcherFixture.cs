@@ -1,4 +1,3 @@
-using System.Collections;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NUnit.Framework;
@@ -44,11 +43,11 @@ namespace NHibernate.Test.Ado
 		private void Cleanup()
 		{
 			using (ISession s = Sfi.OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.CreateQuery("delete from VerySimple").ExecuteUpdate();
 				s.CreateQuery("delete from AlmostSimple").ExecuteUpdate();
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 
