@@ -15,16 +15,21 @@
   <target name="get-project-version">
     <xmlpeek
       file="${root.dir}/build-common/NHibernate.props"
-      xpath="/Project/PropertyGroup/VersionPrefix"
-      property="version.prefix" />
-    <property name="project.version" value="${version.prefix}" />
+      xpath="/Project/PropertyGroup/NhVersion"
+      property="version.short" />
+    <xmlpeek
+      file="${root.dir}/build-common/NHibernate.props"
+      xpath="/Project/PropertyGroup/VersionPatch"
+      property="version.patch" />
+    <property name="project.version" value="${version.short}.${version.patch}" />
   </target>
   
   <target name="set-doc-version">
+    <copy file="${root.dir}/doc/reference/master.template.xml" tofile="${root.dir}/doc/reference/master.xml" overwrite="true" />
     <xmlpoke
       file="${root.dir}/doc/reference/master.xml"
       xpath="/book/bookinfo/releaseinfo"
-      value="${project.version}" />
+      value="${version.short}" />
   </target>
 
 	<!-- properties used to connect to database for testing -->

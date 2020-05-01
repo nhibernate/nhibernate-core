@@ -27,7 +27,6 @@ Tools\gitreleasemanager\0.7.0\tools\GitReleaseManager.exe create -o nhibernate -
 
   * Check/update version number in NHibernate.props under build-common folder.
     Clear VersionSuffix if present.
-    NOTE: This paragraph is changed for 5.3 - if you are releasing earlier version please check instruction from appropriate branch   
 
   * Don't forget to commit the above.
 
@@ -55,3 +54,10 @@ Tools\gitreleasemanager\0.7.0\tools\GitReleaseManager.exe create -o nhibernate -
   * If this was a stable branch, merge it forward to master. Perhaps some
     changes need to be edited out in the merge, but this will reduce the
     risk of some issue being left unfixed on master.
+ 
+  * If this was the master branch, create the stable branch for the new release, named
+    according to its version with "x" instead of its patch number. By example, "5.3.x".
+    
+  * If next version is decided set it in NHibernate.props under build-common folder
+    (in most cases - increment minor version) and set VersionSuffix to "dev".
+    Commit it directly (without going through a PR).
