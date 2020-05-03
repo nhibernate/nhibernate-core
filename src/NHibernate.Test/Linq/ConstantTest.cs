@@ -220,7 +220,7 @@ namespace NHibernate.Test.Linq
 			var expression = ExpressionParameterVisitor.Visit(preTransformResult, out var parameters1);
 			var k1 = ExpressionKeyVisitor.Visit(expression, parameters1);
 
-			var preTransformResult2 = NhRelinqQueryParser.PreTransform(q1.Expression, preTransformParameters);
+			var preTransformResult2 = NhRelinqQueryParser.PreTransform(q2.Expression, preTransformParameters);
 			var expression2 = ExpressionParameterVisitor.Visit(preTransformResult2, out var parameters2);
 			var k2 = ExpressionKeyVisitor.Visit(expression2, parameters2);
 
