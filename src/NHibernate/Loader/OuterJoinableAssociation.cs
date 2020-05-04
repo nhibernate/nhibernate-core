@@ -237,8 +237,8 @@ namespace NHibernate.Loader
 						                    new EntityLoadInfo(entitySuffix)
 						                    {
 							                    LazyProperties = EntityFetchLazyProperties,
-												IncludeLazyProps = SelectMode == SelectMode.FetchLazyProperties,
-											});
+							                    IncludeLazyProps = SelectMode == SelectMode.FetchLazyProperties,
+						                    });
 				case SelectMode.ChildFetch:
 					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(Joinable, "child fetch select mode")
 					                    .IdentifierSelectFragment(RHSAlias, entitySuffix);
