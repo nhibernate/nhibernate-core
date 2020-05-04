@@ -203,7 +203,6 @@ namespace NHibernate.Loader
 			{
 				case SelectMode.Undefined:
 				case SelectMode.Fetch:
-					//TODO 6.0: Just drop obsolete parts making all 3 cases handled by the same code
 #pragma warning disable 618
 					return Joinable.SelectFragment(
 						next?.Joinable,
@@ -229,15 +228,15 @@ namespace NHibernate.Loader
 
 				case SelectMode.FetchLazyPropertyGroup:
 					return ReflectHelper.CastOrThrow<ISupportLazyPropsJoinable>(Joinable, "fetch lazy property")
-										.SelectFragment(
-											next?.Joinable,
-											next?.RHSAlias,
-											RHSAlias,
-											collectionSuffix,
-											ShouldFetchCollectionPersister(),
-											new EntityLoadInfo(entitySuffix)
-											{
-												LazyProperties = EntityFetchLazyProperties, 
+					                    .SelectFragment(
+						                    next?.Joinable,
+						                    next?.RHSAlias,
+						                    RHSAlias,
+						                    collectionSuffix,
+						                    ShouldFetchCollectionPersister(),
+						                    new EntityLoadInfo(entitySuffix)
+						                    {
+							                    LazyProperties = EntityFetchLazyProperties,
 												IncludeLazyProps = SelectMode == SelectMode.FetchLazyProperties,
 											});
 				case SelectMode.ChildFetch:
