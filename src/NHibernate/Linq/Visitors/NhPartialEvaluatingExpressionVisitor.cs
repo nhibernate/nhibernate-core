@@ -107,7 +107,6 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			// Variables in expressions are never a constant, they are encapsulated as fields of a compiler generated class.
-			// Skip detecting variables for DML queries as HQL does not support reusing parameters for them.
 			if (expression.NodeType != ExpressionType.Constant &&
 			    _preTransformationParameters.MinimizeParameters &&
 			    evaluatedExpression is ConstantExpression variableConstant &&

@@ -19,6 +19,8 @@ namespace NHibernate.Linq.Visitors
 		{
 			QueryMode = queryMode;
 			SessionFactory = sessionFactory;
+			// Skip detecting variables for DML queries as HQL does not support reusing parameters for them.
+			MinimizeParameters = QueryMode == QueryMode.Select;
 		}
 
 		/// <summary>
@@ -34,7 +36,7 @@ namespace NHibernate.Linq.Visitors
 		/// <summary>
 		/// Whether to minimize the number of parameters for variables.
 		/// </summary>
-		internal bool MinimizeParameters { get; set; }
+		public bool MinimizeParameters { get; set; }
 
 		/// <summary>
 		/// The filter which decides whether a part of the expression will be pre-evalauted or not.
