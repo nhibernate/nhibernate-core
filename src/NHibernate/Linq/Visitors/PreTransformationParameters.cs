@@ -32,6 +32,11 @@ namespace NHibernate.Linq.Visitors
 		public ISessionFactoryImplementor SessionFactory { get; }
 
 		/// <summary>
+		/// Whether to minimize the number of parameters for variables.
+		/// </summary>
+		internal bool MinimizeParameters { get; set; }
+
+		/// <summary>
 		/// The filter which decides whether a part of the expression will be pre-evalauted or not.
 		/// </summary>
 		internal IEvaluatableExpressionFilter EvaluatableExpressionFilter { get; set; }

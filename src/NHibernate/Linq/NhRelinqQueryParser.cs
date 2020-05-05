@@ -73,6 +73,7 @@ namespace NHibernate.Linq
 		{
 			parameters.EvaluatableExpressionFilter = new NhEvaluatableExpressionFilter(parameters.SessionFactory);
 			parameters.QueryVariables = new Dictionary<ConstantExpression, QueryVariable>();
+			parameters.MinimizeParameters = parameters.QueryMode == QueryMode.Select;
 
 			var partiallyEvaluatedExpression = NhPartialEvaluatingExpressionVisitor
 				.EvaluateIndependentSubtrees(expression, parameters);
