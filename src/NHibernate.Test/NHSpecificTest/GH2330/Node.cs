@@ -1,7 +1,7 @@
 ﻿using System;
 using NHibernate.Mapping.ByCode;
 
-namespace NHibernate.Test.Hql
+namespace NHibernate.Test.NHSpecificTest.GH2330
 {
 	public abstract class Node
 	{
