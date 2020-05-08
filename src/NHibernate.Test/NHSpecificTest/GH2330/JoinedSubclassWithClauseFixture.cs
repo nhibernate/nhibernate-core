@@ -2,13 +2,12 @@
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Criterion;
 using NHibernate.Mapping.ByCode;
-using NHibernate.Test.Hql;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH2330
 {
 	[TestFixture]
-	public class ByCodeFixture : TestCaseMappingByCode
+	public class JoinedSubclassWithClauseFixture : TestCaseMappingByCode
 	{
 		private object _visit1Id;
 		private object _visit2Id;
@@ -64,6 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2330
 						Restrictions.Eq("Deleted", false))
 					.List<UserEntityVisit>()
 					.Select(x => x.Id);
+
 				Assert.That(results, Is.EquivalentTo(new[] {_visit1Id, _visit2Id,}));
 			}
 		}
@@ -72,6 +72,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2330
 		public void Join_Inheritance_QueryOver()
 		{
 			using (var session = OpenSession())
+			using (session.BeginTransaction())
 			{
 				PersonBase f = null;
 				var results = session.QueryOver<UserEntityVisit>()
@@ -82,7 +83,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2330
 						Restrictions.Where(() => f.Deleted == false))
 					.List()
 					.Select(x => x.Id);
-				// assert
+
 				Assert.That(results, Is.EquivalentTo(new[] {_visit1Id, _visit2Id,}));
 			}
 		}
