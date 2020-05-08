@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Criterion;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Test.Hql.EntityJoinHqlTestEntities;
 using NUnit.Framework;
@@ -524,6 +521,7 @@ namespace NHibernate.Test.Hql
 							m.NotFound(NotFoundMode.Ignore);
 						});
 				});
+
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
