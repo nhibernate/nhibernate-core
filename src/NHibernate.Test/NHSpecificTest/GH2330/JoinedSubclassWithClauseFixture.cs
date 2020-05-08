@@ -16,8 +16,31 @@ namespace NHibernate.Test.NHSpecificTest.GH2330
 		{
 			var mapper = new ModelMapper();
 
-			Node.AddMapping(mapper);
-			UserEntityVisit.AddMapping(mapper);
+			mapper.Class<Node>(ca =>
+			{
+				ca.Id(x => x.Id, map => map.Generator(Generators.Identity));
+				ca.Property(x => x.Deleted);
+				ca.Property(x => x.FamilyName);
+				ca.Table("Node");
+				ca.Abstract(true);
+			});
+
+			mapper.JoinedSubclass<PersonBase>(
+				ca =>
+				{
+					ca.Key(x => x.Column("FK_Node_ID"));
+					ca.Extends(typeof(Node));
+					ca.Property(x => x.Deleted);
+					ca.Property(x => x.Login);
+				});
+
+			mapper.Class<UserEntityVisit>(
+				ca =>
+				{
+					ca.Id(x => x.Id, map => map.Generator(Generators.Identity));
+					ca.Property(x => x.Deleted);
+					ca.ManyToOne(x => x.PersonBase);
+				});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
