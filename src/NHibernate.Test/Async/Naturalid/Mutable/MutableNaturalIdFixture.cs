@@ -8,8 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System;
-using System.Collections;
 using System.Reflection;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
@@ -42,41 +40,33 @@ namespace NHibernate.Test.Naturalid.Mutable
 		[Test]
 		public async Task ReattachmentNaturalIdCheckAsync()
 		{
-			ISession s = OpenSession();
-			s.BeginTransaction();
-			User u = new User("gavin", "hb", "secret");
-			await (s.PersistAsync(u));
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			User u;
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				u = new User("gavin", "hb", "secret");
+				await (s.PersistAsync(u));
+				await (t.CommitAsync());
+				s.Close();
+			}
 
 			FieldInfo name = u.GetType().GetField("name",
 			                                      BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 			name.SetValue(u, "Gavin");
-			s = OpenSession();
-			s.BeginTransaction();
-			try
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				await (s.UpdateAsync(u));
-				await (s.Transaction.CommitAsync());
-			}
-			catch (HibernateException)
-			{
-				await (s.Transaction.RollbackAsync());
-			}
-			catch (Exception)
-			{
-					await (s.Transaction.RollbackAsync());
-			}
-			finally
-			{
-				s.Close();
+				await (t.CommitAsync());
 			}
 
-			s = OpenSession();
-			s.BeginTransaction();
-			await (s.DeleteAsync(u));
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.DeleteAsync(u));
+				await (t.CommitAsync());
+				s.Close();
+			}
 		}
 
 		[Test]

@@ -467,9 +467,8 @@ namespace NHibernate.Test.LinqBulkManipulation
 
 			// this is just checking parsing and syntax...
 			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				s.BeginTransaction();
-
 				Assert.DoesNotThrowAsync(() =>
 				{
 					return s
@@ -477,7 +476,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 						.InsertIntoAsync(x => new Animal { Description = x.Description, BodyWeight = x.BodyWeight });
 				});
 
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 		}
 
@@ -983,11 +982,11 @@ namespace NHibernate.Test.LinqBulkManipulation
 			}
 
 			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				s.BeginTransaction();
 				var count = await (s.Query<SimpleEntityWithAssociation>().Where(x => x.AssociatedEntities.Count == 0 && x.Name.Contains("myEntity")).DeleteAsync());
 				Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 		}
 

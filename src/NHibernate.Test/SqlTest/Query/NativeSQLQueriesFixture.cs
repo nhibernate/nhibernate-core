@@ -783,7 +783,7 @@ namespace NHibernate.Test.SqlTest.Query
 		public void HandlesManualSynchronization()
 		{
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.SessionFactory.Statistics.IsStatisticsEnabled = true;
 				s.SessionFactory.Statistics.Clear();
@@ -802,7 +802,7 @@ namespace NHibernate.Test.SqlTest.Query
 
 				// clean up
 				s.Delete(jboss);
-				s.Transaction.Commit();
+				t.Commit();
 				s.Close();
 			}
 		}

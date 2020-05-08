@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Diagnostics;
 using System.Linq;
 using NHibernate.AdoNet;
@@ -229,10 +228,10 @@ namespace NHibernate.Test.Ado
 		private void Cleanup()
 		{
 			using (var s = Sfi.OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.CreateQuery("delete from VerySimple").ExecuteUpdate();
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 

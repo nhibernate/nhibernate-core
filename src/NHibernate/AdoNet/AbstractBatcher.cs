@@ -130,7 +130,7 @@ namespace NHibernate.AdoNet
 					cmd.Connection = sessionConnection;
 				}
 
-				_connectionManager.Transaction.Enlist(cmd);
+				_connectionManager.EnlistInTransaction(cmd);
 				Driver.PrepareCommand(cmd);
 			}
 			catch (InvalidOperationException ioe)

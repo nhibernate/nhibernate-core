@@ -188,9 +188,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			{
 				IIsolatedWork work = new TmpIdTableDropIsolatedWork(persister, log, session);
 
-				if (ShouldIsolateTemporaryTableDDL())
+				if (ShouldIsolateTemporaryTableDDL() && session.ConnectionManager.CurrentTransaction != null)
 				{
-					session.ConnectionManager.Transaction.RegisterSynchronization(
+					session.ConnectionManager.CurrentTransaction.RegisterSynchronization(
 						new IsolatedWorkAfterTransaction(work, session));
 				}
 				else

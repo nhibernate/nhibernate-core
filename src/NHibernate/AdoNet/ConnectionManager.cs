@@ -386,27 +386,41 @@ namespace NHibernate.AdoNet
 
 		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
 		{
-			Transaction.Begin(isolationLevel);
+			EnsureTransactionIsCreated();
+			_transaction.Begin(isolationLevel);
 			return _transaction;
 		}
 
 		public ITransaction BeginTransaction()
 		{
-			Transaction.Begin();
+			EnsureTransactionIsCreated();
+			_transaction.Begin();
 			return _transaction;
 		}
 
+		private void EnsureTransactionIsCreated()
+		{
+			if (_transaction == null)
+			{
+				_transaction = Factory.TransactionFactory.CreateTransaction(Session);
+			}
+		}
+
+		// Since v5.3
+		[Obsolete("Use CurrentTransaction instead, and check for null.")]
 		public ITransaction Transaction
 		{
 			get
 			{
-				if (_transaction == null)
-				{
-					_transaction = Factory.TransactionFactory.CreateTransaction(Session);
-				}
+				EnsureTransactionIsCreated();
 				return _transaction;
 			}
 		}
+
+		/// <summary>
+		/// The current transaction if any is ongoing, else <see langword="null" />.
+		/// </summary>
+		public ITransaction CurrentTransaction => _transaction;
 
 		public void AfterNonTransactionalQuery(bool success)
 		{
@@ -444,8 +458,30 @@ namespace NHibernate.AdoNet
 		public DbCommand CreateCommand()
 		{
 			var result = GetConnection().CreateCommand();
-			Transaction.Enlist(result);
+			EnlistInTransaction(result);
 			return result;
+		}
+
+		/// <summary>
+		/// Enlist a command in the current transaction, if any.
+		/// </summary>
+		/// <param name="command">The command to enlist.</param>
+		public void EnlistInTransaction(DbCommand command)
+		{
+			if (command == null)
+				throw new ArgumentNullException(nameof(command));
+
+			if (_transaction != null)
+			{
+				_transaction.Enlist(command);
+				return;
+			}
+
+			if (command.Transaction != null)
+			{
+				_log.Warn("set a nonnull DbCommand.Transaction to null because the Session had no Transaction");
+				command.Transaction = null;
+			}
 		}
 
 		/// <summary>

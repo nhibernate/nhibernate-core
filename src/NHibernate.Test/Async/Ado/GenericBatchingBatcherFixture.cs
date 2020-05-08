@@ -9,7 +9,6 @@
 
 
 using System;
-using System.Collections;
 using System.Diagnostics;
 using System.Linq;
 using NHibernate.AdoNet;
@@ -241,10 +240,10 @@ namespace NHibernate.Test.Ado
 		private async Task CleanupAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (var s = Sfi.OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				await (s.CreateQuery("delete from VerySimple").ExecuteUpdateAsync(cancellationToken));
-				await (s.Transaction.CommitAsync(cancellationToken));
+				await (t.CommitAsync(cancellationToken));
 			}
 		}
 
