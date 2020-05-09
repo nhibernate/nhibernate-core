@@ -236,7 +236,8 @@ namespace NHibernate.Loader
 						                    ShouldFetchCollectionPersister(),
 						                    new EntityLoadInfo(entitySuffix)
 						                    {
-							                    LazyProperties = EntityFetchLazyProperties
+							                    LazyProperties = EntityFetchLazyProperties,
+							                    IncludeLazyProps = SelectMode == SelectMode.FetchLazyProperties,
 						                    });
 				case SelectMode.ChildFetch:
 					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(Joinable, "child fetch select mode")
