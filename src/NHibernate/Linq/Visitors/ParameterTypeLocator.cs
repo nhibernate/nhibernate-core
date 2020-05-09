@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Engine;
+using NHibernate.Param;
 using NHibernate.Type;
 using NHibernate.Util;
 using Remotion.Linq;
@@ -10,9 +11,9 @@ using Remotion.Linq.Parsing;
 namespace NHibernate.Linq.Visitors
 {
 	/// <summary>
-	/// Locates <see cref="ConstantExpression"/> actual type based on its usage.
+	/// Locates parameter actual type based on its usage.
 	/// </summary>
-	public static class ConstantTypeLocator
+	public static class ParameterTypeLocator
 	{
 		/// <summary>
 		/// List of <see cref="ExpressionType"/> for which the <see cref="MemberExpression"/> should be related to the other side
@@ -43,38 +44,49 @@ namespace NHibernate.Linq.Visitors
 		};
 
 		/// <summary>
-		/// Calculate constant expressions types inside the query model.
+		/// Set query parameter types based on the given query model.
 		/// </summary>
+		/// <param name="parameters">The query parameters.</param>
 		/// <param name="queryModel">The query model.</param>
 		/// <param name="targetType">The target entity type.</param>
 		/// <param name="sessionFactory">The session factory.</param>
-		/// <returns></returns>
-		public static Dictionary<ConstantExpression, IType> GetTypes(
+		public static void SetParameterTypes(
+			IDictionary<ConstantExpression, NamedParameter> parameters,
 			QueryModel queryModel,
 			System.Type targetType,
 			ISessionFactoryImplementor sessionFactory)
 		{
-			return GetTypes(queryModel, targetType, sessionFactory, false);
+			SetParameterTypes(parameters, queryModel, targetType, sessionFactory, false);
 		}
 
-		internal static Dictionary<ConstantExpression, IType> GetTypes(
+		internal static void SetParameterTypes(
+			IDictionary<ConstantExpression, NamedParameter> parameters,
 			QueryModel queryModel,
 			System.Type targetType,
 			ISessionFactoryImplementor sessionFactory,
 			bool removeMappedAsCalls)
 		{
-			var types = new Dictionary<ConstantExpression, IType>();
-			var visitor = new ConstantTypeLocatorVisitor(removeMappedAsCalls, targetType, sessionFactory);
+			if (parameters.Count == 0)
+			{
+				return;
+			}
+
+			var visitor = new ConstantTypeLocatorVisitor(removeMappedAsCalls, targetType, parameters, sessionFactory);
 			queryModel.TransformExpressions(visitor.Visit);
 
 			foreach (var pair in visitor.ConstantExpressions)
 			{
 				var type = pair.Value;
 				var constantExpression = pair.Key;
+				if (!parameters.TryGetValue(constantExpression, out var namedParameter))
+				{
+					continue;
+				}
+
 				if (type != null)
 				{
 					// MappedAs was used
-					types.Add(constantExpression, type);
+					namedParameter.Type = type;
 					continue;
 				}
 
@@ -107,30 +119,31 @@ namespace NHibernate.Linq.Visitors
 						: ParameterHelper.TryGuessType(constantExpression.Type, sessionFactory, out _);
 				}
 
-				types.Add(constantExpression, type);
+				namedParameter.Type = type;
 			}
-
-			return types;
 		}
 
 		private class ConstantTypeLocatorVisitor : RelinqExpressionVisitor
 		{
 			private readonly bool _removeMappedAsCalls;
 			private readonly System.Type _targetType;
+			private readonly IDictionary<ConstantExpression, NamedParameter> _parameters;
 			private readonly ISessionFactoryImplementor _sessionFactory;
 			public readonly Dictionary<ConstantExpression, IType> ConstantExpressions =
 				new Dictionary<ConstantExpression, IType>();
-			public readonly Dictionary<Expression, HashSet<MemberExpression>> RelatedExpressions =
-				new Dictionary<Expression, HashSet<MemberExpression>>();
+			public readonly Dictionary<Expression, HashSet<Expression>> RelatedExpressions =
+				new Dictionary<Expression, HashSet<Expression>>();
 
 			public ConstantTypeLocatorVisitor(
 				bool removeMappedAsCalls,
 				System.Type targetType,
+				IDictionary<ConstantExpression, NamedParameter> parameters,
 				ISessionFactoryImplementor sessionFactory)
 			{
 				_removeMappedAsCalls = removeMappedAsCalls;
 				_targetType = targetType;
 				_sessionFactory = sessionFactory;
+				_parameters = parameters;
 			}
 
 			protected override Expression VisitBinary(BinaryExpression node)
@@ -149,8 +162,8 @@ namespace NHibernate.Linq.Visitors
 				}
 				else
 				{
-					AddRelatedMemberExpression(node, left, right);
-					AddRelatedMemberExpression(node, right, left);
+					AddRelatedExpression(node, left, right);
+					AddRelatedExpression(node, right, left);
 				}
 
 				return node;
@@ -161,15 +174,9 @@ namespace NHibernate.Linq.Visitors
 				node = (ConditionalExpression) base.VisitConditional(node);
 				var ifTrue = Unwrap(node.IfTrue);
 				var ifFalse = Unwrap(node.IfFalse);
-				AddRelatedMemberExpression(node, ifTrue, ifFalse);
-				AddRelatedMemberExpression(node, ifFalse, ifTrue);
+				AddRelatedExpression(node, ifTrue, ifFalse);
+				AddRelatedExpression(node, ifFalse, ifTrue);
 
-				return node;
-			}
-
-			protected override MemberAssignment VisitMemberAssignment(MemberAssignment node)
-			{
-				node = base.VisitMemberAssignment(node);
 				return node;
 			}
 
@@ -201,12 +208,12 @@ namespace NHibernate.Linq.Visitors
 
 			protected override Expression VisitConstant(ConstantExpression node)
 			{
-				if (node.Value is IEntityNameProvider || RelatedExpressions.ContainsKey(node))
+				if (node.Value is IEntityNameProvider || RelatedExpressions.ContainsKey(node) || !_parameters.ContainsKey(node))
 				{
 					return node;
 				}
 
-				RelatedExpressions.Add(node, new HashSet<MemberExpression>());
+				RelatedExpressions.Add(node, new HashSet<Expression>());
 				ConstantExpressions.Add(node, null);
 				return node;
 			}
@@ -241,42 +248,56 @@ namespace NHibernate.Linq.Visitors
 				ConstantExpressions[constantExpression] = persister.EntityMetamodel.GetPropertyType(parameterExpression.Name);
 			}
 
-			private void AddRelatedMemberExpression(Expression node, Expression left, Expression right)
+			private void AddRelatedExpression(Expression node, Expression left, Expression right)
 			{
-				HashSet<MemberExpression> set;
-				if (left is MemberExpression leftMemberExpression)
+				if (left.NodeType == ExpressionType.MemberAccess || IsDynamicMember(left))
 				{
-					AddMemberExpression(right, leftMemberExpression);
+					AddRelatedExpression(right, left);
 					if (NonVoidOperators.Contains(node.NodeType))
 					{
-						AddMemberExpression(node, leftMemberExpression);
+						AddRelatedExpression(node, left);
 					}
 				}
 
 				// Copy all found MemberExpressions to the other side
 				// (e.g. (o.Prop ?? constant1) == constant2 -> copy o.Prop to constant2)
-				if (RelatedExpressions.TryGetValue(left, out set))
+				if (RelatedExpressions.TryGetValue(left, out var set))
 				{
 					foreach (var nestedMemberExpression in set)
 					{
-						AddMemberExpression(right, nestedMemberExpression);
+						AddRelatedExpression(right, nestedMemberExpression);
 						if (NonVoidOperators.Contains(node.NodeType))
 						{
-							AddMemberExpression(node, nestedMemberExpression);
+							AddRelatedExpression(node, nestedMemberExpression);
 						}
 					}
 				}
 			}
 
-			private void AddMemberExpression(Expression expression, MemberExpression memberExpression)
+			private void AddRelatedExpression(Expression expression, Expression relatedExpression)
 			{
 				if (!RelatedExpressions.TryGetValue(expression, out var set))
 				{
-					set = new HashSet<MemberExpression>();
+					set = new HashSet<Expression>();
 					RelatedExpressions.Add(expression, set);
 				}
 
-				set.Add(memberExpression);
+				set.Add(relatedExpression);
+			}
+
+			private bool IsDynamicMember(Expression expression)
+			{
+				switch (expression)
+				{
+					case InvocationExpression invocationExpression:
+						// session.Query<Product>().Where("Properties.Name == @0", "First Product")
+						return ExpressionsHelper.TryGetDynamicMemberBinder(invocationExpression, out _);
+					case MethodCallExpression methodCallExpression:
+						// session.Query<Product>() where p.Properties["Name"] == "First Product" select p
+						return VisitorUtil.TryGetPotentialDynamicComponentDictionaryMember(methodCallExpression, out _);
+					default:
+						return false;
+				}
 			}
 
 			private static Expression Unwrap(Expression expression)

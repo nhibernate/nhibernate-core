@@ -106,6 +106,18 @@ namespace NHibernate.Linq.Visitors
 			return base.VisitMethodCall(expression);
 		}
 
+		protected override Expression VisitInvocation(InvocationExpression expression)
+		{
+			if (ExpressionsHelper.TryGetDynamicMemberBinder(expression, out _))
+			{
+				// Avoid adding System.Runtime.CompilerServices.CallSite instance as a parameter
+				base.Visit(expression.Arguments[1]);
+				return expression;
+			}
+
+			return base.VisitInvocation(expression);
+		}
+
 		protected override Expression VisitConstant(ConstantExpression expression)
 		{
 			if (!_parameters.ContainsKey(expression) && !typeof(IQueryable).IsAssignableFrom(expression.Type) && !IsNullObject(expression))

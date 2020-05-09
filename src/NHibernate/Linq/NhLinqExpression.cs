@@ -90,7 +90,7 @@ namespace NHibernate.Linq
 
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
 			var queryModel = NhRelinqQueryParser.Parse(_expression);
-			SetParameterTypes(sessionFactory, queryModel);
+			ParameterTypeLocator.SetParameterTypes(_constantToParameterMap, queryModel, TargetType, sessionFactory, true);
 			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters,
 				new QuerySourceNamer(), TargetType, QueryMode);
 
@@ -119,24 +119,6 @@ namespace NHibernate.Linq
 			ParameterDescriptors = other.ParameterDescriptors;
 			// Type could have been overridden by translation.
 			Type = other.Type;
-		}
-
-		private void SetParameterTypes(
-			ISessionFactoryImplementor sessionFactory,
-			QueryModel queryModel)
-		{
-			if (_constantToParameterMap.Count == 0)
-			{
-				return;
-			}
-
-			foreach (var pair in ConstantTypeLocator.GetTypes(queryModel, TargetType, sessionFactory, true))
-			{
-				if (_constantToParameterMap.TryGetValue(pair.Key, out var parameter))
-				{
-					parameter.Type = pair.Value;
-				}
-			}
 		}
 
 		private static IASTNode DuplicateTree(IASTNode ast)
