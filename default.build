@@ -2,7 +2,7 @@
 <project 
 	name="NHibernate" 
 	default="build"
-	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
+	xmlns="http://nant.sf.net/release/0.90/nant.xsd"
 >
 
 	<property name="root.dir" value="." />
@@ -29,6 +29,7 @@
 	<target name="build"
 		depends="init prepare-build-directory nuget.set-properties"
 		description="Builds NHibernate in the current configuration">
+		<property name="build.counter" value="" overwrite="false" />
 
 		<exec program="dotnet" verbose="true">
 			<arg value="msbuild" />
@@ -39,6 +40,8 @@
 			<arg value="/p:IncludeSymbols=&quot;True&quot;" />
 			<arg value="/p:IncludeSource=&quot;True&quot;" />
 			<arg value="/p:PackageOutputPath=&quot;${path::get-full-path(nuget.nupackages.dir)}&quot;" />
+			<!-- build.counter is not available by default. It needs to be exposed in Team City as system parameter system.build.counter with value %build.counter% -->
+			<arg value="/p:BuildNumber=&quot;${build.counter}&quot;" unless="${build.counter == ''}" />
 			<arg value="/t:Restore" />
 			<arg value="/t:Rebuild" />
 			<arg value="/v:q" />
