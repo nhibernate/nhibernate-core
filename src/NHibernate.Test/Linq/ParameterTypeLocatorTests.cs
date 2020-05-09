@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Engine.Query;
@@ -13,7 +14,7 @@ using Remotion.Linq.Clauses;
 
 namespace NHibernate.Test.Linq
 {
-	public class ConstantTypeLocatorTests : LinqTestCase
+	public class ParameterTypeLocatorTests : LinqTestCase
 	{
 		[Test]
 		public void AddIntegerTest()
@@ -172,8 +173,7 @@ namespace NHibernate.Test.Linq
 				new Dictionary<string, Predicate<IType>>
 				{
 					{"2", o => o is EnumStoredAsStringType},
-					{"Unspecified", o => o is EnumStoredAsStringType},
-					{"null", o => o is PersistentEnumType}, // HasValue
+					{"Unspecified", o => o is EnumStoredAsStringType}
 				},
 				db.Users.Where(o => (o.NullableEnum2.HasValue ? o.Enum1 : EnumStoredAsString.Unspecified) == EnumStoredAsString.Medium),
 				db.Users.Where(o => EnumStoredAsString.Medium == (o.NullableEnum2.HasValue ? EnumStoredAsString.Unspecified : o.Enum1))
@@ -189,8 +189,7 @@ namespace NHibernate.Test.Linq
 					{"0", o => o is PersistentEnumType},
 					{"2", o => o is EnumStoredAsStringType},
 					{"Small", o => o is EnumStoredAsStringType},
-					{"Unspecified", o => o is EnumStoredAsStringType},
-					{"null", o => o is PersistentEnumType}, // HasValue
+					{"Unspecified", o => o is EnumStoredAsStringType}
 				},
 				db.Users.Where(o => (o.Enum2 != EnumStoredAsInt32.Unspecified
 										? (o.NullableEnum2.HasValue ? o.Enum1 : EnumStoredAsString.Unspecified)
@@ -225,6 +224,36 @@ namespace NHibernate.Test.Linq
 				},
 				db.Users.Where(o => (o.Name == "test" ? o.NotMappedUser : o).Enum1 == EnumStoredAsString.Medium),
 				db.Users.Where(o => EnumStoredAsString.Medium == (o.Name == "test" ? o : o.NotMappedUser).Enum1)
+			);
+		}
+
+		[Test]
+		public void DynamicMemberTest()
+		{
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"\"test\"", o => o is AnsiStringType},
+				},
+				db.DynamicUsers.Where("Properties.Name == @0", "test"),
+				db.DynamicUsers.Where("@0 == Properties.Name", "test")
+			);
+		}
+
+		[Test]
+		public void DynamicDictionaryMemberTest()
+		{
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"\"test\"", o => o is AnsiStringType},
+				},
+#pragma warning disable CS0252
+				db.DynamicUsers.Where(o => o.Settings["Property1"] == "test"),
+#pragma warning restore CS0252
+#pragma warning disable CS0253
+				db.DynamicUsers.Where(o => "test" == o.Settings["Property1"])
+#pragma warning restore CS0253
 			);
 		}
 
@@ -373,11 +402,12 @@ namespace NHibernate.Test.Linq
 			System.Type targetType)
 		{
 			var result = NhRelinqQueryParser.PreTransform(expression, new PreTransformationParameters(queryMode, Sfi));
+			var parameters = ExpressionParameterVisitor.Visit(result);
 			expression = result.Expression;
 			var queryModel = NhRelinqQueryParser.Parse(expression);
-			var types = ConstantTypeLocator.GetTypes(queryModel, targetType, Sfi);
-			Assert.That(types.Count, Is.EqualTo(expectedResults.Count), "Incorrect number of constants");
-			foreach (var pair in types)
+			ParameterTypeLocator.SetParameterTypes(parameters, queryModel, targetType, Sfi);
+			Assert.That(parameters.Count, Is.EqualTo(expectedResults.Count), "Incorrect number of parameters");
+			foreach (var pair in parameters)
 			{
 				var origCulture = CultureInfo.CurrentCulture;
 				try
@@ -385,7 +415,7 @@ namespace NHibernate.Test.Linq
 					CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 					var expressionText = pair.Key.ToString();
 					Assert.That(expectedResults.ContainsKey(expressionText), Is.True, $"{expressionText} constant is not expected");
-					Assert.That(expectedResults[expressionText](pair.Value), Is.True, $"Invalid type, actual type: {pair.Value?.Name ?? "null"}");
+					Assert.That(expectedResults[expressionText](pair.Value.Type), Is.True, $"Invalid type, actual type: {pair.Value?.Name ?? "null"}");
 				}
 				finally
 				{

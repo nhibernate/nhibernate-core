@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -28,6 +29,29 @@ namespace NHibernate.Util
 					string.Format("Invalid expression type: Expected ExpressionType.MemberAccess, Found {0}", expression.Body.NodeType));
 			}
 			return ((MemberExpression)expression.Body).Member;
+		}
+
+		/// <summary>
+		/// Try to retrieve <see cref="GetMemberBinder"/> from a reduced <see cref="ExpressionType.Dynamic"/> expression.
+		/// </summary>
+		/// <param name="expression">The reduced dynamic expression.</param>
+		/// <param name="memberBinder">The out binder parameter.</param>
+		/// <returns>Whether the binder was found.</returns>
+		internal static bool TryGetDynamicMemberBinder(InvocationExpression expression, out GetMemberBinder memberBinder)
+		{
+			// This is an ugly workaround for dynamic expressions.
+			// Unfortunately we can not tap into the expression tree earlier to intercept the dynamic expression
+			if (expression.Arguments.Count == 2 &&
+			    expression.Arguments[0] is ConstantExpression constant &&
+			    constant.Value is CallSite site &&
+			    site.Binder is GetMemberBinder binder)
+			{
+				memberBinder = binder;
+				return true;
+			}
+
+			memberBinder = null;
+			return false;
 		}
 
 		/// <summary>
@@ -635,6 +659,19 @@ namespace NHibernate.Util
 				return base.Visit(node.Expression);
 			}
 
+			protected override Expression VisitInvocation(InvocationExpression node)
+			{
+				if (TryGetDynamicMemberBinder(node, out var binder))
+				{
+					_memberPaths.Push(new MemberMetadata(binder.Name, _convertType, _hasIndexer));
+					_convertType = null;
+					_hasIndexer = false;
+					return base.Visit(node.Arguments[1]);
+				}
+
+				return base.Visit(node);
+			}
+
 			protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression node)
 			{
 				if (node.ReferencedQuerySource is IFromClause fromClause)
@@ -719,6 +756,14 @@ namespace NHibernate.Util
 							? Enumerable.First(node.Arguments) // q.Children.ElementAt(0)
 							: node.Object // q.Children[0]
 					);
+				}
+
+				if (VisitorUtil.TryGetPotentialDynamicComponentDictionaryMember(node, out var memberName))
+				{
+					_memberPaths.Push(new MemberMetadata(memberName, _convertType, _hasIndexer));
+					_convertType = null;
+					_hasIndexer = false;
+					return base.Visit(node.Object);
 				}
 
 				return Visit(node);

@@ -10,6 +10,7 @@ using System.Text;
 using NHibernate.Engine;
 using NHibernate.Param;
 using NHibernate.Type;
+using NHibernate.Util;
 using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
@@ -204,6 +205,19 @@ namespace NHibernate.Linq.Visitors
 			_string.Append(expression.Member.Name);
 
 			return expression;
+		}
+
+		protected override Expression VisitInvocation(InvocationExpression expression)
+		{
+			if (ExpressionsHelper.TryGetDynamicMemberBinder(expression, out var memberBinder))
+			{
+				Visit(expression.Arguments[1]);
+				_string.Append(".");
+				_string.Append(memberBinder.Name);
+				return expression;
+			}
+
+			return base.VisitInvocation(expression);
 		}
 
 		protected override Expression VisitMethodCall(MethodCallExpression expression)
