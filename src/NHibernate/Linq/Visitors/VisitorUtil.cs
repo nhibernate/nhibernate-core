@@ -13,25 +13,12 @@ namespace NHibernate.Linq.Visitors
 	{
 		public static bool IsDynamicComponentDictionaryGetter(MethodInfo method, Expression targetObject, IEnumerable<Expression> arguments, ISessionFactory sessionFactory, out string memberName)
 		{
-			memberName = null;
-
-			// A dynamic component must be an IDictionary with a string key.
-
-			if (method.Name != "get_Item" || !typeof(IDictionary).IsAssignableFrom(targetObject.Type) && !typeof(IDictionary<string, object>).IsAssignableFrom(targetObject.Type))
+			if (!TryGetPotentialDynamicComponentDictionaryMember(method, targetObject, arguments, out memberName))
+			{
 				return false;
+			}
 
-			var key = arguments.First() as ConstantExpression;
-			if (key == null || key.Type != typeof(string))
-				return false;
-
-			// The potential member name
-			memberName = (string)key.Value;
-
-			// Need the owning member (the dictionary).
-			var member = targetObject as MemberExpression;
-			if (member == null)
-				return false;
-
+			var member = (MemberExpression) targetObject;
 			var memberPath = member.Member.Name;
 			var metaData = sessionFactory.GetClassMetadata(member.Expression.Type);
 
@@ -130,6 +117,37 @@ namespace NHibernate.Linq.Visitors
 				parentProp = parentProp.Expression as MemberExpression;
 			}
 			return path;
+		}
+
+		internal static bool TryGetPotentialDynamicComponentDictionaryMember(MethodCallExpression expression, out string memberName)
+		{
+			return TryGetPotentialDynamicComponentDictionaryMember(
+				expression.Method,
+				expression.Object,
+				expression.Arguments,
+				out memberName);
+		}
+
+		internal static bool TryGetPotentialDynamicComponentDictionaryMember(
+			MethodInfo method,
+			Expression targetObject,
+			IEnumerable<Expression> arguments,
+			out string memberName)
+		{
+			memberName = null;
+			// A dynamic component must be an IDictionary with a string key.
+			if (method.Name != "get_Item" ||
+			    targetObject.NodeType != ExpressionType.MemberAccess || // Need the owning member (the dictionary).
+			    !(arguments.First() is ConstantExpression key) ||
+			    key.Type != typeof(string) ||
+			    (!typeof(IDictionary).IsAssignableFrom(targetObject.Type) && !typeof(IDictionary<string, object>).IsAssignableFrom(targetObject.Type)))
+			{
+				return false;
+			}
+
+			// The potential member name
+			memberName = (string) key.Value;
+			return true;
 		}
 
 		internal static bool IsMappedAs(MethodInfo methodInfo)
