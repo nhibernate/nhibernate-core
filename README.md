@@ -11,7 +11,7 @@ including [howtos][A1], [blogs][A2] and [reference documentation][A3].
 [A2]: http://nhibernate.info/blog/
 [A3]: http://nhibernate.info/doc/nh/en/index.html
 
-Latest Version
+Latest Release Version
 --------------
 
 The quickest way to get the latest release of NHibernate is to add it to your project using 
@@ -21,6 +21,12 @@ Alternatively binaries are available from SourceForge at <http://sourceforge.net
 
 You are encouraged to review the release notes ([releasenotes.txt](releasenotes.txt)), particularly when upgrading to a 
 later version. The release notes will generally document any breaking changes.
+
+Nightly Development Builds
+--------------------------
+
+The quickest way to get the latest release of NHibernate is to add it to your project using 
+NuGet from MyGet feed (<https://www.myget.org/gallery/nhibernate>).
 
 Community Forums
 ----------------
