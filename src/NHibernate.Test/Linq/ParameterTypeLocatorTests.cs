@@ -415,7 +415,7 @@ namespace NHibernate.Test.Linq
 					CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 					var expressionText = pair.Key.ToString();
 					Assert.That(expectedResults.ContainsKey(expressionText), Is.True, $"{expressionText} constant is not expected");
-					Assert.That(expectedResults[expressionText](pair.Value.Type), Is.True, $"Invalid type, actual type: {pair.Value?.Name ?? "null"}");
+					Assert.That(expectedResults[expressionText](pair.Value.Type), Is.True, $"Invalid type, actual type: {pair.Value?.Type?.Name ?? "null"}");
 				}
 				finally
 				{

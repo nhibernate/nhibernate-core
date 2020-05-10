@@ -16,6 +16,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Util
 {
@@ -31,6 +32,7 @@ namespace NHibernate.Util
 			return ((MemberExpression)expression.Body).Member;
 		}
 
+#if NETCOREAPP2_0
 		/// <summary>
 		/// Try to retrieve <see cref="GetMemberBinder"/> from a reduced <see cref="ExpressionType.Dynamic"/> expression.
 		/// </summary>
@@ -39,7 +41,9 @@ namespace NHibernate.Util
 		/// <returns>Whether the binder was found.</returns>
 		internal static bool TryGetDynamicMemberBinder(InvocationExpression expression, out GetMemberBinder memberBinder)
 		{
-			// This is an ugly workaround for dynamic expressions.
+			// This is an ugly workaround for dynamic expressions in .NET Core. In .NET Core a dynamic expression is reduced
+			// when first visited by a expression visitor that is not a DynamicExpressionVisitor, where in .NET Framework it is never reduced.
+			// As RelinqExpressionVisitor does not extend DynamicExpressionVisitor, we will always have a reduced dynamic expression in .NET Core.
 			// Unfortunately we can not tap into the expression tree earlier to intercept the dynamic expression
 			if (expression.Arguments.Count == 2 &&
 			    expression.Arguments[0] is ConstantExpression constant &&
@@ -53,6 +57,7 @@ namespace NHibernate.Util
 			memberBinder = null;
 			return false;
 		}
+#endif
 
 		/// <summary>
 		/// Check whether the given expression represent a variable.
@@ -659,6 +664,7 @@ namespace NHibernate.Util
 				return base.Visit(node.Expression);
 			}
 
+#if NETCOREAPP2_0
 			protected override Expression VisitInvocation(InvocationExpression node)
 			{
 				if (TryGetDynamicMemberBinder(node, out var binder))
@@ -669,7 +675,21 @@ namespace NHibernate.Util
 					return base.Visit(node.Arguments[1]);
 				}
 
-				return base.Visit(node);
+				return base.VisitInvocation(node);
+			}
+#endif
+
+			protected override Expression VisitDynamic(DynamicExpression node)
+			{
+				if (node.Binder is GetMemberBinder binder)
+				{
+					_memberPaths.Push(new MemberMetadata(binder.Name, _convertType, _hasIndexer));
+					_convertType = null;
+					_hasIndexer = false;
+					return base.Visit(node.Arguments[0]);
+				}
+
+				return Visit(node);
 			}
 
 			protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression node)
