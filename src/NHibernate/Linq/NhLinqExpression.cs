@@ -8,7 +8,6 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Linq.Visitors;
 using NHibernate.Param;
 using NHibernate.Type;
-using Remotion.Linq;
 
 namespace NHibernate.Linq
 {

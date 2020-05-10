@@ -207,18 +207,19 @@ namespace NHibernate.Linq.Visitors
 			return expression;
 		}
 
+#if NETCOREAPP2_0
 		protected override Expression VisitInvocation(InvocationExpression expression)
 		{
 			if (ExpressionsHelper.TryGetDynamicMemberBinder(expression, out var memberBinder))
 			{
 				Visit(expression.Arguments[1]);
-				_string.Append(".");
-				_string.Append(memberBinder.Name);
+				FormatBinder(memberBinder);
 				return expression;
 			}
 
 			return base.VisitInvocation(expression);
 		}
+#endif
 
 		protected override Expression VisitMethodCall(MethodCallExpression expression)
 		{
@@ -279,8 +280,8 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitDynamic(DynamicExpression expression)
 		{
-			FormatBinder(expression.Binder);
 			Visit(expression.Arguments, AppendCommas);
+			FormatBinder(expression.Binder);
 			return expression;
 		}
 
