@@ -106,6 +106,7 @@ namespace NHibernate.Linq.Visitors
 			return base.VisitMethodCall(expression);
 		}
 
+#if NETCOREAPP2_0
 		protected override Expression VisitInvocation(InvocationExpression expression)
 		{
 			if (ExpressionsHelper.TryGetDynamicMemberBinder(expression, out _))
@@ -117,6 +118,7 @@ namespace NHibernate.Linq.Visitors
 
 			return base.VisitInvocation(expression);
 		}
+#endif
 
 		protected override Expression VisitConstant(ConstantExpression expression)
 		{

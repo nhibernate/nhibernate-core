@@ -226,13 +226,14 @@ possible solutions:
 
 		private HqlTreeNode VisitInvocationExpression(InvocationExpression expression)
 		{
+#if NETCOREAPP2_0
 			if (ExpressionsHelper.TryGetDynamicMemberBinder(expression, out var binder))
 			{
 				return _hqlTreeBuilder.Dot(
 					VisitExpression(expression.Arguments[1]).AsExpression(),
 					_hqlTreeBuilder.Ident(binder.Name));
 			}
-
+#endif
 			return VisitExpression(expression.Expression);
 		}
 

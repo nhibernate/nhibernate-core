@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq.Expressions;
 using NHibernate.Engine;
 using NHibernate.Param;
@@ -289,9 +290,13 @@ namespace NHibernate.Linq.Visitors
 			{
 				switch (expression)
 				{
+#if NETCOREAPP2_0
 					case InvocationExpression invocationExpression:
 						// session.Query<Product>().Where("Properties.Name == @0", "First Product")
 						return ExpressionsHelper.TryGetDynamicMemberBinder(invocationExpression, out _);
+#endif
+					case DynamicExpression dynamicExpression:
+						return dynamicExpression.Binder is GetMemberBinder;
 					case MethodCallExpression methodCallExpression:
 						// session.Query<Product>() where p.Properties["Name"] == "First Product" select p
 						return VisitorUtil.TryGetPotentialDynamicComponentDictionaryMember(methodCallExpression, out _);
