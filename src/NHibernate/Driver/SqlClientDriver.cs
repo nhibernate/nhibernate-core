@@ -295,7 +295,7 @@ namespace NHibernate.Driver
 		/// <returns>True, if the parameter should be interpreted as a character, otherwise False</returns>
 		protected static bool IsChar(DbParameter dbParam, SqlType sqlType)
 		{
-			return (DbType.StringFixedLength == dbParam.DbType || DbType.StringFixedLength == dbParam.DbType) &&
+			return (DbType.StringFixedLength == dbParam.DbType || DbType.AnsiStringFixedLength == dbParam.DbType) &&
 			       sqlType.LengthDefined && sqlType.Length == 1;
 		}
 
