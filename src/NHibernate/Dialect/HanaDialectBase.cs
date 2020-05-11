@@ -58,7 +58,7 @@ namespace NHibernate.Dialect
 			}
 
 			/// <inheritdoc />
-			public virtual string FunctionName => "cast";
+			public virtual string Name => "cast";
 
 			public bool HasArguments => true;
 

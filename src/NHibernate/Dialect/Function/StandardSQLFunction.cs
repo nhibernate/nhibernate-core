@@ -67,7 +67,7 @@ namespace NHibernate.Dialect.Function
 		}
 
 		/// <inheritdoc />
-		public string FunctionName => name;
+		public string Name => name;
 
 		public bool HasArguments
 		{

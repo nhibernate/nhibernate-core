@@ -42,7 +42,7 @@ namespace NHibernate.Dialect.Function
 		}
 
 		/// <inheritdoc />
-		public string FunctionName => "nvl";
+		public string Name => "nvl";
 
 		public bool HasArguments
 		{
