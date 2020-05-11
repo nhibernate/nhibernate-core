@@ -116,8 +116,8 @@ namespace NHibernate.Linq.Visitors
 				if (type == null)
 				{
 					type = constantExpression.Value != null
-						? ParameterHelper.TryGuessType(constantExpression.Value, sessionFactory, out _)
-						: ParameterHelper.TryGuessType(constantExpression.Type, sessionFactory, out _);
+						? ParameterHelper.TryGuessType(constantExpression.Value, sessionFactory, namedParameter.IsCollection)
+						: ParameterHelper.TryGuessType(constantExpression.Type, sessionFactory, namedParameter.IsCollection);
 				}
 
 				namedParameter.Type = type;
@@ -251,7 +251,9 @@ namespace NHibernate.Linq.Visitors
 
 			private void AddRelatedExpression(Expression node, Expression left, Expression right)
 			{
-				if (left.NodeType == ExpressionType.MemberAccess || IsDynamicMember(left))
+				if (left.NodeType == ExpressionType.MemberAccess ||
+					IsDynamicMember(left) ||
+					left is QuerySourceReferenceExpression)
 				{
 					AddRelatedExpression(right, left);
 					if (NonVoidOperators.Contains(node.NodeType))

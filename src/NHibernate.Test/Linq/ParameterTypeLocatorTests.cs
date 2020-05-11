@@ -98,6 +98,23 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void EqualEntityTest()
+		{
+			var order = new Order();
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{
+						$"value({typeof(Order).FullName})",
+						o => o is ManyToOneType manyToOne && manyToOne.Name == typeof(Order).FullName
+					}
+				},
+				db.Orders.Where(o => o == order),
+				db.Orders.Where(o => order == o)
+			);
+		}
+
+		[Test]
 		public void DoubleEqualTest()
 		{
 			AssertResults(
