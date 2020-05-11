@@ -107,5 +107,15 @@ namespace NHibernate.Util
 		{
 			return list ?? Array.Empty<T>();
 		}
+
+		internal static IEnumerable<T> CastOrDefault<T>(this IEnumerable list)
+		{
+			foreach (var obj in list)
+			{
+				yield return obj == null
+					? default(T)
+					: (T) obj;
+			}
+		}
 	}
 }
