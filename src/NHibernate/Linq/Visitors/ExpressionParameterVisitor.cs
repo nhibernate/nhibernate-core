@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Engine;
+using NHibernate.Linq.Functions;
 using NHibernate.Param;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -19,8 +20,10 @@ namespace NHibernate.Linq.Visitors
 	{
 		private readonly Dictionary<ConstantExpression, NamedParameter> _parameters = new Dictionary<ConstantExpression, NamedParameter>();
 		private readonly Dictionary<QueryVariable, NamedParameter> _variableParameters = new Dictionary<QueryVariable, NamedParameter>();
+		private readonly HashSet<ConstantExpression> _collectionParameters = new HashSet<ConstantExpression>();
 		private readonly IDictionary<ConstantExpression, QueryVariable> _queryVariables;
 		private readonly ISessionFactoryImplementor _sessionFactory;
+		private readonly ILinqToHqlGeneratorsRegistry _functionRegistry;
 
 		private static readonly ISet<MethodBase> PagingMethods = new HashSet<MethodBase>
 		{
@@ -41,6 +44,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			_sessionFactory = preTransformationResult.SessionFactory;
 			_queryVariables = preTransformationResult.QueryVariables;
+			_functionRegistry = _sessionFactory.Settings.LinqToHqlGeneratorsRegistry;
 		}
 
 		// Since v5.3
@@ -96,6 +100,17 @@ namespace NHibernate.Linq.Visitors
 					return expression;
 
 				return Expression.Call(null, expression.Method, query, arg);
+			}
+
+			if (_functionRegistry != null &&
+				_functionRegistry.TryGetGenerator(method, out var generator) &&
+				generator is CollectionContainsGenerator)
+			{
+				var argument = method.IsStatic ? expression.Arguments[0] : expression.Object;
+				if (argument is ConstantExpression constantExpression)
+				{
+					_collectionParameters.Add(constantExpression);
+				}
 			}
 
 			if (VisitorUtil.IsDynamicComponentDictionaryGetter(expression, _sessionFactory))
@@ -172,7 +187,7 @@ namespace NHibernate.Linq.Visitors
 		private NamedParameter CreateParameter(ConstantExpression expression, object value, IType type)
 		{
 			var parameterName = "p" + (_parameters.Count + 1);
-			return IsCollectionType(expression)
+			return _collectionParameters.Contains(expression)
 				? new NamedListParameter(parameterName, value, type)
 				: new NamedParameter(parameterName, value, type);
 		}
@@ -180,16 +195,6 @@ namespace NHibernate.Linq.Visitors
 		private static bool IsNullObject(ConstantExpression expression)
 		{
 			return expression.Type == typeof(Object) && expression.Value == null;
-		}
-
-		private static bool IsCollectionType(ConstantExpression expression)
-		{
-			if (expression.Value != null)
-			{
-				return expression.Value is IEnumerable && !(expression.Value is string);
-			}
-
-			return expression.Type.IsCollectionType();
 		}
 	}
 }
