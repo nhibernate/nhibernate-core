@@ -25,7 +25,7 @@ later version. The release notes will generally document any breaking changes.
 Nightly Development Builds
 --------------------------
 
-The quickest way to get the latest release of NHibernate is to add it to your project using 
+The quickest way to get the latest development build of NHibernate is to add it to your project using 
 NuGet from MyGet feed (<https://www.myget.org/gallery/nhibernate>).
 
 In order to make life a little bit easier you can register the package source in the NuGet.Config
