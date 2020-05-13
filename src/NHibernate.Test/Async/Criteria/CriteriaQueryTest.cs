@@ -874,7 +874,7 @@ namespace NHibernate.Test.Criteria
 			ProjectionList p2 = Projections.ProjectionList()
 				.Add(Projections.Min("StudentNumber"))
 				.Add(Projections.Avg("StudentNumber"))
-				.Add(Projections.SqlProjection(
+				.Add(Projections.Sql(
 						"1 as constOne, count(*) as countStar",
 						new String[] { "constOne", "countStar" },
 						new IType[] { NHibernateUtil.Int32, NHibernateUtil.Int32 }
@@ -971,7 +971,7 @@ namespace NHibernate.Test.Criteria
 				Student studentSubquery = null;
 				var subquery = QueryOver.Of(() => studentSubquery)
 				         .And(
-					         Expression.Sql("{e}.studentId = 667 and {studentSubquery}.studentId = 667")
+					         Restrictions.Sql("{e}.studentId = 667 and {studentSubquery}.studentId = 667")
 					                   .AddCriteriaAliases("e", "studentSubquery")).Select(Projections.Id());
 				         
 				var uniqueResult = await (s.CreateCriteria(typeof(Student))
@@ -983,7 +983,7 @@ namespace NHibernate.Test.Criteria
 				                    .CreateCriteria("Course", "c")
 				                    .AddOrder(Order.Asc("Description"))
 				                    .SetProjection(
-					                    Projections.SqlProjection(
+					                    Projections.Sql(
 						                    "{alias}.studentId as studentNumber, {e}.Semester as semester,"
 						                    + " {c}.CourseCode as courseCode, {c}.Description as descr",
 						                    new string[] {"studentNumber", "semester", "courseCode", "descr"},
@@ -1153,7 +1153,7 @@ namespace NHibernate.Test.Criteria
 			ProjectionList p2 = Projections.ProjectionList()
 				.Add(Projections.Min("StudentNumber"))
 				.Add(Projections.Avg("StudentNumber"))
-				.Add(Projections.SqlProjection(
+				.Add(Projections.Sql(
 						"1 as constOne, count(*) as countStar",
 						new String[] { "constOne", "countStar" },
 						new IType[] { NHibernateUtil.Int32, NHibernateUtil.Int32 }
@@ -1453,7 +1453,7 @@ namespace NHibernate.Test.Criteria
 			ProjectionList p2 = Projections.ProjectionList()
 				.Add(Property.ForName("StudentNumber").Min())
 				.Add(Property.ForName("StudentNumber").Avg())
-				.Add(Projections.SqlProjection(
+				.Add(Projections.Sql(
 					"1 as constOne, count(*) as countStar",
 					new String[] { "constOne", "countStar" },
 					new IType[] { NHibernateUtil.Int32, NHibernateUtil.Int32 }
@@ -1946,7 +1946,7 @@ namespace NHibernate.Test.Criteria
 			ProjectionList p2 = Projections.ProjectionList()
 				.Add(Property.ForName("StudentNumber").Min())
 				.Add(Property.ForName("StudentNumber").Avg())
-				.Add(Projections.SqlProjection(
+				.Add(Projections.Sql(
 						"1 as constOne, count(*) as countStar",
 						new String[] { "constOne", "countStar" },
 						new IType[] { NHibernateUtil.Int32, NHibernateUtil.Int32 }
@@ -2539,7 +2539,7 @@ namespace NHibernate.Test.Criteria
 			{
 				ICriteria c = session.CreateCriteria(typeof(Student));
 				c.Add(Expression.Eq("StudentNumber", (long)232));
-				c.Add(Expression.Sql("2 = ?", 1, NHibernateUtil.Int32));
+				c.Add(Restrictions.Sql("2 = ?", 1, NHibernateUtil.Int32));
 
 				Student gavin = new Student();
 				gavin.Name = "Gavin King";

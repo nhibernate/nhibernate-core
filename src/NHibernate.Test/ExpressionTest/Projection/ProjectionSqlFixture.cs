@@ -101,7 +101,7 @@ namespace NHibernate.Test.ExpressionTest.Projection
                 ICriteria c = session.CreateCriteria(typeof(ProjectionTestClass));
 
                 c.SetProjection(Projections.ProjectionList()
-                    .Add(Projections.SqlProjection("Avg({alias}.Pay) as MyPay",
+                    .Add(Projections.Sql("Avg({alias}.Pay) as MyPay",
                     new string[] { "MyPay" },
                     new IType[] { NHibernateUtil.Double })));
 

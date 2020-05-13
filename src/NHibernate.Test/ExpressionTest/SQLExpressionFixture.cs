@@ -13,7 +13,7 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			using (ISession session = factory.OpenSession())
 			{
-				ICriterion sqlExpression = Expression.Sql("{alias}.address is not null");
+				ICriterion sqlExpression = Restrictions.Sql("{alias}.address is not null");
 
 				CreateObjects(typeof(Simple), session);
 				SqlString sqlString = sqlExpression.ToSqlString(criteria, criteriaQuery);
@@ -29,7 +29,7 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			using (ISession session = factory.OpenSession())
 			{
-				ICriterion sqlExpression = Expression.Sql(new SqlString("{alias}.address is not null"));
+				ICriterion sqlExpression = Restrictions.Sql(new SqlString("{alias}.address is not null"));
 
 				CreateObjects(typeof(Simple), session);
 				SqlString sqlString = sqlExpression.ToSqlString(criteria, criteriaQuery);
@@ -52,7 +52,7 @@ namespace NHibernate.Test.ExpressionTest
 				builder.Add("{alias}.address = ");
 				builder.AddParameter();
 
-				ICriterion sqlExpression = Expression.Sql(builder.ToSqlString(), "some address", NHibernateUtil.String);
+				ICriterion sqlExpression = Restrictions.Sql(builder.ToSqlString(), "some address", NHibernateUtil.String);
 
 				CreateObjects(typeof(Simple), session);
 				SqlString sqlString = sqlExpression.ToSqlString(criteria, criteriaQuery);

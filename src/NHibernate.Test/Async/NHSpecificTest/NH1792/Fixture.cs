@@ -113,7 +113,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1792
 
 				IList<Product> results =
 					await (session.CreateCriteria<Product>().Add(
-						Expression.Sql("{alias}.Id in (Select " + top + " p.Id from Product p order by Name)")).Add(Restrictions.Gt("Id", 0)).
+						Restrictions.Sql("{alias}.Id in (Select " + top + " p.Id from Product p order by Name)")).Add(Restrictions.Gt("Id", 0)).
 						SetMaxResults(3).ListAsync<Product>());
 
 				Assert.AreEqual(3, results.Count);

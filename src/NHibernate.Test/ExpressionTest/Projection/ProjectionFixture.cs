@@ -155,7 +155,7 @@ namespace NHibernate.Test.ExpressionTest.Projection
 		public void SqlGroupProjectionTest()
 		{
 			ISession session = factory.OpenSession();
-			IProjection expression = Projections.SqlGroupProjection("count(Pay)", "Pay",
+			IProjection expression = Projections.Sql("count(Pay)", "Pay",
 			                                                        new string[] {"PayCount"},
 			                                                        new IType[] {NHibernateUtil.Double}
 				);
@@ -170,7 +170,7 @@ namespace NHibernate.Test.ExpressionTest.Projection
 		public void SqlProjectionTest()
 		{
 			ISession session = factory.OpenSession();
-			IProjection expression = Projections.SqlProjection("count(Pay)",
+			IProjection expression = Projections.Sql("count(Pay)",
 			                                                   new string[] {"CountOfPay"}, new
 			                                                                                	IType[] {NHibernateUtil.Double});
 			CreateObjects(typeof(Simple), session);

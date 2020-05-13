@@ -218,7 +218,7 @@ namespace NHibernate.Criterion
 		/// The string {alias} will be replaced by the alias of the root entity.
 		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddCriteriaAliases("a", "bc")
 		/// </summary>
-		public static SQLProjection SqlProjection(string sql, string[] columnAliases, IType[] types)
+		public static SQLProjection Sql(string sql, string[] columnAliases, IType[] types)
 		{
 			return new SQLProjection(sql, columnAliases, types);
 		}
@@ -227,8 +227,30 @@ namespace NHibernate.Criterion
 		/// A grouping SQL projection, specifying both select clause and group by clause fragments
 		/// The string {alias} will be replaced by the alias of the root entity.
 		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddCriteriaAliases("a", "bc")
+		/// </summary>	
+		public static SQLProjection Sql(string sql, string groupBy, string[] columnAliases, IType[] types)
+		{
+			return new SQLProjection(sql, groupBy, columnAliases, types);
+		}
+
+		/// <summary>
+		/// A SQL projection, a typed select clause fragment.
+		/// The string {alias} will be replaced by the alias of the root entity.
 		/// </summary>
-		public static SQLProjection SqlGroupProjection(string sql, string groupBy, string[] columnAliases, IType[] types)
+		//Since v5.3
+		[Obsolete("Use Projections.Sql instead")]
+		public static IProjection SqlProjection(string sql, string[] columnAliases, IType[] types)
+		{
+			return new SQLProjection(sql, columnAliases, types);
+		}
+
+		/// <summary>
+		/// A grouping SQL projection, specifying both select clause and group by clause fragments
+		/// The string {alias} will be replaced by the alias of the root entity.
+		/// </summary>
+		//Since v5.3
+		[Obsolete("Use Projections.Sql instead")]
+		public static IProjection SqlGroupProjection(string sql, string groupBy, string[] columnAliases, IType[] types)
 		{
 			return new SQLProjection(sql, groupBy, columnAliases, types);
 		}

@@ -262,18 +262,18 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void SQLCriterion()
 		{
-			ICriterion c = Expression.Sql("SELECT Name FROM Student");
+			ICriterion c = Restrictions.Sql("SELECT Name FROM Student");
 			NHAssert.IsSerializable(c);
 		}
 
 		[Test]
 		public void SQLProjection()
 		{
-			IProjection p = Projections.SqlProjection("COUNT(*)",
+			IProjection p = Projections.Sql("COUNT(*)",
 													  new string[] { "tStudent" }, new IType[] { NHibernateUtil.Int32 });
 			NHAssert.IsSerializable(p);
 			p =
-				Projections.SqlGroupProjection("COUNT({alias}.studentId), {alias}.preferredCourseCode",
+				Projections.Sql("COUNT({alias}.studentId), {alias}.preferredCourseCode",
 											   "{alias}.preferredCourseCode",
 											   new string[] { "studentsOfCourse", "CourseCode" },
 											   new IType[] { NHibernateUtil.Int32, NHibernateUtil.Int32 });
@@ -404,19 +404,19 @@ namespace NHibernate.Test.Criteria
 
 			// SQLCriterion
 			dc = DetachedCriteria.For(typeof(Student))
-				.Add(Expression.Sql("{alias}.Name = 'Gavin'"));
+				.Add(Restrictions.Sql("{alias}.Name = 'Gavin'"));
 			SerializeAndList(dc);
 
 			// SQLProjection
 			dc = DetachedCriteria.For(typeof(Enrolment))
-				.SetProjection(Projections.SqlProjection("1 as constOne, count(*) as countStar",
+				.SetProjection(Projections.Sql("1 as constOne, count(*) as countStar",
 														 new String[] { "constOne", "countStar" },
 														 new IType[] { NHibernateUtil.Int32, NHibernateUtil.Int32 }));
 			SerializeAndList(dc);
 
 			dc = DetachedCriteria.For(typeof(Student))
 				.SetProjection(
-				Projections.SqlGroupProjection("COUNT({alias}.studentId), {alias}.preferredCourseCode",
+				Projections.Sql("COUNT({alias}.studentId), {alias}.preferredCourseCode",
 											   "{alias}.preferredCourseCode",
 											   new string[] { "studentsOfCourse", "CourseCode" },
 											   new IType[] { NHibernateUtil.Int32, NHibernateUtil.Int32 }));

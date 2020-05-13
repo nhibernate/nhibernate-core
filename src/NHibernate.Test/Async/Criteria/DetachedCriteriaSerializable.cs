@@ -150,19 +150,19 @@ namespace NHibernate.Test.Criteria
 
 			// SQLCriterion
 			dc = DetachedCriteria.For(typeof(Student))
-				.Add(Expression.Sql("{alias}.Name = 'Gavin'"));
+				.Add(Restrictions.Sql("{alias}.Name = 'Gavin'"));
 			await (SerializeAndListAsync(dc));
 
 			// SQLProjection
 			dc = DetachedCriteria.For(typeof(Enrolment))
-				.SetProjection(Projections.SqlProjection("1 as constOne, count(*) as countStar",
+				.SetProjection(Projections.Sql("1 as constOne, count(*) as countStar",
 														 new String[] { "constOne", "countStar" },
 														 new IType[] { NHibernateUtil.Int32, NHibernateUtil.Int32 }));
 			await (SerializeAndListAsync(dc));
 
 			dc = DetachedCriteria.For(typeof(Student))
 				.SetProjection(
-				Projections.SqlGroupProjection("COUNT({alias}.studentId), {alias}.preferredCourseCode",
+				Projections.Sql("COUNT({alias}.studentId), {alias}.preferredCourseCode",
 											   "{alias}.preferredCourseCode",
 											   new string[] { "studentsOfCourse", "CourseCode" },
 											   new IType[] { NHibernateUtil.Int32, NHibernateUtil.Int32 }));
