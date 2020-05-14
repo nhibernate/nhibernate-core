@@ -1102,7 +1102,7 @@ namespace NHibernate.Test.Criteria
 				s.Query<Enrolment>().Delete();
 				s.Query<Student>().Delete();
 				s.Query<Course>().Delete();
-				s.Transaction.Commit();
+				s.GetCurrentTransaction().Commit();
 			}
 		}
 

@@ -1005,7 +1005,7 @@ namespace NHibernate.Test.Criteria
 				await (s.Query<Enrolment>().DeleteAsync());
 				await (s.Query<Student>().DeleteAsync());
 				await (s.Query<Course>().DeleteAsync());
-				await (s.Transaction.CommitAsync());
+				await (s.GetCurrentTransaction().CommitAsync());
 			}
 		}
 
