@@ -870,7 +870,7 @@ namespace NHibernate.Loader.Criteria
 				return GetSQLAlias(criteria);
 
 			if (outerQueryTranslator != null)
-				return ((CriteriaQueryTranslator) outerQueryTranslator).GetSQLAlias(criteriaAlias);
+				return outerQueryTranslator.GetSQLAlias(criteriaAlias);
 
 			throw new InvalidOperationException("Could not find criteria by alias: " + criteriaAlias);
 		}
