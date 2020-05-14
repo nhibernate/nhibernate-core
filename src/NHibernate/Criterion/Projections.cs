@@ -216,7 +216,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// A SQL projection, a typed select clause fragment.
 		/// The string {alias} will be replaced by the alias of the root entity.
-		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddCriteriaAliases("a", "bc")
+		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddAliases("a", "bc")
 		/// </summary>
 		public static SQLProjection Sql(string sql, string[] columnAliases, IType[] types)
 		{
@@ -226,7 +226,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// A grouping SQL projection, specifying both select clause and group by clause fragments
 		/// The string {alias} will be replaced by the alias of the root entity.
-		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddCriteriaAliases("a", "bc")
+		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddAliases("a", "bc")
 		/// </summary>	
 		public static SQLProjection Sql(string sql, string groupBy, string[] columnAliases, IType[] types)
 		{

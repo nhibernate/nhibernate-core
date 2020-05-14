@@ -10,7 +10,7 @@ namespace NHibernate.Criterion
 	/// <summary>
 	/// An <see cref="ICriterion"/> that creates a SQLExpression.
 	/// The string {alias} will be replaced by the alias of the root entity.
-	/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddCriteriaAliases("a", "bc")
+	/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddAliases("a", "bc")
 	/// </summary>
 	/// <remarks>
 	/// This allows for database specific Expressions at the cost of needing to 
@@ -67,7 +67,7 @@ namespace NHibernate.Criterion
 		/// Provide list of criteria aliases that's used in SQL projection.
 		/// To be replaced with SQL aliases.
 		/// </summary>
-		public SQLCriterion AddCriteriaAliases(params string[] criteriaAliases)
+		public SQLCriterion AddAliases(params string[] criteriaAliases)
 		{
 			if(_criteriaAliases == null)
 				_criteriaAliases = new List<string>();

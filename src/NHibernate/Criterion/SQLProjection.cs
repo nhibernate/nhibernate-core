@@ -9,7 +9,7 @@ namespace NHibernate.Criterion
 
 	/// <summary>
 	/// A SQL fragment. The string {alias} will be replaced by the alias of the root entity.
-	/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddCriteriaAliases("a", "bc")
+	/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddAliases("a", "bc")
 	/// </summary>
 	[Serializable]
 	public sealed class SQLProjection : IProjection
@@ -46,7 +46,7 @@ namespace NHibernate.Criterion
 		/// Provide list of criteria aliases that's used in SQL projection.
 		/// To be replaced with SQL aliases.
 		/// </summary>
-		public SQLProjection AddCriteriaAliases(params string[] criteriaAliases)
+		public SQLProjection AddAliases(params string[] criteriaAliases)
 		{
 			if(_criteriaAliases == null)
 				_criteriaAliases = new List<string>();

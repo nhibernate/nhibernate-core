@@ -801,7 +801,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Apply a constraint expressed in SQL, with the given SQL parameters
 		/// The string {alias} will be replaced by the alias of the root entity.
-		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddCriteriaAliases("a", "bc")
+		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddAliases("a", "bc")
 		/// </summary>
 		/// <param name="sql"></param>
 		/// <param name="values"></param>
@@ -815,7 +815,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Apply a constraint expressed in SQL, with the given SQL parameter
 		/// The string {alias} will be replaced by the alias of the root entity.
-		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddCriteriaAliases("a", "bc")
+		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddAliases("a", "bc")
 		/// </summary>
 		/// <param name="sql"></param>
 		/// <param name="value"></param>
@@ -829,7 +829,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Apply a constraint expressed in SQL, with the given SQL parameter
 		/// The string {alias} will be replaced by the alias of the root entity.
-		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddCriteriaAliases("a", "bc")
+		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddAliases("a", "bc")
 		/// </summary>
 		public static SQLCriterion Sql(string sql, object value, IType type)
 		{
@@ -839,7 +839,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Apply a constraint expressed in SQL, with the given SQL parameter
 		/// The string {alias} will be replaced by the alias of the root entity.
-		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddCriteriaAliases("a", "bc")
+		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddAliases("a", "bc")
 		/// </summary>
 		public static SQLCriterion Sql(string sql, object[] values, IType[] types)
 		{
@@ -849,7 +849,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Apply a constraint expressed in SQL
 		/// The string {alias} will be replaced by the alias of the root entity.
-		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddCriteriaAliases("a", "bc")
+		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddAliases("a", "bc")
 		/// </summary>
 		/// <param name="sql"></param>
 		/// <returns></returns>
@@ -861,7 +861,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Apply a constraint expressed in SQL
 		/// The string {alias} will be replaced by the alias of the root entity.
-		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddCriteriaAliases("a", "bc")
+		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddAliases("a", "bc")
 		/// </summary>
 		/// <param name="sql"></param>
 		/// <returns></returns>
