@@ -16,7 +16,7 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Loader.Criteria
 {
-	public class CriteriaQueryTranslator : ICriteriaQuery, ISupportEntityProjectionCriteriaQuery, ICriteriaQueryNextVer
+	public class CriteriaQueryTranslator : ICriteriaQuery, ISupportEntityProjectionCriteriaQuery
 	{
 		public class EntityJoinInfo
 		{
@@ -863,13 +863,14 @@ namespace NHibernate.Loader.Criteria
 			return GetEntityName(subcriteria);
 		}
 
+		//TODO 6.0: Add to ICriteriaQuery interface
 		public string GetSQLAlias(string criteriaAlias)
 		{
 			if (aliasCriteriaMap.TryGetValue(criteriaAlias, out var criteria))
 				return GetSQLAlias(criteria);
 
 			if (outerQueryTranslator != null)
-				return ((ICriteriaQueryNextVer) outerQueryTranslator).GetSQLAlias(criteriaAlias);
+				return ((CriteriaQueryTranslator) outerQueryTranslator).GetSQLAlias(criteriaAlias);
 
 			throw new InvalidOperationException("Could not find criteria by alias: " + criteriaAlias);
 		}

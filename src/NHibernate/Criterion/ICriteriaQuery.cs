@@ -1,18 +1,26 @@
 using System.Collections.Generic;
 using NHibernate.Engine;
+using NHibernate.Loader.Criteria;
 using NHibernate.Param;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
 	//TODO 6.0: Add to ICriteriaQuery interface
-	internal interface ICriteriaQueryNextVer
+	internal static class CriteriaQueryExtensions
 	{
 		/// <summary> 
 		/// Get the SQL table alias for given criteria alias
 		/// </summary>
-		string GetSQLAlias(string criteriaAlias);
+		public static string GetSQLAlias(this ICriteriaQuery query, string criteriaAlias)
+		{
+			return
+				ReflectHelper
+					.CastOrThrow<CriteriaQueryTranslator>(query, "retrieving criteria SQL alias")
+					.GetSQLAlias(criteriaAlias);
+		}
 	}
 
 	/// <summary> 

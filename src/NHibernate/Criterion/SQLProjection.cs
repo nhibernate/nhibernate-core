@@ -76,11 +76,7 @@ namespace NHibernate.Criterion
 			{
 				foreach (var alias in criteriaAliases)
 				{
-					sqlTemplate = sqlTemplate.Replace(
-						"{" + alias + "}",
-						criteriaQuery is ICriteriaQueryNextVer cqNew
-							? cqNew.GetSQLAlias(alias)
-							: criteriaQuery.GetSQLAlias(criteria, alias + ".id"));
+					sqlTemplate = sqlTemplate.Replace("{" + alias + "}", criteriaQuery.GetSQLAlias(alias));
 				}
 			}
 
