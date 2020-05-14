@@ -11,7 +11,7 @@ using NHibernate.Util;
 namespace NHibernate
 {
 	// 6.0 TODO: Convert most of these extensions to interface methods
-	public static class StatelessSessionExtensions
+	public static partial class StatelessSessionExtensions
 	{
 		/// <summary>
 		/// Creates a <see cref="IQueryBatch"/> for the session.
@@ -31,6 +31,12 @@ namespace NHibernate
 		/// <returns>The current transaction or <see langword="null" />..</returns>
 		public static ITransaction GetCurrentTransaction(this IStatelessSession session)
 			=> session.GetSessionImplementation().ConnectionManager.CurrentTransaction;
+
+		//NOTE: Keep it as extension
+		public static T Get<T>(this IStatelessSession session, string entityName, object id, LockMode lockMode = null)
+		{
+			return (T) session.Get(entityName, id, lockMode);
+		}
 	}
 
 	/// <summary>

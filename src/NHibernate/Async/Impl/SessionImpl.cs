@@ -803,22 +803,19 @@ namespace NHibernate.Impl
 			return LoadAsync(entityClass.FullName, id, cancellationToken);
 		}
 
-		public async Task<T> GetAsync<T>(object id, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<T> GetAsync<T>(object id, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			using (BeginProcess())
+			if (cancellationToken.IsCancellationRequested)
 			{
-				return (T)await (GetAsync(typeof(T), id, cancellationToken)).ConfigureAwait(false);
+				return Task.FromCanceled<T>(cancellationToken);
 			}
+			return GetAsync<T>(id, lockMode: null, cancellationToken: cancellationToken);
 		}
 
 		public async Task<T> GetAsync<T>(object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (BeginProcess())
-			{
-				return (T)await (GetAsync(typeof(T), id, lockMode, cancellationToken)).ConfigureAwait(false);
-			}
+			return (T) await (GetAsync(typeof(T), id, lockMode, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public Task<object> GetAsync(System.Type entityClass, object id, CancellationToken cancellationToken = default(CancellationToken))
@@ -827,7 +824,7 @@ namespace NHibernate.Impl
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return GetAsync(entityClass.FullName, id, cancellationToken);
+			return GetAsync(entityClass, id, lockMode: null, cancellationToken: cancellationToken);
 		}
 
 		/// <summary>
@@ -842,14 +839,37 @@ namespace NHibernate.Impl
 		/// <param name="lockMode"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		public async Task<object> GetAsync(System.Type clazz, object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> GetAsync(System.Type clazz, object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return GetAsync(clazz.FullName, id, lockMode, cancellationToken);
+		}
+
+		/// <summary>
+		/// Return the persistent instance of the given entity name with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		public async Task<object> GetAsync(string entityName, object id, LockMode lockMode, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (BeginProcess())
 			{
-				LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, lockMode, this);
-				await (FireLoadAsync(loadEvent, LoadEventListener.Get, cancellationToken)).ConfigureAwait(false);
-				return loadEvent.Result;
+				LoadEvent loadEvent = new LoadEvent(id, entityName, lockMode, this);
+				bool success = false;
+				try
+				{
+					await (FireLoadAsync(loadEvent, LoadEventListener.Get, cancellationToken)).ConfigureAwait(false);
+					success = true;
+					return loadEvent.Result;
+				}
+				finally
+				{
+					await (AfterOperationAsync(success, cancellationToken)).ConfigureAwait(false);
+				}
 			}
 		}
 
@@ -882,24 +902,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public async Task<object> GetAsync(string entityName, object id, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> GetAsync(string entityName, object id, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			using (BeginProcess())
+			if (cancellationToken.IsCancellationRequested)
 			{
-				LoadEvent loadEvent = new LoadEvent(id, entityName, false, this);
-				bool success = false;
-				try
-				{
-					await (FireLoadAsync(loadEvent, LoadEventListener.Get, cancellationToken)).ConfigureAwait(false);
-					success = true;
-					return loadEvent.Result;
-				}
-				finally
-				{
-					await (AfterOperationAsync(success, cancellationToken)).ConfigureAwait(false);
-				}
+				return Task.FromCanceled<object>(cancellationToken);
 			}
+			return GetAsync(entityName, id, null, cancellationToken);
 		}
 
 		/// <summary>

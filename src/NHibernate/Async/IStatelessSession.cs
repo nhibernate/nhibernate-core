@@ -22,6 +22,16 @@ namespace NHibernate
 {
 	using System.Threading.Tasks;
 	using System.Threading;
+	public static partial class StatelessSessionExtensions
+	{
+
+		//NOTE: Keep it as extension
+		public static async Task<T> GetAsync<T>(this IStatelessSession session, string entityName, object id, LockMode lockMode = null, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			return (T) await (session.GetAsync(entityName, id, lockMode, cancellationToken)).ConfigureAwait(false);
+		}
+	}
 
 	public partial interface IStatelessSession : IDisposable
 	{

@@ -15,7 +15,7 @@ using NHibernate.Util;
 namespace NHibernate
 {
 	// 6.0 TODO: Convert most of these extensions to interface methods
-	public static class SessionExtensions
+	public static partial class SessionExtensions
 	{
 		/// <summary>
 		/// Obtain a <see cref="IStatelessSession"/> builder with the ability to grab certain information from
@@ -48,6 +48,30 @@ namespace NHibernate
 		/// <returns>The current transaction or <see langword="null" />..</returns>
 		public static ITransaction GetCurrentTransaction(this ISession session)
 			=> session.GetSessionImplementation().ConnectionManager.CurrentTransaction;
+
+		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		public static object Get(this ISession session, string entityName, object id, LockMode lockMode)
+		{
+			return
+				ReflectHelper
+					.CastOrThrow<SessionImpl>(session, "Get with entityName and lockMode")
+					.Get(entityName, id, lockMode);
+		}
+
+		//NOTE: Keep it as extension
+		/// <summary>
+		/// Return the persistent instance of the given entity name with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		public static T Get<T>(this ISession session, string entityName, object id, LockMode lockMode = null)
+		{
+			return (T) session.Get(entityName, id, lockMode);
+		}
 	}
 
 	/// <summary>

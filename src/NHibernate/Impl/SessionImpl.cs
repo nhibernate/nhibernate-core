@@ -1158,23 +1158,17 @@ namespace NHibernate.Impl
 
 		public T Get<T>(object id)
 		{
-			using (BeginProcess())
-			{
-				return (T)Get(typeof(T), id);
-			}
+			return Get<T>(id, lockMode: null);
 		}
 
 		public T Get<T>(object id, LockMode lockMode)
 		{
-			using (BeginProcess())
-			{
-				return (T)Get(typeof(T), id, lockMode);
-			}
+			return (T) Get(typeof(T), id, lockMode);
 		}
 
 		public object Get(System.Type entityClass, object id)
 		{
-			return Get(entityClass.FullName, id);
+			return Get(entityClass, id, lockMode: null);
 		}
 
 		/// <summary>
@@ -1190,11 +1184,30 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object Get(System.Type clazz, object id, LockMode lockMode)
 		{
+			return Get(clazz.FullName, id, lockMode);
+		}
+
+		/// <summary>
+		/// Return the persistent instance of the given entity name with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		public object Get(string entityName, object id, LockMode lockMode)
+		{
 			using (BeginProcess())
 			{
-				LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, lockMode, this);
-				FireLoad(loadEvent, LoadEventListener.Get);
-				return loadEvent.Result;
+				LoadEvent loadEvent = new LoadEvent(id, entityName, lockMode, this);
+				bool success = false;
+				try
+				{
+					FireLoad(loadEvent, LoadEventListener.Get);
+					success = true;
+					return loadEvent.Result;
+				}
+				finally
+				{
+					AfterOperation(success);
+				}
 			}
 		}
 
@@ -1228,21 +1241,7 @@ namespace NHibernate.Impl
 
 		public object Get(string entityName, object id)
 		{
-			using (BeginProcess())
-			{
-				LoadEvent loadEvent = new LoadEvent(id, entityName, false, this);
-				bool success = false;
-				try
-				{
-					FireLoad(loadEvent, LoadEventListener.Get);
-					success = true;
-					return loadEvent.Result;
-				}
-				finally
-				{
-					AfterOperation(success);
-				}
-			}
+			return Get(entityName, id, null);
 		}
 
 		/// <summary>
