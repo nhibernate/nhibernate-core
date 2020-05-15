@@ -1379,7 +1379,9 @@ namespace NHibernate.Engine
 		
 		public void ReplaceDelayedEntityIdentityInsertKeys(EntityKey oldKey, object generatedId)
 		{
-			entitiesByKey.Remove(oldKey, out var tempObject);
+			if (!entitiesByKey.Remove(oldKey, out var tempObject))
+				throw new KeyNotFoundException(oldKey.ToString());
+
 			object entity = tempObject;
 			object tempObject2 = entityEntries[entity];
 			entityEntries.Remove(entity);
