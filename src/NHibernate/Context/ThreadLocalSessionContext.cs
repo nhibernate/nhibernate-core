@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using NHibernate;
 using NHibernate.Engine;
+using NHibernate.Util;
 
 namespace NHibernate.Context
 {
@@ -36,7 +37,7 @@ namespace NHibernate.Context
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ThreadLocalSessionContext));
 
 		[ThreadStatic]
-		protected static IDictionary<ISessionFactory, ISession> context;
+		protected static Dictionary<ISessionFactory, ISession> context;
 
 		protected readonly ISessionFactoryImplementor factory;
 
@@ -122,18 +123,13 @@ namespace NHibernate.Context
 
 		private static ISession DoUnbind(ISessionFactory factory, bool releaseMapIfEmpty)
 		{
-			ISession session = null;
+			if (context == null) 
+				return null;
 
-			if (context != null)
-			{
-				if (context.TryGetValue(factory, out session))
-				{
-					context.Remove(factory);
-				}
+			context.Remove(factory, out var session);
 
-				if (releaseMapIfEmpty && context.Count == 0)
-					context = null;
-			}
+			if (releaseMapIfEmpty && context.Count == 0)
+				context = null;
 			return session;
 		}
 
