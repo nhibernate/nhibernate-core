@@ -737,9 +737,7 @@ namespace NHibernate.Util
 		internal static bool Remove<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, out TValue value)
 		{
 			if (!dic.TryGetValue(key, out value))
-			{
 				return false;
-			}
 
 			dic.Remove(key);
 			return true;

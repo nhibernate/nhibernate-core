@@ -443,7 +443,9 @@ namespace NHibernate.Engine
 		/// </summary>
 		public object RemoveEntity(EntityKey key)
 		{
-			entitiesByKey.Remove(key, out var tempObject);
+			if (!entitiesByKey.Remove(key, out var tempObject))
+				throw new KeyNotFoundException(key.ToString());
+
 			object entity = tempObject;
 			List<EntityUniqueKey> toRemove = new List<EntityUniqueKey>();
 			foreach (KeyValuePair<EntityUniqueKey, object> pair in entitiesByUniqueKey)
