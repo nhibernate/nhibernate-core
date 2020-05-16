@@ -34,6 +34,12 @@ namespace NHibernate
 		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
 		/// already associated with the session, return that instance or proxy.)
 		/// </summary>
+		/// <param name="session">The session.</param>
+		/// <param name="entityName">The entity name.</param>
+		/// <param name="id">The entity identifier.</param>
+		/// <param name="lockMode">The lock mode to use for getting the entity.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>A persistent instance, or <see langword="null" />.</returns>
 		public static Task<object> GetAsync(this ISession session, string entityName, object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -59,6 +65,13 @@ namespace NHibernate
 		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
 		/// already associated with the session, return that instance or proxy.)
 		/// </summary>
+		/// <typeparam name="T">The entity class.</typeparam>
+		/// <param name="session">The session.</param>
+		/// <param name="entityName">The entity name.</param>
+		/// <param name="id">The entity identifier.</param>
+		/// <param name="lockMode">The lock mode to use for getting the entity.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>A persistent instance, or <see langword="null" />.</returns>
 		public static async Task<T> GetAsync<T>(this ISession session, string entityName, object id, LockMode lockMode = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();

@@ -848,11 +848,7 @@ namespace NHibernate.Impl
 			return GetAsync(clazz.FullName, id, lockMode, cancellationToken);
 		}
 
-		/// <summary>
-		/// Return the persistent instance of the given entity name with the given identifier, or null
-		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
-		/// already associated with the session, return that instance or proxy.)
-		/// </summary>
+		/// <inheritdoc />
 		public async Task<object> GetAsync(string entityName, object id, LockMode lockMode, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
