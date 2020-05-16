@@ -1187,11 +1187,7 @@ namespace NHibernate.Impl
 			return Get(clazz.FullName, id, lockMode);
 		}
 
-		/// <summary>
-		/// Return the persistent instance of the given entity name with the given identifier, or null
-		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
-		/// already associated with the session, return that instance or proxy.)
-		/// </summary>
+		/// <inheritdoc />
 		public object Get(string entityName, object id, LockMode lockMode)
 		{
 			using (BeginProcess())

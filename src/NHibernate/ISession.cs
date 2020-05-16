@@ -54,6 +54,11 @@ namespace NHibernate
 		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
 		/// already associated with the session, return that instance or proxy.)
 		/// </summary>
+		/// <param name="session">The session.</param>
+		/// <param name="entityName">The entity name.</param>
+		/// <param name="id">The entity identifier.</param>
+		/// <param name="lockMode">The lock mode to use for getting the entity.</param>
+		/// <returns>A persistent instance, or <see langword="null" />.</returns>
 		public static object Get(this ISession session, string entityName, object id, LockMode lockMode)
 		{
 			return
@@ -68,6 +73,12 @@ namespace NHibernate
 		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
 		/// already associated with the session, return that instance or proxy.)
 		/// </summary>
+		/// <typeparam name="T">The entity class.</typeparam>
+		/// <param name="session">The session.</param>
+		/// <param name="entityName">The entity name.</param>
+		/// <param name="id">The entity identifier.</param>
+		/// <param name="lockMode">The lock mode to use for getting the entity.</param>
+		/// <returns>A persistent instance, or <see langword="null" />.</returns>
 		public static T Get<T>(this ISession session, string entityName, object id, LockMode lockMode = null)
 		{
 			return (T) session.Get(entityName, id, lockMode);
