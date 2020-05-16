@@ -410,9 +410,7 @@ namespace NHibernate.AdoNet
 			var nhReader = reader as NHybridDataReader;
 			var actualReader = nhReader == null ? reader : nhReader.Target;
 
-			Stopwatch duration;
-			if (_readersDuration.TryGetValue(actualReader, out duration))
-				_readersDuration.Remove(actualReader);
+			_readersDuration.Remove(actualReader, out var duration);
 			return duration;
 		}
 
