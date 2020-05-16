@@ -9,6 +9,7 @@ namespace NHibernate.Criterion
 	/// <summary>
 	/// An <see cref="ICriterion"/> that creates a SQLExpression.
 	/// The string {alias} will be replaced by the alias of the root entity.
+	/// Criteria aliases can also be used: "{a}.Value + {bc}.Value".
 	/// </summary>
 	/// <remarks>
 	/// This allows for database specific Expressions at the cost of needing to 
@@ -42,7 +43,7 @@ namespace NHibernate.Criterion
 					parameters[paramPos++].BackTrack = parameter.BackTrack;
 				}
 			}
-			return _sql.Replace("{alias}", criteriaQuery.GetSQLAlias(criteria));
+			return SQLProjection.GetSqlString(criteria, criteriaQuery, _sql);
 		}
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)

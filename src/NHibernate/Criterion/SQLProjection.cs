@@ -1,7 +1,6 @@
 using System;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -9,6 +8,7 @@ namespace NHibernate.Criterion
 
 	/// <summary>
 	/// A SQL fragment. The string {alias} will be replaced by the alias of the root entity.
+	/// Criteria aliases can also be used: "{a}.Value + {bc}.Value".
 	/// </summary>
 	[Serializable]
 	public sealed class SQLProjection : IProjection
@@ -37,15 +37,27 @@ namespace NHibernate.Criterion
 
 		public SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
 		{
-			//SqlString result = new SqlString(criteriaQuery.GetSQLAlias(criteria));
-			//result.Replace(sql, "{alias}");
-			//return result;
-			return new SqlString(sql?.Replace("{alias}", criteriaQuery.GetSQLAlias(criteria)));
+			return GetSqlString(criteria, criteriaQuery, sql);
 		}
 
 		public SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new SqlString(groupBy?.Replace("{alias}", criteriaQuery.GetSQLAlias(criteria)));
+			return GetSqlString(criteria, criteriaQuery, groupBy);
+		}
+
+		private SqlString GetSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, string sqlTemplate)
+		{
+			return GetSqlString(criteria, criteriaQuery, new SqlString(sqlTemplate));
+		}
+
+		internal static SqlString GetSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, SqlString sqlTemplate)
+		{
+			foreach (var kvp in criteriaQuery.GetCriteriaSQLAliasMap())
+			{
+				sqlTemplate = sqlTemplate.Replace("{" + kvp.Key + "}", kvp.Value);
+			}
+
+			return sqlTemplate.Replace("{alias}", criteriaQuery.GetSQLAlias(criteria));
 		}
 
 		public override string ToString()

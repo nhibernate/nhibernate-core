@@ -13,6 +13,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Dialect;
 using NHibernate.Criterion;
+using NHibernate.Linq;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
@@ -920,6 +921,91 @@ namespace NHibernate.Test.Criteria
 
 			await (t.CommitAsync());
 			s.Close();
+		}
+
+		[Test]
+		public async Task TestSQLProjectionWithAliasesAsync()
+		{
+			using(ISession s = OpenSession())
+			using(ITransaction t = s.BeginTransaction())
+			{
+				Course course = new Course();
+				course.CourseCode = "HIB";
+				course.Description = "Hibernate Training";
+				await (s.SaveAsync(course));
+
+				Student gavin = new Student();
+				gavin.Name = "Gavin King";
+				gavin.StudentNumber = 667;
+				await (s.SaveAsync(gavin));
+
+				Student xam = new Student();
+				xam.Name = "Max Rydahl Andersen";
+				xam.StudentNumber = 101;
+				await (s.SaveAsync(xam));
+
+				Enrolment enrolment = new Enrolment();
+				enrolment.Course = course;
+				enrolment.CourseCode = course.CourseCode;
+				enrolment.Semester = 1;
+				enrolment.Year = 1999;
+				enrolment.Student = xam;
+				enrolment.StudentNumber = xam.StudentNumber;
+				xam.Enrolments.Add(enrolment);
+				await (s.SaveAsync(enrolment));
+
+				enrolment = new Enrolment();
+				enrolment.Course = course;
+				enrolment.CourseCode = course.CourseCode;
+				enrolment.Semester = 3;
+				enrolment.Year = 1998;
+				enrolment.Student = gavin;
+				enrolment.StudentNumber = gavin.StudentNumber;
+				gavin.Enrolments.Add(enrolment);
+				await (s.SaveAsync(enrolment));
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			{
+				Student studentSubquery = null;
+				var subquery = QueryOver.Of(() => studentSubquery)
+				         .And(
+					         Expression.Sql("{e}.studentId = 667 and {studentSubquery}.studentId = 667")).Select(Projections.Id());
+				         
+				var uniqueResult = await (s.CreateCriteria(typeof(Student))
+				                    .Add(Subqueries.Exists(subquery.DetachedCriteria))
+				                    .AddOrder(Order.Asc("Name"))
+				                    .CreateCriteria("Enrolments", "e")
+				                    .AddOrder(Order.Desc("Year"))
+				                    .AddOrder(Order.Desc("Semester"))
+				                    .CreateCriteria("Course", "c")
+				                    .AddOrder(Order.Asc("Description"))
+				                    .SetProjection(
+					                    Projections.SqlProjection(
+						                    "{alias}.studentId as studentNumber, {e}.Semester as semester,"
+						                    + " {c}.CourseCode as courseCode, {c}.Description as descr",
+						                    new string[] {"studentNumber", "semester", "courseCode", "descr"},
+						                    new[]
+						                    {
+							                    TypeFactory.HeuristicType(typeof(long)),
+							                    TypeFactory.HeuristicType(typeof(short)),
+							                    TypeFactory.HeuristicType(typeof(string)),
+							                    TypeFactory.HeuristicType(typeof(string)),
+						                    }))
+				                    .UniqueResultAsync());
+
+				Assert.That(uniqueResult, Is.Not.Null);
+			}
+
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				await (s.Query<Enrolment>().DeleteAsync());
+				await (s.Query<Student>().DeleteAsync());
+				await (s.Query<Course>().DeleteAsync());
+				await (s.GetCurrentTransaction().CommitAsync());
+			}
 		}
 
 		[Test]

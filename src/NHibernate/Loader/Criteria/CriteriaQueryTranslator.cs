@@ -863,6 +863,20 @@ namespace NHibernate.Loader.Criteria
 			return GetEntityName(subcriteria);
 		}
 
+		internal IDictionary<string, string> GetCriteriaSQLAliasMap()
+		{
+			var result = criteriaSQLAliasMap.Where(p => !string.IsNullOrEmpty(p.Key.Alias)).ToDictionary(p => p.Key.Alias, p => p.Value);
+			if (outerQueryTranslator != null)
+			{
+				foreach (var p in outerQueryTranslator.GetCriteriaSQLAliasMap())
+				{
+					result.Add(p.Key, p.Value);
+				}
+			}
+
+			return result;
+		}
+
 		public string GetSQLAlias(ICriteria criteria, string propertyName)
 		{
 			if (StringHelper.IsNotRoot(propertyName, out var root))
