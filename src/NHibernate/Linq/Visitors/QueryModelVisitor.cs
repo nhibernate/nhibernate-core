@@ -23,7 +23,7 @@ using SelectClause = Remotion.Linq.Clauses.SelectClause;
 
 namespace NHibernate.Linq.Visitors
 {
-	public class QueryModelVisitor : NhQueryModelVisitorBase, INhQueryModelVisitor
+	public class QueryModelVisitor : NhQueryModelVisitorBase, INhQueryModelVisitor, INhQueryModelVisitorExtended
 	{
 		private readonly QueryMode _queryMode;
 
@@ -513,6 +513,16 @@ namespace NHibernate.Linq.Visitors
 
 		public override void VisitJoinClause(JoinClause joinClause, QueryModel queryModel, int index)
 		{
+			AddJoin(joinClause, queryModel, true);
+		}
+
+		public void VisitNhOuterJoinClause(NhOuterJoinClause outerJoinClause, QueryModel queryModel, int index)
+		{
+			AddJoin(outerJoinClause.JoinClause, queryModel, false);
+		}
+
+		private void AddJoin(JoinClause joinClause, QueryModel queryModel, bool innerJoin)
+		{
 			var equalityVisitor = new EqualityHqlGenerator(VisitorParameters);
 			var withClause = equalityVisitor.Visit(joinClause.InnerKeySelector, joinClause.OuterKeySelector);
 			var alias = _hqlTree.TreeBuilder.Alias(VisitorParameters.QuerySourceNamer.GetName(joinClause));
@@ -522,12 +532,19 @@ namespace NHibernate.Linq.Visitors
 			// join and add the condition in the where statement.
 			if (queryModel.BodyClauses.OfType<NhJoinClause>().Any(o => o.ParentJoinClause == joinClause))
 			{
+				if (!innerJoin)
+				{
+					throw new NotSupportedException("Left joins that have association properties in the inner key selector are not supported.");
+				}
+
 				_hqlTree.AddWhereClause(withClause);
 				join = CreateCrossJoin(joinExpression, alias);
 			}
 			else
 			{
-				join = _hqlTree.TreeBuilder.InnerJoin(joinExpression.AsExpression(), alias);
+				join = innerJoin
+					? _hqlTree.TreeBuilder.InnerJoin(joinExpression.AsExpression(), alias)
+					: (HqlTreeNode) _hqlTree.TreeBuilder.LeftJoin(joinExpression.AsExpression(), alias);
 				join.AddChild(_hqlTree.TreeBuilder.With(withClause));
 			}
 
