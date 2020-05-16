@@ -18,7 +18,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1920
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-
 		[Test] 
 		public async Task Can_Query_Without_Collection_Size_ConditionAsync() 
 		{ 
@@ -77,6 +76,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1920
 				await (tx.CommitAsync()); 
 			} 
 		} 
-
 	}
 }

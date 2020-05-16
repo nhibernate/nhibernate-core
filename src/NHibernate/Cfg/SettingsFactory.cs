@@ -54,6 +54,15 @@ namespace NHibernate.Cfg
 			settings.Dialect = dialect;
 
 			settings.LinqToHqlGeneratorsRegistry = LinqToHqlGeneratorsRegistryFactory.CreateGeneratorsRegistry(properties);
+			// 6.0 TODO: default to false instead of true, and adjust documentation in xsd, xml comment on Environment
+			// and Setting properties, and doc\reference.
+			settings.LinqToHqlLegacyPreEvaluation = PropertiesHelper.GetBoolean(
+				Environment.LinqToHqlLegacyPreEvaluation,
+				properties,
+				true);
+			settings.LinqToHqlFallbackOnPreEvaluation = PropertiesHelper.GetBoolean(
+				Environment.LinqToHqlFallbackOnPreEvaluation,
+				properties);
 
 			#region SQL Exception converter
 
@@ -207,7 +216,6 @@ namespace NHibernate.Cfg
 			if (string.IsNullOrEmpty(cacheRegionPrefix)) cacheRegionPrefix = null;
 			if (cacheRegionPrefix != null) log.Info("Cache region prefix: {0}", cacheRegionPrefix);
 
-
 			if (useQueryCache)
 			{
 				string queryCacheFactoryClassName = PropertiesHelper.GetString(Environment.QueryCacheFactory, properties,
@@ -291,6 +299,7 @@ namespace NHibernate.Cfg
 			settings.TransactionFactory = transactionFactory;
 			// Not ported - TransactionManagerLookup
 			settings.SessionFactoryName = sessionFactoryName;
+			settings.AutoJoinTransaction = PropertiesHelper.GetBoolean(Environment.AutoJoinTransaction, properties, true);
 			settings.MaximumFetchDepth = maxFetchDepth;
 			settings.IsQueryCacheEnabled = useQueryCache;
 			settings.IsSecondLevelCacheEnabled = useSecondLevelCache;

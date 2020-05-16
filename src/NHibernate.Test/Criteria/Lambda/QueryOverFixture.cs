@@ -1,21 +1,14 @@
 using System;
-using System.Collections;
-
 using NUnit.Framework;
-
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
-using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
-
 	[TestFixture]
 	public class QueryOverFixture : LambdaFixtureBase
 	{
-
 		[Test]
 		public void SimpleCriterion_NoAlias()
 		{
@@ -169,7 +162,6 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Add(Restrictions.Not(Restrictions.Eq("Name", "test name")))
 					.Add(Restrictions.Not(Restrictions.Eq("personAlias.Name", "test name")))
 					.Add(Restrictions.Not(Restrictions.Eq("Name", "not test name")));
-
 
 			Person personAlias = null;
 			IQueryOver<Person> actual =
@@ -932,6 +924,61 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void SetTimeout()
+		{
+			var expected =
+				CreateTestCriteria(typeof(Person))
+					.SetTimeout(3);
+
+			var actual =
+				CreateTestQueryOver<Person>()
+					.SetTimeout(3);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void SetFetchSize()
+		{
+			var expected =
+				CreateTestCriteria(typeof(Person))
+					.SetFetchSize(3);
+
+			var actual =
+				CreateTestQueryOver<Person>()
+					.SetFetchSize(3);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void SetComment()
+		{
+			var expected =
+				CreateTestCriteria(typeof(Person))
+					.SetComment("blah");
+
+			var actual =
+				CreateTestQueryOver<Person>()
+					.SetComment("blah");
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void SetFlushMode(
+			[Values(FlushMode.Always, FlushMode.Auto, FlushMode.Commit, FlushMode.Manual)] FlushMode flushMode)
+		{
+			var expected =
+				CreateTestCriteria(typeof(Person))
+					.SetFlushMode(flushMode);
+			var actual =
+				CreateTestQueryOver<Person>()
+					.SetFlushMode(flushMode);
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
 		public void DetachedQueryOver()
 		{
 			DetachedCriteria expected =
@@ -1039,7 +1086,5 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			AssertCriteriaAreEqual(expected.UnderlyingCriteria, actual);
 		}
-
 	}
-
 }

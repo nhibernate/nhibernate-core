@@ -452,7 +452,6 @@ namespace NHibernate.Test.Legacy
 			list = await (s.CreateQuery("select foo, bar from Foo foo left outer join foo.TheFoo bar where foo = ?")
 				.SetEntity(0, foo).ListAsync());
 
-
 			object[] row1 = (object[]) list[0];
 			Assert.IsTrue(row1[0] == foo && row1[1] == foo2);
 
@@ -611,7 +610,6 @@ namespace NHibernate.Test.Legacy
 			enumerable = await (s.CreateQuery(
 						"select foo.Component.Name, elements(foo.Component.ImportantDates) from foo in class Foo where foo.TheFoo.id=?").
 						SetString(0, foo.TheFoo.Key).EnumerableAsync());
-			
 
 			int i = 0;
 			foreach (object[] row in enumerable)
@@ -1017,7 +1015,6 @@ namespace NHibernate.Test.Legacy
 			}
 		}
 
-
 		[Test]
 		public async Task ReuseDeletedCollectionAsync()
 		{
@@ -1266,7 +1263,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task LateCollectionAddAsync()
 		{
@@ -1328,7 +1324,6 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task ListRemoveAsync()
@@ -1475,7 +1470,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task FetchListAsync()
 		{
@@ -1503,7 +1497,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task BagOneToManyAsync()
 		{
@@ -1526,7 +1519,6 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task QueryLockModeAsync()
@@ -1602,7 +1594,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task ManyToManyBagAsync()
 		{
@@ -1628,7 +1619,6 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task IdBagAsync()
@@ -1689,7 +1679,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task ForceOuterJoinAsync()
 		{
@@ -1726,7 +1715,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task EmptyCollectionAsync()
 		{
@@ -1746,7 +1734,6 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task OneToOneGeneratorAsync()
@@ -1768,7 +1755,6 @@ namespace NHibernate.Test.Legacy
 
 			Assert.AreEqual(x.Id, y.Id);
 
-
 			s = OpenSession();
 			x = new X();
 			y = new Y();
@@ -1783,7 +1769,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 
 			Assert.AreEqual(x.Id, y.Id);
-
 
 			s = OpenSession();
 			x = new X();
@@ -1816,7 +1801,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task LimitAsync()
 		{
@@ -1845,7 +1829,6 @@ namespace NHibernate.Test.Legacy
 			await (txn.CommitAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task CustomAsync()
@@ -1879,7 +1862,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task SaveAddDeleteAsync()
 		{
@@ -1894,7 +1876,6 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task NamedParamsAsync()
@@ -2089,7 +2070,6 @@ namespace NHibernate.Test.Legacy
 
 			Assert.IsTrue(list.Count == 1 && list[0] == f);
 
-
 			list = await (s.CreateCriteria(typeof(Foo))
 				.SetMaxResults(5)
 				.AddOrder(Order.Asc("Date"))
@@ -2137,7 +2117,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task AfterDeleteAsync()
 		{
@@ -2151,7 +2130,6 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task CollectionWhereAsync()
@@ -2191,7 +2169,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task ComponentParentAsync()
 		{
@@ -2223,7 +2200,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task CollectionCacheAsync()
 		{
@@ -2245,7 +2221,6 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		//[Ignore("TimeZone Portions commented out - http://nhibernate.jira.com/browse/NH-88")]
@@ -2292,7 +2267,6 @@ namespace NHibernate.Test.Legacy
 							NHibernateUtil.String
 						};
 
-
 					//IList results = s.List( hqlString, values, types );
 					IQuery q = s.CreateQuery(hqlString);
 					for (int i = 0; i < values.Length; i++)
@@ -2318,7 +2292,6 @@ namespace NHibernate.Test.Legacy
 					}
 					results = await (q.ListAsync());
 					Assert.AreEqual(1, results.Count);
-
 
 					hqlString = "from s in class Stuff where s.Foo.String is not null";
 					await (s.CreateQuery(hqlString).ListAsync());
@@ -2362,7 +2335,6 @@ namespace NHibernate.Test.Legacy
 			}
 		}
 
-
 		[Test]
 		public async Task CascadeSaveAsync()
 		{
@@ -2388,7 +2360,6 @@ namespace NHibernate.Test.Legacy
 			await (t.CommitAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task CompositeKeyPathExpressionsAsync()
@@ -2419,7 +2390,6 @@ namespace NHibernate.Test.Legacy
 
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task CollectionsInSelectAsync()
@@ -2456,7 +2426,6 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(baz.Name, r.Name);
 			Assert.AreEqual(1, r.Count);
 			Assert.AreEqual(foos[1].Long, r.Amount);
-
 
 			list =
 				await (s.CreateQuery(
@@ -2557,7 +2526,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task NewFlushingAsync()
 		{
@@ -2640,7 +2608,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task PersistCollectionsAsync()
 		{
@@ -2688,7 +2655,6 @@ namespace NHibernate.Test.Legacy
 				list = await (s.CreateQuery(
 							"select foo from foo in class NHibernate.DomainModel.Foo, baz in class NHibernate.DomainModel.Baz where foo in elements(baz.FooArray) and 3 = some elements(baz.IntArray) and 4 > all indices(baz.IntArray)")
 							.ListAsync());
-				
 
 				Assert.AreEqual(2, list.Count, "collection.elements find");
 			}
@@ -2871,7 +2837,7 @@ namespace NHibernate.Test.Legacy
 			await (s.DeleteAsync(baz.TopGlarchez['H']));
 
 			var cmd = s.Connection.CreateCommand();
-			s.Transaction.Enlist(cmd);
+			txn.Enlist(cmd);
 			cmd.CommandText = "update " + Dialect.QuoteForTableName("glarchez") + " set baz_map_id=null where baz_map_index='a'";
 			int rows = await (cmd.ExecuteNonQueryAsync());
 			Assert.AreEqual(1, rows);
@@ -2916,7 +2882,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task SaveFlushAsync()
 		{
@@ -2935,7 +2900,6 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task CreateUpdateAsync()
@@ -2969,7 +2933,6 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task UpdateCollectionsAsync()
@@ -3038,7 +3001,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task LoadAsync()
 		{
@@ -3067,7 +3029,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task CreateAsync()
 		{
@@ -3086,7 +3047,6 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task CallbackAsync()
@@ -3125,7 +3085,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task PolymorphismAsync()
 		{
@@ -3144,7 +3103,6 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task RemoveContainsAsync()
@@ -3167,7 +3125,6 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task CollectionOfSelfAsync()
@@ -3208,7 +3165,6 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task FindAsync()
@@ -3284,8 +3240,7 @@ namespace NHibernate.Test.Legacy
 			await (txn.CommitAsync());
 			s.Close();
 		}
-
-
+		
 		[Test]
 		public async Task DeleteRecursiveAsync()
 		{
@@ -3302,8 +3257,7 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
-
+		
 		[Test]
 		public async Task ReachabilityAsync()
 		{
@@ -3426,8 +3380,7 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
-
+		
 		[Test]
 		public async Task PersistentLifecycleAsync()
 		{
@@ -3453,8 +3406,7 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
-
+		
 		[Test]
 		public async Task EnumerableAsync()
 		{
@@ -3791,7 +3743,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task RecursiveLoadAsync()
 		{
@@ -3993,7 +3944,6 @@ namespace NHibernate.Test.Legacy
 			await (txn.CommitAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task DeleteTransientAsync()
@@ -4219,7 +4169,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task ArraysOfTimesAsync()
 		{
@@ -4297,7 +4246,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task EnumAsync()
 		{
@@ -4363,8 +4311,7 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
-
+		
 		[Test]
 		public async Task NoForeignKeyViolationsAsync()
 		{
@@ -4933,7 +4880,6 @@ namespace NHibernate.Test.Legacy
 
 			e = (await (s.CreateQuery("select elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").EnumerableAsync())).
 						GetEnumerator();
-			
 
 			bool found = false;
 			while (e.MoveNext())
@@ -5139,7 +5085,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task ObjectTypeAsync()
 		{
@@ -5165,7 +5110,6 @@ namespace NHibernate.Test.Legacy
 				await (s.FlushAsync());
 			}
 		}
-
 
 		[Test]
 		public async Task AnyAsync()

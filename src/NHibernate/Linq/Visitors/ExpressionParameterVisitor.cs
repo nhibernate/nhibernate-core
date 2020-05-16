@@ -17,16 +17,18 @@ namespace NHibernate.Linq.Visitors
 	public class ExpressionParameterVisitor : RelinqExpressionVisitor
 	{
 		private readonly Dictionary<ConstantExpression, NamedParameter> _parameters = new Dictionary<ConstantExpression, NamedParameter>();
+		private readonly Dictionary<QueryVariable, NamedParameter> _variableParameters = new Dictionary<QueryVariable, NamedParameter>();
+		private readonly IDictionary<ConstantExpression, QueryVariable> _queryVariables;
 		private readonly ISessionFactoryImplementor _sessionFactory;
 
 		private static readonly MethodInfo QueryableSkipDefinition =
-			ReflectHelper.GetMethodDefinition(() => Queryable.Skip<object>(null, 0));
+			ReflectHelper.FastGetMethodDefinition(Queryable.Skip, default(IQueryable<object>), 0);
 		private static readonly MethodInfo QueryableTakeDefinition =
-			ReflectHelper.GetMethodDefinition(() => Queryable.Take<object>(null, 0));
+			ReflectHelper.FastGetMethodDefinition(Queryable.Take, default(IQueryable<object>), 0);
 		private static readonly MethodInfo EnumerableSkipDefinition =
-			ReflectHelper.GetMethodDefinition(() => Enumerable.Skip<object>(null, 0));
+			ReflectHelper.FastGetMethodDefinition(Enumerable.Skip, default(IEnumerable<object>), 0);
 		private static readonly MethodInfo EnumerableTakeDefinition =
-			ReflectHelper.GetMethodDefinition(() => Enumerable.Take<object>(null, 0));
+			ReflectHelper.FastGetMethodDefinition(Enumerable.Take, default(IEnumerable<object>), 0);
 
 		private readonly ICollection<MethodBase> _pagingMethods = new HashSet<MethodBase>
 			{
@@ -34,23 +36,38 @@ namespace NHibernate.Linq.Visitors
 				EnumerableSkipDefinition, EnumerableTakeDefinition
 			};
 
+		// Since v5.3
+		[Obsolete("Please use overload with preTransformationResult parameter instead.")]
 		public ExpressionParameterVisitor(ISessionFactoryImplementor sessionFactory)
 		{
 			_sessionFactory = sessionFactory;
 		}
 
-		public static IDictionary<ConstantExpression, NamedParameter> Visit(Expression expression, ISessionFactoryImplementor sessionFactory)
+		public ExpressionParameterVisitor(PreTransformationResult preTransformationResult)
 		{
-			return Visit(ref expression, sessionFactory);
+			_sessionFactory = preTransformationResult.SessionFactory;
+			_queryVariables = preTransformationResult.QueryVariables;
 		}
 
-		internal static IDictionary<ConstantExpression, NamedParameter> Visit(ref Expression expression, ISessionFactoryImplementor sessionFactory)
+		// Since v5.3
+		[Obsolete("Please use overload with preTransformationResult parameter instead.")]
+		public static IDictionary<ConstantExpression, NamedParameter> Visit(Expression expression, ISessionFactoryImplementor sessionFactory)
 		{
 			var visitor = new ExpressionParameterVisitor(sessionFactory);
-
-			expression = visitor.Visit(expression);
+			visitor.Visit(expression);
 
 			return visitor._parameters;
+		}
+
+		public static Expression Visit(
+			PreTransformationResult preTransformationResult,
+			out IDictionary<ConstantExpression, NamedParameter> parameters)
+		{
+			var visitor = new ExpressionParameterVisitor(preTransformationResult);
+			var expression = visitor.Visit(preTransformationResult.Expression);
+			parameters = visitor._parameters;
+
+			return expression;
 		}
 
 		protected override Expression VisitMethodCall(MethodCallExpression expression)
@@ -122,7 +139,23 @@ namespace NHibernate.Linq.Visitors
 				// comes up, it would be nice to combine the HQL parameter type determination code
 				// and the Expression information.
 
-				_parameters.Add(expression, new NamedParameter("p" + (_parameters.Count + 1), value, type));
+				NamedParameter parameter = null;
+				if (_queryVariables != null &&
+				    _queryVariables.TryGetValue(expression, out var variable) &&
+				    !_variableParameters.TryGetValue(variable, out parameter))
+				{
+					parameter = new NamedParameter("p" + (_parameters.Count + 1), value, type);
+					_variableParameters.Add(variable, parameter);
+				}
+
+				if (parameter == null)
+				{
+					parameter = new NamedParameter("p" + (_parameters.Count + 1), value, type);
+				}
+
+				_parameters.Add(expression, parameter);
+
+				return base.VisitConstant(expression);
 			}
 
 			return base.VisitConstant(expression);

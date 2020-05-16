@@ -719,6 +719,57 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>linqtohql.legacy_preevaluation</literal>
+                        </entry>
+                        <entry>
+                            Whether to use the legacy pre-evaluation or not in Linq queries. Defaults to <literal>true</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                            <para>
+                                Legacy pre-evaluation is causing special properties or functions like <literal>DateTime.Now</literal>
+                                or <literal>Guid.NewGuid()</literal> to be always evaluated with the .Net runtime and replaced in the
+                                query by parameter values.
+                            </para>
+                            <para>
+                                The new pre-evaluation allows them to be converted to HQL function calls which will be run on the db
+                                side. This allows for example to retrieve the server time instead of the client time, or to generate
+                                UUIDs for each row instead of an unique one for all rows.
+                            </para>
+                            <para>
+                                The new pre-evaluation will likely be enabled by default in the next major version (6.0).
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>linqtohql.fallback_on_preevaluation</literal>
+                        </entry>
+                        <entry>
+                            When the new pre-evaluation is enabled, should methods which translation is not supported by the current
+                            dialect fallback to pre-evaluation? Defaults to <literal>false</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                            <para>
+                                When this fallback option is enabled while legacy pre-evaluation is disabled, properties or functions
+                                like <literal>DateTime.Now</literal> or <literal>Guid.NewGuid()</literal> used in Linq expressions
+                                will not fail when the dialect does not support them, but will instead be pre-evaluated.
+                            </para>
+                            <para>
+                                When this fallback option is disabled while legacy pre-evaluation is disabled, properties or functions
+                                like <literal>DateTime.Now</literal> or <literal>Guid.NewGuid()</literal> used in Linq expressions
+                                will fail when the dialect does not support them.
+                            </para>
+                            <para>
+                                This option has no effect if the legacy pre-evaluation is enabled.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>sql_exception_converter</literal>
                         </entry>
                         <entry>
@@ -907,6 +958,25 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>transaction.auto_join</literal>
+                        </entry>
+                        <entry>
+                            Should sessions check on every operation whether there is an ongoing system transaction or not, and enlist
+                            into it if any?
+                            <para>
+                                Default is <literal>true</literal>. It can also be controlled at session opening, with
+                                <literal>ISessionFactory.WithOptions</literal>. A session can also be instructed to explicitly join the current
+                                transaction by calling <literal>ISession.JoinTransaction</literal>. This setting has no effect when using a
+                                transaction factory that is not system transactions aware.
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>default_flush_mode</literal>
                         </entry>
                         <entry>
@@ -1079,6 +1149,20 @@ in the parameter binding.</programlisting>
                                 <emphasis role="strong">eg.</emphasis>
                                 <literal>3</literal>
                             </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>sqlite.binaryguid</literal>
+                        </entry>
+                        <entry>
+                            SQLite can store GUIDs in binary or text form, controlled by the BinaryGuid
+                            connection string parameter (default is 'true'). The BinaryGuid setting will affect
+                            how to cast GUID to string in SQL. NHibernate will attempt to detect this
+                            setting automatically from the connection string, but if the connection
+                            or connection string is being handled by the application instead of by NHibernate,
+                            you can use the <literal>sqlite.binaryguid</literal> NHibernate setting to override the behavior.
+                            The value can be <literal>true</literal> or <literal>false</literal>.
                         </entry>
                     </row>
                     <row>

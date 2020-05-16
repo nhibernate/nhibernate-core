@@ -9,9 +9,11 @@
 
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NSubstitute;
 using NUnit.Framework;
 using NHibernate.Linq;
 
@@ -140,131 +142,6 @@ namespace NHibernate.Test.Linq
 							"all orders containing their OrderId, a subsequence of the " +
 							"items in the order where there is a discount, and the money " +
 							"saved if shipping is not included.")]
-		[Ignore("TODO - nested select")]
-		public async Task DLinq17Async()
-		{
-			using (ISession s = OpenSession())
-			{
-				/////////////
-				///// Flattened Select
-				/////////////
-
-				//// In HQL select, get all the data that's needed
-				//var dbOrders =
-				//    s.CreateQuery("select o.OrderId, od, o.Freight from Order o join o.OrderLines od").List<object[]>();
-
-				//// Now group by the items in the parent select, grouping the items in the child select (note lookups on object[], ala SelectClauseVisitor)
-				//// Note the casts to get the types correct.  Need to check if SelectClauseVisitor handles that, but think it does
-				//var a = from o in dbOrders
-				//        group new { OrderLine = (OrderLine)o[1], Freight = (Decimal?)o[2] } by new { OrderId = (int) o[0] }
-				//            into g
-				//            select
-				//            // Select the parent items,  and the child items in a nested select
-				//            new { g.Key.OrderId, DiscountedProducts = from e in g select new { e.OrderLine, FreeShippingDiscount = e.Freight } };
-
-				//a.ToList();
-
-				/////////////
-				///// Nested Select
-				/////////////
-				//var dbOrders2 = s.CreateQuery("select o.OrderId from Order o").List<int>();
-
-				//var q2 = from o in dbOrders2
-				//         select new
-				//                    {
-				//                        OrderId = o,
-				//                        DiscountedProducts =
-				//                             from subO in db.Orders
-				//                                 where subO.OrderId == o
-				//                                 from orderLine in subO.OrderLines
-				//                                 select new { orderLine, FreeShippingDiscount = subO.Freight }
-				//                    };
-
-				//q2.ToList();
-
-				///////////
-				///// Batching Select
-				///////////
-				var dbOrders3 = await (s.CreateQuery("select o.OrderId from Order o").ListAsync<int>());
-
-				//var q3 = dbOrders3.SubQueryBatcher(orderId => orderId,
-				//                                   ids => from subO in db.Orders.ToList()  // Note that ToList is just because current group by code is incorrent in our linq provider
-				//                                          where ids.Contains(subO.OrderId)
-				//                                          from orderLine in subO.OrderLines
-				//                                          group new {orderLine, FreeShippingDiscount = subO.Freight}
-				//                                             by subO.OrderId
-				//                                          into g
-				//                                             select g
-				//                                   )
-				//                                   .Select((input, index) => new
-				//                                    {
-				//                                         OrderId = input.Item,
-				//                                         DiscountedProducts = input.Batcher.GetData(index)
-				//                    });
-
-				// This is what we want:
-				//var q3 = dbOrders3.SubQueryBatcher(orderId => orderId,
-				//                                   ids => db.Orders
-				//                                       .Where(o => ids.Contains(o.OrderId))
-				//                                       .Select(o => new {o.OrderId, o.OrderLines, o.Freight}).ToList()
-				//                                       .GroupBy(k => k.OrderId, e => new { e.OrderLines, FreeShippingDiscount = e.Freight})
-				//                                   )
-				//                                   .Select((input, index) => new
-				//                                    {
-				//                                         OrderId = input.Item,
-				//                                         DiscountedProducts = input.Batcher.GetData(index)
-				//                    });
-
-				// This is what we're using since our provider can't yet handle the in or the group by clauses correctly (note the ToList and the Where clause moving to get us into Linq to Objects world)
-				var q3 = dbOrders3.SubQueryBatcher(orderId => orderId,
-								   ids =>
-									   (from o in db.Orders
-									   from ol in o.OrderLines
-									   select new { OrderLines = ol, FreeShippingDiscount = o.Freight, o.OrderId })
-									   .ToList()
-									   .Where(o => ids.Contains(o.OrderId))
-									   .GroupBy(k => k.OrderId, e => new { e.OrderLines, e.FreeShippingDiscount })
-								   )
-								   .Select((input, index) => new
-								   {
-									   OrderId = input.Item,
-									   DiscountedProducts = input.Batcher.GetData(index)
-								   });
-
-
-				foreach (var x in q3)
-				{
-					Console.WriteLine(x.OrderId);
-
-					foreach (var y in x.DiscountedProducts)
-					{
-						Console.WriteLine(y.FreeShippingDiscount);
-					}
-				}
-
-				q3.ToList();
-			}
-
-			var q =
-				from o in db.Orders
-				select new
-						   {
-							   o.OrderId,
-							   DiscountedProducts =
-									from od in o.OrderLines
-//                                    from od in o.OrderLines.Cast<OrderLine>()
-									where od.Discount > 0.0m
-									select od, FreeShippingDiscount = o.Freight
-						   };
-
-			await (ObjectDumper.WriteAsync(q, 1));
-		}
-
-		[Category("SELECT/DISTINCT")]
-		[Test(Description = "This sample uses nested queries to return a sequence of " +
-							"all orders containing their OrderId, a subsequence of the " +
-							"items in the order where there is a discount, and the money " +
-							"saved if shipping is not included.")]
 		public async Task DLinq17bAsync()
 		{
 			var q =
@@ -276,31 +153,6 @@ namespace NHibernate.Test.Linq
 					from od in o.OrderLines
 					where od.Discount > 0.0m
 					select new {od.Quantity, od.UnitPrice},
-							   FreeShippingDiscount = o.Freight
-						   };
-
-			await (ObjectDumper.WriteAsync(q, 1));
-		}
-
-		[Category("SELECT/DISTINCT")]
-		[Test(Description = "This sample uses nested queries to return a sequence of " +
-							"all orders containing their OrderId, a subsequence of the " +
-							"items in the order where there is a discount, and the money " +
-							"saved if shipping is not included.")]
-		[Ignore("TODO - nested select")]
-		public async Task DLinq17cAsync()
-		{
-			var q =
-				from o in db.Orders
-				select new
-						   {
-							   o.OrderId,
-							   DiscountedProducts =
-					from od in o.OrderLines
-//                    from od in o.OrderLines.Cast<OrderLine>()
-					where od.Discount > 0.0m
-					orderby od.Discount descending
-					select od,
 							   FreeShippingDiscount = o.Freight
 						   };
 
@@ -370,64 +222,6 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Category("COUNT/SUM/MIN/MAX/AVG")]
-		[Test(Description = "This sample uses Min to find the Products that have the lowest unit price " +
-							"in each category.")]
-		[Ignore("TODO nested aggregating group by")]
-		public async Task DLinq25Async()
-		{
-			using (var session = OpenSession())
-			{
-				var output = (await (session
-					.CreateQuery(
-					"select p.Category.CategoryId, p from Product p where p.UnitPrice = (select min(p2.UnitPrice) from Product p2 where p.Category.CategoryId = p2.Category.CategoryId)"
-					)
-					.ListAsync<object[]>()))
-					.GroupBy(input => input[0])
-					.Select(input => new {CategoryId = (int) input.Key, CheapestProducts = from g in input select (Product) g[1]});
-			}
-
-			/*
-			 * From g, only using g.Key, min(UnitPrice), g
-			 *  - g.Key is fine
-			 *  - min(UnitPrice) is fine
-			 *  - g is the problem.  Can't just issue a single select since it's non-aggregating
-			 *    However, don't want to loose the aggregate; need that processed in the DB
-			 * 
-			 * To get additional information over and above g.Key and any aggregates, need a where clause against the aggregate:
-			 * 
-			 * select xxx, yyy, zzz from Product p where p.UnitPrice = (select min(p2.UnitPrice) from Product p2)
-			 * 
-			 * the outer where comes from the inner where in the queryModel:
-			 *
-			 * where p2.UnitPrice == g.Min(p3 => p3.UnitPrice)
-			 * 
-			 * also need additional constraints on the aggregate to fulfil the groupby requirements:
-			 * 
-			 * where p.Category.CategoryId = p2.Category.CategoryId
-			 * 
-			 * so join the inner select to the outer select using the group by criteria
-			 * 
-			 * finally, need to do some client-side processing to get the "shape" correct
-			 * 
-			 */
-
-			var categories =
-				from p in db.Products
-				group p by p.Category.CategoryId
-				into g
-					select new
-							   {
-								   CategoryId = g.Key,
-								   CheapestProducts =
-					(IEnumerable<Product>) (from p2 in g
-											where p2.UnitPrice == g.Min(p3 => p3.UnitPrice)
-											select p2)
-							   };
-
-			Console.WriteLine(await (ObjectDumper.WriteAsync(categories, 1)));
-		}
-
-		[Category("COUNT/SUM/MIN/MAX/AVG")]
 		[Test(Description = "This sample uses Max to find the latest hire date of any Employee.")]
 		public async Task DLinq26Async()
 		{
@@ -444,28 +238,6 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Category("COUNT/SUM/MIN/MAX/AVG")]
-		[Test(Description = "This sample uses Max to find the Products that have the highest unit price " +
-							"in each category.")]
-		[Ignore("TODO nested aggregating group by")]
-		public async Task DLinq28Async()
-		{
-			var categories =
-				from p in db.Products
-				group p by p.Category.CategoryId
-				into g
-					select new
-							   {
-								   g.Key,
-								   MostExpensiveProducts =
-					from p2 in g
-					where p2.UnitPrice == g.Max(p3 => p3.UnitPrice)
-					select p2
-							   };
-
-			await (ObjectDumper.WriteAsync(categories, 1));
-		}
-
-		[Category("COUNT/SUM/MIN/MAX/AVG")]
 		[Test(Description = "This sample uses Average to find the average freight of all Orders.")]
 		public async Task DLinq29Async()
 		{
@@ -479,28 +251,6 @@ namespace NHibernate.Test.Linq
 		{
 			decimal? q = await (db.Products.AverageAsync(p => p.UnitPrice));
 			Console.WriteLine(q);
-		}
-
-		[Category("COUNT/SUM/MIN/MAX/AVG")]
-		[Test(Description = "This sample uses Average to find the Products that have unit price higher than " +
-							"the average unit price of the category for each category.")]
-		[Ignore("TODO nested aggregating group by")]
-		public async Task DLinq31Async()
-		{
-			var categories =
-				from p in db.Products
-				group p by p.Category.CategoryId
-				into g
-					select new
-							   {
-								   g.Key,
-								   ExpensiveProducts =
-					from p2 in g
-					where p2.UnitPrice > g.Average(p3 => p3.UnitPrice)
-					select p2
-							   };
-
-			await (ObjectDumper.WriteAsync(categories, 1));
 		}
 
 		[Category("ORDER BY")]
@@ -567,30 +317,6 @@ namespace NHibernate.Test.Linq
 				select o;
 
 			await (ObjectDumper.WriteAsync(q));
-		}
-
-
-		[Category("ORDER BY")]
-		[Test(Description = "This sample uses Orderby, Max and Group By to find the Products that have " +
-							"the highest unit price in each category, and sorts the group by category id.")]
-		[Ignore("TODO nested aggregating group by")]
-		public async Task DLinq41Async()
-		{
-			var categories =
-				from p in db.Products
-				group p by p.Category.CategoryId
-				into g
-					orderby g.Key
-					select new
-							   {
-								   g.Key,
-								   MostExpensiveProducts =
-					from p2 in g
-					where p2.UnitPrice == g.Max(p3 => p3.UnitPrice)
-					select p2
-							   };
-
-			await (ObjectDumper.WriteAsync(categories, 1));
 		}
 
 		[Category("GROUP BY/HAVING")]
@@ -925,94 +651,6 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-		[Category("UNION ALL/UNION/INTERSECT")]
-		[Test(Description = "This sample uses Concat to return a sequence of all Customer and Employee " +
-							"phone/fax numbers.")]
-		[Ignore("TODO set operations")]
-		public async Task DLinq55Async()
-		{
-			IQueryable<string> q = (
-									   from c in db.Customers
-									   select c.Address.PhoneNumber
-								   ).Concat(
-				from c in db.Customers
-				select c.Address.Fax
-				).Concat(
-				from e in db.Employees
-				select e.Address.PhoneNumber
-				);
-
-			await (ObjectDumper.WriteAsync(q));
-		}
-
-		[Category("UNION ALL/UNION/INTERSECT")]
-		[Test(Description = "This sample uses Concat to return a sequence of all Customer and Employee " +
-							"name and phone number mappings.")]
-		[Ignore("TODO set operations")]
-		public async Task DLinq56Async()
-		{
-			var q = (
-						from c in db.Customers
-						select new {Name = c.CompanyName, Phone = c.Address.PhoneNumber}
-					).Concat(
-				from e in db.Employees
-				select new {Name = e.FirstName + " " + e.LastName, Phone = e.Address.PhoneNumber}
-				);
-
-			await (ObjectDumper.WriteAsync(q));
-		}
-
-		[Category("UNION ALL/UNION/INTERSECT")]
-		[Test(Description = "This sample uses Union to return a sequence of all countries that either " +
-							"Customers or Employees are in.")]
-		[Ignore("TODO set operations")]
-		public async Task DLinq57Async()
-		{
-			IQueryable<string> q = (
-									   from c in db.Customers
-									   select c.Address.Country
-								   ).Union(
-				from e in db.Employees
-				select e.Address.Country
-				);
-
-			await (ObjectDumper.WriteAsync(q));
-		}
-
-		[Category("UNION ALL/UNION/INTERSECT")]
-		[Test(Description = "This sample uses Intersect to return a sequence of all countries that both " +
-							"Customers and Employees live in.")]
-		[Ignore("TODO set operations")]
-		public async Task DLinq58Async()
-		{
-			IQueryable<string> q = (
-									   from c in db.Customers
-									   select c.Address.Country
-								   ).Intersect(
-				from e in db.Employees
-				select e.Address.Country
-				);
-
-			await (ObjectDumper.WriteAsync(q));
-		}
-
-		[Category("UNION ALL/UNION/INTERSECT")]
-		[Test(Description = "This sample uses Except to return a sequence of all countries that " +
-							"Customers live in but no Employees live in.")]
-		[Ignore("TODO set operations")]
-		public async Task DLinq59Async()
-		{
-			IQueryable<string> q = (
-									   from c in db.Customers
-									   select c.Address.Country
-								   ).Except(
-				from e in db.Employees
-				select e.Address.Country
-				);
-
-			await (ObjectDumper.WriteAsync(q));
-		}
-
 		[Category("WHERE")]
 		[Test(Description = "This sample uses First to select the first Shipper in the table.")]
 		public async Task DLinq6Async()
@@ -1121,7 +759,33 @@ namespace NHibernate.Test.Linq
 				where c.Address.City == "London"
 				select o;
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+			}
+		}
+
+		[Category("JOIN")]
+		[Test(Description = "This sample uses foreign key navigation in the " +
+							"from clause to select all orders for customers in London.")]
+		public async Task DLinqJoin1LeftJoinAsync()
+		{
+			IQueryable<Order> q =
+				from c in db.Customers
+				from o in c.Orders.DefaultIfEmpty()
+				where c.Address.City == "London"
+				select o;
+
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
 		}
 
 		[Category("JOIN")]
@@ -1227,7 +891,13 @@ namespace NHibernate.Test.Linq
 				where p.Supplier.Address.Country == "USA" && p.UnitsInStock == 0
 				select p;
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+			}
 		}
 
 		[Category("JOIN")]
@@ -1243,7 +913,16 @@ namespace NHibernate.Test.Linq
 				where e.Address.City == "Seattle"
 				select new {e.FirstName, e.LastName, et.Region.Description};
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				// EmployeeTerritories and Territories
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
+				// Region
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
 		}
 
 		[Category("JOIN")]
@@ -1267,7 +946,13 @@ namespace NHibernate.Test.Linq
 							   e1.Address.City
 						   };
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+			}
 		}
 
 		[Category("JOIN")]
@@ -1282,7 +967,13 @@ namespace NHibernate.Test.Linq
 				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId into orders
 				select new {c.ContactName, OrderCount = orders.Average(x => x.Freight)};
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(0));
+			}
 		}
 
 		[Category("JOIN")]
@@ -1294,7 +985,33 @@ namespace NHibernate.Test.Linq
 				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId
 				select new { c.ContactName, o.OrderId };
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+			}
+		}
+
+		[Category("JOIN")]
+		[Test(Description = "This sample explictly joins two tables and projects results from both tables.")]
+		public async Task DLinqJoin5aLeftJoinAsync()
+		{
+			var q =
+				from c in db.Customers
+				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId into orders
+				from o in orders.DefaultIfEmpty()
+				where o != null
+				select new { c.ContactName, o.OrderId };
+
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
 		}
 
 		[Category("JOIN")]
@@ -1323,15 +1040,133 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Category("JOIN")]
+		[TestCase(true, Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
+		[TestCase(false, Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
+		public async Task DLinqJoin5dAsync(bool useCrossJoin)
+		{
+			if (useCrossJoin && !Dialect.SupportsCrossJoin)
+			{
+				Assert.Ignore("Dialect does not support cross join.");
+			}
+
+			var q =
+				from c in db.Customers
+				join o in db.Orders on
+					new {c.CustomerId, HasContractTitle = c.ContactTitle != null} equals
+					new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null }
+				select new { c.ContactName, o.OrderId };
+
+			using (var substitute = SubstituteDialect())
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				ClearQueryPlanCache();
+				substitute.Value.SupportsCrossJoin.Returns(useCrossJoin);
+
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(sql, Does.Contain(useCrossJoin ? "cross join" : "inner join"));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(0));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(useCrossJoin ? 1 : 2));
+				Assert.That(GetTotalOccurrences(sql, "cross join"), Is.EqualTo(useCrossJoin ? 1 : 0));
+			}
+		}
+
+		[Category("JOIN")]
 		[Test(Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
-		public async Task DLinqJoin5dAsync()
+		public void DLinqJoin5dLeftJoinAsync()
 		{
 			var q =
 				from c in db.Customers
-				join o in db.Orders on new {c.CustomerId, HasContractTitle = c.ContactTitle != null} equals new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null }
+				join o in db.Orders on
+					new { c.CustomerId, HasContractTitle = c.ContactTitle != null } equals
+					new { o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null } into orders
+				from o in orders.DefaultIfEmpty()
 				select new { c.ContactName, o.OrderId };
 
-			await (ObjectDumper.WriteAsync(q));
+			Assert.ThrowsAsync<NotSupportedException>(() => ObjectDumper.WriteAsync(q));
+		}
+
+		[Category("JOIN")]
+		[Test(Description = "This sample joins two tables and projects results from the first table.")]
+		public async Task DLinqJoin5eAsync()
+		{
+			var q =
+				from c in db.Customers
+				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId
+				where c.ContactName != null
+				select o;
+
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+			}
+		}
+
+		[Category("JOIN")]
+		[Test(Description = "This sample joins two tables and projects results from the first table.")]
+		public async Task DLinqJoin5eLeftJoinAsync()
+		{
+			var q =
+				from c in db.Customers
+				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId into orders
+				from o in orders.DefaultIfEmpty()
+				where c.ContactName != null
+				select o;
+
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
+		}
+
+		[Category("JOIN")]
+		[TestCase(Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
+		public async Task DLinqJoin5fAsync()
+		{
+			var q =
+				from o in db.Orders
+				join c in db.Customers on 
+					new { o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null } equals 
+					new { c.CustomerId, HasContractTitle = c.ContactTitle != null }
+				select new { c.ContactName, o.OrderId };
+			
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(0));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
+			}
+		}
+
+		[Category("JOIN")]
+		[TestCase(Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
+		public async Task DLinqJoin5fLeftJoinAsync()
+		{
+			var q =
+				from o in db.Orders
+				join c in db.Customers on
+					new { o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null } equals
+					new { c.CustomerId, HasContractTitle = c.ContactTitle != null } into customers
+				from c in customers.DefaultIfEmpty()
+				select new { c.ContactName, o.OrderId };
+
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(2));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(0));
+			}
 		}
 
 		[Category("JOIN")]
@@ -1347,7 +1182,13 @@ namespace NHibernate.Test.Linq
 				join e in db.Employees on c.Address.City equals e.Address.City into emps
 				select new {c.ContactName, ords = ords.Count(), emps = emps.Count()};
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(0));
+			}
 		}
 
 		[Category("JOIN")]
@@ -1355,7 +1196,6 @@ namespace NHibernate.Test.Linq
 			Description =
 				"This sample shows how to get LEFT OUTER JOIN by using DefaultIfEmpty(). The DefaultIfEmpty() method returns null when there is no Order for the Employee."
 			)]
-		[Ignore("TODO left outer join")]
 		public async Task DLinqJoin7Async()
 		{
 			var q =
@@ -1364,7 +1204,13 @@ namespace NHibernate.Test.Linq
 				from o in ords.DefaultIfEmpty()
 				select new {e.FirstName, e.LastName, Order = o};
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
 		}
 
 		[Category("JOIN")]
@@ -1378,32 +1224,99 @@ namespace NHibernate.Test.Linq
 				from o in ords
 				select new {c.ContactName, o.OrderId, z};
 
-			await (ObjectDumper.WriteAsync(q));
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+			}
 		}
 
 		[Category("JOIN")]
-		[Test(Description = "This sample shows a group join with a composite key.")]
-		public async Task DLinqJoin9Async()
+		[TestCase(true, Description = "This sample shows a group join with a composite key.")]
+		[TestCase(false, Description = "This sample shows a group join with a composite key.")]
+		public async Task DLinqJoin9Async(bool useCrossJoin)
 		{
-			var expected =
-				(from o in db.Orders.ToList()
-				 from p in db.Products.ToList()
-				 join d in db.OrderLines.ToList()
-					on new {o.OrderId, p.ProductId} equals new {d.Order.OrderId, d.Product.ProductId}
-					into details
-				 from d in details
-				 select new {o.OrderId, p.ProductId, d.UnitPrice}).ToList();
+			if (useCrossJoin && !Dialect.SupportsCrossJoin)
+			{
+				Assert.Ignore("Dialect does not support cross join.");
+			}
 
-			var actual =
-				await ((from o in db.Orders
-				 from p in db.Products
-				 join d in db.OrderLines
-					on new {o.OrderId, p.ProductId} equals new {d.Order.OrderId, d.Product.ProductId}
-					into details
-				 from d in details
-				 select new {o.OrderId, p.ProductId, d.UnitPrice}).ToListAsync());
+			// The expected collection can be obtained from the below Linq to Objects query.
+			//var expected =
+			//	(from o in db.Orders.ToList()
+			//	 from p in db.Products.ToList()
+			//	 join d in db.OrderLines.ToList()
+			//		on new {o.OrderId, p.ProductId} equals new {d.Order.OrderId, d.Product.ProductId}
+			//		into details
+			//	 from d in details
+			//	 select new {o.OrderId, p.ProductId, d.UnitPrice}).ToList();
 
-			Assert.AreEqual(expected.Count, actual.Count);
+			using (var substitute = SubstituteDialect())
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				ClearQueryPlanCache();
+				substitute.Value.SupportsCrossJoin.Returns(useCrossJoin);
+
+				var actual =
+					await ((from o in db.Orders
+					from p in db.Products
+					join d in db.OrderLines
+						on new { o.OrderId, p.ProductId } equals new { d.Order.OrderId, d.Product.ProductId }
+						into details
+					from d in details
+					select new { o.OrderId, p.ProductId, d.UnitPrice }).ToListAsync());
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(actual.Count, Is.EqualTo(2155));
+				Assert.That(sql, Does.Contain(useCrossJoin ? "cross join" : "inner join"));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(useCrossJoin ? 1 : 2));
+			}
+		}
+
+		[Category("JOIN")]
+		[TestCase(true, Description = "This sample shows a group left join with a composite key.")]
+		[TestCase(false, Description = "This sample shows a group left join with a composite key.")]
+		public async Task DLinqJoin9LeftJoinAsync(bool useCrossJoin)
+		{
+			if (useCrossJoin && !Dialect.SupportsCrossJoin)
+			{
+				Assert.Ignore("Dialect does not support cross join.");
+			}
+
+			// The expected collection can be obtained from the below Linq to Objects query.
+			//var expected =
+			//	(from o in db.Orders.ToList()
+			//	 from p in db.Products.ToList()
+			//	 join d in db.OrderLines.ToList()
+			//		 on new { o.OrderId, p.ProductId } equals new { d.Order.OrderId, d.Product.ProductId }
+			//		 into details
+			//	 from d in details.DefaultIfEmpty()
+			//	 where d != null && d.UnitPrice > 50
+			//	 select new { o.OrderId, p.ProductId, d.UnitPrice }).ToList();
+
+			using (var substitute = SubstituteDialect())
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				ClearQueryPlanCache();
+				substitute.Value.SupportsCrossJoin.Returns(useCrossJoin);
+
+				var actual =
+					await ((from o in db.Orders
+					from p in db.Products
+					join d in db.OrderLines
+						on new {o.OrderId, p.ProductId} equals new {d.Order.OrderId, d.Product.ProductId}
+						into details
+					from d in details.DefaultIfEmpty()
+					where d != null && d.UnitPrice > 50
+					select new {o.OrderId, p.ProductId, d.UnitPrice}).ToListAsync());
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(actual.Count, Is.EqualTo(163));
+				Assert.That(sql, Does.Contain(useCrossJoin ? "cross join" : "inner join"));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
 		}
 
 		[Category("JOIN")]
@@ -1416,6 +1329,46 @@ namespace NHibernate.Test.Linq
 					 select new { CustomerName = x.Key.ContactName, Order = x };
 
 			await (ObjectDumper.WriteAsync(q));
+		}
+
+		[Category("JOIN")]
+		[Test(Description = "This sample shows how to join multiple tables.")]
+		public async Task DLinqJoin10aAsync()
+		{
+			var q =
+				from e in db.Employees
+				join s in db.Employees on e.Superior.EmployeeId equals s.EmployeeId
+				join s2 in db.Employees on s.Superior.EmployeeId equals s2.EmployeeId
+				select new { e.FirstName, SuperiorName = s.FirstName, Superior2Name = s2.FirstName };
+
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
+			}
+		}
+
+		[Category("JOIN")]
+		[Test(Description = "This sample shows how to join multiple tables using a left join.")]
+		public async Task DLinqJoin10aLeftJoinAsync()
+		{
+			var q =
+				from e in db.Employees
+				join s in db.Employees on e.Superior.EmployeeId equals s.EmployeeId into sup
+				from s in sup.DefaultIfEmpty()
+				join s2 in db.Employees on s.Superior.EmployeeId equals s2.EmployeeId into sup2
+				from s2 in sup2.DefaultIfEmpty()
+				select new { e.FirstName, SuperiorName = s.FirstName, Superior2Name = s2.FirstName };
+
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				await (ObjectDumper.WriteAsync(q));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(2));
+			}
 		}
 	}
 }

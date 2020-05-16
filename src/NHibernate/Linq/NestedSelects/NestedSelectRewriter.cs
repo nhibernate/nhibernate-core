@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -16,13 +17,13 @@ namespace NHibernate.Linq.NestedSelects
 	static class NestedSelectRewriter
 	{
 		private static readonly MethodInfo CastMethod =
-			ReflectHelper.GetMethod(() => Enumerable.Cast<object[]>(null));
-		private static readonly MethodInfo GroupByMethod = ReflectHelper.GetMethod(
-			() => Enumerable.GroupBy<object[], Tuple, Tuple>(null, null, (Func<object[], Tuple>)null));
-		private static readonly MethodInfo WhereMethod = ReflectHelper.GetMethod(
-			() => Enumerable.Where(null, (Func<Tuple, bool>)null));
-		private static readonly MethodInfo ObjectReferenceEquals = ReflectHelper.GetMethod(
-			() => ReferenceEquals(null, null));
+			ReflectHelper.FastGetMethod(Enumerable.Cast<object[]>, default(IEnumerable));
+		private static readonly MethodInfo GroupByMethod = 
+			ReflectHelper.FastGetMethod(Enumerable.GroupBy, default(IEnumerable<object[]>), default(Func<object[], Tuple>), default(Func<object[], Tuple>));
+		private static readonly MethodInfo WhereMethod = 
+			ReflectHelper.FastGetMethod(Enumerable.Where, default(IEnumerable<Tuple>), default(Func<Tuple, bool>));
+		private static readonly MethodInfo ObjectReferenceEquals =
+			ReflectHelper.FastGetMethod(ReferenceEquals, default(object), default(object));
 		private static readonly PropertyInfo IGroupingKeyProperty = (PropertyInfo)
 			ReflectHelper.GetProperty<IGrouping<Tuple, Tuple>, Tuple>(g => g.Key);
 
@@ -43,6 +44,9 @@ namespace NHibernate.Linq.NestedSelects
 				if (processed != null)
 					replacements.Add(expression, processed);
 			}
+
+			if (!replacements.Any())
+				return;
 
 			var key = Expression.Property(group, IGroupingKeyProperty);
 
@@ -92,6 +96,10 @@ namespace NHibernate.Linq.NestedSelects
 
 		private static Expression ProcessSubquery(ISessionFactory sessionFactory, ICollection<ExpressionHolder> elementExpression, QueryModel queryModel, Expression @group, QueryModel subQueryModel)
 		{
+			var resultTypeOverride = subQueryModel.ResultTypeOverride;
+			if (resultTypeOverride != null && !resultTypeOverride.IsArray && !resultTypeOverride.IsEnumerableOfT())
+				return null;
+
 			var subQueryMainFromClause = subQueryModel.MainFromClause;
 
 			var restrictions = subQueryModel.BodyClauses

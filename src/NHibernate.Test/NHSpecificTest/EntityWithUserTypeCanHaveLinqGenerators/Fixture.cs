@@ -6,7 +6,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 {
-
 	[TestFixture]
 	public class Fixture : TestCase
 	{

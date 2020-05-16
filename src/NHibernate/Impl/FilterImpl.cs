@@ -15,7 +15,7 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private FilterDefinition definition;
 
-		private readonly IDictionary<string, object> parameters = new Dictionary<string, object>();
+		private readonly Dictionary<string, object> parameters = new Dictionary<string, object>();
 		private readonly Dictionary<string, int> _parameterSpans = new Dictionary<string, int>();
 
 		public void AfterDeserialize(FilterDefinition factoryDefinition)

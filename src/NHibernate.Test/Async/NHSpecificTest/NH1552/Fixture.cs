@@ -94,7 +94,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1552
             }
         }
 
-
         [Test]
         public async Task Paging_with_sql_works_as_expected_with_FirstResultMaxResultAsync()
         {

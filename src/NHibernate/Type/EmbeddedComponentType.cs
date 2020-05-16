@@ -19,9 +19,12 @@ namespace NHibernate.Type
 
 		public override object Instantiate(object parent, ISessionImplementor session)
 		{
-			bool useParent= false;
-			// NH Different implementation : since we are not sure about why H3.2 use the "parent"
-			//useParent = parent != null && base.ReturnedClass.IsInstanceOfType(parent);
+			var useParent =
+				parent != null &&
+				//TODO: Yuck! This is not quite good enough, it's a quick
+				//hack around the problem of having a to-one association
+				//that refers to an embedded component:
+				ReturnedClass.IsInstanceOfType(parent);
 
 			return useParent ? parent : base.Instantiate(parent, session);
 		}

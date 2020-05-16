@@ -143,25 +143,21 @@ namespace NHibernate.Test.TransformTests
 		protected override void OnSetUp()
 		{
 			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				using (s.BeginTransaction())
-				{
 					s.Save(new Simple { Name = "Name1" });
 					s.Save(new Simple { Name = "Name2" });
-					s.Transaction.Commit();
+					t.Commit();
 				}
-			}
 		}
 
 		protected override void OnTearDown()
 		{
 			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				using (s.BeginTransaction())
-				{
 					s.Delete("from Simple");
-					s.Transaction.Commit();
-				}
+					t.Commit();
 			}
 		}
 

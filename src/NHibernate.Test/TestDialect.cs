@@ -82,6 +82,8 @@ namespace NHibernate.Test
 
 		public virtual bool SupportsDuplicatedColumnAliases => true;
 
+		public virtual bool SupportsAggregateInSubSelect => false;
+
 		/// <summary>
 		/// Supports inserting in a table without any column specified in the insert.
 		/// </summary>
@@ -95,7 +97,6 @@ namespace NHibernate.Test
 		/// generator is <c>native</c> while the dialect uses <c>identity</c> for this generator.</remarks>
 		public bool SupportsEmptyInsertsOrHasNonIdentityNativeGenerator
 			=> SupportsEmptyInserts || !HasIdentityNativeGenerator;
-
 
 		/// <summary>
 		/// Supports condition not bound to any data, like "where @p1 = @p2".
@@ -167,6 +168,14 @@ namespace NHibernate.Test
 		public virtual bool SupportsUsingConnectionOnSystemTransactionPrepare => true;
 
 		/// <summary>
+		/// Some databases fail with dependent transaction, typically when their driver tries to access the transaction
+		/// state from its two PC: the dependent transaction is meant to be disposed of before completing the actual
+		/// transaction, so it is usually disposed at this point, and its state cannot be read. (Drivers should always
+		/// clone transactions for avoiding this trouble.)
+		/// </summary>
+		public virtual bool SupportsDependentTransaction => true;
+
+		/// <summary>
 		/// Some databases (provider?) fails to compute adequate column types for queries which columns
 		/// computing include a parameter value.
 		/// </summary>
@@ -176,5 +185,11 @@ namespace NHibernate.Test
 		/// their type in the query.
 		/// </remarks>
 		public virtual bool HasBrokenTypeInferenceOnSelectedParameters => false;
+
+		/// <summary>
+		/// Note: Dialect.SupportsRawValueConstructorSyntax is currently disabled for all Dialects (even for ones that support this feature).
+		/// This flag is added to be able to test this feature selectively
+		/// </summary>
+		public virtual bool SupportsRowValueConstructorSyntax => _dialect.SupportsRowValueConstructorSyntax;
 	}
 }

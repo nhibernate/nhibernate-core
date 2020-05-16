@@ -1,15 +1,21 @@
 @echo off
 pushd %~dp0
 
+for /f "tokens=* USEBACKQ delims= " %%i in (`findstr /c:"NUnit.Console" "Tools\packages.csproj"`) do set NUNIT_VERSION=%%i
+set NUNIT_VERSION=%NUNIT_VERSION:~51%
+set NUNIT_VERSION=%NUNIT_VERSION:" />=%
+
 set NANT="%~dp0Tools\nant\bin\NAnt.exe" -t:net-4.0
 set BUILD_TOOL_PATH=%~dp0Tools\BuildTool\bin\BuildTool.dll
 set BUILDTOOL=dotnet %BUILD_TOOL_PATH%
 set AVAILABLE_CONFIGURATIONS=%~dp0available-test-configurations
 set CURRENT_CONFIGURATION=%~dp0current-test-configuration
-set NUNIT="%~dp0Tools\NUnit.ConsoleRunner.3.7.0\tools\nunit3-console.exe"
+set NUNIT="%~dp0Tools\NUnit.ConsoleRunner\%NUNIT_VERSION%\tools\nunit3-console.exe"
 
 if not exist %BUILD_TOOL_PATH% (
-    dotnet build %~dp0Tools\BuildTool\BuildTool.sln -c Release -o bin
+    pushd %~dp0Tools\BuildTool
+    dotnet build BuildTool.sln -c Release -o bin
+    popd
 )
 
 :main-menu
@@ -182,7 +188,8 @@ SET NUNITPLATFORM=
 goto test-run
 
 :test-run
-start "nunit3-console" cmd /K %NUNIT% %NUNITPLATFORM% --agents=1 --process=separate NHibernate.nunit
+%NANT% common.tools-restore
+start "nunit3-console" cmd /K %NUNIT% %NUNITPLATFORM% --agents=1 NHibernate.nunit
 goto main-menu
 
 rem :build-test

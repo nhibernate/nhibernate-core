@@ -13,7 +13,7 @@ namespace NHibernate.Criterion
 	public class ConstantProjection : SimpleProjection
 	{
 		private readonly object value;
-		private readonly TypedValue typedValue;
+		public TypedValue TypedValue { get; }
 
 		public ConstantProjection(object value) : this(value, NHibernateUtil.GuessType(value.GetType()))
 		{
@@ -22,7 +22,7 @@ namespace NHibernate.Criterion
 		public ConstantProjection(object value, IType type)
 		{
 			this.value = value;
-			typedValue = new TypedValue(type, this.value);
+			TypedValue = new TypedValue(type, this.value);
 		}
 
 		public override bool IsAggregate
@@ -43,19 +43,19 @@ namespace NHibernate.Criterion
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
 			return new SqlString(
-				criteriaQuery.NewQueryParameter(typedValue).Single(),
+				criteriaQuery.NewQueryParameter(TypedValue).Single(),
 				" as ",
 				GetColumnAliases(position, criteria, criteriaQuery)[0]);
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new IType[] { typedValue.Type };
+			return new IType[] { TypedValue.Type };
 		}
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[] { typedValue };
+			return new TypedValue[] { TypedValue };
 		}
 	}
 }

@@ -21,7 +21,6 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaFromHql
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
-
 		protected override string[] Mappings
 		{
 			get { return new string[] { "NHSpecificTest.CriteriaFromHql.Mappings.hbm.xml" }; }

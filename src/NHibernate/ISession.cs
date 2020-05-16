@@ -14,7 +14,7 @@ using NHibernate.Util;
 
 namespace NHibernate
 {
-	// 6.0 TODO: Convert to interface methods
+	// 6.0 TODO: Convert most of these extensions to interface methods
 	public static class SessionExtensions
 	{
 		/// <summary>
@@ -39,6 +39,15 @@ namespace NHibernate
 		{
 			return ReflectHelper.CastOrThrow<AbstractSessionImpl>(session, "query batch").CreateQueryBatch();
 		}
+
+		// 6.0 TODO: consider if it should be added as a property on ISession then obsolete this, or if it should stay here as an extension method.
+		/// <summary>
+		/// Get the current transaction if any is ongoing, else <see langword="null" />.
+		/// </summary>
+		/// <param name="session">The session.</param>
+		/// <returns>The current transaction or <see langword="null" />..</returns>
+		public static ITransaction GetCurrentTransaction(this ISession session)
+			=> session.GetSessionImplementation().ConnectionManager.CurrentTransaction;
 	}
 
 	/// <summary>
@@ -762,6 +771,8 @@ namespace NHibernate
 		/// <summary>
 		/// Get the current Unit of Work and return the associated <c>ITransaction</c> object.
 		/// </summary>
+		// Since v5.3
+		[Obsolete("Use GetCurrentTransaction extension method instead, and check for null.")]
 		ITransaction Transaction { get; }
 
 		/// <summary>
@@ -771,7 +782,8 @@ namespace NHibernate
 		/// <para>
 		/// Sessions auto-join current transaction by default on their first usage within a scope.
 		/// This can be disabled with <see cref="ISessionBuilder{T}.AutoJoinTransaction(bool)"/> from
-		/// a session builder obtained with <see cref="ISessionFactory.WithOptions()"/>.
+		/// a session builder obtained with <see cref="ISessionFactory.WithOptions()"/>, or with the
+		/// auto-join transaction configuration setting.
 		/// </para>
 		/// <para>
 		/// This method allows to explicitly join the current transaction. It does nothing if it is already

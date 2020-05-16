@@ -733,6 +733,16 @@ namespace NHibernate.Util
 				(comparer == null ? DictionaryEquals(m1, m2, EqualityComparer<V>.Default) :
 					m1.All(kv => m2.TryGetValue(kv.Key, out var value) && comparer.Equals(kv.Value, value)));
 
+		//It's added to make use of optimized .NET Core Dictionary.Remove(key, out value) method
+		internal static bool Remove<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, out TValue value)
+		{
+			if (!dic.TryGetValue(key, out value))
+				return false;
+
+			dic.Remove(key);
+			return true;
+		}
+
 		private static bool? FastCheckEquality<T>(IEnumerable<T> c1, IEnumerable<T> c2)
 		{
 			if (c1 == c2)

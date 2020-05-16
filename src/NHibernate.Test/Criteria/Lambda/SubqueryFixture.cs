@@ -11,11 +11,9 @@ using NHibernate.Util;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
-
 	[TestFixture]
 	public class SubqueryFixture : LambdaFixtureBase
 	{
-
 		private Child _subqueryChildAlias = null;
 
 		private DetachedCriteria DetachedCriteriaChild
@@ -592,7 +590,5 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
-
 	}
-
 }

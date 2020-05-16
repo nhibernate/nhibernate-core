@@ -1,21 +1,40 @@
 using System;
+using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class DynamicComponentCustomizer<TComponent> : PropertyContainerCustomizer<TComponent>, IDynamicComponentMapper<TComponent>
+	public class DynamicComponentCustomizer<TComponent> : PropertyContainerCustomizer<TComponent>,
+		IDynamicComponentMapper<TComponent>
 	{
-		public DynamicComponentCustomizer(IModelExplicitDeclarationsHolder explicitDeclarationsHolder, ICustomizersHolder customizersHolder, PropertyPath propertyPath)
+		private readonly System.Type _componentType;
+
+		public DynamicComponentCustomizer(
+			IModelExplicitDeclarationsHolder explicitDeclarationsHolder,
+			ICustomizersHolder customizersHolder,
+			PropertyPath propertyPath)
+			: this(typeof(TComponent), explicitDeclarationsHolder, customizersHolder, propertyPath)
+		{
+		}
+
+		internal DynamicComponentCustomizer(
+			System.Type componentType,
+			IModelExplicitDeclarationsHolder explicitDeclarationsHolder,
+			ICustomizersHolder customizersHolder,
+			PropertyPath propertyPath)
 			: base(explicitDeclarationsHolder, customizersHolder, propertyPath)
 		{
 			if (propertyPath == null)
 			{
-				throw new ArgumentNullException("propertyPath");
+				throw new ArgumentNullException(nameof(propertyPath));
 			}
+
 			if (explicitDeclarationsHolder == null)
 			{
-				throw new ArgumentNullException("explicitDeclarationsHolder");
+				throw new ArgumentNullException(nameof(explicitDeclarationsHolder));
 			}
-			explicitDeclarationsHolder.AddAsDynamicComponent(propertyPath.LocalMember, typeof(TComponent));
+
+			_componentType = componentType;
+			explicitDeclarationsHolder.AddAsDynamicComponent(propertyPath.LocalMember, _componentType);
 		}
 
 		#region IDynamicComponentMapper<TComponent> Members
@@ -51,5 +70,15 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		}
 
 		#endregion
+
+		protected override MemberInfo GetRequiredPropertyOrFieldByName(string memberName)
+		{
+			var result = _componentType.GetPropertyOrFieldMatchingName(memberName);
+			if (result == null)
+			{
+				throw new MappingException(string.Format("Member not found. The member '{0}' does not exists in type {1}", memberName, _componentType.FullName));
+			}
+			return result;
+		}
 	}
 }

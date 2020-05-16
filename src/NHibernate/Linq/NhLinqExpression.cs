@@ -11,7 +11,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Linq
 {
-	public class NhLinqExpression : IQueryExpression
+	public class NhLinqExpression : IQueryExpression, ICacheableQueryExpression
 	{
 		public string Key { get; protected set; }
 
@@ -32,14 +32,23 @@ namespace NHibernate.Linq
 
 		public ExpressionToHqlTranslationResults ExpressionToHqlTranslationResults { get; private set; }
 
-		protected virtual QueryMode QueryMode => QueryMode.Select;
+		protected virtual QueryMode QueryMode { get; }
 
 		private readonly Expression _expression;
 		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 
 		public NhLinqExpression(Expression expression, ISessionFactoryImplementor sessionFactory)
+			: this(QueryMode.Select, expression, sessionFactory)
 		{
-			_expression = NhRelinqQueryParser.PreTransform(expression);
+		}
+
+		internal NhLinqExpression(QueryMode queryMode, Expression expression, ISessionFactoryImplementor sessionFactory)
+		{
+			QueryMode = queryMode;
+			var preTransformResult = NhRelinqQueryParser.PreTransform(
+				expression,
+				new PreTransformationParameters(queryMode, sessionFactory));
+			_expression = preTransformResult.Expression;
 
 			// We want logging to be as close as possible to the original expression sent from the
 			// application. But if we log before partial evaluation done in PreTransform, the log won't
@@ -47,9 +56,9 @@ namespace NHibernate.Linq
 			// referenced from the main query.
 			LinqLogging.LogExpression("Expression (partially evaluated)", _expression);
 
-			_constantToParameterMap = ExpressionParameterVisitor.Visit(ref _expression, sessionFactory);
+			_expression = ExpressionParameterVisitor.Visit(preTransformResult, out _constantToParameterMap);
 
-			ParameterValuesByName = _constantToParameterMap.Values.ToDictionary(p => p.Name,
+			ParameterValuesByName = _constantToParameterMap.Values.Distinct().ToDictionary(p => p.Name,
 																				p => System.Tuple.Create(p.Value, p.Type));
 
 			Key = ExpressionKeyVisitor.Visit(_expression, _constantToParameterMap);

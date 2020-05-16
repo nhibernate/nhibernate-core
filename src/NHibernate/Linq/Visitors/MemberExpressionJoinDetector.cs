@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using NHibernate.Engine;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.ReWriters;
 using Remotion.Linq.Clauses;
@@ -32,7 +33,14 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitMember(MemberExpression expression)
 		{
-			var isIdentifier = _isEntityDecider.IsIdentifier(expression.Expression.Type, expression.Member.Name);
+			// A static member expression such as DateTime.Now has a null Expression.
+			if (expression.Expression == null)
+			{
+				// A static member call is never a join, and it is not an instance member access either.
+				return base.VisitMember(expression);
+			}
+
+			var isEntity = _isEntityDecider.IsEntity(expression, out var isIdentifier);
 			if (isIdentifier)
 				_hasIdentifier = true;
 			if (!isIdentifier)
@@ -43,7 +51,7 @@ namespace NHibernate.Linq.Visitors
 			if (!isIdentifier)
 				_memberExpressionDepth--;
 
-			if (_isEntityDecider.IsEntity(expression.Type) &&
+			if (isEntity &&
 				((_requiresJoinForNonIdentifier && !_hasIdentifier) || _memberExpressionDepth > 0) &&
 				_joiner.CanAddJoin(expression))
 			{

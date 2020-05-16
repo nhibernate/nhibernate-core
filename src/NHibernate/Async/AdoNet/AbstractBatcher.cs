@@ -58,7 +58,7 @@ namespace NHibernate.AdoNet
 					cmd.Connection = sessionConnection;
 				}
 
-				_connectionManager.Transaction.Enlist(cmd);
+				_connectionManager.EnlistInTransaction(cmd);
 				Driver.PrepareCommand(cmd);
 			}
 			catch (InvalidOperationException ioe)
@@ -79,7 +79,7 @@ namespace NHibernate.AdoNet
 			}
 			else
 			{
-				_batchCommand = await (PrepareCommandAsync(type, sql, parameterTypes, cancellationToken)).ConfigureAwait(false); // calls ExecuteBatch()
+				_batchCommand = await (PrepareCommandAsync(type, sql, parameterTypes, true, cancellationToken)).ConfigureAwait(false); // calls ExecuteBatch()
 				_batchCommandSql = sql;
 				_batchCommandParameterTypes = parameterTypes;
 			}
@@ -87,7 +87,16 @@ namespace NHibernate.AdoNet
 			return _batchCommand;
 		}
 
-		public async Task<DbCommand> PrepareCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes, CancellationToken cancellationToken)
+		public Task<DbCommand> PrepareCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<DbCommand>(cancellationToken);
+			}
+			return PrepareCommandAsync(type, sql, parameterTypes, false, cancellationToken);
+		}
+
+		private async Task<DbCommand> PrepareCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes, bool batch, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			await (OnPreparedCommandAsync(cancellationToken)).ConfigureAwait(false);
@@ -96,7 +105,7 @@ namespace NHibernate.AdoNet
 			// if the command is associated with an ADO.NET Transaction/Connection while
 			// another open one Command is doing something then an exception will be 
 			// thrown.
-			return Generate(type, sql, parameterTypes);
+			return Generate(type, sql, parameterTypes, batch);
 		}
 
 		protected virtual Task OnPreparedCommandAsync(CancellationToken cancellationToken)

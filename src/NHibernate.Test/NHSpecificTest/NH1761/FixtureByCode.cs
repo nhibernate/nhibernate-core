@@ -19,7 +19,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1761
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
 				rc.Bag(x => x.FundingPrograms, m => {}, r => r.OneToMany());
-				
 			});
 			mapper.Class<FundingProgram>(rc =>
 			{
@@ -74,7 +73,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1761
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
 		public virtual IList<FundingProgram> FundingPrograms { get; set; } = new List<FundingProgram>();
-
 	}
 
 	public class FundingProgram

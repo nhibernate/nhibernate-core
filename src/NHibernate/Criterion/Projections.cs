@@ -153,7 +153,6 @@ namespace NHibernate.Criterion
 			return new AggregateProjection("max", projection);
 		}
 
-
 		/// <summary>
 		/// A property minimum value
 		/// </summary>
@@ -300,7 +299,6 @@ namespace NHibernate.Criterion
 			return new CastProjection(type, projection);
 		}
 
-
 		/// <summary>
 		/// Return a constant value
 		/// </summary>
@@ -321,7 +319,6 @@ namespace NHibernate.Criterion
 		{
 			return new ConstantProjection(obj,type);
 		}
-
 
 		/// <summary>
 		/// Calls the named <see cref="ISQLFunction"/>

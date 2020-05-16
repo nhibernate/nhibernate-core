@@ -24,7 +24,7 @@ namespace NHibernate.Loader.Custom
 		// the types will also have to be discovered at cache hit, from the cache results.
 
 		private readonly SqlString sql;
-		private readonly ISet<string> querySpaces = new HashSet<string>();
+		private readonly HashSet<string> querySpaces = new HashSet<string>();
 		private List<IParameterSpecification> parametersSpecifications;
 
 		private readonly IQueryable[] entityPersisters;
@@ -275,7 +275,7 @@ namespace NHibernate.Loader.Custom
 			get { return entityPersisters; }
 		}
 
-		protected override ICollectionPersister[] CollectionPersisters
+		protected internal override ICollectionPersister[] CollectionPersisters
 		{
 			get { return collectionPersisters; }
 		}

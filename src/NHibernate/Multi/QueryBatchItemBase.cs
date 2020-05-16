@@ -14,13 +14,17 @@ namespace NHibernate.Multi
 	/// <summary>
 	/// Base class for both ICriteria and IQuery queries
 	/// </summary>
-	public abstract partial class QueryBatchItemBase<TResult> : IQueryBatchItem<TResult>
+	public abstract partial class QueryBatchItemBase<TResult> : IQueryBatchItem<TResult>, IQueryBatchItemWithAsyncProcessResults
 	{
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(QueryBatch));
+
 		protected ISessionImplementor Session;
 		private List<EntityKey[]>[] _subselectResultKeys;
 		private List<QueryInfo> _queryInfos;
 		private CacheMode? _cacheMode;
 		private IList<TResult> _finalResults;
+		private DbDataReader _reader;
+		private List<object>[] _hydratedObjects;
 
 		protected class QueryInfo : ICachingInformation, ICachingInformationWithFetches
 		{
@@ -46,7 +50,7 @@ namespace NHibernate.Multi
 			public bool IsCacheable { get; }
 
 			/// <inheritdoc />
-			public QueryKey CacheKey { get;}
+			public QueryKey CacheKey { get; }
 
 			/// <inheritdoc />
 			public bool CanGetFromCache { get; }
@@ -176,6 +180,7 @@ namespace NHibernate.Multi
 
 			var dialect = Session.Factory.Dialect;
 			var hydratedObjects = new List<object>[_queryInfos.Count];
+			var isDebugLog = Log.IsDebugEnabled();
 
 			using (Session.SwitchCacheMode(_cacheMode))
 			{
@@ -223,8 +228,15 @@ namespace NHibernate.Multi
 					if (ownCacheBatcher)
 						cacheBatcher = new CacheBatcher(Session);
 
-					for (var count = 0; count < maxRows && reader.Read(); count++)
+					if (isDebugLog)
+						Log.Debug("processing result set");
+
+					int count;
+					for (count = 0; count < maxRows && reader.Read(); count++)
 					{
+						if (isDebugLog)
+							Log.Debug("result set row: {0}", count);
+
 						rowCount++;
 
 						var o =
@@ -250,6 +262,9 @@ namespace NHibernate.Multi
 						tmpResults.Add(o);
 					}
 
+					if (isDebugLog)
+						Log.Debug("done processing result set ({0} rows)", count);
+
 					queryInfo.Result = tmpResults;
 					if (queryInfo.CanPutToCache)
 						queryInfo.ResultToCache = queryCacheBuilder.Result;
@@ -260,16 +275,20 @@ namespace NHibernate.Multi
 					reader.NextResult();
 				}
 
-				InitializeEntitiesAndCollections(reader, hydratedObjects);
-
+				StopLoadingCollections(reader);
+				_reader = reader;
+				_hydratedObjects = hydratedObjects;
 				return rowCount;
 			}
 		}
 
-		/// <inheritdoc />
+		/// <inheritdoc cref="IQueryBatchItem.ProcessResults" />
 		public void ProcessResults()
 		{
 			ThrowIfNotInitialized();
+
+			using (Session.SwitchCacheMode(_cacheMode))
+				InitializeEntitiesAndCollections(_reader, _hydratedObjects);
 
 			for (var i = 0; i < _queryInfos.Count; i++)
 			{
@@ -345,6 +364,17 @@ namespace NHibernate.Multi
 				queryInfo.Loader.InitializeEntitiesAndCollections(
 					hydratedObjects[i], reader, Session, queryInfo.Parameters.IsReadOnly(Session),
 					queryInfo.CacheBatcher);
+			}
+		}
+
+		private void StopLoadingCollections(DbDataReader reader)
+		{
+			for (var i = 0; i < _queryInfos.Count; i++)
+			{
+				var queryInfo = _queryInfos[i];
+				if (queryInfo.IsResultFromCache)
+					continue;
+				queryInfo.Loader.StopLoadingCollections(Session, reader);
 			}
 		}
 

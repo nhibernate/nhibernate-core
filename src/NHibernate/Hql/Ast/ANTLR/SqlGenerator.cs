@@ -128,10 +128,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 			var parameterNode = n as ParameterNode;
 			if (parameterNode != null)
 			{
-				var parameter = Parameter.Placeholder;
-				// supposed to be simplevalue
-				parameter.BackTrack = parameterNode.HqlParameterSpecification.GetIdsForBackTrack(sessionFactory).Single();
-				writer.PushParameter(parameter);
+				var list = parameterNode.HqlParameterSpecification.GetIdsForBackTrack(sessionFactory).Select(
+					backTrack =>
+					{
+						var parameter = Parameter.Placeholder;
+						parameter.BackTrack = backTrack;
+						return parameter;
+					}).ToList();
+				Out(SqlStringHelper.ParametersList(list));
 			}
 			else if (n is SqlNode)
 			{
@@ -304,6 +308,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 				outputStack.RemoveAt(0);
 				Out(template.Render(functionArguments.Args, sessionFactory));
 			}
+		}
+
+		private void OutAggregateFunctionName(IASTNode m)
+		{
+			var aggregateNode = (AggregateNode) m;
+			Out(aggregateNode.FunctionName);
 		}
 
 		private void CommaBetweenParameters(String comma)
@@ -489,7 +499,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				return builder.ToSqlString();
 			}
-
 
 			#endregion
 		}

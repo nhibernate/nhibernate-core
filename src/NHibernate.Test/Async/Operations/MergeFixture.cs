@@ -85,23 +85,31 @@ namespace NHibernate.Test.Operations
 		[Test]
 		public async Task DeleteAndMergeAsync()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
-				s.BeginTransaction();
-				var jboss = new Employer();
-				await (s.PersistAsync(jboss));
-				await (s.Transaction.CommitAsync());
-				s.Clear();
+				Employer jboss;
+				using (var t = s.BeginTransaction())
+				{
+					jboss = new Employer();
+					await (s.PersistAsync(jboss));
+					await (t.CommitAsync());
+					s.Clear();
+				}
 
-				s.BeginTransaction();
-				var otherJboss = await (s.GetAsync<Employer>(jboss.Id));
-				await (s.DeleteAsync(otherJboss));
-				await (s.Transaction.CommitAsync());
-				s.Clear();
+				using (var t = s.BeginTransaction())
+				{
+					var otherJboss = await (s.GetAsync<Employer>(jboss.Id));
+					await (s.DeleteAsync(otherJboss));
+					await (t.CommitAsync());
+					s.Clear();
+				}
+
 				jboss.Vers = 1;
-				s.BeginTransaction();
-				await (s.MergeAsync(jboss));
-				await (s.Transaction.CommitAsync());
+				using (var t = s.BeginTransaction())
+				{
+					await (s.MergeAsync(jboss));
+					await (t.CommitAsync());
+				}
 			}
 		}
 
@@ -126,13 +134,11 @@ namespace NHibernate.Test.Operations
 
 			p.Address.StreetAddress = "321 Main";
 
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				using (s.BeginTransaction())
-				{
-					p = (Person) await (s.MergeAsync(p));
-					await (s.Transaction.CommitAsync());
-				}
+				p = (Person) await (s.MergeAsync(p));
+				await (t.CommitAsync());
 			}
 
 			AssertInsertCount(0);
@@ -147,41 +153,6 @@ namespace NHibernate.Test.Operations
 					await (s.DeleteAsync(p));
 					await (tx.CommitAsync());
 				}
-			}
-		}
-
-		[Test, Ignore("Need some more investigation about id sync.")]
-		public async Task MergeBidiPrimayKeyOneToOneAsync()
-		{
-			Person p;
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
-			{
-				p = new Person {Name = "steve"};
-				new PersonalDetails {SomePersonalDetail = "I have big feet", Person = p};
-				await (s.PersistAsync(p));
-				await (tx.CommitAsync());
-			}
-
-			ClearCounts();
-
-			p.Details.SomePersonalDetail = p.Details.SomePersonalDetail + " and big hands too";
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
-			{
-				p = (Person) await (s.MergeAsync(p));
-				await (tx.CommitAsync());
-			}
-
-			AssertInsertCount(0);
-			AssertUpdateCount(1);
-			AssertDeleteCount(0);
-
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
-			{
-				await (s.DeleteAsync(p));
-				await (tx.CommitAsync());
 			}
 		}
 
@@ -452,44 +423,41 @@ namespace NHibernate.Test.Operations
 		{
 			var entity = new VersionedEntity {Id = "entity", Name = "entity"};
 			using(ISession s = OpenSession())
-			using(s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				await (s.PersistAsync(entity));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			// make the detached 'entity' reference stale...
 			using(var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				var entity2 = await (s.GetAsync<VersionedEntity>(entity.Id));
 				entity2.Name = "entity-name";
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
-			// now try to reattch it
-			ISession s2 = null;
-			try
+			// now try to reattach it
+			using (var s2 = OpenSession())
+			using (var t = s2.BeginTransaction())
 			{
-				s2 = OpenSession();
-				s2.BeginTransaction();
-
-				await (s2.MergeAsync(entity));
-				await (s2.Transaction.CommitAsync());
-				Assert.Fail("was expecting staleness error");
-			}
-			catch (StaleObjectStateException)
-			{
-				// expected outcome...
-			}
-			finally
-			{
-				if (s2 != null)
+				try
 				{
-					await (s2.Transaction.RollbackAsync());
-					s2.Close();
+					await (s2.MergeAsync(entity));
+					await (t.CommitAsync());
+					Assert.Fail("was expecting staleness error");
 				}
-				await (CleanupAsync());
+				catch (StaleObjectStateException)
+				{
+					// expected outcome...
+				}
+				finally
+				{
+					await (t.RollbackAsync());
+					s2.Close();
+					await (CleanupAsync());
+				}
 			}
 		}
 
@@ -586,10 +554,10 @@ namespace NHibernate.Test.Operations
 				Name = "test"
 			};
 			using(ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				await (s.PersistAsync(node));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			ClearCounts();
@@ -597,10 +565,10 @@ namespace NHibernate.Test.Operations
 			// node is now detached, but we have made no changes.  so attempt to merge it
 			// into this new session; this should cause no updates...
 			using(var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				node = (Node) await (s.MergeAsync(node));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -611,10 +579,10 @@ namespace NHibernate.Test.Operations
 			// make sure we get an update as a result...
 			node.Description = "new description";
 			using(var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				node = (Node) await (s.MergeAsync(node));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 			AssertUpdateCount(1);
 			AssertInsertCount(0);
@@ -626,10 +594,10 @@ namespace NHibernate.Test.Operations
 		{
 			var entity = new VersionedEntity {Id = "entity", Name = "entity"};
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				await (s.PersistAsync(entity));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			ClearCounts();
@@ -638,10 +606,10 @@ namespace NHibernate.Test.Operations
 			// into this new session; this should cause no updates...
 			VersionedEntity mergedEntity;
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				mergedEntity = (VersionedEntity) await (s.MergeAsync(entity));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -653,10 +621,10 @@ namespace NHibernate.Test.Operations
 			// make sure we get an update as a result...
 			entity.Name = "new name";
 			using(var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				entity = (VersionedEntity) await (s.MergeAsync(entity));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 			AssertUpdateCount(1);
 			AssertInsertCount(0);
@@ -670,12 +638,12 @@ namespace NHibernate.Test.Operations
 			var child = new VersionedEntity {Id = "child", Name = "child"};
 
 			using(ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				parent.Children.Add(child);
 				child.Parent = parent;
 				await (s.PersistAsync(parent));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			ClearCounts();
@@ -684,10 +652,10 @@ namespace NHibernate.Test.Operations
 			// into this new session; this should cause no updates...
 			VersionedEntity mergedParent;
 			using(var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				mergedParent = (VersionedEntity) await (s.MergeAsync(parent));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -704,10 +672,10 @@ namespace NHibernate.Test.Operations
 			mergedParent.Name = "new name";
 			mergedParent.Children.Add(new VersionedEntity {Id = "child2", Name = "new child"});
 			using(var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				parent = (VersionedEntity) await (s.MergeAsync(mergedParent));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 			AssertUpdateCount(1);
 			AssertInsertCount(1);
@@ -723,7 +691,7 @@ namespace NHibernate.Test.Operations
 				Name = "parent"
 			};
 			using(ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				var child = new Node
 				{
@@ -733,7 +701,7 @@ namespace NHibernate.Test.Operations
 				parent.Children.Add(child);
 				child.Parent = parent;
 				await (s.PersistAsync(parent));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			ClearCounts();
@@ -741,10 +709,10 @@ namespace NHibernate.Test.Operations
 			// parent is now detached, but we have made no changes.  so attempt to merge it
 			// into this new session; this should cause no updates...
 			using(var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				parent = (Node) await (s.MergeAsync(parent));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -763,10 +731,10 @@ namespace NHibernate.Test.Operations
 					Name = "second child"
 				});
 			using(var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				parent = (Node) await (s.MergeAsync(parent));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 			AssertUpdateCount(1);
 			AssertInsertCount(1);

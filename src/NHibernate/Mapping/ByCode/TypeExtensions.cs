@@ -212,7 +212,6 @@ namespace NHibernate.Mapping.ByCode
 			return null;
 		}
 
-
 		public static System.Type DetermineRequiredCollectionElementType(this MemberInfo collectionProperty)
 		{
 			System.Type propertyType = collectionProperty.GetPropertyOrFieldType();
@@ -229,7 +228,6 @@ namespace NHibernate.Mapping.ByCode
 
 			return collectionElementType;
 		}
-
 
 		public static System.Type DetermineCollectionElementOrDictionaryValueType(this System.Type genericCollection)
 		{

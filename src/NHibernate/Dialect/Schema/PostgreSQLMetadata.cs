@@ -75,7 +75,6 @@ namespace NHibernate.Dialect.Schema
 			foreignKeys.Locale = CultureInfo.InvariantCulture;
 			return foreignKeys;
 		}
-
 	}
 
 	public class PostgreSQLTableMetadata : AbstractTableMetadata

@@ -7,7 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1289
 	{
 		#region Fields
 
-
 		public virtual string ImageName
 		{
 			get;

@@ -1,4 +1,3 @@
-using System.Collections;
 using NHibernate.Dialect;
 using NUnit.Framework;
 
@@ -52,11 +51,11 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 				Assert.IsTrue(BinaryTimestamp.Equals(bar.Timestamp, retrievedBar.Timestamp), "Timestamps are different!");
 			}
 
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
 			{
-				session.BeginTransaction();
 				session.Delete("from Bar");
-				session.Transaction.Commit();
+				tran.Commit();
 			}
 		}
 	}

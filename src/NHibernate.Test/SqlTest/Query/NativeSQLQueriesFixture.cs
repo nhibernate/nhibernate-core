@@ -536,7 +536,6 @@ namespace NHibernate.Test.SqlTest.Query
 			AssertClassAssignability(o[0].GetType(), typeof(long));
 			AssertClassAssignability(o[1].GetType(), typeof(Employment));
 
-
 			IQuery queryWithCollection = s.GetNamedQuery("organizationEmploymentsExplicitAliases");
 			queryWithCollection.SetInt64("id", jboss.Id);
 			list = queryWithCollection.List();
@@ -784,7 +783,7 @@ namespace NHibernate.Test.SqlTest.Query
 		public void HandlesManualSynchronization()
 		{
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.SessionFactory.Statistics.IsStatisticsEnabled = true;
 				s.SessionFactory.Statistics.Clear();
@@ -803,7 +802,7 @@ namespace NHibernate.Test.SqlTest.Query
 
 				// clean up
 				s.Delete(jboss);
-				s.Transaction.Commit();
+				t.Commit();
 				s.Close();
 			}
 		}

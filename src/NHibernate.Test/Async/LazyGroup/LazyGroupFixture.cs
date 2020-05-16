@@ -99,14 +99,14 @@ namespace NHibernate.Test.LazyGroup
 
 		[TestCase(true)]
 		[TestCase(false)]
-		public async Task TestUpdateAsync(bool fetchBeforeUpdate, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task TestUpdateAsync(bool fetchBeforeUpdate)
 		{
 			Sfi.Statistics.Clear();
 
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				var person = await (s.GetAsync<Person>(1, cancellationToken));
+				var person = await (s.GetAsync<Person>(1));
 				if (fetchBeforeUpdate)
 				{
 					var nickName = person.NickName;
@@ -114,7 +114,7 @@ namespace NHibernate.Test.LazyGroup
 
 				person.NickName = "test";
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(1));
@@ -122,12 +122,12 @@ namespace NHibernate.Test.LazyGroup
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				var person = await (s.GetAsync<Person>(1, cancellationToken));
+				var person = await (s.GetAsync<Person>(1));
 				Assert.That(person.NickName, Is.EqualTo("test"));
 
 				person.NickName = "NickName1"; // reset name
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -224,7 +224,6 @@ namespace NHibernate.Test.LazyGroup
 				Image = new byte[i],
 				NickName = $"NickName{i}"
 			};
-
 		}
 	}
 }

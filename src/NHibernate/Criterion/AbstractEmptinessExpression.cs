@@ -16,7 +16,6 @@ namespace NHibernate.Criterion
 
 		protected abstract bool ExcludeEmpty { get; }
 
-
 		protected AbstractEmptinessExpression(string propertyName)
 		{
 			this.propertyName = propertyName;
@@ -61,7 +60,6 @@ namespace NHibernate.Criterion
 
 			return new SqlString(new object[] {ExcludeEmpty ? "exists" : "not exists", innerSelect.ToString()});
 		}
-
 
 		protected IQueryableCollection GetQueryableCollection(string entityName, string actualPropertyName,
 															  ISessionFactoryImplementor factory)

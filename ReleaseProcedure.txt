@@ -4,11 +4,11 @@ These are the tasks typically needed to create an official NHibernate release.
     that is about to happen (as these will show in the milestone).
 
   * Create a draft release in Github with GitReleaseManager. If you have used
-    the NHibernate build menu, it should be available in Tools\gitreleasemanage.x.x.x\
+    the NHibernate build menu, it should be available in Tools\gitreleasemanager\x.x.x\
     (change x.x.x by its current version in tools).
     By example:
 
-Tools\gitreleasemanager.0.7.0\tools\GitReleaseManager.exe create -o nhibernate -r nhibernate-core -m 5.1 -u username -p password
+Tools\gitreleasemanager\0.7.0\tools\GitReleaseManager.exe create -o nhibernate -r nhibernate-core -m 5.1 -u username -p password
 
     (Adjust the -m milestone parameter above, and add "-c branchname" if
     releasing another branch than master)
@@ -25,9 +25,8 @@ Tools\gitreleasemanager.0.7.0\tools\GitReleaseManager.exe create -o nhibernate -
     If the release tag does not match the released version with major.minor.release
     formalism, the NuGet package will have an invalid link to release notes.
 
-  * Check/update version number in common.xml and NHibernate.props under
-    build-common folder, in master.xml under doc\reference folder, and in
-    appveyor.yml in the NHibernate root.
+  * Check/update version number in NHibernate.props under build-common folder.
+    Clear VersionSuffix if present.
 
   * Don't forget to commit the above.
 
@@ -55,3 +54,10 @@ Tools\gitreleasemanager.0.7.0\tools\GitReleaseManager.exe create -o nhibernate -
   * If this was a stable branch, merge it forward to master. Perhaps some
     changes need to be edited out in the merge, but this will reduce the
     risk of some issue being left unfixed on master.
+ 
+  * If this was the master branch, create the stable branch for the new release, named
+    according to its version with "x" instead of its patch number. By example, "5.3.x".
+    
+  * If next version is decided set it in NHibernate.props under build-common folder
+    (in most cases - increment minor version) and set VersionSuffix to "dev".
+    Commit it directly (without going through a PR).

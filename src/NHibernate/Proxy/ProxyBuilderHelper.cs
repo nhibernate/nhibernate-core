@@ -14,6 +14,7 @@ using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Security;
+using NHibernate.Proxy.DynamicProxy;
 using NHibernate.Util;
 
 namespace NHibernate.Proxy
@@ -101,11 +102,19 @@ namespace NHibernate.Proxy
 
 		internal static IEnumerable<MethodInfo> GetProxiableMethods(System.Type type, IEnumerable<System.Type> interfaces)
 		{
-			var proxiableMethods =
-				GetProxiableMethods(type)
+			if (type.IsInterface || type == typeof(object) || type.GetInterfaces().Length == 0)
+			{
+				return GetProxiableMethods(type)
 					.Concat(interfaces.SelectMany(i => i.GetMethods()))
 					.Distinct();
-			
+			}
+
+			var proxiableMethods = new HashSet<MethodInfo>(GetProxiableMethods(type), new MethodInfoComparer(type));
+			foreach (var interfaceMethod in interfaces.SelectMany(i => i.GetMethods()))
+			{
+				proxiableMethods.Add(interfaceMethod);
+			}
+
 			return proxiableMethods;
 		}
 
@@ -136,23 +145,43 @@ namespace NHibernate.Proxy
 
 		internal static MethodBuilder GenerateMethodSignature(string name, MethodInfo method, TypeBuilder typeBuilder)
 		{
-			//TODO: Should we use attributes of base method?
-			var methodAttributes = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.Virtual;
+			var explicitImplementation = method.DeclaringType.IsInterface;
+			if (explicitImplementation &&
+				(typeBuilder.BaseType == typeof(object) ||
+#pragma warning disable 618
+					typeBuilder.BaseType == typeof(ProxyDummy)) &&
+#pragma warning restore 618
+				(IsEquals(method) || IsGetHashCode(method)))
+			{
+				// If we are building a proxy for an interface, and it defines an Equals or GetHashCode, they must
+				// be implicitly implemented for overriding object methods.
+				// (Ideally we should check the method actually comes from the interface declared for the proxy.)
+				explicitImplementation = false;
+			}
+
+			var methodAttributes = explicitImplementation
+				? MethodAttributes.Private | MethodAttributes.Final | MethodAttributes.HideBySig |
+					MethodAttributes.SpecialName | MethodAttributes.NewSlot | MethodAttributes.Virtual
+				: MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.Virtual;
 
 			if (method.IsSpecialName)
 				methodAttributes |= MethodAttributes.SpecialName;
 
 			var parameters = method.GetParameters();
-
-			var methodBuilder = typeBuilder.DefineMethod(
-				name,
-				methodAttributes,
-				CallingConventions.HasThis,
-				method.ReturnType,
-				parameters.Select(param => param.ParameterType).ToArray());
+			var implementationName = explicitImplementation
+				? $"{method.DeclaringType.FullName}.{name}"
+				: name;
+			var methodBuilder =
+				typeBuilder.DefineMethod(
+					implementationName,
+					methodAttributes,
+					CallingConventions.HasThis,
+					method.ReturnType,
+					parameters.ToArray(param => param.ParameterType));
+			if (explicitImplementation)
+				methodBuilder.SetImplementationFlags(MethodImplAttributes.Managed | MethodImplAttributes.IL);
 
 			var typeArgs = method.GetGenericArguments();
-
 			if (typeArgs.Length > 0)
 			{
 				var typeNames = GenerateTypeNames(typeArgs.Length);
@@ -169,8 +198,7 @@ namespace NHibernate.Proxy
 
 					// Copy generic parameter constraints (class and interfaces).
 					var typeConstraints = typeArg.GetGenericParameterConstraints()
-					                             .Select(x => ResolveTypeConstraint(method, x))
-					                             .ToArray();
+												.ToArray(x => ResolveTypeConstraint(method, x));
 
 					var baseTypeConstraint = typeConstraints.SingleOrDefault(x => x.IsClass);
 					typeArgBuilder.SetBaseTypeConstraint(baseTypeConstraint);
@@ -181,6 +209,18 @@ namespace NHibernate.Proxy
 			}
 
 			return methodBuilder;
+		}
+
+		private static bool IsGetHashCode(MethodBase method)
+		{
+			return method.Name == "GetHashCode" && method.GetParameters().Length == 0;
+		}
+
+		private static bool IsEquals(MethodBase method)
+		{
+			if (method.Name != "Equals") return false;
+			var parameters = method.GetParameters();
+			return parameters.Length == 1 && parameters[0].ParameterType == typeof(object);
 		}
 
 		internal static void GenerateInstanceOfIgnoresAccessChecksToAttribute(
@@ -253,6 +293,73 @@ namespace NHibernate.Proxy
 			}
 
 			return result;
+		}
+
+		/// <summary>
+		/// Method equality for the proxy building purpose: we want to equate an interface method to a base type
+		/// method which implements it. This implies the base type method has the same signature and there is no
+		/// explicit implementation of the interface method in the base type.
+		/// </summary>
+		private class MethodInfoComparer : IEqualityComparer<MethodInfo>
+		{
+			private readonly Dictionary<System.Type, Dictionary<MethodInfo, MethodInfo>> _interfacesMap;
+
+			public MethodInfoComparer(System.Type baseType)
+			{
+				_interfacesMap = BuildInterfacesMap(baseType);
+			}
+
+			private static Dictionary<System.Type, Dictionary<MethodInfo, MethodInfo>> BuildInterfacesMap(System.Type type)
+			{
+				return type.GetInterfaces()
+					.Distinct()
+					.ToDictionary(i => i, i => ToDictionary(type.GetInterfaceMap(i)));
+			}
+
+			private static Dictionary<MethodInfo, MethodInfo> ToDictionary(InterfaceMapping interfaceMap)
+			{
+				var map = new Dictionary<MethodInfo, MethodInfo>(interfaceMap.InterfaceMethods.Length);
+				for (var i = 0; i < interfaceMap.InterfaceMethods.Length; i++)
+				{
+					map.Add(interfaceMap.InterfaceMethods[i], interfaceMap.TargetMethods[i]);
+				}
+
+				return map;
+			}
+
+			public bool Equals(MethodInfo x, MethodInfo y)
+			{
+				if (x == y)
+					return true;
+				if (x == null || y == null)
+					return false;
+				if (x.Name != y.Name)
+					return false;
+
+				// If they have the same declaring type, one cannot be the implementation of the other.
+				if (x.DeclaringType == y.DeclaringType)
+					return false;
+				// If they belong to two different interfaces or to two different concrete types, one cannot be the
+				// implementation of the other.
+				if (x.DeclaringType.IsInterface == y.DeclaringType.IsInterface)
+					return false;
+
+				var interfaceMethod = x.DeclaringType.IsInterface ? x : y;
+				// If the interface is not implemented by the base type, the method cannot be implemented by the
+				// base type method.
+				if (!_interfacesMap.TryGetValue(interfaceMethod.DeclaringType, out var map))
+					return false;
+
+				var baseMethod = x.DeclaringType.IsInterface ? y : x;
+				return map[interfaceMethod] == baseMethod;
+			}
+
+			public int GetHashCode(MethodInfo obj)
+			{
+				// Hashing by name only, putting methods with the same name in the same bucket, in order to keep
+				// this method fast.
+				return obj.Name.GetHashCode();
+			}
 		}
 	}
 }

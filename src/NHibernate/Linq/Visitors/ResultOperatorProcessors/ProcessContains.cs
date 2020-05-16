@@ -59,7 +59,8 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 		private static bool IsEmptyList(HqlParameter source, VisitorParameters parameters)
 		{
 			var parameterName = source.NodesPreOrder.Single(n => n is HqlIdent).AstNode.Text;
-			var parameterValue = parameters.ConstantToParameterMap.Single(p => p.Value.Name == parameterName).Key.Value;
+			// Multiple constants may be linked to the same parameter, take the first matching parameter
+			var parameterValue = parameters.ConstantToParameterMap.First(p => p.Value.Name == parameterName).Key.Value;
 			return !((IEnumerable)parameterValue).Cast<object>().Any();
 		}
 	}

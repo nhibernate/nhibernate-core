@@ -18,7 +18,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3004
 
 		public TestSqlClientDriver()
 		{
-
 		}
 
 		public TestSqlClientDriver(bool UseNamedPrefixInSql, bool UseNamedPrefixInParameter)
@@ -30,7 +29,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3004
 		public override bool UseNamedPrefixInSql
 		{
 			get { return _UseNamedPrefixInSql; }
-			
 		}
 
 		public override bool UseNamedPrefixInParameter

@@ -63,6 +63,16 @@ namespace NHibernate.Impl
 		public async Task CloseAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			if (isClosed)
+			{
+				if (log.IsDebugEnabled())
+				{
+					log.Debug("Already closed");
+				}
+
+				return;
+			}
+
 			log.Info("Closing");
 
 			isClosed = true;
@@ -226,7 +236,7 @@ namespace NHibernate.Impl
 					if (log.IsDebugEnabled())
 					{
 						log.Debug("evicting second-level cache for: {0}",
-					          string.Join(", ", cacheGroup.Select(p => p.EntityName)));
+						          string.Join(", ", cacheGroup.Select(p => p.EntityName)));
 					}
 					await (cacheGroup.Key.ClearAsync(cancellationToken)).ConfigureAwait(false);
 				}
@@ -327,7 +337,7 @@ namespace NHibernate.Impl
 					if (log.IsDebugEnabled())
 					{
 						log.Debug("evicting second-level cache for: {0}",
-					          string.Join(", ", cacheGroup.Select(p => p.Role)));
+						          string.Join(", ", cacheGroup.Select(p => p.Role)));
 					}
 					await (cacheGroup.Key.ClearAsync(cancellationToken)).ConfigureAwait(false);
 				}

@@ -260,7 +260,6 @@ namespace NHibernate.Test.Futures
 
 				using (var logSpy = new SqlLogSpy())
 				{
-
 					Assert.That((await (persons.GetEnumerableAsync())).Any(x => x.Children.Any()), "No children found");
 					Assert.That((await (persons10.GetEnumerableAsync())).Any(x => x.Children.Any()), "No children found");
 

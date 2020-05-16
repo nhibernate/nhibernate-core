@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Antlr.Runtime;
 using NHibernate.Dialect.Function;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Persister.Collection;
-using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
@@ -27,7 +28,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get
 			{
-					
 				IType type = base.DataType;
 				if ( type != null ) 
 				{
@@ -39,7 +39,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					return fe.DataType;
 				}
 				ISQLFunction sf = Walker.SessionFactoryHelper.FindSQLFunction(Text);
-				return sf?.ReturnType(null, Walker.SessionFactoryHelper.Factory);
+				return sf?.GetReturnType(Enumerable.Empty<IType>(), Walker.SessionFactoryHelper.Factory, true);
 			}
 
 			set
@@ -239,7 +239,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				throw new QueryException("Property '" + OriginalText + "' is not a component.  Use an alias to reference associations or collections.");
 			}
 
-			IType propertyType ;  // used to set the type of the parent dot node
+			IType propertyType; // used to set the type of the parent dot node
 			string propertyPath = Text + "." + NextSibling.Text;
 			try
 			{
@@ -290,7 +290,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			return true;
 		}
-
 
 		private IType GetNakedPropertyType(FromElement fromElement)
 		{

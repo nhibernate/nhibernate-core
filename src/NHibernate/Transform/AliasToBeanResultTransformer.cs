@@ -78,27 +78,39 @@ namespace NHibernate.Transform
 			return collection;
 		}
 
+		protected virtual void OnPropertyNotFound(string propertyName)
+		{
+			throw new PropertyNotFoundException(_resultClass.GetType(), propertyName, "setter");
+		}
+
 		#region Setter resolution
 
 		protected MemberInfo GetMemberInfo(string alias)
 		{
-			return TryGetMemberInfo(alias, _propertiesByNameCaseSensitive)
-				?? TryGetMemberInfo(alias, _fieldsByNameCaseSensitive)
-				?? TryGetMemberInfo(alias, _propertiesByNameCaseInsensitive)
-				?? (MemberInfo) TryGetMemberInfo(alias, _fieldsByNameCaseInsensitive)
-				?? throw new PropertyNotFoundException(_resultClass, alias, "setter");
+			if (TryGetMemberInfo(alias, _propertiesByNameCaseSensitive, out var property))
+				return property;
+			if (TryGetMemberInfo(alias, _fieldsByNameCaseSensitive, out var field))
+				return field;
+			if (TryGetMemberInfo(alias, _propertiesByNameCaseInsensitive, out property))
+				return property;
+			if (TryGetMemberInfo(alias, _fieldsByNameCaseInsensitive, out field))
+				return field;
+			OnPropertyNotFound(alias);
+			return null;
 		}
 
-		private TMemberInfo TryGetMemberInfo<TMemberInfo>(string alias, Dictionary<string, NamedMember<TMemberInfo>> propertiesMap)
-			where TMemberInfo: MemberInfo
+		private bool TryGetMemberInfo<TMemberInfo>(string alias, Dictionary<string, NamedMember<TMemberInfo>> propertiesMap, out TMemberInfo member)
+			where TMemberInfo : MemberInfo
 		{
 			if (propertiesMap.TryGetValue(alias, out var property))
 			{
 				CheckMember(property, alias);
-				return property.Member;
+				member = property.Member;
+				return true;
 			}
 
-			return null;
+			member = null;
+			return false;
 		}
 
 		private void CheckMember<T>(NamedMember<T> member, string alias) where T : MemberInfo

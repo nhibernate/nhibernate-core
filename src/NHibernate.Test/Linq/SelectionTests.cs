@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NHibernate.DomainModel.NHSpecific;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -327,6 +329,14 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void CanSelectNotMappedEntityProperty()
+		{
+			var list = db.Animals.Where(o => o.Mother != null).Select(o => o.FatherOrMother.SerialNumber).ToList();
+
+			Assert.That(list, Has.Count.GreaterThan(0));
+		}
+
+		[Test]
 		public void CanProjectWithCast()
 		{
 			// NH-2463
@@ -346,6 +356,10 @@ namespace NHibernate.Test.Linq
 
 			var names5 = db.Users.Select(p => new { p1 = (p as IUser).Name }).ToList();
 			Assert.AreEqual(3, names5.Count);
+
+			var names6 = db.Users.Select(p => new { p1 = (long) p.Id }).ToList();
+			Assert.AreEqual(3, names6.Count);
+
 			// ReSharper restore RedundantCast
 		}
 
@@ -490,6 +504,23 @@ namespace NHibernate.Test.Linq
 		{
 			var fatherIsKnown = db.Animals.Select(a => new { a.SerialNumber, Superior = a.Father.SerialNumber, FatherIsKnown = a.Father.SerialNumber == "5678" ? (object)true : (object)false }).ToList();
 			Assert.That(fatherIsKnown, Has.Exactly(1).With.Property("FatherIsKnown").True);
+		}
+
+		[Test]
+		public void CanCastToDerivedType()
+		{
+			var dogs = db.Animals
+			                      .Where(a => ((Dog) a).Pregnant)
+			                      .Select(a => new {a.SerialNumber})
+			                      .ToList();
+			Assert.That(dogs, Has.Exactly(1).With.Property("SerialNumber").Not.Null);
+		}
+
+		[Test]
+		public void CanCastToCustomRegisteredType()
+		{
+			TypeFactory.RegisterType(typeof(NullableInt32), new NullableInt32Type(), Enumerable.Empty<string>());
+			Assert.That(db.Users.Where(o => (NullableInt32) o.Id == 1).ToList(), Has.Count.EqualTo(1));
 		}
 
 		public class Wrapper<T>

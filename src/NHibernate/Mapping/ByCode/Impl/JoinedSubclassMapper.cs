@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Persister.Entity;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -13,7 +14,6 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public JoinedSubclassMapper(System.Type subClass, HbmMapping mapDoc) : base(subClass, mapDoc)
 		{
-			var toAdd = new[] {classMapping};
 			classMapping.name = subClass.GetShortClassName(mapDoc);
 			classMapping.extends = subClass.BaseType.GetShortClassName(mapDoc);
 			if (classMapping.key == null)
@@ -21,7 +21,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				classMapping.key = new HbmKey {column1 = subClass.BaseType.Name.ToLowerInvariant() + "_key"};
 			}
 			keyMapper = new KeyMapper(subClass, classMapping.key);
-			mapDoc.Items = mapDoc.Items == null ? toAdd : mapDoc.Items.Concat(toAdd).ToArray();
+			mapDoc.Items = ArrayHelper.Append(mapDoc.Items, classMapping);
 		}
 
 		#region Overrides of AbstractPropertyContainerMapper
@@ -32,8 +32,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentNullException("property");
 			}
-			var toAdd = new[] {property};
-			classMapping.Items = classMapping.Items == null ? toAdd : classMapping.Items.Concat(toAdd).ToArray();
+			classMapping.Items = ArrayHelper.Append(classMapping.Items, property);
 		}
 
 		#endregion
@@ -88,13 +87,22 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Synchronize(params string[] table)
 		{
 			if (table == null)
-			{
 				return;
+
+			var existingSyncs = classMapping.synchronize != null
+				? new HashSet<string>(classMapping.synchronize.Select(x => x.table))
+				: new HashSet<string>();
+
+			foreach (var t in table)
+			{
+				var cleanedName = t?.Trim();
+				if (!string.IsNullOrEmpty(cleanedName))
+				{
+					existingSyncs.Add(cleanedName);
+				}
 			}
-			var existingSyncs = new HashSet<string>(classMapping.synchronize != null ? classMapping.synchronize.Select(x => x.table) : Enumerable.Empty<string>());
-			System.Array.ForEach(table.Where(x => x != null).Select(tableName => tableName.Trim()).Where(cleanedName => !"".Equals(cleanedName)).ToArray(),
-													 x => existingSyncs.Add(x.Trim()));
-			classMapping.synchronize = existingSyncs.Select(x => new HbmSynchronize { table = x }).ToArray();
+
+			classMapping.synchronize = existingSyncs.ToArray(x => new HbmSynchronize { table = x });
 		}
 
 		#endregion

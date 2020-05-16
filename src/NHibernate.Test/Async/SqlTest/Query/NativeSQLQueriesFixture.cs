@@ -410,80 +410,6 @@ namespace NHibernate.Test.SqlTest.Query
 			s.Close();
 		}
 
-		/* test for native sql composite id joins which has never been implemented */
-
-		[Test, Ignore("Failure expected")]
-		public async Task CompositeIdJoinsFailureExpectedAsync()
-		{
-			ISession s = OpenSession();
-			ITransaction t = s.BeginTransaction();
-			Person person = new Person();
-			person.Name = "Noob";
-
-			Product product = new Product();
-			product.ProductId = new Product.ProductIdType();
-			product.ProductId.Orgid = "x";
-			product.ProductId.Productnumber = "1234";
-			product.Name = "Hibernate 3";
-
-			Order order = new Order();
-			order.OrderId = new Order.OrderIdType();
-			order.OrderId.Ordernumber = "1";
-			order.OrderId.Orgid = "y";
-
-			product.Orders.Add(order);
-			order.Product = product;
-			order.Person = person;
-
-			await (s.SaveAsync(product));
-			await (s.SaveAsync(order));
-			await (s.SaveAsync(person));
-
-			await (t.CommitAsync());
-			s.Close();
-
-			s = OpenSession();
-			t = s.BeginTransaction();
-			Product p = (Product) (await (s.CreateQuery("from Product p join fetch p.orders").ListAsync()))[0];
-			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Orders));
-			await (t.CommitAsync());
-			s.Close();
-
-			s = OpenSession();
-			t = s.BeginTransaction();
-			object[] o = (object[]) (await (s.CreateSQLQuery(
-				                         "select\r\n" +
-				                         "        product.orgid as {product.id.orgid}," +
-				                         "        product.productnumber as {product.id.productnumber}," +
-				                         "        {prod_orders}.orgid as orgid3_1_,\r\n" +
-				                         "        {prod_orders}.ordernumber as ordernum2_3_1_,\r\n" +
-				                         "        product.name as {product.name}," +
-				                         "        {prod_orders.element.*}," +
-				                         /*"        orders.PROD_NO as PROD4_3_1_,\r\n" +
-	  "        orders.person as person3_1_,\r\n" +
-	  "        orders.PROD_ORGID as PROD3_0__,\r\n" +
-	  "        orders.PROD_NO as PROD4_0__,\r\n" +
-	  "        orders.orgid as orgid0__,\r\n" +
-	  "        orders.ordernumber as ordernum2_0__ \r\n" +*/
-				                         "    from\r\n" +
-				                         "        Product product \r\n" +
-				                         "    inner join\r\n" +
-				                         "        TBL_ORDER {prod_orders} \r\n" +
-				                         "            on product.orgid={prod_orders}.PROD_ORGID \r\n" +
-				                         "            and product.productnumber={prod_orders}.PROD_NO")
-			                         .AddEntity("product", typeof(Product))
-			                         .AddJoin("prod_orders", "product.orders")
-			                         .ListAsync()))[0];
-
-			p = (Product) o[0];
-			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Orders));
-			IEnumerator en = p.Orders.GetEnumerator();
-			Assert.IsTrue(en.MoveNext());
-			Assert.IsNotNull(en.Current);
-			await (t.CommitAsync());
-			s.Close();
-		}
-
 		[Test]
 		public async Task AutoDetectAliasingAsync()
 		{
@@ -546,7 +472,6 @@ namespace NHibernate.Test.SqlTest.Query
 			Assert.AreEqual(2, o.Length);
 			AssertClassAssignability(o[0].GetType(), typeof(long));
 			AssertClassAssignability(o[1].GetType(), typeof(Employment));
-
 
 			IQuery queryWithCollection = s.GetNamedQuery("organizationEmploymentsExplicitAliases");
 			queryWithCollection.SetInt64("id", jboss.Id);
@@ -795,7 +720,7 @@ namespace NHibernate.Test.SqlTest.Query
 		public async Task HandlesManualSynchronizationAsync()
 		{
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.SessionFactory.Statistics.IsStatisticsEnabled = true;
 				s.SessionFactory.Statistics.Clear();
@@ -814,7 +739,7 @@ namespace NHibernate.Test.SqlTest.Query
 
 				// clean up
 				await (s.DeleteAsync(jboss));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 				s.Close();
 			}
 		}
