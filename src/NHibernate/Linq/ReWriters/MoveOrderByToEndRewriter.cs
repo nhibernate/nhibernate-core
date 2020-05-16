@@ -14,11 +14,10 @@ namespace NHibernate.Linq.ReWriters
 			int len = queryModel.BodyClauses.Count;
 			for(int i=0; i<len; i++)
 			{
-				if (queryModel.BodyClauses[i] is OrderByClause)
+				if (queryModel.BodyClauses[i] is OrderByClause clause)
 				{
 					// If we find an order by clause, move it to the end of the list.
 					// This preserves the ordering of multiple orderby clauses if there are any.
-					IBodyClause clause = queryModel.BodyClauses[i];
 					queryModel.BodyClauses.RemoveAt(i);
 					queryModel.BodyClauses.Add(clause);
 					i--;

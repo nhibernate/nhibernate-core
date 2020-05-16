@@ -114,8 +114,7 @@ namespace NHibernate.Linq.Visitors
 			{
 				if (_model.BodyClauses[i] == oldClause)
 				{
-					_model.BodyClauses.RemoveAt(i);
-					_model.BodyClauses.Insert(i, newClause);
+					_model.BodyClauses[i] = newClause;
 				}
 			}
 		}
