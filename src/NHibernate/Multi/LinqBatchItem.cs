@@ -48,7 +48,7 @@ namespace NHibernate.Multi
 	/// <typeparam name="T">Result type</typeparam>
 	public partial class LinqBatchItem<T> : QueryBatchItem<T>, ILinqBatchItem
 	{
-		private readonly Delegate _postExecuteTransformer;
+		private readonly PostResultTransformer _postExecuteTransformer;
 		private readonly System.Type _resultTypeOverride;
 
 		public LinqBatchItem(IQuery query) : base(query)
@@ -57,7 +57,7 @@ namespace NHibernate.Multi
 
 		internal LinqBatchItem(IQuery query, NhLinqExpression linq) : base(query)
 		{
-			_postExecuteTransformer = linq.ExpressionToHqlTranslationResults.PostExecuteTransformer;
+			_postExecuteTransformer = linq.ExpressionToHqlTranslationResults.PostResultTransformer;
 			_resultTypeOverride = linq.ExpressionToHqlTranslationResults.ExecuteResultTypeOverride;
 		}
 
@@ -88,7 +88,7 @@ namespace NHibernate.Multi
 
 		private List<T> GetTransformedResults(IList transformerList)
 		{
-			var res = _postExecuteTransformer.DynamicInvoke(transformerList.AsQueryable());
+			var res = _postExecuteTransformer.Transform(transformerList.AsQueryable());
 			return new List<T>
 			{
 				(T) res

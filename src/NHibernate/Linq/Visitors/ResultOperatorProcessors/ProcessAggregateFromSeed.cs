@@ -22,8 +22,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			var accumulatorType = resultOperator.Func.Parameters[0].Type;
 			var inputList = Expression.Parameter(typeof(IEnumerable<>).MakeGenericType(inputType), "inputList");
 
-			MethodCallExpression call;
-
+			Expression call;
 			if (resultOperator.OptionalResultSelector == null)
 			{
 				var aggregate = ReflectionCache.EnumerableMethods.AggregateWithSeedDefinition
@@ -51,13 +50,15 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 					);
 			}
 
+			call = ConstantParametersRewriter.Rewrite(call, queryModelVisitor.VisitorParameters, out var parameter);
+
 			// NH-3850: changed from list transformer (working on IEnumerable<object>) to post execute
 			// transformer (working on IEnumerable<inputType>) for globally aggregating polymorphic results
 			// instead of aggregating results for each class separately and yielding only the first.
 			// If the aggregation relies on ordering, final result will still be wrong due to
 			// polymorphic results being union-ed without re-ordering. (This is a limitation of all polymorphic
 			// queries, this is not specific to LINQ provider.)
-			tree.AddPostExecuteTransformer(Expression.Lambda(call, inputList));
+			tree.AddPostExecuteTransformer(Expression.Lambda(call, inputList, parameter));
 			// There is no more a list transformer yielding an IList<resultType>, have to override the execute
 			// result type.
 			tree.ExecuteResultTypeOverride = inputType;

@@ -59,7 +59,7 @@ namespace NHibernate.Test.Futures
 					.Select(x => x.Id)
 					.ToFutureValue(x => x.Sum());
 
-				Assert.That(() => personsSum.Value, Throws.InnerException.TypeOf<InvalidOperationException>().Or.InnerException.TypeOf<ArgumentNullException>());
+				Assert.That(() => personsSum.Value, Throws.TypeOf<InvalidOperationException>().Or.InnerException.TypeOf<ArgumentNullException>());
 			}
 		}
 

@@ -24,17 +24,23 @@ namespace NHibernate.Linq
 		/// </summary>
 		protected virtual System.Type TargetType => Type;
 
+		// Since v5.3
+		[Obsolete("This property has no usages and will be removed in a future version")]
 		public IList<NamedParameterDescriptor> ParameterDescriptors { get; private set; }
 
 		public NhLinqExpressionReturnType ReturnType { get; }
 
+		// Since v5.3
+		[Obsolete("Use NamedParameters property instead.")]
 		public IDictionary<string, Tuple<object, IType>> ParameterValuesByName { get; }
 
 		public ExpressionToHqlTranslationResults ExpressionToHqlTranslationResults { get; private set; }
 
 		protected virtual QueryMode QueryMode { get; }
 
-		internal IDictionary<string, NamedParameter> NamedParameters { get; }
+		public IDictionary<string, NamedParameter> NamedParameters { get; }
+
+		internal object[] ParameterValues { get; }
 
 		private readonly Expression _expression;
 		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
@@ -60,9 +66,25 @@ namespace NHibernate.Linq
 
 			_constantToParameterMap = ExpressionParameterVisitor.Visit(preTransformResult);
 
-			ParameterValuesByName = _constantToParameterMap.Values.Distinct().ToDictionary(p => p.Name,
-			                                                                               p => System.Tuple.Create(p.Value, p.Type));
-			NamedParameters = _constantToParameterMap.Values.Distinct().ToDictionary(p => p.Name);
+			var parameterValuesByName = new Dictionary<string, Tuple<object, IType>>();
+			var namedParameters = new Dictionary<string, NamedParameter>();
+			var parameterValues = new object[_constantToParameterMap.Count];
+			foreach (var pair in _constantToParameterMap)
+			{
+				var parameter = pair.Value;
+				if (!parameterValuesByName.ContainsKey(parameter.Name))
+				{
+					parameterValuesByName.Add(parameter.Name, System.Tuple.Create(parameter.Value, parameter.Type));
+					namedParameters.Add(parameter.Name, parameter);
+				}
+
+				parameterValues[parameter.Index] = parameter.Value;
+			}
+#pragma warning disable 618
+			ParameterValuesByName = parameterValuesByName;
+#pragma warning restore 618
+			NamedParameters = namedParameters;
+			ParameterValues = parameterValues;
 			Key = ExpressionKeyVisitor.Visit(_expression, _constantToParameterMap, sessionFactory);
 
 			Type = _expression.Type;
@@ -97,16 +119,10 @@ namespace NHibernate.Linq
 
 			if (ExpressionToHqlTranslationResults.ExecuteResultTypeOverride != null)
 				Type = ExpressionToHqlTranslationResults.ExecuteResultTypeOverride;
-
+#pragma warning disable CS0618
 			ParameterDescriptors = requiredHqlParameters.AsReadOnly();
-
-			CanCachePlan = CanCachePlan &&
-				// If some constants do not have matching HQL parameters, their values from first query will
-				// be embedded in the plan and reused for subsequent queries: do not cache the plan.
-				!ParameterValuesByName
-					.Keys
-					.Except(requiredHqlParameters.Select(p => p.Name))
-					.Any();
+#pragma warning restore CS0618
+			CanCachePlan &= visitorParameters.CanCachePlan;
 
 			// The ast node may be altered by caller, duplicate it for preserving the original one.
 			return DuplicateTree(ExpressionToHqlTranslationResults.Statement.AstNode);
@@ -115,9 +131,16 @@ namespace NHibernate.Linq
 		internal void CopyExpressionTranslation(NhLinqExpression other)
 		{
 			ExpressionToHqlTranslationResults = other.ExpressionToHqlTranslationResults;
+#pragma warning disable CS0618
 			ParameterDescriptors = other.ParameterDescriptors;
+#pragma warning restore CS0618
 			// Type could have been overridden by translation.
 			Type = other.Type;
+		}
+
+		internal void Prepare()
+		{
+			ExpressionToHqlTranslationResults = ExpressionToHqlTranslationResults?.WithParameterValues(ParameterValues);
 		}
 
 		private static IASTNode DuplicateTree(IASTNode ast)

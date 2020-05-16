@@ -560,7 +560,9 @@ possible solutions:
 				throw new NotSupportedException(method.ToString());
 			}
 
-			return generator.BuildHql(method, expression.Object, expression.Arguments, _hqlTreeBuilder, this);
+			return _parameters.UpdateCanCachePlan(
+				() => generator.BuildHql(method, expression.Object, expression.Arguments, _hqlTreeBuilder, this),
+				visitor => visitor.Visit(expression));
 		}
 
 		protected HqlTreeNode VisitLambdaExpression(LambdaExpression expression)

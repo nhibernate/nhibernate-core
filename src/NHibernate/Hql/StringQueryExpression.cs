@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast.ANTLR;
@@ -26,6 +27,9 @@ namespace NHibernate.Hql
 		}
 
 		public System.Type Type { get { return typeof (object); } }
+
+		// Since v5.3
+		[Obsolete("This property has no usages and will be removed in a future version")]
 		public IList<NamedParameterDescriptor> ParameterDescriptors { get; private set; }
 	}
 

@@ -27,7 +27,7 @@ namespace NHibernate.Linq.NestedSelects
 		private static readonly PropertyInfo IGroupingKeyProperty = (PropertyInfo)
 			ReflectHelper.GetProperty<IGrouping<Tuple, Tuple>, Tuple>(g => g.Key);
 
-		public static void ReWrite(QueryModel queryModel, ISessionFactory sessionFactory)
+		public static void ReWrite(QueryModel queryModel, VisitorParameters parameters, ISessionFactory sessionFactory)
 		{
 			var nsqmv = new NestedSelectDetector(sessionFactory);
 			nsqmv.Visit(queryModel.SelectClause.Selector);
@@ -60,9 +60,11 @@ namespace NHibernate.Linq.NestedSelects
 
 			elementExpression.AddRange(expressions);
 
-			var keySelector = CreateSelector(elementExpression, 0);
+			var parameter = Expression.Parameter(typeof(object[]), "parameterValues");
 
-			var elementSelector = CreateSelector(elementExpression, 1);
+			var keySelector = CreateSelector(elementExpression, 0, parameters, parameter);
+
+			var elementSelector = CreateSelector(elementExpression, 1, parameters, parameter);
 			
 			var input = Expression.Parameter(typeof (IEnumerable<object>), "input");
 
@@ -71,7 +73,8 @@ namespace NHibernate.Linq.NestedSelects
 								Expression.Call(CastMethod, input),
 								keySelector,
 								elementSelector),
-				input);
+				input,
+				parameter);
 
 			queryModel.ResultOperators.Add(new ClientSideSelect2(lambda));
 			queryModel.ResultOperators.Add(new ClientSideSelect(Expression.Lambda(resultSelector, @group)));
@@ -238,7 +241,11 @@ namespace NHibernate.Linq.NestedSelects
             return ConvertToObject(Expression.PropertyOrField(expression, propertyName));
 		}
 
-		private static LambdaExpression CreateSelector(IEnumerable<ExpressionHolder> expressions, int tuple)
+		private static LambdaExpression CreateSelector(
+			IEnumerable<ExpressionHolder> expressions,
+			int tuple,
+			VisitorParameters parameters,
+			ParameterExpression parameterValuesParameter)
 		{
 			var parameter = Expression.Parameter(typeof (object[]), "x");
 
@@ -246,7 +253,10 @@ namespace NHibernate.Linq.NestedSelects
 				.Where(x => x.Tuple == tuple)
 				.Select(x => ArrayIndex(parameter, x.index));
 
-			var newArrayInit = Expression.NewArrayInit(typeof (object), initializers);
+			var newArrayInit = ConstantParametersRewriter.Rewrite(
+				Expression.NewArrayInit(typeof(object), initializers),
+				parameters,
+				parameterValuesParameter);
 
 			return Expression.Lambda(
 				Expression.New(Tuple.Constructor, newArrayInit),

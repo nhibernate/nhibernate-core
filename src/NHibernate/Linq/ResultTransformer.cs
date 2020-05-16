@@ -9,31 +9,78 @@ namespace NHibernate.Linq
 	[Serializable]
 	public class ResultTransformer : IResultTransformer, IEquatable<ResultTransformer>
 	{
-		private readonly Func<object[], object> _itemTransformation;
-		private readonly Func<IEnumerable<object>, object> _listTransformation;
+		private readonly Func<object[], object> _itemTransformation; // TODO 6.0: Remove
+		private readonly Func<IEnumerable<object>, object> _listTransformation; // TODO 6.0: Remove
+		private readonly Func<object[], object[], object> _itemTransformationParams; // TODO 6.0: Rename to _itemTransformation
+		private readonly Func<IEnumerable<object>, object[], object> _listTransformationParams; // TODO 6.0: Rename to _listTransformation
+		private readonly object[] _parameterValues;
 
+		// Since v5.3
+		[Obsolete("Use overload with Func<object[], object[], object> parameter instead.")]
 		public ResultTransformer(Func<object[], object> itemTransformation, Func<IEnumerable<object>, object> listTransformation)
 		{
 			_itemTransformation = itemTransformation;
 			_listTransformation = listTransformation;
 		}
 
+		public ResultTransformer(
+			Func<object[], object[], object> itemTransformation,
+			Func<IEnumerable<object>, object[], object> listTransformation)
+		{
+			_itemTransformationParams = itemTransformation;
+			_listTransformationParams = listTransformation;
+		}
+
+		private ResultTransformer(
+				Func<object[], object[], object> itemTransformation,
+				Func<IEnumerable<object>, object[], object> listTransformation,
+				object[] parameterValues,
+				Func<object[], object> itemTransformationOld, // TODO 6.0: Remove
+				Func<IEnumerable<object>, object> listTransformationOld // TODO 6.0: Remove
+			)
+		{
+			_itemTransformationParams = itemTransformation;
+			_listTransformationParams = listTransformation;
+			_parameterValues = parameterValues;
+			_itemTransformation = itemTransformationOld;
+			_listTransformation = listTransformationOld;
+		}
+
+		internal ResultTransformer WithParameterValues(object[] parameterValues)
+		{
+			return new ResultTransformer(
+				_itemTransformationParams,
+				_listTransformationParams,
+				parameterValues,
+				_itemTransformation,
+				_listTransformation);
+		}
+
 		#region IResultTransformer Members
 
 		public object TransformTuple(object[] tuple, string[] aliases)
 		{
-			return _itemTransformation == null ? tuple : _itemTransformation(tuple);
+			if (_itemTransformationParams == null && _itemTransformation == null)
+			{
+				return tuple;
+			}
+
+			return _itemTransformationParams != null
+				? _itemTransformationParams(tuple, _parameterValues)
+				: _itemTransformation(tuple);
 		}
 
 		public IList TransformList(IList collection)
 		{
-			if (_listTransformation == null)
+			if (_listTransformation == null && _listTransformationParams == null)
 			{
 				return collection;
 			}
 
 			var toTransform = GetToTransform(collection);
-			var transformResult = _listTransformation(toTransform);
+			var transformResult = _listTransformationParams != null
+				? _listTransformationParams(toTransform, _parameterValues)
+				: _listTransformation(toTransform);
 
 			var resultList = transformResult as IList;
 			return resultList ?? new List<object> { transformResult };
@@ -64,7 +111,10 @@ namespace NHibernate.Linq
 			{
 				return true;
 			}
-			return Equals(other._listTransformation, _listTransformation) && Equals(other._itemTransformation, _itemTransformation);
+			return Equals(other._listTransformation, _listTransformation) &&
+				Equals(other._itemTransformation, _itemTransformation) &&
+				Equals(other._listTransformationParams, _listTransformationParams) &&
+				Equals(other._itemTransformationParams, _itemTransformationParams);
 		}
 
 		public override bool Equals(object obj)
@@ -78,7 +128,9 @@ namespace NHibernate.Linq
 			{
 				int lt = (_listTransformation != null ? _listTransformation.GetHashCode() : 0);
 				int it = (_itemTransformation != null ? _itemTransformation.GetHashCode() : 0);
-				return (lt*397) ^ (it*17);
+				int lt2 = (_listTransformationParams != null ? _listTransformationParams.GetHashCode() : 0);
+				int it2 = (_itemTransformationParams != null ? _itemTransformationParams.GetHashCode() : 0);
+				return (lt*397) ^ (it*17) ^ (lt2 * 397) ^ (it2 * 17);
 			}
 		}
 	}

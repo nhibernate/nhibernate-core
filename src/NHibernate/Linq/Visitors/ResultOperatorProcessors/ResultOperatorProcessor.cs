@@ -14,7 +14,9 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
         public override void Process(ResultOperatorBase resultOperator, QueryModelVisitor queryModel, IntermediateHqlTree tree)
         {
-            _processor.Process((T)resultOperator, queryModel, tree);
+	        queryModel.VisitorParameters.UpdateCanCachePlan(
+		        () => _processor.Process((T) resultOperator, queryModel, tree),
+		        visitor => resultOperator.TransformExpressions(visitor.Visit));
         }
     }
 }

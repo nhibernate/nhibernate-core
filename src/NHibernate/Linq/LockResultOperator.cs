@@ -13,7 +13,7 @@ namespace NHibernate.Linq
 
 		public IQuerySource QuerySource => _qsrExpression.ReferencedQuerySource;
 
-		public ConstantExpression LockMode { get; }
+		public ConstantExpression LockMode { get; private set; }
 
 		public LockResultOperator(QuerySourceReferenceExpression qsrExpression, ConstantExpression lockMode)
 		{
@@ -39,6 +39,7 @@ namespace NHibernate.Linq
 		public override void TransformExpressions(Func<Expression, Expression> transformation)
 		{
 			_qsrExpression = (QuerySourceReferenceExpression) transformation(_qsrExpression);
+			LockMode = (ConstantExpression) transformation(LockMode);
 		}
 	}
 }

@@ -15,6 +15,7 @@ namespace NHibernate.Linq.Visitors
 		private readonly HqlTreeBuilder _hqlTreeBuilder = new HqlTreeBuilder();
 		private HashSet<Expression> _hqlNodes;
 		private readonly ParameterExpression _inputParameter;
+		private readonly ParameterExpression _parameterValuesParameter;
 		private readonly VisitorParameters _parameters;
 		private int _iColumn;
 		private List<HqlExpression> _hqlTreeNodes = new List<HqlExpression>();
@@ -23,6 +24,7 @@ namespace NHibernate.Linq.Visitors
 		public SelectClauseVisitor(System.Type inputType, VisitorParameters parameters)
 		{
 			_inputParameter = Expression.Parameter(inputType, "input");
+			_parameterValuesParameter = Expression.Parameter(typeof(object[]), "parameterValues");
 			_parameters = parameters;
 			_hqlVisitor = new HqlGeneratorExpressionVisitor(_parameters);
 		}
@@ -59,7 +61,7 @@ namespace NHibernate.Linq.Visitors
 
 			if ((projection != expression) && !_hqlNodes.Contains(expression))
 			{
-				ProjectionExpression = Expression.Lambda(projection, _inputParameter);
+				ProjectionExpression = Expression.Lambda(projection, _inputParameter, _parameterValuesParameter);
 			}
 
 			// Handle any boolean results in the output nodes
@@ -90,6 +92,18 @@ namespace NHibernate.Linq.Visitors
 
 			// Can't handle this node with HQL.  Just recurse down, and emit the expression
 			return base.Visit(expression);
+		}
+
+		protected override Expression VisitConstant(ConstantExpression expression)
+		{
+			if (_parameters.ConstantToParameterMap.TryGetValue(expression, out var namedParameter))
+			{
+				return Expression.Convert(
+					Expression.ArrayIndex(_parameterValuesParameter, Expression.Constant(namedParameter.Index)),
+					expression.Type);
+			}
+
+			return expression;
 		}
 
 		private static readonly MethodInfo ConvertChangeType =

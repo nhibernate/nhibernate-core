@@ -8,6 +8,10 @@ namespace NHibernate.Param
 		{
 		}
 
+		internal NamedListParameter(string name, object value, IType type, int index) : base(name, value, type, index)
+		{
+		}
+
 		public override bool IsCollection => true;
 	}
 }

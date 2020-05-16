@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
@@ -16,6 +17,8 @@ namespace NHibernate
 		IASTNode Translate(ISessionFactoryImplementor sessionFactory, bool filter);
 		string Key { get; }
 		System.Type Type { get; }
+		// Since v5.3
+		[Obsolete("This property has no usages and will be removed in a future version")]
 		IList<NamedParameterDescriptor> ParameterDescriptors { get; }
 	}
 }

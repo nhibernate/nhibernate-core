@@ -25,10 +25,6 @@ using NHibernate.Param;
 
 namespace NHibernate.Linq
 {
-	public partial interface INhQueryProvider : IQueryProvider
-	{
-		Task<int> ExecuteDmlAsync<T>(QueryMode queryMode, Expression expression, CancellationToken cancellationToken);
-	}
 
 	public partial class DefaultQueryProvider : INhQueryProvider, IQueryProviderWithOptions, ISupportFutureBatchNhQueryProvider
 	{
@@ -38,7 +34,7 @@ namespace NHibernate.Linq
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var linqExpression = PrepareQuery(expression, out var query);
-			var resultTransformer = linqExpression.ExpressionToHqlTranslationResults?.PostExecuteTransformer;
+			var resultTransformer = linqExpression.ExpressionToHqlTranslationResults?.PostResultTransformer;
 			if (resultTransformer == null)
 			{
 				return await (query.ListAsync<TResult>(cancellationToken)).ConfigureAwait(false);
@@ -46,7 +42,7 @@ namespace NHibernate.Linq
 
 			return new List<TResult>
 			{
-				(TResult) resultTransformer.DynamicInvoke((await (query.ListAsync(cancellationToken)).ConfigureAwait(false)).AsQueryable())
+				(TResult) resultTransformer.Transform((await (query.ListAsync(cancellationToken)).ConfigureAwait(false)).AsQueryable())
 			};
 		}
 
@@ -57,16 +53,9 @@ namespace NHibernate.Linq
 			cancellationToken.ThrowIfCancellationRequested();
 			IList results = await (query.ListAsync(cancellationToken)).ConfigureAwait(false);
 
-			if (nhQuery.ExpressionToHqlTranslationResults?.PostExecuteTransformer != null)
+			if (nhQuery.ExpressionToHqlTranslationResults?.PostResultTransformer != null)
 			{
-				try
-				{
-					return nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer.DynamicInvoke(results.AsQueryable());
-				}
-				catch (TargetInvocationException e)
-				{
-					throw ReflectHelper.UnwrapTargetInvocationException(e);
-				}
+				return nhQuery.ExpressionToHqlTranslationResults.PostResultTransformer.Transform(results.AsQueryable());
 			}
 
 			if (nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence)
@@ -104,6 +93,7 @@ namespace NHibernate.Linq
 
 				var query = Session.CreateQuery(nhLinqExpression);
 
+				nhLinqExpression.Prepare();
 				SetParameters(query, nhLinqExpression.NamedParameters);
 				_options?.Apply(query);
 				return query.ExecuteUpdateAsync(cancellationToken);

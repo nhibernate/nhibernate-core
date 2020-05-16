@@ -202,8 +202,10 @@ namespace NHibernate.Impl
 			_tree = tree;
 			Key = key;
 			Type = queryExpression.Type;
+#pragma warning disable CS0618
 			ParameterDescriptors = queryExpression.ParameterDescriptors;
-			 _cacheableExpression = queryExpression as ICacheableQueryExpression;
+#pragma warning restore CS0618
+			_cacheableExpression = queryExpression as ICacheableQueryExpression;
 		}
 
 		#region IQueryExpression Members
@@ -217,6 +219,8 @@ namespace NHibernate.Impl
 
 		public System.Type Type { get; private set; }
 
+		// Since v5.3
+		[Obsolete("This property has no usages and will be removed in a future version")]
 		public IList<NamedParameterDescriptor> ParameterDescriptors { get; private set; }
 
 		#endregion

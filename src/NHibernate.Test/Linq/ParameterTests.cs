@@ -411,7 +411,7 @@ namespace NHibernate.Test.Linq
 			{
 				// In case of arrays linqParameterNumber and parameterNumber will be different
 				Assert.That(
-					GetLinqExpression(query).ParameterValuesByName.Count,
+					GetLinqExpression(query).NamedParameters.Count,
 					Is.EqualTo(linqParameterNumber ?? parameterNumber),
 					"Linq expression has different number of parameters");
 

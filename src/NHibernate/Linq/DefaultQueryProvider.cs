@@ -15,20 +15,6 @@ using NHibernate.Param;
 
 namespace NHibernate.Linq
 {
-	public partial interface INhQueryProvider : IQueryProvider
-	{
-		//Since 5.2
-		[Obsolete("Replaced by ISupportFutureBatchNhQueryProvider interface")]
-		IFutureEnumerable<TResult> ExecuteFuture<TResult>(Expression expression);
-
-		//Since 5.2
-		[Obsolete("Replaced by ISupportFutureBatchNhQueryProvider interface")]
-		IFutureValue<TResult> ExecuteFutureValue<TResult>(Expression expression);
-		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);
-		int ExecuteDml<T>(QueryMode queryMode, Expression expression);
-		Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken);
-	}
-
 	// 6.0 TODO: merge into INhQueryProvider.
 	public interface ISupportFutureBatchNhQueryProvider
 	{
@@ -105,7 +91,7 @@ namespace NHibernate.Linq
 		public virtual IList<TResult> ExecuteList<TResult>(Expression expression)
 		{
 			var linqExpression = PrepareQuery(expression, out var query);
-			var resultTransformer = linqExpression.ExpressionToHqlTranslationResults?.PostExecuteTransformer;
+			var resultTransformer = linqExpression.ExpressionToHqlTranslationResults?.PostResultTransformer;
 			if (resultTransformer == null)
 			{
 				return query.List<TResult>();
@@ -113,7 +99,7 @@ namespace NHibernate.Linq
 
 			return new List<TResult>
 			{
-				(TResult) resultTransformer.DynamicInvoke(query.List().AsQueryable())
+				(TResult) resultTransformer.Transform(query.List().AsQueryable())
 			};
 		}
 
@@ -171,10 +157,10 @@ namespace NHibernate.Linq
 		[Obsolete]
 		private static void SetupFutureResult(NhLinqExpression nhExpression, IDelayedValue result)
 		{
-			if (nhExpression.ExpressionToHqlTranslationResults.PostExecuteTransformer == null)
+			if (nhExpression.ExpressionToHqlTranslationResults.PostResultTransformer == null)
 				return;
 
-			result.ExecuteOnEval = nhExpression.ExpressionToHqlTranslationResults.PostExecuteTransformer;
+			result.ExecuteOnEval = nhExpression.ExpressionToHqlTranslationResults.PostResultTransformer.GetDelegate();
 		}
 
 		public async Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
@@ -212,9 +198,10 @@ namespace NHibernate.Linq
 				query = Session.CreateFilter(Collection, nhLinqExpression);
 			}
 
+			nhLinqExpression.Prepare();
 			SetParameters(query, nhLinqExpression.NamedParameters);
 			_options?.Apply(query);
-			SetResultTransformerAndAdditionalCriteria(query, nhLinqExpression, nhLinqExpression.ParameterValuesByName);
+			SetResultTransformerAndExecuteRegisteredDelegates(query, nhLinqExpression, nhLinqExpression.NamedParameters);
 
 			return nhLinqExpression;
 		}
@@ -225,16 +212,9 @@ namespace NHibernate.Linq
 		{
 			IList results = query.List();
 
-			if (nhQuery.ExpressionToHqlTranslationResults?.PostExecuteTransformer != null)
+			if (nhQuery.ExpressionToHqlTranslationResults?.PostResultTransformer != null)
 			{
-				try
-				{
-					return nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer.DynamicInvoke(results.AsQueryable());
-				}
-				catch (TargetInvocationException e)
-				{
-					throw ReflectHelper.UnwrapTargetInvocationException(e);
-				}
+				return nhQuery.ExpressionToHqlTranslationResults.PostResultTransformer.Transform(results.AsQueryable());
 			}
 
 			if (nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence)
@@ -270,6 +250,8 @@ namespace NHibernate.Linq
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("Use SetResultTransformerAndExecuteRegisteredDelegates method instead")]
 		public virtual void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters)
 		{
 			if (nhExpression.ExpressionToHqlTranslationResults != null)
@@ -283,6 +265,30 @@ namespace NHibernate.Linq
 			}
 		}
 
+		public virtual void SetResultTransformerAndExecuteRegisteredDelegates(IQuery query, NhLinqExpression nhExpression, IDictionary<string, NamedParameter> parameters)
+		{
+			if (nhExpression.ExpressionToHqlTranslationResults == null)
+			{
+				return;
+			}
+
+			// For avoiding breaking derived classes, call the obsolete method until it is dropped.
+#pragma warning disable CS0618
+			var param = parameters.ToDictionary(
+				o => o.Key,
+				o => new Tuple<object, IType>(o.Value.Value, o.Value.Type));
+			SetResultTransformerAndAdditionalCriteria(query, nhExpression, param);
+#pragma warning restore CS0618
+
+			if (nhExpression.ExpressionToHqlTranslationResults.PreQueryExecuteDelegates?.Count > 0)
+			{
+				foreach (var action in nhExpression.ExpressionToHqlTranslationResults.PreQueryExecuteDelegates)
+				{
+					action(query, parameters);
+				}
+			}
+		}
+
 		public int ExecuteDml<T>(QueryMode queryMode, Expression expression)
 		{
 			if (Collection != null)
@@ -292,6 +298,7 @@ namespace NHibernate.Linq
 
 			var query = Session.CreateQuery(nhLinqExpression);
 
+			nhLinqExpression.Prepare();
 			SetParameters(query, nhLinqExpression.NamedParameters);
 			_options?.Apply(query);
 			return query.ExecuteUpdate();

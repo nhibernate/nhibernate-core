@@ -49,10 +49,10 @@ namespace NHibernate.Test.Linq
 				var nhNewYork = new NhLinqExpression(newYork.Body, Sfi);
 
 				Assert.AreEqual(nhLondon.Key, nhNewYork.Key);
-				Assert.AreEqual(1, nhLondon.ParameterValuesByName.Count);
-				Assert.AreEqual(1, nhNewYork.ParameterValuesByName.Count);
-				Assert.AreEqual("London", nhLondon.ParameterValuesByName.First().Value.Item1);
-				Assert.AreEqual("New York", nhNewYork.ParameterValuesByName.First().Value.Item1);
+				Assert.AreEqual(1, nhLondon.NamedParameters.Count);
+				Assert.AreEqual(1, nhNewYork.NamedParameters.Count);
+				Assert.AreEqual("London", nhLondon.NamedParameters.First().Value.Value);
+				Assert.AreEqual("New York", nhNewYork.NamedParameters.First().Value.Value);
 			}
 		}
 
@@ -72,13 +72,13 @@ namespace NHibernate.Test.Linq
 				var nhLondon = new NhLinqExpression(london.Body, Sfi);
 				var nhNewYork = new NhLinqExpression(newYork.Body, Sfi);
 
-				var londonParameter = nhLondon.ParameterValuesByName.Single().Value;
-				Assert.That(londonParameter.Item1, Is.EqualTo("London"));
-				Assert.That(londonParameter.Item2, Is.EqualTo(NHibernateUtil.StringClob));
+				var londonParameter = nhLondon.NamedParameters.Single().Value;
+				Assert.That(londonParameter.Value, Is.EqualTo("London"));
+				Assert.That(londonParameter.Type, Is.EqualTo(NHibernateUtil.StringClob));
 
-				var newYorkParameter = nhNewYork.ParameterValuesByName.Single().Value;
-				Assert.That(newYorkParameter.Item1, Is.EqualTo("New York"));
-				Assert.That(newYorkParameter.Item2, Is.EqualTo(NHibernateUtil.AnsiString));
+				var newYorkParameter = nhNewYork.NamedParameters.Single().Value;
+				Assert.That(newYorkParameter.Value, Is.EqualTo("New York"));
+				Assert.That(newYorkParameter.Type, Is.EqualTo(NHibernateUtil.AnsiString));
 			}
 		}
 

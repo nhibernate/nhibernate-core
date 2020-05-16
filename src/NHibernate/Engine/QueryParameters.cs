@@ -31,7 +31,7 @@ namespace NHibernate.Engine
 		}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues)
-			: this(positionalParameterTypes, postionalParameterValues, null, null, false, false, false, null, null, false, null) {}
+			: this(positionalParameterTypes, postionalParameterValues, null, null, null, false, false, false, null, null, null, null) {}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, object[] collectionKeys)
 			: this(positionalParameterTypes, postionalParameterValues, null, collectionKeys) {}
@@ -39,6 +39,8 @@ namespace NHibernate.Engine
 		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, IDictionary<string, TypedValue> namedParameters, object[] collectionKeys)
 			: this(positionalParameterTypes, postionalParameterValues, namedParameters, null, null, false, false, false, null, null, collectionKeys, null) {}
 
+		// Since v5.3
+		[Obsolete("This constructor has no more usage in NHibernate and will be removed in a future version.")]
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, LockMode> lockModes, RowSelection rowSelection,
 		                       bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
 			: this(positionalParameterTypes, positionalParameterValues, null, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null, transformer)
