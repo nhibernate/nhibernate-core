@@ -43,7 +43,7 @@ namespace NHibernate.Criterion
 					parameters[paramPos++].BackTrack = parameter.BackTrack;
 				}
 			}
-			return SQLProjection.GetSqlString(criteria, criteriaQuery, _sql);
+			return criteriaQuery.RenderSQLAliases(_sql).Replace("{alias}", criteriaQuery.GetSQLAlias(criteria));
 		}
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
