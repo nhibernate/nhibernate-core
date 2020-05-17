@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using NHibernate.Engine;
 using NHibernate.Linq;
+using NHibernate.Linq.Clauses;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
@@ -644,6 +645,11 @@ namespace NHibernate.Util
 				if (node.ReferencedQuerySource is JoinClause joinClause)
 				{
 					return base.Visit(joinClause.InnerSequence);
+				}
+
+				if (node.ReferencedQuerySource is NhOuterJoinClause outerJoinClause)
+				{
+					return base.Visit(outerJoinClause.JoinClause.InnerSequence);
 				}
 
 				// Not supported expression
