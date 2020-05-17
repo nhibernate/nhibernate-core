@@ -868,16 +868,16 @@ namespace NHibernate.Loader.Criteria
 		/// </summary>
 		public SqlString RenderSQLAliases(SqlString sqlTemplate)
 		{
-			sqlTemplate = criteriaSQLAliasMap
+			var result = criteriaSQLAliasMap
 				.Where(p => !string.IsNullOrEmpty(p.Key.Alias))
 				.Aggregate(sqlTemplate, (current, p) => current.Replace("{" + p.Key.Alias + "}", p.Value));
 
 			if (outerQueryTranslator != null)
 			{
-				return outerQueryTranslator.RenderSQLAliases(sqlTemplate);
+				return outerQueryTranslator.RenderSQLAliases(result);
 			}
 
-			return sqlTemplate;
+			return result;
 		}
 
 		public string GetSQLAlias(ICriteria criteria, string propertyName)
