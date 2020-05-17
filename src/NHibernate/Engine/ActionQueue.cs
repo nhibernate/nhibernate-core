@@ -59,7 +59,7 @@ namespace NHibernate.Engine
 			afterTransactionProcesses = new AfterTransactionCompletionProcessQueue();
 			beforeTransactionProcesses = new BeforeTransactionCompletionProcessQueue();
 
-			executedSpaces = new HashSet<string>();
+			executedSpaces = session.Factory.Settings.IsQueryCacheEnabled ? new HashSet<string>() : null;
 		}
 
 		public virtual void Clear()
@@ -172,7 +172,7 @@ namespace NHibernate.Engine
 
 		private void PreInvalidateCaches()
 		{
-			if (session.Factory.Settings.IsQueryCacheEnabled && executedSpaces.Count > 0)
+			if (executedSpaces?.Count > 0)
 			{
 				session.Factory.UpdateTimestampsCache.PreInvalidate(executedSpaces);
 			}
@@ -217,7 +217,9 @@ namespace NHibernate.Engine
 #pragma warning restore 618,619
 			}
 
-			if (executable.PropertySpaces != null && (!(executable is ICacheableExecutable ce) || ce.HasCache))
+			if (executedSpaces != null && 
+			    executable.PropertySpaces != null &&
+			    (!(executable is ICacheableExecutable ce) || ce.HasCache))
 			{
 				executedSpaces.UnionWith(executable.PropertySpaces);
 			}
@@ -295,12 +297,11 @@ namespace NHibernate.Engine
 
 		private void InvalidateCaches()
 		{
-			if (session.Factory.Settings.IsQueryCacheEnabled && executedSpaces.Count > 0)
+			if (executedSpaces?.Count > 0)
 			{
 				session.Factory.UpdateTimestampsCache.Invalidate(executedSpaces);
+				executedSpaces.Clear();
 			}
-
-			executedSpaces.Clear();
 		}
 
 		/// <summary> 
