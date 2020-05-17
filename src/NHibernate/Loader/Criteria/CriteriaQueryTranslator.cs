@@ -865,12 +865,16 @@ namespace NHibernate.Loader.Criteria
 
 		internal IDictionary<string, string> GetCriteriaSQLAliasMap()
 		{
-			var result = criteriaSQLAliasMap.Where(p => !string.IsNullOrEmpty(p.Key.Alias)).ToDictionary(p => p.Key.Alias, p => p.Value);
-			if (outerQueryTranslator != null)
+			var result = outerQueryTranslator != null
+				? new Dictionary<string, string>(outerQueryTranslator.GetCriteriaSQLAliasMap())
+				: new Dictionary<string, string>();
+
+			//NOTE: we SHOULD override the outer aliases
+			foreach (var p in criteriaSQLAliasMap)
 			{
-				foreach (var p in outerQueryTranslator.GetCriteriaSQLAliasMap())
+				if (!string.IsNullOrEmpty(p.Key.Alias))
 				{
-					result.Add(p.Key, p.Value);
+					result[p.Key.Alias] = p.Value;
 				}
 			}
 
