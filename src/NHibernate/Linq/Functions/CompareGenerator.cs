@@ -15,6 +15,7 @@ namespace NHibernate.Linq.Functions
 		private static readonly HashSet<MethodInfo> ActingMethods = new HashSet<MethodInfo>
 			{
 				ReflectHelper.FastGetMethod(string.Compare, default(string), default(string)),
+				ReflectHelper.FastGetMethod(string.Compare, default(string), default(string), default(StringComparison)),
 				ReflectHelper.GetMethodDefinition<string>(s => s.CompareTo(s)),
 				ReflectHelper.GetMethodDefinition<char>(x => x.CompareTo(x)),
 
