@@ -93,11 +93,7 @@ namespace NHibernate.AdoNet
 			}
 
 			var cmd = _factory.ConnectionProvider.Driver.GenerateCommand(type, sql, parameterTypes);
-			LogOpenPreparedCommand();
-			if (Log.IsDebugEnabled())
-			{
-				Log.Debug("Building an DbCommand object for the SqlString: {0}", sql);
-			}
+			LogOpenPreparedCommand(sql);
 			_commandsToClose.Add(cmd);
 			return cmd;
 		}
@@ -232,7 +228,7 @@ namespace NHibernate.AdoNet
 			}
 			finally
 			{
-				if (Log.IsDebugEnabled() && duration != null)
+				if (duration != null)
 					Log.Debug("ExecuteNonQuery took {0} ms", duration.ElapsedMilliseconds);
 			}
 		}
@@ -242,13 +238,24 @@ namespace NHibernate.AdoNet
 			CheckReaders();
 			LogCommand(cmd);
 			Prepare(cmd);
-			Stopwatch duration = null;
-			if (Log.IsDebugEnabled())
-				duration = Stopwatch.StartNew();
-			DbDataReader reader = null;
+
+			var duration = Log.IsDebugEnabled() ? Stopwatch.StartNew() : null;
+
+			var reader = DoExecuteReader(cmd);
+
+			_readersToClose.Add(reader);
+			LogOpenReader(duration , reader);
+			return reader;
+		}
+
+		private DbDataReader DoExecuteReader(DbCommand cmd)
+		{
 			try
 			{
-				reader = cmd.ExecuteReader();
+				var reader = cmd.ExecuteReader();
+				return _factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders
+					? reader
+					: NHybridDataReader.Create(reader);
 			}
 			catch (Exception e)
 			{
@@ -256,23 +263,6 @@ namespace NHibernate.AdoNet
 				Log.Error(e, "Could not execute query: {0}", cmd.CommandText);
 				throw;
 			}
-			finally
-			{
-				if (Log.IsDebugEnabled() && duration != null && reader != null)
-				{
-					Log.Debug("ExecuteReader took {0} ms", duration.ElapsedMilliseconds);
-					_readersDuration[reader] = duration;
-				}
-			}
-
-			if (!_factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
-			{
-				reader = NHybridDataReader.Create(reader);
-			}
-
-			_readersToClose.Add(reader);
-			LogOpenReader();
-			return reader;
 		}
 
 		/// <summary>
@@ -388,8 +378,7 @@ namespace NHibernate.AdoNet
 			var rsw = reader as ResultSetWrapper;
 			var actualReader = rsw == null ? reader : rsw.Target;
 			_readersToClose.Remove(actualReader);
-
-			var duration = GetReaderStopwatch(actualReader);
+			_readersDuration.Remove(actualReader, out var duration);
 
 			try
 			{
@@ -401,24 +390,7 @@ namespace NHibernate.AdoNet
 				Log.Warn(e, "exception closing reader");
 			}
 
-			LogCloseReader();
-			LogDuration(duration);
-		}
-
-		private Stopwatch GetReaderStopwatch(DbDataReader reader)
-		{
-			var nhReader = reader as NHybridDataReader;
-			var actualReader = nhReader == null ? reader : nhReader.Target;
-
-			_readersDuration.Remove(actualReader, out var duration);
-			return duration;
-		}
-
-		private static void LogDuration(Stopwatch duration)
-		{
-			if (!Log.IsDebugEnabled() || duration == null) return;
-
-			Log.Debug("DataReader was closed after {0} ms", duration.ElapsedMilliseconds);
+			LogCloseReader(duration);
 		}
 
 		public void ExecuteBatch()
@@ -447,7 +419,7 @@ namespace NHibernate.AdoNet
 				duration = Stopwatch.StartNew();
 			var countBeforeExecutingBatch = CountOfStatementsInCurrentBatch;
 			DoExecuteBatch(ps);
-			if (Log.IsDebugEnabled() && duration != null)
+			if (duration != null)
 				Log.Debug("ExecuteBatch for {0} statements took {1} ms",
 					countBeforeExecutingBatch,
 					duration.ElapsedMilliseconds);
@@ -504,12 +476,13 @@ namespace NHibernate.AdoNet
 			_factory.Settings.SqlStatementLogger.LogCommand(command, FormatStyle.Basic);
 		}
 
-		private void LogOpenPreparedCommand()
+		private void LogOpenPreparedCommand(SqlString sql)
 		{
 			if (Log.IsDebugEnabled())
 			{
 				int currentOpenCommandCount = Interlocked.Increment(ref _openCommandCount);
 				Log.Debug("Opened new DbCommand, open DbCommands: {0}", currentOpenCommandCount);
+				Log.Debug("Building an DbCommand object for the SqlString: {0}", sql);
 			}
 
 			if (_factory.Statistics.IsStatisticsEnabled)
@@ -532,22 +505,26 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		private static void LogOpenReader()
+		private void LogOpenReader(Stopwatch duration, DbDataReader reader)
 		{
-			if (Log.IsDebugEnabled())
-			{
-				int currentOpenReaderCount = Interlocked.Increment(ref _openReaderCount);
-				Log.Debug("Opened DbDataReader, open DbDataReaders: {0}", currentOpenReaderCount);
-			}
+			if (duration == null)
+				return;
+
+			Log.Debug("ExecuteReader took {0} ms", duration.ElapsedMilliseconds);
+			_readersDuration[reader] = duration;
+
+			int currentOpenReaderCount = Interlocked.Increment(ref _openReaderCount);
+			Log.Debug("Opened DbDataReader, open DbDataReaders: {0}", currentOpenReaderCount);
 		}
 
-		private static void LogCloseReader()
+		private static void LogCloseReader(Stopwatch duration)
 		{
-			if (Log.IsDebugEnabled())
-			{
-				int currentOpenReaderCount = Interlocked.Decrement(ref _openReaderCount);
-				Log.Debug("Closed DbDataReader, open DbDataReaders :{0}", currentOpenReaderCount);
-			}
+			if (duration == null)
+				return;
+
+			int currentOpenReaderCount = Interlocked.Decrement(ref _openReaderCount);
+			Log.Debug("Closed DbDataReader, open DbDataReaders :{0}", currentOpenReaderCount);
+			Log.Debug("DataReader was closed after {0} ms", duration.ElapsedMilliseconds);
 		}
 
 		public void CancelLastQuery()
