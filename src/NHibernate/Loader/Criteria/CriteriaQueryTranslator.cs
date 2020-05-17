@@ -868,13 +868,9 @@ namespace NHibernate.Loader.Criteria
 		/// </summary>
 		public SqlString RenderSQLAliases(SqlString sqlTemplate)
 		{
-			foreach (var p in criteriaSQLAliasMap)
-			{
-				if (!string.IsNullOrEmpty(p.Key.Alias))
-				{
-					sqlTemplate = sqlTemplate.Replace("{" + p.Key.Alias + "}", p.Value);
-				}
-			}
+			sqlTemplate = criteriaSQLAliasMap
+				.Where(p => !string.IsNullOrEmpty(p.Key.Alias))
+				.Aggregate(sqlTemplate, (current, p) => current.Replace("{" + p.Key.Alias + "}", p.Value));
 
 			if (outerQueryTranslator != null)
 			{
