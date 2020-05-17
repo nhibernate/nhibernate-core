@@ -27,12 +27,12 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			// queries, this is not specific to LINQ provider.)
 			var inputList = Expression.Parameter(typeof(IEnumerable<>).MakeGenericType(inputType), "inputList");
 			var aggregate = ReflectionCache.EnumerableMethods.AggregateDefinition.MakeGenericMethod(inputType);
-			MethodCallExpression call = Expression.Call(
-				aggregate,
-				inputList,
-				accumulatorFunc
-				);
-			tree.AddPostExecuteTransformer(Expression.Lambda(call, inputList));
+			var call = ConstantParametersRewriter.Rewrite(
+				Expression.Call(aggregate, inputList, accumulatorFunc),
+				queryModelVisitor.VisitorParameters,
+				out var parameter);
+
+			tree.AddPostExecuteTransformer(Expression.Lambda(call, inputList, parameter));
 			// There is no more a list transformer yielding an IList<resultType>, but this aggregate case
 			// have inputType = resultType, so no further action is required.
 		}

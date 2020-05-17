@@ -226,18 +226,14 @@ possible solutions:
 
 		private HqlTreeNode VisitInvocationExpression(InvocationExpression expression)
 		{
-			//This is an ugly workaround for dynamic expressions.
-			//Unfortunately we can not tap into the expression tree earlier to intercept the dynamic expression
-			if (expression.Arguments.Count == 2 &&
-			    expression.Arguments[0] is ConstantExpression constant &&
-			    constant.Value is CallSite site &&
-			    site.Binder is GetMemberBinder binder)
+#if NETCOREAPP2_0
+			if (ExpressionsHelper.TryGetDynamicMemberBinder(expression, out var binder))
 			{
 				return _hqlTreeBuilder.Dot(
 					VisitExpression(expression.Arguments[1]).AsExpression(),
 					_hqlTreeBuilder.Ident(binder.Name));
 			}
-
+#endif
 			return VisitExpression(expression.Expression);
 		}
 
@@ -564,7 +560,9 @@ possible solutions:
 				throw new NotSupportedException(method.ToString());
 			}
 
-			return generator.BuildHql(method, expression.Object, expression.Arguments, _hqlTreeBuilder, this);
+			return _parameters.UpdateCanCachePlan(
+				() => generator.BuildHql(method, expression.Object, expression.Arguments, _hqlTreeBuilder, this),
+				visitor => visitor.Visit(expression));
 		}
 
 		protected HqlTreeNode VisitLambdaExpression(LambdaExpression expression)

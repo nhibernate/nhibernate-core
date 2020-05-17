@@ -15,10 +15,9 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			var parameter = Expression.Parameter(typeof(IQueryable<>).MakeGenericType(type), null);
 
 			var lambda = Expression.Lambda(
-				Expression.Call(
-					target,
-					parameter),
-				parameter);
+				Expression.Call(target, parameter),
+				parameter,
+				Expression.Parameter(typeof(object[]), "parameterValues"));
 
 			tree.AddPostExecuteTransformer(lambda);
 		}

@@ -37,9 +37,12 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 			var groupByExpr = Expression.Call(groupByMethod, castToItemExpr, keySelectorExpr, elementSelectorExpr);
 
-			var toListExpr = Expression.Call(toList, groupByExpr);
+			var toListExpr = ConstantParametersRewriter.Rewrite(
+				Expression.Call(toList, groupByExpr),
+				queryModelVisitor.VisitorParameters,
+				out var parameter);
 
-			var lambdaExpr = Expression.Lambda(toListExpr, listParameter);
+			var lambdaExpr = Expression.Lambda(toListExpr, listParameter, parameter);
 
 			tree.AddListTransformer(lambdaExpr);
 		}

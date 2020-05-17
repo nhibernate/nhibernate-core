@@ -77,6 +77,34 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void UsingEntityEnumerableParameterTwice()
+		{
+			if (!Dialect.SupportsSubSelects)
+			{
+				Assert.Ignore();
+			}
+
+			var enumerable = db.DynamicUsers.First();
+			AssertTotalParameters(
+				db.DynamicUsers.Where(o => o == enumerable && o != enumerable),
+				1);
+		}
+
+		[Test]
+		public void UsingEntityEnumerableListParameterTwice()
+		{
+			if (!Dialect.SupportsSubSelects)
+			{
+				Assert.Ignore();
+			}
+
+			var enumerable = new[] {db.DynamicUsers.First()};
+			AssertTotalParameters(
+				db.DynamicUsers.Where(o => enumerable.Contains(o) && enumerable.Contains(o)),
+				1);
+		}
+
+		[Test]
 		public void UsingValueTypeParameterTwice()
 		{
 			var value = 1;
@@ -383,7 +411,7 @@ namespace NHibernate.Test.Linq
 			{
 				// In case of arrays linqParameterNumber and parameterNumber will be different
 				Assert.That(
-					GetLinqExpression(query).ParameterValuesByName.Count,
+					GetLinqExpression(query).NamedParameters.Count,
 					Is.EqualTo(linqParameterNumber ?? parameterNumber),
 					"Linq expression has different number of parameters");
 

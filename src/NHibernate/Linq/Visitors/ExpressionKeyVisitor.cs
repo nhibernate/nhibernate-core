@@ -7,7 +7,10 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using NHibernate.Engine;
 using NHibernate.Param;
+using NHibernate.Type;
+using NHibernate.Util;
 using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
@@ -22,18 +25,42 @@ namespace NHibernate.Linq.Visitors
 	public class ExpressionKeyVisitor : RelinqExpressionVisitor
 	{
 		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
+		private readonly ISessionFactoryImplementor _sessionFactory;
 		readonly StringBuilder _string = new StringBuilder();
 
-		private ExpressionKeyVisitor(IDictionary<ConstantExpression, NamedParameter> constantToParameterMap)
+		private ExpressionKeyVisitor(
+			IDictionary<ConstantExpression, NamedParameter> constantToParameterMap,
+			ISessionFactoryImplementor sessionFactory)
 		{
 			_constantToParameterMap = constantToParameterMap;
+			_sessionFactory = sessionFactory;
 		}
 
+		// Since v5.3
+		[Obsolete("Use the overload with ISessionFactoryImplementor parameter")]
 		public static string Visit(Expression expression, IDictionary<ConstantExpression, NamedParameter> parameters)
 		{
-			var visitor = new ExpressionKeyVisitor(parameters);
+			var visitor = new ExpressionKeyVisitor(parameters, null);
 
 			visitor.Visit(expression);
+
+			return visitor.ToString();
+		}
+
+		/// <summary>
+		/// Generates the key for the expression.
+		/// </summary>
+		/// <param name="rootExpression">The expression.</param>
+		/// <param name="sessionFactory">The session factory.</param>
+		/// <param name="parameters">Parameters found in <paramref name="rootExpression"/>.</param>
+		/// <returns>The key for the expression.</returns>
+		public static string Visit(
+			Expression rootExpression,
+			IDictionary<ConstantExpression, NamedParameter> parameters,
+			ISessionFactoryImplementor sessionFactory)
+		{
+			var visitor = new ExpressionKeyVisitor(parameters, sessionFactory);
+			visitor.Visit(rootExpression);
 
 			return visitor.ToString();
 		}
@@ -86,47 +113,68 @@ namespace NHibernate.Linq.Visitors
 				throw new InvalidOperationException("Cannot visit a constant without a constant to parameter map.");
 			if (_constantToParameterMap.TryGetValue(expression, out param))
 			{
-				// Nulls generate different query plans.  X = variable generates a different query depending on if variable is null or not.
-				if (param.Value == null)
-				{
-					_string.Append("NULL");
-				}
-				else
-				{
-					var value = param.Value as IEnumerable;
-					if (value != null && !(value is string) && !value.Cast<object>().Any())
-					{
-						_string.Append("EmptyList");
-					}
-					else
-					{
-						_string.Append(param.Name);
-					}
-				}
+				VisitParameter(param);
 			}
 			else
 			{
-				if (expression.Value == null)
-				{
-					_string.Append("NULL");
-				}
-				else
-				{
-					var value = expression.Value as IEnumerable;
-					if (value != null  && !(value is string) && !(value is IQueryable))
-					{
-						_string.Append("{");
-						_string.Append(String.Join(",", value.Cast<object>()));
-						_string.Append("}");
-					}
-					else
-					{
-						_string.Append(expression.Value);
-					}
-				}
+				VisitConstantValue(expression.Value);
 			}
 
 			return base.VisitConstant(expression);
+		}
+
+		private void VisitConstantValue(object value)
+		{
+			if (value == null)
+			{
+				_string.Append("NULL");
+				return;
+			}
+
+			if (value is IEnumerable enumerable && !(value is IQueryable))
+			{
+				_string.Append("{");
+				_string.Append(string.Join(",", enumerable.Cast<object>()));
+				_string.Append("}");
+				return;
+			}
+
+			// When MappedAs is used we have to put all sql types information in the key in order to
+			// distinct when different precisions/sizes are used.
+			if (_sessionFactory != null && value is IType type)
+			{
+				_string.Append(type.Name);
+				_string.Append('[');
+				_string.Append(string.Join(",", type.SqlTypes(_sessionFactory).Select(o => o.ToString())));
+				_string.Append(']');
+				return;
+			}
+
+			_string.Append(value);
+		}
+
+		private void VisitParameter(NamedParameter param)
+		{
+			// Nulls generate different query plans.  X = variable generates a different query depending on if variable is null or not.
+			if (param.Value == null)
+			{
+				_string.Append("NULL");
+				return;
+			}
+
+			if (param.IsCollection && !((IEnumerable) param.Value).Cast<object>().Any())
+			{
+				_string.Append("EmptyList");
+			}
+			else
+			{
+				_string.Append(param.Name);
+			}
+			
+			// Add the type in order to avoid invalid parameter conversions (string -> char)
+			_string.Append("<");
+			_string.Append(param.Value.GetType());
+			_string.Append(">");
 		}
 
 		private T AppendCommas<T>(T expression) where T : Expression
@@ -158,6 +206,20 @@ namespace NHibernate.Linq.Visitors
 
 			return expression;
 		}
+
+#if NETCOREAPP2_0
+		protected override Expression VisitInvocation(InvocationExpression expression)
+		{
+			if (ExpressionsHelper.TryGetDynamicMemberBinder(expression, out var memberBinder))
+			{
+				Visit(expression.Arguments[1]);
+				FormatBinder(memberBinder);
+				return expression;
+			}
+
+			return base.VisitInvocation(expression);
+		}
+#endif
 
 		protected override Expression VisitMethodCall(MethodCallExpression expression)
 		{
@@ -218,8 +280,8 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitDynamic(DynamicExpression expression)
 		{
-			FormatBinder(expression.Binder);
 			Visit(expression.Arguments, AppendCommas);
+			FormatBinder(expression.Binder);
 			return expression;
 		}
 

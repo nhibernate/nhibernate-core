@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq.GroupBy;
 using NHibernate.Util;
@@ -17,10 +18,12 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			var selectMethod = ReflectionCache.EnumerableMethods.SelectDefinition.MakeGenericMethod(new[] { inputType, outputType });
 			var toListMethod = ReflectionCache.EnumerableMethods.ToListDefinition.MakeGenericMethod(new[] { outputType });
 
-			var lambda = Expression.Lambda(
-				Expression.Call(toListMethod,
-								Expression.Call(selectMethod, inputList, resultOperator.SelectClause)),
-				inputList);
+			var argument = ConstantParametersRewriter.Rewrite(
+				Expression.Call(selectMethod, inputList, resultOperator.SelectClause),
+				queryModelVisitor.VisitorParameters,
+				out var parameter);
+
+			var lambda = Expression.Lambda(Expression.Call(toListMethod, argument), inputList, parameter);
 
 			tree.AddListTransformer(lambda);
 		}

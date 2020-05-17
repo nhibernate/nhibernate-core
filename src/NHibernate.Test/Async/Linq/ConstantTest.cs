@@ -299,7 +299,7 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public async Task PlansWithNonParameterizedConstantsAreNotCachedAsync()
+		public async Task PlansWithNonParameterizedConstantsAreCachedAsync()
 		{
 			var queryPlanCacheType = typeof(QueryPlanCache);
 
@@ -314,12 +314,12 @@ namespace NHibernate.Test.Linq
 			 select new { c.CustomerId, c.ContactName, Constant = 1 }).FirstAsync());
 			Assert.That(
 				cache,
-				Has.Count.EqualTo(0),
-				"Query plan should not be cached.");
+				Has.Count.EqualTo(1),
+				"Query plan should be cached.");
 		}
 
 		[Test]
-		public async Task PlansWithNonParameterizedConstantsAreNotCachedForExpandedQueryAsync()
+		public async Task PlansWithNonParameterizedConstantsAreCachedForExpandedQueryAsync()
 		{
 			var queryPlanCacheType = typeof(QueryPlanCache);
 
@@ -335,8 +335,8 @@ namespace NHibernate.Test.Linq
 
 			Assert.That(
 				cache,
-				Has.Count.EqualTo(0),
-				"Query plan should not be cached.");
+				Has.Count.EqualTo(2), // The second one is for the expanded expression that has two parameters
+				"Query plan should be cached.");
 		}
 
 		//GH-2298 - Different Update queries - same query cache plan

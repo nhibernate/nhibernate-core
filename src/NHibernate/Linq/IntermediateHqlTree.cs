@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
 using NHibernate.Hql.Ast.ANTLR;
+using NHibernate.Param;
 using NHibernate.Transform;
 using NHibernate.Type;
 
@@ -20,7 +21,7 @@ namespace NHibernate.Linq
 		 * We ***shouldn't*** change the behavior of the query just because we are translating it in SQL.
 		 */
 		private readonly bool _isRoot;
-		private readonly List<Action<IQuery, IDictionary<string, Tuple<object, IType>>>> _additionalCriteria = new List<Action<IQuery, IDictionary<string, Tuple<object, IType>>>>();
+		private readonly List<Action<IQuery, IDictionary<string, NamedParameter>>> _preQueryExecuteDelegates = new List<Action<IQuery, IDictionary<string, NamedParameter>>>();
 		private readonly List<LambdaExpression> _listTransformers = new List<LambdaExpression>();
 		private readonly List<LambdaExpression> _itemTransformers = new List<LambdaExpression>();
 		private readonly List<LambdaExpression> _postExecuteTransformers = new List<LambdaExpression>();
@@ -101,7 +102,7 @@ namespace NHibernate.Linq
 				_itemTransformers,
 				_listTransformers,
 				_postExecuteTransformers,
-				_additionalCriteria,
+				_preQueryExecuteDelegates,
 				ExecuteResultTypeOverride);
 		}
 
@@ -109,8 +110,8 @@ namespace NHibernate.Linq
 		{
 			if (!_hasDistinctRootOperator)
 			{
-				Expression<Func<IEnumerable<object>, IList>> x =
-					l => DistinctRootEntityResultTransformer.TransformList(l);
+				Expression<Func<IEnumerable<object>, object[], IList>> x =
+					(l, p) => DistinctRootEntityResultTransformer.TransformList(l);
 
 				_listTransformers.Add(x);
 				_hasDistinctRootOperator = true;
@@ -271,9 +272,20 @@ namespace NHibernate.Linq
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("Use AddPreQueryExecuteDelegate method instead")]
 		public void AddAdditionalCriteria(Action<IQuery, IDictionary<string, Tuple<object, IType>>> criteria)
 		{
-			_additionalCriteria.Add(criteria);
+			_preQueryExecuteDelegates.Add(Action);
+
+			void Action(IQuery q, IDictionary<string, NamedParameter> p) => criteria(
+				q,
+				p.ToDictionary(o => o.Key, o => new Tuple<object, IType>(o.Value.Value, o.Value.Type)));
+		}
+
+		public void AddPreQueryExecuteDelegate(Action<IQuery, IDictionary<string, NamedParameter>> action)
+		{
+			_preQueryExecuteDelegates.Add(action);
 		}
 
 		public void AddPostExecuteTransformer(LambdaExpression lambda)

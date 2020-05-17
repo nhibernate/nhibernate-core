@@ -11,9 +11,18 @@ namespace NHibernate.Param
 			Type = type;
 		}
 
+		internal NamedParameter(string name, object value, IType type, int index) : this(name, value, type)
+		{
+			Index = index;
+		}
+
 		public string Name { get; private set; }
 		public object Value { get; internal set; }
 		public IType Type { get; internal set; }
+
+		internal int Index { get; }
+
+		public virtual bool IsCollection => false;
 
 		public bool Equals(NamedParameter other)
 		{

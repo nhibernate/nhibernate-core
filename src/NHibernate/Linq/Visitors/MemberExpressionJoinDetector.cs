@@ -19,16 +19,18 @@ namespace NHibernate.Linq.Visitors
 	{
 		private readonly IIsEntityDecider _isEntityDecider;
 		private readonly IJoiner _joiner;
+		private readonly ISessionFactoryImplementor _sessionFactory;
 
 		private bool _requiresJoinForNonIdentifier;
 		private bool _preventJoinsInConditionalTest;
 		private bool _hasIdentifier;
 		private int _memberExpressionDepth;
 
-		public MemberExpressionJoinDetector(IIsEntityDecider isEntityDecider, IJoiner joiner)
+		public MemberExpressionJoinDetector(IIsEntityDecider isEntityDecider, IJoiner joiner, ISessionFactoryImplementor sessionFactory)
 		{
 			_isEntityDecider = isEntityDecider;
 			_joiner = joiner;
+			_sessionFactory = sessionFactory;
 		}
 
 		protected override Expression VisitMember(MemberExpression expression)
@@ -55,7 +57,7 @@ namespace NHibernate.Linq.Visitors
 				((_requiresJoinForNonIdentifier && !_hasIdentifier) || _memberExpressionDepth > 0) &&
 				_joiner.CanAddJoin(expression))
 			{
-				var key = ExpressionKeyVisitor.Visit(expression, null);
+				var key = ExpressionKeyVisitor.Visit(expression, null, _sessionFactory);
 				return _joiner.AddJoin(result, key);
 			}
 

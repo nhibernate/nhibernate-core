@@ -80,14 +80,14 @@ namespace NHibernate.Test.TransformTests
 		[Test]
 		public void LinqResultTransformer_ShouldHaveEqualityBasedOnCtorParameter()
 		{
-			Func<object[], object> d1 = x => new object();
-			Func<IEnumerable<object>, IEnumerable<object>> d2 = x => x;
+			Func<object[], object[], object> d1 = (x, p) => new object();
+			Func<IEnumerable<object>, object[], IEnumerable<object>> d2 = (x, p) => x;
 			var transformer1 = new ResultTransformer(d1, d2);
 			var transformer2 = new ResultTransformer(d1, d2);
 			Assert.That(transformer1, Is.EqualTo(transformer2));
 			Assert.That(transformer1.GetHashCode(), Is.EqualTo(transformer2.GetHashCode()));
 
-			Func<IEnumerable<object>, IEnumerable<int>> d3 = x => new [] { 1, 2, 3 };
+			Func<IEnumerable<object>, object[], IEnumerable<int>> d3 = (x, p) => new [] { 1, 2, 3 };
 			var transformer3 = new ResultTransformer(d1, d3);
 			Assert.That(transformer1, Is.Not.EqualTo(transformer3));
 			Assert.That(transformer1.GetHashCode(), Is.Not.EqualTo(transformer3.GetHashCode()));

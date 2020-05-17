@@ -37,7 +37,7 @@ namespace NHibernate.Linq.Visitors
 				SubQueryConditionalExpander.ReWrite(queryModel);
 			}
 
-			NestedSelectRewriter.ReWrite(queryModel, parameters.SessionFactory);
+			NestedSelectRewriter.ReWrite(queryModel, parameters, parameters.SessionFactory);
 
 			// Remove unnecessary body operators
 			RemoveUnnecessaryBodyOperators.ReWrite(queryModel);
@@ -200,8 +200,12 @@ namespace NHibernate.Linq.Visitors
 			var inputList = Expression.Parameter(inputListType, "inputList");
 			// Sum has no suitable generic overload, throw in Sum on int, then the code using it
 			// will check and adjust it if it is long instead of int (GetAggregateMethodCall does that).
-			var aggregateCall = GetAggregateMethodCall(ReflectionCache.EnumerableMethods.SumOnInt, inputListType, elementType, inputList);
-			_hqlTree.AddPostExecuteTransformer(Expression.Lambda(aggregateCall, inputList));
+			var aggregateCall = ConstantParametersRewriter.Rewrite(
+				GetAggregateMethodCall(ReflectionCache.EnumerableMethods.SumOnInt, inputListType, elementType, inputList),
+				VisitorParameters,
+				out var parameter);
+
+			_hqlTree.AddPostExecuteTransformer(Expression.Lambda(aggregateCall, inputList, parameter));
 		}
 
 		private void AddPostExecuteTransformerForResultAggregate(MethodInfo aggregateMethodTemplate)
@@ -215,8 +219,12 @@ namespace NHibernate.Linq.Visitors
 			{
 				var inputListType = typeof(IEnumerable<>).MakeGenericType(elementType);
 				var inputList = Expression.Parameter(inputListType, "inputList");
-				var aggregateCall = GetAggregateMethodCall(aggregateMethodTemplate, inputListType, elementType, inputList);
-				aggregateLambda = Expression.Lambda(aggregateCall, inputList);
+				var aggregateCall = ConstantParametersRewriter.Rewrite(
+					GetAggregateMethodCall(aggregateMethodTemplate, inputListType, elementType, inputList),
+					VisitorParameters,
+					out var parameter);
+
+				aggregateLambda = Expression.Lambda(aggregateCall, inputList, parameter);
 			}
 			else
 			{
@@ -235,8 +243,12 @@ namespace NHibernate.Linq.Visitors
 
 				var aggregateCall = GetAggregateMethodCall(aggregateMethodTemplate, nullableInputListType, nullableElementType, nullableInputList);
 
-				var convert = Expression.Convert(aggregateCall, elementType);
-				aggregateLambda = Expression.Lambda(convert, nullableInputList);
+				var convert = ConstantParametersRewriter.Rewrite(
+					Expression.Convert(aggregateCall, elementType),
+					VisitorParameters,
+					out var parameter);
+
+				aggregateLambda = Expression.Lambda(convert, nullableInputList, parameter);
 			}
 
 			_hqlTree.AddPostExecuteTransformer(aggregateLambda);
@@ -276,7 +288,13 @@ namespace NHibernate.Linq.Visitors
 				aggregateCall);
 			if (!elementTypeIsNullable)
 				conditionalAggregateCall = Expression.Convert(conditionalAggregateCall, elementType);
-			_hqlTree.AddPostExecuteTransformer(Expression.Lambda(conditionalAggregateCall, inputList));
+
+			conditionalAggregateCall = ConstantParametersRewriter.Rewrite(
+				conditionalAggregateCall,
+				VisitorParameters,
+				out var parameter);
+
+			_hqlTree.AddPostExecuteTransformer(Expression.Lambda(conditionalAggregateCall, inputList, parameter));
 		}
 
 		private MethodCallExpression GetAggregateMethodCall(MethodInfo aggregateMethodTemplate, System.Type inputListType,

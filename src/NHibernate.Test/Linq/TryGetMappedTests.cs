@@ -774,7 +774,8 @@ namespace NHibernate.Test.Linq
 
 			var expression = query.Expression;
 			var preTransformResult = NhRelinqQueryParser.PreTransform(expression, new PreTransformationParameters(QueryMode.Select, Sfi));
-			expression = ExpressionParameterVisitor.Visit(preTransformResult, out var constantToParameterMap);
+			expression = preTransformResult.Expression;
+			var constantToParameterMap = ExpressionParameterVisitor.Visit(preTransformResult);
 			var queryModel = NhRelinqQueryParser.Parse(expression);
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
 			var visitorParameters = new VisitorParameters(
