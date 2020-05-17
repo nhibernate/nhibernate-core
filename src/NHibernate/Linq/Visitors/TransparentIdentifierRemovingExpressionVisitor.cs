@@ -29,6 +29,8 @@ namespace NHibernate.Linq.Visitors
 	// Copied from Relinq and added a fallback for comparing two member info by DeclaringType and Name
 	// 6.0 TODO: drop if https://github.com/OData/WebApi/issues/2108 is fixed and add a possible breaking
 	// change requiring to upgrade OData. (See https://github.com/nhibernate/nhibernate-core/pull/2322#discussion_r401215456 )
+	// Use this version in order to support expressions that were created programmatically and do not mimic what the C# compiler generates.
+	// Consider removing this if https://re-motion.atlassian.net/projects/RMLNQ/issues/RMLNQ-121 is fixed and we upgrade ReLinq.
 	/// <summary>
 	/// Replaces expression patterns of the form <c>new T { x = 1, y = 2 }.x</c> (<see cref="MemberInitExpression"/>) or 
 	/// <c>new T ( x = 1, y = 2 ).x</c> (<see cref="NewExpression"/>) to <c>1</c> (or <c>2</c> if <c>y</c> is accessed instead of <c>x</c>).

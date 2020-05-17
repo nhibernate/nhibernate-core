@@ -87,8 +87,6 @@ namespace NHibernate.Linq
 
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
 			var queryModel = NhRelinqQueryParser.Parse(_expression);
-			// Use the modified TransparentIdentifierRemovingExpressionVisitor in order to support expressions that were created
-			// programmatically and do not mimic what the C# compiler generates.
 			queryModel.TransformExpressions(TransparentIdentifierRemovingExpressionVisitor.ReplaceTransparentIdentifiers);
 			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters,
 				new QuerySourceNamer(), TargetType, QueryMode);
