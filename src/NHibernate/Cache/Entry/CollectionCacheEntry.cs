@@ -43,7 +43,7 @@ namespace NHibernate.Cache.Entry
 
 				return true;
 			}
-			catch
+			catch (TransientObjectException)
 			{
 				return false;
 			}

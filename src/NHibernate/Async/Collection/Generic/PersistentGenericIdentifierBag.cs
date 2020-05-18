@@ -60,7 +60,7 @@ namespace NHibernate.Collection.Generic
 			for (int j = 0; j < _values.Count; j++)
 			{
 				object val = _values[j];
-				result[i++] = await (persister.IdentifierType.DisassembleAsync(_identifiers[j], Session, null, cancellationToken)).ConfigureAwait(false);
+				result[i++] = await (persister.IdentifierType.DisassembleAsync(GetIdentifier(j), Session, null, cancellationToken)).ConfigureAwait(false);
 				result[i++] = await (persister.ElementType.DisassembleAsync(val, Session, null, cancellationToken)).ConfigureAwait(false);
 			}
 

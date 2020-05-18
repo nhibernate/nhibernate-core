@@ -108,7 +108,7 @@ namespace NHibernate.Collection.Generic
 			for (int j = 0; j < _values.Count; j++)
 			{
 				object val = _values[j];
-				result[i++] = persister.IdentifierType.Disassemble(_identifiers[j], Session, null);
+				result[i++] = persister.IdentifierType.Disassemble(GetIdentifier(j), Session, null);
 				result[i++] = persister.ElementType.Disassemble(val, Session, null);
 			}
 
