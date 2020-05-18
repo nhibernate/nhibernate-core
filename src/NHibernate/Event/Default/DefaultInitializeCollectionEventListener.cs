@@ -171,7 +171,6 @@ namespace NHibernate.Event.Default
 				{
 					return false;
 				}
-				
 
 				persistenceContext.GetCollectionEntry(collection).PostInitialize(collection, persistenceContext);
 
