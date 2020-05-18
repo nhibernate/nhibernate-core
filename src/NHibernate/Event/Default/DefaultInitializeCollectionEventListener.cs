@@ -161,7 +161,7 @@ namespace NHibernate.Event.Default
 			else
 			{
 				IPersistenceContext persistenceContext = source.PersistenceContext;
-				
+
 				CollectionCacheEntry cacheEntry = (CollectionCacheEntry) persister.CacheEntryStructure.Destructure(ce, factory);
 				try
 				{

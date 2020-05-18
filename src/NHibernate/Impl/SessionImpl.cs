@@ -1116,7 +1116,7 @@ namespace NHibernate.Impl
 		public object Load(string entityName, object id)
 		{
 			using (BeginProcess())
-			 {
+			{
 				if (id == null)
 				{
 					throw new ArgumentNullException("id", "null is not a valid identifier");
