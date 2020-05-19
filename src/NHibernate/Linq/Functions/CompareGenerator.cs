@@ -12,10 +12,12 @@ namespace NHibernate.Linq.Functions
 {
 	internal class CompareGenerator : BaseHqlGeneratorForMethod, IRuntimeMethodHqlGenerator
 	{
+		private static readonly MethodInfo MethodWithComparer = ReflectHelper.FastGetMethod(string.Compare, default(string), default(string), default(StringComparison));
+
 		private static readonly HashSet<MethodInfo> ActingMethods = new HashSet<MethodInfo>
 			{
 				ReflectHelper.FastGetMethod(string.Compare, default(string), default(string)),
-				ReflectHelper.FastGetMethod(string.Compare, default(string), default(string), default(StringComparison)),
+				MethodWithComparer,
 				ReflectHelper.GetMethodDefinition<string>(s => s.CompareTo(s)),
 				ReflectHelper.GetMethodDefinition<char>(x => x.CompareTo(x)),
 
@@ -44,7 +46,10 @@ namespace NHibernate.Linq.Functions
 		internal static bool IsCompareMethod(MethodInfo methodInfo)
 		{
 			if (ActingMethods.Contains(methodInfo))
+			{
+				LogIgnoredStringComparisonParameter(methodInfo, MethodWithComparer);
 				return true;
+			}
 
 			// This is .Net 4 only, and in the System.Data.Services assembly, which we don't depend directly on.
 			return methodInfo != null && methodInfo.Name == "Compare" &&

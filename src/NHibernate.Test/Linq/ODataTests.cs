@@ -75,6 +75,7 @@ namespace NHibernate.Test.Linq
 			Assert.That(results, Has.Count.EqualTo(expectedRows));
 		}
 
+		//GH-2362
 		[TestCase("$filter=CustomerId le 'ANATR'",2 )]
 		[TestCase("$filter=startswith(CustomerId, 'ANATR')", 1)]
 		[TestCase("$filter=endswith(CustomerId, 'ANATR')", 1)]
