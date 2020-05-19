@@ -7,7 +7,6 @@ using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
-using NHibernate.Connection;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
@@ -702,28 +701,5 @@ namespace NHibernate.Impl
 		{
 			return new QueryBatch(this, false);
 		}
-	}
-
-	[Serializable]
-	partial class NonContextualConnectionAccess : IConnectionAccess
-	{
-		private readonly ISessionFactoryImplementor _factory;
-
-		public NonContextualConnectionAccess(ISessionFactoryImplementor factory)
-		{
-			_factory = factory;
-		}
-
-		public DbConnection GetConnection()
-		{
-			return _factory.ConnectionProvider.GetConnection();
-		}
-
-		public void CloseConnection(DbConnection connection)
-		{
-			_factory.ConnectionProvider.CloseConnection(connection);
-		}
-
-		public string ConnectionString => _factory.ConnectionProvider.GetConnectionString();
 	}
 }

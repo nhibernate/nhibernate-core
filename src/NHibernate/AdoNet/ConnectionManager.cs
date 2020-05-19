@@ -84,7 +84,6 @@ namespace NHibernate.AdoNet
 #pragma warning disable 618
 			: this(session, suppliedConnection, connectionReleaseMode, interceptor, shouldAutoJoinTransaction)
 #pragma warning restore 618
-
 		{
 			_connectionAccess = connectionAccess ?? throw new ArgumentNullException(nameof(connectionAccess));
 		}

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Connection;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -345,52 +344,5 @@ namespace NHibernate.Test.MultiTenancy
 		}
 
 		#endregion Test Setup
-	}
-
-	[Serializable]
-	class Entity
-	{
-		public virtual Guid Id { get; set; }
-		public virtual string Name { get; set; }
-	}
-	
-	public class MockConnectionProvider : IMultiTenantConnectionProvider
-	{
-		private readonly IConnectionAccess _connectionAccess;
-
-		public MockConnectionProvider(string tenantIdentifier, IConnectionAccess connectionAccess)
-		{
-			_connectionAccess = connectionAccess;
-			TenantIdentifier = tenantIdentifier;
-		}
-
-		public string TenantIdentifier { get; }
-		public IConnectionAccess GetConnectionAccess()
-		{
-			return _connectionAccess;
-		}
-	}
-
-	[Serializable]
-	public class TestTenantConnectionProvider : AbstractMultiTenantConnectionProvider
-	{
-		public TestTenantConnectionProvider(ISessionFactoryImplementor sfi, string tenantId, bool isSqlServerDialect)
-		{
-			TenantIdentifier = tenantId;
-			SessionFactory = sfi;
-			TenantConnectionString = sfi.ConnectionProvider.GetConnectionString();
-			if (isSqlServerDialect)
-			{
-				var stringBuilder = new SqlConnectionStringBuilder(sfi.ConnectionProvider.GetConnectionString());
-				stringBuilder.ApplicationName = tenantId;
-				TenantConnectionString = stringBuilder.ToString();
-			}
-		}
-
-		protected override string TenantConnectionString { get; }
-
-		public override string TenantIdentifier { get; }
-
-		protected override ISessionFactoryImplementor SessionFactory { get; }
 	}
 }

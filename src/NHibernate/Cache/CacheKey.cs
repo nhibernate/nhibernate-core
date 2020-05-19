@@ -90,7 +90,7 @@ namespace NHibernate.Cache
 
 			if (_tenantIdentifier != null)
 			{
-				hashCode = 37 * hashCode + _tenantIdentifier.GetHashCode();
+				hashCode = (37 * hashCode) + _tenantIdentifier.GetHashCode();
 			}
 
 			return hashCode;

@@ -262,7 +262,7 @@ namespace NHibernate.Cache
 				result = 37 * result + _sqlQueryString.GetHashCode();
 				if (_tenantIdentifier != null)
 				{
-					result = 37 * result + _tenantIdentifier.GetHashCode();
+					result = (37 * result) + _tenantIdentifier.GetHashCode();
 				}
 				return result;
 			}

@@ -17,7 +17,6 @@ using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
-using NHibernate.Connection;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
@@ -219,17 +218,5 @@ namespace NHibernate.Impl
 		public abstract Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
 
 		public abstract Task<int> ExecuteUpdateAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
-	}
-	partial class NonContextualConnectionAccess : IConnectionAccess
-	{
-
-		public Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<DbConnection>(cancellationToken);
-			}
-			return _factory.ConnectionProvider.GetConnectionAsync(cancellationToken);
-		}
 	}
 }
