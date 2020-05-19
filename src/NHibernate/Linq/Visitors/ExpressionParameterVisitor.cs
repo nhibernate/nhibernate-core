@@ -103,6 +103,7 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			if (_functionRegistry != null &&
+			    method.Name == nameof(Queryable.Contains) &&
 				_functionRegistry.TryGetGenerator(method, out var generator) &&
 				generator is CollectionContainsGenerator)
 			{
