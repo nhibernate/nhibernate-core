@@ -186,10 +186,11 @@ namespace NHibernate.Linq.Visitors
 
 		private NamedParameter CreateParameter(ConstantExpression expression, object value, IType type)
 		{
-			var parameterName = "p" + (_parameters.Count + 1);
-			return _collectionParameters.Contains(expression)
-				? new NamedListParameter(parameterName, value, type)
-				: new NamedParameter(parameterName, value, type);
+			return new NamedParameter(
+				"p" + (_parameters.Count + 1),
+				value,
+				type,
+				_collectionParameters.Contains(expression));
 		}
 
 		private static bool IsNullObject(ConstantExpression expression)
