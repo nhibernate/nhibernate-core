@@ -69,21 +69,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				return;
 			}
 
-			IType expectedType = null;
-			if (first is SqlNode firstNode)
-			{
-				expectedType = firstNode.DataType;
-			}
-
-			if (expectedType == null)
-			{
-				if (second is SqlNode secondNode)
-				{
-					expectedType = secondNode.DataType;
-				}
-			}
-
-			expectedTypeAwareNode.ExpectedType = expectedType;
+			expectedTypeAwareNode.ExpectedType = (first as SqlNode)?.DataType ?? (second as SqlNode)?.DataType;
 		}
 	}
 }
