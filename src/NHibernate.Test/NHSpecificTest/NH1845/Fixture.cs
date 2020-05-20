@@ -1,30 +1,9 @@
-using NHibernate.Cfg.MappingSchema;
-using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1845
 {
 	[TestFixture]
-	public class Fixture : TestCaseMappingByCode
+	public class Fixture : BugTestCase
 	{
-		protected override HbmMapping GetMappings()
-		{
-			var mapper = new ModelMapper();
-			mapper.Class<Category>(rc =>
-								   {
-									   rc.Id(x => x.Id, map => map.Generator(Generators.Native));
-									   rc.Property(x => x.Name);
-									   rc.ManyToOne(x => x.Parent, map => map.Column("ParentId"));
-									   rc.Bag(x => x.Subcategories, map =>
-																	{
-																		map.Access(Accessor.NoSetter);
-																		map.Key(km => km.Column("ParentId"));
-																		map.Cascade(Mapping.ByCode.Cascade.All.Include(Mapping.ByCode.Cascade.DeleteOrphans));
-																	}, rel => rel.OneToMany());
-								   });
-			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
-			return mappings;
-		}
-
 		[Test]
 		public void LazyLoad_Initialize_AndEvict()
 		{
