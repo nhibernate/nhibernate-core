@@ -43,9 +43,11 @@ namespace NHibernate.Criterion
 		}
 
 		/// <summary>
-		/// Provide list of criteria aliases that's used in SQL projection.
-		/// To be replaced with SQL aliases.
+		/// Provide the list of criteria aliases which are used in SQL projection, 
+		/// and need to be replaced with SQL aliases.
 		/// </summary>
+		/// <param name="criteriaAliases">The list of criteria aliases.</param>
+		/// <returns>A SQL projection.</returns>
 		public SQLProjection AddAliases(params string[] criteriaAliases)
 		{
 			if(_criteriaAliases == null)

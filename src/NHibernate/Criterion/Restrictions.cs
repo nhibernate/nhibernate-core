@@ -803,10 +803,10 @@ namespace NHibernate.Criterion
 		/// The string {alias} will be replaced by the alias of the root entity.
 		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddAliases("a", "bc")
 		/// </summary>
-		/// <param name="sql"></param>
-		/// <param name="values"></param>
-		/// <param name="types"></param>
-		/// <returns></returns>
+		/// <param name="sql">The sql constraint expression, with <c>?</c> representing a parameter.</param>
+		/// <param name="values">The parameters values for <paramref name="sql" />.</param>
+		/// <param name="types">The parameters types.</param>
+		/// <returns>A sql criterion.</returns>
 		public static SQLCriterion Sql(SqlString sql, object[] values, IType[] types)
 		{
 			return new SQLCriterion(sql, values, types);
@@ -817,10 +817,10 @@ namespace NHibernate.Criterion
 		/// The string {alias} will be replaced by the alias of the root entity.
 		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddAliases("a", "bc")
 		/// </summary>
-		/// <param name="sql"></param>
-		/// <param name="value"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
+		/// <param name="sql">The sql constraint expression, with <c>?</c> representing the parameter.</param>
+		/// <param name="value">The parameters value for <paramref name="sql" />.</param>
+		/// <param name="type">The parameter type.</param>
+		/// <returns>A sql criterion.</returns>
 		public static SQLCriterion Sql(SqlString sql, object value, IType type)
 		{
 			return Sql(sql, new object[] { value }, new IType[] { type });
@@ -831,6 +831,10 @@ namespace NHibernate.Criterion
 		/// The string {alias} will be replaced by the alias of the root entity.
 		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddAliases("a", "bc")
 		/// </summary>
+		/// <param name="sql">The sql constraint expression, with <c>?</c> representing the parameter.</param>
+		/// <param name="value">The parameters value for <paramref name="sql" />.</param>
+		/// <param name="type">The parameter type.</param>
+		/// <returns>A sql criterion.</returns>
 		public static SQLCriterion Sql(string sql, object value, IType type)
 		{
 			return Sql(sql, new object[] { value }, new IType[] { type });
@@ -841,6 +845,10 @@ namespace NHibernate.Criterion
 		/// The string {alias} will be replaced by the alias of the root entity.
 		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddAliases("a", "bc")
 		/// </summary>
+		/// <param name="sql">The sql constraint expression, with <c>?</c> representing a parameter.</param>
+		/// <param name="values">The parameters values for <paramref name="sql" />.</param>
+		/// <param name="types">The parameters types.</param>
+		/// <returns>A sql criterion.</returns>
 		public static SQLCriterion Sql(string sql, object[] values, IType[] types)
 		{
 			return new SQLCriterion(SqlString.Parse(sql), values, types);
@@ -851,8 +859,8 @@ namespace NHibernate.Criterion
 		/// The string {alias} will be replaced by the alias of the root entity.
 		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddAliases("a", "bc")
 		/// </summary>
-		/// <param name="sql"></param>
-		/// <returns></returns>
+		/// <param name="sql">The sql constraint expression.</param>
+		/// <returns>A sql criterion.</returns>
 		public static SQLCriterion Sql(SqlString sql)
 		{
 			return Sql(sql, Array.Empty<object>(), TypeHelper.EmptyTypeArray);
@@ -863,8 +871,8 @@ namespace NHibernate.Criterion
 		/// The string {alias} will be replaced by the alias of the root entity.
 		/// Criteria aliases can also be used: "{a}.Value + {bc}.Value". Such aliases need to be registered via call to AddAliases("a", "bc")
 		/// </summary>
-		/// <param name="sql"></param>
-		/// <returns></returns>
+		/// <param name="sql">The sql constraint expression.</param>
+		/// <returns>A sql criterion.</returns>
 		public static SQLCriterion Sql(string sql)
 		{
 			return Sql(sql, Array.Empty<object>(), TypeHelper.EmptyTypeArray);
