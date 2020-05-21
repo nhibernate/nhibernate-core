@@ -8,6 +8,22 @@ namespace NHibernate.Collection.Generic.SetHelpers
 	internal class SetSnapShot<T> : ISetSnapshot<T>
 	{
 		private readonly List<T> _elements;
+
+		/// <summary>
+		/// Lazy cache for TryGetValue calls
+		/// </summary>
+		private Dictionary<T, T> _lookupCache;
+
+		/// <summary>
+		/// Index of the first item that is not yet in the lookup cache
+		/// </summary>
+		private int _lookupCacheUnprocessed;
+
+		/// <summary>
+		/// <see langword="true" /> if the snapshot contains a <see langword="null" /> element
+		/// </summary>
+		private bool _containsNull;
+
 		public SetSnapShot()
 		{
 			_elements = new List<T>();
@@ -36,6 +52,16 @@ namespace NHibernate.Collection.Generic.SetHelpers
 		public void Add(T item)
 		{
 			_elements.Add(item);
+			// we don't need to invalidate the cache if it was already created,
+			// as items are always added at the end and will be caught by
+			// _lookupCacheUnprocessed
+
+			if (item == null)
+			{
+				// keep track if the collection contains a null item
+				// these are processed separately in TryGetValue
+				_containsNull = true;
+			}
 		}
 
 		public void Clear()
@@ -45,7 +71,9 @@ namespace NHibernate.Collection.Generic.SetHelpers
 
 		public bool Contains(T item)
 		{
-			return _elements.Contains(item);
+			// use the caching implementation in TryGetValue
+			T discard;
+			return TryGetValue(item, out discard);
 		}
 
 		public void CopyTo(T[] array, int arrayIndex)
@@ -95,11 +123,45 @@ namespace NHibernate.Collection.Generic.SetHelpers
 
 		public bool TryGetValue(T element, out T value)
 		{
-			var idx = _elements.IndexOf(element);
-			if (idx >= 0)
+			if (element == null)
 			{
-				value = _elements[idx];
+				// null-s cannot be handled by the cache,
+				// but we keep track of them separately
+				value = default(T);
+				return _containsNull;
+			}
+
+			if (_lookupCache == null)
+			{
+				_lookupCache = new Dictionary<T, T>();
+			}
+
+			if (_lookupCache.TryGetValue(element, out value))
+			{
 				return true;
+			}
+
+			// look at elements not yet in the cache
+			while (_lookupCacheUnprocessed < _elements.Count)
+			{
+				T snapshotElement = _elements[_lookupCacheUnprocessed++];
+				if (snapshotElement != null)
+				{
+					// be careful not to replace cache entries to preserve
+					// original semantics and return the first matching object
+					if (!_lookupCache.ContainsKey(snapshotElement))
+					{
+						_lookupCache.Add(snapshotElement, snapshotElement);
+					}
+
+					if (snapshotElement.Equals(element))
+					{
+						// found a match, no need to continue filling the cache
+						// at this point
+						value = snapshotElement;
+						return true;
+					}
+				}
 			}
 
 			value = default(T);
