@@ -8,8 +8,9 @@ using System.Threading;
 
 namespace NHibernate.Collection.Generic.SetHelpers
 {
-#if NETFX
-	// TODO 6.0: Consider removing this class in case we upgrade to NET 4.7.2, which has HashSet<T>.TryGetValue
+#if NETFX || NETSTANDARD2_0
+	// TODO 6.0: Consider removing this class in case we upgrade to .NET 4.7.2 and NET Standard 2.1,
+	// which have HashSet<T>.TryGetValue
 	[Serializable]
 	internal class SetSnapShot<T> : ICollection<T>, IReadOnlyCollection<T>, ICollection
 	{
