@@ -109,7 +109,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
 			RegisterFunction("chr", new StandardSQLFunction("char", NHibernateUtil.Character));
-			RegisterFunction("locate", new StandardSQLFunction("instr",  NHibernateUtil.Int32));
+			RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "instr(?2, ?1)") {MaxArgumentsCount = 2});
 
 			RegisterFunction("mod", new ModulusFunctionTemplate(false));
 
