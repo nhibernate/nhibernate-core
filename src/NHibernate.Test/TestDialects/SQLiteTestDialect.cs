@@ -22,7 +22,7 @@ namespace NHibernate.Test.TestDialects
 			get { return false; }
 		}
 
-		public override bool SupportsLocate
+		public override bool SupportsLocateStartIndex
 		{
 			get { return false; }
 		}

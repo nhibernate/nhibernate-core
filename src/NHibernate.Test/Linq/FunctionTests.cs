@@ -184,9 +184,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void CharIndexFunction()
 		{
-			if (!TestDialect.SupportsLocate)
-				Assert.Ignore("Locate function not supported.");
-
 			var raw = (from e in db.Employees select e.FirstName).ToList();
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf('a') == 0).ToList();
 
@@ -203,7 +200,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void CharIndexOffsetNegativeFunction()
 		{
-			if (!TestDialect.SupportsLocate)
+			if (!TestDialect.SupportsLocateStartIndex)
 				Assert.Ignore("Locate function not supported.");
 
 			var raw = (from e in db.Employees select e.FirstName).ToList();
@@ -222,9 +219,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void IndexOfFunctionExpression()
 		{
-			if (!TestDialect.SupportsLocate)
-				Assert.Ignore("Locate function not supported.");
-
 			var raw = (from e in db.Employees select e.FirstName).ToList();
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf("an") == 0).ToList();
 
@@ -241,7 +235,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void IndexOfFunctionProjection()
 		{
-			if (!TestDialect.SupportsLocate)
+			if (!TestDialect.SupportsLocateStartIndex)
 				Assert.Ignore("Locate function not supported.");
 
 			var raw = (from e in db.Employees select e.FirstName).ToList();
@@ -260,9 +254,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void TwoFunctionExpression()
 		{
-			if (!TestDialect.SupportsLocate)
-				Assert.Ignore("Locate function not supported.");
-
 			var query = from e in db.Employees
 						where e.FirstName.IndexOf("A") == e.BirthDate.Value.Month 
 						select e.FirstName;

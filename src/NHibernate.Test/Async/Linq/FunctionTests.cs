@@ -195,9 +195,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task CharIndexFunctionAsync()
 		{
-			if (!TestDialect.SupportsLocate)
-				Assert.Ignore("Locate function not supported.");
-
 			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf('a') == 0).ToList();
 
@@ -214,7 +211,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task CharIndexOffsetNegativeFunctionAsync()
 		{
-			if (!TestDialect.SupportsLocate)
+			if (!TestDialect.SupportsLocateStartIndex)
 				Assert.Ignore("Locate function not supported.");
 
 			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
@@ -233,9 +230,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task IndexOfFunctionExpressionAsync()
 		{
-			if (!TestDialect.SupportsLocate)
-				Assert.Ignore("Locate function not supported.");
-
 			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf("an") == 0).ToList();
 
@@ -252,7 +246,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task IndexOfFunctionProjectionAsync()
 		{
-			if (!TestDialect.SupportsLocate)
+			if (!TestDialect.SupportsLocateStartIndex)
 				Assert.Ignore("Locate function not supported.");
 
 			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
@@ -271,9 +265,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TwoFunctionExpressionAsync()
 		{
-			if (!TestDialect.SupportsLocate)
-				Assert.Ignore("Locate function not supported.");
-
 			var query = from e in db.Employees
 						where e.FirstName.IndexOf("A") == e.BirthDate.Value.Month 
 						select e.FirstName;
