@@ -863,19 +863,18 @@ namespace NHibernate.Loader.Criteria
 			return GetEntityName(subcriteria);
 		}
 
-		internal IDictionary<string, string> GetCriteriaSQLAliasMap()
+		/// <summary> 
+		/// Substitute the SQL aliases in <see cref="SqlString"/> template.
+		/// </summary>
+		public SqlString RenderSQLAliases(SqlString sqlTemplate)
 		{
-			var result = outerQueryTranslator != null
-				? new Dictionary<string, string>(outerQueryTranslator.GetCriteriaSQLAliasMap())
-				: new Dictionary<string, string>();
+			var result = criteriaSQLAliasMap
+				.Where(p => !string.IsNullOrEmpty(p.Key.Alias))
+				.Aggregate(sqlTemplate, (current, p) => current.Replace("{" + p.Key.Alias + "}", p.Value));
 
-			//NOTE: we SHOULD override the outer aliases
-			foreach (var p in criteriaSQLAliasMap)
+			if (outerQueryTranslator != null)
 			{
-				if (!string.IsNullOrEmpty(p.Key.Alias))
-				{
-					result[p.Key.Alias] = p.Value;
-				}
+				return outerQueryTranslator.RenderSQLAliases(result);
 			}
 
 			return result;
