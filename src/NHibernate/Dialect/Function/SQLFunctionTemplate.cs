@@ -44,8 +44,6 @@ namespace NHibernate.Dialect.Function
 		private readonly string template;
 		private TemplateChunk[] chunks;
 
-		public int? MaxArgumentsCount { get; set; }
-
 		public SQLFunctionTemplate(IType type, string template) : this(type, template, true)
 		{
 		}
@@ -126,9 +124,6 @@ namespace NHibernate.Dialect.Function
 		/// <returns></returns>
 		public virtual SqlString Render(IList args, ISessionFactoryImplementor factory)
 		{
-			if (args.Count > MaxArgumentsCount)
-				throw new QueryException($"Function template '{template}' takes max {MaxArgumentsCount} arguments. Provided count: {args.Count}");
-
 			SqlStringBuilder buf = new SqlStringBuilder();
 			foreach (TemplateChunk tc in chunks)
 			{
