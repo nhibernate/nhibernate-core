@@ -518,12 +518,10 @@ namespace NHibernate.Dialect
 				return true;
 			}
 		}
-		
+
 		[Serializable]
 		private class LocateFunction : ISQLFunction, ISQLFunctionExtended
 		{
-			#region Implementation of ISQLFunction
-
 			// Since v5.3
 			[Obsolete("Use GetReturnType method instead.")]
 			public IType ReturnType(IType columnType, IMapping mapping)
@@ -586,9 +584,6 @@ namespace NHibernate.Dialect
 						" -1, 0)"
 					);
 			}
-
-			#endregion
 		}
-
 	}
 }
