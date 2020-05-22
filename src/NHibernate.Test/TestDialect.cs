@@ -44,7 +44,6 @@ namespace NHibernate.Test
 
 		public virtual bool SupportsOperatorAll => true;
 		public virtual bool SupportsOperatorSome => true;
-		public virtual bool SupportsLocateStartIndex => true;
 
 		public virtual bool SupportsFullJoin => true;
 

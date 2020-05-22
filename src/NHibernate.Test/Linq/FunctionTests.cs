@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using NHibernate.DomainModel;
 using NHibernate.DomainModel.Northwind.Entities;
-using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -200,9 +199,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void CharIndexOffsetNegativeFunction()
 		{
-			if (!TestDialect.SupportsLocateStartIndex)
-				Assert.Ignore("Locate function not supported.");
-
 			var raw = (from e in db.Employees select e.FirstName).ToList();
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf('a', 2) == -1).ToList();
 
@@ -235,9 +231,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void IndexOfFunctionProjection()
 		{
-			if (!TestDialect.SupportsLocateStartIndex)
-				Assert.Ignore("Locate function not supported.");
-
 			var raw = (from e in db.Employees select e.FirstName).ToList();
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.Contains("a")).Select(x => x.IndexOf("a", 1)).ToList();
 

@@ -1,10 +1,14 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Text;
 using NHibernate.Dialect.Function;
+using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Dialect
@@ -109,7 +113,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
 			RegisterFunction("chr", new StandardSQLFunction("char", NHibernateUtil.Character));
-			RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "instr(?2, ?1)") {MaxArgumentsCount = 2});
+			RegisterFunction("locate", new LocateFunction());
 
 			RegisterFunction("mod", new ModulusFunctionTemplate(false));
 
@@ -514,5 +518,77 @@ namespace NHibernate.Dialect
 				return true;
 			}
 		}
+		
+		[Serializable]
+		private class LocateFunction : ISQLFunction, ISQLFunctionExtended
+		{
+			#region Implementation of ISQLFunction
+
+			// Since v5.3
+			[Obsolete("Use GetReturnType method instead.")]
+			public IType ReturnType(IType columnType, IMapping mapping)
+			{
+				return NHibernateUtil.Int32;
+			}
+
+			/// <inheritdoc />
+			public IType GetReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+#pragma warning disable 618
+				return ReturnType(argumentTypes.FirstOrDefault(), mapping);
+#pragma warning restore 618
+			}
+
+			/// <inheritdoc />
+			public IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+				return GetReturnType(argumentTypes, mapping, throwOnError);
+			}
+
+			/// <inheritdoc />
+			public string Name => "instr";
+
+			public bool HasArguments => true;
+
+			public bool HasParenthesesIfNoArguments => true;
+
+			public SqlString Render(IList args, ISessionFactoryImplementor factory)
+			{
+				if (args.Count != 2 && args.Count != 3)
+				{
+					throw new QueryException("'locate' function takes 2 or 3 arguments. Provided count: " + args.Count);
+				}
+
+				if (args.Count == 2)
+				{
+					return new SqlString("instr(", args[1], ", ", args[0], ")");
+				}
+
+				var text = args[1];
+				var value = args[0];
+				var startIndex = args[2];
+				//ifnull(
+				//	nullif(
+				//		instr(substr(text, startIndex), value)
+				//		, 0)
+				//	+ startIndex -1
+				//, 0)
+				return
+					new SqlString(
+						"ifnull(nullif(instr(substr(",
+						text,
+						", ",
+						startIndex,
+						"), ",
+						value,
+						"), 0) + ",
+						startIndex,
+						" -1, 0)"
+					);
+			}
+
+			#endregion
+		}
+
 	}
 }
