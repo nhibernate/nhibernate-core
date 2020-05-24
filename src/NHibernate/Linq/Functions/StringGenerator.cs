@@ -78,7 +78,7 @@ namespace NHibernate.Linq.Functions
 	{
 		public StartsWithGenerator()
 		{
-			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition<string>(x => x.StartsWith(null)) };
+			SupportedMethods = new[] { ReflectionCache.StringMethods.StartsWith };
 		}
 
 		public override bool AllowsNullableReturnType(MethodInfo method) => false;
@@ -97,7 +97,7 @@ namespace NHibernate.Linq.Functions
 	{
 		public EndsWithGenerator()
 		{
-			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition<string>(x => x.EndsWith(null)) };
+			SupportedMethods = new[] { ReflectionCache.StringMethods.EndsWith };
 		}
 
 		public override bool AllowsNullableReturnType(MethodInfo method) => false;
@@ -116,7 +116,7 @@ namespace NHibernate.Linq.Functions
 	{
 		public ContainsGenerator()
 		{
-			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition<string>(x => x.Contains(null)) };
+			SupportedMethods = new[] { ReflectionCache.StringMethods.Contains };
 		}
 
 		public override bool AllowsNullableReturnType(MethodInfo method) => false;

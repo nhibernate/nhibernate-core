@@ -29,6 +29,7 @@ namespace NHibernate.Linq
 			// NH-3247: must remove .Net compiler char to int conversion before
 			// parameterization occurs.
 			preTransformerRegistry.Register(new RemoveCharToIntConversion());
+			preTransformerRegistry.Register(new LikeTransformer());
 			PreProcessor = new TransformingExpressionTreeProcessor(preTransformerRegistry);
 
 			var transformerRegistry = ExpressionTransformerRegistry.CreateDefault();
