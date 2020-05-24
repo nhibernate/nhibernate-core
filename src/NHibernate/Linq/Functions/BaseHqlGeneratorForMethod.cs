@@ -21,13 +21,13 @@ namespace NHibernate.Linq.Functions
 
 		private protected static void LogIgnoredParameter(MethodInfo method, string paramType)
 		{
-			if(Log.IsWarnEnabled())
+			if (Log.IsWarnEnabled())
 				Log.Warn("Method parameter of type '{0}' is ignored when converting to hql the following method: {1}", paramType, method);
 		}
 
 		private protected static void LogIgnoredStringComparisonParameter(MethodInfo actualMethod, MethodInfo methodWithStringComparison)
 		{
-			if(actualMethod == methodWithStringComparison)
+			if (actualMethod == methodWithStringComparison)
 				LogIgnoredParameter(actualMethod, nameof(StringComparison));
 		}
 

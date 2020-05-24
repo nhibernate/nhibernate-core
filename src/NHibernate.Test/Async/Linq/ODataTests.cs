@@ -94,7 +94,7 @@ namespace NHibernate.Test.Linq
 		[TestCase("$filter=indexof(CustomerId, 'ANATR') eq 0", 1, true)]
 		public async Task StringFilterAsync(string queryString, int expectedCount, bool locateFunction = false)
 		{
-			if(locateFunction && !TestDialect.SupportsLocate)
+			if (locateFunction && !TestDialect.SupportsLocate)
 				Assert.Ignore("Locate function is not supported.");
 
 			Assert.That(
