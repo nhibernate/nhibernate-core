@@ -17,44 +17,47 @@ namespace NHibernate.Linq.ExpressionTransformers
 
 		public Expression Transform(MethodCallExpression expression)
 		{
-			if (expression.Method == ReflectionCache.StringMethods.StartsWith)
+			if (IsLike(expression, out var value))
 			{
 				return Expression.Call(
 					Like,
 					expression.Object,
-					Concat(expression.Arguments[0], Expression.Constant("%"))
-				);
-			}
-
-			if (expression.Method == ReflectionCache.StringMethods.EndsWith)
-			{
-				return Expression.Call(
-					Like,
-					expression.Object,
-					Concat(Expression.Constant("%"), expression.Arguments[0])
-				);
-			}
-
-			if (expression.Method == ReflectionCache.StringMethods.Contains)
-			{
-				return Expression.Call(
-					Like,
-					expression.Object,
-					Concat(Concat(Expression.Constant("%"), expression.Arguments[0]), Expression.Constant("%"))
+					Expression.Constant(value)
 				);
 			}
 
 			return expression;
 		}
 
-		private static Expression Concat(Expression arg1, Expression arg2)
+		private static bool IsLike(MethodCallExpression expression, out string value)
 		{
-			if (arg1 is ConstantExpression const1 && arg2 is ConstantExpression const2)
+			if (expression.Method == ReflectionCache.StringMethods.StartsWith)
 			{
-				return Expression.Constant(string.Concat(const1.Value, const2.Value));
+				if (expression.Arguments[0] is ConstantExpression constantExpression)
+				{
+					value = string.Concat(constantExpression.Value, "%");
+					return true;
+				}
+			}
+			else if (expression.Method == ReflectionCache.StringMethods.EndsWith)
+			{
+				if (expression.Arguments[0] is ConstantExpression constantExpression)
+				{
+					value = string.Concat("%", constantExpression.Value);
+					return true;
+				}
+			}
+			else if (expression.Method == ReflectionCache.StringMethods.Contains)
+			{
+				if (expression.Arguments[0] is ConstantExpression constantExpression)
+				{
+					value = string.Concat("%", constantExpression.Value, "%");
+					return true;
+				}
 			}
 
-			return Expression.Add(arg1, arg2, ReflectionCache.StringMethods.Concat);
+			value = null;
+			return false;
 		}
 	}
 }
