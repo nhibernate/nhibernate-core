@@ -17,7 +17,7 @@ namespace NHibernate.Linq.ExpressionTransformers
 
 		public Expression Transform(MethodCallExpression expression)
 		{
-			if (expression.Method.Name == nameof(string.StartsWith) && expression.Method == ReflectionCache.StringMethods.StartsWith)
+			if (expression.Method == ReflectionCache.StringMethods.StartsWith)
 			{
 				return Expression.Call(
 					Like,
@@ -26,7 +26,7 @@ namespace NHibernate.Linq.ExpressionTransformers
 				);
 			}
 
-			if (expression.Method.Name == nameof(string.EndsWith) && expression.Method == ReflectionCache.StringMethods.EndsWith)
+			if (expression.Method == ReflectionCache.StringMethods.EndsWith)
 			{
 				return Expression.Call(
 					Like,
@@ -35,7 +35,7 @@ namespace NHibernate.Linq.ExpressionTransformers
 				);
 			}
 
-			if (expression.Method.Name == nameof(string.Contains) && expression.Method == ReflectionCache.StringMethods.Contains)
+			if (expression.Method == ReflectionCache.StringMethods.Contains)
 			{
 				return Expression.Call(
 					Like,
