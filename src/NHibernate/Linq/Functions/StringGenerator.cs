@@ -233,13 +233,15 @@ namespace NHibernate.Linq.Functions
 		}
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
+			var argsCount = arguments.Count;
 			if (LogIgnoredStringComparisonParameter(method, MethodWithComparer1, MethodWithComparer2))
 			{
-				arguments = arguments.Where(a => a.Type != typeof(StringComparison)).ToList().AsReadOnly();
+				//StringComparison is last argument, just ignore it
+				argsCount--;
 			}
 
 			HqlMethodCall locate;
-			if (arguments.Count == 1)
+			if (argsCount == 1)
 			{
 				locate = treeBuilder.MethodCall("locate",
 					visitor.Visit(arguments[0]).AsExpression(),
