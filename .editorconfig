@@ -15,6 +15,9 @@ csharp_new_line_before_members_in_object_initializers = true
 csharp_new_line_before_members_in_anonymous_types = true
 csharp_new_line_between_query_expression_clauses = true
 
+# ReSharper properties
+resharper_space_within_single_line_array_initializer_braces = true
+
 [*.xsd]
 indent_style = tab
 
