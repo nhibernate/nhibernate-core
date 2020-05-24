@@ -127,7 +127,7 @@ namespace NHibernate.Test.MultiTenancy
 		[Test]
 		public async Task TenantSessionIsSerializableAndCanBeReconnectedAsync()
 		{
-			ISession deserializedSession = null; 
+			ISession deserializedSession = null;
 			using (var sesTen1 = OpenTenantSession("tenant1"))
 			{
 				var entity = await (sesTen1.Query<Entity>().WithOptions(x => x.SetCacheable(true)).Where(e => e.Id == _id).SingleOrDefaultAsync());
@@ -155,14 +155,14 @@ namespace NHibernate.Test.MultiTenancy
 			Assert.That(Sfi.Statistics.SecondLevelCacheHitCount, Is.EqualTo(1));
 		}
 
-		private static string GetTenantId(ISession deserializedSession)
+		private static string GetTenantId(ISession session)
 		{
-			return deserializedSession.GetSessionImplementation().GetTenantIdentifier();
+			return session.GetSessionImplementation().GetTenantIdentifier();
 		}
-		
-		private static string GetTenantId(IStatelessSession deserializedSession)
+
+		private static string GetTenantId(IStatelessSession session)
 		{
-			return deserializedSession.GetSessionImplementation().GetTenantIdentifier();
+			return session.GetSessionImplementation().GetTenantIdentifier();
 		}
 
 		private T SpoofSerialization<T>(T session)
@@ -173,7 +173,7 @@ namespace NHibernate.Test.MultiTenancy
 				SurrogateSelector = new SerializationHelper.SurrogateSelector()
 #endif
 			};
-			MemoryStream stream = new MemoryStream();
+			var stream = new MemoryStream();
 			formatter.Serialize(stream, session);
 
 			stream.Position = 0;
@@ -185,7 +185,7 @@ namespace NHibernate.Test.MultiTenancy
 		{
 			return Sfi.WithOptions().TenantConfiguration(GetTenantConfig(tenantId)).OpenSession();
 		}
-		
+
 		private IStatelessSession OpenTenantStatelessSession(string tenantId)
 		{
 			return Sfi.WithStatelessOptions().TenantConfiguration(GetTenantConfig(tenantId)).OpenStatelessSession();
@@ -227,8 +227,8 @@ namespace NHibernate.Test.MultiTenancy
 
 		protected override void OnTearDown()
 		{
-			using (ISession session = OpenSession())
-			using (ITransaction transaction = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
 				session.Delete("from System.Object");
 
