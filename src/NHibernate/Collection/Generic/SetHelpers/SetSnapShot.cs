@@ -86,7 +86,9 @@ namespace NHibernate.Collection.Generic.SetHelpers
 
 		public void CopyTo(T[] array, int arrayIndex)
 		{
-			_values.Keys.CopyTo(array, arrayIndex);
+			if (_hasNull)
+				array[arrayIndex] = default(T);
+			_values.Keys.CopyTo(array, arrayIndex + (_hasNull ? 1 : 0));
 		}
 
 		public bool Remove(T item)
