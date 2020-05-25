@@ -228,7 +228,6 @@ namespace NHibernate.Util
 			public static readonly MethodInfo EndsWith = ReflectHelper.GetMethodDefinition<string>(x => x.EndsWith(null));
 			public static readonly MethodInfo StartsWith = ReflectHelper.GetMethodDefinition<string>(x => x.StartsWith(null));
 			public static readonly MethodInfo Contains = ReflectHelper.GetMethodDefinition<string>(x => x.Contains(null));
-			public static readonly MethodInfo Concat = ReflectHelper.FastGetMethod(string.Concat, default(string), default(string));
 		}
 	}
 }
