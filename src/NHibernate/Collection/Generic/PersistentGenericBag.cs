@@ -295,12 +295,15 @@ namespace NHibernate.Collection.Generic
 				return false;
 			}
 
-			foreach (var elt in _gbag)
+			for (var i = 0; i < _gbag.Count; i++)
 			{
-				if (CountOccurrences(elt, _gbag, elementType) != CountOccurrences(elt, sn, elementType))
-				{
+				if(elementType.IsSame(_gbag[i], sn[i]))
+					continue;
+
+				var elt = _gbag[i];
+				var countInSnapshot = CountOccurrences(elt, sn, elementType);
+				if (countInSnapshot == 0 || CountOccurrences(elt, _gbag, elementType) != countInSnapshot)
 					return false;
-				}
 			}
 
 			return true;
