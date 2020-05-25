@@ -25,7 +25,7 @@ namespace NHibernate.Linq.Visitors
 		private readonly ISessionFactoryImplementor _sessionFactory;
 		private readonly ILinqToHqlGeneratorsRegistry _functionRegistry;
 
-		private static readonly ISet<MethodBase> PagingMethods = new HashSet<MethodBase>
+		private static readonly HashSet<MethodBase> PagingMethods = new HashSet<MethodBase>
 		{
 			ReflectionCache.EnumerableMethods.SkipDefinition,
 			ReflectionCache.EnumerableMethods.TakeDefinition,
