@@ -8,6 +8,7 @@ using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
@@ -41,6 +42,15 @@ namespace NHibernate.Dialect
 		public override string AddColumnString
 		{
 			get { return "add"; }
+		}
+
+		/// <inheritdoc />
+		public override void Configure(IDictionary<string, string> settings)
+		{
+			base.Configure(settings);
+			// We have to match the scale for decimals as they are mapped with scale 5 by default. Without matching, an overflow exception
+			// will occur when multiplying a decimal column with a parameter.
+			DefaultCastScale = PropertiesHelper.GetByte(Environment.QueryDefaultCastScale, settings, null) ?? 5;
 		}
 
 		public override string GetSelectSequenceNextValString(string sequenceName)

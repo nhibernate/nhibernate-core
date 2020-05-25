@@ -206,7 +206,6 @@ namespace NHibernate.Linq.Visitors
 				canBeEvaluated &= CanBeEvaluatedInHql(argumentExpression);
 			}
 
-			
 			ContainsUntranslatedMethodCalls |= !canBeEvaluated;
 			return canBeEvaluated;
 		}
