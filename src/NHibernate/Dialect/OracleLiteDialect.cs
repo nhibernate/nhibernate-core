@@ -80,7 +80,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("rtrim", new StandardSQLFunction("rtrim"));
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
 			RegisterFunction("ascii", new StandardSQLFunction("ascii", NHibernateUtil.Int32));
-			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int64));
+			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));
 
 			RegisterFunction("to_char", new StandardSQLFunction("to_char", NHibernateUtil.String));
 			RegisterFunction("to_date", new StandardSQLFunction("to_date", NHibernateUtil.DateTime));

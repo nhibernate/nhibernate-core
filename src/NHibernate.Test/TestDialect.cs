@@ -191,5 +191,10 @@ namespace NHibernate.Test
 		/// This flag is added to be able to test this feature selectively
 		/// </summary>
 		public virtual bool SupportsRowValueConstructorSyntax => _dialect.SupportsRowValueConstructorSyntax;
+
+		/// <summary>
+		/// Whether the parameter values are sent as strings instead of binary.
+		/// </summary>
+		public virtual bool SendsParameterValuesAsStrings => false;
 	}
 }

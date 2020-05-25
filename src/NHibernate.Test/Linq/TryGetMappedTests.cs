@@ -787,6 +787,7 @@ namespace NHibernate.Test.Linq
 				QueryMode.Select);
 			if (rewriteQuery)
 			{
+				QueryModelRewriter.Rewrite(queryModel, visitorParameters);
 				QueryModelVisitor.GenerateHqlQuery(
 					queryModel,
 					visitorParameters,

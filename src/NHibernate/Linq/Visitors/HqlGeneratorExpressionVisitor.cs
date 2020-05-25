@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Dynamic;
 using System.Linq;
@@ -19,6 +20,13 @@ namespace NHibernate.Linq.Visitors
 {
 	public class HqlGeneratorExpressionVisitor : IHqlExpressionVisitor
 	{
+		private static readonly HashSet<System.Type> IntegerTypes = new HashSet<System.Type>
+		{
+			typeof(short), typeof(ushort),
+			typeof(int), typeof(uint),
+			typeof(long), typeof(ulong)
+		};
+
 		private readonly HqlTreeBuilder _hqlTreeBuilder = new HqlTreeBuilder();
 		private readonly VisitorParameters _parameters;
 		private readonly ILinqToHqlGeneratorsRegistry _functionRegistry;
@@ -291,8 +299,7 @@ possible solutions:
 
 		protected HqlTreeNode VisitNhDistinct(NhDistinctExpression expression)
 		{
-			var visitor = new HqlGeneratorExpressionVisitor(_parameters);
-			return _hqlTreeBuilder.ExpressionSubTreeHolder(_hqlTreeBuilder.Distinct(), visitor.VisitExpression(expression.Expression));
+			return _hqlTreeBuilder.ExpressionSubTreeHolder(_hqlTreeBuilder.Distinct(), VisitExpression(expression.Expression));
 		}
 
 		protected HqlTreeNode VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
@@ -337,6 +344,7 @@ possible solutions:
 					return _hqlTreeBuilder.BooleanOr(lhs.ToBooleanExpression(), rhs.ToBooleanExpression());
 
 				case ExpressionType.Add:
+				case ExpressionType.AddChecked:
 					if (expression.Left.Type == typeof (string) && expression.Right.Type == typeof(string))
 					{
 						return _hqlTreeBuilder.MethodCall("concat", lhs, rhs);
@@ -344,16 +352,37 @@ possible solutions:
 					return _hqlTreeBuilder.Add(lhs, rhs);
 
 				case ExpressionType.Subtract:
+				case ExpressionType.SubtractChecked:
 					return _hqlTreeBuilder.Subtract(lhs, rhs);
 
 				case ExpressionType.Multiply:
+				case ExpressionType.MultiplyChecked:
 					return _hqlTreeBuilder.Multiply(lhs, rhs);
 
 				case ExpressionType.Divide:
+					// In some databases (e.g. Oracle) division of two integer produces a decimal value where in .NET
+					// the result is an integer. Use floor method if exists otherwise cast in order to prevent ORA-01406
+					// error in Oracle and to simulate what .NET does. We cannot use always cast method as in some
+					// databases (e.g. Oracle) it rounds the result.
+					if (IntegerTypes.Contains(expression.Left.Type.UnwrapIfNullable()) &&
+						IntegerTypes.Contains(expression.Right.Type.UnwrapIfNullable()))
+					{
+						return _parameters.SessionFactory.SQLFunctionRegistry.FindSQLFunction("floor") != null
+							? (HqlTreeNode) _hqlTreeBuilder.MethodCall("floor", _hqlTreeBuilder.Divide(lhs, rhs))
+							: _hqlTreeBuilder.Cast(_hqlTreeBuilder.Divide(lhs, rhs), expression.Type);
+					}
+
 					return _hqlTreeBuilder.Divide(lhs, rhs);
 
 				case ExpressionType.Modulo:
-					return _hqlTreeBuilder.MethodCall("mod", lhs, rhs);
+					var modFunction = _parameters.SessionFactory.SQLFunctionRegistry.FindSQLFunction("mod");
+					var modReturnType = modFunction?.GetEffectiveReturnType(
+						ExpressionsHelper.GetTypes(_parameters, expression.Left, expression.Right),
+						_parameters.SessionFactory,
+						true);
+					return IsCastRequired(modReturnType, TypeFactory.GetDefaultTypeFor(expression.Type), out _)
+						? (HqlTreeNode) _hqlTreeBuilder.Cast(_hqlTreeBuilder.MethodCall("mod", lhs, rhs), expression.Type)
+						: _hqlTreeBuilder.TransparentCast(_hqlTreeBuilder.MethodCall("mod", lhs, rhs), expression.Type);
 
 				case ExpressionType.LessThan:
 					return _hqlTreeBuilder.LessThan(lhs, rhs);

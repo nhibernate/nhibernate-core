@@ -9,12 +9,15 @@
 
 
 using System.Collections;
+using System.Linq;
 using NHibernate.Dialect;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.TypedManyToOne
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	[TestFixture]
 	public class TypedManyToOneTestAsync : TestCase
 	{
@@ -35,38 +38,27 @@ namespace NHibernate.Test.TypedManyToOne
 		}
 
 		[Test]
-		public async Task TestCreateQueryAsync()
+		public async Task TestLinqEntityNameQueryAsync()
 		{
-			var cust = new Customer();
-			cust.CustomerId = "abc123";
-			cust.Name = "Matt";
-
-			var ship = new Address();
-			ship.Street = "peachtree rd";
-			ship.State = "GA";
-			ship.City = "ATL";
-			ship.Zip = "30326";
-			ship.AddressId = new AddressId("SHIPPING", "xyz123");
-			ship.Customer = cust;
-
-			var bill = new Address();
-			bill.Street = "peachtree rd";
-			bill.State = "GA";
-			bill.City = "ATL";
-			bill.Zip = "30326";
-			bill.AddressId = new AddressId("BILLING", "xyz123");
-			bill.Customer = cust;
-
-			cust.BillingAddress = bill;
-			cust.ShippingAddress = ship;
-
-			using (ISession s = Sfi.OpenSession())
-			using (ITransaction t = s.BeginTransaction())
+			var cust = await (CreateCustomerAsync());
+			using (var s = Sfi.OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				await (s.PersistAsync(cust));
+				var billingNotes = await (s.Query<Customer>().Select(o => o.BillingAddress.BillingNotes).FirstAsync());
+				Assert.That(billingNotes, Is.EqualTo("BillingNotes"));
+				var shippingNotes = await (s.Query<Customer>().Select(o => o.ShippingAddress.ShippingNotes).FirstAsync());
+				Assert.That(shippingNotes, Is.EqualTo("ShippingNotes"));
+
 				await (t.CommitAsync());
 			}
 
+			await (DeleteCustomerAsync(cust));
+		}
+
+		[Test]
+		public async Task TestCreateQueryAsync()
+		{
+			var cust = await (CreateCustomerAsync());
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -82,20 +74,7 @@ namespace NHibernate.Test.TypedManyToOne
 				await (t.CommitAsync());
 			}
 
-			using (ISession s = Sfi.OpenSession())
-			using (ITransaction t = s.BeginTransaction())
-			{
-				await (s.SaveOrUpdateAsync(cust));
-				ship = cust.ShippingAddress;
-				cust.ShippingAddress = null;
-				await (s.DeleteAsync("ShippingAddress", ship));
-				await (s.FlushAsync());
-
-				Assert.That(await (s.GetAsync("ShippingAddress", ship.AddressId)), Is.Null);
-				await (s.DeleteAsync(cust));
-
-				await (t.CommitAsync());
-			}
+			await (DeleteCustomerAsync(cust));
 		}
 
 		[Test]
@@ -122,6 +101,61 @@ namespace NHibernate.Test.TypedManyToOne
 				Assert.That(cust.BillingAddress, Is.Null);
 				await (s.DeleteAsync(cust));
 				await (t.CommitAsync());
+			}
+		}
+
+		private async Task<Customer> CreateCustomerAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var cust = new Customer();
+			cust.CustomerId = "abc123";
+			cust.Name = "Matt";
+
+			var ship = new Address();
+			ship.Street = "peachtree rd";
+			ship.State = "GA";
+			ship.City = "ATL";
+			ship.Zip = "30326";
+			ship.AddressId = new AddressId("SHIPPING", "xyz123");
+			ship.Customer = cust;
+			ship.ShippingNotes = "ShippingNotes";
+
+			var bill = new Address();
+			bill.Street = "peachtree rd";
+			bill.State = "GA";
+			bill.City = "ATL";
+			bill.Zip = "30326";
+			bill.AddressId = new AddressId("BILLING", "xyz123");
+			bill.Customer = cust;
+			bill.BillingNotes = "BillingNotes";
+
+			cust.BillingAddress = bill;
+			cust.ShippingAddress = ship;
+
+			using (ISession s = Sfi.OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				await (s.PersistAsync(cust, cancellationToken));
+				await (t.CommitAsync(cancellationToken));
+			}
+
+			return cust;
+		}
+
+		private async Task DeleteCustomerAsync(Customer cust, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			using (var s = Sfi.OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.SaveOrUpdateAsync(cust, cancellationToken));
+				var ship = cust.ShippingAddress;
+				cust.ShippingAddress = null;
+				await (s.DeleteAsync("ShippingAddress", ship, cancellationToken));
+				await (s.FlushAsync(cancellationToken));
+
+				Assert.That(await (s.GetAsync("ShippingAddress", ship.AddressId, cancellationToken)), Is.Null);
+				await (s.DeleteAsync(cust, cancellationToken));
+
+				await (t.CommitAsync(cancellationToken));
 			}
 		}
 	}

@@ -93,6 +93,7 @@ namespace NHibernate.Linq
 			ParameterTypeLocator.SetParameterTypes(_constantToParameterMap, queryModel, TargetType, sessionFactory, true);
 			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters,
 				new QuerySourceNamer(), TargetType, QueryMode);
+			QueryModelRewriter.Rewrite(queryModel, visitorParameters);
 
 			ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel, visitorParameters, true, ReturnType);
 

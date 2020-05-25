@@ -73,7 +73,7 @@ namespace NHibernate.Dialect
 
 			// Override standard HQL function
 			RegisterFunction("current_timestamp", new StandardSQLFunction("current_timestamp", NHibernateUtil.LocalDateTime));
-			RegisterFunction("length", new StandardSafeSQLFunction("length", NHibernateUtil.String, 1));
+			RegisterFunction("length", new StandardSafeSQLFunction("length", NHibernateUtil.Int32, 1));
 			RegisterFunction("nullif", new StandardSafeSQLFunction("nullif", 2));
 			RegisterFunction("lower", new StandardSafeSQLFunction("lower", NHibernateUtil.String, 1));
 			RegisterFunction("upper", new StandardSafeSQLFunction("upper", NHibernateUtil.String, 1));

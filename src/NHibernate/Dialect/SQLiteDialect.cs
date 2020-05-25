@@ -357,6 +357,9 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
+		/// <inheritdoc />
+		public override bool IsDecimalStoredAsFloatingPointNumber => true;
+
 		public override string Qualify(string catalog, string schema, string table)
 		{
 			StringBuilder qualifiedName = new StringBuilder();

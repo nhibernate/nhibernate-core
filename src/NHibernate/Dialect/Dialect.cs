@@ -2585,6 +2585,16 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
+		/// Whether <see cref="Decimal"/> is stored as a floating point number.
+		/// </summary>
+		public virtual bool IsDecimalStoredAsFloatingPointNumber => false;
+
+		/// <summary>
+		///  Whether bitwise operators are supported for <see cref="bool"/>.
+		/// </summary>
+		public virtual bool SupportsBitwiseOperatorsOnBoolean => true;
+
+		/// <summary>
 		/// The keyword used to specify a nullable column
 		/// </summary>
 		public virtual string NullColumnString

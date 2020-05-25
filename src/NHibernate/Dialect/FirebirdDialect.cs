@@ -432,7 +432,7 @@ namespace NHibernate.Dialect
 		{
 			RegisterFunction("current_timestamp", new CurrentTimeStamp());
 			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate, false));
-			RegisterFunction("length", new StandardSafeSQLFunction("char_length", NHibernateUtil.Int64, 1));
+			RegisterFunction("length", new StandardSafeSQLFunction("char_length", NHibernateUtil.Int32, 1));
 			RegisterFunction("nullif", new StandardSafeSQLFunction("nullif", 2));
 			RegisterFunction("lower", new StandardSafeSQLFunction("lower", NHibernateUtil.String, 1));
 			RegisterFunction("upper", new StandardSafeSQLFunction("upper", NHibernateUtil.String, 1));

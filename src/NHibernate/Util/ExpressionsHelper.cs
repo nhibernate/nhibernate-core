@@ -126,6 +126,21 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
+		/// Get the mapped types for the given expressions.
+		/// </summary>
+		/// <param name="parameters">The query parameters.</param>
+		/// <param name="expressions">The expressions.</param>
+		/// <returns>An enumerable of mapped types or <see langword="null"/> when a mapped type was not
+		/// found or an item type of <paramref name="expressions"/> is <see cref="object"/>.</returns>
+		internal static IEnumerable<IType> GetTypes(VisitorParameters parameters, params Expression[] expressions)
+		{
+			foreach (var expression in expressions)
+			{
+				yield return GetType(parameters, expression);
+			}
+		}
+
+		/// <summary>
 		/// Try to get the mapped nullability from the given expression.
 		/// </summary>
 		/// <param name="sessionFactory">The session factory.</param>

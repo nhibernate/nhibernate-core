@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using NHibernate.Dialect;
 using NUnit.Framework;
 
@@ -24,38 +25,27 @@ namespace NHibernate.Test.TypedManyToOne
 		}
 
 		[Test]
-		public void TestCreateQuery()
+		public void TestLinqEntityNameQuery()
 		{
-			var cust = new Customer();
-			cust.CustomerId = "abc123";
-			cust.Name = "Matt";
-
-			var ship = new Address();
-			ship.Street = "peachtree rd";
-			ship.State = "GA";
-			ship.City = "ATL";
-			ship.Zip = "30326";
-			ship.AddressId = new AddressId("SHIPPING", "xyz123");
-			ship.Customer = cust;
-
-			var bill = new Address();
-			bill.Street = "peachtree rd";
-			bill.State = "GA";
-			bill.City = "ATL";
-			bill.Zip = "30326";
-			bill.AddressId = new AddressId("BILLING", "xyz123");
-			bill.Customer = cust;
-
-			cust.BillingAddress = bill;
-			cust.ShippingAddress = ship;
-
-			using (ISession s = Sfi.OpenSession())
-			using (ITransaction t = s.BeginTransaction())
+			var cust = CreateCustomer();
+			using (var s = Sfi.OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				s.Persist(cust);
+				var billingNotes = s.Query<Customer>().Select(o => o.BillingAddress.BillingNotes).First();
+				Assert.That(billingNotes, Is.EqualTo("BillingNotes"));
+				var shippingNotes = s.Query<Customer>().Select(o => o.ShippingAddress.ShippingNotes).First();
+				Assert.That(shippingNotes, Is.EqualTo("ShippingNotes"));
+
 				t.Commit();
 			}
 
+			DeleteCustomer(cust);
+		}
+
+		[Test]
+		public void TestCreateQuery()
+		{
+			var cust = CreateCustomer();
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -71,20 +61,7 @@ namespace NHibernate.Test.TypedManyToOne
 				t.Commit();
 			}
 
-			using (ISession s = Sfi.OpenSession())
-			using (ITransaction t = s.BeginTransaction())
-			{
-				s.SaveOrUpdate(cust);
-				ship = cust.ShippingAddress;
-				cust.ShippingAddress = null;
-				s.Delete("ShippingAddress", ship);
-				s.Flush();
-
-				Assert.That(s.Get("ShippingAddress", ship.AddressId), Is.Null);
-				s.Delete(cust);
-
-				t.Commit();
-			}
+			DeleteCustomer(cust);
 		}
 
 		[Test]
@@ -110,6 +87,61 @@ namespace NHibernate.Test.TypedManyToOne
 				Assert.That(cust.ShippingAddress, Is.Null);
 				Assert.That(cust.BillingAddress, Is.Null);
 				s.Delete(cust);
+				t.Commit();
+			}
+		}
+
+		private Customer CreateCustomer()
+		{
+			var cust = new Customer();
+			cust.CustomerId = "abc123";
+			cust.Name = "Matt";
+
+			var ship = new Address();
+			ship.Street = "peachtree rd";
+			ship.State = "GA";
+			ship.City = "ATL";
+			ship.Zip = "30326";
+			ship.AddressId = new AddressId("SHIPPING", "xyz123");
+			ship.Customer = cust;
+			ship.ShippingNotes = "ShippingNotes";
+
+			var bill = new Address();
+			bill.Street = "peachtree rd";
+			bill.State = "GA";
+			bill.City = "ATL";
+			bill.Zip = "30326";
+			bill.AddressId = new AddressId("BILLING", "xyz123");
+			bill.Customer = cust;
+			bill.BillingNotes = "BillingNotes";
+
+			cust.BillingAddress = bill;
+			cust.ShippingAddress = ship;
+
+			using (ISession s = Sfi.OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Persist(cust);
+				t.Commit();
+			}
+
+			return cust;
+		}
+
+		private void DeleteCustomer(Customer cust)
+		{
+			using (var s = Sfi.OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.SaveOrUpdate(cust);
+				var ship = cust.ShippingAddress;
+				cust.ShippingAddress = null;
+				s.Delete("ShippingAddress", ship);
+				s.Flush();
+
+				Assert.That(s.Get("ShippingAddress", ship.AddressId), Is.Null);
+				s.Delete(cust);
+
 				t.Commit();
 			}
 		}

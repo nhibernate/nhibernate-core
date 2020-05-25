@@ -249,7 +249,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("soundex", new StandardSQLFunction("soundex"));
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
 			RegisterFunction("ascii", new StandardSQLFunction("ascii", NHibernateUtil.Int32));
-			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int64));
+			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));
 			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1, 1, ?2)"));
 			RegisterFunction("right", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1, -?2)"));
 

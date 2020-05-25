@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -11,6 +12,7 @@ using NHibernate.Engine;
 using NHibernate.Param;
 using NHibernate.Type;
 using NHibernate.Util;
+using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
@@ -65,6 +67,24 @@ namespace NHibernate.Linq.Visitors
 			return visitor.ToString();
 		}
 
+		/// <summary>
+		/// Generates the key for a child expression based on the <paramref name="parameters"/> of one of its parents.
+		/// </summary>
+		/// <param name="childExpression">The child expression.</param>
+		/// <param name="parameters">The query parameters for the parent expression.</param>
+		/// <param name="sessionFactory">The session factory.</param>
+		/// <returns>The key for the child expression.</returns>
+		internal static string VisitChild(
+			Expression childExpression,
+			IDictionary<ConstantExpression, NamedParameter> parameters,
+			ISessionFactoryImplementor sessionFactory)
+		{
+			var visitor = new ExpressionKeyVisitor(parameters, sessionFactory);
+			visitor.Visit(childExpression);
+
+			return visitor.ToString();
+		}
+
 		public override string ToString()
 		{
 			return _string.ToString();
@@ -72,23 +92,22 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitBinary(BinaryExpression expression)
 		{
-			if (expression.Method != null)
+			if (expression.NodeType == ExpressionType.ArrayIndex)
 			{
-				_string.Append(expression.Method.DeclaringType.Name);
-				_string.Append(".");
-				VisitMethod(expression.Method);
-			}
-			else
-			{
-				_string.Append(expression.NodeType);
+				Visit(expression.Left);
+				_string.Append("[");
+				Visit(expression.Right);
+				_string.Append("]");
+
+				return expression;
 			}
 
 			_string.Append("(");
-
 			Visit(expression.Left);
-			_string.Append(", ");
+			_string.Append(" ");
+			_string.Append(expression.NodeType);
+			_string.Append(" ");
 			Visit(expression.Right);
-
 			_string.Append(")");
 
 			return expression;
@@ -96,11 +115,13 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitConditional(ConditionalExpression expression)
 		{
+			_string.Append("IIF(");
 			Visit(expression.Test);
-			_string.Append(" ? ");
+			_string.Append(",");
 			Visit(expression.IfTrue);
-			_string.Append(" : ");
+			_string.Append(",");
 			Visit(expression.IfFalse);
+			_string.Append(")");
 
 			return expression;
 		}
@@ -131,6 +152,14 @@ namespace NHibernate.Linq.Visitors
 				return;
 			}
 
+			if (value is string)
+			{
+				_string.Append('"');
+				_string.Append(value);
+				_string.Append('"');
+				return;
+			}
+
 			if (value is IEnumerable enumerable && !(value is IQueryable))
 			{
 				_string.Append("{");
@@ -147,6 +176,15 @@ namespace NHibernate.Linq.Visitors
 				_string.Append('[');
 				_string.Append(string.Join(",", type.SqlTypes(_sessionFactory).Select(o => o.ToString())));
 				_string.Append(']');
+				return;
+			}
+
+			var stringValue = value.ToString();
+			if (stringValue == value.GetType().ToString())
+			{
+				_string.Append("value(");
+				_string.Append(stringValue);
+				_string.Append(')');
 				return;
 			}
 
@@ -177,19 +215,11 @@ namespace NHibernate.Linq.Visitors
 			_string.Append(">");
 		}
 
-		private T AppendCommas<T>(T expression) where T : Expression
-		{
-			Visit(expression);
-			_string.Append(", ");
-
-			return expression;
-		}
-
 		protected override Expression VisitLambda<T>(Expression<T> expression)
 		{
 			_string.Append('(');
 
-			Visit(expression.Parameters, AppendCommas);
+			Visit(expression.Parameters, ',');
 			_string.Append(") => (");
 			Visit(expression.Body);
 			_string.Append(')');
@@ -197,9 +227,36 @@ namespace NHibernate.Linq.Visitors
 			return expression;
 		}
 
+		protected override Expression VisitListInit(ListInitExpression expression)
+		{
+			Visit(expression.NewExpression);
+			_string.Append(" {");
+			Visit(expression.Initializers, VisitElementInit, ',');
+			_string.Append('}');
+
+			return expression;
+		}
+
+		protected override Expression VisitRuntimeVariables(RuntimeVariablesExpression node)
+		{
+			_string.Append('(');
+			Visit(node.Variables, ',');
+			_string.Append(')');
+
+			return node;
+		}
+
 		protected override Expression VisitMember(MemberExpression expression)
 		{
-			base.VisitMember(expression);
+			if (expression.Expression != null)
+			{
+				Visit(expression.Expression);
+			}
+			else
+			{
+				// Static members
+				_string.Append(expression.Member.DeclaringType.Name);
+			}
 
 			_string.Append('.');
 			_string.Append(expression.Member.Name);
@@ -207,39 +264,127 @@ namespace NHibernate.Linq.Visitors
 			return expression;
 		}
 
-#if NETCOREAPP2_0
+		protected override Expression VisitMemberInit(MemberInitExpression expression)
+		{
+			if (expression.NewExpression.Arguments.Count == 0 &&
+			    expression.NewExpression.Type.Name.Contains('<'))
+			{
+				// Anonymous type
+				_string.Append("new");
+			}
+			else
+			{
+				Visit(expression.NewExpression);
+			}
+
+			_string.Append(" {");
+			Visit(expression.Bindings, VisitMemberBinding, ',');
+			_string.Append('}');
+
+			return expression;
+		}
+
+		protected override MemberAssignment VisitMemberAssignment(MemberAssignment assignment)
+		{
+			_string.Append(assignment.Member.Name);
+			_string.Append(" = ");
+			Visit(assignment.Expression);
+
+			return assignment;
+		}
+
+		protected override MemberListBinding VisitMemberListBinding(MemberListBinding binding)
+		{
+			_string.Append(binding.Member.Name);
+			_string.Append(" = {");
+			Visit(binding.Initializers, VisitElementInit, ',');
+			_string.Append('}');
+
+			return binding;
+		}
+
+		protected override MemberMemberBinding VisitMemberMemberBinding(MemberMemberBinding binding)
+		{
+			_string.Append(binding.Member.Name);
+			_string.Append(" = {");
+			Visit(binding.Bindings, VisitMemberBinding, ',');
+			_string.Append('}');
+
+			return binding;
+		}
+
+		protected override ElementInit VisitElementInit(ElementInit initializer)
+		{
+			_string.Append(initializer.AddMethod);
+			Visit(initializer.Arguments, ',', '(', ')');
+
+			return initializer;
+		}
+
 		protected override Expression VisitInvocation(InvocationExpression expression)
 		{
+#if NETCOREAPP2_0
 			if (ExpressionsHelper.TryGetDynamicMemberBinder(expression, out var memberBinder))
 			{
 				Visit(expression.Arguments[1]);
 				FormatBinder(memberBinder);
 				return expression;
 			}
-
-			return base.VisitInvocation(expression);
-		}
 #endif
+
+			_string.Append("Invoke(");
+			Visit(expression.Expression);
+			Visit(expression.Arguments, ',', null, ')');
+
+			return expression;
+		}
 
 		protected override Expression VisitMethodCall(MethodCallExpression expression)
 		{
-			Visit(expression.Object);
-			_string.Append('.');
+			if (expression.Object != null)
+			{
+				Visit(expression.Object);
+				_string.Append('.');
+			}
+
 			VisitMethod(expression.Method);
-			_string.Append('(');
-			ExpressionVisitor.Visit(expression.Arguments, AppendCommas);
-			_string.Append(')');
+			Visit(expression.Arguments, ',', '(', ')');
 
 			return expression;
+		}
+
+		protected override Expression VisitNewArray(NewArrayExpression node)
+		{
+			switch (node.NodeType)
+			{
+				case ExpressionType.NewArrayBounds:
+					// new MyType[](expr1, expr2)
+					_string.Append("new ");
+					_string.Append(node.Type);
+					Visit(node.Expressions, ',', '(', ')');
+					break;
+				case ExpressionType.NewArrayInit:
+					// new [] {expr1, expr2}
+					_string.Append("new [] ");
+					Visit(node.Expressions, ',', '{', '}');
+					break;
+			}
+
+			return node;
 		}
 
 		protected override Expression VisitNew(NewExpression expression)
 		{
 			_string.Append("new ");
-			_string.Append(expression.Constructor.DeclaringType.AssemblyQualifiedName);
-			_string.Append('(');
-			Visit(expression.Arguments, AppendCommas);
-			_string.Append(')');
+			_string.Append(GetTypeName(expression.Constructor.DeclaringType));
+			var preVisitAction = expression.Members != null
+				? i =>
+				{
+					_string.Append(expression.Members[i].Name);
+					_string.Append(" = ");
+				}
+				: (Action<int>) null;
+			Visit(expression.Arguments, ',', '(', ')', preVisitAction);
 
 			return expression;
 		}
@@ -253,10 +398,19 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitTypeBinary(TypeBinaryExpression expression)
 		{
-			_string.Append("IsType(");
+			_string.Append("(");
 			Visit(expression.Expression);
-			_string.Append(", ");
-			_string.Append(expression.TypeOperand.AssemblyQualifiedName);
+			switch (expression.NodeType)
+			{
+				case ExpressionType.TypeIs:
+					_string.Append(" Is ");
+					break;
+				case ExpressionType.TypeEqual:
+					_string.Append(" TypeEqual ");
+					break;
+			}
+
+			_string.Append(GetTypeName(expression.TypeOperand));
 			_string.Append(")");
 
 			return expression;
@@ -267,21 +421,90 @@ namespace NHibernate.Linq.Visitors
 			_string.Append(expression.NodeType);
 			_string.Append('(');
 			Visit(expression.Operand);
+
+			switch (expression.NodeType)
+			{
+				case ExpressionType.TypeAs:
+					_string.Append(" As ");
+					_string.Append(GetTypeName(expression.Type));
+					_string.Append(')');
+					break;
+				case ExpressionType.Convert:
+				case ExpressionType.ConvertChecked:
+					_string.Append(", ");
+					_string.Append(GetTypeName(expression.Type));
+					_string.Append(')');
+					break;
+				default:
+					_string.Append(')');
+					break;
+			}
+
+			return expression;
+		}
+
+		protected override Expression VisitDefault(DefaultExpression node)
+		{
+			_string.Append("default(");
+			_string.Append(GetTypeName(node.Type));
+			_string.Append(')');
+
+			return node;
+		}
+
+		protected override Expression VisitIndex(IndexExpression node)
+		{
+			if (node.Object != null)
+			{
+				Visit(node.Object);
+			}
+			else
+			{
+				_string.Append(node.Indexer.DeclaringType.Name);
+			}
+			if (node.Indexer != null)
+			{
+				_string.Append('.');
+				_string.Append(node.Indexer.Name);
+			}
+
+			Visit(node.Arguments, ',', '[', ']');
+
+			return node;
+		}
+
+		protected override Expression VisitExtension(Expression expression)
+		{
+			_string.Append(expression.GetType());
+			_string.Append('(');
+			base.VisitExtension(expression);
 			_string.Append(')');
 
 			return expression;
 		}
 
-		protected override Expression VisitQuerySourceReference(Remotion.Linq.Clauses.Expressions.QuerySourceReferenceExpression expression)
+		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 		{
-			_string.Append(expression.ReferencedQuerySource.ItemName);
+			_string.Append(expression.ReferencedQuerySource);
+
 			return expression;
 		}
 
 		protected override Expression VisitDynamic(DynamicExpression expression)
 		{
-			Visit(expression.Arguments, AppendCommas);
+			Visit(expression.Arguments, ',', '(', ')');
 			FormatBinder(expression.Binder);
+
+			return expression;
+		}
+
+		protected override Expression VisitSubQuery(SubQueryExpression expression)
+		{
+			_string.Append("SubQuery");
+			_string.Append('(');
+			new QueryModelKeyVisitor(this, _string).VisitQueryModel(expression.QueryModel);
+			_string.Append(')');
+
 			return expression;
 		}
 
@@ -291,8 +514,57 @@ namespace NHibernate.Linq.Visitors
 			if (methodInfo.IsGenericMethod)
 			{
 				_string.Append('[');
-				_string.Append(string.Join(",", methodInfo.GetGenericArguments().Select(a => a.AssemblyQualifiedName)));
+				_string.Append(string.Join(",", methodInfo.GetGenericArguments().Select(GetTypeName)));
 				_string.Append(']');
+			}
+		}
+
+		private void Visit<T>(ReadOnlyCollection<T> nodes, char separator, Action<int> preVisitAction = null)
+			where T : Expression
+		{
+			Visit(nodes, separator, null, null, preVisitAction);
+		}
+
+		private void Visit<T>(
+			ReadOnlyCollection<T> nodes,
+			char separator,
+			char? openSymbol,
+			char? closeSymbol,
+			Action<int> preVisitAction = null)
+			where T : Expression
+		{
+			if (openSymbol.HasValue)
+			{
+				_string.Append(openSymbol.Value);
+			}
+
+			for (var i = 0; i < nodes.Count; i++)
+			{
+				if (i > 0)
+				{
+					_string.Append(separator);
+				}
+
+				preVisitAction?.Invoke(i);
+				Visit(nodes[i]);
+			}
+
+			if (closeSymbol.HasValue)
+			{
+				_string.Append(closeSymbol.Value);
+			}
+		}
+
+		private void Visit<T>(ReadOnlyCollection<T> nodes, Func<T, T> elementVisitor, char separator)
+		{
+			for (var i = 0; i < nodes.Count; i++)
+			{
+				if (i > 0)
+				{
+					_string.Append(separator);
+				}
+
+				elementVisitor(nodes[i]);
 			}
 		}
 
@@ -340,6 +612,13 @@ namespace NHibernate.Linq.Visitors
 					_string.Append("DynamicMetaObject");
 					break;
 			}
+		}
+
+		internal static string GetTypeName(System.Type type)
+		{
+			return type.Namespace == "System"
+				? type.FullName
+				: type.AssemblyQualifiedName;
 		}
 	}
 }

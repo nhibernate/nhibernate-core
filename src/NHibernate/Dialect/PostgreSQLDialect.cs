@@ -243,6 +243,9 @@ namespace NHibernate.Dialect
 		/// <inheritdoc />
 		public override bool SupportsOuterJoinForUpdate => false;
 
+		/// <inheritdoc />
+		public override bool SupportsBitwiseOperatorsOnBoolean => false;
+
 		public override string GetForUpdateString(string aliases)
 		{
 			return ForUpdateString + " of " + aliases;

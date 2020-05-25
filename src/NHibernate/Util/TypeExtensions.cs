@@ -48,5 +48,15 @@ namespace NHibernate.Util
 
 			return type;
 		}
+
+		internal static System.Type GetNullableType(this System.Type type)
+		{
+			if (type.IsNullable())
+			{
+				return type;
+			}
+
+			return type.IsValueType ? typeof(Nullable<>).MakeGenericType(type) : type;
+		}
 	}
 }

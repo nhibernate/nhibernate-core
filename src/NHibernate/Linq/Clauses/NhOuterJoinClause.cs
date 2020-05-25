@@ -31,6 +31,11 @@ namespace NHibernate.Linq.Clauses
 			return new NhOuterJoinClause(JoinClause.Clone(cloneContext));
 		}
 
+		public override string ToString()
+		{
+			return $"outer {JoinClause}";
+		}
+
 		protected override void Accept(INhQueryModelVisitor visitor, QueryModel queryModel, int index)
 		{
 			if (visitor is INhQueryModelVisitorExtended queryModelVisitorExtended)
