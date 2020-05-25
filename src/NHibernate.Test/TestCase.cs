@@ -440,7 +440,6 @@ namespace NHibernate.Test
 		private static readonly Dictionary<string, HashSet<System.Type>> DialectsNotSupportingStandardFunction =
 			new Dictionary<string, HashSet<System.Type>>
 			{
-				{"locate", new HashSet<System.Type> {typeof (SQLiteDialect)}},
 				{"bit_length", new HashSet<System.Type> {typeof (SQLiteDialect)}},
 				{"extract", new HashSet<System.Type> {typeof (SQLiteDialect)}},
 				{
