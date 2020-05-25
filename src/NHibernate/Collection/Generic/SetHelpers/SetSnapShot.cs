@@ -122,7 +122,7 @@ namespace NHibernate.Collection.Generic.SetHelpers
 			CopyTo(typedArray, index);
 		}
 
-		public int Count => _values.Count;
+		public int Count => _values.Count + (_hasNull ? 1 : 0);
 
 		public bool IsReadOnly => ((ICollection<KeyValuePair<T, T>>) _values).IsReadOnly;
 
