@@ -439,7 +439,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary> Retrieve a entity. </summary>
+		/// <summary> Retrieve an entity. </summary>
 		/// <returns> a detached entity instance </returns>
 		public Task<object> GetAsync(string entityName, object id, CancellationToken cancellationToken = default(CancellationToken))
 		{
@@ -450,31 +450,19 @@ namespace NHibernate.Impl
 			return GetAsync(entityName, id, LockMode.None, cancellationToken);
 		}
 
-		/// <summary> Retrieve a entity.
-		///
+		/// <summary>
+		/// Retrieve an entity.
 		/// </summary>
 		/// <returns> a detached entity instance
 		/// </returns>
 		public async Task<T> GetAsync<T>(object id, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (BeginProcess())
-			{
-				return (T)await (GetAsync(typeof(T), id, cancellationToken)).ConfigureAwait(false);
-			}
-		}
-
-		private Task<object> GetAsync(System.Type persistentClass, object id, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			return GetAsync(persistentClass.FullName, id, cancellationToken);
+			return (T) await (GetAsync(typeof(T).FullName, id, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <summary>
-		/// Retrieve a entity, obtaining the specified lock mode.
+		/// Retrieve an entity, obtaining the specified lock mode.
 		/// </summary>
 		/// <returns> a detached entity instance </returns>
 		public async Task<object> GetAsync(string entityName, object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken))
@@ -482,7 +470,7 @@ namespace NHibernate.Impl
 			cancellationToken.ThrowIfCancellationRequested();
 			using (BeginProcess())
 			{
-				object result = await (Factory.GetEntityPersister(entityName).LoadAsync(id, null, lockMode, this, cancellationToken)).ConfigureAwait(false);
+				object result = await (Factory.GetEntityPersister(entityName).LoadAsync(id, null, lockMode ?? LockMode.None, this, cancellationToken)).ConfigureAwait(false);
 				if (temporaryPersistenceContext.IsLoadFinished)
 				{
 					temporaryPersistenceContext.Clear();
@@ -492,16 +480,13 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Retrieve a entity, obtaining the specified lock mode.
+		/// Retrieve an entity, obtaining the specified lock mode.
 		/// </summary>
 		/// <returns> a detached entity instance </returns>
 		public async Task<T> GetAsync<T>(object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (BeginProcess())
-			{
-				return (T)await (GetAsync(typeof(T).FullName, id, lockMode, cancellationToken)).ConfigureAwait(false);
-			}
+			return (T) await (GetAsync(typeof(T).FullName, id, lockMode, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <summary>

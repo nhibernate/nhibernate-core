@@ -22,11 +22,6 @@ namespace NHibernate.Test.TestDialects
 			get { return false; }
 		}
 
-		public override bool SupportsLocate
-		{
-			get { return false; }
-		}
-
 		public override bool SupportsFullJoin
 		{
 			get { return false; }

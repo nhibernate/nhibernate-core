@@ -1156,45 +1156,59 @@ namespace NHibernate.Impl
 			return Load(entityClass.FullName, id);
 		}
 
+		/// <inheritdoc />
 		public T Get<T>(object id)
 		{
-			using (BeginProcess())
-			{
-				return (T)Get(typeof(T), id);
-			}
+			return (T) Get(typeof(T), id);
 		}
 
+		/// <inheritdoc />
 		public T Get<T>(object id, LockMode lockMode)
 		{
-			using (BeginProcess())
-			{
-				return (T)Get(typeof(T), id, lockMode);
-			}
+			return (T) Get(typeof(T), id, lockMode);
 		}
 
+		/// <inheritdoc />
 		public object Get(System.Type entityClass, object id)
 		{
 			return Get(entityClass.FullName, id);
 		}
 
-		/// <summary>
-		/// Load the data for the object with the specified id into a newly created object
-		/// using "for update", if supported. A new key will be assigned to the object.
-		/// This should return an existing proxy where appropriate.
-		///
-		/// If the object does not exist in the database, null is returned.
-		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="id"></param>
-		/// <param name="lockMode"></param>
-		/// <returns></returns>
+		/// <inheritdoc />
 		public object Get(System.Type clazz, object id, LockMode lockMode)
+		{
+			return Get(clazz.FullName, id, lockMode);
+		}
+
+		/// <inheritdoc />
+		public object Get(string entityName, object id, LockMode lockMode)
 		{
 			using (BeginProcess())
 			{
-				LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, lockMode, this);
+				LoadEvent loadEvent = new LoadEvent(id, entityName, lockMode, this);
 				FireLoad(loadEvent, LoadEventListener.Get);
+				//Note: AfterOperation call is skipped to avoid releasing the lock when outside of a transaction.
 				return loadEvent.Result;
+			}
+		}
+
+		/// <inheritdoc />
+		public object Get(string entityName, object id)
+		{
+			using (BeginProcess())
+			{
+				LoadEvent loadEvent = new LoadEvent(id, entityName, null, this);
+				bool success = false;
+				try
+				{
+					FireLoad(loadEvent, LoadEventListener.Get);
+					success = true;
+					return loadEvent.Result;
+				}
+				finally
+				{
+					AfterOperation(success);
+				}
 			}
 		}
 
@@ -1223,25 +1237,6 @@ namespace NHibernate.Impl
 						+ obj.GetType().FullName);
 				}
 				return entry.Persister.EntityName;
-			}
-		}
-
-		public object Get(string entityName, object id)
-		{
-			using (BeginProcess())
-			{
-				LoadEvent loadEvent = new LoadEvent(id, entityName, false, this);
-				bool success = false;
-				try
-				{
-					FireLoad(loadEvent, LoadEventListener.Get);
-					success = true;
-					return loadEvent.Result;
-				}
-				finally
-				{
-					AfterOperation(success);
-				}
 			}
 		}
 
