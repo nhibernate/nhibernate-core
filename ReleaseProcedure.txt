@@ -8,7 +8,7 @@ These are the tasks typically needed to create an official NHibernate release.
     (change x.x.x by its current version in tools).
     By example:
 
-Tools\gitreleasemanager\0.7.0\tools\GitReleaseManager.exe create -o nhibernate -r nhibernate-core -m 5.1 -u username -p password
+Tools\gitreleasemanager\0.11.0\tools\GitReleaseManager.exe create -o nhibernate -r nhibernate-core -m 5.3 --token yourGitHubTokenWithRepoScope
 
     (Adjust the -m milestone parameter above, and add "-c branchname" if
     releasing another branch than master)
