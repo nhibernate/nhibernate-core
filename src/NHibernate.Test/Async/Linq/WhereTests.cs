@@ -433,7 +433,7 @@ namespace NHibernate.Test.Linq
 			Assert.That(users.Count, Is.EqualTo(1));
 		}
 
-		[Test()]
+		[Test]
 		public void StringComparisonParamEmitsWarningAsync()
 		{
 			Assert.Multiple(
@@ -442,18 +442,15 @@ namespace NHibernate.Test.Linq
 					await (AssertStringComparisonWarningAsync(x => string.Compare(x.CustomerId, "ANATR", StringComparison.Ordinal) <= 0, 2));
 					await (AssertStringComparisonWarningAsync(x => x.CustomerId.StartsWith("ANATR", StringComparison.Ordinal), 1));
 					await (AssertStringComparisonWarningAsync(x => x.CustomerId.EndsWith("ANATR", StringComparison.Ordinal), 1));
-					if (TestDialect.SupportsLocate)
-					{
-						await (AssertStringComparisonWarningAsync(x => x.CustomerId.IndexOf("ANATR", StringComparison.Ordinal) == 0, 1));
-						await (AssertStringComparisonWarningAsync(x => x.CustomerId.IndexOf("ANATR", 0, StringComparison.Ordinal) == 0, 1));
-					}
+					await (AssertStringComparisonWarningAsync(x => x.CustomerId.IndexOf("ANATR", StringComparison.Ordinal) == 0, 1));
+					await (AssertStringComparisonWarningAsync(x => x.CustomerId.IndexOf("ANATR", 0, StringComparison.Ordinal) == 0, 1));
 #if NETCOREAPP2_0
 					await (AssertStringComparisonWarningAsync(x => x.CustomerId.Replace("AN", "XX", StringComparison.Ordinal) == "XXATR", 1));
 #endif
 				});
 		}
 
-		private async Task AssertStringComparisonWarningAsync(Expression<Func<Customer,bool>> whereParam, int expected, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task AssertStringComparisonWarningAsync(Expression<Func<Customer, bool>> whereParam, int expected, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (var log = new LogSpy(typeof(BaseHqlGeneratorForMethod)))
 			{

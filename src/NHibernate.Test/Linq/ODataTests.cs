@@ -76,15 +76,12 @@ namespace NHibernate.Test.Linq
 		}
 
 		//GH-2362
-		[TestCase("$filter=CustomerId le 'ANATR'",2 )]
+		[TestCase("$filter=CustomerId le 'ANATR'", 2)]
 		[TestCase("$filter=startswith(CustomerId, 'ANATR')", 1)]
 		[TestCase("$filter=endswith(CustomerId, 'ANATR')", 1)]
-		[TestCase("$filter=indexof(CustomerId, 'ANATR') eq 0", 1, true)]
-		public void StringFilter(string queryString, int expectedCount, bool locateFunction = false)
+		[TestCase("$filter=indexof(CustomerId, 'ANATR') eq 0", 1)]
+		public void StringFilter(string queryString, int expectedCount)
 		{
-			if (locateFunction && !TestDialect.SupportsLocate)
-				Assert.Ignore("Locate function is not supported.");
-
 			Assert.That(
 				ApplyFilter(session.Query<Customer>(), queryString).Cast<Customer>().ToList(),
 				Has.Count.EqualTo(expectedCount));
