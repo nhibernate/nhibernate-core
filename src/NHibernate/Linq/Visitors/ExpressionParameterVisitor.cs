@@ -102,16 +102,11 @@ namespace NHibernate.Linq.Visitors
 				return Expression.Call(null, expression.Method, query, arg);
 			}
 
-			if (_functionRegistry != null && 
-				method.Name == nameof(Queryable.Contains) &&
-				_functionRegistry.TryGetGenerator(method, out var generator) &&
-				generator is CollectionContainsGenerator)
+			if (_functionRegistry != null &&
+			    _functionRegistry.TryGetGenerator(method, out var generator) &&
+				generator.TryGetCollectionParameters(expression, out var collectionParameter))
 			{
-				var argument = method.IsStatic ? expression.Arguments[0] : expression.Object;
-				if (argument is ConstantExpression constantExpression)
-				{
-					_collectionParameters.Add(constantExpression);
-				}
+				_collectionParameters.Add(collectionParameter);
 			}
 
 			if (VisitorUtil.IsDynamicComponentDictionaryGetter(expression, _sessionFactory))

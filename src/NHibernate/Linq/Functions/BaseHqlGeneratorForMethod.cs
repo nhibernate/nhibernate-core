@@ -19,6 +19,13 @@ namespace NHibernate.Linq.Functions
 
 		public virtual bool AllowsNullableReturnType(MethodInfo method) => true;
 
+		/// <inheritdoc />
+		public virtual bool TryGetCollectionParameter(MethodCallExpression expression, out ConstantExpression collectionParameter)
+		{
+			collectionParameter = null;
+			return false;
+		}
+
 		private protected static void LogIgnoredParameter(MethodInfo method, string paramType)
 		{
 			if (Log.IsWarnEnabled())
