@@ -264,7 +264,7 @@ namespace NHibernate.Engine
 
 			if (forceDirty)
 			{
-				collection.Dirty();
+				throw new HibernateException("Found test where it's used...");
 			}
 		}
 
