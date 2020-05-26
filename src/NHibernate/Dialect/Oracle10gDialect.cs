@@ -26,12 +26,12 @@ namespace NHibernate.Dialect
 
 		public override void Configure(IDictionary<string, string> settings)
 		{
-			base.Configure(settings);
-
 			_useBinaryFloatingPointTypes = PropertiesHelper.GetBoolean(
 				Environment.OracleUseBinaryFloatingPointTypes,
 				settings,
 				false);
+
+			base.Configure(settings);
 		}
 
 		// Avoid registering weighted double type when using binary floating point types
