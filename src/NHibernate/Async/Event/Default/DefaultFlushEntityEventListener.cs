@@ -202,7 +202,6 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-
 				int[] dirtyProperties = @event.DirtyProperties;
 				if (dirtyProperties != null && dirtyProperties.Length != 0)
 				{
@@ -306,7 +305,6 @@ namespace NHibernate.Event.Default
 			@event.DirtyCheckPossible = !cannotDirtyCheck;
 		}
 
-
 		private async Task<object[]> GetDatabaseSnapshotAsync(ISessionImplementor session, IEntityPersister persister, object id, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -334,6 +332,5 @@ namespace NHibernate.Event.Default
 				return session.PersistenceContext.GetCachedDatabaseSnapshot(entityKey);
 			}
 		}
-
 	}
 }

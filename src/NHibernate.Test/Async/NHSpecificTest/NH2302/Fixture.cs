@@ -82,35 +82,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
             }
         }
 
-        [Test, Ignore("Not supported without specify the string length.")]
-        public async Task StringSqlTypeAsync()
-        {
-            int id;
-            // buildup a string the exceed the mapping
-            string str = GetFixedLengthString12000();
-
-            using (ISession sess = OpenSession())
-            using (ITransaction tx = sess.BeginTransaction())
-            {
-                // create and save the entity
-                StringLengthEntity entity = new StringLengthEntity();
-                entity.StringSqlType = str;
-                await (sess.SaveAsync(entity));
-                await (tx.CommitAsync());
-                id = entity.ID;
-            }
-
-            using (ISession sess = OpenSession())
-            using (ITransaction tx = sess.BeginTransaction())
-            {
-                StringLengthEntity loaded = await (sess.GetAsync<StringLengthEntity>(id));
-                Assert.IsNotNull(loaded);
-                Assert.AreEqual(12000, loaded.StringSqlType.Length);
-                Assert.AreEqual(str, loaded.StringSqlType);
-                await (tx.CommitAsync());
-            }
-        }
-
         [Test]
         public async Task BlobSqlTypeAsync()
         {
@@ -214,6 +185,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
         {
             return new string('a', 12000);
         }
-
-    }
+	}
 }

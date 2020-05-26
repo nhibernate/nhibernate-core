@@ -215,6 +215,351 @@ namespace NHibernate.Test.CacheTest
 		}
 
 		[Test]
+		public async Task GetManyReadWriteTestAsync()
+		{
+			var persister = Sfi.GetEntityPersister(typeof(ReadWrite).FullName);
+			Assert.That(persister.Cache.Cache, Is.Not.Null);
+			Assert.That(persister.Cache.Cache, Is.TypeOf<BatchableCache>());
+			int[] getIds;
+			int[] loadIds;
+
+			using (var s = Sfi.OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var items = await (s.Query<ReadWrite>().ToListAsync());
+				loadIds = getIds = items.OrderBy(o => o.Id).Select(o => o.Id).ToArray();
+				await (tx.CommitAsync());
+			}
+
+			// Batch size 3
+			var parentTestCases = new List<Tuple<int[], int, int[][], int[], Func<int, bool>>>
+			{
+				// When the cache is empty, GetMany will be called three times. First time in type
+				// DefaultLoadEventListener, the second time in BatchingEntityLoader and third in ReadWriteCache.
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
+					0,
+					new[]
+					{
+						new[] {0, 1, 2}, // Triggered by LoadFromSecondLevelCache method of DefaultLoadEventListener type
+						new[] {1, 2, 3}, // Triggered by Load method of BatchingEntityLoader type
+						new[] {0, 1, 2} // Triggered by PutMany method of ReadWriteCache type
+					},
+					new[] {0, 1, 2},
+					null
+				),
+				// When there are not enough uninitialized entities after the demanded one to fill the batch,
+				// the nearest before the demanded entity are added.
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
+					4,
+					new[]
+					{
+						new[] {4, 5, 3},
+						new[] {5, 3, 2},
+						new[] {4, 5, 3},
+					},
+					new[] {3, 4, 5},
+					null
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
+					5,
+					new[]
+					{
+						new[] {5, 4, 3},
+						new[] {4, 3, 2},
+						new[] {5, 4, 3},
+					},
+					new[] {3, 4, 5},
+					null
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
+					0,
+					new[]
+					{
+						new[] {0, 1, 2} // 0 get assembled and no further processing is done
+					},
+					null,
+					(i) => i % 2 == 0 // Cache all even indexes before loading
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
+					1,
+					new[]
+					{
+						new[] {1, 2, 3}, // 2 gets assembled inside LoadFromSecondLevelCache
+						new[] {3, 4, 5},
+						new[] {1, 3, 5}
+					},
+					new[] {1, 3, 5},
+					(i) => i % 2 == 0
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
+					5,
+					new[]
+					{
+						new[] {5, 4, 3}, // 4 gets assembled inside LoadFromSecondLevelCache
+						new[] {3, 2, 1},
+						new[] {1, 3, 5}
+					},
+					new[] {1, 3, 5},
+					(i) => i % 2 == 0
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
+					0,
+					new[]
+					{
+						new[] {0, 1, 2}, // 1 gets assembled inside LoadFromSecondLevelCache
+						new[] {2, 3, 4},
+						new[] {0, 2, 4}
+					},
+					new[] {0, 2, 4},
+					(i) => i % 2 != 0
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
+					4,
+					new[]
+					{
+						new[] {4, 5, 3}, // 5 and 3 get assembled inside LoadFromSecondLevelCache
+						new[] {2, 1, 0},
+						new[] {0, 2, 4}
+					},
+					new[] {0, 2, 4},
+					(i) => i % 2 != 0
+				),
+				// Tests by loading different ids
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 0).ToArray(),
+					0,
+					new[]
+					{
+						new[] {0, 5, 4}, // Triggered by LoadFromSecondLevelCache method of DefaultLoadEventListener type
+						new[] {3, 4, 5}, // Triggered by Load method of BatchingEntityLoader type
+						new[] {0, 4, 5}, // Triggered by PutMany method of ReadWriteCache type
+					},
+					new[] {0, 4, 5},
+					null
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 4).ToArray(),
+					4,
+					new[]
+					{
+						new[] {4, 5, 3},
+						new[] {5, 3, 2},
+						new[] {3, 4, 5}
+					},
+					new[] {3, 4, 5},
+					null
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 0).ToArray(),
+					0,
+					new[]
+					{
+						new[] {0, 5, 4} // 0 get assembled and no further processing is done
+					},
+					null,
+					(i) => i % 2 == 0 // Cache all even indexes before loading
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 1).ToArray(),
+					1,
+					new[]
+					{
+						new[] {1, 5, 4}, // 4 gets assembled inside LoadFromSecondLevelCache
+						new[] {5, 3, 2},
+						new[] {1, 3, 5}
+					},
+					new[] {1, 3, 5},
+					(i) => i % 2 == 0
+				)
+			};
+
+			foreach (var tuple in parentTestCases)
+			{
+				await (AssertMultipleCacheCallsAsync<ReadWrite>(tuple.Item1, getIds, tuple.Item2, tuple.Item3, tuple.Item4, tuple.Item5));
+			}
+		}
+
+		[Test]
+		public async Task GetManyReadWriteItemTestAsync()
+		{
+			var persister = Sfi.GetEntityPersister(typeof(ReadWriteItem).FullName);
+			Assert.That(persister.Cache.Cache, Is.Not.Null);
+			Assert.That(persister.Cache.Cache, Is.TypeOf<BatchableCache>());
+			int[] getIds;
+			int[] loadIds;
+
+			using (var s = Sfi.OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var items = await (s.Query<ReadWriteItem>().Take(6).ToListAsync());
+				loadIds = getIds = items.OrderBy(o => o.Id).Select(o => o.Id).ToArray();
+				await (tx.CommitAsync());
+			}
+			// Batch size 4
+			var parentTestCases = new List<Tuple<int[], int, int[][], int[], Func<int, bool>>>
+			{
+				// When the cache is empty, GetMany will be called three times. First time in type
+				// DefaultLoadEventListener, the second time in BatchingEntityLoader and third in ReadWriteCache.
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
+					0,
+					new[]
+					{
+						new[] {0, 1, 2, 3}, // Triggered by LoadFromSecondLevelCache method of DefaultLoadEventListener type
+						new[] {1, 2, 3, 4}, // Triggered by Load method of BatchingEntityLoader type
+						new[] {0, 1, 2, 3} // Triggered by PutMany method of ReadWriteCache type
+					},
+					new[] {0, 1, 2, 3},
+					null
+				),
+				// When there are not enough uninitialized entities after the demanded one to fill the batch,
+				// the nearest before the demanded entity are added.
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
+					4,
+					new[]
+					{
+						new[] {4, 5, 3, 2},
+						new[] {5, 3, 2, 1},
+						new[] {4, 5, 3, 2}
+					},
+					new[] {2, 3, 4, 5},
+					null
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
+					5,
+					new[]
+					{
+						new[] {5, 4, 3, 2},
+						new[] {4, 3, 2, 1},
+						new[] {5, 4, 3, 2}
+					},
+					new[] {2, 3, 4, 5},
+					null
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
+					0,
+					new[]
+					{
+						new[] {0, 1, 2, 3} // 0 get assembled and no further processing is done
+					},
+					null,
+					(i) => i % 2 == 0 // Cache all even indexes before loading
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
+					1,
+					new[]
+					{
+						new[] {1, 2, 3, 4}, // 2 and 4 get assembled inside LoadFromSecondLevelCache
+						new[] {3, 5, 0},
+						new[] {1, 3, 5}
+					},
+					new[] {1, 3, 5},
+					(i) => i % 2 == 0
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
+					5,
+					new[]
+					{
+						new[] {5, 4, 3, 2}, // 4 and 2 get assembled inside LoadFromSecondLevelCache
+						new[] {3, 1, 0},
+						new[] {1, 3, 5}
+					},
+					new[] {1, 3, 5},
+					(i) => i % 2 == 0
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
+					0,
+					new[]
+					{
+						new[] {0, 1, 2, 3}, // 1 and 3 get assembled inside LoadFromSecondLevelCache
+						new[] {2, 4, 5},
+						new[] {0, 2, 4}
+					},
+					new[] {0, 2, 4},
+					(i) => i % 2 != 0
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds,
+					4,
+					new[]
+					{
+						new[] {4, 5, 3, 2}, // 5 and 3 get assembled inside LoadFromSecondLevelCache
+						new[] {2, 1, 0},
+						new[] {0, 2, 4}
+					},
+					new[] {0, 2, 4},
+					(i) => i % 2 != 0
+				),
+				// Tests by loading different ids
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 0).ToArray(),
+					0,
+					new[]
+					{
+						new[] {0, 5, 4, 3}, // Triggered by LoadFromSecondLevelCache method of DefaultLoadEventListener type
+						new[] {5, 4, 3, 2}, // Triggered by Load method of BatchingEntityLoader type
+						new[] {0, 5, 4, 3}, // Triggered by PutMany method of ReadWriteCache type
+					},
+					new[] {0, 5, 4, 3},
+					null
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 5).ToArray(),
+					5,
+					new[]
+					{
+						new[] {5, 4, 3, 2},
+						new[] {4, 3, 2, 1},
+						new[] {2, 3, 4, 5}
+					},
+					new[] {2, 3, 4, 5},
+					null
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 0).ToArray(),
+					0,
+					new[]
+					{
+						new[] {0, 5, 4, 3} // 0 get assembled and no further processing is done
+					},
+					null,
+					(i) => i % 2 == 0 // Cache all even indexes before loading
+				),
+				new Tuple<int[], int, int[][], int[], Func<int, bool>>(
+					loadIds.Where((v, i) => i != 1).ToArray(),
+					1,
+					new[]
+					{
+						new[] {1, 5, 4, 3}, // 4 get assembled inside LoadFromSecondLevelCache
+						new[] {5, 3, 2, 0},
+						new[] {1, 3, 5}
+					},
+					new[] {1, 3, 5},
+					(i) => i % 2 == 0
+				),
+			};
+
+			foreach (var tuple in parentTestCases)
+			{
+				await (AssertMultipleCacheCallsAsync<ReadWriteItem>(tuple.Item1, getIds, tuple.Item2, tuple.Item3, tuple.Item4, tuple.Item5));
+			}
+		}
+
+		[Test]
 		public async Task MultipleGetReadOnlyTestAsync()
 		{
 			var persister = Sfi.GetEntityPersister(typeof(ReadOnly).FullName);
@@ -866,14 +1211,14 @@ namespace NHibernate.Test.CacheTest
 
 		[TestCase(true)]
 		[TestCase(false)]
-		public async Task QueryEntityBatchCacheTestAsync(bool clearEntityCacheAfterQuery, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task QueryEntityBatchCacheTestAsync(bool clearEntityCacheAfterQuery)
 		{
 			var persister = Sfi.GetEntityPersister(typeof(ReadOnlyItem).FullName);
 			var cache = (BatchableCache) persister.Cache.Cache;
 			var queryCache = GetDefaultQueryCache();
 
 			Sfi.Statistics.Clear();
-			await (Sfi.EvictQueriesAsync(cancellationToken));
+			await (Sfi.EvictQueriesAsync());
 			cache.ClearStatistics();
 			queryCache.ClearStatistics();
 
@@ -884,9 +1229,9 @@ namespace NHibernate.Test.CacheTest
 			{
 				items = await (s.Query<ReadOnlyItem>()
 				         .WithOptions(o => o.SetCacheable(true))
-				         .ToListAsync(cancellationToken));
+				         .ToListAsync());
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(queryCache.GetCalls, Has.Count.EqualTo(1), "Unexpected query cache GetCalls");
@@ -903,7 +1248,7 @@ namespace NHibernate.Test.CacheTest
 
 			if (clearEntityCacheAfterQuery)
 			{
-				await (cache.ClearAsync(cancellationToken));
+				await (cache.ClearAsync(CancellationToken.None));
 			}
 
 			Sfi.Statistics.Clear();
@@ -913,9 +1258,9 @@ namespace NHibernate.Test.CacheTest
 			{
 				items = await (s.Query<ReadOnlyItem>()
 				         .WithOptions(o => o.SetCacheable(true))
-				         .ToListAsync(cancellationToken));
+				         .ToListAsync());
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(queryCache.GetCalls, Has.Count.EqualTo(1), "Unexpected query cache GetCalls");
@@ -935,7 +1280,7 @@ namespace NHibernate.Test.CacheTest
 		[TestCase(false, false)]
 		[TestCase(true, true)]
 		[TestCase(false, true)]
-		public async Task QueryFetchCollectionBatchCacheTestAsync(bool clearEntityCacheAfterQuery, bool future, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task QueryFetchCollectionBatchCacheTestAsync(bool clearEntityCacheAfterQuery, bool future)
 		{
 			if (future && !Sfi.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
@@ -954,19 +1299,19 @@ namespace NHibernate.Test.CacheTest
 
 			using (var s = OpenSession())
 			{
-				var ids = await (s.Query<ReadOnly>().Select(o => o.Id).OrderBy(o => o).ToListAsync(cancellationToken));
+				var ids = await (s.Query<ReadOnly>().Select(o => o.Id).OrderBy(o => o).ToListAsync());
 				middleId = ids[2];
 			}
 
 			Sfi.Statistics.Clear();
-			await (Sfi.EvictQueriesAsync(cancellationToken));
+			await (Sfi.EvictQueriesAsync());
 			queryCache.ClearStatistics();
 			cache.ClearStatistics();
-			await (cache.ClearAsync(cancellationToken));
+			await (cache.ClearAsync(CancellationToken.None));
 			itemCache.ClearStatistics();
-			await (itemCache.ClearAsync(cancellationToken));
+			await (itemCache.ClearAsync(CancellationToken.None));
 			collectionCache.ClearStatistics();
-			await (collectionCache.ClearAsync(cancellationToken));
+			await (collectionCache.ClearAsync(CancellationToken.None));
 
 			List<ReadOnly> items;
 			using (var s = OpenSession())
@@ -992,10 +1337,10 @@ namespace NHibernate.Test.CacheTest
 					items = await (s.Query<ReadOnly>()
 					         .WithOptions(o => o.SetCacheable(true))
 					         .FetchMany(o => o.Items)
-					         .ToListAsync(cancellationToken));
+					         .ToListAsync());
 				}
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(queryCache.GetCalls, Has.Count.EqualTo(future ? 0 : 1), "Unexpected query cache GetCalls");
@@ -1018,9 +1363,9 @@ namespace NHibernate.Test.CacheTest
 
 			if (clearEntityCacheAfterQuery)
 			{
-				await (cache.ClearAsync(cancellationToken));
-				await (collectionCache.ClearAsync(cancellationToken));
-				await (itemCache.ClearAsync(cancellationToken));
+				await (cache.ClearAsync(CancellationToken.None));
+				await (collectionCache.ClearAsync(CancellationToken.None));
+				await (itemCache.ClearAsync(CancellationToken.None));
 			}
 
 			Sfi.Statistics.Clear();
@@ -1048,10 +1393,10 @@ namespace NHibernate.Test.CacheTest
 					items = await (s.Query<ReadOnly>()
 					         .WithOptions(o => o.SetCacheable(true))
 					         .FetchMany(o => o.Items)
-					         .ToListAsync(cancellationToken));
+					         .ToListAsync());
 				}
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(queryCache.GetCalls, Has.Count.EqualTo(future ? 0 : 1), "Unexpected query cache GetCalls");
@@ -1080,7 +1425,7 @@ namespace NHibernate.Test.CacheTest
 		[TestCase(false, false)]
 		[TestCase(true, true)]
 		[TestCase(false, true)]
-		public async Task QueryFetchEntityBatchCacheTestAsync(bool clearEntityCacheAfterQuery, bool future, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task QueryFetchEntityBatchCacheTestAsync(bool clearEntityCacheAfterQuery, bool future)
 		{
 			if (future && !Sfi.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
@@ -1097,17 +1442,17 @@ namespace NHibernate.Test.CacheTest
 
 			using (var s = OpenSession())
 			{
-				var ids = await (s.Query<ReadOnlyItem>().Select(o => o.Id).OrderBy(o => o).ToListAsync(cancellationToken));
+				var ids = await (s.Query<ReadOnlyItem>().Select(o => o.Id).OrderBy(o => o).ToListAsync());
 				middleId = ids[17];
 			}
 
 			Sfi.Statistics.Clear();
-			await (Sfi.EvictQueriesAsync(cancellationToken));
+			await (Sfi.EvictQueriesAsync());
 			queryCache.ClearStatistics();
 			cache.ClearStatistics();
-			await (cache.ClearAsync(cancellationToken));
+			await (cache.ClearAsync(CancellationToken.None));
 			parentCache.ClearStatistics();
-			await (parentCache.ClearAsync(cancellationToken));
+			await (parentCache.ClearAsync(CancellationToken.None));
 
 			List<ReadOnlyItem> items;
 			using (var s = OpenSession())
@@ -1133,10 +1478,10 @@ namespace NHibernate.Test.CacheTest
 					items = await (s.Query<ReadOnlyItem>()
 							 .WithOptions(o => o.SetCacheable(true))
 							 .Fetch(o => o.Parent)
-							 .ToListAsync(cancellationToken));
+							 .ToListAsync());
 				}
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(queryCache.GetCalls, Has.Count.EqualTo(future ? 0 : 1), "Unexpected query cache GetCalls");
@@ -1158,8 +1503,8 @@ namespace NHibernate.Test.CacheTest
 
 			if (clearEntityCacheAfterQuery)
 			{
-				await (cache.ClearAsync(cancellationToken));
-				await (parentCache.ClearAsync(cancellationToken));
+				await (cache.ClearAsync(CancellationToken.None));
+				await (parentCache.ClearAsync(CancellationToken.None));
 			}
 
 			Sfi.Statistics.Clear();
@@ -1187,10 +1532,10 @@ namespace NHibernate.Test.CacheTest
 					items = await (s.Query<ReadOnlyItem>()
 							 .WithOptions(o => o.SetCacheable(true))
 							 .Fetch(o => o.Parent)
-							 .ToListAsync(cancellationToken));
+							 .ToListAsync());
 				}
 
-				await (tx.CommitAsync(cancellationToken));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(queryCache.GetCalls, Has.Count.EqualTo(future ? 0 : 1), "Unexpected query cache GetCalls");
@@ -1350,6 +1695,5 @@ namespace NHibernate.Test.CacheTest
 
 			return cache;
 		}
-
 	}
 }

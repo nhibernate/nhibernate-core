@@ -6,7 +6,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1845
 	{
 		private readonly IList<Category> subcategories = new List<Category>();
 
-		public Category() : this("") {}
+		public Category() : this("")
+		{
+		}
 
 		public Category(string name)
 		{
@@ -16,6 +18,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1845
 		public virtual int Id { get; set; }
 
 		public virtual string Name { get; set; }
+
+		public virtual int SortIndex { get; set; }
 
 		public virtual Category Parent { get; set; }
 

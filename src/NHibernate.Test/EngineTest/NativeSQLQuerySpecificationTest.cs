@@ -54,6 +54,5 @@ namespace NHibernate.Test.EngineTest
 			var sr2 = new NativeSQLQuerySpecification("SELECT * FROM SOMETHING", new INativeSQLQueryReturn[] { new NativeSQLQueryScalarReturn("myAlias", NHibernateUtil.Int32), new NativeSQLQueryScalarReturn("otherAlias", NHibernateUtil.Int32) }, new List<string> { "ANOTHER" });
 			Assert.AreNotEqual(sr1.GetHashCode(), sr2.GetHashCode());
 		}
-
 	}
 }

@@ -14,7 +14,7 @@ namespace NHibernate.Type
 				: type.GetColumnSpan(sessionFactory);
 		}
 	}
-	
+
 	/// <summary>
 	/// Defines a mapping from a .NET <see cref="System.Type"/> to a SQL data-type.
 	/// This interface is intended to be implemented by applications that need custom types.

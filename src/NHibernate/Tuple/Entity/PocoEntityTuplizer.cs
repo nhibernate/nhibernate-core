@@ -15,7 +15,6 @@ using NHibernate.Bytecode.Lightweight;
 
 namespace NHibernate.Tuple.Entity
 {
-
 	/// <summary> An <see cref="IEntityTuplizer"/> specific to the POCO entity mode. </summary>
 	public class PocoEntityTuplizer : AbstractEntityTuplizer
 	{

@@ -6,6 +6,8 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NHibernate.Dialect.Function
 {
@@ -18,7 +20,7 @@ namespace NHibernate.Dialect.Function
 	/// parameters with '?' followed by parameter's index (first index is 1).
 	/// </summary>
 	[Serializable]
-	public class SQLFunctionTemplate : ISQLFunction
+	public class SQLFunctionTemplate : ISQLFunction, ISQLFunctionExtended
 	{
 		private const int InvalidArgumentIndex = -1;
 		private static readonly Regex SplitRegex = new Regex("(\\?[0-9]+)");
@@ -80,10 +82,29 @@ namespace NHibernate.Dialect.Function
 
 		#region ISQLFunction Members
 
+		// Since v5.3
+		[Obsolete("Use GetReturnType method instead.")]
 		public IType ReturnType(IType columnType, IMapping mapping)
 		{
 			return (returnType == null) ? columnType : returnType;
 		}
+
+		/// <inheritdoc />
+		public virtual IType GetReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+		{
+#pragma warning disable 618
+			return ReturnType(argumentTypes.FirstOrDefault(), mapping);
+#pragma warning restore 618
+		}
+
+		/// <inheritdoc />
+		public virtual IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+		{
+			return GetReturnType(argumentTypes, mapping, throwOnError);
+		}
+
+		/// <inheritdoc />
+		public virtual string Name => null;
 
 		public bool HasArguments
 		{

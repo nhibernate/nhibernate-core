@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Engine;
@@ -13,9 +12,6 @@ namespace NHibernate.Criterion
 	/// An <see cref="ICriterion"/> that constrains the property
 	/// to a specified list of values.
 	/// </summary>
-	/// <remarks>
-	/// InExpression - should only be used with a Single Value column - no multicolumn properties...
-	/// </remarks>
 	[Serializable]
 	public class InExpression : AbstractCriterion
 	{
@@ -62,41 +58,52 @@ namespace NHibernate.Criterion
 				return new SqlString("1=0");
 			}
 
-			//TODO: add default capacity
-			SqlStringBuilder result = new SqlStringBuilder();
-			SqlString[] columnNames =
-				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria);
-			
-			// Generate SqlString of the form:
-			// columnName1 in (values) and columnName2 in (values) and ...
-			Parameter[] parameters = GetParameterTypedValues(criteria, criteriaQuery).SelectMany(t => criteriaQuery.NewQueryParameter(t)).ToArray();
+			SqlString[] columns = CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria);
 
-			for (int columnIndex = 0; columnIndex < columnNames.Length; columnIndex++)
+			var list = new List<Parameter>(columns.Length * Values.Length);
+			foreach (var typedValue in GetParameterTypedValues(criteria, criteriaQuery))
 			{
-				SqlString columnName = columnNames[columnIndex];
-
-				if (columnIndex > 0)
-				{
-					result.Add(" and ");
-				}
-
-				result
-					.Add(columnName)
-					.Add(" in (");
-
-				for (int i = 0; i < _values.Length; i++)
-				{
-					if (i > 0)
-					{
-						result.Add(StringHelper.CommaSpace);
-					}
-					result.Add(parameters[i]);
-				}
-
-				result.Add(")");
+				//Must be executed after CriterionUtil.GetColumnNames (as it might add _projection parameters to criteria)
+				list.AddRange(criteriaQuery.NewQueryParameter(typedValue));
 			}
 
-			return result.ToSqlString();
+			var bogusParam = Parameter.Placeholder;
+
+			var sqlString = GetSqlString(criteriaQuery, columns, bogusParam);
+			sqlString.SubstituteBogusParameters(list, bogusParam);
+			return sqlString;
+		}
+
+		private SqlString GetSqlString(ICriteriaQuery criteriaQuery, SqlString[] columns, Parameter bogusParam)
+		{
+			if (columns.Length <= 1 || criteriaQuery.Factory.Dialect.SupportsRowValueConstructorSyntaxInInList)
+			{
+				var wrapInParens = columns.Length > 1;
+				const string comaSeparator = ", ";
+				var singleValueParam = SqlStringHelper.Repeat(new SqlString(bogusParam), columns.Length, comaSeparator, wrapInParens);
+
+				var parameters = SqlStringHelper.Repeat(singleValueParam, Values.Length, comaSeparator,  wrapInParens: false);
+
+				//single column: col1 in (?, ?)
+				//multi column:  (col1, col2) in ((?, ?), (?, ?))
+				return new SqlString(
+					wrapInParens ? StringHelper.OpenParen : string.Empty,
+					SqlStringHelper.Join(comaSeparator, columns),
+					wrapInParens ? StringHelper.ClosedParen : string.Empty,
+					" in (",
+					parameters,
+					")");
+			}
+
+			//((col1 = ? and col2 = ?) or (col1 = ? and col2 = ?))
+			var cols = new SqlString(
+				" ( ",
+				SqlStringHelper.Join(new SqlString(" = ", bogusParam, " and "), columns),
+				"= ",
+				bogusParam,
+				" ) ");
+			cols = SqlStringHelper.Repeat(cols, Values.Length, " or ", wrapInParens: Values.Length > 1);
+			return cols;
 		}
 
 		private void AssertPropertyIsNotCollection(ICriteriaQuery criteriaQuery, ICriteria criteria)
@@ -122,29 +129,24 @@ namespace NHibernate.Criterion
 		{
 			IType type = GetElementType(criteria, criteriaQuery);
 
-			if (type.IsComponentType)
+			if (!type.IsComponentType)
 			{
-				List<TypedValue> list = new List<TypedValue>();
-				IAbstractComponentType actype = (IAbstractComponentType) type;
-				IType[] types = actype.Subtypes;
+				return _values.ToList(v => new TypedValue(type, v, false));
+			}
 
-				for (int i = 0; i < types.Length; i++)
+			List<TypedValue> list = new List<TypedValue>();
+			IAbstractComponentType actype = (IAbstractComponentType) type;
+			var types = actype.Subtypes;
+			foreach (var value in _values)
+			{
+				var propertyValues = value != null ? actype.GetPropertyValues(value) : null;
+				for (int ti = 0; ti < types.Length; ti++)
 				{
-					for (int j = 0; j < _values.Length; j++)
-					{
-						object subval = _values[j] == null
-											? null
-											: actype.GetPropertyValues(_values[j])[i];
-						list.Add(new TypedValue(types[i], subval, false));
-					}
+					list.Add(new TypedValue(types[ti], propertyValues?[ti], false));
 				}
+			}
 
-				return list;
-			}
-			else
-			{
-				return _values.Select(v => new TypedValue(type, v, false)).ToList();
-			}
+			return list;
 		}
 
 		/// <summary>

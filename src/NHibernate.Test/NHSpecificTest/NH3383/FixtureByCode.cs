@@ -21,7 +21,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
-
 		[Test]
 		public void DeserializedCascadeStyleRefersToSameObject()
 		{
@@ -42,7 +41,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 
 			Assert.That(deserializedCascadeStyle, Is.SameAs(CascadeStyle.Evict));
 		}
-
 
 		[Test]
 		public void CanRoundTripSerializedMultipleCascadeStyle()
@@ -69,7 +67,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 			            Is.EqualTo(
 				            "[NHibernate.Engine.CascadeStyle+DeleteCascadeStyle,NHibernate.Engine.CascadeStyle+LockCascadeStyle]"));
 		}
-
 
 		[Test]
 		public void DeserializedPropertyMapping_RefersToSameCascadeStyle()

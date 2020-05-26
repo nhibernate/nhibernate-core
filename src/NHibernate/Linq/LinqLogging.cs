@@ -28,7 +28,6 @@ namespace NHibernate.Linq
 			}
 		}
 
-
 		/// <summary>
 		/// Replace all occurrences of ConstantExpression where the value is an NHibernate
 		/// proxy with a ParameterExpression. The name of the parameter will be a string

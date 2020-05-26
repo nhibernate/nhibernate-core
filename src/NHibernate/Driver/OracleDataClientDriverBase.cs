@@ -30,6 +30,8 @@ namespace NHibernate.Driver
 		private readonly object _oracleDbTypeBlob;
 		private readonly object _oracleDbTypeNVarchar2;
 		private readonly object _oracleDbTypeNChar;
+		private readonly object _oracleDbTypeBinaryDouble;
+		private readonly object _oracleDbTypeBinaryFloat;
 
 		/// <summary>
 		/// Default constructor.
@@ -58,6 +60,8 @@ namespace NHibernate.Driver
 			_oracleDbTypeBlob = Enum.Parse(oracleDbTypeEnum, "Blob");
 			_oracleDbTypeNVarchar2 = Enum.Parse(oracleDbTypeEnum, "NVarchar2");
 			_oracleDbTypeNChar = Enum.Parse(oracleDbTypeEnum, "NChar");
+			_oracleDbTypeBinaryDouble = Enum.Parse(oracleDbTypeEnum, "BinaryDouble");
+			_oracleDbTypeBinaryFloat = Enum.Parse(oracleDbTypeEnum, "BinaryFloat");
 		}
 
 		/// <inheritdoc/>
@@ -67,6 +71,7 @@ namespace NHibernate.Driver
 
 			// If changing the default value, keep it in sync with Oracle8iDialect.Configure.
 			UseNPrefixedTypesForUnicode = PropertiesHelper.GetBoolean(Cfg.Environment.OracleUseNPrefixedTypesForUnicode, settings, false);
+			UseBinaryFloatingPointTypes = PropertiesHelper.GetBoolean(Cfg.Environment.OracleUseBinaryFloatingPointTypes, settings, false);
 		}
 
 		/// <summary>
@@ -83,6 +88,11 @@ namespace NHibernate.Driver
 		/// https://docs.oracle.com/database/121/ODPNT/featOraCommand.htm#i1007557
 		/// </remarks>
 		public bool UseNPrefixedTypesForUnicode { get; private set; }
+
+		/// <summary>
+		/// Whether binary_double and binary_float are used for <see cref="double"/> and <see cref="float"/> types.
+		/// </summary>
+		public bool UseBinaryFloatingPointTypes { get; private set; }
 
 		/// <inheritdoc/>
 		public override bool UseNamedPrefixInSql => true;
@@ -130,6 +140,18 @@ namespace NHibernate.Driver
 					break;
 				case DbType.Currency:
 					base.InitializeParameter(dbParam, name, SqlTypeFactory.Decimal);
+					break;
+				case DbType.Double:
+					if (UseBinaryFloatingPointTypes)
+						InitializeParameter(dbParam, name, _oracleDbTypeBinaryDouble);
+					else
+						base.InitializeParameter(dbParam, name, sqlType);
+					break;
+				case DbType.Single:
+					if (UseBinaryFloatingPointTypes)
+						InitializeParameter(dbParam, name, _oracleDbTypeBinaryFloat);
+					else
+						base.InitializeParameter(dbParam, name, sqlType);
 					break;
 				default:
 					base.InitializeParameter(dbParam, name, sqlType);

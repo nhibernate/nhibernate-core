@@ -71,7 +71,7 @@ namespace NHibernate.Event.Default
 				case EntityState.Persistent:
 					return EntityIsPersistent(@event);
 
-				default:  //TRANSIENT or DELETED
+				default: //TRANSIENT or DELETED
 					return await (EntityIsTransientAsync(@event, cancellationToken)).ConfigureAwait(false);
 			}
 		}

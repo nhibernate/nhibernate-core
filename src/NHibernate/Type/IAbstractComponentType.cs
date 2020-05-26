@@ -42,7 +42,7 @@ namespace NHibernate.Type
 
 		FetchMode GetFetchMode(int i);
 
-		bool IsEmbedded { get;}
+		bool IsEmbedded { get; }
 
 		bool IsMethodOf(MethodBase method);
 	}

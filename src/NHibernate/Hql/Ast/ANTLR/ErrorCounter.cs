@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using Antlr.Runtime;
 
-
 namespace NHibernate.Hql.Ast.ANTLR
 {
 	/// <summary>
@@ -55,8 +54,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 				if (!first) buf.Append('\n');
 
 				first = false;
-
 			}
+			
 			return buf.ToString();
 		}
 
@@ -83,5 +82,4 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 	}
-
 }

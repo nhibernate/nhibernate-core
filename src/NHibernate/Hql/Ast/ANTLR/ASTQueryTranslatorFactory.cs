@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
+using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
@@ -24,8 +24,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			var polymorphicParsers = AstPolymorphicProcessor.Process(ast, factory);
 
 			var translators = polymorphicParsers
-							.Select(hql => new QueryTranslatorImpl(queryIdentifier, hql, filters, factory))
-							.ToArray();
+				.ToArray(hql => new QueryTranslatorImpl(queryIdentifier, hql, filters, factory));
 
 			foreach (var translator in translators)
 			{
@@ -40,7 +39,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 
 			return translators;
-			
 		}
 	}
 }

@@ -12,6 +12,7 @@
 
     <PackageDescription>NHibernate is a mature, open source object-relational mapper for the .NET framework. It is actively developed, fully featured and used in thousands of successful projects.</PackageDescription>
     <PackageTags>ORM; O/RM; DataBase; DAL; ObjectRelationalMapping; NHibernate; ADO.Net; Core</PackageTags>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   
   <ItemGroup>
@@ -37,7 +38,7 @@
     </PackageReference>
     <PackageReference Include="Antlr3.Runtime" Version="[3.5.1, 4.0)" />
     <PackageReference Include="Iesi.Collections" Version="[4.0.4, 5.0)" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Remotion.Linq" Version="[2.2.0, 3.0)" />
     <PackageReference Include="Remotion.Linq.EagerFetching" Version="[2.2.0, 3.0)" />
   </ItemGroup>

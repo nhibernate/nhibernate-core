@@ -1,3 +1,47 @@
+﻿Build 5.2.7
+=============================
+
+Release notes - NHibernate - Version 5.2.7
+
+4 issues were resolved in this release.
+
+** Bug
+
+   * #2302 Backport sqlite.binaryguid to configuration schema
+   * #2298 Dml Linq Update Produce Wrong Sql
+   * #2296 Missing Row Count in Debug Log for Future queries
+
+** Task
+
+   * #2303 Release 5.2.7
+
+Build 5.2.6
+=============================
+
+Release notes - NHibernate - Version 5.2.6
+
+11 issues were resolved in this release.
+
+** Bug
+
+   * #2190 Cannot instantiate a SessionFactory using Prevalence cache
+   * #2177 New Fetch() method in QueryOver returns IQueryOver<> instead of QueryOver<>
+   * #2172 Using DependentTransaction fails
+   * #2175 Subcriteria on component collection generates incorrect join alias 
+   * #2173 Futures not batching correctly in NH 5.2.x
+   * #2141 Undefined call to Equals object in collection during flush just before commit 
+   * #2127 StackExchangeRedisCache with PreferMultipleGet = true calls GetMany multiple times
+   * #2110 Wrong GUID to string conversion with SQLite  BinaryGuid=False
+
+** Task
+
+   * #2200 Release 5.2.6
+   * #2199 Upgrade AsyncGenerator to 0.8.2.12
+
+** Tests
+
+   * #2132 Add GetMany for ReadWriteCache tests
+
 Build 5.2.5
 =============================
 
@@ -342,6 +386,22 @@ Release notes - NHibernate - Version 5.2.0
 As part of releasing 5.2.0, a misnamed setting in 5.0.0 release notes has been fixed:
 transaction.use_connection_on_system_events correct name is transaction.use_connection_on_system_prepare
 
+Build 5.1.7
+=============================
+
+Release notes - NHibernate - Version 5.1.7
+
+** Bug
+    * #2298 Dml Linq Update Produce Wrong Sql
+
+Build 5.1.6
+=============================
+
+Release notes - NHibernate - Version 5.1.6
+
+** Bug
+    * #2172 Using DependentTransaction fails
+
 Build 5.1.5
 =============================
 
@@ -604,6 +664,14 @@ Release notes - NHibernate - Version 5.1.0
 
 As part of releasing 5.1.0, a missing 5.0.0 possible breaking change has been added about inequality semantic in LINQ
 queries. See 5.0.0 possible breaking changes.
+
+Build 5.0.8
+=============================
+
+Release notes - NHibernate - Version 5.0.8
+
+** Bug
+    * #2172 Using DependentTransaction fails
 
 ﻿Build 5.0.7
 =============================

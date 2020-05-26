@@ -77,13 +77,18 @@ namespace NHibernate.Impl
 	{
 		#region Default entity not found delegate
 
-		private class DefaultEntityNotFoundDelegate : IEntityNotFoundDelegate
+		internal class DefaultEntityNotFoundDelegate : IEntityNotFoundDelegate
 		{
 			#region IEntityNotFoundDelegate Members
 
 			public void HandleEntityNotFound(string entityName, object id)
 			{
 				throw new ObjectNotFoundException(id, entityName);
+			}
+
+			public void HandleEntityNotFound(string entityName, string propertyName, object key)
+			{
+				throw new ObjectNotFoundByUniqueKeyException(entityName, propertyName, key);
 			}
 
 			#endregion
@@ -162,7 +167,7 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly UpdateTimestampsCache updateTimestampsCache;
 		[NonSerialized]
-		private readonly IDictionary<string, string[]> entityNameImplementorsMap = new ConcurrentDictionary<string, string[]>(4 * System.Environment.ProcessorCount, 100);
+		private readonly ConcurrentDictionary<string, string[]> entityNameImplementorsMap = new ConcurrentDictionary<string, string[]>(4 * System.Environment.ProcessorCount, 100);
 		private readonly string uuid;
 		private bool disposed;
 
@@ -210,6 +215,22 @@ namespace NHibernate.Impl
 				// Ignore if the Dialect does not provide DataBaseSchema
 				log.Warn(ex, "Dialect does not provide DataBaseSchema, but keywords import or auto quoting is enabled.");
 			}
+
+			#region Serialization info
+
+			name = settings.SessionFactoryName;
+			try
+			{
+				uuid = (string)UuidGenerator.Generate(null, null);
+			}
+			catch (Exception ex)
+			{
+				throw new AssertionFailure("Could not generate UUID", ex);
+			}
+
+			SessionFactoryObjectFactory.AddInstance(uuid, name, this, properties);
+
+			#endregion
 
 			#region Caches
 			settings.CacheProvider.Start(properties);
@@ -319,22 +340,6 @@ namespace NHibernate.Impl
 			{
 				persister.PostInstantiate();
 			}
-			#endregion
-
-			#region Serialization info
-
-			name = settings.SessionFactoryName;
-			try
-			{
-				uuid = (string)UuidGenerator.Generate(null, null);
-			}
-			catch (Exception ex)
-			{
-				throw new AssertionFailure("Could not generate UUID", ex);
-			}
-
-			SessionFactoryObjectFactory.AddInstance(uuid, name, this, properties);
-
 			#endregion
 
 			log.Debug("Instantiated session factory");
@@ -852,6 +857,16 @@ namespace NHibernate.Impl
 		/// </summary>
 		public void Close()
 		{
+			if (isClosed)
+			{
+				if (log.IsDebugEnabled())
+				{
+					log.Debug("Already closed");
+				}
+
+				return;
+			}
+
 			log.Info("Closing");
 
 			isClosed = true;
@@ -1410,7 +1425,7 @@ namespace NHibernate.Impl
 			private ConnectionReleaseMode _connectionReleaseMode;
 			private FlushMode _flushMode;
 			private bool _autoClose;
-			private bool _autoJoinTransaction = true;
+			private bool _autoJoinTransaction;
 
 			public SessionBuilderImpl(SessionFactoryImpl sessionFactory)
 			{
@@ -1419,6 +1434,7 @@ namespace NHibernate.Impl
 				// set up default builder values...
 				_connectionReleaseMode = sessionFactory.Settings.ConnectionReleaseMode;
 				_autoClose = sessionFactory.Settings.IsAutoCloseSessionEnabled;
+				_autoJoinTransaction = sessionFactory.Settings.AutoJoinTransaction;
 				// NH different implementation: not using Settings.IsFlushBeforeCompletionEnabled
 				_flushMode = sessionFactory.Settings.DefaultFlushMode;
 			}

@@ -81,6 +81,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1693
 				await (tx.CommitAsync());
 			}
 		}
-
 	}
 }

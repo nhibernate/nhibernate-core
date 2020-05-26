@@ -36,7 +36,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1097
 			using (var session = this.OpenSession())
 			using (var tran = session.BeginTransaction())
 			{
-
 				Assert.Throws<QueryException>(delegate
 				                              	{
 													var query = session.CreateQuery("from Person p where p.namecolumn=:nameOfPerson");

@@ -27,7 +27,7 @@ namespace NHibernate.Impl
 		private readonly List<IQuery> queries = new List<IQuery>();
 		private readonly List<ITranslator> translators = new List<ITranslator>();
 		private readonly List<int> translatorQueryMap = new List<int>();
-		private readonly IList<System.Type> resultCollectionGenericType = new List<System.Type>();
+		private readonly List<System.Type> resultCollectionGenericType = new List<System.Type>();
 		private readonly List<QueryParameters> parameters = new List<QueryParameters>();
 		private IList queryResults;
 		private readonly Dictionary<string, int> queryResultPositions = new Dictionary<string, int>();
@@ -520,11 +520,10 @@ namespace NHibernate.Impl
 
 		protected List<object> DoList()
 		{
-			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
-			var stopWatch = new Stopwatch();
-			if (statsEnabled)
+			Stopwatch stopWatch = null;
+			if (session.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWatch.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 			int rowCount = 0;
 
@@ -635,7 +634,7 @@ namespace NHibernate.Impl
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi query", resultSetsCommand.Sql);
 			}
 
-			if (statsEnabled)
+			if (stopWatch != null)
 			{
 				stopWatch.Stop();
 				session.Factory.StatisticsImplementor.QueryExecuted(string.Format("{0} queries (MultiQuery)", translators.Count), rowCount, stopWatch.Elapsed);
@@ -774,7 +773,7 @@ namespace NHibernate.Impl
 			return combinedQueryParameters;
 		}
 
-		private IList<QueryParameters> Parameters
+		private List<QueryParameters> Parameters
 		{
 			get
 			{

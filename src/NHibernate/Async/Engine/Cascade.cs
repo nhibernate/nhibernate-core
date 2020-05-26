@@ -26,7 +26,6 @@ namespace NHibernate.Engine
 	public sealed partial class Cascade
 	{
 
-
 		/// <summary> Cascade an action from the parent entity instance to all its children. </summary>
 		/// <param name="persister">The parent's entity persister </param>
 		/// <param name="parent">The parent reference. </param>
@@ -117,7 +116,8 @@ namespace NHibernate.Engine
 						// value is orphaned if loaded state for this property shows not null
 						// because it is currently null.
 						EntityEntry entry = eventSource.PersistenceContext.GetEntry(parent);
-						if (entry != null && entry.Status != Status.Saving)
+						//LoadedState is null when detached entity is cascaded from session.Update context
+						if (entry?.LoadedState != null && entry.Status != Status.Saving)
 						{
 							object loadedValue;
 							if (componentPathStack.Count == 0)
@@ -284,11 +284,11 @@ namespace NHibernate.Engine
 			if (pc.WasInitialized)
 			{
 				CollectionEntry ce = eventSource.PersistenceContext.GetCollectionEntry(pc);
-				orphans = ce == null ? CollectionHelper.EmptyCollection : await (ce.GetOrphansAsync(entityName, pc, cancellationToken)).ConfigureAwait(false);
+				orphans = ce == null ? CollectionHelper.EmptyCollection : ce.GetOrphans(entityName, pc);
 			}
 			else
 			{
-				orphans = await (pc.GetQueuedOrphansAsync(entityName, cancellationToken)).ConfigureAwait(false);
+				orphans = pc.GetQueuedOrphans(entityName);
 			}
 
 			foreach (object orphan in orphans)

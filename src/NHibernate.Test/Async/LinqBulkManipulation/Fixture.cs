@@ -467,9 +467,8 @@ namespace NHibernate.Test.LinqBulkManipulation
 
 			// this is just checking parsing and syntax...
 			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				s.BeginTransaction();
-
 				Assert.DoesNotThrowAsync(() =>
 				{
 					return s
@@ -477,7 +476,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 						.InsertIntoAsync(x => new Animal { Description = x.Description, BodyWeight = x.BodyWeight });
 				});
 
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 		}
 
@@ -760,7 +759,6 @@ namespace NHibernate.Test.LinqBulkManipulation
 				}
 				using (var t = s.BeginTransaction())
 				{
-
 					var count = await (s.Query<Zoo>().UpdateBuilder().Set(y => y.Name, y => y.Name).UpdateAsync());
 					Assert.That(count, Is.EqualTo(2), "Incorrect discrim subclass update count");
 
@@ -803,7 +801,6 @@ namespace NHibernate.Test.LinqBulkManipulation
 				count =
 					await (s.Query<Dragon>().UpdateBuilder().Set(y => y.FireTemperature, 300).UpdateAsync());
 				Assert.That(count, Is.EqualTo(1), "Incorrect entity-updated count");
-
 
 				count =
 					await (s.Query<Animal>().UpdateBuilder().Set(y => y.BodyWeight, y => y.BodyWeight + 1 + 1).UpdateAsync());
@@ -985,11 +982,11 @@ namespace NHibernate.Test.LinqBulkManipulation
 			}
 
 			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				s.BeginTransaction();
 				var count = await (s.Query<SimpleEntityWithAssociation>().Where(x => x.AssociatedEntities.Count == 0 && x.Name.Contains("myEntity")).DeleteAsync());
 				Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 		}
 
@@ -1017,7 +1014,6 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-
 				var count = await (s.Query<Animal>().Where(x => x.Id == _polliwog.Id).DeleteAsync());
 				Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
 

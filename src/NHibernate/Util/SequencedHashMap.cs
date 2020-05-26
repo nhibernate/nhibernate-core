@@ -144,7 +144,6 @@ namespace NHibernate.Util
 			#endregion
 		}
 
-
 		/// <summary>
 		/// Construct an empty sentinel used to hold the head (sentinel.next) and the tail (sentinal.prev)
 		/// of the list. The sentinal has a <see langword="null" /> key and value
@@ -447,7 +446,6 @@ namespace NHibernate.Util
 			return false;
 		}
 
-
 		private Entry First
 		{
 			get { return (IsEmpty) ? null : _sentinel.Next; }
@@ -577,7 +575,6 @@ namespace NHibernate.Util
 			}
 		}
 
-
 		private class ValuesCollection : ICollection
 		{
 			private SequencedHashMap _parent;
@@ -629,7 +626,6 @@ namespace NHibernate.Util
 			}
 		}
 
-
 		private enum ReturnType
 		{
 			/// <summary>
@@ -647,7 +643,6 @@ namespace NHibernate.Util
 			/// </summary>
 			ReturnEntry
 		}
-
 
 		private class OrderedEnumerator : IDictionaryEnumerator
 		{
@@ -674,7 +669,6 @@ namespace NHibernate.Util
 					{
 						throw new InvalidOperationException("Enumerator was modified");
 					}
-
 
 					switch (_returnType)
 					{

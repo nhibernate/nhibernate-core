@@ -138,7 +138,6 @@ namespace NHibernate.Test.CompositeId
 				await (t.CommitAsync());
 			}
 
-			
 			using (s = OpenSession())
 			{
 				t = s.BeginTransaction();

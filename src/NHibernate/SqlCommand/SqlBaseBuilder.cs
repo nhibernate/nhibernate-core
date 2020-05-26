@@ -76,7 +76,7 @@ namespace NHibernate.SqlCommand
 
 			for (int i = 0; i < columnNames.Length; i++)
 			{
-				if (string.IsNullOrEmpty(columnNames[i])) continue;// prevent empty column name
+				if (string.IsNullOrEmpty(columnNames[i])) continue; // prevent empty column name
 
 				if (andNeeded)
 				{
@@ -108,6 +108,5 @@ namespace NHibernate.SqlCommand
 			if (string.IsNullOrEmpty(columnName)) return null;
 			return new SqlString(columnName, op, Parameter.Placeholder);
 		}
-
 	}
 }

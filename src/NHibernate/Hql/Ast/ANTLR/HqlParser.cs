@@ -102,7 +102,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			set { filter = value; }
 		}
 
-
 		public override void ReportError(RecognitionException e)
 		{
 			_parseErrorHandler.ReportError(e);

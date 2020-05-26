@@ -7,7 +7,6 @@ namespace NHibernate.Engine.Query
 {
 	public static class CallableParser
 	{
-
 		public class Detail
 		{
 			public bool IsCallable;

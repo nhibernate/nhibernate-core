@@ -28,9 +28,9 @@ namespace NHibernate.Loader.Criteria
 		//the user visible aliases, which are unknown to the superclass,
 		//these are not the actual "physical" SQL aliases
 		private readonly string[] userAliases;
-		private readonly IList<string> userAliasList = new List<string>();
-		private readonly IList<IType> resultTypeList = new List<IType>();
-		private readonly IList<bool> includeInResultRowList = new List<bool>();
+		private readonly List<string> userAliasList = new List<string>();
+		private readonly List<IType> resultTypeList = new List<IType>();
+		private readonly List<bool> includeInResultRowList = new List<bool>();
 
 		private static readonly INHibernateLogger logger = NHibernateLogger.For(typeof(CriteriaJoinWalker));
 
@@ -81,9 +81,9 @@ namespace NHibernate.Loader.Criteria
 			{
 				var tableAlias = translator.GetSQLAlias(entityJoinInfo.Criteria);
 				var criteriaPath = entityJoinInfo.Criteria.Alias; //path for entity join is equal to alias
-				var criteriaAlias = entityJoinInfo.Criteria.Alias;
+				var criteriaPathAlias = entityJoinInfo.Criteria.Alias;
 				var persister = entityJoinInfo.Persister as IOuterJoinLoadable;
-				AddExplicitEntityJoinAssociation(persister, tableAlias, translator.GetJoinType(criteriaPath, criteriaAlias), criteriaPath, criteriaAlias);
+				AddExplicitEntityJoinAssociation(persister, tableAlias, translator.GetJoinType(criteriaPath, criteriaPathAlias), criteriaPath, criteriaPathAlias);
 				IncludeInResultIfNeeded(persister, entityJoinInfo.Criteria, tableAlias, criteriaPath);
 				//collect mapped associations for entity join
 				WalkEntityTree(persister, tableAlias, criteriaPath, 1);
@@ -99,27 +99,35 @@ namespace NHibernate.Loader.Criteria
 
 		protected override OuterJoinableAssociation CreateRootAssociation()
 		{
-			var selectMode = GetSelectMode(string.Empty);
+			var path = string.Empty;
+			var selectMode = GetSelectMode(path);
 			if (selectMode == SelectMode.JoinOnly || selectMode == SelectMode.Skip)
 			{
 				throw new NotSupportedException($"SelectMode {selectMode} for root entity is not supported. Use {nameof(SelectMode)}.{nameof(SelectMode.ChildFetch)} instead.");
 			}
 
-			return new OuterJoinableAssociation(
-				Persister.EntityType,
-				null,
-				null,
-				Alias,
-				JoinType.LeftOuterJoin,
-				null,
-				Factory,
-				CollectionHelper.EmptyDictionary<string, IFilter>(),
-				selectMode);
+			return InitAssociation(
+				new OuterJoinableAssociation(
+					Persister.EntityType,
+					null,
+					null,
+					Alias,
+					JoinType.LeftOuterJoin,
+					null,
+					Factory,
+					CollectionHelper.EmptyDictionary<string, IFilter>(),
+					selectMode),
+				path);
 		}
 
 		protected override SelectMode GetSelectMode(string path)
 		{
 			return translator.RootCriteria.GetSelectMode(path);
+		}
+
+		protected override ISet<string> GetEntityFetchLazyProperties(string path)
+		{
+			return translator.RootCriteria.GetEntityFetchLazyProperties(path);
 		}
 
 		private void WalkCompositeComponentIdTree(IOuterJoinLoadable persister, string alias, string path)
@@ -197,6 +205,7 @@ namespace NHibernate.Loader.Criteria
 
 				case SelectMode.Fetch:
 				case SelectMode.FetchLazyProperties:
+				case SelectMode.FetchLazyPropertyGroup:
 				case SelectMode.ChildFetch:
 				case SelectMode.JoinOnly:
 					IsDuplicateAssociation(lhsTable, lhsColumns, type); //deliberately ignore return value!

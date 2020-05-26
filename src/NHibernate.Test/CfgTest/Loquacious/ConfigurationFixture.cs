@@ -155,6 +155,5 @@ namespace NHibernate.Test.CfgTest.Loquacious
 				}
 			}
 		}
-
 	}
 }

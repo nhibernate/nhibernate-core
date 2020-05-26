@@ -66,6 +66,5 @@ namespace NHibernate.Test.SqlTest.Custom.Oracle
 			await (t.CommitAsync());
 			s.Close();
 		}
-
 	}
 }

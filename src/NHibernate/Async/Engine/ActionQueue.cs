@@ -11,28 +11,27 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NHibernate.Action;
 using NHibernate.Cache;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
 	public partial class ActionQueue
 	{
 
-		private async Task ExecuteActionsAsync(IList list, CancellationToken cancellationToken)
+		private async Task ExecuteActionsAsync<T>(List<T> list, CancellationToken cancellationToken) where T: IExecutable
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			// Actions may raise events to which user code can react and cause changes to action list.
 			// It will then fail here due to list being modified. (Some previous code was dodging the
 			// trouble with a for loop which was not failing provided the list was not getting smaller.
 			// But then it was clearing it without having executed added actions (if any), ...)
-			
-			foreach (IExecutable executable in list)
+			foreach (var executable in list)
 			{
 				await (InnerExecuteAsync(executable, cancellationToken)).ConfigureAwait(false);
 			}
@@ -46,7 +45,7 @@ namespace NHibernate.Engine
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			if (session.Factory.Settings.IsQueryCacheEnabled)
+			if (session.Factory.Settings.IsQueryCacheEnabled && executedSpaces.Count > 0)
 			{
 				return session.Factory.UpdateTimestampsCache.PreInvalidateAsync(executedSpaces, cancellationToken);
 			}
@@ -118,10 +117,10 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private static async Task PrepareActionsAsync(IList queue, CancellationToken cancellationToken)
+		private static async Task PrepareActionsAsync<T>(List<T> queue, CancellationToken cancellationToken) where T: IExecutable
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			foreach (IExecutable executable in queue)
+			foreach (var executable in queue)
 				await (executable.BeforeExecutionsAsync(cancellationToken)).ConfigureAwait(false);
 		}
 
@@ -166,7 +165,7 @@ namespace NHibernate.Engine
 		private async Task InvalidateCachesAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (session.Factory.Settings.IsQueryCacheEnabled)
+			if (session.Factory.Settings.IsQueryCacheEnabled && executedSpaces.Count > 0)
 			{
 				await (session.Factory.UpdateTimestampsCache.InvalidateAsync(executedSpaces, cancellationToken)).ConfigureAwait(false);
 			}

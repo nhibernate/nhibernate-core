@@ -29,11 +29,11 @@ namespace NHibernate.Test.NHSpecificTest.GH1496
 				foreach (int index in modifiedItems)
 				{
 					ModifiedItems.Add(new Item
-				{
-					Index = index,
-					OldState = @event.OldState[index],
-					State = @event.State[index]
-				});
+					{
+						Index = index,
+						OldState = @event.OldState[index],
+						State = @event.State[index]
+					});
 				}
 				return Task.CompletedTask;
 			}

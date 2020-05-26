@@ -36,7 +36,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3844
 		public virtual double TimeInHours { get; set; }
 		public virtual Project Project { get; set; }
 		public virtual IList<Component> Components { get; set; }
-
 	}
 
 	public class Job

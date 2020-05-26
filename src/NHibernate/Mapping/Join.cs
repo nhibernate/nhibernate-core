@@ -100,7 +100,7 @@ namespace NHibernate.Mapping
 			pk.Name = PK_ALIAS.ToAliasString(table.Name);
 			table.PrimaryKey = pk;
 
-			pk.AddColumns(Key.ColumnIterator.OfType<Column>());
+			pk.AddColumns(Key.ColumnIterator);
 		}
 
 		public int PropertySpan
@@ -164,7 +164,6 @@ namespace NHibernate.Mapping
 				}
 				return isLazy.Value;
 			}
-
 		}
 
 		public virtual bool IsOptional

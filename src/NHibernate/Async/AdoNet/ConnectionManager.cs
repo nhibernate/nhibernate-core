@@ -90,7 +90,7 @@ namespace NHibernate.AdoNet
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var result = (await (GetConnectionAsync(cancellationToken)).ConfigureAwait(false)).CreateCommand();
-			Transaction.Enlist(result);
+			EnlistInTransaction(result);
 			return result;
 		}
 	}

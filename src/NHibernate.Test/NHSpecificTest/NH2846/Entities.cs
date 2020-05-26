@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 
-
 namespace NHibernate.Test.NHSpecificTest.NH2846
 {
 	public class Post

@@ -128,7 +128,6 @@ namespace NHibernate.Test.Linq.ByMethod
 			AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
 		}
 
-
 		[Test]
 		public void SingleKeyPropertyGroupAndOrderByCountBeforeProjection()
 		{
@@ -891,7 +890,6 @@ namespace NHibernate.Test.Linq.ByMethod
 			}
 		}
 
-
 		[Test(Description = "NH-3446"), KnownBug("NH-3446", "NHibernate.HibernateException")]
 		public void GroupByOrderByKeySelectToClass()
 		{
@@ -900,7 +898,6 @@ namespace NHibernate.Test.Linq.ByMethod
 				.Select(x => new GroupInfo {Key = x.Key, ItemCount = x.Count(), HasSubgroups = false, Items = x})
 				.ToList();
 		}
-
 
 		[Test(Description = "NH-3743")]
 		public void FetchBeforeGroupBy()
@@ -913,6 +910,48 @@ namespace NHibernate.Test.Linq.ByMethod
 				.ToArray();
 
 			Assert.True(result.Any());
+		}
+
+		[Test]
+		public void SelectArrayIndexBeforeGroupBy()
+		{
+			var result = db.Orders
+							.SelectMany(o => o.OrderLines.Select(c => c.Id).DefaultIfEmpty().Select(c => new object[] {c, o}))
+							.GroupBy(g => g[0], g => (Order) g[1])
+							.Select(g => new[] {g.Key, g.Count(), g.Max(x => x.OrderDate)});
+
+			Assert.True(result.Any());
+		}
+
+		[Test]
+		public void SelectMemberInitBeforeGroupBy()
+		{
+			var result = db.Orders
+							.Select(o => new OrderGroup {OrderId = o.OrderId, OrderDate = o.OrderDate})
+							.GroupBy(o => o.OrderId)
+							.Select(g => new OrderGroup {OrderId = g.Key, OrderDate = g.Max(o => o.OrderDate)})
+							.ToList();
+
+			Assert.True(result.Any());
+		}
+
+		[Test]
+		public void SelectNewBeforeGroupBy()
+		{
+			var result = db.Orders
+							.Select(o => new {o.OrderId, o.OrderDate})
+							.GroupBy(o => o.OrderId)
+							.Select(g => new {OrderId = g.Key, OrderDate = g.Max(o => o.OrderDate)})
+							.ToList();
+
+			Assert.True(result.Any());
+		}
+
+		private class OrderGroup
+		{
+			public int OrderId { get; set; }
+
+			public DateTime? OrderDate { get; set; }
 		}
 
 		private class GroupInfo

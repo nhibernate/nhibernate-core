@@ -7,7 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3453
 {
     class Direction
     {
-
         #region Compisite ID
         
         public virtual Int32 Id1 { get; set; }

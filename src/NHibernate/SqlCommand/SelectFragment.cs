@@ -12,8 +12,8 @@ namespace NHibernate.SqlCommand
 	public class SelectFragment
 	{
 		private string suffix;
-		private IList<string> columns = new List<string>();
-		private IList<string> columnAliases = new List<string>();
+		private readonly List<string> columns = new List<string>();
+		private readonly List<string> columnAliases = new List<string>();
 		private Dialect.Dialect dialect;
 		private string[] usedAliases;
 		private string extraSelectList;

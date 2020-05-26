@@ -95,7 +95,6 @@ namespace NHibernate.Id
 		/// </summary>
 		public partial class BasicDelegate : AbstractSelectingDelegate, IInsertGeneratedIdentifierDelegate
 		{
-
 			private readonly IPostInsertIdentityPersister persister;
 			private readonly ISessionFactoryImplementor factory;
 

@@ -84,7 +84,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3571
 					tran.Commit();
 				}
 			}
-
 		}
 
 		[Test]
@@ -102,7 +101,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3571
 				Assert.AreEqual("First Product", product.Details.Properties["Name"]);
 			}
 		}
-
 
 		[Test]
 		public async Task MultipleQueriesShouldNotCacheAsync()

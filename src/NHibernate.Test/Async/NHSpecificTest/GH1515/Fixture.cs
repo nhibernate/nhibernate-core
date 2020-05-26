@@ -39,7 +39,5 @@ namespace NHibernate.Test.NHSpecificTest.GH1515
 
 			await (collection.Received().ForceInitializationAsync(CancellationToken.None));
 		}
-
-
 	}
 }

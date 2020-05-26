@@ -104,7 +104,6 @@ namespace NHibernate.Driver
 		}
 #endif
 
-
 		/// <summary>
 		/// MsSql requires the use of a Named Prefix in the SQL statement.
 		/// </summary>
@@ -283,7 +282,6 @@ namespace NHibernate.Driver
 		{
 			return (sqlType is BinaryBlobSqlType) || ((DbType.Binary == dbParam.DbType) && sqlType.LengthDefined && (sqlType.Length > MsSql2000Dialect.MaxSizeForLengthLimitedBinary));
 		}
-
 
 		public override IResultSetsCommand GetResultSetsCommand(ISessionImplementor session)
 		{

@@ -83,6 +83,5 @@ namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 
 			Assert.That(() => mapper.ComponentAsId(For<User>.Property(x => x.Id), map => map.Access(Accessor.Field)), Throws.TypeOf<ArgumentOutOfRangeException>());
 		}
-
 	}
 }

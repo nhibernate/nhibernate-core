@@ -49,7 +49,6 @@ namespace NHibernate.Test.NHSpecificTest.NH719
 			set { id = value; }
 		}
 
-
 		public virtual string Foo
 		{
 			get { return foo; }

@@ -11,6 +11,8 @@
 using System;
 using System.Collections;
 using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Loader;
@@ -19,8 +21,6 @@ using NHibernate.Type;
 
 namespace NHibernate.Collection
 {
-	using System.Threading.Tasks;
-	using System.Threading;
 	public partial interface IPersistentCollection
 	{
 
@@ -65,27 +65,11 @@ namespace NHibernate.Collection
 		/// </remarks>
 		Task ForceInitializationAsync(CancellationToken cancellationToken);
 
-		/// <summary> Get the "queued" orphans</summary>
-		Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken);
-
 		/// <summary>
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		Task PreInsertAsync(ICollectionPersister persister, CancellationToken cancellationToken);
-
-		/// <summary>
-		/// Get all "orphaned" elements
-		/// </summary>
-		/// <param name="snapshot">The snapshot of the collection.</param>
-		/// <param name="entityName">The persistent class whose objects
-		/// the collection is expected to contain.</param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns>
-		/// An <see cref="ICollection"/> that contains all of the elements
-		/// that have been orphaned.
-		/// </returns>
-		Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken);
 	}
 }

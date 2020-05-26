@@ -175,7 +175,6 @@ namespace NHibernate.SqlCommand
 			return aliases;
 		}
 
-
 		/// <summary>
 		/// 
 		/// </summary>

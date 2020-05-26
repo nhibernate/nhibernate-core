@@ -58,8 +58,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 			}
 		}
 
-
-
 		[Test]
 		public void CanCreateAnonExampleForInt()
 		{

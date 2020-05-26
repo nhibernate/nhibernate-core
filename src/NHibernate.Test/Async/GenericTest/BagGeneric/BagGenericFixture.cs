@@ -19,7 +19,6 @@ namespace NHibernate.Test.GenericTest.BagGeneric
 	[TestFixture]
 	public class BagGenericFixtureAsync : TestCase
 	{
-
 		protected override string[] Mappings
 		{
 			get { return new string[] { "GenericTest.BagGeneric.BagGenericFixture.hbm.xml" }; }

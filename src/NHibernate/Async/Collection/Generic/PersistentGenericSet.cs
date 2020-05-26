@@ -28,9 +28,12 @@ namespace NHibernate.Collection.Generic
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, IQueryable<T>
+	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, IReadOnlyCollection<T>, IQueryable<T>
 	{
 
+		//Since 5.3
+		/// <inheritdoc />
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -39,12 +42,7 @@ namespace NHibernate.Collection.Generic
 			}
 			try
 			{
-				var sn = new SetSnapShot<T>((IEnumerable<T>)snapshot);
-
-				// TODO: Avoid duplicating shortcuts and array copy, by making base class GetOrphans() more flexible
-				if (WrappedSet.Count == 0) return Task.FromResult<ICollection>(sn);
-				if (((ICollection)sn).Count == 0) return Task.FromResult<ICollection>(sn);
-				return GetOrphansAsync(sn, WrappedSet.ToArray(), entityName, Session, cancellationToken);
+				return Task.FromResult<ICollection>(GetOrphans(snapshot, entityName));
 			}
 			catch (Exception ex)
 			{

@@ -479,7 +479,6 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void CanUseSecondLevelCacheWithPositionalParametersAndHql()
 		{
-			
 			Sfi.QueryCache.Clear();
 
 			CreateItems();
@@ -763,7 +762,6 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void CanUseSecondLevelCacheWithPositionalParameters()
 		{
-			
 			Sfi.QueryCache.Clear();
 
 			CreateItems();

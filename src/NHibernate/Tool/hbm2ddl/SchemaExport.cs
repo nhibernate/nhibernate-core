@@ -325,12 +325,10 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
-
 		public void Execute(Action<string> scriptAction, bool execute, bool justDrop)
 		{
 			Execute(scriptAction, execute, justDrop, null);
 		}
-
 
 		public void Execute(Action<string> scriptAction, bool execute, bool justDrop, TextWriter exportOutput)
 		{

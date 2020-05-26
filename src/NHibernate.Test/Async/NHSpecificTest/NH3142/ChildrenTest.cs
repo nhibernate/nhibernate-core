@@ -68,7 +68,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3142
 			}
 		}
 
-
 		[Test]
 		public async Task ChildrenCollectionOfAllParentsShouldContainsThreeElementsAsync()
 		{

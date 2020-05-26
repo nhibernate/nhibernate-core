@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -134,7 +135,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 						metavalueKey, existingClassMetavalue, newClassMetavalue));
 			}
 			values[metavalueKey] = newClassMetavalue;
-			manyToAny.metavalue = values.Select(vd => new HbmMetaValue { value = vd.Key, @class = vd.Value }).ToArray();
+			manyToAny.metavalue = values.ToArray(vd => new HbmMetaValue {value = vd.Key, @class = vd.Value});
 		}
 
 		private void CheckMetaTypeImmutability(string nhTypeName)

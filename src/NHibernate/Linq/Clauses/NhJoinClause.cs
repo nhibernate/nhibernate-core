@@ -54,6 +54,8 @@ namespace NHibernate.Linq.Clauses
 
 		public bool IsInner { get; private set; }
 
+		internal JoinClause ParentJoinClause { get; set; }
+
 		public void TransformExpressions(Func<Expression, Expression> transformation)
 		{
 			if (transformation == null) throw new ArgumentNullException(nameof(transformation));

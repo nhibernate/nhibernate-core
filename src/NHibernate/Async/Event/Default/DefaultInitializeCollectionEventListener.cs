@@ -33,11 +33,10 @@ namespace NHibernate.Event.Default
 			IPersistentCollection collection = @event.Collection;
 			ISessionImplementor source = @event.Session;
 
-			bool statsEnabled = source.Factory.Statistics.IsStatisticsEnabled;
-			var stopWath = new Stopwatch();
-			if (statsEnabled)
+			Stopwatch stopWatch = null;
+			if (source.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWath.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 
 			CollectionEntry ce = source.PersistenceContext.GetCollectionEntry(collection);
@@ -63,10 +62,10 @@ namespace NHibernate.Event.Default
 					await (ce.LoadedPersister.InitializeAsync(ce.LoadedKey, source, cancellationToken)).ConfigureAwait(false);
 					log.Debug("collection initialized");
 
-					if (statsEnabled)
+					if (stopWatch != null)
 					{
-						stopWath.Stop();
-						source.Factory.StatisticsImplementor.FetchCollection(ce.LoadedPersister.Role, stopWath.Elapsed);
+						stopWatch.Stop();
+						source.Factory.StatisticsImplementor.FetchCollection(ce.LoadedPersister.Role, stopWatch.Elapsed);
 					}
 				}
 			}

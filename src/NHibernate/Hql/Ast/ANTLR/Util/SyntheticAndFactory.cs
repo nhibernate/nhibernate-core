@@ -198,6 +198,5 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				statement.WhereClause.SetFirstChild(and);
 			}
 		}
-
 	}
 }

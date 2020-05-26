@@ -38,7 +38,6 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 			configuration.SetProperty(Environment.ShowSql, "true");
 		}
 
-
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
@@ -55,7 +54,6 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 			}
 		}
 
-
 		protected override void OnTearDown()
 		{
 			using (ISession s = OpenSession())
@@ -65,7 +63,6 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 				tx.Commit();
 			}
 		}
-
 
 		[Test]
 		public void CanQueryWithCastInHql()
@@ -77,7 +74,6 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 				Assert.That(datesRecovered, Is.EqualTo(new DateTimeOffset(2012, 11, 1, 2, 0, 0, TimeSpan.FromHours(3))));
 			}
 		}
-
 
 		[Test(Description = "NH-3357")]
 		public void CanQueryWithAggregateInLinq()
@@ -93,7 +89,6 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 
 				Assert.That(datesRecovered, Is.EqualTo(new DateTimeOffset(2012, 11, 1, 2, 0, 0, TimeSpan.FromHours(3))));
 			}
-
 		}
 	}
 }

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using NHibernate.Linq.Clauses;
+using NHibernate.Engine;
 using NHibernate.Linq.ReWriters;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
@@ -77,10 +77,21 @@ namespace NHibernate.Linq.Visitors
 			_joiner = joiner;
 		}
 
+		public Expression Transform(Expression expression)
+		{
+			var result = Visit(expression);
+			PostTransform();
+			return result;
+		}
+
 		public void Transform(IClause whereClause)
 		{
 			whereClause.TransformExpressions(Visit);
+			PostTransform();
+		}
 
+		private void PostTransform()
+		{
 			var values = _values.Pop();
 
 			foreach (var memberExpression in values.MemberExpressions)
@@ -278,7 +289,7 @@ namespace NHibernate.Linq.Visitors
 			return expression;
 		}
 
-		// We would usually get NULL if one of our inner member expresions was null.
+		// We would usually get NULL if one of our inner member expressions was null.
 		// However, it's possible a method call will convert the null value from the failed join into a non-null value.
 		// This could be optimized by actually checking what the method does.  For example StartsWith("s") would leave null as null and would still allow us to inner join.
 		//protected override Expression VisitMethodCall(MethodCallExpression expression)
@@ -296,8 +307,15 @@ namespace NHibernate.Linq.Visitors
 			// I'm not sure what processing re-linq does to strange member expressions.
 			// TODO: I suspect this code doesn't add the right joins for the last case.
 
-			var isIdentifier = _isEntityDecider.IsIdentifier(expression.Expression.Type, expression.Member.Name);
+			// A static member expression such as DateTime.Now has a null Expression.
+			if (expression.Expression == null)
+			{
+				// A static member call is never a join, and it is not an instance member access either: leave
+				// the current value on stack, untouched.
+				return base.VisitMember(expression);
+			}
 
+			var isEntity = _isEntityDecider.IsEntity(expression, out var isIdentifier);
 			if (!isIdentifier)
 				_memberExpressionDepth++;
 
@@ -307,7 +325,7 @@ namespace NHibernate.Linq.Visitors
 				_memberExpressionDepth--;
 
 			ExpressionValues values = _values.Pop().Operation(pvs => pvs.MemberAccess(expression.Type));
-			if (_isEntityDecider.IsEntity(expression.Type))
+			if (isEntity)
 			{
 				// Don't add joins for things like a.B == a.C where B and C are entities.
 				// We only need to join B when there's something like a.B.D.
@@ -321,7 +339,7 @@ namespace NHibernate.Linq.Visitors
 				values.MemberExpressionValuesIfEmptyOuterJoined[key] = PossibleValueSet.CreateNull(expression.Type);
 			}
 			SetResultValues(values);
-			
+
 			return result;
 		}
 
