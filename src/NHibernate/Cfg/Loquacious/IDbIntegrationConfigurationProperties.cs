@@ -18,6 +18,9 @@ namespace NHibernate.Cfg.Loquacious
 		bool LogSqlInConsole { set; }
 		bool LogFormattedSql { set; }
 
+		//NH-3724
+		void WithNotificationHandler(Delegate handler);
+
 		void ConnectionProvider<TProvider>() where TProvider : IConnectionProvider;
 		void Driver<TDriver>() where TDriver : IDriver;
 		IsolationLevel IsolationLevel { set; }

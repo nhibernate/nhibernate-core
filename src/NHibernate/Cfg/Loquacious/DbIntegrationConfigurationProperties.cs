@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using NHibernate.AdoNet;
 using NHibernate.Connection;
@@ -21,6 +22,12 @@ namespace NHibernate.Cfg.Loquacious
 		}
 
 		#region Implementation of IDbIntegrationConfigurationProperties
+
+		public void WithNotificationHandler(Delegate handler)
+		{
+			//NH-3724
+			configuration.NotificationHandler = handler;
+		}
 
 		public void Dialect<TDialect>() where TDialect : Dialect.Dialect
 		{

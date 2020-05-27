@@ -31,6 +31,9 @@ namespace NHibernate.Cfg
 		//private int jdbcFetchSize;
 
 		#endregion
+
+		public Delegate NotificationHandler { get; internal set; }
+
 		public SqlStatementLogger SqlStatementLogger { get; internal set; }
 
 		public int MaximumFetchDepth { get; internal set; }

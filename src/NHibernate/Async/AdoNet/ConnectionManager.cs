@@ -62,6 +62,11 @@ namespace NHibernate.AdoNet
 					if (_ownConnection)
 					{
 						_connection = await (Factory.ConnectionProvider.GetConnectionAsync(cancellationToken)).ConfigureAwait(false);
+						//NH-3724
+						if (Factory.Settings.NotificationHandler != null)
+						{
+							Factory.ConnectionProvider.Driver.AddNotificationHandler(_connection, Factory.Settings.NotificationHandler);
+						}
 						// Will fail if the connection is already enlisted in another transaction.
 						// Probable case: nested transaction scope with connection auto-enlistment enabled.
 						// That is an user error.

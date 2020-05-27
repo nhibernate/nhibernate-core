@@ -37,6 +37,7 @@ namespace NHibernate.Driver
 			}
 		}
 
+
 #if !NETFX
 		public OdbcDriver() 
 			: base("System.Data.Odbc", "System.Data.Odbc.OdbcConnection", "System.Data.Odbc.OdbcCommand")
@@ -46,6 +47,12 @@ namespace NHibernate.Driver
 		public override DbConnection CreateConnection()
 		{
 			return new System.Data.Odbc.OdbcConnection();
+		}
+
+		public override void AddNotificationHandler(DbConnection con, Delegate handler)
+		{
+			//NH-3724
+			(con as System.Data.Odbc.OdbcConnection).InfoMessage += (System.Data.Odbc.OdbcInfoMessageEventHandler) handler;
 		}
 
 		public override DbCommand CreateCommand()

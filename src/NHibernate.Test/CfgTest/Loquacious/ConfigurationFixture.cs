@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -11,12 +12,26 @@ using NHibernate.Exceptions;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Type;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.CfgTest.Loquacious
 {
 	[TestFixture]
 	public class ConfigurationFixture
 	{
+		[Test]
+		public void CanSetNotificationHandler()
+		{
+			//NH-3724
+			EventHandler<SqlInfoMessageEventArgs> handler = (s, e) => {};
+			var cfg = new Configuration().DataBaseIntegration(x =>
+			{
+				x.WithNotificationHandler(handler);
+			}).Configure();
+
+			Assert.IsNotNull(cfg.NotificationHandler);
+		}
+
 		[Test]
 		public void CompleteConfiguration()
 		{

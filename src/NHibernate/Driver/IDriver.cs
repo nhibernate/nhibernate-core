@@ -37,6 +37,14 @@ namespace NHibernate.Driver
 		/// </summary>
 		void Configure(IDictionary<string, string> settings);
 
+		//NH-3724
+		/// <summary>
+		/// Attaches an event handler for the notification event (InfoMessage in most ADO.NET drivers).
+		/// </summary>
+		/// <param name="con"></param>
+		/// <param name="handler"></param>
+		void AddNotificationHandler(DbConnection con, Delegate handler);
+
 		/// <summary>
 		/// Creates an uninitialized DbConnection object for the specific Driver
 		/// </summary>
