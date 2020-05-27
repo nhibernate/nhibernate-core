@@ -53,7 +53,7 @@
 		<property name="City" not-null="true"/>
 		<property name="State" not-null="true"/>
 		<property name="Zip" not-null="true"/>
-						
+		<property name="BillingNotes" />
 	</class>
 
 	<class name="Address" 
@@ -73,7 +73,7 @@
 		<property name="City" not-null="true"/>
 		<property name="State" not-null="true"/>
 		<property name="Zip" not-null="true"/>
-						
+		<property name="ShippingNotes" />
 	</class>
 
 </hibernate-mapping>

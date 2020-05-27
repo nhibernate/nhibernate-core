@@ -56,7 +56,10 @@ namespace NHibernate.Driver
 		public override bool SupportsMultipleOpenReaders => false;
 
 		/// <summary>
-		/// MySql.Data does not support preparing of commands.
+		/// MySql.Data supports prepared statements but in the current state NHibernate may
+		/// execute two queries in one command separated by a semicolon (e.g. SELECT LAST_INSERT_ID() when
+		/// native id generator is used), which throws an exception when <see cref="System.Data.Common.DbCommand.Prepare"/>
+		/// is called.
 		/// </summary>
 		/// <value><see langword="false" /> - it is not supported.</value>
 		/// <remarks>

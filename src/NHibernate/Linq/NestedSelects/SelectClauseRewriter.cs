@@ -23,7 +23,11 @@ namespace NHibernate.Linq.NestedSelects
 			this.expressions = expressions;
 			this.parameter = parameter;
 			this.tuple = tuple;
-			this.expressions.Add(new ExpressionHolder { Expression = expression, Tuple = tuple }); //ID placeholder
+			if (expression != null)
+			{
+				this.expressions.Add(new ExpressionHolder { Expression = expression, Tuple = tuple }); //ID placeholder
+			}
+
 			_dictionary = dictionary;
 		}
 

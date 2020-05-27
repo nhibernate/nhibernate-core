@@ -62,6 +62,7 @@ namespace NHibernate.Linq.Visitors
 		// TODO: There are a number of types of expressions that we didn't handle here due to time constraints.  For example, the ?: operator could be checked easily.
 		private readonly IIsEntityDecider _isEntityDecider;
 		private readonly IJoiner _joiner;
+		private readonly ISessionFactoryImplementor _sessionFactory;
 
 		private readonly Stack<bool> _handled = new Stack<bool>();
 		
@@ -71,10 +72,11 @@ namespace NHibernate.Linq.Visitors
 		// The following is used for member expressions traversal.
 		private int _memberExpressionDepth;
 
-		internal WhereJoinDetector(IIsEntityDecider isEntityDecider, IJoiner joiner)
+		internal WhereJoinDetector(IIsEntityDecider isEntityDecider, IJoiner joiner, ISessionFactoryImplementor sessionFactory)
 		{
 			_isEntityDecider = isEntityDecider;
 			_joiner = joiner;
+			_sessionFactory = sessionFactory;
 		}
 
 		public Expression Transform(Expression expression)
@@ -329,7 +331,7 @@ namespace NHibernate.Linq.Visitors
 			{
 				// Don't add joins for things like a.B == a.C where B and C are entities.
 				// We only need to join B when there's something like a.B.D.
-				var key = ExpressionKeyVisitor.Visit(expression, null);
+				var key = ExpressionKeyVisitor.Visit(expression, null, _sessionFactory);
 				if (_memberExpressionDepth > 0 &&
 					_joiner.CanAddJoin(expression))
 				{

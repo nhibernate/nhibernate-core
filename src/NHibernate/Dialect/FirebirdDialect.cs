@@ -8,6 +8,7 @@ using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
@@ -41,6 +42,15 @@ namespace NHibernate.Dialect
 		public override string AddColumnString
 		{
 			get { return "add"; }
+		}
+
+		/// <inheritdoc />
+		public override void Configure(IDictionary<string, string> settings)
+		{
+			base.Configure(settings);
+			// We have to match the scale for decimals as they are mapped with scale 5 by default. Without matching, an overflow exception
+			// will occur when multiplying a decimal column with a parameter.
+			DefaultCastScale = PropertiesHelper.GetByte(Environment.QueryDefaultCastScale, settings, null) ?? 5;
 		}
 
 		public override string GetSelectSequenceNextValString(string sequenceName)
@@ -432,7 +442,7 @@ namespace NHibernate.Dialect
 		{
 			RegisterFunction("current_timestamp", new CurrentTimeStamp());
 			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate, false));
-			RegisterFunction("length", new StandardSafeSQLFunction("char_length", NHibernateUtil.Int64, 1));
+			RegisterFunction("length", new StandardSafeSQLFunction("char_length", NHibernateUtil.Int32, 1));
 			RegisterFunction("nullif", new StandardSafeSQLFunction("nullif", 2));
 			RegisterFunction("lower", new StandardSafeSQLFunction("lower", NHibernateUtil.String, 1));
 			RegisterFunction("upper", new StandardSafeSQLFunction("upper", NHibernateUtil.String, 1));

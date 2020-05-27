@@ -59,6 +59,13 @@ namespace NHibernate.Linq.Functions
 		}
 
 		public bool AllowsNullableReturnType(MethodInfo method) => false;
+
+		/// <inheritdoc />
+		public bool TryGetCollectionParameter(MethodCallExpression expression, out ConstantExpression collectionParameter)
+		{
+			collectionParameter = null;
+			return false;
+		}
 	}
 
 	public class LengthGenerator : BaseHqlGeneratorForProperty

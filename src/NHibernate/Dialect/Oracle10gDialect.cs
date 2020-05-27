@@ -26,12 +26,17 @@ namespace NHibernate.Dialect
 
 		public override void Configure(IDictionary<string, string> settings)
 		{
-			base.Configure(settings);
-
 			_useBinaryFloatingPointTypes = PropertiesHelper.GetBoolean(
 				Environment.OracleUseBinaryFloatingPointTypes,
 				settings,
 				false);
+
+			if (_useBinaryFloatingPointTypes)
+			{
+				RegisterFunction("mod", new ModulusFunction(true, true));
+			}
+
+			base.Configure(settings);
 		}
 
 		// Avoid registering weighted double type when using binary floating point types
@@ -66,5 +71,8 @@ namespace NHibernate.Dialect
 
 		/// <inheritdoc />
 		public override bool SupportsCrossJoin => true;
+
+		/// <inheritdoc />
+		public override bool SupportsIEEE754FloatingPointNumbers => _useBinaryFloatingPointTypes;
 	}
 }
