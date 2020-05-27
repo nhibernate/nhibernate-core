@@ -87,14 +87,7 @@ namespace NHibernate.Dialect.Function
 				throw new QueryException(string.Format("invalid Hibernate type for cast(): type {0} not found", typeName));
 			}
 
-			if (CastingIsRequired(sqlType))
-			{
-				return new SqlString("cast(", args[0], " as ", sqlType, ")");
-			}
-			else
-			{
-				return new SqlString("(", args[0], ")");
-			}
+			return CastingIsRequired(sqlType) ? Render(args, sqlType, factory) : new SqlString("(", args[0], ")");
 		}
 
 		#endregion
@@ -102,6 +95,11 @@ namespace NHibernate.Dialect.Function
 		protected virtual bool CastingIsRequired(string sqlType)
 		{
 			return true;
+		}
+
+		protected virtual SqlString Render(IList args, string sqlType, ISessionFactoryImplementor factory)
+		{
+			return new SqlString("cast(", args[0], " as ", sqlType, ")");
 		}
 
 		#region IFunctionGrammar Members
