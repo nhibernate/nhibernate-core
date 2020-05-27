@@ -13,7 +13,7 @@ using NHibernate.Util;
 namespace NHibernate.Cache
 {
 	[Serializable]
-	public class QueryKey : IDeserializationCallback
+	public class QueryKey : IDeserializationCallback, IEquatable<QueryKey>
 	{
 		private readonly ISessionFactoryImplementor _factory;
 		private readonly SqlString _sqlQueryString;
@@ -93,47 +93,51 @@ namespace NHibernate.Cache
 
 		public override bool Equals(object other)
 		{
-			QueryKey that = (QueryKey)other;
-			if (!_sqlQueryString.Equals(that._sqlQueryString))
-			{
-				return false;
-			}
-			if (_firstRow != that._firstRow
-				|| _maxRows != that._maxRows)
+			return Equals(other as QueryKey);
+		}
+
+		public bool Equals(QueryKey other)
+		{
+			if (other == null || !_sqlQueryString.Equals(other._sqlQueryString))
 			{
 				return false;
 			}
 
-			if (!Equals(_customTransformer, that._customTransformer))
+			if (_firstRow != other._firstRow || _maxRows != other._maxRows)
+			{
+				return false;
+			}
+
+			if (!Equals(_customTransformer, other._customTransformer))
 			{
 				return false;
 			}
 
 			if (_types == null)
 			{
-				if (that._types != null)
+				if (other._types != null)
 				{
 					return false;
 				}
 			}
 			else
 			{
-				if (that._types == null)
+				if (other._types == null)
 				{
 					return false;
 				}
-				if (_types.Length != that._types.Length)
+				if (_types.Length != other._types.Length)
 				{
 					return false;
 				}
 
 				for (int i = 0; i < _types.Length; i++)
 				{
-					if (!_types[i].Equals(that._types[i]))
+					if (!_types[i].Equals(other._types[i]))
 					{
 						return false;
 					}
-					if (!Equals(_values[i], that._values[i]))
+					if (!Equals(_values[i], other._values[i]))
 					{
 						return false;
 					}
@@ -144,16 +148,16 @@ namespace NHibernate.Cache
 			// issues on deserialization if GetHashCode or Equals are called in its deserialization callback. And
 			// building sets or dictionaries on the fly will in most cases be worst than BagEquals, unless re-coding
 			// its short-circuits.
-			if (!CollectionHelper.BagEquals(_filters, that._filters))
+			if (!CollectionHelper.BagEquals(_filters, other._filters))
 				return false;
-			if (!CollectionHelper.BagEquals(_namedParameters, that._namedParameters, NamedParameterComparer.Instance))
+			if (!CollectionHelper.BagEquals(_namedParameters, other._namedParameters, NamedParameterComparer.Instance))
 				return false;
 
-			if (!CollectionHelper.SequenceEquals<int>(_multiQueriesFirstRows, that._multiQueriesFirstRows))
+			if (!CollectionHelper.SequenceEquals(_multiQueriesFirstRows, other._multiQueriesFirstRows))
 			{
 				return false;
 			}
-			if (!CollectionHelper.SequenceEquals<int>(_multiQueriesMaxRows, that._multiQueriesMaxRows))
+			if (!CollectionHelper.SequenceEquals(_multiQueriesMaxRows, other._multiQueriesMaxRows))
 			{
 				return false;
 			}
