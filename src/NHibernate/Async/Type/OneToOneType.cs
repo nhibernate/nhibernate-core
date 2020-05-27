@@ -22,78 +22,6 @@ namespace NHibernate.Type
 	public partial class OneToOneType : EntityType, IAssociationType
 	{
 
-		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				NullSafeSet(st, value, index, settable, session);
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
-
-		public override async Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			await (GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSetAsync(cmd, await (GetReferenceValueAsync(value, session, cancellationToken)).ConfigureAwait(false), index, session, cancellationToken)).ConfigureAwait(false);
-		}
-
-		public override Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<bool>(IsDirty(old, current, session));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<bool>(ex);
-			}
-		}
-
-		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<bool>(IsDirty(old, current, checkable, session));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<bool>(ex);
-			}
-		}
-
-		public override Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<bool>(IsModified(old, current, checkable, session));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<bool>(ex);
-			}
-		}
-
 		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -113,7 +41,7 @@ namespace NHibernate.Type
 				EmbeddedComponentType ownerIdType = session.GetEntityPersister(null, owner).IdentifierType as EmbeddedComponentType;
 				if (ownerIdType != null)
 				{
-					object[] values = await (ownerIdType.GetPropertyValuesAsync(identifier, session, cancellationToken)).ConfigureAwait(false);
+					object[] values = ownerIdType.GetPropertyValues(identifier, session);
 					object id = await (componentType.ResolveIdentifierAsync(values, session, null, cancellationToken)).ConfigureAwait(false);
 					IEntityPersister persister = session.Factory.GetEntityPersister(type.ReturnedClass.FullName);
 					var key = session.GenerateEntityKey(id, persister);

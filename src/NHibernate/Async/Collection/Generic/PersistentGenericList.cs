@@ -49,25 +49,6 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			IType elementType = persister.ElementType;
-			var sn = (IList<T>) GetSnapshot();
-			if (sn.Count != WrappedList.Count)
-			{
-				return false;
-			}
-			for (int i = 0; i < WrappedList.Count; i++)
-			{
-				if (await (elementType.IsDirtyAsync(WrappedList[i], sn[i], Session, cancellationToken)).ConfigureAwait(false))
-				{
-					return false;
-				}
-			}
-			return true;
-		}
-
 		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -114,45 +95,6 @@ namespace NHibernate.Collection.Generic
 				result[i] = await (persister.ElementType.DisassembleAsync(WrappedList[i], Session, null, cancellationToken)).ConfigureAwait(false);
 			}
 			return result;
-		}
-
-		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IEnumerable>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<IEnumerable>(GetDeletes(persister, indexIsFormula));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IEnumerable>(ex);
-			}
-		}
-
-		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<bool>(NeedsInserting(entry, i, elemType));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<bool>(ex);
-			}
-		}
-
-		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			var sn = (IList<T>)GetSnapshot();
-			return i < sn.Count && sn[i] != null && WrappedList[i] != null && await (elemType.IsDirtyAsync(WrappedList[i], sn[i], Session, cancellationToken)).ConfigureAwait(false);
 		}
 	}
 }

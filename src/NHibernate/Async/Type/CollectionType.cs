@@ -47,40 +47,6 @@ namespace NHibernate.Type
 			return ResolveIdentifierAsync(null, session, owner, cancellationToken);
 		}
 
-		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				NullSafeSet(st, value, index, settable, session);
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
-
-		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				NullSafeSet(cmd, value, index, session);
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
-
 		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -129,15 +95,6 @@ namespace NHibernate.Type
 				object key = await (GetPersister(session).KeyType.AssembleAsync(cached, session, owner, cancellationToken)).ConfigureAwait(false);
 				return await (ResolveKeyAsync(key, session, owner, cancellationToken)).ConfigureAwait(false);
 			}
-		}
-
-		public override async Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			// collections don't dirty an unversioned parent entity
-
-			// TODO: I don't like this implementation; it would be better if this was handled by SearchForDirtyCollections();
-			return IsOwnerVersioned(session) && await (base.IsDirtyAsync(old, current, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public override Task<object> HydrateAsync(DbDataReader rs, string[] name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
@@ -277,32 +234,6 @@ namespace NHibernate.Type
 			}
 
 			return target;
-		}
-
-		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
-			return IsDirtyAsync(old, current, session, cancellationToken);
-		}
-
-		public override Task<bool> IsModifiedAsync(object oldHydratedState, object currentState, bool[] checkable,
-										ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<bool>(IsModified(oldHydratedState, currentState, checkable, session));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<bool>(ex);
-			}
 		}
 
 		/// <summary>

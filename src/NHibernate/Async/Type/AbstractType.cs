@@ -94,32 +94,6 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Should the parent be considered dirty, given both the old and current 
-		/// field or element value?
-		/// </summary>
-		/// <param name="old">The old value</param>
-		/// <param name="current">The current value</param>
-		/// <param name="session">The <see cref="ISessionImplementor"/> is not used by this method.</param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns>true if the field is dirty</returns>
-		/// <remarks>This method uses <c>IType.Equals(object, object)</c> to determine the value of IsDirty.</remarks>
-		public virtual Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<bool>(IsDirty(old, current, session));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<bool>(ex);
-			}
-		}
-
-		/// <summary>
 		/// Retrieves an instance of the mapped class, or the identifier of an entity 
 		/// or collection from a <see cref="DbDataReader"/>.
 		/// </summary>
@@ -188,22 +162,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary>
-		/// Says whether the value has been modified
-		/// </summary>
-		public virtual Task<bool> IsModifiedAsync(
-			object old,
-			object current,
-			bool[] checkable,
-			ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
-			return IsDirtyAsync(old, current, session, cancellationToken);
-		}
-
 		public virtual Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache,
 							  ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken)
 		{
@@ -239,13 +197,5 @@ namespace NHibernate.Type
 
 		/// <inheritdoc />
 		public abstract Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, Object owner, CancellationToken cancellationToken);
-
-		/// <inheritdoc />
-		public abstract Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken);
-
-		/// <inheritdoc />
-		public abstract Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session, CancellationToken cancellationToken);
-
-		public abstract Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken);
 	}
 }

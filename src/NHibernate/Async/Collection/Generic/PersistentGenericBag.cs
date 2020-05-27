@@ -44,38 +44,6 @@ namespace NHibernate.Collection.Generic
 			return result;
 		}
 
-		public override Task<bool> EqualsSnapshotAsync(ICollectionPersister persister, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<bool>(EqualsSnapshot(persister));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<bool>(ex);
-			}
-		}
-
-		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IEnumerable>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<IEnumerable>(GetDeletes(persister, indexIsFormula));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IEnumerable>(ex);
-			}
-		}
-
 		//Since 5.3
 		/// <inheritdoc />
 		[Obsolete("This method has no more usages and will be removed in a future version")]
@@ -115,38 +83,6 @@ namespace NHibernate.Collection.Generic
 				{
 					_gbag.Add((T) element);
 				}
-			}
-		}
-
-		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<bool>(NeedsInserting(entry, i, elemType));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<bool>(ex);
-			}
-		}
-
-		public override Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<bool>(NeedsUpdating(entry, i, elemType));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<bool>(ex);
 			}
 		}
 

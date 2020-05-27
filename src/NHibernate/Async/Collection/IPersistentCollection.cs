@@ -48,18 +48,6 @@ namespace NHibernate.Collection
 		Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken);
 
 		/// <summary>
-		/// Does the current state exactly match the snapshot?
-		/// </summary>
-		/// <param name="persister">The <see cref="ICollectionPersister"/> to compare the elements of the Collection.</param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns>
-		/// <see langword="true" /> if the wrapped collection is different than the snapshot
-		/// of the collection or if one of the elements in the collection is
-		/// dirty.
-		/// </returns>
-		Task<bool> EqualsSnapshotAsync(ICollectionPersister persister, CancellationToken cancellationToken);
-
-		/// <summary>
 		/// Disassemble the collection, ready for the cache
 		/// </summary>
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
@@ -76,21 +64,6 @@ namespace NHibernate.Collection
 		/// This method is similar to <see cref="AbstractPersistentCollection.Initialize" />, except that different exceptions are thrown.
 		/// </remarks>
 		Task ForceInitializationAsync(CancellationToken cancellationToken);
-
-		/// <summary>
-		/// Do we need to insert this element?
-		/// </summary>
-		Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken);
-
-		/// <summary>
-		/// Do we need to update this element?
-		/// </summary>
-		Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken);
-
-		/// <summary>
-		/// Get all the elements that need deleting
-		/// </summary>
-		Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated

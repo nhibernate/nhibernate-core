@@ -48,7 +48,7 @@ namespace NHibernate.Persister.Collection
 				int count = 0;
 				foreach (object entry in entries)
 				{
-					if (await (collection.NeedsUpdatingAsync(entry, i, ElementType, cancellationToken)).ConfigureAwait(false))
+					if (collection.NeedsUpdating(entry, i, ElementType))
 					{
 						int offset = 0;
 						if (useBatch)
@@ -71,24 +71,24 @@ namespace NHibernate.Persister.Collection
 						{
 							//offset += expectation.Prepare(st, Factory.ConnectionProvider.Driver);
 
-							int loc = await (WriteElementAsync(st, collection.GetElement(entry), offset, session, cancellationToken)).ConfigureAwait(false);
+							int loc = WriteElement(st, collection.GetElement(entry), offset, session);
 							if (hasIdentifier)
 							{
-								await (WriteIdentifierAsync(st, collection.GetIdentifier(entry, i), loc, session, cancellationToken)).ConfigureAwait(false);
+								WriteIdentifier(st, collection.GetIdentifier(entry, i), loc, session);
 							}
 							else
 							{
-								loc = await (WriteKeyAsync(st, id, loc, session, cancellationToken)).ConfigureAwait(false);
+								loc = WriteKey(st, id, loc, session);
 								if (HasIndex && !indexContainsFormula)
 								{
-									await (WriteIndexToWhereAsync(st, collection.GetIndex(entry, i, this), loc, session, cancellationToken)).ConfigureAwait(false);
+									WriteIndexToWhere(st, collection.GetIndex(entry, i, this), loc, session);
 								}
 								else
 								{
 									// No nullness handled on update: updates does not occurs with sets or bags, and
 									// indexed collections allowing formula (maps) force their element columns to
 									// not-nullable.
-									await (WriteElementToWhereAsync(st, collection.GetSnapshotElement(entry, i), null, loc, session, cancellationToken)).ConfigureAwait(false);
+									WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), null, loc, session);
 								}
 							}
 

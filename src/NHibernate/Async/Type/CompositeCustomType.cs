@@ -26,38 +26,6 @@ namespace NHibernate.Type
 	public partial class CompositeCustomType : AbstractType, IAbstractComponentType
 	{
 
-		public virtual Task<object[]> GetPropertyValuesAsync(object component, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object[]>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<object[]>(GetPropertyValues(component, session));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object[]>(ex);
-			}
-		}
-
-		public virtual Task<object> GetPropertyValueAsync(object component, int i, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<object>(GetPropertyValue(component, i, session));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
-
 		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -120,49 +88,6 @@ namespace NHibernate.Type
 			{
 				return Task.FromException<object>(ex);
 			}
-		}
-
-		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				NullSafeSet(st, value, index, settable, session);
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
-
-		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				NullSafeSet(cmd, value, index, session);
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
-
-		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
-			return IsDirtyAsync(old, current, session, cancellationToken);
 		}
 
 		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, IDictionary copiedAlready, CancellationToken cancellationToken)

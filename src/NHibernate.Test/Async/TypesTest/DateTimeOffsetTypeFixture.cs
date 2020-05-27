@@ -22,7 +22,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class DateTimeOffsetTypeFixtureAsync : TypeFixtureBase
 	{
@@ -85,22 +84,6 @@ namespace NHibernate.Test.TypesTest
 		{
 			(Sfi.ConnectionProvider.Driver as ClientDriverWithParamsStats)?.CleanUp();
 			base.DropSchema();
-		}
-
-		[Test]
-		public async Task NextAsync()
-		{
-			var current = DateTimeOffset.Parse("2004-01-01");
-			var next = await (Type.NextAsync(current, null, CancellationToken.None));
-
-			Assert.That(next, Is.TypeOf<DateTimeOffset>(), "next should be DateTimeOffset");
-			Assert.That(next, Is.GreaterThan(current), "next should be greater than current");
-		}
-
-		[Test]
-		public async Task SeedAsync()
-		{
-			Assert.That(await (Type.SeedAsync(null, CancellationToken.None)), Is.TypeOf<DateTimeOffset>(), "seed should be DateTime");
 		}
 
 		[Test]

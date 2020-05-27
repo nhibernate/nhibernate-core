@@ -184,17 +184,21 @@ namespace NHibernate.Engine
 				return interceptorResult;
 
 			// let the persister inspect the instance to decide
-			if (proxy != null)
-			{
-				// The persister only deals with unproxied entities.
-				entity = proxy.HibernateLazyInitializer.GetImplementation();
-			}
-
+			// The persister only deals with unproxied entities.
+			entity = UnproxyForInitialized(proxy) ?? entity;
 			return session
 				.GetEntityPersister(
 					entityName,
 					entity)
-				.IsTransient(entity, session);
+				.IsTransient(entity);
+		}
+
+		private static object UnproxyForInitialized(INHibernateProxy proxy)
+		{
+			return
+				proxy?.HibernateLazyInitializer.IsUninitialized == false
+					? proxy.HibernateLazyInitializer.GetImplementation()
+					: null;
 		}
 
 		/// <summary> 
@@ -205,25 +209,37 @@ namespace NHibernate.Engine
 		/// </remarks>
 		public static bool IsTransientSlow(string entityName, object entity, ISessionImplementor session)
 		{
-			return IsTransientFast(entityName, entity, session) ??
-			       HasDbSnapshot(entityName, entity, session);
+			bool? isTransient = IsTransientFast(entityName, entity, session);
+			if (isTransient.HasValue)
+				return isTransient.Value;
+
+			var persister = session.GetEntityPersister(entityName, entity);
+			var id = persister.GetIdentifier(entity);
+
+			// check to see if it is in the second-level cache
+			if (persister.HasCache && session.CacheMode.HasFlag(CacheMode.Get))
+			{
+				var ck = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
+				if (persister.Cache.Get(ck, session.Timestamp) != null)
+					return false;
+			}
+
+			return HasDbSnapshot(persister, id, session);
 		}
 
-		static bool HasDbSnapshot(string entityName, object entity, ISessionImplementor session)
+		static bool HasDbSnapshot(IEntityPersister persister, object identifier, ISessionImplementor session)
 		{
-			IEntityPersister persister = session.GetEntityPersister(entityName, entity);
 			if (persister.IdentifierGenerator is Assigned)
 			{
 				// When using assigned identifiers we cannot tell if an entity
 				// is transient or detached without querying the database.
 				// This could potentially cause Select N+1 in cascaded saves, so warn the user.
 				log.Warn("Unable to determine if {0} with assigned identifier {1} is transient or detached; querying the database. Use explicit Save() or Update() in session to prevent this.", 
-					entity, persister.GetIdentifier(entity));
+					persister.EntityName, identifier);
 			}
 
 			// hit the database, after checking the session cache for a snapshot
-			System.Object[] snapshot =
-				session.PersistenceContext.GetDatabaseSnapshot(persister.GetIdentifier(entity), persister);
+			System.Object[] snapshot = session.PersistenceContext.GetDatabaseSnapshot(identifier, persister);
 			return snapshot == null;
 		}
 

@@ -60,7 +60,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sqlString, parameterTypes, cancellationToken)).ConfigureAwait(false);
 						foreach (var parameterSpecification in whereParams)
 						{
-							await (parameterSpecification.BindAsync(ps, sqlQueryParametersList, parameters, session, cancellationToken)).ConfigureAwait(false);
+							parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
 						}
 
 						resultCount = await (session.Batcher.ExecuteNonQueryAsync(ps, cancellationToken)).ConfigureAwait(false);
@@ -97,7 +97,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 							ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, updates[i], parameterTypes, cancellationToken)).ConfigureAwait(false);
 							foreach (var parameterSpecification in paramsSpec)
 							{
-								await (parameterSpecification.BindAsync(ps, sqlQueryParametersList, parameters, session, cancellationToken)).ConfigureAwait(false);
+								parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
 							}
 
 							await (session.Batcher.ExecuteNonQueryAsync(ps, cancellationToken)).ConfigureAwait(false);

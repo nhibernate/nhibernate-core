@@ -4201,7 +4201,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public virtual bool? IsTransient(object entity, ISessionImplementor session)
+		public virtual bool? IsTransient(object entity)
 		{
 			object id;
 			if (CanExtractIdOutOfEntity)
@@ -4238,14 +4238,7 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 
-			// check to see if it is in the second-level cache
-			if (HasCache && session.CacheMode.HasFlag(CacheMode.Get))
-			{
-				CacheKey ck = session.GenerateCacheKey(id, IdentifierType, RootEntityName);
-				if (Cache.Get(ck, session.Timestamp) != null)
-					return false;
-			}
-
+			//Note: second level cache check is moved to ForeignKeys.IsTransientSlow as a potentially slow operation
 			return null;
 		}
 		

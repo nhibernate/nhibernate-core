@@ -71,48 +71,6 @@ namespace NHibernate.Type
 			throw new NotSupportedException("any mappings may not form part of a property-ref");
 		}
 
-		public override async Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			object id;
-			string entityName;
-			if (value == null)
-			{
-				id = null;
-				entityName = null;
-			}
-			else
-			{
-				entityName = session.BestGuessEntityName(value);
-				id = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, value, session, cancellationToken)).ConfigureAwait(false);
-			}
-
-			// metaType is assumed to be single-column type
-			if (settable == null || settable[0])
-			{
-				await (metaType.NullSafeSetAsync(st, entityName, index, session, cancellationToken)).ConfigureAwait(false);
-			}
-			if (settable == null)
-			{
-				await (identifierType.NullSafeSetAsync(st, id, index + 1, session, cancellationToken)).ConfigureAwait(false);
-			}
-			else
-			{
-				bool[] idsettable = new bool[settable.Length - 1];
-				Array.Copy(settable, 1, idsettable, 0, idsettable.Length);
-				await (identifierType.NullSafeSetAsync(st, id, index + 1, idsettable, session, cancellationToken)).ConfigureAwait(false);
-			}
-		}
-
-		public override Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			return NullSafeSetAsync(st, value, index, null, session, cancellationToken);
-		}
-
 		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -123,35 +81,7 @@ namespace NHibernate.Type
 			return (e == null) ? Task.FromResult<object>(null ): session.InternalLoadAsync(e.EntityName, e.Id, false, false, cancellationToken);
 		}
 
-		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			return value == null
-				? null
-				: new ObjectTypeCacheEntry
-				{
-					EntityName = session.BestGuessEntityName(value),
-					Id = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(session.BestGuessEntityName(value), value, session, cancellationToken)).ConfigureAwait(false)
-				};
-		}
-
-		public override async Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner,
-									   IDictionary copiedAlready, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (original == null)
-			{
-				return null;
-			}
-			else
-			{
-				string entityName = session.BestGuessEntityName(original);
-				object id = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, original, session, cancellationToken)).ConfigureAwait(false);
-				return await (session.InternalLoadAsync(entityName, id, false, false, cancellationToken)).ConfigureAwait(false);
-			}
-		}
-
-		public Task<object> GetPropertyValueAsync(Object component, int i, ISessionImplementor session, CancellationToken cancellationToken)
+		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -159,7 +89,7 @@ namespace NHibernate.Type
 			}
 			try
 			{
-				return i == 0 ? Task.FromResult<object>(session.BestGuessEntityName(component) ): IdAsync(component, session, cancellationToken);
+				return Task.FromResult<object>(Disassemble(value, session, owner));
 			}
 			catch (Exception ex)
 			{
@@ -167,47 +97,30 @@ namespace NHibernate.Type
 			}
 		}
 
-		public async Task<object[]> GetPropertyValuesAsync(object component, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			return new object[] { session.BestGuessEntityName(component), await (IdAsync(component, session, cancellationToken)).ConfigureAwait(false) };
-		}
-
-		private static async Task<object> IdAsync(object component, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			try
-			{
-				return await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(session.BestGuessEntityName(component), component, session, cancellationToken)).ConfigureAwait(false);
-			}
-			catch (TransientObjectException)
-			{
-				return null;
-			}
-		}
-
-		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
+		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner,
+									   IDictionary copiedAlready, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
-				return Task.FromCanceled<bool>(cancellationToken);
+				return Task.FromCanceled<object>(cancellationToken);
 			}
-			//TODO!!!
-			return IsDirtyAsync(old, current, session, cancellationToken);
-		}
-
-		public override async Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (current == null)
-				return old != null;
-			if (old == null)
-				return current != null;
-			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry)old;
-			bool[] idcheckable = new bool[checkable.Length - 1];
-			Array.Copy(checkable, 1, idcheckable, 0, idcheckable.Length);
-			return (checkable[0] && !holder.EntityName.Equals(session.BestGuessEntityName(current))) || 
-				await (identifierType.IsModifiedAsync(holder.Id, await (IdAsync(current, session, cancellationToken)).ConfigureAwait(false), idcheckable, session, cancellationToken)).ConfigureAwait(false);
+			try
+			{
+				if (original == null)
+				{
+					return Task.FromResult<object>(null);
+				}
+				else
+				{
+					string entityName = session.BestGuessEntityName(original);
+					object id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, original, session);
+					return session.InternalLoadAsync(entityName, id, false, false, cancellationToken);
+				}
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		private Task<object> ResolveAnyAsync(string entityName, object id, ISessionImplementor session, CancellationToken cancellationToken)

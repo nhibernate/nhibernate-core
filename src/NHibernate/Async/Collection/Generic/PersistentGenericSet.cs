@@ -50,26 +50,6 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			var elementType = persister.ElementType;
-			var snapshot = (ISetSnapshot<T>)GetSnapshot();
-			if (((ICollection)snapshot).Count != WrappedSet.Count)
-			{
-				return false;
-			}
-
-			foreach (T obj in WrappedSet)
-			{
-				T oldValue;
-				if (!snapshot.TryGetValue(obj, out oldValue) || await (elementType.IsDirtyAsync(oldValue, obj, Session, cancellationToken)).ConfigureAwait(false))
-					return false;
-			}
-
-			return true;
-		}
-
 		/// <summary>
 		/// Initializes this PersistentSet from the cached values.
 		/// </summary>
@@ -116,53 +96,6 @@ namespace NHibernate.Collection.Generic
 				result[i++] = await (persister.ElementType.DisassembleAsync(obj, Session, null, cancellationToken)).ConfigureAwait(false);
 			}
 			return result;
-		}
-
-		public override async Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			IType elementType = persister.ElementType;
-			var sn = (ISetSnapshot<T>)GetSnapshot();
-			var deletes = new List<T>(((ICollection<T>)sn).Count);
-
-			deletes.AddRange(sn.Where(obj => !WrappedSet.Contains(obj)));
-
-			foreach (var obj in WrappedSet)
-			{
-				T oldValue;
-				if (sn.TryGetValue(obj, out oldValue) && await (elementType.IsDirtyAsync(obj, oldValue, Session, cancellationToken)).ConfigureAwait(false))
-					deletes.Add(oldValue);
-			}
-
-			return deletes;
-		}
-
-		public override async Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			var sn = (ISetSnapshot<T>)GetSnapshot();
-			T oldKey;
-
-			// note that it might be better to iterate the snapshot but this is safe,
-			// assuming the user implements equals() properly, as required by the PersistentSet
-			// contract!
-			return !sn.TryGetValue((T) entry, out oldKey) || await (elemType.IsDirtyAsync(oldKey, entry, Session, cancellationToken)).ConfigureAwait(false);
-		}
-
-		public override Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
-			try
-			{
-				return Task.FromResult<bool>(NeedsUpdating(entry, i, elemType));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<bool>(ex);
-			}
 		}
 	}
 }

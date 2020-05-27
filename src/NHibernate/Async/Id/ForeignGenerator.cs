@@ -61,10 +61,10 @@ namespace NHibernate.Id
 			object id;
 			try
 			{
-				id = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(
+				id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(
 					foreignValueSourceType.GetAssociatedEntityName(),
 					associatedObject,
-					sessionImplementor, cancellationToken)).ConfigureAwait(false);
+					sessionImplementor);
 			}
 			catch (TransientObjectException)
 			{

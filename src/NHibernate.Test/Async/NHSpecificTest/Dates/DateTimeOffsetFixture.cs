@@ -22,7 +22,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.Dates
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class DateTimeOffsetFixtureAsync : FixtureBaseAsync
 	{
@@ -75,23 +74,6 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 				await (s.DeleteAsync(datesRecovered));
 				await (tx.CommitAsync());
 			}
-		}
-
-		[Test]
-		public async Task NextAsync()
-		{
-			var type = NHibernateUtil.DateTimeOffset;
-			var current = DateTimeOffset.Now.AddTicks(-1);
-			object next = await (type.NextAsync(current, null, CancellationToken.None));
-
-			Assert.That(next, Is.TypeOf<DateTimeOffset>().And.Property("Ticks").GreaterThan(current.Ticks));
-		}
-
-		[Test]
-		public async Task SeedAsync()
-		{
-			var type = NHibernateUtil.DateTimeOffset;
-			Assert.That(await (type.SeedAsync(null, CancellationToken.None)), Is.TypeOf<DateTimeOffset>());
 		}
 	}
 }
