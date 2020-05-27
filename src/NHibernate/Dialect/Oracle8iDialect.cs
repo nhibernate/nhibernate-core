@@ -297,7 +297,7 @@ namespace NHibernate.Dialect
 			// Multi-param numeric dialect functions...
 			RegisterFunction("atan2", new StandardSQLFunction("atan2", NHibernateUtil.Double));
 			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Int32));
-			RegisterFunction("mod", new ModulusFunction(true, true));
+			RegisterFunction("mod", new ModulusFunction(true, false));
 			RegisterFunction("nvl", new StandardSQLFunction("nvl"));
 			RegisterFunction("nvl2", new StandardSQLFunction("nvl2"));
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
@@ -541,6 +541,9 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
+
+		/// <inheritdoc />
+		public override bool SupportsIEEE754FloatingPointNumbers => false;
 
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{

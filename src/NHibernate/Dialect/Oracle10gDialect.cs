@@ -31,6 +31,11 @@ namespace NHibernate.Dialect
 				settings,
 				false);
 
+			if (_useBinaryFloatingPointTypes)
+			{
+				RegisterFunction("mod", new ModulusFunction(true, true));
+			}
+
 			base.Configure(settings);
 		}
 
@@ -66,5 +71,8 @@ namespace NHibernate.Dialect
 
 		/// <inheritdoc />
 		public override bool SupportsCrossJoin => true;
+
+		/// <inheritdoc />
+		public override bool SupportsIEEE754FloatingPointNumbers => _useBinaryFloatingPointTypes;
 	}
 }

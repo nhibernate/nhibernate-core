@@ -372,6 +372,15 @@ possible solutions:
 							: _hqlTreeBuilder.Cast(_hqlTreeBuilder.Divide(lhs, rhs), expression.Type);
 					}
 
+					// In Oracle division can return a number with up to 40 digits, which cannot be retrieved from the data reader due to the lack of such
+					// numeric type in .NET (this does not apply for binary_float and binary_double). In order to avoid that we have to add a cast to trim
+					// the number so that it can be converted into a .NET numeric type.
+					// We have to avoid casting for other dialects as in some databases (e.g. MySql) it may not return the same number.
+					if (!_parameters.SessionFactory.Dialect.SupportsIEEE754FloatingPointNumbers)
+					{
+						return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Divide(lhs, rhs), expression.Type);
+					}
+
 					return _hqlTreeBuilder.Divide(lhs, rhs);
 
 				case ExpressionType.Modulo:

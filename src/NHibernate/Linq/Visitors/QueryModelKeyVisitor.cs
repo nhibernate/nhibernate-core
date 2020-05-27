@@ -1,4 +1,6 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using NHibernate.Linq.Clauses;
 using Remotion.Linq;
@@ -10,8 +12,16 @@ namespace NHibernate.Linq.Visitors
 {
 	internal class QueryModelKeyVisitor : NhQueryModelVisitorBase, INhQueryModelVisitorExtended
 	{
+		private static readonly QueryModel DefaultQueryModel = new QueryModel(
+			new MainFromClause(
+				"x",
+				typeof(QueryModelVisitor),
+				Expression.Constant(0)),
+			new SelectClause(Expression.Constant(0)));
+
 		private readonly ExpressionKeyVisitor _keyVisitor;
 		private readonly StringBuilder _string;
+		private HashSet<IQuerySource> _processedSources;
 
 		public QueryModelKeyVisitor(ExpressionKeyVisitor keyVisitor, StringBuilder stringBuilder)
 		{
@@ -50,7 +60,7 @@ namespace NHibernate.Linq.Visitors
 			_string.Append(" on ");
 			_keyVisitor.Visit(joinClause.OuterKeySelector);
 			_string.Append(" equals ");
-			_string.Append(joinClause.InnerKeySelector);
+			_keyVisitor.Visit(joinClause.InnerKeySelector);
 		}
 
 		public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
@@ -140,6 +150,33 @@ namespace NHibernate.Linq.Visitors
 			}
 		}
 
+		public void VisitQuerySource(IQuerySource querySource)
+		{
+			if (!AddReferencedQuerySource(querySource))
+			{
+				_string.Append(querySource.ItemName);
+				return;
+			}
+
+			switch (querySource)
+			{
+				case MainFromClause mainFromClause:
+					VisitMainFromClause(mainFromClause, DefaultQueryModel);
+					break;
+				case ResultOperatorBase resultOperator:
+					VisitResultOperator(resultOperator, DefaultQueryModel, 0);
+					break;
+				case NhClauseBase nhClauseBase:
+					nhClauseBase.Accept(this, DefaultQueryModel, 0);
+					break;
+				case IBodyClause bodyClause:
+					bodyClause.Accept(this, DefaultQueryModel, 0);
+					break;
+				default:
+					throw new NotSupportedException($"Unknown query source {querySource}");
+			}
+		}
+
 		private void VisitResultOperatorBase(ResultOperatorBase resultOperator)
 		{
 			_string.Append(resultOperator.GetType().Name.Replace("ResultOperator", "("));
@@ -217,6 +254,16 @@ namespace NHibernate.Linq.Visitors
 			_string.Append(fromClause.ItemName);
 			_string.Append(" in ");
 			_keyVisitor.Visit(fromClause.FromExpression);
+		}
+
+		private bool AddReferencedQuerySource(IQuerySource querySource)
+		{
+			if (_processedSources == null)
+			{
+				_processedSources = new HashSet<IQuerySource>();
+			}
+
+			return _processedSources.Add(querySource);
 		}
 	}
 }

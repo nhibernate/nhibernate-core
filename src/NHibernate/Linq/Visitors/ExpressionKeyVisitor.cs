@@ -12,6 +12,7 @@ using NHibernate.Engine;
 using NHibernate.Param;
 using NHibernate.Type;
 using NHibernate.Util;
+using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
 
@@ -29,6 +30,7 @@ namespace NHibernate.Linq.Visitors
 		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 		private readonly ISessionFactoryImplementor _sessionFactory;
 		readonly StringBuilder _string = new StringBuilder();
+		private QueryModelKeyVisitor _queryModelKeyVisitor;
 
 		private ExpressionKeyVisitor(
 			IDictionary<ConstantExpression, NamedParameter> constantToParameterMap,
@@ -37,6 +39,9 @@ namespace NHibernate.Linq.Visitors
 			_constantToParameterMap = constantToParameterMap;
 			_sessionFactory = sessionFactory;
 		}
+
+		private QueryModelKeyVisitor QueryModelKeyVisitor =>
+			_queryModelKeyVisitor ?? (_queryModelKeyVisitor = new QueryModelKeyVisitor(this, _string));
 
 		// Since v5.3
 		[Obsolete("Use the overload with ISessionFactoryImplementor parameter")]
@@ -485,7 +490,16 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 		{
-			_string.Append(expression.ReferencedQuerySource);
+			// When parameters are involved we have to traverse the reference query source in order
+			// to replace constant expressions with parameter names
+			if (_constantToParameterMap != null)
+			{
+				QueryModelKeyVisitor.VisitQuerySource(expression.ReferencedQuerySource);
+			}
+			else
+			{
+				_string.Append(expression.ReferencedQuerySource);
+			}
 
 			return expression;
 		}
@@ -502,7 +516,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			_string.Append("SubQuery");
 			_string.Append('(');
-			new QueryModelKeyVisitor(this, _string).VisitQueryModel(expression.QueryModel);
+			QueryModelKeyVisitor.VisitQueryModel(expression.QueryModel);
 			_string.Append(')');
 
 			return expression;

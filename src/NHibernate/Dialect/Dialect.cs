@@ -2595,6 +2595,11 @@ namespace NHibernate.Dialect
 		public virtual bool SupportsBitwiseOperatorsOnBoolean => true;
 
 		/// <summary>
+		/// Whether IEEE Standard 754 for floating point numbers is supported
+		/// </summary>
+		public virtual bool SupportsIEEE754FloatingPointNumbers => true;
+
+		/// <summary>
 		/// The keyword used to specify a nullable column
 		/// </summary>
 		public virtual string NullColumnString

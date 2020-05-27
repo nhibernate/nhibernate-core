@@ -654,16 +654,12 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void CanSelectModulus()
 		{
-			if (!TestDialect.SendsParameterValuesAsStrings)
-			{
-				var list = db.Animals.Select(a => new { Sql = a.Id % 2.1f, a.Id }).ToList();
-				Assert.That(list.Select(o => o.Sql), Is.EqualTo(list.Select(o => o.Id % 2.1f)));
-				var list1 = db.Animals.Select(a => new { Sql = a.Id % 2.1d, a.Id }).ToList();
-				Assert.That(list1.Select(o => o.Sql), Is.EqualTo(list1.Select(o => o.Id % 2.1d)));
-				var list2 = db.Animals.Select(a => new { Sql = a.BodyWeight % 2.1f, a.BodyWeight }).ToList();
-				Assert.That(list2.Select(o => o.Sql), Is.EqualTo(list2.Select(o => o.BodyWeight % 2.1f)));
-			}
-
+			var list = db.Animals.Select(a => new { Sql = a.Id % 2.1f, a.Id }).ToList();
+			Assert.That(list.Select(o => o.Sql), Is.EqualTo(list.Select(o => o.Id % 2.1f)).Within(GetTolerance()));
+			var list1 = db.Animals.Select(a => new { Sql = a.Id % 2.1d, a.Id }).ToList();
+			Assert.That(list1.Select(o => o.Sql), Is.EqualTo(list1.Select(o => o.Id % 2.1d)).Within(GetTolerance()));
+			var list2 = db.Animals.Select(a => new { Sql = a.BodyWeight % 2.1f, a.BodyWeight }).ToList();
+			Assert.That(list2.Select(o => o.Sql), Is.EqualTo(list2.Select(o => o.BodyWeight % 2.1f)).Within(GetTolerance()));
 			var list3 = db.Animals.Select(a => new { Sql = a.Id % 2.1m, a.Id }).ToList();
 			Assert.That(list3.Select(o => o.Sql), Is.EqualTo(list3.Select(o => o.Id % 2.1m)));
 			var list4 = db.Animals.Select(a => new { Sql = a.Id % 2, a.Id }).ToList();
@@ -687,14 +683,10 @@ namespace NHibernate.Test.Linq
 			Assert.That(list1.Select(o => o.CalculatedValue), Is.EqualTo(list1.Select(o => o.OriginalValue % 2.1m)));
 			var list2 = db.Animals.Select(a => new ObjectDto { CalculatedValue = a.Id % 2L, OriginalValue = a.Id }).ToList();
 			Assert.That(list2.Select(o => o.CalculatedValue), Is.EqualTo(list2.Select(o => o.OriginalValue % 2L)));
-
-			if (!TestDialect.SendsParameterValuesAsStrings)
-			{
-				var list3 = db.Animals.Select(a => new ObjectDto { CalculatedValue = a.Id % 2.1f, OriginalValue = a.Id }).ToList();
-				Assert.That(list3.Select(o => o.CalculatedValue), Is.EqualTo(list3.Select(o => o.OriginalValue % 2.1f)));
-				var list4 = db.Animals.Select(a => new ObjectDto { CalculatedValue = a.Id % 2.1d, OriginalValue = a.Id }).ToList();
-				Assert.That(list4.Select(o => o.CalculatedValue), Is.EqualTo(list4.Select(o => o.OriginalValue % 2.1d)));
-			}
+			var list3 = db.Animals.Select(a => new ObjectDto { CalculatedValue = a.Id % 2.1f, OriginalValue = a.Id }).ToList();
+			Assert.That(list3.Select(o => o.CalculatedValue), Is.EqualTo(list3.Select(o => o.OriginalValue % 2.1f)).Within(GetTolerance()));
+			var list4 = db.Animals.Select(a => new ObjectDto { CalculatedValue = a.Id % 2.1d, OriginalValue = a.Id }).ToList();
+			Assert.That(list4.Select(o => o.CalculatedValue), Is.EqualTo(list4.Select(o => o.OriginalValue % 2.1d)).Within(GetTolerance()));
 		}
 
 		[Test]
@@ -740,19 +732,14 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void CanSelectMultiplyOperator()
 		{
-			if (TestDialect.SendsParameterValuesAsStrings)
-			{
-				Assert.Ignore("Ignore due to driver double and float parameters issue");
-			}
-
 			var list1 = db.Animals.Select(a => new { Sql = a.Id * 5, a.Id }).ToList();
 			Assert.That(list1.Select(o => o.Sql), Is.EqualTo(list1.Select(o => o.Id * 5)));
 			var list2 = db.Animals.Select(a => new { Sql = a.Id * 12345.54321m, a.Id }).ToList();
 			Assert.That(list2.Select(o => o.Sql), Is.EqualTo(list2.Select(o => o.Id * 12345.54321m)));
-			var list3 = db.Animals.Select(a => new { Sql = a.Id * 12345.54321f, a.Id }).ToList();
-			Assert.That(list3.Select(o => o.Sql), Is.EqualTo(list3.Select(o => o.Id * 12345.54321f)));
+			var list3 = db.Animals.Select(a => new { Sql = a.Id * 123.321f, a.Id }).ToList();
+			Assert.That(list3.Select(o => o.Sql), Is.EqualTo(list3.Select(o => o.Id * 123.321f)).Within(GetTolerance()));
 			var list4 = db.Animals.Select(a => new { Sql = a.Id * 12345.54321d, a.Id }).ToList();
-			Assert.That(list4.Select(o => o.Sql), Is.EqualTo(list4.Select(o => o.Id * 12345.54321d)));
+			Assert.That(list4.Select(o => o.Sql), Is.EqualTo(list4.Select(o => o.Id * 12345.54321d)).Within(GetTolerance()));
 			var list5 = db.Animals.Select(a => new { Sql = a.Id * 2L, a.Id }).ToList();
 			Assert.That(list5.Select(o => o.Sql), Is.EqualTo(list5.Select(o => o.Id * 2L)));
 
@@ -768,19 +755,14 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void CanSelectDivideOperator()
 		{
-			if (TestDialect.SendsParameterValuesAsStrings)
-			{
-				Assert.Ignore("Ignore due to driver double and float parameters issue");
-			}
-
 			var list1 = db.Animals.Select(a => new { Sql = a.Id / 5, a.Id }).ToList();
 			Assert.That(list1.Select(o => o.Sql), Is.EqualTo(list1.Select(o => o.Id / 5)));
 			var list2 = db.Animals.Select(a => new { Sql = a.Id / 12345.54321m, a.Id }).ToList();
 			Assert.That(list2.Select(o => o.Sql), Is.EqualTo(list2.Select(o => o.Id / 12345.54321m)));
 			var list3 = db.Animals.Select(a => new { Sql = a.Id / 12345.54321f, a.Id }).ToList();
-			Assert.That(list3.Select(o => o.Sql), Is.EqualTo(list3.Select(o => o.Id / 12345.54321f)));
+			Assert.That(list3.Select(o => o.Sql), Is.EqualTo(list3.Select(o => o.Id / 12345.54321f)).Within(GetTolerance()));
 			var list4 = db.Animals.Select(a => new { Sql = a.Id / 12345.54321d, a.Id }).ToList();
-			Assert.That(list4.Select(o => o.Sql), Is.EqualTo(list4.Select(o => o.Id / 12345.54321d)));
+			Assert.That(list4.Select(o => o.Sql), Is.EqualTo(list4.Select(o => o.Id / 12345.54321d)).Within(GetTolerance()));
 			var list5 = db.Animals.Select(a => new { Sql = a.Id / 2L, a.Id }).ToList();
 			Assert.That(list5.Select(o => o.Sql), Is.EqualTo(list5.Select(o => o.Id / 2L)));
 
@@ -790,7 +772,7 @@ namespace NHibernate.Test.Linq
 			Assert.That(list7.Select(o => o.Sql), Is.EqualTo(list7.Select(o => o.UnitPrice / 12345L)));
 
 			var list8 = db.Animals.Select(a => new { Sql = a.BodyWeight / 12345.54321f, a.BodyWeight }).ToList();
-			Assert.That(list8.Select(o => o.Sql), Is.EqualTo(list8.Select(o => o.BodyWeight / 12345.54321f)));
+			Assert.That(list8.Select(o => o.Sql), Is.EqualTo(list8.Select(o => o.BodyWeight / 12345.54321f)).Within(GetTolerance()));
 		}
 
 		[Test]
@@ -801,7 +783,7 @@ namespace NHibernate.Test.Linq
 			var list2 = db.Animals.Select(a => new { Sql = a.Id + 12345.54321m, a.Id }).ToList();
 			Assert.That(list2.Select(o => o.Sql), Is.EqualTo(list2.Select(o => o.Id + 12345.54321m)));
 			var list3 = db.Animals.Select(a => new { Sql = a.Id + 12345.54321f, a.Id }).ToList();
-			Assert.That(list3.Select(o => o.Sql), Is.EqualTo(list3.Select(o => o.Id + 12345.54321f)));
+			Assert.That(list3.Select(o => o.Sql), Is.EqualTo(list3.Select(o => o.Id + 12345.54321f)).Within(GetTolerance()));
 			var list4 = db.Animals.Select(a => new { Sql = a.Id + 12345.54321d, a.Id }).ToList();
 			Assert.That(list4.Select(o => o.Sql), Is.EqualTo(list4.Select(o => o.Id + 12345.54321d)));
 			var list5 = db.Animals.Select(a => new { Sql = a.Id + 2L, a.Id }).ToList();
@@ -824,7 +806,7 @@ namespace NHibernate.Test.Linq
 			var list2 = db.Animals.Select(a => new { Sql = a.Id - 12345.54321m, a.Id }).ToList();
 			Assert.That(list2.Select(o => o.Sql), Is.EqualTo(list2.Select(o => o.Id - 12345.54321m)));
 			var list3 = db.Animals.Select(a => new { Sql = a.Id - 12345.54321f, a.Id }).ToList();
-			Assert.That(list3.Select(o => o.Sql), Is.EqualTo(list3.Select(o => o.Id - 12345.54321f)));
+			Assert.That(list3.Select(o => o.Sql), Is.EqualTo(list3.Select(o => o.Id - 12345.54321f)).Within(GetTolerance()));
 			var list4 = db.Animals.Select(a => new { Sql = a.Id - 12345.54321d, a.Id }).ToList();
 			Assert.That(list4.Select(o => o.Sql), Is.EqualTo(list4.Select(o => o.Id - 12345.54321d)));
 			var list5 = db.Animals.Select(a => new { Sql = a.Id - 2L, a.Id }).ToList();
@@ -1518,6 +1500,13 @@ namespace NHibernate.Test.Linq
 		{
 			public T item;
 			public string message;
+		}
+
+		private double GetTolerance()
+		{
+			return !Dialect.SupportsIEEE754FloatingPointNumbers || TestDialect.SendsParameterValuesAsStrings
+				? 0.1d
+				: 0d;
 		}
 
 		private static void AssertOneSelectColumn(IQueryable query)
