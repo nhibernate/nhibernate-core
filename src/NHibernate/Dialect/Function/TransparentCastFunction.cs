@@ -1,4 +1,7 @@
 using System;
+using System.Collections;
+using NHibernate.Engine;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect.Function
 {
@@ -8,9 +11,16 @@ namespace NHibernate.Dialect.Function
 	[Serializable]
 	public class TransparentCastFunction : CastFunction
 	{
+		// Since v5.3
+		[Obsolete("This method has no usages and will be removed in a future version")]
 		protected override bool CastingIsRequired(string sqlType)
 		{
 			return false;
+		}
+
+		protected override SqlString Render(IList args, string sqlType, ISessionFactoryImplementor factory)
+		{
+			return new SqlString("(", args[0], ")");
 		}
 	}
 }

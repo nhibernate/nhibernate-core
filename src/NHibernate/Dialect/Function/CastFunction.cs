@@ -87,11 +87,17 @@ namespace NHibernate.Dialect.Function
 				throw new QueryException(string.Format("invalid Hibernate type for cast(): type {0} not found", typeName));
 			}
 
-			return CastingIsRequired(sqlType) ? Render(args, sqlType, factory) : new SqlString("(", args[0], ")");
+#pragma warning disable 618
+			return CastingIsRequired(sqlType)
+#pragma warning restore 618
+				? Render(args, sqlType, factory)
+				: new SqlString("(", args[0], ")");
 		}
 
 		#endregion
 
+		// Since v5.3
+		[Obsolete("This method has no usages and will be removed in a future version")]
 		protected virtual bool CastingIsRequired(string sqlType)
 		{
 			return true;
