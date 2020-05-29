@@ -87,11 +87,13 @@ namespace NHibernate.Dialect.Function
 				throw new QueryException(string.Format("invalid Hibernate type for cast(): type {0} not found", typeName));
 			}
 
+			//TODO 6.0: Remove pragma block with its content
 #pragma warning disable 618
-			return CastingIsRequired(sqlType)
+			if (!CastingIsRequired(sqlType))
+				return new SqlString("(", args[0], ")");
 #pragma warning restore 618
-				? Render(args, sqlType, factory)
-				: new SqlString("(", args[0], ")");
+
+			return Render(args, sqlType, factory);
 		}
 
 		#endregion
