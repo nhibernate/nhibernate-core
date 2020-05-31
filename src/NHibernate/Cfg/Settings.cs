@@ -129,6 +129,9 @@ namespace NHibernate.Cfg
 		public bool IsNamedQueryStartupCheckingEnabled { get; internal set; }
 
 		public bool IsBatchVersionedDataEnabled { get; internal set; }
+		
+		// 6.0 TODO : should throw by default, remove this setting
+		public bool ThrowOnSchemaUpdate { get; internal set; }
 
 		#region NH specific
 

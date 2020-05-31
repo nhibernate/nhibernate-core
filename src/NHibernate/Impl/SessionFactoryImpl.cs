@@ -352,12 +352,23 @@ namespace NHibernate.Impl
 
 			if (settings.IsAutoUpdateSchema)
 			{
-				new SchemaUpdate(cfg).Execute(false, true);
+				var schemaUpdate = new SchemaUpdate(cfg);
+				schemaUpdate.Execute(false, true);
+				if (settings.ThrowOnSchemaUpdate)
+				{
+					if (schemaUpdate.Exceptions.Any())
+					{
+						throw new AggregateHibernateException(
+							"Schema update has failed, see inner exceptions for details", schemaUpdate.Exceptions);
+					}
+				}
 			}
+			
 			if (settings.IsAutoValidateSchema)
 			{
 				new SchemaValidator(cfg, settings).Validate();
 			}
+			
 			if (settings.IsAutoDropSchema)
 			{
 				schemaExport = new SchemaExport(cfg);

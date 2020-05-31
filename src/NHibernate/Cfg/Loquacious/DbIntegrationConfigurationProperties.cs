@@ -129,6 +129,11 @@ namespace NHibernate.Cfg.Loquacious
 		{
 			set { configuration.SetProperty(Environment.Hbm2ddlAuto, value.ToString()); }
 		}
+		
+		public bool ThrowOnSchemaUpdate
+		{
+			set { configuration.SetProperty(Environment.Hbm2ddlThrowOnUpdate, value.ToString().ToLowerInvariant()); }
+		}
 
 		public void QueryModelRewriterFactory<TFactory>() where TFactory : IQueryModelRewriterFactory
 		{

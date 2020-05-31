@@ -193,6 +193,7 @@ namespace NHibernate.Cfg
 		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string QueryImports = "query.imports";
 		public const string Hbm2ddlAuto = "hbm2ddl.auto";
+		public const string Hbm2ddlThrowOnUpdate = "hbm2ddl.throwOnUpdate";
 		public const string Hbm2ddlKeyWords = "hbm2ddl.keywords";
 
 		public const string SqlExceptionConverter = "sql_exception_converter";
