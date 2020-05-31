@@ -151,6 +151,18 @@ namespace NHibernate.Cfg.Loquacious
 			return dbc;
 		}
 
+		// 6.0 TODO default should become true
+		/// <summary>
+		/// Whether to throw or not on schema auto-update failures. <see langword="false" /> by default.
+		/// </summary>
+		/// <param name="throw"><see langword="true" /> to throw in case any failure is reported during schema auto-update,
+		/// <see langword="false" /> to ignore failures.</param>
+		public DbIntegrationConfiguration ThrowOnSchemaUpdate(bool @throw)
+		{
+			dbc.Configuration.SetProperty(Environment.Hbm2ddlThrowOnUpdate, @throw.ToString().ToLowerInvariant());
+			return dbc;
+		}
+
 		#region Implementation of IDbSchemaIntegrationConfiguration
 #pragma warning disable 618
 

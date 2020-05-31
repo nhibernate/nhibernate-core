@@ -829,7 +829,7 @@ var session = sessions.OpenSession(conn);
                             is closed explicitly.
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 
-                                <literal>create</literal> | <literal>create-drop</literal>
+                                <literal>create</literal> | <literal>create-drop</literal> | <literal>update</literal> | <literal>validate</literal>
                             </para>
                         </entry>
                     </row>
@@ -855,6 +855,20 @@ var session = sessions.OpenSession(conn);
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
                                 <literal>none</literal> | <literal>keywords</literal> | <literal>auto-quote</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>hbm2ddl.throwOnUpdate</literal>
+                        </entry>
+                        <entry>
+                            When <literal>hbm2ddl.auto</literal> is <literal>update</literal>, whether to throw or not on schema auto-update failures.
+                            <!-- 6.0 TODO: should become true by default. -->
+                            Disabled by default.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>true</literal> | <literal>false</literal>
                             </para>
                         </entry>
                     </row>

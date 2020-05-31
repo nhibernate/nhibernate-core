@@ -63,8 +63,8 @@ namespace NHibernate.Test.CfgTest.Loquacious
 						.WithTimeout(10)
 						.WithMaximumDepthOfOuterJoinFetching(11)
 						.WithHqlToSqlSubstitutions("true 1, false 0, yes 'Y', no 'N'")
-					.Schema
-						.Validating();
+					.Schema.Validating()
+					.Schema.ThrowOnSchemaUpdate(true);
 
 			Assert.That(cfg.Properties[Environment.SessionFactoryName], Is.EqualTo("SomeName"));
 			Assert.That(cfg.Properties[Environment.CacheProvider], Is.EqualTo(typeof(HashtableCacheProvider).AssemblyQualifiedName));
@@ -97,6 +97,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(cfg.Properties[Environment.MaxFetchDepth], Is.EqualTo("11"));
 			Assert.That(cfg.Properties[Environment.QuerySubstitutions], Is.EqualTo("true 1, false 0, yes 'Y', no 'N'"));
 			Assert.That(cfg.Properties[Environment.Hbm2ddlAuto], Is.EqualTo("validate"));
+			Assert.That(cfg.Properties[Environment.Hbm2ddlThrowOnUpdate], Is.EqualTo("true"));
 
 			// Keywords import and auto-validation require a valid connection string, disable them before checking
 			// the session factory can be built.
