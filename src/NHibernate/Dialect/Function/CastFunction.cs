@@ -54,7 +54,7 @@ namespace NHibernate.Dialect.Function
 			get { return true; }
 		}
 
-		public SqlString Render(IList args, ISessionFactoryImplementor factory)
+		public virtual SqlString Render(IList args, ISessionFactoryImplementor factory)
 		{
 			if (args.Count != 2)
 			{
@@ -87,13 +87,13 @@ namespace NHibernate.Dialect.Function
 				throw new QueryException(string.Format("invalid Hibernate type for cast(): type {0} not found", typeName));
 			}
 
-			//TODO 6.0: Remove pragma block with its content
+			// TODO 6.0: Remove pragma block with its content
 #pragma warning disable 618
 			if (!CastingIsRequired(sqlType))
 				return new SqlString("(", args[0], ")");
 #pragma warning restore 618
 
-			return Render(args, sqlType, factory);
+			return Render(args[0], sqlType, factory);
 		}
 
 		#endregion
@@ -108,13 +108,13 @@ namespace NHibernate.Dialect.Function
 		/// <summary>
 		/// Renders the SQL fragment representing the SQL cast.
 		/// </summary>
-		/// <param name="args">The cast arguments.</param>
+		/// <param name="expression">The cast argument.</param>
 		/// <param name="sqlType">The SQL type to cast to.</param>
 		/// <param name="factory">The session factory.</param>
 		/// <returns>A SQL fragment.</returns>
-		protected virtual SqlString Render(IList args, string sqlType, ISessionFactoryImplementor factory)
+		protected virtual SqlString Render(object expression, string sqlType, ISessionFactoryImplementor factory)
 		{
-			return new SqlString("cast(", args[0], " as ", sqlType, ")");
+			return new SqlString("cast(", expression, " as ", sqlType, ")");
 		}
 
 		#region IFunctionGrammar Members
