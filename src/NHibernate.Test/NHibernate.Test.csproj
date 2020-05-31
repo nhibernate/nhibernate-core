@@ -49,6 +49,9 @@
     <Compile Include="..\NHibernate\Util\AsyncReaderWriterLock.cs">
       <Link>UtilityTest\AsyncReaderWriterLock.cs</Link>
     </Compile>
+    <Compile Include="..\NHibernate\Collection\Generic\SetHelpers\SetSnapShot.cs">
+      <Link>UtilityTest\SetSnapShot.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.8" />
