@@ -105,6 +105,13 @@ namespace NHibernate.Dialect.Function
 			return true;
 		}
 
+		/// <summary>
+		/// Renders the SQL fragment representing the SQL cast.
+		/// </summary>
+		/// <param name="args">The cast arguments.</param>
+		/// <param name="sqlType">The SQL type to cast to.</param>
+		/// <param name="factory">The session factory.</param>
+		/// <returns>A SQL fragment.</returns>
 		protected virtual SqlString Render(IList args, string sqlType, ISessionFactoryImplementor factory)
 		{
 			return new SqlString("cast(", args[0], " as ", sqlType, ")");
