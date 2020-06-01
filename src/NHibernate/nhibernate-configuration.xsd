@@ -124,7 +124,7 @@
 										<xs:enumeration value="query.imports" />
 										<xs:enumeration value="hbm2ddl.auto" />
 										<xs:enumeration value="hbm2ddl.keywords" />
-										<xs:enumeration value="hbm2ddl.throwOnUpdate">
+										<xs:enumeration value="hbm2ddl.throw_on_update">
 											<xs:annotation>
 												<!-- 6.0 TODO: should become true -->
 												<xs:documentation>

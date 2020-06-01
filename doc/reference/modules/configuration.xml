@@ -860,7 +860,7 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hbm2ddl.throwOnUpdate</literal>
+                            <literal>hbm2ddl.throw_on_update</literal>
                         </entry>
                         <entry>
                             When <literal>hbm2ddl.auto</literal> is <literal>update</literal>, whether to throw or not on schema auto-update failures.

@@ -198,7 +198,7 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// Whether to throw or not on schema auto-update failures. <c>false</c> by default.
 		/// </summary>
-		public const string Hbm2ddlThrowOnUpdate = "hbm2ddl.throwOnUpdate";
+		public const string Hbm2ddlThrowOnUpdate = "hbm2ddl.throw_on_update";
 		public const string Hbm2ddlKeyWords = "hbm2ddl.keywords";
 
 		public const string SqlExceptionConverter = "sql_exception_converter";
