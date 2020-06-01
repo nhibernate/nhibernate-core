@@ -297,7 +297,7 @@ namespace NHibernate.Collection.Generic
 
 			for (var i = 0; i < _gbag.Count; i++)
 			{
-				if(elementType.IsSame(_gbag[i], sn[i]))
+				if (elementType.IsSame(_gbag[i], sn[i]))
 					continue;
 
 				var elt = _gbag[i];
