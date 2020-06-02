@@ -87,6 +87,18 @@ namespace NHibernate.Test.Linq
 			Assert.That(results, Has.Count.EqualTo(expectedRows));
 		}
 
+		//GH-2362
+		[TestCase("$filter=CustomerId le 'ANATR'", 2)]
+		[TestCase("$filter=startswith(CustomerId, 'ANATR')", 1)]
+		[TestCase("$filter=endswith(CustomerId, 'ANATR')", 1)]
+		[TestCase("$filter=indexof(CustomerId, 'ANATR') eq 0", 1)]
+		public async Task StringFilterAsync(string queryString, int expectedCount)
+		{
+			Assert.That(
+				await (ApplyFilter(session.Query<Customer>(), queryString).Cast<Customer>().ToListAsync()),
+				Has.Count.EqualTo(expectedCount));
+		}
+
 		private IQueryable ApplyFilter<T>(IQueryable<T> query, string queryString)
 		{
 			var context = new ODataQueryContext(CreatEdmModel(), typeof(T), null) { };
