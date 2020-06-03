@@ -10,10 +10,14 @@ using NHibernate.Dialect;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Linq;
+using NHibernate.Linq.ExpressionTransformers;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
 using NHibernate.Transaction;
 using NHibernate.Util;
+using Remotion.Linq.Parsing.ExpressionVisitors.Transformation;
+using Remotion.Linq.Parsing.Structure;
+using Remotion.Linq.Parsing.Structure.ExpressionTreeProcessors;
 
 namespace NHibernate.Cfg
 {
@@ -308,7 +312,9 @@ namespace NHibernate.Cfg
 			// Not ported - JdbcBatchVersionedData
 
 			settings.QueryModelRewriterFactory = CreateQueryModelRewriterFactory(properties);
-			
+			settings.PreTransformerInitializer = CreatePreTransformerInitializer(properties);
+			settings.LinqPreTransformer = CreateLinqPreTransformer(settings.PreTransformerInitializer);
+
 			// NHibernate-specific:
 			settings.IsolationLevel = isolation;
 			
@@ -441,6 +447,37 @@ namespace NHibernate.Cfg
 			{
 				throw new HibernateException("could not instantiate IQueryModelRewriterFactory: " + className, cnfe);
 			}
+		}
+
+		private static IExpressionTransformerInitializer CreatePreTransformerInitializer(IDictionary<string, string> properties)
+		{
+			var className = PropertiesHelper.GetString(Environment.PreTransformerInitializer, properties, null);
+			if (className == null)
+				return null;
+
+			log.Info("Pre-transformer initializer: {0}", className);
+
+			try
+			{
+				return
+					(IExpressionTransformerInitializer)
+					Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
+			}
+			catch (Exception e)
+			{
+				throw new HibernateException("could not instantiate IExpressionTransformerInitializer: " + className, e);
+			}
+		}
+
+		private static IExpressionTreeProcessor CreateLinqPreTransformer(IExpressionTransformerInitializer expressionTransformerInitializer)
+		{
+			var preTransformerRegistry = new ExpressionTransformerRegistry();
+			// NH-3247: must remove .Net compiler char to int conversion before
+			// parameterization occurs.
+			preTransformerRegistry.Register(new RemoveCharToIntConversion());
+			expressionTransformerInitializer?.Initialize(preTransformerRegistry);
+
+			return new TransformingExpressionTreeProcessor(preTransformerRegistry);
 		}
 	}
 }

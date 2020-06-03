@@ -10,6 +10,7 @@ using NHibernate.Hql;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
 using NHibernate.Transaction;
+using Remotion.Linq.Parsing.Structure;
 
 namespace NHibernate.Cfg
 {
@@ -182,7 +183,14 @@ namespace NHibernate.Cfg
 		public bool LinqToHqlFallbackOnPreEvaluation { get; internal set; }
 
 		public IQueryModelRewriterFactory QueryModelRewriterFactory { get; internal set; }
-		
+
+		/// <summary>
+		/// The pre-transformer initializer used to register custom expression transformers.
+		/// </summary>
+		public IExpressionTransformerInitializer PreTransformerInitializer { get; internal set; }
+
+		internal IExpressionTreeProcessor LinqPreTransformer { get; set; }
+
 		#endregion
 
 		internal string GetFullCacheRegionName(string name)

@@ -151,6 +151,13 @@
 										<xs:enumeration value="order_inserts" />
 										<xs:enumeration value="order_updates" />
 										<xs:enumeration value="query.query_model_rewriter_factory" />
+										<xs:enumeration value="query.pre_transformer_initializer">
+											<xs:annotation>
+												<xs:documentation>
+													The pre-transformer initializer used to register custom expression transformers.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="linqtohql.generatorsregistry" />
 										<xs:enumeration value="linqtohql.legacy_preevaluation">
 											<xs:annotation>

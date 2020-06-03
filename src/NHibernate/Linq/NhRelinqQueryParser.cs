@@ -21,16 +21,9 @@ namespace NHibernate.Linq
 	public static class NhRelinqQueryParser
 	{
 		private static readonly QueryParser QueryParser;
-		private static readonly IExpressionTreeProcessor PreProcessor;
 
 		static NhRelinqQueryParser()
 		{
-			var preTransformerRegistry = new ExpressionTransformerRegistry();
-			// NH-3247: must remove .Net compiler char to int conversion before
-			// parameterization occurs.
-			preTransformerRegistry.Register(new RemoveCharToIntConversion());
-			PreProcessor = new TransformingExpressionTreeProcessor(preTransformerRegistry);
-
 			var transformerRegistry = ExpressionTransformerRegistry.CreateDefault();
 			transformerRegistry.Register(new RemoveRedundantCast());
 			transformerRegistry.Register(new SimplifyCompareTransformer());
@@ -78,7 +71,7 @@ namespace NHibernate.Linq
 				.EvaluateIndependentSubtrees(expression, parameters);
 
 			return new PreTransformationResult(
-				PreProcessor.Process(partiallyEvaluatedExpression),
+				parameters.PreTransformer.Process(partiallyEvaluatedExpression),
 				parameters.SessionFactory,
 				parameters.QueryVariables);
 		}
