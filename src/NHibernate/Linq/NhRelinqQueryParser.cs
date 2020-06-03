@@ -71,7 +71,8 @@ namespace NHibernate.Linq
 				.EvaluateIndependentSubtrees(expression, parameters);
 
 			return new PreTransformationResult(
-				parameters.PreTransformer.Process(partiallyEvaluatedExpression),
+				// PreTransformer may be null when mocking session factory in a unit test
+				parameters.PreTransformer?.Process(partiallyEvaluatedExpression) ?? partiallyEvaluatedExpression,
 				parameters.SessionFactory,
 				parameters.QueryVariables);
 		}
