@@ -124,6 +124,14 @@
 										<xs:enumeration value="query.imports" />
 										<xs:enumeration value="hbm2ddl.auto" />
 										<xs:enumeration value="hbm2ddl.keywords" />
+										<xs:enumeration value="hbm2ddl.throw_on_update">
+											<xs:annotation>
+												<!-- 6.0 TODO: should become true -->
+												<xs:documentation>
+													Whether to throw or not on schema auto-update failures. false by default.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="sql_exception_converter" />
 										<xs:enumeration value="adonet.wrap_result_sets" />
 										<xs:enumeration value="prepare_sql" />
