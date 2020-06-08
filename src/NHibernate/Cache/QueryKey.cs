@@ -194,7 +194,7 @@ namespace NHibernate.Cache
 				return false;
 			}
 
-			if (_tenantIdentifier != that._tenantIdentifier)
+			if (_tenantIdentifier != other._tenantIdentifier)
 			{
 				return false;
 			}
