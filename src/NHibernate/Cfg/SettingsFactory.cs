@@ -466,9 +466,10 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private static Func<Expression, Expression> CreateLinqPreTransformer(IExpressionTransformerRegistrar expressionTransformerRegistrar)
+		private static Lazy<Func<Expression, Expression>> CreateLinqPreTransformer(IExpressionTransformerRegistrar expressionTransformerRegistrar)
 		{
-			return NhRelinqQueryParser.CreatePreTransformer(expressionTransformerRegistrar);
+			// Avoid loading re-linq when linq is not used
+			return new Lazy<Func<Expression, Expression>>(() => NhRelinqQueryParser.CreatePreTransformer(expressionTransformerRegistrar));
 		}
 	}
 }

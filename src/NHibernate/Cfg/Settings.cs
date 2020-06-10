@@ -189,7 +189,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public IExpressionTransformerRegistrar PreTransformerRegistrar { get; internal set; }
 
-		internal Func<Expression, Expression> LinqPreTransformer { get; set; }
+		internal Lazy<Func<Expression, Expression>> LinqPreTransformer { get; set; }
 
 		#endregion
 

@@ -20,7 +20,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			QueryMode = queryMode;
 			SessionFactory = sessionFactory;
-			PreTransformer = sessionFactory.Settings.LinqPreTransformer;
+			PreTransformer = sessionFactory.Settings.LinqPreTransformer.Value;
 			// Skip detecting variables for DML queries as HQL does not support reusing parameters for them.
 			MinimizeParameters = QueryMode == QueryMode.Select;
 		}
