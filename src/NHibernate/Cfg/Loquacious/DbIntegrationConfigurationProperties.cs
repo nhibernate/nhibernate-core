@@ -135,6 +135,11 @@ namespace NHibernate.Cfg.Loquacious
 			configuration.SetProperty(Environment.QueryModelRewriterFactory, typeof(TFactory).AssemblyQualifiedName);
 		}
 
+		public void PreTransformerRegistrar<TRegistrar>() where TRegistrar : IExpressionTransformerRegistrar
+		{
+			configuration.SetProperty(Environment.PreTransformerRegistrar, typeof(TRegistrar).AssemblyQualifiedName);
+		}
+
 		#endregion
 	}
 }
