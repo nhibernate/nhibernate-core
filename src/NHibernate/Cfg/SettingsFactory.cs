@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq.Expressions;
 using NHibernate.AdoNet;
 using NHibernate.AdoNet.Util;
 using NHibernate.Cache;
@@ -10,14 +11,10 @@ using NHibernate.Dialect;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Linq;
-using NHibernate.Linq.ExpressionTransformers;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
 using NHibernate.Transaction;
 using NHibernate.Util;
-using Remotion.Linq.Parsing.ExpressionVisitors.Transformation;
-using Remotion.Linq.Parsing.Structure;
-using Remotion.Linq.Parsing.Structure.ExpressionTreeProcessors;
 
 namespace NHibernate.Cfg
 {
@@ -469,15 +466,9 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private static IExpressionTreeProcessor CreateLinqPreTransformer(IExpressionTransformerRegistrar expressionTransformerRegistrar)
+		private static Func<Expression, Expression> CreateLinqPreTransformer(IExpressionTransformerRegistrar expressionTransformerRegistrar)
 		{
-			var preTransformerRegistry = new ExpressionTransformerRegistry();
-			// NH-3247: must remove .Net compiler char to int conversion before
-			// parameterization occurs.
-			preTransformerRegistry.Register(new RemoveCharToIntConversion());
-			expressionTransformerRegistrar?.Register(preTransformerRegistry);
-
-			return new TransformingExpressionTreeProcessor(preTransformerRegistry);
+			return NhRelinqQueryParser.CreatePreTransformer(expressionTransformerRegistrar);
 		}
 	}
 }

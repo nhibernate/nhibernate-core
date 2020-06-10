@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq.Expressions;
 using NHibernate.AdoNet;
 using NHibernate.AdoNet.Util;
 using NHibernate.Cache;
@@ -189,7 +190,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public IExpressionTransformerRegistrar PreTransformerRegistrar { get; internal set; }
 
-		internal IExpressionTreeProcessor LinqPreTransformer { get; set; }
+		internal Func<Expression, Expression> LinqPreTransformer { get; set; }
 
 		#endregion
 

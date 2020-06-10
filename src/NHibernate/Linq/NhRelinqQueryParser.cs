@@ -72,7 +72,7 @@ namespace NHibernate.Linq
 
 			return new PreTransformationResult(
 				// PreTransformer may be null when mocking session factory in a unit test
-				parameters.PreTransformer?.Process(partiallyEvaluatedExpression) ?? partiallyEvaluatedExpression,
+				parameters.PreTransformer?.Invoke(partiallyEvaluatedExpression) ?? partiallyEvaluatedExpression,
 				parameters.SessionFactory,
 				parameters.QueryVariables);
 		}
@@ -80,6 +80,17 @@ namespace NHibernate.Linq
 		public static QueryModel Parse(Expression expression)
 		{
 			return QueryParser.GetParsedQuery(expression);
+		}
+
+		internal static Func<Expression, Expression> CreatePreTransformer(IExpressionTransformerRegistrar expressionTransformerRegistrar)
+		{
+			var preTransformerRegistry = new ExpressionTransformerRegistry();
+			// NH-3247: must remove .Net compiler char to int conversion before
+			// parameterization occurs.
+			preTransformerRegistry.Register(new RemoveCharToIntConversion());
+			expressionTransformerRegistrar?.Register(preTransformerRegistry);
+
+			return new TransformingExpressionTreeProcessor(preTransformerRegistry).Process;
 		}
 	}
 
