@@ -22,7 +22,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void RewriteLike()
 		{
-			// This example shows how to use the pre-transformer initializer to rewrite the
+			// This example shows how to use the pre-transformer registrar to rewrite the
 			// query so that StartsWith, EndsWith and Contains methods will generate the same sql.
 			var queryPlanCache = GetQueryPlanCache();
 			queryPlanCache.Clear();
