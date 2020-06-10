@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Engine;
 using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
-using Remotion.Linq.Parsing.Structure;
 
 namespace NHibernate.Linq.Visitors
 {

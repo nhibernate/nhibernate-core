@@ -11,7 +11,6 @@ using NHibernate.Hql;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
 using NHibernate.Transaction;
-using Remotion.Linq.Parsing.Structure;
 
 namespace NHibernate.Cfg
 {
