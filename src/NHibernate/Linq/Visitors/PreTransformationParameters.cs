@@ -11,6 +11,8 @@ namespace NHibernate.Linq.Visitors
 	/// </summary>
 	public class PreTransformationParameters
 	{
+		private static readonly Func<Expression, Expression> DefaultPreTransformer = NhRelinqQueryParser.CreatePreTransformer(null);
+
 		/// <summary>
 		/// The default constructor.
 		/// </summary>
@@ -20,7 +22,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			QueryMode = queryMode;
 			SessionFactory = sessionFactory;
-			PreTransformer = sessionFactory.Settings.LinqPreTransformer.Value;
+			PreTransformer = sessionFactory.Settings.LinqPreTransformer ?? DefaultPreTransformer;
 			// Skip detecting variables for DML queries as HQL does not support reusing parameters for them.
 			MinimizeParameters = QueryMode == QueryMode.Select;
 		}

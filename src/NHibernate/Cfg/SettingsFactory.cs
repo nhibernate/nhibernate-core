@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq.Expressions;
 using NHibernate.AdoNet;
 using NHibernate.AdoNet.Util;
 using NHibernate.Cache;
@@ -310,7 +309,12 @@ namespace NHibernate.Cfg
 
 			settings.QueryModelRewriterFactory = CreateQueryModelRewriterFactory(properties);
 			settings.PreTransformerRegistrar = CreatePreTransformerRegistrar(properties);
-			settings.LinqPreTransformer = CreateLinqPreTransformer(settings.PreTransformerRegistrar);
+
+			// Avoid dependency on re-linq assembly when PreTransformerRegistrar is null
+			if (settings.PreTransformerRegistrar != null)
+			{
+				settings.LinqPreTransformer = NhRelinqQueryParser.CreatePreTransformer(settings.PreTransformerRegistrar);
+			}
 
 			// NHibernate-specific:
 			settings.IsolationLevel = isolation;
@@ -464,12 +468,6 @@ namespace NHibernate.Cfg
 			{
 				throw new HibernateException("could not instantiate IExpressionTransformerRegistrar: " + className, e);
 			}
-		}
-
-		private static Lazy<Func<Expression, Expression>> CreateLinqPreTransformer(IExpressionTransformerRegistrar expressionTransformerRegistrar)
-		{
-			// Avoid loading re-linq when linq is not used
-			return new Lazy<Func<Expression, Expression>>(() => NhRelinqQueryParser.CreatePreTransformer(expressionTransformerRegistrar));
 		}
 	}
 }
