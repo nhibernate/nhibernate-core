@@ -185,9 +185,9 @@ namespace NHibernate.Cfg
 		public IQueryModelRewriterFactory QueryModelRewriterFactory { get; internal set; }
 
 		/// <summary>
-		/// The pre-transformer initializer used to register custom expression transformers.
+		/// The pre-transformer registrar used to register custom expression transformers.
 		/// </summary>
-		public IExpressionTransformerInitializer PreTransformerInitializer { get; internal set; }
+		public IExpressionTransformerRegistrar PreTransformerRegistrar { get; internal set; }
 
 		internal IExpressionTreeProcessor LinqPreTransformer { get; set; }
 

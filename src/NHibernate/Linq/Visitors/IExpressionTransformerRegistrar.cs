@@ -5,12 +5,12 @@ namespace NHibernate.Linq.Visitors
 	/// <summary>
 	/// Provides a way to register custom transformers for expressions.
 	/// </summary>
-	public interface IExpressionTransformerInitializer
+	public interface IExpressionTransformerRegistrar
 	{
 		/// <summary>
-		/// Initialize expression transformer registry by registering additional transformers.
+		/// Registers additional transformers on the expression transformer registry.
 		/// </summary>
 		/// <param name="expressionTransformerRegistry">The expression transformer registry.</param>
-		void Initialize(ExpressionTransformerRegistry expressionTransformerRegistry);
+		void Register(ExpressionTransformerRegistry expressionTransformerRegistry);
 	}
 }

@@ -278,9 +278,9 @@ namespace NHibernate.Cfg
 		public const string QueryModelRewriterFactory = "query.query_model_rewriter_factory";
 
 		/// <summary>
-		/// The class name of the LINQ query pre-transformer initializer, implementing <see cref="IExpressionTransformerInitializer"/>.
+		/// The class name of the LINQ query pre-transformer registrar, implementing <see cref="IExpressionTransformerRegistrar"/>.
 		/// </summary>
-		public const string PreTransformerInitializer = "query.pre_transformer_initializer";
+		public const string PreTransformerRegistrar = "query.pre_transformer_registrar";
 
 		/// <summary>
 		/// Set the default length used in casting when the target type is length bound and

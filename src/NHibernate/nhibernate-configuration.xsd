@@ -151,10 +151,10 @@
 										<xs:enumeration value="order_inserts" />
 										<xs:enumeration value="order_updates" />
 										<xs:enumeration value="query.query_model_rewriter_factory" />
-										<xs:enumeration value="query.pre_transformer_initializer">
+										<xs:enumeration value="query.pre_transformer_registrar">
 											<xs:annotation>
 												<xs:documentation>
-													The pre-transformer initializer used to register custom expression transformers.
+													The pre-transformer registrar used to register custom expression transformers.
 												</xs:documentation>
 											</xs:annotation>
 										</xs:enumeration>

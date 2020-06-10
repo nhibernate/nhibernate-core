@@ -312,8 +312,8 @@ namespace NHibernate.Cfg
 			// Not ported - JdbcBatchVersionedData
 
 			settings.QueryModelRewriterFactory = CreateQueryModelRewriterFactory(properties);
-			settings.PreTransformerInitializer = CreatePreTransformerInitializer(properties);
-			settings.LinqPreTransformer = CreateLinqPreTransformer(settings.PreTransformerInitializer);
+			settings.PreTransformerRegistrar = CreatePreTransformerRegistrar(properties);
+			settings.LinqPreTransformer = CreateLinqPreTransformer(settings.PreTransformerRegistrar);
 
 			// NHibernate-specific:
 			settings.IsolationLevel = isolation;
@@ -449,33 +449,33 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private static IExpressionTransformerInitializer CreatePreTransformerInitializer(IDictionary<string, string> properties)
+		private static IExpressionTransformerRegistrar CreatePreTransformerRegistrar(IDictionary<string, string> properties)
 		{
-			var className = PropertiesHelper.GetString(Environment.PreTransformerInitializer, properties, null);
+			var className = PropertiesHelper.GetString(Environment.PreTransformerRegistrar, properties, null);
 			if (className == null)
 				return null;
 
-			log.Info("Pre-transformer initializer: {0}", className);
+			log.Info("Pre-transformer registrar: {0}", className);
 
 			try
 			{
 				return
-					(IExpressionTransformerInitializer)
+					(IExpressionTransformerRegistrar)
 					Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
 			}
 			catch (Exception e)
 			{
-				throw new HibernateException("could not instantiate IExpressionTransformerInitializer: " + className, e);
+				throw new HibernateException("could not instantiate IExpressionTransformerRegistrar: " + className, e);
 			}
 		}
 
-		private static IExpressionTreeProcessor CreateLinqPreTransformer(IExpressionTransformerInitializer expressionTransformerInitializer)
+		private static IExpressionTreeProcessor CreateLinqPreTransformer(IExpressionTransformerRegistrar expressionTransformerRegistrar)
 		{
 			var preTransformerRegistry = new ExpressionTransformerRegistry();
 			// NH-3247: must remove .Net compiler char to int conversion before
 			// parameterization occurs.
 			preTransformerRegistry.Register(new RemoveCharToIntConversion());
-			expressionTransformerInitializer?.Initialize(preTransformerRegistry);
+			expressionTransformerRegistrar?.Register(preTransformerRegistry);
 
 			return new TransformingExpressionTreeProcessor(preTransformerRegistry);
 		}
