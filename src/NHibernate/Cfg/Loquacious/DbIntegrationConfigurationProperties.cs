@@ -130,6 +130,15 @@ namespace NHibernate.Cfg.Loquacious
 			set { configuration.SetProperty(Environment.Hbm2ddlAuto, value.ToString()); }
 		}
 
+		// 6.0 TODO default should become true
+		/// <summary>
+		/// Whether to throw or not on schema auto-update failures. <see langword="false" /> by default.
+		/// </summary>
+		public bool ThrowOnSchemaUpdate
+		{
+			set { configuration.SetProperty(Environment.Hbm2ddlThrowOnUpdate, value.ToString().ToLowerInvariant()); }
+		}
+
 		public void QueryModelRewriterFactory<TFactory>() where TFactory : IQueryModelRewriterFactory
 		{
 			configuration.SetProperty(Environment.QueryModelRewriterFactory, typeof(TFactory).AssemblyQualifiedName);

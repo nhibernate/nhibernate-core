@@ -510,6 +510,8 @@ namespace NHibernate.Dialect
 		[Serializable]
 		protected class SQLiteCastFunction : CastFunction
 		{
+			// Since v5.3
+			[Obsolete("This method has no usages and will be removed in a future version")]
 			protected override bool CastingIsRequired(string sqlType)
 			{
 				if (StringHelper.ContainsCaseInsensitive(sqlType, "date") ||
