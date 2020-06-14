@@ -135,6 +135,10 @@ namespace NHibernate.Cfg.Loquacious
 			configuration.SetProperty(Environment.QueryModelRewriterFactory, typeof(TFactory).AssemblyQualifiedName);
 		}
 
+		/// <summary>
+		/// Set the class of the LINQ query pre-transformer registrar.
+		/// </summary>
+		/// <typeparam name="TRegistrar">The class of the LINQ query pre-transformer registrar.</typeparam>
 		public void PreTransformerRegistrar<TRegistrar>() where TRegistrar : IExpressionTransformerRegistrar
 		{
 			configuration.SetProperty(Environment.PreTransformerRegistrar, typeof(TRegistrar).AssemblyQualifiedName);
