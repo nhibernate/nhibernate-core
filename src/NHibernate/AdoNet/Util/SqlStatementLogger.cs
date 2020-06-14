@@ -118,7 +118,7 @@ namespace NHibernate.AdoNet.Util
 
 			if (IsStringType(parameter.DbType))
 			{
-				return string.Concat("'", TruncateWithEllipsis(parameter.Value.ToString(), maxLoggableStringLength), "'");
+				return $"'{TruncateWithEllipsis(parameter.Value.ToString(), maxLoggableStringLength).Replace("'", "''")}'";
 			}
 
 			if (parameter.Value is DateTime)
