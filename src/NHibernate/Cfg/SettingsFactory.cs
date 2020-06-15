@@ -196,6 +196,8 @@ namespace NHibernate.Cfg
 				settings.IsAutoQuoteEnabled = false;
 			}
 
+			settings.ThrowOnSchemaUpdate = PropertiesHelper.GetBoolean(Environment.Hbm2ddlThrowOnUpdate, properties, false);
+
 			#endregion
 
 			bool useSecondLevelCache = PropertiesHelper.GetBoolean(Environment.UseSecondLevelCache, properties, true);

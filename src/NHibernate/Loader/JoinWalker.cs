@@ -980,42 +980,96 @@ namespace NHibernate.Loader
 			{
 				// if not a composite key, use "foo in (?, ?, ?)" for batching
 				// if no batch, and not a composite key, use "foo = ?"
-				string tableAlias = GenerateAliasForColumn(alias, columnNames[0]);
-				InFragment inf = new InFragment().SetColumn(tableAlias, columnNames[0]);
+				var columnName = columnNames[0];
 
-				for (int i = 0; i < batchSize; i++)
-					inf.AddValue(Parameter.Placeholder);
-
-				return new SqlStringBuilder(inf.ToFragmentString());
-			}
-			else
-			{
-				var fragments = new ConditionalFragment[batchSize];
-				for (int i = 0; i < batchSize; i++)
+				var tableAlias = GenerateAliasForColumn(alias, columnName);
+				var qualifiedName = !string.IsNullOrEmpty(tableAlias)
+					? tableAlias + StringHelper.Dot + columnName
+					: columnName;
+				
+				var whereString = new SqlStringBuilder(batchSize * 5);
+				whereString.Add(qualifiedName);
+				if (batchSize == 1)
 				{
-					fragments[i] = new ConditionalFragment()
-						.SetTableAlias(alias)
-						.SetCondition(columnNames, Parameter.GenerateParameters(columnNames.Length));
-				}
-
-				var whereString = new SqlStringBuilder();
-
-				if (fragments.Length == 1)
-				{
-					// if no batch, use "foo = ? and bar = ?"
-					whereString.Add(fragments[0].ToSqlStringFragment());
+					whereString.Add("=").Add(Parameter.Placeholder);
 				}
 				else
 				{
-					// if batching, use "( (foo = ? and bar = ?) or (foo = ? and bar = ?) )"
-					var df = new DisjunctionFragment(fragments);
+					bool added = false;
 
-					whereString.Add(StringHelper.OpenParen);
-					whereString.Add(df.ToFragmentString());
+					whereString.Add(" in (");
+					for (var i = 0; i < batchSize; i++)
+					{
+						var value = Parameter.Placeholder;
+						if (added)
+						{
+							whereString.Add(StringHelper.CommaSpace);
+						}
+
+						whereString.Add(value);
+
+						added = true;
+					}
+
 					whereString.Add(StringHelper.ClosedParen);
 				}
 
 				return whereString;
+			}
+			else
+			{
+				if (batchSize == 1)
+				{
+					// if no batch, use "foo = ? and bar = ?"
+					var whereString = new SqlStringBuilder(columnNames.Length * 4);
+					ColumnFragment(whereString, alias, columnNames);
+					return whereString;
+				}
+				else
+				{
+					// if batching, use "( (foo = ? and bar = ?) or (foo = ? and bar = ?) )"
+
+					var whereString = new SqlStringBuilder();
+					whereString.Add(StringHelper.OpenParen);
+
+					var added = false;
+					for (var i = 0; i < batchSize; i++)
+					{
+						if (added)
+						{
+							whereString.Add(" or ");
+						}
+
+						whereString.Add("(");
+						ColumnFragment(whereString, alias, columnNames);
+						whereString.Add(")");
+						added = true;
+					}
+					whereString.Add(StringHelper.ClosedParen);
+					return whereString;
+				}
+			}
+		}
+
+		private static void ColumnFragment(SqlStringBuilder builder, string alias, string[] columnNames)
+		{
+			//foo = ? and bar = ?
+			var prefix = alias + StringHelper.Dot;
+			var added = false;
+			foreach (var columnName in columnNames)
+			{
+				if (added)
+				{
+					builder.Add(" and ");
+				}
+
+				builder
+					.Add(prefix)
+					.Add(columnName)
+					.Add("=")
+					.Add(Parameter.Placeholder);
+
+				added = true;
 			}
 		}
 
