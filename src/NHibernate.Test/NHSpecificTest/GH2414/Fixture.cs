@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
@@ -24,6 +25,11 @@ namespace NHibernate.Test.NHSpecificTest.GH2414
 				rc.Id(x => x.Id, m => m.Generator(Generators.Identity));
 				rc.Property(x => x.Name);
 			});
+			mapper.Class<EntityWithGuidKey>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.Guid));
+				rc.Property(x => x.Name);
+			});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
@@ -38,6 +44,11 @@ namespace NHibernate.Test.NHSpecificTest.GH2414
 
 				var e2 = new Entity { Name = "Sally" };
 				session.Save(e2);
+
+				var e3 = new EntityWithGuidKey() { Id = Guid.NewGuid(), Name = "Bob" };
+				session.Save(e3);
+				
+				var e4 = new EntityWithGuidKey() { Id = Guid.NewGuid(), Name = "Sally" };
 
 				transaction.Commit();
 			}
@@ -67,6 +78,18 @@ namespace NHibernate.Test.NHSpecificTest.GH2414
 				var entity = new Entity() { Name = "NewEntity" };
 				session.Persist(entity);
 				var result = session.Query<Entity>().Where(x => x == entity).ToList();
+				Assert.That(result, Has.Count.EqualTo(0));
+			}
+		}
+
+		[Test]
+		public void QueryWithEqualDelayedPostInsertIdentifierInWhereWithGuidKeyEntity()
+		{
+			using (var session = OpenSession())
+			{
+				var entity = new EntityWithGuidKey() { Name = "NewEntity" };
+				session.Persist(entity);
+				var result = session.Query<EntityWithGuidKey>().Where(x => x == entity).ToList();
 				Assert.That(result, Has.Count.EqualTo(0));
 			}
 		}
