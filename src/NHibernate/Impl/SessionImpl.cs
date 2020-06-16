@@ -2370,7 +2370,7 @@ namespace NHibernate.Impl
 			{
 				if (entityName == null)
 				{
-					return Factory.GetEntityPersister(GuessEntityName(obj));
+					return Factory.GetEntityPersister(BestGuessEntityName(obj));
 				}
 				else
 				{
