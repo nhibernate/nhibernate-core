@@ -29,6 +29,15 @@ namespace NHibernate.Test
 		private SchemaExport _schemaExport;
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
+		private static readonly FieldInfo PlanCacheField;
+
+		static TestCase()
+		{
+			PlanCacheField = typeof(QueryPlanCache)
+				                 .GetField("planCache", BindingFlags.NonPublic | BindingFlags.Instance)
+			                 ?? throw new InvalidOperationException(
+				                 "planCache field does not exist in QueryPlanCache.");
+		}
 
 		protected Dialect.Dialect Dialect
 		{
@@ -488,14 +497,14 @@ namespace NHibernate.Test
 				$"{dialect} doesn't support {functionName} standard function.");
 		}
 
+		protected SoftLimitMRUCache GetQueryPlanCache()
+		{
+			return (SoftLimitMRUCache) PlanCacheField.GetValue(Sfi.QueryPlanCache);
+		}
+
 		protected void ClearQueryPlanCache()
 		{
-			var planCacheField = typeof(QueryPlanCache)
-									.GetField("planCache", BindingFlags.NonPublic | BindingFlags.Instance)
-								?? throw new InvalidOperationException("planCache field does not exist in QueryPlanCache.");
-
-			var planCache = (SoftLimitMRUCache) planCacheField.GetValue(Sfi.QueryPlanCache);
-			planCache.Clear();
+			GetQueryPlanCache().Clear();
 		}
 
 		protected Substitute<Dialect.Dialect> SubstituteDialect()

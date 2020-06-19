@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Engine;
 using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
@@ -10,6 +11,8 @@ namespace NHibernate.Linq.Visitors
 	/// </summary>
 	public class PreTransformationParameters
 	{
+		private static readonly Func<Expression, Expression> DefaultPreTransformer = NhRelinqQueryParser.CreatePreTransformer(null);
+
 		/// <summary>
 		/// The default constructor.
 		/// </summary>
@@ -19,6 +22,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			QueryMode = queryMode;
 			SessionFactory = sessionFactory;
+			PreTransformer = sessionFactory.Settings.LinqPreTransformer ?? DefaultPreTransformer;
 			// Skip detecting variables for DML queries as HQL does not support reusing parameters for them.
 			MinimizeParameters = QueryMode == QueryMode.Select;
 		}
@@ -32,6 +36,11 @@ namespace NHibernate.Linq.Visitors
 		/// The session factory used in the pre-transform process.
 		/// </summary>
 		public ISessionFactoryImplementor SessionFactory { get; }
+
+		/// <summary>
+		/// The transformer that will be used to pre-transform the query expression.
+		/// </summary>
+		internal Func<Expression, Expression> PreTransformer { get; }
 
 		/// <summary>
 		/// Whether to minimize the number of parameters for variables.

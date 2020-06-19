@@ -705,6 +705,19 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>query.pre_transformer_registrar</literal>
+                        </entry>
+                        <entry>
+                            The class name of the LINQ query pre-transformer registrar, implementing
+                            <literal>IExpressionTransformerRegistrar</literal>. Defaults to <literal>null</literal> (no registrar).
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>classname.of.ExpressionTransformerRegistrar, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>linqtohql.generatorsregistry</literal>
                         </entry>
                         <entry>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq.Expressions;
 using NHibernate.AdoNet;
 using NHibernate.AdoNet.Util;
 using NHibernate.Cache;
@@ -189,7 +190,14 @@ namespace NHibernate.Cfg
 		public bool LinqToHqlFallbackOnPreEvaluation { get; internal set; }
 
 		public IQueryModelRewriterFactory QueryModelRewriterFactory { get; internal set; }
-		
+
+		/// <summary>
+		/// The pre-transformer registrar used to register custom expression transformers.
+		/// </summary>
+		public IExpressionTransformerRegistrar PreTransformerRegistrar { get; internal set; }
+
+		internal Func<Expression, Expression> LinqPreTransformer { get; set; }
+
 		#endregion
 
 		internal string GetFullCacheRegionName(string name)

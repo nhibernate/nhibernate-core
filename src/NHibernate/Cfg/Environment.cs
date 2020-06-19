@@ -6,6 +6,7 @@ using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
 using NHibernate.Engine;
 using NHibernate.Linq;
+using NHibernate.Linq.Visitors;
 using NHibernate.Util;
 
 namespace NHibernate.Cfg
@@ -281,6 +282,11 @@ namespace NHibernate.Cfg
 		public const string OrderUpdates = "order_updates";
 
 		public const string QueryModelRewriterFactory = "query.query_model_rewriter_factory";
+
+		/// <summary>
+		/// The class name of the LINQ query pre-transformer registrar, implementing <see cref="IExpressionTransformerRegistrar"/>.
+		/// </summary>
+		public const string PreTransformerRegistrar = "query.pre_transformer_registrar";
 
 		/// <summary>
 		/// Set the default length used in casting when the target type is length bound and

@@ -310,7 +310,14 @@ namespace NHibernate.Cfg
 			// Not ported - JdbcBatchVersionedData
 
 			settings.QueryModelRewriterFactory = CreateQueryModelRewriterFactory(properties);
-			
+			settings.PreTransformerRegistrar = CreatePreTransformerRegistrar(properties);
+
+			// Avoid dependency on re-linq assembly when PreTransformerRegistrar is null
+			if (settings.PreTransformerRegistrar != null)
+			{
+				settings.LinqPreTransformer = NhRelinqQueryParser.CreatePreTransformer(settings.PreTransformerRegistrar);
+			}
+
 			// NHibernate-specific:
 			settings.IsolationLevel = isolation;
 			
@@ -442,6 +449,26 @@ namespace NHibernate.Cfg
 			catch (Exception cnfe)
 			{
 				throw new HibernateException("could not instantiate IQueryModelRewriterFactory: " + className, cnfe);
+			}
+		}
+
+		private static IExpressionTransformerRegistrar CreatePreTransformerRegistrar(IDictionary<string, string> properties)
+		{
+			var className = PropertiesHelper.GetString(Environment.PreTransformerRegistrar, properties, null);
+			if (className == null)
+				return null;
+
+			log.Info("Pre-transformer registrar: {0}", className);
+
+			try
+			{
+				return
+					(IExpressionTransformerRegistrar)
+					Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
+			}
+			catch (Exception e)
+			{
+				throw new HibernateException("could not instantiate IExpressionTransformerRegistrar: " + className, e);
 			}
 		}
 	}
