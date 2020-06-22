@@ -15,7 +15,7 @@ namespace NHibernate.MultiTenancy
 		public string TenantIdentifier { get; set; }
 
 		/// <summary>
-		/// Tenant Connection String. Usage depends on multi-tenancy connection provider "multiTenancy.connection.provider"
+		/// Tenant Connection String. Usage depends on multi-tenancy connection provider "multiTenancy.connection_provider"
 		/// </summary>
 		public string ConnectionString { get; set; }
 
