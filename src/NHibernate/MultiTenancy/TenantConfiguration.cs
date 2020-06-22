@@ -1,5 +1,4 @@
 using System;
-using NHibernate.Connection;
 
 namespace NHibernate.MultiTenancy
 {
@@ -16,17 +15,13 @@ namespace NHibernate.MultiTenancy
 		public string TenantIdentifier { get; set; }
 
 		/// <summary>
-		/// Tenant connection access. Required for <seealso cref="MultiTenancyStrategy.Database"/> multi-tenancy strategy.
+		/// Tenant Connection String. Usage depends on multi-tenancy connection provider "multiTenancy.connection.provider"
 		/// </summary>
-		public IConnectionAccess ConnectionAccess { get; set; }
+		public string ConnectionString { get; set; }
 
-		/// <summary>
-		/// Creates tenant configuration for <seealso cref="MultiTenancyStrategy.Database"/> multi-tenancy strategy.
-		/// </summary>
-		public TenantConfiguration(IMultiTenantConnectionProvider tenantConnectionProvider)
+		public TenantConfiguration(string tenantIdentifier)
 		{
-			TenantIdentifier = tenantConnectionProvider.TenantIdentifier;
-			ConnectionAccess = tenantConnectionProvider.GetConnectionAccess();
+			TenantIdentifier = tenantIdentifier;
 		}
 	}
 }

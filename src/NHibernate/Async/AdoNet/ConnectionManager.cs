@@ -61,7 +61,7 @@ namespace NHibernate.AdoNet
 				{
 					if (_ownConnection)
 					{
-						_connection = await (_connectionAccess.GetConnectionAsync(cancellationToken)).ConfigureAwait(false);
+						_connection = await (_connectionAccess.GetConnectionAsync(Factory.ConnectionProvider, cancellationToken)).ConfigureAwait(false);
 						// Will fail if the connection is already enlisted in another transaction.
 						// Probable case: nested transaction scope with connection auto-enlistment enabled.
 						// That is an user error.

@@ -391,6 +391,11 @@ namespace NHibernate.Cfg
 		/// <seealso cref="MultiTenancyStrategy"/>
 		public const string MultiTenancy = "multiTenancy";
 
+		/// <summary>
+		/// Connection provider for given multi-tenancy strategy.
+		/// </summary>
+		public const string MultiTenancyConnectionProvider = "multiTenancy.connection.provider";
+
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;
 

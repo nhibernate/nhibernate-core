@@ -327,9 +327,12 @@ namespace NHibernate.Cfg
 			settings.TrackSessionId = trackSessionId;
 
 			var multiTenancyStrategy = PropertiesHelper.GetEnum(Environment.MultiTenancy, properties, MultiTenancyStrategy.None);
-			if(multiTenancyStrategy != MultiTenancyStrategy.None)
-				log.Debug("multi-tenancy strategy : " + multiTenancyStrategy);
 			settings.MultiTenancyStrategy = multiTenancyStrategy;
+			if (multiTenancyStrategy != MultiTenancyStrategy.None)
+			{
+				log.Debug("multi-tenancy strategy : " + multiTenancyStrategy);
+				settings.MultiTenancyConnectionProvider = CreateMultiTenancyConnectionProvider(properties);
+			}
 
 			return settings;
 		}
@@ -414,6 +417,30 @@ namespace NHibernate.Cfg
 			catch (Exception cnfe)
 			{
 				throw new HibernateException("could not find query provider class: " + className, cnfe);
+			}
+		}
+
+		private static IMultiTenancyConnectionProvider CreateMultiTenancyConnectionProvider(IDictionary<string, string> properties)
+		{
+			string className = PropertiesHelper.GetString(
+				Environment.MultiTenancyConnectionProvider,
+				properties,
+				null);
+			if (className == null)
+			{
+				log.Info("Default Multi-tenancy connection provider is used: {0}", typeof(DefaultMultiTenancyConnectionProvider).FullName);
+				return new DefaultMultiTenancyConnectionProvider();
+			}
+
+			log.Info("Multi-tenancy connection provider: {0}", className);
+			try
+			{
+				return (IMultiTenancyConnectionProvider)
+					Environment.ObjectsFactory.CreateInstance(System.Type.GetType(className, true));
+			}
+			catch (Exception cnfe)
+			{
+				throw new HibernateException("could not find Multi-tenancy connection provider class: " + className, cnfe);
 			}
 		}
 

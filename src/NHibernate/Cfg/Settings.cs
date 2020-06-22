@@ -210,5 +210,7 @@ namespace NHibernate.Cfg
 		}
 
 		public MultiTenancyStrategy MultiTenancyStrategy { get; internal set; }
+
+		public IMultiTenancyConnectionProvider MultiTenancyConnectionProvider { get; internal set; }
 	}
 }

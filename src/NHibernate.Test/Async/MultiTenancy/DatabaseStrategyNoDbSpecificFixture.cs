@@ -16,6 +16,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Connection;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -35,7 +36,12 @@ namespace NHibernate.Test.MultiTenancy
 
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.Properties[Cfg.Environment.MultiTenancy] = MultiTenancyStrategy.Database.ToString();
+			configuration.DataBaseIntegration(
+				x =>
+				{
+					x.MultiTenancy = MultiTenancyStrategy.Database;
+					x.MultiTenancyConnectionProvider<TestMultiTenancyConnectionProvider>();
+				});
 			configuration.Properties[Cfg.Environment.GenerateStatistics] = "true";
 			base.Configure(configuration);
 		}
@@ -193,7 +199,10 @@ namespace NHibernate.Test.MultiTenancy
 
 		private TenantConfiguration GetTenantConfig(string tenantId)
 		{
-			return new TenantConfiguration(new TestTenantConnectionProvider(Sfi, tenantId, IsSqlServerDialect));
+			return new TestTenantConfiguration(tenantId, IsSqlServerDialect)
+			{
+				ConnectionString = Sfi.ConnectionProvider.GetConnectionString()
+			};
 		}
 
 		private bool IsSqlServerDialect => Sfi.Dialect is MsSql2000Dialect && !(Sfi.ConnectionProvider.Driver is OdbcDriver);
@@ -217,7 +226,8 @@ namespace NHibernate.Test.MultiTenancy
 
 		protected override DbConnection OpenConnectionForSchemaExport()
 		{
-			return GetTenantConfig("defaultTenant").ConnectionAccess.GetConnection();
+			return Sfi.Settings.MultiTenancyConnectionProvider
+					.GetConnectionAccess(GetTenantConfig("defaultTenant")).GetConnection(Sfi.ConnectionProvider);
 		}
 
 		protected override ISession OpenSession()

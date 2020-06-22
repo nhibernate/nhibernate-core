@@ -17,6 +17,6 @@ namespace NHibernate.Connection
 	public partial interface IConnectionAccess
 	{
 		//ObtainConnection in hibernate
-		Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken);
+		Task<DbConnection> GetConnectionAsync(IConnectionProvider provider, CancellationToken cancellationToken);
 	}
 }

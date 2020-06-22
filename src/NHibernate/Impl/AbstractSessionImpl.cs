@@ -70,11 +70,6 @@ namespace NHibernate.Impl
 				throw  new ArgumentException("Tenant configuration with TenantIdentifier defined is required for multi-tenancy.", nameof(tenantConfiguration));
 			}
 
-			if (factory.Settings.MultiTenancyStrategy == MultiTenancyStrategy.Database && tenantConfiguration.ConnectionAccess == null)
-			{
-				throw new ArgumentException($"Tenant configuration with ConnectionAccess defined is required for {factory.Settings.MultiTenancyStrategy} multi-tenancy strategy.");
-			}
-
 			return tenantConfiguration;
 		}
 
@@ -107,7 +102,9 @@ namespace NHibernate.Impl
 						options.UserSuppliedConnection,
 						options.SessionConnectionReleaseMode,
 						Interceptor,
-						_tenantConfiguration?.ConnectionAccess ?? new NonContextualConnectionAccess(_factory),
+						_tenantConfiguration == null
+							? new NonContextualConnectionAccess(_factory.ConnectionProvider)
+							: _factory.Settings.MultiTenancyConnectionProvider.GetConnectionAccess(_tenantConfiguration),
 						options.ShouldAutoJoinTransaction);
 				}
 			}

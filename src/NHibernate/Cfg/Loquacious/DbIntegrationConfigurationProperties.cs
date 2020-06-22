@@ -4,6 +4,7 @@ using NHibernate.Connection;
 using NHibernate.Driver;
 using NHibernate.Exceptions;
 using NHibernate.Linq.Visitors;
+using NHibernate.MultiTenancy;
 using NHibernate.Transaction;
 
 namespace NHibernate.Cfg.Loquacious
@@ -156,6 +157,11 @@ namespace NHibernate.Cfg.Loquacious
 		public MultiTenancy.MultiTenancyStrategy MultiTenancy
 		{
 			set { configuration.SetProperty(Environment.MultiTenancy,  value.ToString()); }
+		}
+
+		public void MultiTenancyConnectionProvider<TProvider>() where TProvider : IMultiTenancyConnectionProvider
+		{
+			configuration.SetProperty(Environment.MultiTenancyConnectionProvider, typeof(TProvider).AssemblyQualifiedName);
 		}
 
 		#endregion

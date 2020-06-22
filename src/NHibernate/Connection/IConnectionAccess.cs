@@ -11,10 +11,10 @@ namespace NHibernate.Connection
 	public partial interface IConnectionAccess
 	{
 		//ObtainConnection in hibernate
-		DbConnection GetConnection();
+		DbConnection GetConnection(IConnectionProvider provider);
 
 		//ReleaseConnection in hibernate
-		void CloseConnection(DbConnection conn);
+		void CloseConnection(DbConnection conn, IConnectionProvider provider);
 
 		string ConnectionString { get; }
 	}

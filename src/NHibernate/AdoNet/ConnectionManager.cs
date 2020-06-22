@@ -165,7 +165,7 @@ namespace NHibernate.AdoNet
 			if (_backupConnection != null)
 			{
 				_log.Warn("Backup connection was still defined at time of closing.");
-				_connectionAccess.CloseConnection(_backupConnection);
+				_connectionAccess.CloseConnection(_backupConnection, Factory.ConnectionProvider);
 				_backupConnection = null;
 			}
 
@@ -222,7 +222,7 @@ namespace NHibernate.AdoNet
 
 		private void CloseConnection()
 		{
-			_connectionAccess.CloseConnection(_connection);
+			_connectionAccess.CloseConnection(_connection, Factory.ConnectionProvider);
 			_connection = null;
 		}
 
@@ -256,7 +256,7 @@ namespace NHibernate.AdoNet
 			{
 				if (_ownConnection)
 				{
-					_connection = _connectionAccess.GetConnection();
+					_connection = _connectionAccess.GetConnection(Factory.ConnectionProvider);
 					// Will fail if the connection is already enlisted in another transaction.
 					// Probable case: nested transaction scope with connection auto-enlistment enabled.
 					// That is an user error.
