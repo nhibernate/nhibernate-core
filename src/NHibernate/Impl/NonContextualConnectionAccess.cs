@@ -7,10 +7,9 @@ namespace NHibernate.Impl
 	[Serializable]
 	partial class NonContextualConnectionAccess : IConnectionAccess
 	{
-		public NonContextualConnectionAccess(IConnectionProvider provider)
+		public NonContextualConnectionAccess(string connectionString)
 		{
-			ConnectionString = provider.GetConnectionString();
-			;
+			ConnectionString = connectionString;
 		}
 
 		public DbConnection GetConnection(IConnectionProvider provider)

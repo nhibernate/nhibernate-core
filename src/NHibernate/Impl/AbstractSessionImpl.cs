@@ -7,6 +7,7 @@ using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
+using NHibernate.Connection;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
@@ -103,7 +104,7 @@ namespace NHibernate.Impl
 						options.SessionConnectionReleaseMode,
 						Interceptor,
 						_tenantConfiguration == null
-							? new NonContextualConnectionAccess(_factory.ConnectionProvider)
+							? new NonContextualConnectionAccess(_factory.ConnectionProvider.GetConnectionString())
 							: _factory.Settings.MultiTenancyConnectionProvider.GetConnectionAccess(_tenantConfiguration),
 						options.ShouldAutoJoinTransaction);
 				}
