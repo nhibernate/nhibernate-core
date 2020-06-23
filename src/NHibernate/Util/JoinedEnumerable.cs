@@ -34,7 +34,6 @@ namespace NHibernate.Util
 		{
 		}
 
-
 		#region System.Collections.IEnumerable Members
 
 		/// <summary></summary>
@@ -45,8 +44,6 @@ namespace NHibernate.Util
 		}
 
 		#endregion
-
-
 
 		#region Nested class JoinedEnumerator
 
@@ -60,7 +57,6 @@ namespace NHibernate.Util
 				_enumerators = enumerators.ToArray();
 				_current = 0;
 			}
-
 
 			#region System.Collections.IEnumerator Members
 
@@ -86,14 +82,12 @@ namespace NHibernate.Util
 				return false;
 			}
 
-
 			public void Reset()
 			{
 				foreach (var enumerator in _enumerators)
 					enumerator.Reset();
 				_current = 0;
 			}
-
 
 			public object Current
 			{
@@ -126,7 +120,6 @@ namespace NHibernate.Util
 				log.Debug("running JoinedEnumerator.Dispose()");
 				Dispose(true);
 			}
-
 
 			/// <summary>
 			/// Takes care of freeing the managed and unmanaged resources that 
@@ -174,9 +167,8 @@ namespace NHibernate.Util
 		#endregion
 	}
 
-
-
-
+	// Since 5.3
+	[Obsolete("This class has no more usages and will be removed in a future version")]
 	public class JoinedEnumerable<T> : IEnumerable<T>
 	{
 		private readonly IEnumerable<T>[] enumerables;

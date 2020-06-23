@@ -1,11 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -16,6 +15,7 @@ namespace NHibernate.Criterion
 		private readonly ISQLFunction function;
 		private readonly string functionName;
 		private readonly IType returnType;
+		private readonly IProjection returnTypeProjection;
 
 		public SqlFunctionProjection(string functionName, IType returnType, params IProjection[] args)
 		{
@@ -28,6 +28,13 @@ namespace NHibernate.Criterion
 		{
 			this.function = function;
 			this.returnType = returnType;
+			this.args = args;
+		}
+
+		public SqlFunctionProjection(string functionName, IProjection returnTypeProjection, params IProjection[] args)
+		{
+			this.functionName = functionName;
+			this.returnTypeProjection = returnTypeProjection;
 			this.args = args;
 		}
 
@@ -75,8 +82,8 @@ namespace NHibernate.Criterion
 			var arguments = new List<object>();
 			for (int i = 0; i < args.Length; i++)
 			{
-				SqlString projectArg = GetProjectionArgument(criteriaQuery, criteria, args[i], 0); // The loc parameter is unused.
-				arguments.Add(projectArg);
+				var projectArg = GetProjectionArguments(criteriaQuery, criteria, args[i]);
+				arguments.AddRange(projectArg);
 			}
 
 			return new SqlString(
@@ -100,17 +107,24 @@ namespace NHibernate.Criterion
 			return dialectFunction;
 		}
 
-		private static SqlString GetProjectionArgument(ICriteriaQuery criteriaQuery, ICriteria criteria, IProjection projection, int loc)
+		private static object[] GetProjectionArguments(ICriteriaQuery criteriaQuery, ICriteria criteria, IProjection projection)
 		{
-			SqlString sql = projection.ToSqlString(criteria, loc, criteriaQuery);
-			return SqlStringHelper.RemoveAsAliasesFromSql(sql);
+			return CriterionUtil.GetColumnNamesAsSqlStringParts(projection, criteriaQuery, criteria);
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
+			var type = GetReturnType(criteria, criteriaQuery);
+			return type != null ? new[] {type} : Array.Empty<IType>();
+		}
+
+		private IType GetReturnType(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
 			ISQLFunction sqlFunction = GetFunction(criteriaQuery);
-			IType type = sqlFunction.ReturnType(returnType, criteriaQuery.Factory);
-			return new IType[] {type};
+
+			var resultType = returnType ?? returnTypeProjection?.GetTypes(criteria, criteriaQuery).FirstOrDefault();
+
+			return sqlFunction.GetReturnType(new[] {resultType}, criteriaQuery.Factory, true);
 		}
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)

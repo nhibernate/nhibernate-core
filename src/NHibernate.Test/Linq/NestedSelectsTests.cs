@@ -364,5 +364,38 @@ namespace NHibernate.Test.Linq
 			Assert.That(orders.Count, Is.EqualTo(830));
 			Assert.That(orders[0].OrderLinesIds, Is.Empty);
 		}
+
+		[Test]
+		public void NoNestedSelects_AnyOnGroupBySubquery()
+		{
+			var subQuery = from vms in db.Animals
+							group vms by vms.Father
+							into vmReqs
+							select vmReqs.Max(x => x.Id);
+
+			var outerQuery = from vm in db.Animals
+							where subQuery.Any(x => vm.Id == x)
+							select vm;
+			var animals = outerQuery.ToList();
+			Assert.That(animals.Count, Is.EqualTo(2));
+		}
+
+		//NH-3155
+		[Test]
+		public void NoNestedSelects_ContainsOnGroupBySubquery()
+		{
+			var subQuery = from vms in db.Animals
+							where vms.BodyWeight > 0
+							group vms by vms.Father
+							into vmReqs
+							select vmReqs.Max(x => x.Id);
+
+			var outerQuery = from vm in db.Animals
+							where subQuery.Contains(vm.Id)
+							select vm;
+
+			var animals = outerQuery.ToList();
+			Assert.That(animals.Count, Is.EqualTo(2));
+		}
 	}
 }

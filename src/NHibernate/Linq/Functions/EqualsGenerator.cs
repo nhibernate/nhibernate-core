@@ -14,7 +14,7 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 				{
-					ReflectHelper.GetMethodDefinition(() => string.Equals(default(string), default(string))),
+					ReflectHelper.FastGetMethod(string.Equals, default(string), default(string)),
 					ReflectHelper.GetMethodDefinition<string>(x => x.Equals(x)),
 					ReflectHelper.GetMethodDefinition<char>(x => x.Equals(x)),
 
@@ -33,7 +33,7 @@ namespace NHibernate.Linq.Functions
 					ReflectHelper.GetMethodDefinition<float>(x => x.Equals(x)),
 					ReflectHelper.GetMethodDefinition<double>(x => x.Equals(x)),
 					
-					ReflectHelper.GetMethodDefinition(() => decimal.Equals(default(decimal), default(decimal))),
+					ReflectHelper.FastGetMethod(decimal.Equals, default(decimal), default(decimal)),
 					ReflectHelper.GetMethodDefinition<decimal>(x => x.Equals(x)),
 
 					ReflectHelper.GetMethodDefinition<Guid>(x => x.Equals(x)),
@@ -63,14 +63,14 @@ namespace NHibernate.Linq.Functions
 				};
 		}
 
+		public override bool AllowsNullableReturnType(MethodInfo method) => false;
+
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			Expression lhs = arguments.Count == 1 ? targetObject : arguments[0];
 			Expression rhs = arguments.Count == 1 ? arguments[0] : arguments[1];
 
-			return treeBuilder.Equality(
-				visitor.Visit(lhs).ToArithmeticExpression(),
-				visitor.Visit(rhs).ToArithmeticExpression());
+			return visitor.Visit(Expression.Equal(lhs, rhs));
 		}
 	}
 }

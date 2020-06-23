@@ -40,7 +40,6 @@ namespace NHibernate.Test.Extralazy
 			set { documents = value; }
 		}
 
-
 		public virtual ISet<Photo> Photos
 		{
 			get { return photos; }

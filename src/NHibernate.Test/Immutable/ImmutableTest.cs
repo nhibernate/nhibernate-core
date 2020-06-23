@@ -1038,7 +1038,6 @@ namespace NHibernate.Test.Immutable
 	
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
-	
 		}
 	
 		[Test]

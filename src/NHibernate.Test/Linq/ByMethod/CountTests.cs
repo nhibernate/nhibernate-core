@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq.ByMethod
@@ -97,6 +98,51 @@ namespace NHibernate.Test.Linq.ByMethod
 			var result = query.ToList();
 
 			Assert.That(result.Count, Is.EqualTo(77));
+		}
+
+		[Test]
+		public void CheckSqlFunctionNameLongCount()
+		{
+			var name = Dialect is MsSql2000Dialect ? "count_big" : "count";
+			using (var sqlLog = new SqlLogSpy())
+			{
+				var result = db.Orders.LongCount();
+				Assert.That(result, Is.EqualTo(830));
+
+				var log = sqlLog.GetWholeLog();
+				Assert.That(log, Does.Contain($"{name}("));
+			}
+		}
+
+		[Test]
+		public void CheckSqlFunctionNameForCount()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			{
+				var result = db.Orders.Count();
+				Assert.That(result, Is.EqualTo(830));
+
+				var log = sqlLog.GetWholeLog();
+				Assert.That(log, Does.Contain("count("));
+			}
+		}
+
+		[Test]
+		public void CheckMssqlCountCast()
+		{
+			if (!(Dialect is MsSql2000Dialect))
+			{
+				Assert.Ignore();
+			}
+
+			using (var sqlLog = new SqlLogSpy())
+			{
+				var result = db.Orders.Count();
+				Assert.That(result, Is.EqualTo(830));
+
+				var log = sqlLog.GetWholeLog();
+				Assert.That(log, Does.Not.Contain("cast("));
+			}
 		}
 	}
 }

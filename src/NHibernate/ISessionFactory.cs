@@ -296,10 +296,10 @@ namespace NHibernate
 		ISession GetCurrentSession();
 
 		/// <summary> Get the statistics for this session factory</summary>
-		IStatistics Statistics { get;}
+		IStatistics Statistics { get; }
 
 		/// <summary> Was this <see cref="ISessionFactory"/> already closed?</summary>
-		bool IsClosed { get;}
+		bool IsClosed { get; }
 
 		/// <summary>
 		/// Obtain a set of the names of all filters defined on this SessionFactory.

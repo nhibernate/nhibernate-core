@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-using System.Threading;
 
 namespace NHibernate.Util
 {
@@ -25,7 +23,7 @@ namespace NHibernate.Util
 	public class SoftLimitMRUCache : IDeserializationCallback
 	{
 		private const int DefaultStrongRefCount = 128;
-		private object _syncRoot;
+		private readonly object _syncRoot = new object();
 
 		private readonly int strongReferenceCount;
 
@@ -50,17 +48,6 @@ namespace NHibernate.Util
 		public SoftLimitMRUCache()
 			: this(DefaultStrongRefCount) {}
 
-		private object SyncRoot
-		{
-			get
-			{
-				if (_syncRoot == null)
-					Interlocked.CompareExchange(ref _syncRoot, new object(), null);
-
-				return _syncRoot;
-			}
-		}
-
 		#region IDeserializationCallback Members
 
 		void IDeserializationCallback.OnDeserialization(object sender)
@@ -72,10 +59,9 @@ namespace NHibernate.Util
 
 		public object this[object key]
 		{
-			[MethodImpl(MethodImplOptions.Synchronized)]
 			get
 			{
-				lock (SyncRoot)
+				lock (_syncRoot)
 				{
 					object result = softReferenceCache[key];
 					if (result != null)
@@ -87,10 +73,9 @@ namespace NHibernate.Util
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void Put(object key, object value)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				softReferenceCache[key] = value;
 				strongReferenceCache[key] = value;
@@ -99,10 +84,9 @@ namespace NHibernate.Util
 
 		public int Count
 		{
-			[MethodImpl(MethodImplOptions.Synchronized)]
 			get
 			{
-				lock (SyncRoot)
+				lock (_syncRoot)
 				{
 					return strongReferenceCache.Count;
 				}
@@ -111,20 +95,18 @@ namespace NHibernate.Util
 
 		public int SoftCount
 		{
-			[MethodImpl(MethodImplOptions.Synchronized)]
 			get
 			{
-				lock (SyncRoot)
+				lock (_syncRoot)
 				{
 					return softReferenceCache.Count;
 				}
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void Clear()
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				strongReferenceCache.Clear();
 				softReferenceCache.Clear();

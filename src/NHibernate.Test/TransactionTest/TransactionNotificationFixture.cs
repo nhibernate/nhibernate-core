@@ -11,7 +11,7 @@ namespace NHibernate.Test.TransactionTest
 	{
 		protected override string[] Mappings => Array.Empty<string>();
 
-		[Test]
+		[Test, Obsolete]
 		public void NoTransaction()
 		{
 			var interceptor = new RecordingInterceptor();

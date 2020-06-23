@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Exceptions;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Type;
 using NUnit.Framework;
@@ -111,7 +112,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 				{
 					expectedResult = expectedQuery(session.Query<T>()).ToList();
 				}
-				catch (Exception e)
+				catch (GenericADOException e)
 				{
 					Assert.Ignore($"Not currently supported query: {e}");
 				}

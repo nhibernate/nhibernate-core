@@ -36,7 +36,7 @@ namespace NHibernate.Persister.Collection
 		ICacheConcurrencyStrategy Cache { get; }
 
 		/// <summary> Get the cache structure</summary>
-		ICacheEntryStructure CacheEntryStructure { get;}
+		ICacheEntryStructure CacheEntryStructure { get; }
 
 		/// <summary>
 		/// Get the associated <c>IType</c>
@@ -74,7 +74,7 @@ namespace NHibernate.Persister.Collection
 		bool IsArray { get; }
 
 		/// <summary> Is this a one-to-many association?</summary>
-		bool IsOneToMany { get;}
+		bool IsOneToMany { get; }
 
 		/// <summary> 
 		/// Is this a many-to-many association?  Note that this is mainly
@@ -82,7 +82,7 @@ namespace NHibernate.Persister.Collection
 		/// contain all the information needed to handle a many-to-many
 		/// itself, as internally it is looked at as two many-to-ones.
 		/// </summary>
-		bool IsManyToMany { get;}
+		bool IsManyToMany { get; }
 
 		/// <summary>
 		/// Is this collection lazily initialized?
@@ -100,7 +100,7 @@ namespace NHibernate.Persister.Collection
 		string Role { get; }
 
 		/// <summary> Get the persister of the entity that "owns" this collection</summary>
-		IEntityPersister OwnerEntityPersister { get;}
+		IEntityPersister OwnerEntityPersister { get; }
 
 		/// <summary>
 		/// Get the surrogate key generation strategy (optional operation)
@@ -121,7 +121,7 @@ namespace NHibernate.Persister.Collection
 		/// Is cascade delete handled by the database-level
 		/// foreign key constraint definition?
 		/// </summary>
-		bool CascadeDeleteEnabled { get;}
+		bool CascadeDeleteEnabled { get; }
 
 		/// <summary> 
 		/// Does this collection cause version increment of the owning entity?
@@ -129,10 +129,10 @@ namespace NHibernate.Persister.Collection
 		bool IsVersioned { get; }
 
 		/// <summary> Can the elements of this collection change?</summary>
-		bool IsMutable { get;}
+		bool IsMutable { get; }
 
 		ISessionFactoryImplementor Factory { get; }
-		bool IsExtraLazy { get;}
+		bool IsExtraLazy { get; }
 
 		/// <summary>
 		/// Initialize the given collection with the given key
@@ -268,7 +268,7 @@ namespace NHibernate.Persister.Collection
 		int GetSize(object key, ISessionImplementor session);
 		bool IndexExists(object key, object index, ISessionImplementor session);
 		bool ElementExists(object key, object element, ISessionImplementor session);
-		
+
 		/// <summary>
 		/// Try to find an element by a given index.
 		/// </summary>
@@ -278,7 +278,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="owner">The owner of the collection.</param>
 		/// <returns>The value of the element where available; otherwise <see cref="NotFoundObject"/>.</returns>
 		object GetElementByIndex(object key, object index, ISessionImplementor session, object owner);
-		
+
 		/// <summary>
 		/// A place-holder to inform that the data-reader was empty.
 		/// </summary>

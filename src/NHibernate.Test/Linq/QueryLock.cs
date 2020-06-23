@@ -9,7 +9,6 @@ using NHibernate.Exceptions;
 using NHibernate.Linq;
 using NUnit.Framework;
 
-
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]

@@ -39,7 +39,6 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
-
 		/// <summary>
 		/// Adds a columnName to the SELECT fragment.
 		/// </summary>
@@ -229,7 +228,6 @@ namespace NHibernate.SqlCommand
 
 				commaNeeded = true;
 			}
-
 
 			sqlBuilder.Add(" FROM ")
 				.Add(Dialect.AppendLockHint(lockMode, tableName));

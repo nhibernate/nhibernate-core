@@ -22,7 +22,7 @@ namespace NHibernate.Collection.Generic
 	/// </summary>
 	[Serializable]
 	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
-	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, IQueryable<T>
+	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, IReadOnlyCollection<T>, IQueryable<T>
 	{
 		/// <summary>
 		/// The <see cref="ISet{T}"/> that NHibernate is wrapping.
@@ -45,7 +45,6 @@ namespace NHibernate.Collection.Generic
 		public PersistentGenericSet()
 		{
 		}
-
 
 		/// <summary> 
 		/// Constructor matching super.
@@ -111,12 +110,11 @@ namespace NHibernate.Collection.Generic
 		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
 			var elementType = persister.ElementType;
-			var snapshot = (ISetSnapshot<T>)GetSnapshot();
+			var snapshot = (SetSnapShot<T>)GetSnapshot();
 			if (((ICollection)snapshot).Count != WrappedSet.Count)
 			{
 				return false;
 			}
-
 
 			foreach (T obj in WrappedSet)
 			{
@@ -233,11 +231,10 @@ namespace NHibernate.Collection.Generic
 		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
 			IType elementType = persister.ElementType;
-			var sn = (ISetSnapshot<T>)GetSnapshot();
+			var sn = (SetSnapShot<T>)GetSnapshot();
 			var deletes = new List<T>(((ICollection<T>)sn).Count);
 
 			deletes.AddRange(sn.Where(obj => !WrappedSet.Contains(obj)));
-
 
 			foreach (var obj in WrappedSet)
 			{
@@ -251,7 +248,7 @@ namespace NHibernate.Collection.Generic
 
 		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
-			var sn = (ISetSnapshot<T>)GetSnapshot();
+			var sn = (SetSnapShot<T>)GetSnapshot();
 			T oldKey;
 
 			// note that it might be better to iterate the snapshot but this is safe,

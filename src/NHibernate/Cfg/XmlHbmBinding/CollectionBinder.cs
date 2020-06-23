@@ -942,7 +942,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					string.Format(
 						"many-to-many defining filter or where without join fetching not valid within collection using join fetching [{0}]",
 						collection.Role));
-
 			}
 
 			new FiltersBinder(collection, Mappings).Bind(filters, collection.AddManyToManyFilter);

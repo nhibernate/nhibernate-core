@@ -54,6 +54,15 @@ namespace NHibernate.Cfg
 			settings.Dialect = dialect;
 
 			settings.LinqToHqlGeneratorsRegistry = LinqToHqlGeneratorsRegistryFactory.CreateGeneratorsRegistry(properties);
+			// 6.0 TODO: default to false instead of true, and adjust documentation in xsd, xml comment on Environment
+			// and Setting properties, and doc\reference.
+			settings.LinqToHqlLegacyPreEvaluation = PropertiesHelper.GetBoolean(
+				Environment.LinqToHqlLegacyPreEvaluation,
+				properties,
+				true);
+			settings.LinqToHqlFallbackOnPreEvaluation = PropertiesHelper.GetBoolean(
+				Environment.LinqToHqlFallbackOnPreEvaluation,
+				properties);
 
 			#region SQL Exception converter
 
@@ -187,6 +196,8 @@ namespace NHibernate.Cfg
 				settings.IsAutoQuoteEnabled = false;
 			}
 
+			settings.ThrowOnSchemaUpdate = PropertiesHelper.GetBoolean(Environment.Hbm2ddlThrowOnUpdate, properties, false);
+
 			#endregion
 
 			bool useSecondLevelCache = PropertiesHelper.GetBoolean(Environment.UseSecondLevelCache, properties, true);
@@ -206,7 +217,6 @@ namespace NHibernate.Cfg
 			string cacheRegionPrefix = PropertiesHelper.GetString(Environment.CacheRegionPrefix, properties, null);
 			if (string.IsNullOrEmpty(cacheRegionPrefix)) cacheRegionPrefix = null;
 			if (cacheRegionPrefix != null) log.Info("Cache region prefix: {0}", cacheRegionPrefix);
-
 
 			if (useQueryCache)
 			{
@@ -291,6 +301,7 @@ namespace NHibernate.Cfg
 			settings.TransactionFactory = transactionFactory;
 			// Not ported - TransactionManagerLookup
 			settings.SessionFactoryName = sessionFactoryName;
+			settings.AutoJoinTransaction = PropertiesHelper.GetBoolean(Environment.AutoJoinTransaction, properties, true);
 			settings.MaximumFetchDepth = maxFetchDepth;
 			settings.IsQueryCacheEnabled = useQueryCache;
 			settings.IsSecondLevelCacheEnabled = useSecondLevelCache;
@@ -299,7 +310,14 @@ namespace NHibernate.Cfg
 			// Not ported - JdbcBatchVersionedData
 
 			settings.QueryModelRewriterFactory = CreateQueryModelRewriterFactory(properties);
-			
+			settings.PreTransformerRegistrar = CreatePreTransformerRegistrar(properties);
+
+			// Avoid dependency on re-linq assembly when PreTransformerRegistrar is null
+			if (settings.PreTransformerRegistrar != null)
+			{
+				settings.LinqPreTransformer = NhRelinqQueryParser.CreatePreTransformer(settings.PreTransformerRegistrar);
+			}
+
 			// NHibernate-specific:
 			settings.IsolationLevel = isolation;
 			
@@ -431,6 +449,26 @@ namespace NHibernate.Cfg
 			catch (Exception cnfe)
 			{
 				throw new HibernateException("could not instantiate IQueryModelRewriterFactory: " + className, cnfe);
+			}
+		}
+
+		private static IExpressionTransformerRegistrar CreatePreTransformerRegistrar(IDictionary<string, string> properties)
+		{
+			var className = PropertiesHelper.GetString(Environment.PreTransformerRegistrar, properties, null);
+			if (className == null)
+				return null;
+
+			log.Info("Pre-transformer registrar: {0}", className);
+
+			try
+			{
+				return
+					(IExpressionTransformerRegistrar)
+					Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
+			}
+			catch (Exception e)
+			{
+				throw new HibernateException("could not instantiate IExpressionTransformerRegistrar: " + className, e);
 			}
 		}
 	}

@@ -10,16 +10,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3567
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
-			using (ISession session = this.OpenSession())
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
 			{
-				session.BeginTransaction();
 				var id = 0;
 
 				var site1 = new Site { Id = ++id, Name = "Site 1" };
 				var site2 = new Site { Id = ++id, Name = "Site 1" };
 				session.Save(site1);
 				session.Save(site2);
-
 
 				var p1 = new Post { Id = ++id, Content = "Post 1", Site = site1 };
 				var p2 = new Post { Id = ++id, Content = "Post 2", Site = site2 };
@@ -32,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3567
 				session.Save(new Comment { Id = ++id, Content = "Comment 2.1", Post = p2 });
 				session.Save(new Comment { Id = ++id, Content = "Comment 2.2", Post = p2 });
 				session.Flush();
-				session.Transaction.Commit();
+				tran.Commit();
 			}
 		}
 
@@ -92,16 +91,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3567
 
 					Assert.That(numberOfComments, Is.EqualTo(2), "Query with sub-query returned an invalid number of rows.");
 
-
 					transaction.Rollback();
-
 				}
-
 			}
 		}
-
-
 	}
-
-
 }

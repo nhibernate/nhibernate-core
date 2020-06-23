@@ -11,6 +11,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Param;
@@ -24,6 +25,29 @@ namespace NHibernate.Loader.Criteria
 {
 	using System.Threading.Tasks;
 	using System.Threading;
+	internal static partial class CriteriaLoaderExtensions
+	{
+		/// <summary>
+		/// Loads all loaders results to single typed list
+		/// </summary>
+		internal static async Task<List<T>> LoadAllToListAsync<T>(this IList<CriteriaLoader> loaders, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var subresults = new List<IList>(loaders.Count);
+			foreach(var l in loaders)
+			{
+				subresults.Add(await (l.ListAsync(session, cancellationToken)).ConfigureAwait(false));
+			}
+
+			var results = new List<T>(subresults.Sum(r => r.Count));
+			foreach(var list in subresults)
+			{
+				ArrayHelper.AddAll(results, list);
+			}
+			return results;
+		}
+	}
+
 	public partial class CriteriaLoader : OuterJoinLoader
 	{
 
@@ -50,7 +74,6 @@ namespace NHibernate.Loader.Criteria
 			return ResolveResultTransformer(customResultTransformer)
 				.TransformTuple(await (GetResultRowAsync(row, rs, session, cancellationToken)).ConfigureAwait(false), ResultRowAliases);
 		}
-
 
 		protected override async Task<object[]> GetResultRowAsync(object[] row, DbDataReader rs, ISessionImplementor session, CancellationToken cancellationToken)
 		{

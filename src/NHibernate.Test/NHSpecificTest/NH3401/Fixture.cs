@@ -38,7 +38,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3401
 				transaction.Commit();
 			}
 
-
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{

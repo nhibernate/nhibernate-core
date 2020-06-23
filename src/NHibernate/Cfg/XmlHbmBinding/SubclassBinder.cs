@@ -60,6 +60,5 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
             new FiltersBinder(model, Mappings).Bind(subClassMapping.filter);
         }
-
 	}
 }

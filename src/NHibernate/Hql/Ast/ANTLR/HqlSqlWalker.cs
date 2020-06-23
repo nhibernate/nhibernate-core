@@ -736,6 +736,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 					HandleWithFragment(fromElement, with);
 				}
+
+				if (fromElement.Parent == null)
+				{
+					fromElement.FromClause.AddChild(fromElement);
+				}
 			}
 
 			if ( log.IsDebugEnabled() )
@@ -929,7 +934,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		void ProcessBool(IASTNode constant)
 		{
-			_literalProcessor.ProcessBoolean(constant);  // Use the delegate.
+			_literalProcessor.ProcessBoolean(constant); // Use the delegate.
 		}
 
 		static void PrepareLogicOperator(IASTNode operatorNode)
@@ -1134,7 +1139,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 			return top;
 		}
-
 
 		// Helper methods
 

@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 
-
 namespace NHibernate.Test.NHSpecificTest.NH1039
 {
 	using System.Threading.Tasks;

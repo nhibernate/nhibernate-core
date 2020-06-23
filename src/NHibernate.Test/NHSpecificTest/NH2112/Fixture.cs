@@ -73,6 +73,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2112
         {
             Assert.That(Sfi.Statistics.EntityDeleteCount, Is.EqualTo(expected), "unexpected delete count");
         }
-
-    }
+	}
 }

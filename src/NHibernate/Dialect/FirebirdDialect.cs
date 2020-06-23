@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using NHibernate.Dialect.Function;
@@ -154,7 +155,7 @@ namespace NHibernate.Dialect
 		[Serializable]
 		private class CurrentTimeStamp : NoArgSQLFunction
 		{
-			public CurrentTimeStamp() : base("current_timestamp", NHibernateUtil.DateTime, true)
+			public CurrentTimeStamp() : base("current_timestamp", NHibernateUtil.LocalDateTime, true)
 			{
 			}
 
@@ -205,7 +206,7 @@ namespace NHibernate.Dialect
 		}
 
 		[Serializable]
-		private class PositionFunction : ISQLFunction
+		private class PositionFunction : ISQLFunction, ISQLFunctionExtended
 		{
 			// The cast is needed, at least in the case that ?3 is a named integer parameter, otherwise firebird will generate an error.  
 			// We have a unit test to cover this potential firebird bug.
@@ -214,10 +215,27 @@ namespace NHibernate.Dialect
 			private static readonly ISQLFunction LocateWith3Params = new SQLFunctionTemplate(NHibernateUtil.Int32,
 				"position(?1, ?2, cast(?3 as int))");
 
+			// Since v5.3
+			[Obsolete("Use GetReturnType method instead.")]
 			public IType ReturnType(IType columnType, IMapping mapping)
 			{
 				return NHibernateUtil.Int32;
 			}
+
+			/// <inheritdoc />
+			public IType GetReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+				return NHibernateUtil.Int32;
+			}
+
+			/// <inheritdoc />
+			public IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+				return GetReturnType(argumentTypes, mapping, throwOnError);
+			}
+
+			/// <inheritdoc />
+			public string Name => "position";
 
 			public bool HasArguments
 			{
@@ -413,15 +431,18 @@ namespace NHibernate.Dialect
 		private void OverrideStandardHQLFunctions()
 		{
 			RegisterFunction("current_timestamp", new CurrentTimeStamp());
+			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate, false));
 			RegisterFunction("length", new StandardSafeSQLFunction("char_length", NHibernateUtil.Int64, 1));
 			RegisterFunction("nullif", new StandardSafeSQLFunction("nullif", 2));
 			RegisterFunction("lower", new StandardSafeSQLFunction("lower", NHibernateUtil.String, 1));
 			RegisterFunction("upper", new StandardSafeSQLFunction("upper", NHibernateUtil.String, 1));
-			RegisterFunction("mod", new StandardSafeSQLFunction("mod", NHibernateUtil.Double, 2));
+			// Modulo does not throw for decimal parameters but they are casted to int by Firebird, which produces unexpected results
+			RegisterFunction("mod", new ModulusFunction(false, false));
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as VARCHAR(255))"));
 			RegisterFunction("strguid", new StandardSQLFunction("uuid_to_char", NHibernateUtil.String));
 			RegisterFunction("sysdate", new CastedFunction("today", NHibernateUtil.Date));
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
+			RegisterFunction("new_uuid", new NoArgSQLFunction("gen_uuid", NHibernateUtil.Guid));
 			// Bitwise operations
 			RegisterFunction("band", new Function.BitwiseFunctionOperation("bin_and"));
 			RegisterFunction("bor", new Function.BitwiseFunctionOperation("bin_or"));
@@ -435,7 +456,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("yesterday", new CastedFunction("yesterday", NHibernateUtil.Date));
 			RegisterFunction("tomorrow", new CastedFunction("tomorrow", NHibernateUtil.Date));
 			RegisterFunction("now", new CastedFunction("now", NHibernateUtil.DateTime));
-			RegisterFunction("iif", new StandardSafeSQLFunction("iif", 3));
+			RegisterFunction("iif", new IifSafeSQLFunction());
 			// New embedded functions in FB 2.0 (http://www.firebirdsql.org/rlsnotes20/rnfbtwo-str.html#str-string-func)
 			RegisterFunction("char_length", new StandardSafeSQLFunction("char_length", NHibernateUtil.Int64, 1));
 			RegisterFunction("bit_length", new StandardSafeSQLFunction("bit_length", NHibernateUtil.Int64, 1));
@@ -463,6 +484,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("log10", new StandardSQLFunction("log10", NHibernateUtil.Double));
 			RegisterFunction("pi", new NoArgSQLFunction("pi", NHibernateUtil.Double));
 			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
+			RegisterFunction("random", new NoArgSQLFunction("rand", NHibernateUtil.Double));
 			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
 			RegisterFunction("sqtr", new StandardSQLFunction("sqtr", NHibernateUtil.Double));
 			RegisterFunction("trunc", new StandardSQLFunction("trunc"));

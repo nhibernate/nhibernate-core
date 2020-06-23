@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
@@ -30,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 		protected override void OnSetUp()
 		{
 			using (var s = Sfi.OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				var parent = new Employee
 				{
@@ -56,18 +55,18 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 				s.Save(parent);
 				s.Save(emp);
 
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 
 		protected override void OnTearDown()
 		{
 			using (var s = Sfi.OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.Delete("from System.Object");
 
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 
@@ -105,7 +104,6 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 			}
 		}
 
-
 		[TestCase(JoinType.LeftOuterJoin)]
 		[TestCase(JoinType.InnerJoin)]
 		public async Task CanQueryByCriteriaOnSetOfElementByCreateAliasAsync(JoinType joinType)
@@ -123,7 +121,6 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 				Assert.That(((Employee) list[0]).Id, Is.EqualTo(1));
 			}
 		}
-
 
 		[Test]
 		public async Task CanQueryByCriteriaOnSetOfCompositeElement_UsingDetachedCriteriaAsync()
@@ -144,7 +141,6 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 			}
 		}
 
-
 		protected override string[] Mappings
 		{
 			get { return new[] {"NHSpecificTest.CriteriaQueryOnComponentCollection.Mappings.hbm.xml"}; }
@@ -154,6 +150,5 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 		{
 			get { return "NHibernate.Test"; }
 		}
-
 	}
 }

@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Collection.Generic;
 using NHibernate.Collection.Trackers;
 using NHibernate.Engine;
@@ -36,6 +38,28 @@ namespace NHibernate.Collection
 			object AddedInstance { get; }
 			object Orphan { get; }
 			void Operate();
+		}
+
+		class TypeComparer : IEqualityComparer<object>
+		{
+			private readonly IType _type;
+			private readonly ISessionFactoryImplementor _sessionFactory;
+
+			public TypeComparer(IType type, ISessionFactoryImplementor sessionFactory)
+			{
+				_type = type;
+				_sessionFactory = sessionFactory;
+			}
+
+			public new bool Equals(object x, object y)
+			{
+				return _type.IsEqual(x, y, _sessionFactory);
+			}
+
+			public int GetHashCode(object obj)
+			{
+				return _type.GetHashCode(obj, _sessionFactory);
+			}
 		}
 
 		// 6.0 TODO: Remove
@@ -1119,35 +1143,62 @@ namespace NHibernate.Collection
 				return oldElements;
 			}
 
-			IType idType = session.Factory.GetEntityPersister(entityName).IdentifierType;
+			if (currentElements.Count == oldElements.Count && currentElements.Cast<object>().SequenceEqual(oldElements.Cast<object>(), ReferenceComparer<object>.Instance))
+				return Array.Empty<object>();
 
-			// create the collection holding the orphans
-			List<object> res = new List<object>();
+			var persister = session.Factory.GetEntityPersister(entityName);
+			IType idType = persister.IdentifierType;
 
-			// collect EntityIdentifier(s) of the *current* elements - add them into a HashSet for fast access
-			var currentIds = new HashSet<TypedValue>();
+			var currentObjects = new HashSet<object>(new TypeComparer(idType, session.Factory));
 			foreach (object current in currentElements)
 			{
-				if (current != null && ForeignKeys.IsNotTransientSlow(entityName, current, session))
+				if (current != null)
 				{
-					object currentId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session);
-					currentIds.Add(new TypedValue(idType, currentId, false));
+					var id = ForeignKeys.GetIdentifier(persister, current);
+					if (id != null)
+						currentObjects.Add(id);
 				}
 			}
 
-			// iterate over the *old* list
+			List<object> res = new List<object>();
+			// oldElements may contain new elements (one case when session.Save is called on new object with collection filled with new objects)
 			foreach (object old in oldElements)
 			{
-				object oldId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, old, session);
-				if (!currentIds.Contains(new TypedValue(idType, oldId, false)))
+				if (old != null)
 				{
-					res.Add(old);
+					var id = ForeignKeys.GetIdentifier(persister, old);
+					if (id != null)
+					{
+						if (!currentObjects.Contains(id))
+						{
+							res.Add(old);
+						}
+					}
 				}
 			}
 
 			return res;
 		}
 
+		// Since 5.3
+		/// <summary> 
+		/// Given a collection of entity instances that used to
+		/// belong to the collection, and a collection of instances
+		/// that currently belong, return a collection of orphans
+		/// </summary>
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		protected virtual Task<ICollection> GetOrphansAsync(ICollection oldElements, ICollection currentElements, string entityName, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<ICollection>(cancellationToken);
+			}
+
+			return Task.FromResult(GetOrphans(oldElements, currentElements, entityName, session));
+		}
+
+		// Since 5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public void IdentityRemove(IList list, object obj, string entityName, ISessionImplementor session)
 		{
 			if (obj != null && ForeignKeys.IsNotTransientSlow(entityName, obj, session))
@@ -1268,6 +1319,29 @@ namespace NHibernate.Collection
 		/// <param name="persister">The underlying collection persister. </param>
 		/// <param name="anticipatedSize">The anticipated size of the collection after initialization is complete. </param>
 		public abstract void BeforeInitialize(ICollectionPersister persister, int anticipatedSize);
+
+		// Since 5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<ICollection>(cancellationToken);
+			}
+
+			try
+			{
+				return Task.FromResult(GetQueuedOrphans(entityName));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<ICollection>(ex);
+			}
+		}
+		
+		// Since 5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public abstract Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken);
 
 		#region - Hibernate Collection Proxy Classes
 

@@ -1,7 +1,5 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ReadOnly
@@ -26,45 +24,52 @@ namespace NHibernate.Test.ReadOnly
 		public void ReadOnlyOnProxies()
 		{
 			ClearCounts();
-	
-			ISession s = OpenSession();
-			s.BeginTransaction();
-			DataPoint dp = new DataPoint();
-			dp.X = 0.1M;
-			dp.Y = (decimal)System.Math.Cos((double)dp.X);
-			dp.Description = "original";
-			s.Save(dp);
-			long dpId = dp.Id;
-			s.Transaction.Commit();
-			s.Close();
-	
+			long dpId;
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				DataPoint dp = new DataPoint();
+				dp.X = 0.1M;
+				dp.Y = (decimal) System.Math.Cos((double) dp.X);
+				dp.Description = "original";
+				s.Save(dp);
+				dpId = dp.Id;
+				t.Commit();
+				s.Close();
+			}
+
 			AssertInsertCount(1);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
-			s = OpenSession();
-			s.BeginTransaction();
-			dp = s.Load<DataPoint>(dpId);
-			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False, "was initialized");
-			s.SetReadOnly(dp, true);
-			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False, "was initialized during SetReadOnly");
-			dp.Description = "changed";
-			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True, "was not initialized during mod");
-			Assert.That(dp.Description, Is.EqualTo("changed"), "desc not changed in memory");
-			s.Flush();
-			s.Transaction.Commit();
-			s.Close();
-	
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var dp = s.Load<DataPoint>(dpId);
+				Assert.That(NHibernateUtil.IsInitialized(dp), Is.False, "was initialized");
+				s.SetReadOnly(dp, true);
+				Assert.That(NHibernateUtil.IsInitialized(dp), Is.False, "was initialized during SetReadOnly");
+				dp.Description = "changed";
+				Assert.That(NHibernateUtil.IsInitialized(dp), Is.True, "was not initialized during mod");
+				Assert.That(dp.Description, Is.EqualTo("changed"), "desc not changed in memory");
+				s.Flush();
+				t.Commit();
+				s.Close();
+			}
+
 			AssertUpdateCount(0);
-	
-			s = OpenSession();
-			s.BeginTransaction();
-			IList list = s.CreateQuery("from DataPoint where Description = 'changed'").List();
-			Assert.That(list.Count, Is.EqualTo(0), "change written to database");
-			Assert.That(s.CreateQuery("delete from DataPoint").ExecuteUpdate(), Is.EqualTo(1));
-			s.Transaction.Commit();
-			s.Close();
-			
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				IList list = s.CreateQuery("from DataPoint where Description = 'changed'").List();
+				Assert.That(list.Count, Is.EqualTo(0), "change written to database");
+				Assert.That(s.CreateQuery("delete from DataPoint").ExecuteUpdate(), Is.EqualTo(1));
+				t.Commit();
+				s.Close();
+			}
+
 			AssertUpdateCount(0);
 			//deletes from Query.executeUpdate() are not tracked
 			//AssertDeleteCount(1);
@@ -544,38 +549,45 @@ namespace NHibernate.Test.ReadOnly
 			string newText = "some even bigger text string";
 	
 			ClearCounts();
-	
-			ISession s = OpenSession();
-			s.BeginTransaction();
-			TextHolder holder = new TextHolder(origText);
-			s.Save(holder);
-			long id = holder.Id;
-			s.Transaction.Commit();
-			s.Close();
-	
+			long id;
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				TextHolder holder = new TextHolder(origText);
+				s.Save(holder);
+				id = holder.Id;
+				t.Commit();
+				s.Close();
+			}
+
 			AssertInsertCount(1);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
-			s = OpenSession();
-			s.BeginTransaction();
-			holder = s.Get<TextHolder>(id);
-			s.SetReadOnly(holder, true);
-			holder.TheText = newText;
-			s.Flush();
-			s.Transaction.Commit();
-			s.Close();
-	
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var holder = s.Get<TextHolder>(id);
+				s.SetReadOnly(holder, true);
+				holder.TheText = newText;
+				s.Flush();
+				t.Commit();
+				s.Close();
+			}
+
 			AssertUpdateCount(0);
-	
-			s = OpenSession();
-			s.BeginTransaction();
-			holder = s.Get<TextHolder>(id);
-			Assert.That(origText, Is.EqualTo(holder.TheText), "change written to database");
-			s.Delete(holder);
-			s.Transaction.Commit();
-			s.Close();
-	
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var holder = s.Get<TextHolder>(id);
+				Assert.That(origText, Is.EqualTo(holder.TheText), "change written to database");
+				s.Delete(holder);
+				t.Commit();
+				s.Close();
+			}
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 		}

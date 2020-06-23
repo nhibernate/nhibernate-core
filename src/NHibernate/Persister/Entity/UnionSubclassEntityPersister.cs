@@ -180,7 +180,7 @@ namespace NHibernate.Persister.Entity
 
 		public override string DiscriminatorSQLValue
 		{
-			get { return discriminatorSQLValue;}
+			get { return discriminatorSQLValue; }
 		}
 
 		public override object DiscriminatorValue

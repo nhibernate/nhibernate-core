@@ -13,6 +13,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Collection.Generic;
 using NHibernate.Collection.Trackers;
 using NHibernate.Engine;
@@ -25,8 +27,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Collection
 {
-	using System.Threading.Tasks;
-	using System.Threading;
 	public abstract partial class AbstractPersistentCollection : IPersistentCollection, ILazyInitializedCollection
 	{
 
@@ -151,56 +151,6 @@ namespace NHibernate.Collection
 			return Task.CompletedTask;
 		}
 
-		public Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<ICollection>(cancellationToken);
-			}
-			try
-			{
-				if (HasQueuedOperations)
-				{
-					List<object> additions;
-					List<object> removals;
-
-					// Use the queue operation tracker when available to get the orphans as the default logic
-					// does not work correctly when readding a transient entity. Removals list should
-					// contain only entities that are already in the database.
-					if (_queueOperationTracker != null)
-					{
-						removals = new List<object>(_queueOperationTracker.GetOrphans().Cast<object>());
-						additions = new List<object>(_queueOperationTracker.GetAddedElements().Cast<object>());
-					}
-					else // 6.0 TODO: Remove whole else block
-					{
-						additions = new List<object>(operationQueue.Count);
-						removals = new List<object>(operationQueue.Count);
-						for (int i = 0; i < operationQueue.Count; i++)
-						{
-							var op = operationQueue[i];
-							if (op.AddedInstance != null)
-							{
-								additions.Add(op.AddedInstance);
-							}
-							if (op.Orphan != null)
-							{
-								removals.Add(op.Orphan);
-							}
-						}
-					}
-
-					return GetOrphansAsync(removals, additions, entityName, session, cancellationToken);
-				}
-
-				return Task.FromResult<ICollection>(CollectionHelper.EmptyCollection);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<ICollection>(ex);
-			}
-		}
-
 		/// <summary>
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
 		/// </summary>
@@ -223,60 +173,8 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary>
-		/// Get all "orphaned" elements
-		/// </summary>
-		public abstract Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken);
-
-		/// <summary> 
-		/// Given a collection of entity instances that used to
-		/// belong to the collection, and a collection of instances
-		/// that currently belong, return a collection of orphans
-		/// </summary>
-		protected virtual async Task<ICollection> GetOrphansAsync(ICollection oldElements, ICollection currentElements, string entityName, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			// short-circuit(s)
-			if (currentElements.Count == 0)
-			{
-				// no new elements, the old list contains only Orphans
-				return oldElements;
-			}
-			if (oldElements.Count == 0)
-			{
-				// no old elements, so no Orphans neither
-				return oldElements;
-			}
-
-			IType idType = session.Factory.GetEntityPersister(entityName).IdentifierType;
-
-			// create the collection holding the orphans
-			List<object> res = new List<object>();
-
-			// collect EntityIdentifier(s) of the *current* elements - add them into a HashSet for fast access
-			var currentIds = new HashSet<TypedValue>();
-			foreach (object current in currentElements)
-			{
-				if (current != null && await (ForeignKeys.IsNotTransientSlowAsync(entityName, current, session, cancellationToken)).ConfigureAwait(false))
-				{
-					object currentId = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, current, session, cancellationToken)).ConfigureAwait(false);
-					currentIds.Add(new TypedValue(idType, currentId, false));
-				}
-			}
-
-			// iterate over the *old* list
-			foreach (object old in oldElements)
-			{
-				object oldId = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, old, session, cancellationToken)).ConfigureAwait(false);
-				if (!currentIds.Contains(new TypedValue(idType, oldId, false)))
-				{
-					res.Add(old);
-				}
-			}
-
-			return res;
-		}
-
+		// Since 5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public async Task IdentityRemoveAsync(IList list, object obj, string entityName, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();

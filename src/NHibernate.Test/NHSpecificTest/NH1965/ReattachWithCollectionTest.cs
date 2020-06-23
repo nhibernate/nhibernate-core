@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
@@ -41,10 +40,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1965
 		{
 			var cat = new Cat();
 			using (var session = OpenSession())
-			using (session.BeginTransaction())
+			using (var tran = session.BeginTransaction())
 			{
 				session.Save(cat);
-				session.Transaction.Commit();
+				tran.Commit();
 			}
 
 			using (var session = OpenSession())
@@ -53,10 +52,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1965
 			}
 
 			using (var session = OpenSession())
-			using (session.BeginTransaction())
+			using (var tran = session.BeginTransaction())
 			{
 				session.Delete(cat);
-				session.Transaction.Commit();
+				tran.Commit();
 			}
 		}
 	}

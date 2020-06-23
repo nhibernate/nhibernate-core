@@ -22,6 +22,5 @@
 		/// Force immediate initialization.
 		/// </summary>
 		void ForceInitialization();
-
 	}
 }

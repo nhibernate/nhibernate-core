@@ -41,7 +41,6 @@ namespace NHibernate.Test.TypesTest
 			}
 		}
 
-
 		[Test(Description = "NH-2887")]
 		public void ReadWriteRelativeUri()
 		{
@@ -98,6 +97,5 @@ namespace NHibernate.Test.TypesTest
 			var propertyType = Sfi.GetEntityPersister(typeof(UriClass).FullName).GetPropertyType("AutoUri");
 			Assert.That(propertyType, Is.InstanceOf<UriType>());
 		}
-
 	}
 }

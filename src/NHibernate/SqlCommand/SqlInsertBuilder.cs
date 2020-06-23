@@ -28,7 +28,7 @@ namespace NHibernate.SqlCommand
 
 		protected internal Dialect.Dialect Dialect
 		{
-			get{return factory.Dialect;}
+			get { return factory.Dialect; }
 		}
 
 		public virtual SqlInsertBuilder SetComment(string comment)
@@ -70,7 +70,6 @@ namespace NHibernate.SqlCommand
 		{
 			return AddColumn(columnName, literalType.ObjectToSQLString(val, Dialect));
 		}
-
 
 		/// <summary>
 		/// Add a column with a specific value to the INSERT sql
@@ -220,7 +219,7 @@ namespace NHibernate.SqlCommand
 
 		public SqlType[] GetParametersTypeArray()
 		{
-			return new SafetyEnumerable<SqlType>(columns.Values).ToArray();
+			return columns.Values.OfType<SqlType>().ToArray();
 		}
 	}
 }

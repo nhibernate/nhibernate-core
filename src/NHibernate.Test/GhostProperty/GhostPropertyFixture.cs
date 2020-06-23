@@ -48,7 +48,6 @@ namespace NHibernate.Test.GhostProperty
 				});
 				tx.Commit();
 			}
-
 		}
 
 		protected override void OnTearDown()

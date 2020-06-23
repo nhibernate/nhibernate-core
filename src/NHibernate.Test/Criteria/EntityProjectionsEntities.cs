@@ -24,6 +24,7 @@ namespace NHibernate.Test.Criteria
 		public virtual string Name { get; set; }
 
 		public virtual string LazyProp { get; set; }
+		public virtual string LazyProp2 { get; set; }
 
 		public virtual EntitySimpleChild Child1 { get; set; }
 		public virtual EntitySimpleChild Child2 { get; set; }

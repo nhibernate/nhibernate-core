@@ -18,7 +18,7 @@ namespace NHibernate.Mapping
 
 		public override IEnumerable<Column> ColumnIterator
 		{
-			get { return new JoinedEnumerable<Column>(includedTable.ColumnIterator, base.ColumnIterator); }
+			get { return includedTable.ColumnIterator.Concat(base.ColumnIterator); }
 		}
 
 		public override IEnumerable<UniqueKey> UniqueKeyIterator
@@ -39,7 +39,6 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				List<Index> indexes = new List<Index>();
 				IEnumerable<Index> includedIdxs = includedTable.IndexIterator;
 				foreach (Index parentIndex in includedIdxs)
 				{
@@ -55,9 +54,13 @@ namespace NHibernate.Mapping
 					index.IsInherited = true;
 					index.Table = this;
 					index.AddColumns(parentIndex.ColumnIterator);
-					indexes.Add(index);
+					yield return index;
 				}
-				return new JoinedEnumerable<Index>(indexes, base.IndexIterator);
+
+				foreach (var index in base.IndexIterator)
+				{
+					yield return index;
+				}
 			}
 		}
 

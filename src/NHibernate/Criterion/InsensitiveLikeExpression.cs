@@ -63,8 +63,8 @@ namespace NHibernate.Criterion
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
-			SqlString[] columnNames =
-				CriterionUtil.GetColumnNames(propertyName, projection, criteriaQuery, criteria);
+			var columnNames =
+				CriterionUtil.GetColumnNamesAsSqlStringParts(propertyName, projection, criteriaQuery, criteria);
 
 			if (columnNames.Length != 1)
 			{
@@ -73,14 +73,14 @@ namespace NHibernate.Criterion
 
 			if (criteriaQuery.Factory.Dialect is PostgreSQLDialect)
 			{
-				sqlBuilder.Add(columnNames[0]);
+				sqlBuilder.AddObject(columnNames[0]);
 				sqlBuilder.Add(" ilike ");
 			}
 			else
 			{
 				sqlBuilder.Add(criteriaQuery.Factory.Dialect.LowercaseFunction)
 					.Add("(")
-					.Add(columnNames[0])
+					.AddObject(columnNames[0])
 					.Add(")")
 					.Add(" like ");
 			}
@@ -106,11 +106,7 @@ namespace NHibernate.Criterion
 		public TypedValue GetParameterTypedValue(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			var matchValue = value.ToString().ToLower();
-			if (projection != null)
-			{
-				return CriterionUtil.GetTypedValues(criteriaQuery, criteria, projection, null, matchValue).Single();
-			}
-			return criteriaQuery.GetTypedValue(criteria, propertyName, matchValue);
+			return CriterionUtil.GetTypedValue(criteriaQuery, criteria, projection, propertyName, matchValue);
 		}
 
 		public override IProjection[] GetProjections()

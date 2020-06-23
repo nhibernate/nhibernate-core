@@ -69,7 +69,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1499
 				Assert.ThrowsAsync<QueryException>(() => criteria.ListAsync<Document>());
 			}
 		}
-
-
 	}
 }

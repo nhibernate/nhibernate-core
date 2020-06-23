@@ -40,9 +40,9 @@ namespace NHibernate.AdoNet
 					var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
 					lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
 					_currentBatchCommandsLog.Append("command ")
-					.Append(_countOfCommands)
-					.Append(":")
-					.AppendLine(lineWithParameters);
+						.Append(_countOfCommands)
+						.Append(":")
+						.AppendLine(lineWithParameters);
 				}
 				if (Log.IsDebugEnabled())
 				{

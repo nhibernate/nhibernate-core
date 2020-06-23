@@ -34,7 +34,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2044
             }
         }
 
-
         [Test]
         public void IgnoreCaseShouldWorkWithCharCorrectly()
         {
@@ -45,8 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2044
                 IList<DomainClass> list = criteria.List<DomainClass>();
 
                 Assert.AreEqual(1, list.Count);
-                
-            }
+			}
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq.Expressions;
 using NHibernate.AdoNet;
 using NHibernate.AdoNet.Util;
 using NHibernate.Cache;
@@ -52,6 +53,15 @@ namespace NHibernate.Cfg
 		public string DefaultCatalogName { get; internal set; }
 
 		public string SessionFactoryName { get; internal set; }
+
+		/// <summary>
+		/// Should sessions check on every operation whether there is an ongoing system transaction or not, and enlist
+		/// into it if any? Default is <see langword="true"/>. It can also be controlled at session opening, see
+		/// <see cref="ISessionFactory.WithOptions" />. A session can also be instructed to explicitly join the current
+		/// transaction by calling <see cref="ISession.JoinTransaction" />. This setting has no effect if using a
+		/// transaction factory that is not system transactions aware.
+		/// </summary>
+		public bool AutoJoinTransaction { get; internal set; }
 
 		public bool IsAutoCreateSchema { get; internal set; }
 
@@ -120,6 +130,13 @@ namespace NHibernate.Cfg
 		public bool IsNamedQueryStartupCheckingEnabled { get; internal set; }
 
 		public bool IsBatchVersionedDataEnabled { get; internal set; }
+		
+		// 6.0 TODO : should throw by default
+		/// <summary>
+		/// <see langword="true" /> to throw in case any failure is reported during schema auto-update,
+		/// <see langword="false" /> to ignore failures.
+		/// </summary>
+		public bool ThrowOnSchemaUpdate { get; internal set; }
 
 		#region NH specific
 
@@ -134,8 +151,53 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public ILinqToHqlGeneratorsRegistry LinqToHqlGeneratorsRegistry { get; internal set; }
 
+		/// <summary>
+		/// Whether to use the legacy pre-evaluation or not in Linq queries. <c>true</c> by default.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Legacy pre-evaluation is causing special properties or functions like <c>DateTime.Now</c> or
+		/// <c>Guid.NewGuid()</c> to be always evaluated with the .Net runtime and replaced in the query by
+		/// parameter values.
+		/// </para>
+		/// <para>
+		/// The new pre-evaluation allows them to be converted to HQL function calls which will be run on the db
+		/// side. This allows for example to retrieve the server time instead of the client time, or to generate
+		/// UUIDs for each row instead of an unique one for all rows.
+		/// </para>
+		/// </remarks>
+		public bool LinqToHqlLegacyPreEvaluation { get; internal set; }
+
+		/// <summary>
+		/// When the new pre-evaluation is enabled, should methods which translation is not supported by the current
+		/// dialect fallback to pre-evaluation? <c>false</c> by default.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// When this fallback option is enabled while legacy pre-evaluation is disabled, properties or functions
+		/// like <c>DateTime.Now</c> or <c>Guid.NewGuid()</c> used in Linq expressions will not fail when the dialect does not
+		/// support them, but will instead be pre-evaluated.
+		/// </para>
+		/// <para>
+		/// When this fallback option is disabled while legacy pre-evaluation is disabled, properties or functions
+		/// like <c>DateTime.Now</c> or <c>Guid.NewGuid()</c> used in Linq expressions will fail when the dialect does not
+		/// support them.
+		/// </para>
+		/// <para>
+		/// This option has no effect if the legacy pre-evaluation is enabled.
+		/// </para>
+		/// </remarks>
+		public bool LinqToHqlFallbackOnPreEvaluation { get; internal set; }
+
 		public IQueryModelRewriterFactory QueryModelRewriterFactory { get; internal set; }
-		
+
+		/// <summary>
+		/// The pre-transformer registrar used to register custom expression transformers.
+		/// </summary>
+		public IExpressionTransformerRegistrar PreTransformerRegistrar { get; internal set; }
+
+		internal Func<Expression, Expression> LinqPreTransformer { get; set; }
+
 		#endregion
 
 		internal string GetFullCacheRegionName(string name)

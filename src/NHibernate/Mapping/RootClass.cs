@@ -89,12 +89,12 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public override IEnumerable<Table> TableClosureIterator
 		{
-			get { return new SingletonEnumerable<Table>(Table); }
+			get { return new[] {Table}; }
 		}
 
 		public override IEnumerable<IKeyValue> KeyClosureIterator
 		{
-			get { return new SingletonEnumerable<IKeyValue>(Key); }
+			get { return new[] {Key}; }
 		}
 
 		/// <summary>
@@ -170,7 +170,6 @@ namespace NHibernate.Mapping
 				}
 				return tables;
 			}
-
 		}
 
 		internal override int NextSubclassId()

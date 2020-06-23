@@ -26,7 +26,6 @@ namespace NHibernate.Engine
 	public sealed partial class Cascade
 	{
 
-
 		/// <summary> Cascade an action from the parent entity instance to all its children. </summary>
 		/// <param name="persister">The parent's entity persister </param>
 		/// <param name="parent">The parent reference. </param>
@@ -285,11 +284,11 @@ namespace NHibernate.Engine
 			if (pc.WasInitialized)
 			{
 				CollectionEntry ce = eventSource.PersistenceContext.GetCollectionEntry(pc);
-				orphans = ce == null ? CollectionHelper.EmptyCollection : await (ce.GetOrphansAsync(entityName, pc, cancellationToken)).ConfigureAwait(false);
+				orphans = ce == null ? CollectionHelper.EmptyCollection : ce.GetOrphans(entityName, pc);
 			}
 			else
 			{
-				orphans = await (pc.GetQueuedOrphansAsync(entityName, cancellationToken)).ConfigureAwait(false);
+				orphans = pc.GetQueuedOrphans(entityName);
 			}
 
 			foreach (object orphan in orphans)

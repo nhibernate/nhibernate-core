@@ -42,7 +42,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 		protected ISessionFactoryImplementor Factory
 		{
-			get{return Walker.SessionFactoryHelper.Factory;}
+			get { return Walker.SessionFactoryHelper.Factory; }
 		}
 
 		protected virtual void CoordinateSharedCacheCleanup(ISessionImplementor session)
@@ -188,9 +188,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			{
 				IIsolatedWork work = new TmpIdTableDropIsolatedWork(persister, log, session);
 
-				if (ShouldIsolateTemporaryTableDDL())
+				if (ShouldIsolateTemporaryTableDDL() && session.ConnectionManager.CurrentTransaction != null)
 				{
-					session.ConnectionManager.Transaction.RegisterSynchronization(
+					session.ConnectionManager.CurrentTransaction.RegisterSynchronization(
 						new IsolatedWorkAfterTransaction(work, session));
 				}
 				else

@@ -118,7 +118,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
-
 		public string PropertyPath
 		{
 			get { return _propertyPath; }
@@ -244,7 +243,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			IsResolved = true;
 		}
 
-		
 		public FromReferenceNode GetLhs()
 		{
 			var lhs = ((FromReferenceNode)GetChild(0));
@@ -359,7 +357,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			Walker.AddQuerySpaces( queryableCollection.CollectionSpaces );	// Always add the collection's query spaces.
 		}
 
-
 		private void DereferenceEntity(EntityType entityType, bool implicitJoin, string classAlias, bool generateJoin, IASTNode parent) 
 		{
 			CheckForCorrelatedSubquery( "dereferenceEntity" );
@@ -389,6 +386,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string property = _propertyName;
 			bool joinIsNeeded;
 
+			//For nullable entity comparisons we always need to add join (like not constrained one-to-one or not-found ignore associations) 
+			bool comparisonWithNullableEntity = false;
+
 			if ( IsDotNode( parent ) ) 
 			{
 				// our parent is another dot node, meaning we are being further dereferenced.
@@ -396,7 +396,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// entity's PK (because 'our' table would know the FK).
 				parentAsDotNode = ( DotNode ) parent;
 				property = parentAsDotNode._propertyName;
-				joinIsNeeded = generateJoin && !IsReferenceToPrimaryKey( parentAsDotNode._propertyName, entityType );
+				joinIsNeeded = generateJoin && (entityType.IsNullable || !IsReferenceToPrimaryKey( parentAsDotNode._propertyName, entityType ));
 			}
 			else if ( ! Walker.IsSelectStatement ) 
 			{
@@ -409,12 +409,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else
 			{
-				joinIsNeeded = generateJoin || ((Walker.IsInSelect && !Walker.IsInCase) || (Walker.IsInFrom && !Walker.IsComparativeExpressionClause));
+				comparisonWithNullableEntity = (Walker.IsComparativeExpressionClause && entityType.IsNullable);
+				joinIsNeeded = generateJoin || (Walker.IsInSelect && !Walker.IsInCase) || (Walker.IsInFrom && !Walker.IsComparativeExpressionClause)
+				               || comparisonWithNullableEntity;
 			}
 
 			if ( joinIsNeeded ) 
 			{
 				DereferenceEntityJoin( classAlias, entityType, implicitJoin, parent );
+				if (comparisonWithNullableEntity)
+				{
+					_columns = FromElement.GetIdentityColumns();
+				}
 			}
 			else 
 			{
@@ -534,7 +540,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				currentFromClause.AddDuplicateAlias(classAlias, elem);
 			}
-		
 
 			SetImpliedJoin( elem );
 			Walker.AddQuerySpaces( elem.EntityPersister.QuerySpaces );
@@ -558,7 +563,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 			}
 		}
-
 
 		/// <summary>
 		/// Is the given property name a reference to the primary key of the associated
@@ -610,7 +614,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get { return Walker.IsSubQuery && FromElement.FromClause != Walker.CurrentFromClause; }
 		}
-
 
 		private void CheckLhsIsNotCollection()
 		{

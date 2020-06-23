@@ -1,8 +1,7 @@
 using System;
-using System.Text;
-using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Criterion
 {
@@ -38,46 +37,54 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public virtual SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			if (projection != null)
-			{
-				SqlString sb = SqlString.Empty;
-				SqlString produced = this.projection.ToSqlString(criteria, 0, criteriaQuery);
-				SqlString truncated = SqlStringHelper.RemoveAsAliasesFromSql(produced);
-				sb = sb.Append(truncated);
-				sb = sb.Append(ascending ? " asc" : " desc");
-				return sb;
-			}
+			var columnsOrAliases = GetColumnsOrAliases(criteria, criteriaQuery);
+			var sqlTypes = ignoreCase ? SqlTypes(criteria, criteriaQuery) : null;
 
-			string[] columns = criteriaQuery.GetColumnAliasesUsingProjection(criteria, propertyName);
-			Type.IType type = criteriaQuery.GetTypeUsingProjection(criteria, propertyName);
-
-			StringBuilder fragment = new StringBuilder();
-			ISessionFactoryImplementor factory = criteriaQuery.Factory;
-			for (int i = 0; i < columns.Length; i++)
+			var fragment = new SqlStringBuilder();
+			var factory = criteriaQuery.Factory;
+			for (var i = 0; i < columnsOrAliases.Length; i++)
 			{
-				bool lower = ignoreCase && IsStringType(type.SqlTypes(factory)[i]);
+				var lower = sqlTypes != null && IsStringType(sqlTypes[i]);
+				if (lower)
+				{
+					fragment
+						.Add(factory.Dialect.LowercaseFunction)
+						.Add("(");
+				}
+
+				fragment.AddObject(columnsOrAliases[i]);
 
 				if (lower)
 				{
-					fragment.Append(factory.Dialect.LowercaseFunction)
-						.Append("(");
-				}
-				fragment.Append(columns[i]);
-
-				if (lower)
-				{
-					fragment.Append(")");
+					fragment.Add(")");
 				}
 
-				fragment.Append(ascending ? " asc" : " desc");
+				fragment.Add(ascending ? " asc" : " desc");
 
-				if (i < columns.Length - 1)
+				if (i < columnsOrAliases.Length - 1)
 				{
-					fragment.Append(", ");
+					fragment.Add(", ");
 				}
 			}
 
-			return new SqlString(fragment.ToString());
+			return fragment.ToSqlString();
+		}
+
+		private object[] GetColumnsOrAliases(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			var propName = propertyName ?? (projection as IPropertyProjection)?.PropertyName;
+			return propName != null
+				? criteriaQuery.GetColumnAliasesUsingProjection(criteria, propName)
+				: CriterionUtil.GetColumnNamesAsSqlStringParts(projection, criteriaQuery, criteria);
+		}
+
+		private SqlType[] SqlTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			var type = projection == null
+				? criteriaQuery.GetTypeUsingProjection(criteria, propertyName)
+				: projection.GetTypes(criteria, criteriaQuery)[0];
+
+			return type.SqlTypes(criteriaQuery.Factory);
 		}
 
 		public override string ToString()

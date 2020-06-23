@@ -74,6 +74,5 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
                 _processedText = true;
             }
         }
-
 	}
 }

@@ -64,4 +64,3 @@ namespace NHibernate.Proxy
 		}
 	}
 }
-

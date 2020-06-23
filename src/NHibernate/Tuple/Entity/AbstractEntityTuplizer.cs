@@ -324,7 +324,7 @@ namespace NHibernate.Tuple.Entity
 		}
 
 		/// <summary> Return the entity-mode handled by this tuplizer instance. </summary>
-		public abstract EntityMode EntityMode { get;}
+		public abstract EntityMode EntityMode { get; }
 
 		protected virtual IInstantiator Instantiator { get; set; }
 
@@ -420,6 +420,5 @@ namespace NHibernate.Tuple.Entity
 		{
 			get { return entityMetamodel; }
 		}
-
 	}
 }

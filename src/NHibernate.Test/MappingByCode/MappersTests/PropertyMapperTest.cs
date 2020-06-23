@@ -37,7 +37,6 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			public void Access(System.Type accessorType)
 			{
-				
 			}
 		}
 		[Test]

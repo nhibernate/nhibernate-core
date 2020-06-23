@@ -28,6 +28,5 @@ namespace NHibernate.Test.NHSpecificTest.NH280
 			get { return _description; }
 			set { _description = value; }
 		}
-
 	}
 }

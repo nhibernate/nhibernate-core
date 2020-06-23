@@ -97,7 +97,6 @@ namespace NHibernate.Util
 			return sb.ToString();
 		}
 
-
 		/// <summary>
 		/// Append all elements in the 'from' list to the 'to' list.
 		/// </summary>
@@ -181,6 +180,15 @@ namespace NHibernate.Util
 			return array.Count(t => t);
 		}
 
+		internal static IEnumerable<int> IndexesOf<T>(T[] array, T value)
+		{
+			for (int i = 0; i < array.Length; i++)
+			{
+				if (EqualityComparer<T>.Default.Equals(array[i], value))
+					yield return i;
+			}
+		}
+
 		public static bool ArrayEquals<T>(T[] a, T[] b)
 		{
 			return ArrayComparer<T>.Default.Equals(a, b);
@@ -203,7 +211,6 @@ namespace NHibernate.Util
 		{
 			return ArrayComparer<T>.Default.GetHashCode(array);
 		}
-
 
 		/// <summary>
 		/// Append a value to an array.

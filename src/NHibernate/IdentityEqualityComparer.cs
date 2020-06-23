@@ -1,14 +1,15 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace NHibernate
 {
+	// Since v5.3 
+	[Obsolete("This class has no more usages and will be removed in a future version")]
 	[Serializable]
-	public class IdentityEqualityComparer: IEqualityComparer
+	public class IdentityEqualityComparer : IEqualityComparer, IEqualityComparer<object>
 	{
-		#region IEqualityComparer Members
-
 		public int GetHashCode(object obj)
 		{
 			return RuntimeHelpers.GetHashCode(obj);
@@ -32,8 +33,6 @@ namespace NHibernate
 		public new bool Equals(object x, object y)
 		{
 			return ReferenceEquals(x, y);
-
 		}
-		#endregion
 	}
 }
