@@ -336,14 +336,14 @@
 												</xs:documentation>
 											</xs:annotation>
 										</xs:enumeration>
-										<xs:enumeration value="multiTenancy">
+										<xs:enumeration value="multi_tenancy.strategy">
 											<xs:annotation>
 												<xs:documentation>
 													Strategy for multi-tenancy. Supported Values: Database, None. Corresponds to MultiTenancyStrategy enum.
 												</xs:documentation>
 											</xs:annotation>
 										</xs:enumeration>
-										<xs:enumeration value="multiTenancy.connection_provider">
+										<xs:enumeration value="multi_tenancy.connection_provider">
 											<xs:annotation>
 												<xs:documentation>
 													Connection provider for given multi-tenancy strategy. Class name implementing IMultiTenancyConnectionProvider.

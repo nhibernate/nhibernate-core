@@ -6,7 +6,6 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Connection;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -38,9 +37,7 @@ namespace NHibernate.Test.MultiTenancy
 		[Test]
 		public void ShouldThrowWithNoTenantIdentifier()
 		{
-			var sessionBuilder = Sfi.WithOptions().TenantConfiguration(new TenantConfiguration(null));
-
-			Assert.That(() => sessionBuilder.OpenSession(), Throws.ArgumentException);
+			Assert.Throws<ArgumentNullException>(() => Sfi.WithOptions().TenantConfiguration(new TenantConfiguration(null)));
 		}
 
 		[Test]
@@ -63,9 +60,7 @@ namespace NHibernate.Test.MultiTenancy
 		[Test]
 		public void StatelessSessionShouldThrowWithNoTenantIdentifier()
 		{
-			var sessionBuilder = Sfi.WithStatelessOptions().TenantConfiguration(new TenantConfiguration(null));
-
-			Assert.That(() => sessionBuilder.OpenStatelessSession(), Throws.ArgumentException);
+			Assert.Throws<ArgumentNullException>(() => Sfi.WithStatelessOptions().TenantConfiguration(new TenantConfiguration(null)));
 		}
 
 		[Test]
@@ -272,10 +267,7 @@ namespace NHibernate.Test.MultiTenancy
 
 		private TenantConfiguration GetTenantConfig(string tenantId)
 		{
-			return new TestTenantConfiguration(tenantId, IsSqlServerDialect)
-			{
-				ConnectionString = Sfi.ConnectionProvider.GetConnectionString()
-			};
+			return new TestTenantConfiguration(tenantId, IsSqlServerDialect);
 		}
 
 		private bool IsSqlServerDialect => Sfi.Dialect is MsSql2000Dialect && !(Sfi.ConnectionProvider.Driver is OdbcDriver);
@@ -300,7 +292,7 @@ namespace NHibernate.Test.MultiTenancy
 		protected override DbConnection OpenConnectionForSchemaExport()
 		{
 			return Sfi.Settings.MultiTenancyConnectionProvider
-					.GetConnectionAccess(GetTenantConfig("defaultTenant")).GetConnection(Sfi.ConnectionProvider);
+					.GetConnectionAccess(GetTenantConfig("defaultTenant"), Sfi).GetConnection();
 		}
 
 		protected override ISession OpenSession()

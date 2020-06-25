@@ -12,16 +12,11 @@ namespace NHibernate.MultiTenancy
 		/// Tenant identifier must uniquely identify tenant
 		/// Note: Among other things this value is used for data separation between tenants in cache so not unique value will leak data to other tenants 
 		/// </summary>
-		public string TenantIdentifier { get; set; }
-
-		/// <summary>
-		/// Tenant Connection String. Usage depends on multi-tenancy connection provider "multiTenancy.connection_provider"
-		/// </summary>
-		public string ConnectionString { get; set; }
+		public string TenantIdentifier { get; }
 
 		public TenantConfiguration(string tenantIdentifier)
 		{
-			TenantIdentifier = tenantIdentifier;
+			TenantIdentifier = tenantIdentifier ?? throw new ArgumentNullException(nameof(tenantIdentifier));
 		}
 	}
 }

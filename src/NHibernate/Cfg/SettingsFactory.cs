@@ -426,13 +426,12 @@ namespace NHibernate.Cfg
 				Environment.MultiTenancyConnectionProvider,
 				properties,
 				null);
+			log.Info("Multi-tenancy connection provider: {0}", className);
 			if (className == null)
 			{
-				log.Info("Default Multi-tenancy connection provider is used: {0}", typeof(DefaultMultiTenancyConnectionProvider).FullName);
-				return new DefaultMultiTenancyConnectionProvider();
+				return null;
 			}
 
-			log.Info("Multi-tenancy connection provider: {0}", className);
 			try
 			{
 				return (IMultiTenancyConnectionProvider)

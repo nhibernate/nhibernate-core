@@ -68,7 +68,13 @@ namespace NHibernate.Impl
 
 			if (string.IsNullOrEmpty(tenantConfiguration?.TenantIdentifier))
 			{
-				throw  new ArgumentException("Tenant configuration with TenantIdentifier defined is required for multi-tenancy.", nameof(tenantConfiguration));
+				throw new ArgumentException("Tenant configuration with TenantIdentifier defined is required for multi-tenancy.", nameof(tenantConfiguration));
+			}
+
+			if (_factory.Settings.MultiTenancyConnectionProvider == null)
+			{
+				throw new ArgumentException(
+					$"IMultiTenantConnectionProvider is required for multi-tenancy. Provide it via '{Cfg.Environment.MultiTenancyConnectionProvider}` session factory setting.");
 			}
 
 			return tenantConfiguration;
@@ -104,8 +110,8 @@ namespace NHibernate.Impl
 						options.SessionConnectionReleaseMode,
 						Interceptor,
 						_tenantConfiguration == null
-							? new NonContextualConnectionAccess(_factory.ConnectionProvider.GetConnectionString())
-							: _factory.Settings.MultiTenancyConnectionProvider.GetConnectionAccess(_tenantConfiguration),
+							? new NonContextualConnectionAccess(_factory)
+							: _factory.Settings.MultiTenancyConnectionProvider.GetConnectionAccess(_tenantConfiguration, _factory),
 						options.ShouldAutoJoinTransaction);
 				}
 			}

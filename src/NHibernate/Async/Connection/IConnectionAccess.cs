@@ -16,7 +16,13 @@ namespace NHibernate.Connection
 	using System.Threading;
 	public partial interface IConnectionAccess
 	{
+
 		//ObtainConnection in hibernate
-		Task<DbConnection> GetConnectionAsync(IConnectionProvider provider, CancellationToken cancellationToken);
+		/// <summary>
+		/// Gets the database connection.
+		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>The database connection.</returns>
+		Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken);
 	}
 }

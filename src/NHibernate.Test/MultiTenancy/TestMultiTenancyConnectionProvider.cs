@@ -1,17 +1,19 @@
 using System;
 using System.Data.SqlClient;
+using NHibernate.Connection;
+using NHibernate.Engine;
 using NHibernate.MultiTenancy;
 
 namespace NHibernate.Test.MultiTenancy
 {
 	[Serializable]
-	public class TestMultiTenancyConnectionProvider : DefaultMultiTenancyConnectionProvider
+	public class TestMultiTenancyConnectionProvider : AbstractMultiTenancyConnectionProvider
 	{
-		protected override string GetTenantConnectionString(TenantConfiguration configuration)
+		protected override string GetTenantConnectionString(TenantConfiguration tenantConfiguration, ISessionFactoryImplementor sessionFactory)
 		{
-			return configuration is TestTenantConfiguration tenant && tenant.IsSqlServerDialect
-				? new SqlConnectionStringBuilder(configuration.ConnectionString) {ApplicationName = configuration.TenantIdentifier}.ToString()
-				: base.GetTenantConnectionString(configuration);
+			return tenantConfiguration is TestTenantConfiguration tenant && tenant.IsSqlServerDialect
+				? new SqlConnectionStringBuilder(sessionFactory.ConnectionProvider.GetConnectionString()) {ApplicationName = tenantConfiguration.TenantIdentifier}.ToString()
+				: sessionFactory.ConnectionProvider.GetConnectionString();
 		}
 	}
 }

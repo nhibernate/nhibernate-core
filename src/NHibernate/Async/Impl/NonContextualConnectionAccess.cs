@@ -11,6 +11,7 @@
 using System;
 using System.Data.Common;
 using NHibernate.Connection;
+using NHibernate.Engine;
 
 namespace NHibernate.Impl
 {
@@ -19,13 +20,14 @@ namespace NHibernate.Impl
 	partial class NonContextualConnectionAccess : IConnectionAccess
 	{
 
-		public Task<DbConnection> GetConnectionAsync(IConnectionProvider provider, CancellationToken cancellationToken)
+		/// <inheritdoc />
+		public Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<DbConnection>(cancellationToken);
 			}
-			return provider.GetConnectionAsync(ConnectionString, cancellationToken);
+			return _sessionFactory.ConnectionProvider.GetConnectionAsync(cancellationToken);
 		}
 	}
 }

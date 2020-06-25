@@ -11,24 +11,25 @@
 using System;
 using System.Data.Common;
 using NHibernate.Connection;
-using Environment = NHibernate.Cfg.Environment;
+using NHibernate.Engine;
 
 namespace NHibernate.MultiTenancy
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class DefaultMultiTenancyConnectionProvider : IMultiTenancyConnectionProvider
+	public abstract partial class AbstractMultiTenancyConnectionProvider : IMultiTenancyConnectionProvider
 	{
 		partial class ContextualConnectionAccess : IConnectionAccess
 		{
 
-			public Task<DbConnection> GetConnectionAsync(IConnectionProvider provider, CancellationToken cancellationToken)
+			/// <inheritdoc />
+			public Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{
 					return Task.FromCanceled<DbConnection>(cancellationToken);
 				}
-				return provider.GetConnectionAsync(ConnectionString, cancellationToken);
+				return _sessionFactory.ConnectionProvider.GetConnectionAsync(ConnectionString, cancellationToken);
 			}
 		}
 	}

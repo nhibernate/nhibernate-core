@@ -1,4 +1,5 @@
 using NHibernate.Connection;
+using NHibernate.Engine;
 
 namespace NHibernate.MultiTenancy
 {
@@ -9,8 +10,11 @@ namespace NHibernate.MultiTenancy
 	public interface IMultiTenancyConnectionProvider
 	{
 		/// <summary>
-		/// Tenant connection access
+		/// Gets the tenant connection access.
 		/// </summary>
-		IConnectionAccess GetConnectionAccess(TenantConfiguration configuration);
+		/// <param name="tenantConfiguration">The tenant configuration.</param>
+		/// <param name="sessionFactory">The session factory.</param>
+		/// <returns>The tenant connection access.</returns>
+		IConnectionAccess GetConnectionAccess(TenantConfiguration tenantConfiguration, ISessionFactoryImplementor sessionFactory);
 	}
 }

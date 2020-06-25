@@ -387,14 +387,14 @@ namespace NHibernate.Cfg
 		private static readonly Dictionary<string, string> GlobalProperties = new Dictionary<string, string>();
 
 		/// <summary>
-		/// Strategy for multi-tenancy. </summary>
+		/// Strategy for multi-tenancy.</summary>
 		/// <seealso cref="MultiTenancyStrategy"/>
-		public const string MultiTenancy = "multiTenancy";
+		public const string MultiTenancy = "multi_tenancy.strategy";
 
 		/// <summary>
 		/// Connection provider for given multi-tenancy strategy. Class name implementing IMultiTenancyConnectionProvider.
 		/// </summary>
-		public const string MultiTenancyConnectionProvider = "multiTenancy.connection_provider";
+		public const string MultiTenancyConnectionProvider = "multi_tenancy.connection_provider";
 
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;
