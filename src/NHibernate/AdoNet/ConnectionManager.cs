@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Security;
 using NHibernate.Connection;
 using NHibernate.Engine;
+using NHibernate.Impl;
 
 namespace NHibernate.AdoNet
 {
@@ -81,10 +82,16 @@ namespace NHibernate.AdoNet
 			IInterceptor interceptor,
 			IConnectionAccess connectionAccess,
 			bool shouldAutoJoinTransaction)
-#pragma warning disable 618
-			: this(session, suppliedConnection, connectionReleaseMode, interceptor, shouldAutoJoinTransaction)
-#pragma warning restore 618
 		{
+			Session = session;
+			_connection = suppliedConnection;
+			_connectionReleaseMode = connectionReleaseMode;
+
+			_interceptor = interceptor;
+			_batcher = session.Factory.Settings.BatcherFactory.CreateBatcher(this, interceptor);
+
+			_ownConnection = suppliedConnection == null;
+			ShouldAutoJoinTransaction = shouldAutoJoinTransaction;
 			_connectionAccess = connectionAccess ?? throw new ArgumentNullException(nameof(connectionAccess));
 		}
 
@@ -106,6 +113,7 @@ namespace NHibernate.AdoNet
 
 			_ownConnection = suppliedConnection == null;
 			ShouldAutoJoinTransaction = shouldAutoJoinTransaction;
+			_connectionAccess = new NonContextualConnectionAccess(session.Factory);
 		}
 
 		public void AddDependentSession(ISessionImplementor session)
