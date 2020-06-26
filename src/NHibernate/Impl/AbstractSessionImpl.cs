@@ -113,10 +113,10 @@ namespace NHibernate.Impl
 						options.UserSuppliedConnection,
 						options.SessionConnectionReleaseMode,
 						Interceptor,
+						options.ShouldAutoJoinTransaction,
 						_tenantConfiguration == null
 							? new NonContextualConnectionAccess(_factory)
-							: _factory.Settings.MultiTenancyConnectionProvider.GetConnectionAccess(_tenantConfiguration, _factory),
-						options.ShouldAutoJoinTransaction);
+							: _factory.Settings.MultiTenancyConnectionProvider.GetConnectionAccess(_tenantConfiguration, _factory));
 				}
 			}
 		}

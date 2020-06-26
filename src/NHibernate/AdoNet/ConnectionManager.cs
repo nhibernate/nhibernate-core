@@ -80,8 +80,8 @@ namespace NHibernate.AdoNet
 			DbConnection suppliedConnection,
 			ConnectionReleaseMode connectionReleaseMode,
 			IInterceptor interceptor,
-			IConnectionAccess connectionAccess,
-			bool shouldAutoJoinTransaction)
+			bool shouldAutoJoinTransaction,
+			IConnectionAccess connectionAccess)
 		{
 			Session = session;
 			_connection = suppliedConnection;
@@ -102,18 +102,8 @@ namespace NHibernate.AdoNet
 			DbConnection suppliedConnection,
 			ConnectionReleaseMode connectionReleaseMode,
 			IInterceptor interceptor,
-			bool shouldAutoJoinTransaction)
+			bool shouldAutoJoinTransaction) : this(session, suppliedConnection, connectionReleaseMode, interceptor, shouldAutoJoinTransaction, new NonContextualConnectionAccess(session.Factory))
 		{
-			Session = session;
-			_connection = suppliedConnection;
-			_connectionReleaseMode = connectionReleaseMode;
-
-			_interceptor = interceptor;
-			_batcher = session.Factory.Settings.BatcherFactory.CreateBatcher(this, interceptor);
-
-			_ownConnection = suppliedConnection == null;
-			ShouldAutoJoinTransaction = shouldAutoJoinTransaction;
-			_connectionAccess = new NonContextualConnectionAccess(session.Factory);
 		}
 
 		public void AddDependentSession(ISessionImplementor session)
