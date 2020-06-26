@@ -6,7 +6,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Connection
 {
-	//TODO: Merge into IConnectionProvider
+	//6.0 TODO: Merge into IConnectionProvider
 	public static partial class ConnectionProviderExtensions
 	{
 		internal static DbConnection GetConnection(this IConnectionProvider connectionProvider, string connectionString)
@@ -14,7 +14,7 @@ namespace NHibernate.Connection
 			return ReflectHelper.CastOrThrow<ConnectionProvider>(connectionProvider, "open connection by connectionString").GetConnection(connectionString);
 		}
 
-		//TODO: Expose as ConnectionString property
+		//6.0 TODO: Expose as ConnectionString property
 		public static string GetConnectionString(this IConnectionProvider connectionProvider)
 		{
 			return ReflectHelper.CastOrThrow<ConnectionProvider>(connectionProvider, "retrieve connectionString").ConnectionString;
