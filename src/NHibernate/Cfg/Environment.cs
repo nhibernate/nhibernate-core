@@ -388,7 +388,7 @@ namespace NHibernate.Cfg
 
 		/// <summary>
 		/// Strategy for multi-tenancy.</summary>
-		/// <seealso cref="MultiTenancyStrategy"/>
+		/// See also <seealso cref="MultiTenancyStrategy"/>
 		public const string MultiTenancy = "multi_tenancy.strategy";
 
 		/// <summary>

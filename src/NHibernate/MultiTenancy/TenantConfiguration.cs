@@ -3,7 +3,8 @@ using System;
 namespace NHibernate.MultiTenancy
 {
 	/// <summary>
-	/// Tenant specific configuration
+	/// Tenant specific configuration.
+	/// This class can be used as base class for user complex tenant configurations.
 	/// </summary>
 	[Serializable]
 	public class TenantConfiguration

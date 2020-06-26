@@ -188,12 +188,12 @@ namespace NHibernate.Test.MultiTenancy
 
 		private ISession OpenTenantSession(string tenantId)
 		{
-			return Sfi.WithOptions().TenantConfiguration(GetTenantConfig(tenantId)).OpenSession();
+			return Sfi.WithOptions().Tenant(GetTenantConfig(tenantId)).OpenSession();
 		}
 
 		private IStatelessSession OpenTenantStatelessSession(string tenantId)
 		{
-			return Sfi.WithStatelessOptions().TenantConfiguration(GetTenantConfig(tenantId)).OpenStatelessSession();
+			return Sfi.WithStatelessOptions().Tenant(GetTenantConfig(tenantId)).OpenStatelessSession();
 		}
 
 		private TenantConfiguration GetTenantConfig(string tenantId)

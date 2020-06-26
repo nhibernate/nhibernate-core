@@ -472,7 +472,7 @@ namespace NHibernate.Test
 			TenantConfiguration ISessionCreationOptionsWithMultiTenancy.TenantConfiguration
 			{
 				get => (_actualBuilder as ISessionCreationOptionsWithMultiTenancy)?.TenantConfiguration;
-				set => _actualBuilder.TenantConfiguration(value);
+				set => _actualBuilder.Tenant(value);
 			}
 		}
 
@@ -515,7 +515,7 @@ namespace NHibernate.Test
 			TenantConfiguration ISessionCreationOptionsWithMultiTenancy.TenantConfiguration
 			{
 				get => (_actualBuilder as ISessionCreationOptionsWithMultiTenancy)?.TenantConfiguration;
-				set => _actualBuilder.TenantConfiguration(value);
+				set => _actualBuilder.Tenant(value);
 			}
 
 			#endregion

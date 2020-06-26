@@ -37,7 +37,7 @@ namespace NHibernate.Test.MultiTenancy
 		[Test]
 		public void ShouldThrowWithNoTenantIdentifier()
 		{
-			Assert.Throws<ArgumentNullException>(() => Sfi.WithOptions().TenantConfiguration(new TenantConfiguration(null)));
+			Assert.Throws<ArgumentNullException>(() => Sfi.WithOptions().Tenant(new TenantConfiguration(null)));
 		}
 
 		[Test]
@@ -60,7 +60,7 @@ namespace NHibernate.Test.MultiTenancy
 		[Test]
 		public void StatelessSessionShouldThrowWithNoTenantIdentifier()
 		{
-			Assert.Throws<ArgumentNullException>(() => Sfi.WithStatelessOptions().TenantConfiguration(new TenantConfiguration(null)));
+			Assert.Throws<ArgumentNullException>(() => Sfi.WithStatelessOptions().Tenant(new TenantConfiguration(null)));
 		}
 
 		[Test]
@@ -257,12 +257,12 @@ namespace NHibernate.Test.MultiTenancy
 
 		private ISession OpenTenantSession(string tenantId)
 		{
-			return Sfi.WithOptions().TenantConfiguration(GetTenantConfig(tenantId)).OpenSession();
+			return Sfi.WithOptions().Tenant(GetTenantConfig(tenantId)).OpenSession();
 		}
 
 		private IStatelessSession OpenTenantStatelessSession(string tenantId)
 		{
-			return Sfi.WithStatelessOptions().TenantConfiguration(GetTenantConfig(tenantId)).OpenStatelessSession();
+			return Sfi.WithStatelessOptions().Tenant(GetTenantConfig(tenantId)).OpenStatelessSession();
 		}
 
 		private TenantConfiguration GetTenantConfig(string tenantId)

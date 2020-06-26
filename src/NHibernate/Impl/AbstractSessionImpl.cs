@@ -68,13 +68,17 @@ namespace NHibernate.Impl
 
 			if (string.IsNullOrEmpty(tenantConfiguration?.TenantIdentifier))
 			{
-				throw new ArgumentException("Tenant configuration with TenantIdentifier defined is required for multi-tenancy.", nameof(tenantConfiguration));
+				throw new ArgumentException(
+					$"Tenant configuration with `{nameof(TenantConfiguration.TenantIdentifier)}` defined is required for multi-tenancy.",
+					nameof(tenantConfiguration));
 			}
 
 			if (_factory.Settings.MultiTenancyConnectionProvider == null)
 			{
 				throw new ArgumentException(
-					$"IMultiTenantConnectionProvider is required for multi-tenancy. Provide it via '{Cfg.Environment.MultiTenancyConnectionProvider}` session factory setting.");
+					$"`{nameof(IMultiTenancyConnectionProvider)}` is required for multi-tenancy." +
+					$" Provide it via '{Cfg.Environment.MultiTenancyConnectionProvider}` session factory setting." +
+					$" You can use `{nameof(AbstractMultiTenancyConnectionProvider)}` as a base.");
 			}
 
 			return tenantConfiguration;

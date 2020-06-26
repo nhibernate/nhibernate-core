@@ -6,14 +6,23 @@ using NHibernate.Util;
 
 namespace NHibernate
 {
-	//TODO 6.0: Merge into ISessionBuilder<T>
 	public static class SessionBuilderExtensions
 	{
 		/// <summary>
-		/// Provides tenant configuration required for multi-tenancy
-		/// <seealso cref="Cfg.Environment.MultiTenancy"/>
+		/// Associates session with given tenantIdentifier when multi-tenancy is enabled.
+		/// See <seealso cref="NHibernate.Cfg.Environment.MultiTenancy"/>
 		/// </summary>
-		public static T TenantConfiguration<T>(this T builder, TenantConfiguration tenantConfig) where T: ISessionBuilder
+		public static T Tenant<T>(this T builder, string tenantIdentifier) where T : ISessionBuilder
+		{
+			return builder.Tenant(new TenantConfiguration(tenantIdentifier));
+		}
+
+		//TODO 6.0: Merge into ISessionBuilder<T>
+		/// <summary>
+		/// Associates session with given tenantConfig when multi-tenancy is enabled.
+		/// See <seealso cref="NHibernate.Cfg.Environment.MultiTenancy"/>
+		/// </summary>
+		public static T Tenant<T>(this T builder, TenantConfiguration tenantConfig) where T: ISessionBuilder
 		{
 			ReflectHelper.CastOrThrow<ISessionCreationOptionsWithMultiTenancy>(builder, "multi tenancy").TenantConfiguration = tenantConfig;
 			return builder;

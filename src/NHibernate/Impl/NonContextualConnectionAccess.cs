@@ -6,7 +6,7 @@ using NHibernate.Engine;
 namespace NHibernate.Impl
 {
 	/// <summary>
-	/// A non contextual connection access used when multi-tenant is not enabled.  
+	/// A non contextual connection access used when multi-tenancy is not enabled.  
 	/// </summary>
 	[Serializable]
 	partial class NonContextualConnectionAccess : IConnectionAccess
