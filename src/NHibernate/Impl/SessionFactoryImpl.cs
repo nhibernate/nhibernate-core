@@ -1038,7 +1038,7 @@ namespace NHibernate.Impl
 				throw new NotImplementedException("Eviction is not implemented for multi-tenancy. Please initialize CurrentSessionContext.");
 			}
 
-			return new CacheKey(id, type, entityOrRoleName, this, null);
+			return new CacheKey(id, type, entityOrRoleName, this, tenantIdentifier);
 		}
 
 		public void EvictCollection(string roleName)

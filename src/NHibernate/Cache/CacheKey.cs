@@ -46,13 +46,8 @@ namespace NHibernate.Cache
 		//Since 5.3
 		[Obsolete("Use constructor with tenantIdentifier")]
 		public CacheKey(object id, IType type, string entityOrRoleName, ISessionFactoryImplementor factory)
+			: this(id, type, entityOrRoleName, factory, null)
 		{
-			key = id;
-			this.type = type;
-			this.entityOrRoleName = entityOrRoleName;
-			_factory = factory;
-
-			_hashCode = GenerateHashCode();
 		}
 
 		//Mainly for SysCache and Memcache

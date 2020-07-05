@@ -81,29 +81,8 @@ namespace NHibernate.Cache
 		[Obsolete("Please use overload with tenantIdentifier")]
 		public QueryKey(ISessionFactoryImplementor factory, SqlString queryString, QueryParameters queryParameters,
 		                ISet<FilterKey> filters, CacheableResultTransformer customTransformer)
+			: this(factory, queryString, queryParameters, filters, customTransformer, null)
 		{
-			_factory = factory;
-			_sqlQueryString = queryString;
-			_types = queryParameters.PositionalParameterTypes;
-			_values = queryParameters.PositionalParameterValues;
-
-			RowSelection selection = queryParameters.RowSelection;
-			if (selection != null)
-			{
-				_firstRow = selection.FirstRow;
-				_maxRows = selection.MaxRows;
-			}
-			else
-			{
-				_firstRow = RowSelection.NoValue;
-				_maxRows = RowSelection.NoValue;
-			}
-
-			_namedParameters = queryParameters.NamedParameters?.ToArray();
-			_filters = filters?.ToArray();
-			_customTransformer = customTransformer;
-
-			_hashCode = ComputeHashCode();
 		}
 
 		public CacheableResultTransformer ResultTransformer
