@@ -16,6 +16,7 @@ using System.Runtime.Serialization;
 using System.Security;
 using NHibernate.Connection;
 using NHibernate.Engine;
+using NHibernate.Impl;
 
 namespace NHibernate.AdoNet
 {

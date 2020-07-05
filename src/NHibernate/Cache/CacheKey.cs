@@ -54,7 +54,10 @@ namespace NHibernate.Cache
 		public override String ToString()
 		{
 			// For Component the user can override ToString
-			return entityOrRoleName + '#' + key;
+			return
+				string.IsNullOrEmpty(_tenantIdentifier)
+					? entityOrRoleName + "#" + key
+					: string.Join("#", entityOrRoleName, key, _tenantIdentifier);
 		}
 
 		public override bool Equals(object obj)

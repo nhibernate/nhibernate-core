@@ -933,16 +933,7 @@ namespace NHibernate.Impl
 
 		public void Evict(System.Type persistentClass, object id)
 		{
-			IEntityPersister p = GetEntityPersister(persistentClass.FullName);
-			if (p.HasCache)
-			{
-				if (log.IsDebugEnabled())
-				{
-					log.Debug("evicting second-level cache: {0}", MessageHelper.InfoString(p, id));
-				}
-				CacheKey ck = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
-				p.Cache.Remove(ck);
-			}
+			EvictEntity(persistentClass.FullName, id);
 		}
 
 		public void Evict(System.Type persistentClass)
@@ -996,33 +987,44 @@ namespace NHibernate.Impl
 
 		public void EvictEntity(string entityName, object id)
 		{
+			EvictEntity(entityName, id, null);
+		}
+
+		public void EvictEntity(string entityName, object id, string tenantIdentifier)
+		{
 			IEntityPersister p = GetEntityPersister(entityName);
 			if (p.HasCache)
 			{
 				if (log.IsDebugEnabled())
 				{
-					log.Debug("evicting second-level cache: {0}", MessageHelper.InfoString(p, id, this));
+					LogEvict(tenantIdentifier, MessageHelper.InfoString(p, id, this));
 				}
-				CacheKey cacheKey = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
+				CacheKey cacheKey = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName, tenantIdentifier);
 				p.Cache.Remove(cacheKey);
 			}
 		}
 
 		public void EvictCollection(string roleName, object id)
 		{
+			EvictCollection(roleName, id, null);
+		}
+
+		public void EvictCollection(string roleName, object id, string tenantIdentifier)
+		{
 			ICollectionPersister p = GetCollectionPersister(roleName);
 			if (p.HasCache)
 			{
 				if (log.IsDebugEnabled())
 				{
-					log.Debug("evicting second-level cache: {0}", MessageHelper.CollectionInfoString(p, id));
+					LogEvict(tenantIdentifier, MessageHelper.CollectionInfoString(p, id));
 				}
-				CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role);
+
+				CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role, tenantIdentifier);
 				p.Cache.Remove(ck);
 			}
 		}
 
-		private CacheKey GenerateCacheKeyForEvict(object id, IType type, string entityOrRoleName, string tenantIdentifier = null)
+		private CacheKey GenerateCacheKeyForEvict(object id, IType type, string entityOrRoleName, string tenantIdentifier)
 		{
 			// if there is a session context, use that to generate the key.
 			if (CurrentSessionContext != null)
@@ -1035,7 +1037,7 @@ namespace NHibernate.Impl
 
 			if (settings.MultiTenancyStrategy != MultiTenancyStrategy.None && tenantIdentifier == null)
 			{
-				throw new NotImplementedException("Eviction is not implemented for multi-tenancy. Please initialize CurrentSessionContext.");
+				throw new ArgumentException("Use overload with tenantIdentifier or initialize CurrentSessionContext.");
 			}
 
 			return new CacheKey(id, type, entityOrRoleName, this, tenantIdentifier);
@@ -1268,6 +1270,17 @@ namespace NHibernate.Impl
 		}
 
 		#endregion
+
+		private static void LogEvict(string tenantIdentifier, string infoString)
+		{
+			if (string.IsNullOrEmpty(tenantIdentifier))
+			{
+				log.Debug("evicting second-level cache: {0}", infoString);
+				return;
+			}
+
+			log.Debug("evicting second-level cache for tenant '{1}': {0}", infoString, tenantIdentifier);
+		}
 
 		private void Init()
 		{
