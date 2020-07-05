@@ -18,7 +18,7 @@
                 <para>
                     NHibernate makes identifier properties optional. There are all sorts of reasons why
                     you should use them. We recommend that identifiers be 'synthetic' (generated, with
-                    no business meaning) and of a non-primitive type. For maximum flexibility, use
+                    no business meaning) and of a primitive type. For maximum flexibility, use
                     <literal>Int64</literal> or <literal>String</literal>.
                 </para>
             </listitem>
