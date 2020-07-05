@@ -30,11 +30,6 @@ namespace NHibernate.Connection
 		/// <exception cref="Exception">
 		/// If there is any problem creating or opening the <see cref="DbConnection"/>.
 		/// </exception>
-		public override DbConnection GetConnection()
-		{
-			return GetConnection(ConnectionString);
-		}
-
 		public override DbConnection GetConnection(string connectionString)
 		{
 			log.Debug("Obtaining DbConnection from Driver");
