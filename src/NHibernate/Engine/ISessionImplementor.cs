@@ -18,10 +18,10 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
-	// 6.0 TODO: Convert to interface methods, excepted SwitchCacheMode
+	// 6.0 TODO: Convert to interface methods, excepted SwitchCacheMode, GetTenantIdentifier
 	public static partial class SessionImplementorExtensions
 	{
-		//6.0 TODO: Expose as TenantIdentifier property
+		//NOTE: Keep it as extension
 		/// <summary>
 		/// Obtain the tenant identifier associated with this session.
 		/// </summary>
@@ -30,7 +30,7 @@ namespace NHibernate.Engine
 		{
 			if (session is AbstractSessionImpl sessionImpl)
 			{
-				return sessionImpl.TenantIdentifier;
+				return sessionImpl.TenantConfiguration?.TenantIdentifier;
 			}
 
 			return null;

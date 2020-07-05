@@ -498,7 +498,8 @@ namespace NHibernate.Impl
 		/// <inheritdoc />
 		public virtual bool TransactionInProgress => ConnectionManager.IsInActiveTransaction;
 
-		protected internal TenantConfiguration TenantConfiguration
+		//6.0 TODO Add to ISessionImplementor
+		public TenantConfiguration TenantConfiguration
 		{
 			get => _tenantConfiguration;
 			protected set => _tenantConfiguration = value;
