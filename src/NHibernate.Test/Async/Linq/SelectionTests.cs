@@ -454,6 +454,39 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task CanExecuteMethodWithNullObjectAndSubselectAsync()
+		{
+			var list1 = await (db.Animals.Select(
+				              a => new
+				              {
+					              NullableId = (int?) a.Father.Father.Id,
+				              })
+			              .ToListAsync());
+			Assert.That(list1, Has.Count.GreaterThan(0));
+			Assert.That(list1[0].NullableId, Is.Null);
+
+			var list2 = await (db.Animals.Select(
+				              a => new
+				              {
+					              Descriptions = a.Children.Select(z => z.Description)
+				              })
+			              .ToListAsync());
+			Assert.That(list2, Has.Count.GreaterThan(0));
+			Assert.That(list2[0].Descriptions, Is.Not.Null);
+
+			var list3 = await (db.Animals.Select(
+				              a => new
+				              {
+					              NullableId = (int?) a.Father.Father.Id,
+					              Descriptions = a.Children.Select(z => z.Description)
+				              })
+			              .ToListAsync());
+			Assert.That(list3, Has.Count.GreaterThan(0));
+			Assert.That(list3[0].NullableId, Is.Null);
+			Assert.That(list3[0].Descriptions, Is.Not.Null);
+		}
+
+		[Test]
 		public async Task CanSelectConditionalEntityValueWithEntityComparisonRepeatAsync()
 		{
 			// Check again in the same ISessionFactory to ensure caching doesn't cause failures
