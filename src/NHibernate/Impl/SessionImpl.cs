@@ -16,6 +16,7 @@ using NHibernate.Hql;
 using NHibernate.Intercept;
 using NHibernate.Loader.Criteria;
 using NHibernate.Loader.Custom;
+using NHibernate.MultiTenancy;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -104,6 +105,7 @@ namespace NHibernate.Impl
 			enabledFilterNames = (List<string>)info.GetValue("enabledFilterNames", typeof(List<string>));
 
 			ConnectionManager = (ConnectionManager)info.GetValue("connectionManager", typeof(ConnectionManager));
+			TenantConfiguration = info.GetValue<TenantConfiguration>(nameof(TenantConfiguration));
 		}
 
 		/// <summary>
@@ -143,6 +145,7 @@ namespace NHibernate.Impl
 			info.AddValue("enabledFilterNames", enabledFilterNames, typeof(List<string>));
 
 			info.AddValue("connectionManager", ConnectionManager, typeof(ConnectionManager));
+			info.AddValue(nameof(TenantConfiguration), TenantConfiguration);
 		}
 
 		#endregion
@@ -2412,6 +2415,7 @@ namespace NHibernate.Impl
 				: base((SessionFactoryImpl)session.Factory)
 			{
 				_session = session;
+				TenantConfiguration = session.TenantConfiguration;
 				SetSelf(this);
 			}
 
@@ -2464,6 +2468,7 @@ namespace NHibernate.Impl
 				: base((SessionFactoryImpl)session.Factory)
 			{
 				_session = session;
+				TenantConfiguration = session.TenantConfiguration;
 				SetSelf(this);
 			}
 

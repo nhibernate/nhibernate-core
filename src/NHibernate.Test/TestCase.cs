@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Reflection;
 using log4net;
 using NHibernate.Cfg;
@@ -237,7 +238,7 @@ namespace NHibernate.Test
 			}
 
 			bool empty;
-			using (ISession s = Sfi.OpenSession())
+			using (ISession s = OpenSession())
 			{
 				IList objects = s.CreateQuery("from System.Object o").List();
 				empty = objects.Count == 0;
@@ -291,15 +292,16 @@ namespace NHibernate.Test
 
 		protected virtual void CreateSchema()
 		{
-			SchemaExport.Create(OutputDdl, true);
+			using (var optionalConnection = OpenConnectionForSchemaExport())
+				SchemaExport.Create(OutputDdl, true, optionalConnection);
 		}
 
 		protected virtual void DropSchema()
 		{
-			DropSchema(OutputDdl, SchemaExport, Sfi);
+			DropSchema(OutputDdl, SchemaExport, Sfi, OpenConnectionForSchemaExport);
 		}
 
-		public static void DropSchema(bool useStdOut, SchemaExport export, ISessionFactoryImplementor sfi)
+		public static void DropSchema(bool useStdOut, SchemaExport export, ISessionFactoryImplementor sfi, Func<DbConnection> getConnection = null)
 		{
 			if (sfi?.ConnectionProvider.Driver is FirebirdClientDriver fbDriver)
 			{
@@ -312,7 +314,16 @@ namespace NHibernate.Test
 				fbDriver.ClearPool(null);
 			}
 
-			export.Drop(useStdOut, true);
+			using(var optionalConnection = getConnection?.Invoke())
+				export.Drop(useStdOut, true, optionalConnection);
+		}
+
+		/// <summary>
+		/// Specific connection is required only for Database multi-tenancy. In other cases can be null 
+		/// </summary>
+		protected virtual DbConnection OpenConnectionForSchemaExport()
+		{
+			return null;
 		}
 
 		protected virtual DebugSessionFactory BuildSessionFactory()

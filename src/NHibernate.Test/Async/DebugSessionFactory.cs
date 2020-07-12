@@ -26,6 +26,7 @@ using NHibernate.Exceptions;
 using NHibernate.Id;
 using NHibernate.Impl;
 using NHibernate.Metadata;
+using NHibernate.MultiTenancy;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;

@@ -1881,7 +1881,7 @@ namespace NHibernate.Loader
 		{
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters);
 			return new QueryKey(Factory, SqlString, queryParameters, filterKeys,
-								CreateCacheableResultTransformer(queryParameters));
+								CreateCacheableResultTransformer(queryParameters), session.GetTenantIdentifier());
 		}
 
 		private CacheableResultTransformer CreateCacheableResultTransformer(QueryParameters queryParameters)

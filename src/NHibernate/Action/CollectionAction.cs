@@ -124,7 +124,7 @@ namespace NHibernate.Action
 
 		public virtual void ExecuteAfterTransactionCompletion(bool success)
 		{
-			var ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
+			var ck = session.GenerateCacheKey(key, persister.KeyType, persister.Role);
 			persister.Cache.Release(ck, softLock);
 		}
 

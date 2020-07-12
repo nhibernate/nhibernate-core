@@ -1,7 +1,14 @@
 using System.Data.Common;
+using NHibernate.MultiTenancy;
 
 namespace NHibernate.Impl
 {
+	public interface ISessionCreationOptionsWithMultiTenancy
+	{
+		//TODO 6.0: Merge to ISessionCreationOptions without setter
+		TenantConfiguration TenantConfiguration { get; set; }
+	}
+
 	/// <summary>
 	/// Options for session creation.
 	/// </summary>

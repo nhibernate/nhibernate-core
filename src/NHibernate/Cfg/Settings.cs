@@ -10,6 +10,7 @@ using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
+using NHibernate.MultiTenancy;
 using NHibernate.Transaction;
 
 namespace NHibernate.Cfg
@@ -207,5 +208,9 @@ namespace NHibernate.Cfg
 				return prefix + '.' + name;
 			return name;
 		}
+
+		public MultiTenancyStrategy MultiTenancyStrategy { get; internal set; }
+
+		public IMultiTenancyConnectionProvider MultiTenancyConnectionProvider { get; internal set; }
 	}
 }
