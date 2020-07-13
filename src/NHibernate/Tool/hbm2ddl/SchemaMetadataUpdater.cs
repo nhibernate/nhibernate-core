@@ -55,6 +55,8 @@ namespace NHibernate.Tool.hbm2ddl
 
 		public static void QuoteTableAndColumns(Configuration configuration, Dialect.Dialect dialect)
 		{
+			// We have to build the mappings in order to quote collection mappings that use a second pass command to be fully initialized
+			configuration.BuildMappings();
 			foreach (var cm in configuration.ClassMappings)
 			{
 				QuoteTable(cm.Table, dialect);
