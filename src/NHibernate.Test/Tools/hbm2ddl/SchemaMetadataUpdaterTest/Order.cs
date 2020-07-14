@@ -12,11 +12,4 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 		public string Abracadabra { get; set; }
 		public ISet<OrderRow> Rows { get; set; }
 	}
-
-	public class OrderRow
-	{
-		public int Id { get; set; }
-		public Order Order { get; set; }
-		public string Name { get; set; }
-	}
 }
