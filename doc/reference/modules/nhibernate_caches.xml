@@ -874,8 +874,8 @@
 				<term><literal>cache.serializer</literal></term>
 				<listitem>
 					The assembly qualified name of the serializer that is used to serialize/deserialize the key values. Optionally, a faster json serializer can be
-          used by installing <literal>NHibernate.Caches.Util.JsonSerializer</literal> package and setting
-          <literal>NHibernate.Caches.Util.JsonSerializer.JsonCacheSerializer, NHibernate.Caches.Util.JsonSerializer</literal> value instead.
+					used by installing <literal>NHibernate.Caches.Util.JsonSerializer</literal> package and setting
+					<literal>NHibernate.Caches.Util.JsonSerializer.JsonCacheSerializer, NHibernate.Caches.Util.JsonSerializer</literal> value instead.
 					Defaults to <literal>NHibernate.Caches.Common.BinaryCacheSerializer, NHibernate.Caches.Common</literal>.
 				</listitem>
 			</varlistentry>
@@ -1058,6 +1058,16 @@
 					Defaults to <literal>false</literal>.
 				</listitem>
 			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.serializer</literal></term>
+				<listitem>
+					The assembly qualified name of the serializer that is used to serialize/deserialize the key values. Optionally, a faster json serializer can be
+					used by installing <literal>NHibernate.Caches.Util.JsonSerializer</literal> package and setting
+					<literal>NHibernate.Caches.Util.JsonSerializer.JsonCacheSerializer, NHibernate.Caches.Util.JsonSerializer</literal> value instead.
+					Defaults to <literal>NHibernate.Caches.Common.BinaryCacheSerializer, NHibernate.Caches.Common</literal>.
+					This setting is available since the 5.7 version of CoreDistributedCache.
+				</listitem>
+			</varlistentry>
 		</variablelist>
 
 		<para>
@@ -1082,9 +1092,11 @@
     <properties>
       <property name="expiration-scan-frequency">00:10:00</property>
       <property name="size-limit">1048576</property>
+      <property name="cache.serializer">NHibernate.Caches.Util.JsonSerializer.JsonCacheSerializer, NHibernate.Caches.Util.JsonSerializer</property>
     </properties>
     <cache region="foo" expiration="500" sliding="true" />
     <cache region="noExplicitExpiration" sliding="true" />
+    <cache region="specificSerializer" serializer="NHibernate.Caches.Common.BinaryCacheSerializer, NHibernate.Caches.Common" />
   </coredistributedcache>
 </configuration>]]></programlisting>
 		</example>
