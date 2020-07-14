@@ -34,6 +34,8 @@ namespace NHibernate.Linq
 
 		protected virtual QueryMode QueryMode { get; }
 
+		internal IDictionary<string, NamedParameter> NamedParameters { get; }
+
 		private readonly Expression _expression;
 		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 
@@ -56,12 +58,12 @@ namespace NHibernate.Linq
 			// referenced from the main query.
 			LinqLogging.LogExpression("Expression (partially evaluated)", _expression);
 
-			_expression = ExpressionParameterVisitor.Visit(preTransformResult, out _constantToParameterMap);
+			_constantToParameterMap = ExpressionParameterVisitor.Visit(preTransformResult);
 
 			ParameterValuesByName = _constantToParameterMap.Values.Distinct().ToDictionary(p => p.Name,
-																				p => System.Tuple.Create(p.Value, p.Type));
-
-			Key = ExpressionKeyVisitor.Visit(_expression, _constantToParameterMap);
+			                                                                               p => System.Tuple.Create(p.Value, p.Type));
+			NamedParameters = _constantToParameterMap.Values.Distinct().ToDictionary(p => p.Name);
+			Key = ExpressionKeyVisitor.Visit(_expression, _constantToParameterMap, sessionFactory);
 
 			Type = _expression.Type;
 
@@ -88,6 +90,7 @@ namespace NHibernate.Linq
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
 			var queryModel = NhRelinqQueryParser.Parse(_expression);
 			queryModel.TransformExpressions(TransparentIdentifierRemovingExpressionVisitor.ReplaceTransparentIdentifiers);
+			ParameterTypeLocator.SetParameterTypes(_constantToParameterMap, queryModel, TargetType, sessionFactory, true);
 			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters,
 				new QuerySourceNamer(), TargetType, QueryMode);
 

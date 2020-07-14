@@ -48,9 +48,15 @@ namespace NHibernate.DomainModel.Northwind.Entities
 
         public virtual FeatureSet Features { get; set; }
 
+		public virtual User NotMappedUser => this;
+
 		public virtual EnumStoredAsString Enum1 { get; set; }
 
+		public virtual EnumStoredAsString? NullableEnum1 { get; set; }
+
 		public virtual EnumStoredAsInt32 Enum2 { get; set; }
+
+		public virtual EnumStoredAsInt32? NullableEnum2 { get; set; }
 
 		public virtual IUser CreatedBy { get; set; }
 

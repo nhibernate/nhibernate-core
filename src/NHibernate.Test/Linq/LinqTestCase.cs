@@ -34,7 +34,8 @@ namespace NHibernate.Test.Linq
 					"Northwind.Mappings.User.hbm.xml",
 					"Northwind.Mappings.TimeSheet.hbm.xml",
 					"Northwind.Mappings.Animal.hbm.xml",
-					"Northwind.Mappings.Patient.hbm.xml"
+					"Northwind.Mappings.Patient.hbm.xml",
+					"Northwind.Mappings.DynamicUser.hbm.xml"
 				};
 			}
 		}
