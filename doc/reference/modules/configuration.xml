@@ -433,6 +433,39 @@ var session = sessions.OpenSession(conn);
 
     </sect1>
 
+    <sect1 id="configuration-provider">
+        <title>Using a custom configuration provider</title>
+
+        <para>
+            By default, NHibernate attempts to read the <literal>hibernate-configuration</literal> section
+            through the .Net <literal>ConfigurationManager</literal>. Some environments do not support it, so
+            NHibernate provide a way to set a custom configuration provider, through the
+            <literal>NHibernate.Cfg.ConfigurationProvider.Current</literal> property.
+        </para>
+
+        <para>
+            To disable the configuration provider, in case you configure NHibernate entirely programmatically,
+            set this property to <literal>null</literal>.
+        </para>
+
+        <programlisting><![CDATA[ConfigurationProvider.Current = null;]]></programlisting>
+
+        <para>
+            To provide directly the <literal>System.Configuration.Configuration</literal> instance to use, assign
+            the <literal>Current</literal> property with an instance of
+            <literal>NHibernate.Cfg.SystemConfigurationProvider</literal> built with your
+            <literal>Configuration</literal> instance.
+        </para>
+
+        <programlisting><![CDATA[ConfigurationProvider.Current = new SystemConfigurationProvider(yourConfig);]]></programlisting>
+
+        <para>
+            You may also derive a custom provider from <literal>NHibernate.Cfg.ConfigurationProvider</literal>,
+            implements its abstract methods, and assign an instance of your custom provider to the
+            <literal>NHibernate.Cfg.ConfigurationProvider.Current</literal> property.
+        </para>
+    </sect1>
+
     <sect1 id="configuration-optional">
         <title>Optional configuration properties</title>
         
