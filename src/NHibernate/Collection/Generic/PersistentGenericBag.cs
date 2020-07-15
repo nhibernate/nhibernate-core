@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Collection.Trackers;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Linq;
@@ -48,7 +49,7 @@ namespace NHibernate.Collection.Generic
 		 * <one-to-many> <bag>!
 		 */
 		private IList<T> _gbag;
-		private bool _isOneToMany;
+		private bool _isOneToMany; // 6.0 TODO: Remove
 
 		public PersistentGenericBag()
 		{
@@ -65,6 +66,19 @@ namespace NHibernate.Collection.Generic
 			_gbag = coll as IList<T> ?? new List<T>(coll);
 			SetInitialized();
 			IsDirectlyAccessible = true;
+		}
+
+		internal override AbstractQueueOperationTracker CreateQueueOperationTracker()
+		{
+			var entry = Session.PersistenceContext.GetCollectionEntry(this);
+			return new BagQueueOperationTracker<T>(entry.LoadedPersister);
+		}
+
+		public override void ApplyQueuedOperations()
+		{
+			var queueOperation = (BagQueueOperationTracker<T>) QueueOperationTracker;
+			queueOperation?.ApplyChanges(_gbag);
+			QueueOperationTracker = null;
 		}
 
 		protected IList<T> InternalBag
@@ -119,15 +133,16 @@ namespace NHibernate.Collection.Generic
 
 		int IList.Add(object value)
 		{
-			Add((T) value);
+			if (!IsOperationQueueEnabled || !ReadSize())
+			{
+				Write();
+				return ((IList) _gbag).Add((T) value);
+			}
 
-			//TODO: take a look at this - I don't like it because it changes the 
-			// meaning of Add - instead of returning the index it was added at 
-			// returns a "fake" index - not consistent with IList interface...
-			var count = !IsOperationQueueEnabled
-							? _gbag.Count
-							: 0;
-			return count - 1;
+			var val = (T) value;
+			QueueAddElement(val);
+
+			return CachedSize;
 		}
 
 		void IList.Insert(int index, object value)
@@ -181,7 +196,7 @@ namespace NHibernate.Collection.Generic
 			}
 			else
 			{
-				QueueOperation(new SimpleAddDelayedOperation(this, item));
+				QueueAddElement(item);
 			}
 		}
 
@@ -189,7 +204,7 @@ namespace NHibernate.Collection.Generic
 		{
 			if (ClearQueueEnabled)
 			{
-				QueueOperation(new ClearDelayedOperation(this));
+				QueueClearCollection();
 			}
 			else
 			{
@@ -204,7 +219,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(T item)
 		{
-			return ReadElementExistence(item) ?? _gbag.Contains(item);
+			return ReadElementExistence(item, out _) ?? _gbag.Contains(item);
 		}
 
 		public void CopyTo(T[] array, int arrayIndex)
@@ -500,79 +515,6 @@ namespace NHibernate.Collection.Generic
 			}
 
 			return result;
-		}
-
-		private sealed class ClearDelayedOperation : IDelayedOperation
-		{
-			private readonly PersistentGenericBag<T> _enclosingInstance;
-
-			public ClearDelayedOperation(PersistentGenericBag<T> enclosingInstance)
-			{
-				_enclosingInstance = enclosingInstance;
-			}
-
-			public object AddedInstance
-			{
-				get { return null; }
-			}
-
-			public object Orphan
-			{
-				get { throw new NotSupportedException("queued clear cannot be used with orphan delete"); }
-			}
-
-			public void Operate()
-			{
-				_enclosingInstance._gbag.Clear();
-			}
-		}
-
-		private sealed class SimpleAddDelayedOperation : IDelayedOperation
-		{
-			private readonly PersistentGenericBag<T> _enclosingInstance;
-			private readonly T _value;
-
-			public SimpleAddDelayedOperation(PersistentGenericBag<T> enclosingInstance, T value)
-			{
-				_enclosingInstance = enclosingInstance;
-				_value = value;
-			}
-
-			public object AddedInstance
-			{
-				get { return _value; }
-			}
-
-			public object Orphan
-			{
-				get { return null; }
-			}
-
-			public void Operate()
-			{
-				// NH Different behavior for NH-739. A "bag" mapped as a bidirectional one-to-many of an entity with an
-				// id generator causing it to be inserted on flush must not replay the addition after initialization,
-				// if the entity was previously saved. In that case, the entity save has inserted it in database with
-				// its association to the bag, without causing a full flush. So for the bag, the operation is still
-				// pending, but in database it is already done. On initialization, the bag thus already receives the
-				// entity in its loaded list, and it should not be added again.
-				// Since a one-to-many bag is actually a set, we can simply check if the entity is already in the loaded
-				// state, and discard it if yes. (It also relies on the bag not having pending removes, which is the
-				// case, since it only handles delayed additions and clears.)
-				// Since this condition happens with transient instances added in the bag then saved, ReferenceEquals
-				// is enough to match them.
-				// This solution is a workaround, the root cause is not fixed. The root cause is the insertion on save
-				// done without caring for pending operations of one-to-many collections. This root cause could be fixed
-				// by triggering a full flush there before the insert (currently it just flushes pending inserts), or
-				// maybe by flushing just the dirty one-to-many non-initialized collections (but this can be tricky).
-				// (It is also likely one-to-many lists have a similar issue, but nothing is done yet for them. And
-				// their case is more complex due to having to care for the indexes and to handle many more delayed
-				// operation kinds.)
-				if (_enclosingInstance._isOneToMany && _enclosingInstance._gbag.Any(l => ReferenceEquals(l, _value)))
-					return;
-
-				_enclosingInstance._gbag.Add(_value);
-			}
 		}
 	}
 }

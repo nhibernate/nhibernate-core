@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Collection.Generic.SetHelpers;
+using NHibernate.Collection.Trackers;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Linq;

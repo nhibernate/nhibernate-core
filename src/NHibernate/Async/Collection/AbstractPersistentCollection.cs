@@ -16,10 +16,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NHibernate.Collection.Generic;
+using NHibernate.Collection.Trackers;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
+using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -27,6 +29,62 @@ namespace NHibernate.Collection
 {
 	public abstract partial class AbstractPersistentCollection : IPersistentCollection, ILazyInitializedCollection
 	{
+
+		protected virtual async Task<bool?> ReadKeyExistenceAsync<TKey, TValue>(TKey elementKey, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (!initialized)
+			{
+				ThrowLazyInitializationExceptionIfNotConnected();
+				CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(this);
+				ICollectionPersister persister = entry.LoadedPersister;
+				if (persister.IsExtraLazy)
+				{
+					var queueOperationTracker = (AbstractMapQueueOperationTracker<TKey, TValue>) GetOrCreateQueueOperationTracker();
+					if (queueOperationTracker == null)
+					{
+						if (HasQueuedOperations)
+						{
+							await (session.FlushAsync(cancellationToken)).ConfigureAwait(false);
+						}
+
+						return persister.IndexExists(entry.LoadedKey, elementKey, session);
+					}
+
+					if (queueOperationTracker.ContainsKey(elementKey))
+					{
+						return true;
+					}
+
+					if (queueOperationTracker.Cleared)
+					{
+						return false;
+					}
+
+					if (queueOperationTracker.IsElementKeyQueuedForDelete(elementKey))
+					{
+						return false;
+					}
+
+					// As keys are unordered we don't have to calculate the current order of the key
+					return persister.IndexExists(entry.LoadedKey, elementKey, session);
+				}
+				Read();
+			}
+			return null;
+		}
+
+		internal async Task<bool> IsTransientAsync(object element, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var queryableCollection = (IQueryableCollection) Session.Factory.GetCollectionPersister(Role);
+			return
+				queryableCollection != null &&
+				queryableCollection.ElementType.IsEntityType &&
+				!element.IsProxy() &&
+				!Session.PersistenceContext.IsEntryFor(element) &&
+				await (ForeignKeys.IsTransientFastAsync(queryableCollection.ElementPersister.EntityName, element, Session, cancellationToken)).ConfigureAwait(false) == true;
+		}
 
 		/// <summary>
 		/// Initialize the collection, if possible, wrapping any exceptions
