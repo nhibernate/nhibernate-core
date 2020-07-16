@@ -231,7 +231,7 @@ Release notes - NHibernate - Version 5.3.0
 
 ** Task
 
-   * #2430 Document cache.serializer setting of CoreDistributedCache #2430
+   * #2430 Document cache.serializer setting of CoreDistributedCache
    * #2397 Update GitReleaseManager
    * #2391 Use latest Firebird for AppVeyor and Travis
    * #2388 Release 5.3
