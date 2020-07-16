@@ -155,6 +155,10 @@
         <title>Mapping the cat</title>
 
         <para>
+            This tutorial directly uses xml mapping files. This is just one among many mapping solution
+            NHibernate provides, see <xref linkend="mapping-declaration" />.
+        </para>
+        <para>
             The <literal>Cat.hbm.xml</literal> mapping file contains the metadata
             required for the object/relational mapping. The metadata includes declaration
             of persistent classes and the mapping of properties (to columns and
