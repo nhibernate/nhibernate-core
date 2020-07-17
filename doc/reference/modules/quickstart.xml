@@ -155,7 +155,7 @@
         <title>Mapping the cat</title>
 
         <para>
-            This tutorial directly uses xml mapping files. This is just one among many mapping solution
+            This tutorial directly uses xml mapping files. This is just one among many mapping solutions
             NHibernate provides, see <xref linkend="mapping-declaration" />.
         </para>
         <para>

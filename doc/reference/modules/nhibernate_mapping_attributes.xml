@@ -17,7 +17,7 @@
 			<orderedlist>
 				<listitem>
 					<para>
-						<emphasis role="strong">NHibernate.Mapping.Attributes</emphasis>: That is the only assembly you need (as end-user).</para>
+						<emphasis role="strong">NHibernate.Mapping.Attributes</emphasis>: that is the only assembly you need (as an end-user).</para>
 				</listitem>
 				<listitem>
 					<para>
@@ -32,7 +32,7 @@
 					<para>
 						<ulink url="http://mbunit.tigris.org/">
 							<emphasis role="strong">Refly</emphasis>
-						</ulink>: thanks to <ulink url="http://www.dotnetwiki.org/">Jonathan de Halleux</ulink> for this library which make it so easy to generate code.</para>
+						</ulink>: thanks to <ulink url="http://www.dotnetwiki.org/">Jonathan de Halleux</ulink> for this library which makes it so easy to generate code.</para>
 				</listitem>
 			</orderedlist>
 		</para>
@@ -78,7 +78,8 @@ public class MappedSubClass : Base { }</programlisting>
 				<para>
 					It is possible to register patterns (using Regular Expressions) to automatically transform fully qualified names of properties types
 					into something else. Eg: <literal>HbmSerializer.Default.HbmWriter.Patterns.Add(@"Namespace\.(\S+), Assembly", "$1");</literal> will
-					map all properties with a not-qualified type name.</para>
+					map all properties with a not-qualified type name.
+				</para>
 			</listitem>
 			<listitem>
 				<para>
@@ -86,7 +87,8 @@ public class MappedSubClass : Base { }</programlisting>
 					<literal>HbmSerializer.Default.Serialize(typeof(XXX))</literal> and
 					<literal>HbmSerializer.Default.Serialize(typeof(XXX).Assembly)</literal>. So it is no longer required to create a MemoryStream for
 					these simple cases. The output of these call can be directly added to your NHibernate <literal>Configuration</literal> instance:
-					<literal>cfg.AddInputStream(HbmSerializer.Default.Serialize(typeof(XXX)))</literal>.</para>
+					<literal>cfg.AddInputStream(HbmSerializer.Default.Serialize(typeof(XXX)))</literal>.
+				</para>
 			</listitem>
 			<listitem>
 				<para>Two <methodname>WriteUserDefinedContent()</methodname> methods have been added to <classname>HbmWriter</classname>. They improve the extensibility of this library; it is now very easy to create a .NET attribute and integrate it in the mapping.</para>
@@ -99,13 +101,14 @@ public class MappedSubClass : Base { }</programlisting>
 			</listitem>
 			<listitem>
 				<para>
-					A notable "bug" fix is the re-ordering of (joined-)subclasses; This operation may be required when a subclass extends another subclass.
+					A notable "bug" fix is the re-ordering of (joined-)subclasses. This operation may be required when a subclass extends another subclass.
 					In this case, the extended class mapping must come before the extending class mapping. Note that the re-ordering takes place only for
 					"top-level" classes (that is not nested in other mapped classes). Anyway, it is quite unusual to put an interdependent mapped subclasses
-					in a mapped class.</para>
+					in a mapped class.
+				</para>
 			</listitem>
 			<listitem>
-				<para>There are also many other little changes; refer to the release notes for more details.</para>
+				<para>There are also many other little changes: refer to the release notes for more details.</para>
 			</listitem>
 		</orderedlist>
 	</section>
@@ -166,8 +169,8 @@ cfg.AddInputStream(HbmSerializer.Default.Serialize(
 				<para>
 					Use <methodname>HbmSerializer.Validate</methodname> to enable/disable the validation of generated xml streams (against
 					NHibernate mapping schema). This is useful to quickly find errors. (They are written in the StringBuilder property 
-					<methodname>HbmSerializer.Error</methodname>.) If the error is due to this library, then see if it is a know issue and report it.
-					You are welcome to contribute a solution if you solve the problem :).</para>
+					<methodname>HbmSerializer.Error</methodname>.) If the error is due to this library, then see if it is a known issue and report it.
+					You are welcome to contribute a solution if you solve the trouble :).</para>
 			</listitem>
 			<listitem>
 				<para>Your classes, fields and properties (members) can be private; just make sure that you have the permission to access private members using reflection (<methodname>ReflectionPermissionFlag.MemberAccess</methodname>).</para>
@@ -262,7 +265,7 @@ public MyType MyProperty;</programlisting>
 		<para>Anyway, the solution would be to add a <methodname>int ParentNode</methodname> property to BaseAttribute so that you can create a real graph...</para>
 		<para>For now, you can fallback on <classname>[RawXml]</classname>.</para>
 
-		<para>Actually, there is no other know issue nor planned modification. This library should be stable and complete; but if you find a bug or think of an useful improvement, contact us!</para>
+		<para>Actually, there is no other know issue nor planned modification. This library should be stable and complete. But if you find a bug or think of an useful improvement, contact us!</para>
 		<para>As a side note, it would be nice to write a better TestFixture than <emphasis>NHibernate.Mapping.Attributes.Test</emphasis> :D.</para>
 	</section>
 
@@ -292,7 +295,7 @@ public MyType MyProperty;</programlisting>
 				</para>
 			</listitem>
 		</orderedlist>
-		<para>This implementation is based on NHibernate mapping schema; so there is probably lot of "standard schema features" that are not supported...</para>
+		<para>This implementation is based on NHibernate mapping schema. So there is probably lot of "standard schema features" that are not supported...</para>
 		<para>The version of NHibernate.Mapping.Attributes should be the version of the NHibernate schema used to generate it (=> the version of NHibernate library).</para>
 		<para>
 			In the design of this project, performance is a (<emphasis>very</emphasis>) minor goal :). Easier implementation and maintenance
