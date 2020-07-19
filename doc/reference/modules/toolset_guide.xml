@@ -370,7 +370,7 @@ new SchemaExport(cfg).Create(false, true);]]></programlisting>
         </table>
       <para>
         A more detailed guide of <literal>hbm2net</literal> is available in
-        http://nhibernate.info/blog/2009/12/12/t4-hbm2net-alpha-2.html
+        https://nhibernate.info/blog/2009/12/12/t4-hbm2net-alpha-2.html
       </para>
 
 
