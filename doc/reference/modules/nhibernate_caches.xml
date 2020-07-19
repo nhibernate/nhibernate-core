@@ -2,7 +2,6 @@
 <chapter id="caches">
 	<title>NHibernate.Caches</title>
 
-
 	<abstract id="NHibernate.Caches-abstract">
 		<title>What is NHibernate.Caches?</title>
 		<formalpara>
@@ -243,6 +242,43 @@
 		</para>
 	</section>
 
+	<section id="NHibernate.Caches.ConfigurationProvider">
+		<title>Using a custom configuration provider</title>
+
+		<para>
+			Most caches have their own configuration section. By default, the cache attempts to read its configuration section
+			through the .Net <literal>ConfigurationManager</literal>. Some environments do not support it, especially when
+			running under .Net Core. The .Net Core compatible caches provide a way to set a custom configuration provider, through
+			their <literal>NHibernate.Caches. cache specific namespace .ConfigurationProvider</literal> class.
+		</para>
+
+		<para>
+			To disable the configuration provider, in case you configure the cache entirely programmatically,
+			set its <literal>ConfigurationProvider.Current</literal> property to <literal>null</literal>.
+		</para>
+
+		<programlisting><![CDATA[ConfigurationProvider.Current = null;]]></programlisting>
+
+		<para>
+			To provide directly the <literal>System.Configuration.Configuration</literal> instance to use, call
+			the cache <literal>ConfigurationProvider.SetConfiguration</literal> method.
+		</para>
+
+		<programlisting><![CDATA[ConfigurationProvider.SetConfiguration(yourConfig);]]></programlisting>
+
+		<para>
+			You may also derive a custom provider from the <literal>ConfigurationProvider</literal> of the cache,
+			implements its abstract method <literal>GetConfiguration</literal>, and assign an instance of your
+			custom provider to the cache <literal>ConfigurationProvider.Current</literal> property.
+		</para>
+
+		<para>
+			Changes of the <literal>ConfigurationProvider.Current</literal> property value are to be done very
+			early in the application lifecycle, before building any session factory using the cache provider or
+			before any other call on the cache API. Otherwise they will not be taken into account.
+		</para>
+	</section>
+
 	<section id="NHibernate.Caches.Prevalence">
 		<title>Prevalence Cache Configuration</title>
 		<para>
@@ -251,7 +287,7 @@
 			full path. If the directory doesn't exist, it will be created.
 		</para>
 		<para>
-			The <literal>prevalenceBase</literal> setting can only be set programmatically through on the NHibernate
+			The <literal>prevalenceBase</literal> setting can only be set programmatically through the NHibernate
 			configuration object, by example with <literal>Configuration.SetProperty</literal>.
 		</para>
 	</section>
@@ -260,6 +296,11 @@
 		<title>SysCache Configuration</title>
 		<para>
 			SysCache relies on <classname>System.Web.Caching.Cache</classname> for the underlying implementation.
+			This is a .Net Framework only library, since <literal>System.Web.Caching</literal> is available neither
+			in the .Net Standard nor in .Net Core.
+		</para>
+
+		<para>
 			The following NHibernate configuration settings are available:
 		</para>
 
@@ -316,10 +357,16 @@
 		<title>SysCache2 Configuration</title>
 
 		<para>
-			SysCache2 can use SqlCacheDependencies to invalidate cache regions when data in an underlying SQL Server
+			SysCache2 uses <literal>System.Web.Caching</literal> like SysCache, but can use <literal>SqlCacheDependencies</literal>
+			to invalidate cache regions when data in an underlying SQL Server
 			table or query changes. Query dependencies are only available for SQL Server 2005 or higher. To use the cache
 			provider, the application must be setup and configured to support SQL notifications as described in the
 			MSDN documentation.
+		</para>
+
+		<para>
+			This is a .Net Framework only library, since <literal>System.Web.Caching</literal> is available neither
+			in the .Net Standard nor in .Net Core.
 		</para>
 
 		<para>
@@ -625,6 +672,7 @@
 			Its configuration relies on the EnyimMemcached library own configuration, through its
 			<literal>enyim.com/memcached</literal> configuration section. See
 			<ulink url="https://github.com/enyim/EnyimMemcached">project site</ulink>.
+			This is a .Net Framework only library.
 		</para>
 	</section>
 
@@ -633,6 +681,9 @@
 		<para>
 			RtMemoryCache relies on <classname>System.Runtime.Caching.MemoryCache</classname> for the
 			underlying implementation.
+		</para>
+
+		<para>
 			The following NHibernate configuration settings are available:
 		</para>
 
@@ -674,6 +725,12 @@
   </rtmemorycache>
 </configuration>]]></programlisting>
 		</example>
+
+		<para>
+			The loading of this section can be customized with the
+			<literal>NHibernate.Caches.RtMemoryCache.ConfigurationProvider</literal> class. See
+			<xref linkend="NHibernate.Caches.ConfigurationProvider" />.
+		</para>
 	</section>
 
 	<section id="NHibernate.Caches.StackExchangeRedis">
@@ -681,7 +738,11 @@
 		<para>
 			NHibernate.Caches.StackExchangeRedis relies on <classname>StackExchange.Redis</classname> for the
 			underlying implementation.
-			The following NHibernate configuration settings are available (also defined in <literal>NHibernate.Caches.StackExchangeRedis.RedisEnvironment</literal>):
+		</para>
+
+		<para>
+			The following NHibernate configuration settings are available (also defined in
+			<literal>NHibernate.Caches.StackExchangeRedis.RedisEnvironment</literal>):
 		</para>
 
 		<variablelist>
@@ -975,10 +1036,16 @@
     <cache region="foo" expiration="500" database="1" />
     <cache region="bar" sliding="true" append-hashcode="true" />
     <cache region="baz"
-           strategy="NHibernate.Caches.StackExchangeRedis.FastRegionStrategy, NHibernate.Caches" />
+      strategy="NHibernate.Caches.StackExchangeRedis.FastRegionStrategy, NHibernate.Caches" />
   </redis>
 </configuration>]]></programlisting>
 		</example>
+
+		<para>
+			The loading of this section can be customized with the
+			<literal>NHibernate.Caches.StackExchangeRedis.ConfigurationProvider</literal> class. See
+			<xref linkend="NHibernate.Caches.ConfigurationProvider" />.
+		</para>
 	</section>
 
 	<section id="NHibernate.Caches.CoreMemoryCache">
@@ -986,6 +1053,9 @@
 		<para>
 			CoreMemoryCache relies on <classname>Microsoft.Extensions.Caching.Memory.MemoryCache</classname> for the
 			underlying implementation.
+		</para>
+
+		<para>
 			The following NHibernate configuration settings are available:
 		</para>
 
@@ -1029,6 +1099,12 @@
   </corememorycache>
 </configuration>]]></programlisting>
 		</example>
+
+		<para>
+			The loading of this section can be customized with the
+			<literal>NHibernate.Caches.CoreMemoryCache.ConfigurationProvider</literal> class. See
+			<xref linkend="NHibernate.Caches.ConfigurationProvider" />.
+		</para>
 	</section>
 
 	<section id="NHibernate.Caches.CoreDistributedCache">
@@ -1038,6 +1114,9 @@
 			implementations. The implementation has to be provided through an <literal>IDistributedCacheFactory</literal>, either
 			supplied through configuration or programmatically by affecting
 			<literal>CoreDistributedCacheProvider.CacheFactory</literal> before building a session factory.
+		</para>
+
+		<para>
 			The following NHibernate configuration settings are available:
 		</para>
 
@@ -1092,14 +1171,22 @@
     <properties>
       <property name="expiration-scan-frequency">00:10:00</property>
       <property name="size-limit">1048576</property>
-      <property name="cache.serializer">NHibernate.Caches.Util.JsonSerializer.JsonCacheSerializer, NHibernate.Caches.Util.JsonSerializer</property>
+      <property name="cache.serializer"
+        >NHibernate.Caches.Util.JsonSerializer.JsonCacheSerializer, NHibernate.Caches.Util.JsonSerializer</property>
     </properties>
     <cache region="foo" expiration="500" sliding="true" />
     <cache region="noExplicitExpiration" sliding="true" />
-    <cache region="specificSerializer" serializer="NHibernate.Caches.Common.BinaryCacheSerializer, NHibernate.Caches.Common" />
+    <cache region="specificSerializer"
+      serializer="NHibernate.Caches.Common.BinaryCacheSerializer, NHibernate.Caches.Common" />
   </coredistributedcache>
 </configuration>]]></programlisting>
 		</example>
+
+		<para>
+			The loading of this section can be customized with the
+			<literal>NHibernate.Caches.CoreDistributedCache.ConfigurationProvider</literal> class. See
+			<xref linkend="NHibernate.Caches.ConfigurationProvider" />.
+		</para>
 
 		<para>
 			CoreDistributedCache does not support <literal>NHibernate.Cache.ICache.Clear</literal>. Clearing the NHibernate
