@@ -3,7 +3,7 @@
 
 Release notes - NHibernate - Version 5.3.0
 
-218 issues were resolved in this release.
+220 issues were resolved in this release.
 
     ##### Possible Breaking Changes #####
         * A distributed cache may hold conflicting timestamps after upgrade for as much as twelve hours.
@@ -231,6 +231,8 @@ Release notes - NHibernate - Version 5.3.0
 
 ** Task
 
+   * #2433 Improve slightly mapping documentation
+   * #2432 Document the caches configuration providers
    * #2430 Document cache.serializer setting of CoreDistributedCache
    * #2397 Update GitReleaseManager
    * #2391 Use latest Firebird for AppVeyor and Travis
