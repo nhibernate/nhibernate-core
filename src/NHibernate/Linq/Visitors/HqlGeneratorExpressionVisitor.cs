@@ -607,7 +607,8 @@ possible solutions:
 		{
 			existType = false;
 			return toType != typeof(object) &&
-					IsCastRequired(ExpressionsHelper.GetType(_parameters, expression), TypeFactory.GetDefaultTypeFor(toType), out existType);
+			       expression.Type.UnwrapIfNullable() != toType.UnwrapIfNullable() &&
+			       IsCastRequired(ExpressionsHelper.GetType(_parameters, expression), TypeFactory.GetDefaultTypeFor(toType), out existType);
 		}
 
 		private bool IsCastRequired(IType type, IType toType, out bool existType)
@@ -637,14 +638,6 @@ possible solutions:
 			{
 				existType = false;
 				return false; // Never cast an enum that is mapped as string, the type will provide a string for the parameter value
-			}
-
-			// Custom types may use a different sql type for mapping a .NET type that NHibernate would use (e.g. DateTime stored as integer).
-			if (type is CustomType)
-			{
-				// TODO: Extend IType by adding a method that can control whether a cast is required
-				existType = false;
-				return false;
 			}
 
 			// Some dialects can map several sql types into one, cast only if the dialect types are different
