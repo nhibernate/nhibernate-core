@@ -77,5 +77,6 @@
     <Content Include="../../LICENSE.txt">
       <PackagePath>./NHibernate.license.txt</PackagePath>
     </Content>
+    <None Include="../../logo/NHibernate-NuGet.png" Pack="true" PackagePath="/" />
   </ItemGroup>
 </Project>
