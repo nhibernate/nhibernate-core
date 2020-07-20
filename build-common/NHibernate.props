@@ -25,7 +25,7 @@
     <Authors>NHibernate community, Hibernate community</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
 
-    <PackageProjectUrl>http://nhibernate.info</PackageProjectUrl>
+    <PackageProjectUrl>https://nhibernate.info</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/nhibernate/nhibernate-core/master/logo/NHibernate-NuGet.png</PackageIconUrl>
     <PackageIcon>NHibernate-NuGet.png</PackageIcon>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
