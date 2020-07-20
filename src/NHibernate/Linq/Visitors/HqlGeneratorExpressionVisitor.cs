@@ -639,6 +639,14 @@ possible solutions:
 				return false; // Never cast an enum that is mapped as string, the type will provide a string for the parameter value
 			}
 
+			// Custom types may use a different sql type for mapping a .NET type that NHibernate would use (e.g. DateTime stored as integer).
+			if (type is CustomType)
+			{
+				// TODO: Extend IType by adding a method that can control whether a cast is required
+				existType = false;
+				return false;
+			}
+
 			// Some dialects can map several sql types into one, cast only if the dialect types are different
 			if (!_parameters.SessionFactory.Dialect.TryGetCastTypeName(sqlTypes[0], out var castTypeName) ||
 			    !_parameters.SessionFactory.Dialect.TryGetCastTypeName(toSqlTypes[0], out var toCastTypeName))
