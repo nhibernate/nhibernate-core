@@ -22,12 +22,12 @@ namespace NHibernate.Test.NHSpecificTest.GH2437
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				User user = new User() { UserCode = "gokhanabatay", IsOpen = true, UserName = "Gökhan Abatay" };
+				var user = new User { UserCode = "gokhanabatay", IsOpen = true, UserName = "Gökhan Abatay" };
 				session.Save(user);
 
-				for (int i = 0; i < 10; i++)
+				for (var i = 0; i < 10; i++)
 				{
-					UserSession userSession = new UserSession()
+					var userSession = new UserSession
 					{
 						Claims = "My Claims",
 						ExpireDateTime = DateTime.Now.AddDays(1),
@@ -65,11 +65,11 @@ namespace NHibernate.Test.NHSpecificTest.GH2437
 		public void Get_DateCustomType_NullableDateValueEquals()
 		{
 			using (var session = OpenSession())
-			using (var transaction = session.BeginTransaction())
+			using (session.BeginTransaction())
 			{
-				Assert.That(session.Query<UserSession>()
-					.Where(x => x.OpenDate.Value == DateTime.Now)
-					.ToList().Count == 10);
+				var sessions = session.Query<UserSession>().Where(x => x.OpenDate.Value == DateTime.Now).ToList();
+
+				Assert.That(sessions, Has.Count.EqualTo(10));
 			}
 		}
 
@@ -77,11 +77,11 @@ namespace NHibernate.Test.NHSpecificTest.GH2437
 		public void Get_DateTimeCustomType_NullableDateValueEquals()
 		{
 			using (var session = OpenSession())
-			using (var transaction = session.BeginTransaction())
+			using (session.BeginTransaction())
 			{
-				Assert.That(session.Query<UserSession>()
-					.Where(x => x.ExpireDateTime.Value > DateTime.Now)
-					.ToList().Count == 10);
+				var sessions = session.Query<UserSession>().Where(x => x.ExpireDateTime.Value > DateTime.Now).ToList();
+
+				Assert.That(sessions, Has.Count.EqualTo(10));
 			}
 		}
 
@@ -89,11 +89,11 @@ namespace NHibernate.Test.NHSpecificTest.GH2437
 		public void Get_DateCustomType_DateEquals()
 		{
 			using (var session = OpenSession())
-			using (var transaction = session.BeginTransaction())
+			using (session.BeginTransaction())
 			{
-				Assert.That(session.Query<UserSession>()
-					.Where(x => x.OpenDate == DateTime.Now)
-					.ToList().Count == 10);
+				var sessions = session.Query<UserSession>().Where(x => x.OpenDate == DateTime.Now).ToList();
+
+				Assert.That(sessions, Has.Count.EqualTo(10));
 			}
 		}
 
@@ -101,11 +101,11 @@ namespace NHibernate.Test.NHSpecificTest.GH2437
 		public void Get_DateTimeCustomType_DateEquals()
 		{
 			using (var session = OpenSession())
-			using (var transaction = session.BeginTransaction())
+			using (session.BeginTransaction())
 			{
-				Assert.That(session.Query<UserSession>()
-					.Where(x => x.ExpireDateTime > DateTime.Now)
-					.ToList().Count == 10);
+				var sessions = session.Query<UserSession>().Where(x => x.ExpireDateTime > DateTime.Now).ToList();
+
+				Assert.That(sessions, Has.Count.EqualTo(10));
 			}
 		}
 
@@ -113,13 +113,14 @@ namespace NHibernate.Test.NHSpecificTest.GH2437
 		public void Get_BooleanCustomType()
 		{
 			using (var session = OpenSession())
-			using (var transaction = session.BeginTransaction())
+			using (session.BeginTransaction())
 			{
-				Assert.That(
-					session.Query<UserSession>()
-					       .Where(x => x.OpenDate == DateTime.Now)
-					       .Select(x => new NullableBooleanResult() {IsOpen = x.User.IsOpen})
-					       .ToList().Count == 10);
+				var results = session.Query<UserSession>()
+					.Where(x => x.OpenDate == DateTime.Now)
+					.Select(x => new NullableBooleanResult() {IsOpen = x.User.IsOpen})
+					.ToList();
+				
+				Assert.That(results, Has.Count.EqualTo(10));
 			}
 		}
 
