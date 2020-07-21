@@ -716,7 +716,7 @@ namespace NHibernate.Util
 
 			protected override Expression VisitSubQuery(SubQueryExpression expression)
 			{
-				expression.QueryModel.TransformExpressions(base.Visit);
+				base.Visit(expression.QueryModel.SelectClause.Selector);
 				return expression;
 			}
 

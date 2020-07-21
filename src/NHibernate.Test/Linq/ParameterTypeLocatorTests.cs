@@ -93,7 +93,10 @@ namespace NHibernate.Test.Linq
 					{"3", o => o is EnumStoredAsStringType}
 				},
 				db.Users.Fetch(o => o.Role).ThenFetch(o => o.ParentRole).Where(o => o.Enum1 == EnumStoredAsString.Large),
-				db.Users.Fetch(o => o.Role).ThenFetch(o => o.ParentRole).Where(o => EnumStoredAsString.Large == o.Enum1)
+				db.Users.Fetch(o => o.Role).ThenFetch(o => o.ParentRole).Where(o => EnumStoredAsString.Large == o.Enum1),
+				db.Timesheets.SelectMany(o => o.Users).Fetch(o => o.Role).Where(o => EnumStoredAsString.Large == o.Enum1),
+				db.Timesheets.FetchMany(o => o.Users).SelectMany(o => o.Users).Where(o => EnumStoredAsString.Large == o.Enum1),
+				db.Timesheets.FetchMany(o => o.Users).Where(o => o.Users.Any(u => EnumStoredAsString.Large == u.Enum1))
 			);
 		}
 
@@ -106,7 +109,8 @@ namespace NHibernate.Test.Linq
 					{"3", o => o is EnumStoredAsStringType}
 				},
 				db.Users.Where(o => db.Users.Any(u => u.Enum1 == EnumStoredAsString.Large)),
-				db.Users.Where(o => db.Users.Any(u => EnumStoredAsString.Large == u.Enum1))
+				db.Users.Where(o => db.Users.Any(u => EnumStoredAsString.Large == u.Enum1)),
+				db.Timesheets.Where(o => o.Users.Any(u => EnumStoredAsString.Large == u.Enum1))
 			);
 		}
 
