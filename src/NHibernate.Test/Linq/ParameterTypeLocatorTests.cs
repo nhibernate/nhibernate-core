@@ -85,6 +85,47 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void EqualStringEnumTestWithFetch()
+		{
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"3", o => o is EnumStoredAsStringType}
+				},
+				db.Users.Fetch(o => o.Role).ThenFetch(o => o.ParentRole).Where(o => o.Enum1 == EnumStoredAsString.Large),
+				db.Users.Fetch(o => o.Role).ThenFetch(o => o.ParentRole).Where(o => EnumStoredAsString.Large == o.Enum1)
+			);
+		}
+
+		[Test]
+		public void EqualStringEnumTestWithSubQuery()
+		{
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"3", o => o is EnumStoredAsStringType}
+				},
+				db.Users.Where(o => db.Users.Any(u => u.Enum1 == EnumStoredAsString.Large)),
+				db.Users.Where(o => db.Users.Any(u => EnumStoredAsString.Large == u.Enum1))
+			);
+		}
+
+		[Test]
+		public void EqualStringEnumTestWithMaxSubQuery()
+		{
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"3", o => o is EnumStoredAsStringType}
+				},
+				db.Users.Fetch(o => o.Role).Where(o => db.Users.Max(u => u.Enum1 == EnumStoredAsString.Large ? u.Id : -u.Id) == o.Id),
+				db.Users.Fetch(o => o.Role).Where(o => db.Users.Max(u => EnumStoredAsString.Large == u.Enum1 ? u.Id : -u.Id) == o.Id),
+				db.Users.Where(o => db.Users.Max(u => u.Enum1 == EnumStoredAsString.Large ? u.Id : -u.Id) == o.Id),
+				db.Users.Where(o => db.Users.Max(u => EnumStoredAsString.Large == u.Enum1 ? u.Id : -u.Id) == o.Id)
+			);
+		}
+
+		[Test]
 		public void EqualStringTest()
 		{
 			AssertResults(

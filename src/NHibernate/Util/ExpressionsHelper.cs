@@ -714,6 +714,12 @@ namespace NHibernate.Util
 				return node;
 			}
 
+			protected override Expression VisitSubQuery(SubQueryExpression expression)
+			{
+				expression.QueryModel.TransformExpressions(base.Visit);
+				return expression;
+			}
+
 			protected override Expression VisitUnary(UnaryExpression node)
 			{
 				// Store only the outermost cast, when there are multiple casts for the same member
