@@ -607,7 +607,8 @@ possible solutions:
 		{
 			existType = false;
 			return toType != typeof(object) &&
-					IsCastRequired(ExpressionsHelper.GetType(_parameters, expression), TypeFactory.GetDefaultTypeFor(toType), out existType);
+			       expression.Type.UnwrapIfNullable() != toType.UnwrapIfNullable() &&
+			       IsCastRequired(ExpressionsHelper.GetType(_parameters, expression), TypeFactory.GetDefaultTypeFor(toType), out existType);
 		}
 
 		private bool IsCastRequired(IType type, IType toType, out bool existType)
