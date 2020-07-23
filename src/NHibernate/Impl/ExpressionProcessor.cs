@@ -258,16 +258,16 @@ namespace NHibernate.Impl
 			if (expression.NodeType == ExpressionType.MemberAccess)
 			{
 				var memberAccess = (MemberExpression) expression;
-				if (memberAccess.Expression.NodeType == ExpressionType.Constant)
+				if (memberAccess.Expression == null || memberAccess.Expression.NodeType == ExpressionType.Constant)
 				{
-					var constant = (ConstantExpression) memberAccess.Expression;
+					var constantValue = ((ConstantExpression) memberAccess.Expression)?.Value;
 					var member = memberAccess.Member;
 					switch (member.MemberType)
 					{
 						case MemberTypes.Field:
-							return ((FieldInfo) member).GetValue(constant.Value);
+							return ((FieldInfo) member).GetValue(constantValue);
 						case MemberTypes.Property:
-							return ((PropertyInfo) member).GetValue(constant.Value);
+							return ((PropertyInfo) member).GetValue(constantValue);
 					}
 				}
 			}
