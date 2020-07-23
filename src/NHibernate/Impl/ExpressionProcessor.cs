@@ -252,6 +252,26 @@ namespace NHibernate.Impl
 		/// </summary>
 		public static object FindValue(Expression expression)
 		{
+			if (expression.NodeType == ExpressionType.Constant)
+				return ((ConstantExpression) expression).Value;
+
+			if (expression.NodeType == ExpressionType.MemberAccess)
+			{
+				var memberAccess = (MemberExpression) expression;
+				if (memberAccess.Expression.NodeType == ExpressionType.Constant)
+				{
+					var constant = (ConstantExpression) memberAccess.Expression;
+					var member = memberAccess.Member;
+					switch (member.MemberType)
+					{
+						case MemberTypes.Field:
+							return ((FieldInfo) member).GetValue(constant.Value);
+						case MemberTypes.Property:
+							return ((PropertyInfo) member).GetValue(constant.Value);
+					}
+				}
+			}
+
 			var valueExpression = Expression.Lambda(expression).Compile();
 			object value = valueExpression.DynamicInvoke();
 			return value;
@@ -452,16 +472,12 @@ namespace NHibernate.Impl
 			if (methodCallExpression == null)
 				throw new ArgumentException("right operand should be detachedQueryInstance.As<T>() - " + expression, nameof(expression));
 
-			var criteriaExpression = Expression.Lambda(methodCallExpression.Object).Compile();
-			QueryOver detachedQuery = (QueryOver)criteriaExpression.DynamicInvoke();
-			return detachedQuery.DetachedCriteria;
+			return ((QueryOver) FindValue(methodCallExpression.Object)).DetachedCriteria;
 		}
 
 		private static bool EvaluatesToNull(Expression expression)
 		{
-			var valueExpression = Expression.Lambda(expression).Compile();
-			object value = valueExpression.DynamicInvoke();
-			return (value == null);
+			return FindValue(expression) == null;
 		}
 
 		private static System.Type FindMemberType(Expression expression)
