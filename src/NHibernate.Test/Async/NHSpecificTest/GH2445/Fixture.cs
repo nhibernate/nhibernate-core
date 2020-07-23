@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2446
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect is Oracle8iDialect || dialect is MySQLDialect || dialect is SQLiteDialect;
+			return dialect is MySQLDialect || dialect is SQLiteDialect;
 		}
 
 		protected override HbmMapping GetMappings()
