@@ -1,4 +1,24 @@
-﻿Build 5.3.0
+﻿Build 5.3.1
+=============================
+
+Release notes - NHibernate - Version 5.3.1
+
+7 issues were resolved in this release.
+
+** Bug
+
+   * #2445 LINQ queries with a cast from int to uint fail
+   * #2440 InvalidCastException for Future Criteria with aliased fetches 
+   * #2439 Invalid parameter conversion for enums
+   * #2437 Invalid cast on nullable custom type with Linq
+
+** Task
+
+   * #2450 Release 5.3.1
+   * #2436 Fix old http://nhibernate.info URIs
+   * #2435 Fix iconUrl warning
+
+Build 5.3.0
 =============================
 
 Release notes - NHibernate - Version 5.3.0
