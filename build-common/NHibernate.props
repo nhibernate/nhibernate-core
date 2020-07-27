@@ -27,6 +27,7 @@
 
     <PackageProjectUrl>https://nhibernate.info</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/nhibernate/nhibernate-core/master/logo/NHibernate-NuGet.png</PackageIconUrl>
+    <PackageIcon>NHibernate-NuGet.png</PackageIcon>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>LGPL-2.1-only</PackageLicenseExpression>
     <PackageReleaseNotes Condition="'$(VersionSuffix)' == ''">https://github.com/nhibernate/nhibernate-core/blob/$(VersionPrefix)/releasenotes.txt</PackageReleaseNotes>
