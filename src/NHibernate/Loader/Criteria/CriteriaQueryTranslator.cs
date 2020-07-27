@@ -804,10 +804,13 @@ namespace NHibernate.Loader.Criteria
 
 		public IType GetType(ICriteria subcriteria, string propertyName)
 		{
-			if(!TryParseCriteriaPath(subcriteria, propertyName, out var entityName, out var entityPropName, out _))
-				throw new QueryException("Could not find property " + propertyName);
+			if (TryGetType(subcriteria, propertyName, out var resultType))
+				return resultType;
 
-			return GetPropertyMapping(entityName).ToType(entityPropName);
+			if (outerQueryTranslator != null)
+				return outerQueryTranslator.GetType(subcriteria, propertyName);
+
+			throw new QueryException("Could not find property " + propertyName);
 		}
 
 		public bool TryGetType(ICriteria subcriteria, string propertyName, out IType type)
