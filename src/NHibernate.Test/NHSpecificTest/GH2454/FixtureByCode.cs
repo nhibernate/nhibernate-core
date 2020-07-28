@@ -9,6 +9,11 @@ namespace NHibernate.Test.NHSpecificTest.GH2454
 	[TestFixture]
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect.SupportsScalarSubSelects;
+		}
+
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
