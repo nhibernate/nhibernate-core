@@ -20,6 +20,11 @@ namespace NHibernate.Test.NHSpecificTest.GH2454
 	[TestFixture]
 	public class ByCodeFixtureAsync : TestCaseMappingByCode
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect.SupportsScalarSubSelects;
+		}
+
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
@@ -49,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2454
 		}
 
 		[Test]
-		public async Task SubqueryCorrelatedThroughConditional()
+		public async Task SubqueryCorrelatedThroughConditionalAsync()
 		{
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
@@ -58,26 +63,26 @@ namespace NHibernate.Test.NHSpecificTest.GH2454
 				{
 					// alpha entities
 					var projectAlpha = new Project { Name = "Alpha" };
-					session.Save(projectAlpha);
+					await (session.SaveAsync(projectAlpha));
 
 					var componentAlpha = new Component { Project = projectAlpha, Name = "Thingie" };
-					session.Save(componentAlpha);
+					await (session.SaveAsync(componentAlpha));
 
 					var tagAlpha = new Tag { Component1 = componentAlpha, Name = "A20" };
-					session.Save(tagAlpha);
+					await (session.SaveAsync(tagAlpha));
 
 					// beta entities
 					var projectBeta = new Project { Name = "Beta" };
-					session.Save(projectBeta);
+					await (session.SaveAsync(projectBeta));
 
 					var componentBeta = new Component { Project = projectBeta, Name = "Thingie" };
-					session.Save(componentBeta);
+					await (session.SaveAsync(componentBeta));
 
 					var tagBeta = new Tag { Component1 = componentBeta, Name = "B17" };
-					session.Save(tagBeta);
+					await (session.SaveAsync(tagBeta));
 				}
 
-				session.Flush();
+				await (session.FlushAsync());
 
 				// query
 				{
