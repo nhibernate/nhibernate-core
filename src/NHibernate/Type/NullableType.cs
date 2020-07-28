@@ -377,6 +377,15 @@ namespace NHibernate.Type
 			return (SqlType.GetHashCode() / 2) + (Name.GetHashCode() / 2);
 		}
 
+		/// <summary>
+		/// Provides a more descriptive string representation by reporting the properties that are important for equality. 
+		/// Useful in error messages.
+		/// </summary>
+		public override string ToString()
+		{
+			return string.Format("{0}(SqlType: {1})", Name, SqlType);
+		}
+
 		#endregion
 	}
 }
