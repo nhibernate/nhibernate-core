@@ -126,6 +126,23 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task UsingParameterInEvaluatableExpressionAsync()
+		{
+			var value = "test";
+			await (db.Orders.Where(o => string.Format("{0}", value) != o.ShippedTo).ToListAsync());
+			await (db.Orders.Where(o => $"{value}_" != o.ShippedTo).ToListAsync());
+			await (db.Orders.Where(o => string.Copy(value) != o.ShippedTo).ToListAsync());
+
+			var guid = Guid.Parse("2D7E6EB3-BD08-4A40-A4E7-5150F7895821");
+			await (db.Orders.Where(o => o.ShippedTo.Contains($"VALUE {guid}")).ToListAsync());
+
+			var names = new[] {"name"};
+			await (db.Users.Where(x => names.Length == 0 || names.Contains(x.Name)).ToListAsync());
+			names = new string[] { };
+			await (db.Users.Where(x => names.Length == 0 || names.Contains(x.Name)).ToListAsync());
+		}
+
+		[Test]
 		public async Task UsingNegateValueTypeParameterTwiceAsync()
 		{
 			var value = 1;

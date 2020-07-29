@@ -114,6 +114,23 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void UsingParameterInEvaluatableExpression()
+		{
+			var value = "test";
+			db.Orders.Where(o => string.Format("{0}", value) != o.ShippedTo).ToList();
+			db.Orders.Where(o => $"{value}_" != o.ShippedTo).ToList();
+			db.Orders.Where(o => string.Copy(value) != o.ShippedTo).ToList();
+
+			var guid = Guid.Parse("2D7E6EB3-BD08-4A40-A4E7-5150F7895821");
+			db.Orders.Where(o => o.ShippedTo.Contains($"VALUE {guid}")).ToList();
+
+			var names = new[] {"name"};
+			db.Users.Where(x => names.Length == 0 || names.Contains(x.Name)).ToList();
+			names = new string[] { };
+			db.Users.Where(x => names.Length == 0 || names.Contains(x.Name)).ToList();
+		}
+
+		[Test]
 		public void ValidateMixingTwoParametersCacheKeys()
 		{
 			var value = 1;
