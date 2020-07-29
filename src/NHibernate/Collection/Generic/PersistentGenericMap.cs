@@ -230,23 +230,6 @@ namespace NHibernate.Collection.Generic
 			return sn[((KeyValuePair<TKey, TValue>)entry).Key];
 		}
 
-		public override bool Equals(object other)
-		{
-			var that = other as IDictionary<TKey, TValue>;
-			if (that == null)
-			{
-				return false;
-			}
-			Read();
-			return CollectionHelper.DictionaryEquals(WrappedMap, that);
-		}
-
-		public override int GetHashCode()
-		{
-			Read();
-			return WrappedMap.GetHashCode();
-		}
-
 		public override bool EntryExists(object entry, int i)
 		{
 			return WrappedMap.ContainsKey(((KeyValuePair<TKey, TValue>)entry).Key);
