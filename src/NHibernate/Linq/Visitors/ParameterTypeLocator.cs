@@ -227,8 +227,8 @@ namespace NHibernate.Linq.Visitors
 				// ReLinq wraps all ResultOperatorExpressionNodeBase into a SubQueryExpression. In case of
 				// ContainsResultOperator where the constant expression is dislocated from the related expression,
 				// we have to manually link the related expressions.
-				var containsOperator = node.QueryModel.ResultOperators.OfType<ContainsResultOperator>().FirstOrDefault();
-				if (containsOperator != null &&
+				if (node.QueryModel.ResultOperators.Count == 1 &&
+				    node.QueryModel.ResultOperators[0] is ContainsResultOperator containsOperator &&
 				    node.QueryModel.SelectClause.Selector is QuerySourceReferenceExpression querySourceReference &&
 				    querySourceReference.ReferencedQuerySource is MainFromClause mainFromClause &&
 				    mainFromClause.FromExpression is ConstantExpression constantExpression)
