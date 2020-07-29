@@ -26,11 +26,18 @@ namespace NHibernate.Criterion
 			return null;
 		}
 
+		// Since v5.3
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		public virtual string[] GetColumnAliases(int loc)
 		{
-			return new string[] {"y" + loc + "_"};
+			return new[] {GetColumnAlias(loc, 0)};
 		}
-		
+
+		public virtual string GetColumnAlias(int position, int columnIndex)
+		{
+			return "y" + (position + columnIndex) + "_";
+		}
+
 		public string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return GetColumnAliases(alias, position);
@@ -42,12 +49,11 @@ namespace NHibernate.Criterion
 			string[] aliases = new string[numColumns];
 			for (int i = 0; i < numColumns; i++) 
 			{
-				aliases[i] = "y" + position + "_";
-				position++;
+				aliases[i] = GetColumnAlias(position, i);
 			}
 			return aliases;
 		}
-		
+
 		public virtual string[] Aliases
 		{
 			get { return new String[1]; }
