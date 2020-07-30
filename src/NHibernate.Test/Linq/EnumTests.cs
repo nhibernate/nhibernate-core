@@ -50,6 +50,14 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void CanQueryWithContainsOnEnumStoredAsString_Small_1()
+		{
+			var values = new[] { EnumStoredAsString.Small, EnumStoredAsString.Medium };
+			var query = db.Users.Where(x => values.Contains(x.Enum1)).ToList();
+			Assert.AreEqual(3, query.Count);
+		}
+
+		[Test]
 		public void ConditionalNavigationProperty()
 		{
 			EnumStoredAsString? type = null;
