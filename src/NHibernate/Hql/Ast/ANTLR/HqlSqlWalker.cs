@@ -794,8 +794,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if (path.Type == IDENT)
 			{
 				var pathIdentNode = (IdentNode) path;
-				string name = path.Text ?? pathIdentNode.OriginalText;
-				return SessionFactoryHelper.FindQueryableUsingImports(name);
+				return SessionFactoryHelper.FindQueryableUsingImports(pathIdentNode.Path);
 			}
 			else if (path.Type == DOT)
 			{
