@@ -143,6 +143,20 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task UsingParameterOnSelectorsAsync()
+		{
+			var user = new User() {Id = 1};
+			await (db.Users.Where(o => o == user).ToListAsync());
+			await (db.Users.FirstOrDefaultAsync(o => o == user));
+			await (db.Timesheets.Where(o => o.Users.Any(u => u == user)).ToListAsync());
+
+			var users = new[] {new User() {Id = 1}};
+			await (db.Users.Where(o => users.Contains(o)).ToListAsync());
+			await (db.Users.FirstOrDefaultAsync(o => users.Contains(o)));
+			await (db.Timesheets.Where(o => o.Users.Any(u => users.Contains(u))).ToListAsync());
+		}
+
+		[Test]
 		public async Task UsingNegateValueTypeParameterTwiceAsync()
 		{
 			var value = 1;

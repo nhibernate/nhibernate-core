@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
 using NHibernate.Param;
+using NHibernate.Persister.Collection;
 using NHibernate.Type;
 using NHibernate.Util;
 using Remotion.Linq;
@@ -110,6 +111,12 @@ namespace NHibernate.Linq.Visitors
 							out _,
 							out _))
 						{
+							if (visitor.SequenceSelectorExpressions.Contains(memberExpression) && type is IAssociationType associationType)
+							{
+								var collection = (IQueryableCollection) associationType.GetAssociatedJoinable(sessionFactory);
+								type = collection.ElementType;
+							}
+
 							break;
 						}
 					}
@@ -137,6 +144,7 @@ namespace NHibernate.Linq.Visitors
 				new Dictionary<ConstantExpression, IType>();
 			public readonly Dictionary<Expression, HashSet<Expression>> RelatedExpressions =
 				new Dictionary<Expression, HashSet<Expression>>();
+			public readonly HashSet<Expression> SequenceSelectorExpressions = new HashSet<Expression>();
 
 			public ConstantTypeLocatorVisitor(
 				bool removeMappedAsCalls,
@@ -247,6 +255,13 @@ namespace NHibernate.Linq.Visitors
 				}
 				else
 				{
+					// In case a parameter is related to a sequence selector we will have to get the underling item type
+					// (e.g. q.Where(o => o.Users.Any(u => u == user)))
+					if (node.QueryModel.ResultOperators.Any(o => o is ValueFromSequenceResultOperatorBase))
+					{
+						SequenceSelectorExpressions.Add(node.QueryModel.SelectClause.Selector);
+					}
+
 					node.QueryModel.TransformExpressions(Visit);
 				}
 
