@@ -18,6 +18,11 @@ namespace NHibernate.Test.NHSpecificTest.GH2465
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect.SupportsScalarSubSelects;
+		}
+
 		protected override void OnSetUp()
 		{
 			using (var session = OpenSession())

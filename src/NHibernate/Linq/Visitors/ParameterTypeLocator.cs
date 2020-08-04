@@ -111,9 +111,9 @@ namespace NHibernate.Linq.Visitors
 							out _,
 							out _))
 						{
-							if (visitor.SequenceSelectorExpressions.Contains(memberExpression) && type is IAssociationType associationType)
+							if (type.IsAssociationType && visitor.SequenceSelectorExpressions.Contains(memberExpression))
 							{
-								var collection = (IQueryableCollection) associationType.GetAssociatedJoinable(sessionFactory);
+								var collection = (IQueryableCollection) ((IAssociationType) type).GetAssociatedJoinable(sessionFactory);
 								type = collection.ElementType;
 							}
 
