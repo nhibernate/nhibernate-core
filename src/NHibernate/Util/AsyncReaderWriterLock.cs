@@ -82,23 +82,23 @@ namespace NHibernate.Util
 
 		public Releaser ReadLock()
 		{
-			if (CanEnterReadLock())
+			if (CanEnterReadLock(out var waitingReadLockSemaphore))
 			{
 				return _readerReleaser;
 			}
 
-			_waitingReadLockSemaphore.Wait();
+			waitingReadLockSemaphore.Wait();
 
 			return _readerReleaser;
 		}
 
 		public Task<Releaser> ReadLockAsync()
 		{
-			return CanEnterReadLock() ? _readerReleaserTask : ReadLockInternalAsync();
+			return CanEnterReadLock(out var waitingReadLockSemaphore) ? _readerReleaserTask : ReadLockInternalAsync();
 
 			async Task<Releaser> ReadLockInternalAsync()
 			{
-				await _waitingReadLockSemaphore.WaitAsync().ConfigureAwait(false);
+				await waitingReadLockSemaphore.WaitAsync().ConfigureAwait(false);
 
 				return _readerReleaser;
 			}
@@ -165,7 +165,7 @@ namespace NHibernate.Util
 			}
 		}
 
-		private bool CanEnterReadLock()
+		private bool CanEnterReadLock(out SemaphoreSlim waitingReadLockSemaphore)
 		{
 			lock (_writeLockSemaphore)
 			{
@@ -173,6 +173,7 @@ namespace NHibernate.Util
 				if (_writersWaiting == 0 && _writeLockSemaphore.CurrentCount > 0)
 				{
 					_currentReaders++;
+					waitingReadLockSemaphore = null;
 
 					return true;
 				}
@@ -183,6 +184,7 @@ namespace NHibernate.Util
 				}
 
 				_readersWaiting++;
+				waitingReadLockSemaphore = _waitingReadLockSemaphore;
 
 				return false;
 			}
