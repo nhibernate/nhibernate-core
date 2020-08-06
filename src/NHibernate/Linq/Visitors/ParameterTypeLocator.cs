@@ -255,7 +255,7 @@ namespace NHibernate.Linq.Visitors
 				}
 				else
 				{
-					// In case a parameter is related to a sequence selector we will have to get the underling item type
+					// In case a parameter is related to a sequence selector we will have to get the underlying item type
 					// (e.g. q.Where(o => o.Users.Any(u => u == user)))
 					if (node.QueryModel.ResultOperators.Any(o => o is ValueFromSequenceResultOperatorBase))
 					{
