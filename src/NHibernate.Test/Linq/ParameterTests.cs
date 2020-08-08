@@ -131,6 +131,20 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void UsingParameterOnSelectors()
+		{
+			var user = new User() {Id = 1};
+			db.Users.Where(o => o == user).ToList();
+			db.Users.FirstOrDefault(o => o == user);
+			db.Timesheets.Where(o => o.Users.Any(u => u == user)).ToList();
+
+			var users = new[] {new User() {Id = 1}};
+			db.Users.Where(o => users.Contains(o)).ToList();
+			db.Users.FirstOrDefault(o => users.Contains(o));
+			db.Timesheets.Where(o => o.Users.Any(u => users.Contains(u))).ToList();
+		}
+
+		[Test]
 		public void ValidateMixingTwoParametersCacheKeys()
 		{
 			var value = 1;
