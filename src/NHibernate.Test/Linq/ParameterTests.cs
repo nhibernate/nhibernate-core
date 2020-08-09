@@ -114,6 +114,37 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void UsingParameterInEvaluatableExpression()
+		{
+			var value = "test";
+			db.Orders.Where(o => string.Format("{0}", value) != o.ShippedTo).ToList();
+			db.Orders.Where(o => $"{value}_" != o.ShippedTo).ToList();
+			db.Orders.Where(o => string.Copy(value) != o.ShippedTo).ToList();
+
+			var guid = Guid.Parse("2D7E6EB3-BD08-4A40-A4E7-5150F7895821");
+			db.Orders.Where(o => o.ShippedTo.Contains($"VALUE {guid}")).ToList();
+
+			var names = new[] {"name"};
+			db.Users.Where(x => names.Length == 0 || names.Contains(x.Name)).ToList();
+			names = new string[] { };
+			db.Users.Where(x => names.Length == 0 || names.Contains(x.Name)).ToList();
+		}
+
+		[Test]
+		public void UsingParameterOnSelectors()
+		{
+			var user = new User() {Id = 1};
+			db.Users.Where(o => o == user).ToList();
+			db.Users.FirstOrDefault(o => o == user);
+			db.Timesheets.Where(o => o.Users.Any(u => u == user)).ToList();
+
+			var users = new[] {new User() {Id = 1}};
+			db.Users.Where(o => users.Contains(o)).ToList();
+			db.Users.FirstOrDefault(o => users.Contains(o));
+			db.Timesheets.Where(o => o.Users.Any(u => users.Contains(u))).ToList();
+		}
+
+		[Test]
 		public void ValidateMixingTwoParametersCacheKeys()
 		{
 			var value = 1;

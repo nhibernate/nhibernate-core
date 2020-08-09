@@ -1,4 +1,23 @@
-﻿Build 5.3.1
+﻿Build 5.3.2
+=============================
+
+Release notes - NHibernate - Version 5.3.2
+
+6 issues were resolved in this release.
+
+** Bug
+
+   * #2468 Null reference at NHibernate.Util.AsyncReaderWriterLock.ReadLock()
+   * #2465 Linq contains on a value collection is failing
+   * #2463 Path expected for join
+   * #2458 Evaluatable expressions with parameters are no more pre-evaluated
+   * #2453 Fail to cast enum as nvarchar for Linq Contains
+
+** Task
+
+   * #2472 Release 5.3.2
+
+Build 5.3.1
 =============================
 
 Release notes - NHibernate - Version 5.3.1

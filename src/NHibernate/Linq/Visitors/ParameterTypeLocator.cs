@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
 using NHibernate.Param;
+using NHibernate.Persister.Collection;
 using NHibernate.Type;
 using NHibernate.Util;
 using Remotion.Linq;
+using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
@@ -107,6 +111,12 @@ namespace NHibernate.Linq.Visitors
 							out _,
 							out _))
 						{
+							if (type.IsAssociationType && visitor.SequenceSelectorExpressions.Contains(memberExpression))
+							{
+								var collection = (IQueryableCollection) ((IAssociationType) type).GetAssociatedJoinable(sessionFactory);
+								type = collection.ElementType;
+							}
+
 							break;
 						}
 					}
@@ -134,6 +144,7 @@ namespace NHibernate.Linq.Visitors
 				new Dictionary<ConstantExpression, IType>();
 			public readonly Dictionary<Expression, HashSet<Expression>> RelatedExpressions =
 				new Dictionary<Expression, HashSet<Expression>>();
+			public readonly HashSet<Expression> SequenceSelectorExpressions = new HashSet<Expression>();
 
 			public ConstantTypeLocatorVisitor(
 				bool removeMappedAsCalls,
@@ -219,14 +230,42 @@ namespace NHibernate.Linq.Visitors
 				return node;
 			}
 
-			public override Expression Visit(Expression node)
+			protected override Expression VisitSubQuery(SubQueryExpression node)
 			{
-				if (node is SubQueryExpression subQueryExpression)
+				// ReLinq wraps all ResultOperatorExpressionNodeBase into a SubQueryExpression. In case of
+				// ContainsResultOperator where the constant expression is dislocated from the related expression,
+				// we have to manually link the related expressions.
+				if (node.QueryModel.ResultOperators.Count == 1 &&
+				    node.QueryModel.ResultOperators[0] is ContainsResultOperator containsOperator &&
+				    node.QueryModel.SelectClause.Selector is QuerySourceReferenceExpression querySourceReference &&
+				    querySourceReference.ReferencedQuerySource is MainFromClause mainFromClause &&
+				    mainFromClause.FromExpression is ConstantExpression constantExpression)
 				{
-					subQueryExpression.QueryModel.TransformExpressions(Visit);
+					VisitConstant(constantExpression);
+					AddRelatedExpression(constantExpression, Unwrap(Visit(containsOperator.Item)));
+					// Copy all found MemberExpressions to the constant expression
+					// (e.g. values.Contains(o.Name != o.Name2 ? o.Enum1 : o.Enum2) -> copy o.Enum1 and o.Enum2)
+					if (RelatedExpressions.TryGetValue(containsOperator.Item, out var set))
+					{
+						foreach (var nestedMemberExpression in set)
+						{
+							AddRelatedExpression(constantExpression, nestedMemberExpression);
+						}
+					}
+				}
+				else
+				{
+					// In case a parameter is related to a sequence selector we will have to get the underlying item type
+					// (e.g. q.Where(o => o.Users.Any(u => u == user)))
+					if (node.QueryModel.ResultOperators.Any(o => o is ValueFromSequenceResultOperatorBase))
+					{
+						SequenceSelectorExpressions.Add(node.QueryModel.SelectClause.Selector);
+					}
+
+					node.QueryModel.TransformExpressions(Visit);
 				}
 
-				return base.Visit(node);
+				return node;
 			}
 
 			private void VisitAssign(Expression leftNode, Expression rightNode)

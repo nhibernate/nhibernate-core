@@ -85,6 +85,22 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void ContainsStringEnumTest()
+		{
+			var values = new[] {EnumStoredAsString.Small};
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"value(NHibernate.DomainModel.Northwind.Entities.EnumStoredAsString[])", o => o is EnumStoredAsStringType}
+				},
+				db.Users.Where(o => values.Contains(o.Enum1)),
+				db.Users.Where(o => values.Contains(o.NullableEnum1.Value)),
+				db.Users.Where(o => values.Contains(o.Name == o.Name ? o.Enum1 : o.NullableEnum1.Value)),
+				db.Timesheets.Where(o => o.Users.Any(u => values.Contains(u.Enum1)))
+			);
+		}
+
+		[Test]
 		public void EqualStringEnumTestWithFetch()
 		{
 			AssertResults(
