@@ -35,7 +35,7 @@ namespace NHibernate.Test.Criteria
 				.Add(" + ")
 				.Add(criteriaQuery.NewQueryParameter(typedValue).Single())
 				.Add(") as ")
-				.Add(GetColumnAlias(0, 0 ))
+				.Add(GetColumnAlias(0))
 				.ToSqlString();
 		}
 

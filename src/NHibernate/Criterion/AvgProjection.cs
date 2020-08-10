@@ -30,7 +30,7 @@ namespace NHibernate.Criterion
 				sql.Add(criteriaQuery.GetColumn(criteria, propertyName));
 			}
 			sql.Add(" as ").Add(sqlType).Add(")");
-			sql.Add(") as ").Add(GetColumnAlias(loc, 0));
+			sql.Add(") as ").Add(GetColumnAlias(loc));
 			return sql.ToSqlString();
 		}
 
