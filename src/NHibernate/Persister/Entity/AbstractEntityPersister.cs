@@ -1408,7 +1408,6 @@ namespace NHibernate.Persister.Entity
 			{
 				throw new HibernateException($"Entity is not associated with the session: {id}");
 			}
-
 		
 			var lazyProperties = allLazyProperties ? LazyProperties.ToArray() : uninitializedLazyProperties;
 			var metadata = InstrumentationMetadata.LazyPropertiesMetadata;
@@ -1420,7 +1419,6 @@ namespace NHibernate.Persister.Entity
 				indexes[i] = descriptor.PropertyIndex;
 				lazyIndexes[i] = descriptor.LazyIndex;
 			}
-		
 
 			var values = Hydrate(rs, id, entity, suffixedPropertyColumns, null, true, indexes, session);
 			for (var i = 0; i < lazyIndexes.Length; i++)
