@@ -48,7 +48,7 @@ namespace NHibernate.Criterion
 			var ifTrue = CriterionUtil.GetColumnNameAsSqlStringPart(whenTrue, criteriaQuery, criteria);
 			var ifFalse = CriterionUtil.GetColumnNameAsSqlStringPart(whenFalse, criteriaQuery, criteria);
 			return new SqlString("(case when ", condition, " then ", ifTrue, " else ", ifFalse, " end) as ",
-			                     GetColumnAliases(position, criteria, criteriaQuery)[0]);
+			                     GetColumnAlias(position));
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
