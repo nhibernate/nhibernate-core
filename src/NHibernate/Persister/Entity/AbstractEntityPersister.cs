@@ -1409,24 +1409,18 @@ namespace NHibernate.Persister.Entity
 				throw new HibernateException($"Entity is not associated with the session: {id}");
 			}
 
-			int[] indexes;
-			int[] lazyIndexes;
-			if (allLazyProperties)
+		
+			var lazyProperties = allLazyProperties ? LazyProperties.ToArray() : uninitializedLazyProperties;
+			var metadata = InstrumentationMetadata.LazyPropertiesMetadata;
+			var indexes = new int[lazyProperties.Length];
+			var lazyIndexes = new int[lazyProperties.Length];
+			for (var i = 0; i < lazyProperties.Length; i++)
 			{
-				lazyIndexes = indexes = lazyPropertyNumbers;
+				var descriptor = metadata.GetLazyPropertyDescriptor(lazyProperties[i]);
+				indexes[i] = descriptor.PropertyIndex;
+				lazyIndexes[i] = descriptor.LazyIndex;
 			}
-			else
-			{
-				var metadata = InstrumentationMetadata.LazyPropertiesMetadata;
-				indexes = new int[uninitializedLazyProperties.Length];
-				lazyIndexes = new int[uninitializedLazyProperties.Length];
-				for (var i = 0; i < uninitializedLazyProperties.Length; i++)
-				{
-					var descriptor = metadata.GetLazyPropertyDescriptor(uninitializedLazyProperties[i]);
-					indexes[i] = descriptor.PropertyIndex;
-					lazyIndexes[i] = descriptor.LazyIndex;
-				}
-			}
+		
 
 			var values = Hydrate(rs, id, entity, suffixedPropertyColumns, null, true, indexes, session);
 			for (var i = 0; i < lazyIndexes.Length; i++)
