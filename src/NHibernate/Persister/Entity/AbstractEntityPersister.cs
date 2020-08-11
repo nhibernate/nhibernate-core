@@ -1425,7 +1425,7 @@ namespace NHibernate.Persister.Entity
 				var metadata = InstrumentationMetadata.LazyPropertiesMetadata;
 				indexes = new int[uninitializedLazyProperties.Length];
 				lazyIndexes = new int[uninitializedLazyProperties.Length];
-				for(var i = 0; i < uninitializedLazyProperties.Length; i++)
+				for (var i = 0; i < uninitializedLazyProperties.Length; i++)
 				{
 					var descriptor = metadata.GetLazyPropertyDescriptor(uninitializedLazyProperties[i]);
 					indexes[i] = descriptor.PropertyIndex;
