@@ -1432,6 +1432,7 @@ namespace NHibernate.Persister.Entity
 					lazyIndexes[i] = descriptor.LazyIndex;
 				}
 			}
+
 			var values = Hydrate(rs, id, entity, suffixedPropertyColumns, null, true, indexes, session);
 			for (var i = 0; i < lazyIndexes.Length; i++)
 			{
