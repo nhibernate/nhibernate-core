@@ -90,7 +90,7 @@ namespace NHibernate.Tuple.Entity
 			type = persistentClass.MappedClass;
 			rootType = persistentClass.RootClazz.MappedClass;
 			rootTypeAssemblyQualifiedName = rootType == null ? null : rootType.AssemblyQualifiedName;
-			OverridesEquals = ReflectHelper.OverridesEquals(type);
+			OverridesEquals = type != null && ReflectHelper.OverridesEquals(type); // type will be null for dynamic entities
 
 			identifierProperty = PropertyFactory.BuildIdentifierProperty(persistentClass,
 			                                                             sessionFactory.GetIdentifierGenerator(rootName));
