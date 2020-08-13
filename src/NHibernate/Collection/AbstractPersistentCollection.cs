@@ -775,12 +775,13 @@ namespace NHibernate.Collection
 			return queueOperationTracker;
 		}
 
-		internal bool IsTransient(object element)
+		internal bool CanSkipElementExistanceCheck(object element)
 		{
 			var queryableCollection = (IQueryableCollection) Session.Factory.GetCollectionPersister(Role);
 			return
 				queryableCollection != null &&
 				queryableCollection.ElementType.IsEntityType &&
+				!queryableCollection.ElementPersister.EntityMetamodel.OverridesEquals &&
 				!element.IsProxy() &&
 				!Session.PersistenceContext.IsEntryFor(element) &&
 				ForeignKeys.IsTransientFast(queryableCollection.ElementPersister.EntityName, element, Session) == true;

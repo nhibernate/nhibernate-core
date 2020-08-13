@@ -1315,6 +1315,52 @@ namespace NHibernate.Test.Extralazy
 			}
 		}
 
+		[Test]
+		public void SetAddWithOverrideEquals()
+		{
+			User gavin;
+			User robert;
+			User tom;
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = new User("gavin", "secret");
+				robert = new User("robert", "secret");
+				tom = new User("tom", "secret");
+				s.Persist(gavin);
+				s.Persist(robert);
+				s.Persist(tom);
+
+				gavin.Followers.Add(new UserFollower(gavin, robert));
+				gavin.Followers.Add(new UserFollower(gavin, tom));
+				robert.Followers.Add(new UserFollower(robert, tom));
+
+				Assert.That(gavin.Followers.Count, Is.EqualTo(2), "Gavin's documents count after adding 2");
+				Assert.That(robert.Followers.Count, Is.EqualTo(1), "Robert's followers count after adding one");
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				gavin = s.Get<User>("gavin");
+				robert = s.Get<User>("robert");
+				tom = s.Get<User>("tom");
+
+				// Re-add
+				Assert.That(gavin.Followers.Add(new UserFollower(gavin, robert)), Is.False, "Re-adding element");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Followers), Is.True, "Documents initialization status after re-adding");
+				Assert.That(gavin.Followers, Has.Count.EqualTo(2), "Gavin's followers count after re-adding");
+
+				// Add new
+				Assert.That(robert.Followers.Add(new UserFollower(robert, gavin)), Is.True, "Adding element");
+				Assert.That(NHibernateUtil.IsInitialized(gavin.Followers), Is.True, "Documents initialization status after adding");
+				Assert.That(gavin.Followers, Has.Count.EqualTo(2), "Robert's followers count after re-adding");
+			}
+		}
+
 		[TestCase(false, false)]
 		[TestCase(false, true)]
 		[TestCase(true, false)]

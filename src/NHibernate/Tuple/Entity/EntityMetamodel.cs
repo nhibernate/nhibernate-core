@@ -90,6 +90,7 @@ namespace NHibernate.Tuple.Entity
 			type = persistentClass.MappedClass;
 			rootType = persistentClass.RootClazz.MappedClass;
 			rootTypeAssemblyQualifiedName = rootType == null ? null : rootType.AssemblyQualifiedName;
+			OverridesEquals = ReflectHelper.OverridesEquals(type);
 
 			identifierProperty = PropertyFactory.BuildIdentifierProperty(persistentClass,
 			                                                             sessionFactory.GetIdentifierGenerator(rootName));
@@ -548,6 +549,8 @@ namespace NHibernate.Tuple.Entity
 		{
 			get { return properties; }
 		}
+
+		internal bool OverridesEquals { get; private set; }
 
 		public int GetPropertyIndex(string propertyName)
 		{
