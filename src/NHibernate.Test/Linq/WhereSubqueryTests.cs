@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -507,6 +508,26 @@ where c.Order.Customer.CustomerId = 'VINET'
 						 select order).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(61));
+		}
+
+		[Test(Description = "GH2479")]
+		public void OrdersWithSubquery9()
+		{
+			var ordersQuery = db.Orders
+			                    .Where(x => x.Employee.EmployeeId > 5)
+			                    .OrderBy(x => x.OrderId)
+			                    .Take(2);
+
+			var orderLinesFuture = db.OrderLines
+			                         .Where(x => ordersQuery.Any(o => o == x.Order))
+			                         .OrderBy(x => x.Id)
+			                         .ToFuture();
+
+			var orders = ordersQuery.ToFuture().ToList();
+			var orderLines = orderLinesFuture.ToList();
+
+			Assert.That(orders.Count, Is.EqualTo(2), nameof(orders));
+			Assert.That(orderLines.Count, Is.EqualTo(6), nameof(orderLines));
 		}
 
 		[Test(Description = "NH-2654")]
