@@ -75,6 +75,31 @@ Release notes - NHibernate - Version 5.3.0
           expressions.
         * `ICache` caches yielded by the session factory will be `CacheBase` wrappers around the cache actually
           provided by the cache provider, if it was not deriving from `CacheBase`.
+        * Calling `IList.RemoveAt` or `IList<>.RemoveAt` on an uninitialized list with a negative number
+          will now throw an `ArgumentOutOfRangeException`.
+        * Calling `IList.RemoveAt` or `IList<>.RemoveAt` on an uninitialized list mapped as `lazy="extra"`
+          with a number that is equal or higher that the current collection size will now throw an
+          `ArgumentOutOfRangeException`.
+        * Calling `IList.Insert` or `IList<>.Insert` on an uninitialized list with a negative number will
+          now throw an `ArgumentOutOfRangeException`.
+        * Calling `IList.Insert` or `IList<>.Insert` on an uninitialized list mapped as `lazy="extra"`
+          with a number that is higher that the current collection size will now throw an 
+          `ArgumentOutOfRangeException`.
+        * Getting or setting a value with `IList.this[int index]` or `IList<>.this[int index]` on an uninitialized
+          list with a negative number will now throw an `ArgumentOutOfRangeException`.
+        * Setting a value with `IList.this[int index]` or `IList<>.this[int index]` on an uninitialized list
+          mapped as `lazy="extra"` with a number that is equal or higher that the current collection size will now
+          throw an `ArgumentOutOfRangeException`.
+        * Calling `IDictionary<,>.Add` or `ICollection<>.Add` on an uninitialized map mapped as `lazy="extra"` with
+          a key that already exists will now throw an `ArgumentException`.
+        * Calling `IDictionary<,>.Remove` or `ICollection<>.Remove` on an uninitialized map mapped as `lazy="extra"`
+          with a key that does not exist will now return false.
+        * Map dirtiness is now evaluated by `EqualityComparer<TValue>.Default` when setting an existing key value
+          with `IDictionary<,>.this[]` on an initialized map.
+        * Calling `ISet<>.Add` on an uninitialized set mapped as `lazy="extra"` with a transient element that
+          already exists in the set will now return false.
+        * Calling `ISet<>.Add` or `ICollection<>.Add` on an uninitialized set mapped as `lazy="true"` with a
+          transient element that does not override `Equals` method will not initialize the collection.
 
 ** Bug
 
