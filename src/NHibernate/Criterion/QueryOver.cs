@@ -9,6 +9,7 @@ using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -404,12 +405,7 @@ namespace NHibernate.Criterion
 
 		public QueryOver<TRoot,TSubType> Select(params Expression<Func<TRoot, object>>[] projections)
 		{
-			List<IProjection> projectionList = new List<IProjection>();
-
-			foreach (var projection in projections)
-				projectionList.Add(ExpressionProcessor.FindMemberProjection(projection.Body).AsProjection());
-
-			criteria.SetProjection(projectionList.ToArray());
+			criteria.SetProjection(projections.ToArray(x => Projections.Expression(x)));
 			return this;
 		}
 
