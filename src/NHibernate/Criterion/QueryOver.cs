@@ -405,7 +405,7 @@ namespace NHibernate.Criterion
 
 		public QueryOver<TRoot,TSubType> Select(params Expression<Func<TRoot, object>>[] projections)
 		{
-			criteria.SetProjection(projections.ToArray(x => Projections.Expression(x)));
+			criteria.SetProjection(projections.ToArray(x => Projections.Select(x)));
 			return this;
 		}
 

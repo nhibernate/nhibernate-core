@@ -177,7 +177,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public QueryOverProjectionBuilder<T> Select(Expression<Func<T, object>> expression)
 		{
-			PushProjection(Projections.Expression(expression));
+			PushProjection(Projections.Select(expression));
 			return this;
 		}
 
@@ -186,7 +186,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public QueryOverProjectionBuilder<T> Select(Expression<Func<object>> expression)
 		{
-			PushProjection(Projections.Expression(expression));
+			PushProjection(Projections.Select(expression));
 			return this;
 		}
 

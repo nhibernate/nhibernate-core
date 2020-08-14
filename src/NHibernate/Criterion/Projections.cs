@@ -523,7 +523,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Projects given lambda expression
 		/// </summary>
-		public static IProjection Expression(Expression<Func<object>> expression)
+		public static IProjection Select(Expression<Func<object>> expression)
 		{
 			return ExpressionProcessor.FindMemberProjection(expression.Body).AsProjection();
 		}
@@ -531,7 +531,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Projects given lambda expression
 		/// </summary>
-		public static IProjection Expression<TEntity>(Expression<Func<TEntity, object>> expression)
+		public static IProjection Select<TEntity>(Expression<Func<TEntity, object>> expression)
 		{
 			return ExpressionProcessor.FindMemberProjection(expression.Body).AsProjection();
 		}
