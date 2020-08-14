@@ -794,7 +794,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if (path.Type == IDENT)
 			{
 				var pathIdentNode = (IdentNode) path;
-				return SessionFactoryHelper.FindQueryableUsingImports(pathIdentNode.Path);
+				//Until IDENT node is not expected for implicit join path we can throw on not found persister
+				return (IQueryable) SessionFactoryHelper.RequireClassPersister(pathIdentNode.Path);
 			}
 			else if (path.Type == DOT)
 			{
