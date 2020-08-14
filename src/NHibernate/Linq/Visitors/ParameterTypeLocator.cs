@@ -3,6 +3,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
+using NHibernate.Linq.Functions;
 using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -213,6 +214,17 @@ namespace NHibernate.Linq.Visitors
 					return _removeMappedAsCalls
 						? rawParameter
 						: node;
+				}
+
+				if (EqualsGenerator.Methods.Contains(node.Method) || CompareGenerator.IsCompareMethod(node.Method))
+				{
+					node = (MethodCallExpression) base.VisitMethodCall(node);
+					var left = Unwrap(node.Method.IsStatic ? node.Arguments[0] : node.Object);
+					var right = Unwrap(node.Method.IsStatic ? node.Arguments[1] : node.Arguments[0]);
+					AddRelatedExpression(node, left, right);
+					AddRelatedExpression(node, right, left);
+
+					return node;
 				}
 
 				return base.VisitMethodCall(node);
