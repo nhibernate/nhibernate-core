@@ -249,7 +249,7 @@ namespace NHibernate.Engine
 			return selector != null && selector.IncludeSubclasses(alias);
 		}
 
-		private void AddExtraJoins(JoinFragment joinFragment, string alias, IJoinable joinable, bool innerJoin)
+		private protected void AddExtraJoins(JoinFragment joinFragment, string alias, IJoinable joinable, bool innerJoin)
 		{
 			bool include = IsIncluded(alias);
 			joinFragment.AddJoins(joinable.FromJoinFragment(alias, innerJoin, include),

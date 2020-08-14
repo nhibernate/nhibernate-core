@@ -41,6 +41,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 //				on.Append(" and ").Append(filters);
 //			}
 			joinFragment.AddJoin(_tableName, _tableAlias, Array.Empty<string>(), Array.Empty<string>(), _joinType, on);
+			if (includeExtraJoins)
+			{
+				AddExtraJoins(joinFragment, _tableAlias, _entityType.GetAssociatedJoinable(Factory), _joinType == JoinType.InnerJoin);
+			}
 			return joinFragment;
 		}
 	}
