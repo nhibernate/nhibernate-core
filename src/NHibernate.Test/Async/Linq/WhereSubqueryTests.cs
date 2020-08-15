@@ -465,6 +465,22 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.That(query.Count, Is.EqualTo(61));
 		}
 
+		[Test(Description = "GH2479")]
+		public async Task OrdersWithSubquery11Async()
+		{
+			var ordersQuery = db.Orders
+			                    .OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId)
+			                    .Take(2);
+
+			var orderLineQuery = ordersQuery.SelectMany(x => x.OrderLines);
+			var productsNotInLargestOrders = await (db.Products
+			                                   .Where(x => orderLineQuery.All(p => p.Product != x))
+			                                   .OrderBy(x => x.ProductId)
+			                                   .ToListAsync());
+
+			Assert.That(productsNotInLargestOrders.Count, Is.EqualTo(49), nameof(productsNotInLargestOrders));
+		}
+
 		[Test(Description = "NH-2654")]
 		public async Task CategoriesWithDiscountedProductsAsync()
 		{

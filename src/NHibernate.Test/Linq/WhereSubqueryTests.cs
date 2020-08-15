@@ -530,6 +530,43 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.That(orderLines.Count, Is.EqualTo(6), nameof(orderLines));
 		}
 
+		[Test(Description = "GH2479")]
+		public void OrdersWithSubquery10()
+		{
+			var ordersQuery = db.Orders
+			                    .Where(x => x.Employee.EmployeeId > 5)
+			                    .OrderBy(x => x.OrderId)
+			                    .Take(2);
+
+			var productsQuery = ordersQuery.SelectMany(x => x.OrderLines).Select(x => x.Product);
+			var productsFuture = db.Products
+			                       .Where(x => productsQuery.Contains(x))
+			                       .OrderBy(x => x.ProductId)
+			                       .ToFuture();
+
+			var orders = ordersQuery.ToFuture().ToList();
+			var products = productsFuture.ToList();
+
+			Assert.That(orders.Count, Is.EqualTo(2), nameof(orders));
+			Assert.That(products.Count, Is.EqualTo(6), nameof(products));
+		}
+
+		[Test(Description = "GH2479")]
+		public void OrdersWithSubquery11()
+		{
+			var ordersQuery = db.Orders
+			                    .OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId)
+			                    .Take(2);
+
+			var orderLineQuery = ordersQuery.SelectMany(x => x.OrderLines);
+			var productsNotInLargestOrders = db.Products
+			                                   .Where(x => orderLineQuery.All(p => p.Product != x))
+			                                   .OrderBy(x => x.ProductId)
+			                                   .ToList();
+
+			Assert.That(productsNotInLargestOrders.Count, Is.EqualTo(49), nameof(productsNotInLargestOrders));
+		}
+
 		[Test(Description = "NH-2654")]
 		public void CategoriesWithDiscountedProducts()
 		{
