@@ -28,7 +28,7 @@ namespace NHibernate.Linq.GroupBy
 
 		private static void FlattenSubQuery(SubQueryExpression subQueryExpression, QueryModel queryModel)
 		{
-			// we can not flattern subquery if outer query has body clauses.
+			// we can not flatten subquery if outer query has body clauses.
 			var subQueryModel = subQueryExpression.QueryModel;
 			var subQueryMainFromClause = subQueryModel.MainFromClause;
 			if (queryModel.BodyClauses.Count == 0)
