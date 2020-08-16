@@ -934,6 +934,26 @@ namespace NHibernate.Test.FetchLazyProperties
 			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Formula"), Is.True);
 		}
 
+		[TestCase(true)]
+		[TestCase(false)]
+		public void TestFetchAllPropertiesAfterEntityIsInitialized(bool readOnly)
+		{
+			Person person;
+			using(var s = OpenSession())
+			using(var tx = s.BeginTransaction())
+			{
+				person = s.CreateQuery("from Person where Id = 1").SetReadOnly(readOnly).UniqueResult<Person>();
+				var image = person.Image;
+				person = s.CreateQuery("from Person fetch all properties where Id = 1").SetReadOnly(readOnly).UniqueResult<Person>();
+
+				tx.Commit();
+			}
+
+			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Image"), Is.True);
+			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Address"), Is.True);
+			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Formula"), Is.True);
+		}
+
 		[Test]
 		public void TestHqlCrossJoinFetchFormula()
 		{
