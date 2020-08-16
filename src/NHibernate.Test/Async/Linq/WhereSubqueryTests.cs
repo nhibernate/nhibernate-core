@@ -11,6 +11,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Dialect;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Linq;
 using NUnit.Framework;
@@ -468,6 +469,11 @@ where c.Order.Customer.CustomerId = 'VINET'
 		[Test(Description = "GH2479")]
 		public async Task OrdersWithSubquery11Async()
 		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("MS SQL CE does not support sorting on a subquery.");
+
 			var ordersQuery = db.Orders
 			                    .OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId)
 			                    .Take(2);
