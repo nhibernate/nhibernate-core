@@ -74,7 +74,7 @@ namespace NHibernate.Collection
 			return null;
 		}
 
-		internal async Task<bool> CanSkipElementExistanceCheckAsync(object element, CancellationToken cancellationToken)
+		internal async Task<bool> CanSkipElementExistenceCheckAsync(object element, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var queryableCollection = (IQueryableCollection) Session.Factory.GetCollectionPersister(Role);
