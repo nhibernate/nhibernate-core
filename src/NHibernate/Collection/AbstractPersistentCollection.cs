@@ -775,7 +775,7 @@ namespace NHibernate.Collection
 			return queueOperationTracker;
 		}
 
-		internal bool CanSkipElementExistanceCheck(object element)
+		internal bool CanSkipElementExistenceCheck(object element)
 		{
 			var queryableCollection = (IQueryableCollection) Session.Factory.GetCollectionPersister(Role);
 			return
