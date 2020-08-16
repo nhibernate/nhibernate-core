@@ -520,6 +520,22 @@ namespace NHibernate.Criterion
 			throw QueryOver.GetDirectUsageException();
 		}
 
+		/// <summary>
+		/// Projects given lambda expression
+		/// </summary>
+		public static IProjection Select(Expression<Func<object>> expression)
+		{
+			return ExpressionProcessor.FindMemberProjection(expression.Body).AsProjection();
+		}
+
+		/// <summary>
+		/// Projects given lambda expression
+		/// </summary>
+		public static IProjection Select<TEntity>(Expression<Func<TEntity, object>> expression)
+		{
+			return ExpressionProcessor.FindMemberProjection(expression.Body).AsProjection();
+		}
+
 		internal static IProjection ProcessConcat(MethodCallExpression methodCallExpression)
 		{
 			NewArrayExpression args = (NewArrayExpression)methodCallExpression.Arguments[0];
