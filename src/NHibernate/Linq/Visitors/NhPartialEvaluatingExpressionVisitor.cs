@@ -81,7 +81,15 @@ namespace NHibernate.Linq.Visitors
 				#region NH additions
 				// Variables should be evaluated only when they are part of an evaluatable expression (e.g. o => string.Format("...", variable))
 				expression is UnaryExpression unaryExpression &&
-				ExpressionsHelper.IsVariable(unaryExpression.Operand, out _, out _))
+				(
+					ExpressionsHelper.IsVariable(unaryExpression.Operand, out _, out _) ||
+					// Check whether the variable is casted due to comparison with a nullable expression
+					// (e.g. o.NullableShort == shortVariable)
+					unaryExpression.Operand is UnaryExpression subUnaryExpression &&
+					unaryExpression.Type.UnwrapIfNullable() == subUnaryExpression.Type &&
+					ExpressionsHelper.IsVariable(subUnaryExpression.Operand, out _, out _)
+				)
+				)
 				#endregion
 				return base.Visit(expression);
 

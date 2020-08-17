@@ -460,6 +460,23 @@ namespace NHibernate.Test.Linq
 
 			Expect(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.Id == 5), Does.Not.Contain("is null").IgnoreCase);
 			Expect(session.Query<User>().Where(o => 5 == o.CreatedBy.ModifiedBy.Id), Does.Not.Contain("is null").IgnoreCase);
+
+			short value = 3;
+			Expect(session.Query<User>().Where(o => o.NullableShort == value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
+			Expect(session.Query<User>().Where(o => value == o.NullableShort), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
+
+			Expect(session.Query<User>().Where(o => o.NullableShort.Value == value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
+			Expect(session.Query<User>().Where(o => value == o.NullableShort.Value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
+			Expect(session.Query<User>().Where(o => o.Short == value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
+			Expect(session.Query<User>().Where(o => value == o.Short), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
+
+			Expect(session.Query<User>().Where(o => o.NullableShort == 3), Does.Not.Contain("is null").IgnoreCase.And.Contain("cast"));
+			Expect(session.Query<User>().Where(o => 3 == o.NullableShort), Does.Not.Contain("is null").IgnoreCase.And.Contain("cast"));
+
+			Expect(session.Query<User>().Where(o => o.NullableShort.Value == 3), Does.Not.Contain("is null").IgnoreCase.And.Contain("cast"));
+			Expect(session.Query<User>().Where(o => 3 == o.NullableShort.Value), Does.Not.Contain("is null").IgnoreCase.And.Contain("cast"));
+			Expect(session.Query<User>().Where(o => o.Short == 3), Does.Not.Contain("is null").IgnoreCase.And.Contain("cast"));
+			Expect(session.Query<User>().Where(o => 3 == o.Short), Does.Not.Contain("is null").IgnoreCase.And.Contain("cast"));
 		}
 
 		[Test]
@@ -548,6 +565,15 @@ namespace NHibernate.Test.Linq
 
 			Expect(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.Id != 5), Does.Contain("is null").IgnoreCase);
 			Expect(session.Query<User>().Where(o => 5 != o.CreatedBy.ModifiedBy.Id), Does.Contain("is null").IgnoreCase);
+
+			short value = 3;
+			Expect(session.Query<User>().Where(o => o.NullableShort != value), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
+			Expect(session.Query<User>().Where(o => value != o.NullableShort), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
+
+			Expect(session.Query<User>().Where(o => o.NullableShort.Value != value), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
+			Expect(session.Query<User>().Where(o => value != o.NullableShort.Value), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
+			Expect(session.Query<User>().Where(o => o.Short != value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
+			Expect(session.Query<User>().Where(o => value != o.Short), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
 		}
 
 		[Test]

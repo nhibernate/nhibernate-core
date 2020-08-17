@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Dynamic;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace NHibernate.Linq.Visitors
 		private readonly VisitorParameters _parameters;
 		private readonly ILinqToHqlGeneratorsRegistry _functionRegistry;
 		private readonly NullableExpressionDetector _nullableExpressionDetector;
+		private readonly HashSet<Expression> _notCastableExpressions = new HashSet<Expression>();
 
 		public static HqlTreeNode Visit(Expression expression, VisitorParameters parameters)
 		{
@@ -308,6 +310,17 @@ possible solutions:
 
 		protected HqlTreeNode VisitBinaryExpression(BinaryExpression expression)
 		{
+			// In .NET some numeric types do not have thier own operators (e.g. short == short is converted to (int) short == (int) short),
+			// in such case we dont want to add a sql cast
+			if (expression.Left.NodeType == ExpressionType.Convert &&
+			    expression.Right.NodeType == ExpressionType.Convert &&
+			    ((UnaryExpression) expression.Left).Operand.Type.UnwrapIfNullable() ==
+			    ((UnaryExpression) expression.Right).Operand.Type.UnwrapIfNullable())
+			{
+				_notCastableExpressions.Add(expression.Left);
+				_notCastableExpressions.Add(expression.Right);
+			}
+
 			if (expression.NodeType == ExpressionType.Equal)
 			{
 				return TranslateEqualityComparison(expression);
@@ -496,7 +509,7 @@ possible solutions:
 				case ExpressionType.Convert:
 				case ExpressionType.ConvertChecked:
 				case ExpressionType.TypeAs:
-					return IsCastRequired(expression.Operand, expression.Type, out var existType)
+					return IsCastRequired(expression.Operand, expression.Type, out var existType) && !_notCastableExpressions.Contains(expression)
 						? _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), expression.Type)
 						// Make a transparent cast when an IType exists, so that it can be used to retrieve the value from the data reader
 						: existType && HqlIdent.SupportsType(expression.Type)

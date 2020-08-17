@@ -126,6 +126,15 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task UsingValueTypeParameterTwiceOnNullablePropertyAsync()
+		{
+			short value = 1;
+			await (AssertTotalParametersAsync(
+				db.Users.Where(o => o.NullableShort == value && o.NullableShort != value && o.Short == value),
+				1));
+		}
+
+		[Test]
 		public async Task UsingParameterInEvaluatableExpressionAsync()
 		{
 			var value = "test";

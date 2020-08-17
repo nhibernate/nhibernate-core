@@ -50,6 +50,10 @@ namespace NHibernate.DomainModel.Northwind.Entities
 
 		public virtual User NotMappedUser => this;
 
+		public virtual short Short { get; set; }
+
+		public virtual short? NullableShort { get; set; }
+
 		public virtual EnumStoredAsString Enum1 { get; set; }
 
 		public virtual EnumStoredAsString? NullableEnum1 { get; set; }
