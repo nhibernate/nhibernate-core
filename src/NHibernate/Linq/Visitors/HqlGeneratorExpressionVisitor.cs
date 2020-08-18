@@ -24,7 +24,7 @@ namespace NHibernate.Linq.Visitors
 		private readonly VisitorParameters _parameters;
 		private readonly ILinqToHqlGeneratorsRegistry _functionRegistry;
 		private readonly NullableExpressionDetector _nullableExpressionDetector;
-		private readonly HashSet<Expression> _notCastableExpressions = new HashSet<Expression>();
+		private readonly Dictionary<Expression, System.Type> _notCastableExpressions = new Dictionary<Expression, System.Type>();
 
 		public static HqlTreeNode Visit(Expression expression, VisitorParameters parameters)
 		{
@@ -317,8 +317,9 @@ possible solutions:
 			    ((UnaryExpression) expression.Left).Operand.Type.UnwrapIfNullable() ==
 			    ((UnaryExpression) expression.Right).Operand.Type.UnwrapIfNullable())
 			{
-				_notCastableExpressions.Add(expression.Left);
-				_notCastableExpressions.Add(expression.Right);
+				var type = ((UnaryExpression) expression.Left).Operand.Type.UnwrapIfNullable();
+				_notCastableExpressions.Add(expression.Left, type);
+				_notCastableExpressions.Add(expression.Right, type);
 			}
 
 			if (expression.NodeType == ExpressionType.Equal)
@@ -509,11 +510,14 @@ possible solutions:
 				case ExpressionType.Convert:
 				case ExpressionType.ConvertChecked:
 				case ExpressionType.TypeAs:
-					return IsCastRequired(expression.Operand, expression.Type, out var existType) && !_notCastableExpressions.Contains(expression)
+					var notCastable = _notCastableExpressions.TryGetValue(expression, out var castType);
+					castType = castType ?? expression.Type;
+
+					return IsCastRequired(expression.Operand, castType, out var existType) && !notCastable
 						? _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), expression.Type)
 						// Make a transparent cast when an IType exists, so that it can be used to retrieve the value from the data reader
-						: existType && HqlIdent.SupportsType(expression.Type)
-							? _hqlTreeBuilder.TransparentCast(VisitExpression(expression.Operand).AsExpression(), expression.Type)
+						: existType && HqlIdent.SupportsType(castType)
+							? _hqlTreeBuilder.TransparentCast(VisitExpression(expression.Operand).AsExpression(), castType)
 							: VisitExpression(expression.Operand);
 			}
 
