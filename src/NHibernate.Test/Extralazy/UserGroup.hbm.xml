@@ -30,6 +30,10 @@
 			<key column="owner"/>
 			<one-to-many class="Document"/>
 		</set>
+    <set name="Followers" inverse="true" lazy="true" cascade="all,delete-orphan">
+      <key column="userId"/>
+      <one-to-many class="UserFollower"/>
+    </set>
 		<set name="Photos" inverse="true" lazy="true" where="Title like 'PRV%'" cascade="all,delete-orphan">
 			<key column="owner"/>
 			<one-to-many class="Photo"/>
@@ -76,6 +80,13 @@
     <property name="ListIndex" />
     <property name="OriginalIndex" />
     <many-to-one name="Owner" not-null="true"/>
+  </class>
+  <class name="UserFollower" table="user_follower">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <many-to-one name="User" column="userId" not-null="true"/>
+    <many-to-one name="Follower" column="followerId" not-null="true"/>
   </class>
   <class name="CreditCard" table="credit_card">
     <id name="Id">

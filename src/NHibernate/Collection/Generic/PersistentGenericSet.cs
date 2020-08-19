@@ -314,8 +314,8 @@ namespace NHibernate.Collection.Generic
 		public bool Add(T o)
 		{
 			// Skip checking the element existence in the database if we know that the element
-			// is transient and the operation queue is enabled
-			if (WasInitialized || !IsOperationQueueEnabled || !IsTransient(o))
+			// is transient, the mapped class does not override Equals method and the operation queue is enabled
+			if (WasInitialized || !IsOperationQueueEnabled || !CanSkipElementExistenceCheck(o))
 			{
 				var exists = IsOperationQueueEnabled ? ReadElementExistence(o, out _) : null;
 				if (!exists.HasValue)
