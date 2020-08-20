@@ -292,22 +292,20 @@ namespace NHibernate.Impl
 				return FindMemberProjection(unwrapExpression);
 			}
 
-			var methodCallExpression = expression as MethodCallExpression;
-			if (methodCallExpression != null)
+			if (expression.NodeType == ExpressionType.Call)
 			{
+				var methodCallExpression = (MethodCallExpression) expression;
 				var signature = Signature(methodCallExpression.Method);
-				Func<Expression, IProjection> processor;
-				if (_customProjectionProcessors.TryGetValue(signature, out processor))
+				if (_customProjectionProcessors.TryGetValue(signature, out var processor))
 				{
 					return ProjectionInfo.ForProjection(processor(methodCallExpression));
 				}
 			}
-			var memberExpression = expression as MemberExpression;
-			if (memberExpression != null)
+			if (expression.NodeType == ExpressionType.MemberAccess)
 			{
+				var memberExpression = (MemberExpression) expression;
 				var signature = Signature(memberExpression.Member);
-				Func<Expression, IProjection> processor;
-				if (_customProjectionProcessors.TryGetValue(signature, out processor))
+				if (_customProjectionProcessors.TryGetValue(signature, out var processor))
 				{
 					return ProjectionInfo.ForProjection(processor(memberExpression));
 				}
@@ -352,8 +350,11 @@ namespace NHibernate.Impl
 
 		private static bool IsCompilerGeneratedMemberExpressionOfCompilerGeneratedClass(Expression expression)
 		{
-			var memberExpression = expression as MemberExpression;
-			if (memberExpression != null && memberExpression.Member.DeclaringType != null)
+			if (expression.NodeType != ExpressionType.MemberAccess)
+				return false;
+
+			var memberExpression = (MemberExpression) expression;
+			if (memberExpression.Member.DeclaringType != null)
 			{
 				return Attribute.GetCustomAttribute(memberExpression.Member.DeclaringType, typeof(CompilerGeneratedAttribute)) != null 
 					&& GeneratedMemberNameRegex.IsMatch(memberExpression.Member.Name);
@@ -446,10 +447,10 @@ namespace NHibernate.Impl
 		/// <returns>Evaluated detached criteria</returns>
 		public static DetachedCriteria FindDetachedCriteria(Expression expression)
 		{
-			var methodCallExpression = expression as MethodCallExpression;
-			if (methodCallExpression == null)
+			if (expression.NodeType != ExpressionType.Call)
 				throw new ArgumentException("right operand should be detachedQueryInstance.As<T>() - " + expression, nameof(expression));
 
+			var methodCallExpression = (MethodCallExpression) expression;
 			return ((QueryOver) FindValue(methodCallExpression.Object)).DetachedCriteria;
 		}
 
