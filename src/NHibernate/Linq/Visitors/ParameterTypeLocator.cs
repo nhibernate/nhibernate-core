@@ -255,8 +255,8 @@ namespace NHibernate.Linq.Visitors
 				if (EqualsGenerator.Methods.Contains(node.Method) || CompareGenerator.IsCompareMethod(node.Method))
 				{
 					node = (MethodCallExpression) base.VisitMethodCall(node);
-					var left = Unwrap(node.Method.IsStatic ? node.Arguments[0] : node.Object);
-					var right = Unwrap(node.Method.IsStatic ? node.Arguments[1] : node.Arguments[0]);
+					var left = UnwrapUnary(node.Method.IsStatic ? node.Arguments[0] : node.Object);
+					var right = UnwrapUnary(node.Method.IsStatic ? node.Arguments[1] : node.Arguments[0]);
 					AddRelatedExpression(node, left, right);
 					AddRelatedExpression(node, right, left);
 
