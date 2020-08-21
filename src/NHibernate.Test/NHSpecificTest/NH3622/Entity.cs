@@ -31,7 +31,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3622
 		public virtual string Name { get; set; }
 	}
 
-
 	public class TagMap : ClassMapping<Tag>
 	{
 		public TagMap()
