@@ -20,9 +20,6 @@
       <column name="ModifiedById" />
     </many-to-one>
 
-    <property name="Short" column="Enum2" insert="false" update="false" not-null="true" />
-    <property name="NullableShort" formula="(case when Enum2 = 0 then null else Enum2 end)" insert="false" update="false" />
-
     <property name="Enum1" type="NHibernate.DomainModel.Northwind.Entities.EnumStoredAsStringType, NHibernate.DomainModel">
       <column name="Enum1" length="12" />
     </property>

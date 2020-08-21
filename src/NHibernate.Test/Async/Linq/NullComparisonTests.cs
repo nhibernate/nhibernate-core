@@ -474,26 +474,27 @@ namespace NHibernate.Test.Linq
 			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.Id == 5), Does.Not.Contain("is null").IgnoreCase));
 			await (ExpectAsync(session.Query<User>().Where(o => 5 == o.CreatedBy.ModifiedBy.Id), Does.Not.Contain("is null").IgnoreCase));
 
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort == o.NullableShort), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short == o.Short), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort == o.Short), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short == o.NullableShort), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+
 			short value = 3;
-			await (ExpectAsync(session.Query<User>().Where(o => o.NullableShort == value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
-			await (ExpectAsync(session.Query<User>().Where(o => value == o.NullableShort), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort == value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => value == o.NullableShort), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
 
-			await (ExpectAsync(session.Query<User>().Where(o => o.NullableShort.Value == value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
-			await (ExpectAsync(session.Query<User>().Where(o => value == o.NullableShort.Value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
-			await (ExpectAsync(session.Query<User>().Where(o => o.Short == value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
-			await (ExpectAsync(session.Query<User>().Where(o => value == o.Short), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort.Value == value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => value == o.NullableShort.Value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short == value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => value == o.Short), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
 
-			var shouldCast = Sfi.Dialect is SQLiteDialect || // transparent cast is translated to sql
-			                 Sfi.Dialect.TryGetCastTypeName(NHibernateUtil.Int16.SqlType, out var shortCast) &&
-			                 Sfi.Dialect.TryGetCastTypeName(NHibernateUtil.Int32.SqlType, out var intCast) &&
-			                 shortCast != intCast;
-			await (ExpectAsync(session.Query<User>().Where(o => o.NullableShort == 3), shouldCast ? WithoutIsNullAndWithCast() : WithoutIsNullAndWithoutCast()));
-			await (ExpectAsync(session.Query<User>().Where(o => 3 == o.NullableShort), shouldCast ? WithoutIsNullAndWithCast() : WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort == 3L), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3L == o.NullableShort), WithoutIsNullAndWithoutCast()));
 
-			await (ExpectAsync(session.Query<User>().Where(o => o.NullableShort.Value == 3), shouldCast ? WithoutIsNullAndWithCast() : WithoutIsNullAndWithoutCast()));
-			await (ExpectAsync(session.Query<User>().Where(o => 3 == o.NullableShort.Value), shouldCast ? WithoutIsNullAndWithCast() : WithoutIsNullAndWithoutCast()));
-			await (ExpectAsync(session.Query<User>().Where(o => o.Short == 3), shouldCast ? WithoutIsNullAndWithCast() : WithoutIsNullAndWithoutCast()));
-			await (ExpectAsync(session.Query<User>().Where(o => 3 == o.Short), shouldCast ? WithoutIsNullAndWithCast() : WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort.Value == 3L), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3L == o.NullableShort.Value),  WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short == 3L), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3L == o.Short), WithoutIsNullAndWithoutCast()));
 		}
 
 		[Test]
@@ -583,26 +584,27 @@ namespace NHibernate.Test.Linq
 			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.Id != 5), Does.Contain("is null").IgnoreCase));
 			await (ExpectAsync(session.Query<User>().Where(o => 5 != o.CreatedBy.ModifiedBy.Id), Does.Contain("is null").IgnoreCase));
 
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort != o.NullableShort), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short != o.Short), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort != o.Short), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short != o.NullableShort), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+
 			short value = 3;
-			await (ExpectAsync(session.Query<User>().Where(o => o.NullableShort != value), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
-			await (ExpectAsync(session.Query<User>().Where(o => value != o.NullableShort), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort != value), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => value != o.NullableShort), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
 
-			await (ExpectAsync(session.Query<User>().Where(o => o.NullableShort.Value != value), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
-			await (ExpectAsync(session.Query<User>().Where(o => value != o.NullableShort.Value), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
-			await (ExpectAsync(session.Query<User>().Where(o => o.Short != value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
-			await (ExpectAsync(session.Query<User>().Where(o => value != o.Short), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort.Value != value), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => value != o.NullableShort.Value), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short != value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
+			await (ExpectAsync(db.NumericEntities.Where(o => value != o.Short), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
 
-			var shouldCast = Sfi.Dialect is SQLiteDialect || // transparent cast is translated to sql
-							 Sfi.Dialect.TryGetCastTypeName(NHibernateUtil.Int16.SqlType, out var shortCast) &&
-							 Sfi.Dialect.TryGetCastTypeName(NHibernateUtil.Int32.SqlType, out var intCast) &&
-							 shortCast != intCast;
-			await (ExpectAsync(session.Query<User>().Where(o => o.NullableShort != 3), shouldCast ? WithIsNullAndWithCast() : WithIsNullAndWithoutCast()));
-			await (ExpectAsync(session.Query<User>().Where(o => 3 != o.NullableShort), shouldCast ? WithIsNullAndWithCast() : WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort != 3L), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3 != o.NullableShort), WithIsNullAndWithoutCast()));
 
-			await (ExpectAsync(session.Query<User>().Where(o => o.NullableShort.Value != 3), shouldCast ? WithIsNullAndWithCast() : WithIsNullAndWithoutCast()));
-			await (ExpectAsync(session.Query<User>().Where(o => 3 != o.NullableShort.Value), shouldCast ? WithIsNullAndWithCast() : WithIsNullAndWithoutCast()));
-			await (ExpectAsync(session.Query<User>().Where(o => o.Short != 3), shouldCast ? WithoutIsNullAndWithCast() : WithoutIsNullAndWithoutCast()));
-			await (ExpectAsync(session.Query<User>().Where(o => 3 != o.Short), shouldCast ? WithoutIsNullAndWithCast() : WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort.Value != 3L), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3L != o.NullableShort.Value), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short != 3L), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3L != o.Short), WithoutIsNullAndWithoutCast()));
 		}
 
 		private IResolveConstraint WithIsNullAndWithoutCast()

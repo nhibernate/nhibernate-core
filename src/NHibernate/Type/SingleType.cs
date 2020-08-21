@@ -62,7 +62,7 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand rs, object value, int index, ISessionImplementor session)
 		{
-			rs.Parameters[index].Value = value;
+			rs.Parameters[index].Value = Convert.ToSingle(value);
 		}
 
 		// Since 5.2

@@ -310,16 +310,15 @@ possible solutions:
 
 		protected HqlTreeNode VisitBinaryExpression(BinaryExpression expression)
 		{
-			// In .NET some numeric types do not have thier own operators (e.g. short == short is converted to (int) short == (int) short),
-			// in such case we dont want to add a sql cast
-			if (expression.Left.NodeType == ExpressionType.Convert &&
-			    expression.Right.NodeType == ExpressionType.Convert &&
-			    ((UnaryExpression) expression.Left).Operand.Type.UnwrapIfNullable() ==
-			    ((UnaryExpression) expression.Right).Operand.Type.UnwrapIfNullable())
+			// There are some cases where we do not want to add a sql cast:
+			// - When comparing numeric types that do not have thier own operator (e.g. short == short)
+			// - When comparing a member expression with a parameter of similar type (e.g. o.Short == intParameter)
+			var leftType = GetExpressionType(expression.Left);
+			var rightType = GetExpressionType(expression.Right);
+			if (leftType != null && leftType == rightType)
 			{
-				var type = ((UnaryExpression) expression.Left).Operand.Type.UnwrapIfNullable();
-				_notCastableExpressions.Add(expression.Left, type);
-				_notCastableExpressions.Add(expression.Right, type);
+				_notCastableExpressions.Add(expression.Left, leftType);
+				_notCastableExpressions.Add(expression.Right, rightType);
 			}
 
 			if (expression.NodeType == ExpressionType.Equal)
@@ -386,6 +385,23 @@ possible solutions:
 			}
 
 			throw new InvalidOperationException();
+		}
+
+		private System.Type GetExpressionType(Expression expression)
+		{
+			switch (expression.NodeType)
+			{
+				case ExpressionType.Constant:
+					return _parameters.ConstantToParameterMap.TryGetValue((ConstantExpression) expression, out var param)
+						? param.Type?.ReturnedClass
+						: null;
+				case ExpressionType.Convert:
+				case ExpressionType.ConvertChecked:
+					var operand = ((UnaryExpression) expression).Operand;
+					return GetExpressionType(operand) ?? operand.Type.UnwrapIfNullable();
+			}
+
+			return null;
 		}
 
 		private HqlTreeNode TranslateInequalityComparison(BinaryExpression expression)
