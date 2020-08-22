@@ -141,8 +141,8 @@ namespace NHibernate.Linq.Visitors
 					}
 				}
 
-				constantExpressions.Select(o => o.Type.UnwrapIfNullable()).Distinct().Single();
-				var constantExpression = constantExpressions.First(); // TODO: check when types are different
+				// All constant expressions have the same type/value
+				var constantExpression = constantExpressions.First();
 				var constantType = constantExpression.Type.UnwrapIfNullable();
 				IType type = null;
 				if (

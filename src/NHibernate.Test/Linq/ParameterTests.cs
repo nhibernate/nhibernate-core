@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using NHibernate.Dialect;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Driver;
 using NHibernate.Engine.Query;
 using NHibernate.Linq;
 using NHibernate.Util;
@@ -306,6 +307,7 @@ namespace NHibernate.Test.Linq
 				{db.NumericEntities.Where(o => o.NullableDouble == doubleParam || o.Integer != doubleParam), "Double"},
 				{db.NumericEntities.Where(o => o.NullableDouble == doubleParam || o.NullableInteger == doubleParam), "Double"}
 			};
+			var odbcDriver = Sfi.ConnectionProvider.Driver is OdbcDriver;
 
 			foreach (var pair in queriables)
 			{
@@ -317,7 +319,7 @@ namespace NHibernate.Test.Linq
 					{
 						var matches = Regex.Matches(sql, @"cast\([\w\d]+\..+\)");
 						Assert.That(matches.Count, Is.EqualTo(1));
-						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(1));
+						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(odbcDriver ? 2 : 1));
 					});
 			}
 		}
@@ -349,6 +351,7 @@ namespace NHibernate.Test.Linq
 			var sameType = Sfi.Dialect.TryGetCastTypeName(NHibernateUtil.Single.SqlType, out var singleCast) &&
 			               Sfi.Dialect.TryGetCastTypeName(NHibernateUtil.Double.SqlType, out var doubleCast) &&
 			               singleCast == doubleCast;
+			var odbcDriver = Sfi.ConnectionProvider.Driver is OdbcDriver;
 
 			foreach (var pair in queriables)
 			{
@@ -363,7 +366,7 @@ namespace NHibernate.Test.Linq
 							: Regex.Matches(sql, @"cast\(((@|\?|:)p\d+|\?)\s+as.*\)");
 						// SQLiteDialect uses sql cast for transparentcast method
 						Assert.That(matches.Count, Is.EqualTo(sameType && !(Sfi.Dialect is SQLiteDialect) ? 0 : 1));
-						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(1));
+						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(odbcDriver ? 2 : 1));
 					});
 			}
 		}
@@ -396,6 +399,7 @@ namespace NHibernate.Test.Linq
 				{db.NumericEntities.Where(o => o.NullableLong == longParam || o.Decimal != longParam), "Int64"},
 				{db.NumericEntities.Where(o => o.NullableLong == longParam || o.NullableSingle > longParam), "Int64"}
 			};
+			var odbcDriver = Sfi.ConnectionProvider.Driver is OdbcDriver;
 
 			foreach (var pair in queriables)
 			{
@@ -407,7 +411,7 @@ namespace NHibernate.Test.Linq
 					{
 						var matches = Regex.Matches(sql, @"cast\(((@|\?|:)p\d+|\?)\s+as.*\)");
 						Assert.That(matches.Count, Is.EqualTo(1));
-						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(1));
+						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(odbcDriver ? 2 : 1));
 					});
 			}
 		}
