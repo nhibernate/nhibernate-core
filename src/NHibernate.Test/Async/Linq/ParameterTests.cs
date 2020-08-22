@@ -337,6 +337,11 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task CompareFloatingPointParameterWithDifferentFloatingPointColumnsAsync()
 		{
+			if (Sfi.Dialect is FirebirdDialect)
+			{
+				Assert.Ignore("Due to the regex hack in FirebirdClientDriver, the parameters can be casted twice.");
+			}
+
 			var singleParam = 2.2f;
 			var doubleParam = 3.3d;
 			var queriables = new Dictionary<IQueryable<NumericEntity>, string>
@@ -378,6 +383,11 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task CompareIntegralParameterWithIntegralAndFloatingPointColumnsAsync()
 		{
+			if (Sfi.Dialect is FirebirdDialect)
+			{
+				Assert.Ignore("Due to the regex hack in FirebirdClientDriver, the parameters can be casted twice.");
+			}
+
 			short shortParam = 1;
 			var intParam = 2;
 			var longParam = 3L;
@@ -448,6 +458,11 @@ namespace NHibernate.Test.Linq
 					query,
 					1,
 					sql => Assert.That(sql, Does.Not.Contain("cast"))));
+			}
+
+			if (Sfi.Dialect is FirebirdDialect)
+			{
+				Assert.Ignore("Due to the regex bug in FirebirdClientDriver, the parameters are not casted.");
 			}
 
 			queriables = new List<IQueryable<NumericEntity>>

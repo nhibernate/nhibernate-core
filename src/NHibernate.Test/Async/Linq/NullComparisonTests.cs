@@ -474,6 +474,11 @@ namespace NHibernate.Test.Linq
 			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.Id == 5), Does.Not.Contain("is null").IgnoreCase));
 			await (ExpectAsync(session.Query<User>().Where(o => 5 == o.CreatedBy.ModifiedBy.Id), Does.Not.Contain("is null").IgnoreCase));
 
+			if (Sfi.Dialect is FirebirdDialect)
+			{
+				return;
+			}
+
 			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort == o.NullableShort), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
 			await (ExpectAsync(db.NumericEntities.Where(o => o.Short == o.Short), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
 			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort == o.Short), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
@@ -584,6 +589,11 @@ namespace NHibernate.Test.Linq
 			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.Id != 5), Does.Contain("is null").IgnoreCase));
 			await (ExpectAsync(session.Query<User>().Where(o => 5 != o.CreatedBy.ModifiedBy.Id), Does.Contain("is null").IgnoreCase));
 
+			if (Sfi.Dialect is FirebirdDialect)
+			{
+				return;
+			}
+
 			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort != o.NullableShort), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
 			await (ExpectAsync(db.NumericEntities.Where(o => o.Short != o.Short), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
 			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort != o.Short), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast")));
@@ -612,19 +622,9 @@ namespace NHibernate.Test.Linq
 			return Does.Contain("is null").IgnoreCase.And.Not.Contain("cast").IgnoreCase;
 		}
 
-		private IResolveConstraint WithIsNullAndWithCast()
-		{
-			return Does.Contain("is null").IgnoreCase.And.Contain("cast").IgnoreCase;
-		}
-
 		private IResolveConstraint WithoutIsNullAndWithoutCast()
 		{
 			return Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast").IgnoreCase;
-		}
-
-		private IResolveConstraint WithoutIsNullAndWithCast()
-		{
-			return Does.Not.Contain("is null").IgnoreCase.And.Contain("cast").IgnoreCase;
 		}
 
 		[Test]
