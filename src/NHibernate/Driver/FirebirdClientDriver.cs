@@ -24,7 +24,7 @@ namespace NHibernate.Driver
 			// Zero-width negative look-behind: the match must not be preceded by
 			@"(?<!" +
 			// a comparison,
-			@"[=<>]\s*" +
+			@"[=<>]\s" +
 			// or a paging instruction,
 			@"|\bfirst\s+|\bskip\s+" +
 			// or a "between" condition,
@@ -36,7 +36,7 @@ namespace NHibernate.Driver
 			// Zero-width negative look-ahead: the match must not be followed by
 			@"(?!" +
 			// a comparison.
-			@"\s*[=<>])";
+			@"\s[=<>])";
 		private static readonly Regex _statementRegEx = new Regex(SELECT_CLAUSE_EXP, RegexOptions.IgnoreCase);
 		private static readonly Regex _castCandidateRegEx = new Regex(CAST_PARAMS_EXP, RegexOptions.IgnoreCase);
 		private readonly FirebirdDialect _fbDialect = new FirebirdDialect();

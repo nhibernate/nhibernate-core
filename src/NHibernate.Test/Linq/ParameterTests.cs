@@ -150,7 +150,15 @@ namespace NHibernate.Test.Linq
 					3,
 					sql =>
 					{
-						Assert.That(sql, Does.Not.Contain("cast"));
+						if (Sfi.Dialect is FirebirdDialect)
+						{
+							Assert.That(sql, Does.Contain("cast"));
+						}
+						else
+						{
+							Assert.That(sql, Does.Not.Contain("cast"));
+						}
+
 						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(3));
 					});
 			}
@@ -191,7 +199,15 @@ namespace NHibernate.Test.Linq
 					3,
 					sql =>
 					{
-						Assert.That(sql, Does.Not.Contain("cast"));
+						if (Sfi.Dialect is FirebirdDialect)
+						{
+							Assert.That(sql, Does.Contain("cast"));
+						}
+						else
+						{
+							Assert.That(sql, Does.Not.Contain("cast"));
+						}
+
 						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(3));
 					});
 			}
@@ -233,7 +249,15 @@ namespace NHibernate.Test.Linq
 					totalParameters,
 					sql =>
 					{
-						Assert.That(sql, Does.Not.Contain("cast"));
+						if (Sfi.Dialect is FirebirdDialect)
+						{
+							Assert.That(sql, Does.Contain("cast"));
+						}
+						else
+						{
+							Assert.That(sql, Does.Not.Contain("cast"));
+						}
+
 						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(totalParameters));
 					});
 			}
@@ -356,8 +380,17 @@ namespace NHibernate.Test.Linq
 						var matches = pair.Value == "Double"
 							? Regex.Matches(sql, @"cast\([\w\d]+\..+\)")
 							: Regex.Matches(sql, @"cast\(((@|\?|:)p\d+|\?)\s+as.*\)");
-						// SQLiteDialect uses sql cast for transparentcast method
-						Assert.That(matches.Count, Is.EqualTo(sameType && !(Sfi.Dialect is SQLiteDialect) ? 0 : 1));
+						if (Sfi.Dialect is FirebirdDialect)
+						{
+							// Additional casts are added by FirebirdClientDriver
+							Assert.That(matches.Count, Is.EqualTo(pair.Value == "Double" ? 1 : 2));
+						}
+						else
+						{
+							// SQLiteDialect uses sql cast for transparentcast method
+							Assert.That(matches.Count, Is.EqualTo(sameType && !(Sfi.Dialect is SQLiteDialect) ? 0 : 1));
+						}
+
 						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(1));
 					});
 			}
@@ -396,7 +429,7 @@ namespace NHibernate.Test.Linq
 					sql =>
 					{
 						var matches = Regex.Matches(sql, @"cast\(((@|\?|:)p\d+|\?)\s+as.*\)");
-						Assert.That(matches.Count, Is.EqualTo(1));
+						Assert.That(matches.Count, Is.EqualTo(Sfi.Dialect is FirebirdDialect ? 2 : 1));
 						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(1));
 					});
 			}
@@ -435,7 +468,17 @@ namespace NHibernate.Test.Linq
 				AssertTotalParameters(
 					query,
 					1,
-					sql => Assert.That(sql, Does.Not.Contain("cast")));
+					sql =>
+					{
+						if (Sfi.Dialect is FirebirdDialect)
+						{
+							Assert.That(sql, Does.Contain("cast"));
+						}
+						else
+						{
+							Assert.That(sql, Does.Not.Contain("cast"));
+						}
+					});
 			}
 
 			queriables = new List<IQueryable<NumericEntity>>
@@ -464,7 +507,16 @@ namespace NHibernate.Test.Linq
 					sql => {
 						// SQLiteDialect uses sql cast for transparentcast method
 						Assert.That(sql, !sameType || Sfi.Dialect is SQLiteDialect ? Does.Match("where\\s+cast") : (IResolveConstraint)Does.Not.Contain("cast"));
-						Assert.That(GetTotalOccurrences(sql, "cast"), Is.EqualTo(!sameType || Sfi.Dialect is SQLiteDialect ? 1 : 0));
+						if (Sfi.Dialect is FirebirdDialect)
+						{
+							// Additional casts are added by FirebirdClientDriver
+							Assert.That(GetTotalOccurrences(sql, "cast"), Is.EqualTo(3));
+						}
+						else
+						{
+							// SQLiteDialect uses sql cast for transparentcast method
+							Assert.That(GetTotalOccurrences(sql, "cast"), Is.EqualTo(!sameType || Sfi.Dialect is SQLiteDialect ? 1 : 0));
+						}
 					});
 			}
 		}
@@ -477,7 +529,7 @@ namespace NHibernate.Test.Linq
 				db.NumericEntities.Where(o => o.NullableShort == value && o.NullableShort != value && o.Short == value),
 				1, sql => {
 				
-				Assert.That(GetTotalOccurrences(sql, "cast"), Is.EqualTo(0));
+				Assert.That(GetTotalOccurrences(sql, "cast"), Is.EqualTo(Sfi.Dialect is FirebirdDialect ? 3 : 0));
 			});
 		}
 
