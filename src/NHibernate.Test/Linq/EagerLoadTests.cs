@@ -596,6 +596,5 @@ namespace NHibernate.Test.Linq
 
 			Assert.True(result.Any());
 		}
-
 	}
 }
