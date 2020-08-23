@@ -68,8 +68,18 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 				}
 			}
 
-			var alias = queryModelVisitor.Model.GetNewName("_");
-			tree.AddFromClause(tree.TreeBuilder.LeftFetchJoin(memberPath, tree.TreeBuilder.Alias(alias)));
+			var relatedJoin = queryModelVisitor.RelatedJoinFetchRequests.FirstOrDefault(o => o.Value == resultOperator).Key;
+			string alias;
+			if (relatedJoin != null)
+			{
+				alias = queryModelVisitor.VisitorParameters.QuerySourceNamer.GetName(relatedJoin);
+			}
+			else
+			{
+				alias = queryModelVisitor.Model.GetNewName("_");
+				tree.AddFromClause(tree.TreeBuilder.LeftFetchJoin(memberPath, tree.TreeBuilder.Alias(alias)));
+			}
+
 			tree.AddDistinctRootOperator();
 
 			foreach (var innerFetch in resultOperator.InnerFetchRequests)

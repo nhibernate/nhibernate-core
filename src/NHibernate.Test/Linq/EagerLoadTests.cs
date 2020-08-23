@@ -370,5 +370,232 @@ namespace NHibernate.Test.Linq
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(order.Shipper));
 		}
+
+		[Test]
+		public void WhereReuseJoins()
+		{
+			OrderLine orderLine;
+			using (var logSpy = new SqlLogSpy())
+			{
+				orderLine = db.OrderLines
+				              .Where(o => o.Order.Customer.ContactName == "Maria Anders")
+				              .Fetch(o => o.Order).ThenFetch(o => o.Customer)
+				              .ToList()
+				              .First();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order.Customer), Is.True);
+			}
+
+			session.Clear();
+			using (var logSpy = new SqlLogSpy())
+			{
+				orderLine = db.OrderLines
+				              .Where(o => o.Order.Customer.ContactName == "Maria Anders")
+				              .Fetch(o => o.Order)
+				              .ToList()
+				              .First();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order.Customer), Is.False);
+			}
+
+			session.Clear();
+			using (var logSpy = new SqlLogSpy())
+			{
+				orderLine = db.OrderLines
+				              .Where(o => o.Order.OrderLines.Any(l => l.Product.Name == "Tofu"))
+				              .Fetch(o => o.Order).ThenFetch(o => o.Customer)
+				              .ToList()
+				              .First();
+
+				var sql = logSpy.GetWholeLog();
+				sql = sql.Substring(0, sql.IndexOf("where"));
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order.Customer), Is.True);
+			}
+
+			using (var logSpy = new SqlLogSpy())
+			{
+				db.Employees
+				  .Where(o => o.Superior.Superior.Superior.FirstName != null)
+				  .Fetch(o => o.Superior)
+				  .ToList()
+				  .FirstOrDefault();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, ","), Is.EqualTo(31), "Only the first level should be fetched.");
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(3));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(3));
+			}
+
+			using (var logSpy = new SqlLogSpy())
+			{
+				db.Employees
+				  .Where(o => o.Superior.FirstName != null)
+				  .Fetch(o => o.Superior).ThenFetch(o => o.Superior).ThenFetch(o => o.Superior)
+				  .ToList()
+				  .FirstOrDefault();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(3));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(2));
+			}
+		}
+
+		[Test]
+		public void OrderByReuseJoins()
+		{
+			OrderLine orderLine;
+			using (var logSpy = new SqlLogSpy())
+			{
+				orderLine = db.OrderLines
+				              .Where(o => o.Order.OrderId == 10248)
+				              .OrderBy(o => o.Order.Customer.ContactName)
+				              .Fetch(o => o.Order).ThenFetch(o => o.Customer)
+				              .ToList()
+				              .First();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order.Customer), Is.True);
+			}
+
+			session.Clear();
+			using (var logSpy = new SqlLogSpy())
+			{
+				orderLine = db.OrderLines
+				              .Where(o => o.Order.OrderId == 10248)
+				              .OrderBy(o => o.Order.Customer.ContactName)
+				              .Fetch(o => o.Order)
+				              .ToList()
+				              .First();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order.Customer), Is.False);
+			}
+
+			using (var logSpy = new SqlLogSpy())
+			{
+				db.Employees
+				  .OrderBy(o => o.Superior.Superior.Superior.FirstName)
+				  .Fetch(o => o.Superior)
+				  .ToList()
+				  .FirstOrDefault();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, ","), Is.EqualTo(31), "Only the first level should be fetched.");
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(3));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(3));
+			}
+
+			using (var logSpy = new SqlLogSpy())
+			{
+				db.Employees
+				  .OrderBy(o => o.Superior.FirstName)
+				  .Fetch(o => o.Superior).ThenFetch(o => o.Superior).ThenFetch(o => o.Superior)
+				  .ToList()
+				  .FirstOrDefault();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(3));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(3));
+			}
+		}
+
+		[Test]
+		public void WhereAndOrderByReuseJoins()
+		{
+			OrderLine orderLine;
+			using (var logSpy = new SqlLogSpy())
+			{
+				orderLine = db.OrderLines
+				              .Where(o => o.Order.Customer.ContactName == "Maria Anders")
+				              .OrderBy(o => o.Order.Customer.ContactName)
+				              .Fetch(o => o.Order).ThenFetch(o => o.Customer)
+				              .ToList()
+				              .First();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order.Customer), Is.True);
+			}
+
+			session.Clear();
+			using (var logSpy = new SqlLogSpy())
+			{
+				orderLine = db.OrderLines
+				              .Where(o => o.Order.Customer.ContactName == "Maria Anders")
+				              .OrderBy(o => o.Order.Customer.ContactName)
+				              .Fetch(o => o.Order)
+				              .ToList()
+				              .First();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order.Customer), Is.False);
+			}
+
+			using (var logSpy = new SqlLogSpy())
+			{
+				db.Employees
+				  .Where(o => o.Superior.Superior.Superior.FirstName != null)
+				  .OrderBy(o => o.Superior.Superior.Superior.FirstName)
+				  .Fetch(o => o.Superior)
+				  .ToList()
+				  .FirstOrDefault();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, ","), Is.EqualTo(31), "Only the first level should be fetched.");
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(3));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(3));
+			}
+
+			using (var logSpy = new SqlLogSpy())
+			{
+				db.Employees
+				  .Where(o => o.Superior.FirstName != null)
+				  .OrderBy(o => o.Superior.FirstName)
+				  .Fetch(o => o.Superior).ThenFetch(o => o.Superior).ThenFetch(o => o.Superior)
+				  .ToList()
+				  .FirstOrDefault();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(3));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(2));
+			}
+		}
+
+		[Test]
+		public void FetchBeforeSelect()
+		{
+			var result = db.Orders
+			               .Where(o => o.OrderId == 10248)
+			               .Fetch(x => x.Customer)
+			               .Select(x => new {x.Customer.ContactName})
+			               .ToList();
+
+			Assert.True(result.Any());
+		}
+
 	}
 }
