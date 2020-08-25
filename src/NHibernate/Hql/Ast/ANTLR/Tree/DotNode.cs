@@ -504,6 +504,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			//
 			///////////////////////////////////////////////////////////////////////////////
 
+			// even though we might find a pre-existing element by join path, we may not be able to reuse it...
 			bool useFoundFromElement = elem != null && CanReuse(classAlias, elem);
 
 			if ( ! useFoundFromElement )
