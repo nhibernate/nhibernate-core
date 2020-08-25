@@ -467,19 +467,19 @@ namespace NHibernate.Test.Linq
 				return;
 			}
 
-			Expect(db.NumericEntities.Where(o => o.NullableShort == o.NullableShort), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
-			Expect(db.NumericEntities.Where(o => o.Short == o.Short), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
-			Expect(db.NumericEntities.Where(o => o.NullableShort == o.Short), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
-			Expect(db.NumericEntities.Where(o => o.Short == o.NullableShort), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
+			Expect(db.NumericEntities.Where(o => o.NullableShort == o.NullableShort), WithIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.Short == o.Short), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.NullableShort == o.Short), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.Short == o.NullableShort), WithoutIsNullAndWithoutCast());
 
 			short value = 3;
-			Expect(db.NumericEntities.Where(o => o.NullableShort == value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
-			Expect(db.NumericEntities.Where(o => value == o.NullableShort), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
+			Expect(db.NumericEntities.Where(o => o.NullableShort == value), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => value == o.NullableShort), WithoutIsNullAndWithoutCast());
 
-			Expect(db.NumericEntities.Where(o => o.NullableShort.Value == value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
-			Expect(db.NumericEntities.Where(o => value == o.NullableShort.Value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
-			Expect(db.NumericEntities.Where(o => o.Short == value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
-			Expect(db.NumericEntities.Where(o => value == o.Short), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
+			Expect(db.NumericEntities.Where(o => o.NullableShort.Value == value), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => value == o.NullableShort.Value), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.Short == value), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => value == o.Short), WithoutIsNullAndWithoutCast());
 
 			Expect(db.NumericEntities.Where(o => o.NullableShort == 3L), WithoutIsNullAndWithoutCast());
 			Expect(db.NumericEntities.Where(o => 3L == o.NullableShort), WithoutIsNullAndWithoutCast());
@@ -582,19 +582,19 @@ namespace NHibernate.Test.Linq
 				return;
 			}
 
-			Expect(db.NumericEntities.Where(o => o.NullableShort != o.NullableShort), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
-			Expect(db.NumericEntities.Where(o => o.Short != o.Short), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
-			Expect(db.NumericEntities.Where(o => o.NullableShort != o.Short), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
-			Expect(db.NumericEntities.Where(o => o.Short != o.NullableShort), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
+			Expect(db.NumericEntities.Where(o => o.NullableShort != o.NullableShort), WithIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.Short != o.Short), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.NullableShort != o.Short), WithIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.Short != o.NullableShort), WithIsNullAndWithoutCast());
 
 			short value = 3;
-			Expect(db.NumericEntities.Where(o => o.NullableShort != value), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
-			Expect(db.NumericEntities.Where(o => value != o.NullableShort), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
+			Expect(db.NumericEntities.Where(o => o.NullableShort != value), WithIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => value != o.NullableShort), WithIsNullAndWithoutCast());
 
-			Expect(db.NumericEntities.Where(o => o.NullableShort.Value != value), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
-			Expect(db.NumericEntities.Where(o => value != o.NullableShort.Value), Does.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
-			Expect(db.NumericEntities.Where(o => o.Short != value), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
-			Expect(db.NumericEntities.Where(o => value != o.Short), Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast"));
+			Expect(db.NumericEntities.Where(o => o.NullableShort.Value != value), WithIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => value != o.NullableShort.Value), WithIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.Short != value), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => value != o.Short), WithoutIsNullAndWithoutCast());
 
 			Expect(db.NumericEntities.Where(o => o.NullableShort != 3L), WithIsNullAndWithoutCast());
 			Expect(db.NumericEntities.Where(o => 3 != o.NullableShort), WithIsNullAndWithoutCast());
