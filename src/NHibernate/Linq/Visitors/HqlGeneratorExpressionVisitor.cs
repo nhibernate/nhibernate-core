@@ -311,7 +311,7 @@ possible solutions:
 		protected HqlTreeNode VisitBinaryExpression(BinaryExpression expression)
 		{
 			// There are some cases where we do not want to add a sql cast:
-			// - When comparing numeric types that do not have thier own operator (e.g. short == short)
+			// - When comparing numeric types that do not have their own operator (e.g. short == short)
 			// - When comparing a member expression with a parameter of similar type (e.g. o.Short == intParameter)
 			var leftType = GetExpressionType(expression.Left);
 			var rightType = GetExpressionType(expression.Right);
