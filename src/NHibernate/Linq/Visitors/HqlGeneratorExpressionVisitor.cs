@@ -526,11 +526,14 @@ possible solutions:
 				case ExpressionType.Convert:
 				case ExpressionType.ConvertChecked:
 				case ExpressionType.TypeAs:
-					var notCastable = _notCastableExpressions.TryGetValue(expression, out var castType);
-					castType = castType ?? expression.Type;
+					var castable = !_notCastableExpressions.TryGetValue(expression, out var castType);
+					if (castable)
+					{
+						castType = expression.Type;
+					}
 
-					return IsCastRequired(expression.Operand, castType, out var existType) && !notCastable
-						? _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), expression.Type)
+					return IsCastRequired(expression.Operand, castType, out var existType) && castable
+						? _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), castType)
 						// Make a transparent cast when an IType exists, so that it can be used to retrieve the value from the data reader
 						: existType && HqlIdent.SupportsType(castType)
 							? _hqlTreeBuilder.TransparentCast(VisitExpression(expression.Operand).AsExpression(), castType)
