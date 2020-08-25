@@ -122,8 +122,8 @@ namespace NHibernate.Linq.Visitors
 
 		public ResultOperatorRewriterResult RewrittenOperatorResult { get; private set; }
 
-		internal Dictionary<NhJoinClause, FetchRequestBase> RelatedJoinFetchRequests { get; } =
-			new Dictionary<NhJoinClause, FetchRequestBase>();
+		internal Dictionary<NhJoinClause, FetchOneRequest> RelatedJoinFetchRequests { get; } =
+			new Dictionary<NhJoinClause, FetchOneRequest>();
 
 		static QueryModelVisitor()
 		{
@@ -391,15 +391,12 @@ namespace NHibernate.Linq.Visitors
 			ResultOperatorMap.Process(resultOperator, this, _hqlTree);
 		}
 
-		private bool TryGetRelatedFetchRequest(NhJoinClause joinClause, QueryModel queryModel, out FetchRequestBase fetchRequest)
+		private bool TryGetRelatedFetchRequest(NhJoinClause joinClause, QueryModel queryModel, out FetchOneRequest fetchRequest)
 		{
 			if (joinClause.Restrictions.Count > 0 ||
 			    !(joinClause.FromExpression is MemberExpression memberExpression) ||
 			    !(memberExpression.Expression is QuerySourceReferenceExpression querySource) ||
-				// Hql does not support fetch with group by and select
-			    queryModel.ResultOperators.Any(o => o is GroupResultOperator) ||
-				!(queryModel.SelectClause.Selector is QuerySourceReferenceExpression selectSource) ||
-			    selectSource.ReferencedQuerySource != queryModel.MainFromClause)
+			    !IsFetchSupported(queryModel))
 			{
 				fetchRequest = null;
 				return false;
@@ -407,13 +404,14 @@ namespace NHibernate.Linq.Visitors
 
 			if (querySource.ReferencedQuerySource is MainFromClause)
 			{
-				fetchRequest = queryModel.ResultOperators.OfType<FetchRequestBase>()
+				fetchRequest = queryModel.ResultOperators.OfType<FetchOneRequest>()
 				                         .FirstOrDefault(o => o.RelationMember == memberExpression.Member);
 			}
-			else if (querySource.ReferencedQuerySource is NhJoinClause prevJoinClause &&
-			         RelatedJoinFetchRequests.TryGetValue(prevJoinClause, out var parentFetchRequest))
+			else if (querySource.ReferencedQuerySource is NhJoinClause parentJoinClause &&
+			         RelatedJoinFetchRequests.TryGetValue(parentJoinClause, out var parentFetchRequest))
 			{
-				fetchRequest = parentFetchRequest.InnerFetchRequests.FirstOrDefault(o => o.RelationMember == memberExpression.Member);
+				fetchRequest = parentFetchRequest.InnerFetchRequests.OfType<FetchOneRequest>()
+				                                 .FirstOrDefault(o => o.RelationMember == memberExpression.Member);
 			}
 			else
 			{
@@ -421,6 +419,15 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			return fetchRequest != null;
+		}
+
+		private static bool IsFetchSupported(QueryModel queryModel)
+		{
+			// Hql does not support fetch with group by and select
+			return
+				!queryModel.ResultOperators.Any(o => o is GroupResultOperator) &&
+				queryModel.SelectClause.Selector is QuerySourceReferenceExpression selectSource &&
+				selectSource.ReferencedQuerySource == queryModel.MainFromClause;
 		}
 
 		private static IStreamedDataInfo GetOutputDataInfo(ResultOperatorBase resultOperator, IStreamedDataInfo evaluationType)

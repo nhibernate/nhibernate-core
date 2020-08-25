@@ -29,7 +29,8 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 		private void Process(FetchRequestBase resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree, HqlDot memberPath, IType propType)
 		{
-			if (resultOperator is FetchOneRequest)
+			string alias = null;
+			if (resultOperator is FetchOneRequest fetchRequest)
 			{
 				if (propType == null)
 				{
@@ -66,15 +67,15 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 					return;
 				}
+
+				var relatedJoin = queryModelVisitor.RelatedJoinFetchRequests.FirstOrDefault(o => o.Value == fetchRequest).Key;
+				if (relatedJoin != null)
+				{
+					alias = queryModelVisitor.VisitorParameters.QuerySourceNamer.GetName(relatedJoin);
+				}
 			}
 
-			var relatedJoin = queryModelVisitor.RelatedJoinFetchRequests.FirstOrDefault(o => o.Value == resultOperator).Key;
-			string alias;
-			if (relatedJoin != null)
-			{
-				alias = queryModelVisitor.VisitorParameters.QuerySourceNamer.GetName(relatedJoin);
-			}
-			else
+			if (alias == null)
 			{
 				alias = queryModelVisitor.Model.GetNewName("_");
 				tree.AddFromClause(tree.TreeBuilder.LeftFetchJoin(memberPath, tree.TreeBuilder.Alias(alias)));
