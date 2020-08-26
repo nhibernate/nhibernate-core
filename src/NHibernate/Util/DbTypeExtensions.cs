@@ -2,7 +2,7 @@
 
 namespace NHibernate.Util
 {
-	public static class DbTypeExtensions
+	internal static class DbTypeExtensions
 	{
 		/// <summary>
 		/// Checks whether the type is a <see cref="DbType.String"/>, <see cref="DbType.AnsiString"/>, <see cref="DbType.StringFixedLength"/> or <see cref="DbType.AnsiStringFixedLength"/>
