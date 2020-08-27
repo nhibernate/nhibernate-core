@@ -112,60 +112,81 @@ namespace NHibernate.Linq.Visitors
 					continue;
 				}
 
-				var parameterRelatedExpressions = new List<Expression>();
-				foreach (var expression in constantExpressions)
-				{
-					if (visitor.RelatedExpressions.TryGetValue(expression, out var relatedExpressions))
-					{
-						parameterRelatedExpressions.AddRange(relatedExpressions);
-					}
-				}
-
-				var candidateTypes = new HashSet<IType>();
-				// In order to get the actual type we have to check first the related member expressions, as
-				// an enum is translated in a numeric type when used in a BinaryExpression and also it can be mapped as string.
-				// By getting the type from a related member expression we also get the correct length in case of StringType
-				// or precision when having a DecimalType.
-				foreach (var relatedExpression in parameterRelatedExpressions)
-				{
-					if (TryGetMappedType(sessionFactory, relatedExpression, out var candidateType, out _, out _, out _))
-					{
-						if (candidateType.IsAssociationType && visitor.SequenceSelectorExpressions.Contains(relatedExpression))
-						{
-							var collection = (IQueryableCollection) ((IAssociationType) candidateType).GetAssociatedJoinable(sessionFactory);
-							candidateType = collection.ElementType;
-						}
-
-						candidateTypes.Add(candidateType);
-					}
-				}
-
-				// All constant expressions have the same type/value
-				var constantExpression = constantExpressions.First();
-				var constantType = constantExpression.Type.UnwrapIfNullable();
-				IType type = null;
-				if (
-					candidateTypes.Count == 1 &&
-					// When comparing an integral column with a floating-point parameter, the parameter type must remain floating-point type
-					// and the column needs to be casted in order to prevent invalid results (e.g. Where(o => o.Integer >= 2.2d)).
-					!(candidateTypes.Any(t => IntegralNumericTypes.Contains(t.ReturnedClass)) && FloatingPointNumericTypes.Contains(constantType))
-				)
-				{
-					type = candidateTypes.FirstOrDefault();
-				}
-
-				// No related MemberExpressions was found, guess the type by value or its type when null.
-				// When a numeric parameter is compared to different columns with different types (e.g. Where(o => o.Single >= singleParam || o.Double <= singleParam))
-				// do not change the parameter type, but instead cast the parameter when comparing with different column types.
-				if (type == null)
-				{
-					type = constantExpression.Value != null
-						? ParameterHelper.TryGuessType(constantExpression.Value, sessionFactory, namedParameter.IsCollection)
-						: ParameterHelper.TryGuessType(constantType, sessionFactory, namedParameter.IsCollection);
-				}
-
-				namedParameter.Type = type;
+				namedParameter.Type = GetParameterType(sessionFactory, constantExpressions, visitor, namedParameter);
 			}
+		}
+
+		private static HashSet<IType> GetCandidateTypes(
+			ISessionFactoryImplementor sessionFactory,
+			IEnumerable<ConstantExpression> constantExpressions,
+			ConstantTypeLocatorVisitor visitor)
+		{
+			var parameterRelatedExpressions = new List<Expression>();
+			foreach (var expression in constantExpressions)
+			{
+				if (visitor.RelatedExpressions.TryGetValue(expression, out var relatedExpressions))
+				{
+					parameterRelatedExpressions.AddRange(relatedExpressions);
+				}
+			}
+
+			var candidateTypes = new HashSet<IType>();
+			// In order to get the actual type we have to check first the related member expressions, as
+			// an enum is translated in a numeric type when used in a BinaryExpression and also it can be mapped as string.
+			// By getting the type from a related member expression we also get the correct length in case of StringType
+			// or precision when having a DecimalType.
+			foreach (var relatedExpression in parameterRelatedExpressions)
+			{
+				if (TryGetMappedType(sessionFactory, relatedExpression, out var candidateType, out _, out _, out _))
+				{
+					if (candidateType.IsAssociationType && visitor.SequenceSelectorExpressions.Contains(relatedExpression))
+					{
+						var collection =
+							(IQueryableCollection) ((IAssociationType) candidateType).GetAssociatedJoinable(sessionFactory);
+						candidateType = collection.ElementType;
+					}
+
+					candidateTypes.Add(candidateType);
+				}
+			}
+
+			return candidateTypes;
+		}
+
+		private static IType GetParameterType(
+			ISessionFactoryImplementor sessionFactory,
+			HashSet<ConstantExpression> constantExpressions,
+			ConstantTypeLocatorVisitor visitor,
+			NamedParameter namedParameter)
+		{
+			var candidateTypes = GetCandidateTypes(sessionFactory, constantExpressions, visitor);
+
+			// All constant expressions have the same type/value
+			var constantExpression = constantExpressions.First();
+			var constantType = constantExpression.Type.UnwrapIfNullable();
+			IType type = null;
+			if (
+				candidateTypes.Count == 1 &&
+				// When comparing an integral column with a floating-point parameter, the parameter type must remain floating-point type
+				// and the column needs to be casted in order to prevent invalid results (e.g. Where(o => o.Integer >= 2.2d)).
+				!(candidateTypes.Any(t => IntegralNumericTypes.Contains(t.ReturnedClass)) &&
+				  FloatingPointNumericTypes.Contains(constantType))
+			)
+			{
+				type = candidateTypes.FirstOrDefault();
+			}
+
+			// No related MemberExpressions was found, guess the type by value or its type when null.
+			// When a numeric parameter is compared to different columns with different types (e.g. Where(o => o.Single >= singleParam || o.Double <= singleParam))
+			// do not change the parameter type, but instead cast the parameter when comparing with different column types.
+			if (type == null)
+			{
+				type = constantExpression.Value != null
+					? ParameterHelper.TryGuessType(constantExpression.Value, sessionFactory, namedParameter.IsCollection)
+					: ParameterHelper.TryGuessType(constantType, sessionFactory, namedParameter.IsCollection);
+			}
+
+			return type;
 		}
 
 		private class ConstantTypeLocatorVisitor : RelinqExpressionVisitor
