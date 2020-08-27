@@ -164,7 +164,6 @@ namespace NHibernate.Linq.Visitors
 			// All constant expressions have the same type/value
 			var constantExpression = constantExpressions.First();
 			var constantType = constantExpression.Type.UnwrapIfNullable();
-			IType type = null;
 			if (
 				candidateTypes.Count == 1 &&
 				// When comparing an integral column with a floating-point parameter, the parameter type must remain floating-point type
@@ -173,20 +172,15 @@ namespace NHibernate.Linq.Visitors
 				  FloatingPointNumericTypes.Contains(constantType))
 			)
 			{
-				type = candidateTypes.FirstOrDefault();
+				return candidateTypes.First();
 			}
 
 			// No related MemberExpressions was found, guess the type by value or its type when null.
 			// When a numeric parameter is compared to different columns with different types (e.g. Where(o => o.Single >= singleParam || o.Double <= singleParam))
 			// do not change the parameter type, but instead cast the parameter when comparing with different column types.
-			if (type == null)
-			{
-				type = constantExpression.Value != null
-					? ParameterHelper.TryGuessType(constantExpression.Value, sessionFactory, namedParameter.IsCollection)
-					: ParameterHelper.TryGuessType(constantType, sessionFactory, namedParameter.IsCollection);
-			}
-
-			return type;
+			return constantExpression.Value != null
+				? ParameterHelper.TryGuessType(constantExpression.Value, sessionFactory, namedParameter.IsCollection)
+				: ParameterHelper.TryGuessType(constantType, sessionFactory, namedParameter.IsCollection);
 		}
 
 		private class ConstantTypeLocatorVisitor : RelinqExpressionVisitor
