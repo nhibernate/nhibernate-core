@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -14,7 +16,10 @@ namespace NHibernate.Test.Linq
 	public class EnumTests : TestCaseMappingByCode
 	{
 		private IType _enumType;
+		private ISession _session;
 
+		private IQueryable<EnumEntity> TestEntities { get; set; }
+		private IQueryable<EnumEntity> TestEntitiesInDb { get; set; }
 
 		public EnumTests(System.Type enumType)
 		{
@@ -30,6 +35,7 @@ namespace NHibernate.Test.Linq
 					rc.Table("EnumEntity");
 					rc.Id(x => x.Id, m => m.Generator(Generators.Identity));
 					rc.Property(x => x.Name);
+					rc.Property(x => x.BatchId);
 					rc.Property(x => x.Enum, m => m.Type(_enumType));
 					rc.Property(x => x.NullableEnum, m => m.Type(_enumType));
 					rc.ManyToOne(x => x.Other, m => m.Cascade(Mapping.ByCode.Cascade.All));
@@ -42,25 +48,43 @@ namespace NHibernate.Test.Linq
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
-			using (var session = OpenSession())
-			using (var trans = session.BeginTransaction())
+			_session = OpenSession();
+
+			var entities = new[] {
+				new EnumEntity { Enum = TestEnum.Unspecified },
+				new EnumEntity { Enum = TestEnum.Small, NullableEnum = TestEnum.Large },
+				new EnumEntity { Enum = TestEnum.Small, NullableEnum = TestEnum.Medium },
+				new EnumEntity { Enum = TestEnum.Medium, NullableEnum = TestEnum.Medium },
+				new EnumEntity { Enum = TestEnum.Medium, NullableEnum = TestEnum.Small },
+				new EnumEntity { Enum = TestEnum.Medium },
+				new EnumEntity { Enum = TestEnum.Large, NullableEnum = TestEnum.Medium },
+				new EnumEntity { Enum = TestEnum.Large, NullableEnum = TestEnum.Unspecified },
+				new EnumEntity { Enum = TestEnum.Large },
+				new EnumEntity { Enum = TestEnum.Large }
+			};
+
+			var batchId = Guid.NewGuid();
+
+			using (var trans = _session.BeginTransaction())
 			{
-				session.Save(new EnumEntity { Enum = TestEnum.Unspecified });
-				session.Save(new EnumEntity { Enum = TestEnum.Small });
-				session.Save(new EnumEntity { Enum = TestEnum.Small });
-				session.Save(new EnumEntity { Enum = TestEnum.Medium });
-				session.Save(new EnumEntity { Enum = TestEnum.Medium });
-				session.Save(new EnumEntity { Enum = TestEnum.Medium });
-				session.Save(new EnumEntity { Enum = TestEnum.Large });
-				session.Save(new EnumEntity { Enum = TestEnum.Large });
-				session.Save(new EnumEntity { Enum = TestEnum.Large });
-				session.Save(new EnumEntity { Enum = TestEnum.Large });
+				foreach (var item in entities)
+				{
+					item.BatchId = batchId;
+					_session.Save(item);
+				}
 				trans.Commit();
 			}
+
+			TestEntitiesInDb = _session.Query<EnumEntity>().Where(x=>x.BatchId == batchId);
+			TestEntities = entities.AsQueryable();
 		}
 
 		protected override void OnTearDown()
 		{
+			if (_session.IsOpen)
+			{
+				_session.Close();
+			}
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
@@ -97,74 +121,66 @@ namespace NHibernate.Test.Linq
 
 		private void CanQueryOnEnum(TestEnum type, int expectedCount)
 		{
-			using (var session = OpenSession())
-			using (var trans = session.BeginTransaction())
-			{
-				var query = session.Query<EnumEntity>().Where(x => x.Enum == type).ToList();
+			var query = TestEntitiesInDb.Where(x => x.Enum == type).ToList();
 
-				Assert.AreEqual(expectedCount, query.Count);
-			}
+			Assert.AreEqual(expectedCount, query.Count);
 		}
 
 		[Test]
 		public void CanQueryWithContainsOnTestEnum_Small_1()
 		{
 			var values = new[] { TestEnum.Small, TestEnum.Medium };
-			using (var session = OpenSession())
-			using (var trans = session.BeginTransaction())
-			{
-				var query = session.Query<EnumEntity>().Where(x => values.Contains(x.Enum)).ToList();
 
-				Assert.AreEqual(5, query.Count);
-			}
+			var query = TestEntitiesInDb.Where(x => values.Contains(x.Enum)).ToList();
+
+			Assert.AreEqual(5, query.Count);
 		}
 
 		[Test]
 		public void ConditionalNavigationProperty()
 		{
 			TestEnum? type = null;
-			using (var session = OpenSession())
-			using (var trans = session.BeginTransaction())
-			{
-				var entities = session.Query<EnumEntity>();
-				entities.Where(o => o.Enum == TestEnum.Large).ToList();
-				entities.Where(o => TestEnum.Large != o.Enum).ToList();
-				entities.Where(o => (o.NullableEnum ?? TestEnum.Large) == TestEnum.Medium).ToList();
-				entities.Where(o => ((o.NullableEnum ?? type) ?? o.Enum) == TestEnum.Medium).ToList();
 
-				entities.Where(o => (o.NullableEnum.HasValue ? o.Enum : TestEnum.Unspecified) == TestEnum.Medium).ToList();
-				entities.Where(o => (o.Enum != TestEnum.Large
+
+			TestEntitiesInDb.Where(o => o.Enum == TestEnum.Large).ToList();
+			TestEntitiesInDb.Where(o => TestEnum.Large != o.Enum).ToList();
+			TestEntitiesInDb.Where(o => (o.NullableEnum ?? TestEnum.Large) == TestEnum.Medium).ToList();
+			TestEntitiesInDb.Where(o => ((o.NullableEnum ?? type) ?? o.Enum) == TestEnum.Medium).ToList();
+
+			TestEntitiesInDb.Where(o => (o.NullableEnum.HasValue ? o.Enum : TestEnum.Unspecified) == TestEnum.Medium).ToList();
+			TestEntitiesInDb.Where(o => (o.Enum != TestEnum.Large
 										? (o.NullableEnum.HasValue ? o.Enum : TestEnum.Unspecified)
 										: TestEnum.Small) == TestEnum.Medium).ToList();
 
-				entities.Where(o => (o.Enum == TestEnum.Large ? o.Other : o.Other).Name == "test").ToList();
-			}
+			TestEntitiesInDb.Where(o => (o.Enum == TestEnum.Large ? o.Other : o.Other).Name == "test").ToList();
 		}
 
 		[Test]
 		public void CanQueryComplexExpressionOnTestEnum()
 		{
 			var type = TestEnum.Unspecified;
-			using (var session = OpenSession())
-			using (var trans = session.BeginTransaction())
+
+			Expression<Func<EnumEntity, bool>> predicate = user => (user.NullableEnum == TestEnum.Large
+									? TestEnum.Medium
+									: user.NullableEnum ?? user.Enum
+								) == type;
+
+			var query = TestEntitiesInDb.Where(predicate).Select(entity => new ProjectedEnum
 			{
-				var entities = session.Query<EnumEntity>();
+				Entity = entity,
+				Simple = entity.Enum,
+				Condition = entity.Enum == TestEnum.Large ? TestEnum.Medium : entity.Enum,
+				Coalesce = entity.NullableEnum ?? TestEnum.Medium
+			}).ToList();
 
-				var query = (from user in entities
-							 where (user.NullableEnum == TestEnum.Large
-									   ? TestEnum.Medium
-									   : user.NullableEnum ?? user.Enum
-								   ) == type
-							 select new
-							 {
-								 user,
-								 simple = user.Enum,
-								 condition = user.Enum == TestEnum.Large ? TestEnum.Medium : user.Enum,
-								 coalesce = user.NullableEnum ?? TestEnum.Medium
-							 }).ToList();
+			var targetCount = TestEntities.Count(predicate); //the truth
+			Assert.That(targetCount, Is.GreaterThan(0)); //test sanity check
+			Assert.That(query.Count, Is.EqualTo(targetCount));
 
-				Assert.That(query.Count, Is.EqualTo(1));
-			}
+			Assert.That(query, Is.All.Matches<ProjectedEnum>(x => x.Simple == x.Entity.Enum));
+			Assert.That(query, Is.All.Matches<ProjectedEnum>(x => x.Condition == (x.Entity.Enum == TestEnum.Large ? TestEnum.Medium : x.Entity.Enum)));
+			Assert.That(query, Is.All.Matches<ProjectedEnum>(x => x.Coalesce == (x.Entity.NullableEnum ?? TestEnum.Medium)));
+
 		}
 
 		public class EnumEntity
@@ -176,6 +192,7 @@ namespace NHibernate.Test.Linq
 			public virtual TestEnum? NullableEnum { get; set; }
 
 			public virtual EnumEntity Other { get; set; }
+			public virtual Guid BatchId { get; set; }
 		}
 
 		public enum TestEnum
@@ -204,6 +221,14 @@ namespace NHibernate.Test.Linq
 			}
 
 			public override SqlType SqlType => SqlTypeFactory.GetAnsiString(255);
+		}
+
+		private class ProjectedEnum
+		{
+			public TestEnum Simple { get; internal set; }
+			public TestEnum Condition { get; internal set; }
+			public TestEnum Coalesce { get; internal set; }
+			public EnumEntity Entity { get; internal set; }
 		}
 	}
 }
