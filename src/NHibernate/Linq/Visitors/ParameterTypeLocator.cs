@@ -101,7 +101,6 @@ namespace NHibernate.Linq.Visitors
 			var visitor = new ConstantTypeLocatorVisitor(removeMappedAsCalls, targetType, parameters, sessionFactory);
 			queryModel.TransformExpressions(visitor.Visit);
 
-			var processedConstants = new HashSet<ConstantExpression>();
 			foreach (var pair in visitor.ParameterConstants)
 			{
 				var namedParameter = pair.Key;
