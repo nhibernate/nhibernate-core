@@ -13,7 +13,6 @@ using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Parsing;
-using static NHibernate.Util.ExpressionsHelper;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -137,7 +136,7 @@ namespace NHibernate.Linq.Visitors
 			// or precision when having a DecimalType.
 			foreach (var relatedExpression in parameterRelatedExpressions)
 			{
-				if (TryGetMappedType(sessionFactory, relatedExpression, out var candidateType, out _, out _, out _))
+				if (ExpressionsHelper.TryGetMappedType(sessionFactory, relatedExpression, out var candidateType, out _, out _, out _))
 				{
 					if (candidateType.IsAssociationType && visitor.SequenceSelectorExpressions.Contains(relatedExpression))
 					{
@@ -433,6 +432,21 @@ namespace NHibernate.Linq.Visitors
 						return false;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Unwraps <see cref="System.Linq.Expressions.UnaryExpression"/>.
+		/// </summary>
+		/// <param name="expression">The expression to unwrap.</param>
+		/// <returns>The unwrapped expression.</returns>
+		private static Expression UnwrapUnary(Expression expression)
+		{
+			while (expression is UnaryExpression unaryExpression)
+			{
+				expression = unaryExpression.Operand;
+			}
+
+			return expression;
 		}
 	}
 }

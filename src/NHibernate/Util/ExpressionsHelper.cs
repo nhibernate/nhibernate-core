@@ -60,21 +60,6 @@ namespace NHibernate.Util
 #endif
 
 		/// <summary>
-		/// Unwraps <see cref="UnaryExpression"/>.
-		/// </summary>
-		/// <param name="expression">The expression to unwrap.</param>
-		/// <returns>The unwrapped expression.</returns>
-		internal static Expression UnwrapUnary(Expression expression)
-		{
-			if (expression is UnaryExpression unaryExpression)
-			{
-				return UnwrapUnary(unaryExpression.Operand);
-			}
-
-			return expression;
-		}
-
-		/// <summary>
 		/// Check whether the given expression represent a variable.
 		/// </summary>
 		/// <param name="expression">The expression to check.</param>
