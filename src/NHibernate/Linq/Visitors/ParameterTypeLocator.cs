@@ -153,26 +153,44 @@ namespace NHibernate.Linq.Visitors
 			return candidateTypes;
 		}
 
+		private static bool GetCandidateType(
+			ISessionFactoryImplementor sessionFactory,
+			IEnumerable<ConstantExpression> constantExpressions,
+			ConstantTypeLocatorVisitor visitor,
+			System.Type constantType,
+			out IType candidateType)
+		{
+			var candidateTypes = GetCandidateTypes(sessionFactory, constantExpressions, visitor);
+			if (candidateTypes.Count == 1)
+			{
+				candidateType = candidateTypes.First();
+
+				// When comparing an integral column with a floating-point parameter, the parameter type must remain floating-point type
+				// and the column needs to be casted in order to prevent invalid results (e.g. Where(o => o.Integer >= 2.2d)).
+				if (!IntegralNumericTypes.Contains(candidateType.ReturnedClass) ||
+				    !FloatingPointNumericTypes.Contains(constantType))
+				{
+					return true;
+				}
+			}
+
+			candidateType = null;
+			return false;
+		}
+
 		private static IType GetParameterType(
 			ISessionFactoryImplementor sessionFactory,
 			HashSet<ConstantExpression> constantExpressions,
 			ConstantTypeLocatorVisitor visitor,
 			NamedParameter namedParameter)
 		{
-			var candidateTypes = GetCandidateTypes(sessionFactory, constantExpressions, visitor);
 
 			// All constant expressions have the same type/value
 			var constantExpression = constantExpressions.First();
 			var constantType = constantExpression.Type.UnwrapIfNullable();
-			if (
-				candidateTypes.Count == 1 &&
-				// When comparing an integral column with a floating-point parameter, the parameter type must remain floating-point type
-				// and the column needs to be casted in order to prevent invalid results (e.g. Where(o => o.Integer >= 2.2d)).
-				!(candidateTypes.Any(t => IntegralNumericTypes.Contains(t.ReturnedClass)) &&
-				  FloatingPointNumericTypes.Contains(constantType))
-			)
+			if (GetCandidateType(sessionFactory, constantExpressions, visitor, constantType, out var candidateType))
 			{
-				return candidateTypes.First();
+				return candidateType;
 			}
 
 			// No related MemberExpressions was found, guess the type by value or its type when null.
