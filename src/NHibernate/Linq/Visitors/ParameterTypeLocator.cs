@@ -123,12 +123,12 @@ namespace NHibernate.Linq.Visitors
 			var candidateTypes = new HashSet<IType>();
 			foreach (var expression in constantExpressions)
 			{
+				// In order to get the actual type we have to check first the related member expressions, as
+				// an enum is translated in a numeric type when used in a BinaryExpression and also it can be mapped as string.
+				// By getting the type from a related member expression we also get the correct length in case of StringType
+				// or precision when having a DecimalType.
 				if (visitor.RelatedExpressions.TryGetValue(expression, out var relatedExpressions))
 				{
-					// In order to get the actual type we have to check first the related member expressions, as
-					// an enum is translated in a numeric type when used in a BinaryExpression and also it can be mapped as string.
-					// By getting the type from a related member expression we also get the correct length in case of StringType
-					// or precision when having a DecimalType.
 					foreach (var relatedExpression in relatedExpressions)
 					{
 						if (ExpressionsHelper.TryGetMappedType(sessionFactory, relatedExpression, out var candidateType, out _, out _, out _))
