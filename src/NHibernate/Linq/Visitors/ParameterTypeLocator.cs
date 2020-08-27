@@ -120,32 +120,28 @@ namespace NHibernate.Linq.Visitors
 			IEnumerable<ConstantExpression> constantExpressions,
 			ConstantTypeLocatorVisitor visitor)
 		{
-			var parameterRelatedExpressions = new List<Expression>();
+			var candidateTypes = new HashSet<IType>();
 			foreach (var expression in constantExpressions)
 			{
 				if (visitor.RelatedExpressions.TryGetValue(expression, out var relatedExpressions))
 				{
-					parameterRelatedExpressions.AddRange(relatedExpressions);
-				}
-			}
-
-			var candidateTypes = new HashSet<IType>();
-			// In order to get the actual type we have to check first the related member expressions, as
-			// an enum is translated in a numeric type when used in a BinaryExpression and also it can be mapped as string.
-			// By getting the type from a related member expression we also get the correct length in case of StringType
-			// or precision when having a DecimalType.
-			foreach (var relatedExpression in parameterRelatedExpressions)
-			{
-				if (ExpressionsHelper.TryGetMappedType(sessionFactory, relatedExpression, out var candidateType, out _, out _, out _))
-				{
-					if (candidateType.IsAssociationType && visitor.SequenceSelectorExpressions.Contains(relatedExpression))
+					// In order to get the actual type we have to check first the related member expressions, as
+					// an enum is translated in a numeric type when used in a BinaryExpression and also it can be mapped as string.
+					// By getting the type from a related member expression we also get the correct length in case of StringType
+					// or precision when having a DecimalType.
+					foreach (var relatedExpression in relatedExpressions)
 					{
-						var collection =
-							(IQueryableCollection) ((IAssociationType) candidateType).GetAssociatedJoinable(sessionFactory);
-						candidateType = collection.ElementType;
-					}
+						if (ExpressionsHelper.TryGetMappedType(sessionFactory, relatedExpression, out var candidateType, out _, out _, out _))
+						{
+							if (candidateType.IsAssociationType && visitor.SequenceSelectorExpressions.Contains(relatedExpression))
+							{
+								var collection = (IQueryableCollection) ((IAssociationType) candidateType).GetAssociatedJoinable(sessionFactory);
+								candidateType = collection.ElementType;
+							}
 
-					candidateTypes.Add(candidateType);
+							candidateTypes.Add(candidateType);
+						}
+					}
 				}
 			}
 
