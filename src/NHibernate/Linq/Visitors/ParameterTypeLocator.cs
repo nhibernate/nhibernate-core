@@ -115,62 +115,39 @@ namespace NHibernate.Linq.Visitors
 			}
 		}
 
-		private static HashSet<IType> GetCandidateTypes(
+		private static IType GetCandidateType(
 			ISessionFactoryImplementor sessionFactory,
 			IEnumerable<ConstantExpression> constantExpressions,
 			ConstantTypeLocatorVisitor visitor)
 		{
-			var candidateTypes = new HashSet<IType>();
+			IType candidateType = null;
 			foreach (var expression in constantExpressions)
 			{
 				// In order to get the actual type we have to check first the related member expressions, as
 				// an enum is translated in a numeric type when used in a BinaryExpression and also it can be mapped as string.
 				// By getting the type from a related member expression we also get the correct length in case of StringType
 				// or precision when having a DecimalType.
-				if (visitor.RelatedExpressions.TryGetValue(expression, out var relatedExpressions))
+				if (!visitor.RelatedExpressions.TryGetValue(expression, out var relatedExpressions))
+					continue;
+				foreach (var relatedExpression in relatedExpressions)
 				{
-					foreach (var relatedExpression in relatedExpressions)
+					if (!ExpressionsHelper.TryGetMappedType(sessionFactory, relatedExpression, out var mappedType, out _, out _, out _))
+						continue;
+
+					if (mappedType.IsAssociationType && visitor.SequenceSelectorExpressions.Contains(relatedExpression))
 					{
-						if (ExpressionsHelper.TryGetMappedType(sessionFactory, relatedExpression, out var candidateType, out _, out _, out _))
-						{
-							if (candidateType.IsAssociationType && visitor.SequenceSelectorExpressions.Contains(relatedExpression))
-							{
-								var collection = (IQueryableCollection) ((IAssociationType) candidateType).GetAssociatedJoinable(sessionFactory);
-								candidateType = collection.ElementType;
-							}
-
-							candidateTypes.Add(candidateType);
-						}
+						var collection = (IQueryableCollection) ((IAssociationType) mappedType).GetAssociatedJoinable(sessionFactory);
+						mappedType = collection.ElementType;
 					}
+
+					if (candidateType == null)
+						candidateType = mappedType;
+					else if (!candidateType.Equals(mappedType))
+						return null;
 				}
 			}
 
-			return candidateTypes;
-		}
-
-		private static bool GetCandidateType(
-			ISessionFactoryImplementor sessionFactory,
-			IEnumerable<ConstantExpression> constantExpressions,
-			ConstantTypeLocatorVisitor visitor,
-			System.Type constantType,
-			out IType candidateType)
-		{
-			var candidateTypes = GetCandidateTypes(sessionFactory, constantExpressions, visitor);
-			if (candidateTypes.Count == 1)
-			{
-				candidateType = candidateTypes.First();
-
-				// When comparing an integral column with a floating-point parameter, the parameter type must remain floating-point type
-				// and the column needs to be casted in order to prevent invalid results (e.g. Where(o => o.Integer >= 2.2d)).
-				if (!IntegralNumericTypes.Contains(candidateType.ReturnedClass) ||
-				    !FloatingPointNumericTypes.Contains(constantType))
-				{
-					return true;
-				}
-			}
-
-			candidateType = null;
-			return false;
+			return candidateType;
 		}
 
 		private static IType GetParameterType(
@@ -183,7 +160,11 @@ namespace NHibernate.Linq.Visitors
 			// All constant expressions have the same type/value
 			var constantExpression = constantExpressions.First();
 			var constantType = constantExpression.Type.UnwrapIfNullable();
-			if (GetCandidateType(sessionFactory, constantExpressions, visitor, constantType, out var candidateType))
+			var candidateType = GetCandidateType(sessionFactory, constantExpressions, visitor);
+			if (candidateType != null &&
+				// When comparing an integral column with a floating-point parameter, the parameter type must remain floating-point type
+				// and the column needs to be casted in order to prevent invalid results (e.g. Where(o => o.Integer >= 2.2d)).
+				!(FloatingPointNumericTypes.Contains(constantType) && IntegralNumericTypes.Contains(candidateType.ReturnedClass)))
 			{
 				return candidateType;
 			}
