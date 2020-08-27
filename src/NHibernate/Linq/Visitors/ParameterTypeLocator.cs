@@ -13,6 +13,7 @@ using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Parsing;
+using TypeExtensions = NHibernate.Util.TypeExtensions;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -49,25 +50,6 @@ namespace NHibernate.Linq.Visitors
 			ExpressionType.Conditional
 		};
 
-
-		private static readonly HashSet<System.Type> IntegralNumericTypes = new HashSet<System.Type>
-		{
-			typeof(sbyte),
-			typeof(short),
-			typeof(int),
-			typeof(long),
-			typeof(byte),
-			typeof(ushort),
-			typeof(uint),
-			typeof(ulong)
-		};
-
-		private static readonly HashSet<System.Type> FloatingPointNumericTypes = new HashSet<System.Type>
-		{
-			typeof(decimal),
-			typeof(float),
-			typeof(double)
-		};
 
 		/// <summary>
 		/// Set query parameter types based on the given query model.
@@ -150,6 +132,29 @@ namespace NHibernate.Linq.Visitors
 			return candidateType;
 		}
 
+		private static IType GetCandidateType(
+			ISessionFactoryImplementor sessionFactory,
+			HashSet<ConstantExpression> constantExpressions,
+			ConstantTypeLocatorVisitor visitor,
+			System.Type constantType)
+		{
+			var candidateType = GetCandidateType(sessionFactory, constantExpressions, visitor);
+			    
+			if (candidateType == null)
+			{
+				return null;
+			}
+			
+			// When comparing an integral column with a real parameter, the parameter type must remain real type
+			// and the column needs to be casted in order to prevent invalid results (e.g. Where(o => o.Integer >= 2.2d)).
+			if (constantType.IsRealNumberType() && candidateType.ReturnedClass.IsIntegralNumberType())
+			{
+				return null;
+			}
+
+			return candidateType;
+		}
+
 		private static IType GetParameterType(
 			ISessionFactoryImplementor sessionFactory,
 			HashSet<ConstantExpression> constantExpressions,
@@ -160,11 +165,8 @@ namespace NHibernate.Linq.Visitors
 			// All constant expressions have the same type/value
 			var constantExpression = constantExpressions.First();
 			var constantType = constantExpression.Type.UnwrapIfNullable();
-			var candidateType = GetCandidateType(sessionFactory, constantExpressions, visitor);
-			if (candidateType != null &&
-				// When comparing an integral column with a floating-point parameter, the parameter type must remain floating-point type
-				// and the column needs to be casted in order to prevent invalid results (e.g. Where(o => o.Integer >= 2.2d)).
-				!(FloatingPointNumericTypes.Contains(constantType) && IntegralNumericTypes.Contains(candidateType.ReturnedClass)))
+			var candidateType = GetCandidateType(sessionFactory, constantExpressions, visitor, constantType);
+			if (candidateType != null)
 			{
 				return candidateType;
 			}
