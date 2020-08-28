@@ -8,17 +8,18 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
-	[TestFixture(typeof(EnumType<TestEnum>))]
-	[TestFixture(typeof(EnumStringType<TestEnum>))]
-	[TestFixture(typeof(EnumAnsiStringType<TestEnum>))]
+	[TestFixture(typeof(EnumType<TestEnum>),"0")]
+	[TestFixture(typeof(EnumStringType<TestEnum>), "'Unspecified'")]
+	[TestFixture(typeof(EnumAnsiStringType<TestEnum>), "'Unspecified'")]
 	public class EnumTests : TestCaseMappingByCode
 	{
 		private IType _enumType;
+		private string _unspecifiedValue;
 
-
-		public EnumTests(System.Type enumType)
+		public EnumTests(System.Type enumType, string unspecifiedValue)
 		{
 			_enumType = (IType) Activator.CreateInstance(enumType);
+			_unspecifiedValue = unspecifiedValue;
 		}
 
 		protected override HbmMapping GetMappings()
@@ -31,7 +32,11 @@ namespace NHibernate.Test.Linq
 					rc.Id(x => x.Id, m => m.Generator(Generators.Identity));
 					rc.Property(x => x.Name);
 					rc.Property(x => x.Enum, m => m.Type(_enumType));
-					rc.Property(x => x.NullableEnum, m => m.Type(_enumType));
+					rc.Property(x => x.NullableEnum, m =>
+					{
+						m.Type(_enumType);
+						m.Formula($"(case when Enum = {_unspecifiedValue} then null else Enum end)");
+					});
 					rc.ManyToOne(x => x.Other, m => m.Cascade(Mapping.ByCode.Cascade.All));
 				});
 
