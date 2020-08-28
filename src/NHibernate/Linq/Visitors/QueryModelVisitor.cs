@@ -340,7 +340,8 @@ namespace NHibernate.Linq.Visitors
 		public override void VisitNhJoinClause(NhJoinClause joinClause, QueryModel queryModel, int index)
 		{
 			var querySourceName = VisitorParameters.QuerySourceNamer.GetName(joinClause);
-			if (TryGetRelatedFetchRequest(joinClause, queryModel, out var fetchRequest))
+			var fetchRequest = GetRelatedFetchRequest(queryModel, joinClause);
+			if (fetchRequest != null)
 			{
 				RelatedJoinFetchRequests.Add(joinClause, fetchRequest);
 			}
@@ -391,34 +392,28 @@ namespace NHibernate.Linq.Visitors
 			ResultOperatorMap.Process(resultOperator, this, _hqlTree);
 		}
 
-		private bool TryGetRelatedFetchRequest(NhJoinClause joinClause, QueryModel queryModel, out FetchOneRequest fetchRequest)
+		private FetchOneRequest GetRelatedFetchRequest(QueryModel queryModel, NhJoinClause joinClause)
 		{
 			if (joinClause.Restrictions.Count > 0 ||
 			    !(joinClause.FromExpression is MemberExpression memberExpression) ||
 			    !(memberExpression.Expression is QuerySourceReferenceExpression querySource) ||
 			    !IsFetchSupported(queryModel))
 			{
-				fetchRequest = null;
-				return false;
+				return null;
 			}
 
 			if (querySource.ReferencedQuerySource is MainFromClause)
 			{
-				fetchRequest = queryModel.ResultOperators.OfType<FetchOneRequest>()
-				                         .FirstOrDefault(o => o.RelationMember == memberExpression.Member);
-			}
-			else if (querySource.ReferencedQuerySource is NhJoinClause parentJoinClause &&
-			         RelatedJoinFetchRequests.TryGetValue(parentJoinClause, out var parentFetchRequest))
-			{
-				fetchRequest = parentFetchRequest.InnerFetchRequests.OfType<FetchOneRequest>()
-				                                 .FirstOrDefault(o => o.RelationMember == memberExpression.Member);
-			}
-			else
-			{
-				fetchRequest = null;
+				return queryModel.ResultOperators.OfType<FetchOneRequest>().FirstOrDefault(o => o.RelationMember == memberExpression.Member);
 			}
 
-			return fetchRequest != null;
+			if (querySource.ReferencedQuerySource is NhJoinClause parentJoinClause &&
+			    RelatedJoinFetchRequests.TryGetValue(parentJoinClause, out var parentFetchRequest))
+			{
+				return parentFetchRequest.InnerFetchRequests.OfType<FetchOneRequest>().FirstOrDefault(o => o.RelationMember == memberExpression.Member);
+			}
+
+			return null;
 		}
 
 		private static bool IsFetchSupported(QueryModel queryModel)
