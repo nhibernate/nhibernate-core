@@ -100,7 +100,8 @@ namespace NHibernate.Linq.Visitors
 		private static IType GetCandidateType(
 			ISessionFactoryImplementor sessionFactory,
 			IEnumerable<ConstantExpression> constantExpressions,
-			ConstantTypeLocatorVisitor visitor)
+			ConstantTypeLocatorVisitor visitor,
+			System.Type constantType)
 		{
 			IType candidateType = null;
 			foreach (var expression in constantExpressions)
@@ -129,28 +130,13 @@ namespace NHibernate.Linq.Visitors
 				}
 			}
 
-			return candidateType;
-		}
-
-		private static IType GetCandidateType(
-			ISessionFactoryImplementor sessionFactory,
-			HashSet<ConstantExpression> constantExpressions,
-			ConstantTypeLocatorVisitor visitor,
-			System.Type constantType)
-		{
-			var candidateType = GetCandidateType(sessionFactory, constantExpressions, visitor);
-			    
 			if (candidateType == null)
-			{
 				return null;
-			}
-			
+
 			// When comparing an integral column with a real parameter, the parameter type must remain real type
 			// and the column needs to be casted in order to prevent invalid results (e.g. Where(o => o.Integer >= 2.2d)).
 			if (constantType.IsRealNumberType() && candidateType.ReturnedClass.IsIntegralNumberType())
-			{
 				return null;
-			}
 
 			return candidateType;
 		}
@@ -161,7 +147,6 @@ namespace NHibernate.Linq.Visitors
 			ConstantTypeLocatorVisitor visitor,
 			NamedParameter namedParameter)
 		{
-
 			// All constant expressions have the same type/value
 			var constantExpression = constantExpressions.First();
 			var constantType = constantExpression.Type.UnwrapIfNullable();
