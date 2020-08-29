@@ -13,9 +13,6 @@ env:
   - DB=Firebird 
   - DB=MySQL CONNECTION_STRING="Server=127.0.0.1;Uid=root;Database=nhibernate;Old Guids=True;"   
   - DB=SQLite 
-matrix:
-  allow_failures:
-    - env: DB=MySQL CONNECTION_STRING="Server=127.0.0.1;Uid=root;Database=nhibernate;Old Guids=True;"
 before_install:
   - curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
   - curl https://packages.microsoft.com/config/ubuntu/14.04/prod.list | sudo tee /etc/apt/sources.list.d/microsoft.list
