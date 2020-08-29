@@ -21,7 +21,7 @@ namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	[TestFixture(typeof(EnumType<TestEnum>),"0")]
+	[TestFixture(typeof(EnumType<TestEnum>), "0")]
 	[TestFixture(typeof(EnumStringType<TestEnum>), "'Unspecified'")]
 	[TestFixture(typeof(EnumAnsiStringType<TestEnum>), "'Unspecified'")]
 	public class EnumTestsAsync : TestCaseMappingByCode
@@ -42,17 +42,16 @@ namespace NHibernate.Test.Linq
 				rc =>
 				{
 					rc.Table("EnumEntity");
-					rc.Id(x => x.Id, m => m.Generator(Generators.Identity));
+					rc.Id(x => x.Id, m => m.Generator(Generators.Guid));
 					rc.Property(x => x.Name);
-					rc.Property(x => x.Enum, m => m.Type(_enumType));
-					rc.Property(x => x.NullableEnum, m =>
+					rc.Property(x => x.Enum1, m => m.Type(_enumType));
+					rc.Property(x => x.NullableEnum1, m =>
 					{
 						m.Type(_enumType);
-						m.Formula($"(case when Enum = {_unspecifiedValue} then null else Enum end)");
+						m.Formula($"(case when Enum1 = {_unspecifiedValue} then null else Enum1 end)");
 					});
 					rc.ManyToOne(x => x.Other, m => m.Cascade(Mapping.ByCode.Cascade.All));
 				});
-
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
@@ -63,16 +62,16 @@ namespace NHibernate.Test.Linq
 			using (var session = OpenSession())
 			using (var trans = session.BeginTransaction())
 			{
-				session.Save(new EnumEntity { Enum = TestEnum.Unspecified });
-				session.Save(new EnumEntity { Enum = TestEnum.Small });
-				session.Save(new EnumEntity { Enum = TestEnum.Small });
-				session.Save(new EnumEntity { Enum = TestEnum.Medium });
-				session.Save(new EnumEntity { Enum = TestEnum.Medium });
-				session.Save(new EnumEntity { Enum = TestEnum.Medium });
-				session.Save(new EnumEntity { Enum = TestEnum.Large });
-				session.Save(new EnumEntity { Enum = TestEnum.Large });
-				session.Save(new EnumEntity { Enum = TestEnum.Large });
-				session.Save(new EnumEntity { Enum = TestEnum.Large });
+				session.Save(new EnumEntity { Enum1 = TestEnum.Unspecified });
+				session.Save(new EnumEntity { Enum1 = TestEnum.Small });
+				session.Save(new EnumEntity { Enum1 = TestEnum.Small });
+				session.Save(new EnumEntity { Enum1 = TestEnum.Medium });
+				session.Save(new EnumEntity { Enum1 = TestEnum.Medium });
+				session.Save(new EnumEntity { Enum1 = TestEnum.Medium });
+				session.Save(new EnumEntity { Enum1 = TestEnum.Large });
+				session.Save(new EnumEntity { Enum1 = TestEnum.Large });
+				session.Save(new EnumEntity { Enum1 = TestEnum.Large });
+				session.Save(new EnumEntity { Enum1 = TestEnum.Large });
 				trans.Commit();
 			}
 		}
@@ -118,7 +117,7 @@ namespace NHibernate.Test.Linq
 			using (var session = OpenSession())
 			using (var trans = session.BeginTransaction())
 			{
-				var query = await (session.Query<EnumEntity>().Where(x => x.Enum == type).ToListAsync(cancellationToken));
+				var query = await (session.Query<EnumEntity>().Where(x => x.Enum1 == type).ToListAsync(cancellationToken));
 
 				Assert.AreEqual(expectedCount, query.Count);
 			}
@@ -131,7 +130,7 @@ namespace NHibernate.Test.Linq
 			using (var session = OpenSession())
 			using (var trans = session.BeginTransaction())
 			{
-				var query = await (session.Query<EnumEntity>().Where(x => values.Contains(x.Enum)).ToListAsync());
+				var query = await (session.Query<EnumEntity>().Where(x => values.Contains(x.Enum1)).ToListAsync());
 
 				Assert.AreEqual(5, query.Count);
 			}
@@ -145,17 +144,17 @@ namespace NHibernate.Test.Linq
 			using (var trans = session.BeginTransaction())
 			{
 				var entities = session.Query<EnumEntity>();
-				await (entities.Where(o => o.Enum == TestEnum.Large).ToListAsync());
-				await (entities.Where(o => TestEnum.Large != o.Enum).ToListAsync());
-				await (entities.Where(o => (o.NullableEnum ?? TestEnum.Large) == TestEnum.Medium).ToListAsync());
-				await (entities.Where(o => ((o.NullableEnum ?? type) ?? o.Enum) == TestEnum.Medium).ToListAsync());
+				await (entities.Where(o => o.Enum1 == TestEnum.Large).ToListAsync());
+				await (entities.Where(o => TestEnum.Large != o.Enum1).ToListAsync());
+				await (entities.Where(o => (o.NullableEnum1 ?? TestEnum.Large) == TestEnum.Medium).ToListAsync());
+				await (entities.Where(o => ((o.NullableEnum1 ?? type) ?? o.Enum1) == TestEnum.Medium).ToListAsync());
 
-				await (entities.Where(o => (o.NullableEnum.HasValue ? o.Enum : TestEnum.Unspecified) == TestEnum.Medium).ToListAsync());
-				await (entities.Where(o => (o.Enum != TestEnum.Large
-										? (o.NullableEnum.HasValue ? o.Enum : TestEnum.Unspecified)
+				await (entities.Where(o => (o.NullableEnum1.HasValue ? o.Enum1 : TestEnum.Unspecified) == TestEnum.Medium).ToListAsync());
+				await (entities.Where(o => (o.Enum1 != TestEnum.Large
+										? (o.NullableEnum1.HasValue ? o.Enum1 : TestEnum.Unspecified)
 										: TestEnum.Small) == TestEnum.Medium).ToListAsync());
 
-				await (entities.Where(o => (o.Enum == TestEnum.Large ? o.Other : o.Other).Name == "test").ToListAsync());
+				await (entities.Where(o => (o.Enum1 == TestEnum.Large ? o.Other : o.Other).Name == "test").ToListAsync());
 			}
 		}
 
@@ -170,59 +169,20 @@ namespace NHibernate.Test.Linq
 				var entities = session.Query<EnumEntity>();
 
 				var query = await ((from user in entities
-							 where (user.NullableEnum == TestEnum.Large
+							 where (user.NullableEnum1 == TestEnum.Large
 									   ? TestEnum.Medium
-									   : user.NullableEnum ?? user.Enum
+									   : user.NullableEnum1 ?? user.Enum1
 								   ) == type
 							 select new
 							 {
 								 user,
-								 simple = user.Enum,
-								 condition = user.Enum == TestEnum.Large ? TestEnum.Medium : user.Enum,
-								 coalesce = user.NullableEnum ?? TestEnum.Medium
+								 simple = user.Enum1,
+								 condition = user.Enum1 == TestEnum.Large ? TestEnum.Medium : user.Enum1,
+								 coalesce = user.NullableEnum1 ?? TestEnum.Medium
 							 }).ToListAsync());
 
 				Assert.That(query.Count, Is.EqualTo(0));
 			}
-		}
-
-		public class EnumEntity
-		{
-			public virtual int Id { get; set; }
-			public virtual string Name { get; set; }
-
-			public virtual TestEnum Enum { get; set; }
-			public virtual TestEnum? NullableEnum { get; set; }
-
-			public virtual EnumEntity Other { get; set; }
-		}
-
-		public enum TestEnum
-		{
-			Unspecified,
-			Small,
-			Medium,
-			Large
-		}
-
-		[Serializable]
-		public class EnumAnsiStringType<T> : EnumStringType
-		{
-			private readonly string typeName;
-
-			public EnumAnsiStringType()
-				: base(typeof(T))
-			{
-				System.Type type = GetType();
-				typeName = type.FullName + ", " + type.Assembly.GetName().Name;
-			}
-
-			public override string Name
-			{
-				get { return typeName; }
-			}
-
-			public override SqlType SqlType => SqlTypeFactory.GetAnsiString(255);
 		}
 	}
 }
