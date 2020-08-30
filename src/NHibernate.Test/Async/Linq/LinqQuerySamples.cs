@@ -13,9 +13,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Hql.Ast.ANTLR;
+using NHibernate.Linq;
 using NSubstitute;
 using NUnit.Framework;
-using NHibernate.Linq;
 
 namespace NHibernate.Test.Linq
 {
@@ -23,6 +24,34 @@ namespace NHibernate.Test.Linq
 	[TestFixture]
 	public class LinqQuerySamplesAsync : LinqTestCase
 	{
+		class NotMappedEntity
+		{
+			public virtual int Id { get; set; }
+			public virtual string Name { get; set; }
+		}
+
+		[Test]
+		public void ShouldThrowForQueryOnNotMappedEntityAsync()
+		{
+			var querySyntaxException = Assert.ThrowsAsync<QuerySyntaxException>(() => session.Query<NotMappedEntity>().Select(x => x.Id).ToListAsync());
+			Assert.That(querySyntaxException.Message, Does.Contain(nameof(NotMappedEntity)));
+		}
+
+		[Test]
+		public void ShouldThrowForQueryOnNotMappedEntityNameAsync()
+		{
+			var entityName = "NotMappedEntityName";
+			var querySyntaxException = Assert.ThrowsAsync<QuerySyntaxException>(() => session.Query<NotMappedEntity>(entityName).ToListAsync());
+			Assert.That(querySyntaxException.Message, Does.Contain(entityName));
+		}
+
+		[Test]
+		public void ShouldThrowForDmlQueryOnNotMappedEntityAsync()
+		{
+			var querySyntaxException = Assert.ThrowsAsync<QuerySyntaxException>(() => session.Query<NotMappedEntity>().DeleteAsync());
+			Assert.That(querySyntaxException.Message, Does.Contain(nameof(NotMappedEntity)));
+		}
+
 		[Test]
 		public async Task GroupTwoQueriesAndSumAsync()
 		{

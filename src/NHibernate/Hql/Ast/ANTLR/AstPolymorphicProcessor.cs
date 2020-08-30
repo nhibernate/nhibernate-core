@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR
     {
         private readonly IASTNode _ast;
         private readonly ISessionFactoryImplementor _factory;
-        private IEnumerable<KeyValuePair<IASTNode, IASTNode[]>> _nodeMapping;
+        private Dictionary<IASTNode, IASTNode[]> _nodeMapping;
 
         private AstPolymorphicProcessor(IASTNode ast, ISessionFactoryImplementor factory)
         {
@@ -29,8 +29,11 @@ namespace NHibernate.Hql.Ast.ANTLR
             // Find all the polymorphic query sources
             _nodeMapping = new PolymorphicQuerySourceDetector(_factory).Process(_ast);
 
-            if (_nodeMapping.Count() > 0)
+            if (_nodeMapping.Count > 0)
             {
+                foreach (var kv in _nodeMapping.Where(x => x.Value.Length == 0))
+                    throw new QuerySyntaxException(kv.Key + " is not mapped");
+
                 return DuplicateTree().ToArray();
             }
             else
