@@ -627,9 +627,14 @@ aggregateArgument
 	;
 
 aggregateDistinctAll
-	: ( ( DISTINCT | ALL )? ( path | collectionExpr ) )
+	: ( distinctAll aggregateArgument ) => (distinctAll aggregateArgument)
+	| aggregateArgument
 	;
-	
+
+distinctAll
+	: ( DISTINCT | ALL ) 
+	;
+
 //## collection: ( OPEN query CLOSE ) | ( 'elements'|'indices' OPEN path CLOSE );
 
 collectionExpr
