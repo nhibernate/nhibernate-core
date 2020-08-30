@@ -634,7 +634,7 @@ possible solutions:
 				return false;
 			}
 
-			if (type.ReturnedClass.IsEnum && sqlTypes[0].DbType == DbType.String)
+			if (type.ReturnedClass.IsEnum && sqlTypes[0].DbType.IsStringType())
 			{
 				existType = false;
 				return false; // Never cast an enum that is mapped as string, the type will provide a string for the parameter value
