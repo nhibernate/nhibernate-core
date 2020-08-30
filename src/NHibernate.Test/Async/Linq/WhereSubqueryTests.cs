@@ -328,6 +328,17 @@ namespace NHibernate.Test.Linq
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
+		[Test(Description = "GH-2471")]
+		public async Task TimeSheetsWithStringContainsSubQueryWithAsQueryableAfterWhereAsync()
+		{
+			var query = await ((
+				from timesheet in db.Timesheets
+				where timesheet.Entries.Where(e => e.Comments != null).AsQueryable().Any(e => e.Comments.Contains("testing"))
+				select timesheet).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
 		[Test(Description = "NH-3002")]
 		public async Task HqlOrderLinesWithInnerJoinAndSubQueryAsync()
 		{
