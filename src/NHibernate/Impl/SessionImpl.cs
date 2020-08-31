@@ -14,6 +14,7 @@ using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Hql;
 using NHibernate.Intercept;
+using NHibernate.Linq;
 using NHibernate.Loader.Criteria;
 using NHibernate.Loader.Custom;
 using NHibernate.MultiTenancy;
@@ -2350,6 +2351,11 @@ namespace NHibernate.Impl
 			{
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, false);
+				if (queryExpression is NhLinqExpression expression)
+				{
+					if (plan.Translators.Length == 0)
+						throw new QueryException($"Unmapped entity query {expression.Type}");
+				}
 				AutoFlushIfRequired(plan.QuerySpaces);
 
 				bool success = false;

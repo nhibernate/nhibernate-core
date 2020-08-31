@@ -181,6 +181,18 @@ namespace NHibernate.Test.LinqBulkManipulation
 
 		#region INSERTS
 
+		public class NotMappedEntity
+		{
+		}
+
+		[Test]
+		public void NotMapped()
+		{
+			using(var s = OpenSession()) {
+				Assert.Throws<QueryException>(() => s.Query<NotMappedEntity>().Delete());
+			}
+		}
+
 		[Test]
 		public void SimpleInsert()
 		{
