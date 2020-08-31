@@ -30,20 +30,18 @@ namespace NHibernate.Hql.Ast.ANTLR
             // Find all the polymorphic query sources
             _nodeMapping = new PolymorphicQuerySourceDetector(_factory).Process(_ast);
 
-            if (_nodeMapping.Count > 0)
-			{
-				if (_nodeMapping.All(x => x.Value.Length == 0))
-					throw new QuerySyntaxException(
-						_nodeMapping.Keys.Count == 1
-							? _nodeMapping.First().Key + " is not mapped"
-							: string.Join(", ", _nodeMapping.Keys) + " are not mapped");
+            if (_nodeMapping.Count == 0)
+                return new[] {_ast};
 
-                return DuplicateTree();
-            }
-            else
-            {
-                return new[] { _ast };
-            }
+            var parsers = DuplicateTree();
+
+            if (parsers.Length == 0)
+                throw new QuerySyntaxException(
+                    _nodeMapping.Keys.Count == 1
+                        ? _nodeMapping.First().Key + " is not mapped"
+                        : string.Join(", ", _nodeMapping.Keys) + " are not mapped");
+
+            return parsers;
         }
 
         private IASTNode[] DuplicateTree()
