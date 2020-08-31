@@ -2,14 +2,34 @@ using System;
 using System.Collections;
 using System.Transactions;
 using NHibernate.Cfg;
+using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
 namespace NHibernate.Test.SystemTransactions
 {
 	public class TransactionNotificationFixture : TestCase
 	{
-		protected override string[] Mappings
-			=> Array.Empty<string>();
+		public class Entity
+		{
+			public virtual int Id { get; set; }
+			public virtual string Name { get; set; }
+		}
+
+		protected override string[] Mappings => null;
+
+		protected override void AddMappings(Configuration configuration)
+		{
+			var modelMapper = new ModelMapper();
+			modelMapper.Class<Entity>(
+				x =>
+				{
+					x.Id(e => e.Id);
+					x.Property(e => e.Name);
+					x.Table(nameof(Entity));
+				});
+
+			configuration.AddMapping(modelMapper.CompileMappingForAllExplicitlyAddedEntities());
+		}
 
 		protected virtual bool UseConnectionOnSystemTransactionPrepare => true;
 
@@ -135,7 +155,7 @@ namespace NHibernate.Test.SystemTransactions
 			ISession s1 = null;
 			ISession s2 = null;
 
-			using (var tx = new TransactionScope())
+			using (var tx = new TransactionScope(TransactionScopeOption.Suppress))
 			{
 				try
 				{
