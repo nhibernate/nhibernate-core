@@ -117,7 +117,7 @@ namespace NHibernate.Test.SystemTransactions
 					scope.Complete();
 				}
 
-				using (var scope = new TransactionScope())
+				using (var scope = new TransactionScope(TransactionScopeOption.Required, transactionOptions))
 				{
 					session.CreateCriteria<object>().List();
 					scope.Complete();
