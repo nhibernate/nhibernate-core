@@ -2,6 +2,7 @@
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
+using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
@@ -30,11 +31,14 @@ namespace NHibernate.Hql.Ast.ANTLR
             _nodeMapping = new PolymorphicQuerySourceDetector(_factory).Process(_ast);
 
             if (_nodeMapping.Count > 0)
-            {
-                foreach (var kv in _nodeMapping.Where(x => x.Value.Length == 0))
-                    throw new QuerySyntaxException(kv.Key + " is not mapped");
+			{
+				if (_nodeMapping.All(x => x.Value.Length == 0))
+					throw new QuerySyntaxException(
+						_nodeMapping.Keys.Count == 1
+							? _nodeMapping.First().Key + " is not mapped"
+							: string.Join(", ", _nodeMapping.Keys) + " are not mapped");
 
-                return DuplicateTree().ToArray();
+                return DuplicateTree();
             }
             else
             {
@@ -42,18 +46,10 @@ namespace NHibernate.Hql.Ast.ANTLR
             }
         }
 
-        private IEnumerable<IASTNode> DuplicateTree()
+        private IASTNode[] DuplicateTree()
         {
             var replacements = CrossJoinDictionaryArrays.PerformCrossJoin(_nodeMapping);
-
-            var dups = new IASTNode[replacements.Count()];
-
-            for (var i = 0; i < replacements.Count(); i++)
-            {
-                dups[i] = DuplicateTree(_ast, replacements[i]);
-            }
-
-            return dups;
+            return replacements.ToArray(x => DuplicateTree(_ast, x));
         }
 
         private static IASTNode DuplicateTree(IASTNode ast, IDictionary<IASTNode, IASTNode> nodeMapping)
