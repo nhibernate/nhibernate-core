@@ -29,7 +29,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void ShouldThrowForQueryOnNotMappedEntityName()
 		{
-			var entityName = "NotMappedEntityName";
+			var entityName = "SomeNamespace.NotMappedEntityName";
 			var querySyntaxException = Assert.Throws<QuerySyntaxException>(() => session.Query<NotMappedEntity>(entityName).ToList());
 			Assert.That(querySyntaxException.Message, Does.Contain(entityName));
 		}
@@ -37,8 +37,16 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void ShouldThrowForDmlQueryOnNotMappedEntity()
 		{
-			var querySyntaxException = Assert.Throws<QuerySyntaxException>(() => session.Query<NotMappedEntity>().Delete());
-			Assert.That(querySyntaxException.Message, Does.Contain(nameof(NotMappedEntity)));
+			Assert.Multiple(
+				() =>
+				{
+					var querySyntaxException = Assert.Throws<QuerySyntaxException>(() => session.Query<NotMappedEntity>().Delete());
+					Assert.That(querySyntaxException.Message, Does.Contain(nameof(NotMappedEntity)));
+
+					var entityName = "SomeNamespace.NotMappedEntityName";
+					querySyntaxException = Assert.Throws<QuerySyntaxException>(() => session.Delete($"from {entityName}"));
+					Assert.That(querySyntaxException.Message, Does.Contain(entityName));
+				});
 		}
 
 		[Test]
