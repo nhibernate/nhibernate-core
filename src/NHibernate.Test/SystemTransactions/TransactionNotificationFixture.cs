@@ -105,10 +105,13 @@ namespace NHibernate.Test.SystemTransactions
 		[Test]
 		public void TwoTransactionScopesInsideOneSession()
 		{
+			IgnoreIfTransactionScopeInsideSessionIsNotSupported();
+
 			var interceptor = new RecordingInterceptor();
 			using (var session = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
-				using (var scope = new TransactionScope())
+				var transactionOptions = new TransactionOptions {IsolationLevel = IsolationLevel.ReadUncommitted};
+				using (var scope = new TransactionScope(TransactionScopeOption.Required, transactionOptions))
 				{
 					session.CreateCriteria<object>().List();
 					scope.Complete();
@@ -128,8 +131,7 @@ namespace NHibernate.Test.SystemTransactions
 		[Test]
 		public void OneTransactionScopesInsideOneSession()
 		{
-			if(!TestDialect.SupportsDependentTransaction)
-				Assert.Ignore("Driver does not support dependent transactions. Ignoring test.");
+			IgnoreIfTransactionScopeInsideSessionIsNotSupported();
 
 			var interceptor = new RecordingInterceptor();
 			using (var session = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
@@ -220,6 +222,12 @@ namespace NHibernate.Test.SystemTransactions
 			Assert.That(() => s1.IsOpen, Is.False.After(500, 100), "Session not closed.");
 
 			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1));
+		}
+
+		private void IgnoreIfTransactionScopeInsideSessionIsNotSupported()
+		{
+			if (!Sfi.ConnectionProvider.Driver.SupportsSystemTransactions || !TestDialect.SupportsDependentTransaction)
+				Assert.Ignore("Driver does not support dependent transactions. Ignoring test.");
 		}
 	}
 
