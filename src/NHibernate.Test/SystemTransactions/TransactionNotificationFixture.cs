@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Transactions;
 using NHibernate.Cfg;
 using NHibernate.Mapping.ByCode;
@@ -130,6 +128,9 @@ namespace NHibernate.Test.SystemTransactions
 		[Test]
 		public void OneTransactionScopesInsideOneSession()
 		{
+			if(!TestDialect.SupportsDependentTransaction)
+				Assert.Ignore("Driver does not support dependent transactions. Ignoring test.");
+
 			var interceptor = new RecordingInterceptor();
 			using (var session = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
