@@ -110,14 +110,13 @@ namespace NHibernate.Test.SystemTransactions
 			var interceptor = new RecordingInterceptor();
 			using (var session = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
-				var transactionOptions = new TransactionOptions {IsolationLevel = IsolationLevel.ReadUncommitted};
-				using (var scope = new TransactionScope(TransactionScopeOption.Required, transactionOptions))
+				using (var scope = new TransactionScope())
 				{
 					session.CreateCriteria<object>().List();
 					scope.Complete();
 				}
 
-				using (var scope = new TransactionScope(TransactionScopeOption.Required, transactionOptions))
+				using (var scope = new TransactionScope())
 				{
 					session.CreateCriteria<object>().List();
 					scope.Complete();
