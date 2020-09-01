@@ -25,18 +25,4 @@
     <many-to-one name="Logger" class="LoggerBase" column="LoggerBaseId" />
     <property name="Name"/>
   </class>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </hibernate-mapping>
