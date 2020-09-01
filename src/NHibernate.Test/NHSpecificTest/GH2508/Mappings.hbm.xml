@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH2508">
+
+  <class name="LoggerBase" abstract="true" polymorphism="implicit">
+    <id name="Id" generator="guid.comb"/>
+    
+    <property name="Name"/>
+    <property name="Solution" type="StringClob" lazy="true"/>
+   
+    <bag name="Children" cascade="all-delete-orphan" inverse="true">
+      <key column="LoggerBaseId"/>
+      <one-to-many class="Child"/>
+    </bag>
+
+    <joined-subclass name="LoggerCase">
+      <key column="Id" />
+      <property name="Description"/>
+    </joined-subclass>
+  </class>
+
+  <class name="Child">
+    <id name="Id" generator="guid.comb"/>
+
+    <many-to-one name="Logger" class="LoggerBase" column="LoggerBaseId" />
+    <property name="Name"/>
+  </class>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</hibernate-mapping>

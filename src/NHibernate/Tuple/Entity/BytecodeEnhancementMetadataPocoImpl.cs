@@ -170,7 +170,7 @@ namespace NHibernate.Tuple.Entity
 				return null;
 			}
 
-			if (_entityType != interceptor.MappedClass)
+			if (!_entityType.IsAssignableFrom(interceptor.MappedClass))
 			{
 				throw new ArgumentException(
 					$"Passed entity instance [{entity}] is not of expected type [{EntityName}]");
