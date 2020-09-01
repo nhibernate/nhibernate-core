@@ -28,6 +28,21 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(result, Is.EqualTo(387));
 		}
 
+		//NH-3249 (GH-1285)
+		[Test]
+		public void CountDistinctFunc_ReturnsNumberOfDistinctEntriesForThatFunc()
+		{
+			if (!TestDialect.SupportsCountDistinct)
+				Assert.Ignore("Dialect does not support count distinct");
+
+			var result = db.Orders
+				.Select(x => x.ShippingDate.Value.Date)
+				.Distinct()
+				.Count();
+
+			Assert.That(result, Is.EqualTo(387));
+		}
+
 		[Test]
 		public void CountProperty_ReturnsNumberOfNonNullEntriesForThatProperty()
 		{
