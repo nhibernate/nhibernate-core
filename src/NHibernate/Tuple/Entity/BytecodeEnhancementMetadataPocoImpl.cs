@@ -132,7 +132,7 @@ namespace NHibernate.Tuple.Entity
 				return null; // Can happen when a saved entity is refreshed within the same session NH2860
 			}
 
-			if (_entityType.IsInstanceOfType(entity))
+			if (!_entityType.IsInstanceOfType(entity))
 			{
 				throw new ArgumentException(
 					$"Passed entity instance [{entity}] is not of expected type [{EntityName}]");
