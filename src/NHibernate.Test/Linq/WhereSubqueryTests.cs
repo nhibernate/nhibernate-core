@@ -519,7 +519,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			var ordersQuery = db.Orders
 			                    .Where(x => x.Employee.EmployeeId > 5)
-			                    .OrderBy(x => x.OrderId)
+			                    .OrderByDescending(x => x.OrderId)
 			                    .Take(2);
 
 			var orderLinesFuture = db.OrderLines
@@ -531,7 +531,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 			var orderLines = orderLinesFuture.ToList();
 
 			Assert.That(orders.Count, Is.EqualTo(2), nameof(orders));
-			Assert.That(orderLines.Count, Is.EqualTo(6), nameof(orderLines));
+			Assert.That(orderLines.Count, Is.EqualTo(4), nameof(orderLines));
 		}
 
 		[Test]
@@ -539,7 +539,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 		{
 			var ordersQuery = db.Orders
 			                    .Where(x => x.Employee.EmployeeId > 5)
-			                    .OrderBy(x => x.OrderId);
+			                    .OrderByDescending(x => x.OrderId);
 
 			var orderLinesFuture = db.OrderLines
 			                         .Where(x => ordersQuery.Any(o => o == x.Order))
@@ -561,7 +561,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			var ordersQuery = db.Orders
 			                    .Where(x => x.Employee.EmployeeId > 5)
-			                    .OrderBy(x => x.OrderId)
+			                    .OrderByDescending(x => x.OrderId)
 			                    .Take(2);
 
 			var productsQuery = ordersQuery.SelectMany(x => x.OrderLines).Select(x => x.Product);
@@ -574,7 +574,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 			var products = productsFuture.ToList();
 
 			Assert.That(orders.Count, Is.EqualTo(2), nameof(orders));
-			Assert.That(products.Count, Is.EqualTo(6), nameof(products));
+			Assert.That(products.Count, Is.EqualTo(4), nameof(products));
 		}
 
 		[Test]
@@ -582,7 +582,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 		{
 			var ordersQuery = db.Orders
 			                    .Where(x => x.Employee.EmployeeId > 5)
-			                    .OrderBy(x => x.OrderId);
+			                    .OrderByDescending(x => x.OrderId);
 
 			var productsQuery = ordersQuery.SelectMany(x => x.OrderLines).Select(x => x.Product);
 			var productsFuture = db.Products
@@ -594,7 +594,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 			var products = productsFuture.ToList();
 
 			Assert.That(orders.Count, Is.EqualTo(286), nameof(orders));
-			Assert.That(orders.Count, Is.EqualTo(286), nameof(orders));
+			Assert.That(products.Count, Is.EqualTo(77), nameof(products));
 		}
 
 		[Test(Description = "GH2479")]
