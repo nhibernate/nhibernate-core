@@ -16,14 +16,16 @@ namespace NHibernate.Linq.ReWriters
 		{
 			var rewriter = new RemoveUnnecessaryBodyOperators();
 
-			if (queryModel.ResultOperators.All(
-				r => r is ContainsResultOperator || r is AnyResultOperator || r is AllResultOperator))
+			if (queryModel.ResultOperators.Count == 1 &&
+				queryModel.ResultOperators.All(
+					r => r is ContainsResultOperator || r is AnyResultOperator || r is AllResultOperator))
 			{
 				// For these operators, we can remove any order-by clause
-				var bodyClauses = queryModel.BodyClauses.OfType<OrderByClause>().ToList();
-				foreach (var orderby in bodyClauses)
+				var bodyClauses = queryModel.BodyClauses;
+				for (int i = bodyClauses.Count - 1; i >= 0; i--)
 				{
-					queryModel.BodyClauses.Remove(orderby);
+					if (bodyClauses[i] is OrderByClause)
+						bodyClauses.RemoveAt(i);
 				}
 			}
 
