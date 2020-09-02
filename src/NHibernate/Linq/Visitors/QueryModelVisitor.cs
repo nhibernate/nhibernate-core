@@ -65,6 +65,9 @@ namespace NHibernate.Linq.Visitors
 			// Rewrite paging
 			PagingRewriter.ReWrite(queryModel);
 
+			//Remove unnecessary order-by clauses
+			RemoveUnnecessaryBodyOperators.RemoveUnnecessaryOrderByClauses(queryModel);
+
 			// Flatten pointless subqueries
 			QueryReferenceExpressionFlattener.ReWrite(queryModel);
 

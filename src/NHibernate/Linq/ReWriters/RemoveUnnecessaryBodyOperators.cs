@@ -16,9 +16,14 @@ namespace NHibernate.Linq.ReWriters
 		{
 			var rewriter = new RemoveUnnecessaryBodyOperators();
 
+			rewriter.VisitQueryModel(queryModel);
+		}
+
+		internal static void RemoveUnnecessaryOrderByClauses(QueryModel queryModel)
+		{
 			if (queryModel.ResultOperators.Count == 1 &&
-				queryModel.ResultOperators.All(
-					r => r is ContainsResultOperator || r is AnyResultOperator || r is AllResultOperator))
+			    queryModel.ResultOperators.All(
+				    r => r is ContainsResultOperator || r is AnyResultOperator || r is AllResultOperator))
 			{
 				// For these operators, we can remove any order-by clause
 				var bodyClauses = queryModel.BodyClauses;
@@ -28,8 +33,6 @@ namespace NHibernate.Linq.ReWriters
 						bodyClauses.RemoveAt(i);
 				}
 			}
-
-			rewriter.VisitQueryModel(queryModel);
 		}
 
 		public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
