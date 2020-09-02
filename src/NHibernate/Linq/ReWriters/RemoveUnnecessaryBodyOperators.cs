@@ -27,7 +27,7 @@ namespace NHibernate.Linq.ReWriters
 			    resultOperator is AnyResultOperator ||
 			    resultOperator is AllResultOperator)
 			{
-				// For these operators, we can remove any order-by result operators
+				// For these operators, we can remove any order-by clause
 				var bodyClauses = queryModel.BodyClauses.OfType<OrderByClause>().ToList();
 				foreach (var orderby in bodyClauses)
 				{
