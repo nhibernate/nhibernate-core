@@ -28,7 +28,7 @@ namespace NHibernate.Linq.GroupBy
 
 		private static void FlattenSubQuery(SubQueryExpression subQueryExpression, QueryModel queryModel)
 		{
-			// we can not flattern subquery if outer query has body clauses.
+			// we can not flatten subquery if outer query has body clauses.
 			var subQueryModel = subQueryExpression.QueryModel;
 			var subQueryMainFromClause = subQueryModel.MainFromClause;
 			if (queryModel.BodyClauses.Count == 0)
@@ -53,7 +53,8 @@ namespace NHibernate.Linq.GroupBy
 				var where = new WhereClause(new SubQueryExpression(newSubQueryModel));
 				queryModel.BodyClauses.Add(where);
 
-				if (!queryModel.BodyClauses.OfType<OrderByClause>().Any())
+				if (!queryModel.BodyClauses.OfType<OrderByClause>().Any() && 
+					!(queryModel.ResultOperators.Count == 1 && queryModel.ResultOperators.All(x => x is AnyResultOperator || x is ContainsResultOperator || x is AllResultOperator)))
 				{
 					var orderByClauses = subQueryModel.BodyClauses.OfType<OrderByClause>();
 					foreach (var orderByClause in orderByClauses)
