@@ -16,18 +16,25 @@ namespace NHibernate.Linq.ReWriters
 		{
 			var rewriter = new RemoveUnnecessaryBodyOperators();
 
+			if (queryModel.ResultOperators.All(
+				r => r is ContainsResultOperator || r is AnyResultOperator || r is AllResultOperator))
+			{
+				// For these operators, we can remove any order-by clause
+				var bodyClauses = queryModel.BodyClauses.OfType<OrderByClause>().ToList();
+				foreach (var orderby in bodyClauses)
+				{
+					queryModel.BodyClauses.Remove(orderby);
+				}
+			}
+
 			rewriter.VisitQueryModel(queryModel);
 		}
 
 		public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
 		{
-			if (resultOperator is CountResultOperator || 
-			    resultOperator is LongCountResultOperator || 
-			    resultOperator is ContainsResultOperator ||
-			    resultOperator is AnyResultOperator ||
-			    resultOperator is AllResultOperator)
+			if (resultOperator is CountResultOperator || resultOperator is LongCountResultOperator)
 			{
-				// For these operators, we can remove any order-by clause
+				// For count operators, we can remove any order-by clause
 				var bodyClauses = queryModel.BodyClauses.OfType<OrderByClause>().ToList();
 				foreach (var orderby in bodyClauses)
 				{
