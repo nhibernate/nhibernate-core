@@ -621,9 +621,6 @@ where c.Order.Customer.CustomerId = 'VINET'
 		[Test]
 		public void OrdersWithSubquery11A()
 		{
-			//if (Dialect is MsSqlCeDialect)
-			//	Assert.Ignore("MS SQL CE does not support sorting on a subquery.");
-
 			var ordersQuery = db.Orders
 			                    .OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId);
 
