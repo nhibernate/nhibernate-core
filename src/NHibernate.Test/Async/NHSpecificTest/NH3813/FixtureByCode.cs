@@ -29,12 +29,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3813
 					m.Lazy(false);
 
 					m.Id(
-						i => i.ID,
+						i => i.Id,
 						id =>
 						{
 							id.Column("ID");
 							id.Generator(Generators.Identity);
 						});
+					m.Property(x => x.Name);
 
 					m.Bag(
 						b => b.AssociationTableCollection,
@@ -52,12 +53,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3813
 					m.Lazy(false);
 
 					m.Id(
-						i => i.ID,
+						i => i.Id,
 						id =>
 						{
 							id.Column("ID");
 							id.Generator(Generators.Identity);
 						});
+					m.Property(x => x.Name);
 				});
 
 			mapper.Class<AssociationTable>(
@@ -67,9 +69,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3813
 						i =>
 						{
 							i.ManyToOne(c => c.FirstTable, p => { p.Column("FirstTableID"); });
-
 							i.ManyToOne(c => c.OtherTable, p => { p.Column("OtherTableID"); });
 						});
+					m.Property(x => x.Name);
 				});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();

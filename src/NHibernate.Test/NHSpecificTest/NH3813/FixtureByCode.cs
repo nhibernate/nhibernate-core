@@ -18,12 +18,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3813
 					m.Lazy(false);
 
 					m.Id(
-						i => i.ID,
+						i => i.Id,
 						id =>
 						{
 							id.Column("ID");
 							id.Generator(Generators.Identity);
 						});
+					m.Property(x => x.Name);
 
 					m.Bag(
 						b => b.AssociationTableCollection,
@@ -41,12 +42,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3813
 					m.Lazy(false);
 
 					m.Id(
-						i => i.ID,
+						i => i.Id,
 						id =>
 						{
 							id.Column("ID");
 							id.Generator(Generators.Identity);
 						});
+					m.Property(x => x.Name);
 				});
 
 			mapper.Class<AssociationTable>(
@@ -56,9 +58,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3813
 						i =>
 						{
 							i.ManyToOne(c => c.FirstTable, p => { p.Column("FirstTableID"); });
-
 							i.ManyToOne(c => c.OtherTable, p => { p.Column("OtherTableID"); });
 						});
+					m.Property(x => x.Name);
 				});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
@@ -177,42 +179,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3813
 			}
 
 			base.OnTearDown();
-		}
-	}
-
-	public class FirstTable
-	{
-		public virtual int ID { get; set; }
-
-		public virtual IList<AssociationTable> AssociationTableCollection { get; set; }
-
-		public FirstTable()
-		{
-			this.AssociationTableCollection = new List<AssociationTable>();
-		}
-	}
-
-	public class OtherTable
-	{
-		public virtual int ID { get; set; }
-	}
-
-	public class AssociationTable
-	{
-		public virtual int FirstTableID { get; set; }
-		public virtual FirstTable FirstTable { get; set; }
-
-		public virtual int OtherTableID { get; set; }
-		public virtual OtherTable OtherTable { get; set; }
-
-		public override bool Equals(object obj)
-		{
-			return base.Equals(obj);
-		}
-
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
 		}
 	}
 }
