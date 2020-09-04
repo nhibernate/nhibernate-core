@@ -121,6 +121,22 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void ConstantNonCachedInMemberInitExpressionWithCondition()
+		{
+			var shipper1 = GetShipper(1);
+			var shipper2 = GetShipper(2);
+
+			Assert.That(shipper1.Number, Is.EqualTo(1));
+			Assert.That(shipper2.Number, Is.EqualTo(2));
+		}
+
+		private ShipperDto GetShipper(int id)
+		{
+			return db.Shippers.Where(o => o.ShipperId == id)
+			         .Select(o => new ShipperDto {Number = id, CompanyName = o.CompanyName}).Single();
+		}
+
+		[Test]
 		public void ConstantInNewArrayExpression()
 		{
 			var c1 = (from c in db.Categories
