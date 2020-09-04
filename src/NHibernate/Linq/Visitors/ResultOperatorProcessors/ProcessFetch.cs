@@ -20,10 +20,10 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 		public void Process(FetchRequestBase resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree, string sourceAlias)
 		{
-			Process(resultOperator, queryModelVisitor, tree, tree.GetFromRangeClause(), sourceAlias);
+			Process(resultOperator, queryModelVisitor, tree, null, sourceAlias);
 		}
 
-		public void Process(
+		private void Process(
 			FetchRequestBase resultOperator,
 			QueryModelVisitor queryModelVisitor,
 			IntermediateHqlTree tree,
@@ -45,11 +45,6 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			HqlTreeNode currentNode,
 			IType propType)
 		{
-			if (currentNode == null)
-			{
-				throw new InvalidOperationException($"Property {resultOperator.RelationMember.Name} cannot be fetched for this type of query.");
-			}
-
 			if (resultOperator is FetchOneRequest)
 			{
 				if (propType == null)
@@ -61,6 +56,12 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 				
 				if (propType != null && !propType.IsAssociationType)
 				{
+					if (currentNode == null)
+					{
+						currentNode = tree.GetFromRangeClause()
+									?? throw new InvalidOperationException($"Property {resultOperator.RelationMember.Name} cannot be fetched for this type of query.");
+					}
+
 					currentNode.AddChild(tree.TreeBuilder.Fetch());
 					currentNode.AddChild(memberPath);
 
