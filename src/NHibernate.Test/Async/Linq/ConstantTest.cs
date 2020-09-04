@@ -22,6 +22,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	// Mainly adapted from tests contributed by Nicola Tuveri on NH-2500 (NH-2500.patch file)
 	[TestFixture]
 	public class ConstantTestAsync : LinqTestCase
@@ -116,6 +117,29 @@ namespace NHibernate.Test.Linq
 			Assert.That(s1, Has.All.Property("Name").EqualTo("shipper1"), "s1 Names");
 			Assert.That(s2, Has.All.Property("Number").EqualTo(2), "s2 Numbers");
 			Assert.That(s2, Has.All.Property("Name").EqualTo("shipper2"), "s2 Names");
+		}
+
+		[Test]
+		public async Task ConstantNonCachedInMemberInitExpressionWithConditionAsync()
+		{
+			var shipper1 = await (GetShipperAsync(1));
+			var shipper2 = await (GetShipperAsync(2));
+
+			Assert.That(shipper1.Number, Is.EqualTo(1));
+			Assert.That(shipper2.Number, Is.EqualTo(2));
+		}
+
+		private Task<ShipperDto> GetShipperAsync(int id, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			try
+			{
+				return db.Shippers.Where(o => o.ShipperId == id)
+				         .Select(o => new ShipperDto {Number = id, CompanyName = o.CompanyName}).SingleAsync(cancellationToken);
+			}
+			catch (System.Exception ex)
+			{
+				return Task.FromException<ShipperDto>(ex);
+			}
 		}
 
 		[Test]
