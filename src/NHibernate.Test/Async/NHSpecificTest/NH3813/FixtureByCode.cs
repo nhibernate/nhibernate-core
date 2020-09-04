@@ -152,10 +152,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3813
 
 		protected override void OnSetUp()
 		{
-			base.OnSetUp();
-
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				// a record that has association records will be loaded regularly
 				var withAssociations = new FirstTable();
@@ -180,16 +178,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3813
 
 		protected override void OnTearDown()
 		{
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				s.Delete("from AssociationTable");
-				s.Delete("from OtherTable");
-				s.Delete("from FirstTable");
+				s.CreateQuery("delete from System.Object").ExecuteUpdate();
 				t.Commit();
 			}
-
-			base.OnTearDown();
 		}
 	}
 }
