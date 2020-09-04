@@ -1,4 +1,5 @@
 using System.Linq;
+using NHibernate.Linq.ReWriters;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
@@ -53,7 +54,7 @@ namespace NHibernate.Linq.GroupBy
 				var where = new WhereClause(new SubQueryExpression(newSubQueryModel));
 				queryModel.BodyClauses.Add(where);
 
-				if (!queryModel.BodyClauses.OfType<OrderByClause>().Any())
+				if (RemoveUnnecessaryBodyOperators.IsOrderByNeeded(queryModel) && !queryModel.BodyClauses.OfType<OrderByClause>().Any())
 				{
 					var orderByClauses = subQueryModel.BodyClauses.OfType<OrderByClause>();
 					foreach (var orderByClause in orderByClauses)

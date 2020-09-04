@@ -466,6 +466,25 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.That(query.Count, Is.EqualTo(61));
 		}
 
+		[Test]
+		public async Task OrdersWithSubquery9CountAsync()
+		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
+
+			var ordersQuery = db.Orders
+								.Where(x => x.Employee.EmployeeId > 5)
+								.OrderByDescending(x => x.OrderId)
+								.Take(2);
+
+			var orderLines = await (db.OrderLines
+									.Where(x => ordersQuery.Count(o => o == x.Order) > 0)
+									.OrderBy(x => x.Id)
+									.ToListAsync());
+
+			Assert.That(orderLines.Count, Is.EqualTo(4), nameof(orderLines));
+		}
+
 		[Test(Description = "GH2479")]
 		public async Task OrdersWithSubquery11Async()
 		{
