@@ -22,6 +22,8 @@ namespace NHibernate.DomainModel.Northwind.Entities
 
 		public virtual ISet<AnotherEntity> RelatedItems { get; set; } = new HashSet<AnotherEntity>();
 
+		public virtual ISet<AnotherEntityRequired> RequiredRelatedItems { get; set; } = new HashSet<AnotherEntityRequired>();
+
 		public virtual bool? NullableBool { get; set; }
 	}
 

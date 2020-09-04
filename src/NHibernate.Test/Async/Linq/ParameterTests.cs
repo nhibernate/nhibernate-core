@@ -82,6 +82,80 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task UsingEntityParameterForCollectionAsync()
+		{
+			var item = await (db.OrderLines.FirstAsync());
+			await (AssertTotalParametersAsync(
+				db.Orders.Where(o => o.OrderLines.Contains(item)),
+				1));
+		}
+
+		[Test]
+		public async Task UsingProxyParameterForCollectionAsync()
+		{
+			var item = await (session.LoadAsync<Order>(10248));
+			Assert.That(NHibernateUtil.IsInitialized(item), Is.False);
+			await (AssertTotalParametersAsync(
+				db.Customers.Where(o => o.Orders.Contains(item)),
+				1));
+		}
+
+		[Test]
+		public async Task UsingFieldProxyParameterForCollectionAsync()
+		{
+			var item = await (session.Query<AnotherEntityRequired>().FirstAsync());
+			await (AssertTotalParametersAsync(
+				session.Query<AnotherEntityRequired>().Where(o => o.RequiredRelatedItems.Contains(item)),
+				1));
+		}
+
+		[Test]
+		public async Task UsingEntityParameterInSubQueryAsync()
+		{
+			var item = await (db.Customers.FirstAsync());
+			var subQuery = db.Orders.Select(o => o.Customer).Where(o => o == item);
+			await (AssertTotalParametersAsync(
+				db.Orders.Where(o => subQuery.Contains(o.Customer)),
+				1));
+		}
+
+		[Test]
+		public async Task UsingEntityParameterForCollectionSelectionAsync()
+		{
+			var item = await (db.OrderLines.FirstAsync());
+			await (AssertTotalParametersAsync(
+				db.Orders.SelectMany(o => o.OrderLines).Where(o => o == item),
+				1));
+		}
+
+		[Test]
+		public async Task UsingFieldProxyParameterForCollectionSelectionAsync()
+		{
+			var item = await (session.Query<AnotherEntityRequired>().FirstAsync());
+			await (AssertTotalParametersAsync(
+				session.Query<AnotherEntityRequired>().SelectMany(o => o.RequiredRelatedItems).Where(o => o == item),
+				1));
+		}
+
+		[Test]
+		public async Task UsingEntityListParameterForCollectionSelectionAsync()
+		{
+			var items = new[] {await (db.OrderLines.FirstAsync())};
+			await (AssertTotalParametersAsync(
+				db.Orders.SelectMany(o => o.OrderLines).Where(o => items.Contains(o)),
+				1));
+		}
+
+		[Test]
+		public async Task UsingFieldProxyListParameterForCollectionSelectionAsync()
+		{
+			var items = new[] {await (session.Query<AnotherEntityRequired>().FirstAsync())};
+			await (AssertTotalParametersAsync(
+				session.Query<AnotherEntityRequired>().SelectMany(o => o.RequiredRelatedItems).Where(o => items.Contains(o)),
+				1));
+		}
+
+		[Test]
 		public async Task UsingTwoEntityParametersAsync()
 		{
 			var order = await (db.Orders.FirstAsync());
