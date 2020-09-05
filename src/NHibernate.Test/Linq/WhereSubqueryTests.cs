@@ -559,6 +559,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 			if (Dialect is MySQLDialect)
 				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
 
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var ordersQuery = db.Orders
 								.Where(x => x.Employee.EmployeeId > 5)
 								.OrderByDescending(x => x.OrderId)
