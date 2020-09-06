@@ -238,23 +238,6 @@ namespace NHibernate.Collection.Generic
 			return entry != null;
 		}
 
-		public override bool Equals(object obj)
-		{
-			var that = obj as ICollection<T>;
-			if (that == null)
-			{
-				return false;
-			}
-			Read();
-			return CollectionHelper.SequenceEquals(WrappedList, that);
-		}
-
-		public override int GetHashCode()
-		{
-			Read();
-			return WrappedList.GetHashCode();
-		}
-
 		#region IList Members
 
 		int IList.Add(object value)
