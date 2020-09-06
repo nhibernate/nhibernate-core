@@ -141,7 +141,7 @@ namespace NHibernate.Linq.Visitors
 
 				// We have a bit more information about the null parameter value.
 				// Figure out a type so that HQL doesn't break on the null. (Related to NH-2430)
-				// In v5.3 types are calculated by ConstantTypeLocator, this logic is only for back compatibility.
+				// In v5.3 types are calculated by ParameterTypeLocator, this logic is only for back compatibility.
 				// TODO 6.0: Remove
 				if (expression.Value == null)
 					type = NHibernateUtil.GuessType(expression.Type);

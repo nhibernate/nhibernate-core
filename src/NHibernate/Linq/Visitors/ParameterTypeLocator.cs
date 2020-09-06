@@ -13,6 +13,7 @@ using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Parsing;
+using TypeExtensions = NHibernate.Util.TypeExtensions;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -49,6 +50,7 @@ namespace NHibernate.Linq.Visitors
 			ExpressionType.Conditional
 		};
 
+
 		/// <summary>
 		/// Set query parameter types based on the given query model.
 		/// </summary>
@@ -80,59 +82,86 @@ namespace NHibernate.Linq.Visitors
 			var visitor = new ConstantTypeLocatorVisitor(removeMappedAsCalls, targetType, parameters, sessionFactory);
 			queryModel.TransformExpressions(visitor.Visit);
 
-			foreach (var pair in visitor.ConstantExpressions)
+			foreach (var pair in visitor.ParameterConstants)
 			{
-				var type = pair.Value;
-				var constantExpression = pair.Key;
-				if (!parameters.TryGetValue(constantExpression, out var namedParameter))
+				var namedParameter = pair.Key;
+				var constantExpressions = pair.Value;
+				// In case any of the constants has the type set, use it (e.g. MappedAs)
+				namedParameter.Type = constantExpressions.Select(o => visitor.ConstantExpressions[o]).FirstOrDefault(o => o != null);
+				if (namedParameter.Type != null)
 				{
 					continue;
 				}
 
-				if (type != null)
-				{
-					// MappedAs was used
-					namedParameter.Type = type;
-					continue;
-				}
+				namedParameter.Type = GetParameterType(sessionFactory, constantExpressions, visitor, namedParameter);
+			}
+		}
 
+		private static IType GetCandidateType(
+			ISessionFactoryImplementor sessionFactory,
+			IEnumerable<ConstantExpression> constantExpressions,
+			ConstantTypeLocatorVisitor visitor,
+			System.Type constantType)
+		{
+			IType candidateType = null;
+			foreach (var expression in constantExpressions)
+			{
 				// In order to get the actual type we have to check first the related member expressions, as
 				// an enum is translated in a numeric type when used in a BinaryExpression and also it can be mapped as string.
 				// By getting the type from a related member expression we also get the correct length in case of StringType
 				// or precision when having a DecimalType.
-				if (visitor.RelatedExpressions.TryGetValue(constantExpression, out var memberExpressions))
+				if (!visitor.RelatedExpressions.TryGetValue(expression, out var relatedExpressions))
+					continue;
+				foreach (var relatedExpression in relatedExpressions)
 				{
-					foreach (var memberExpression in memberExpressions)
+					if (!ExpressionsHelper.TryGetMappedType(sessionFactory, relatedExpression, out var mappedType, out _, out _, out _))
+						continue;
+
+					if (mappedType.IsAssociationType && visitor.SequenceSelectorExpressions.Contains(relatedExpression))
 					{
-						if (ExpressionsHelper.TryGetMappedType(
-							sessionFactory,
-							memberExpression,
-							out type,
-							out _,
-							out _,
-							out _))
-						{
-							if (type.IsAssociationType && visitor.SequenceSelectorExpressions.Contains(memberExpression))
-							{
-								var collection = (IQueryableCollection) ((IAssociationType) type).GetAssociatedJoinable(sessionFactory);
-								type = collection.ElementType;
-							}
-
-							break;
-						}
+						var collection = (IQueryableCollection) ((IAssociationType) mappedType).GetAssociatedJoinable(sessionFactory);
+						mappedType = collection.ElementType;
 					}
-				}
 
-				// No related MemberExpressions was found, guess the type by value or its type when null.
-				if (type == null)
-				{
-					type = constantExpression.Value != null
-						? ParameterHelper.TryGuessType(constantExpression.Value, sessionFactory, namedParameter.IsCollection)
-						: ParameterHelper.TryGuessType(constantExpression.Type, sessionFactory, namedParameter.IsCollection);
+					if (candidateType == null)
+						candidateType = mappedType;
+					else if (!candidateType.Equals(mappedType))
+						return null;
 				}
-
-				namedParameter.Type = type;
 			}
+
+			if (candidateType == null)
+				return null;
+
+			// When comparing an integral column with a real parameter, the parameter type must remain real type
+			// and the column needs to be casted in order to prevent invalid results (e.g. Where(o => o.Integer >= 2.2d)).
+			if (constantType.IsRealNumberType() && candidateType.ReturnedClass.IsIntegralNumberType())
+				return null;
+
+			return candidateType;
+		}
+
+		private static IType GetParameterType(
+			ISessionFactoryImplementor sessionFactory,
+			HashSet<ConstantExpression> constantExpressions,
+			ConstantTypeLocatorVisitor visitor,
+			NamedParameter namedParameter)
+		{
+			// All constant expressions have the same type/value
+			var constantExpression = constantExpressions.First();
+			var constantType = constantExpression.Type.UnwrapIfNullable();
+			var candidateType = GetCandidateType(sessionFactory, constantExpressions, visitor, constantType);
+			if (candidateType != null)
+			{
+				return candidateType;
+			}
+
+			// No related MemberExpressions was found, guess the type by value or its type when null.
+			// When a numeric parameter is compared to different columns with different types (e.g. Where(o => o.Single >= singleParam || o.Double <= singleParam))
+			// do not change the parameter type, but instead cast the parameter when comparing with different column types.
+			return constantExpression.Value != null
+				? ParameterHelper.TryGuessType(constantExpression.Value, sessionFactory, namedParameter.IsCollection)
+				: ParameterHelper.TryGuessType(constantType, sessionFactory, namedParameter.IsCollection);
 		}
 
 		private class ConstantTypeLocatorVisitor : RelinqExpressionVisitor
@@ -143,6 +172,8 @@ namespace NHibernate.Linq.Visitors
 			private readonly ISessionFactoryImplementor _sessionFactory;
 			public readonly Dictionary<ConstantExpression, IType> ConstantExpressions =
 				new Dictionary<ConstantExpression, IType>();
+			public readonly Dictionary<NamedParameter, HashSet<ConstantExpression>> ParameterConstants =
+				new Dictionary<NamedParameter, HashSet<ConstantExpression>>();
 			public readonly Dictionary<Expression, HashSet<Expression>> RelatedExpressions =
 				new Dictionary<Expression, HashSet<Expression>>();
 			public readonly HashSet<Expression> SequenceSelectorExpressions = new HashSet<Expression>();
@@ -167,8 +198,8 @@ namespace NHibernate.Linq.Visitors
 					return node;
 				}
 
-				var left = Unwrap(node.Left);
-				var right = Unwrap(node.Right);
+				var left = UnwrapUnary(node.Left);
+				var right = UnwrapUnary(node.Right);
 				if (node.NodeType == ExpressionType.Assign)
 				{
 					VisitAssign(left, right);
@@ -185,8 +216,8 @@ namespace NHibernate.Linq.Visitors
 			protected override Expression VisitConditional(ConditionalExpression node)
 			{
 				node = (ConditionalExpression) base.VisitConditional(node);
-				var ifTrue = Unwrap(node.IfTrue);
-				var ifFalse = Unwrap(node.IfFalse);
+				var ifTrue = UnwrapUnary(node.IfTrue);
+				var ifFalse = UnwrapUnary(node.IfFalse);
 				AddRelatedExpression(node, ifTrue, ifFalse);
 				AddRelatedExpression(node, ifFalse, ifTrue);
 
@@ -219,8 +250,8 @@ namespace NHibernate.Linq.Visitors
 				if (EqualsGenerator.Methods.Contains(node.Method) || CompareGenerator.IsCompareMethod(node.Method))
 				{
 					node = (MethodCallExpression) base.VisitMethodCall(node);
-					var left = Unwrap(node.Method.IsStatic ? node.Arguments[0] : node.Object);
-					var right = Unwrap(node.Method.IsStatic ? node.Arguments[1] : node.Arguments[0]);
+					var left = UnwrapUnary(node.Method.IsStatic ? node.Arguments[0] : node.Object);
+					var right = UnwrapUnary(node.Method.IsStatic ? node.Arguments[1] : node.Arguments[0]);
 					AddRelatedExpression(node, left, right);
 					AddRelatedExpression(node, right, left);
 
@@ -232,13 +263,21 @@ namespace NHibernate.Linq.Visitors
 
 			protected override Expression VisitConstant(ConstantExpression node)
 			{
-				if (node.Value is IEntityNameProvider || RelatedExpressions.ContainsKey(node) || !_parameters.ContainsKey(node))
+				if (node.Value is IEntityNameProvider || RelatedExpressions.ContainsKey(node) || !_parameters.TryGetValue(node, out var param))
 				{
 					return node;
 				}
 
 				RelatedExpressions.Add(node, new HashSet<Expression>());
 				ConstantExpressions.Add(node, null);
+				if (!ParameterConstants.TryGetValue(param, out var set))
+				{
+					set = new HashSet<ConstantExpression>();
+					ParameterConstants.Add(param, set);
+				}
+
+				set.Add(node);
+
 				return node;
 			}
 
@@ -254,7 +293,7 @@ namespace NHibernate.Linq.Visitors
 				    mainFromClause.FromExpression is ConstantExpression constantExpression)
 				{
 					VisitConstant(constantExpression);
-					AddRelatedExpression(constantExpression, Unwrap(Visit(containsOperator.Item)));
+					AddRelatedExpression(constantExpression, UnwrapUnary(Visit(containsOperator.Item)));
 					// Copy all found MemberExpressions to the constant expression
 					// (e.g. values.Contains(o.Name != o.Name2 ? o.Enum1 : o.Enum2) -> copy o.Enum1 and o.Enum2)
 					if (RelatedExpressions.TryGetValue(containsOperator.Item, out var set))
@@ -357,16 +396,21 @@ namespace NHibernate.Linq.Visitors
 						return false;
 				}
 			}
+		}
 
-			private static Expression Unwrap(Expression expression)
+		/// <summary>
+		/// Unwraps <see cref="System.Linq.Expressions.UnaryExpression"/>.
+		/// </summary>
+		/// <param name="expression">The expression to unwrap.</param>
+		/// <returns>The unwrapped expression.</returns>
+		private static Expression UnwrapUnary(Expression expression)
+		{
+			while (expression is UnaryExpression unaryExpression)
 			{
-				if (expression is UnaryExpression unaryExpression)
-				{
-					return unaryExpression.Operand;
-				}
-
-				return expression;
+				expression = unaryExpression.Operand;
 			}
+
+			return expression;
 		}
 	}
 }

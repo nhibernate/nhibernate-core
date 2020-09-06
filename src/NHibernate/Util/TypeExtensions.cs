@@ -48,5 +48,30 @@ namespace NHibernate.Util
 
 			return type;
 		}
+
+		internal static bool IsIntegralNumberType(this System.Type type)
+		{
+			var code = System.Type.GetTypeCode(type);
+			if (code == TypeCode.SByte || code == TypeCode.Byte ||
+			    code == TypeCode.Int16 || code == TypeCode.UInt16 ||
+			    code == TypeCode.Int32 || code == TypeCode.UInt32 ||
+			    code == TypeCode.Int64 || code == TypeCode.UInt64)
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		internal static bool IsRealNumberType(this System.Type type)
+		{
+			var code = System.Type.GetTypeCode(type);
+			if (code == TypeCode.Decimal || code == TypeCode.Single || code == TypeCode.Double)
+			{
+				return true;
+			}
+
+			return false;
+		}
 	}
 }
