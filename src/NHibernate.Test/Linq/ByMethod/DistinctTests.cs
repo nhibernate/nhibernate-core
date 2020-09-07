@@ -36,16 +36,18 @@ namespace NHibernate.Test.Linq.ByMethod
 		public void DistinctAndOrderByOnAnonymousTypeProjection()
 		{
 			var result = db.Orders
+							.Where(x => x.ShippingDate != null)
 							.Select(x => new { x.ShippingDate })
 							.OrderByDescending(x => x.ShippingDate)
 							.Distinct()
 							.ToArray();
+
 			var expectedResults = result
 								.OrderByDescending(x => x.ShippingDate)
 								.Distinct()
 								.ToArray();
 
-			Assert.That(result.Length, Is.EqualTo(388));
+			Assert.That(result.Length, Is.EqualTo(387));
 			CollectionAssert.AreEqual(expectedResults, result);
 		}
 
