@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Util;
@@ -35,16 +34,16 @@ namespace NHibernate.Hql.Ast.ANTLR
 
             var parsers = DuplicateTree();
 
-			if (parsers.Length == 0)
-			{
-				var entityNames = _nodeMapping.Keys.ToArray(x => PolymorphicQuerySourceDetector.GetClassName(x));
-				throw new QuerySyntaxException(
-					entityNames.Length == 1
-						? entityNames[0] + " is not mapped"
-						: string.Join(", ", entityNames) + " are not mapped");
-			}
+            if (parsers.Length == 0)
+            {
+                var entityNames = _nodeMapping.Keys.ToArray(x => PolymorphicQuerySourceDetector.GetClassName(x));
+                throw new QuerySyntaxException(
+                    entityNames.Length == 1
+                        ? entityNames[0] + " is not mapped"
+                        : string.Join(", ", entityNames) + " are not mapped");
+            }
 
-			return parsers;
+            return parsers;
         }
 
         private IASTNode[] DuplicateTree()
