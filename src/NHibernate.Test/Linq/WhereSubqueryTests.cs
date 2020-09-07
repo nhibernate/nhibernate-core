@@ -575,6 +575,28 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.That(orderLines.Count, Is.EqualTo(4), nameof(orderLines));
 		}
 
+		[Test]
+		public void OrdersWithSubquery9Sum()
+		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
+
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
+			var ordersQuery = db.Orders
+								.Where(x => x.Employee.EmployeeId > 5)
+								.OrderByDescending(x => x.OrderId)
+								.Take(2);
+
+			var orderLines = db.OrderLines
+								.Where(x => ordersQuery.Where(o => o == x.Order).Sum(o => o.Freight.Value) > 0)
+								.OrderBy(x => x.Id)
+								.ToList();
+
+			Assert.That(orderLines.Count, Is.EqualTo(4), nameof(orderLines));
+		}
+
 		[Test(Description = "GH2479")]
 		public void OrdersWithSubquery10()
 		{
