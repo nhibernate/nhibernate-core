@@ -40,9 +40,12 @@ namespace NHibernate.Linq.ReWriters
 			{
 				case 1:
 					var r = queryModel.ResultOperators[0];
-					return !(r is AnyResultOperator || r is AllResultOperator || r is ContainsResultOperator);  
+					return !(r is AnyResultOperator || r is AllResultOperator || r is ContainsResultOperator);
 				case 0:
-					return !(queryModel.SelectClause.Selector is NhAggregatedExpression);
+					var s = queryModel.SelectClause.Selector;
+					return s is NhAggregatedExpression
+						? s is NhDistinctExpression
+						: true;
 			}
 
 			return true;

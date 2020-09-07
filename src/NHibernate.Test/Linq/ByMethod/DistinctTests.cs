@@ -33,6 +33,23 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test]
+		public void DistinctAndOrderByOnAnonymousTypeProjection()
+		{
+			var result = db.Orders
+							.Select(x => new { x.ShippingDate })
+							.OrderByDescending(x => x.ShippingDate)
+							.Distinct()
+							.ToArray();
+			var expectedResults = result
+								.OrderByDescending(x => x.ShippingDate)
+								.Distinct()
+								.ToArray();
+
+			Assert.That(result.Length, Is.EqualTo(388));
+			CollectionAssert.AreEqual(expectedResults, result);
+		}
+
+		[Test]
 		public void DistinctOnComplexAnonymousTypeProjection()
 		{
 			//NH-2380
