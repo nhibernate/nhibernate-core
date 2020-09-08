@@ -2538,6 +2538,22 @@ namespace NHibernate.Test.Criteria
 			session.Close();
 		}
 
+		public class NotMappedEntity
+		{
+			public  virtual  int Id { get; set; }
+			public  virtual  string Name { get; set; }
+		}
+
+		[Test]
+		public void CriteriaOnNotMappedEntity()
+		{
+			using (ISession session = OpenSession())
+			{
+				Assert.Throws<QueryException>(
+					() => session.CreateCriteria(typeof(NotMappedEntity)).List());
+			}
+		}
+
 		[Test]
 		public void TypeMismatch()
 		{

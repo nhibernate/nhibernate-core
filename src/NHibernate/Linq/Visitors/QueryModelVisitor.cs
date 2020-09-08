@@ -15,6 +15,7 @@ using NHibernate.Linq.Visitors.ResultOperatorProcessors;
 using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
+using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Clauses.StreamedData;
 using Remotion.Linq.EagerFetching;
@@ -123,6 +124,9 @@ namespace NHibernate.Linq.Visitors
 		public QueryModel Model { get; }
 
 		public ResultOperatorRewriterResult RewrittenOperatorResult { get; private set; }
+
+		internal Dictionary<NhJoinClause, FetchOneRequest> RelatedJoinFetchRequests { get; } =
+			new Dictionary<NhJoinClause, FetchOneRequest>();
 
 		static QueryModelVisitor()
 		{
@@ -339,6 +343,11 @@ namespace NHibernate.Linq.Visitors
 		public override void VisitNhJoinClause(NhJoinClause joinClause, QueryModel queryModel, int index)
 		{
 			var querySourceName = VisitorParameters.QuerySourceNamer.GetName(joinClause);
+			var fetchRequest = GetRelatedFetchRequest(queryModel, joinClause);
+			if (fetchRequest != null)
+			{
+				RelatedJoinFetchRequests.Add(joinClause, fetchRequest);
+			}
 
 			var expression = HqlGeneratorExpressionVisitor.Visit(joinClause.FromExpression, VisitorParameters).AsExpression();
 			var alias = _hqlTree.TreeBuilder.Alias(querySourceName);
@@ -346,11 +355,15 @@ namespace NHibernate.Linq.Visitors
 			HqlTreeNode hqlJoin;
 			if (joinClause.IsInner)
 			{
-				hqlJoin = _hqlTree.TreeBuilder.Join(expression, alias);
+				hqlJoin = fetchRequest != null
+					? _hqlTree.TreeBuilder.FetchJoin(expression, alias)
+					: (HqlTreeNode) _hqlTree.TreeBuilder.Join(expression, alias);
 			}
 			else
 			{
-				hqlJoin = _hqlTree.TreeBuilder.LeftJoin(expression, alias);
+				hqlJoin = fetchRequest != null
+					? _hqlTree.TreeBuilder.LeftFetchJoin(expression, alias)
+					: (HqlTreeNode) _hqlTree.TreeBuilder.LeftJoin(expression, alias);
 			}
 
 			foreach (var withClause in joinClause.Restrictions)
@@ -380,6 +393,39 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			ResultOperatorMap.Process(resultOperator, this, _hqlTree);
+		}
+
+		private FetchOneRequest GetRelatedFetchRequest(QueryModel queryModel, NhJoinClause joinClause)
+		{
+			if (joinClause.Restrictions.Count > 0 ||
+			    !(joinClause.FromExpression is MemberExpression memberExpression) ||
+			    !(memberExpression.Expression is QuerySourceReferenceExpression querySource) ||
+			    !IsFetchSupported(queryModel))
+			{
+				return null;
+			}
+
+			if (querySource.ReferencedQuerySource is MainFromClause)
+			{
+				return queryModel.ResultOperators.OfType<FetchOneRequest>().FirstOrDefault(o => o.RelationMember == memberExpression.Member);
+			}
+
+			if (querySource.ReferencedQuerySource is NhJoinClause parentJoinClause &&
+			    RelatedJoinFetchRequests.TryGetValue(parentJoinClause, out var parentFetchRequest))
+			{
+				return parentFetchRequest.InnerFetchRequests.OfType<FetchOneRequest>().FirstOrDefault(o => o.RelationMember == memberExpression.Member);
+			}
+
+			return null;
+		}
+
+		private static bool IsFetchSupported(QueryModel queryModel)
+		{
+			// Hql does not support fetch with group by and select
+			return
+				!queryModel.ResultOperators.Any(o => o is GroupResultOperator) &&
+				queryModel.SelectClause.Selector is QuerySourceReferenceExpression selectSource &&
+				selectSource.ReferencedQuerySource == queryModel.MainFromClause;
 		}
 
 		private static IStreamedDataInfo GetOutputDataInfo(ResultOperatorBase resultOperator, IStreamedDataInfo evaluationType)

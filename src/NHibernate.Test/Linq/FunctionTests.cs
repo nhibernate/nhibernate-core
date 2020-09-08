@@ -356,6 +356,7 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		[Ignore("Not mapped entity")]
 		public void WhereShortEqual()
 		{
 			var query = from item in session.Query<Foo>()
@@ -448,6 +449,7 @@ namespace NHibernate.Test.Linq
 		}	
 	
 		[Test]
+		[Ignore("Not mapped entity")]
 		public void WhereFloatEqual()
 		{
 			var query = from item in session.Query<Foo>()
@@ -458,6 +460,7 @@ namespace NHibernate.Test.Linq
 		}	
 
 		[Test]
+		[Ignore("Not mapped entity")]
 		public void WhereCharEqual()
 		{
 			var query = from item in session.Query<Foo>()
@@ -468,6 +471,7 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		[Ignore("Not mapped entity")]
 		public void WhereByteEqual()
 		{
 			var query = from item in session.Query<Foo>()
