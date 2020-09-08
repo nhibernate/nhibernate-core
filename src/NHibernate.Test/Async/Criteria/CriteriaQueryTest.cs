@@ -2135,11 +2135,11 @@ namespace NHibernate.Test.Criteria
 				Assert.That(expectedAssociationList.Count, Is.EqualTo(2));
 				CollectionAssert.AreEqual(expectedAssociationList, mother.Offspring);
 			}
-			
+
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from System.Object").ExecuteUpdateAsync());
+				await (s.DeleteAsync("from Reptile"));
 				await (t.CommitAsync());
 			}
 		}
