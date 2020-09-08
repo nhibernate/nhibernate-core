@@ -368,16 +368,6 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public async Task WhereShortEqualAsync()
-		{
-			var query = from item in session.Query<Foo>()
-						where item.Short.Equals(-1)
-						select item;
-
-			await (ObjectDumper.WriteAsync(query));
-		}
-
-		[Test]
 		public async Task WhereBoolConstantEqualAsync()
 		{
 			var query = from item in db.Role
@@ -458,36 +448,6 @@ namespace NHibernate.Test.Linq
 
 			await (ObjectDumper.WriteAsync(query));
 		}	
-	
-		[Test]
-		public async Task WhereFloatEqualAsync()
-		{
-			var query = from item in session.Query<Foo>()
-						where item.Float.Equals(-1)
-						select item;
-
-			await (ObjectDumper.WriteAsync(query));
-		}	
-
-		[Test]
-		public async Task WhereCharEqualAsync()
-		{
-			var query = from item in session.Query<Foo>()
-						where item.Char.Equals('A')
-						select item;
-
-			await (ObjectDumper.WriteAsync(query));
-		}
-
-		[Test]
-		public async Task WhereByteEqualAsync()
-		{
-			var query = from item in session.Query<Foo>()
-						where item.Byte.Equals(1)
-						select item;
-
-			await (ObjectDumper.WriteAsync(query));
-		}
 
 		[Test]
 		public async Task WhereDecimalEqualAsync()
