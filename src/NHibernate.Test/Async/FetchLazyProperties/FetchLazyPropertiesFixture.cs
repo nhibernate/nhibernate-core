@@ -666,6 +666,40 @@ namespace NHibernate.Test.FetchLazyProperties
 
 		#endregion
 
+		#region TestHqlFetchManyToOneAndComponentManyToOne
+
+		[Test]
+		public async Task TestHqlFetchManyToOneAndComponentManyToOneAsync()
+		{
+			Person person;
+			using (var s = OpenSession())
+			{
+				person = await (s.CreateQuery("from Person p fetch p.Address left join fetch p.Address.Continent left join fetch p.BestFriend where p.Id = 1").UniqueResultAsync<Person>());
+			}
+
+			AssertFetchManyToOneAndComponentManyToOne(person);
+		}
+
+		[Test]
+		public async Task TestLinqFetchManyToOneAndComponentManyToOneAsync()
+		{
+			Person person;
+			using (var s = OpenSession())
+			{
+				person = await (s.Query<Person>().Fetch(o => o.BestFriend).Fetch(o => o.Address).ThenFetch(o => o.Continent).FirstOrDefaultAsync(o => o.Id == 1));
+			}
+
+			AssertFetchManyToOneAndComponentManyToOne(person);
+		}
+
+		private static void AssertFetchManyToOneAndComponentManyToOne(Person person)
+		{
+			AssertFetchComponentManyToOne(person);
+			Assert.That(NHibernateUtil.IsInitialized(person.BestFriend), Is.True);
+		}
+
+		#endregion
+
 		#region FetchSubClassFormula
 
 		[Test]

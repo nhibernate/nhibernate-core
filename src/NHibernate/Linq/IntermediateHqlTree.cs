@@ -127,6 +127,11 @@ namespace NHibernate.Linq
 			_root.NodesPreOrder.OfType<HqlFrom>().First().AddChild(from);
 		}
 
+		internal HqlRange GetFromRangeClause()
+		{
+			return _root.NodesPreOrder.OfType<HqlFrom>().First().Children.OfType<HqlRange>().FirstOrDefault();
+		}
+
 		public void AddSelectClause(HqlTreeNode select)
 		{
 			_root.NodesPreOrder.OfType<HqlSelectFrom>().First().AddChild(select);
