@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Dialect;
 using NHibernate.Criterion;
 using NHibernate.Linq;
@@ -2180,6 +2181,64 @@ namespace NHibernate.Test.Criteria
 
 			t.Rollback();
 			s.Close();
+		}
+
+		//NH-2239 (GH-1075) - Wrong OrderBy in generated SQL
+		[Test]
+		public void OrderByAndOrderedCollection()
+		{
+			var reptile1 = new Reptile { SerialNumber = "9" };
+			var reptile2 = new Reptile { SerialNumber = "8" };
+			var reptile3 = new Reptile { SerialNumber = "7" };
+			var reptile4 = new Reptile { SerialNumber = "6" };
+			var reptile5 = new Reptile { SerialNumber = "5" };
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.Save(reptile5);
+				s.Save(reptile1);
+				s.Save(reptile2);
+				s.Save(reptile3);
+				s.Save(reptile4);
+
+				reptile1.AddOffspring(reptile4);
+				reptile1.AddOffspring(reptile2);
+				reptile4.Father = reptile3;
+				reptile2.Father = reptile4;
+				reptile1.Father = reptile5;
+				reptile3.AddOffspring(reptile1);
+
+				t.Commit();
+			}
+
+			using(var s = OpenSession())
+			{
+				var list = s.CreateCriteria(typeof(Reptile))
+							.Fetch(SelectMode.Fetch, "offspring")
+							.AddOrder(Order.Asc("serialNumber"))
+							.SetResultTransformer(Transformers.DistinctRootEntity)
+							.List<Reptile>();
+
+				var expectedList = list.OrderBy(x => x.SerialNumber).ToList();
+
+				Assert.That(list.Count, Is.EqualTo(5));
+				CollectionAssert.AreEqual(expectedList, list);
+
+				var mother = expectedList.Last();
+				Assert.That(NHibernateUtil.IsInitialized(mother.Offspring), Is.True);
+
+				var expectedAssociationList = mother.Offspring.OrderBy(r => r.Father.Id).ToList();
+				Assert.That(expectedAssociationList.Count, Is.EqualTo(2));
+				CollectionAssert.AreEqual(expectedAssociationList, mother.Offspring);
+			}
+			
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.CreateQuery("delete from System.Object").ExecuteUpdate();
+				t.Commit();
+			}
 		}
 
 		[Test]
