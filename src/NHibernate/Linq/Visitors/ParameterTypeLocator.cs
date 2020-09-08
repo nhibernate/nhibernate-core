@@ -303,21 +303,11 @@ namespace NHibernate.Linq.Visitors
 					return false;
 				}
 
-				var left = UnwrapUnary(mainFromClause.FromExpression);
-				var right = UnwrapUnary(containsOperator.Item);
-				if (left.NodeType == ExpressionType.Constant)
-				{
-					// The constant is on the left side (e.g. db.Users.Where(o => users.Contains(o)))
-					VisitConstant((ConstantExpression) left);
-					right = UnwrapUnary(Visit(containsOperator.Item));
-				}
-				else if (right.NodeType == ExpressionType.Constant)
-				{
-					// The constant is on the right side (e.g. db.Customers.Where(o => o.Orders.Contains(item)))
-					VisitConstant((ConstantExpression) right);
-					left = UnwrapUnary(Visit(mainFromClause.FromExpression));
-				}
-				else
+				var left = UnwrapUnary(Visit(mainFromClause.FromExpression));
+				var right = UnwrapUnary(Visit(containsOperator.Item));
+				// The constant is on the left side (e.g. db.Users.Where(o => users.Contains(o)))
+				// The constant is on the right side (e.g. db.Customers.Where(o => o.Orders.Contains(item)))
+				if (left.NodeType != ExpressionType.Constant && right.NodeType != ExpressionType.Constant)
 				{
 					return false;
 				}
