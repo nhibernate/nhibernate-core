@@ -70,6 +70,80 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void UsingEntityParameterForCollection()
+		{
+			var item = db.OrderLines.First();
+			AssertTotalParameters(
+				db.Orders.Where(o => o.OrderLines.Contains(item)),
+				1);
+		}
+
+		[Test]
+		public void UsingProxyParameterForCollection()
+		{
+			var item = session.Load<Order>(10248);
+			Assert.That(NHibernateUtil.IsInitialized(item), Is.False);
+			AssertTotalParameters(
+				db.Customers.Where(o => o.Orders.Contains(item)),
+				1);
+		}
+
+		[Test]
+		public void UsingFieldProxyParameterForCollection()
+		{
+			var item = session.Query<AnotherEntityRequired>().First();
+			AssertTotalParameters(
+				session.Query<AnotherEntityRequired>().Where(o => o.RequiredRelatedItems.Contains(item)),
+				1);
+		}
+
+		[Test]
+		public void UsingEntityParameterInSubQuery()
+		{
+			var item = db.Customers.First();
+			var subQuery = db.Orders.Select(o => o.Customer).Where(o => o == item);
+			AssertTotalParameters(
+				db.Orders.Where(o => subQuery.Contains(o.Customer)),
+				1);
+		}
+
+		[Test]
+		public void UsingEntityParameterForCollectionSelection()
+		{
+			var item = db.OrderLines.First();
+			AssertTotalParameters(
+				db.Orders.SelectMany(o => o.OrderLines).Where(o => o == item),
+				1);
+		}
+
+		[Test]
+		public void UsingFieldProxyParameterForCollectionSelection()
+		{
+			var item = session.Query<AnotherEntityRequired>().First();
+			AssertTotalParameters(
+				session.Query<AnotherEntityRequired>().SelectMany(o => o.RequiredRelatedItems).Where(o => o == item),
+				1);
+		}
+
+		[Test]
+		public void UsingEntityListParameterForCollectionSelection()
+		{
+			var items = new[] {db.OrderLines.First()};
+			AssertTotalParameters(
+				db.Orders.SelectMany(o => o.OrderLines).Where(o => items.Contains(o)),
+				1);
+		}
+
+		[Test]
+		public void UsingFieldProxyListParameterForCollectionSelection()
+		{
+			var items = new[] {session.Query<AnotherEntityRequired>().First()};
+			AssertTotalParameters(
+				session.Query<AnotherEntityRequired>().SelectMany(o => o.RequiredRelatedItems).Where(o => items.Contains(o)),
+				1);
+		}
+
+		[Test]
 		public void UsingTwoEntityParameters()
 		{
 			var order = db.Orders.First();
