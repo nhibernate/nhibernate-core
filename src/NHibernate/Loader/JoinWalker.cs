@@ -818,10 +818,9 @@ namespace NHibernate.Loader
 		{
 			if (ass.Length == 0)
 				return orderBy;
-			else if (orderBy.Length == 0)
+			if (orderBy.Length == 0)
 				return ass;
-			else
-				return ass.Append(StringHelper.CommaSpace, orderBy);
+			return orderBy.Append(StringHelper.CommaSpace, ass);
 		}
 
 		protected SqlString MergeOrderings(string ass, SqlString orderBy) {
