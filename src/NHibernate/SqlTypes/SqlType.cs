@@ -130,15 +130,15 @@ namespace NHibernate.SqlTypes
 				return false;
 			}
 
-			if (LengthDefined && rhsSqlType.LengthDefined)
+			if (LengthDefined)
 			{
 				return (DbType.Equals(rhsSqlType.DbType)) && (Length == rhsSqlType.Length);
 			}
-			if (PrecisionDefined && rhsSqlType.PrecisionDefined)
+			if (PrecisionDefined)
 			{
 				return (DbType.Equals(rhsSqlType.DbType)) && (Precision == rhsSqlType.Precision) && (Scale == rhsSqlType.Scale);
 			}
-			if (ScaleDefined && rhsSqlType.ScaleDefined)
+			if (ScaleDefined)
 			{
 				return DbType.Equals(rhsSqlType.DbType) && Scale == rhsSqlType.Scale;
 			}
