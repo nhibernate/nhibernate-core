@@ -16,6 +16,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.GH1180
 {
 	using System.Threading.Tasks;
+	[KnownBug("NH-3847 (GH-1180)")]
 	[TestFixture]
 	public class ByCodeFixtureAsync : TestCaseMappingByCode
 	{
@@ -33,6 +34,16 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
+		protected override void OnTearDown()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				session.CreateQuery("delete from System.Object").ExecuteUpdate();
+				transaction.Commit();
+			}
+		}
+
 		[Test]
 		public async Task StringTypesAsync()
 		{
@@ -40,48 +51,46 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 			using (var transaction = session.BeginTransaction())
 			{
 				// data
-				{
-					await (session.SaveAsync(new Entity { Name = "Alpha" }));
-					await (session.SaveAsync(new Entity { Name = "Beta" }));
-					await (session.SaveAsync(new Entity { Name = "Gamma" }));
-				}
+				await (session.SaveAsync(new Entity {Name = "Alpha"}));
+				await (session.SaveAsync(new Entity {Name = "Beta"}));
+				await (session.SaveAsync(new Entity {Name = "Gamma"}));
 
-				await (session.FlushAsync());
+				await (transaction.CommitAsync());
+			}
 
-				// whenTrue is constant, whenFalse is property -> works even before the fix
-				{
-					ICriteria tagCriteria = session.CreateCriteria(typeof(Entity));
+			// whenTrue is constant, whenFalse is property -> works even before the fix
+			using (var session = OpenSession())
+			{
+				ICriteria tagCriteria = session.CreateCriteria(typeof(Entity));
 
-					var conditionalProjection = Projections.Conditional(
-						Restrictions.Not(
-							Restrictions.Like(nameof(Entity.Name), "B%")),
-						Projections.Constant("other"),
-						Projections.Property(nameof(Entity.Name)));
-					tagCriteria.SetProjection(conditionalProjection);
+				var conditionalProjection = Projections.Conditional(
+					Restrictions.Not(
+						Restrictions.Like(nameof(Entity.Name), "B%")),
+					Projections.Constant("other"),
+					Projections.Property(nameof(Entity.Name)));
+				tagCriteria.SetProjection(conditionalProjection);
 
-					// run query
+				// run query
+				var results = await (tagCriteria.ListAsync());
 
-					var results = await (tagCriteria.ListAsync());
+				Assert.That(results, Is.EquivalentTo(new[] {"other", "Beta", "other"}));
+			}
 
-					Assert.That(results, Is.EquivalentTo(new[] { "other", "Beta", "other" }));
-				}
+			// whenTrue is property, whenFalse is constant -> fails before the fix
+			using (var session = OpenSession())
+			{
+				ICriteria tagCriteria = session.CreateCriteria(typeof(Entity));
 
-				// whenTrue is property, whenFalse is constant -> fails before the fix
-				{
-					ICriteria tagCriteria = session.CreateCriteria(typeof(Entity));
+				var conditionalProjection = Projections.Conditional(
+					Restrictions.Like(nameof(Entity.Name), "B%"),
+					Projections.Property(nameof(Entity.Name)),
+					Projections.Constant("other"));
+				tagCriteria.SetProjection(conditionalProjection);
 
-					var conditionalProjection = Projections.Conditional(
-						Restrictions.Like(nameof(Entity.Name), "B%"),
-						Projections.Property(nameof(Entity.Name)),
-						Projections.Constant("other"));
-					tagCriteria.SetProjection(conditionalProjection);
+				// run query
+				var results = await (tagCriteria.ListAsync());
 
-					// run query
-
-					var results = await (tagCriteria.ListAsync());
-
-					Assert.That(results, Is.EquivalentTo(new[] { "other", "Beta", "other" }));
-				}
+				Assert.That(results, Is.EquivalentTo(new[] {"other", "Beta", "other"}));
 			}
 		}
 
@@ -91,49 +100,46 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				// data
-				{
-					await (session.SaveAsync(new Entity { Amount = 3.14m }));
-					await (session.SaveAsync(new Entity { Amount = 42.13m }));
-					await (session.SaveAsync(new Entity { Amount = 17.99m }));
-				}
+				await (session.SaveAsync(new Entity {Amount = 3.14m}));
+				await (session.SaveAsync(new Entity {Amount = 42.13m}));
+				await (session.SaveAsync(new Entity {Amount = 17.99m}));
 
-				await (session.FlushAsync());
+				await (transaction.CommitAsync());
+			}
 
-				// whenTrue is constant, whenFalse is property -> works even before the fix
-				{
-					ICriteria tagCriteria = session.CreateCriteria(typeof(Entity));
+			// whenTrue is constant, whenFalse is property -> works even before the fix
+			using (var session = OpenSession())
+			{
+				ICriteria tagCriteria = session.CreateCriteria(typeof(Entity));
 
-					var conditionalProjection = Projections.Conditional(
-						Restrictions.Not(
-							Restrictions.Ge(nameof(Entity.Amount), 20m)),
-						Projections.Constant(20m),
-						Projections.Property(nameof(Entity.Amount)));
-					tagCriteria.SetProjection(conditionalProjection);
+				var conditionalProjection = Projections.Conditional(
+					Restrictions.Not(
+						Restrictions.Ge(nameof(Entity.Amount), 20m)),
+					Projections.Constant(20m),
+					Projections.Property(nameof(Entity.Amount)));
+				tagCriteria.SetProjection(conditionalProjection);
 
-					// run query
+				// run query
+				var results = await (tagCriteria.ListAsync());
 
-					var results = await (tagCriteria.ListAsync());
+				Assert.That(results, Is.EquivalentTo(new[] {20m, 42.13m, 20m}));
+			}
 
-					Assert.That(results, Is.EquivalentTo(new[] { 20m, 42.13m, 20m }));
-				}
+			// whenTrue is property, whenFalse is constant -> fails before the fix
+			using (var session = OpenSession())
+			{
+				ICriteria tagCriteria = session.CreateCriteria(typeof(Entity));
 
-				// whenTrue is property, whenFalse is constant -> fails before the fix
-				{
-					ICriteria tagCriteria = session.CreateCriteria(typeof(Entity));
+				var conditionalProjection = Projections.Conditional(
+					Restrictions.Ge(nameof(Entity.Amount), 20m),
+					Projections.Property(nameof(Entity.Amount)),
+					Projections.Constant(20m));
+				tagCriteria.SetProjection(conditionalProjection);
 
-					var conditionalProjection = Projections.Conditional(
-						Restrictions.Ge(nameof(Entity.Amount), 20m),
-						Projections.Property(nameof(Entity.Amount)),
-						Projections.Constant(20m));
-					tagCriteria.SetProjection(conditionalProjection);
+				// run query
+				var results = await (tagCriteria.ListAsync());
 
-					// run query
-
-					var results = await (tagCriteria.ListAsync());
-
-					Assert.That(results, Is.EquivalentTo(new[] { 20m, 42.13m, 20m }));
-				}
+				Assert.That(results, Is.EquivalentTo(new[] {20m, 42.13m, 20m}));
 			}
 		}
 	}
