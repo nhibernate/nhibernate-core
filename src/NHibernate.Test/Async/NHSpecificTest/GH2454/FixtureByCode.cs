@@ -53,68 +53,75 @@ namespace NHibernate.Test.NHSpecificTest.GH2454
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
-		[Test]
-		public async Task SubqueryCorrelatedThroughConditionalAsync()
+		protected override void OnSetUp()
 		{
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				// data
-				{
-					// alpha entities
-					var projectAlpha = new Project { Name = "Alpha" };
-					await (session.SaveAsync(projectAlpha));
+				// alpha entities
+				var projectAlpha = new Project {Name = "Alpha"};
+				session.Save(projectAlpha);
 
-					var componentAlpha = new Component { Project = projectAlpha, Name = "Thingie" };
-					await (session.SaveAsync(componentAlpha));
+				var componentAlpha = new Component {Project = projectAlpha, Name = "Thingie"};
+				session.Save(componentAlpha);
 
-					var tagAlpha = new Tag { Component1 = componentAlpha, Name = "A20" };
-					await (session.SaveAsync(tagAlpha));
+				var tagAlpha = new Tag {Component1 = componentAlpha, Name = "A20"};
+				session.Save(tagAlpha);
 
-					// beta entities
-					var projectBeta = new Project { Name = "Beta" };
-					await (session.SaveAsync(projectBeta));
+				// beta entities
+				var projectBeta = new Project {Name = "Beta"};
+				session.Save(projectBeta);
 
-					var componentBeta = new Component { Project = projectBeta, Name = "Thingie" };
-					await (session.SaveAsync(componentBeta));
+				var componentBeta = new Component {Project = projectBeta, Name = "Thingie"};
+				session.Save(componentBeta);
 
-					var tagBeta = new Tag { Component1 = componentBeta, Name = "B17" };
-					await (session.SaveAsync(tagBeta));
-				}
+				var tagBeta = new Tag {Component1 = componentBeta, Name = "B17"};
+				session.Save(tagBeta);
 
-				await (session.FlushAsync());
+				transaction.Commit();
+			}
+		}
 
-				// query
-				{
-					ICriteria tagCriteria = session.CreateCriteria(typeof(Tag), "t");
-					tagCriteria.CreateCriteria("Component1", "c1");
-					tagCriteria.CreateCriteria("Component2", "c2", JoinType.LeftOuterJoin);
+		protected override void OnTearDown()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				session.CreateQuery("delete from System.Object").ExecuteUpdate();
+				transaction.Commit();
+			}
+		}
 
-					IProjection projectNameProjection;
-					{
-						// create correlated subquery
-						var projectCriteria = DetachedCriteria.For(typeof(Project), "p");
+		[Test]
+		public async Task SubqueryCorrelatedThroughConditionalAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var tagCriteria = session.CreateCriteria(typeof(Tag), "t");
+				tagCriteria.CreateCriteria("Component1", "c1");
+				tagCriteria.CreateCriteria("Component2", "c2", JoinType.LeftOuterJoin);
 
-						var conditionalCorrelationProjection = Projections.Conditional(
-							Restrictions.IsNotNull(Projections.Property("t.Component2")),
-							Projections.Property("c2.Project"),
-							Projections.Property("c1.Project"));
-						projectCriteria.Add(Restrictions.EqProperty("p.Id", conditionalCorrelationProjection));
+				// create correlated subquery
+				var projectCriteria = DetachedCriteria.For(typeof(Project), "p");
 
-						projectCriteria.SetProjection(Projections.Property("p.Name"));
+				var conditionalCorrelationProjection = Projections.Conditional(
+					Restrictions.IsNotNull(Projections.Property("t.Component2")),
+					Projections.Property("c2.Project"),
+					Projections.Property("c1.Project"));
+				projectCriteria.Add(Restrictions.EqProperty("p.Id", conditionalCorrelationProjection));
 
-						projectNameProjection = Projections.SubQuery(projectCriteria);
-					}
+				projectCriteria.SetProjection(Projections.Property("p.Name"));
 
-					tagCriteria.Add(Restrictions.Eq(projectNameProjection, "Beta"));
-					tagCriteria.SetProjection(Projections.Property("t.Name"));
+				var projectNameProjection = Projections.SubQuery(projectCriteria);
 
-					// run query
+				tagCriteria.Add(Restrictions.Eq(projectNameProjection, "Beta"));
+				tagCriteria.SetProjection(Projections.Property("t.Name"));
 
-					var results = await (tagCriteria.ListAsync());
+				// run query
+				var results = await (tagCriteria.ListAsync());
 
-					Assert.That(results, Is.EquivalentTo(new[] { "B17" }));
-				}
+				Assert.That(results, Is.EquivalentTo(new[] {"B17"}));
 			}
 		}
 	}
