@@ -383,7 +383,7 @@ namespace NHibernate.Type
 		/// </summary>
 		public override string ToString()
 		{
-			return string.Format("{0}(SqlType: {1})", Name, SqlType);
+			return $"{base.ToString()} (SqlType: {SqlType})";
 		}
 
 		#endregion
