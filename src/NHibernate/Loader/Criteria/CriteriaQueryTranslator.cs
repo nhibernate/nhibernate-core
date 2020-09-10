@@ -778,8 +778,8 @@ namespace NHibernate.Loader.Criteria
 
 			if (projectionTypes == null)
 			{
-					//it does not refer to an alias of a projection, look for a property
-					return GetType(subcriteria, propertyName);
+				//it does not refer to an alias of a projection, look for a property
+				return GetType(subcriteria, propertyName);
 			}
 			else
 			{
