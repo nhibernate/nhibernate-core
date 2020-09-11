@@ -315,7 +315,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public SqlString WithClauseFragment
 		{
 			get { return _withClauseFragment; }
-			set => _withClauseFragment = value;
+			set { _withClauseFragment = value; }
 		}
 
 		// Since 5.4

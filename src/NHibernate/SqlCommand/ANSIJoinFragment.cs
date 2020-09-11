@@ -48,29 +48,21 @@ namespace NHibernate.SqlCommand
 
 		internal static string GetJoinString(JoinType joinType)
 		{
-			string joinString;
 			switch (joinType)
 			{
 				case JoinType.InnerJoin:
-					joinString = " inner join ";
-					break;
+					return " inner join ";
 				case JoinType.LeftOuterJoin:
-					joinString = " left outer join ";
-					break;
+					return " left outer join ";
 				case JoinType.RightOuterJoin:
-					joinString = " right outer join ";
-					break;
+					return " right outer join ";
 				case JoinType.FullJoin:
-					joinString = " full outer join ";
-					break;
+					return " full outer join ";
 				case JoinType.CrossJoin:
-					joinString = " cross join ";
-					break;
+					return " cross join ";
 				default:
 					throw new AssertionFailure("undefined join type");
 			}
-
-			return joinString;
 		}
 
 		public override SqlString ToFromFragmentString
