@@ -27,7 +27,7 @@ Release notes - NHibernate - Version 5.3.3
    * #2482 Add missing possible breaking changes for #2010
    * #2527 Release 5.3.3
 
-As part of releasing 5.3.3, two missing 5.3.0 possible breaking change have been added, about
+As part of releasing 5.3.3, two missing 5.3.0 possible breaking changes have been added, about
 uninitialized extra lazy collections and SQLite schema validation. See 5.3.0 possible breaking changes.
 
 Build 5.3.2
