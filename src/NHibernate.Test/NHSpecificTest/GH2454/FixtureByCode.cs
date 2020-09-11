@@ -76,7 +76,9 @@ namespace NHibernate.Test.NHSpecificTest.GH2454
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.CreateQuery("delete from System.Object").ExecuteUpdate();
+				session.CreateQuery("delete from Tag").ExecuteUpdate();
+				session.CreateQuery("delete from Component").ExecuteUpdate();
+				session.CreateQuery("delete from Project").ExecuteUpdate();
 				transaction.Commit();
 			}
 		}
