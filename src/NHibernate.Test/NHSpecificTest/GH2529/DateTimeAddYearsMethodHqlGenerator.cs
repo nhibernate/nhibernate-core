@@ -7,7 +7,7 @@ using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
 using NHibernate.Util;
 
-namespace NHibernate.Test.NHSpecificTest.GH9999
+namespace NHibernate.Test.NHSpecificTest.GH2529
 {
 	public class DateTimeAddYearsMethodHqlGenerator : BaseHqlGeneratorForMethod
 	{

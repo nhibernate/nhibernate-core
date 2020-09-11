@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NHibernate.Test.NHSpecificTest.GH9999
+namespace NHibernate.Test.NHSpecificTest.GH2529
 {
 	public class User
 	{

@@ -2,7 +2,7 @@
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
 
-namespace NHibernate.Test.NHSpecificTest.GH9999
+namespace NHibernate.Test.NHSpecificTest.GH2529
 {
 	public class EnhancedMsSql2008Dialect : MsSql2008Dialect
 	{
