@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
@@ -21,18 +22,31 @@ namespace NHibernate.Linq.ReWriters
 
 		internal static void RemoveUnnecessaryOrderByClauses(QueryModel queryModel)
 		{
-			if (queryModel.ResultOperators.Count == 1 &&
-			    queryModel.ResultOperators.All(
-				    r => r is ContainsResultOperator || r is AnyResultOperator || r is AllResultOperator))
+			if (IsOrderByNeeded(queryModel))
+				return;
+
+			// For these operators, we can remove any order-by clause
+			var bodyClauses = queryModel.BodyClauses;
+			for (int i = bodyClauses.Count - 1; i >= 0; i--)
 			{
-				// For these operators, we can remove any order-by clause
-				var bodyClauses = queryModel.BodyClauses;
-				for (int i = bodyClauses.Count - 1; i >= 0; i--)
-				{
-					if (bodyClauses[i] is OrderByClause)
-						bodyClauses.RemoveAt(i);
-				}
+				if (bodyClauses[i] is OrderByClause)
+					bodyClauses.RemoveAt(i);
 			}
+		}
+
+		internal static bool IsOrderByNeeded(QueryModel queryModel)
+		{
+			switch (queryModel.ResultOperators.Count)
+			{
+				case 1:
+					var r = queryModel.ResultOperators[0];
+					return !(r is AnyResultOperator || r is AllResultOperator || r is ContainsResultOperator);
+				case 0:
+					var s = queryModel.SelectClause.Selector;
+					return !(s is NhAggregatedExpression) || s is NhDistinctExpression;
+			}
+
+			return true;
 		}
 
 		public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
