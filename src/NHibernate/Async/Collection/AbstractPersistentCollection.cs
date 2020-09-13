@@ -74,13 +74,14 @@ namespace NHibernate.Collection
 			return null;
 		}
 
-		internal async Task<bool> IsTransientAsync(object element, CancellationToken cancellationToken)
+		internal async Task<bool> CanSkipElementExistenceCheckAsync(object element, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var queryableCollection = (IQueryableCollection) Session.Factory.GetCollectionPersister(Role);
 			return
 				queryableCollection != null &&
 				queryableCollection.ElementType.IsEntityType &&
+				!queryableCollection.ElementPersister.EntityMetamodel.OverridesEquals &&
 				!element.IsProxy() &&
 				!Session.PersistenceContext.IsEntryFor(element) &&
 				await (ForeignKeys.IsTransientFastAsync(queryableCollection.ElementPersister.EntityName, element, Session, cancellationToken)).ConfigureAwait(false) == true;

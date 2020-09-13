@@ -1413,7 +1413,12 @@ namespace NHibernate.Persister.Entity
 			int[] lazyIndexes;
 			if (allLazyProperties)
 			{
-				lazyIndexes = indexes = lazyPropertyNumbers;
+				indexes = lazyPropertyNumbers;
+				lazyIndexes = new int[lazyPropertyNumbers.Length];
+				for(var i = 0; i < lazyIndexes.Length; i++)
+				{
+					lazyIndexes[i] = i;
+				}
 			}
 			else
 			{

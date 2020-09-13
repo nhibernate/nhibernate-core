@@ -129,5 +129,13 @@ namespace NHibernate.Test.Linq.ByMethod
 				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(useCrossJoin ? 0 : 1));
 			}
 		}
+
+		[Test]
+		public void CanJoinOnEntityWithSubclasses()
+		{
+			var result = (from o in db.Animals
+						from o2 in db.Animals.Where(x => x.BodyWeight > 50)
+						select new {o, o2}).Take(1).ToList();
+		}
 	}
 }

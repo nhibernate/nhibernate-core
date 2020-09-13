@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using NHibernate.Util;
 using Remotion.Linq.Parsing.ExpressionVisitors.Transformation;
 
 namespace NHibernate.Linq.ExpressionTransformers
@@ -24,6 +25,13 @@ namespace NHibernate.Linq.ExpressionTransformers
 				!expression.IsLiftedToNull)
 			{
 				return expression.Operand;
+			}
+
+			// Reduce double casting (e.g. (long?)(long)3 => (long?)3)
+			if (expression.Operand.NodeType == ExpressionType.Convert &&
+			    expression.Type.UnwrapIfNullable() == expression.Operand.Type)
+			{
+				return Expression.Convert(((UnaryExpression) expression.Operand).Operand, expression.Type);
 			}
 
 			return expression;

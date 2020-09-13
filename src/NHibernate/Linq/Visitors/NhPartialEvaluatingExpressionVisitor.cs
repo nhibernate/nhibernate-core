@@ -80,8 +80,7 @@ namespace NHibernate.Linq.Visitors
 			if (expression.NodeType == ExpressionType.Lambda || !_partialEvaluationInfo.IsEvaluatableExpression(expression) ||
 				#region NH additions
 				// Variables should be evaluated only when they are part of an evaluatable expression (e.g. o => string.Format("...", variable))
-				expression is UnaryExpression unaryExpression &&
-				ExpressionsHelper.IsVariable(unaryExpression.Operand, out _, out _))
+				ContainsVariable(expression))
 				#endregion
 				return base.Visit(expression);
 
@@ -154,8 +153,27 @@ namespace NHibernate.Linq.Visitors
 			}
 		}
 
+		#region NH additions
+
+		private bool ContainsVariable(Expression expression)
+		{
+			if (!(expression is UnaryExpression unaryExpression))
+			{
+				return false;
+			}
+
+			return ExpressionsHelper.IsVariable(unaryExpression.Operand, out _, out _) ||
+			       // Check whether the variable is casted due to comparison with a nullable expression
+			       // (e.g. o.NullableShort == shortVariable)
+			       unaryExpression.Operand is UnaryExpression subUnaryExpression &&
+			       unaryExpression.Type.UnwrapIfNullable() == subUnaryExpression.Type &&
+			       ExpressionsHelper.IsVariable(subUnaryExpression.Operand, out _, out _);
+		}
+
 		#endregion
-		
+
+		#endregion
+
 		protected override Expression VisitConstant(ConstantExpression expression)
 		{
 			if (expression.Value is Expression value)

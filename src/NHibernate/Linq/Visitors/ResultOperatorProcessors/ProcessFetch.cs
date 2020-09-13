@@ -20,14 +20,30 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 		public void Process(FetchRequestBase resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree, string sourceAlias)
 		{
+			Process(resultOperator, queryModelVisitor, tree, null, sourceAlias);
+		}
+
+		private void Process(
+			FetchRequestBase resultOperator,
+			QueryModelVisitor queryModelVisitor,
+			IntermediateHqlTree tree,
+			HqlTreeNode currentNode,
+			string sourceAlias)
+		{
 			var memberPath = tree.TreeBuilder.Dot(
 				tree.TreeBuilder.Ident(sourceAlias),
 				tree.TreeBuilder.Ident(resultOperator.RelationMember.Name));
 
-			Process(resultOperator, queryModelVisitor, tree, memberPath, null);
+			Process(resultOperator, queryModelVisitor, tree, memberPath, currentNode, null);
 		}
 
-		private void Process(FetchRequestBase resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree, HqlDot memberPath, IType propType)
+		private void Process(
+			FetchRequestBase resultOperator,
+			QueryModelVisitor queryModelVisitor,
+			IntermediateHqlTree tree,
+			HqlDot memberPath,
+			HqlTreeNode currentNode,
+			IType propType)
 		{
 			string alias = null;
 			if (resultOperator is FetchOneRequest)
@@ -41,8 +57,14 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 				
 				if (propType != null && !propType.IsAssociationType)
 				{
-					tree.AddFromLastChildClause(tree.TreeBuilder.Fetch());
-					tree.AddFromLastChildClause(memberPath);
+					if (currentNode == null)
+					{
+						currentNode = tree.GetFromRangeClause()
+									?? throw new InvalidOperationException($"Property {resultOperator.RelationMember.Name} cannot be fetched for this type of query.");
+					}
+
+					currentNode.AddChild(tree.TreeBuilder.Fetch());
+					currentNode.AddChild(memberPath);
 
 					ComponentType componentType = null;
 					foreach (var innerFetch in resultOperator.InnerFetchRequests)
@@ -62,7 +84,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 							memberPath,
 							tree.TreeBuilder.Ident(innerFetch.RelationMember.Name));
 
-						Process(innerFetch, queryModelVisitor, tree, memberPath, componentType.Subtypes[subTypeIndex]);
+						Process(innerFetch, queryModelVisitor, tree, memberPath, currentNode, componentType.Subtypes[subTypeIndex]);
 					}
 
 					return;
@@ -78,14 +100,15 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			if (alias == null)
 			{
 				alias = queryModelVisitor.Model.GetNewName("_");
-				tree.AddFromClause(tree.TreeBuilder.LeftFetchJoin(memberPath, tree.TreeBuilder.Alias(alias)));
+				currentNode = tree.TreeBuilder.LeftFetchJoin(memberPath, tree.TreeBuilder.Alias(alias));
+				tree.AddFromClause(currentNode);
 			}
 
 			tree.AddDistinctRootOperator();
 
 			foreach (var innerFetch in resultOperator.InnerFetchRequests)
 			{
-				Process(innerFetch, queryModelVisitor, tree, alias);
+				Process(innerFetch, queryModelVisitor, tree, currentNode, alias);
 			}
 		}
 	}

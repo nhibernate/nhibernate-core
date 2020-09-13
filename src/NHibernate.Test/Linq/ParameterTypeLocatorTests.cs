@@ -64,7 +64,7 @@ namespace NHibernate.Test.Linq
 			AssertResults(
 				new Dictionary<string, Predicate<IType>>
 				{
-					{"2.1", o => o is Int32Type}
+					{"2.1", o => o is DoubleType}
 				},
 				db.Users.Where(o => o.Id > 2.1),
 				db.Users.Where(o => 2.1 > o.Id)
@@ -81,6 +81,97 @@ namespace NHibernate.Test.Linq
 				},
 				db.Users.Where(o => o.Enum1 == EnumStoredAsString.Large),
 				db.Users.Where(o => EnumStoredAsString.Large == o.Enum1)
+			);
+		}
+
+		[Test]
+		public void EqualsMethodStringTest()
+		{
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"\"London\"", o => o is StringType stringType && stringType.SqlType.Length == 15}
+				},
+				db.Orders.Where(o => o.ShippingAddress.City.Equals("London")),
+				db.Orders.Where(o => "London".Equals(o.ShippingAddress.City)),
+				db.Orders.Where(o => string.Equals("London", o.ShippingAddress.City)),
+				db.Orders.Where(o => string.Equals(o.ShippingAddress.City, "London"))
+			);
+		}
+
+		[Test]
+		public void BinaryIntShortTest()
+		{
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"3", o => o is Int16Type}
+				},
+				db.NumericEntities.Where(o => o.Short == 3),
+				db.NumericEntities.Where(o => 3 == o.Short),
+				db.NumericEntities.Where(o => o.Short < 3),
+				db.NumericEntities.Where(o => 3 < o.Short),
+				db.NumericEntities.Where(o => o.Short > 3),
+				db.NumericEntities.Where(o => 3 > o.Short),
+				db.NumericEntities.Where(o => o.Short >= 3),
+				db.NumericEntities.Where(o => 3 >= o.Short),
+				db.NumericEntities.Where(o => o.Short <= 3),
+				db.NumericEntities.Where(o => 3 <= o.Short),
+				db.NumericEntities.Where(o => o.Short != 3),
+				db.NumericEntities.Where(o => 3 != o.Short),
+
+				db.NumericEntities.Where(o => o.NullableShort == 3),
+				db.NumericEntities.Where(o => 3 == o.NullableShort),
+				db.NumericEntities.Where(o => o.NullableShort < 3),
+				db.NumericEntities.Where(o => 3 < o.NullableShort),
+				db.NumericEntities.Where(o => o.NullableShort > 3),
+				db.NumericEntities.Where(o => 3 > o.NullableShort),
+				db.NumericEntities.Where(o => o.NullableShort >= 3),
+				db.NumericEntities.Where(o => 3 >= o.NullableShort),
+				db.NumericEntities.Where(o => o.NullableShort <= 3),
+				db.NumericEntities.Where(o => 3 <= o.NullableShort),
+				db.NumericEntities.Where(o => o.NullableShort != 3),
+				db.NumericEntities.Where(o => 3 != o.NullableShort),
+
+				db.NumericEntities.Where(o => o.NullableShort.Value == 3),
+				db.NumericEntities.Where(o => 3 == o.NullableShort.Value),
+				db.NumericEntities.Where(o => o.NullableShort.Value < 3),
+				db.NumericEntities.Where(o => 3 < o.NullableShort.Value),
+				db.NumericEntities.Where(o => o.NullableShort.Value > 3),
+				db.NumericEntities.Where(o => 3 > o.NullableShort.Value),
+				db.NumericEntities.Where(o => o.NullableShort.Value >= 3),
+				db.NumericEntities.Where(o => 3 >= o.NullableShort.Value),
+				db.NumericEntities.Where(o => o.NullableShort.Value <= 3),
+				db.NumericEntities.Where(o => 3 <= o.NullableShort.Value),
+				db.NumericEntities.Where(o => o.NullableShort.Value != 3),
+				db.NumericEntities.Where(o => 3 != o.NullableShort.Value)
+			);
+		}
+
+		[Test]
+		public void BinaryNullableIntShortTest()
+		{
+			int? value = 3;
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"3", o => o is Int16Type}
+				},
+				db.NumericEntities.Where(o => o.Short == value),
+				db.NumericEntities.Where(o => value == o.Short),
+				db.NumericEntities.Where(o => o.Short < value),
+				db.NumericEntities.Where(o => value < o.Short),
+
+				db.NumericEntities.Where(o => o.NullableShort == value),
+				db.NumericEntities.Where(o => value == o.NullableShort),
+				db.NumericEntities.Where(o => o.NullableShort < value),
+				db.NumericEntities.Where(o => value < o.NullableShort),
+
+				db.NumericEntities.Where(o => o.NullableShort.Value == value),
+				db.NumericEntities.Where(o => value == o.NullableShort.Value),
+				db.NumericEntities.Where(o => o.NullableShort.Value < value),
+				db.NumericEntities.Where(o => value < o.NullableShort.Value),
+				db.NumericEntities.Where(o => o.NullableShort.Value > value)
 			);
 		}
 
@@ -155,6 +246,22 @@ namespace NHibernate.Test.Linq
 				},
 				db.Orders.Where(o => o.ShippingAddress.City == "London"),
 				db.Orders.Where(o => "London" == o.ShippingAddress.City)
+			);
+		}
+
+		[Test]
+		public void CompareToStringTest()
+		{
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"1", o => o is Int32Type},
+					{"\"London\"", o => o is StringType stringType && stringType.SqlType.Length == 15}
+				},
+				db.Orders.Where(o => o.ShippingAddress.City.CompareTo("London") > 1),
+				db.Orders.Where(o => "London".CompareTo(o.ShippingAddress.City) > 1),
+				db.Orders.Where(o => string.Compare("London", o.ShippingAddress.City) > 1),
+				db.Orders.Where(o => string.Compare(o.ShippingAddress.City, "London") > 1)
 			);
 		}
 

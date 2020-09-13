@@ -101,7 +101,7 @@ namespace NHibernate.Linq
 
 			ParameterDescriptors = requiredHqlParameters.AsReadOnly();
 
-			CanCachePlan = CanCachePlan &&
+			CanCachePlan = CanCachePlan && visitorParameters.CanCachePlan &&
 				// If some constants do not have matching HQL parameters, their values from first query will
 				// be embedded in the plan and reused for subsequent queries: do not cache the plan.
 				!ParameterValuesByName
