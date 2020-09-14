@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1180
 {
-	//NH-3847 (GH-1180)
+	//NH-3847
 	[TestFixture]
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
@@ -90,9 +90,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.Save(new Entity {Amount = 3.141m});
-				session.Save(new Entity {Amount = 42.131m});
-				session.Save(new Entity {Amount = 17.991m});
+				session.Save(new Entity {Amount = 3.14m});
+				session.Save(new Entity {Amount = 42.13m});
+				session.Save(new Entity {Amount = 17.99m});
 
 				transaction.Commit();
 			}

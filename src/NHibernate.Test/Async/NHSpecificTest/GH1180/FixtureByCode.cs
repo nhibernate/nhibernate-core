@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.GH1180
 {
 	using System.Threading.Tasks;
-	//NH-3847 (GH-1180)
+	//NH-3847
 	[TestFixture]
 	public class ByCodeFixtureAsync : TestCaseMappingByCode
 	{
@@ -101,9 +101,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				await (session.SaveAsync(new Entity {Amount = 3.141m}));
-				await (session.SaveAsync(new Entity {Amount = 42.131m}));
-				await (session.SaveAsync(new Entity {Amount = 17.991m}));
+				await (session.SaveAsync(new Entity {Amount = 3.14m}));
+				await (session.SaveAsync(new Entity {Amount = 42.13m}));
+				await (session.SaveAsync(new Entity {Amount = 17.99m}));
 
 				await (transaction.CommitAsync());
 			}
