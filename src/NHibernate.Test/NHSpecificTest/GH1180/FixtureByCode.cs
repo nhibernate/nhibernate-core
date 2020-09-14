@@ -1,5 +1,6 @@
 ﻿using NHibernate.Cfg.MappingSchema;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
@@ -36,6 +37,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 		[Test]
 		public void StringTypes()
 		{
+			var whenFalse =
+				Dialect is Oracle8iDialect
+				//Most dialects allow to return DbType.String and DbType.AnsiString in case statement
+				//But Oracle throws 'ORA-12704: character set mismatch' 
+					? Projections.Constant("otherstring", NHibernateUtil.AnsiString)
+					: Projections.Constant("otherstring");
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
@@ -56,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 					Restrictions.Not(
 						Restrictions.Like(nameof(Entity.Name), "B%")),
 					//Property - ansi string length 5; contstant - string, length 10
-					Projections.Constant("otherstring"),
+					whenFalse,
 					Projections.Property(nameof(Entity.Name)));
 				tagCriteria.SetProjection(conditionalProjection);
 
@@ -74,7 +81,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 				var conditionalProjection = Projections.Conditional(
 					Restrictions.Like(nameof(Entity.Name), "B%"),
 					Projections.Property(nameof(Entity.Name)),
-					Projections.Constant("otherstring"));
+					whenFalse);
 				tagCriteria.SetProjection(conditionalProjection);
 
 				// run query
@@ -87,12 +94,14 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 		[Test]
 		public void DecimalTypes()
 		{
+			//On some dialects (SQLite) Scale mapping is ignored
+			var propertyResult = TestDialect.HasBrokenDecimalType ? 42.131m : 42.13m;
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.Save(new Entity {Amount = 3.14m});
-				session.Save(new Entity {Amount = 42.13m});
-				session.Save(new Entity {Amount = 17.99m});
+				session.Save(new Entity {Amount = 3.141m});
+				session.Save(new Entity {Amount = 42.131m});
+				session.Save(new Entity {Amount = 17.991m});
 
 				transaction.Commit();
 			}
@@ -113,7 +122,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 				// run query
 				var results = tagCriteria.List();
 
-				Assert.That(results, Is.EquivalentTo(new[] {20.123m, 42.13m, 20.123m}));
+				Assert.That(results, Is.EquivalentTo(new[] {20.123m, propertyResult, 20.123m}));
 			}
 
 			// whenTrue is property, whenFalse is constant
@@ -130,7 +139,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 				// run query
 				var results = tagCriteria.List();
 
-				Assert.That(results, Is.EquivalentTo(new[] {20.123m, 42.13m, 20.123m}));
+				Assert.That(results, Is.EquivalentTo(new[] {20.123m, propertyResult, 20.123m}));
 			}
 		}
 	}
