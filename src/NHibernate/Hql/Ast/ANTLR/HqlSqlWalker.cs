@@ -1229,8 +1229,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				sql.whereExpr();
 
-				var withClauseFragment = new SqlString("(", sql.GetSQL(), ")");
-				fromElement.SetWithClauseFragment(visitor.GetJoinAlias(), withClauseFragment);
+				fromElement.WithClauseFragment = new SqlString("(", sql.GetSQL(), ")");
 			}
 			catch (SemanticException)
 			{
@@ -1250,44 +1249,15 @@ namespace NHibernate.Hql.Ast.ANTLR
 	class WithClauseVisitor : IVisitationStrategy 
 	{
 		private readonly FromElement _joinFragment;
-		private readonly bool _multiTable;
 
 		public WithClauseVisitor(FromElement fromElement) 
 		{
 			_joinFragment = fromElement;
-			_multiTable = (fromElement.EntityPersister as IQueryable)?.IsMultiTable == true;
 		}
 
 		public void Visit(IASTNode node)
 		{
-			// todo : currently expects that the individual with expressions apply to the same sql table join.
-			//      This may not be the case for joined-subclass where the property values
-			//      might be coming from different tables in the joined hierarchy.  At some
-			//      point we should expand this to support that capability.  However, that has
-			//      some difficulties:
-			//          1) the biggest is how to handle ORs when the individual comparisons are
-			//              linked to different sql joins.
-			//          2) here we would need to track each comparison individually, along with
-			//              the join alias to which it applies and then pass that information
-			//              back to the FromElement so it can pass it along to the JoinSequence
-			if (_multiTable && node is DotNode dotNode)
-			{
-				FromElement fromElement = dotNode.FromElement;
-				if (_joinFragment == fromElement)
-				{
-					var joinAlias = ExtractAppliedAlias(dotNode);
-					//See WithClauseFixture.InvalidWithSemantics to understand the logic behind this check
-					// todo : temporary
-					//      needed because currently persister is the one that
-					//      creates and renders the join fragments for inheritence
-					//      hierarchies...
-					if (joinAlias != _joinFragment.TableAlias)
-					{
-						throw new InvalidWithClauseException("with clause can only reference columns in the driving table");
-					}
-				}
-			}
-			else if (node is ParameterNode paramNode)
+			if (node is ParameterNode paramNode)
 			{
 				ApplyParameterSpecification(paramNode.HqlParameterSpecification);
 			}
@@ -1314,11 +1284,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_joinFragment.AddEmbeddedParameter(paramSpec);
 		}
 
-		private static String ExtractAppliedAlias(IASTNode dotNode) 
-		{
-			return dotNode.Text.Substring( 0, dotNode.Text.IndexOf( '.' ) );
-		}
-
+		// Since 5.4
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public String GetJoinAlias()
 		{
 			return _joinFragment.TableAlias;

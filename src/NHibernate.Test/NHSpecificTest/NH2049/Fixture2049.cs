@@ -54,14 +54,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2049
 		}
 
 		[Test]
-		[KnownBug("Known bug NH-2049.", "NHibernate.Exceptions.GenericADOException")]
 		public void CanHqlQueryWithFilterOnJoinClassBaseClassProperty()
 		{
 			using (ISession session = OpenSession())
 			{
 				session.EnableFilter("DeletedCustomer").SetParameter("deleted", false);
-				var persons = session.CreateQuery("from Person as person left join person.IndividualCustomer as indCustomer")
-					.List<Person>();
+				var persons = session.CreateQuery("from Person as person inner join fetch person.IndividualCustomer as indCustomer")
+									.List<Person>();
 
 				Assert.That(persons, Has.Count.EqualTo(1));
 				Assert.That(persons[0].Id, Is.EqualTo(1));

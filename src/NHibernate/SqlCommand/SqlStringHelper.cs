@@ -30,6 +30,27 @@ namespace NHibernate.SqlCommand
 			return buf.ToSqlString();
 		}
 
+		internal static SqlString JoinParts(object separator, IList<object> parts)
+		{
+			if (parts.Count == 0)
+				return SqlString.Empty;
+
+			if (parts.Count == 1)
+				return parts[0] is SqlString sqlstring
+					? sqlstring
+					: new SqlString(parts);
+
+			var buf = new SqlStringBuilder();
+
+			buf.AddObject(parts[0]);
+			for (var index = 1; index < parts.Count; index++)
+			{
+				buf.AddObject(separator).AddObject(parts[index]);
+			}
+
+			return buf.ToSqlString();
+		}
+
 		internal static SqlString Join(string separator, IList<SqlString> strings)
 		{
 			if (strings.Count == 0)

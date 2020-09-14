@@ -65,14 +65,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2049
 		}
 
 		[Test]
-		[KnownBug("Known bug NH-2049.", "NHibernate.Exceptions.GenericADOException")]
 		public async Task CanHqlQueryWithFilterOnJoinClassBaseClassPropertyAsync()
 		{
 			using (ISession session = OpenSession())
 			{
 				session.EnableFilter("DeletedCustomer").SetParameter("deleted", false);
-				var persons = await (session.CreateQuery("from Person as person left join person.IndividualCustomer as indCustomer")
-					.ListAsync<Person>());
+				var persons = await (session.CreateQuery("from Person as person inner join fetch person.IndividualCustomer as indCustomer")
+									.ListAsync<Person>());
 
 				Assert.That(persons, Has.Count.EqualTo(1));
 				Assert.That(persons[0].Id, Is.EqualTo(1));
