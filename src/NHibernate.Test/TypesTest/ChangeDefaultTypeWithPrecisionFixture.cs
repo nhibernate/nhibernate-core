@@ -69,8 +69,8 @@ namespace NHibernate.Test.TypesTest
 			var propertyType1 = Sfi.GetClassMetadata(typeof(ChangeDefaultTypeClass))
 									.GetPropertyType(nameof(ChangeDefaultTypeClass.CurrencyTypeExplicitPrecision6And3));
 			Assert.That(
-				propertyType1,
-				Is.EqualTo(_testDefaultType));
+				propertyType1.GetType(),
+				Is.EqualTo(_testDefaultType.GetType()));
 			Assert.That(propertyType1.SqlTypes(Sfi)[0].Precision, Is.EqualTo(6));
 			Assert.That(propertyType1.SqlTypes(Sfi)[0].Scale, Is.EqualTo(3));
 			
