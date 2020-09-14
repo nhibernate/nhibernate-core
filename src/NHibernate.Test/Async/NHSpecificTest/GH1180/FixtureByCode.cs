@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.GH1180
 {
 	using System.Threading.Tasks;
-	[KnownBug("NH-3847 (GH-1180)")]
+	//NH-3847 (GH-1180)
 	[TestFixture]
 	public class ByCodeFixtureAsync : TestCaseMappingByCode
 	{
@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 			mapper.Class<Entity>(rc =>
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
-				rc.Property(x => x.Name, m => { m.Length(10); });
+				rc.Property(x => x.Name, m => {m.Type(NHibernateUtil.AnsiString); m.Length(5); });
 				rc.Property(x => x.Amount, m => { m.Precision(8); m.Scale(2); });
 			});
 
@@ -58,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 				await (transaction.CommitAsync());
 			}
 
-			// whenTrue is constant, whenFalse is property -> works even before the fix
+			// whenTrue is constant, whenFalse is property
 			using (var session = OpenSession())
 			{
 				ICriteria tagCriteria = session.CreateCriteria(typeof(Entity));
@@ -66,17 +66,18 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 				var conditionalProjection = Projections.Conditional(
 					Restrictions.Not(
 						Restrictions.Like(nameof(Entity.Name), "B%")),
-					Projections.Constant("other"),
+					//Property - ansi string length 5; contstant - string, length 10
+					Projections.Constant("otherstring"),
 					Projections.Property(nameof(Entity.Name)));
 				tagCriteria.SetProjection(conditionalProjection);
 
 				// run query
 				var results = await (tagCriteria.ListAsync());
 
-				Assert.That(results, Is.EquivalentTo(new[] {"other", "Beta", "other"}));
+				Assert.That(results, Is.EquivalentTo(new[] {"otherstring", "Beta", "otherstring"}));
 			}
 
-			// whenTrue is property, whenFalse is constant -> fails before the fix
+			// whenTrue is property, whenFalse is constant
 			using (var session = OpenSession())
 			{
 				ICriteria tagCriteria = session.CreateCriteria(typeof(Entity));
@@ -84,13 +85,13 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 				var conditionalProjection = Projections.Conditional(
 					Restrictions.Like(nameof(Entity.Name), "B%"),
 					Projections.Property(nameof(Entity.Name)),
-					Projections.Constant("other"));
+					Projections.Constant("otherstring"));
 				tagCriteria.SetProjection(conditionalProjection);
 
 				// run query
 				var results = await (tagCriteria.ListAsync());
 
-				Assert.That(results, Is.EquivalentTo(new[] {"other", "Beta", "other"}));
+				Assert.That(results, Is.EquivalentTo(new[] {"otherstring", "Beta", "otherstring"}));
 			}
 		}
 
@@ -100,14 +101,14 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				await (session.SaveAsync(new Entity {Amount = 3.14m}));
-				await (session.SaveAsync(new Entity {Amount = 42.13m}));
-				await (session.SaveAsync(new Entity {Amount = 17.99m}));
+				await (session.SaveAsync(new Entity {Amount = 3.141m}));
+				await (session.SaveAsync(new Entity {Amount = 42.131m}));
+				await (session.SaveAsync(new Entity {Amount = 17.991m}));
 
 				await (transaction.CommitAsync());
 			}
 
-			// whenTrue is constant, whenFalse is property -> works even before the fix
+			// whenTrue is constant, whenFalse is property
 			using (var session = OpenSession())
 			{
 				ICriteria tagCriteria = session.CreateCriteria(typeof(Entity));
@@ -115,17 +116,18 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 				var conditionalProjection = Projections.Conditional(
 					Restrictions.Not(
 						Restrictions.Ge(nameof(Entity.Amount), 20m)),
-					Projections.Constant(20m),
+					//Property scale is 2, make sure constant scale 3 is not lost
+					Projections.Constant(20.123m),
 					Projections.Property(nameof(Entity.Amount)));
 				tagCriteria.SetProjection(conditionalProjection);
 
 				// run query
 				var results = await (tagCriteria.ListAsync());
 
-				Assert.That(results, Is.EquivalentTo(new[] {20m, 42.13m, 20m}));
+				Assert.That(results, Is.EquivalentTo(new[] {20.123m, 42.13m, 20.123m}));
 			}
 
-			// whenTrue is property, whenFalse is constant -> fails before the fix
+			// whenTrue is property, whenFalse is constant
 			using (var session = OpenSession())
 			{
 				ICriteria tagCriteria = session.CreateCriteria(typeof(Entity));
@@ -133,13 +135,13 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 				var conditionalProjection = Projections.Conditional(
 					Restrictions.Ge(nameof(Entity.Amount), 20m),
 					Projections.Property(nameof(Entity.Amount)),
-					Projections.Constant(20m));
+					Projections.Constant(20.123m));
 				tagCriteria.SetProjection(conditionalProjection);
 
 				// run query
 				var results = await (tagCriteria.ListAsync());
 
-				Assert.That(results, Is.EquivalentTo(new[] {20m, 42.13m, 20m}));
+				Assert.That(results, Is.EquivalentTo(new[] {20.123m, 42.13m, 20.123m}));
 			}
 		}
 	}
