@@ -78,8 +78,8 @@ namespace NHibernate.Test.TypesTest
 									.GetPropertyType(nameof(ChangeDefaultTypeClass.CurrencyTypePrecisionInType5And2));
 			
 			Assert.That(
-				propertyType2,
-				Is.EqualTo(_testDefaultType));
+				propertyType2.GetType(),
+				Is.EqualTo(_testDefaultType.GetType()));
 			Assert.That(propertyType2.SqlTypes(Sfi)[0].Precision, Is.EqualTo(5));
 			Assert.That(propertyType2.SqlTypes(Sfi)[0].Scale, Is.EqualTo(2));
 		}
