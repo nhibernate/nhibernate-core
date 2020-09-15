@@ -1661,12 +1661,12 @@ namespace NHibernate.Test.Linq
 			var q =
 				from c in db.Customers
 				join o in db.Orders on
-					new { c.CustomerId, HasContractTitle = c.ContactTitle != null } equals
-					new { o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null } into orders
+					new {c.CustomerId, HasContractTitle = c.ContactTitle != null} equals
+					new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null} into orders
 				from o in orders.DefaultIfEmpty()
-				select new { c.ContactName, o.OrderId };
+				select new {c.ContactName, OrderId = (int?) o.OrderId};
 
-			Assert.Throws<NotSupportedException>(() => ObjectDumper.Write(q));
+			ObjectDumper.Write(q);
 		}
 
 		[Category("JOIN")]

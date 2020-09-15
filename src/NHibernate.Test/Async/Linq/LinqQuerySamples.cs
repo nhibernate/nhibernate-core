@@ -1112,17 +1112,17 @@ namespace NHibernate.Test.Linq
 
 		[Category("JOIN")]
 		[Test(Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
-		public void DLinqJoin5dLeftJoinAsync()
+		public async Task DLinqJoin5dLeftJoinAsync()
 		{
 			var q =
 				from c in db.Customers
 				join o in db.Orders on
-					new { c.CustomerId, HasContractTitle = c.ContactTitle != null } equals
-					new { o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null } into orders
+					new {c.CustomerId, HasContractTitle = c.ContactTitle != null} equals
+					new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null} into orders
 				from o in orders.DefaultIfEmpty()
-				select new { c.ContactName, o.OrderId };
+				select new {c.ContactName, OrderId = (int?) o.OrderId};
 
-			Assert.ThrowsAsync<NotSupportedException>(() => ObjectDumper.WriteAsync(q));
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("JOIN")]
