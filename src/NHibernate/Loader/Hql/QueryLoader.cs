@@ -203,11 +203,6 @@ namespace NHibernate.Loader.Hql
 			get { return _collectionPersisters; }
 		}
 
-		protected override IDictionary<string, string[]> GetCollectionUserProvidedAlias(int index)
-		{
-			return null;
-		}
-
 		private void Initialize(SelectClause selectClause)
 		{
 			IList<FromElement> fromElementList = selectClause.FromElementsForLoad;
