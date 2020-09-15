@@ -45,7 +45,6 @@ namespace NHibernate.Loader.Hql
 		private int _selectLength;
 		private LockMode[] _defaultLockModes;
 		private ISet<ICollectionPersister> _uncacheableCollectionPersisters;
-		private Dictionary<string, string[]>[] _collectionUserProvidedAliases;
 		private IReadOnlyDictionary<int, int> _entityByResultTypeDic;
 
 		public QueryLoader(QueryTranslatorImpl queryTranslator, ISessionFactoryImplementor factory, SelectClause selectClause)
@@ -206,7 +205,7 @@ namespace NHibernate.Loader.Hql
 
 		protected override IDictionary<string, string[]> GetCollectionUserProvidedAlias(int index)
 		{
-			return _collectionUserProvidedAliases?[index];
+			return null;
 		}
 
 		private void Initialize(SelectClause selectClause)
@@ -229,8 +228,6 @@ namespace NHibernate.Loader.Hql
 				_collectionPersisters = new IQueryableCollection[length];
 				_collectionOwners = new int[length];
 				_collectionSuffixes = new string[length];
-				if (collectionFromElements.Any(qc => qc.QueryableCollection.IsManyToMany))
-					_collectionUserProvidedAliases = new Dictionary<string, string[]>[length];
 
 				for (int i = 0; i < length; i++)
 				{
@@ -278,24 +275,6 @@ namespace NHibernate.Loader.Hql
 				if (_includeInSelect[i])
 				{
 					_selectLength++;
-				}
-
-				if (collectionFromElements != null && element.IsFetch && element.QueryableCollection?.IsManyToMany == true
-					&& element.QueryableCollection.IsManyToManyFiltered(_queryTranslator.EnabledFilters))
-				{
-					var collectionIndex = collectionFromElements.IndexOf(element);
-
-					if (collectionIndex >= 0)
-					{
-						// When many-to-many is filtered we need to populate collection from element persister and not from bridge table.
-						// As bridge table will contain not-null values for filtered elements
-						// So do alias substitution for collection persister with element persister
-						// See test TestFilteredLinqQuery for details
-						_collectionUserProvidedAliases[collectionIndex] = new Dictionary<string, string[]>
-						{
-							{CollectionPersister.PropElement, _entityPersisters[i].GetIdentifierAliases(Suffixes[i])}
-						};
-					}
 				}
 
 				_owners[i] = -1; //by default
