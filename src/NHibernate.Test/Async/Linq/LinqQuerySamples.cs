@@ -1078,15 +1078,9 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Category("JOIN")]
-		[TestCase(true, Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
-		[TestCase(false, Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
-		public async Task DLinqJoin5dAsync(bool useCrossJoin)
+		[Test(Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
+		public async Task DLinqJoin5dAsync()
 		{
-			if (useCrossJoin && !Dialect.SupportsCrossJoin)
-			{
-				Assert.Ignore("Dialect does not support cross join.");
-			}
-
 			var q =
 				from c in db.Customers
 				join o in db.Orders on
@@ -1094,35 +1088,30 @@ namespace NHibernate.Test.Linq
 					new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null }
 				select new { c.ContactName, o.OrderId };
 
-			using (var substitute = SubstituteDialect())
 			using (var sqlSpy = new SqlLogSpy())
 			{
-				ClearQueryPlanCache();
-				substitute.Value.SupportsCrossJoin.Returns(useCrossJoin);
-
 				await (ObjectDumper.WriteAsync(q));
 
 				var sql = sqlSpy.GetWholeLog();
-				Assert.That(sql, Does.Contain(useCrossJoin ? "cross join" : "inner join"));
 				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(0));
-				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(useCrossJoin ? 1 : 2));
-				Assert.That(GetTotalOccurrences(sql, "cross join"), Is.EqualTo(useCrossJoin ? 1 : 0));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
+				Assert.That(GetTotalOccurrences(sql, "cross join"), Is.EqualTo(0));
 			}
 		}
 
 		[Category("JOIN")]
 		[Test(Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
-		public void DLinqJoin5dLeftJoinAsync()
+		public async Task DLinqJoin5dLeftJoinAsync()
 		{
 			var q =
 				from c in db.Customers
 				join o in db.Orders on
-					new { c.CustomerId, HasContractTitle = c.ContactTitle != null } equals
-					new { o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null } into orders
+					new {c.CustomerId, HasContractTitle = c.ContactTitle != null} equals
+					new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null} into orders
 				from o in orders.DefaultIfEmpty()
-				select new { c.ContactName, o.OrderId };
+				select new {c.ContactName, OrderId = (int?) o.OrderId};
 
-			Assert.ThrowsAsync<NotSupportedException>(() => ObjectDumper.WriteAsync(q));
+			await (ObjectDumper.WriteAsync(q));
 		}
 
 		[Category("JOIN")]
