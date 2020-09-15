@@ -143,13 +143,13 @@ namespace NHibernate.SqlTypes
 			if (ScaleDefined != rhsSqlType.ScaleDefined)
 				return false;
 
-			if (LengthDefined && Length != rhsSqlType.Length)
+			if (Length != rhsSqlType.Length)
 				return false;
 
-			if (PrecisionDefined && Precision != rhsSqlType.Precision)
+			if (Precision != rhsSqlType.Precision)
 				return false;
 
-			if (ScaleDefined && Scale != rhsSqlType.Scale)
+			if (Scale != rhsSqlType.Scale)
 				return false;
 
 			return true;
