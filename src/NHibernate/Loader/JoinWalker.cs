@@ -848,21 +848,29 @@ namespace NHibernate.Loader
 				}
 				else
 				{
-					oj.AddJoins(outerjoin);
 					// NH Different behavior : NH1179 and NH1293
 					// Apply filters in Many-To-One association
+					SqlString filter = null;
 					if (enabledFiltersForManyToOne.Count > 0)
 					{
 						string manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFiltersForManyToOne);
 						bool joinClauseDoesNotContainsFilterAlready =
-							outerjoin.ToFromFragmentString.IndexOfCaseInsensitive(manyToOneFilterFragment) == -1;
+							oj.On?.IndexOfCaseInsensitive(manyToOneFilterFragment) == -1;
 						if (joinClauseDoesNotContainsFilterAlready)
 						{
-							// Ensure that the join condition is added to the join, not the where clause.
-							// Adding the condition to the where clause causes left joins to become inner joins.
-							outerjoin.AddFromFragmentString(new SqlString(manyToOneFilterFragment));
+							filter = new SqlString(manyToOneFilterFragment);
 						}
 					}
+
+					if (TableGroupJoinHelper.ProcessAsTableGroupJoin(new[] {oj}, new[] {oj.On, filter}, true, outerjoin, alias => true, factory))
+						continue;
+
+					oj.AddJoins(outerjoin);
+
+					// Ensure that the join condition is added to the join, not the where clause.
+					// Adding the condition to the where clause causes left joins to become inner joins.
+					if (SqlStringHelper.IsNotEmpty(filter))
+						outerjoin.AddFromFragmentString(filter);
 				}
 				last = oj;
 			}

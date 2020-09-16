@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Persister.Collection;
@@ -41,7 +40,7 @@ namespace NHibernate.Engine
 			return buf.Append('}').ToString();
 		}
 
-		private sealed class Join
+		private sealed class Join : IJoin
 		{
 			private readonly IAssociationType associationType;
 			private readonly IJoinable joinable;
@@ -50,7 +49,7 @@ namespace NHibernate.Engine
 			private readonly string[] lhsColumns;
 
 			public Join(ISessionFactoryImplementor factory, IAssociationType associationType, string alias, JoinType joinType,
-			            string[] lhsColumns)
+						string[] lhsColumns)
 			{
 				this.associationType = associationType;
 				this.joinable = associationType.GetAssociatedJoinable(factory);
@@ -182,7 +181,7 @@ namespace NHibernate.Engine
 				last = join.Joinable;
 			}
 
-			if (rootJoinable == null && ProcessAsTableGroupJoin(includeAllSubclassJoins, withClauses, joinFragment))
+			if (rootJoinable == null && TableGroupJoinHelper.ProcessAsTableGroupJoin(joins, withClauses, includeAllSubclassJoins, joinFragment, alias => IsIncluded(alias), factory))
 			{
 				return joinFragment;
 			}
@@ -251,117 +250,6 @@ namespace NHibernate.Engine
 			}
 
 			return SqlStringHelper.JoinParts(" and ", withConditions);
-		}
-
-		private bool ProcessAsTableGroupJoin(bool includeAllSubclassJoins, SqlString[] withClauseFragments, JoinFragment joinFragment)
-		{
-			if (!NeedsTableGroupJoin(joins, withClauseFragments, includeAllSubclassJoins))
-				return false;
-
-			var first = joins[0];
-			string joinString = ANSIJoinFragment.GetJoinString(first.JoinType);
-			joinFragment.AddFromFragmentString(
-				new SqlString(
-					joinString,
-					" (",
-					first.Joinable.TableName,
-					" ",
-					first.Alias
-				));
-
-			foreach (var join in joins)
-			{
-				if (join != first)
-					joinFragment.AddJoin(
-						join.Joinable.TableName,
-						join.Alias,
-						join.LHSColumns,
-						JoinHelper.GetRHSColumnNames(join.AssociationType, factory),
-						join.JoinType,
-						SqlString.Empty);
-
-				AddSubclassJoins(
-					joinFragment,
-					join.Alias,
-					join.Joinable,
-					// TODO (from hibernate): Think about if this could be made always true 
-					// NH Specific: made always true (original check: join.JoinType == JoinType.InnerJoin)
-					true,
-					includeAllSubclassJoins
-				);
-			}
-
-			var tableGroupWithClause = GetTableGroupJoinWithClause(withClauseFragments, first);
-			joinFragment.AddFromFragmentString(tableGroupWithClause);
-			return true;
-		}
-
-		private SqlString GetTableGroupJoinWithClause(SqlString[] withClauseFragments, Join first)
-		{
-			SqlStringBuilder fromFragment = new SqlStringBuilder();
-			fromFragment.Add(")").Add(" on ");
-
-			String[] lhsColumns = first.LHSColumns;
-			var isAssociationJoin = lhsColumns.Length > 0;
-			if (isAssociationJoin)
-			{
-				String rhsAlias = first.Alias;
-				String[] rhsColumns = JoinHelper.GetRHSColumnNames(first.AssociationType, factory);
-				for (int j = 0; j < lhsColumns.Length; j++)
-				{
-					fromFragment.Add(lhsColumns[j]);
-					fromFragment.Add("=");
-					fromFragment.Add(rhsAlias);
-					fromFragment.Add(".");
-					fromFragment.Add(rhsColumns[j]);
-					if (j < lhsColumns.Length - 1)
-					{
-						fromFragment.Add(" and ");
-					}
-				}
-			}
-
-			for (var i= 0; i < withClauseFragments.Length; i++)
-			{
-				var withClause = withClauseFragments[i];
-				if (SqlStringHelper.IsEmpty(withClause))
-					continue;
-
-				if (withClause.StartsWithCaseInsensitive(" and "))
-				{
-					if (!isAssociationJoin)
-					{
-						withClause = withClause.Substring(4);
-					}
-				}
-				else if (isAssociationJoin)
-				{
-					fromFragment.Add(" and ");
-				}
-
-				fromFragment.Add(withClause);
-			}
-
-			return fromFragment.ToSqlString();
-		}
-
-		private bool NeedsTableGroupJoin(List<Join> joins, SqlString[] withClauseFragments, bool includeSubclasses)
-		{
-			// If the rewrite is disabled or we don't have a with clause, we don't need a table group join
-			if ( /*!collectionJoinSubquery ||*/ withClauseFragments.All(x => SqlStringHelper.IsEmpty(x)))
-			{
-				return false;
-			}
-			// If we only have one join, a table group join is only necessary if subclass columns are used in the with clause
-			if (joins.Count == 1)
-			{
-				return joins[0].Joinable is AbstractEntityPersister persister && persister.HasSubclassJoins(includeSubclasses);
-				//NH Specific: No alias processing
-				//return isSubclassAliasDereferenced( joins[ 0], withClauseFragment );
-			}
-
-			//NH Specific: No alias processing (see hibernate JoinSequence.NeedsTableGroupJoin)
-			return true;
 		}
 
 		private bool IsManyToManyRoot(IJoinable joinable)

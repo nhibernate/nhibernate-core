@@ -20,7 +20,7 @@
             <generator class="assigned" />
         </id>
         <property name="Name" />
-        <one-to-one name="IndividualCustomer" class="IndividualCustomer" property-ref="Person" />
+        <one-to-one name="IndividualCustomer" class="IndividualCustomer" property-ref="Person"  />
     </class>
 
     <filter-def name="DeletedCustomer">
