@@ -159,7 +159,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			if (!(expression is UnaryExpression unaryExpression) ||
 				// Avoid detecting expression variables as parameters
-				typeof(Expression).IsAssignableFrom(expression.Type.UnwrapIfNullable()))
+				typeof(Expression).IsAssignableFrom(expression.Type))
 			{
 				return false;
 			}
