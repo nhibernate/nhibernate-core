@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.GH1994
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public class ManyToManyFilteredFixture : BugTestCase
 	{
 		protected override void OnSetUp()
 		{
@@ -137,6 +137,38 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 
 				Assert.That(query.Count, Is.EqualTo(1), "filtered assets");
 				Assert.That(query[0].Documents.Count, Is.EqualTo(1), "filtered asset documents");
+			}
+		}
+
+		[Test]
+		public void LazyLoad()
+		{
+			if(Dialect is PostgreSQLDialect)
+				Assert.Ignore("Dialect doesn't support 0/1 to bool implicit cast");
+
+			using (var s = OpenSession())
+			{
+				var asset = s.Query<Asset>().First();
+				Assert.That(asset.Documents.Count, Is.EqualTo(2));
+				Assert.That(asset.DocumentsBag.Count, Is.EqualTo(2));
+				Assert.That(asset.DocumentsFiltered.Count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public void LazyLoadFiltered()
+		{
+			if(Dialect is PostgreSQLDialect)
+				Assert.Ignore("Dialect doesn't support 0/1 to bool implicit cast");
+
+			using (var s = OpenSession())
+			{
+				s.EnableFilter("deletedFilter").SetParameter("deletedParam", false);
+
+				var asset = s.Query<Asset>().First();
+				Assert.That(asset.Documents.Count, Is.EqualTo(1));
+				Assert.That(asset.DocumentsBag.Count, Is.EqualTo(1));
+				Assert.That(asset.DocumentsFiltered.Count, Is.EqualTo(1));
 			}
 		}
 	}

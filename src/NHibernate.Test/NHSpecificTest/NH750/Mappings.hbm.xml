@@ -5,13 +5,17 @@
 				   default-access="field.camelcase-underscore"
 				   default-lazy="false">
 	<class name="Device">
-		<id name="_id" column="`_id`" type="Int32" access="field">
+		<id name="Id" column="`_id`" type="Int32">
 			<generator class="native"/>
 		</id>
 		<property name="Manifacturer"/>
 		<bag name="Drives" table="DriveOfDevice" cascade="all">
 			<key column="DeviceId"/>
 			<many-to-many class="Drive" column="DriveId" not-found="ignore"/>
+		</bag>
+    <bag name="DrivesNotIgnored" lazy="true" table="DriveOfDeviceNotIgnored" cascade="persist"  >
+			<key column="DeviceId"/>
+			<many-to-many class="Drive" column="DriveId" foreign-key="none"/>
 		</bag>
 	</class>
 

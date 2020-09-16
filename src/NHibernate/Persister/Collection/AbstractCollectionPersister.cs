@@ -1777,8 +1777,14 @@ namespace NHibernate.Persister.Collection
 			return SelectFragment(rhs, rhsAlias, lhsAlias, collectionSuffix, includeCollectionColumns, new EntityLoadInfo(entitySuffix) {IncludeLazyProps = true});
 		}
 
-		//6.0 TODO: Make abstract
-		public virtual string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string currentCollectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
+		// 6.0 TODO: Remove
+		[Obsolete("Please use overload without rhs and rhsAlias parameters")]
+		public virtual string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string collectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
+		{
+			return SelectFragment(lhsAlias, collectionSuffix, includeCollectionColumns, entityInfo);
+		}
+
+		public virtual string SelectFragment(string lhsAlias, string currentCollectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
 		{
 			throw new NotImplementedException("SelectFragment with fetching lazy properties option is not implemented by " + GetType().FullName);
 		}

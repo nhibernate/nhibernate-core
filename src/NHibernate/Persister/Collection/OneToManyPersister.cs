@@ -294,7 +294,7 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string collectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
+		public override string SelectFragment(string lhsAlias, string collectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
 		{
 			var buf = new StringBuilder();
 
@@ -317,7 +317,7 @@ namespace NHibernate.Persister.Collection
 			{
 				var selectMode = ReflectHelper.CastOrThrow<ISupportLazyPropsJoinable>(ElementPersister, "fetch lazy properties");
 				if (selectMode != null)
-					return buf.Append(selectMode.SelectFragment(null, null, lhsAlias, null, false, entityInfo)).ToString();
+					return buf.Append(selectMode.SelectFragment( lhsAlias, null, false, entityInfo)).ToString();
 			}
 
 			var ojl = (IOuterJoinLoadable)ElementPersister;
