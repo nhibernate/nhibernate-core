@@ -842,8 +842,20 @@ namespace NHibernate.Loader
 
 			var sortedAssociations = GetSortedAssociations(associations);
 			OuterJoinableAssociation last = null;
-			foreach (OuterJoinableAssociation oj in sortedAssociations)
+			for (var index = 0; index < sortedAssociations.Count; index++)
 			{
+				OuterJoinableAssociation oj = sortedAssociations[index];
+				if (oj.IsCollection && oj.Joinable is IQueryableCollection qc && qc.IsManyToMany)
+				{
+					var a = sortedAssociations[index + 1];
+					var filter = new SqlString(qc.GetManyToManyFilterFragment(a.RHSAlias, enabledFilters));
+					if (TableGroupJoinHelper.ProcessAsTableGroupJoin(new[] {oj, a}, new[] {oj.On, a.On, filter}, true, outerjoin, alias => true, factory))
+					{
+						last = null;
+						index++;
+						continue;
+					}
+				}
 				if (last != null && last.IsManyToManyWith(oj))
 				{
 					oj.AddManyToManyJoin(outerjoin, (IQueryableCollection) last.Joinable);
@@ -1168,7 +1180,6 @@ namespace NHibernate.Loader
 				for (int i = 0; i < associations.Count; i++)
 				{
 					OuterJoinableAssociation join = associations[i];
-					OuterJoinableAssociation next = (i == associations.Count - 1) ? null : associations[i + 1];
 
 					IJoinable joinable = join.Joinable;
 					string entitySuffix = (suffixes == null || entityAliasCount >= suffixes.Length) ? null : suffixes[entityAliasCount];
@@ -1177,7 +1188,7 @@ namespace NHibernate.Loader
 																			? null
 																			: collectionSuffixes[collectionAliasCount];
 
-					string selectFragment = join.GetSelectFragment(entitySuffix, collectionSuffix, next);
+					string selectFragment = join.GetSelectFragment(entitySuffix, collectionSuffix);
 
 					if (!string.IsNullOrWhiteSpace(selectFragment))
 					{
@@ -1199,7 +1210,7 @@ namespace NHibernate.Loader
 		[Obsolete("This method has no more usages and will be removed in a future version")]
 		protected static string GetSelectFragment(OuterJoinableAssociation join, string entitySuffix, string collectionSuffix, OuterJoinableAssociation next = null)
 		{
-			return join.GetSelectFragment(entitySuffix, collectionSuffix, next);
+			return join.GetSelectFragment(entitySuffix, collectionSuffix);
 		}
 	}
 }
