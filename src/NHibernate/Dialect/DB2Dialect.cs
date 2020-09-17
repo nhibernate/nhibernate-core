@@ -297,6 +297,8 @@ namespace NHibernate.Dialect
 
 		#region Overridden informational metadata
 
+		public override bool SupportsNullInUnique => false;
+
 		public override bool SupportsEmptyInList => false;
 
 		public override bool SupportsResultSetPositionQueryMethodsOnForwardOnlyCursor => false;
