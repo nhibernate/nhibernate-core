@@ -6,7 +6,7 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Engine
 {
-	//Generates table group join if neccessary. Example of generated query wit table group join:
+	//Generates table group join if neccessary. Example of generated query with table group join:
 	// SELECT *
 	// FROM Person person0_
 	// INNER JOIN (
@@ -101,6 +101,13 @@ namespace NHibernate.Engine
 				}
 			}
 
+			AppendWithClause(fromFragment, isAssociationJoin, withClauseFragments);
+
+			return fromFragment.ToSqlString();
+		}
+
+		private static void AppendWithClause(SqlStringBuilder fromFragment, bool hasConditions, SqlString[] withClauseFragments)
+		{
 			for (var i = 0; i < withClauseFragments.Length; i++)
 			{
 				var withClause = withClauseFragments[i];
@@ -109,20 +116,19 @@ namespace NHibernate.Engine
 
 				if (withClause.StartsWithCaseInsensitive(" and "))
 				{
-					if (!isAssociationJoin)
+					if (!hasConditions)
 					{
 						withClause = withClause.Substring(4);
 					}
 				}
-				else if (isAssociationJoin)
+				else if (hasConditions)
 				{
 					fromFragment.Add(" and ");
 				}
 
 				fromFragment.Add(withClause);
+				hasConditions = true;
 			}
-
-			return fromFragment.ToSqlString();
 		}
 	}
 }
