@@ -232,28 +232,29 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
+		public override SqlString GetLimitString(SqlString sql, SqlString offset, SqlString limit)
 		{
 			if (offset == null)
 			{
-				return new SqlString(querySqlString,
-									 " fetch first ",
-									 limit,
-									 " rows only");
+				return new SqlString(sql, " fetch first ", limit, " rows only");
 			}
+
+			ExtractColumnOrAliasNames(sql, out var selectColumns, out _, out _);
 
 			/*
 			 * "select * from (select row_number() over(orderby_clause) as rownum, "
 			 * querySqlString_without select
 			 * " ) as tempresult where rownum between ? and ?"
 			 */
-			string rownumClause = GetRowNumber(querySqlString);
+			string rownumClause = GetRowNumber(sql);
 
 			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
 			pagingBuilder
-				.Add("select * from (select ")
+				.Add("select " )
+				.Add(string.Join(",", selectColumns))
+				.Add(" from (select ")
 				.Add(rownumClause)
-				.Add(querySqlString.Substring(7))
+				.Add(sql.Substring(7))
 				.Add(") as tempresult where rownum ");
 
 			if (limit != null)
