@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2549
 		}
 
 		[Test]
-		public async Task EntityJoinFilterAsync()
+		public async Task EntityJoinFilterLinqAsync()
 		{
 			using (var s = OpenSession())
 			{
@@ -55,6 +55,24 @@ namespace NHibernate.Test.NHSpecificTest.GH2549
 				var filteredList = await ((from p in s.Query<Person>()
 									join c in s.Query<Customer>() on p.Name equals c.Name
 									select p).ToListAsync());
+
+				Assert.That(list, Has.Count.EqualTo(2));
+				Assert.That(filteredList, Has.Count.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public async Task EntityJoinFilterQueryOverAsync()
+		{
+			using (var s = OpenSession())
+			{
+				Customer c = null;
+				Person p = null;
+				var list = await (s.QueryOver(() => p).JoinEntityAlias(() => c, () => c.Name == p.Name).ListAsync());
+
+				s.EnableFilter("DeletedCustomer").SetParameter("deleted", false);
+
+				var filteredList = await (s.QueryOver(() => p).JoinEntityAlias(() => c, () => c.Name == p.Name).ListAsync());
 
 				Assert.That(list, Has.Count.EqualTo(2));
 				Assert.That(filteredList, Has.Count.EqualTo(1));
