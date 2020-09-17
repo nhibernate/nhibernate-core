@@ -354,6 +354,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return joinSequence;
 		}
 
+		// Since v5.4
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		public String[][] GenerateColumnNames(IType[] sqlResultTypes)
 		{
 			return NameGenerator.GenerateColumnNames(sqlResultTypes, _sfi);

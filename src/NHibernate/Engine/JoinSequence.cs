@@ -154,7 +154,7 @@ namespace NHibernate.Engine
 			return ToJoinFragment(enabledFilters, includeExtraJoins, true, withClauseFragment);
 		}
 
-		internal JoinFragment ToJoinFragment(
+		internal virtual JoinFragment ToJoinFragment(
 			IDictionary<string, IFilter> enabledFilters,
 			bool includeAllSubclassJoins,
 			bool renderSubclassJoins,

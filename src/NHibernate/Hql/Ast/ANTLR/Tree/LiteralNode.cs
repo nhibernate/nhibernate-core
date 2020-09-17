@@ -18,9 +18,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
+		// Since v5.4
+		[Obsolete("Use overload with aliasCreator parameter instead.")]
 		public override void SetScalarColumnText(int i) 
 		{
 			ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i );
+		}
+
+		/// <inheritdoc />
+		public override string[] SetScalarColumnText(int i, Func<int, int, string> aliasCreator)
+		{
+			return new[] {ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i, aliasCreator)};
 		}
 
 		public override IType DataType

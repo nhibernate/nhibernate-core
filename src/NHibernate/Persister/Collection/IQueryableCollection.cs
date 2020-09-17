@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using NHibernate.Persister.Entity;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Persister.Collection
 {
@@ -45,6 +47,8 @@ namespace NHibernate.Persister.Collection
 		/// <summary>
 		/// Generate a list of collection index and element columns
 		/// </summary>
+		// Since v5.4
+		[Obsolete("Use GetSelectFragment extension method instead.")]
 		string SelectFragment(string alias, string columnSuffix);
 
 		/// <summary> 
@@ -90,5 +94,44 @@ namespace NHibernate.Persister.Collection
 		/// <returns>Appropriate table alias.</returns>
 		[Obsolete("Use directly the alias parameter value instead")]
 		string GenerateTableAliasForKeyColumns(string alias);
+	}
+
+	public static class QueryableCollectionExtensions
+	{
+		/// <summary>
+		/// Gets the select fragment containing collection element, index and indentifier columns.
+		/// </summary>
+		/// <param name="queryable">The <see cref="IQueryableCollection"/> instance.</param>
+		/// <param name="alias">The table alias.</param>
+		/// <param name="columnSuffix">The column suffix.</param>
+		/// <returns>The element, index and indentifier select fragment.</returns>
+		// 6.0 TODO: Move into IQueryableCollection
+		public static SelectFragment GetSelectFragment(this IQueryableCollection queryable, string alias, string columnSuffix)
+		{
+			if (queryable is AbstractCollectionPersister collectionPersister)
+			{
+				return collectionPersister.GetSelectFragment(alias, columnSuffix);
+			}
+
+#pragma warning disable 618
+			var renderedText = queryable.SelectFragment(alias, columnSuffix);
+#pragma warning restore 618
+			var identifierAlias = queryable.GetIdentifierColumnAlias(null);
+			var indexAliases = queryable.GetIndexColumnAliases(null);
+			var columnAliases = queryable.GetKeyColumnAliases(null)
+			                             .Union(queryable.GetElementColumnAliases(null));
+			if (indexAliases != null)
+			{
+				columnAliases = columnAliases.Union(indexAliases);
+			}
+
+			if (identifierAlias != null)
+			{
+				columnAliases = columnAliases.Union(new[] {identifierAlias});
+			}
+
+			return new SelectFragment(queryable.Factory.Dialect, renderedText, columnAliases.ToList())
+				.SetSuffix(columnSuffix);
+		}
 	}
 }

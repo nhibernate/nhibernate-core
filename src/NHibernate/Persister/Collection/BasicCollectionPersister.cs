@@ -274,7 +274,9 @@ namespace NHibernate.Persister.Collection
 					return ManyToManySelectFragment(rhs, rhsAlias, lhsAlias, collectionSuffix, elementType);
 				}
 			}
-			return includeCollectionColumns ? SelectFragment(lhsAlias, collectionSuffix) : string.Empty;
+			return includeCollectionColumns
+				? GetSelectFragment(lhsAlias, collectionSuffix).ToSqlStringFragment(false)
+				: string.Empty;
 		}
 
 		private string ManyToManySelectFragment(

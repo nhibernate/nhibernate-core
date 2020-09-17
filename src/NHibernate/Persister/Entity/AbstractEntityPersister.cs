@@ -1608,7 +1608,8 @@ namespace NHibernate.Persister.Entity
 
 		public string SelectFragment(string alias, string suffix, bool fetchLazyProperties)
 		{
-			return IdentifierSelectFragment(alias, suffix) + PropertySelectFragment(alias, suffix, fetchLazyProperties);
+			return GetIdentifierSelectFragment(alias, suffix).ToSqlStringFragment(false) +
+			       GetPropertiesSelectFragment(alias, suffix, null, fetchLazyProperties).ToSqlStringFragment();
 		}
 
 		public string[] GetIdentifierAliases(string suffix)
@@ -1633,25 +1634,65 @@ namespace NHibernate.Persister.Entity
 			return entityMetamodel.HasSubclasses ? new Alias(suffix).ToAliasString(DiscriminatorAlias, factory.Dialect) : null;
 		}
 
+		// Since v5.4
+		[Obsolete("Use GetIdentifierSelectFragment method instead.")]
 		public virtual string IdentifierSelectFragment(string name, string suffix)
+		{
+			return GetIdentifierSelectFragment(name, suffix).ToSqlStringFragment(false);
+		}
+
+		/// <summary>
+		/// Gets the identifier select fragment.
+		/// </summary>
+		/// <param name="alias">The table alias</param>
+		/// <param name="suffix">The column suffix.</param>
+		/// <returns>The identifier select fragment.</returns>
+		public virtual SelectFragment GetIdentifierSelectFragment(string alias, string suffix)
 		{
 			return new SelectFragment(factory.Dialect)
 				.SetSuffix(suffix)
-				.AddColumns(name, IdentifierColumnNames, IdentifierAliases)
-				.ToSqlStringFragment(false);
+				.AddColumns(alias, IdentifierColumnNames, IdentifierAliases);
 		}
 
+		// Since v5.4
+		[Obsolete("Use GetPropertiesSelectFragment method instead.")]
 		public string PropertySelectFragment(string name, string suffix, bool allProperties)
 		{
-			return PropertySelectFragment(name, suffix, null, allProperties);
+			return GetPropertiesSelectFragment(name, suffix, null, allProperties).ToSqlStringFragment();
 		}
 
+		/// <summary>
+		/// Gets the properties select fragment.
+		/// </summary>
+		/// <param name="alias">The table alias</param>
+		/// <param name="suffix">The column suffix.</param>
+		/// <param name="allProperties">Whether to fetch all lazy properties.</param>
+		/// <returns>The properties select fragment.</returns>
+		public SelectFragment GetPropertiesSelectFragment(string alias, string suffix, bool allProperties)
+		{
+			return GetPropertiesSelectFragment(alias, suffix, null, allProperties);
+		}
+
+		// Since v5.4
+		[Obsolete("Use GetPropertiesSelectFragment method instead.")]
 		public string PropertySelectFragment(string name, string suffix, ICollection<string> fetchProperties)
 		{
-			return PropertySelectFragment(name, suffix, fetchProperties, false);
+			return GetPropertiesSelectFragment(name, suffix, fetchProperties, false).ToSqlStringFragment();
 		}
 
-		private string PropertySelectFragment(string name, string suffix, ICollection<string> fetchProperties, bool allProperties)
+		/// <summary>
+		/// Gets the properties select fragment.
+		/// </summary>
+		/// <param name="alias">The table alias</param>
+		/// <param name="suffix">The column suffix.</param>
+		/// <param name="fetchProperties">Lazy properties to fetch.</param>
+		/// <returns>The properties select fragment.</returns>
+		public SelectFragment GetPropertiesSelectFragment(string alias, string suffix, ICollection<string> fetchProperties)
+		{
+			return GetPropertiesSelectFragment(alias, suffix, fetchProperties, false);
+		}
+
+		private SelectFragment GetPropertiesSelectFragment(string alias, string suffix, ICollection<string> fetchProperties, bool allProperties)
 		{
 			SelectFragment select = new SelectFragment(Factory.Dialect)
 				.SetSuffix(suffix)
@@ -1693,7 +1734,7 @@ namespace NHibernate.Persister.Entity
 					subclassColumnSelectableClosure[i];
 				if (selectable)
 				{
-					string subalias = GenerateTableAlias(name, columnTableNumbers[i]);
+					string subalias = GenerateTableAlias(alias, columnTableNumbers[i]);
 					select.AddColumn(subalias, columns[i], columnAliases[i]);
 				}
 			}
@@ -1707,18 +1748,18 @@ namespace NHibernate.Persister.Entity
 					!IsSubclassTableSequentialSelect(formulaTableNumbers[i]);
 				if (selectable)
 				{
-					string subalias = GenerateTableAlias(name, formulaTableNumbers[i]);
+					string subalias = GenerateTableAlias(alias, formulaTableNumbers[i]);
 					select.AddFormula(subalias, formulaTemplates[i], formulaAliases[i]);
 				}
 			}
 
 			if (entityMetamodel.HasSubclasses)
-				AddDiscriminatorToSelect(select, name, suffix);
+				AddDiscriminatorToSelect(select, alias, suffix);
 
 			if (HasRowId)
-				select.AddColumn(name, rowIdName, Loadable.RowIdAlias);
+				select.AddColumn(alias, rowIdName, Loadable.RowIdAlias);
 
-			return select.ToSqlStringFragment();
+			return select;
 		}
 
 		public object[] GetDatabaseSnapshot(object id, ISessionImplementor session)
@@ -2350,21 +2391,19 @@ namespace NHibernate.Persister.Entity
 					Component component = (Component)prop.Value;
 					InternalInitSubclassPropertyAliasesMap(propName, component.PropertyIterator);
 				}
-				else
-				{
-					string[] aliases = new string[prop.ColumnSpan];
-					string[] cols = new string[prop.ColumnSpan];
-					int l = 0;
-					foreach (ISelectable thing in prop.ColumnIterator)
-					{
-						aliases[l] = thing.GetAlias(Factory.Dialect, prop.Value.Table);
-						cols[l] = thing.GetText(Factory.Dialect);
-						l++;
-					}
 
-					subclassPropertyAliases[propName] = aliases;
-					subclassPropertyColumnNames[propName] = cols;
+				var aliases = new string[prop.ColumnSpan];
+				var cols = new string[prop.ColumnSpan];
+				var l = 0;
+				foreach (var thing in prop.ColumnIterator)
+				{
+					aliases[l] = thing.GetAlias(Factory.Dialect, prop.Value.Table);
+					cols[l] = thing.GetText(Factory.Dialect);
+					l++;
 				}
+
+				subclassPropertyAliases[propName] = aliases;
+				subclassPropertyColumnNames[propName] = cols;
 			}
 		}
 
@@ -4373,8 +4412,12 @@ namespace NHibernate.Persister.Entity
 
 		public string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string collectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
 		{
-			return IdentifierSelectFragment(lhsAlias, entityInfo.EntitySuffix)
-					+ PropertySelectFragment(lhsAlias, entityInfo.EntitySuffix, entityInfo.LazyProperties, entityInfo.IncludeLazyProps);
+			return GetIdentifierSelectFragment(lhsAlias, entityInfo.EntitySuffix).ToSqlStringFragment(false) +
+			       GetPropertiesSelectFragment(
+				       lhsAlias,
+				       entityInfo.EntitySuffix,
+				       entityInfo.LazyProperties,
+				       entityInfo.IncludeLazyProps).ToSqlStringFragment();
 		}
 
 		public bool IsInstrumented
