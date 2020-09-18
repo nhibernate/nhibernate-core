@@ -17,6 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			EntityType entityType = (EntityType) entityPersister.Type;
 			InitializeEntity(fromClause, entityPersister.EntityName, entityPersister, entityType, alias, tableAlias);
 
+			//NH Specific: hibernate uses special class EntityJoinJoinSequenceImpl
 			JoinSequence = new JoinSequence(SessionFactoryHelper.Factory)
 				.AddJoin(entityType, tableAlias, joinType, Array.Empty<string>());
 
