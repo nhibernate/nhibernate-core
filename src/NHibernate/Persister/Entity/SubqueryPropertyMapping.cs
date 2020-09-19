@@ -73,6 +73,11 @@ namespace NHibernate.Persister.Entity
 				}
 				else
 				{
+					if (_propertyMappings.ContainsKey(mapping))
+					{
+						throw new QueryException($"Subquery selects the same type '{mapping.Type}' multiple times. Use unique alias for each type selection.");
+					}
+
 					_propertyMappings.Add(mapping, fromElement.EntitySuffix ?? fromElement.CollectionSuffix);
 				}
 			}
@@ -189,15 +194,17 @@ namespace NHibernate.Persister.Entity
 		public List<string> GetPropertiesColumns(string alias)
 		{
 			var columns = new List<string>();
+			var processedElements = new HashSet<FromElement>();
 			foreach (var expression in _selectClause.NonScalarExpressions)
 			{
-				if (expression.FromElement == null || expression.FromElement.IsFetch)
+				var fromElement = expression.FromElement;
+				if (fromElement == null || fromElement.IsFetch || !processedElements.Add(fromElement))
 				{
 					continue;
 				}
 
-				var fragment = expression.FromElement.GetPropertiesSelectFragment(expression.FromElement.EntitySuffix, alias);
-				if (expression.FromElement is JoinSubqueryFromElement)
+				var fragment = fromElement.GetPropertiesSelectFragment(fromElement.EntitySuffix, alias);
+				if (fromElement is JoinSubqueryFromElement)
 				{
 					columns.AddRange(fragment.GetColumnAliases());
 				}
@@ -221,20 +228,25 @@ namespace NHibernate.Persister.Entity
 		public List<string> GetIdentifiersColumns(string alias)
 		{
 			var columns = new List<string>();
+			var processedElements = new HashSet<FromElement>();
 			foreach (var expression in _selectClause.NonScalarExpressions)
 			{
-				if (expression.FromElement == null || expression.FromElement.FromClause.IsScalarSubQuery || expression.FromElement.IsFetch)
+				var fromElement = expression.FromElement;
+				if (fromElement == null ||
+				    fromElement.FromClause.IsScalarSubQuery ||
+				    fromElement.IsFetch ||
+				    !processedElements.Add(fromElement))
 				{
 					continue;
 				}
 
-				var fragment = expression.FromElement.GetIdentifierSelectFragment(expression.FromElement.EntitySuffix, alias);
+				var fragment = fromElement.GetIdentifierSelectFragment(fromElement.EntitySuffix, alias);
 				if (fragment == null)
 				{
 					continue; // Subquery with scalar select
 				}
 
-				if (expression.FromElement is JoinSubqueryFromElement)
+				if (fromElement is JoinSubqueryFromElement)
 				{
 					columns.AddRange(fragment.GetColumnAliases());
 				}

@@ -1237,7 +1237,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			get 
 			{
 				// select clauses for insert statements should alwasy be treated as shallow
-				return StatementType == INSERT ||  _qti.IsShallowQuery;
+				return StatementType == INSERT || (_qti.IsShallowQuery && !_currentFromClause.IsJoinSubQuery);
 			}
 		}
 

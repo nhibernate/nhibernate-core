@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -745,7 +746,7 @@ namespace NHibernate.Test.Linq.ByMethod
 	select o, o2.ord
 	from Order o
 	inner join (
-		select o1 as ord, o1.OrderLines.size
+		select o1 as ord, o1.ShippedTo
 		from Order o1
 		inner join fetch o1.OrderLines
 		where o1.OrderId = 10248
@@ -810,7 +811,7 @@ namespace NHibernate.Test.Linq.ByMethod
 	select o, o2.ord
 	from Order o
 	inner join (
-		select o1 as ord, o1.OrderLines.size
+		select o1 as ord, o1.ShippedTo
 		from Order o1
 		inner join fetch o1.ProductIds
 		where o1.OrderId = 10248
@@ -851,6 +852,87 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(NHibernateUtil.IsInitialized(order.ProductIds), fetches[0] ? Is.True : (IResolveConstraint) Is.False);
 			order = (Order) array[1];
 			Assert.That(NHibernateUtil.IsInitialized(order.ProductIds), fetches[1] ? Is.True : (IResolveConstraint) Is.False);
+		}
+
+		#endregion
+
+		#region HqlDuplicateEntitySelectionSubQuery
+
+		[Test]
+		public void HqlDuplicateEntitySelectionSubQuery()
+		{
+			AssertDuplicateEntitySelectionSubQuery(@"
+	from Order o
+	inner join (
+		select o1 as ord1, o1 as ord2
+		from Order o1
+		where o1.OrderId = 10248
+	) o2 on (o.OrderId - 1) = o2.ord1.OrderId");
+
+			AssertDuplicateEntitySelectionSubQuery(@"
+	select o, o2.ord1, o2.ord2
+	from Order o
+	inner join (
+		select o1 as ord1, o1 as ord2
+		from Order o1
+		where o1.OrderId = 10248
+	) o2 on (o.OrderId - 1) = o2.ord1.OrderId");
+
+			AssertDuplicateEntitySelectionSubQuery(@"
+	select o, o2, o2
+	from Order o
+	inner join (
+		select o1
+		from Order o1
+		where o1.OrderId = 10248
+	) o2 on (o.OrderId - 1) = o2.OrderId");
+
+			AssertDuplicateEntitySelectionSubQuery(@"
+	select o, o2, o2
+	from Order o
+	inner join (
+		from Order
+		where OrderId = 10248
+	) o2 on (o.OrderId - 1) = o2.OrderId");
+		}
+
+		private void AssertDuplicateEntitySelectionSubQuery(string query)
+		{
+			IList result;
+			using (var logSpy = new SqlLogSpy())
+			{
+				result = session.CreateQuery(query).List();
+				AssertDuplicateEntitySelectionSubQuery(logSpy.GetWholeLog(), result, false);
+			}
+
+			using (var logSpy = new SqlLogSpy())
+			{
+				result = session.CreateQuery(query).Enumerable().OfType<object[]>().ToList();
+				AssertDuplicateEntitySelectionSubQuery(logSpy.GetWholeLog(), result, true);
+			}
+		}
+
+		private void AssertDuplicateEntitySelectionSubQuery(string sql, IList result, bool shallow)
+		{
+			var selectSql = sql.Substring(0, sql.IndexOf("from"));
+			var item = result[0];
+			Assert.That(item, Is.TypeOf<object[]>());
+			var array = (object[]) item;
+			Assert.That(array, Has.Length.EqualTo(3));
+			if (shallow)
+			{
+				Assert.That(GetTotalOccurrences(selectSql, ","), Is.EqualTo(1));
+				Assert.That(array[0], Is.AssignableFrom<Order>().And.Property("OrderId").EqualTo(10249));
+				Assert.That(array[1], Is.AssignableFrom<Order>().And.Property("OrderId").EqualTo(10248));
+				Assert.That(array[1], Is.AssignableFrom<Order>().And.Property("OrderId").EqualTo(10248));
+			}
+			else
+			{
+				Assert.That(GetTotalOccurrences(selectSql, ","), Is.EqualTo(27));
+				Assert.That(array[0], Is.TypeOf<Order>().And.Property("OrderId").EqualTo(10249));
+				Assert.That(array[1], Is.TypeOf<Order>().And.Property("OrderId").EqualTo(10248));
+				Assert.That(array[1], Is.TypeOf<Order>().And.Property("OrderId").EqualTo(10248));
+			}
 		}
 
 		#endregion

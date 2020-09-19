@@ -103,9 +103,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			var inheritedExpressions = new Dictionary<ISelectExpression, SelectClause>();
 			SelectExpressions = GetSelectExpressions();
 			OriginalSelectExpressions = SelectExpressions.ToList();
-			NonScalarExpressions = !Walker.IsShallowQuery
-				? new List<ISelectExpression>()
-				: null;
+			NonScalarExpressions = new List<ISelectExpression>();
 			var length = SelectExpressions.Count;
 			for (var i = 0; i < length; i++)
 			{
@@ -152,7 +150,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 						if (!selectClause.IsScalarSelect)
 						{
-							RemoveChild((IASTNode) expr);
+							RemoveChildAndUnsetParent((IASTNode) expr);
 						}
 
 						subqueryExpressions = new List<ISelectExpression>();
@@ -180,7 +178,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					var indexes = new List<int>(subqueryExpressions.Count);
 					foreach (var expression in subqueryExpressions)
 					{
-						inheritedExpressions.Add(expression, selectClause);
+						inheritedExpressions[expression] = selectClause;
 						indexes.Add(i);
 						SelectExpressions.Insert(i, expression);
 						i++;
@@ -227,16 +225,21 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				InitializeScalarColumnNames();
 			}
 
+			// generate id select fragment and then property select fragment for
+			// each expression, just like generateSelectFragments().
+			RenderNonScalarSelects(fromClause, inheritedExpressions, GetFetchedFromElements(fromClause));
+		}
+
+		private List<FromElement> GetFetchedFromElements(FromClause fromClause)
+		{
+			var fetchedFromElements = new List<FromElement>();
 			if (Walker.IsShallowQuery)
 			{
-				RenderDerivedNonScalarIdentifiers(fromClause);
-				return;
+				return fetchedFromElements;
 			}
 
-			var fetchedFromElements = new List<FromElement>();
 			// add the fetched entities
-			var fromElements = fromClause.GetAllProjectionListTyped();
-			foreach (FromElement fromElement in fromElements)
+			foreach (FromElement fromElement in fromClause.GetAllProjectionListTyped())
 			{
 				if (!fromElement.IsFetch)
 				{
@@ -278,9 +281,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 			}
 
-			// generate id select fragment and then property select fragment for
-			// each expression, just like generateSelectFragments().
-			RenderNonScalarSelects(fromClause, inheritedExpressions, fetchedFromElements);
+			return fetchedFromElements;
 		}
 
 		private void AddExpression(ISelectExpression expr, List<IType> queryReturnTypeList)
@@ -452,19 +453,40 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			var appender = new ASTAppender(ASTFactory, this);
 			var combinedFromElements = new List<FromElement>();
+			var processedElements = new HashSet<FromElement>();
 			foreach (var e in NonScalarExpressions)
 			{
 				var fromElement = e.FromElement;
-				if (fromElement != null)
+				if (fromElement == null)
+				{
+					continue;
+				}
+
+				var node = (IASTNode) e;
+				if (processedElements.Add(fromElement))
 				{
 					combinedFromElements.Add(fromElement);
 					RenderNonScalarIdentifiers(fromElement, inheritedExpressions.ContainsKey(e) ? null : e, appender);
 				}
+				else if (!inheritedExpressions.ContainsKey(e) && node.Parent != null)
+				{
+					RemoveChildAndUnsetParent(node);
+				}
+			}
+
+			if (Walker.IsShallowQuery)
+			{
+				return;
 			}
 
 			// Append fetched elements
 			foreach (var fetchedFromElement in fetchedFromElements)
 			{
+				if (!processedElements.Add(fetchedFromElement))
+				{
+					continue;
+				}
+
 				fetchedFromElement.EntitySuffix = Walker.GetEntitySuffix(fetchedFromElement);
 				combinedFromElements.Add(fetchedFromElement);
 				var fragment = fetchedFromElement.GetIdentifierSelectFragment(fetchedFromElement.EntitySuffix);
@@ -495,7 +517,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			var fromElements = currentFromClause.GetAllProjectionListTyped();
 			foreach (var fromElement in fromElements)
 			{
-				if (fromElement.IsCollectionOfValuesOrComponents && fromElement.IsFetch)
+				if (fromElement.IsCollectionOfValuesOrComponents &&
+					fromElement.IsFetch &&
+					processedElements.Add(fromElement))
 				{
 					var suffix = Walker.GetSuffix(fromElement);
 					var fragment = fromElement.GetValueCollectionSelectFragment(suffix);
@@ -514,25 +538,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return appender.Append(type, fragment.ToSqlStringFragment(false), false);
 		}
 
-		private void RenderDerivedNonScalarIdentifiers(FromClause fromClause)
-		{
-			// Render only when scalar columns are not rendered
-			if (_derivedSelectExpressions == null || !fromClause.IsScalarSubQuery)
-			{
-				return;
-			}
-
-			var appender = new ASTAppender(ASTFactory, this);
-			foreach (var derivedSelectExpression in _derivedSelectExpressions)
-			{
-				RenderNonScalarIdentifiers(derivedSelectExpression.FromElement, derivedSelectExpression, appender);
-			}
-		}
-
 		private void RenderNonScalarIdentifiers(FromElement fromElement, ISelectExpression expr, ASTAppender appender)
 		{
 			if (fromElement.FromClause.IsScalarSubQuery && _derivedSelectExpressions?.Contains(expr) != true)
 			{
+				return;
+			}
+
+			if (Walker.IsShallowQuery && !fromElement.FromClause.IsScalarSubQuery && SelectExpressions.Contains(expr))
+			{
+				// A scalar column was generated
 				return;
 			}
 
@@ -541,8 +556,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			if (fragment == null)
 			{
 				// When a subquery join has a scalar select only
-				var node = (IASTNode) expr;
-				node?.Parent.RemoveChild(node);
+				RemoveChildAndUnsetParent((IASTNode) expr);
 				return;
 			}
 
@@ -705,6 +719,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public int GetColumnNamesStartPosition(int i)
 		{
 			return _columnNamesStartPositions[i];
+		}
+
+		private static void RemoveChildAndUnsetParent(IASTNode node)
+		{
+			if (node?.Parent != null)
+			{
+				node.Parent.RemoveChild(node);
+				node.Parent = null;
+			}
 		}
 	}
 }
