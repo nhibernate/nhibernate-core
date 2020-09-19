@@ -57,7 +57,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public SqlString RenderText(SqlString subQuery, ISessionFactoryImplementor sessionFactory)
 		{
-			return RenderText(sessionFactory).Replace("{query}", subQuery.ToString());
+			var array = RenderText(sessionFactory).Split("{query}");
+
+			return new SqlString(new object[] {array[0], subQuery, array[1]});
 		}
 
 		public override string GetIdentityColumn()

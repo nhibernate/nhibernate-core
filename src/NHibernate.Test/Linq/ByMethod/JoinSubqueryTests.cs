@@ -14,24 +14,16 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void HqlEntitySubQuery()
 		{
-			var result = session.CreateQuery("from Order o inner join (from Order where OrderId = 10248) o2 on (o.OrderId - 1) = o2.OrderId").List();
-			AssertEntitySubQuery(result);
-
-			result = session.CreateQuery("from Order o inner join (from Order o2 where o2.OrderId = 10248) o3 on (o.OrderId - 1) = o3.OrderId").List();
-			AssertEntitySubQuery(result);
-
-			result = session.CreateQuery("from Order o inner join (select o2 from Order o2 where o2.OrderId = 10248) o3 on (o.OrderId - 1) = o3.OrderId").List();
-			AssertEntitySubQuery(result);
-
-			result = session.CreateQuery("select o, o3 from Order o inner join (select o2 from Order o2 where o2.OrderId = 10248) o3 on (o.OrderId - 1) = o3.OrderId").List();
-			AssertEntitySubQuery(result);
-
-			result = session.CreateQuery("select o, o3 from Order o inner join (from Order o2 where o2.OrderId = 10248) o3 on (o.OrderId - 1) = o3.OrderId").List();
-			AssertEntitySubQuery(result);
+			AssertEntitySubQuery("from Order o inner join (from Order where OrderId = :id) o2 on (o.OrderId - 1) = o2.OrderId");
+			AssertEntitySubQuery("from Order o inner join (from Order o2 where o2.OrderId = :id) o3 on (o.OrderId - 1) = o3.OrderId");
+			AssertEntitySubQuery("from Order o inner join (select o2 from Order o2 where o2.OrderId = :id) o3 on (o.OrderId - 1) = o3.OrderId");
+			AssertEntitySubQuery("select o, o3 from Order o inner join (select o2 from Order o2 where o2.OrderId = :id) o3 on (o.OrderId - 1) = o3.OrderId");
+			AssertEntitySubQuery("select o, o3 from Order o inner join (from Order o2 where o2.OrderId = :id) o3 on (o.OrderId - 1) = o3.OrderId");
 		}
 
-		private void AssertEntitySubQuery(IList result)
+		private void AssertEntitySubQuery(string query)
 		{
+			var result = session.CreateQuery(query).SetParameter("id", 10248).List();
 			Assert.That(result, Has.Count.EqualTo(1));
 			var item = result[0];
 			Assert.That(item, Is.TypeOf<object[]>());
@@ -48,23 +40,24 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void HqlScalarSubQuery()
 		{
-			var result = session.CreateQuery(@"
+			AssertScalarSubQuery(@"
 	select o.Customer.CustomerId, o.ShippedTo, o2
-	from Order o inner join (
-		select OrderId, Customer.CustomerId, ShippedTo from Order where OrderId = 10248
-	) o2 on (o.OrderId - 1) = o2.OrderId").List();
-			AssertScalarSubQuery(result);
+	from Order o
+	inner join (
+		select OrderId, Customer.CustomerId, ShippedTo from Order where OrderId = :id
+	) o2 on (o.OrderId - 1) = o2.OrderId");
 
-			result = session.CreateQuery(@"
+			AssertScalarSubQuery(@"
 	select o.Customer.CustomerId, o.ShippedTo, o2.OrderId, o2.CustomerId, o2.ShippedTo
-	from Order o inner join (
-		select OrderId, Customer.CustomerId, ShippedTo from Order where OrderId = 10248
-	) o2 on (o.OrderId - 1) = o2.OrderId").List();
-			AssertScalarSubQuery(result);
+	from Order o
+	inner join (
+		select OrderId, Customer.CustomerId, ShippedTo from Order where OrderId = :id
+	) o2 on (o.OrderId - 1) = o2.OrderId");
 		}
 
-		private void AssertScalarSubQuery(IList result)
+		private void AssertScalarSubQuery(string query)
 		{
+			var result = session.CreateQuery(query).SetParameter("id", 10248).List();
 			Assert.That(result, Has.Count.EqualTo(1));
 			var item = result[0];
 			Assert.That(item, Is.TypeOf<object[]>());
@@ -84,23 +77,22 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void HqlIdSubQuery()
 		{
-			var result = session.CreateQuery(@"
+			AssertIdSubQuery<Order>(@"
 	select o
 	from Order o inner join (
-		select id from Order where OrderId = 10248
-	) o2 on o.id = o2.id").List();
-			AssertIdSubQuery<Order>(result);
+		select id from Order where OrderId = :id
+	) o2 on o.id = o2.id");
 
-			result = session.CreateQuery(@"
+			AssertIdSubQuery<CompositeOrder>(@"
 	select o
 	from CompositeOrder o inner join (
-		select id from CompositeOrder where OrderId = 10248
-	) o2 on o.id = o2.id").List();
-			AssertIdSubQuery<CompositeOrder>(result);
+		select id from CompositeOrder where OrderId = :id
+	) o2 on o.id = o2.id");
 		}
 
-		private void AssertIdSubQuery<T>(IList result)
+		private void AssertIdSubQuery<T>(string query)
 		{
+			var result = session.CreateQuery(query).SetParameter("id", 10248).List();
 			Assert.That(result, Has.Count.EqualTo(1));
 			var item = result[0];
 			Assert.That(item, Is.TypeOf<T>());
@@ -139,23 +131,22 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void HqlMixedSubQuery()
 		{
-			var result = session.CreateQuery(@"
+			AssertMixedSubQuery(@"
 	select o, o2, o.Customer.CustomerId, o.ShippedTo
 	from Order o inner join (
-		select OrderId, Customer, ShippedTo from Order where OrderId = 10248
-	) o2 on (o.OrderId - 1) = o2.OrderId").List();
-			AssertMixedSubQuery(result);
+		select OrderId, Customer, ShippedTo from Order where OrderId = :id
+	) o2 on (o.OrderId - 1) = o2.OrderId");
 
-			result = session.CreateQuery(@"
+			AssertMixedSubQuery(@"
 	select o, o2.OrderId, o2.cu, o2.ShippedTo, o.Customer.CustomerId, o.ShippedTo
 	from Order o inner join (
-		select OrderId, Customer as cu, ShippedTo from Order where OrderId = 10248
-	) o2 on (o.OrderId - 1) = o2.OrderId").List();
-			AssertMixedSubQuery(result);
+		select OrderId, Customer as cu, ShippedTo from Order where OrderId = :id
+	) o2 on (o.OrderId - 1) = o2.OrderId");
 		}
 
-		private void AssertMixedSubQuery(IList result)
+		private void AssertMixedSubQuery(string query)
 		{
+			var result = session.CreateQuery(query).SetParameter("id", 10248).List();
 			Assert.That(result, Has.Count.EqualTo(1));
 			var item = result[0];
 			Assert.That(item, Is.TypeOf<object[]>());
@@ -176,16 +167,16 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void HqlSubQueryComponentPropertySelection()
 		{
-			var result = session.CreateQuery(@"
+			AssertSubQueryComponentPropertySelection(@"
 	select o2.cu.Address.Street, o2.emp.Address.Street
 	from Order o inner join (
-		select OrderId, Customer as cu, Employee as emp from Order where OrderId = 10248
-	) o2 on (o.OrderId - 1) = o2.OrderId").List();
-			AssertSubQueryComponentPropertySelection(result);
+		select OrderId, Customer as cu, Employee as emp from Order where OrderId = :id
+	) o2 on (o.OrderId - 1) = o2.OrderId");
 		}
 
-		private void AssertSubQueryComponentPropertySelection(IList result)
+		private void AssertSubQueryComponentPropertySelection(string query)
 		{
+			var result = session.CreateQuery(query).SetParameter("id", 10248).List();
 			Assert.That(result, Has.Count.EqualTo(1));
 			var item = result[0];
 			Assert.That(item, Is.TypeOf<object[]>());
@@ -202,23 +193,35 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void HqlIdSubQueryWithPagingAndOrderBy()
 		{
-			var result = session.CreateQuery(@"
+			AssertIdSubQueryWithPagingAndOrderBy<Order>(@"
 	select o
 	from Order o inner join (
-		select id from Order order by OrderId skip 2 take 2
-	) o2 on o.id = o2.id").List();
-			AssertIdSubQueryWithPagingAndOrderBy<Order>(result);
+		select id from Order order by OrderId skip :s take :t
+	) o2 on o.id = o2.id");
 
-			result = session.CreateQuery(@"
+			AssertIdSubQueryWithPagingAndOrderBy<CompositeOrder>(@"
 	select o
 	from CompositeOrder o inner join (
-		select id from CompositeOrder order by OrderId skip 2 take 2
-	) o2 on o.id = o2.id").List();
-			AssertIdSubQueryWithPagingAndOrderBy<CompositeOrder>(result);
+		select id from CompositeOrder order by OrderId skip :s take :t
+	) o2 on o.id = o2.id");
 		}
 
-		private void AssertIdSubQueryWithPagingAndOrderBy<T>(IList result)
+		private void AssertIdSubQueryWithPagingAndOrderBy<T>(string query)
 		{
+			IList result;
+			if (Sfi.Dialect.SupportsVariableLimit)
+			{
+				result = session.CreateQuery(query)
+				                .SetParameter("s", 2)
+				                .SetParameter("t", 2)
+				                .List();
+			}
+			else
+			{
+				query = query.Replace(":s", "2").Replace(":t", "2");
+				result = session.CreateQuery(query).List();
+			}
+			
 			Assert.That(result, Has.Count.EqualTo(2));
 			var item = result[0];
 			Assert.That(item, Is.TypeOf<T>());
@@ -235,25 +238,24 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void HqlGroupBySubQueryWithAliases()
 		{
-			var result = session.CreateQuery(@"
+			AssertGroupBySubQueryWithAliases(@"
 	select o, o2
 	from Order o inner join (
 		select Customer.CustomerId, count(*) as total, max(OrderId) as orderId from Order group by Customer.CustomerId
 	) o2 on o.id = o2.orderId
-	where o2.total > 30").List();
-			AssertGroupBySubQueryWithAliases(result);
+	where o2.total > :total");
 
-			result = session.CreateQuery(@"
+			AssertGroupBySubQueryWithAliases(@"
 	select o, o2.CustomerId, o2.total, o2.orderId
 	from Order o inner join (
 		select Customer.CustomerId, count(*) as total, max(OrderId) as orderId from Order group by Customer.CustomerId
 	) o2 on o.id = o2.orderId
-	where o2.total > 30").List();
-			AssertGroupBySubQueryWithAliases(result);
+	where o2.total > :total");
 		}
 
-		private void AssertGroupBySubQueryWithAliases(IList result)
+		private void AssertGroupBySubQueryWithAliases(string query)
 		{
+			var result = session.CreateQuery(query).SetParameter("total", 30).List();
 			Assert.That(result, Has.Count.EqualTo(1));
 			var item = result[0];
 			Assert.That(item, Is.TypeOf<object[]>());
@@ -272,16 +274,16 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void HqlSubQueryWithEntityAlias()
 		{
-			var result = session.CreateQuery(@"
+			AssertSubQueryWithEntityAlias(@"
 	select o, o3.order.OrderId, o3.customer.CustomerId, o3.ShippedTo
 	from Order o inner join (
-		select o2 as order, o2.Customer as customer, o2.ShippedTo from Order o2 where o2.OrderId = 10248
-	) o3 on (o.OrderId - 1) = o3.order.OrderId").List();
-			AssertSubQueryWithEntityAlias(result);
+		select o2 as order, o2.Customer as customer, o2.ShippedTo from Order o2 where o2.OrderId = :id
+	) o3 on (o.OrderId - 1) = o3.order.OrderId");
 		}
 
-		private void AssertSubQueryWithEntityAlias(IList result)
+		private void AssertSubQueryWithEntityAlias(string query)
 		{
+			var result = session.CreateQuery(query).SetParameter("id", 10248).List();
 			Assert.That(result, Has.Count.EqualTo(1));
 			var item = result[0];
 			Assert.That(item, Is.TypeOf<object[]>());
@@ -300,30 +302,32 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void HqlMultipleEntitySubQueries()
 		{
-			var result = session.CreateQuery(@"
+			AssertMultipleEntitySubQueries(@"
 	from Order o
 	inner join (
-		from Order where OrderId = 10248
+		from Order where OrderId = :id
 	) o2 on (o.OrderId - 1) = o2.OrderId
 	left join (
-		from Order where OrderId = 10250
-	) o3 on (o3.OrderId - 2) = o2.OrderId").List();
-			AssertMultipleEntitySubQueries(result);
+		from Order where OrderId = :id2
+	) o3 on (o3.OrderId - 2) = o2.OrderId");
 
-			result = session.CreateQuery(@"
+			AssertMultipleEntitySubQueries(@"
 	select o, o2, o3
 	from Order o
 	inner join (
-		from Order where OrderId = 10248
+		from Order where OrderId = :id
 	) o2 on (o.OrderId - 1) = o2.OrderId
 	left join (
-		from Order where OrderId = 10250
-	) o3 on (o3.OrderId - 2) = o2.OrderId").List();
-			AssertMultipleEntitySubQueries(result);
+		from Order where OrderId = :id2
+	) o3 on (o3.OrderId - 2) = o2.OrderId");
 		}
 
-		private void AssertMultipleEntitySubQueries(IList result)
+		private void AssertMultipleEntitySubQueries(string query)
 		{
+			var result = session.CreateQuery(query)
+			                    .SetParameter("id", 10248)
+			                    .SetParameter("id2", 10250)
+			                    .List();
 			Assert.That(result, Has.Count.EqualTo(1));
 			var item = result[0];
 			Assert.That(item, Is.TypeOf<object[]>());
@@ -341,30 +345,32 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void HqlMultipleScalarSubQueries()
 		{
-			var result = session.CreateQuery(@"
+			AssertMultipleScalarSubQueries(@"
 	from Order o
 	inner join (
-		select OrderId, Customer.CustomerId, ShippedTo from Order where OrderId = 10248
+		select OrderId, Customer.CustomerId, ShippedTo from Order where OrderId = :id
 	) o2 on (o.OrderId - 1) = o2.OrderId
 	left join (
-		select OrderId, Customer.CustomerId, ShippedTo from Order where OrderId = 10250
-	) o3 on (o3.OrderId - 2) = o2.OrderId").List();
-			AssertMultipleScalarSubQueries(result);
+		select OrderId, Customer.CustomerId, ShippedTo from Order where OrderId = :id2
+	) o3 on (o3.OrderId - 2) = o2.OrderId");
 
-			result = session.CreateQuery(@"
+			AssertMultipleScalarSubQueries(@"
 	select o, o2, o3
 	from Order o
 	inner join (
-		select OrderId, Customer.CustomerId, ShippedTo from Order where OrderId = 10248
+		select OrderId, Customer.CustomerId, ShippedTo from Order where OrderId = :id
 	) o2 on (o.OrderId - 1) = o2.OrderId
 	left join (
-		select OrderId, Customer.CustomerId, ShippedTo from Order where OrderId = 10250
-	) o3 on (o3.OrderId - 2) = o2.OrderId").List();
-			AssertMultipleScalarSubQueries(result);
+		select OrderId, Customer.CustomerId, ShippedTo from Order where OrderId = :id2
+	) o3 on (o3.OrderId - 2) = o2.OrderId");
 		}
 
-		private void AssertMultipleScalarSubQueries(IList result)
+		private void AssertMultipleScalarSubQueries(string query)
 		{
+			var result = session.CreateQuery(query)
+			                    .SetParameter("id", 10248)
+			                    .SetParameter("id2", 10250)
+			                    .List();
 			Assert.That(result, Has.Count.EqualTo(1));
 			var item = result[0];
 			Assert.That(item, Is.TypeOf<object[]>());
@@ -386,7 +392,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void HqlNestedEntitySubQueries()
 		{
-			var result = session.CreateQuery(@"
+			AssertNestedEntitySubQueries(@"
 	from Order o 
 	left join (
 		select e as emp, e2 as sup
@@ -394,10 +400,9 @@ namespace NHibernate.Test.Linq.ByMethod
 		left join (from Employee) e2 on e.Superior = e2
 	) o3 on o.Employee = o3.emp
 	order by o.id
-	take 1").List();
-			AssertNestedEntitySubQueries(result);
+	take :t");
 
-			result = session.CreateQuery(@"
+			AssertNestedEntitySubQueries(@"
 	select o, o3
 	from Order o 
 	left join (
@@ -406,10 +411,9 @@ namespace NHibernate.Test.Linq.ByMethod
 		left join (from Employee) e2 on e.Superior = e2
 	) o3 on o.Employee = o3.emp
 	order by o.id
-	take 1").List();
-			AssertNestedEntitySubQueries(result);
+	take :t");
 
-			result = session.CreateQuery(@"
+			AssertNestedEntitySubQueries(@"
 	select o, o3.emp, o3.sup
 	from Order o 
 	left join (
@@ -418,12 +422,24 @@ namespace NHibernate.Test.Linq.ByMethod
 		left join (from Employee) e2 on e.Superior = e2
 	) o3 on o.Employee = o3.emp
 	order by o.id
-	take 1").List();
-			AssertNestedEntitySubQueries(result);
+	take :t");
 		}
 
-		private void AssertNestedEntitySubQueries(IList result)
+		private void AssertNestedEntitySubQueries(string query)
 		{
+			IList result;
+			if (Sfi.Dialect.SupportsVariableLimit)
+			{
+				result = session.CreateQuery(query)
+				                .SetParameter("t", 1)
+				                .List();
+			}
+			else
+			{
+				query = query.Replace(":t", "1");
+				result = session.CreateQuery(query).List();
+			}
+
 			Assert.That(result, Has.Count.EqualTo(1));
 			var item = result[0];
 			Assert.That(item, Is.TypeOf<object[]>());
@@ -441,7 +457,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void HqlNestedScalarSubQueries()
 		{
-			var result = session.CreateQuery(@"
+			AssertNestedScalarSubQueries(@"
 	select o.OrderId, o.ShippedTo, o.Customer.CustomerId, o.ShippingAddress.City, o3 as ord3
 	from Order o
 	left join (
@@ -452,10 +468,9 @@ namespace NHibernate.Test.Linq.ByMethod
 			from Order
 		) o2 on o1.OrderId = o2.OrderId-1
 	) o3 on o.OrderId = o3.OrderId-1
-	where o.OrderId = 10248").List();
-			AssertNestedScalarSubQueries(result);
+	where o.OrderId = :id");
 
-			result = session.CreateQuery(@"
+			AssertNestedScalarSubQueries(@"
 	select o.OrderId, o.ShippedTo, o.Customer.CustomerId, o.ShippingAddress.City, o3 as ord3
 	from Order o
 	left join (
@@ -468,10 +483,9 @@ namespace NHibernate.Test.Linq.ByMethod
 			from Order
 		) o2 on o1.OrderId = o2.OrderId-1
 	) o3 on o.OrderId = o3.OrderId-1
-	where o.OrderId = 10248").List();
-			AssertNestedScalarSubQueries(result);
+	where o.OrderId = :id");
 
-			result = session.CreateQuery(@"
+			AssertNestedScalarSubQueries(@"
 	select
 		o.OrderId, o.ShippedTo, o.Customer.CustomerId, o.ShippingAddress.City,
 		o3.OrderId, o3.ShippedTo, o3.CustomerId, o3.City, o3.oid, o3.sto, o3.cuid, o3.cty
@@ -486,12 +500,12 @@ namespace NHibernate.Test.Linq.ByMethod
 			from Order
 		) o2 on o1.OrderId = o2.OrderId-1
 	) o3 on o.OrderId = o3.OrderId-1
-	where o.OrderId = 10248").List();
-			AssertNestedScalarSubQueries(result);
+	where o.OrderId = :id");
 		}
 
-		private void AssertNestedScalarSubQueries(IList result)
+		private void AssertNestedScalarSubQueries(string query)
 		{
+			var result = session.CreateQuery(query).SetParameter("id", 10248).List();
 			Assert.That(result, Has.Count.EqualTo(1));
 			var item = result[0];
 			Assert.That(item, Is.TypeOf<object[]>());
@@ -518,7 +532,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void HqlNestedMixedSubQueries()
 		{
-			var result = session.CreateQuery(@"
+			AssertNestedMixedSubQueries(@"
 	select o, o.ShippedTo, o.Customer, o.ShippingAddress.City, o3
 	from Order o
 	left join (
@@ -529,10 +543,9 @@ namespace NHibernate.Test.Linq.ByMethod
 			from Order o0
 		) o2 on o1.OrderId = o2.ord1.OrderId-1
 	) o3 on o.OrderId = o3.ord2.OrderId-1
-	where o.OrderId = 10248").List();
-			AssertNestedMixedSubQueries(result);
+	where o.OrderId = :id");
 
-			result = session.CreateQuery(@"
+			AssertNestedMixedSubQueries(@"
 	select 
 		o, o.ShippedTo, o.Customer, o.ShippingAddress.City,
 		o3.ord2, o3.sto2, o3.cu2, o3.cty2, o3.sub1
@@ -545,10 +558,9 @@ namespace NHibernate.Test.Linq.ByMethod
 			from Order o0
 		) o2 on o1.OrderId = o2.ord1.OrderId-1
 	) o3 on o.OrderId = o3.ord2.OrderId-1
-	where o.OrderId = 10248").List();
-			AssertNestedMixedSubQueries(result);
+	where o.OrderId = :id");
 
-			result = session.CreateQuery(@"
+			AssertNestedMixedSubQueries(@"
 	select 
 		o, o.ShippedTo, o.Customer, o.ShippingAddress.City,
 		o3.ord2, o3.sto2, o3.cu2, o3.cty2,
@@ -562,10 +574,9 @@ namespace NHibernate.Test.Linq.ByMethod
 			from Order o0
 		) o2 on o1.OrderId = o2.ord1.OrderId-1
 	) o3 on o.OrderId = o3.ord2.OrderId-1
-	where o.OrderId = 10248").List();
-			AssertNestedMixedSubQueries(result);
+	where o.OrderId = :id");
 
-			result = session.CreateQuery(@"
+			AssertNestedMixedSubQueries(@"
 	select 
 		o4.ord3, o4.ord3.ShippedTo, o4.cu3, o4.ord3.ShippingAddress.City,
 		o4.sub2.ord2, o4.sub2.ord2.ShippedTo, o4.sub2.cu2, o4.sub2.cu2.Address.City,
@@ -583,12 +594,10 @@ namespace NHibernate.Test.Linq.ByMethod
 				from Order o0
 			) o2 on o1.OrderId = o2.ord1.OrderId-1
 		) o3 on o.OrderId = o3.ord2.OrderId-1
-		where o.OrderId = 10248
-	) o4 on o5.OrderId = o4.ord3.OrderId
-	").List();
-			AssertNestedMixedSubQueries(result);
+		where o.OrderId = :id
+	) o4 on o5.OrderId = o4.ord3.OrderId");
 
-			result = session.CreateQuery(@"
+			AssertNestedMixedSubQueries(@"
 	select
 		o, o.ShippedTo, o.Customer, o.ShippingAddress.City,
 		o3.ord2, o3.sto2, o3.cu2, o3.cty2,
@@ -604,10 +613,9 @@ namespace NHibernate.Test.Linq.ByMethod
 			from Order o0
 		) o2 on o1.OrderId = o2.ord1.OrderId-1
 	) o3 on o.OrderId = o3.ord2.OrderId-1
-	where o.OrderId = 10248").List();
-			AssertNestedMixedSubQueries(result);
+	where o.OrderId = :id");
 
-			result = session.CreateQuery(@"
+			AssertNestedMixedSubQueries(@"
 	select
 		o, o.ShippedTo, o.Customer, o.ShippingAddress.City,
 		o3.ord2, o3.sto2, o3.cu2, o3.cty2,
@@ -620,10 +628,9 @@ namespace NHibernate.Test.Linq.ByMethod
 		from Order o1
 		left join (from Order) o2 on o1.OrderId = o2.OrderId-1
 	) o3 on o.OrderId = o3.ord2.OrderId-1
-	where o.OrderId = 10248").List();
-			AssertNestedMixedSubQueries(result);
+	where o.OrderId = :id");
 
-			result = session.CreateQuery(@"
+			AssertNestedMixedSubQueries(@"
 	select
 		o, o.ShippedTo, o.Customer, o.ShippingAddress.City,
 		o3.ord2, o3.ord2.ShippedTo, o3.ord2.Customer, o3.ord2.Customer.Address.City,
@@ -634,12 +641,12 @@ namespace NHibernate.Test.Linq.ByMethod
 		from Order o1
 		left join (from Order) o2 on o1.OrderId = o2.OrderId-1
 	) o3 on o.OrderId = o3.ord2.OrderId-1
-	where o.OrderId = 10248").List();
-			AssertNestedMixedSubQueries(result);
+	where o.OrderId = :id");
 		}
 
-		private void AssertNestedMixedSubQueries(IList result)
+		private void AssertNestedMixedSubQueries(string query)
 		{
+			var result = session.CreateQuery(query).SetParameter("id", 10248).List();
 			Assert.That(result, Has.Count.EqualTo(1));
 			var item = result[0];
 			Assert.That(item, Is.TypeOf<object[]>());
@@ -667,51 +674,48 @@ namespace NHibernate.Test.Linq.ByMethod
 		public void HqlEntitySubQueryWithEntityFetch()
 		{
 			session.Clear();
-			var result = session.CreateQuery(@"
+			AssertEntitySubQueryWithEntityFetch(@"
 	from Order o
 	inner join (
 		from Order o1
 		inner join fetch o1.Customer
-		where o1.OrderId = 10248
-	) o2 on (o.OrderId - 1) = o2.OrderId").List();
-			AssertEntitySubQueryWithEntityFetch(result, new[] {false, true});
+		where o1.OrderId = :id
+	) o2 on (o.OrderId - 1) = o2.OrderId", new[] {false, true});
 
 			session.Clear();
-			result = session.CreateQuery(@"
+			AssertEntitySubQueryWithEntityFetch(@"
 	select o, o2.ord
 	from Order o
 	inner join (
 		select o1 as ord, o1.Customer.CustomerId
 		from Order o1
 		inner join fetch o1.Customer
-		where o1.OrderId = 10248
-	) o2 on (o.OrderId - 1) = o2.ord.OrderId").List();
-			AssertEntitySubQueryWithEntityFetch(result, new[] {false, true});
+		where o1.OrderId = :id
+	) o2 on (o.OrderId - 1) = o2.ord.OrderId", new[] {false, true});
 
 			session.Clear();
-			result = session.CreateQuery(@"
+			AssertEntitySubQueryWithEntityFetch(@"
 	from Order o
 	inner join (
 		from Order o1
-		where o1.OrderId = 10248
+		where o1.OrderId = :id
 	) o2 on (o.OrderId - 1) = o2.OrderId
-	inner join fetch o.Customer").List();
-			AssertEntitySubQueryWithEntityFetch(result, new[] {true, false});
+	inner join fetch o.Customer", new[] {true, false});
 
 			session.Clear();
-			result = session.CreateQuery(@"
+			AssertEntitySubQueryWithEntityFetch(@"
 	from Order o
 	inner join (
 		from Order o1
 		inner join fetch o1.Customer
-		where o1.OrderId = 10248
+		where o1.OrderId = :id
 	) o2 on (o.OrderId - 1) = o2.OrderId
-	inner join fetch o.Customer").List();
-			AssertEntitySubQueryWithEntityFetch(result, new[] {true, true});
+	inner join fetch o.Customer", new[] {true, true});
 		}
 
-		private void AssertEntitySubQueryWithEntityFetch(IList result, bool[] fetches)
+		private void AssertEntitySubQueryWithEntityFetch(string query, bool[] fetches)
 		{
+			var result = session.CreateQuery(query).SetParameter("id", 10248).List();
 			var item = result[0];
 			Assert.That(item, Is.TypeOf<object[]>());
 			var array = (object[]) item;
@@ -732,51 +736,48 @@ namespace NHibernate.Test.Linq.ByMethod
 		public void HqlEntitySubQueryWithCollectionFetch()
 		{
 			session.Clear();
-			var result = session.CreateQuery(@"
+			AssertEntitySubQueryWithCollectionFetch(@"
 	from Order o
 	inner join (
 		from Order o1
 		inner join fetch o1.OrderLines
-		where o1.OrderId = 10248
-	) o2 on (o.OrderId - 1) = o2.OrderId").List();
-			AssertEntitySubQueryWithCollectionFetch(result, new[] {false, true});
+		where o1.OrderId = :id
+	) o2 on (o.OrderId - 1) = o2.OrderId", new[] {false, true});
 
 			session.Clear();
-			result = session.CreateQuery(@"
+			AssertEntitySubQueryWithCollectionFetch(@"
 	select o, o2.ord
 	from Order o
 	inner join (
 		select o1 as ord, o1.ShippedTo
 		from Order o1
 		inner join fetch o1.OrderLines
-		where o1.OrderId = 10248
-	) o2 on (o.OrderId - 1) = o2.ord.OrderId").List();
-			AssertEntitySubQueryWithCollectionFetch(result, new[] {false, true});
+		where o1.OrderId = :id
+	) o2 on (o.OrderId - 1) = o2.ord.OrderId", new[] {false, true});
 
 			session.Clear();
-			result = session.CreateQuery(@"
+			AssertEntitySubQueryWithCollectionFetch(@"
 	from Order o
 	inner join (
 		from Order o1
-		where o1.OrderId = 10248
+		where o1.OrderId = :id
 	) o2 on (o.OrderId - 1) = o2.OrderId
-	inner join fetch o.OrderLines").List();
-			AssertEntitySubQueryWithCollectionFetch(result, new[] {true, false});
+	inner join fetch o.OrderLines", new[] {true, false});
 
 			session.Clear();
-			result = session.CreateQuery(@"
+			AssertEntitySubQueryWithCollectionFetch(@"
 	from Order o
 	inner join (
 		from Order o1
 		inner join fetch o1.OrderLines
-		where o1.OrderId = 10248
+		where o1.OrderId = :id
 	) o2 on (o.OrderId - 1) = o2.OrderId
-	inner join fetch o.OrderLines").List();
-			AssertEntitySubQueryWithCollectionFetch(result, new[] {true, true});
+	inner join fetch o.OrderLines", new[] {true, true});
 		}
 
-		private void AssertEntitySubQueryWithCollectionFetch(IList result, bool[] fetches)
+		private void AssertEntitySubQueryWithCollectionFetch(string query, bool[] fetches)
 		{
+			var result = session.CreateQuery(query).SetParameter("id", 10248).List();
 			var item = result[0];
 			Assert.That(item, Is.TypeOf<object[]>());
 			var array = (object[]) item;
@@ -797,51 +798,48 @@ namespace NHibernate.Test.Linq.ByMethod
 		public void HqlEntitySubQueryWithCollectionOfValuesFetch()
 		{
 			session.Clear();
-			var result = session.CreateQuery(@"
+			AssertEntitySubQueryWithCollectionOfValuesFetch(@"
 	from Order o
 	inner join (
 		from Order o1
 		inner join fetch o1.ProductIds
-		where o1.OrderId = 10248
-	) o2 on (o.OrderId - 1) = o2.OrderId").List();
-			AssertEntitySubQueryWithCollectionOfValuesFetch(result, new[] {false, true});
+		where o1.OrderId = :id
+	) o2 on (o.OrderId - 1) = o2.OrderId", new[] {false, true});
 
 			session.Clear();
-			result = session.CreateQuery(@"
+			AssertEntitySubQueryWithCollectionOfValuesFetch(@"
 	select o, o2.ord
 	from Order o
 	inner join (
 		select o1 as ord, o1.ShippedTo
 		from Order o1
 		inner join fetch o1.ProductIds
-		where o1.OrderId = 10248
-	) o2 on (o.OrderId - 1) = o2.ord.OrderId").List();
-			AssertEntitySubQueryWithCollectionOfValuesFetch(result, new[] {false, true});
+		where o1.OrderId = :id
+	) o2 on (o.OrderId - 1) = o2.ord.OrderId", new[] {false, true});
 
 			session.Clear();
-			result = session.CreateQuery(@"
+			AssertEntitySubQueryWithCollectionOfValuesFetch(@"
 	from Order o
 	inner join (
 		from Order o1
-		where o1.OrderId = 10248
+		where o1.OrderId = :id
 	) o2 on (o.OrderId - 1) = o2.OrderId
-	inner join fetch o.ProductIds").List();
-			AssertEntitySubQueryWithCollectionOfValuesFetch(result, new[] {true, false});
+	inner join fetch o.ProductIds", new[] {true, false});
 
 			session.Clear();
-			result = session.CreateQuery(@"
+			AssertEntitySubQueryWithCollectionOfValuesFetch(@"
 	from Order o
 	inner join (
 		from Order o1
 		inner join fetch o1.ProductIds
-		where o1.OrderId = 10248
+		where o1.OrderId = :id
 	) o2 on (o.OrderId - 1) = o2.OrderId
-	inner join fetch o.ProductIds").List();
-			AssertEntitySubQueryWithCollectionOfValuesFetch(result, new[] {true, true});
+	inner join fetch o.ProductIds", new[] {true, true});
 		}
 
-		private void AssertEntitySubQueryWithCollectionOfValuesFetch(IList result, bool[] fetches)
+		private void AssertEntitySubQueryWithCollectionOfValuesFetch(string query, bool[] fetches)
 		{
+			var result = session.CreateQuery(query).SetParameter("id", 10248).List();
 			var item = result[0];
 			Assert.That(item, Is.TypeOf<object[]>());
 			var array = (object[]) item;
@@ -866,7 +864,7 @@ namespace NHibernate.Test.Linq.ByMethod
 	inner join (
 		select o1 as ord1, o1 as ord2
 		from Order o1
-		where o1.OrderId = 10248
+		where o1.OrderId = :id
 	) o2 on (o.OrderId - 1) = o2.ord1.OrderId");
 
 			AssertDuplicateEntitySelectionSubQuery(@"
@@ -875,7 +873,7 @@ namespace NHibernate.Test.Linq.ByMethod
 	inner join (
 		select o1 as ord1, o1 as ord2
 		from Order o1
-		where o1.OrderId = 10248
+		where o1.OrderId = :id
 	) o2 on (o.OrderId - 1) = o2.ord1.OrderId");
 
 			AssertDuplicateEntitySelectionSubQuery(@"
@@ -884,7 +882,7 @@ namespace NHibernate.Test.Linq.ByMethod
 	inner join (
 		select o1
 		from Order o1
-		where o1.OrderId = 10248
+		where o1.OrderId = :id
 	) o2 on (o.OrderId - 1) = o2.OrderId");
 
 			AssertDuplicateEntitySelectionSubQuery(@"
@@ -892,7 +890,7 @@ namespace NHibernate.Test.Linq.ByMethod
 	from Order o
 	inner join (
 		from Order
-		where OrderId = 10248
+		where OrderId = :id
 	) o2 on (o.OrderId - 1) = o2.OrderId");
 		}
 
@@ -901,13 +899,13 @@ namespace NHibernate.Test.Linq.ByMethod
 			IList result;
 			using (var logSpy = new SqlLogSpy())
 			{
-				result = session.CreateQuery(query).List();
+				result = session.CreateQuery(query).SetParameter("id", 10248).List();
 				AssertDuplicateEntitySelectionSubQuery(logSpy.GetWholeLog(), result, false);
 			}
 
 			using (var logSpy = new SqlLogSpy())
 			{
-				result = session.CreateQuery(query).Enumerable().OfType<object[]>().ToList();
+				result = session.CreateQuery(query).SetParameter("id", 10248).Enumerable().OfType<object[]>().ToList();
 				AssertDuplicateEntitySelectionSubQuery(logSpy.GetWholeLog(), result, true);
 			}
 		}
