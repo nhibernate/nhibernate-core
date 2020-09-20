@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,8 @@ namespace NHibernate.Cache
 		public async Task<object> GetAsync(CacheKey key, long txTimestamp, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			CheckCache();
+			cancellationToken.ThrowIfCancellationRequested();
 			using (await (_asyncReaderWriterLock.ReadLockAsync()).ConfigureAwait(false))
 			{
 				if (log.IsDebugEnabled())
@@ -65,6 +68,7 @@ namespace NHibernate.Cache
 		public async Task<object[]> GetManyAsync(CacheKey[] keys, long timestamp, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			CheckCache();
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
@@ -92,6 +96,8 @@ namespace NHibernate.Cache
 		/// </summary>
 		public async Task<ISoftLock> LockAsync(CacheKey key, object version, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
+			CheckCache();
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await (_asyncReaderWriterLock.WriteLockAsync()).ConfigureAwait(false))
 			{
@@ -136,6 +142,8 @@ namespace NHibernate.Cache
 				// MinValue means cache is disabled
 				return result;
 			}
+
+			CheckCache();
 			cancellationToken.ThrowIfCancellationRequested();
 
 			using (await (_asyncReaderWriterLock.WriteLockAsync()).ConfigureAwait(false))
@@ -207,6 +215,8 @@ namespace NHibernate.Cache
 				// MinValue means cache is disabled
 				return false;
 			}
+
+			CheckCache();
 			cancellationToken.ThrowIfCancellationRequested();
 
 			using (await (_asyncReaderWriterLock.WriteLockAsync()).ConfigureAwait(false))
@@ -264,7 +274,7 @@ namespace NHibernate.Cache
 				@lock.Unlock(Cache.NextTimestamp());
 				return Cache.PutAsync(key, @lock, cancellationToken);
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -272,6 +282,8 @@ namespace NHibernate.Cache
 
 		public async Task ReleaseAsync(CacheKey key, ISoftLock clientLock, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
+			CheckCache();
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await (_asyncReaderWriterLock.WriteLockAsync()).ConfigureAwait(false))
 			{
@@ -308,6 +320,7 @@ namespace NHibernate.Cache
 			}
 			try
 			{
+				CheckCache();
 				log.Warn("An item was expired by the cache while it was locked (increase your cache timeout): {0}", key);
 				long ts = Cache.NextTimestamp() + Cache.Timeout;
 				// create new lock that times out immediately
@@ -315,7 +328,7 @@ namespace NHibernate.Cache
 				@lock.Unlock(ts);
 				return Cache.PutAsync(key, @lock, cancellationToken);
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -327,7 +340,15 @@ namespace NHibernate.Cache
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return Cache.ClearAsync(cancellationToken);
+			try
+			{
+				CheckCache();
+				return Cache.ClearAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		public Task RemoveAsync(CacheKey key, CancellationToken cancellationToken)
@@ -336,7 +357,15 @@ namespace NHibernate.Cache
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return Cache.RemoveAsync(key, cancellationToken);
+			try
+			{
+				CheckCache();
+				return Cache.RemoveAsync(key, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		/// <summary>
@@ -345,6 +374,8 @@ namespace NHibernate.Cache
 		/// </summary>
 		public async Task<bool> AfterUpdateAsync(CacheKey key, object value, object version, ISoftLock clientLock, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
+			CheckCache();
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await (_asyncReaderWriterLock.WriteLockAsync()).ConfigureAwait(false))
 			{
@@ -393,6 +424,8 @@ namespace NHibernate.Cache
 		public async Task<bool> AfterInsertAsync(CacheKey key, object value, object version, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			CheckCache();
+			cancellationToken.ThrowIfCancellationRequested();
 			using (await (_asyncReaderWriterLock.WriteLockAsync()).ConfigureAwait(false))
 			{
 				if (log.IsDebugEnabled())
@@ -436,7 +469,7 @@ namespace NHibernate.Cache
 				Evict(key);
 				return Task.CompletedTask;
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -452,7 +485,7 @@ namespace NHibernate.Cache
 			{
 				return Task.FromResult<bool>(Update(key, value, currentVersion, previousVersion));
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<bool>(ex);
 			}

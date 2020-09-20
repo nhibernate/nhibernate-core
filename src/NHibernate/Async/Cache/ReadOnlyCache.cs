@@ -24,6 +24,7 @@ namespace NHibernate.Cache
 		public async Task<object> GetAsync(CacheKey key, long timestamp, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			CheckCache();
 			var result = await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 			if (log.IsDebugEnabled())
 			{
@@ -36,6 +37,7 @@ namespace NHibernate.Cache
 		public async Task<object[]> GetManyAsync(CacheKey[] keys, long timestamp, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			CheckCache();
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
@@ -81,6 +83,8 @@ namespace NHibernate.Cache
 				// MinValue means cache is disabled
 				return result;
 			}
+
+			CheckCache();
 
 			var checkKeys = new List<CacheKey>();
 			var checkKeyIndexes = new List<int>();
@@ -141,6 +145,8 @@ namespace NHibernate.Cache
 				return false;
 			}
 
+			CheckCache();
+
 			if (minimalPut && await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false) != null)
 			{
 				if (log.IsDebugEnabled())
@@ -183,7 +189,15 @@ namespace NHibernate.Cache
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return Cache.ClearAsync(cancellationToken);
+			try
+			{
+				CheckCache();
+				return Cache.ClearAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		public Task RemoveAsync(CacheKey key, CancellationToken cancellationToken)
@@ -192,7 +206,15 @@ namespace NHibernate.Cache
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return Cache.RemoveAsync(key, cancellationToken);
+			try
+			{
+				CheckCache();
+				return Cache.RemoveAsync(key, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		/// <summary>

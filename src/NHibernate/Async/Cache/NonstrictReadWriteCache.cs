@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace NHibernate.Cache
 		public async Task<object> GetAsync(CacheKey key, long txTimestamp, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			CheckCache();
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache lookup: {0}", key);
@@ -43,6 +45,7 @@ namespace NHibernate.Cache
 		public async Task<object[]> GetManyAsync(CacheKey[] keys, long timestamp, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			CheckCache();
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
@@ -72,6 +75,8 @@ namespace NHibernate.Cache
 				// MinValue means cache is disabled
 				return result;
 			}
+
+			CheckCache();
 
 			var checkKeys = new List<object>();
 			var checkKeyIndexes = new List<int>();
@@ -135,6 +140,8 @@ namespace NHibernate.Cache
 				return false;
 			}
 
+			CheckCache();
+
 			if (minimalPut && await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false) != null)
 			{
 				if (log.IsDebugEnabled())
@@ -164,7 +171,7 @@ namespace NHibernate.Cache
 			{
 				return Task.FromResult<ISoftLock>(Lock(key, version));
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<ISoftLock>(ex);
 			}
@@ -178,13 +185,14 @@ namespace NHibernate.Cache
 			}
 			try
 			{
+				CheckCache();
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("Removing: {0}", key);
 				}
 				return Cache.RemoveAsync(key, cancellationToken);
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -198,13 +206,14 @@ namespace NHibernate.Cache
 			}
 			try
 			{
+				CheckCache();
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("Clearing");
 				}
 				return Cache.ClearAsync(cancellationToken);
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -221,13 +230,14 @@ namespace NHibernate.Cache
 			}
 			try
 			{
+				CheckCache();
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("Invalidating: {0}", key);
 				}
 				return Cache.RemoveAsync(key, cancellationToken);
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -254,6 +264,7 @@ namespace NHibernate.Cache
 			}
 			try
 			{
+				CheckCache();
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("Invalidating (again): {0}", key);
@@ -261,7 +272,7 @@ namespace NHibernate.Cache
 
 				return Cache.RemoveAsync(key, cancellationToken);
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -290,7 +301,7 @@ namespace NHibernate.Cache
 			{
 				return Task.FromResult<bool>(AfterInsert(key, value, version));
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<bool>(ex);
 			}

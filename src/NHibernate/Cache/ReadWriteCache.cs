@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,7 @@ namespace NHibernate.Cache
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ReadWriteCache));
 
 		private CacheBase _cache;
+		private bool _isDestroyed;
 		private int _nextLockId;
 		private readonly AsyncReaderWriterLock _asyncReaderWriterLock = new AsyncReaderWriterLock();
 
@@ -43,7 +45,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public string RegionName
 		{
-			get { return Cache.RegionName; }
+			get { return Cache?.RegionName; }
 		}
 
 		// 6.0 TODO: remove
@@ -96,6 +98,7 @@ namespace NHibernate.Cache
 		/// </remarks>
 		public object Get(CacheKey key, long txTimestamp)
 		{
+			CheckCache();
 			using (_asyncReaderWriterLock.ReadLock())
 			{
 				if (log.IsDebugEnabled())
@@ -119,6 +122,7 @@ namespace NHibernate.Cache
 
 		public object[] GetMany(CacheKey[] keys, long timestamp)
 		{
+			CheckCache();
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
@@ -167,6 +171,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public ISoftLock Lock(CacheKey key, object version)
 		{
+			CheckCache();
 			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
@@ -209,6 +214,8 @@ namespace NHibernate.Cache
 				// MinValue means cache is disabled
 				return result;
 			}
+
+			CheckCache();
 
 			using (_asyncReaderWriterLock.WriteLock())
 			{
@@ -279,6 +286,8 @@ namespace NHibernate.Cache
 				return false;
 			}
 
+			CheckCache();
+
 			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
@@ -331,6 +340,7 @@ namespace NHibernate.Cache
 
 		public void Release(CacheKey key, ISoftLock clientLock)
 		{
+			CheckCache();
 			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
@@ -360,6 +370,7 @@ namespace NHibernate.Cache
 
 		internal void HandleLockExpiry(object key)
 		{
+			CheckCache();
 			log.Warn("An item was expired by the cache while it was locked (increase your cache timeout): {0}", key);
 			long ts = Cache.NextTimestamp() + Cache.Timeout;
 			// create new lock that times out immediately
@@ -370,11 +381,13 @@ namespace NHibernate.Cache
 
 		public void Clear()
 		{
+			CheckCache();
 			Cache.Clear();
 		}
 
 		public void Remove(CacheKey key)
 		{
+			CheckCache();
 			Cache.Remove(key);
 		}
 
@@ -382,6 +395,7 @@ namespace NHibernate.Cache
 		{
 			// The cache is externally provided and may be shared. Destroying the cache is
 			// not the responsibility of this class.
+			_isDestroyed = true;
 			Cache = null;
 			_asyncReaderWriterLock.Dispose();
 		}
@@ -392,6 +406,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public bool AfterUpdate(CacheKey key, object value, object version, ISoftLock clientLock)
 		{
+			CheckCache();
 			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
@@ -438,6 +453,7 @@ namespace NHibernate.Cache
 
 		public bool AfterInsert(CacheKey key, object value, object version)
 		{
+			CheckCache();
 			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
@@ -497,6 +513,12 @@ namespace NHibernate.Cache
 			       myLock.IsLock &&
 			       clientLock != null &&
 			       ((CacheLock) clientLock).Id == ((CacheLock) myLock).Id;
+		}
+
+		private void CheckCache()
+		{
+			if (_cache == null || _isDestroyed)
+				throw new InvalidOperationException(_isDestroyed ? "The cache has already been destroyed" : "The concrete cache is not defined");
 		}
 	}
 }

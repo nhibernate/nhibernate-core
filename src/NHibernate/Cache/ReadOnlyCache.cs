@@ -14,13 +14,14 @@ namespace NHibernate.Cache
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ReadOnlyCache));
 
 		private CacheBase _cache;
+		private bool _isDestroyed;
 
 		/// <summary>
 		/// Gets the cache region name.
 		/// </summary>
 		public string RegionName
 		{
-			get { return Cache.RegionName; }
+			get { return Cache?.RegionName; }
 		}
 
 		// 6.0 TODO: remove
@@ -41,6 +42,7 @@ namespace NHibernate.Cache
 
 		public object Get(CacheKey key, long timestamp)
 		{
+			CheckCache();
 			var result = Cache.Get(key);
 			if (log.IsDebugEnabled())
 			{
@@ -52,6 +54,7 @@ namespace NHibernate.Cache
 
 		public object[] GetMany(CacheKey[] keys, long timestamp)
 		{
+			CheckCache();
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
@@ -86,6 +89,8 @@ namespace NHibernate.Cache
 				// MinValue means cache is disabled
 				return result;
 			}
+
+			CheckCache();
 
 			var checkKeys = new List<CacheKey>();
 			var checkKeyIndexes = new List<int>();
@@ -145,6 +150,8 @@ namespace NHibernate.Cache
 				return false;
 			}
 
+			CheckCache();
+
 			if (minimalPut && Cache.Get(key) != null)
 			{
 				if (log.IsDebugEnabled())
@@ -171,11 +178,13 @@ namespace NHibernate.Cache
 
 		public void Clear()
 		{
+			CheckCache();
 			Cache.Clear();
 		}
 
 		public void Remove(CacheKey key)
 		{
+			CheckCache();
 			Cache.Remove(key);
 		}
 
@@ -183,6 +192,7 @@ namespace NHibernate.Cache
 		{
 			// The cache is externally provided and may be shared. Destroying the cache is
 			// not the responsibility of this class.
+			_isDestroyed = true;
 			Cache = null;
 		}
 
@@ -227,6 +237,12 @@ namespace NHibernate.Cache
 		{
 			log.Error("Application attempted to edit read only item: {0}", key);
 			throw new InvalidOperationException("ReadOnlyCache: Can't write to a readonly object " + key.EntityOrRoleName);
+		}
+
+		private void CheckCache()
+		{
+			if (_cache == null || _isDestroyed)
+				throw new InvalidOperationException(_isDestroyed ? "The cache has already been destroyed" : "The concrete cache is not defined");
 		}
 	}
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,13 +19,14 @@ namespace NHibernate.Cache
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(NonstrictReadWriteCache));
 
 		private CacheBase _cache;
+		private bool _isDestroyed;
 
 		/// <summary>
 		/// Gets the cache region name.
 		/// </summary>
 		public string RegionName
 		{
-			get { return Cache.RegionName; }
+			get { return Cache?.RegionName; }
 		}
 
 		// 6.0 TODO: remove
@@ -48,6 +50,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public object Get(CacheKey key, long txTimestamp)
 		{
+			CheckCache();
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache lookup: {0}", key);
@@ -64,6 +67,7 @@ namespace NHibernate.Cache
 
 		public object[] GetMany(CacheKey[] keys, long timestamp)
 		{
+			CheckCache();
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
@@ -92,6 +96,8 @@ namespace NHibernate.Cache
 				// MinValue means cache is disabled
 				return result;
 			}
+
+			CheckCache();
 
 			var checkKeys = new List<object>();
 			var checkKeyIndexes = new List<int>();
@@ -154,6 +160,8 @@ namespace NHibernate.Cache
 				return false;
 			}
 
+			CheckCache();
+
 			if (minimalPut && Cache.Get(key) != null)
 			{
 				if (log.IsDebugEnabled())
@@ -180,6 +188,7 @@ namespace NHibernate.Cache
 
 		public void Remove(CacheKey key)
 		{
+			CheckCache();
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Removing: {0}", key);
@@ -189,6 +198,7 @@ namespace NHibernate.Cache
 
 		public void Clear()
 		{
+			CheckCache();
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Clearing");
@@ -200,6 +210,7 @@ namespace NHibernate.Cache
 		{
 			// The cache is externally provided and may be shared. Destroying the cache is
 			// not the responsibility of this class.
+			_isDestroyed = true;
 			Cache = null;
 		}
 
@@ -208,6 +219,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public void Evict(CacheKey key)
 		{
+			CheckCache();
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Invalidating: {0}", key);
@@ -237,6 +249,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public void Release(CacheKey key, ISoftLock @lock)
 		{
+			CheckCache();
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Invalidating (again): {0}", key);
@@ -260,6 +273,12 @@ namespace NHibernate.Cache
 		public bool AfterInsert(CacheKey key, object value, object version)
 		{
 			return false;
+		}
+
+		private void CheckCache()
+		{
+			if (_cache == null || _isDestroyed)
+				throw new InvalidOperationException(_isDestroyed ? "The cache has already been destroyed" : "The concrete cache is not defined");
 		}
 	}
 }
