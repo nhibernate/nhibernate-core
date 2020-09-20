@@ -116,6 +116,34 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
+		//NH-3893 (GH-1349) left and right functions are broken
+		[Test]
+		public async Task LeftAndRightAsync()
+		{
+			//left or right functions are supported by most dialects but not registered.
+			if (!(Dialect is MsSql2000Dialect || Dialect is SQLiteDialect))
+				Assert.Ignore("left or right function is not supported by dialect");
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				Simple simple = new Simple();
+				simple.Name = "Simple Dialect Function Test";
+				simple.Address = "Simple Address";
+				simple.Pay = 45.8f;
+				simple.Count = 2;
+				await (s.SaveAsync(simple, 10L));
+
+				var rset = await (s.CreateQuery("select left('abc', 2), right('abc', 2) from s in class Simple").ListAsync<object[]>());
+				var row = rset[0];
+				Assert.AreEqual("ab", row[0], "Left function is broken.");
+				Assert.AreEqual("bc", row[1], "Right function is broken.");
+
+				await (s.DeleteAsync(simple));
+				await (t.CommitAsync());
+			}
+		}
+
 		[Test]
 		public async Task SetPropertiesAsync()
 		{
