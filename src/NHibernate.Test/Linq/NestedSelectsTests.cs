@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Linq.Expressions;
+using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -396,6 +398,55 @@ namespace NHibernate.Test.Linq
 
 			var animals = outerQuery.ToList();
 			Assert.That(animals.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public void CanSelectWithWhereSubQuery()
+		{
+			var query = from timesheet in db.Timesheets
+						select new
+						{
+							timesheet.Id,
+							Entries = timesheet.Entries.Where(e => e.NumberOfHours >= 0).ToList()
+						};
+
+			var list = query.ToList();
+
+			Assert.AreEqual(3, list.Count);
+		}
+
+		[KnownBug("GH-2540")]
+		[Test]
+		public void CanSelectWithAsQueryableAndWhereSubQuery()
+		{
+			var query = from timesheet in db.Timesheets
+						select new
+						{
+							timesheet.Id,
+							Entries = timesheet.Entries.AsQueryable().Where(e => e.NumberOfHours >= 0).ToList()
+						};
+
+			var list = query.ToList();
+
+			Assert.AreEqual(3, list.Count);
+		}
+
+		[KnownBug("GH-2540")]
+		[Test]
+		public void CanSelectWithAsQueryableAndWhereSubQueryWithExternalPredicate()
+		{
+			Expression<Func<TimesheetEntry, bool>> predicate = e => e.NumberOfHours >= 0;
+
+			var query = from timesheet in db.Timesheets
+						select new
+						{
+							timesheet.Id,
+							Entries = timesheet.Entries.AsQueryable().Where(predicate).ToList()
+						};
+
+			var list = query.ToList();
+
+			Assert.AreEqual(3, list.Count);
 		}
 	}
 }
