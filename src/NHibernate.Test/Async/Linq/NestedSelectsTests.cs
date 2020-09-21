@@ -413,8 +413,7 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(3, list.Count);
 		}
 
-		//GH-2540
-		[Test]
+		[Test(Description = "GH-2540")]
 		public async Task CanSelectWithAsQueryableAndWhereSubQueryAsync()
 		{
 			var query = from timesheet in db.Timesheets
@@ -429,8 +428,7 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(3, list.Count);
 		}
 
-		//GH-2540
-		[Test]
+		[Test(Description = "GH-2540")]
 		public async Task CanSelectWithAsQueryableAndWhereSubQueryToArrayAsync()
 		{
 			var query = from timesheet in db.Timesheets
@@ -445,8 +443,7 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(3, list.Count);
 		}
 
-		//GH-2540
-		[Test]
+		[Test(Description = "GH-2540")]
 		public async Task CanSelectWithAsQueryableAndWhereSubQueryWithExternalPredicateAsync()
 		{
 			Expression<Func<TimesheetEntry, bool>> predicate = e => e.NumberOfHours >= 0;

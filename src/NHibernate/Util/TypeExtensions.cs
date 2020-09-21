@@ -1,19 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NHibernate.Util
 {
 	public static class TypeExtensions
 	{
+		//Since 5.4
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public static bool IsEnumerableOfT(this System.Type type)
 		{
-			if (!type.IsGenericType) 
-				return false;
-
-			var typeDef = type.GetGenericTypeDefinition();
-			return typeDef == typeof(IEnumerable<>) || typeDef == typeof(IQueryable<>);
+			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>);
 		}
 
 		public static bool IsNullable(this System.Type type)

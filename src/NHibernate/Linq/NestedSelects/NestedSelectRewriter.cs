@@ -97,7 +97,7 @@ namespace NHibernate.Linq.NestedSelects
 		private static Expression ProcessSubquery(ISessionFactory sessionFactory, ICollection<ExpressionHolder> elementExpression, QueryModel queryModel, Expression @group, QueryModel subQueryModel)
 		{
 			var resultTypeOverride = subQueryModel.ResultTypeOverride;
-			if (resultTypeOverride != null && !resultTypeOverride.IsArray && !resultTypeOverride.IsEnumerableOfT())
+			if (resultTypeOverride != null && !resultTypeOverride.IsArray && !IsEnumerableOfT(resultTypeOverride))
 				return null;
 
 			SubQueryFromClauseFlattener.ReWrite(subQueryModel);
@@ -127,6 +127,15 @@ namespace NHibernate.Linq.NestedSelects
 			var source = new QuerySourceReferenceExpression(@join);
 
 			return BuildSubCollectionQuery(sessionFactory, elementExpression, @group, source, selector, elementType, collectionType);
+		}
+
+		private static bool IsEnumerableOfT(System.Type type)
+		{
+			if (!type.IsGenericType) 
+				return false;
+
+			var typeDef = type.GetGenericTypeDefinition();
+			return typeDef == typeof(IEnumerable<>) || typeDef == typeof(IQueryable<>);
 		}
 
 		private static Expression ProcessMemberExpression(ISessionFactory sessionFactory, ICollection<ExpressionHolder> elementExpression, QueryModel queryModel, Expression @group, Expression memberExpression)
