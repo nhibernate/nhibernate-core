@@ -100,6 +100,7 @@ namespace NHibernate.Linq.NestedSelects
 			if (resultTypeOverride != null && !resultTypeOverride.IsArray && !resultTypeOverride.IsEnumerableOfT())
 				return null;
 
+			SubQueryFromClauseFlattener.ReWrite(subQueryModel);
 			var subQueryMainFromClause = subQueryModel.MainFromClause;
 
 			var restrictions = subQueryModel.BodyClauses

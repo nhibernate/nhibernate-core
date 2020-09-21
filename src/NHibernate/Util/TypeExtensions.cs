@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NHibernate.Util
 {
@@ -8,7 +9,11 @@ namespace NHibernate.Util
 	{
 		public static bool IsEnumerableOfT(this System.Type type)
 		{
-			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>);
+			if (!type.IsGenericType) 
+				return false;
+
+			var typeDef = type.GetGenericTypeDefinition();
+			return typeDef == typeof(IEnumerable<>) || typeDef == typeof(IQueryable<>);
 		}
 
 		public static bool IsNullable(this System.Type type)
