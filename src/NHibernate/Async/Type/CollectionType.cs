@@ -104,8 +104,13 @@ namespace NHibernate.Type
 		public override async Task BeforeAssembleAsync(object oid, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			if (oid == null)
+			{
+				return;
+			}
+
 			var queryCacheQueue = session.PersistenceContext.BatchFetchQueue.QueryCacheQueue;
-			if (queryCacheQueue == null || oid == null)
+			if (queryCacheQueue == null)
 			{
 				return;
 			}
