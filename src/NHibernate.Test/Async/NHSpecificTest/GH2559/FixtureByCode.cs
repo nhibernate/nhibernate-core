@@ -129,8 +129,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2559
 						.Query<Person>()
 						.FetchMany(p => p.Children)
 							.ThenFetchMany(ch => ch.Pets)
-						.FetchMany(p => p.Cars) as IQueryable<Person>
-						;
+						.FetchMany(p => p.Cars) as IQueryable<Person>;
 
 				query = query.WithOptions(opt =>
 					opt.SetCacheable(true)
