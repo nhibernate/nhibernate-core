@@ -161,7 +161,7 @@ namespace NHibernate.Type
 		public override void BeforeAssemble(object oid, ISessionImplementor session)
 		{
 			var queryCacheQueue = session.PersistenceContext.BatchFetchQueue.QueryCacheQueue;
-			if (queryCacheQueue == null)
+			if (queryCacheQueue == null || oid == null)
 			{
 				return;
 			}

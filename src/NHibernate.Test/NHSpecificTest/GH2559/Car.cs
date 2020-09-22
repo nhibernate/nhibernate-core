@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NHibernate.Test.NHSpecificTest.CachingComplexQuery
+namespace NHibernate.Test.NHSpecificTest.GH2559
 {
 	public class Car
 	{

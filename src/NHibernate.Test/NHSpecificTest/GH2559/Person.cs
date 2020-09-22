@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NHibernate.Test.NHSpecificTest.CachingComplexQuery
+namespace NHibernate.Test.NHSpecificTest.GH2559
 {
 	public class Person
 	{

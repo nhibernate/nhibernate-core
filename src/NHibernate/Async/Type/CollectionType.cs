@@ -105,7 +105,7 @@ namespace NHibernate.Type
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var queryCacheQueue = session.PersistenceContext.BatchFetchQueue.QueryCacheQueue;
-			if (queryCacheQueue == null)
+			if (queryCacheQueue == null || oid == null)
 			{
 				return;
 			}
