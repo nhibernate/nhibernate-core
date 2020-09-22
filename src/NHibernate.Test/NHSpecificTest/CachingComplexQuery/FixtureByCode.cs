@@ -6,14 +6,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.CachingComplexQuery
 {
-	/// <summary>
-	/// Fixture using 'by code' mappings
-	/// </summary>
-	/// <remarks>
-	/// This fixture is identical to <see cref="Fixture" /> except the <see cref="Person" /> mapping is performed 
-	/// by code in the GetMappings method, and does not require the <c>Mappings.hbm.xml</c> file. Use this approach
-	/// if you prefer.
-	/// </remarks>
 	[TestFixture]
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
@@ -94,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.CachingComplexQuery
 				var car2 = new Car { Name = "Car2", Owner = person };
 				session.Save(car1);
 				session.Save(car2);
-				
+
 				session.Save(person);
 				transaction.Commit();
 			}
@@ -105,11 +97,10 @@ namespace NHibernate.Test.NHSpecificTest.CachingComplexQuery
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.Delete("from Pet");
-				session.Delete("from Child");
-				session.Delete("from Car");
-				session.Delete("from Person");
-
+				session.CreateQuery("delete from Pet").ExecuteUpdate();
+				session.CreateQuery("delete from Child").ExecuteUpdate();
+				session.CreateQuery("delete from Car").ExecuteUpdate();
+				session.CreateQuery("delete from Person").ExecuteUpdate();
 				transaction.Commit();
 			}
 		}
@@ -118,25 +109,23 @@ namespace NHibernate.Test.NHSpecificTest.CachingComplexQuery
 		public void TestQueryCachingWithThenFetchMany()
 		{
 			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
-				using (var transaction = session.BeginTransaction())
-				{
-					var query =
-						session
-							.Query<Person>()
-							.FetchMany(p => p.Children)
-								.ThenFetchMany(ch => ch.Pets)
-							.FetchMany(p => p.Cars) as IQueryable<Person>;
+				var query =
+					session
+						.Query<Person>()
+						.FetchMany(p => p.Children)
+							.ThenFetchMany(ch => ch.Pets)
+						.FetchMany(p => p.Cars) as IQueryable<Person>;
 
-					query = query.WithOptions(opt =>
-						opt.SetCacheable(true)
-							.SetCacheMode(CacheMode.Normal)
-							.SetCacheRegion("Long_Cache"));
+				query = query.WithOptions(opt =>
+					opt.SetCacheable(true)
+						.SetCacheMode(CacheMode.Normal)
+						.SetCacheRegion("Long_Cache"));
 
-					query.ToList(); // First time the result will be cached
-					Assert.That(() => query.ToList(), Throws.Nothing); // 
-					transaction.Commit();
-				}
+				query.ToList(); // First time the result will be cached
+				Assert.That(() => query.ToList(), Throws.Nothing);
+				transaction.Commit();
 			}
 		}
 	}
