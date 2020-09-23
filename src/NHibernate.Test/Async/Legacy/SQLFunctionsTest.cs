@@ -121,8 +121,8 @@ namespace NHibernate.Test.Legacy
 		public async Task LeftAndRightAsync()
 		{
 			//left or right functions are supported by most dialects but not registered.
-			if (!(Dialect is MsSql2000Dialect || Dialect is SQLiteDialect))
-				Assert.Ignore("left or right function is not supported by dialect");
+			AssumeFunctionSupported("left");
+			AssumeFunctionSupported("right");
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
