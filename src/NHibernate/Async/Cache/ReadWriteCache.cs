@@ -269,8 +269,9 @@ namespace NHibernate.Cache
 			try
 			{
 				//decrement the lock
-				@lock.Unlock(InternalCache.NextTimestamp());
-				return InternalCache.PutAsync(key, @lock, cancellationToken);
+				var cache = InternalCache;
+				@lock.Unlock(cache.NextTimestamp());
+				return cache.PutAsync(key, @lock, cancellationToken);
 			}
 			catch (Exception ex)
 			{

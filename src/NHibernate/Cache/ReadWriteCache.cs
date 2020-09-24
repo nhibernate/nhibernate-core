@@ -344,8 +344,9 @@ namespace NHibernate.Cache
 		private void DecrementLock(object key, CacheLock @lock)
 		{
 			//decrement the lock
-			@lock.Unlock(InternalCache.NextTimestamp());
-			InternalCache.Put(key, @lock);
+			var cache = InternalCache;
+			@lock.Unlock(cache.NextTimestamp());
+			cache.Put(key, @lock);
 		}
 
 		public void Release(CacheKey key, ISoftLock clientLock)
