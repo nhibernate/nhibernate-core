@@ -33,7 +33,19 @@ namespace NHibernate.Cache
 			set { _cache = value?.AsCacheBase(); }
 		}
 
-		// 6.0 TODO: make implicit and switch to auto-property
+		// 6.0 TODO: Rename to Cache and make public (possible breaking change for reader when null).
+		private CacheBase InternalCache
+		{
+			get
+			{
+				if (_cache == null || _isDestroyed)
+					throw new InvalidOperationException(_isDestroyed ? "The cache has already been destroyed" : "The concrete cache is not defined");
+				return _cache;
+			}
+			set => _cache = value;
+		}
+
+		// 6.0 TODO: remove
 		CacheBase IBatchableCacheConcurrencyStrategy.Cache
 		{
 			get => _cache;
@@ -42,8 +54,7 @@ namespace NHibernate.Cache
 
 		public object Get(CacheKey key, long timestamp)
 		{
-			CheckCache();
-			var result = Cache.Get(key);
+			var result = InternalCache.Get(key);
 			if (log.IsDebugEnabled())
 			{
 				log.Debug(result != null ? "Cache hit: {0}" : "Cache miss: {0}", key);
@@ -54,13 +65,12 @@ namespace NHibernate.Cache
 
 		public object[] GetMany(CacheKey[] keys, long timestamp)
 		{
-			CheckCache();
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
 
-			var results = _cache.GetMany(keys);
+			var results = InternalCache.GetMany(keys);
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache hit: {0}", string.Join(",", keys.Where((k, i) => results[i] != null)));
@@ -90,8 +100,6 @@ namespace NHibernate.Cache
 				return result;
 			}
 
-			CheckCache();
-
 			var checkKeys = new List<CacheKey>();
 			var checkKeyIndexes = new List<int>();
 			for (var i = 0; i < minimalPuts.Length; i++)
@@ -102,10 +110,12 @@ namespace NHibernate.Cache
 					checkKeyIndexes.Add(i);
 				}
 			}
+
+			var cache = InternalCache;
 			var skipKeyIndexes = new HashSet<int>();
 			if (checkKeys.Any())
 			{
-				var objects = _cache.GetMany(checkKeys.ToArray());
+				var objects = cache.GetMany(checkKeys.ToArray());
 				for (var i = 0; i < objects.Length; i++)
 				{
 					if (objects[i] != null)
@@ -137,7 +147,7 @@ namespace NHibernate.Cache
 				putValues[j++] = values[i];
 				result[i] = true;
 			}
-			_cache.PutMany(putKeys, putValues);
+			cache.PutMany(putKeys, putValues);
 			return result;
 		}
 
@@ -150,9 +160,8 @@ namespace NHibernate.Cache
 				return false;
 			}
 
-			CheckCache();
-
-			if (minimalPut && Cache.Get(key) != null)
+			var cache = InternalCache;
+			if (minimalPut && cache.Get(key) != null)
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -164,7 +173,7 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Caching: {0}", key);
 			}
-			Cache.Put(key, value);
+			cache.Put(key, value);
 			return true;
 		}
 
@@ -178,22 +187,22 @@ namespace NHibernate.Cache
 
 		public void Clear()
 		{
-			CheckCache();
-			Cache.Clear();
+			InternalCache.Clear();
 		}
 
 		public void Remove(CacheKey key)
 		{
-			CheckCache();
-			Cache.Remove(key);
+			InternalCache.Remove(key);
 		}
 
 		public void Destroy()
 		{
+			if (_isDestroyed)
+				return;
+			_isDestroyed = true;
 			// The cache is externally provided and may be shared. Destroying the cache is
 			// not the responsibility of this class.
-			_isDestroyed = true;
-			Cache = null;
+			_cache = null;
 		}
 
 		/// <summary>
@@ -237,12 +246,6 @@ namespace NHibernate.Cache
 		{
 			log.Error("Application attempted to edit read only item: {0}", key);
 			throw new InvalidOperationException("ReadOnlyCache: Can't write to a readonly object " + key.EntityOrRoleName);
-		}
-
-		private void CheckCache()
-		{
-			if (_cache == null || _isDestroyed)
-				throw new InvalidOperationException(_isDestroyed ? "The cache has already been destroyed" : "The concrete cache is not defined");
 		}
 	}
 }

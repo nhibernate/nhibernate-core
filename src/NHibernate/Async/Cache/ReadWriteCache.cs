@@ -42,7 +42,7 @@ namespace NHibernate.Cache
 		public async Task<object> GetAsync(CacheKey key, long txTimestamp, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			CheckCache();
+			var cache = InternalCache;
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await (_asyncReaderWriterLock.ReadLockAsync()).ConfigureAwait(false))
 			{
@@ -55,7 +55,7 @@ namespace NHibernate.Cache
 				/*try
 				{
 					cache.Lock( key );*/
-				var lockable = (ILockable) await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
+				var lockable = (ILockable) await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 				return GetValue(txTimestamp, key, lockable);
 				/*}
 				finally
@@ -68,16 +68,16 @@ namespace NHibernate.Cache
 		public async Task<object[]> GetManyAsync(CacheKey[] keys, long timestamp, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			CheckCache();
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
+			var cache = InternalCache;
 			var result = new object[keys.Length];
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await (_asyncReaderWriterLock.ReadLockAsync()).ConfigureAwait(false))
 			{
-				var lockables = await (_cache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
+				var lockables = await (cache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
 				for (var i = 0; i < lockables.Length; i++)
 				{
 					var o = (ILockable) lockables[i];
@@ -97,7 +97,7 @@ namespace NHibernate.Cache
 		public async Task<ISoftLock> LockAsync(CacheKey key, object version, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			CheckCache();
+			var cache = InternalCache;
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await (_asyncReaderWriterLock.WriteLockAsync()).ConfigureAwait(false))
 			{
@@ -106,20 +106,20 @@ namespace NHibernate.Cache
 					log.Debug("Invalidating: {0}", key);
 				}
 
-				var lockValue = await (_cache.LockAsync(key, cancellationToken)).ConfigureAwait(false);
+				var lockValue = await (cache.LockAsync(key, cancellationToken)).ConfigureAwait(false);
 				try
 				{
-					ILockable lockable = (ILockable) await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
-					long timeout = Cache.NextTimestamp() + Cache.Timeout;
+					ILockable lockable = (ILockable) await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
+					long timeout = cache.NextTimestamp() + cache.Timeout;
 					CacheLock @lock = lockable == null ?
 					                  CacheLock.Create(timeout, NextLockId(), version) :
 					                  lockable.Lock(timeout, NextLockId());
-					await (Cache.PutAsync(key, @lock, cancellationToken)).ConfigureAwait(false);
+					await (cache.PutAsync(key, @lock, cancellationToken)).ConfigureAwait(false);
 					return @lock;
 				}
 				finally
 				{
-					await (_cache.UnlockAsync(key, lockValue, cancellationToken)).ConfigureAwait(false);
+					await (cache.UnlockAsync(key, lockValue, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
@@ -143,9 +143,8 @@ namespace NHibernate.Cache
 				return result;
 			}
 
-			CheckCache();
+			var cache = InternalCache;
 			cancellationToken.ThrowIfCancellationRequested();
-
 			using (await (_asyncReaderWriterLock.WriteLockAsync()).ConfigureAwait(false))
 			{
 				if (log.IsDebugEnabled())
@@ -153,11 +152,11 @@ namespace NHibernate.Cache
 					log.Debug("Caching: {0}", string.Join(",", keys.AsEnumerable()));
 				}
 
-				var lockValue = await (_cache.LockManyAsync(keys, cancellationToken)).ConfigureAwait(false);
+				var lockValue = await (cache.LockManyAsync(keys, cancellationToken)).ConfigureAwait(false);
 				try
 				{
 					var putBatch = new Dictionary<object, object>();
-					var lockables = await (_cache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
+					var lockables = await (cache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
 					for (var i = 0; i < keys.Length; i++)
 					{
 						var key = keys[i];
@@ -167,7 +166,7 @@ namespace NHibernate.Cache
 						                lockable.IsPuttable(timestamp, version, versionComparers[i]);
 						if (puttable)
 						{
-							putBatch.Add(key, CachedItem.Create(values[i], Cache.NextTimestamp(), version));
+							putBatch.Add(key, CachedItem.Create(values[i], cache.NextTimestamp(), version));
 							if (log.IsDebugEnabled())
 							{
 								log.Debug("Cached: {0}", key);
@@ -188,12 +187,12 @@ namespace NHibernate.Cache
 
 					if (putBatch.Count > 0)
 					{
-						await (_cache.PutManyAsync(putBatch.Keys.ToArray(), putBatch.Values.ToArray(), cancellationToken)).ConfigureAwait(false);
+						await (cache.PutManyAsync(putBatch.Keys.ToArray(), putBatch.Values.ToArray(), cancellationToken)).ConfigureAwait(false);
 					}
 				}
 				finally
 				{
-					await (_cache.UnlockManyAsync(keys, lockValue, cancellationToken)).ConfigureAwait(false);
+					await (cache.UnlockManyAsync(keys, lockValue, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			return result;
@@ -216,9 +215,8 @@ namespace NHibernate.Cache
 				return false;
 			}
 
-			CheckCache();
+			var cache = InternalCache;
 			cancellationToken.ThrowIfCancellationRequested();
-
 			using (await (_asyncReaderWriterLock.WriteLockAsync()).ConfigureAwait(false))
 			{
 				if (log.IsDebugEnabled())
@@ -226,17 +224,17 @@ namespace NHibernate.Cache
 					log.Debug("Caching: {0}", key);
 				}
 
-				var lockValue = await (_cache.LockAsync(key, cancellationToken)).ConfigureAwait(false);
+				var lockValue = await (cache.LockAsync(key, cancellationToken)).ConfigureAwait(false);
 				try
 				{
-					ILockable lockable = (ILockable) await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
+					ILockable lockable = (ILockable) await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 
 					bool puttable = lockable == null ||
 					                lockable.IsPuttable(txTimestamp, version, versionComparator);
 
 					if (puttable)
 					{
-						await (Cache.PutAsync(key, CachedItem.Create(value, Cache.NextTimestamp(), version), cancellationToken)).ConfigureAwait(false);
+						await (cache.PutAsync(key, CachedItem.Create(value, cache.NextTimestamp(), version), cancellationToken)).ConfigureAwait(false);
 						if (log.IsDebugEnabled())
 						{
 							log.Debug("Cached: {0}", key);
@@ -254,7 +252,7 @@ namespace NHibernate.Cache
 				}
 				finally
 				{
-					await (_cache.UnlockAsync(key, lockValue, cancellationToken)).ConfigureAwait(false);
+					await (cache.UnlockAsync(key, lockValue, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
@@ -271,8 +269,8 @@ namespace NHibernate.Cache
 			try
 			{
 				//decrement the lock
-				@lock.Unlock(Cache.NextTimestamp());
-				return Cache.PutAsync(key, @lock, cancellationToken);
+				@lock.Unlock(InternalCache.NextTimestamp());
+				return InternalCache.PutAsync(key, @lock, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -283,7 +281,7 @@ namespace NHibernate.Cache
 		public async Task ReleaseAsync(CacheKey key, ISoftLock clientLock, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			CheckCache();
+			var cache = InternalCache;
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await (_asyncReaderWriterLock.WriteLockAsync()).ConfigureAwait(false))
 			{
@@ -292,10 +290,10 @@ namespace NHibernate.Cache
 					log.Debug("Releasing: {0}", key);
 				}
 
-				var lockValue = await (_cache.LockAsync(key, cancellationToken)).ConfigureAwait(false);
+				var lockValue = await (cache.LockAsync(key, cancellationToken)).ConfigureAwait(false);
 				try
 				{
-					ILockable lockable = (ILockable) await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
+					ILockable lockable = (ILockable) await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 					if (IsUnlockable(clientLock, lockable))
 					{
 						await (DecrementLockAsync(key, (CacheLock) lockable, cancellationToken)).ConfigureAwait(false);
@@ -307,7 +305,7 @@ namespace NHibernate.Cache
 				}
 				finally
 				{
-					await (_cache.UnlockAsync(key, lockValue, cancellationToken)).ConfigureAwait(false);
+					await (cache.UnlockAsync(key, lockValue, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
@@ -320,13 +318,13 @@ namespace NHibernate.Cache
 			}
 			try
 			{
-				CheckCache();
 				log.Warn("An item was expired by the cache while it was locked (increase your cache timeout): {0}", key);
-				long ts = Cache.NextTimestamp() + Cache.Timeout;
+				var cache = InternalCache;
+				long ts = cache.NextTimestamp() + cache.Timeout;
 				// create new lock that times out immediately
 				CacheLock @lock = CacheLock.Create(ts, NextLockId(), null);
 				@lock.Unlock(ts);
-				return Cache.PutAsync(key, @lock, cancellationToken);
+				return cache.PutAsync(key, @lock, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -340,15 +338,7 @@ namespace NHibernate.Cache
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				CheckCache();
-				return Cache.ClearAsync(cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return InternalCache.ClearAsync(cancellationToken);
 		}
 
 		public Task RemoveAsync(CacheKey key, CancellationToken cancellationToken)
@@ -357,15 +347,7 @@ namespace NHibernate.Cache
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				CheckCache();
-				return Cache.RemoveAsync(key, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return InternalCache.RemoveAsync(key, cancellationToken);
 		}
 
 		/// <summary>
@@ -375,7 +357,7 @@ namespace NHibernate.Cache
 		public async Task<bool> AfterUpdateAsync(CacheKey key, object value, object version, ISoftLock clientLock, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			CheckCache();
+			var cache = InternalCache;
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await (_asyncReaderWriterLock.WriteLockAsync()).ConfigureAwait(false))
 			{
@@ -384,10 +366,10 @@ namespace NHibernate.Cache
 					log.Debug("Updating: {0}", key);
 				}
 
-				var lockValue = await (_cache.LockAsync(key, cancellationToken)).ConfigureAwait(false);
+				var lockValue = await (cache.LockAsync(key, cancellationToken)).ConfigureAwait(false);
 				try
 				{
-					ILockable lockable = (ILockable) await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
+					ILockable lockable = (ILockable) await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 					if (IsUnlockable(clientLock, lockable))
 					{
 						CacheLock @lock = (CacheLock) lockable;
@@ -400,7 +382,7 @@ namespace NHibernate.Cache
 						else
 						{
 							//recache the updated state
-							await (Cache.PutAsync(key, CachedItem.Create(value, Cache.NextTimestamp(), version), cancellationToken)).ConfigureAwait(false);
+							await (cache.PutAsync(key, CachedItem.Create(value, cache.NextTimestamp(), version), cancellationToken)).ConfigureAwait(false);
 							if (log.IsDebugEnabled())
 							{
 								log.Debug("Updated: {0}", key);
@@ -416,7 +398,7 @@ namespace NHibernate.Cache
 				}
 				finally
 				{
-					await (_cache.UnlockAsync(key, lockValue, cancellationToken)).ConfigureAwait(false);
+					await (cache.UnlockAsync(key, lockValue, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
@@ -424,7 +406,7 @@ namespace NHibernate.Cache
 		public async Task<bool> AfterInsertAsync(CacheKey key, object value, object version, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			CheckCache();
+			var cache = InternalCache;
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await (_asyncReaderWriterLock.WriteLockAsync()).ConfigureAwait(false))
 			{
@@ -433,13 +415,13 @@ namespace NHibernate.Cache
 					log.Debug("Inserting: {0}", key);
 				}
 
-				var lockValue = await (_cache.LockAsync(key, cancellationToken)).ConfigureAwait(false);
+				var lockValue = await (cache.LockAsync(key, cancellationToken)).ConfigureAwait(false);
 				try
 				{
-					ILockable lockable = (ILockable) await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
+					ILockable lockable = (ILockable) await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 					if (lockable == null)
 					{
-						await (Cache.PutAsync(key, CachedItem.Create(value, Cache.NextTimestamp(), version), cancellationToken)).ConfigureAwait(false);
+						await (cache.PutAsync(key, CachedItem.Create(value, cache.NextTimestamp(), version), cancellationToken)).ConfigureAwait(false);
 						if (log.IsDebugEnabled())
 						{
 							log.Debug("Inserted: {0}", key);
@@ -453,7 +435,7 @@ namespace NHibernate.Cache
 				}
 				finally
 				{
-					await (_cache.UnlockAsync(key, lockValue, cancellationToken)).ConfigureAwait(false);
+					await (cache.UnlockAsync(key, lockValue, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}

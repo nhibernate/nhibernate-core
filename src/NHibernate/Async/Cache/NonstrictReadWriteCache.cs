@@ -27,13 +27,12 @@ namespace NHibernate.Cache
 		public async Task<object> GetAsync(CacheKey key, long txTimestamp, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			CheckCache();
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache lookup: {0}", key);
 			}
 
-			var result = await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
+			var result = await (InternalCache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 			if (log.IsDebugEnabled())
 			{
 				log.Debug(result != null ? "Cache hit: {0}" : "Cache miss: {0}", key);
@@ -45,13 +44,12 @@ namespace NHibernate.Cache
 		public async Task<object[]> GetManyAsync(CacheKey[] keys, long timestamp, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			CheckCache();
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
 
-			var results = await (_cache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
+			var results = await (InternalCache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache hit: {0}", string.Join(",", keys.Where((k, i) => results != null)));
@@ -76,8 +74,6 @@ namespace NHibernate.Cache
 				return result;
 			}
 
-			CheckCache();
-
 			var checkKeys = new List<object>();
 			var checkKeyIndexes = new List<int>();
 			for (var i = 0; i < minimalPuts.Length; i++)
@@ -88,10 +84,12 @@ namespace NHibernate.Cache
 					checkKeyIndexes.Add(i);
 				}
 			}
+
+			var cache = InternalCache;
 			var skipKeyIndexes = new HashSet<int>();
 			if (checkKeys.Any())
 			{
-				var objects = await (_cache.GetManyAsync(checkKeys.ToArray(), cancellationToken)).ConfigureAwait(false);
+				var objects = await (cache.GetManyAsync(checkKeys.ToArray(), cancellationToken)).ConfigureAwait(false);
 				for (var i = 0; i < objects.Length; i++)
 				{
 					if (objects[i] != null)
@@ -123,7 +121,7 @@ namespace NHibernate.Cache
 				putValues[j++] = values[i];
 				result[i] = true;
 			}
-			await (_cache.PutManyAsync(putKeys, putValues, cancellationToken)).ConfigureAwait(false);
+			await (cache.PutManyAsync(putKeys, putValues, cancellationToken)).ConfigureAwait(false);
 			return result;
 		}
 
@@ -140,9 +138,8 @@ namespace NHibernate.Cache
 				return false;
 			}
 
-			CheckCache();
-
-			if (minimalPut && await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false) != null)
+			var cache = InternalCache;
+			if (minimalPut && await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false) != null)
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -154,7 +151,7 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Caching: {0}", key);
 			}
-			await (Cache.PutAsync(key, value, cancellationToken)).ConfigureAwait(false);
+			await (cache.PutAsync(key, value, cancellationToken)).ConfigureAwait(false);
 			return true;
 		}
 
@@ -185,12 +182,11 @@ namespace NHibernate.Cache
 			}
 			try
 			{
-				CheckCache();
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("Removing: {0}", key);
 				}
-				return Cache.RemoveAsync(key, cancellationToken);
+				return InternalCache.RemoveAsync(key, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -206,12 +202,11 @@ namespace NHibernate.Cache
 			}
 			try
 			{
-				CheckCache();
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("Clearing");
 				}
-				return Cache.ClearAsync(cancellationToken);
+				return InternalCache.ClearAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -230,12 +225,11 @@ namespace NHibernate.Cache
 			}
 			try
 			{
-				CheckCache();
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("Invalidating: {0}", key);
 				}
-				return Cache.RemoveAsync(key, cancellationToken);
+				return InternalCache.RemoveAsync(key, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -264,13 +258,12 @@ namespace NHibernate.Cache
 			}
 			try
 			{
-				CheckCache();
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("Invalidating (again): {0}", key);
 				}
 
-				return Cache.RemoveAsync(key, cancellationToken);
+				return InternalCache.RemoveAsync(key, cancellationToken);
 			}
 			catch (Exception ex)
 			{
