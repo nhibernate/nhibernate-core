@@ -83,6 +83,9 @@ namespace NHibernate.Proxy
 				          .Distinct();
 			foreach (var a in assemblyNamesToIgnoreAccessCheck)
 				ProxyBuilderHelper.GenerateInstanceOfIgnoresAccessChecksToAttribute(assemblyBuilder, a);
+
+			if (!baseType.IsVisible && !baseType.IsInterface)
+				ProxyBuilderHelper.GenerateInstanceOfIgnoresAccessChecksToAttribute(assemblyBuilder, baseType.Assembly.GetName().Name);
 #else
 			interfaces.RemoveWhere(i => !i.IsVisible);
 #endif
