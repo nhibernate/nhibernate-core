@@ -330,6 +330,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set { _withClauseFragment = value; }
 		}
 
+		internal HashSet<FromElement> WithClauseFromElements { get; set; }
+
 		// Since 5.4
 		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public string WithClauseJoinAlias

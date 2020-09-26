@@ -946,5 +946,30 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		#endregion
+
+		#region DependentEntityJoin
+
+		[Test]
+		public async Task HqlDependentEntityJoinAsync()
+		{
+			await (AssertDependentEntityJoinAsync(@"from Order o 
+inner join (from Order where OrderId = :id) o2 on (o.OrderId - 1) = o2.OrderId 
+left join o.Employee e on e = o2.Employee"));
+		}
+
+		private async Task AssertDependentEntityJoinAsync(string query, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var result = await (session.CreateQuery(query).SetParameter("id", 10248).ListAsync(cancellationToken));
+			Assert.That(result, Has.Count.EqualTo(1));
+			var item = result[0];
+			Assert.That(item, Is.TypeOf<object[]>());
+			var array = (object[]) item;
+			Assert.That(array, Has.Length.EqualTo(3));
+			Assert.That(array[0], Is.TypeOf<Order>().And.Property("OrderId").EqualTo(10249));
+			Assert.That(array[1], Is.TypeOf<Order>().And.Property("OrderId").EqualTo(10248));
+			Assert.That(array[2], Is.Null);
+		}
+
+		#endregion
 	}
 }

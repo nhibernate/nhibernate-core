@@ -436,9 +436,36 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			foreach (var item in _appendFromElements)
 			{
-				AddChild(item);
+				var dependentElement = GetFirstDependentFromElement(item);
+				if (dependentElement == null)
+				{
+					AddChild(item);
+				}
+				else
+				{
+					var index = dependentElement.ChildIndex;
+					dependentElement.Parent.InsertChild(index, item);
+				}
 			}
 			_appendFromElements.Clear();
+		}
+
+		private FromElement GetFirstDependentFromElement(FromElement element)
+		{
+			foreach (var fromElement in _fromElements)
+			{
+				if (fromElement == element ||
+					fromElement.WithClauseFromElements?.Contains(element) != true ||
+				    // Parent will be null for entity and subquery joins
+				    fromElement.Parent == null)
+				{
+					continue;
+				}
+
+				return fromElement;
+			}
+
+			return null;
 		}
 	}
 }

@@ -1320,6 +1320,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				sql.whereExpr();
 
 				fromElement.WithClauseFragment = new SqlString("(", sql.GetSQL(), ")");
+				fromElement.WithClauseFromElements = visitor.FromElements;
 			}
 			catch (SemanticException)
 			{
@@ -1345,6 +1346,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_joinFragment = fromElement;
 		}
 
+		internal HashSet<FromElement> FromElements { get; } = new HashSet<FromElement>();
+
 		public void Visit(IASTNode node)
 		{
 			if (node is ParameterNode paramNode)
@@ -1354,6 +1357,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			else if (node is IParameterContainer paramContainer)
 			{
 				ApplyParameterSpecifications(paramContainer);
+			}
+			else if (node is ISelectExpression selectExpression && selectExpression.FromElement != null)
+			{
+				FromElements.Add(selectExpression.FromElement);
 			}
 		}
 

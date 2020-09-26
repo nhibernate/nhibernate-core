@@ -195,6 +195,8 @@ fromTable
 tableJoin [ IASTNode parent ]
 	: ^( c=JOIN_FRAGMENT { Out(" "); Out($c); } (tableJoin [ c ] )* )
 	| ^( d=FROM_FRAGMENT { NestedFromFragment($d,parent); } (tableJoin [ d ] )* )
+	| ^( e=ENTITY_JOIN   { Out(" "); Out(e); } (tableJoin [ e ])* )
+	| ^( f=JOIN_SUBQUERY { Out(" "); StartJoinSubquery(); } selectStatement { EndJoinSubquery(f); } (tableJoin [ f ])* )
 	;
 
 booleanOp[ bool parens ]
