@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -76,7 +75,7 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 				var multi = s.CreateQueryBatch();
 				multi.Add<int>(s.CreateQuery(hqlQuery));
 				s.Connection.Close();
-				Assert.ThrowsAsync<UnitTestException>(() => multi.ExecuteAsync(CancellationToken.None));
+				Assert.ThrowsAsync<UnitTestException>(() => multi.ExecuteAsync());
 			}
 		}
 
@@ -118,7 +117,7 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 				var multi = s.CreateQueryBatch();
 				multi.Add<ClassA>(s.CreateCriteria(typeof(ClassA)));
 				s.Connection.Close();
-				Assert.ThrowsAsync<UnitTestException>(() => multi.ExecuteAsync(CancellationToken.None));
+				Assert.ThrowsAsync<UnitTestException>(() => multi.ExecuteAsync());
 			}
 		}
 	}

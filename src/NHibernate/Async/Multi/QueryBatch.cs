@@ -27,7 +27,7 @@ namespace NHibernate.Multi
 	{
 
 		/// <inheritdoc />
-		public async Task ExecuteAsync(CancellationToken cancellationToken)
+		public async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (_queries.Count == 0)
