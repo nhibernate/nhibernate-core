@@ -70,7 +70,7 @@ namespace NHibernate.Multi
 		}
 
 		/// <inheritdoc />
-		public Task<IList<TResult>> GetResultAsync<TResult>(int queryIndex, CancellationToken cancellationToken)
+		public Task<IList<TResult>> GetResultAsync<TResult>(int queryIndex, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -87,7 +87,7 @@ namespace NHibernate.Multi
 		}
 
 		/// <inheritdoc />
-		public Task<IList<TResult>> GetResultAsync<TResult>(string querykey, CancellationToken cancellationToken)
+		public Task<IList<TResult>> GetResultAsync<TResult>(string querykey, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
