@@ -119,18 +119,18 @@ namespace NHibernate.Persister.Collection
 			var identifierAlias = queryable.GetIdentifierColumnAlias(null);
 			var indexAliases = queryable.GetIndexColumnAliases(null);
 			var columnAliases = queryable.GetKeyColumnAliases(null)
-			                             .Union(queryable.GetElementColumnAliases(null));
+			                             .Concat(queryable.GetElementColumnAliases(null));
 			if (indexAliases != null)
 			{
-				columnAliases = columnAliases.Union(indexAliases);
+				columnAliases = columnAliases.Concat(indexAliases);
 			}
 
 			if (identifierAlias != null)
 			{
-				columnAliases = columnAliases.Union(new[] {identifierAlias});
+				columnAliases = columnAliases.Concat(new[] {identifierAlias});
 			}
 
-			return new SelectFragment(queryable.Factory.Dialect, renderedText, columnAliases.ToList())
+			return new SelectFragment(queryable.Factory.Dialect, renderedText, columnAliases.Distinct().ToList())
 				.SetSuffix(columnSuffix);
 		}
 	}

@@ -15,6 +15,7 @@ namespace NHibernate.Persister.Entity
 		private readonly Dictionary<string, string> _propertyMappingSuffixes = new Dictionary<string, string>();
 		private readonly Dictionary<IPropertyMapping, string> _propertyMappings = new Dictionary<IPropertyMapping, string>();
 		private readonly Dictionary<string, ISelectExpression> _aliasSelectExpressions = new Dictionary<string, ISelectExpression>();
+		private readonly HashSet<FromElement> _nonScalarFromElements = new HashSet<FromElement>();
 		private readonly SelectClause _selectClause;
 
 		public SubqueryPropertyMapping(IType type, SelectClause selectClause)
@@ -55,7 +56,17 @@ namespace NHibernate.Persister.Entity
 			{
 				var expression = nonScalarExpressions[i];
 				var fromElement = expression.FromElement;
-				var mapping = fromElement?.GetPropertyMapping("");
+				if (fromElement == null)
+				{
+					continue;
+				}
+
+				if (!fromElement.IsFetch)
+				{
+					_nonScalarFromElements.Add(fromElement);
+				}
+
+				var mapping = fromElement.GetPropertyMapping("");
 				if (mapping == null)
 				{
 					continue;
@@ -194,15 +205,8 @@ namespace NHibernate.Persister.Entity
 		public List<string> GetPropertiesColumns(string alias)
 		{
 			var columns = new List<string>();
-			var processedElements = new HashSet<FromElement>();
-			foreach (var expression in _selectClause.NonScalarExpressions)
+			foreach (var fromElement in _nonScalarFromElements)
 			{
-				var fromElement = expression.FromElement;
-				if (fromElement == null || fromElement.IsFetch || !processedElements.Add(fromElement))
-				{
-					continue;
-				}
-
 				var fragment = fromElement.GetPropertiesSelectFragment(fromElement.EntitySuffix, alias);
 				if (fromElement is JoinSubqueryFromElement)
 				{
@@ -228,14 +232,9 @@ namespace NHibernate.Persister.Entity
 		public List<string> GetIdentifiersColumns(string alias)
 		{
 			var columns = new List<string>();
-			var processedElements = new HashSet<FromElement>();
-			foreach (var expression in _selectClause.NonScalarExpressions)
+			foreach (var fromElement in _nonScalarFromElements)
 			{
-				var fromElement = expression.FromElement;
-				if (fromElement == null ||
-				    fromElement.FromClause.IsScalarSubQuery ||
-				    fromElement.IsFetch ||
-				    !processedElements.Add(fromElement))
+				if (fromElement.FromClause.IsScalarSubQuery)
 				{
 					continue;
 				}

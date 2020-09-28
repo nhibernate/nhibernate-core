@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Antlr.Runtime;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
@@ -19,9 +21,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			QueryNode = queryNode;
 			DataType = dataType;
 			foreach (var fromElement in querySelectClause.SelectExpressions.Select(o => o.FromElement)
-				.Union(querySelectClause.NonScalarExpressions?.Select(o => o.FromElement) ?? Enumerable.Empty<FromElement>())
-				.Union(querySelectClause.CollectionFromElements ?? Enumerable.Empty<FromElement>())
-				.Where(o => o != null))
+				.Concat(querySelectClause.NonScalarExpressions?.Select(o => o.FromElement) ?? Enumerable.Empty<FromElement>())
+				.Concat(querySelectClause.CollectionFromElements ?? Enumerable.Empty<FromElement>())
+				.Where(o => o != null)
+				.Distinct())
 			{
 				fromElement.ParentFromElement = this;
 			}
@@ -65,16 +68,24 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				renderText.Substring(index + 7));
 		}
 
-		public override string GetIdentityColumn()
+		internal List<ISelectExpression> GetRelatedSelectExpressions(DotNode dotNode, out SelectClause selectClause)
 		{
-			// Return null for a scalar subquery instead of throwing an exception.
-			// The node will be removed in the SelectClause
-			if (DataType is SubqueryComponentType && PropertyMapping.GetIdentifiersColumns(TableAlias).Count == 0)
+			return PropertyMapping.GetRelatedSelectExpressions(dotNode.PropertyPath, out selectClause);
+		}
+
+		internal override string[] GetIdentityColumns(string alias)
+		{
+			if (DataType is SubqueryComponentType)
 			{
-				return null;
+				var idColumns = PropertyMapping.GetIdentifiersColumns(alias);
+				// Return null for a scalar subquery instead of throwing an exception.
+				// The node will be removed in the SelectClause
+				return idColumns.Count == 0
+					? null
+					: idColumns.ToArray();
 			}
 
-			return base.GetIdentityColumn();
+			return base.GetIdentityColumns(alias);
 		}
 	}
 }

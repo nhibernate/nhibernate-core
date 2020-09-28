@@ -67,14 +67,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_derivedSelectExpressions = new HashSet<ISelectExpression>();
 			foreach (FromElement fromElement in fromElements)
 			{
-				if (fromElement.SelectType == null || fromElement.IsFetch || fromElement.IsCollectionOfValuesOrComponents)
+				IType type;
+				if (fromElement.IsFetch || fromElement.IsCollectionOfValuesOrComponents || ((type = fromElement.SelectType) == null))
 				{
 					continue;
 				}
 
 				var node = (IdentNode)appender.Append(HqlSqlWalker.IDENT, fromElement.ClassAlias ?? "", true);
 				node.FromElement = fromElement;
-				node.DataType = fromElement.SelectType;
+				node.DataType = type;
 				_derivedSelectExpressions.Add(node);
 			}
 
@@ -112,7 +113,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				{
 					_constructorNode = (ConstructorNode) expr;
 					_scalarSelect = true;
-					NonScalarExpressions?.AddRange(_constructorNode.GetSelectExpressions(true, o => !o.IsScalar));
+					SelectExpressions.RemoveAt(i);
+					NonScalarExpressions.AddRange(_constructorNode.GetSelectExpressions(true, o => !o.IsScalar));
 					foreach (var argumentExpression in _constructorNode.GetSelectExpressions())
 					{
 						SelectExpressions.Insert(i, argumentExpression);
@@ -120,61 +122,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 						AddExpression(argumentExpression, queryReturnTypeList);
 					}
 
-					SelectExpressions.Remove(expr);
-					length = SelectExpressions.Count;
 					i--;
+					length = SelectExpressions.Count;
 				}
-				else if (expr.FromElement is JoinSubqueryFromElement joinSubquery)
+				else if (expr.FromElement is JoinSubqueryFromElement joinSubquery &&
+				         TryProcessSubqueryExpressions(expr, joinSubquery, out var selectClause, out var subqueryExpressions))
 				{
-					SelectClause selectClause;
-					List<ISelectExpression> subqueryExpressions;
-					if (expr is IdentNode)
-					{
-						selectClause = joinSubquery.QueryNode.GetSelectClause();
-						subqueryExpressions = selectClause.SelectExpressions;
-						NonScalarExpressions.Add(expr);
-					}
-					else if (expr is DotNode dotNode)
-					{
-						var relatedExpressions = joinSubquery.PropertyMapping.GetRelatedSelectExpressions(dotNode.PropertyPath, out selectClause);
-						if (relatedExpressions == null)
-						{
-							if (!expr.IsScalar)
-							{
-								NonScalarExpressions.Add(expr);
-							}
-
-							AddExpression(expr, queryReturnTypeList);
-							continue;
-						}
-
-						if (!selectClause.IsScalarSelect)
-						{
-							RemoveChildAndUnsetParent((IASTNode) expr);
-						}
-
-						subqueryExpressions = new List<ISelectExpression>();
-						foreach (var relatedExpression in relatedExpressions)
-						{
-							if (!relatedExpression.IsScalar)
-							{
-								NonScalarExpressions.Add(relatedExpression);
-							}
-
-							subqueryExpressions.Add(relatedExpression);
-						}
-					}
-					else
-					{
-						if (!expr.IsScalar)
-						{
-							NonScalarExpressions?.Add(expr);
-						}
-
-						AddExpression(expr, queryReturnTypeList);
-						continue;
-					}
-
+					SelectExpressions.RemoveAt(i);
 					var indexes = new List<int>(subqueryExpressions.Count);
 					foreach (var expression in subqueryExpressions)
 					{
@@ -185,16 +139,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 						AddExpression(expression, queryReturnTypeList);
 					}
 
-					_replacedExpressions.Add(expr, indexes);
-					SelectExpressions.Remove(expr);
-					length = SelectExpressions.Count;
 					i--;
+					length = SelectExpressions.Count;
+					_replacedExpressions.Add(expr, indexes);
 				}
 				else
 				{
 					if (!expr.IsScalar)
 					{
-						NonScalarExpressions?.Add(expr);
+						NonScalarExpressions.Add(expr);
 					}
 
 					AddExpression(expr, queryReturnTypeList);
@@ -212,6 +165,49 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			Render(fromClause, inheritedExpressions);
 
 			FinishInitialization();
+		}
+
+		private bool TryProcessSubqueryExpressions(
+			ISelectExpression selectExpression,
+			JoinSubqueryFromElement joinSubquery,
+			out SelectClause selectClause,
+			out List<ISelectExpression> subqueryExpressions)
+		{
+			if (selectExpression is IdentNode)
+			{
+				selectClause = joinSubquery.QueryNode.GetSelectClause();
+				subqueryExpressions = selectClause.SelectExpressions;
+				NonScalarExpressions.Add(selectExpression);
+			}
+			else if (selectExpression is DotNode dotNode)
+			{
+				subqueryExpressions = joinSubquery.GetRelatedSelectExpressions(dotNode, out selectClause);
+				if (subqueryExpressions == null)
+				{
+					return false;
+				}
+
+				if (!selectClause.IsScalarSelect)
+				{
+					RemoveChildAndUnsetParent((IASTNode) selectExpression);
+				}
+
+				foreach (var expression in subqueryExpressions)
+				{
+					if (!expression.IsScalar)
+					{
+						NonScalarExpressions.Add(expression);
+					}
+				}
+			}
+			else
+			{
+				selectClause = null;
+				subqueryExpressions = null;
+				return false;
+			}
+
+			return true;
 		}
 
 		private void Render(
@@ -454,54 +450,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			var appender = new ASTAppender(ASTFactory, this);
 			var combinedFromElements = new List<FromElement>();
 			var processedElements = new HashSet<FromElement>();
-			foreach (var e in NonScalarExpressions)
-			{
-				var fromElement = e.FromElement;
-				if (fromElement == null)
-				{
-					continue;
-				}
-
-				var node = (IASTNode) e;
-				if (processedElements.Add(fromElement))
-				{
-					combinedFromElements.Add(fromElement);
-					RenderNonScalarIdentifiers(fromElement, inheritedExpressions.ContainsKey(e) ? null : e, appender);
-				}
-				else if (!inheritedExpressions.ContainsKey(e) && node.Parent != null)
-				{
-					RemoveChildAndUnsetParent(node);
-				}
-			}
-
+			RenderNonScalarIdentifiers(appender, processedElements, combinedFromElements, inheritedExpressions);
 			if (Walker.IsShallowQuery)
 			{
 				return;
 			}
 
 			// Append fetched elements
-			foreach (var fetchedFromElement in fetchedFromElements)
-			{
-				if (!processedElements.Add(fetchedFromElement))
-				{
-					continue;
-				}
-
-				fetchedFromElement.EntitySuffix = Walker.GetEntitySuffix(fetchedFromElement);
-				combinedFromElements.Add(fetchedFromElement);
-				var fragment = fetchedFromElement.GetIdentifierSelectFragment(fetchedFromElement.EntitySuffix);
-				if (fragment == null)
-				{
-					// When a subquery join has a scalar select only
-					continue; 
-				}
-
-				var generatedExpr = (SelectExpressionImpl) Append(appender, HqlSqlWalker.SELECT_EXPR, fragment);
-				generatedExpr.FromElement = fetchedFromElement;
-				generatedExpr.DataType = fetchedFromElement.DataType;
-				NonScalarExpressions.Add(generatedExpr);
-			}
-
+			RenderFetchedNonScalarIdentifiers(appender, fetchedFromElements, processedElements, combinedFromElements);
 			if (currentFromClause.IsScalarSubQuery)
 			{
 				return;
@@ -525,6 +481,62 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					var fragment = fromElement.GetValueCollectionSelectFragment(suffix);
 					Append(appender, HqlSqlWalker.SQL_TOKEN, fragment);
 				}
+			}
+		}
+
+		private void RenderNonScalarIdentifiers(
+			ASTAppender appender,
+			HashSet<FromElement> processedElements,
+			List<FromElement> combinedFromElements,
+			Dictionary<ISelectExpression, SelectClause> inheritedExpressions)
+		{
+			foreach (var e in NonScalarExpressions)
+			{
+				var fromElement = e.FromElement;
+				if (fromElement == null)
+				{
+					continue;
+				}
+
+				var node = (IASTNode) e;
+				if (processedElements.Add(fromElement))
+				{
+					combinedFromElements.Add(fromElement);
+					RenderNonScalarIdentifiers(fromElement, inheritedExpressions.ContainsKey(e) ? null : e, appender);
+				}
+				else if (!inheritedExpressions.ContainsKey(e) && node.Parent != null)
+				{
+					RemoveChildAndUnsetParent(node);
+				}
+			}
+		}
+
+		private void RenderFetchedNonScalarIdentifiers(
+			ASTAppender appender,
+			IList<FromElement> fetchedFromElements,
+			HashSet<FromElement> processedElements,
+			List<FromElement> combinedFromElements)
+		{
+			foreach (var fetchedFromElement in fetchedFromElements)
+			{
+				if (!processedElements.Add(fetchedFromElement))
+				{
+					continue;
+				}
+
+				fetchedFromElement.EntitySuffix = Walker.GetEntitySuffix(fetchedFromElement);
+				combinedFromElements.Add(fetchedFromElement);
+				var fragment = fetchedFromElement.GetIdentifierSelectFragment(fetchedFromElement.EntitySuffix);
+				if (fragment == null)
+				{
+					// When a subquery join has a scalar select only
+					continue;
+				}
+
+				var generatedExpr = (SelectExpressionImpl) Append(appender, HqlSqlWalker.SELECT_EXPR, fragment);
+				generatedExpr.FromElement = fetchedFromElement;
+				generatedExpr.DataType = fetchedFromElement.DataType;
+				NonScalarExpressions.Add(generatedExpr);
 			}
 		}
 

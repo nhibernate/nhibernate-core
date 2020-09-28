@@ -584,8 +584,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public virtual string GetIdentityColumn()
 		{
 			var cols = GetIdentityColumns();
-			string result = string.Join(", ", cols);
+			if (cols == null)
+			{
+				return null;
+			}
 
+			string result = string.Join(", ", cols);
 			if (cols.Length > 1 && Walker.IsComparativeExpressionClause)
 			{
 				return "(" + result + ")";
@@ -603,10 +607,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				throw new InvalidOperationException("No table alias for node " + this);
 			}
-			string[] cols;
+
+			return GetIdentityColumns(table);
+		}
+
+		internal virtual string[] GetIdentityColumns(string alias)
+		{
 			string propertyName;
-			if (EntityPersister != null && EntityPersister.EntityMetamodel != null
-					&& EntityPersister.EntityMetamodel.HasNonIdentifierPropertyNamedId)
+			if (EntityPersister?.EntityMetamodel?.HasNonIdentifierPropertyNamedId == true)
 			{
 				propertyName = EntityPersister.IdentifierPropertyName;
 			}
@@ -619,11 +627,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				propertyName = NHibernate.Persister.Entity.EntityPersister.EntityID;
 			}
 
-			cols = UseTableAliases
-				? GetPropertyMapping(propertyName).ToColumns(table, propertyName)
+			return UseTableAliases
+				? GetPropertyMapping(propertyName).ToColumns(alias, propertyName)
 				: GetPropertyMapping(propertyName).ToColumns(propertyName);
-
-			return cols;
 		}
 
 		internal bool UseTableAliases => Walker.StatementType == HqlSqlWalker.SELECT || Walker.IsSubQuery;
