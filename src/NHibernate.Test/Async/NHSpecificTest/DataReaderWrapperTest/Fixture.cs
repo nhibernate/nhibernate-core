@@ -16,7 +16,6 @@ using NHibernate.Multi;
 namespace NHibernate.Test.NHSpecificTest.DataReaderWrapperTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -71,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.DataReaderWrapperTest
 				var crit = s.CreateCriteria(typeof (TheEntity));
 				var multi = s.CreateQueryBatch();
 				multi.Add<TheEntity>(crit);
-				var res = await (multi.GetResultAsync<TheEntity>(0, CancellationToken.None));
+				var res = await (multi.GetResultAsync<TheEntity>(0));
 				Assert.That(res.Count, Is.EqualTo(1));
 			}
 		}

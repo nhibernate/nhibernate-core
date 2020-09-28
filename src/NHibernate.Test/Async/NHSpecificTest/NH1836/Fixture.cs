@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1836
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -70,7 +69,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1836
 				                                 .SetResultTransformer(Transformers.AliasToBean(typeof(EntityDTO))));
 
 				Assert.That(multiQuery.Execute, Throws.Nothing);
-				var results = await (multiQuery.GetResultAsync<EntityDTO>(0, CancellationToken.None));
+				var results = await (multiQuery.GetResultAsync<EntityDTO>(0));
 				Assert.That(results.First(), Is.TypeOf<EntityDTO>().And.Property("EntityId").EqualTo(1));
 				await (t.CommitAsync());
 			}
