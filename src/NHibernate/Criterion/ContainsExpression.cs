@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
-using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
+	[Serializable]
 	public class ContainsExpression : AbstractCriterion
 	{
 		private readonly object value;
