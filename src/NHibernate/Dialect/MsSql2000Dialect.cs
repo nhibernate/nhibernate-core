@@ -365,6 +365,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("extract", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(?1, ?3)"));
 
 			RegisterFunction("new_uuid", new NoArgSQLFunction("newid", NHibernateUtil.Guid));
+
+			RegisterFunction("contains", new StandardSQLFunction("contains"));
+			RegisterFunction("freetext", new StandardSQLFunction("freetext")); 
 		}
 
 		protected virtual void RegisterGuidTypeMapping()

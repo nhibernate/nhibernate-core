@@ -141,6 +141,16 @@ namespace NHibernate.Criterion
 			return new InsensitiveLikeExpression(projection, value);
 		}
 
+		public static AbstractCriterion Contains(string propertyName, string value, bool freetext = false)
+		{
+			return new ContainsExpression(propertyName, value, freetext);
+		}
+
+		public static AbstractCriterion Contains(IProjection projection, string value, bool freetext = false)
+		{
+			return new ContainsExpression(projection, value, freetext);
+		}
+
 		/// <summary>
 		/// Apply a "greater than" constraint to the named property
 		/// </summary>

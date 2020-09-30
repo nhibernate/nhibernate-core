@@ -143,6 +143,8 @@ namespace NHibernate.Dialect
 				new SQLFunctionTemplate(
 					NHibernateUtil.Double,
 					"(cast(random() as real) / 4611686018427387904 / 4 + 0.5)"));
+
+			RegisterFunction("match", new SQLFunctionTemplate(null, "?1 match ?2")); 
 		}
 
 		public override void Configure(IDictionary<string, string> settings)
