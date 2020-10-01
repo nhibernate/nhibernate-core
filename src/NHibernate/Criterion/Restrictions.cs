@@ -141,14 +141,14 @@ namespace NHibernate.Criterion
 			return new InsensitiveLikeExpression(projection, value);
 		}
 
-		public static AbstractCriterion Contains(string propertyName, string value)
+		public static AbstractCriterion FullTextContains(string propertyName, string value)
 		{
-			return new ContainsExpression(propertyName, value);
+			return new FullTextContainsExpression(propertyName, value);
 		}
 
-		public static AbstractCriterion Contains(IProjection projection, string value)
+		public static AbstractCriterion FullTextContains(IProjection projection, string value)
 		{
-			return new ContainsExpression(projection, value);
+			return new FullTextContainsExpression(projection, value);
 		}
 
 		/// <summary>

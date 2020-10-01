@@ -7,20 +7,20 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion
 {
 	[Serializable]
-	public class ContainsExpression : AbstractCriterion
+	public class FullTextContainsExpression : AbstractCriterion
 	{
 		private readonly object value;
 		private readonly IProjection projection;
 		private readonly TypedValue typedValue;
 
-		public ContainsExpression(IProjection projection, object value)
+		public FullTextContainsExpression(IProjection projection, object value)
 		{
 			this.projection = projection;
 			this.value = value;
 			typedValue = new TypedValue(NHibernateUtil.String, this.value, false);
 		}
 
-		public ContainsExpression(string propertyName, object value)
+		public FullTextContainsExpression(string propertyName, object value)
 			: this(Projections.Property(propertyName), value)
 		{
 		}
