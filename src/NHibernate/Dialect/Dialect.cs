@@ -2542,6 +2542,11 @@ namespace NHibernate.Dialect
 			get { return "lower"; }
 		}
 
+		public virtual string FullTextSearchFunction
+		{
+			get { return string.Empty; }
+		}
+
 		// 18 is the smallest of all dialects we handle.
 		/// <summary>
 		/// The maximum length a SQL alias can have.

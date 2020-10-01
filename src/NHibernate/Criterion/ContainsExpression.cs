@@ -12,18 +12,16 @@ namespace NHibernate.Criterion
 		private readonly object value;
 		private readonly IProjection projection;
 		private readonly TypedValue typedValue;
-		private readonly bool freetext;
 
-		public ContainsExpression(IProjection projection, object value, bool freetext)
+		public ContainsExpression(IProjection projection, object value)
 		{
 			this.projection = projection;
 			this.value = value;
 			typedValue = new TypedValue(NHibernateUtil.String, this.value, false);
-			this.freetext = freetext;
 		}
 
-		public ContainsExpression(string propertyName, object value, bool freetext)
-			: this(Projections.Property(propertyName), value, freetext)
+		public ContainsExpression(string propertyName, object value)
+			: this(Projections.Property(propertyName), value)
 		{
 		}
 
@@ -32,8 +30,9 @@ namespace NHibernate.Criterion
 			var columns = CriterionUtil.GetColumnNamesAsSqlStringParts(projection, criteriaQuery, criteria);
 			var value = criteriaQuery.NewQueryParameter(typedValue).Single();
 			var arguments = new[] { columns[0], value };
-			var functionName = GetFunctionName(criteriaQuery);
-
+			var dialect = criteriaQuery.Factory.Dialect;
+			var functionName = dialect.FullTextSearchFunction;
+			
 			var dialectFunction = criteriaQuery.Factory.SQLFunctionRegistry.FindSQLFunction(functionName);
 			if (dialectFunction == null)
 			{
@@ -41,19 +40,6 @@ namespace NHibernate.Criterion
 					criteriaQuery.Factory.Dialect, functionName));
 			}
 			return dialectFunction.Render(arguments, criteriaQuery.Factory);
-		}
-
-		private string GetFunctionName(ICriteriaQuery criteriaQuery)
-		{
-			var dialect = criteriaQuery.Factory.Dialect;
-
-			if (dialect is MsSql2000Dialect)
-				return freetext ? "freetext" : "contains";
-
-			if (dialect is SQLiteDialect)
-				return "match";
-
-			return "contains";
 		}
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)

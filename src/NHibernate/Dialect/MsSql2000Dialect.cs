@@ -746,6 +746,11 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		public override string FullTextSearchFunction
+		{
+			get { return "contains"; }
+		}
+
 		// Was 30 in "earlier version", without telling to which version the document apply.
 		// https://msdn.microsoft.com/en-us/library/ms191240.aspx#Anchor_3
 		/// <inheritdoc />

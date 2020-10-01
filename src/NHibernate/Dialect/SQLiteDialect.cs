@@ -508,6 +508,11 @@ namespace NHibernate.Dialect
 		/// <inheritdoc />
 		public override int MaxAliasLength => 128;
 
+		public override string FullTextSearchFunction
+		{
+			get { return "match"; }
+		}
+
 		// Since v5.3
 		[Obsolete("This class has no usage in NHibernate anymore and will be removed in a future version. Use or extend CastFunction instead.")]
 		[Serializable]
