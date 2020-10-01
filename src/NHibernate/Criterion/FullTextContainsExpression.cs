@@ -59,7 +59,7 @@ namespace NHibernate.Criterion
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return projection + " contains/freetext " + value;
+			return projection + " full-text-contains " + value;
 		}
 	}
 }
