@@ -135,15 +135,32 @@ namespace NHibernate.Type
 
 		public override object Disassemble(object value, ISessionImplementor session, object owner)
 		{
-			return null;
+			if (value == null)
+			{
+				return null;
+			}
+
+			object id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session);
+
+			if (id == null)
+			{
+				throw new AssertionFailure("cannot cache a reference to an object with a null id: " + GetAssociatedEntityName());
+			}
+
+			return GetIdentifierType(session).Disassemble(id, session, owner);
 		}
 
 		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			//this should be a call to resolve(), not resolveIdentifier(), 
-			//'cos it might be a property-ref, and we did not cache the
-			//referenced value
-			return ResolveIdentifier(session.GetContextEntityIdentifier(owner), session, owner);
+			// the owner of the association is not the owner of the id
+			object id = GetIdentifierType(session).Assemble(cached, session, null);
+
+			if (id == null)
+			{
+				return null;
+			}
+
+			return ResolveIdentifier(id, session);
 		}
 
 		/// <summary>
