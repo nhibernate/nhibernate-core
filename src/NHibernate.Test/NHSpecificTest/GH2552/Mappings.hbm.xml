@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.GH2552">
+  <class name="PersonByFK" batch-size="3">
+    <cache usage="read-only"/>
+    <id name="Id" unsaved-value="0" generator="native"/>
+    <property name="Name"/>
+    <one-to-one name="Details" class="DetailsByFK" fetch="join" cascade="all"/>
+  </class>
+
+  <class name="DetailsByFK">
+    <cache usage="read-only"/>
+    <id name="Id" unsaved-value="0">
+      <generator class="foreign">
+        <param name="property">Person</param>
+      </generator>
+    </id>
+    <one-to-one name="Person" class="PersonByFK" constrained="true"/>
+    <property name="Data"/>
+  </class>
+
+  <class name="PersonByRef" batch-size="3">
+    <cache usage="read-only"/>
+    <id name="Id" unsaved-value="0" generator="native"/>
+    <property name="Name" />
+    <one-to-one name="Details" class="DetailsByRef" property-ref="Person" fetch="join" cascade="all"/>
+  </class>
+
+  <class name="DetailsByRef">
+    <cache usage="read-only"/>
+    <id name="Id" unsaved-value="0" generator="native"/>
+    <many-to-one name="Person" class="PersonByRef" column="PersonId" unique="true"/>
+    <property name="Data"/>
+  </class>
+</hibernate-mapping>
