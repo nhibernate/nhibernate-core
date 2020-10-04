@@ -32,7 +32,7 @@ namespace NHibernate.Cache
 				log.Debug("Cache lookup: {0}", key);
 			}
 
-			var result = await (InternalCache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
+			var result = await (_this.Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 			if (log.IsDebugEnabled())
 			{
 				log.Debug(result != null ? "Cache hit: {0}" : "Cache miss: {0}", key);
@@ -49,7 +49,7 @@ namespace NHibernate.Cache
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
 
-			var results = await (InternalCache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
+			var results = await (_this.Cache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache hit: {0}", string.Join(",", keys.Where((k, i) => results != null)));
@@ -85,7 +85,7 @@ namespace NHibernate.Cache
 				}
 			}
 
-			var cache = InternalCache;
+			var cache = _this.Cache;
 			var skipKeyIndexes = new HashSet<int>();
 			if (checkKeys.Any())
 			{
@@ -138,7 +138,7 @@ namespace NHibernate.Cache
 				return false;
 			}
 
-			var cache = InternalCache;
+			var cache = _this.Cache;
 			if (minimalPut && await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false) != null)
 			{
 				if (log.IsDebugEnabled())
@@ -186,7 +186,7 @@ namespace NHibernate.Cache
 				{
 					log.Debug("Removing: {0}", key);
 				}
-				return InternalCache.RemoveAsync(key, cancellationToken);
+				return _this.Cache.RemoveAsync(key, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -206,7 +206,7 @@ namespace NHibernate.Cache
 				{
 					log.Debug("Clearing");
 				}
-				return InternalCache.ClearAsync(cancellationToken);
+				return _this.Cache.ClearAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -229,7 +229,7 @@ namespace NHibernate.Cache
 				{
 					log.Debug("Invalidating: {0}", key);
 				}
-				return InternalCache.RemoveAsync(key, cancellationToken);
+				return _this.Cache.RemoveAsync(key, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -263,7 +263,7 @@ namespace NHibernate.Cache
 					log.Debug("Invalidating (again): {0}", key);
 				}
 
-				return InternalCache.RemoveAsync(key, cancellationToken);
+				return _this.Cache.RemoveAsync(key, cancellationToken);
 			}
 			catch (Exception ex)
 			{

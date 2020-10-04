@@ -35,10 +35,20 @@ namespace NHibernate.Cache
 
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ReadWriteCache));
 
+		// 6.0 TODO : remove
+		private readonly IBatchableCacheConcurrencyStrategy _this;
 		private CacheBase _cache;
 		private bool _isDestroyed;
 		private int _nextLockId;
 		private readonly AsyncReaderWriterLock _asyncReaderWriterLock = new AsyncReaderWriterLock();
+
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public ReadWriteCache()
+		{
+			_this = this;
+		}
 
 		/// <summary>
 		/// Gets the cache region name.
@@ -57,8 +67,8 @@ namespace NHibernate.Cache
 			set { _cache = value?.AsCacheBase(); }
 		}
 
-		// 6.0 TODO: Rename to Cache and make public (possible breaking change for reader when null).
-		private CacheBase InternalCache
+		// 6.0 TODO: implement implicitly
+		CacheBase IBatchableCacheConcurrencyStrategy.Cache
 		{
 			get
 			{
@@ -66,12 +76,6 @@ namespace NHibernate.Cache
 					throw new InvalidOperationException(_isDestroyed ? "The cache has already been destroyed" : "The concrete cache is not defined");
 				return _cache;
 			}
-		}
-
-		// 6.0 TODO: remove
-		CacheBase IBatchableCacheConcurrencyStrategy.Cache
-		{
-			get => _cache;
 			set => _cache = value;
 		}
 
@@ -109,7 +113,7 @@ namespace NHibernate.Cache
 		/// </remarks>
 		public object Get(CacheKey key, long txTimestamp)
 		{
-			var cache = InternalCache;
+			var cache = _this.Cache;
 			using (_asyncReaderWriterLock.ReadLock())
 			{
 				if (log.IsDebugEnabled())
@@ -137,7 +141,7 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
-			var cache = InternalCache;
+			var cache = _this.Cache;
 			var result = new object[keys.Length];
 			using (_asyncReaderWriterLock.ReadLock())
 			{
@@ -182,7 +186,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public ISoftLock Lock(CacheKey key, object version)
 		{
-			var cache = InternalCache;
+			var cache = _this.Cache;
 			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
@@ -226,7 +230,7 @@ namespace NHibernate.Cache
 				return result;
 			}
 
-			var cache = InternalCache;
+			var cache = _this.Cache;
 			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
@@ -296,7 +300,7 @@ namespace NHibernate.Cache
 				return false;
 			}
 
-			var cache = InternalCache;
+			var cache = _this.Cache;
 			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
@@ -343,14 +347,14 @@ namespace NHibernate.Cache
 		private void DecrementLock(object key, CacheLock @lock)
 		{
 			//decrement the lock
-			var cache = InternalCache;
+			var cache = _this.Cache;
 			@lock.Unlock(cache.NextTimestamp());
 			cache.Put(key, @lock);
 		}
 
 		public void Release(CacheKey key, ISoftLock clientLock)
 		{
-			var cache = InternalCache;
+			var cache = _this.Cache;
 			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
@@ -381,7 +385,7 @@ namespace NHibernate.Cache
 		internal void HandleLockExpiry(object key)
 		{
 			log.Warn("An item was expired by the cache while it was locked (increase your cache timeout): {0}", key);
-			var cache = InternalCache;
+			var cache = _this.Cache;
 			long ts = cache.NextTimestamp() + cache.Timeout;
 			// create new lock that times out immediately
 			CacheLock @lock = CacheLock.Create(ts, NextLockId(), null);
@@ -391,12 +395,12 @@ namespace NHibernate.Cache
 
 		public void Clear()
 		{
-			InternalCache.Clear();
+			_this.Cache.Clear();
 		}
 
 		public void Remove(CacheKey key)
 		{
-			InternalCache.Remove(key);
+			_this.Cache.Remove(key);
 		}
 
 		public void Destroy()
@@ -416,7 +420,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public bool AfterUpdate(CacheKey key, object value, object version, ISoftLock clientLock)
 		{
-			var cache = InternalCache;
+			var cache = _this.Cache;
 			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
@@ -463,7 +467,7 @@ namespace NHibernate.Cache
 
 		public bool AfterInsert(CacheKey key, object value, object version)
 		{
-			var cache = InternalCache;
+			var cache = _this.Cache;
 			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())

@@ -13,8 +13,18 @@ namespace NHibernate.Cache
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ReadOnlyCache));
 
+		// 6.0 TODO : remove
+		private readonly IBatchableCacheConcurrencyStrategy _this;
 		private CacheBase _cache;
 		private bool _isDestroyed;
+
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public ReadOnlyCache()
+		{
+			_this = this;
+		}
 
 		/// <summary>
 		/// Gets the cache region name.
@@ -33,8 +43,8 @@ namespace NHibernate.Cache
 			set { _cache = value?.AsCacheBase(); }
 		}
 
-		// 6.0 TODO: Rename to Cache and make public (possible breaking change for reader when null).
-		private CacheBase InternalCache
+		// 6.0 TODO: implement implicitly
+		CacheBase IBatchableCacheConcurrencyStrategy.Cache
 		{
 			get
 			{
@@ -42,18 +52,12 @@ namespace NHibernate.Cache
 					throw new InvalidOperationException(_isDestroyed ? "The cache has already been destroyed" : "The concrete cache is not defined");
 				return _cache;
 			}
-		}
-
-		// 6.0 TODO: remove
-		CacheBase IBatchableCacheConcurrencyStrategy.Cache
-		{
-			get => _cache;
 			set => _cache = value;
 		}
 
 		public object Get(CacheKey key, long timestamp)
 		{
-			var result = InternalCache.Get(key);
+			var result = _this.Cache.Get(key);
 			if (log.IsDebugEnabled())
 			{
 				log.Debug(result != null ? "Cache hit: {0}" : "Cache miss: {0}", key);
@@ -69,7 +73,7 @@ namespace NHibernate.Cache
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
 
-			var results = InternalCache.GetMany(keys);
+			var results = _this.Cache.GetMany(keys);
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache hit: {0}", string.Join(",", keys.Where((k, i) => results[i] != null)));
@@ -110,7 +114,7 @@ namespace NHibernate.Cache
 				}
 			}
 
-			var cache = InternalCache;
+			var cache = _this.Cache;
 			var skipKeyIndexes = new HashSet<int>();
 			if (checkKeys.Any())
 			{
@@ -159,7 +163,7 @@ namespace NHibernate.Cache
 				return false;
 			}
 
-			var cache = InternalCache;
+			var cache = _this.Cache;
 			if (minimalPut && cache.Get(key) != null)
 			{
 				if (log.IsDebugEnabled())
@@ -186,12 +190,12 @@ namespace NHibernate.Cache
 
 		public void Clear()
 		{
-			InternalCache.Clear();
+			_this.Cache.Clear();
 		}
 
 		public void Remove(CacheKey key)
 		{
-			InternalCache.Remove(key);
+			_this.Cache.Remove(key);
 		}
 
 		public void Destroy()
