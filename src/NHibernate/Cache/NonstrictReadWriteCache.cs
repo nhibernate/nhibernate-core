@@ -47,7 +47,6 @@ namespace NHibernate.Cache
 					throw new InvalidOperationException(_isDestroyed ? "The cache has already been destroyed" : "The concrete cache is not defined");
 				return _cache;
 			}
-			set => _cache = value;
 		}
 
 		// 6.0 TODO: remove
