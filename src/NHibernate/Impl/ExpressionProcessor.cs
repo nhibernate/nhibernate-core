@@ -461,9 +461,12 @@ namespace NHibernate.Impl
 
 		private static System.Type FindMemberType(Expression expression)
 		{
-			if (expression.NodeType == ExpressionType.Call)
+			switch (expression.NodeType)
 			{
-				return ((MethodCallExpression) expression).Method.ReturnType;
+				case ExpressionType.MemberAccess:
+					return expression.Type;
+				case ExpressionType.Call:
+					return ((MethodCallExpression) expression).Method.ReturnType;
 			}
 
 			var unwrapExpression = UnwrapConvertExpression(expression);
@@ -472,7 +475,10 @@ namespace NHibernate.Impl
 				return FindMemberType(unwrapExpression);
 			}
 
-			return expression.Type;
+			if(expression is UnaryExpression || expression is BinaryExpression)
+				return expression.Type;
+
+			throw new ArgumentException("Could not determine member type from " + expression, nameof(expression));
 		}
 
 		private static bool IsMemberExpression(Expression expression)
