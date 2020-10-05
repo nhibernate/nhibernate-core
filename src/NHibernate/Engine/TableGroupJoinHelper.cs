@@ -17,7 +17,7 @@ namespace NHibernate.Engine
 	{
 		internal static bool ProcessAsTableGroupJoin(IReadOnlyList<IJoin> tableGroupJoinables, SqlString[] withClauseFragments, bool includeAllSubclassJoins, JoinFragment joinFragment, Func<string, bool> isSubclassIncluded, ISessionFactoryImplementor sessionFactoryImplementor)
 		{
-			if (!TableGroupJoinHelper.NeedsTableGroupJoin(tableGroupJoinables, withClauseFragments, includeAllSubclassJoins))
+			if (!NeedsTableGroupJoin(tableGroupJoinables, withClauseFragments, includeAllSubclassJoins))
 				return false;
 
 			var first = tableGroupJoinables[0];
@@ -51,15 +51,15 @@ namespace NHibernate.Engine
 					join.Joinable.WhereJoinFragment(join.Alias, innerJoin, include));
 			}
 
-			var withClause = TableGroupJoinHelper.GetTableGroupJoinWithClause(withClauseFragments, first, sessionFactoryImplementor);
+			var withClause = GetTableGroupJoinWithClause(withClauseFragments, first, sessionFactoryImplementor);
 			joinFragment.AddFromFragmentString(withClause);
 			return true;
 		}
 
 		private static bool NeedsTableGroupJoin(IReadOnlyList<IJoin> joins, SqlString[] withClauseFragments, bool includeSubclasses)
 		{
-			// If the rewrite is disabled or we don't have a with clause, we don't need a table group join
-			if ( /*!collectionJoinSubquery ||*/ withClauseFragments.All(x => SqlStringHelper.IsEmpty(x)))
+			// If we don't have a with clause, we don't need a table group join
+			if (withClauseFragments.All(x => SqlStringHelper.IsEmpty(x)))
 			{
 				return false;
 			}
