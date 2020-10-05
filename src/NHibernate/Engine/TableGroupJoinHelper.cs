@@ -45,7 +45,7 @@ namespace NHibernate.Engine
 				bool include = includeAllSubclassJoins && isSubclassIncluded(join.Alias);
 				// TODO (from hibernate): Think about if this could be made always true 
 				// NH Specific: made always true (original check: join.JoinType == JoinType.InnerJoin)
-				var innerJoin = true;
+				const bool innerJoin = true;
 				joinFragment.AddJoins(
 					join.Joinable.FromJoinFragment(join.Alias, innerJoin, include),
 					join.Joinable.WhereJoinFragment(join.Alias, innerJoin, include));
@@ -87,17 +87,10 @@ namespace NHibernate.Engine
 			{
 				string rhsAlias = first.Alias;
 				string[] rhsColumns = JoinHelper.GetRHSColumnNames(first.AssociationType, factory);
-				for (int j = 0; j < lhsColumns.Length; j++)
+				fromFragment.Add(lhsColumns[0]).Add("=").Add(rhsAlias).Add(".").Add(rhsColumns[0]);
+				for (int j = 1; j < lhsColumns.Length; j++)
 				{
-					fromFragment.Add(lhsColumns[j]);
-					fromFragment.Add("=");
-					fromFragment.Add(rhsAlias);
-					fromFragment.Add(".");
-					fromFragment.Add(rhsColumns[j]);
-					if (j < lhsColumns.Length - 1)
-					{
-						fromFragment.Add(" and ");
-					}
+					fromFragment.Add(" and ").Add(lhsColumns[j]).Add("=").Add(rhsAlias).Add(".").Add(rhsColumns[j]);
 				}
 			}
 
