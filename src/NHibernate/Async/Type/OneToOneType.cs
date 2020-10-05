@@ -123,39 +123,36 @@ namespace NHibernate.Type
 			return identifier;
 		}
 
-		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
+		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			if (value == null)
 			{
-				return Task.FromCanceled<object>(cancellationToken);
+				return null;
 			}
-			try
+
+			object id = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(GetAssociatedEntityName(), value, session, cancellationToken)).ConfigureAwait(false);
+
+			if (id == null)
 			{
-				return Task.FromResult<object>(Disassemble(value, session, owner));
+				throw new AssertionFailure("cannot cache a reference to an object with a null id: " + GetAssociatedEntityName());
 			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+
+			return await (GetIdentifierType(session).DisassembleAsync(id, session, owner, cancellationToken)).ConfigureAwait(false);
 		}
 
-		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken)
+		public override async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			// the owner of the association is not the owner of the id
+			object id = await (GetIdentifierType(session).AssembleAsync(cached, session, null, cancellationToken)).ConfigureAwait(false);
+
+			if (id == null)
 			{
-				return Task.FromCanceled<object>(cancellationToken);
+				return null;
 			}
-			try
-			{
-				//this should be a call to resolve(), not resolveIdentifier(), 
-				//'cos it might be a property-ref, and we did not cache the
-				//referenced value
-				return ResolveIdentifierAsync(session.GetContextEntityIdentifier(owner), session, owner, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+
+			return await (ResolveIdentifierAsync(id, session, cancellationToken)).ConfigureAwait(false);
 		}
 	}
 }
