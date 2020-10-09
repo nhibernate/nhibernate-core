@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.OneToOneType" default-lazy="false">
+  <class name="Owner">
+    <id name="Id" unsaved-value="0" generator="native"/>
+    <property name="Name"/>
+    <one-to-one name="Details" class="Details" cascade="all"/>
+  </class>
+
+  <class name="Details">
+    <id name="Id" unsaved-value="0">
+      <generator class="foreign">
+        <param name="property">Owner</param>
+      </generator>
+    </id>
+    <one-to-one name="Owner" class="Owner" constrained="true"/>
+    <property name="Data"/>
+  </class>
+</hibernate-mapping>
