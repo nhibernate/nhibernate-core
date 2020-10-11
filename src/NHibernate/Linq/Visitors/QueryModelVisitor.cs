@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Engine;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Clauses;
 using NHibernate.Linq.Expressions;
@@ -12,6 +13,7 @@ using NHibernate.Linq.NestedSelects;
 using NHibernate.Linq.ResultOperators;
 using NHibernate.Linq.ReWriters;
 using NHibernate.Linq.Visitors.ResultOperatorProcessors;
+using NHibernate.Persister.Entity;
 using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
@@ -527,10 +529,13 @@ namespace NHibernate.Linq.Visitors
 			var withClause = equalityVisitor.Visit(joinClause.InnerKeySelector, joinClause.OuterKeySelector);
 			var alias = _hqlTree.TreeBuilder.Alias(VisitorParameters.QuerySourceNamer.GetName(joinClause));
 			var joinExpression = HqlGeneratorExpressionVisitor.Visit(joinClause.InnerSequence, VisitorParameters);
+			var baseMemberCheker = new BaseMemberChecker(VisitorParameters.SessionFactory);
+
 			HqlTreeNode join;
-			// When associations are located inside the inner key selector we have to use a cross join instead of an inner
-			// join and add the condition in the where statement.
-			if (queryModel.BodyClauses.OfType<NhJoinClause>().Any(o => o.ParentJoinClause == joinClause))
+			// When associations or members from another table are located inside the inner key selector we have to use a cross join
+			// instead of an inner join and add the condition in the where statement.
+			if (queryModel.BodyClauses.OfType<NhJoinClause>().Any(o => o.ParentJoinClause == joinClause) ||
+			    queryModel.BodyClauses.OfType<JoinClause>().Any(o => baseMemberCheker.ContainsBaseMember(o.InnerKeySelector)))
 			{
 				if (!innerJoin)
 				{
@@ -549,6 +554,46 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			_hqlTree.AddFromClause(join);
+		}
+
+		private class BaseMemberChecker : NhExpressionVisitor
+		{
+			private readonly ISessionFactoryImplementor _sessionFactory;
+			private bool _result;
+
+			public BaseMemberChecker(ISessionFactoryImplementor sessionFactory)
+			{
+				_sessionFactory = sessionFactory;
+			}
+
+			public bool ContainsBaseMember(Expression node)
+			{
+				_result = false;
+				Visit(node);
+
+				return _result;
+			}
+
+			protected override Expression VisitMember(MemberExpression node)
+			{
+				if (ExpressionsHelper.TryGetMappedType(
+						_sessionFactory,
+						node,
+						out _,
+						out var persister,
+						out _,
+						out var propertyPath) &&
+					persister is IOuterJoinLoadable joinLoadable &&
+					joinLoadable.EntityMetamodel.GetIdentifierPropertyType(propertyPath) == null &&
+					joinLoadable.GetPropertyTableName(propertyPath) != joinLoadable.TableName
+				)
+				{
+					_result = true;
+					return node;
+				}
+
+				return base.VisitMember(node);
+			}
 		}
 
 		public override void VisitGroupJoinClause(GroupJoinClause groupJoinClause, QueryModel queryModel, int index)
