@@ -535,7 +535,7 @@ namespace NHibernate.Linq.Visitors
 			// When associations or members from another table are located inside the inner key selector we have to use a cross join
 			// instead of an inner join and add the condition in the where statement.
 			if (queryModel.BodyClauses.OfType<NhJoinClause>().Any(o => o.ParentJoinClause == joinClause) ||
-			    queryModel.BodyClauses.OfType<JoinClause>().Any(o => baseMemberCheker.ContainsBaseMember(o.InnerKeySelector)))
+			    queryModel.BodyClauses.OfType<JoinClause>().Any(baseMemberCheker.ContainsBaseMember))
 			{
 				if (!innerJoin)
 				{
@@ -566,10 +566,18 @@ namespace NHibernate.Linq.Visitors
 				_sessionFactory = sessionFactory;
 			}
 
-			public bool ContainsBaseMember(Expression node)
+			public bool ContainsBaseMember(JoinClause joinClause)
 			{
+				// Visit the join inner key only for entities that have subclasses
+				if (joinClause.InnerSequence is ConstantExpression constantNode &&
+				    constantNode.Value is IEntityNameProvider entityNameProvider &&
+				    !_sessionFactory.GetEntityPersister(entityNameProvider.EntityName).EntityMetamodel.HasSubclasses)
+				{
+					return false;
+				}
+
 				_result = false;
-				Visit(node);
+				Visit(joinClause.InnerKeySelector);
 
 				return _result;
 			}
