@@ -576,27 +576,10 @@ namespace NHibernate.Linq.Visitors
 			var withClause = equalityVisitor.Visit(joinClause.InnerKeySelector, joinClause.OuterKeySelector);
 			var alias = _hqlTree.TreeBuilder.Alias(VisitorParameters.QuerySourceNamer.GetName(joinClause));
 			var joinExpression = HqlGeneratorExpressionVisitor.Visit(joinClause.InnerSequence, VisitorParameters);
-			HqlTreeNode join;
-			// When associations are located inside the inner key selector we have to use a cross join instead of an inner
-			// join and add the condition in the where statement.
-			if (queryModel.BodyClauses.OfType<NhJoinClause>().Any(o => o.ParentJoinClause == joinClause))
-			{
-				if (!innerJoin)
-				{
-					throw new NotSupportedException("Left joins that have association properties in the inner key selector are not supported.");
-				}
-
-				_hqlTree.AddWhereClause(withClause);
-				join = CreateCrossJoin(joinExpression, alias);
-			}
-			else
-			{
-				join = innerJoin
-					? _hqlTree.TreeBuilder.InnerJoin(joinExpression.AsExpression(), alias)
-					: (HqlTreeNode) _hqlTree.TreeBuilder.LeftJoin(joinExpression.AsExpression(), alias);
-				join.AddChild(_hqlTree.TreeBuilder.With(withClause));
-			}
-
+			var join = innerJoin
+				? _hqlTree.TreeBuilder.InnerJoin(joinExpression.AsExpression(), alias)
+				: (HqlTreeNode) _hqlTree.TreeBuilder.LeftJoin(joinExpression.AsExpression(), alias);
+			join.AddChild(_hqlTree.TreeBuilder.With(withClause));
 			_hqlTree.AddFromClause(join);
 		}
 
