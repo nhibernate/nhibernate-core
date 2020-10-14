@@ -59,12 +59,31 @@ namespace NHibernate.Type
 
 		public override bool IsDirty(object old, object current, ISessionImplementor session)
 		{
-			return false;
+			if (IsSame(old, current))
+			{
+				return false;
+			}
+
+			if (old == null || current == null)
+			{
+				return true;
+			}
+
+			if (ForeignKeys.IsTransientFast(GetAssociatedEntityName(), current, session).GetValueOrDefault())
+			{
+				return true;
+			}
+
+			object oldId = GetIdentifier(old, session);
+			object newId = GetIdentifier(current, session);
+			IType identifierType = GetIdentifierType(session);
+
+			return identifierType.IsDirty(oldId, newId, session);
 		}
 
 		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			return false;
+			return this.IsDirty(old, current, session);
 		}
 
 		public override bool IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
@@ -164,13 +183,12 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// We don't need to dirty check one-to-one because of how 
-		/// assemble/disassemble is implemented and because a one-to-one 
-		/// association is never dirty
+		/// We always need to dirty check as our identifier is dependent on
+		/// whether or not a persistent entry exists.
 		/// </summary>
 		public override bool IsAlwaysDirtyChecked
 		{
-			get { return false; } //TODO: this is kinda inconsistent with CollectionType
+			get { return true; }
 		}
 
 		public override string PropertyName
