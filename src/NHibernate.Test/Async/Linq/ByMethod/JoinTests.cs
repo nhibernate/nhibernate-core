@@ -148,5 +148,13 @@ namespace NHibernate.Test.Linq.ByMethod
 						from o2 in db.Animals.Where(x => x.BodyWeight > 50)
 						select new {o, o2}).Take(1).ToListAsync());
 		}
+
+		[Test(Description = "GH-2580")]
+		public async Task CanInnerJoinOnSubclassWithBaseTableReferenceInOnClauseAsync()
+		{
+			var result = await ((from o in db.Animals
+			              join o2 in db.Mammals on o.BodyWeight equals o2.BodyWeight
+			              select new { o, o2 }).Take(1).ToListAsync());
+		}
 	}
 }
