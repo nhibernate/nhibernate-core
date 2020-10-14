@@ -46,20 +46,29 @@ namespace NHibernate.Type
 				.NullSafeSetAsync(cmd, await (GetReferenceValueAsync(value, session, cancellationToken)).ConfigureAwait(false), index, session, cancellationToken)).ConfigureAwait(false);
 		}
 
-		public override Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken)
+		public override async Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			if (IsSame(old, current))
 			{
-				return Task.FromCanceled<bool>(cancellationToken);
+				return false;
 			}
-			try
+
+			if (old == null || current == null)
 			{
-				return Task.FromResult<bool>(IsDirty(old, current, session));
+				return true;
 			}
-			catch (Exception ex)
+
+			if ((await (ForeignKeys.IsTransientFastAsync(GetAssociatedEntityName(), current, session, cancellationToken)).ConfigureAwait(false)).GetValueOrDefault())
 			{
-				return Task.FromException<bool>(ex);
+				return true;
 			}
+
+			object oldId = await (GetIdentifierAsync(old, session, cancellationToken)).ConfigureAwait(false);
+			object newId = await (GetIdentifierAsync(current, session, cancellationToken)).ConfigureAwait(false);
+			IType identifierType = GetIdentifierType(session);
+
+			return await (identifierType.IsDirtyAsync(oldId, newId, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
@@ -68,14 +77,7 @@ namespace NHibernate.Type
 			{
 				return Task.FromCanceled<bool>(cancellationToken);
 			}
-			try
-			{
-				return Task.FromResult<bool>(IsDirty(old, current, checkable, session));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<bool>(ex);
-			}
+			return this.IsDirtyAsync(old, current, session, cancellationToken);
 		}
 
 		public override Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
