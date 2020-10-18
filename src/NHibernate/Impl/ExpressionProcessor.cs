@@ -479,7 +479,7 @@ namespace NHibernate.Impl
 				return FindMemberType(unwrapExpression);
 			}
 
-			if(expression is UnaryExpression || expression is BinaryExpression)
+			if (expression is UnaryExpression || expression is BinaryExpression)
 				return expression.Type;
 
 			throw new ArgumentException("Could not determine member type from " + expression, nameof(expression));
