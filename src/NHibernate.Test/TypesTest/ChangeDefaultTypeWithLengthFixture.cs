@@ -68,16 +68,16 @@ namespace NHibernate.Test.TypesTest
 			var propertyType25 = Sfi.GetClassMetadata(typeof(ChangeDefaultTypeClass))
 								.GetPropertyType(nameof(ChangeDefaultTypeClass.StringTypeLengthInType25));
 			Assert.That(
-				propertyType25,
-				Is.EqualTo(_testDefaultStringType));
+				propertyType25.GetType(),
+				Is.EqualTo(_testDefaultStringType.GetType()));
 			Assert.That(propertyType25.SqlTypes(Sfi)[0].Length, Is.EqualTo(25));
 			
 			var propertyType20 = Sfi.GetClassMetadata(typeof(ChangeDefaultTypeClass))
 								.GetPropertyType(nameof(ChangeDefaultTypeClass.StringTypeExplicitLength20));
 			
 			Assert.That(
-				propertyType20,
-				Is.EqualTo(_testDefaultStringType));
+				propertyType20.GetType(),
+				Is.EqualTo(_testDefaultStringType.GetType()));
 			Assert.That(propertyType20.SqlTypes(Sfi)[0].Length, Is.EqualTo(20));
 		}
 

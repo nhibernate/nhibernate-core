@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NHibernate.Dialect;
 using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
@@ -460,6 +461,33 @@ namespace NHibernate.Test.Linq
 
 			Expect(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.Id == 5), Does.Not.Contain("is null").IgnoreCase);
 			Expect(session.Query<User>().Where(o => 5 == o.CreatedBy.ModifiedBy.Id), Does.Not.Contain("is null").IgnoreCase);
+
+			if (Sfi.Dialect is FirebirdDialect)
+			{
+				return;
+			}
+
+			Expect(db.NumericEntities.Where(o => o.NullableShort == o.NullableShort), WithIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.Short == o.Short), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.NullableShort == o.Short), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.Short == o.NullableShort), WithoutIsNullAndWithoutCast());
+
+			short value = 3;
+			Expect(db.NumericEntities.Where(o => o.NullableShort == value), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => value == o.NullableShort), WithoutIsNullAndWithoutCast());
+
+			Expect(db.NumericEntities.Where(o => o.NullableShort.Value == value), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => value == o.NullableShort.Value), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.Short == value), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => value == o.Short), WithoutIsNullAndWithoutCast());
+
+			Expect(db.NumericEntities.Where(o => o.NullableShort == 3L), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => 3L == o.NullableShort), WithoutIsNullAndWithoutCast());
+
+			Expect(db.NumericEntities.Where(o => o.NullableShort.Value == 3L), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => 3L == o.NullableShort.Value),  WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.Short == 3L), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => 3L == o.Short), WithoutIsNullAndWithoutCast());
 		}
 
 		[Test]
@@ -548,6 +576,43 @@ namespace NHibernate.Test.Linq
 
 			Expect(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.Id != 5), Does.Contain("is null").IgnoreCase);
 			Expect(session.Query<User>().Where(o => 5 != o.CreatedBy.ModifiedBy.Id), Does.Contain("is null").IgnoreCase);
+
+			if (Sfi.Dialect is FirebirdDialect)
+			{
+				return;
+			}
+
+			Expect(db.NumericEntities.Where(o => o.NullableShort != o.NullableShort), WithIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.Short != o.Short), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.NullableShort != o.Short), WithIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.Short != o.NullableShort), WithIsNullAndWithoutCast());
+
+			short value = 3;
+			Expect(db.NumericEntities.Where(o => o.NullableShort != value), WithIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => value != o.NullableShort), WithIsNullAndWithoutCast());
+
+			Expect(db.NumericEntities.Where(o => o.NullableShort.Value != value), WithIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => value != o.NullableShort.Value), WithIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.Short != value), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => value != o.Short), WithoutIsNullAndWithoutCast());
+
+			Expect(db.NumericEntities.Where(o => o.NullableShort != 3L), WithIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => 3 != o.NullableShort), WithIsNullAndWithoutCast());
+
+			Expect(db.NumericEntities.Where(o => o.NullableShort.Value != 3L), WithIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => 3L != o.NullableShort.Value), WithIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => o.Short != 3L), WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => 3L != o.Short), WithoutIsNullAndWithoutCast());
+		}
+
+		private IResolveConstraint WithIsNullAndWithoutCast()
+		{
+			return Does.Contain("is null").IgnoreCase.And.Not.Contain("cast").IgnoreCase;
+		}
+
+		private IResolveConstraint WithoutIsNullAndWithoutCast()
+		{
+			return Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast").IgnoreCase;
 		}
 
 		[Test]

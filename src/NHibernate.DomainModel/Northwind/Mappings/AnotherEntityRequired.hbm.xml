@@ -19,5 +19,9 @@
       <key column="Id"/>
       <one-to-many class="AnotherEntity"/>
     </set>
+    <set name="RequiredRelatedItems" lazy="true" inverse="true">
+      <key column="Id"/>
+      <one-to-many class="AnotherEntityRequired"/>
+    </set>
   </class>
 </hibernate-mapping>

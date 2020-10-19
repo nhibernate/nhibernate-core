@@ -86,6 +86,18 @@ namespace NHibernate.Test.NHSpecificTest.GH2437
 		}
 
 		[Test]
+		public async Task Get_DateCustomType_NullableDateValueEqualsMethodAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var sessions = await (session.Query<UserSession>().Where(x => x.OpenDate.Value.Equals(DateTime.Now)).ToListAsync());
+
+				Assert.That(sessions, Has.Count.EqualTo(10));
+			}
+		}
+
+		[Test]
 		public async Task Get_DateTimeCustomType_NullableDateValueEqualsAsync()
 		{
 			using (var session = OpenSession())

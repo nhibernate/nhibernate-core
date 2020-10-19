@@ -655,6 +655,40 @@ namespace NHibernate.Test.FetchLazyProperties
 
 		#endregion
 
+		#region TestHqlFetchManyToOneAndComponentManyToOne
+
+		[Test]
+		public void TestHqlFetchManyToOneAndComponentManyToOne()
+		{
+			Person person;
+			using (var s = OpenSession())
+			{
+				person = s.CreateQuery("from Person p fetch p.Address left join fetch p.Address.Continent left join fetch p.BestFriend where p.Id = 1").UniqueResult<Person>();
+			}
+
+			AssertFetchManyToOneAndComponentManyToOne(person);
+		}
+
+		[Test]
+		public void TestLinqFetchManyToOneAndComponentManyToOne()
+		{
+			Person person;
+			using (var s = OpenSession())
+			{
+				person = s.Query<Person>().Fetch(o => o.BestFriend).Fetch(o => o.Address).ThenFetch(o => o.Continent).FirstOrDefault(o => o.Id == 1);
+			}
+
+			AssertFetchManyToOneAndComponentManyToOne(person);
+		}
+
+		private static void AssertFetchManyToOneAndComponentManyToOne(Person person)
+		{
+			AssertFetchComponentManyToOne(person);
+			Assert.That(NHibernateUtil.IsInitialized(person.BestFriend), Is.True);
+		}
+
+		#endregion
+
 		#region FetchSubClassFormula
 
 		[Test]
@@ -925,6 +959,26 @@ namespace NHibernate.Test.FetchLazyProperties
 				person = s.CreateQuery("from Person where Id = 1").SetReadOnly(readOnly).UniqueResult<Person>();
 				var image = person.Image;
 				person = s.CreateQuery("from Person fetch Image where Id = 1").SetReadOnly(readOnly).UniqueResult<Person>();
+
+				tx.Commit();
+			}
+
+			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Image"), Is.True);
+			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Address"), Is.True);
+			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Formula"), Is.True);
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void TestFetchAllPropertiesAfterEntityIsInitialized(bool readOnly)
+		{
+			Person person;
+			using(var s = OpenSession())
+			using(var tx = s.BeginTransaction())
+			{
+				person = s.CreateQuery("from Person where Id = 1").SetReadOnly(readOnly).UniqueResult<Person>();
+				var image = person.Image;
+				person = s.CreateQuery("from Person fetch all properties where Id = 1").SetReadOnly(readOnly).UniqueResult<Person>();
 
 				tx.Commit();
 			}

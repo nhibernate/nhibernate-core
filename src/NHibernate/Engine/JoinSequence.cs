@@ -1,6 +1,8 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -133,80 +135,61 @@ namespace NHibernate.Engine
 
 		public JoinFragment ToJoinFragment(IDictionary<string, IFilter> enabledFilters, bool includeExtraJoins)
 		{
-			return ToJoinFragment(enabledFilters, includeExtraJoins, null, null);
+			return ToJoinFragment(enabledFilters, includeExtraJoins, true, null);
 		}
 
+		public JoinFragment ToJoinFragment(IDictionary<string, IFilter> enabledFilters, bool includeAllSubclassJoins, SqlString withClause)
+		{
+			return ToJoinFragment(enabledFilters, includeAllSubclassJoins, true, withClause);
+		}
+
+		// Since 5.4
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public JoinFragment ToJoinFragment(
 			IDictionary<string, IFilter> enabledFilters,
 			bool includeExtraJoins,
 			SqlString withClauseFragment,
 			string withClauseJoinAlias)
 		{
-			return ToJoinFragment(enabledFilters, includeExtraJoins, withClauseFragment, withClauseJoinAlias, rootAlias);
+			return ToJoinFragment(enabledFilters, includeExtraJoins, true, withClauseFragment);
 		}
 
-		internal virtual JoinFragment ToJoinFragment(
+		internal JoinFragment ToJoinFragment(
 			IDictionary<string, IFilter> enabledFilters,
-			bool includeExtraJoins,
-			SqlString withClauseFragment,
-			string withClauseJoinAlias,
-			string withRootAlias)
+			bool includeAllSubclassJoins,
+			bool renderSubclassJoins,
+			SqlString withClauseFragment)
 		{
 			QueryJoinFragment joinFragment = new QueryJoinFragment(factory.Dialect, useThetaStyle);
 			if (rootJoinable != null)
 			{
-				joinFragment.AddCrossJoin(rootJoinable.TableName, withRootAlias);
-				string filterCondition = rootJoinable.FilterFragment(withRootAlias, enabledFilters);
+				joinFragment.AddCrossJoin(rootJoinable.TableName, rootAlias);
+				string filterCondition = rootJoinable.FilterFragment(rootAlias, enabledFilters);
 				// JoinProcessor needs to know if the where clause fragment came from a dynamic filter or not so it
 				// can put the where clause fragment in the right place in the SQL AST.   'hasFilterCondition' keeps track
 				// of that fact.
 				joinFragment.HasFilterCondition = joinFragment.AddCondition(filterCondition);
-				if (includeExtraJoins)
-				{
-					//TODO: not quite sure about the full implications of this!
-					AddExtraJoins(joinFragment, withRootAlias, rootJoinable, true);
-				}
+				AddSubclassJoins(joinFragment, rootAlias, rootJoinable, true, includeAllSubclassJoins);
 			}
 
+			var withClauses = new SqlString[joins.Count];
 			IJoinable last = rootJoinable;
+			for (int i = 0; i < joins.Count; i++)
+			{
+				Join join = joins[i];
+
+				withClauses[i] = GetWithClause(enabledFilters, ref withClauseFragment, join, last);
+				last = join.Joinable;
+			}
+
+			if (rootJoinable == null && ProcessAsTableGroupJoin(includeAllSubclassJoins, withClauses, joinFragment))
+			{
+				return joinFragment;
+			}
 
 			for (int i = 0; i < joins.Count; i++)
 			{
 				Join join = joins[i];
-				string on = join.AssociationType.GetOnCondition(join.Alias, factory, enabledFilters);
-				SqlString condition = new SqlString();
-				if (last != null &&
-						IsManyToManyRoot(last) &&
-						((IQueryableCollection)last).ElementType == join.AssociationType)
-				{
-					// the current join represents the join between a many-to-many association table
-					// and its "target" table.  Here we need to apply any additional filters
-					// defined specifically on the many-to-many
-					string manyToManyFilter = ((IQueryableCollection)last)
-						.GetManyToManyFilterFragment(join.Alias, enabledFilters);
-					condition = new SqlString("".Equals(manyToManyFilter)
-												? on
-												: "".Equals(on)
-														? manyToManyFilter
-														: on + " and " + manyToManyFilter);
-				}
-				else
-				{
-					// NH Different behavior : NH1179 and NH1293
-					// Apply filters in Many-To-One association
-					var enabledForManyToOne = FilterHelper.GetEnabledForManyToOne(enabledFilters);
-					condition = new SqlString(string.IsNullOrEmpty(on) && enabledForManyToOne.Count > 0
-					            	? join.Joinable.FilterFragment(join.Alias, enabledForManyToOne)
-					            	: on);
-				}
-
-				if (withClauseFragment != null)
-				{
-					if (join.Alias.Equals(withClauseJoinAlias))
-					{
-						condition = condition.Append(" and ", withClauseFragment);
-					}
-				}
 
 				// NH: the variable "condition" have to be a SqlString because it may contains Parameter instances with BackTrack
 				joinFragment.AddJoin(
@@ -215,23 +198,170 @@ namespace NHibernate.Engine
 					join.LHSColumns,
 					JoinHelper.GetRHSColumnNames(join.AssociationType, factory),
 					join.JoinType,
-					condition
-					);
-				if (includeExtraJoins)
-				{
-					//TODO: not quite sure about the full implications of this!
-					AddExtraJoins(joinFragment, join.Alias, join.Joinable, join.JoinType == JoinType.InnerJoin);
-				}
-				last = join.Joinable;
+					withClauses[i]
+				);
+
+				AddSubclassJoins(joinFragment, join.Alias, join.Joinable, join.JoinType == JoinType.InnerJoin, renderSubclassJoins);
 			}
+
 			if (next != null)
 			{
-				joinFragment.AddFragment(next.ToJoinFragment(enabledFilters, includeExtraJoins));
+				joinFragment.AddFragment(next.ToJoinFragment(enabledFilters, includeAllSubclassJoins));
 			}
 			joinFragment.AddCondition(conditions.ToSqlString());
 			if (isFromPart)
 				joinFragment.ClearWherePart();
 			return joinFragment;
+		}
+
+		private SqlString GetWithClause(IDictionary<string, IFilter> enabledFilters, ref SqlString withClauseFragment, Join join, IJoinable last)
+		{
+			string on = join.AssociationType.GetOnCondition(join.Alias, factory, enabledFilters);
+			var withConditions = new List<object>();
+
+			if (!string.IsNullOrEmpty(on))
+				withConditions.Add(on);
+
+			if (last != null &&
+				IsManyToManyRoot(last) &&
+				((IQueryableCollection) last).ElementType == join.AssociationType)
+			{
+				// the current join represents the join between a many-to-many association table
+				// and its "target" table.  Here we need to apply any additional filters
+				// defined specifically on the many-to-many
+				string manyToManyFilter = ((IQueryableCollection) last)
+					.GetManyToManyFilterFragment(join.Alias, enabledFilters);
+
+				if (!string.IsNullOrEmpty(manyToManyFilter))
+					withConditions.Add(manyToManyFilter);
+			}
+			else if (string.IsNullOrEmpty(on))
+			{
+				// NH Different behavior : NH1179 and NH1293
+				// Apply filters in Many-To-One association
+				var enabledForManyToOne = FilterHelper.GetEnabledForManyToOne(enabledFilters);
+				if (enabledForManyToOne.Count > 0)
+					withConditions.Add(join.Joinable.FilterFragment(join.Alias, enabledForManyToOne));
+			}
+
+			if (withClauseFragment != null && !IsManyToManyRoot(join.Joinable))
+			{
+				withConditions.Add(withClauseFragment);
+				withClauseFragment = null;
+			}
+
+			return SqlStringHelper.JoinParts(" and ", withConditions);
+		}
+
+		private bool ProcessAsTableGroupJoin(bool includeAllSubclassJoins, SqlString[] withClauseFragments, JoinFragment joinFragment)
+		{
+			if (!NeedsTableGroupJoin(joins, withClauseFragments, includeAllSubclassJoins))
+				return false;
+
+			var first = joins[0];
+			string joinString = ANSIJoinFragment.GetJoinString(first.JoinType);
+			joinFragment.AddFromFragmentString(
+				new SqlString(
+					joinString,
+					" (",
+					first.Joinable.TableName,
+					" ",
+					first.Alias
+				));
+
+			foreach (var join in joins)
+			{
+				if (join != first)
+					joinFragment.AddJoin(
+						join.Joinable.TableName,
+						join.Alias,
+						join.LHSColumns,
+						JoinHelper.GetRHSColumnNames(join.AssociationType, factory),
+						join.JoinType,
+						SqlString.Empty);
+
+				AddSubclassJoins(
+					joinFragment,
+					join.Alias,
+					join.Joinable,
+					// TODO (from hibernate): Think about if this could be made always true 
+					// NH Specific: made always true (original check: join.JoinType == JoinType.InnerJoin)
+					true,
+					includeAllSubclassJoins
+				);
+			}
+
+			var tableGroupWithClause = GetTableGroupJoinWithClause(withClauseFragments, first);
+			joinFragment.AddFromFragmentString(tableGroupWithClause);
+			return true;
+		}
+
+		private SqlString GetTableGroupJoinWithClause(SqlString[] withClauseFragments, Join first)
+		{
+			SqlStringBuilder fromFragment = new SqlStringBuilder();
+			fromFragment.Add(")").Add(" on ");
+
+			String[] lhsColumns = first.LHSColumns;
+			var isAssociationJoin = lhsColumns.Length > 0;
+			if (isAssociationJoin)
+			{
+				String rhsAlias = first.Alias;
+				String[] rhsColumns = JoinHelper.GetRHSColumnNames(first.AssociationType, factory);
+				for (int j = 0; j < lhsColumns.Length; j++)
+				{
+					fromFragment.Add(lhsColumns[j]);
+					fromFragment.Add("=");
+					fromFragment.Add(rhsAlias);
+					fromFragment.Add(".");
+					fromFragment.Add(rhsColumns[j]);
+					if (j < lhsColumns.Length - 1)
+					{
+						fromFragment.Add(" and ");
+					}
+				}
+			}
+
+			for (var i= 0; i < withClauseFragments.Length; i++)
+			{
+				var withClause = withClauseFragments[i];
+				if (SqlStringHelper.IsEmpty(withClause))
+					continue;
+
+				if (withClause.StartsWithCaseInsensitive(" and "))
+				{
+					if (!isAssociationJoin)
+					{
+						withClause = withClause.Substring(4);
+					}
+				}
+				else if (isAssociationJoin)
+				{
+					fromFragment.Add(" and ");
+				}
+
+				fromFragment.Add(withClause);
+			}
+
+			return fromFragment.ToSqlString();
+		}
+
+		private bool NeedsTableGroupJoin(List<Join> joins, SqlString[] withClauseFragments, bool includeSubclasses)
+		{
+			// If the rewrite is disabled or we don't have a with clause, we don't need a table group join
+			if ( /*!collectionJoinSubquery ||*/ withClauseFragments.All(x => SqlStringHelper.IsEmpty(x)))
+			{
+				return false;
+			}
+			// If we only have one join, a table group join is only necessary if subclass columns are used in the with clause
+			if (joins.Count == 1)
+			{
+				return joins[0].Joinable is AbstractEntityPersister persister && persister.HasSubclassJoins(includeSubclasses);
+				//NH Specific: No alias processing
+				//return isSubclassAliasDereferenced( joins[ 0], withClauseFragment );
+			}
+
+			//NH Specific: No alias processing (see hibernate JoinSequence.NeedsTableGroupJoin)
+			return true;
 		}
 
 		private bool IsManyToManyRoot(IJoinable joinable)
@@ -249,9 +379,9 @@ namespace NHibernate.Engine
 			return selector != null && selector.IncludeSubclasses(alias);
 		}
 
-		private void AddExtraJoins(JoinFragment joinFragment, string alias, IJoinable joinable, bool innerJoin)
+		private void AddSubclassJoins(JoinFragment joinFragment, String alias, IJoinable joinable, bool innerJoin, bool includeSubclassJoins)
 		{
-			bool include = IsIncluded(alias);
+			bool include = includeSubclassJoins && IsIncluded(alias);
 			joinFragment.AddJoins(joinable.FromJoinFragment(alias, innerJoin, include),
 			                      joinable.WhereJoinFragment(alias, innerJoin, include));
 		}
@@ -327,5 +457,11 @@ namespace NHibernate.Engine
 		internal string RootAlias => rootAlias;
 
 		public ISessionFactoryImplementor Factory => factory;
+
+		public JoinSequence AddJoin(FromElement fromElement)
+		{
+			joins.AddRange(fromElement.JoinSequence.joins);
+			return this;
+		}
 	}
 }

@@ -78,9 +78,10 @@ namespace NHibernate.Proxy
 
 #if NETFX || NETCOREAPP2_0
 			var assemblyNamesToIgnoreAccessCheck =
-				interfaces.Where(i => !i.IsVisible)
-				          .Select(i => i.Assembly.GetName().Name)
-				          .Distinct();
+				new[] {baseType}
+					.Concat(interfaces).Where(i => !i.IsVisible)
+					.Select(i => i.Assembly.GetName().Name)
+					.Distinct();
 			foreach (var a in assemblyNamesToIgnoreAccessCheck)
 				ProxyBuilderHelper.GenerateInstanceOfIgnoresAccessChecksToAttribute(assemblyBuilder, a);
 #else

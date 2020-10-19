@@ -23,6 +23,8 @@ namespace NHibernate.Linq.Visitors
 
 		public QueryMode RootQueryMode { get; }
 
+		internal bool CanCachePlan { get; set; } = true;
+
 		public VisitorParameters(
 			ISessionFactoryImplementor sessionFactory, 
 			IDictionary<ConstantExpression, NamedParameter> constantToParameterMap, 

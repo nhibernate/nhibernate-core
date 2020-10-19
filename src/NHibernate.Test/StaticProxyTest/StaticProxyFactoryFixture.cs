@@ -37,6 +37,13 @@ namespace NHibernate.Test.StaticProxyTest
 			public virtual int Id { get; set; }
 		}
 
+		[Serializable]
+		internal class InternalTestClass
+		{
+			int Id { get; set; }
+			string Name { get; set; }
+		}
+
 		public interface IPublic
 		{
 			int Id { get; set; }
@@ -517,6 +524,32 @@ namespace NHibernate.Test.StaticProxyTest
 					Assert.That(proxy, Is.Not.Null);
 					Assert.That(proxy, Is.InstanceOf<IPublic>());
 					Assert.That(proxy, Is.InstanceOf<AbstractTestClass>());
+#if NETFX
+				});
+#endif
+		}
+		
+		[Test]
+		public void VerifyProxyForInternalClass()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(
+				typeof(InternalTestClass).FullName,
+				typeof(InternalTestClass),
+				new HashSet<System.Type> { typeof(INHibernateProxy) },
+				null, null, null, true);
+
+#if NETFX
+			VerifyGeneratedAssembly(
+				() =>
+				{
+#endif
+					var proxy = factory.GetProxy(1, null);
+					Assert.That(proxy, Is.Not.Null);
+					Assert.That(proxy, Is.InstanceOf<InternalTestClass>());
+
+					Assert.That(factory.GetFieldInterceptionProxy(), Is.InstanceOf<InternalTestClass>());
+
 #if NETFX
 				});
 #endif

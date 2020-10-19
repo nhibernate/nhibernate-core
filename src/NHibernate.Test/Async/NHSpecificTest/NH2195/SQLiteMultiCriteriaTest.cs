@@ -20,7 +20,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2195
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SQLiteMultiCriteriaTestAsync : BugTestCase
 	{
@@ -173,8 +172,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 				multi.Add<DomainClass>(criteriaWithPagination);
 				multi.Add<long>(criteriaWithRowCount);
 
-				var numResults = (await (multi.GetResultAsync<long>(1, CancellationToken.None))).Single();
-				var list = await (multi.GetResultAsync<DomainClass>(0, CancellationToken.None));
+				var numResults = (await (multi.GetResultAsync<long>(1))).Single();
+				var list = await (multi.GetResultAsync<DomainClass>(0));
 
 				Assert.That(numResults, Is.EqualTo(2));
 				Assert.That(list.Count, Is.EqualTo(1));
@@ -198,8 +197,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 				multi.Add<DomainClass>(criteriaWithPagination);
 				multi.Add<long>(criteriaWithRowCount);
 
-				var numResults = (await (multi.GetResultAsync<long>(1, CancellationToken.None))).Single();
-				var list = await (multi.GetResultAsync<DomainClass>(0, CancellationToken.None));
+				var numResults = (await (multi.GetResultAsync<long>(1))).Single();
+				var list = await (multi.GetResultAsync<DomainClass>(0));
 
 				Assert.That(numResults, Is.EqualTo(2));
 				Assert.That(list.Count, Is.EqualTo(1));

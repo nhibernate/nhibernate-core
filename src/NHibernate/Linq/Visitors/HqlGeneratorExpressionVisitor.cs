@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Dynamic;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace NHibernate.Linq.Visitors
 		private readonly VisitorParameters _parameters;
 		private readonly ILinqToHqlGeneratorsRegistry _functionRegistry;
 		private readonly NullableExpressionDetector _nullableExpressionDetector;
+		private readonly Dictionary<Expression, System.Type> _notCastableExpressions = new Dictionary<Expression, System.Type>();
 
 		public static HqlTreeNode Visit(Expression expression, VisitorParameters parameters)
 		{
@@ -308,6 +310,17 @@ possible solutions:
 
 		protected HqlTreeNode VisitBinaryExpression(BinaryExpression expression)
 		{
+			// There are some cases where we do not want to add a sql cast:
+			// - When comparing numeric types that do not have their own operator (e.g. short == short)
+			// - When comparing a member expression with a parameter of similar type (e.g. o.Short == intParameter)
+			var leftType = GetExpressionType(expression.Left);
+			var rightType = GetExpressionType(expression.Right);
+			if (leftType != null && leftType == rightType)
+			{
+				_notCastableExpressions.Add(expression.Left, leftType);
+				_notCastableExpressions.Add(expression.Right, rightType);
+			}
+
 			if (expression.NodeType == ExpressionType.Equal)
 			{
 				return TranslateEqualityComparison(expression);
@@ -372,6 +385,23 @@ possible solutions:
 			}
 
 			throw new InvalidOperationException();
+		}
+
+		private System.Type GetExpressionType(Expression expression)
+		{
+			switch (expression.NodeType)
+			{
+				case ExpressionType.Constant:
+					return _parameters.ConstantToParameterMap.TryGetValue((ConstantExpression) expression, out var param)
+						? param.Type?.ReturnedClass
+						: null;
+				case ExpressionType.Convert:
+				case ExpressionType.ConvertChecked:
+					var operand = ((UnaryExpression) expression).Operand;
+					return GetExpressionType(operand) ?? operand.Type.UnwrapIfNullable();
+			}
+
+			return null;
 		}
 
 		private HqlTreeNode TranslateInequalityComparison(BinaryExpression expression)
@@ -496,11 +526,17 @@ possible solutions:
 				case ExpressionType.Convert:
 				case ExpressionType.ConvertChecked:
 				case ExpressionType.TypeAs:
-					return IsCastRequired(expression.Operand, expression.Type, out var existType)
-						? _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), expression.Type)
+					var castable = !_notCastableExpressions.TryGetValue(expression, out var castType);
+					if (castable)
+					{
+						castType = expression.Type;
+					}
+
+					return IsCastRequired(expression.Operand, castType, out var existType) && castable
+						? _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), castType)
 						// Make a transparent cast when an IType exists, so that it can be used to retrieve the value from the data reader
-						: existType && HqlIdent.SupportsType(expression.Type)
-							? _hqlTreeBuilder.TransparentCast(VisitExpression(expression.Operand).AsExpression(), expression.Type)
+						: existType && HqlIdent.SupportsType(castType)
+							? _hqlTreeBuilder.TransparentCast(VisitExpression(expression.Operand).AsExpression(), castType)
 							: VisitExpression(expression.Operand);
 			}
 
@@ -634,7 +670,7 @@ possible solutions:
 				return false;
 			}
 
-			if (type.ReturnedClass.IsEnum && sqlTypes[0].DbType == DbType.String)
+			if (type.ReturnedClass.IsEnum && sqlTypes[0].DbType.IsStringType())
 			{
 				existType = false;
 				return false; // Never cast an enum that is mapped as string, the type will provide a string for the parameter value

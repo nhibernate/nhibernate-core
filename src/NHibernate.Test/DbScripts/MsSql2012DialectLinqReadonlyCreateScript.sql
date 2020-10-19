@@ -54,6 +54,25 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+CREATE TABLE [dbo].[NumericEntity](
+	[Short] [smallint] IDENTITY(1,1) NOT NULL,
+	[NullableShort] [smallint] NULL,
+	[Integer] [int] NOT NULL,
+	[NullableInteger] [int] NULL,
+	[Long] [bigint] NOT NULL,
+	[NullableLong] [bigint] NULL,
+	[Decimal] [decimal](19, 5) NOT NULL,
+	[NullableDecimal] [decimal](19, 5) NULL,
+	[Single] [real] NOT NULL,
+	[NullableSingle] [real] NULL,
+	[Double] [float] NOT NULL,
+	[NullableDouble] [float] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Short] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
 INSERT [dbo].[Suppliers] ([SupplierId], [CompanyName], [ContactName], [ContactTitle], [HomePage], [Address], [City], [Region], [PostalCode], [Country], [Phone], [Fax]) VALUES (1, N'Exotic Liquids', N'Charlotte Cooper', N'Purchasing Manager', N'', N'49 Gilbert St.', N'London', N'', N'EC1 4SD', N'UK', N'(171) 555-2222', N'')
 INSERT [dbo].[Suppliers] ([SupplierId], [CompanyName], [ContactName], [ContactTitle], [HomePage], [Address], [City], [Region], [PostalCode], [Country], [Phone], [Fax]) VALUES (2, N'New Orleans Cajun Delights', N'Shelley Burke', N'Order Administrator', N'#CAJUN.HTM#', N'P.O. Box 78934', N'New Orleans', N'LA', N'70117', N'USA', N'(100) 555-4822', N'')
 INSERT [dbo].[Suppliers] ([SupplierId], [CompanyName], [ContactName], [ContactTitle], [HomePage], [Address], [City], [Region], [PostalCode], [Country], [Phone], [Fax]) VALUES (3, N'Grandma Kelly''s Homestead', N'Regina Murphy', N'Sales Representative', N'', N'707 Oxford Rd.', N'Ann Arbor', N'MI', N'48104', N'USA', N'(313) 555-5735', N'(313) 555-3349')

@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Hql.Ast.ANTLR;
+using NHibernate.Linq;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -11,6 +13,42 @@ namespace NHibernate.Test.Linq
 	[TestFixture]
 	public class LinqQuerySamples : LinqTestCase
 	{
+		class NotMappedEntity
+		{
+			public virtual int Id { get; set; }
+			public virtual string Name { get; set; }
+		}
+
+		[Test]
+		public void ShouldThrowForQueryOnNotMappedEntity()
+		{
+			var querySyntaxException = Assert.Throws<QuerySyntaxException>(() => session.Query<NotMappedEntity>().Select(x => x.Id).ToList());
+			Assert.That(querySyntaxException.Message, Does.Contain(nameof(NotMappedEntity)));
+		}
+
+		[Test]
+		public void ShouldThrowForQueryOnNotMappedEntityName()
+		{
+			var entityName = "SomeNamespace.NotMappedEntityName";
+			var querySyntaxException = Assert.Throws<QuerySyntaxException>(() => session.Query<NotMappedEntity>(entityName).ToList());
+			Assert.That(querySyntaxException.Message, Does.Contain(entityName));
+		}
+
+		[Test]
+		public void ShouldThrowForDmlQueryOnNotMappedEntity()
+		{
+			Assert.Multiple(
+				() =>
+				{
+					var querySyntaxException = Assert.Throws<QuerySyntaxException>(() => session.Query<NotMappedEntity>().Delete());
+					Assert.That(querySyntaxException.Message, Does.Contain(nameof(NotMappedEntity)));
+
+					var entityName = "SomeNamespace.NotMappedEntityName";
+					querySyntaxException = Assert.Throws<QuerySyntaxException>(() => session.Delete($"from {entityName}"));
+					Assert.That(querySyntaxException.Message, Does.Contain(entityName));
+				});
+		}
+
 		[Test]
 		public void GroupTwoQueriesAndSum()
 		{
@@ -1584,15 +1622,9 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Category("JOIN")]
-		[TestCase(true, Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
-		[TestCase(false, Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
-		public void DLinqJoin5d(bool useCrossJoin)
+		[Test(Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
+		public void DLinqJoin5d()
 		{
-			if (useCrossJoin && !Dialect.SupportsCrossJoin)
-			{
-				Assert.Ignore("Dialect does not support cross join.");
-			}
-
 			var q =
 				from c in db.Customers
 				join o in db.Orders on
@@ -1600,19 +1632,14 @@ namespace NHibernate.Test.Linq
 					new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null }
 				select new { c.ContactName, o.OrderId };
 
-			using (var substitute = SubstituteDialect())
 			using (var sqlSpy = new SqlLogSpy())
 			{
-				ClearQueryPlanCache();
-				substitute.Value.SupportsCrossJoin.Returns(useCrossJoin);
-
 				ObjectDumper.Write(q);
 
 				var sql = sqlSpy.GetWholeLog();
-				Assert.That(sql, Does.Contain(useCrossJoin ? "cross join" : "inner join"));
 				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(0));
-				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(useCrossJoin ? 1 : 2));
-				Assert.That(GetTotalOccurrences(sql, "cross join"), Is.EqualTo(useCrossJoin ? 1 : 0));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
+				Assert.That(GetTotalOccurrences(sql, "cross join"), Is.EqualTo(0));
 			}
 		}
 
@@ -1623,12 +1650,12 @@ namespace NHibernate.Test.Linq
 			var q =
 				from c in db.Customers
 				join o in db.Orders on
-					new { c.CustomerId, HasContractTitle = c.ContactTitle != null } equals
-					new { o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null } into orders
+					new {c.CustomerId, HasContractTitle = c.ContactTitle != null} equals
+					new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null} into orders
 				from o in orders.DefaultIfEmpty()
-				select new { c.ContactName, o.OrderId };
+				select new {c.ContactName, OrderId = (int?) o.OrderId};
 
-			Assert.Throws<NotSupportedException>(() => ObjectDumper.Write(q));
+			ObjectDumper.Write(q);
 		}
 
 		[Category("JOIN")]
