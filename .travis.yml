@@ -21,7 +21,7 @@ before_install:
   - |-
     if [[ "$DB" == "MySQL" ]]
     then
-      echo -e '[server]\nlower_case_table_names=1' | sudo tee -a /etc/mysql/my.cnf
+      echo -e '[server]\nlower_case_table_names=1\n[mysqld]\ncharacter-set-server=utf8\ncollation-server=utf8_general_ci' | sudo tee -a /etc/mysql/my.cnf
       sudo service mysql restart
     fi
   - |-
