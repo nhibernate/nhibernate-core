@@ -9,7 +9,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Loader
 {
-	public sealed class OuterJoinableAssociation
+	public sealed class OuterJoinableAssociation : IJoin
 	{
 		private readonly IAssociationType joinableType;
 		private readonly IJoinable joinable;
@@ -99,6 +99,10 @@ namespace NHibernate.Loader
 		}
 
 		public ISet<string> EntityFetchLazyProperties { get; set; }
+
+		string[] IJoin.LHSColumns => lhsColumns;
+		string IJoin.Alias => RHSAlias;
+		IAssociationType IJoin.AssociationType => JoinableType;
 
 		public int GetOwner(IList<OuterJoinableAssociation> associations)
 		{

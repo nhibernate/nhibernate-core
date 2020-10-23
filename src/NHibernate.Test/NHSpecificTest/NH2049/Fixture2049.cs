@@ -37,13 +37,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2049
 		}
 
 		[Test]
-		[KnownBug("Known bug NH-2049.")]
 		public void CanCriteriaQueryWithFilterOnJoinClassBaseClassProperty()
 		{
 			using (ISession session = OpenSession())
 			{
 				session.EnableFilter("DeletedCustomer").SetParameter("deleted", false);
-				IList<Person> persons = session.CreateCriteria(typeof (Person)).List<Person>();
+				IList<Person> persons = session.QueryOver<Person>().JoinQueryOver(x => x.IndividualCustomer).List<Person>();
 
 				Assert.That(persons, Has.Count.EqualTo(1));
 				Assert.That(persons[0].Id, Is.EqualTo(1));
