@@ -113,14 +113,13 @@ namespace NHibernate.Persister.Entity
 		/// to which this property is mapped.
 		/// </summary>
 		/// <param name="propertyPath">The name of the property. </param>
-		/// <param name="useLastIndex">The name of the property. </param>
 		/// <returns> The number of the table to which the property is mapped. </returns>
 		/// <remarks>
 		/// Note that this is <b>not</b> relative to the results from {@link #getConstraintOrderedTableNameClosure()}.
 		/// It is relative to the subclass table name closure maintained internal to the persister (yick!).
 		/// It is also relative to the indexing used to resolve {@link #getSubclassTableName}...
 		/// </remarks>
-		int GetSubclassPropertyTableNumber(string propertyPath, bool useLastIndex);
+		int GetSubclassPropertyTableNumber(string propertyPath);
 
 		/// <summary> Determine whether the given property is declared by our
 		/// mapped class, our super class, or one of our subclasses...

@@ -57,7 +57,7 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		public string[] ToColumns(string alias, string propertyName, bool useLastIndex = false)
+		public string[] ToColumns(string alias, string propertyName)
 		{
 			string[] cols;
 			switch (propertyName)
@@ -107,7 +107,7 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		public string[] ToColumns(string propertyName, bool useLastIndex = false)
+		public string[] ToColumns(string propertyName)
 		{
 			throw new System.NotSupportedException("References to collections must be define a SQL alias");
 		}

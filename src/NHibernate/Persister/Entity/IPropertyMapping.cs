@@ -34,11 +34,10 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="alias"></param>
 		/// <param name="propertyName"></param>
-		/// <param name="useLastIndex"></param>
 		/// <returns></returns>
-		string[] ToColumns(string alias, string propertyName, bool useLastIndex = false);
+		string[] ToColumns(string alias, string propertyName);
 
 		/// <summary> Given a property path, return the corresponding column name(s).</summary>
-		string[] ToColumns(string propertyName, bool useLastIndex = false);
+		string[] ToColumns(string propertyName);
 	}
 }
